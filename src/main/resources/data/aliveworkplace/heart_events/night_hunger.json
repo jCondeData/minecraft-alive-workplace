@@ -1,0 +1,15 @@
+{
+  "hearts": 6,
+  "when": {
+    "hungry": true
+  },
+  "weight": 5,
+  "lines": [
+    "heart_event.aliveworkplace.night_hunger.1",
+    "heart_event.aliveworkplace.night_hunger.2",
+    "heart_event.aliveworkplace.night_hunger.3",
+    "heart_event.aliveworkplace.night_hunger.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.night_hunger",
+  "story": "life_story.aliveworkplace.night_hunger"
+}

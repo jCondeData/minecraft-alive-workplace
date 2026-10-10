@@ -559,11 +559,16 @@ SCENES = [
       "Gift Wrap and a Golden Carrot on the crafting grid made a Gift; Dara the farmer unwrapped it and loved it, her hearts went up in the action bar, and the hall's tooltip says when her name day is", 55,
       [("01_wrapping", "Gift Wrap and a Golden Carrot make a Gift"), ("02_giving", "Dara unwraps it: her line, bits of carrot, hearts"),
        ("03_hearts", "Her hearts went up; a second gift the same day is handed back"), ("04_hall_name_day", "The hall: when her name day is")]),
-    # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page
-    S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from",
-      "at two hearts Dara walked up to the player, faced them and told where she comes from, line by line over her head and in the chat; it went into the chronicle and onto her life story page", 60,
-      [("01_walks_up", "Two hearts: Dara sets out towards you"), ("02_telling", "She tells it, a line every three seconds"),
-       ("03_told", "The last line, each also in the chat in grey"), ("04_life_story", "Shift-click her in the hall: her life story")]),
+    # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
+    # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
+    S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",
+      "at two hearts Dara walked up to the player, faced them and told where she comes from, line by line over her head and in the chat; it went into the chronicle and onto her life story page; at ten hearts she told what she dreams of and gave her keepsake", 75,
+      [("02_telling", "Two hearts: she walks up and tells it, a line every three seconds"), ("03_told", "The last line, each also in the chat in grey"),
+       ("04_life_story", "Shift-click her in the hall: her life story"), ("05_keepsake", "Ten hearts: her dream told, and her keepsake in your hand")]),
+    # My work (ROADMAP 31.8): the 4-heart event of each job family, a villager of each beginning theirs
+    S("heart_events_work", "Village Hall", "Heart events: the work story of every job family",
+      "at four hearts a villager of each job family (and one without a trade) began the story of their work, over their head and in the chat", 45,
+      [("[0-9][0-9]_*@spread", "")]),
     S("story_arc", "Village Hall", "A story arc: its chapters told, the Story tab and the chronicle",
       "a story arc began (its chapters told in chat), the Story tab showed the first chapter ticked and the second with its quest, and the chronicle kept them", 50,
       [("01_story_announced", "The chapters told in chat as they begin"), ("02_story_tab", "The Story tab: chapter 1 ticked, chapter 2 running with its quest"),

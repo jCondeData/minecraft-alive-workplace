@@ -1,0 +1,15 @@
+{
+  "hearts": 6,
+  "when": {
+    "no_bed": true
+  },
+  "weight": 4,
+  "lines": [
+    "heart_event.aliveworkplace.night_no_bed.1",
+    "heart_event.aliveworkplace.night_no_bed.2",
+    "heart_event.aliveworkplace.night_no_bed.3",
+    "heart_event.aliveworkplace.night_no_bed.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.night_no_bed",
+  "story": "life_story.aliveworkplace.night_no_bed"
+}

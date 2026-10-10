@@ -1,0 +1,19 @@
+{
+  "hearts": 4,
+  "when": {
+    "jobs": [
+      "aliveworkplace:scholar",
+      "aliveworkplace:teacher",
+      "minecraft:librarian",
+      "minecraft:cartographer"
+    ]
+  },
+  "lines": [
+    "heart_event.aliveworkplace.work_learning.1",
+    "heart_event.aliveworkplace.work_learning.2",
+    "heart_event.aliveworkplace.work_learning.3",
+    "heart_event.aliveworkplace.work_learning.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.work_learning",
+  "story": "life_story.aliveworkplace.work_learning"
+}

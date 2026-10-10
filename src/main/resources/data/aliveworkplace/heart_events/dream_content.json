@@ -1,0 +1,16 @@
+{
+  "hearts": 10,
+  "when": {
+    "married": true,
+    "happy": true,
+    "level": 5
+  },
+  "lines": [
+    "heart_event.aliveworkplace.dream_content.1",
+    "heart_event.aliveworkplace.dream_content.2",
+    "heart_event.aliveworkplace.dream_content.3",
+    "heart_event.aliveworkplace.dream_content.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.dream_content",
+  "story": "life_story.aliveworkplace.dream_content"
+}

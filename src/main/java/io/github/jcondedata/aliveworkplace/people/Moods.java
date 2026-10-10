@@ -30,7 +30,7 @@ public final class Moods {
 	private static final long KEEP_TICKS = 200;
 	/** How near home decorations count, and how near others count as company. */
 	static final int DECORATION_RANGE = 16;
-	static final int COMPANY_RANGE = 6;
+	public static final int COMPANY_RANGE = 6;
 
 	/** A mood, with what makes it better and worse. */
 	public record Mood(int score, List<Component> good, List<Component> bad) {

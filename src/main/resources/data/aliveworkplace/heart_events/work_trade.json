@@ -1,0 +1,20 @@
+{
+  "hearts": 4,
+  "when": {
+    "jobs": [
+      "aliveworkplace:shopkeeper",
+      "aliveworkplace:innkeeper",
+      "aliveworkplace:ferryman",
+      "aliveworkplace:postman",
+      "aliveworkplace:porter"
+    ]
+  },
+  "lines": [
+    "heart_event.aliveworkplace.work_trade.1",
+    "heart_event.aliveworkplace.work_trade.2",
+    "heart_event.aliveworkplace.work_trade.3",
+    "heart_event.aliveworkplace.work_trade.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.work_trade",
+  "story": "life_story.aliveworkplace.work_trade"
+}

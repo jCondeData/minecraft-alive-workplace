@@ -1,0 +1,16 @@
+{
+  "hearts": 4,
+  "when": {
+    "jobs": [
+      "aliveworkplace:bard"
+    ]
+  },
+  "lines": [
+    "heart_event.aliveworkplace.work_music.1",
+    "heart_event.aliveworkplace.work_music.2",
+    "heart_event.aliveworkplace.work_music.3",
+    "heart_event.aliveworkplace.work_music.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.work_music",
+  "story": "life_story.aliveworkplace.work_music"
+}

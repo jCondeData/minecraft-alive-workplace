@@ -91,11 +91,12 @@ public final class Friendship {
 	/**
 	 * One player's friendship with a villager: their last known name, points, the last gift's day, the week of the gifts
 	 * counted and how many that week (31.6), each daily favour's last day, the game time of the last hit that cost points,
-	 * and the heart events told (31.7).
+	 * the heart events told (31.7), and whether they have given this player their keepsake (31.8; absent in older saves:
+	 * not given).
 	 */
 	public record Bond(String name, int points, long giftDay, long giftWeek, int giftsWeek, Map<String, Long> favours, long hitTick,
-					   List<String> told) {
-		public static final Bond NONE = new Bond("", 0, -1, -1, 0, Map.of(), -1, List.of());
+					   List<String> told, boolean keepsake) {
+		public static final Bond NONE = new Bond("", 0, -1, -1, 0, Map.of(), -1, List.of(), false);
 		public static final Codec<Bond> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.STRING.optionalFieldOf("name", "").forGetter(Bond::name),
 			Codec.INT.optionalFieldOf("points", 0).forGetter(Bond::points),
@@ -104,7 +105,8 @@ public final class Friendship {
 			Codec.INT.optionalFieldOf("gifts_week", 0).forGetter(Bond::giftsWeek),
 			Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("favours", Map.of()).forGetter(Bond::favours),
 			Codec.LONG.optionalFieldOf("hit_tick", -1L).forGetter(Bond::hitTick),
-			Codec.STRING.listOf().optionalFieldOf("told", List.of()).forGetter(Bond::told)
+			Codec.STRING.listOf().optionalFieldOf("told", List.of()).forGetter(Bond::told),
+			Codec.BOOL.optionalFieldOf("keepsake", false).forGetter(Bond::keepsake)
 		).apply(i, Bond::new));
 
 		public Bond {
@@ -117,17 +119,17 @@ public final class Friendship {
 		}
 
 		public Bond withPoints(String name, int points) {
-			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told);
+			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, keepsake);
 		}
 
 		public Bond withFavour(String favour, long day) {
 			Map<String, Long> map = new HashMap<>(favours);
 			map.put(favour, day);
-			return new Bond(name, points, giftDay, giftWeek, giftsWeek, map, hitTick, told);
+			return new Bond(name, points, giftDay, giftWeek, giftsWeek, map, hitTick, told, keepsake);
 		}
 
 		public Bond withHit(long tick) {
-			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, tick, told);
+			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, tick, told, keepsake);
 		}
 
 		/** A heart event told to the end (31.7): its id, once. */
@@ -137,12 +139,17 @@ public final class Friendship {
 			}
 			List<String> list = new ArrayList<>(told);
 			list.add(event);
-			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, list);
+			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, list, keepsake);
+		}
+
+		/** Their keepsake given (31.8, {@link Keepsakes}): once. */
+		public Bond withKeepsake(String name) {
+			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, true);
 		}
 
 		/** A gift taken on {@code day}, the {@code count}th of {@code week} (31.6). */
 		public Bond withGift(String name, long day, long week, int count) {
-			return new Bond(name.isEmpty() ? this.name : name, points, day, week, count, favours, hitTick, told);
+			return new Bond(name.isEmpty() ? this.name : name, points, day, week, count, favours, hitTick, told, keepsake);
 		}
 	}
 
@@ -376,6 +383,13 @@ public final class Friendship {
 		Data data = of(villager);
 		ModAttachments.FRIENDSHIP.set(villager, data.with(player.getUUID(),
 			data.bond(player.getUUID()).withTold(player.getGameProfile().getName(), event)));
+	}
+
+	/** Notes that {@code villager} gave {@code player} their keepsake (31.8, {@link Keepsakes}). */
+	public static void keepsakeGiven(Villager villager, ServerPlayer player) {
+		Data data = of(villager);
+		ModAttachments.FRIENDSHIP.set(villager, data.with(player.getUUID(),
+			data.bond(player.getUUID()).withKeepsake(player.getGameProfile().getName())));
 	}
 
 	/** {@code player} hit {@code villager}: {@link #HIT_COST} off, at most once a minute. Returns the change made. */

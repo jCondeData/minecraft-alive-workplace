@@ -11,6 +11,7 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.KeepsakeCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.VillageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PackModsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",

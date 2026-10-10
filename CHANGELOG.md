@@ -17,6 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Heart events: the full set, and keepsakes** (31.8, part of 1.5, off until it's released): villagers now have
+  something to tell at every second heart. At 4 hearts, **My work**, one story per job family (the first wall a
+  builder raised, the day a miner's lamp went out, the fisherman's fish that got away; someone without a trade asks
+  whether the free Loom near the hall might be for them). At 6, **What keeps me up at night**, from their life now:
+  hunger, no bed of their own, raids, illness in the house, loneliness, or worry about you. At 8, **The people I
+  love**: their partner and the wedding day, who they're courting, their children by name, the partner they lost,
+  their parents, or the whole village. At 10, **What I dream of**: to be a Master, to see the Nether or the sea, a
+  finer house, the village a City, a festival in their honour, or nothing more at all. After the 10-heart story they
+  give you a **keepsake**, once: "Dara's Lucky Pick" (an iron pickaxe with Fortune), "Dara's Grandmother's Seeds",
+  "Dara's Secret Recipe" (a book with her pumpkin pie, and two pies) and nine more, one per job family.
 - **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all

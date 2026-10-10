@@ -1,0 +1,15 @@
+{
+  "hearts": 8,
+  "when": {
+    "courting": true
+  },
+  "weight": 4,
+  "lines": [
+    "heart_event.aliveworkplace.love_courting.1",
+    "heart_event.aliveworkplace.love_courting.2",
+    "heart_event.aliveworkplace.love_courting.3",
+    "heart_event.aliveworkplace.love_courting.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.love_courting",
+  "story": "life_story.aliveworkplace.love_courting"
+}

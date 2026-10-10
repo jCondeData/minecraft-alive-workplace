@@ -5,17 +5,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.guard.BanditCamps;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.CivicEffects;
 import io.github.jcondedata.aliveworkplace.hall.Guilds;
+import io.github.jcondedata.aliveworkplace.hall.VillageGrowth;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.people.Chatter;
 import io.github.jcondedata.aliveworkplace.people.Couples;
 import io.github.jcondedata.aliveworkplace.people.Families;
+import io.github.jcondedata.aliveworkplace.people.Homes;
 import io.github.jcondedata.aliveworkplace.people.Moods;
+import io.github.jcondedata.aliveworkplace.people.Sickness;
 import io.github.jcondedata.aliveworkplace.people.Traits;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
@@ -50,6 +55,7 @@ import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -79,12 +85,23 @@ import org.jetbrains.annotations.Nullable;
  * {@code married}, {@code courting}, {@code widowed} (a late partner and nobody since), {@code parent} (a child of
  * theirs lives in the village), {@code trait}, {@code mood} (a list of mood reasons, any one of which they feel, e.g.
  * {@code "hungry"}) and {@code rank} (the village's rank at least: {@code hamlet}, {@code village}, {@code town},
- * {@code city}). Every lang key gets the same arguments: {@code %1$s} the villager, {@code %2$s} the player,
- * {@code %3$s} the village, {@code %4$s} their mother, {@code %5$s} their father, {@code %6$s} their partner (or late
- * partner), {@code %7$s} their children, {@code %8$s} the day they were hired. A villager tells one event per heart
- * level: of those whose conditions hold, the one with the most conditions (the story that fits them most closely), then
- * the first by id. A data pack replaces an event of ours by shipping a file with the same
- * id, or adds its own; a broken file is skipped with a warning.
+ * {@code city}); and, for the events of their life now (31.8): {@code trade} (they have a job: not jobless, not a
+ * nitwit), {@code hungry} (hungry, or under {@link #LOW_STORE} meals in the village's store), {@code no_bed},
+ * {@code raided} (a raid in the last {@link #RAID_DAYS} days, or a bandit camp preying on the village), {@code ill}
+ * (they or their family: partner, parents, children), {@code lonely} (no partner, and nobody within a few blocks),
+ * {@code happy}, {@code level} (their job level at least, 5 a Master), {@code level_below}, {@code home_tier_below}
+ * (their home's tier, 0 without one) and {@code rank_below}. Every lang key gets the same arguments: {@code %1$s} the
+ * villager, {@code %2$s} the player, {@code %3$s} the village, {@code %4$s} their mother, {@code %5$s} their father,
+ * {@code %6$s} their partner (or late partner), {@code %7$s} their children, {@code %8$s} the day they were hired,
+ * {@code %9$s} their wedding day and {@code %10$s} a sentence about the village's nearest free workstation
+ * ({@link VillageHalls#freeStations}). A villager tells one event per heart level: of those whose conditions hold, the
+ * one with the most conditions (the story that fits them most closely), then the one with the highest
+ * {@code "weight"} (optional, 0), then the first by id. A data pack replaces an event of ours by shipping a file with
+ * the same id, or adds its own; a broken file is skipped with a warning.
+ *
+ * <p>Ours (31.7, 31.8): <b>Where I come from</b> at 2 hearts, <b>My work</b> at 4 (one per job family), <b>What keeps
+ * me up at night</b> at 6, <b>The people I love</b> at 8 and <b>What I dream of</b> at 10, after which they give the
+ * player their keepsake ({@link Keepsakes}), once.
  *
  * <p>Config {@code heartEvents} off: nobody starts telling, a telling under way stops; what was told stays.
  */
@@ -109,12 +126,16 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 	public static final int POINTS = 20;
 	public static final int MIN_LINES = 3;
 	public static final int MAX_LINES = 5;
+	/** {@code hungry}: fewer meals than this in the village's store worries them. */
+	public static final int LOW_STORE = 16;
+	/** {@code raided}: a raid this many days ago or less. */
+	public static final int RAID_DAYS = 5;
 
 	/** The conditions of an event on the villager's facts; null or empty: not asked. */
 	public record When(@Nullable Boolean born, @Nullable Boolean hired, @Nullable Boolean revived, Set<ResourceLocation> jobs,
 					   @Nullable Boolean married, @Nullable Boolean courting, @Nullable Boolean widowed, @Nullable Boolean parent,
-					   @Nullable Traits.Trait trait, Set<String> moods, @Nullable VillageRanks.Rank rank) {
-		public static final When ALWAYS = new When(null, null, null, Set.of(), null, null, null, null, null, Set.of(), null);
+					   @Nullable Traits.Trait trait, Set<String> moods, @Nullable VillageRanks.Rank rank, Now now) {
+		public static final When ALWAYS = new When(null, null, null, Set.of(), null, null, null, null, null, Set.of(), null, Now.ANY);
 
 		public boolean holds(ServerLevel level, Villager villager) {
 			Couples.Partner partner = Couples.partner(villager);
@@ -142,7 +163,7 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 					return false;
 				}
 			}
-			return true;
+			return now.holds(level, villager);
 		}
 
 		/** How many conditions are asked: of two events for the same hearts, the one that asks more is told. */
@@ -151,7 +172,7 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 			for (Boolean flag : new Boolean[] {born, hired, revived, married, courting, widowed, parent}) {
 				n += flag == null ? 0 : 1;
 			}
-			return n + (jobs.isEmpty() ? 0 : 1) + (trait == null ? 0 : 1) + (moods.isEmpty() ? 0 : 1) + (rank == null ? 0 : 1);
+			return n + (jobs.isEmpty() ? 0 : 1) + (trait == null ? 0 : 1) + (moods.isEmpty() ? 0 : 1) + (rank == null ? 0 : 1) + now.asked();
 		}
 
 		private static boolean is(@Nullable Boolean want, boolean fact) {
@@ -159,8 +180,61 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 		}
 	}
 
-	/** One event: its hearts, conditions, the lines' lang keys, and the chronicle's and the life story's. */
-	public record Event(ResourceLocation id, int hearts, When when, List<String> lines, String chronicle, String story) {
+	/**
+	 * The conditions on a villager's life now (31.8), each null when not asked: {@code trade} (they have a job),
+	 * {@code hungry}, {@code noBed}, {@code raided}, {@code ill}, {@code lonely}, {@code happy}, their job
+	 * {@code level} at least and {@code levelBelow}, {@code homeTierBelow} and the village's {@code rankBelow}.
+	 */
+	public record Now(@Nullable Boolean trade, @Nullable Boolean hungry, @Nullable Boolean noBed, @Nullable Boolean raided,
+					  @Nullable Boolean ill, @Nullable Boolean lonely, @Nullable Boolean happy, @Nullable Integer level,
+					  @Nullable Integer levelBelow, @Nullable Integer homeTierBelow, @Nullable VillageRanks.Rank rankBelow) {
+		public static final Now ANY = new Now(null, null, null, null, null, null, null, null, null, null, null);
+
+		public boolean holds(ServerLevel level, Villager villager) {
+			if (this == ANY) {
+				return true;
+			}
+			// The cheap facts first: the store, the family and the neighbours are only looked at when the rest holds.
+			if (trade != null && trade != hasTrade(villager)) {
+				return false;
+			}
+			int jobLevel = villager.getVillagerData().getLevel();
+			if (this.level != null && jobLevel < this.level || levelBelow != null && jobLevel >= levelBelow) {
+				return false;
+			}
+			if (noBed != null && noBed != (VillageNeeds.bed(level, villager) == null)) {
+				return false;
+			}
+			if (happy != null && happy != HeartEvents.happy(villager)) {
+				return false;
+			}
+			if (rankBelow != null) {
+				VillageHallBlockEntity hall = CivicEffects.hallOf(villager);
+				if (hall == null || hall.rank().compareTo(rankBelow) >= 0) {
+					return false;
+				}
+			}
+			if (homeTierBelow != null && homeTier(level, villager) >= homeTierBelow) {
+				return false;
+			}
+			return (raided == null || raided == HeartEvents.raided(level, villager)) && (lonely == null || lonely == HeartEvents.lonely(level, villager))
+				&& (ill == null || ill == HeartEvents.ill(level, villager)) && (hungry == null || hungry == HeartEvents.hungry(level, villager));
+		}
+
+		public int asked() {
+			int n = 0;
+			for (Object asked : new Object[] {trade, hungry, noBed, raided, ill, lonely, happy, level, levelBelow, homeTierBelow, rankBelow}) {
+				n += asked == null ? 0 : 1;
+			}
+			return n;
+		}
+	}
+
+	/**
+	 * One event: its hearts, conditions, the lines' lang keys, the chronicle's and the life story's, and its weight (of
+	 * two events for the same hearts that ask as much, the heavier is told).
+	 */
+	public record Event(ResourceLocation id, int hearts, When when, List<String> lines, String chronicle, String story, int weight) {
 	}
 
 	/** A telling under way (not saved: an interrupted one starts again). */
@@ -267,11 +341,12 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 		if (chronicle.isBlank() || story.isBlank()) {
 			throw new JsonSyntaxException(chronicle.isBlank() ? "chronicle: empty" : "story: empty");
 		}
-		return new Event(id, hearts, o.has("when") ? when(GsonHelper.getAsJsonObject(o, "when")) : When.ALWAYS, List.copyOf(lines), chronicle, story);
+		return new Event(id, hearts, o.has("when") ? when(GsonHelper.getAsJsonObject(o, "when")) : When.ALWAYS, List.copyOf(lines), chronicle, story,
+			GsonHelper.getAsInt(o, "weight", 0));
 	}
 
 	private static final Set<String> CONDITIONS = Set.of("born", "hired", "revived", "jobs", "married", "courting", "widowed", "parent", "trait",
-		"mood", "rank");
+		"mood", "rank", "trade", "hungry", "no_bed", "raided", "ill", "lonely", "happy", "level", "level_below", "home_tier_below", "rank_below");
 
 	private static When when(JsonObject w) {
 		for (String key : w.keySet()) {
@@ -311,22 +386,41 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 				throw new JsonSyntaxException("when.mood: no reasons");
 			}
 		}
-		VillageRanks.Rank rank = null;
-		if (w.has("rank")) {
-			String name = GsonHelper.getAsString(w, "rank");
-			try {
-				rank = VillageRanks.Rank.valueOf(name.toUpperCase(Locale.ROOT));
-			} catch (IllegalArgumentException ex) {
-				throw new JsonSyntaxException("when.rank: no rank \"" + name + "\"");
-			}
-		}
+		Now now = new Now(flag(w, "trade"), flag(w, "hungry"), flag(w, "no_bed"), flag(w, "raided"), flag(w, "ill"), flag(w, "lonely"), flag(w, "happy"),
+			number(w, "level"), number(w, "level_below"), number(w, "home_tier_below"), rank(w, "rank_below"));
 		return new When(flag(w, "born"), flag(w, "hired"), flag(w, "revived"), Set.copyOf(jobs), flag(w, "married"), flag(w, "courting"),
-			flag(w, "widowed"), flag(w, "parent"), trait, Set.copyOf(moods), rank);
+			flag(w, "widowed"), flag(w, "parent"), trait, Set.copyOf(moods), rank(w, "rank"), now.asked() == 0 ? Now.ANY : now);
+	}
+
+	@Nullable
+	private static VillageRanks.Rank rank(JsonObject w, String key) {
+		if (!w.has(key)) {
+			return null;
+		}
+		String name = GsonHelper.getAsString(w, key);
+		try {
+			return VillageRanks.Rank.valueOf(name.toUpperCase(Locale.ROOT));
+		} catch (IllegalArgumentException ex) {
+			throw new JsonSyntaxException("when." + key + ": no rank \"" + name + "\"");
+		}
+	}
+
+	@Nullable
+	private static Integer number(JsonObject o, String key) {
+		return o.has(key) ? GsonHelper.getAsInt(o, key) : null;
 	}
 
 	@Nullable
 	private static Boolean flag(JsonObject o, String key) {
-		return o.has(key) ? GsonHelper.getAsBoolean(o, key) : null;
+		if (!o.has(key)) {
+			return null;
+		}
+		JsonElement value = o.get(key);
+		// (GsonHelper reads any string as false, and a condition that silently never holds is hard to find.)
+		if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isBoolean()) {
+			throw new JsonSyntaxException("when." + key + ": true or false, not " + value);
+		}
+		return value.getAsBoolean();
 	}
 
 	/** Every loaded event, by id. */
@@ -338,20 +432,106 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 
 	/** The names of {@code villager}'s children living in their village (those whose parents on record name them), by name. */
 	public static List<Component> children(ServerLevel level, Villager villager) {
+		List<Component> out = new ArrayList<>();
+		for (Villager child : kin(level, villager, true, false)) {
+			out.add(child.getDisplayName());
+		}
+		out.sort(Comparator.comparing(Component::getString));
+		return out;
+	}
+
+	/** {@code villager}'s children and/or parents living in their village, going by the parents on record (names). */
+	private static List<Villager> kin(ServerLevel level, Villager villager, boolean children, boolean parents) {
 		VillageHallBlockEntity hall = CivicEffects.hallOf(villager);
 		if (hall == null || !villager.hasCustomName()) {
 			return List.of();
 		}
 		String name = villager.getDisplayName().getString();
-		List<Component> out = new ArrayList<>();
+		Families.Parents mine = parents ? Families.parents(villager) : null;
+		List<Villager> out = new ArrayList<>();
 		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall.getBlockPos()), v -> v.isAlive() && v != villager)) {
-			Families.Parents parents = Families.parents(v);
-			if (parents != null && (parents.mother().getString().equals(name) || parents.father().getString().equals(name))) {
-				out.add(v.getDisplayName());
+			Families.Parents theirs = children ? Families.parents(v) : null;
+			if (theirs != null && (theirs.mother().getString().equals(name) || theirs.father().getString().equals(name))) {
+				out.add(v);
+			} else if (mine != null && v.hasCustomName()
+				&& (mine.mother().getString().equals(v.getDisplayName().getString()) || mine.father().getString().equals(v.getDisplayName().getString()))) {
+				out.add(v);
 			}
 		}
-		out.sort(Comparator.comparing(Component::getString));
 		return out;
+	}
+
+	/** {@code trade}: they have a job (not jobless, not a nitwit). */
+	public static boolean hasTrade(Villager villager) {
+		VillagerProfession job = villager.getVillagerData().getProfession();
+		return job != VillagerProfession.NONE && job != VillagerProfession.NITWIT;
+	}
+
+	/** {@code hungry}: they are hungry, or their village's store holds under {@link #LOW_STORE} meals. */
+	public static boolean hungry(ServerLevel level, Villager villager) {
+		if (VillageNeeds.isHungry(villager, level.getGameTime())) {
+			return true;
+		}
+		VillageHallBlockEntity hall = CivicEffects.hallOf(villager);
+		return hall != null && VillageGrowth.meals(level, VillageNeeds.store(level, hall.getBlockPos())) < LOW_STORE;
+	}
+
+	/** {@code raided}: their village was raided in the last {@link #RAID_DAYS} days, or a bandit camp preys on it. */
+	public static boolean raided(ServerLevel level, Villager villager) {
+		VillageHallBlockEntity hall = CivicEffects.hallOf(villager);
+		if (hall == null) {
+			return false;
+		}
+		long since = Chronicle.day(level) - hall.lastRaidDay();
+		return since >= 0 && since <= RAID_DAYS || BanditCamps.near(level, hall.getBlockPos()).isPresent();
+	}
+
+	/** {@code ill}: they are ill, or their partner, a parent or a child of theirs in the village is. */
+	public static boolean ill(ServerLevel level, Villager villager) {
+		if (Sickness.isIll(villager)) {
+			return true;
+		}
+		Couples.Partner partner = Couples.partner(villager);
+		if (partner != null && level.getEntity(partner.id()) instanceof Villager other && other.isAlive() && Sickness.isIll(other)) {
+			return true;
+		}
+		return kin(level, villager, true, true).stream().anyMatch(Sickness::isIll);
+	}
+
+	/** {@code lonely}: with nobody (no partner), and no other villager within {@link Moods#COMPANY_RANGE} blocks. */
+	public static boolean lonely(ServerLevel level, Villager villager) {
+		return Couples.partner(villager) == null
+			&& level.getEntitiesOfClass(Villager.class, villager.getBoundingBox().inflate(Moods.COMPANY_RANGE), v -> v != villager && v.isAlive()).isEmpty();
+	}
+
+	/** {@code happy}: their mood reads happy (never with moods off, or outside a village). */
+	public static boolean happy(Villager villager) {
+		Moods.Mood mood = Moods.of(villager);
+		return mood != null && mood.score() >= Moods.HAPPY;
+	}
+
+	/** Their home's tier: 0 without a bed, or with one that's in no finished house. */
+	public static int homeTier(ServerLevel level, Villager villager) {
+		return Homes.of(level, villager).map(Homes.Home::tier).orElse(0);
+	}
+
+	/**
+	 * What someone without a trade says about the village's free workstations ({@code %10$s}): the nearest to the hall
+	 * and the job it gives ("There's a Loom standing free..."), that there's none, or, for a nitwit, that no bench
+	 * would have them.
+	 */
+	public static Component station(ServerLevel level, Villager villager) {
+		if (villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
+			return Component.translatable("heart_event.aliveworkplace.station.nitwit");
+		}
+		VillageHallBlockEntity hall = CivicEffects.hallOf(villager);
+		List<VillageHalls.FreeStation> free = hall == null ? List.of() : VillageHalls.freeStations(level, hall.getBlockPos());
+		if (free.isEmpty()) {
+			return Component.translatable("heart_event.aliveworkplace.station.none");
+		}
+		VillageHalls.FreeStation station = free.get(0);
+		return Component.translatable("heart_event.aliveworkplace.station.free", level.getBlockState(station.pos()).getBlock().getName(),
+			Component.translatable("entity.minecraft.villager." + station.profession().name()));
 	}
 
 	/** The reasons of {@code villager}'s mood now, as the ids events ask for ({@code hungry}, {@code no_bed}, ...). */
@@ -372,7 +552,8 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 
 	/**
 	 * The arguments every line gets: the villager, the player, the village, their mother, father, partner (or late
-	 * partner), children and the day they were hired. What isn't known reads "nobody" (or "a day nobody wrote down").
+	 * partner), children, the day they were hired, their wedding day and what they say of the village's free
+	 * workstations ({@link #station}). What isn't known reads "nobody" (or "a day nobody wrote down").
 	 */
 	public static Object[] args(ServerLevel level, Villager villager, Component player) {
 		Component nobody = Component.translatable("heart_event.aliveworkplace.nobody");
@@ -387,7 +568,10 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 			parents == null ? nobody : parents.mother(), parents == null ? nobody : parents.father(),
 			partner != null ? partner.name() : late != null ? late.name() : nobody,
 			list(children(level, villager), nobody),
-			hired == null ? Component.translatable("heart_event.aliveworkplace.day_unknown") : Component.translatable("heart_event.aliveworkplace.day", hired)
+			hired == null ? Component.translatable("heart_event.aliveworkplace.day_unknown") : Component.translatable("heart_event.aliveworkplace.day", hired),
+			partner == null || !partner.married() ? Component.translatable("heart_event.aliveworkplace.day_unknown")
+				: Component.translatable("heart_event.aliveworkplace.day", partner.since()),
+			station(level, villager)
 		};
 	}
 
@@ -432,15 +616,16 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 		return levels;
 	}
 
-	/** Which event is told first: the lowest hearts, then the one that asks the most of the villager, then by id. */
+	/** Which event is told first: the lowest hearts, then the one that asks the most of the villager, then the heaviest, then by id. */
 	private static final Comparator<Event> ORDER = Comparator.comparingInt(Event::hearts)
 		.thenComparing(Comparator.comparingInt((Event e) -> e.when().asked()).reversed())
+		.thenComparing(Comparator.comparingInt(Event::weight).reversed())
 		.thenComparing(e -> e.id().toString());
 
 	/**
 	 * What {@code villager} has to tell {@code player} now: the event of the lowest heart level the player has reached
-	 * and hasn't been told one of: of those whose conditions hold, the one that asks the most, then the first by id; null when
-	 * there's none (or it's switched off).
+	 * and hasn't been told one of: of those whose conditions hold, the one that asks the most, then the heaviest, then
+	 * the first by id; null when there's none (or it's switched off).
 	 */
 	@Nullable
 	public static Event pending(ServerLevel level, Villager villager, UUID player) {
@@ -609,7 +794,10 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 		return Component.translatable("message.aliveworkplace.heart_event.said", name, line).withStyle(ChatFormatting.GRAY);
 	}
 
-	/** {@code event} told to the end: noted, {@link #POINTS} friendship, and a line in the chronicle. */
+	/**
+	 * {@code event} told to the end: noted, {@link #POINTS} friendship, and a line in the chronicle; after the 10-heart
+	 * event they give the player their keepsake, if they haven't yet ({@link Keepsakes}).
+	 */
 	private static void finish(ServerLevel level, Villager villager, ServerPlayer player, Event event) {
 		Friendship.told(villager, player, event.id().toString());
 		Friendship.add(villager, player, POINTS);
@@ -617,6 +805,9 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 		if (hall != null) {
 			Chronicle.atHall(level, hall.getBlockPos(), Chronicle.Kind.FRIEND,
 				Component.translatable(event.chronicle(), args(level, villager, Component.literal(player.getGameProfile().getName()))));
+		}
+		if (event.hearts() >= Friendship.HEARTS) {
+			Keepsakes.give(level, villager, player);
 		}
 	}
 

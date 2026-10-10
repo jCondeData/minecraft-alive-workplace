@@ -88,7 +88,7 @@ public final class VillageGrowth {
 	}
 
 	/** The meals in the store. */
-	static long meals(ServerLevel level, List<BlockPos> store) {
+	public static long meals(ServerLevel level, List<BlockPos> store) {
 		long meals = 0;
 		for (var e : SupplyContainers.contents(level, store).entrySet()) {
 			if (VillageNeeds.isMeal(new net.minecraft.world.item.ItemStack(e.getKey()))) {

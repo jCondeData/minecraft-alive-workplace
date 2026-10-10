@@ -27,6 +27,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 - [Lairs and the Defence page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's
   Defence page (32.3).
+- [Sieges: rams and gates](sieges.md): shut gates, the portcullis, rams at the gate and gate hit points (32.4).
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).

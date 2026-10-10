@@ -98,6 +98,17 @@ public final class VillageRaids {
 		return begin(level, hall, Threats.MONSTERS, raiders);
 	}
 
+	/**
+	 * As {@link #track(ServerLevel, BlockPos, int)}, a raid by {@code culture} whose {@code raiders} already stand in the
+	 * world (each carrying {@link #TAG}): its tactics begin as they do in {@link #start}, so a culture that rams gates
+	 * lays its siege (32.4).
+	 */
+	public static Raid track(ServerLevel level, BlockPos hall, Culture culture, List<Mob> raiders) {
+		Raid raid = begin(level, hall, culture.id(), raiders.size());
+		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, raiders));
+		return raid;
+	}
+
 	private static Raid begin(ServerLevel level, BlockPos hall, net.minecraft.resources.ResourceLocation culture, int raiders) {
 		ThreatData.Under raid = new ThreatData.Under(hall.immutable(), culture, raiders, level.getGameTime());
 		ThreatData.get(level).begin(raid);

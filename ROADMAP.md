@@ -2879,7 +2879,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     day adds one;
   - the captain's name is on him, on the Defence page and in the chronicle;
   - scene `defence_page`: the Defence page with a bandit camp standing (screenshot).
-- [ ] **32.4** **Sieges I: rams and gates.** A raid by a culture with `ram_gates` on a village with at least one
+- [x] **32.4** (review: pending 2026-10-10) **Sieges I: rams and gates.** A raid by a culture with `ram_gates` on a village with at least one
   finished wall or gate build (`StarterBlueprints.DEFENCES` and their upgrades) is a siege, run by `threat/Sieges`:
   one director a siege, every 20 ticks, at most 4 path requests a tick. It picks the breach (the gate nearest the
   raiders' side: the fence gates, doors and iron bars of finished defence builds) and sends the rams (role `ram`;

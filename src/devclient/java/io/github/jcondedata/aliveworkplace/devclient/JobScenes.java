@@ -562,6 +562,47 @@ final class JobScenes {
 			return l -> io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(l, v)
 				&& v.distanceToSqr(STATION.getCenter()) < 16 && !io.github.jcondedata.aliveworkplace.city.StewardWork.holdsPlan(v);
 		}, null));
+		// Sieges I (ROADMAP 32.4): raiders who ram gates lay siege to a palisaded village. The gates are shut; the ravager ram
+		// walks at the Palisade Gate and breaks its middle gate blow by blow, the cracks showing, then turns on the next one.
+		SCENES.put("siege_gate", new Job("the ravager ram broke a gate block of the Palisade Gate, the cracks showing, and turned on the next", 1200,
+			new Vec3(3.0, -58.2, -8.0), new Vec3(0.5, -59.2, -2.8), (level, player) -> {
+			// (The camera stands inside the village: the gate's cracks face it, the ram's head comes over the gate.)
+			BlockPos hall = STATION.north(12);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			// A Palisade Gate with a Palisade either side, all finished builds; the outside is the south, the camera's side.
+			BlockPos origin = STATION.offset(-3, 0, -4);
+			Map<BlockPos, StarterBlueprints.Entry> builds = new LinkedHashMap<>();
+			builds.put(origin.west(7), StarterBlueprints.PALISADE);
+			builds.put(origin, StarterBlueprints.PALISADE_GATE);
+			builds.put(origin.east(7), StarterBlueprints.PALISADE);
+			builds.forEach((at, entry) -> {
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(entry.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			});
+			Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(-1, 0, -5), MobSpawnType.COMMAND);
+			villager.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Culture.read(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_besiegers"), com.google.gson.JsonParser.parseString(
+					"{\"roster\": [{\"entity\": \"minecraft:ravager\", \"share\": 1, \"role\": \"ram\"}], \"tactics\": [\"ram_gates\"]}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.threat.Culture.Member member = culture.roster().get(0);
+			net.minecraft.world.entity.Mob ram = io.github.jcondedata.aliveworkplace.threat.Threats.create(level, member);
+			ram.moveTo(0.5, STATION.getY(), 5.5, 180f, 0f);
+			ram.finalizeSpawn(level, level.getCurrentDifficultyAt(ram.blockPosition()), MobSpawnType.EVENT, null);
+			io.github.jcondedata.aliveworkplace.threat.Threats.outfit(level, ram, culture, member);
+			ram.setTarget(villager);
+			level.addFreshEntityWithPassengers(ram);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, hall, culture, List.of(ram));
+			BlockPos middle = origin.offset(3, 0, 1);
+			BlockPos next = origin.offset(2, 0, 1);
+			Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.siege(level, hall).map(s -> middle.equals(s.breach)).orElse(false),
+				"the raid on the palisaded village is a siege, and its breach is the Palisade Gate");
+			return l -> l.getBlockState(middle).isAir() && ram.isAlive()
+				&& io.github.jcondedata.aliveworkplace.threat.Sieges.hitPointsLeft(l, hall, next) < io.github.jcondedata.aliveworkplace.threat.Sieges.FENCE_GATE_HP;
+		}, null));
 		SCENES.put("roads", new Job("the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 9000,
 			new Vec3(0.5, -45, -26), new Vec3(0.5, -60, -6), (level, player) -> {
 			// Two cottages (stamped, on the books as built), the hall south of them, a builder with Stonework in his chest,

@@ -3,7 +3,6 @@ package io.github.jcondedata.aliveworkplace.guard;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
-import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
@@ -21,14 +20,14 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * The village's gates: in a village with a Village Hall and at least one guard, the gates of its finished Gatehouses and
  * Palisade Gates are shut at nightfall and opened again in the morning (the hall's round does it, so within half a
  * minute). Players can still open them by hand.
+ *
+ * <p>In a siege (ROADMAP 32.4, {@code threat/Sieges}) they shut at once, whatever the hour and with or without guards,
+ * and the portcullis of every gate build drops; they stay shut until the first dawn after.
  */
 public final class Gates {
 	/** The blueprints whose fence gates are the village's gates: the two we ship, and every wall kit's gate (27.18). */
 	static Set<ResourceLocation> gated() {
-		Set<ResourceLocation> out = new java.util.LinkedHashSet<>(
-			Set.of(StarterBlueprints.GATEHOUSE.id(), StarterBlueprints.PALISADE_GATE.id()));
-		out.addAll(io.github.jcondedata.aliveworkplace.city.WallKits.gates());
-		return out;
+		return io.github.jcondedata.aliveworkplace.threat.Sieges.gateBuilds();
 	}
 
 	/** Night for the gates: from dusk until just before dawn. */
@@ -37,12 +36,20 @@ public final class Gates {
 		return time >= 12500 && time < 23500;
 	}
 
-	/** The hall's round: shuts or opens the village's gates as the time of day wants. Returns how many gates moved. */
+	/**
+	 * The hall's round: shuts or opens the village's gates as the time of day wants; a siege keeps them shut, guards or
+	 * none. Returns how many gates moved.
+	 */
 	public static int round(ServerLevel level, BlockPos hall, int guards) {
-		if (guards <= 0) {
+		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall);
+		if (guards <= 0 && !siege) {
 			return 0;
 		}
-		boolean shut = shutTime(level);
+		return shut(level, hall, siege || shutTime(level));
+	}
+
+	/** Shuts ({@code shut}) or opens the gates of the village round {@code hall} now. Returns how many gates moved. */
+	public static int shut(ServerLevel level, BlockPos hall, boolean shut) {
 		Set<ResourceLocation> gated = gated();
 		int moved = 0;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {

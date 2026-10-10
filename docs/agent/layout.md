@@ -31,10 +31,13 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   rank, head count), `ThreatData` (saved `aliveworkplace_threats`: raids under way, each hall's threat clock and its last
   three attacks), `Lairs` (32.3, `docs/wiki/lairs.md`: the camp of every culture with a `lair`, saved as
   `aliveworkplace_bandit_camps`; `found`, `round`, the captain's name, the strength with `raidSize`/`sent`/`back`,
-  `onBroken` listeners; `live()` is the Milestone 32 gate).
+  `onBroken` listeners; `live()` is the Milestone 32 gate), `Sieges` (32.4, `docs/wiki/sieges.md`: the tactic `ram_gates`;
+  `begin` shuts the gates, drops the portcullis and picks the breach; one director a siege every 20 ticks walks the rams to
+  the gate, counts the blows against the gate blocks' hit points kept in `ThreatData.Siege`, and sends the rest through;
+  `lift` at the first dawn after; `status` for the Defence page; config `sieges`, `siegeDamage`).
   `guard/VillageRaids` runs the raids and the clock (`tick`, `start`, `cultureFor`), `guard/BanditCamps` is the bandits'
-  face of `Lairs` (same public methods), `hall/DefencePage` the page the hall's guards icon opens; `threat/` never
-  imports `guard/`
+  face of `Lairs` (same public methods), `guard/Gates` asks `Sieges.shut` and takes its gate builds from `Sieges.gateBuilds`,
+  `hall/DefencePage` the page the hall's guards icon opens; `threat/` never imports `guard/`
 - `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list, sales log), `Shops` (offers from stock, sales,
   the CobbleDollars shop screen), `ShopLedger` (CobbleDollars owed to offline owners);
   mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)

@@ -38,7 +38,7 @@ public final class Expansions {
 	/**
 	 * Milestone 32, Threats worth building walls for (1.6). While it's closed lairs are today's bandit camps: the chief
 	 * has no name, a raid isn't held to the lair's strength, and the hall's guards icon opens no Defence page (design note
-	 * M32, "The expansion gate").
+	 * M32, "The expansion gate"). Its switches: {@code sieges}, {@code siegeDamage} (32.4).
 	 */
 	public static final boolean M32 = false;
 	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}. */
@@ -72,6 +72,7 @@ public final class Expansions {
 				"guildsPerRank" -> M30;
 			case "jewellers" -> M34; // the Jeweller (34.12), with the rest of Classes and luxuries below
 			case "villageEconomy" -> M33;
+			case "sieges", "siegeDamage" -> M32;
 			case "friendship", "heartEvents" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",

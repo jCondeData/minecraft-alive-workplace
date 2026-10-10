@@ -97,6 +97,16 @@ public final class WorkplaceConfig {
 	 * {@code banditCamps} still switch {@code monsters} and {@code bandits}.
 	 */
 	public Map<String, Boolean> raiderCultures = defaultCultures();
+	/**
+	 * A raid by a culture that rams gates on a village with a finished wall or gate build is a siege: the gates shut, the
+	 * portcullis drops and the rams go for the gate (ROADMAP 32.4). Off: every raid is a plain one.
+	 */
+	public boolean sieges = Expansions.on(Expansions.M32);
+	/**
+	 * In a siege, rams break the gate blocks of finished wall and gate builds (the builders put them back). Off: gates
+	 * hold however hard they are hit. The {@code mobGriefing} gamerule off does the same.
+	 */
+	public boolean siegeDamage = Expansions.on(Expansions.M32);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -521,6 +531,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;
 		// The other cultures' lairs (32.3) come by chance as the bandits' do; each has its switch in raiderCultures.
 		io.github.jcondedata.aliveworkplace.threat.Lairs.ENABLED = System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED = sieges && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
 		io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED = festivals && System.getProperty("fabric-api.gametest") == null;

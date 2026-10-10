@@ -25,6 +25,14 @@ asks for the steps, `latest.log` and any crash report).
   name ("Chief Harl Ashgrave", one of twenty) over his head and in every message and chronicle line, and the camp has a
   strength (6, one more a day, 10 at most): a raid takes its raiders from it, those alive at dawn rejoin, the dead are
   gone, so a camp that lost a costly night is weak. Any datapack culture with a `lair` makes camp the same way.
+- **Sieges: rams and gates, for 1.6** (32.4, off until 1.6 is finished): a raid by raiders who ram gates on a village
+  with a finished wall or gate is a siege. The gates shut at once, whatever the hour, and the Gatehouse's portcullis
+  drops; both open again at the first dawn after. A ravager ram (or raiders with axes) pounds the gate nearest the
+  raiders: every blow is heard, the cracks grow, and the block breaks without dropping anything (a fence gate has 60
+  hit points, a door 80, iron bars 150: about 10 seconds through a Palisade Gate, about a minute through a Gatehouse).
+  Only the gates of finished builds break, never a gate you placed; builders put them back. The Defence page shows the
+  gates, the portcullis and what is broken. New settings `sieges` and `siegeDamage`; the mobGriefing game rule off also
+  keeps gates standing.
 - **The Defence page, for 1.6** (32.3): the guards icon on the Village Hall opens it: the camp, its captain, its
   strength, roughly where it lies, the days it has stood, and the last three attacks and how they ended.
 - **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**

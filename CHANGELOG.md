@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.142.0 — 2026-10-10
+
 ### Added
 - **The Print Shop and the Jeweller's Workshop, for 1.8** (34.14): two more blueprints in the Blueprint Table, each
   with a II. The **Print Shop** is a brick shop in a timber frame: the cartography table is the press, standing under a

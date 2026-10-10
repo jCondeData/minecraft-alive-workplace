@@ -4368,6 +4368,8 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- **Owner, 2026-10-10 (digest-1009-2253):** "maybe lighter suite for the showcase, we can put it down to 3 lanes if needed." Why it's needed: since 2026-10-06 every nightly showcase shard hits its 58-minute timeout and is cancelled (runs 153-156), so there are no fresh stills for the 12 pending reviews; the 16 shards are planned at ~30 min each but run about twice as long. Decision for the chat or a lane: film fewer scenes per night (changed scenes plus a rotating share of the rest) rather than more shards (MAX_SHARDS 18 is GitHub's job cap). Lanes stay at four until he says drop to 3.
 - **Owner approved every decision in the 2026-10-05 decision notes as written** (chat, 2026-10-06): 27.15-34.1 and B78, including 28.7 (Cobblemon's nurse keeps working), 28.16 (Arena at level 4), 27.16 (bridge deck one block above the bank) and the 33.1 defaults (real-week leaderboard, no tribute, owner-only treasury from 33.5, colonies at City). He will review the wiki (22.9) at the next digest and send notes.
 
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through

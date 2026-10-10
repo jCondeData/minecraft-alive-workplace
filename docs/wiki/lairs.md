@@ -4,6 +4,8 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), so it is **off for players until the m
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
+Roadmap items: 32.3
+
 ## What a player sees
 
 - **A camp out beyond the village.** Now and then (12% a day, as bandit camps always did) raiders make camp 80 to 104

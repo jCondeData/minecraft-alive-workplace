@@ -3,6 +3,8 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
+Roadmap items: 32.2
+
 ## What a player sees
 
 Nothing new yet. Monsters still raid a village with a Village Hall and 8 villagers or more at night, and bandits still

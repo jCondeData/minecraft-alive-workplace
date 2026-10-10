@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Vintner", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Vintner", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -323,7 +323,13 @@ SCENES = [
       [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
-      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
+      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
+    # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
+    S("price_board", "Realm", "The price board: what a village is known for and short of",
+      "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "
+      "Timber's tooltip with the dearer and the cheaper village, and the name icon's Known for line", 60,
+      [("01_price_board", "The Trade page, Prices tab"), ("02_price_tooltip", "Timber: both prices, and where it's dearer and cheaper"),
+       ("03_hall_known_for", "The hall's name icon: Known for, Short of")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,
@@ -519,6 +525,16 @@ SCENES = [
       "a trade and a quest done for Dara put hearts on: the action bar shows them while you look at her, and the hall's tooltip shows your hearts and her best friends", 45,
       [("01_trade_hearts", "A trade: Dara's hearts in the action bar"), ("02_quest_hearts", "Her quest done: a third heart, with a puff"),
        ("03_hall_tooltip", "The hall: your hearts and her best friends")]),
+    # Gifts (ROADMAP 31.6): wrapping on the crafting grid, giving, the hearts, the name day in the hall's tooltip
+    S("gifts", "Village Hall", "Gifts: wrap an item and give it to a villager",
+      "Gift Wrap and a Golden Carrot on the crafting grid made a Gift; Dara the farmer unwrapped it and loved it, her hearts went up in the action bar, and the hall's tooltip says when her name day is", 55,
+      [("01_wrapping", "Gift Wrap and a Golden Carrot make a Gift"), ("02_giving", "Dara unwraps it: her line, bits of carrot, hearts"),
+       ("03_hearts", "Her hearts went up; a second gift the same day is handed back"), ("04_hall_name_day", "The hall: when her name day is")]),
+    # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page
+    S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from",
+      "at two hearts Dara walked up to the player, faced them and told where she comes from, line by line over her head and in the chat; it went into the chronicle and onto her life story page", 60,
+      [("01_walks_up", "Two hearts: Dara sets out towards you"), ("02_telling", "She tells it, a line every three seconds"),
+       ("03_told", "The last line, each also in the chat in grey"), ("04_life_story", "Shift-click her in the hall: her life story")]),
     S("story_arc", "Village Hall", "A story arc: its chapters told, the Story tab and the chronicle",
       "a story arc began (its chapters told in chat), the Story tab showed the first chapter ticked and the second with its quest, and the chronicle kept them", 50,
       [("01_story_announced", "The chapters told in chat as they begin"), ("02_story_tab", "The Story tab: chapter 1 ticked, chapter 2 running with its quest"),

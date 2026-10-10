@@ -311,6 +311,7 @@ public final class Innkeepers {
 		ModAttachments.TRAVELLER.remove(guest);
 		guest.setCustomName(null);
 		ModAttachments.HEAD_START.set(guest, t.level());
+		ModAttachments.HIRED_DAY.set(guest, io.github.jcondedata.aliveworkplace.hall.Chronicle.day((ServerLevel) guest.level())); // the day they stayed (31.7)
 		io.github.jcondedata.aliveworkplace.people.ClassJobs.hired((ServerLevel) guest.level(), guest, t.level()); // the class of their level (34.8)
 		ModAttachments.BUILDER_EMPLOYER.set(guest, new Employer(player.getUUID(), player.getGameProfile().getName()));
 		guest.setVillagerData(guest.getVillagerData().setProfession(VillagerProfession.NONE));

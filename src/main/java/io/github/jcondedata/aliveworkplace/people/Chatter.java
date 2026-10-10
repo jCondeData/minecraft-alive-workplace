@@ -58,7 +58,9 @@ public final class Chatter {
 		Map.entry("reformed_curfew", 2), Map.entry("reformed_conscription", 2),
 		Map.entry("rush", 2), Map.entry("tonic", 2), Map.entry("guild", 2), Map.entry("colours", 2),
 		// A household's rise or fall (34.6), from the mood reason
-		Map.entry("class_rose", 3), Map.entry("class_fell", 3));
+		Map.entry("class_rose", 3), Map.entry("class_fell", 3),
+		// The village's trade (33.4): a good that sells well elsewhere, a glut at home, something dear
+		Map.entry("trade_sells_well", 3), Map.entry("trade_glut", 3), Map.entry("trade_dear", 3));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
@@ -85,7 +87,8 @@ public final class Chatter {
 				continue;
 			}
 			List<Villager> near = level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(NEAR, 4, NEAR),
-				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v));
+				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v)
+					&& io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(v) == null); // not while walking up to tell a heart event (31.7)
 			if (near.isEmpty()) {
 				continue;
 			}
@@ -103,13 +106,15 @@ public final class Chatter {
 	}
 
 	/** Off work: not showing a work line, and not working, hiding or fleeing. */
-	static boolean offWork(Villager villager, long now) {
-		if (WorkerStatus.get(villager, now) != null) {
-			return false;
-		}
+	public static boolean offWork(Villager villager, long now) {
+		return WorkerStatus.get(villager, now) == null && !busy(villager);
+	}
+
+	/** Working, hiding or fleeing (whatever line is over their head). */
+	public static boolean busy(Villager villager) {
 		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
-		return activity != Activity.WORK && activity != Activity.PANIC && activity != Activity.HIDE && activity != Activity.PRE_RAID
-			&& activity != Activity.RAID;
+		return activity == Activity.WORK || activity == Activity.PANIC || activity == Activity.HIDE || activity == Activity.PRE_RAID
+			|| activity == Activity.RAID;
 	}
 
 	/** What the villager talks about now: village news first (twice as likely), then their mood, then hello. */
@@ -139,6 +144,9 @@ public final class Chatter {
 		news.addAll(civicTopics(level, villager, hall));
 		if (!io.github.jcondedata.aliveworkplace.story.Arcs.chatter(level, hall).isEmpty()) {
 			news.add("arc"); // a story arc's chapter is the talk of the village (31.4)
+		}
+		for (io.github.jcondedata.aliveworkplace.trade.TradeTalk.Line trade : io.github.jcondedata.aliveworkplace.trade.TradeTalk.lines(level, hall)) {
+			news.add(trade.topic()); // what the village is known for, has too much of and finds dear (33.4)
 		}
 		topics.addAll(news);
 		topics.addAll(news);
@@ -264,6 +272,11 @@ public final class Chatter {
 			return Component.translatable(lines.get(level.random.nextInt(lines.size()))).withStyle(ChatFormatting.ITALIC);
 		}
 		int variant = level.random.nextInt(VARIANTS.getOrDefault(topic, 1));
+		if (io.github.jcondedata.aliveworkplace.trade.TradeTalk.is(topic)) {
+			io.github.jcondedata.aliveworkplace.trade.TradeTalk.Line trade = io.github.jcondedata.aliveworkplace.trade.TradeTalk.line(level, hall, topic);
+			return trade == null ? null
+				: Component.translatable("chatter.aliveworkplace." + topic + "." + variant, trade.args()).withStyle(ChatFormatting.ITALIC);
+		}
 		Object arg = switch (topic) {
 			case "hello" -> player.getDisplayName();
 			case "bandits" -> BanditCamps.near(level, hall).map(camp -> VillageHallScreen.where(hall, camp.pos())).orElse(Component.empty());
@@ -285,7 +298,7 @@ public final class Chatter {
 	}
 
 	/** {@code villager} turns to {@code player} and says {@code line} (over their head, for a few seconds). */
-	static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
+	public static void say(ServerLevel level, Villager villager, ServerPlayer player, Component line) {
 		Component name = villager.hasCustomName() ? villager.getCustomName() : villager.getType().getDescription();
 		WorkerStatus.set(villager, name.copy().withStyle(ChatFormatting.GRAY), -1f, line);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(player, true));

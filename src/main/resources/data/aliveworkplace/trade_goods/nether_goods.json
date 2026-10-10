@@ -1,0 +1,25 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.nether_goods"
+  },
+  "icon": "minecraft:nether_wart",
+  "items": [
+    "#aliveworkplace:trade/nether_goods"
+  ],
+  "bundle": 8,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:netherworker"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "minecraft:cleric",
+      "aliveworkplace:tinkerer",
+      "minecraft:mason"
+    ]
+  },
+  "food": false,
+  "order": 28
+}

@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "cobblemon:poke_ball",
+      "required": false
+    },
+    {
+      "id": "cobblemon:great_ball",
+      "required": false
+    },
+    {
+      "id": "cobblemon:ultra_ball",
+      "required": false
+    }
+  ]
+}

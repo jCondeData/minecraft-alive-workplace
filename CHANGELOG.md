@@ -23,14 +23,29 @@ asks for the steps, `latest.log` and any crash report).
   gone, so a camp that lost a costly night is weak. Any datapack culture with a `lair` makes camp the same way.
 - **The Defence page, for 1.6** (32.3): the guards icon on the Village Hall opens it: the camp, its captain, its
   strength, roughly where it lies, the days it has stood, and the last three attacks and how they ended.
+- **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**
+  page with tabs. **Routes** is the trade routes page as it was; **Prices** lists every trade good with what the
+  village pays for a bundle and what it sells one for, an arrow for how the price moved since yesterday, a gold star
+  on what the village is known for and a red mark on what it's short of. A good's tooltip names the village on your
+  trade routes where it's dearer and the one where it's cheaper. The hall's name icon says "Known for: Timber, Wool.
+  Short of: Bread", villagers talk about what sells well, what there's too much of and what's dear, and the Village
+  Ledger reaches the page from afar.
 
 ### Changed
+- **Raids run on a new threat engine** (32.2), the base of 1.6's threats. Monster and bandit raids look and count as
+  before, but who raids is now data (`data/aliveworkplace/raider_cultures/monsters.json` and `bandits.json`; a datapack
+  can add cultures of its own, with their own mobs, gear and lands). Two things work differently: a raid under way now
+  **survives a server restart** (it used to be forgotten, and never ended properly), and a raid is now **decided at
+  dusk for the next night**, so the first night after updating is quiet. Breaking up a bandit camp before the bandits'
+  hour calls their attack off. Guards now fight anything a raid brings, hoglins included. New setting `raiderCultures`
+  (in the file only): every culture and whether it may come; `villageRaids` and `banditCamps` work as before.
 - Bandit camps saved by older versions load as they were (their file keeps its name); nothing changes in play until
   1.6 is finished.
 
 ### Fixed
-- The hearts shown when you look at a villager no longer make the server load terrain for a player standing where
-  none is loaded (fake players from other mods, B93); the mod's own test run is back from about two hours to minutes.
+- **The hearts look-up no longer loads chunks** (B93): a player standing where nothing is loaded made the server read
+  that chunk from disk every half second, which slowed every tick (and the test suite from 13 to about 80 minutes).
+  Out there, no hearts are shown.
 
 ## 0.141.0 — 2026-10-09
 
@@ -42,11 +57,42 @@ asks for the steps, `latest.log` and any crash report).
   dawn), Frost and Grand, in that order, each with its own rules, fair wares, feast dish, firework colours and disc.
   Villager trainers' teams and players' eligibility follow the theme. For the Workers' Cup, every pastured Pokémon now
   counts the days it helped a villager at work (once a day); it needs 3.
+- **The trade goods engine for 1.7** (33.2, nothing to see until the price board): trade goods are data files
+  (`data/<namespace>/trade_goods/<good>.json`). Once a day, in its hall's round, each village works out up to 3 goods
+  it's known for and 3 it's short of (from its workers' jobs, its biome, its Storehouses and what its workers wait for)
+  and a price for every good that moves a third of the way toward supply and demand each dawn, between half and twice
+  the base. A beaten raid (night, bandit or vanilla) raises demand for arms for a few days. Kept with the village's
+  caravan entry, so old saves load unchanged. Config `villageEconomy` (off until 1.7).
+- **The 28 trade goods for 1.7** (33.3, nothing to see until the price board): Grain, Bread, Roots, Fish, Meat, Fine
+  Meals, Fruit, Honey and Bone Meal; Timber, Stone, Glass, Bricks and Clay, Coal, Iron and Gold; Wool, Leather, Dyes and
+  Flowers, Paper, Tools, Arms and Armour, Arrows, Remedies and Nether Goods; and, only with Cobblemon, Apricorns, Berries
+  and Poké Balls. Each has its makers and their biomes, the biomes and jobs that want it, and a bundle priced like
+  vanilla's villager trades where there is one (20 wheat, 6 bread, 18 wool, 24 paper, 4 iron ingots for an emerald).
+  Raids raise demand for arms, arrows and remedies for 3 days, and remedies while villagers are ill.
 - **The Vintner, for 1.8** (34.9, off until 1.8 is finished): sneak-right-click a villager by a cauldron with sweet
   berries, glow berries or an apple. They press Cider (Novice), Berry Wine (Apprentice) and Vintage Wine from Berry Wine
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
   (the bottle comes back), are the households' wine luxuries and are served at the Noble's Ball. Trades, Grass, Bug and
   Fairy partners, an outfit, config `vintners`.
+- **Heart events and life stories** (31.7; switched on with the rest of 1.5): at 2, 4, 6, 8 and 10 hearts a villager
+  has something to tell you. When you're within 8 blocks and they're off work they walk up, face you and tell it in
+  three to five lines over their head, one every 3 seconds, each also in your chat in grey; walk away halfway and they
+  start again next time. Told once per player, it adds 20 friendship, writes a line in the chronicle ("Dara told Jesse
+  about growing up in Thornholm") and becomes part of their **life story**: shift-click someone on the hall's list for
+  their page (your hearts, name day, family, partner and the story so far). The first set, at 2 hearts, is **Where I
+  come from**: born here (names both parents), came as a traveller (the inn and the day they were hired), here before
+  the hall, and back from the grave. Events are data (`data/<ns>/heart_events/<id>.json`: hearts, conditions on the
+  villager's facts, lines, the chronicle line); a broken file is skipped with a warning. Config `heartEvents` (true).
+  Villagers revived, widowed or hired from now on remember it (`revived`, `late_partner`, `hired_day`).
+- **Gifts** (31.6; switched on with the rest of 1.5): two new items, **Gift Wrap** (paper, string and any dye make 4)
+  and the **Gift** (Gift Wrap and any one item on the crafting grid; the tooltip says "From Jesse", not what's inside).
+  Right-click a named villager with a Gift: they unwrap it, say how they like it over their head and in your chat, and
+  your friendship changes (loved +80, liked +45, neutral +20, disliked −20, hated −40); the item goes into their
+  chests. One gift a day and two a week per villager; on their **name day** (every 28 days, shown in the hall's list)
+  a gift counts three times. A Bottle o' Enchanting is liked and gives a worker 15 XP. Villagers without a name shake
+  their head; with `friendship` off a Gift is handed back unopened. Tastes are data
+  (`data/<namespace>/villager_tastes/<id>.json`: for everyone, a job, a family of jobs or a trait; the most specific
+  file that names an item wins), with a first set for everyone, twelve job families and the eight traits.
 - **Friendship with villagers** (31.5; switched on with the rest of 1.5): every named villager in a village with a hall keeps ten hearts for
   each player. Trading with them (+5), finishing a hall quest they posted (+40), handing in what they wait for (+10),
   coming to their wedding (+30) or a festival with them (+10) count once a day each; killing a monster that just hurt
@@ -131,15 +177,13 @@ asks for the steps, `latest.log` and any crash report).
   once when the quest goes up.
 
 ### Changed
-- **Raids run on a new threat engine** (32.2), the base of 1.6's threats. Monster and bandit raids look and count as
-  before, but who raids is now data (`data/aliveworkplace/raider_cultures/monsters.json` and `bandits.json`; a datapack
-  can add cultures of its own, with their own mobs, gear and lands). Two things work differently: a raid under way now
-  **survives a server restart** (it used to be forgotten, and never ended properly), and a raid is now **decided at
-  dusk for the next night**, so the first night after updating is quiet. Breaking up a bandit camp before the bandits'
-  hour calls their attack off. Guards now fight anything a raid brings, hoglins included. New setting `raiderCultures`
-  (in the file only): every culture and whether it may come; `villageRaids` and `banditCamps` work as before.
 
 ### Fixed
+- **The Steward's planning costs the server less** (B85): his planning at the hall is split over the second (his
+  wishes and their plot searches, then his desk half a second later), the morning's ranking counts the village a
+  piece a second instead of all in one tick, and one planning second looks up the Blueprint Tables once (every 5
+  seconds at most) instead of once per wish. Nothing a player sees changes. City benchmark: p95 0.49 → 0.38 ms a tick,
+  his planning's server time about halved, and planning is no longer the slowest call.
 - **No more log error when a traveller's camp is set down** (B68): the map's item frame on the camp's barrel is saved
   with the block it hangs on, and structures placed by the mod or by vanilla now hang their frames and paintings on the
   block where they land, so "Block-attached entity at invalid position" is no longer logged. Players saw nothing wrong.

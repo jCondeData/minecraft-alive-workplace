@@ -102,6 +102,46 @@ final class JobScenes {
 		return v;
 	}
 
+	/**
+	 * The {@code price_board} scene's markets (33.4): Thornholm (the hall at the station) known for Timber and Wool and
+	 * short of Bread, with prices that rose, fell and stood still since yesterday, and two villages on its routes, Ashford
+	 * (where Timber is dear) and Ridgeway (where it's cheap). Written for today, so the hall's round doesn't recount it.
+	 */
+	private static void priceBoard(ServerLevel level) {
+		io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+		long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+		BlockPos ashford = STATION.east(180);
+		BlockPos ridgeway = STATION.north(220);
+		if (data.village(STATION) == null) {
+			data.setWants(STATION, Component.literal("Thornholm"), List.of());
+		}
+		if (data.village(ashford) == null) {
+			data.setWants(ashford, Component.literal("Ashford"), List.of());
+			data.setWants(ridgeway, Component.literal("Ridgeway"), List.of());
+			data.toggleRoute(STATION, ashford);
+			data.toggleRoute(ridgeway, STATION);
+		}
+		java.util.function.Function<String, net.minecraft.resources.ResourceLocation> id = io.github.jcondedata.aliveworkplace.AliveWorkplace::id;
+		// what moved since yesterday, in hundredths of an emerald: {now, yesterday}; every other good stands at its base
+		java.util.Map<String, int[]> moved = java.util.Map.of("timber", new int[]{80, 90}, "wool", new int[]{62, 70}, "bread", new int[]{168, 150},
+			"fish", new int[]{131, 124}, "iron", new int[]{112, 104}, "gold", new int[]{92, 100}, "stone", new int[]{84, 91}, "coal", new int[]{118, 110});
+		java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.trade.Market.Price> ours = new java.util.LinkedHashMap<>();
+		java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.trade.Market.Price> dear = new java.util.LinkedHashMap<>();
+		java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.trade.Market.Price> cheap = new java.util.LinkedHashMap<>();
+		for (io.github.jcondedata.aliveworkplace.trade.TradeGoods.Good good : io.github.jcondedata.aliveworkplace.trade.TradeGoods.all()) {
+			int[] m = moved.get(good.id().getPath());
+			int now = m != null ? m[0] * good.basePrice() / 100 : good.basePrice();
+			int yesterday = m != null ? m[1] * good.basePrice() / 100 : good.basePrice();
+			ours.put(good.id(), new io.github.jcondedata.aliveworkplace.trade.Market.Price(now, yesterday, 0));
+			dear.put(good.id(), new io.github.jcondedata.aliveworkplace.trade.Market.Price(good.basePrice() * 140 / 100, good.basePrice() * 140 / 100, 0));
+			cheap.put(good.id(), new io.github.jcondedata.aliveworkplace.trade.Market.Price(good.basePrice() * 72 / 100, good.basePrice() * 72 / 100, 0));
+		}
+		data.setMarket(STATION, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(id.apply("timber"), id.apply("wool")), List.of(id.apply("bread")),
+			ours, today, List.of()));
+		data.setMarket(ashford, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(), List.of(id.apply("timber")), dear, today, List.of()));
+		data.setMarket(ridgeway, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(id.apply("timber")), List.of(), cheap, today, List.of()));
+	}
+
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
@@ -1873,6 +1913,65 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
+		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
+		// name icon with "Known for: Timber, Wool. Short of: Bread".
+		SCREENS.put("price_board", new Screen("the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "
+			+ "Timber's tooltip with the dearer and the cheaper village, and the name icon's Known for line", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setCustomName(Component.literal("Thornholm"));
+				priceBoard(level);
+			},
+			// the pointer rests on the way back (slot 0), clear of the goods, so the whole board shows
+			List.of(new Step("01_price_board", 0, 6, (level, player) -> {
+					priceBoard(level); // again, should the hall's round have counted the village in between
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = -1;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.trade.TradePage.marks(m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.ROUTES.slot()))
+							.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.OPEN), "the minecart opens the Trade page on its Routes tab");
+						m.press(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot(), player);
+						int goods = 0;
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							java.util.Set<String> marks = io.github.jcondedata.aliveworkplace.trade.TradePage.marks(m.icon(slot));
+							String name = m.icon(slot).getHoverName().getString();
+							goods += m.icon(slot).isEmpty() ? 0 : 1;
+							if (name.equals("Timber")) {
+								pickedSlot = slot;
+								Showcase.check(marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.STAR)
+									&& marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.DOWN), "Timber is starred and its price fell: " + marks);
+							} else if (name.equals("Bread")) {
+								Showcase.check(marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.SHORT)
+									&& marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.UP), "Bread is marked short and its price rose: " + marks);
+							}
+						}
+						Showcase.check(goods == io.github.jcondedata.aliveworkplace.trade.TradeGoods.all().size() && goods >= 25, "the Prices tab lists every good: " + goods);
+						Showcase.check(pickedSlot >= 0, "Timber is on the Prices tab");
+					}
+				}, 30),
+				// Timber hovered: both prices, down since yesterday, known for it, dearer in Ashford, cheaper in Ridgeway
+				new Step("02_price_tooltip", -2, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m && pickedSlot >= 0) {
+						List<String> lore = new ArrayList<>();
+						m.icon(pickedSlot).getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY)
+							.lines().forEach(l -> lore.add(l.getString()));
+						Showcase.check(lore.stream().anyMatch(l -> l.startsWith("Dearer in Ashford: ")) && lore.stream().anyMatch(l -> l.startsWith("Cheaper in Ridgeway: ")),
+							"Timber's tooltip names the dearer and the cheaper village: " + lore);
+					}
+				}, 30),
+				// Back at the hall, the name tag (slot 0) hovered: "Known for: Timber, Wool. Short of: Bread"
+				new Step("03_hall_known_for", 0, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					Component line = io.github.jcondedata.aliveworkplace.trade.TradePage.knownAndShort(level, STATION);
+					Showcase.check(line != null && line.getString().equals("Known for: Timber, Wool. Short of: Bread"),
+						"the name icon says what Thornholm is known for and short of: " + (line == null ? null : line.getString()));
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("legend_announce", new Screen("a Mythic Legend's coming was announced in chat and written in the chronicle", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				// ROADMAP 29.3: a Mythic Legend of the scene's own settles by the hall; everyone on the server hears it, in gold.
@@ -2396,6 +2495,146 @@ final class JobScenes {
 					Showcase.check(shown, "the hall's tooltip for Dara shows your hearts and her best friends");
 				}, 30)),
 			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 310));
+		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
+		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
+		// hall's tooltip says when her name day is.
+		SCREENS.put("gifts", new Screen("a Golden Carrot wrapped on the crafting grid and given to Dara: she loved it, her hearts went up, and the hall's tooltip says when her name day is",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(new BlockPos(3, -60, 3), net.minecraft.world.level.block.Blocks.CRAFTING_TABLE.defaultBlockState());
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				dara.setNoAi(true);
+				dara.setYRot(0);
+				dara.setYHeadRot(0);
+				dara.setYBodyRot(0);
+				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				subject = dara;
+			},
+			List.of(new Step("01_wrapping", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(subject, player, 255); // the days before
+					BlockPos table = new BlockPos(3, -60, 3);
+					player.openMenu(new net.minecraft.world.SimpleMenuProvider((id, inventory, p) -> new net.minecraft.world.inventory.CraftingMenu(id, inventory,
+						net.minecraft.world.inventory.ContainerLevelAccess.create(level, table)), Component.translatable("container.crafting")));
+					boolean wrapped = false;
+					if (player.containerMenu instanceof net.minecraft.world.inventory.CraftingMenu menu) {
+						menu.getSlot(1).set(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT_WRAP));
+						menu.getSlot(2).set(new ItemStack(Items.GOLDEN_CARROT));
+						menu.broadcastChanges();
+						ItemStack result = menu.getSlot(0).getItem();
+						wrapped = result.is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT)
+							&& io.github.jcondedata.aliveworkplace.story.Gifts.contents(result).is(Items.GOLDEN_CARROT);
+					}
+					Showcase.check(wrapped, "Gift Wrap and a Golden Carrot on the crafting grid make a Gift holding the carrot");
+				}, 40),
+				new Step("02_giving", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					// Take the Gift off the grid as a shift-click does (that signs it), and give it to Dara.
+					if (player.containerMenu instanceof net.minecraft.world.inventory.CraftingMenu menu) {
+						menu.quickMoveStack(player, 0);
+					}
+					player.closeContainer();
+					ItemStack gift = ItemStack.EMPTY;
+					for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+						if (player.getInventory().getItem(i).is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT)) {
+							gift = player.getInventory().removeItemNoUpdate(i);
+						}
+					}
+					boolean signed = io.github.jcondedata.aliveworkplace.story.Gifts.from(gift).equals(player.getGameProfile().getName());
+					player.setItemInHand(InteractionHand.MAIN_HAND, gift);
+					var result = io.github.jcondedata.aliveworkplace.story.Gifts.give(player, dara, player.getMainHandItem());
+					int expected = io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED.points
+						* (result.nameDay() ? io.github.jcondedata.aliveworkplace.story.Gifts.NAME_DAY_FACTOR : 1);
+					Showcase.check(signed && result.outcome() == io.github.jcondedata.aliveworkplace.story.Gifts.Outcome.GIVEN
+						&& result.band() == io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED && result.change() == expected
+						&& player.getMainHandItem().isEmpty() && result.line().getString().contains("Golden Carrot"),
+						"the Gift is from the player, and Dara the farmer loved her Golden Carrot (+" + expected + "): " + result.line().getString());
+				}, 40),
+				new Step("03_hearts", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					int points = io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID());
+					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
+					// A second gift the same day is turned down, with a line.
+					player.setItemInHand(InteractionHand.MAIN_HAND, io.github.jcondedata.aliveworkplace.story.Gifts.wrap(new ItemStack(Items.CAKE), player.getGameProfile().getName()));
+					var again = io.github.jcondedata.aliveworkplace.story.Gifts.give(player, dara, player.getMainHandItem());
+					Showcase.check(points >= 335 && line != null && line.getString().startsWith("Dara ♥♥♥")
+						&& again.outcome() == io.github.jcondedata.aliveworkplace.story.Gifts.Outcome.DAY_LIMIT
+						&& player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.GIFT),
+						"her hearts went up in the action bar (" + (line == null ? null : line.getString()) + "), and a second gift the same day is handed back: "
+							+ again.line().getString());
+				}, 40),
+				new Step("04_hall_name_day", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean shown = player.containerMenu instanceof ChoiceMenu m && m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON)
+						.getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY).lines().stream()
+						.anyMatch(l -> l.getString().startsWith("Name day: "));
+					Showcase.check(shown, "the hall's tooltip for Dara says when her name day is");
+				}, 30)),
+			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 335));
+		// A heart event (ROADMAP 31.7): at two hearts Dara, born in the village, walks up to the player, faces them and
+		// tells where she comes from, line by line over her head and in grey in the chat; told, it's in the chronicle and
+		// on her life story page (a shift-click on her in the hall's list).
+		SCREENS.put("heart_event", new Screen("at two hearts Dara walked up and told where she comes from; it's in the chronicle and on her life story page",
+			new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				dara.setNoAi(true); // (she waits here until the scene begins)
+				dara.setYRot(0);
+				dara.setYHeadRot(0);
+				dara.setYBodyRot(0);
+				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARENTS.set(dara,
+					new io.github.jcondedata.aliveworkplace.people.Families.Parents(Component.literal("Mira"), Component.literal("Tomas"), "", "", true));
+				subject = dara;
+			},
+			List.of(new Step("01_walks_up", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					Villager dara = subject;
+					dara.setNoAi(false);
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 200); // two hearts: she has something to tell
+					var event = io.github.jcondedata.aliveworkplace.story.HeartEvents.pending(level, dara, player.getUUID());
+					Showcase.check(event != null && event.id().getPath().equals("born_here"),
+						"at two hearts Dara, born here, has \"Where I come from\" to tell: " + (event == null ? null : event.id()));
+				}, 25),
+				new Step("02_telling", -1, 0, null, 80),
+				new Step("03_told", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					var telling = io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(dara);
+					double off = Math.sqrt(dara.distanceToSqr(player));
+					Showcase.check(telling != null && telling.said >= 1 && off <= io.github.jcondedata.aliveworkplace.story.HeartEvents.TALK_RANGE + 0.5,
+						"Dara walked up to the player and began her story: " + (telling == null ? "not telling" : telling.said + " lines") + ", "
+							+ String.format("%.1f", off) + " blocks off");
+				}, 165),
+				new Step("04_life_story", io.github.jcondedata.aliveworkplace.story.LifeStory.SECTIONS, 6, (level, player) -> {
+					Villager dara = subject;
+					String me = player.getGameProfile().getName();
+					String village = io.github.jcondedata.aliveworkplace.hall.VillageHalls.name(level, STATION).getString();
+					boolean told = io.github.jcondedata.aliveworkplace.story.Friendship.of(dara).bond(player.getUUID()).told().equals(List.of("aliveworkplace:born_here"))
+						&& io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 220;
+					boolean chronicled = level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall
+						&& hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FRIEND
+							&& e.text().getString().equals("Dara told " + me + " about growing up in " + village));
+					Showcase.check(told && chronicled, "told to the end: +20 friendship, and the chronicle says Dara told " + me + " about growing up in " + village);
+					// Her life story: a shift-click on her in the hall's list, as the client sends it.
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean page = false;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.clicked(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 0, net.minecraft.world.inventory.ClickType.QUICK_MOVE, player);
+						page = m.icon(4).getHoverName().getString().equals("The life story of Dara")
+							&& m.icon(io.github.jcondedata.aliveworkplace.story.LifeStory.SECTIONS).getHoverName().getString().equals("Born in " + village + " to Mira and Tomas");
+					}
+					Showcase.check(page, "a shift-click on Dara in the hall's list opens her life story, with what she told as its first line");
+				}, 40)),
+			(level, player) -> subject != null
+				&& !io.github.jcondedata.aliveworkplace.story.Friendship.of(subject).bond(player.getUUID()).told().isEmpty()));
 		// A story arc (ROADMAP 31.4): the chapter told in chat as it begins, the hall's Story tab (the first chapter ticked,
 		// the second running with its quest) and the chronicle's STORY lines. The mod ships no arcs of its own yet, so the
 		// scene reads a small one here, as a data pack would.

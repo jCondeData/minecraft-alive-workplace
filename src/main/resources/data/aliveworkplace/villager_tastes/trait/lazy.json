@@ -1,0 +1,11 @@
+{
+  "for": {
+    "trait": "lazy"
+  },
+  "loved": [
+    "#minecraft:beds"
+  ],
+  "disliked": [
+    "#c:tools"
+  ]
+}

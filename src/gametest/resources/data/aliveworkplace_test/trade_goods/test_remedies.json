@@ -1,0 +1,10 @@
+{
+  "name": {"text": "Test Remedies"},
+  "items": ["minecraft:potion"],
+  "bundle": 1,
+  "base_price": 200,
+  "made_by": {"jobs": ["minecraft:cleric"]},
+  "wanted_in": {"jobs": ["aliveworkplace:nurse", "aliveworkplace:guard"]},
+  "events": [{"event": "aliveworkplace:raid", "demand": 1, "days": 2}, {"event": "aliveworkplace:illness", "demand": 2, "days": 1}],
+  "order": 31
+}

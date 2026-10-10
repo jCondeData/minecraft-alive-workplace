@@ -348,6 +348,13 @@ public final class ModAttachments {
 	/** A named villager's friendships with players (ROADMAP 31.5): player → points, favours' days, gifts, heart events told. Absent: nobody has points. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.story.Friendship.Data> FRIENDSHIP = Attachment.saved("friendship", io.github.jcondedata.aliveworkplace.story.Friendship.Data.CODEC);
 
+	/** Brought back from a grave (31.7), set by {@code Graves.revive}. Absent: never, or revived before 31.7. */
+	public static final Attachment<Boolean> REVIVED = Attachment.saved("revived", com.mojang.serialization.Codec.BOOL);
+	/** The partner a villager lost (31.7): their id and name, kept by {@code Couples.onDeath}. Absent: none, or widowed before 31.7. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Couples.LatePartner> LATE_PARTNER = Attachment.saved("late_partner", io.github.jcondedata.aliveworkplace.people.Couples.LatePartner.CODEC);
+	/** The day a traveller was hired from an inn (31.7). Absent: not hired, or hired before 31.7. */
+	public static final Attachment<Long> HIRED_DAY = Attachment.saved("hired_day", com.mojang.serialization.Codec.LONG);
+
 	public static void init() {
 	}
 

@@ -1,0 +1,33 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.wool"
+  },
+  "icon": "minecraft:white_wool",
+  "items": [
+    "#minecraft:wool"
+  ],
+  "bundle": 18,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "minecraft:shepherd"
+    ],
+    "biomes": [
+      "#c:is_plains",
+      "minecraft:meadow",
+      "#minecraft:is_hill"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_snowy",
+      "#minecraft:is_taiga"
+    ],
+    "jobs": [
+      "minecraft:leatherworker",
+      "aliveworkplace:innkeeper"
+    ]
+  },
+  "food": false,
+  "order": 20
+}

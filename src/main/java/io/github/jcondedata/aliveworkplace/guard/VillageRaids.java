@@ -421,6 +421,7 @@ public final class VillageRaids {
 		data.remember(hall, new ThreatData.Past(Chronicle.day(level), raid.culture(), raid.raiders(), Math.max(0, raid.raiders() - survivors), fled));
 		Lairs.back(level, hall, raid.culture(), survivors); // those alive rejoin their lair, the dead are gone
 		Threats.get(raid.culture()).ifPresent(c -> Threats.tactics(c).forEach(t -> t.end(level, hall, c, fled)));
+		io.github.jcondedata.aliveworkplace.trade.TradeGoods.event(level, hall, io.github.jcondedata.aliveworkplace.trade.TradeGoods.RAID); // 33.2: arms wanted for a few days
 		Component name = VillageHalls.name(level, hall);
 		for (ServerPlayer player : players(level, hall)) {
 			Chat.chat(player, Component.translatable(fled ? "message.aliveworkplace.raid.fled" : "message.aliveworkplace.raid.won", name)

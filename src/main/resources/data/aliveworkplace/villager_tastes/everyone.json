@@ -1,0 +1,29 @@
+{
+  "for": "everyone",
+  "loved": [
+    "minecraft:cake",
+    "minecraft:pumpkin_pie",
+    "minecraft:golden_apple",
+    "minecraft:enchanted_golden_apple",
+    "minecraft:diamond"
+  ],
+  "liked": [
+    "minecraft:bread",
+    "minecraft:cookie",
+    "minecraft:honey_bottle",
+    "minecraft:emerald",
+    "#minecraft:small_flowers"
+  ],
+  "disliked": [
+    "minecraft:dirt",
+    "minecraft:gravel",
+    "minecraft:cobblestone",
+    "minecraft:bone"
+  ],
+  "hated": [
+    "minecraft:rotten_flesh",
+    "minecraft:spider_eye",
+    "minecraft:poisonous_potato",
+    "minecraft:pufferfish"
+  ]
+}

@@ -521,6 +521,75 @@ Villagers talk of all this too: a rush, the tonic they drank, their guild and th
 page reminds you of Festival Season with too little in the treasury, a guild still without its Guildhall, Large
 Families without a Cradle, and harvest season without an idol by the fields.
 
+## Friendship and gifts
+
+Coming with 1.5 (switched on when that update is complete). Every named villager in a village with a hall keeps ten
+hearts for each player: trades, quests and help in a fight raise them, and so does a well-chosen **Gift**.
+
+| Item | Recipe | What it does |
+|---|---|---|
+| Gift Wrap | paper + string + any dye (makes 4) | Wraps one item. |
+| Gift | Gift Wrap + any one item, anywhere on the crafting grid | Keeps the item inside. Its tooltip says who it's from ("From Jesse"), never what's in it. |
+
+Right-click a named villager with a Gift: they unwrap it, say what they think over their head and in your chat
+("Cake! You remembered."), and your friendship changes: **loved +80, liked +45, neutral +20, disliked −20, hated −40**.
+What's inside goes into their chests (a worker's supply chests, else the village's store, else their own pockets).
+
+- Each player can give each villager **one gift a day and two a week**; a gift too many is handed back with a word.
+- Every villager has a **name day** every 28 days (the hall's list says when: "Name day: in 12 days"). A gift that day
+  counts **three times**.
+- A **Bottle o' Enchanting** is liked, and a worker learns from it: 15 XP.
+- Villagers without a name shake their head. With `friendship` off, a Gift is handed back unopened.
+
+Who likes what: everyone loves cake, pumpkin pie, golden apples and diamonds, likes bread, cookies, honey bottles,
+emeralds and small flowers, dislikes dirt, gravel, cobblestone and bones, and hates rotten flesh, spider eyes, poisonous
+potatoes and pufferfish. On top of that each family of jobs has its own tastes (builders love blueprints and
+spyglasses, miners and smiths amethyst shards and gold, the people of the land golden carrots and honeycomb, herders
+and fishermen saddles and name tags, the Chef glow berries, the learned enchanted books and maps, healers ghast tears
+and glistering melon, guards and fletchers shields and crossbows, traders emerald blocks, the Bard music discs,
+Pokémon people Rare Candies and Ultra Balls, and those with no trade yet emeralds), and so does each trait (a Glutton
+loves any food, a Frugal villager loves emeralds and gold but dislikes cake, a Lazy one loves beds and dislikes tools).
+
+Tastes are data: `data/<namespace>/villager_tastes/<id>.json`.
+
+```json
+{
+  "for": {"family": ["aliveworkplace:builder", "minecraft:mason"]},
+  "loved": ["aliveworkplace:blueprint", "minecraft:spyglass"],
+  "liked": ["minecraft:glass", "#minecraft:planks"],
+  "disliked": [],
+  "hated": []
+}
+```
+
+`for` is `"everyone"`, `{"job": "<profession id>"}`, `{"family": [<profession ids>]}` or `{"trait": "glutton"}`. The
+most specific file that names an item wins: a job's, then a family's, then a trait's, then everyone's (between two as
+specific as each other, the kinder one). A data pack replaces one of our files by using its id
+(`aliveworkplace:everyone`, `building`, `mining`, `land`, `animals`, `kitchen`, `learning`, `healing`, `arms`, `trade`,
+`music`, `pokemon`, `no_trade`, `trait/<trait>`), or adds files of its own.
+
+### Heart events and life stories
+
+At **2, 4, 6, 8 and 10 hearts** a villager has something to tell you. The next time you're within 8 blocks while
+they're off work, they walk up, face you and tell it: three to five lines over their head, one every 3 seconds, each
+also in your chat in grey so you can read it again. Walk away halfway and they start again next time. Each is told
+once per player, adds 20 friendship and goes into the village's chronicle ("Dara told Jesse about growing up in
+Thornholm").
+
+**Shift-click** someone on the Village Hall's list for their **life story**: your hearts with them, their name day,
+their family and partner, and one line for everything they've told anyone.
+
+The first stories, at 2 hearts, are **Where I come from**: villagers born in the village name both their parents,
+travellers tell of the inn and the day they were hired, those who were here before the hall remember the village
+without a name, and anyone brought back from a grave tells what they remember of it. `heartEvents` in the config
+turns the telling off.
+
+Events are data, `data/<namespace>/heart_events/<id>.json`: the `hearts`, a `when` with conditions on the villager
+(`born`, `hired`, `revived`, `jobs`, `married`, `courting`, `widowed`, `parent`, `trait`, `mood`, `rank`), three to five
+`lines` as lang keys, and the `chronicle` and `story` lines' keys. The lines get the villager, you, the village, their
+mother, father, partner, children and the day they were hired as `%1$s` to `%8$s`. Details:
+[docs/wiki/heart-events.md](docs/wiki/heart-events.md).
+
 ## Legends
 
 Now and then a village that has earned it gains a **Legend**: one named villager, a Master of their trade, with powers
@@ -548,6 +617,26 @@ met they go back to work. Legends never leave, strike or not. `legendNeeds` in t
 
 `legends` in the config switches them off: none come, and those already settled stay as ordinary Masters of their
 trade. Each Legend that ships adds its paragraph below.
+
+## From village to realm
+
+*Part of 1.7, which isn't released yet: `villageEconomy` stays off until then.*
+
+**Specialties and prices.** Villages stop being islands. Once a day every village with a Village Hall works out up to
+three goods it's **known for** (from its workers, its biome and what its Storehouses hold) and up to three it's
+**short of**, and puts a price on each of the 28 trade goods (25 without Cobblemon), from Grain and Timber to Remedies
+and Poké Balls. A price moves a third of the way toward supply and demand each dawn, and never below half or above
+twice the good's usual price.
+
+You read it all on the hall. The minecart in the hall's divider opens the **Trade** page, which has a row of tabs:
+**Routes** is the trade routes page as it always was, and **Prices** is the price board. The board shows every good by
+its icon with what the village **pays** for a bundle and what it **sells** one for (10% more; in CobbleDollars with
+the pack), an arrow for how the price moved since yesterday (green up, red down, a grey bar for steady), a **gold
+star** on what the village is known for and a **red mark** on what it's short of. Hover a good and the tooltip also
+names the village on your trade routes where it's dearer and the one where it's cheaper ("Dearer in Ashford: 1.4
+emeralds"), so you can see where a caravan would earn. The hall's name icon gains a line, "Known for: Timber, Wool.
+Short of: Bread", and villagers talk about it: "Our Timber sells well in Ashford", "We've more Wool than we can use",
+"Bread is dear this week". A Village Ledger reaches the Trade page from afar, like the rest of the hall.
 
 ## All the jobs at a glance
 **Vanilla jobs work as in vanilla**: place their block near a villager without a job and they take it. Most of our jobs

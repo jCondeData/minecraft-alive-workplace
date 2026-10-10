@@ -54,6 +54,16 @@ public final class VillageHouses {
 	/** Config switch {@code pokemonVillageHouses}: off, villages don't grow the five Pokémon jobs' houses (houses already grown stay). */
 	public static boolean POKEMON_JOBS = true;
 
+	/**
+	 * The luxury jobs' houses (ROADMAP 34.13) and the switch each needs: a Winery (a Vintner at a cauldron, config
+	 * {@code vintners}) and a Tailor's Shop (a Tailor at a loom, config {@code tailors}). With its switch off (or Classes
+	 * and luxuries not yet released) villages don't grow that house: its villager would have a job that does nothing.
+	 * Read when the server starts, which is when the pools are filled; houses already grown stay.
+	 */
+	public static final java.util.Map<String, java.util.function.BooleanSupplier> LUXURY_HOUSES = java.util.Map.of(
+		"winery", () -> io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED,
+		"tailors_shop", () -> io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED);
+
 	private static java.util.Map<String, Integer> houses() {
 		Integer override = Integer.getInteger("aliveworkplace.houseWeight");
 		java.util.Map<String, Integer> out = new java.util.LinkedHashMap<>();
@@ -87,6 +97,9 @@ public final class VillageHouses {
 		out.put("tinkers_shop", override != null ? override : 2);
 		out.put("sifting_shed", override != null ? override : 1);
 		out.put("compost_yard", override != null ? override : 1);
+		// The vintner and the tailor (ROADMAP 34.13): only while their jobs are on (LUXURY_HOUSES).
+		out.put("winery", override != null ? override : 2);
+		out.put("tailors_shop", override != null ? override : 2);
 		// The Pokémon jobs' houses (ROADMAP 28.15; Cobblemon and config pokemonVillageHouses): the Pokémon Center most often.
 		// (-Daliveworkplace.pokemonHouseWeight overrides these five, for the village screenshots.)
 		Integer pokemon = Integer.getInteger("aliveworkplace.pokemonHouseWeight", override);
@@ -102,7 +115,8 @@ public final class VillageHouses {
 	public static java.util.List<String> houseNames() {
 		boolean cobblemon = Platform.get().isModLoaded("cobblemon");
 		return HOUSES.keySet().stream().filter(h -> cobblemon || !COBBLEMON_HOUSES.contains(h))
-			.filter(h -> POKEMON_JOBS || !POKEMON_JOB_HOUSES.contains(h)).toList();
+			.filter(h -> POKEMON_JOBS || !POKEMON_JOB_HOUSES.contains(h))
+			.filter(h -> !LUXURY_HOUSES.containsKey(h) || LUXURY_HOUSES.get(h).getAsBoolean()).toList();
 	}
 
 	/**

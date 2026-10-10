@@ -238,6 +238,19 @@ public final class StarterBlueprints {
 	public static final Entry MAP_ROOM = new Entry(AliveWorkplace.id("map_room"), new Vec3i(9, 16, 9));
 
 	/**
+	 * The luxury workshops of ROADMAP 34.13 (tools/blueprints/workshops.py). A stone press house over a half-sunk cellar:
+	 * earth banked up the cellar's sides, its door under the landing of the outside stair; the cauldron vat (Vintner) by
+	 * the press room's door, racks of casks (spruce log ends) and a cellar of chests. No barrel: that's the fisherman's.
+	 */
+	public static final Entry WINERY = new Entry(AliveWorkplace.id("winery"), new Vec3i(13, 14, 12));
+	/** A tasting porch off a back door, and behind it two terraces of sweet berry rows down to a pergola of glow berries. */
+	public static final Entry WINERY_2 = new Entry(AliveWorkplace.id("winery_2"), new Vec3i(13, 14, 20));
+	/** A timber shop with a bay window of dress forms, the loom (Tailor), bolts of coloured wool, a fitting room behind. */
+	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(11, 11, 12));
+	/** A cutting-room storey above, with bolts of cloth on racks, and a drying loft for dyed wool in the roof. */
+	public static final Entry TAILORS_SHOP_2 = new Entry(AliveWorkplace.id("tailors_shop_2"), new Vec3i(11, 15, 12));
+
+	/**
 	 * The country workplaces of ROADMAP 27.14 (tools/blueprints/countryside.py), each the building a {@code workplace_*}
 	 * Steward rule builds for its trade. A farmhouse with one bed beside a 9 x 5 field of farmland round a water channel,
 	 * a scarecrow, and the composter (Farmer) with a chest for the harvest.
@@ -345,6 +358,7 @@ public final class StarterBlueprints {
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
 		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,
+		WINERY, WINERY_2, TAILORS_SHOP, TAILORS_SHOP_2,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2,
 		GUILDHALL, GUILDHALL_2);
 

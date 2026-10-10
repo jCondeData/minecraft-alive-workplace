@@ -101,6 +101,9 @@ public class VillageGameTests implements FabricGameTest {
 			java.util.Map.entry("tinkers_shop", new House(Blocks.SMITHING_TABLE, ModVillagers.TINKERER)),
 			java.util.Map.entry("sifting_shed", new House(Blocks.CAULDRON, ModVillagers.SIFTER)),
 			java.util.Map.entry("compost_yard", new House(Blocks.COMPOSTER, ModVillagers.COMPOSTER)),
+			// The luxury jobs' houses (ROADMAP 34.13): a cauldron would make a leatherworker and a loom a shepherd
+			java.util.Map.entry("winery", new House(Blocks.CAULDRON, ModVillagers.VINTNER)),
+			java.util.Map.entry("tailors_shop", new House(Blocks.LOOM, ModVillagers.TAILOR)),
 			// The Pokémon jobs' houses (ROADMAP 28.15): only with Cobblemon, so Cobblemon's blocks are checked by name
 			java.util.Map.entry("pokemon_center", new House(null, ModVillagers.NURSE, ModVillagers.HEALING_MACHINE_BLOCK)),
 			java.util.Map.entry("camp_kitchen", new House(null, ModVillagers.CAMP_COOK, ModVillagers.CAMPFIRE_POT_BLOCK)),
@@ -109,7 +112,7 @@ public class VillageGameTests implements FabricGameTest {
 			java.util.Map.entry("gem_grotto", new House(Blocks.STONECUTTER, ModVillagers.GEM_GROWER)));
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
 		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
-				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard")),
+				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard", "winery", "tailors_shop")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
@@ -451,6 +454,59 @@ public class VillageGameTests implements FabricGameTest {
 			helper.assertTrue(keeper.getVillagerData().getProfession() == ModVillagers.ORCHARD_KEEPER, "a " + keeper.getVillagerData().getProfession());
 			helper.assertTrue(keeper.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 				.map(g -> g.pos().equals(composter)).orElse(false), "works at " + keeper.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE));
+		});
+	}
+
+	/**
+	 * ROADMAP 34.13: the village's Winery comes with its Vintner, who takes the house's cauldron (a jobless villager
+	 * would take it as a leatherworker) and keeps the job.
+	 */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"theWinerysVintnerTakesItsVat"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theWinerysVintnerTakesItsVat")
+	public void theWinerysVintnerTakesItsVat(GameTestHelper helper) {
+		theHousesWorkerTakesItsBlock(helper, "winery", ModVillagers.VINTNER, Blocks.CAULDRON);
+	}
+
+	/** ROADMAP 34.13: the village's Tailor's Shop comes with its Tailor, who takes the house's loom (a jobless villager would take it as a shepherd). */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"theTailorsShopsTailorTakesItsLoom"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theTailorsShopsTailorTakesItsLoom")
+	public void theTailorsShopsTailorTakesItsLoom(GameTestHelper helper) {
+		theHousesWorkerTakesItsBlock(helper, "tailors_shop", ModVillagers.TAILOR, Blocks.LOOM);
+	}
+
+	/**
+	 * A village house of every style placed as a village places it (its pool element skips the template's air, B11): its
+	 * one villager, already in {@code job}, takes the house's {@code block} as his job site and still has the job then.
+	 */
+	private static void theHousesWorkerTakesItsBlock(GameTestHelper helper, String house, VillagerProfession job, net.minecraft.world.level.block.Block block) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		// Two styles side by side (plains, with its gable roof, and the flat-roofed desert one): the room inside is the same in all five.
+		List<String> styles = List.of("plains", "desert");
+		List<BlockPos> blocks = new java.util.ArrayList<>();
+		List<net.minecraft.world.phys.AABB> areas = new java.util.ArrayList<>();
+		for (int i = 0; i < styles.size(); i++) {
+			var id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("village/" + styles.get(i) + "_" + house);
+			StructureTemplate template = level.getStructureManager().get(id).orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("missing " + id));
+			BlockPos origin = helper.absolutePos(new BlockPos(1 + 11 * i, 1, 4));
+			template.placeInWorld(level, origin, origin, new StructurePlaceSettings().setFinalizeEntities(true)
+				.addProcessor(net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor.STRUCTURE_AND_AIR),
+				net.minecraft.util.RandomSource.create(1), 2);
+			blocks.add(template.filterBlocks(origin, new StructurePlaceSettings(), block).get(0).pos());
+			areas.add(net.minecraft.world.phys.AABB.of(template.getBoundingBox(new StructurePlaceSettings(), origin)).inflate(1));
+		}
+		helper.succeedWhen(() -> {
+			for (int i = 0; i < styles.size(); i++) {
+				List<Villager> villagers = level.getEntitiesOfClass(Villager.class, areas.get(i));
+				helper.assertTrue(villagers.size() == 1, villagers.size() + " villagers in the " + styles.get(i) + " " + house);
+				Villager worker = villagers.get(0);
+				helper.assertTrue(worker.getVillagerData().getProfession() == job, "the " + styles.get(i) + " " + house + "'s villager is a " + worker.getVillagerData().getProfession());
+				BlockPos at = blocks.get(i);
+				helper.assertTrue(worker.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> g.pos().equals(at)).orElse(false), "the " + styles.get(i) + " " + house + "'s villager works at "
+					+ worker.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE) + ", not its " + block.getName().getString() + " at " + at);
+			}
 		});
 	}
 

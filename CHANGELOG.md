@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Winery and the Tailor's Shop, for 1.8** (34.13): two new blueprints in the Blueprint Table, each with a II.
+  The **Winery** is a stone press house over a half-sunk cellar: earth banked up the cellar's sides, its door under
+  the landing of the outside stair, the cauldron vat by the press room's door, racks of casks and a cellar of chests
+  (no barrels: a barrel would make a fisherman). **Winery II** adds a tasting porch and two terraces of sweet berry rows
+  down to a pergola of glow berries. The **Tailor's Shop** is a timber shop with a bay window of dress forms, the
+  loom, bolts of coloured wool and a fitting room behind; **Tailor's Shop II** adds a cutting-room storey and a drying
+  loft for dyed wool. A Vintner or Tailor who reaches Journeyman sells their building's blueprint for 12 emeralds, the
+  Steward builds one for a Vintner or Tailor with no workstation, and (once 1.8 is on) villages of all five kinds grow
+  a small Winery and Tailor's Shop with a Vintner and a Tailor already at work.
 - **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all

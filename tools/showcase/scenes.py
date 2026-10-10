@@ -619,6 +619,13 @@ SCENES = [
       env={"WORKSHOP_WEIGHT": "200", "POKEMON_HOUSE_WEIGHT": "60"}, cobblemon=True),
     S("pokemon_builds", "Build families", "Builds for the Pokémon jobs, both tiers",
       "all ten builds stand with their job blocks", 120, [("[12][0-9]_*@spread", "")], cobblemon=True),
+    # The Winery and the Tailor's Shop (ROADMAP 34.13): both tiers of each, then the two as villages grow them
+    S("luxury_workshops", "Build families", "The Winery and the Tailor's Shop, both tiers, and in a village",
+      "the Winery and the Tailor's Shop stand in both tiers with the vat and the loom, and the village's two came with their Vintner and Tailor",
+      90, [("10_winery", "The Winery: the stair up to the press room, the cellar door under it"),
+           ("13_winery_2_back", "Winery II: the tasting porch, the berry terraces and the pergola"),
+           ("14_tailors_shop", "The Tailor's Shop: the bay window and the banners"),
+           ("16_tailors_shop_2", "Tailor's Shop II: the cutting room and the drying loft")]),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
       "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
       [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),

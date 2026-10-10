@@ -789,3 +789,425 @@ def map_room():
     lantern(b, 2, 7, 2)
     b.fill_air()
     return b
+
+
+# --- Winery (ROADMAP 34.13) -----------------------------------------------------------------------------------------
+# Winery: I a stone press house over a half-sunk cellar. The cellar is the ground storey, of rough mossy stone, with
+# earth banked up its sides and back so only a course of it and its barred slits show; its door is at the foot of the
+# front, in a passage under the landing of the outside stair. The stair climbs along the front wall to the press room
+# above (cut stone, a spruce frame, a clay-tile roof with its gable to the street, a gabled porch over the landing):
+# the cauldron vat (Vintner) by the door, a press on a chain, a hatch and ladder down. In the cellar racks of casks
+# (spruce logs laid so their ends show) and chests. No barrels anywhere: a barrel is the fisherman's job block.
+# II the knoll behind the house: a tasting porch off a back door under a lean-to roof, then two terraces of sweet
+# berry rows stepping down to a pergola hung with glow berries.
+WINERY_CELLAR = Mix((5, "cobblestone"), (3, "stone"), (2, "mossy_cobblestone"), (1, "andesite"), seed=81)
+WINERY_STONE = Mix((7, "stone_bricks"), (2, "andesite"), (1, "cracked_stone_bricks"), seed=82)
+WINERY_PAVING = Mix((4, "stone_bricks"), (2, "cobblestone"), (1, "mossy_stone_bricks"), seed=83)
+WINERY_FRAME = "spruce_log"
+WINERY_ROOF = BRICK
+WINERY_CASK = "spruce_log"
+
+
+def grass(b, x, y, z):
+    b.set(x, y, z, "grass_block", snowy=False)
+
+
+def winery_house(b):
+    """The house both tiers share (walls x 2-10, z 3-9): the cellar storey of rough stone (y 0-2), a spruce beam round
+    the press room's floor (y 3), the press room of cut stone, spruce posts at its corners and halfway along its sides (y 4-7). Doors one over the other in
+    the middle of the front: the cellar's at the ground, the press room's at the head of the stair."""
+    plinth(b, 2, 3, 10, 9, WINERY_CELLAR, floor=WINERY_PAVING)
+    walls(b, 2, 3, 10, 9, 1, 2, WINERY_CELLAR)
+    beam_ring(b, 2, 3, 10, 9, 3, WINERY_FRAME)
+    box(b, 3, 3, 4, 9, 3, 8, "spruce_planks")
+    walls(b, 2, 3, 10, 9, 4, 7, WINERY_STONE)
+    posts(b, [(2, 3), (10, 3), (2, 6), (10, 6), (2, 9), (10, 9)], 4, 7, WINERY_FRAME)
+    door(b, 6, 1, 3, "spruce_door", "south")
+    door(b, 6, 4, 3, "spruce_door", "south")
+    # Front and back: a tall window either side of the middle, under the gable's studs, on a stone sill (none on the
+    # front's west one: the stair passes under it, and a sill there would be in a climber's face)
+    for z, out in ((3, "north"), (9, "south")):
+        for x in (4, 8):
+            window(b, x, 5, z, out, height=2, sill=None if (x, z) == (4, 3) else STONE_BRICK)
+    # The sides: a wide shuttered window in each bay of the press room, barred slits to the cellar just above the bank
+    for z in (5, 8):
+        window(b, 2, 5, z, "west", width=2, height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    for z in (4, 7):
+        window(b, 10, 5, z, "east", width=2, height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    for x in (2, 10):
+        for z in (4, 5):
+            b.set(x, 2, z, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+
+
+def winery_roof(b):
+    """A clay-tile roof, its gables to the street and the back (stone, a king post, a little window), a tie beam across
+    the press room with a lantern on it."""
+    gable_roof(b, 1, 11, 2, 10, 8, WINERY_ROOF, axis="z", gable=WINERY_STONE, gable_at=(3, 9), eave_trim=SPRUCE)
+    beam_ring(b, 2, 3, 10, 9, 8, WINERY_FRAME)
+    for z in (3, 9):
+        for y in (9, 10, 12):
+            log(b, 6, y, z, WINERY_FRAME)
+        pane(b, 6, 11, z)
+        for x in (4, 8):
+            for y in (9, 10):
+                log(b, x, y, z, WINERY_FRAME)
+    for x in range(3, 10):
+        log(b, x, 8, 6, WINERY_FRAME, axis="x")
+    lantern(b, 6, 7, 6, hanging=True)
+
+
+def winery_perron(b):
+    """The outside stair: four steps up along the front wall from the west to a landing before the press room's door,
+    on two piers with the passage to the cellar door between them; a railing, and a gabled porch roof on posts with a
+    lantern under its beam. East of it a rack of casks under the eaves."""
+    for i, x in enumerate((1, 2, 3, 4)):
+        for y in range(0, i):
+            b.set(x, y, 2, resolve(WINERY_CELLAR, x, y, 2))
+        stairs(b, x, i, 2, STONE_BRICK, "east")
+    for z in (1, 2):
+        for x in (5, 7):
+            for y in range(0, 3):
+                b.set(x, y, z, resolve(WINERY_CELLAR, x, y, z))
+        b.set(6, 0, z, resolve(WINERY_PAVING, 6, 0, z))
+        for x in (5, 6, 7):
+            b.set(x, 3, z, "stone_bricks")
+    for x in (5, 7):
+        for y in (4, 5, 6):
+            fence(b, x, y, 1, "spruce_fence")
+    fence(b, 6, 4, 1, "spruce_fence")
+    fence(b, 7, 4, 2, "spruce_fence")
+    gable_roof(b, 4, 8, 0, 2, 7, WINERY_ROOF, axis="z")
+    for x in (5, 6, 7):
+        log(b, x, 7, 1, WINERY_FRAME, axis="x")
+    lantern(b, 6, 6, 1, hanging=True)
+    # Casks: log ends to the street, three and two, a lantern on the low end
+    for x, y in ((8, 0), (9, 0), (10, 0), (8, 1), (9, 1)):
+        log(b, x, y, 2, WINERY_CASK, axis="z")
+    lantern(b, 10, 1, 2)
+
+
+def winery_bank(b, back=11):
+    """Earth banked against the cellar: two high against the walls, one high outside that, stone where it ends at the
+    front. {@code back}: the last row the side banks reach (tier II runs them on beside its porch)."""
+    for z in range(3, back + 1):
+        for inner, outer in ((1, 0), (11, 12)):
+            if z == 3:
+                for y in (0, 1):
+                    b.set(inner, y, z, resolve(WINERY_CELLAR, inner, y, z))
+                b.set(outer, 0, z, resolve(WINERY_CELLAR, outer, 0, z))
+            else:
+                b.set(inner, 0, z, "dirt")
+                grass(b, inner, 1, z)
+                grass(b, outer, 0, z)
+
+
+def winery_back_bank(b):
+    """Tier I: the bank round the back of the cellar."""
+    for x in range(1, 12):
+        b.set(x, 0, 10, "dirt")
+        grass(b, x, 1, 10)
+    for x in range(0, 13):
+        grass(b, x, 0, 11)
+    for x, plant in ((3, "poppy"), (9, "dandelion")):
+        b.set(x, 2, 10, plant)
+
+
+def winery_inside(b):
+    """The press room: the cauldron vat by the door, the press (a tub under a chain from the tie beam), a table, casks,
+    the hatch. The cellar: casks two high along the west and back walls, two big chests along the east, the ladder."""
+    b.set(7, 4, 4, "cauldron")
+    log(b, 8, 4, 6, "stripped_spruce_log")
+    for y in (5, 6, 7):
+        b.set(8, y, 6, "chain", axis="y", waterlogged=False)
+    fence(b, 3, 4, 5, "spruce_fence")
+    b.set(3, 5, 5, "spruce_pressure_plate", powered=False)
+    stairs(b, 3, 4, 4, SPRUCE, "north")
+    log(b, 3, 4, 8, WINERY_CASK, axis="x")
+    log(b, 3, 5, 8, WINERY_CASK, axis="x")
+    log(b, 4, 4, 8, WINERY_CASK, axis="z")
+    lantern(b, 4, 5, 8)
+    trapdoor(b, 9, 3, 8, "spruce_trapdoor", "west", half="top")
+    for y in (1, 2):
+        b.set(9, y, 8, "ladder", facing="west", waterlogged=False)
+        for z in (6, 7, 8):
+            log(b, 3, y, z, WINERY_CASK, axis="x")
+        for x in (4, 5, 6, 7):
+            log(b, x, y, 8, WINERY_CASK, axis="z")
+    for z, kind in ((4, "right"), (5, "left"), (6, "right"), (7, "left")):
+        b.set(9, 1, z, "chest", facing="west", type=kind, waterlogged=False)
+    lantern(b, 8, 1, 8)
+
+
+def winery():
+    """13 x 14 x 12: a stone press house over a half-sunk cellar: earth banked up the cellar's sides and back, its door
+    under the landing of the outside stair, the press room above under a clay-tile roof with a gabled porch; the
+    cauldron vat (Vintner) by the door, a press, racks of casks (spruce log ends) and a cellar of chests."""
+    b = Build(13, 14, 12)
+    winery_house(b)
+    winery_roof(b)
+    winery_perron(b)
+    winery_bank(b)
+    winery_back_bank(b)
+    winery_inside(b)
+    window(b, 6, 5, 9, "south", height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    b.fill_air()
+    return b
+
+
+WINERY_ROWS = (2, 4, 8, 10)
+
+
+def winery_terrace(b, x0, x1, z0, z1, top):
+    """A garden terrace: earth held by a dry-stone edge on its sides and its low end, grass on top at {@code top}, a
+    paved path down the middle, rows of sweet berry bushes running down the slope."""
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            edge = x in (x0, x1) or z == z1
+            for y in range(0, top):
+                b.set(x, y, z, resolve(WINERY_CELLAR, x, y, z) if edge else "dirt")
+            if x == 6:
+                b.set(x, top, z, resolve(WINERY_PAVING, x, top, z))
+            elif edge:
+                b.set(x, top, z, resolve(WINERY_CELLAR, x, top, z))
+            else:
+                grass(b, x, top, z)
+                if x in WINERY_ROWS and z < z1:
+                    b.set(x, top + 1, z, "sweet_berry_bush", age=0)
+
+
+def winery_2():
+    """13 x 14 x 20: the knoll behind the press house: a back door onto a tasting porch (a table, stools, a cask, a
+    railing) under a lean-to of the same tiles, steps down to two terraces of sweet berry rows held by dry-stone edges,
+    and over the lower one a pergola hung with glow berries; a lamp at each foot of the garden."""
+    b = winery().grow(13, 14, 20)
+    b.clear(0, 0, 10, 12, 2, 11)
+    b.clear(5, 4, 10, 7, 6, 10)
+    winery_bank(b, back=12)
+    # The back door where the window was
+    b.set(6, 6, 9, resolve(WINERY_STONE, 6, 6, 9))
+    door(b, 6, 4, 9, "spruce_door", "north")
+    # The porch: a platform as high as the press room's floor, beams round its edge, boards inside
+    for x in range(2, 11):
+        for z in (10, 11, 12):
+            edge = x in (2, 10) or z == 12
+            for y in range(0, 3):
+                b.set(x, y, z, resolve(WINERY_CELLAR, x, y, z) if edge else "dirt")
+            if z == 12:
+                log(b, x, 3, z, WINERY_FRAME, axis="x")
+            elif edge:
+                log(b, x, 3, z, WINERY_FRAME, axis="z")
+            else:
+                b.set(x, 3, z, "spruce_planks")
+    posts(b, [(2, 12), (5, 12), (7, 12), (10, 12)], 4, 5, WINERY_FRAME)
+    for x in (3, 4, 8, 9):
+        fence(b, x, 4, 12, "spruce_fence")
+    for x in (2, 10):
+        for z in (10, 11):
+            fence(b, x, 4, z, "spruce_fence")
+    for x in range(1, 12):
+        if 2 <= x <= 10:
+            stairs(b, x, 8, 10, WINERY_ROOF, "north")
+        stairs(b, x, 7, 11, WINERY_ROOF, "north")
+        stairs(b, x, 6, 12, WINERY_ROOF, "north")
+    # Tasting: a table with a stool either side, a cask with a lantern on it and a stool by it
+    fence(b, 4, 4, 11, "spruce_fence")
+    b.set(4, 5, 11, "spruce_pressure_plate", powered=False)
+    stairs(b, 3, 4, 11, SPRUCE, "west")
+    stairs(b, 5, 4, 11, SPRUCE, "east")
+    log(b, 8, 4, 11, WINERY_CASK)
+    lantern(b, 8, 5, 11)
+    stairs(b, 9, 4, 11, SPRUCE, "east")
+    # The garden: two terraces stepping down, a stair at the head of each
+    winery_terrace(b, 1, 11, 13, 15, 2)
+    winery_terrace(b, 0, 12, 16, 18, 1)
+    stairs(b, 6, 3, 13, STONE_BRICK, "north")
+    stairs(b, 6, 2, 16, STONE_BRICK, "north")
+    stairs(b, 6, 1, 19, STONE_BRICK, "north")
+    # The pergola over the lower terrace, glow berries hanging from its rafters
+    for x, z in ((5, 16), (7, 16), (5, 18), (7, 18)):
+        for y in (2, 3, 4):
+            fence(b, x, y, z, "spruce_fence")
+    for x in range(4, 9):
+        log(b, x, 5, 16, WINERY_FRAME, axis="x")
+        log(b, x, 5, 18, WINERY_FRAME, axis="x")
+    for x in (5, 6, 7):
+        log(b, x, 5, 17, WINERY_FRAME, axis="z")
+    for x, z in ((4, 16), (8, 16), (4, 18), (8, 18), (5, 17), (7, 17), (6, 16)):
+        b.set(x, 4, z, "cave_vines", age=0, berries=True)
+    lamp_post(b, 0, 2, 18)
+    lamp_post(b, 12, 2, 18)
+    b.fill_air()
+    return b
+
+
+# --- Tailor's Shop (ROADMAP 34.13) ----------------------------------------------------------------------------------
+# Tailor's Shop: I a timber shop, dark oak frame and white plaster under a spruce roof with its gable to the street: the
+# door under a hood between two banners of the tailor's cloth, a bay window beside it with dress forms and a bolt on
+# show, a lower wing behind for the fitting room. Inside the loom (Tailor), a counter, bolts of coloured wool along the
+# walls. II a cutting-room storey above (a cutting table, bolts of cloth on racks) and a drying loft in the roof, its
+# front open behind a rail with dyed wool hung from the rafters and a bale on the hoist; a ladder up through both.
+TAILOR_PLINTH = Mix((6, "stone_bricks"), (2, "cobblestone"), (1, "cracked_stone_bricks"), seed=91)
+TAILOR_PLASTER = Mix((7, "white_concrete"), (1, "polished_diorite"), seed=92)
+TAILOR_FRAME = "dark_oak_log"
+TAILOR_ROOF = SPRUCE
+TAILOR_BOLTS = ("red_wool", "blue_wool", "yellow_wool", "lime_wool", "magenta_wool", "cyan_wool", "orange_wool", "white_wool")
+
+
+def dress_form(b, x, y, z, cloth):
+    """A dress form: a post with a length of cloth on it."""
+    fence(b, x, y, z, "dark_oak_fence")
+    b.set(x, y + 1, z, cloth)
+
+
+def tailors_wing(b):
+    """The fitting room: a lower wing behind the shop (walls x 2-8, z 7-10, three high) under its own roof, which dies
+    into the shop's back wall: a door from the shop, a carpet, a dress form, a stool, a shuttered window at the back."""
+    plinth(b, 2, 7, 8, 10, TAILOR_PLINTH, floor="spruce_planks")
+    walls(b, 2, 7, 8, 10, 1, 3, TAILOR_PLASTER)
+    posts(b, [(2, 10), (8, 10)], 1, 3, TAILOR_FRAME)
+    gable_roof(b, 1, 9, 8, 11, 4, TAILOR_ROOF, axis="z", gable=TAILOR_PLASTER, gable_at=(10, 10), eave_trim=SPRUCE)
+    for z in (8, 9):
+        log(b, 2, 4, z, TAILOR_FRAME, axis="z")
+        log(b, 8, 4, z, TAILOR_FRAME, axis="z")
+    for x in range(2, 9):
+        log(b, x, 4, 10, TAILOR_FRAME, axis="x")
+    for y in (5, 6):
+        log(b, 5, y, 10, TAILOR_FRAME)
+    window(b, 5, 2, 10, "south", shutters="spruce_trapdoor", sill=SPRUCE)
+    for x in range(3, 8):
+        log(b, x, 4, 9, TAILOR_FRAME, axis="x")
+    lantern(b, 5, 3, 9, hanging=True)
+    for x in (4, 5, 6):
+        for z in (8, 9):
+            b.set(x, 1, z, "red_carpet")
+    dress_form(b, 7, 1, 9, "purple_wool")
+    stairs(b, 3, 1, 9, DARK_OAK, "west")
+
+
+def tailors_ground(b):
+    """The shop's ground floor (walls x 1-9, z 1-7, four high): the door in the west bay of the front, the bay window in
+    the east one; the loom, a counter, bolts of coloured wool."""
+    plinth(b, 1, 1, 9, 7, TAILOR_PLINTH, floor="spruce_planks")
+    walls(b, 1, 1, 9, 7, 1, 4, TAILOR_PLASTER)
+    posts(b, [(1, 1), (5, 1), (9, 1), (1, 4), (9, 4), (1, 7), (9, 7)], 1, 4, TAILOR_FRAME)
+    # The door: a step, a hood with a lantern under it, a banner of the tailor's cloth either side
+    door(b, 3, 1, 1, "dark_oak_door", "south")
+    stairs(b, 3, 0, 0, STONE_BRICK, "south")
+    slab(b, 3, 4, 0, TAILOR_ROOF)
+    lantern(b, 3, 3, 0, hanging=True)
+    b.set(2, 3, 0, "red_wall_banner", facing="north")
+    b.set(4, 3, 0, "blue_wall_banner", facing="north")
+    # The bay window: a block out from the wall on its own footing, three panes wide between posts, a pent roof
+    for x in range(5, 10):
+        b.set(x, 0, 0, resolve(TAILOR_PLINTH, x, 0, 0))
+        stairs(b, x, 4, 0, TAILOR_ROOF, "south")
+    posts(b, [(5, 0), (9, 0)], 1, 3, TAILOR_FRAME)
+    b.clear(6, 1, 1, 8, 3, 1)
+    for x in (6, 7, 8):
+        b.set(x, 1, 0, "dark_oak_planks")
+        pane(b, x, 2, 0)
+        pane(b, x, 3, 0)
+        b.set(x, 0, 1, "spruce_planks")
+        log(b, x, 4, 1, TAILOR_FRAME, axis="x")
+    dress_form(b, 6, 1, 1, "red_wool")
+    dress_form(b, 8, 1, 1, "blue_wool")
+    b.set(7, 1, 1, "yellow_wool")
+    # The sides: one wide window each, a flower box on the west, shutters on both
+    window(b, 1, 2, 3, "west", width=2, height=2, shutters="spruce_trapdoor", flowers=("spruce_trapdoor", ["potted_red_tulip", "potted_blue_orchid"]))
+    window(b, 9, 2, 2, "east", width=2, height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    # The way through to the fitting room
+    b.set(5, 0, 7, "spruce_planks")
+    door(b, 5, 1, 7, "dark_oak_door", "north")
+    # Inside: the loom and its chest, a counter, bolts of wool stacked along the back wall
+    b.set(2, 1, 5, "loom", facing="east")
+    b.set(2, 1, 6, "chest", facing="east", type="single", waterlogged=False)
+    for x in (6, 7, 8):
+        slab(b, x, 1, 4, DARK_OAK, top=True)
+    for i, (x, y) in enumerate(((8, 1), (8, 2), (7, 1), (7, 2), (6, 1), (3, 1), (3, 2))):
+        b.set(x, y, 6, TAILOR_BOLTS[i])
+    beam_ring(b, 1, 1, 9, 7, 5, TAILOR_FRAME)
+    for x in range(2, 9):
+        log(b, x, 5, 4, TAILOR_FRAME, axis="x")
+    lantern(b, 5, 4, 4, hanging=True)
+
+
+def tailors_gable(b, z, y, window_at=None):
+    """A gable's timbers at the wall {@code z}, its lowest plaster row at {@code y}: a king post, a stud either side,
+    a little window in the post if asked."""
+    for dy in range(0, 4):
+        log(b, 5, y + dy, z, TAILOR_FRAME)
+    for x in (3, 7):
+        log(b, x, y, z, TAILOR_FRAME)
+    if window_at is not None:
+        pane(b, 5, window_at, z)
+
+
+def tailors_shop():
+    """11 x 11 x 12: a timber shop, dark oak and white plaster under a spruce roof: the door between two banners, a bay
+    window with dress forms on show, a lower wing behind for the fitting room; inside the loom (Tailor), a counter
+    and bolts of coloured wool."""
+    b = Build(11, 11, 12)
+    tailors_wing(b)
+    tailors_ground(b)
+    gable_roof(b, 0, 10, 0, 7, 5, TAILOR_ROOF, axis="z", gable=TAILOR_PLASTER, gable_at=(1, 7), eave_trim=SPRUCE)
+    beam_ring(b, 1, 1, 9, 7, 5, TAILOR_FRAME)
+    tailors_gable(b, 1, 6, window_at=7)
+    tailors_gable(b, 7, 6)
+    b.fill_air()
+    return b
+
+
+def tailors_shop_2():
+    """11 x 15 x 12: a cutting-room storey above the shop (a cutting table with cloth laid out, bolts of cloth on racks
+    along the walls) and a drying loft in the roof: its front open behind a rail, dyed wool hung from the rafters, a
+    bale on the hoist over the street; a ladder up through both floors."""
+    b = Build(11, 15, 12)
+    tailors_wing(b)
+    tailors_ground(b)
+    # The cutting room: its floor on the shop's beams, plaster walls in the same frame, windows over the ones below
+    box(b, 2, 5, 2, 8, 5, 6, "spruce_planks")
+    for x in range(2, 9):
+        log(b, x, 5, 4, TAILOR_FRAME, axis="x")
+    walls(b, 1, 1, 9, 7, 6, 8, TAILOR_PLASTER)
+    posts(b, [(1, 1), (5, 1), (9, 1), (1, 4), (9, 4), (1, 7), (5, 7), (9, 7)], 6, 8, TAILOR_FRAME)
+    window(b, 3, 7, 1, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 6, 7, 1, "north", width=3, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 1, 7, 3, "west", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 9, 7, 2, "east", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
+    for x in (4, 5, 6):
+        b.set(x, 6, 4, "dark_oak_planks")
+    b.set(4, 7, 4, "light_blue_carpet")
+    b.set(6, 7, 4, "yellow_carpet")
+    for i, (x, z) in enumerate(((2, 5), (2, 6), (3, 6), (4, 6), (6, 6), (7, 6), (8, 6))):
+        fence(b, x, 6, z, "dark_oak_fence")
+        b.set(x, 7, z, TAILOR_BOLTS[(i + 3) % len(TAILOR_BOLTS)])
+    lantern(b, 5, 8, 3, hanging=True)
+    # The loft: its floor on the top beams, the roof over it, the front gable open behind a rail
+    gable_roof(b, 0, 10, 0, 7, 9, TAILOR_ROOF, axis="z", gable=TAILOR_PLASTER, gable_at=(1, 7), eave_trim=SPRUCE)
+    beam_ring(b, 1, 1, 9, 7, 9, TAILOR_FRAME)
+    box(b, 2, 9, 2, 8, 9, 6, "spruce_planks")
+    tailors_gable(b, 7, 10, window_at=11)
+    b.clear(4, 10, 1, 6, 11, 1)
+    for x in (3, 7):
+        for y in (10, 11):
+            log(b, x, y, 1, TAILOR_FRAME)
+    for x in (4, 5, 6):
+        fence(b, x, 10, 1, "dark_oak_fence")
+        log(b, x, 12, 1, TAILOR_FRAME, axis="x")
+    log(b, 5, 13, 1, TAILOR_FRAME)
+    # Dyed wool hung from the rafters to dry, and a bale going up on the hoist
+    for i, z in enumerate((2, 4, 6)):
+        for x in (4, 5, 6):
+            log(b, x, 12, z, TAILOR_FRAME, axis="x")
+        b.set(4, 11, z, TAILOR_BOLTS[(2 * i) % len(TAILOR_BOLTS)])
+        b.set(6, 11, z, TAILOR_BOLTS[(2 * i + 5) % len(TAILOR_BOLTS)])
+    lantern(b, 5, 10, 5)
+    log(b, 5, 13, 0, TAILOR_FRAME, axis="z")
+    for y in (11, 12):
+        b.set(5, y, 0, "chain", axis="y", waterlogged=False)
+    b.set(5, 10, 0, "magenta_wool")
+    # The ladder up the east wall, through both floors
+    for y in range(1, 10):
+        b.set(8, y, 5, "ladder", facing="west", waterlogged=False)
+    b.fill_air()
+    return b

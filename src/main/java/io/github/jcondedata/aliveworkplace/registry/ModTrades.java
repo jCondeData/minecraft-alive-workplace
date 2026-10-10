@@ -629,7 +629,8 @@ public final class ModTrades {
 	 */
 	/**
 	 * Vintners (34.9): at every level they buy their makings (apples, sweet and glow berries, glass bottles) and sell the
-	 * drinks of their level: Cider (Novice), Berry Wine (Apprentice), Vintage Wine (Journeyman and up).
+	 * drinks of their level: Cider (Novice), Berry Wine (Apprentice), Vintage Wine (Journeyman and up). A Journeyman also
+	 * sells the Winery's blueprint (34.13, {@link #journeymanBlueprint}).
 	 */
 	private static void vintnerTrades() {
 		Platform.get().addTrades(ModVillagers.VINTNER, 1, offers -> {
@@ -656,7 +657,8 @@ public final class ModTrades {
 
 	/**
 	 * Tailors (34.10): at every level they buy their makings (wool, string, leather) and sell the clothes of their level:
-	 * Work Clothes (Novice), Fine Clothes (Apprentice), Noble Robes (Journeyman and up).
+	 * Work Clothes (Novice), Fine Clothes (Apprentice), Noble Robes (Journeyman and up). A Journeyman also sells the
+	 * Tailor's Shop's blueprint (34.13, {@link #journeymanBlueprint}).
 	 */
 	private static void tailorTrades() {
 		Platform.get().addTrades(ModVillagers.TAILOR, 1, offers -> {
@@ -817,6 +819,28 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.GOLDEN_APPLE), 4, 20, 0.05f)));
 		Platform.get().addTrades(ModVillagers.NURSE, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.GOLDEN_CARROT, 8), 8, 30, 0.05f)));
+	}
+
+	/** The emeralds a Journeyman Vintner or Tailor asks for their building's blueprint (34.13). */
+	public static final int LUXURY_BLUEPRINT_PRICE = 12;
+
+	/**
+	 * A Vintner or a Tailor who has just become a Journeyman sells their building's blueprint from then on (ROADMAP
+	 * 34.13): the Winery, the Tailor's Shop. Added to their offers when they level up (the mixin's hook on
+	 * {@code increaseMerchantCareer}) rather than listed with the level's trades: a level shows two of its listed trades,
+	 * picked at random, and the two these jobs already have at Journeyman (their makings bought, Vintage Wine or Noble
+	 * Robes sold) must both stay. Once sold it is theirs like any other trade; never added twice.
+	 */
+	public static void journeymanBlueprint(net.minecraft.world.entity.npc.Villager villager) {
+		if (villager.getVillagerData().getLevel() != 3) {
+			return;
+		}
+		net.minecraft.world.entity.npc.VillagerProfession job = villager.getVillagerData().getProfession();
+		StarterBlueprints.Entry entry = job == ModVillagers.VINTNER ? StarterBlueprints.WINERY : job == ModVillagers.TAILOR ? StarterBlueprints.TAILORS_SHOP : null;
+		if (entry == null || io.github.jcondedata.aliveworkplace.build.UpgradeOffers.sells(villager, entry.id())) {
+			return;
+		}
+		villager.getOffers().add(blueprint(entry, LUXURY_BLUEPRINT_PRICE));
 	}
 
 	private static MerchantOffer blueprint(StarterBlueprints.Entry entry, int emeralds) {

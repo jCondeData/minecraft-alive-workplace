@@ -132,6 +132,8 @@ if __name__ == "__main__":
     for name, draw in (("farmstead", farmstead), ("farmstead_2", farmstead_2), ("fishers_hut", fishers_hut), ("fishers_hut_2", fishers_hut_2),
                        ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
         draw().save(MAIN_STRUCTURES, name)
+    for name, draw in (("winery", winery), ("winery_2", winery_2), ("tailors_shop", tailors_shop), ("tailors_shop_2", tailors_shop_2)):
+        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

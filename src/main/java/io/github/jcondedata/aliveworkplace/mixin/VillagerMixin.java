@@ -189,6 +189,12 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.legend.Gifted.onLevelUp((Villager) (Object) this);
 	}
 
+	/** A Vintner or a Tailor who reaches Journeyman sells their building's blueprint (34.13). */
+	@Inject(method = "increaseMerchantCareer", at = @At("TAIL"))
+	private void aliveworkplace$journeymanBlueprint(CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.registry.ModTrades.journeymanBlueprint((Villager) (Object) this);
+	}
+
 	/** Silver Tongue (29.6): every trade with a player is cheaper, on top of vanilla's special prices. */
 	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
 	private void aliveworkplace$silverTongue(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {

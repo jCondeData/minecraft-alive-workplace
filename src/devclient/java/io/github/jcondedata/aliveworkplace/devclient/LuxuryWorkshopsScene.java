@@ -23,11 +23,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * SCENE=luxury_workshops (ROADMAP 34.13): the Winery and the Tailor's Shop, both tiers of each, placed in a row, then
- * the two as villages grow them (the plains houses, each with its villager already in the job): a still of each from
+ * SCENE=luxury_workshops (ROADMAP 34.13, 34.14): the Winery, the Tailor's Shop, the Print Shop and the Jeweller's
+ * Workshop, both tiers of each, placed in a row, then the four as villages grow them (the plains houses, each with its villager already in the job): a still of each from
  * the front (the street) and from behind, where the upgrades add their part. Checks that each build has its job block
- * where its worker takes it (the cauldron vat, the loom), that no Winery has a barrel, and that each village house
- * came with its Vintner or its Tailor.
+ * where its worker takes it (the cauldron vat, the loom, the cartography table, the stonecutter), that no Winery has
+ * a barrel and no Print Shop a lectern, and that each village house came with its worker.
  */
 final class LuxuryWorkshopsScene {
 	private static final int SPACING = 40;
@@ -51,8 +51,14 @@ final class LuxuryWorkshopsScene {
 		build(StarterBlueprints.WINERY_2, new BlockPos(7, 4, 4), Blocks.CAULDRON),
 		build(StarterBlueprints.TAILORS_SHOP, new BlockPos(2, 1, 5), Blocks.LOOM),
 		build(StarterBlueprints.TAILORS_SHOP_2, new BlockPos(2, 1, 5), Blocks.LOOM),
+		build(StarterBlueprints.PRINT_SHOP, new BlockPos(3, 1, 5), Blocks.CARTOGRAPHY_TABLE),
+		build(StarterBlueprints.PRINT_SHOP_2, new BlockPos(3, 1, 5), Blocks.CARTOGRAPHY_TABLE),
+		build(StarterBlueprints.JEWELLERS_WORKSHOP, new BlockPos(2, 1, 4), Blocks.STONECUTTER),
+		build(StarterBlueprints.JEWELLERS_WORKSHOP_2, new BlockPos(2, 1, 4), Blocks.STONECUTTER),
 		house("winery", Blocks.CAULDRON, ModVillagers.VINTNER),
-		house("tailors_shop", Blocks.LOOM, ModVillagers.TAILOR));
+		house("tailors_shop", Blocks.LOOM, ModVillagers.TAILOR),
+		house("print_shop", Blocks.CARTOGRAPHY_TABLE, ModVillagers.PRINTER),
+		house("jewellers_workshop", Blocks.STONECUTTER, ModVillagers.JEWELLER));
 
 	private int tick;
 	private final List<String> wrong = java.util.Collections.synchronizedList(new ArrayList<>());
@@ -85,6 +91,10 @@ final class LuxuryWorkshopsScene {
 						.anyMatch(p -> level.getBlockState(p).is(Blocks.BARREL))) {
 						wrong.add(piece.name() + " has a barrel (the fisherman's job block)");
 					}
+					if (piece.name().startsWith("print_shop") && BlockPos.betweenClosedStream(origin, origin.offset(piece.size()))
+						.anyMatch(p -> level.getBlockState(p).is(Blocks.LECTERN))) {
+						wrong.add(piece.name() + " has a lectern (the librarian's job block)");
+					}
 					if (piece.worker() != null) {
 						List<Villager> villagers = level.getEntitiesOfClass(Villager.class, box);
 						if (villagers.size() != 1 || villagers.get(0).getVillagerData().getProfession() != piece.worker()) {
@@ -114,7 +124,7 @@ final class LuxuryWorkshopsScene {
 		}
 		if (tick == FIRST + PIECES.size() * EACH + 10) {
 			Showcase.check(wrong.isEmpty(), wrong.isEmpty()
-				? "the Winery and the Tailor's Shop stand in both tiers with the vat and the loom, and the village's two came with their Vintner and Tailor"
+				? "the Winery, the Tailor's Shop, the Print Shop and the Jeweller's Workshop stand in both tiers with their job blocks, and the village's four came with their workers"
 				: String.join("; ", wrong));
 			mc.stop();
 		}

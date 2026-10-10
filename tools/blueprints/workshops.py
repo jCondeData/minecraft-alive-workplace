@@ -1211,3 +1211,262 @@ def tailors_shop_2():
         b.set(8, y, 5, "ladder", facing="west", waterlogged=False)
     b.fill_air()
     return b
+
+
+# --- Print Shop (ROADMAP 34.14) -------------------------------------------------------------------------------------
+# Print Shop: I a brick shop in a spruce frame with its plastered gable to the street, under a dark oak roof: the door
+# under a hood in the middle bay, a wide shuttered window either side. Inside the cartography table is the press
+# (Printer), standing free under a skylight in the west slope of the roof; a counter for buyers by the door, and shelves
+# of paper (white sheets) and ink (black pots) behind it. No lectern anywhere: a lectern would make a librarian.
+# II a lower wing behind: the bindery (a bench of sheets, a chest of paper) and a reading room lined with bookshelves
+# three high, a chair on a carpet under a lantern.
+PRINT_PLINTH = Mix((6, "stone_bricks"), (2, "cobblestone"), (1, "cracked_stone_bricks"), seed=101)
+PRINT_BRICK = Mix((9, "bricks"), (1, "granite"), seed=102)
+PRINT_PLASTER = Mix((7, "white_concrete"), (1, "polished_diorite"), seed=103)
+PRINT_FRAME = "spruce_log"
+PRINT_ROOF = DARK_OAK
+
+
+def shelf(b, x, y, z, what):
+    """A shelf (the top half of a board) with paper (a white sheet) or ink (black pots) on it."""
+    slab(b, x, y, z, SPRUCE, top=True)
+    if what == "paper":
+        b.set(x, y + 1, z, "white_carpet")
+    else:
+        b.set(x, y + 1, z, "black_candle", candles=3, lit=False, waterlogged=False)
+
+
+def print_shop_ground(b):
+    """The shop (walls x 1-9, z 1-7, four high): brick in a spruce frame, the door in the middle bay of the front."""
+    plinth(b, 1, 1, 9, 7, PRINT_PLINTH, floor="spruce_planks")
+    walls(b, 1, 1, 9, 7, 1, 4, PRINT_BRICK)
+    posts(b, [(1, 1), (4, 1), (6, 1), (9, 1), (1, 4), (9, 4), (1, 7), (4, 7), (6, 7), (9, 7)], 1, 4, PRINT_FRAME)
+    door(b, 5, 1, 1, "spruce_door", "south")
+    stairs(b, 5, 0, 0, STONE_BRICK, "south")
+    slab(b, 5, 4, 0, PRINT_ROOF)
+    lantern(b, 5, 3, 0, hanging=True)
+    window(b, 2, 2, 1, "north", width=2, height=2, shutters="spruce_trapdoor", flowers=("spruce_trapdoor", ["potted_cornflower", "potted_dandelion"]))
+    window(b, 7, 2, 1, "north", width=2, height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 1, 2, 3, "west", width=2, height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 1, 2, 6, "west", width=2, height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 9, 2, 2, "east", width=2, height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    beam_ring(b, 1, 1, 9, 7, 5, PRINT_FRAME)
+    for x in range(2, 9):
+        log(b, x, 5, 3, PRINT_FRAME, axis="x")
+    lantern(b, 6, 4, 3, hanging=True)
+    # The press, free in the west of the room under the skylight, its chest of paper by the wall
+    b.set(3, 1, 5, "cartography_table")
+    b.set(2, 1, 6, "chest", facing="east", type="single", waterlogged=False)
+    # The counter for buyers, east of the door, and the shelves of paper and ink behind it
+    for x in (6, 7, 8):
+        slab(b, x, 1, 3, DARK_OAK, top=True)
+    for i, (x, z) in enumerate(((8, 5), (8, 6), (7, 6), (6, 6))):
+        shelf(b, x, 1, z, "paper" if i % 2 == 0 else "ink")
+        shelf(b, x, 3, z, "ink" if i % 2 == 0 else "paper")
+
+
+def print_shop_roof(b):
+    """The dark oak roof, its gable to the street (plaster, a king post, studs, a little window), and the skylight over
+    the press: four panes of glass let into the west slope."""
+    gable_roof(b, 0, 10, 0, 8, 5, PRINT_ROOF, axis="z", gable=PRINT_PLASTER, gable_at=(1, 7), eave_trim=SPRUCE)
+    beam_ring(b, 1, 1, 9, 7, 5, PRINT_FRAME)
+    for z, window_at in ((1, 7), (7, None)):
+        for dy in range(0, 4):
+            log(b, 5, 6 + dy, z, PRINT_FRAME)
+        for x in (3, 7):
+            log(b, x, 6, z, PRINT_FRAME)
+        if window_at is not None:
+            pane(b, 5, window_at, z)
+    for x in (2, 3):
+        for z in (4, 5):
+            b.set(x, 5 + x, z, "glass")
+
+
+def print_shop():
+    """11 x 11 x 9: a brick shop in a spruce frame, its plastered gable to the street under a dark oak roof: the
+    cartography table as the press (Printer) under a skylight, a counter for buyers, paper and ink on shelves."""
+    b = Build(11, 11, 9)
+    print_shop_ground(b)
+    print_shop_roof(b)
+    window(b, 5, 2, 7, "south", height=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    b.fill_air()
+    return b
+
+
+def print_shop_2():
+    """11 x 11 x 16: a lower wing behind the shop: the bindery (a bench of sheets, a chest of paper) and a reading
+    room lined with bookshelves three high, a chair on a carpet under a lantern, a shuttered window at the back."""
+    b = print_shop().grow(11, 11, 16)
+    b.clear(4, 1, 8, 6, 4, 8)
+    # The wing: walls x 2-8, z 8-14, three high, brick in the same frame, its roof dying into the shop's back wall
+    for z in range(8, 15):
+        for x in range(2, 9):
+            b.set(x, 0, z, resolve(PRINT_PLINTH, x, 0, z) if x in (2, 8) or z == 14 else "spruce_planks")
+            if x in (2, 8) or z == 14:
+                for y in (1, 2, 3):
+                    b.set(x, y, z, resolve(PRINT_BRICK, x, y, z))
+    posts(b, [(2, 11), (8, 11), (2, 14), (8, 14)], 1, 3, PRINT_FRAME)
+    gable_roof(b, 1, 9, 8, 15, 4, PRINT_ROOF, axis="z", gable=PRINT_PLASTER, gable_at=(14, 14), eave_trim=SPRUCE)
+    for z in range(8, 14):
+        log(b, 2, 4, z, PRINT_FRAME, axis="z")
+        log(b, 8, 4, z, PRINT_FRAME, axis="z")
+    for x in range(2, 9):
+        log(b, x, 4, 14, PRINT_FRAME, axis="x")
+    for y in (5, 6):
+        log(b, 5, y, 14, PRINT_FRAME)
+    window(b, 5, 2, 14, "south", shutters="spruce_trapdoor", sill=SPRUCE)
+    # The way through, where the shop's back window was
+    b.set(5, 3, 7, resolve(PRINT_BRICK, 5, 3, 7))
+    door(b, 5, 1, 7, "spruce_door", "north")
+    # The bindery, by the door: a bench with sheets laid out, a chest of paper
+    slab(b, 3, 1, 8, DARK_OAK, top=True)
+    slab(b, 3, 1, 9, DARK_OAK, top=True)
+    b.set(3, 2, 9, "white_carpet")
+    b.set(7, 1, 8, "chest", facing="west", type="single", waterlogged=False)
+    b.set(7, 1, 9, "bookshelf")
+    b.set(7, 2, 9, "bookshelf")
+    # The reading room: bookshelves three high along both walls and the back, a chair on a carpet under a lantern
+    for z in (10, 11, 12, 13):
+        for y in (1, 2, 3):
+            b.set(3, y, z, "bookshelf")
+            b.set(7, y, z, "bookshelf")
+    for x in (4, 6):
+        b.set(x, 1, 13, "bookshelf")
+        b.set(x, 3, 13, "bookshelf")
+        b.set(x, 2, 13, "bookshelf")
+    for x in range(3, 8):
+        log(b, x, 4, 11, PRINT_FRAME, axis="x")
+    lantern(b, 5, 3, 11, hanging=True)
+    for z in (10, 11):
+        b.set(5, 1, z, "red_carpet")
+    stairs(b, 5, 1, 12, SPRUCE, "south")
+    b.fill_air()
+    return b
+
+
+# --- Jeweller's Workshop (ROADMAP 34.14) ----------------------------------------------------------------------------
+# Jeweller's Workshop: I a small shop of cut stone on a dark footing under a slate roof, its gable to the street: an
+# iron door in the middle of the front (a stone button by it, outside and in), a barred look to its windows (iron
+# shutters). Inside the stonecutter (Jeweller) at a bench by the west window under a lantern, a counter, and by the
+# front window an amethyst cluster in a glass case. A villager can't open an iron door, so the jeweller's own way in is
+# a plank door in the east wall. II a strong room behind, lower, with no window: through a second iron door, a vault of
+# ten chests behind iron bars and a third iron door.
+JEWEL_FOOT = Mix((5, "cobbled_deepslate"), (3, "polished_deepslate"), (1, "deepslate_bricks"), seed=111)
+JEWEL_STONE = Mix((7, "stone_bricks"), (2, "polished_andesite"), (1, "cracked_stone_bricks"), seed=112)
+JEWEL_ROOF = DEEPSLATE_TILE
+
+
+def button(b, x, y, z, facing):
+    b.set(x, y, z, "stone_button", face="wall", facing=facing, powered=False)
+
+
+def iron_door(b, x, y, z, facing):
+    door(b, x, y, z, "iron_door", facing)
+
+
+def bars(b, x, y, z):
+    b.set(x, y, z, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+
+
+def jewellers_shop(b):
+    """The shop (walls x 1-7, z 1-7, four high): cut stone with quoins at the corners, the iron door in the front."""
+    plinth(b, 1, 1, 7, 7, JEWEL_FOOT, floor=Mix((3, "polished_andesite"), (1, "smooth_stone"), seed=113))
+    walls(b, 1, 1, 7, 7, 1, 4, JEWEL_STONE)
+    for x, z in ((1, 1), (7, 1), (1, 7), (7, 7)):
+        for y in range(1, 5):
+            b.set(x, y, z, "chiseled_stone_bricks" if y % 2 else "polished_andesite")
+    iron_door(b, 4, 1, 1, "south")
+    stairs(b, 4, 0, 0, STONE_BRICK, "south")
+    button(b, 3, 2, 0, "north")
+    button(b, 3, 2, 2, "south")
+    slab(b, 4, 4, 0, STONE_BRICK)
+    lantern(b, 4, 3, 0, hanging=True)
+    for x in (2, 6):
+        window(b, x, 2, 1, "north", height=2, shutters="iron_trapdoor", sill=STONE_BRICK)
+    window(b, 1, 2, 4, "west", height=2, shutters="iron_trapdoor", sill=STONE_BRICK)
+    window(b, 7, 2, 3, "east", height=2, shutters="iron_trapdoor", sill=STONE_BRICK)
+    # The jeweller's own door, in the east wall towards the back, a step before it
+    door(b, 7, 1, 5, "spruce_door", "west")
+    stairs(b, 8, 0, 5, STONE_BRICK, "west")
+    # The bench by the west window: the stonecutter between two boards, a lantern over it on the tie beam
+    beam_ring(b, 1, 1, 7, 7, 5, "stripped_spruce_log")
+    for x in range(2, 7):
+        log(b, x, 5, 4, "stripped_spruce_log", axis="x")
+    b.set(2, 1, 4, "stonecutter", facing="east")
+    slab(b, 2, 1, 3, STONE_BRICK, top=True)
+    slab(b, 2, 1, 5, STONE_BRICK, top=True)
+    lantern(b, 2, 4, 4, hanging=True)
+    # The counter, and the amethyst cluster in its glass case by the front window
+    for x in (4, 5):
+        slab(b, x, 1, 4, "polished_andesite_slab", top=True)
+    b.set(6, 1, 2, "polished_andesite")
+    b.set(6, 2, 2, "amethyst_cluster", facing="up", waterlogged=False)
+    pane(b, 5, 2, 2)
+    pane(b, 6, 2, 3)
+    slab(b, 6, 3, 2, "smooth_stone_slab")
+    b.set(2, 1, 6, "chest", facing="east", type="single", waterlogged=False)
+    b.set(3, 1, 6, "purple_carpet")
+    b.set(4, 1, 6, "purple_carpet")
+
+
+def jewellers_roof(b):
+    gable_roof(b, 0, 8, 0, 8, 5, JEWEL_ROOF, axis="z", gable=JEWEL_STONE, gable_at=(1, 7), eave_trim=STONE_BRICK)
+    beam_ring(b, 1, 1, 7, 7, 5, "stripped_spruce_log")
+    for z in (1, 7):
+        b.set(4, 6, z, "chiseled_stone_bricks")
+        pane(b, 4, 7, z)
+
+
+def jewellers_workshop():
+    """9 x 10 x 9: a small shop of cut stone under a slate roof: an iron door, iron shutters, the stonecutter
+    (Jeweller) at a bench under a lantern, a counter, an amethyst cluster in a glass case; a plank door in the east
+    wall for the jeweller."""
+    b = Build(9, 10, 9)
+    jewellers_shop(b)
+    jewellers_roof(b)
+    window(b, 4, 2, 7, "south", height=2, shutters="iron_trapdoor", sill=STONE_BRICK)
+    b.fill_air()
+    return b
+
+
+def jewellers_workshop_2():
+    """9 x 10 x 14: a strong room behind the shop, lower and windowless: through an iron door, a vault of ten chests
+    behind iron bars with an iron door of its own, a lantern on the wall."""
+    b = jewellers_workshop().grow(9, 10, 14)
+    b.clear(3, 1, 8, 5, 4, 8)
+    for z in range(8, 13):
+        for x in range(1, 8):
+            edge = x in (1, 7) or z == 12
+            b.set(x, 0, z, resolve(JEWEL_FOOT, x, 0, z) if edge else "polished_andesite")
+            if edge:
+                for y in (1, 2, 3):
+                    b.set(x, y, z, resolve(JEWEL_STONE, x, y, z))
+    for x in (1, 7):
+        for y in (1, 2, 3):
+            b.set(x, y, 12, "chiseled_stone_bricks" if y % 2 else "polished_andesite")
+            b.set(x, y, 10, "polished_andesite")
+    gable_roof(b, 0, 8, 8, 13, 4, JEWEL_ROOF, axis="z", gable=JEWEL_STONE, gable_at=(12, 12), eave_trim=STONE_BRICK)
+    for z in range(8, 12):
+        log(b, 1, 4, z, "stripped_spruce_log", axis="z")
+        log(b, 7, 4, z, "stripped_spruce_log", axis="z")
+    for x in range(1, 8):
+        log(b, x, 4, 12, "stripped_spruce_log", axis="x")
+    # The way in, where the shop's back window was: an iron door, a button either side of the wall
+    b.set(4, 3, 7, resolve(JEWEL_STONE, 4, 3, 7))
+    iron_door(b, 4, 1, 7, "north")
+    button(b, 3, 2, 6, "north")
+    button(b, 3, 2, 8, "south")
+    # The vault: bars across the room with an iron door in them, ten chests behind
+    for x in range(2, 7):
+        if x == 4:
+            iron_door(b, x, 1, 10, "north")
+            bars(b, x, 3, 10)
+        else:
+            for y in (1, 2, 3):
+                bars(b, x, y, 10)
+        for y in (1, 2):
+            b.set(x, y, 11, "chest", facing="north", type="single", waterlogged=False)
+    button(b, 2, 2, 9, "east")
+    lantern(b, 6, 1, 9)
+    b.fill_air()
+    return b

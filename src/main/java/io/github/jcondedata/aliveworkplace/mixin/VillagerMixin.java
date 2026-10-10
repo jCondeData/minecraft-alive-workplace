@@ -189,7 +189,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.legend.Gifted.onLevelUp((Villager) (Object) this);
 	}
 
-	/** A Vintner or a Tailor who reaches Journeyman sells their building's blueprint (34.13). */
+	/** A Vintner, a Tailor, a Printer or a Jeweller who reaches Journeyman sells their building's blueprint (34.13, 34.14). */
 	@Inject(method = "increaseMerchantCareer", at = @At("TAIL"))
 	private void aliveworkplace$journeymanBlueprint(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.registry.ModTrades.journeymanBlueprint((Villager) (Object) this);

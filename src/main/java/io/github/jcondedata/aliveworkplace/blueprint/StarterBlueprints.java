@@ -249,6 +249,20 @@ public final class StarterBlueprints {
 	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(11, 11, 12));
 	/** A cutting-room storey above, with bolts of cloth on racks, and a drying loft for dyed wool in the roof. */
 	public static final Entry TAILORS_SHOP_2 = new Entry(AliveWorkplace.id("tailors_shop_2"), new Vec3i(11, 15, 12));
+	/**
+	 * The luxury workshops of ROADMAP 34.14. A brick shop in a spruce frame: the cartography table as the press (Printer)
+	 * under a skylight, a counter for buyers, paper and ink on shelves. No lectern: that would make a librarian.
+	 */
+	public static final Entry PRINT_SHOP = new Entry(AliveWorkplace.id("print_shop"), new Vec3i(11, 11, 9));
+	/** A lower wing behind: the bindery and a reading room lined with bookshelves. */
+	public static final Entry PRINT_SHOP_2 = new Entry(AliveWorkplace.id("print_shop_2"), new Vec3i(11, 11, 16));
+	/**
+	 * A small shop of cut stone with an iron door: the stonecutter (Jeweller) at a bench under a lantern, an amethyst
+	 * cluster in a glass case; a plank door in the east wall for the jeweller, who can't open an iron one.
+	 */
+	public static final Entry JEWELLERS_WORKSHOP = new Entry(AliveWorkplace.id("jewellers_workshop"), new Vec3i(9, 10, 9));
+	/** A strong room behind: a vault of ten chests behind iron bars. */
+	public static final Entry JEWELLERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("jewellers_workshop_2"), new Vec3i(9, 10, 14));
 
 	/**
 	 * The country workplaces of ROADMAP 27.14 (tools/blueprints/countryside.py), each the building a {@code workplace_*}
@@ -358,7 +372,7 @@ public final class StarterBlueprints {
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
 		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,
-		WINERY, WINERY_2, TAILORS_SHOP, TAILORS_SHOP_2,
+		WINERY, WINERY_2, TAILORS_SHOP, TAILORS_SHOP_2, PRINT_SHOP, PRINT_SHOP_2, JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2,
 		GUILDHALL, GUILDHALL_2);
 

@@ -62,7 +62,11 @@ public final class VillageHouses {
 	 */
 	public static final java.util.Map<String, java.util.function.BooleanSupplier> LUXURY_HOUSES = java.util.Map.of(
 		"winery", () -> io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED,
-		"tailors_shop", () -> io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED);
+		"tailors_shop", () -> io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED,
+		// ROADMAP 34.14: a Print Shop (a Printer at a cartography table, config printers) and a Jeweller's Workshop (a
+		// Jeweller at a stonecutter, config jewellers)
+		"print_shop", () -> io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED,
+		"jewellers_workshop", () -> io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED);
 
 	private static java.util.Map<String, Integer> houses() {
 		Integer override = Integer.getInteger("aliveworkplace.houseWeight");
@@ -100,6 +104,9 @@ public final class VillageHouses {
 		// The vintner and the tailor (ROADMAP 34.13): only while their jobs are on (LUXURY_HOUSES).
 		out.put("winery", override != null ? override : 2);
 		out.put("tailors_shop", override != null ? override : 2);
+		// The printer and the jeweller (ROADMAP 34.14): the same, by their jobs' switches.
+		out.put("print_shop", override != null ? override : 2);
+		out.put("jewellers_workshop", override != null ? override : 2);
 		// The Pokémon jobs' houses (ROADMAP 28.15; Cobblemon and config pokemonVillageHouses): the Pokémon Center most often.
 		// (-Daliveworkplace.pokemonHouseWeight overrides these five, for the village screenshots.)
 		Integer pokemon = Integer.getInteger("aliveworkplace.pokemonHouseWeight", override);

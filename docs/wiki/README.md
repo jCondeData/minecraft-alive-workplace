@@ -22,7 +22,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Edicts](edicts.md): laws with a boost, a cost and a reform (1.4).
 - [Guilds](guilds.md): Guild Charters, Guildhalls and the eleven guilds (1.4).
 - [Classes](classes.md): Peasant to Noble, what each needs and gives, and the Vintner (1.8).
-- [The Winery and the Tailor's Shop](luxury-workshops.md): the two luxury workshops, their II, the village houses,
+- [The luxury workshops](luxury-workshops.md): the Winery, the Tailor's Shop, the Print Shop and the Jeweller's Workshop, their II, the village houses,
   the Journeyman's blueprint and the Steward's rules (1.8).
 - [Elders](elders.md): elders, their passing, and the Evergreen Charm that keeps a good one (1.8).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).

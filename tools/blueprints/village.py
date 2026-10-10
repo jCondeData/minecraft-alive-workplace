@@ -386,6 +386,26 @@ def tailors_room(b, style):
     b.set(1, 1, 2, "blue_wool")
 
 
+def print_shop_room(b, style):
+    """A cartography table (the printer's press), a chest of paper and ink, and shelves of books: the printer prints the
+    village's books and its Gazette (ROADMAP 34.14). No lectern: that would make a librarian."""
+    b.set(1, 1, 6, "cartography_table")
+    loot_chest(b, 1, 1, 5, "village_print_shop")
+    b.set(1, 1, 3, "bookshelf")
+    b.set(1, 2, 3, "bookshelf")
+    b.set(1, 1, 2, "bookshelf")
+
+
+def jewellers_room(b, style):
+    """A stonecutter (the jeweller's bench), a chest of gold and stones, and an amethyst cluster on a block of polished
+    stone: the jeweller cuts the village's rings, brooches and circlets (ROADMAP 34.14)."""
+    b.set(1, 1, 6, "stonecutter", facing="east")
+    loot_chest(b, 1, 1, 5, "village_jewellers_workshop")
+    b.set(1, 1, 3, "polished_andesite")
+    b.set(1, 2, 3, "amethyst_cluster", facing="up", waterlogged=False)
+    b.set(1, 1, 2, "smooth_stone")
+
+
 # --- The Pokémon jobs' village houses (ROADMAP 28.15): only with Cobblemon (and config pokemonVillageHouses) -----
 # Each keeps its one job block and comes with its villager already in the job: Cobblemon's blocks (the Healing Machine,
 # the Campfire Pot, the Pasture Block) are never taken by a jobless villager, and a composter or a stonecutter would
@@ -490,6 +510,7 @@ VILLAGE_HOUSES = {"trainers_house": trainers_house, "guard_house": guard_house, 
                   "tinkers_shop": tinkers_shop, "sifting_shed": sifting_shed_house,
                   "compost_yard": compost_yard_house,
                   "winery": winery_room, "tailors_shop": tailors_room,
+                  "print_shop": print_shop_room, "jewellers_workshop": jewellers_room,
                   "pokemon_center": pokemon_center_room, "camp_kitchen": camp_kitchen_room,
                   "berry_nursery": berry_nursery_room, "daycare": daycare_room, "gem_grotto": gem_grotto_room}
 
@@ -502,6 +523,7 @@ HOUSE_JOBS = {"guard_house": "guard", "clinic": "nurse", "post_office": "postman
               "schoolhouse": "teacher", "inn_room": "innkeeper", "mortuary": "undertaker", "tinkers_shop": "tinkerer",
               "sifting_shed": "sifter", "compost_yard": "composter",
               "winery": "vintner", "tailors_shop": "tailor",
+              "print_shop": "printer", "jewellers_workshop": "jeweller",
               "pokemon_center": "nurse", "camp_kitchen": "camp_cook", "berry_nursery": "berry_breeder",
               "daycare": "daycare_keeper", "gem_grotto": "gem_grower"}
 

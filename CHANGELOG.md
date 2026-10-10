@@ -17,6 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Print Shop and the Jeweller's Workshop, for 1.8** (34.14): two more blueprints in the Blueprint Table, each
+  with a II. The **Print Shop** is a brick shop in a timber frame: the cartography table is the press, standing under a
+  skylight, with a counter for buyers and shelves of paper and ink (no lectern: a lectern would make a librarian).
+  **Print Shop II** adds a wing behind with a bindery and a reading room lined with bookshelves. The **Jeweller's
+  Workshop** is a small stone shop with an iron door (a button opens it): the stonecutter at a bench under a lantern,
+  an amethyst cluster in a glass case, and a plank door at the side for the Jeweller, since villagers can't open iron
+  doors. **Jeweller's Workshop II** adds a strong room: a vault of ten chests behind iron bars. A Printer or Jeweller
+  who reaches Journeyman sells their building's blueprint for 12 emeralds, the Steward builds one for a Printer or
+  Jeweller with no workstation, and (once 1.8 is on) villages of all five kinds grow a small Print Shop and Jeweller's
+  Workshop with a Printer and a Jeweller already at work.
 - **The Winery and the Tailor's Shop, for 1.8** (34.13): two new blueprints in the Blueprint Table, each with a II.
   The **Winery** is a stone press house over a half-sunk cellar: earth banked up the cellar's sides, its door under
   the landing of the outside stair, the cauldron vat by the press room's door, racks of casks and a cellar of chests

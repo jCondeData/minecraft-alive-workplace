@@ -104,6 +104,9 @@ public class VillageGameTests implements FabricGameTest {
 			// The luxury jobs' houses (ROADMAP 34.13): a cauldron would make a leatherworker and a loom a shepherd
 			java.util.Map.entry("winery", new House(Blocks.CAULDRON, ModVillagers.VINTNER)),
 			java.util.Map.entry("tailors_shop", new House(Blocks.LOOM, ModVillagers.TAILOR)),
+			// ROADMAP 34.14: a cartography table would make a cartographer and a stonecutter a mason
+			java.util.Map.entry("print_shop", new House(Blocks.CARTOGRAPHY_TABLE, ModVillagers.PRINTER)),
+			java.util.Map.entry("jewellers_workshop", new House(Blocks.STONECUTTER, ModVillagers.JEWELLER)),
 			// The Pokémon jobs' houses (ROADMAP 28.15): only with Cobblemon, so Cobblemon's blocks are checked by name
 			java.util.Map.entry("pokemon_center", new House(null, ModVillagers.NURSE, ModVillagers.HEALING_MACHINE_BLOCK)),
 			java.util.Map.entry("camp_kitchen", new House(null, ModVillagers.CAMP_COOK, ModVillagers.CAMPFIRE_POT_BLOCK)),
@@ -112,7 +115,8 @@ public class VillageGameTests implements FabricGameTest {
 			java.util.Map.entry("gem_grotto", new House(Blocks.STONECUTTER, ModVillagers.GEM_GROWER)));
 		// No Cobblemon here: the Pokémon houses stay out of the pools.
 		helper.assertTrue(VillageHouses.houseNames().equals(List.of("guard_house", "clinic", "post_office", "orchard_house", "ferry_house", "storehouse", "carpenters_workshop", "kitchen",
-				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard", "winery", "tailors_shop")),
+				"flower_shop", "ranch_house", "schoolhouse", "inn_room", "mortuary", "tinkers_shop", "sifting_shed", "compost_yard", "winery", "tailors_shop",
+				"print_shop", "jewellers_workshop")),
 			"houses without Cobblemon: " + VillageHouses.houseNames());
 		for (String style : VillageHouses.STYLES) {
 			StructureTemplatePool pool = pools.get(VillageHouses.housePool(style));
@@ -472,6 +476,20 @@ public class VillageGameTests implements FabricGameTest {
 	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theTailorsShopsTailorTakesItsLoom")
 	public void theTailorsShopsTailorTakesItsLoom(GameTestHelper helper) {
 		theHousesWorkerTakesItsBlock(helper, "tailors_shop", ModVillagers.TAILOR, Blocks.LOOM);
+	}
+
+	/** ROADMAP 34.14: the village's Print Shop comes with its Printer, who takes the house's cartography table (a jobless villager would take it as a cartographer). */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"thePrintShopsPrinterTakesItsPress"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "thePrintShopsPrinterTakesItsPress")
+	public void thePrintShopsPrinterTakesItsPress(GameTestHelper helper) {
+		theHousesWorkerTakesItsBlock(helper, "print_shop", ModVillagers.PRINTER, Blocks.CARTOGRAPHY_TABLE);
+	}
+
+	/** ROADMAP 34.14: the village's Jeweller's Workshop comes with its Jeweller, who takes the house's stonecutter (a jobless villager would take it as a mason). */
+	//$ gametest_ticks_batch '"aliveworkplace_test:big_area"' '1200' '"theJewellersWorkshopsJewellerTakesItsBench"'
+	@GameTest(template = "aliveworkplace_test:big_area", timeoutTicks = 1200, batch = "theJewellersWorkshopsJewellerTakesItsBench")
+	public void theJewellersWorkshopsJewellerTakesItsBench(GameTestHelper helper) {
+		theHousesWorkerTakesItsBlock(helper, "jewellers_workshop", ModVillagers.JEWELLER, Blocks.STONECUTTER);
 	}
 
 	/**

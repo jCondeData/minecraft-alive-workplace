@@ -821,12 +821,13 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.GOLDEN_CARROT, 8), 8, 30, 0.05f)));
 	}
 
-	/** The emeralds a Journeyman Vintner or Tailor asks for their building's blueprint (34.13). */
+	/** The emeralds a Journeyman Vintner, Tailor, Printer or Jeweller asks for their building's blueprint (34.13, 34.14). */
 	public static final int LUXURY_BLUEPRINT_PRICE = 12;
 
 	/**
 	 * A Vintner or a Tailor who has just become a Journeyman sells their building's blueprint from then on (ROADMAP
-	 * 34.13): the Winery, the Tailor's Shop. Added to their offers when they level up (the mixin's hook on
+	 * 34.13): the Winery, the Tailor's Shop; and so do a Printer (the Print Shop) and a Jeweller (the Jeweller's Workshop,
+	 * 34.14). Added to their offers when they level up (the mixin's hook on
 	 * {@code increaseMerchantCareer}) rather than listed with the level's trades: a level shows two of its listed trades,
 	 * picked at random, and the two these jobs already have at Journeyman (their makings bought, Vintage Wine or Noble
 	 * Robes sold) must both stay. Once sold it is theirs like any other trade; never added twice.
@@ -836,7 +837,8 @@ public final class ModTrades {
 			return;
 		}
 		net.minecraft.world.entity.npc.VillagerProfession job = villager.getVillagerData().getProfession();
-		StarterBlueprints.Entry entry = job == ModVillagers.VINTNER ? StarterBlueprints.WINERY : job == ModVillagers.TAILOR ? StarterBlueprints.TAILORS_SHOP : null;
+		StarterBlueprints.Entry entry = job == ModVillagers.VINTNER ? StarterBlueprints.WINERY : job == ModVillagers.TAILOR ? StarterBlueprints.TAILORS_SHOP
+			: job == ModVillagers.PRINTER ? StarterBlueprints.PRINT_SHOP : job == ModVillagers.JEWELLER ? StarterBlueprints.JEWELLERS_WORKSHOP : null;
 		if (entry == null || io.github.jcondedata.aliveworkplace.build.UpgradeOffers.sells(villager, entry.id())) {
 			return;
 		}

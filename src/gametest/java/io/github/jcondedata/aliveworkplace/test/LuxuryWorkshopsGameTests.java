@@ -30,7 +30,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
- * ROADMAP 34.13, the Winery and the Tailor's Shop: both blueprints and their II in the Blueprint Table and built by a
+ * ROADMAP 34.13 and 34.14, the Winery and the Tailor's Shop, the Print Shop and the Jeweller's Workshop (the Printer
+ * taking the cartography table, the Jeweller the stonecutter): both blueprints and their II in the Blueprint Table and built by a
  * builder, the Vintner taking the cauldron and the Tailor the loom; their {@code workplace_*} Steward rules in 27.11's
  * form; the blueprint a Journeyman of each sells; and the village houses' switches. (The village pieces themselves and
  * their workers are in {@code VillageGameTests}.)
@@ -41,7 +42,10 @@ public class LuxuryWorkshopsGameTests implements net.fabricmc.fabric.api.gametes
 
 	static final List<WorkplacesGameTests.Case> CASES = List.of(
 		new WorkplacesGameTests.Case("workplace_winery", "aliveworkplace:vintner", "winery", "workshops", VillageRanks.Rank.HAMLET, false),
-		new WorkplacesGameTests.Case("workplace_tailors_shop", "aliveworkplace:tailor", "tailors_shop", "market", VillageRanks.Rank.HAMLET, false));
+		new WorkplacesGameTests.Case("workplace_tailors_shop", "aliveworkplace:tailor", "tailors_shop", "market", VillageRanks.Rank.HAMLET, false),
+		// ROADMAP 34.14
+		new WorkplacesGameTests.Case("workplace_print_shop", "aliveworkplace:printer", "print_shop", "workshops", VillageRanks.Rank.HAMLET, false),
+		new WorkplacesGameTests.Case("workplace_jewellers_workshop", "aliveworkplace:jeweller", "jewellers_workshop", "market", VillageRanks.Rank.HAMLET, false));
 
 	/** Each rule: a Vintner (a Tailor) without a workstation, and the Steward asks for the Winery (the Tailor's Shop) in its zone. */
 	@GameTestGenerator
@@ -57,7 +61,13 @@ public class LuxuryWorkshopsGameTests implements net.fabricmc.fabric.api.gametes
 	static List<CraftWorkplacesGameTests.Workplace> workplaces() {
 		CraftWorkplacesGameTests.Worker vintner = new CraftWorkplacesGameTests.Worker("aliveworkplace:vintner", Blocks.CAULDRON);
 		CraftWorkplacesGameTests.Worker tailor = new CraftWorkplacesGameTests.Worker("aliveworkplace:tailor", Blocks.LOOM);
+		CraftWorkplacesGameTests.Worker printer = new CraftWorkplacesGameTests.Worker("aliveworkplace:printer", Blocks.CARTOGRAPHY_TABLE);
+		CraftWorkplacesGameTests.Worker jeweller = new CraftWorkplacesGameTests.Worker("aliveworkplace:jeweller", Blocks.STONECUTTER);
 		return List.of(
+			new CraftWorkplacesGameTests.Workplace(StarterBlueprints.PRINT_SHOP, List.of(printer)),
+			new CraftWorkplacesGameTests.Workplace(StarterBlueprints.PRINT_SHOP_2, List.of(printer)),
+			new CraftWorkplacesGameTests.Workplace(StarterBlueprints.JEWELLERS_WORKSHOP, List.of(jeweller)),
+			new CraftWorkplacesGameTests.Workplace(StarterBlueprints.JEWELLERS_WORKSHOP_2, List.of(jeweller)),
 			new CraftWorkplacesGameTests.Workplace(StarterBlueprints.WINERY, List.of(vintner)),
 			new CraftWorkplacesGameTests.Workplace(StarterBlueprints.WINERY_2, List.of(vintner)),
 			new CraftWorkplacesGameTests.Workplace(StarterBlueprints.TAILORS_SHOP, List.of(tailor)),
@@ -83,14 +93,15 @@ public class LuxuryWorkshopsGameTests implements net.fabricmc.fabric.api.gametes
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void luxuryWorkshopsAreInTheBlueprintTable(GameTestHelper helper) {
 		List<ResourceLocation> library = BlueprintLibrary.list(helper.getLevel().getServer(), false);
-		for (StarterBlueprints.Entry e : List.of(StarterBlueprints.WINERY, StarterBlueprints.WINERY_2, StarterBlueprints.TAILORS_SHOP, StarterBlueprints.TAILORS_SHOP_2)) {
+		for (StarterBlueprints.Entry e : List.of(StarterBlueprints.WINERY, StarterBlueprints.WINERY_2, StarterBlueprints.TAILORS_SHOP, StarterBlueprints.TAILORS_SHOP_2,
+			StarterBlueprints.PRINT_SHOP, StarterBlueprints.PRINT_SHOP_2, StarterBlueprints.JEWELLERS_WORKSHOP, StarterBlueprints.JEWELLERS_WORKSHOP_2)) {
 			helper.assertTrue(library.contains(e.id()), e.id() + " isn't in the Blueprint Table");
 			helper.assertTrue(StarterBlueprints.ALL.contains(e), e.id() + " isn't a starter blueprint");
 			helper.assertTrue(VillageMaps.kindOf(e.id()).orElse(null) == VillageMaps.Kind.WORKSHOPS, e.id() + " is on the map as " + VillageMaps.kindOf(e.id()));
 			String key = "blueprint.aliveworkplace." + e.id().getPath();
 			helper.assertTrue(net.minecraft.locale.Language.getInstance().has(key), "no name for " + e.id());
 		}
-		for (String house : List.of("winery", "tailors_shop")) {
+		for (String house : List.of("winery", "tailors_shop", "print_shop", "jewellers_workshop")) {
 			helper.assertTrue(net.minecraft.locale.Language.getInstance().has("village_piece.aliveworkplace." + house), "no name for the village's " + house);
 		}
 		helper.succeed();
@@ -131,6 +142,52 @@ public class LuxuryWorkshopsGameTests implements net.fabricmc.fabric.api.gametes
 		helper.succeed();
 	}
 
+	/**
+	 * ROADMAP 34.14, what the item asks of the drawings. The Print Shop: brick, the cartography table under a skylight
+	 * (glass in the roof above it, nothing between), a counter, paper and ink on shelves, and no lectern (a librarian's);
+	 * its II a reading room lined with bookshelves. The Jeweller's Workshop: stone, the stonecutter under a lantern, an
+	 * amethyst cluster with glass beside it, an iron door, and a door a villager can open; its II a vault of chests
+	 * behind iron bars, with more iron doors.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void thePrintShopAndTheJewellersHaveWhatTheirTradesNeed(GameTestHelper helper) {
+		Blueprint print = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.PRINT_SHOP.id()).orElseThrow();
+		Blueprint print2 = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.PRINT_SHOP_2.id()).orElseThrow();
+		Blueprint jewel = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.JEWELLERS_WORKSHOP.id()).orElseThrow();
+		Blueprint jewel2 = BlueprintLibrary.get(helper.getLevel(), StarterBlueprints.JEWELLERS_WORKSHOP_2.id()).orElseThrow();
+		for (Blueprint b : List.of(print, print2)) {
+			BlockPos press = b.blocks().stream().filter(e -> e.state().is(Blocks.CARTOGRAPHY_TABLE)).map(e -> e.pos()).findFirst().orElseThrow();
+			List<BlockState> above = b.blocks().stream().filter(e -> e.pos().getX() == press.getX() && e.pos().getZ() == press.getZ()
+				&& e.pos().getY() > press.getY() && !e.state().isAir()).sorted(java.util.Comparator.comparingInt(e -> e.pos().getY())).map(e -> e.state()).toList();
+			helper.assertTrue(above.size() == 1 && above.get(0).is(Blocks.GLASS), "over the press at " + press + ": " + above);
+			helper.assertTrue(count(b, Blocks.LECTERN.defaultBlockState()) == 0, "a lectern in the Print Shop: the librarian's job block");
+			helper.assertTrue(count(b, Blocks.BRICKS.defaultBlockState()) >= 40, "the Print Shop has " + count(b, Blocks.BRICKS.defaultBlockState()) + " bricks");
+			helper.assertTrue(count(b, Blocks.WHITE_CARPET.defaultBlockState()) >= 4 && count(b, Blocks.BLACK_CANDLE.defaultBlockState()) >= 4,
+				"paper and ink on the shelves: " + count(b, Blocks.WHITE_CARPET.defaultBlockState()) + " and " + count(b, Blocks.BLACK_CANDLE.defaultBlockState()));
+			helper.assertTrue(b.blocks().stream().filter(e -> e.state().is(Blocks.DARK_OAK_SLAB) && e.pos().getY() == 1).count() >= 3, "no counter in the Print Shop");
+		}
+		helper.assertTrue(count(print, Blocks.BOOKSHELF.defaultBlockState()) == 0 && count(print2, Blocks.BOOKSHELF.defaultBlockState()) >= 24,
+			"the Print Shop II's reading room has " + count(print2, Blocks.BOOKSHELF.defaultBlockState()) + " bookshelves");
+		for (Blueprint b : List.of(jewel, jewel2)) {
+			BlockPos bench = b.blocks().stream().filter(e -> e.state().is(Blocks.STONECUTTER)).map(e -> e.pos()).findFirst().orElseThrow();
+			helper.assertTrue(b.blocks().stream().anyMatch(e -> e.state().is(Blocks.LANTERN) && e.pos().getX() == bench.getX() && e.pos().getZ() == bench.getZ()
+				&& e.pos().getY() > bench.getY()), "no lantern over the stonecutter at " + bench);
+			BlockPos gem = b.blocks().stream().filter(e -> e.state().is(Blocks.AMETHYST_CLUSTER)).map(e -> e.pos()).findFirst().orElseThrow();
+			long glass = b.blocks().stream().filter(e -> e.state().is(Blocks.GLASS_PANE) && e.pos().getY() == gem.getY() && e.pos().distManhattan(gem) == 1).count();
+			helper.assertTrue(count(b, Blocks.AMETHYST_CLUSTER.defaultBlockState()) == 1 && glass >= 2, "the amethyst cluster at " + gem + " has " + glass + " panes of its case round it");
+			helper.assertTrue(count(b, Blocks.IRON_DOOR.defaultBlockState()) >= 2, "no iron door in the Jeweller's Workshop");
+			helper.assertTrue(b.blocks().stream().anyMatch(e -> e.state().is(net.minecraft.tags.BlockTags.WOODEN_DOORS)), "no door the jeweller can open");
+			helper.assertTrue(count(b, Blocks.STONE_BRICKS.defaultBlockState()) >= 40, "the Jeweller's Workshop has " + count(b, Blocks.STONE_BRICKS.defaultBlockState()) + " stone bricks");
+		}
+		helper.assertTrue(count(jewel, Blocks.IRON_BARS.defaultBlockState()) == 0 && count(jewel2, Blocks.IRON_BARS.defaultBlockState()) >= 10,
+			"the strong room has " + count(jewel2, Blocks.IRON_BARS.defaultBlockState()) + " iron bars");
+		long vault = jewel2.blocks().stream().filter(e -> e.state().is(Blocks.CHEST) && e.pos().getZ() >= 9).count();
+		helper.assertTrue(vault >= 10, "the vault has " + vault + " chests");
+		helper.assertTrue(count(jewel2, Blocks.IRON_DOOR.defaultBlockState()) == 6, "the Jeweller's Workshop II has " + count(jewel2, Blocks.IRON_DOOR.defaultBlockState()) / 2 + " iron doors, not three");
+		helper.succeed();
+	}
+
 	private static long count(Blueprint b, BlockState like) {
 		return b.blocks().stream().filter(e -> e.state().is(like.getBlock())).count();
 	}
@@ -147,6 +204,7 @@ public class LuxuryWorkshopsGameTests implements net.fabricmc.fabric.api.gametes
 		}
 		int x = 0;
 		for (Seller s : List.of(new Seller(ModVillagers.VINTNER, StarterBlueprints.WINERY), new Seller(ModVillagers.TAILOR, StarterBlueprints.TAILORS_SHOP),
+			new Seller(ModVillagers.PRINTER, StarterBlueprints.PRINT_SHOP), new Seller(ModVillagers.JEWELLER, StarterBlueprints.JEWELLERS_WORKSHOP),
 			new Seller(VillagerProfession.SHEPHERD, null))) {
 			Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(x++, 2, 0));
 			v.setNoAi(true);
@@ -208,6 +266,37 @@ public class LuxuryWorkshopsGameTests implements net.fabricmc.fabric.api.gametes
 		} finally {
 			Vintners.ENABLED = vintners;
 			Tailors.ENABLED = tailors;
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * ROADMAP 34.14: villages grow a Print Shop only while Printers are on (config {@code printers}) and a Jeweller's
+	 * Workshop only while Jewellers are (config {@code jewellers}); off, the house is out of the pools and of the hall's
+	 * list of houses, and the other stays.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void villagesGrowThePrintShopAndTheJewellersOnlyWhileTheirJobsAreOn(GameTestHelper helper) {
+		boolean printers = io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED;
+		boolean jewellers = io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED;
+		try {
+			io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED = true;
+			helper.assertTrue(VillageHouses.houseNames().containsAll(List.of("print_shop", "jewellers_workshop")), "both on: " + VillageHouses.houseNames());
+			helper.assertTrue(VillagePieces.houses().containsAll(List.of("print_shop", "jewellers_workshop")), "both on, the hall's houses: " + VillagePieces.houses());
+			io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED = false;
+			helper.assertTrue(!VillageHouses.houseNames().contains("print_shop") && VillageHouses.houseNames().contains("jewellers_workshop"),
+				"printers off: " + VillageHouses.houseNames());
+			helper.assertTrue(!VillagePieces.houses().contains("print_shop"), "printers off, the hall's houses: " + VillagePieces.houses());
+			io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED = false;
+			helper.assertTrue(VillageHouses.houseNames().contains("print_shop") && !VillageHouses.houseNames().contains("jewellers_workshop"),
+				"jewellers off: " + VillageHouses.houseNames());
+			helper.assertTrue(!VillagePieces.houses().contains("jewellers_workshop"), "jewellers off, the hall's houses: " + VillagePieces.houses());
+		} finally {
+			io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED = printers;
+			io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED = jewellers;
 		}
 		helper.succeed();
 	}

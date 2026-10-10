@@ -139,6 +139,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		bramWalk.walkTo(level, bram, bramGoal, 1.5);
 		tomWalk.walkTo(level, tom, tomGoal, 1.5);
 		Walker.requestWalk(odo, odoGoal, 0.5f, 1, 0);
+		walkersOnly(bram, tom);
 		helper.assertTrue(Math.abs(speed(tom) - 0.5f) < 0.001f, "the younger villager's walk target: " + speed(tom));
 		helper.assertTrue(speed(bram) < 0.49f && Math.abs(speed(bram) - 0.5f * LifeStages.ELDER_WALK) < 0.001f, "the elder's walk target: " + speed(bram));
 		helper.assertTrue(Math.abs(speed(odo) - speed(bram)) < 0.001f, "the ageless elder's walk target: " + speed(odo));
@@ -157,15 +158,17 @@ public class LifeStageGameTests implements FabricGameTest {
 		helper.onEachTick(() -> {
 			ticks[0]++;
 			float now = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(-1f);
+			int near = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getCloseEnoughDist()).orElse(-1);
 			if (now != last[0] && asked.length() < 2000) {
 				last[0] = now;
 				asked.append(" [tick ").append(ticks[0]).append(": ").append(now).append(", elder ").append(LifeStages.isElder(bram))
 					.append(", ages ").append(LifeStages.AGES).append('/').append(LifeStages.ELDER_DAYS).append(", grown ").append(LifeStages.grownDays(bram, Chronicle.day(level)))
-					.append(", nav ").append(bram.getNavigation().isDone() ? "idle" : "walking").append(", z ").append(Math.round(bram.getZ() * 100) / 100.0).append(']');
+					.append(", near ").append(near).append(", nav ").append(bram.getNavigation().isDone() ? "idle" : "walking").append(", z ").append(Math.round(bram.getZ() * 100) / 100.0).append(']');
 			}
 			if (ticks[0] <= 100) {
 				bramWalk.walkTo(level, bram, bramGoal, 1.5);
 				tomWalk.walkTo(level, tom, tomGoal, 1.5);
+				walkersOnly(bram, tom);
 			}
 			if (ticks[0] == 40) { // (both are well under way by now, whenever their paths were found)
 				from[0] = bram.getZ();
@@ -427,6 +430,18 @@ public class LifeStageGameTests implements FabricGameTest {
 		Villager v = helper.spawn(EntityType.VILLAGER, pos);
 		v.setCustomName(Component.literal(name));
 		return v;
+	}
+
+	/**
+	 * Keeps the measured walk Walker's own (B95). Walker also sets a look target on its goal, and an idle villager's vanilla
+	 * "walk to what you look at" (SetWalkTargetFromLookTarget, speed 0.5, close enough 2) can pick that up in the tick the
+	 * walk target was dropped (no path yet for a villager not on the ground): the elder then walks to the same goal at
+	 * vanilla's 0.5, and Walker, finding its goal already set, never asks again. Without a look target it can't start.
+	 */
+	private static void walkersOnly(Villager... villagers) {
+		for (Villager villager : villagers) {
+			villager.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+		}
 	}
 
 	private static float speed(Villager villager) {

@@ -84,6 +84,8 @@ asks for the steps, `latest.log` and any crash report).
   1.6 is finished.
 
 ### Fixed
+- **Elders and the nimble keep their own pace** (B95): now and then a worker on the way to a job walked at the plain
+  villager speed instead (an elder at full speed, a nimble villager no faster than the rest). They hold their pace now.
 - **The Pathfinder now waits for an Expert explorer** (B96): the Legend's file asked for a Journeyman Cartographer
   (level 3) where its design says Expert (level 4). A Pathfinder who has already come stays.
 - The hearts shown when you look at a villager no longer make the server load terrain for a player standing where

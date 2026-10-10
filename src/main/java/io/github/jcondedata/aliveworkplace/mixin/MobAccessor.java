@@ -16,6 +16,10 @@ public interface MobAccessor {
 	@Invoker("getEquipmentDropChance")
 	float aliveworkplace$dropChance(EquipmentSlot slot);
 
+	/** A mob's goals: a siege's ram is held at the gate (32.4), a caravan's pack llama is left with none but to follow its lead (33.7). */
 	@Accessor("goalSelector")
 	GoalSelector aliveworkplace$goals();
+
+	@Accessor("targetSelector")
+	GoalSelector aliveworkplace$targets();
 }

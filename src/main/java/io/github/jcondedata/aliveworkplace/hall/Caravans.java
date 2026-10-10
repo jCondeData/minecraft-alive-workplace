@@ -41,7 +41,9 @@ import org.jetbrains.annotations.Nullable;
  * keeps where each half ends and whether it's built ({@link Half}), and on a finished road caravans take three quarters
  * of the time. 33.6: with the village economy on a caravan also carries up to {@link #TRADE_STACKS} stacks of goods to
  * sell ({@link Lot}), which the other village's treasury pays for when they arrive
- * ({@link io.github.jcondedata.aliveworkplace.trade.CaravanTrade}); what it can't pay for travels home again.
+ * ({@link io.github.jcondedata.aliveworkplace.trade.CaravanTrade}); what it can't pay for travels home again. 33.7: a
+ * caravan leaving or arriving where a player is near is also seen ({@link CaravanSights}: a carter and two llamas);
+ * the goods travel as before either way.
  */
 public final class Caravans {
 	/** How far apart villages can trade. */
@@ -128,6 +130,8 @@ public final class Caravans {
 		final Map<BlockPos, Map<java.util.UUID, Integer>> banked = new LinkedHashMap<>();
 		/** Each village's trade goods (33.2): known for, short of, prices; none until its hall's daily count. */
 		final Map<BlockPos, io.github.jcondedata.aliveworkplace.trade.Market> markets = new LinkedHashMap<>();
+		/** Each village's Village Banner base colour as its hall's last round saw it (33.7: its caravans' carpets); none without a banner. */
+		final Map<BlockPos, net.minecraft.world.item.DyeColor> colours = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -194,7 +198,25 @@ public final class Caravans {
 			halves.values().forEach(to -> to.remove(hall));
 			leaders.remove(hall);
 			markets.remove(hall);
+			colours.remove(hall);
 			setDirty();
+		}
+
+		/** The village's Village Banner base colour as its hall's last round wrote it (33.7), or null without one. */
+		@Nullable
+		public net.minecraft.world.item.DyeColor colour(BlockPos hall) {
+			return colours.get(hall);
+		}
+
+		/** Writes the village's Village Banner base colour (null: it has none); a village not on the list keeps none. */
+		public void setColour(BlockPos hall, @Nullable net.minecraft.world.item.DyeColor colour) {
+			if (!villages.containsKey(hall)) {
+				return;
+			}
+			net.minecraft.world.item.DyeColor old = colour == null ? colours.remove(hall) : colours.put(hall.immutable(), colour);
+			if (old != colour) {
+				setDirty();
+			}
 		}
 
 		/** The village's trade goods as its hall's last daily count left them (33.2); empty before the first. */
@@ -415,6 +437,10 @@ public final class Caravans {
 					t.put("leader", lt);
 				}
 				market(v.hall()).save(t); // 33.2
+				net.minecraft.world.item.DyeColor colour = colours.get(v.hall());
+				if (colour != null) { // 33.7
+					t.putString("colour", colour.getName());
+				}
 				list.add(t);
 			}
 			tag.put("villages", list);
@@ -513,6 +539,10 @@ public final class Caravans {
 				io.github.jcondedata.aliveworkplace.trade.Market market = io.github.jcondedata.aliveworkplace.trade.Market.load(t); // 33.2; older saves have none
 				if (!market.isEmpty()) {
 					data.markets.put(hall, market);
+				}
+				net.minecraft.world.item.DyeColor colour = net.minecraft.world.item.DyeColor.byName(Nbt.getString(t, "colour"), null); // 33.7; older saves have none
+				if (colour != null) {
+					data.colours.put(hall, colour);
 				}
 			}
 			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);
@@ -616,6 +646,8 @@ public final class Caravans {
 		Data data = Data.get(level);
 		if (census != null) {
 			data.update(hall, VillageHalls.name(level, hall), wants(level, hall, census));
+			VillageBanners.Colours colours = VillageBanners.of(level, hall); // 33.7: its caravans' carpets, known where it isn't loaded
+			data.setColour(hall, colours == null ? null : colours.base());
 		}
 		unload(level, hall, data);
 		io.github.jcondedata.aliveworkplace.trade.CaravanTrade.book(level, hall, data); // 33.6: what our caravans sold
@@ -667,6 +699,7 @@ public final class Caravans {
 		List<ItemStack> all = new ArrayList<>(goods);
 		sale.forEach(lot -> all.addAll(lot.stacks()));
 		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
+		CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
 		return shipment;
 	}
 
@@ -697,6 +730,10 @@ public final class Caravans {
 				: io.github.jcondedata.aliveworkplace.trade.CaravanTrade.sell(level, hall, s, chests, data);
 			if (!left.isEmpty() || !sold.waiting().isEmpty()) {
 				data.ship(new Shipment(s.from(), s.to(), left, level.getGameTime() + VillageNeeds.CHECK_EVERY, sold.waiting(), s.back()));
+			}
+			// 33.7: a caravan that came in (not one still waiting on the road for room) is seen coming, when someone is there
+			if (count(left) + sold.waiting().stream().mapToInt(Lot::count).sum() < count(s.goods()) + s.sale().stream().mapToInt(Lot::count).sum()) {
+				CaravanSights.come(level, hall, s, data);
 			}
 			if (!sold.home().isEmpty()) {
 				List<ItemStack> home = new ArrayList<>();
@@ -736,6 +773,10 @@ public final class Caravans {
 		}
 		io.github.jcondedata.aliveworkplace.legend.CaravanPayPower.of(level, from)
 			.ifPresent(p -> Tithe.put(entity, stacks * p.emeralds() * 100));
+	}
+
+	private static int count(List<ItemStack> stacks) {
+		return stacks.stream().mapToInt(ItemStack::getCount).sum();
 	}
 
 	/** "32 × Oak Log, 16 × Bread". */

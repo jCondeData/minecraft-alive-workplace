@@ -1807,6 +1807,67 @@ final class JobScenes {
 			};
 			return l -> drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
 		}, null));
+		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
+		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
+			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 3000,
+			new Vec3(16, -48, 13), new Vec3(16, -60, -4), (level, player) -> {
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 28; // a small village: the whole walk to its edge is in the picture
+			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			place(level, new BlockPos(4, -60, -3), ModBlocks.STOREHOUSE);
+			Container ours = chest(level, new BlockPos(5, -60, -3), new ItemStack(Items.BREAD, 40));
+			var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+			hall.setCustomName(Component.literal("Thornholm"));
+			// Thornholm flies a red banner; Ashford has none, so its carpets take the colour its hall's position picks
+			hall.setColours(new io.github.jcondedata.aliveworkplace.hall.VillageBanners.Colours(net.minecraft.world.item.DyeColor.RED,
+				net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY));
+			// Ashford, 180 blocks east: a hall, a Storehouse and a chest of logs, kept loaded so its caravan can load
+			BlockPos ashford = STATION.east(180);
+			level.setChunkForced(ashford.getX() >> 4, ashford.getZ() >> 4, true);
+			level.setChunkForced(ashford.east(5).getX() >> 4, ashford.getZ() >> 4, true);
+			level.setBlockAndUpdate(ashford, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			place(level, ashford.east(4), ModBlocks.STOREHOUSE);
+			chest(level, ashford.east(5), new ItemStack(Items.OAK_LOG, 48));
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(ashford)).setCustomName(Component.literal("Ashford"));
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			List<io.github.jcondedata.aliveworkplace.hall.Caravans.Want> logs = List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32));
+			data.setWants(STATION, Component.literal("Thornholm"), logs);
+			data.setWants(ashford, Component.literal("Ashford"), List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.BREAD, 16)));
+			if (!data.routesFrom(STATION).contains(ashford)) {
+				data.toggleRoute(STATION, ashford);
+			}
+			if (!data.routesFrom(ashford).contains(STATION)) {
+				data.toggleRoute(ashford, STATION);
+			}
+			data.clearRoad(STATION);
+			data.clearRoad(ashford);
+			data.sent(ashford, today); // Ashford's caravan waits for the scene to send it
+			// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still
+			data.sent(STATION, -1);
+			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, STATION, null);
+			int[] act = {0};
+			return l -> {
+				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
+				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
+					act[0] = 1; // seen setting out
+				} else if (act[0] == 1 && party == null) {
+					// gone at the edge: now Ashford's caravan brings the logs Thornholm waits for (its hall's own round forgot the wait)
+					data.setWants(STATION, Component.literal("Thornholm"), logs);
+					data.sent(ashford, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, ashford, null);
+					data.hurry(STATION);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+					act[0] = 2;
+				} else if (act[0] == 2 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.UNLOADING
+					&& party.carter().getCustomName() != null && party.carter().getCustomName().getString().equals("Ashford's caravan")) {
+					act[0] = 3; // standing by the Storehouse, unloading
+				} else if (act[0] == 3 && party == null) {
+					act[0] = 4; // and gone again
+				}
+				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
+			};
+		}, null));
 	}
 
 	// --- Screens ---------------------------------------------------------------------------------------------------

@@ -116,7 +116,7 @@ public final class VillageGrowth {
 		List<Villager> parents = io.github.jcondedata.aliveworkplace.people.Couples.coupleNear(level, hall, bed);
 		if (parents.isEmpty()) {
 			parents = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !v.isSleeping()
-				&& !io.github.jcondedata.aliveworkplace.guard.Mercenaries.isMercenary(v))
+				&& !io.github.jcondedata.aliveworkplace.guard.Mercenaries.isMercenary(v) && !CaravanSights.isParty(v))
 				.stream().sorted(Comparator.comparingDouble(v -> v.distanceToSqr(bed.getCenter()))).limit(2).toList();
 		}
 		if (parents.size() < 2) {

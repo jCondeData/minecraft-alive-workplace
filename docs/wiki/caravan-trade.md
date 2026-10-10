@@ -85,7 +85,8 @@ None new. It uses the Village Hall, the Storehouse and its chests.
 - A caravan sells one item of a good per stack (a stack of oak logs, not oak and birch mixed).
 - The Routes tab's lines are worked out from what the Storehouses hold now; after today's caravan has left they show
   what the next one would take.
-- Nothing walks the road yet: the carter and llamas come with 33.7.
+- The carter and llamas you see leaving and arriving are only a sight ([Caravans you can see](visible-caravans.md), 33.7);
+  the goods and the sale work as this page says whether or not they are shown.
 - Other players' villages pay like any other until pacts arrive (33.18).
 - A Merchant Prince's caravan pay (29.17) is unchanged; 33.23 folds it into these prices.
 

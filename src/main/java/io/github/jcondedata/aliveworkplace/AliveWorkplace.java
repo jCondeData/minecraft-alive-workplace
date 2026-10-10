@@ -44,6 +44,7 @@ public final class AliveWorkplace {
 		ModGameRules.init();
 		ModTrades.init();
 
+		io.github.jcondedata.aliveworkplace.hall.CaravanSights.init(); // 33.7; first, so a click on a carter or his llamas stops here
 		BuilderEvents.init();
 		io.github.jcondedata.aliveworkplace.shop.ShopLedger.init();
 		TableServer.init();

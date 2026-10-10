@@ -160,6 +160,14 @@ abstract class VillagerMixin {
 		return io.github.jcondedata.aliveworkplace.legend.Picket.idle(idle);
 	}
 
+	/** A caravan's carter (33.7) is only a sight: his brain gets no behaviours, so he never looks for a job, a bed or a partner. */
+	@Inject(method = "registerBrainGoals", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$carter(Brain<Villager> brain, CallbackInfo ci) {
+		if (io.github.jcondedata.aliveworkplace.hall.CaravanSights.isParty((Villager) (Object) this)) {
+			ci.cancel();
+		}
+	}
+
 	@Inject(method = "registerBrainGoals", at = @At("TAIL"))
 	private void aliveworkplace$builderSchedule(Brain<Villager> brain, CallbackInfo ci) {
 		Villager self = (Villager) (Object) this;

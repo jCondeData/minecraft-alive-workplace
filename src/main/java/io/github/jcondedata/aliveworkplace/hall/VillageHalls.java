@@ -59,6 +59,9 @@ public final class VillageHalls {
 		int children = 0;
 		int guards = 0;
 		for (Villager v : level.getEntitiesOfClass(Villager.class, area(hall), Villager::isAlive)) {
+			if (CaravanSights.isParty(v)) {
+				continue; // a caravan's carter (33.7) is passing through: nobody's villager
+			}
 			if (v.isBaby()) {
 				children++;
 				continue;

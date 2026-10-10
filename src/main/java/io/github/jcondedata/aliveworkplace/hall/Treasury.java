@@ -14,6 +14,8 @@ import net.minecraft.sounds.SoundSource;
  * worker (the config's {@code treasuryPerWorker}, in hundredths), half as much in a village that's badly kept and half
  * again in one that's well kept, a quarter more a rank — and whoever opens the hall collects them (in CobbleDollars
  * when the pack has them). It keeps up to a stack of emeralds a rank; days the hall wasn't loaded count up to three.
+ * With the village economy on (33.5) the treasury also pays for what players sell at the price board and keeps what
+ * they pay there, so only the hall's owner, their friends and operators collect it ({@link #mayCollect}).
  * A Merchant Prince's bank (29.17) adds interest each day on what it holds and lets it hold more ({@link #cap(VillageHallBlockEntity)}).
  */
 public final class Treasury {
@@ -130,10 +132,24 @@ public final class Treasury {
 		return level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.treasury() / 100 : 0;
 	}
 
-	/** {@code player} takes the treasury's whole emeralds (or their worth in CobbleDollars); what to tell them. */
+	/**
+	 * Whether {@code player} may collect {@code hall}'s treasury (33.5). With the village economy on, strangers' trades
+	 * at the price board draw on it, so in every village, protected or not, it's the owner's, their friends' and
+	 * operators' ({@link VillageProtection#mayRule}); a hall nobody owns stays open to all. With the economy off
+	 * (until 1.7), anyone who can open the hall collects, as before.
+	 */
+	public static boolean mayCollect(ServerLevel level, VillageHallBlockEntity hall, net.minecraft.world.entity.player.Player player) {
+		return !io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED || hall.owner() == null || VillageProtection.mayRule(level, hall, player);
+	}
+
+	/** {@code player} takes the treasury's whole emeralds (or their worth in CobbleDollars), if they may; what to tell them. */
 	public static Component collect(ServerLevel level, BlockPos hall, ServerPlayer player) {
 		if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			return Component.empty();
+		}
+		if (!mayCollect(level, entity, player)) {
+			return Component.translatable("message.aliveworkplace.treasury.not_yours", entity.ownerName(), VillageHalls.name(level, hall))
+				.withStyle(ChatFormatting.RED);
 		}
 		int emeralds = entity.treasury() / 100;
 		if (emeralds <= 0) {

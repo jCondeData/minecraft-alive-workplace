@@ -181,4 +181,117 @@ public class ProtectionSpecGameTests implements net.fabricmc.fabric.api.gametest
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * ROADMAP 33.5: a stranger who right-clicks the hall of a protected village gets the Trade page's Prices tab and
+	 * nothing else. They trade at the board, but can't collect the treasury, change a route or open any other page,
+	 * whatever they hold (a Village Ledger isn't bound, a Name Tag doesn't rename the village); the owner still gets the
+	 * whole hall. With the village economy off the hall stays shut to them, as before. And in an open village, where a
+	 * stranger opens the hall's screen, they can no longer collect the treasury.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"aStrangerTradesAtTheBoardAndNothingElse"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "aStrangerTradesAtTheBoardAndNothingElse")
+	public void aStrangerTradesAtTheBoardAndNothingElse(GameTestHelper helper) {
+		ServerPlayer owner = player(helper);
+		ServerPlayer stranger = player(helper);
+		VillageHallBlockEntity hall = protectedHall(helper, owner);
+		ServerLevel level = helper.getLevel();
+		BlockPos at = helper.absolutePos(HALL);
+		TradeGoodsDataGameTests.goodsFrom(helper, "aliveworkplace_test");
+		helper.setBlock(BoardTradeGameTests.STOREHOUSE, ModBlocks.STOREHOUSE);
+		helper.setBlock(BoardTradeGameTests.CHEST, Blocks.CHEST);
+		io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+		BlockPos ashford = at.east(40);
+		Leftovers.after(helper, () -> {
+			data.remove(at);
+			data.remove(ashford);
+			new io.github.jcondedata.aliveworkplace.WorkplaceConfig().apply();
+		});
+		helper.runAfterDelay(2, () -> {
+			BoardTradeGameTests.price(helper, at, BoardTradeGameTests.TIMBER, 150);
+			data.setWants(ashford, net.minecraft.network.chat.Component.literal("Ashford"), java.util.List.of()); // a village a route could go to
+			hall.setTreasury(500);
+			String name = VillageHalls.name(level, at).getString();
+			stranger.moveTo(at.getX() + 2.5, at.getY(), at.getZ() + 0.5, 90f, 0f);
+			stranger.getInventory().selected = 8; // the hand they click with; what they're paid lands in the first slots
+			stranger.getInventory().setItem(9, new ItemStack(Items.OAK_LOG, 16));
+
+			// the right click: the Trade page, with the Prices tab and nothing else in its row but the treasury
+			use(helper, stranger, HALL, Direction.SOUTH, ItemStack.EMPTY);
+			helper.assertTrue(stranger.containerMenu instanceof ChoiceMenu, "a stranger's right click on the hall opened nothing: " + stranger.containerMenu);
+			ChoiceMenu menu = (ChoiceMenu) stranger.containerMenu;
+			ItemStack prices = menu.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot());
+			helper.assertTrue(prices.is(Items.EMERALD) && io.github.jcondedata.aliveworkplace.trade.TradePage.marks(prices)
+				.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.OPEN), "not on the Prices tab: " + prices);
+			for (int slot = 0; slot < 9; slot++) {
+				boolean theirs = slot == io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY
+					|| slot == io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot();
+				helper.assertTrue(theirs || menu.icon(slot).isEmpty(), "the stranger's row has " + menu.icon(slot) + " in slot " + slot);
+			}
+			int timber = BoardTradeGameTests.slot(helper, menu, "Test Timber");
+
+			// they trade: a bundle of logs for an emerald from the treasury
+			menu.press(timber, stranger);
+			helper.assertTrue(BoardTradeGameTests.has(stranger, Items.OAK_LOG) == 0 && BoardTradeGameTests.has(stranger, Items.EMERALD) == 1 && hall.treasury() == 400
+				&& BoardTradeGameTests.count(BoardTradeGameTests.chest(helper), Items.OAK_LOG) == 16, "the stranger's sale: "
+				+ BoardTradeGameTests.has(stranger, Items.EMERALD) + " emeralds, treasury " + hall.treasury());
+
+			// they can't collect the treasury, and no click anywhere on the page leaves it, starts a route or changes the hall
+			helper.assertTrue(BoardTradeGameTests.lore(menu.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY))
+				.contains("Only Owner and their friends can collect it"), "the treasury doesn't say whose it is: "
+				+ BoardTradeGameTests.lore(menu.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY)));
+			for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
+				menu.press(slot, stranger);
+				menu.clicked(slot, 0, net.minecraft.world.inventory.ClickType.QUICK_MOVE, stranger);
+				helper.assertTrue(menu.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot()).is(Items.EMERALD)
+					&& menu.icon(0).isEmpty() && !menu.icon(timber).isEmpty(), "a click on slot " + slot + " left the Prices tab");
+			}
+			helper.assertTrue(BoardTradeGameTests.has(stranger, Items.EMERALD) == 1 && hall.treasury() == 400, "the stranger collected: "
+				+ BoardTradeGameTests.has(stranger, Items.EMERALD) + " emeralds, treasury " + hall.treasury());
+			helper.assertTrue(data.routesFrom(at).isEmpty() && data.routesFrom(ashford).isEmpty(), "the stranger changed a route: " + data.routesFrom(at));
+			helper.assertTrue(hall.isProtected() && owner.getUUID().equals(hall.owner()), "the stranger changed the hall's protection");
+			stranger.closeContainer();
+
+			// whatever they hold: a Village Ledger isn't bound, a Name Tag doesn't rename the village
+			ItemStack ledger = new ItemStack(ModItems.VILLAGE_LEDGER);
+			use(helper, stranger, HALL, Direction.SOUTH, ledger);
+			helper.assertTrue(ledger.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.LEDGER) == null, "the stranger's ledger was bound");
+			helper.assertTrue(stranger.containerMenu instanceof ChoiceMenu m && m.icon(0).isEmpty()
+				&& m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot()).is(Items.EMERALD), "with a ledger in hand: " + stranger.containerMenu);
+			stranger.closeContainer();
+			ItemStack tag = new ItemStack(Items.NAME_TAG);
+			tag.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal("Mine"));
+			use(helper, stranger, HALL, Direction.SOUTH, tag);
+			helper.assertTrue(VillageHalls.name(level, at).getString().equals(name), "the stranger renamed the village: " + VillageHalls.name(level, at).getString());
+			stranger.closeContainer();
+			stranger.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+
+			// the owner still gets the whole hall
+			use(helper, owner, HALL, Direction.SOUTH, ItemStack.EMPTY);
+			helper.assertTrue(owner.containerMenu instanceof ChoiceMenu m && m.icon(0).is(Items.NAME_TAG), "the owner didn't get the hall's screen: " + owner.containerMenu);
+			owner.closeContainer();
+
+			// the village economy off: the hall is shut to a stranger, as before
+			io.github.jcondedata.aliveworkplace.WorkplaceConfig.parse("{\"villageEconomy\": false}").apply();
+			VillageHalls.RADIUS = 16;
+			use(helper, stranger, HALL, Direction.SOUTH, ItemStack.EMPTY);
+			helper.assertTrue(!(stranger.containerMenu instanceof ChoiceMenu), "economy off: the hall opened for a stranger: " + stranger.containerMenu);
+			new io.github.jcondedata.aliveworkplace.WorkplaceConfig().apply();
+			VillageHalls.RADIUS = 16;
+
+			// an open village: the stranger opens the hall's screen, but the treasury is the owner's and their friends'
+			hall.setProtected(false);
+			use(helper, stranger, HALL, Direction.SOUTH, ItemStack.EMPTY);
+			helper.assertTrue(stranger.containerMenu instanceof ChoiceMenu m && m.icon(0).is(Items.NAME_TAG), "an open village's hall didn't open: " + stranger.containerMenu);
+			((ChoiceMenu) stranger.containerMenu).press(0, stranger); // the hall's name: collect
+			stranger.closeContainer();
+			helper.assertTrue(BoardTradeGameTests.has(stranger, Items.EMERALD) == 1 && hall.treasury() == 400, "a stranger collected in an open village: "
+				+ BoardTradeGameTests.has(stranger, Items.EMERALD) + " emeralds, treasury " + hall.treasury());
+			use(helper, owner, HALL, Direction.SOUTH, ItemStack.EMPTY);
+			((ChoiceMenu) owner.containerMenu).press(0, owner);
+			owner.closeContainer();
+			helper.assertTrue(BoardTradeGameTests.has(owner, Items.EMERALD) == 4 && hall.treasury() == 0, "the owner collected " + BoardTradeGameTests.has(owner, Items.EMERALD));
+			helper.succeed();
+		});
+	}
 }

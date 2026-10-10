@@ -1972,6 +1972,77 @@ final class JobScenes {
 						"the name icon says what Thornholm is known for and short of: " + (line == null ? null : line.getString()));
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// Trading at the board (ROADMAP 33.5): Thornholm's Prices tab with its treasury (12.4 emeralds), a click on Timber
+		// buying a bundle out of the Storehouse's chest (0.88 emeralds: charged 1), and the treasury after (13.4).
+		SCREENS.put("board_trade", new Screen("a click on Timber on the hall's Prices tab bought a bundle of 16 logs out of the Storehouse's chest for 1 emerald, "
+			+ "and the treasury on the page went from 12.4 to 13.4 emeralds", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				place(level, new BlockPos(4, -60, -3), ModBlocks.STOREHOUSE);
+				chest(level, new BlockPos(5, -60, -3), new ItemStack(Items.OAK_LOG, 64), new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.WHITE_WOOL, 48),
+					new ItemStack(Items.BREAD, 12));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setCustomName(Component.literal("Thornholm"));
+				priceBoard(level);
+				// a buyer with emeralds and no logs, in survival so the emerald is really paid
+				player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+				player.getInventory().clearContent();
+				player.getInventory().add(new ItemStack(Items.EMERALD, 8));
+			},
+			// 1: the Prices tab, the pointer on the treasury (12.4 emeralds, its cap, who collects)
+			List.of(new Step("01_board_before", io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY, 6, (level, player) -> {
+					priceBoard(level); // again, should the hall's round have counted the village in between
+					((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setTreasury(1240);
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = -1;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
+						m.press(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot(), player);
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							if (m.icon(slot).getHoverName().getString().equals("Timber")) {
+								pickedSlot = slot;
+							}
+						}
+						Showcase.check(pickedSlot >= 0, "Timber is on the Prices tab");
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY).getHoverName().getString().equals("Treasury: 12.4 emeralds"),
+							"the page shows the treasury before: " + m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY).getHoverName().getString());
+						if (pickedSlot >= 0) {
+							List<String> lore = new ArrayList<>();
+							m.icon(pickedSlot).getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY)
+								.lines().forEach(l -> lore.add(l.getString()));
+							Showcase.check(lore.contains("We sell: 0.88 emeralds") && lore.contains("Bundles to spare in the Storehouse: 5")
+								&& lore.contains("Click: buy a bundle. Shift-click: all you can"), "Timber's tooltip says what a click does: " + lore);
+						}
+					}
+				}, 40),
+				// 2: the click on Timber; its tooltip says what was bought and for how much
+				new Step("02_board_bought", -2, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m && pickedSlot >= 0) {
+						m.press(pickedSlot, player);
+						List<String> lore = new ArrayList<>();
+						m.icon(pickedSlot).getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY)
+							.lines().forEach(l -> lore.add(l.getString()));
+						Showcase.check(!lore.isEmpty() && lore.get(0).equals("You buy 16 × Timber from Thornholm for 1 emerald."), "the tooltip says what was bought: " + lore);
+						Showcase.check(player.getInventory().countItem(Items.OAK_LOG) == 16 && player.getInventory().countItem(Items.EMERALD) == 7,
+							"the player got 16 logs for 1 emerald: " + player.getInventory().countItem(Items.OAK_LOG) + " logs, "
+							+ player.getInventory().countItem(Items.EMERALD) + " emeralds");
+						Container chest = (Container) level.getBlockEntity(new BlockPos(5, -60, -3));
+						Showcase.check(chest != null && chest.countItem(Items.OAK_LOG) == 80, "the logs came out of the Storehouse's chest: "
+							+ (chest == null ? null : chest.countItem(Items.OAK_LOG)));
+					}
+				}, 40),
+				// 3: the treasury after: one emerald more
+				new Step("03_board_after", io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY, 6, (level, player) -> {
+					int treasury = ((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).treasury();
+					Showcase.check(treasury == 1340, "the treasury kept the emerald: " + treasury);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY).getHoverName().getString().equals("Treasury: 13.4 emeralds"),
+							"the page shows the treasury after: " + m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY).getHoverName().getString());
+					}
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("legend_announce", new Screen("a Mythic Legend's coming was announced in chat and written in the chronicle", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				// ROADMAP 29.3: a Mythic Legend of the scene's own settles by the hall; everyone on the server hears it, in gold.

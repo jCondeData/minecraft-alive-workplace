@@ -39,7 +39,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * ({@code /workplace friend add}) and operators may break or place blocks, open chests and other blocks, empty buckets,
  * or hurt the villagers, golems, animals, armor stands and item frames (by hand, or with arrows, tridents and potions),
  * and only they may open the hall's screen with a Village Ledger. Anyone may still come in, open doors and gates, press
- * buttons, ring the bell, use a crafting table, trade with the villagers and open their own mailbox. The owner is
+ * buttons, ring the bell, use a crafting table, trade with the villagers and open their own mailbox; with the village
+ * economy on, right-clicking the hall gives them its price board and nothing else, so they can trade there (33.5). The owner is
  * whoever placed the hall (a hall from before this, or placed by a machine, is claimed by the first player to turn its
  * protection on). {@code villageProtection: false} in the config turns the setting off on the whole server.
  */
@@ -56,6 +57,13 @@ public final class VillageProtection {
 			boolean placing = player.isSecondaryUseActive() && !player.getItemInHand(hand).isEmpty();
 			if (level.isClientSide() || (open(state) && !placing)) {
 				return InteractionResult.PASS;
+			}
+			// A stranger at the hall (33.5): the price board alone, whatever they hold, so they can trade there
+			if (!placing && hand == net.minecraft.world.InteractionHand.MAIN_HAND && state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL)
+				&& io.github.jcondedata.aliveworkplace.trade.TradePage.shown() && level instanceof ServerLevel server && player instanceof ServerPlayer stranger
+				&& keeper(server, player, hit.getBlockPos()).isPresent()) {
+				io.github.jcondedata.aliveworkplace.trade.TradePage.openForStranger(stranger, hit.getBlockPos());
+				return InteractionResult.SUCCESS;
 			}
 			return mayChange(level, player, hit.getBlockPos()) ? InteractionResult.PASS : InteractionResult.FAIL;
 		});
@@ -162,6 +170,15 @@ public final class VillageProtection {
 		UUID owner = hall.owner();
 		return owner == null || owner.equals(player.getUUID()) || player.hasPermissions(2)
 			|| Friends.get(level.getServer()).mayDirect(owner, player.getUUID());
+	}
+
+	/**
+	 * Whether {@code player} rules the village (design note M33): the hall's owner, one of their friends, or an operator,
+	 * in every village, protected or not. Unlike {@link #mayBuild}, a hall nobody owns grants it to no one.
+	 */
+	public static boolean mayRule(ServerLevel level, VillageHallBlockEntity hall, Player player) {
+		UUID owner = hall.owner();
+		return owner != null && (owner.equals(player.getUUID()) || player.hasPermissions(2) || Friends.get(level.getServer()).mayDirect(owner, player.getUUID()));
 	}
 
 	/**

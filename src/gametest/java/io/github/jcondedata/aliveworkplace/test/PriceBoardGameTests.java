@@ -186,7 +186,7 @@ public class PriceBoardGameTests implements FabricGameTest {
 			helper.assertTrue(timber != null && timber.is(Items.OAK_LOG), "no timber: " + timber);
 			helper.assertTrue(TradePage.marks(timber).equals(Set.of(TradePage.STAR, TradePage.DOWN)), "timber (known for, fell): " + TradePage.marks(timber));
 			helper.assertTrue(lore(timber).equals(List.of("A bundle of 16", "We sell: " + e(88, "0.88 emeralds"), "We pay: " + e(80, "0.8 emeralds"), "Down from " + e(90, "0.9 emeralds") + " yesterday",
-				village + " is known for it", "No trade routes to compare prices with")), "timber's tooltip: " + lore(timber));
+				village + " is known for it", "No trade routes to compare prices with", "The market needs a Storehouse with a chest")), "timber's tooltip: " + lore(timber));
 
 			ItemStack fish = named(menu, "Test Fish");
 			helper.assertTrue(fish != null && TradePage.marks(fish).equals(Set.of(TradePage.SHORT, TradePage.UP)), "fish (short of, rose): " + fish);
@@ -202,7 +202,7 @@ public class PriceBoardGameTests implements FabricGameTest {
 			helper.assertTrue(stone != null && TradePage.marks(stone).equals(Set.of(TradePage.STEADY))
 				&& lore(stone).contains("We pay: " + TradePage.money(base).getString()), "stone without a price: " + (stone == null ? null : lore(stone)));
 
-			// a click on a good changes nothing (trading is 33.5), and the way back leads to the hall
+			// a click on a good stays on the page (this village has no Storehouse, so nothing is traded: 33.5), and the way back leads to the hall
 			menu.press(VillageHallScreen.FIRST_ROW, player);
 			helper.assertTrue(named(menu, "Test Timber") != null, "a click on a good left the page");
 			menu.press(TradePage.BACK, player);

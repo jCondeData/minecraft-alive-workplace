@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
  * demand = (short of ? 3 : 0) + min(3, bundles workers wait for) + (food and store under 16 meals ? 2 : 0) + events
  * target = clamp(base × (1 + 0.2 × (demand − supply)), base / 2, base × 2)
  * at dawn: price += (target − price) / 3, rounded to the cent; a good without a price starts at its target
+ * at the board (33.5): a bundle sold to the village, price × 0.98; bought from it, price × 1.02 (that day's price)
  * </pre>
  */
 public final class Prices {
@@ -48,6 +49,23 @@ public final class Prices {
 	public static int move(int base, int price, int target) {
 		int moved = price + (int) Math.round((target - price) / 3.0);
 		return Math.max(floor(base), Math.min(ceiling(base), moved));
+	}
+
+	/** Each bundle traded at the board moves that day's price this many percent (33.5). */
+	public static final int STEP_PERCENT = 2;
+
+	/** The price after a bundle was sold to the village: 2% down (a cent at least), never under half the base. */
+	public static int sold(int base, int price) {
+		return Math.max(Math.min(price, floor(base)), price - step(price));
+	}
+
+	/** The price after a bundle was bought from the village: 2% up (a cent at least), never over twice the base. */
+	public static int bought(int base, int price) {
+		return Math.min(Math.max(price, ceiling(base)), price + step(price));
+	}
+
+	private static int step(int price) {
+		return Math.max(1, (int) Math.round(price * STEP_PERCENT / 100.0));
 	}
 
 	/** The price of {@code good} at the village whose hall is at {@code hall}: its last price, or its base if it has none yet. */

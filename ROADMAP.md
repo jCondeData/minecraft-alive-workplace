@@ -3283,7 +3283,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     from afar;
   - showcase scene `price_board` (the page, a tooltip, the name icon), and the README section starts with "Specialties
     and prices".
-- [ ] **33.5** **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
+- [x] **33.5** (review: pending 2026-10-10) **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
   with the goods in your inventory: one bundle; shift-click: as many as it will take) and **buy** what it's known for
   (click with an empty hand), at the board's prices: the village pays from its treasury and keeps what it earns there
   (`Money`, so CobbleDollars with the pack), and the goods go into and come out of its Storehouses' chests, which keep
@@ -5016,3 +5016,21 @@ item waits.
   name. (8) **More than 36 goods** (a data pack adding nine or more): the tab shows the first 36 by `order`; paging can
   come with 33.19's slot 54 toggle if anyone needs it. (9) `tools/modtest/wikicheck.py` doesn't exist yet (22.9), so
   the wiki page (`docs/wiki/price-board.md`) was written to the page format but not machine-checked.
+- 2026-10-10 (33.5, decisions; lane a): trading at the board. (1) **Every good trades both ways**, not only what the
+  village is short of (sell) or known for (buy): the item's sentence reads as where it pays, and the design note's
+  table says "every good ... click to trade". (2) **A click sells if you carry at least a bundle, else buys; a right
+  click always buys** (the menu has no hand to be empty; without the right click someone carrying Timber could never
+  buy more). The tooltip says which a click will do. (3) **Emeralds settle whole** (33.1's rounding rule: paid down,
+  charged up, the difference to the village), **and a sale that wouldn't come to one emerald is refused** with "sell
+  several at once" rather than taking goods for nothing; a shift-click settles once for all its bundles. (4) **The
+  2% step is a cent at least and stops at half and twice the base**, like the dawn move. (5) **The 16 back is per
+  item**, as caravans count it; a bundle may mix a good's items. (6) **The board takes potions only if they heal and
+  no worn tools** (33.3's Remedies note; `Board.counts`), and the Remedies icon is a healing potion. (7) **The
+  treasury nugget is in slot 3 of the Trade page's row on every tab**; earnings stop at the treasury's cap
+  (`Tithe.put`), as caravan pay does. (8) **Who collects follows `villageEconomy`** (33.1: the change waits for the
+  M33 flag), through the new `VillageProtection.mayRule`; an unowned hall stays open. (9) **A stranger's board opens
+  from the protection hook itself**, whatever they hold, so a Ledger is never bound and a Name Tag never renames.
+  (10) `PriceBoardGameTests.thePricesTabStarsMarksAndShowsArrows` had one expectation updated: a good's exact tooltip
+  now ends with the trading line. Not built here, left to their items: the feud's 25% (33.20), Common Coin's smaller
+  spread (33.16), the `board_trades` reform count (33.22) and the leaderboard's "earned" (33.19; board earnings
+  already go into `treasuryTotal`).

@@ -34,6 +34,8 @@ public class ChoiceMenu extends ChestMenu {
 	private final Map<Integer, Consumer<ServerPlayer>> actions = new HashMap<>();
 	/** Whether the button being pressed was shift-clicked (buttons that count up or down take bigger steps). */
 	private boolean shift;
+	/** Whether the button being pressed was right-clicked (the price board buys on a right click, 33.5). */
+	private boolean right;
 
 	private ChoiceMenu(MenuType<?> type, int id, net.minecraft.world.entity.player.Inventory inventory, SimpleContainer icons, Predicate<Player> valid) {
 		super(type, id, inventory, icons, ROWS);
@@ -122,6 +124,11 @@ public class ChoiceMenu extends ChestMenu {
 		return shift;
 	}
 
+	/** Whether the button being pressed now was right-clicked. */
+	public boolean rightClicked() {
+		return right;
+	}
+
 	/** Clicks a button as {@code player} would (also what a real click does). */
 	public void press(int slot, ServerPlayer player) {
 		Consumer<ServerPlayer> action = actions.get(slot);
@@ -135,10 +142,12 @@ public class ChoiceMenu extends ChestMenu {
 		// Nothing moves: the client's guess is corrected when the server sends the slots back.
 		if (player instanceof ServerPlayer sp && slot >= 0 && slot < SIZE && (type == ClickType.PICKUP || type == ClickType.QUICK_MOVE)) {
 			shift = type == ClickType.QUICK_MOVE;
+			right = button == 1;
 			try {
 				press(slot, sp);
 			} finally {
 				shift = false;
+				right = false;
 			}
 		}
 	}

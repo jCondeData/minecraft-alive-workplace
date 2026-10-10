@@ -569,6 +569,21 @@ emeralds"), so you can see where a caravan would earn. The hall's name icon gain
 Short of: Bread", and villagers talk about it: "Our Timber sells well in Ashford", "We've more Wool than we can use",
 "Bread is dear this week". A Village Ledger reaches the Trade page from afar, like the rest of the hall.
 
+**Trading at the board.** The Prices tab is also a market. Click a good to **sell** the village a bundle you carry (16
+logs of Timber, say), or to **buy** one if you don't carry a bundle; a right-click always buys, and a shift-click does
+as many bundles as will go. The village pays out of its **treasury** and keeps what it earns there, and the goods go
+into and come out of its **Storehouses' chests**, which keep 16 of every item back as they do for caravans. It sells
+at 10% over what it pays, and each bundle moves that day's price 2%: down when you sell to it, up when you buy from
+it, so the tenth bundle is worth less than the first. With CobbleDollars trades are to the cent; with emeralds they
+settle in whole emeralds (you're paid down and charged up to the whole emerald, and the odd cents stay with the
+village), so sell several bundles at once. The village never pays more than its treasury holds or takes more than its
+chests have room for, and the good's tooltip says which stopped it; without a Storehouse the tab says the market
+needs one. Potions count as Remedies only if they heal, and worn tools don't count. The treasury sits on the page as a
+gold nugget (what it holds, its cap; click to collect). In a **protected** village a stranger who right-clicks the
+hall gets the price board and nothing else, so anyone can trade there; because their trades draw on the treasury,
+only the hall's owner, their friends and operators collect it, in every village (a hall nobody owns stays open to
+all).
+
 ## All the jobs at a glance
 **Vanilla jobs work as in vanilla**: place their block near a villager without a job and they take it. Most of our jobs
 **share a vanilla block** with a vanilla job, and a jobless villager by it still takes the vanilla job. For one of ours,
@@ -1093,7 +1108,8 @@ orange workshops, light blue wells and fountains — and the workplaces named. T
 **Treasury.** Every morning a village with a Village Hall puts by its takings: a fifth of an emerald a worker, from half
 that in a badly kept village to half as much again in a well-kept one, and a quarter more a rank (ten workers in a
 well-kept hamlet: 3 emeralds a day). The hall's name tag (the top-left icon of its screen) shows what's there — click it
-to collect (CobbleDollars when the pack has them). It holds up to a stack a rank; `villageTreasury` and
+to collect (CobbleDollars when the pack has them; from 1.7, with trading at the price board, only the hall's owner,
+their friends and operators collect, see "From village to realm"). It holds up to a stack a rank; `villageTreasury` and
 `treasuryPerWorker` (hundredths of an emerald) in the config.
 
 **Protecting the village.** Whoever places the Village Hall owns it. Shift-click the hall's name tag (top left of its

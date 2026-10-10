@@ -24,6 +24,22 @@ asks for the steps, `latest.log` and any crash report).
   trade routes where it's dearer and the one where it's cheaper. The hall's name icon says "Known for: Timber, Wool.
   Short of: Bread", villagers talk about what sells well, what there's too much of and what's dear, and the Village
   Ledger reaches the page from afar.
+- **Trading at the board** (33.5, part of 1.7, off until it's released): on the Prices tab, click a good to **sell**
+  the village a bundle you carry, or to **buy** one if you don't (right-click always buys; shift-click does as many
+  bundles as will go). The village pays from its treasury and keeps what it earns there (in CobbleDollars with the
+  pack; with emeralds a trade settles in whole emeralds, and the odd cents stay with the village). The goods go into
+  and come out of its Storehouses' chests, which keep 16 of every item back, as they do for caravans. It sells at 10%
+  over what it pays, and each bundle moves that day's price 2% (sold to it: down; bought from it: up). It never pays
+  more than its treasury holds or takes what its chests have no room for, and the good's tooltip says which stopped
+  it. Without a Storehouse the tab says the market needs one. The treasury is on the Trade page too (a gold nugget:
+  what it holds, its cap, click to collect). The board buys potions only if they heal, and no worn tools.
+- **Strangers can trade in a protected village** (33.5): right-clicking the hall of a village that keeps you out now
+  opens its price board, and nothing else of the hall.
+
+### Changed
+- **Collecting a village's treasury is now for its owner, their friends and operators, in every village** (33.5, with
+  1.7's `villageEconomy`; until then nothing changes). Before, anyone who could open the hall of an open village
+  could collect; now that strangers' trades draw on the treasury, they can't. A hall nobody owns stays open to all.
 
 ### Fixed
 - **The hearts look-up no longer loads chunks** (B93): a player standing where nothing is loaded made the server read

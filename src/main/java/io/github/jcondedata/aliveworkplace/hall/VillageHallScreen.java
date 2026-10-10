@@ -144,8 +144,12 @@ public final class VillageHallScreen {
 			nameLore.add(line(goods, ChatFormatting.YELLOW));
 		}
 		int treasury = Treasury.emeralds(level, hall);
-		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.treasury",
-			io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury)),
+		// 33.5: with the village economy on, only the owner, their friends and operators collect; the line says so to the rest
+		VillageHallBlockEntity kept = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
+		Component inTreasury = io.github.jcondedata.aliveworkplace.work.Money.describe((long) treasury * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, treasury);
+		nameLore.add(line(kept != null && menu.viewer() != null && !Treasury.mayCollect(level, kept, menu.viewer())
+			? Component.translatable("screen.aliveworkplace.hall.treasury_theirs", inTreasury, kept.ownerName())
+			: Component.translatable("screen.aliveworkplace.hall.treasury", inTreasury),
 			treasury > 0 ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 		nameLore.addAll(Treasury.taxLines(level, hall, census.workers(), census.jobless())); // the takings by class (34.7)
 		for (Component held : io.github.jcondedata.aliveworkplace.cup.CupChampions.hallLines(level, hall)) { // the Cups it holds (28.21)

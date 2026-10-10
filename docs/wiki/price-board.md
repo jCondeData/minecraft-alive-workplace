@@ -23,7 +23,7 @@ The hall's name icon gains a line: "Known for: Timber, Wool. Short of: Bread". V
 sells well in a village on a route, a glut at home, and something dear. A Village Ledger opens the hall from afar, and
 the minecart there reaches the Trade page the same way.
 
-Nothing can be bought or sold on the board yet: that's 33.5.
+A click on a good trades it: see [Trading at the board](board-trade.md) (33.5).
 
 ## How it works
 
@@ -74,7 +74,8 @@ None of its own. The page opens from the Village Hall's minecart button and thro
 - **Off means the old page** (33.4, lane a): with `villageEconomy` off the hall looks exactly as it did before 1.7.
 - **A good's name keeps its capital in talk** ("Our Timber sells well in Ashford"): the server can't lower-case a
   translated name.
-- **The treasury isn't on the page yet**: who may collect changes with 33.5, which adds it.
+- **The treasury came onto the page with 33.5** (slot 3 of the first row), which also changed who may collect it:
+  see [Trading at the board](board-trade.md).
 
 ## Known limits
 

@@ -2,9 +2,13 @@ package io.github.jcondedata.aliveworkplace.trade;
 
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.HallPages;
+import io.github.jcondedata.aliveworkplace.hall.Treasury;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import java.util.ArrayList;
@@ -13,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -24,7 +29,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -39,6 +47,13 @@ import org.jetbrains.annotations.Nullable;
  * of it, and the dearer and the cheaper village among those it has routes with. The icon carries its marks
  * ({@link #marks}: {@link #STAR}, {@link #SHORT}, and one of {@link #UP}, {@link #DOWN}, {@link #STEADY}), which the
  * hall's own screen draws over it; the tooltip says the same in words, so nothing depends on the drawing.
+ *
+ * <p><b>Trading</b> (33.5, {@link Board}): a click on a good sells the village a bundle if the player carries one, and
+ * buys one otherwise; a right click always buys; with shift, as many bundles as will go. The tooltip says what a click
+ * will do and what the village can spare, and after a trade what came of it. Without a Storehouse the tab says the
+ * market needs one. The village's treasury sits in the row ({@link #TREASURY}): what it holds and its cap, and a click
+ * collects it for those who may ({@link Treasury#mayCollect}). A stranger who right-clicks the hall of a protected
+ * village gets this page with the Prices tab and nothing else ({@link #openForStranger}).
  */
 public final class TradePage {
 	/** The page's tabs, in the row's order. */
@@ -52,6 +67,8 @@ public final class TradePage {
 	}
 
 	public static final int BACK = 0;
+	/** The village's treasury, in the page's row (33.5). */
+	public static final int TREASURY = 2;
 	/** The Routes tab's slot (where the routes page's title always was); the other tabs follow it. */
 	public static final int FIRST_TAB = 4;
 	/** Goods the Prices tab shows: rows 3 to 6. */
@@ -80,10 +97,16 @@ public final class TradePage {
 
 	private static final Map<Tab, Entry> TABS = new EnumMap<>(Tab.class);
 
+	/** What the last trade on an open page came to, shown once in its good's tooltip. */
+	private record Note(ResourceLocation good, Component text) {
+	}
+
+	private static final Map<ChoiceMenu, Note> NOTES = new WeakHashMap<>();
+
 	static {
 		TABS.put(Tab.ROUTES, new Entry(VillageHallScreen::routesHeader, (menu, level, hall, viewer, again) ->
 			VillageHallScreen.routesList(menu, level, hall, again)));
-		TABS.put(Tab.PRICES, new Entry(TradePage::pricesTab, (menu, level, hall, viewer, again) -> prices(menu, level, hall)));
+		TABS.put(Tab.PRICES, new Entry(TradePage::pricesTab, TradePage::prices));
 	}
 
 	/** Gives {@code tab} its icon and contents: from then on it shows in the row. A later item's tab calls it once, at start-up. */
@@ -124,13 +147,35 @@ public final class TradePage {
 		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), hall, tab, null, player));
 	}
 
+	/** The page with only its Prices tab, not shown to anyone (tests): what a stranger in a protected village gets. */
+	public static ChoiceMenu forStrangerTest(ServerPlayer player, BlockPos hall) {
+		return ChoiceMenu.detached(player, menu -> render(menu, Players.level(player), hall, Tab.PRICES, null, player, true));
+	}
+
+	/**
+	 * Opens the page for a stranger in a protected village (33.5): the Prices tab and nothing else, so they can trade
+	 * there; no way to the hall's screen, the routes or any other tab.
+	 */
+	public static void openForStranger(ServerPlayer player, BlockPos hall) {
+		ServerLevel level = Players.level(player);
+		ChoiceMenu.openHall(player, Component.translatable("screen.aliveworkplace.hall.title", VillageHalls.name(level, hall)),
+			p -> p.isAlive() && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL) && p.position().distanceToSqr(Vec3.atCenterOf(hall)) <= 64,
+			menu -> render(menu, level, hall, Tab.PRICES, null, player, true));
+	}
+
 	/**
 	 * Lays the page out in {@code menu} with {@code tab} open (a tab that hasn't landed opens Routes). {@code back}
 	 * (null: none) returns to the hall's screen.
 	 */
 	public static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall, Tab wanted, @Nullable Runnable back, @Nullable ServerPlayer viewer) {
-		List<Tab> tabs = tabs();
-		Tab tab = tabs.contains(wanted) ? wanted : Tab.ROUTES;
+		render(menu, level, hall, wanted, back, viewer, false);
+	}
+
+	/** The same; {@code pricesOnly}: the row holds the Prices tab alone (a stranger in a protected village). */
+	private static void render(ChoiceMenu menu, ServerLevel level, BlockPos hall, Tab wanted, @Nullable Runnable back, @Nullable ServerPlayer viewer,
+							   boolean pricesOnly) {
+		List<Tab> tabs = pricesOnly ? List.of(Tab.PRICES) : tabs();
+		Tab tab = tabs.contains(wanted) ? wanted : tabs.get(0);
 		menu.clearButtons();
 		if (back != null) {
 			menu.button(BACK, VillageHallScreen.icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE),
@@ -147,20 +192,41 @@ public final class TradePage {
 				menu.button(t.slot(), icon, null);
 			} else {
 				menu.button(t.slot(), icon, p -> {
-					render(menu, level, hall, t, back, p);
+					render(menu, level, hall, t, back, p, pricesOnly);
 					menu.broadcastChanges();
 				});
 			}
+		}
+		Runnable again = () -> {
+			render(menu, level, hall, tab, back, viewer, pricesOnly);
+			menu.broadcastChanges();
+		};
+		if (Economy.ENABLED && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			menu.button(TREASURY, treasuryIcon(level, entity, viewer), p -> {
+				Chat.chat(p, Treasury.collect(level, hall, p));
+				again.run();
+			});
 		}
 		menu.divider(1);
 		Entry open;
 		synchronized (TradePage.class) {
 			open = TABS.get(tab);
 		}
-		open.content().fill(menu, level, hall, viewer, () -> {
-			render(menu, level, hall, tab, back, viewer);
-			menu.broadcastChanges();
-		});
+		open.content().fill(menu, level, hall, viewer, again);
+	}
+
+	/** The treasury in the page's row: what it holds (to the cent), its cap, and who may collect it. */
+	static ItemStack treasuryIcon(ServerLevel level, VillageHallBlockEntity entity, @Nullable ServerPlayer viewer) {
+		List<Component> lore = new ArrayList<>();
+		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.treasury_cap", money(Treasury.cap(entity) * 100)), ChatFormatting.GRAY));
+		lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.treasury_about", ChatFormatting.GRAY));
+		if (viewer == null || Treasury.mayCollect(level, entity, viewer)) {
+			lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.treasury_collect", ChatFormatting.DARK_GRAY));
+		} else {
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.treasury_theirs", entity.ownerName()), ChatFormatting.DARK_GRAY));
+		}
+		return VillageHallScreen.icon(Items.GOLD_NUGGET, Component.translatable("screen.aliveworkplace.trade.treasury", money(entity.treasury())),
+			ChatFormatting.GOLD, lore.toArray(Component[]::new));
 	}
 
 	/** The Prices tab's icon: an emerald, with what the page's marks mean. */
@@ -168,15 +234,22 @@ public final class TradePage {
 		List<Component> lore = new ArrayList<>();
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.prices_about", SELL_PERCENT - 100), ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.prices_marks", ChatFormatting.GRAY));
+		lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.prices_trade", ChatFormatting.GRAY));
 		if (Caravans.Data.get(level).market(hall).priceDay() < 0) {
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.prices_not_yet", ChatFormatting.YELLOW));
+		}
+		if (Caravans.storehouse(level, hall).isEmpty()) {
+			lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.needs_storehouse", ChatFormatting.RED));
 		}
 		return VillageHallScreen.icon(Items.EMERALD, Component.translatable("screen.aliveworkplace.trade.prices_title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD, lore.toArray(Component[]::new));
 	}
 
-	/** The Prices tab: every good, in the goods' own order. */
-	static void prices(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+	/** The Prices tab: every good, in the goods' own order; a click trades ({@link Board}). */
+	static void prices(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable ServerPlayer viewer, Runnable again) {
+		Note note = NOTES.remove(menu);
+		List<BlockPos> chests = Caravans.storehouse(level, hall);
+		List<ItemStack> stock = chests.isEmpty() ? null : Board.stock(level, chests);
 		List<TradeGoods.Good> goods = TradeGoods.all();
 		if (goods.isEmpty()) {
 			menu.button(VillageHallScreen.FIRST_ROW + 4, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.trade.no_goods"),
@@ -188,12 +261,28 @@ public final class TradePage {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
 			}
-			menu.button(slot++, goodIcon(level, hall, good), null);
+			ItemStack icon = goodIcon(level, hall, good, stock, viewer, note != null && note.good().equals(good.id()) ? note.text() : null);
+			menu.button(slot++, icon, p -> {
+				boolean buying = menu.rightClicked() || Board.carried(p, good) < good.bundle();
+				Board.Result result = buying ? Board.buy(level, hall, p, good, menu.shiftClicked()) : Board.sell(level, hall, p, good, menu.shiftClicked());
+				Component said = Board.message(level, hall, result);
+				if (!result.traded()) {
+					level.playSound(null, p.blockPosition(), net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1f);
+				}
+				Chat.actionBar(p, said);
+				NOTES.put(menu, new Note(good.id(), said));
+				again.run();
+			});
 		}
 	}
 
-	/** A good on the Prices tab: its icon with its marks, and the tooltip that says the same in words. */
-	public static ItemStack goodIcon(ServerLevel level, BlockPos hall, TradeGoods.Good good) {
+	/**
+	 * A good on the Prices tab: its icon with its marks, the tooltip that says the same in words, and how to trade it:
+	 * what the village can spare of {@code stock} (null: it has no Storehouse, and the tooltip says the market needs
+	 * one), what a click does for {@code viewer}, and under the name what their last trade came to ({@code note}).
+	 */
+	public static ItemStack goodIcon(ServerLevel level, BlockPos hall, TradeGoods.Good good, @Nullable List<ItemStack> stock, @Nullable ServerPlayer viewer,
+									 @Nullable Component note) {
 		Caravans.Data data = Caravans.Data.get(level);
 		Market market = data.market(hall);
 		Market.Price price = market.prices().get(good.id());
@@ -202,6 +291,9 @@ public final class TradePage {
 		Component village = VillageHalls.name(level, hall);
 		Set<String> marks = new LinkedHashSet<>();
 		List<Component> lore = new ArrayList<>();
+		if (note != null) {
+			lore.add(VillageHallScreen.line(note, ChatFormatting.WHITE));
+		}
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.bundle", good.bundle()), ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.sells", money(selling(pays))), ChatFormatting.GREEN));
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.pays", money(pays)), ChatFormatting.YELLOW));
@@ -248,7 +340,25 @@ public final class TradePage {
 		} else if (dearest == null && cheapest == null) {
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.same_everywhere", ChatFormatting.DARK_GRAY));
 		}
-		ItemStack icon = VillageHallScreen.icon(good.icon(), good.name().copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new));
+		if (stock == null) {
+			lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.needs_storehouse", ChatFormatting.RED));
+		} else {
+			int spare = Board.spareBundles(good, stock);
+			lore.add(VillageHallScreen.line(spare > 0 ? Component.translatable("screen.aliveworkplace.trade.spare", spare)
+				: Component.translatable("screen.aliveworkplace.trade.none_spare", Caravans.KEEP), spare > 0 ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY));
+			int carried = viewer == null ? 0 : Board.carried(viewer, good);
+			if (carried >= good.bundle()) {
+				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.click_sell", carried), ChatFormatting.DARK_GRAY));
+				lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.click_buy_right", ChatFormatting.DARK_GRAY));
+			} else {
+				lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.click_buy", ChatFormatting.DARK_GRAY));
+			}
+		}
+		ItemStack shown = new ItemStack(good.icon());
+		if (shown.is(Items.POTION)) {
+			shown.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.HEALING)); // remedies: the board trades potions that heal
+		}
+		ItemStack icon = VillageHallScreen.icon(shown, good.name().copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new));
 		marks.forEach(m -> mark(icon, m));
 		return icon;
 	}

@@ -330,6 +330,12 @@ SCENES = [
       "Timber's tooltip with the dearer and the cheaper village, and the name icon's Known for line", 60,
       [("01_price_board", "The Trade page, Prices tab"), ("02_price_tooltip", "Timber: both prices, and where it's dearer and cheaper"),
        ("03_hall_known_for", "The hall's name icon: Known for, Short of")]),
+    # Trading at the board (ROADMAP 33.5): buying a bundle of Timber on the Prices tab, the treasury before and after
+    S("board_trade", "Realm", "Trading at the board: buying a bundle",
+      "a click on Timber on the hall's Prices tab bought a bundle of 16 logs out of the Storehouse's chest for 1 emerald, "
+      "and the treasury on the page went from 12.4 to 13.4 emeralds", 60,
+      [("01_board_before", "The Prices tab, the treasury before: 12.4 emeralds"), ("02_board_bought", "Timber clicked: 16 logs for 1 emerald"),
+       ("03_board_after", "The treasury after: 13.4 emeralds")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

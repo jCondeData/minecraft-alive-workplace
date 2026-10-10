@@ -272,7 +272,8 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 			Villager sage = villager(helper, new BlockPos(20, 2, 20), VillagerProfession.NONE, 1);
 			Legends.make(level, sage, Legends.get(TEST).orElseThrow(), "test");
 			check(helper, settled, hall, true, 1, 1);
-			helper.assertTrue(Conditions.types().size() == 21 && Conditions.types().contains("pastured_pokemon") && Conditions.types().contains("alpha_near"), "condition types: " + Conditions.types());
+			helper.assertTrue(Conditions.types().size() == 28 && Conditions.types().contains("pastured_pokemon") && Conditions.types().contains("alpha_near")
+					&& Conditions.types().containsAll(java.util.List.of("hearts_at_least", "job", "job_family", "level_below", "villager_type", "home_tier_below", "no_bed")), "condition types: " + Conditions.types());
 			helper.succeed();
 		});
 	}

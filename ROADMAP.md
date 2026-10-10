@@ -2914,7 +2914,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     changed (the area's blocks compared before and after);
   - in a village ringed by Stone Walls the gathering point is outside the ring;
   - scene `siege_ladders`: a GIF of pillagers laddering a Stone Wall and a guard throwing a ladder down.
-- [ ] **32.6** **Sieges III: battle stations and the morning after.** When a siege begins (or a warned one is near,
+- [x] **32.6** (review: pending 2026-10-10) **Sieges III: battle stations and the morning after.** When a siege begins (or a warned one is near,
   32.14), guards take stations instead of rallying at the bell: archers climb to the free station highest over the
   breach's side (the tops of finished Wall Towers and Lookout Towers, the Gatehouse's walkway, the Stone Wall's and
   Palisade's walkways; stations are walkway spots with two air above, read once per blueprint), knights hold the
@@ -4378,6 +4378,13 @@ item waits.
 - **Owner, 2026-10-10 (digest-1009-2253):** "maybe lighter suite for the showcase, we can put it down to 3 lanes if needed." Why it's needed: since 2026-10-06 every nightly showcase shard hits its 58-minute timeout and is cancelled (runs 153-156), so there are no fresh stills for the 12 pending reviews; the 16 shards are planned at ~30 min each but run about twice as long. Decision for the chat or a lane: film fewer scenes per night (changed scenes plus a rotating share of the rest) rather than more shards (MAX_SHARDS 18 is GitHub's job cap). Lanes stay at four until he says drop to 3.
 - **Owner, 2026-10-10: full permission to keep things in order and unblock bottlenecks.** digest-1009-2253 raised the showcase shard timeout from 58 to 100 minutes (shards plan at ~30 min but ran ~60 and were cancelled every night since 10-06; filming fewer scenes stays the next step if 100 isn't enough). The nightly tests' 5-hour cancels came from the 110-minute full build that B93 cut to 14 minutes, so tonight's nightly should finish; check it.
 - **Owner approved every decision in the 2026-10-05 decision notes as written** (chat, 2026-10-06): 27.15-34.1 and B78, including 28.7 (Cobblemon's nurse keeps working), 28.16 (Arena at level 4), 27.16 (bridge deck one block above the bank) and the 33.1 defaults (real-week leaderboard, no tribute, owner-only treasury from 33.5, colonies at City). He will review the wiki (22.9) at the next digest and send notes.
+- **32.6 notes** (lane-b-1010-0333, 2026-10-10; details in `docs/wiki/sieges.md`, Decisions): (1) "or a warned one is
+  near, 32.14" is not built, 32.14 doesn't exist yet: stations are taken when the siege begins, and 32.14 can start
+  the same watch earlier (`guard/BattleStations`). (2) Villagers can't path up ladders, so a guard walks to the foot of
+  his station and is then set on it with a ladder sound. (3) "Players who fought" are the players who killed a raider
+  of the siege. (4) A Wall Tower's own door counts as a gate for the rams (32.4's rule for doors of defence builds), so
+  a village with only a tower has it as the breach. (5) The scene `battle_stations` was written but not filmed or run
+  locally: its first nightly run is its first run.
 
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):

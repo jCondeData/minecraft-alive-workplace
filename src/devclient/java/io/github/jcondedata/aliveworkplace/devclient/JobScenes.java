@@ -669,6 +669,65 @@ final class JobScenes {
 					&& io.github.jcondedata.aliveworkplace.threat.Ladders.rungs(l, hall).isEmpty();
 			};
 		}, null));
+		// Sieges III (ROADMAP 32.6): raiders with axes lay siege to a Gatehouse with a Wall Tower beside it. The two archers
+		// of the Guard Posts inside leave them for their battle stations, one on each build, and shoot down at the raiders at
+		// the portcullis. (These guards think for themselves: the walk, the climb and the shooting are the feature.)
+		SCENES.put("battle_stations", new Job("the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 1500,
+			new Vec3(14.5, -51.0, 12.5), new Vec3(1.5, -56.5, -3.0), (level, player) -> {
+			BlockPos hall = STATION.north(14);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			// The Gatehouse and, east of it, the Wall Tower, both finished builds; the outside is the south, the camera's side.
+			Map<BlockPos, StarterBlueprints.Entry> builds = new LinkedHashMap<>();
+			builds.put(STATION.offset(-5, 0, -6), StarterBlueprints.GATEHOUSE);
+			builds.put(STATION.offset(6, 0, -6), StarterBlueprints.WALL_TOWER);
+			builds.forEach((at, entry) -> {
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(entry.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			});
+			List<Villager> archers = new java.util.ArrayList<>();
+			for (int x : new int[] {0, 4}) {
+				BlockPos post = STATION.offset(x, 0, -13); // (a Guard Post takes one guard)
+				level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+				Villager archer = EntityType.VILLAGER.spawn(level, STATION.offset(x, 0, -11), MobSpawnType.COMMAND);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, archer, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+				archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+				archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, new ItemStack(net.minecraft.world.item.Items.BOW));
+				archers.add(archer);
+			}
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.guard.BattleStations.forget();
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Culture.read(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_axemen"), com.google.gson.JsonParser.parseString(
+					"{\"roster\": [{\"entity\": \"minecraft:vindicator\", \"share\": 1, \"role\": \"melee\"}], \"tactics\": [\"ram_gates\"]}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.threat.Culture.Member member = culture.roster().get(0);
+			List<net.minecraft.world.entity.Mob> raiders = new java.util.ArrayList<>();
+			for (double[] at : new double[][] {{0.5, 6.5}, {-2.5, 8.5}, {3.5, 8.5}, {6.5, 7.5}}) {
+				net.minecraft.world.entity.Mob raider = io.github.jcondedata.aliveworkplace.threat.Threats.create(level, member);
+				raider.moveTo(at[0], STATION.getY(), at[1], 180f, 0f);
+				raider.finalizeSpawn(level, level.getCurrentDifficultyAt(raider.blockPosition()), MobSpawnType.EVENT, null);
+				io.github.jcondedata.aliveworkplace.threat.Threats.outfit(level, raider, culture, member);
+				level.addFreshEntityWithPassengers(raider);
+				raiders.add(raider);
+			}
+			Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.threat.Culture> loaded = new LinkedHashMap<>();
+			io.github.jcondedata.aliveworkplace.threat.Threats.all().forEach(c -> loaded.put(c.id(), c));
+			loaded.put(culture.id(), culture);
+			io.github.jcondedata.aliveworkplace.threat.Threats.setForTest(loaded);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, hall, culture, raiders);
+			Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.siege(level, hall).isPresent(), "the raid on the village behind the Gatehouse is a siege");
+			List<BlockPos> stations = io.github.jcondedata.aliveworkplace.guard.BattleStations.stations(level, hall);
+			Showcase.check(stations.stream().anyMatch(s -> s.getX() < STATION.getX() + 6) && stations.stream().anyMatch(s -> s.getX() >= STATION.getX() + 6),
+				"the Gatehouse and the Wall Tower both have battle stations");
+			return l -> {
+				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
+				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
+				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
+			};
+		}, null));
 		SCENES.put("roads", new Job("the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 9000,
 			new Vec3(0.5, -45, -26), new Vec3(0.5, -60, -6), (level, player) -> {
 			// Two cottages (stamped, on the books as built), the hall south of them, a builder with Stonework in his chest,

@@ -1,10 +1,10 @@
-# Sieges: rams, gates and ladders
+# Sieges: rams, gates, ladders and battle stations
 
-ROADMAP 32.4 (rams and gates) and 32.5 (ladders), the first two parts of sieges. Part of Milestone 32 (1.6), so it is **off for players until the milestone is
+ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), so it is **off for players until the milestone is
 finished** (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defence page on [Lairs and the Defence page](lairs.md).
 
-Roadmap items: 32.4, 32.5
+Roadmap items: 32.4, 32.5, 32.6
 
 ## What a player sees
 
@@ -31,6 +31,22 @@ Roadmap items: 32.4, 32.5
 - **Ladders go on any wall, yours too, but only into air**, and never against a gate. When the raid is over every
   ladder is taken away; nothing else of the wall is touched and no ladder item is left behind.
 - **No raider appears inside the walls**: a siege gathers beyond the outermost finished wall on the side it comes from.
+- **Guards take battle stations** (32.6) when a siege begins, instead of rallying at the bell. Archers go up to the
+  tops of finished Wall Towers and Lookout Towers and the walkways of the Gatehouse, Stone Wall and Palisade, on the
+  side the raiders came from, and spread over the builds before two share one. Knights stand 3 blocks inside the gate
+  the rams go for, medics 3 blocks behind them. Guards with only a sword, and anyone who finds no free station, answer
+  the bell as before. Their card says "going to their battle station" and "at their battle station".
+- **From a station an archer shoots 24 blocks** (16 from the ground) and does a quarter more damage to a foe 3 or
+  more blocks below. On a station he never climbs down to chase.
+- **The morning after**, at the dawn the gates open, the chronicle has a siege report (a new kind with the iron bars
+  icon): "The siege: 9 raiders came and 7 fell, 5 to the guards and 2 to players. The gate held. Hero of the night:
+  Brannoc, with 3 kills."
+- **Players who killed a raider in a siege that was fought off are Heroes of the Village for a day**, and every
+  villager of the village is 10 happier for a day: "we held against the siege" on their mood. A siege the raiders
+  walked away from at dawn gives neither.
+- **For 2 days after a siege (and during it) builders mend walls, gates and towers first**, before any house.
+- **New research, Ramparts** (one level, after Fortification I, the stone brick wall icon): in a siege the gates have
+  twice the hit points, and archers on stations shoot 28 blocks.
 - **The Defence page shows the gates** (the guards icon on the Village Hall, third row): open or shut, how many stand,
   the portcullis up or down, "Under siege", and how many gate blocks rams broke that wait for a builder.
 
@@ -78,6 +94,35 @@ Roadmap items: 32.4, 32.5
     checked against the world: a rung someone took, and every rung above it, comes off the list and is set again.
     `Ladders.takeAway` runs when the raid ends and again when the siege lifts, and works from the saved list alone, so
     ladders standing when the server stopped go too.
+- **Battle stations** (`guard/BattleStations`, 32.6) run beside the director: one watch a siege, every 20 ticks in
+  a tick of its own, sending at most 4 guards on their way a tick.
+  - A station is a block of a finished wall, gate or Lookout Tower blueprint, at least 2 above its floor row, with a
+    whole top face and nothing in the two blocks above it, that is not a merlon (a spot one higher than a spot beside
+    it). Each blueprint is read once and kept in memory. A Wall Tower has 7: its top floor's planks without the
+    ladder's hole and the lantern's plank.
+  - When a station is taken it is checked against the world: its floor must stand and two blocks be free. A station
+    built over or with its floor gone is skipped, and a guard on it gets another.
+  - An archer's choice among the free stations within 24 blocks of his Guard Post: the breach's side of the village
+    first, then the build with the fewest archers, then the highest, then the nearest the breach (with no breach, the
+    farthest out from the hall).
+  - **The climb**: villagers cannot path up a ladder. A guard walks as near his station as his path gets; once he
+    is within 3.5 blocks of it and below it he is set on it, with a ladder's step sound.
+  - On the way an archer fights only what comes within 8 blocks. From a station his bow's arrow flies faster and
+    flatter so that it carries the range; its damage is scaled back so only the height rule adds to it.
+  - A knight or medic fights only a foe within 6 blocks of his spot, so the gate's defenders wait for what comes
+    through instead of pressing against the bars.
+  - An archer on a station is kept on it: any other walk of a villager's day is stopped while he stands there.
+  - A guard is an archer, knight or medic by what is in the off hand (bow or crossbow, shield, healing potion), as
+    everywhere else. A guard whose kind changes gives his place up.
+  - Nothing of it is saved: after a restart the stations are read and handed out again.
+- **The report** (`threat/SiegeReport`, 32.6): every death of a raider (the raid's tag) within the village's radius
+  plus 64 blocks of a hall under siege is counted in the siege's saved data: to a guard and which, to a player, or to
+  anything else (golems, mercenaries, falls). The hero is the guard with the most kills, the first to get there on a
+  tie. The report is written when the siege lifts. `Tactic.end`'s `fled` decides "won".
+- **Defences first**: `build/Upkeep` sorts a builder's finished builds so the walls and gates family comes first
+  while his bench is in a village under siege or within 48000 ticks after one.
+- **Ramparts**: the siege notes the factor (2 or 1) when it begins, so research finished in mid-siege changes the
+  next siege, not this one. The archers' reach follows the research at once.
 - **Gathering** (`Sieges.outside`, used by `VillageRaids.start` for cultures with `ram_gates` or `ladders`): the line
   from the hall through the raid's gathering point is followed to where it leaves the footprint of each finished wall
   or gate build (3 blocks wider each way, so corners and joints count); if the point is not at least 7 blocks beyond
@@ -104,10 +149,13 @@ In `aliveworkplace_threats` (per dimension), all new and empty by default, so an
 |---|---|---|
 | `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told) | none; `ladders` empty and `laddered` false in a siege saved before 32.5 |
 | `broken` | per hall, the gate blocks rams broke that wait for a builder | none |
+| in each of `sieges` (32.6) | `hp_factor` (what gate hit points were multiplied by), `came`, `fled`, `to_guards`, `to_players`, `to_others`, `kills` (guard, count, name), `players` (who killed a raider) | 1, 0, false, 0, 0, 0, none, none |
+| `after` (32.6) | per hall, the game time until which villagers are glad they held (`held`) and builders mend defences first (`mending`) | none |
 
 ## Items, blocks, jobs, commands
 
-None. One new slot on the hall's Defence page (the gates). The ladders are vanilla ladder blocks.
+None. One new slot on the hall's Defence page (the gates). The ladders are vanilla ladder blocks. 32.6 adds the
+research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icons, so no new art.
 
 ## Decisions
 
@@ -133,7 +181,25 @@ None. One new slot on the hall's Defence page (the gates). The ladders are vanil
   (profession Guard), so mercenaries and golems do not.
 - 32.5: the gathering point is moved only for cultures that lay sieges; the plain monsters gather as they always did.
 
+- 32.6: the class is `guard/BattleStations`, not the design's `threat/Stations`: `work/Stations` already exists,
+  and `threat/` does not import `guard/`, which a class that orders guards about has to.
+- 32.6: no new switch. Stations and the report are part of a siege, so `sieges` off turns them off.
+- 32.6: a guard is set on his station for the last step instead of climbing rung by rung, because villagers have no
+  ladder pathfinding. He has to walk to the foot first.
+- 32.6: archers spread over the builds before taking the highest station twice, so one tower does not get them all.
+- 32.6: "players who fought" are the players who killed a raider of the siege. A player who only wounded one, or
+  who is offline at dawn, is not made a hero.
+- 32.6: the report counts what died, so raiders who fled are "came" but not "fell". Kills by golems and mercenaries
+  count as fallen but are in neither of the two named numbers.
+- 32.6: "the morning after" is the dawn the siege lifts (23500), the same moment the gates open.
+- 32.6: "when a warned siege is near" needs the warnings of 32.14, which does not exist yet. Stations are taken
+  when the siege begins; 32.14 can call the same watch earlier.
+
 ## Known limits
+
+- Battle stations (32.6): a station only counts if the guard can get within 3.5 blocks of its foot. Merlons can
+  hide a foe from an archer standing behind one; he shoots when he has a line of sight. A blueprint whose walkway is
+  made of slabs' lower halves or stairs is not read as stations.
 
 - Ladders (32.5): anything at least two blocks high between a climber and the hall counts as a wall, so a house that
   stands in the way inside an open stretch can get a ladder. A hall shut in a room more than 5 blocks from any ground
@@ -145,9 +211,7 @@ None. One new slot on the hall's Defence page (the gates). The ladders are vanil
   reaching a ladder by himself, and a wall whose top changes while a raider crosses it.
 
 - No culture the mod ships uses `ram_gates` until the pillager warband (32.7); a datapack culture can.
-- Battle stations, the siege report, "defences first" for builders and the Ramparts
-  research are 32.6; gates shut from noon on a warned day are 32.14. The siege's chat lines are not in the chronicle
-  yet (the report is 32.6).
+- Gates shut from noon on a warned day, and stations taken before the raiders are there, are 32.14.
 - A village with walls but no gate build is besieged (the message, the day's end) but there is nothing for a ram to do.
 - The breach is picked once, when the siege begins; if every block of it is open the rams fight as other raiders do.
 - After a restart the director sends raiders that were already inside back through the breach once, if they have
@@ -173,3 +237,20 @@ None. One new slot on the hall's Defence page (the gates). The ladders are vanil
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.
+- GameTests: `BattleStationGameTests` (32.6): an archer whose Guard Post is 6 blocks from a finished Wall
+  Tower is on its top within 400 ticks of the siege starting, on the station nearest the breach's outside, and from
+  there shoots and hits a raider 22 blocks off; the tower's blueprint read once; at most 4 guards sent a tick; 28
+  blocks with Ramparts. With the tower's top built over the same archer has no station and shoots only from 16
+  blocks or less. A station's floor broken under the archer: he takes another. A knight's place 3 blocks inside the
+  Palisade Gate and a medic's 6, both walked to, none for a plain guard, and none at all with the sieges switch off. The
+  morning after: two guards and a player kill raiders, a save and load in mid-siege, the raid ends, dawn: the
+  chronicle's one SIEGE entry word for word with the hero's name, the player a Hero of the Village, a villager's mood
+  10 higher with "we held", defences first for 2 days, all kept through another load. Ramparts: fence gates of 60 hit
+  points become 120, the topic needs Fortification I and has its slot on the research screen; a save without the 32.6
+  fields loads with defaults. A builder with planks and fence gates in his chest puts the broken gate block back
+  before the missing plank of a house recorded first. Every new sentence has its text. All 8 passed twice here
+  together with `SiegeGameTests` and `LadderGameTests`; not checked for flakiness with the repeat generator, and not
+  tested: Lookout Tower, Gatehouse, Stone Wall and Palisade stations in a GameTest (the scene uses a Gatehouse), a
+  crossbow from a station, the damage an arrow does with the height bonus (only the factor), an offline player.
+- Showcase scene `battle_stations`: two archers leaving their Guard Post for stations on a Gatehouse and a Wall Tower
+  and shooting down at raiders hacking at the portcullis. Not filmed yet when this was written.

@@ -227,6 +227,12 @@ public final class Moods {
 			score += banquet.points();
 			good.add(banquet.reason());
 		}
+		// Their village held against a siege in the last day (32.6).
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason held = io.github.jcondedata.aliveworkplace.threat.SiegeReport.heldMood(level, villager);
+		if (held != null) {
+			score += held.points();
+			good.add(held.reason());
+		}
 		// The Festival Cup their village holds (28.21).
 		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason cup = io.github.jcondedata.aliveworkplace.cup.CupChampions.mood(level, villager);
 		if (cup != null) {

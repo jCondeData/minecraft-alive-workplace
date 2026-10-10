@@ -39,8 +39,13 @@ import net.minecraft.world.level.saveddata.SavedData;
  * (above head height) and {@code dropped} (a bar of the dropped portcullis, not of the blueprint); and
  * {@code portcullis}: every bar the siege dropped, to draw up again. Since 32.5 also {@code ladders} (every rung the
  * raiders set against a wall, to take away again; default none) and {@code laddered} (the players were told of the
- * ladders; default false).</li>
+ * ladders; default false). Since 32.6 also the morning report's numbers: {@code hp_factor} (what the gates' hit
+ * points were multiplied by; default 1), {@code came}, {@code fled}, {@code to_guards}, {@code to_players},
+ * {@code to_others} (default 0 and false), {@code kills} (per guard: {@code guard}, {@code count}, {@code name};
+ * default none) and {@code players} (who killed a raider; default none).</li>
  * <li>{@code broken} (32.4): per {@code hall}, the gate blocks rams broke that wait for a builder.</li>
+ * <li>{@code after} (32.6): per {@code hall}, the game time until which its villagers are glad they held
+ * ({@code held}) and its builders mend defence builds first ({@code mending}); default none.</li>
  * </ul>
  */
 public final class ThreatData extends SavedData {
@@ -113,6 +118,22 @@ public final class ThreatData extends SavedData {
 		public final List<BlockPos> ladders = new ArrayList<>();
 		/** Whether the players were told that ladders are at the walls. */
 		public boolean laddered;
+		/** The morning-after report's numbers (32.6); every one defaults to nothing in a save from before it. */
+		/** What the gates' hit points were multiplied by when the siege began (2 with the Ramparts research; a save from before it: 1). */
+		public int hpFactor = 1;
+		/** How many raiders came. */
+		public int came;
+		/** Whether the raiders that were left fled at dawn (the siege was not won). */
+		public boolean fled;
+		/** Raiders that fell to guards, to players, and to anything else. */
+		public int toGuards;
+		public int toPlayers;
+		public int toOthers;
+		/** Each guard's kills in this siege, and the guards' names as they were at their last kill. */
+		public final Map<java.util.UUID, Integer> kills = new LinkedHashMap<>();
+		public final Map<java.util.UUID, String> names = new LinkedHashMap<>();
+		/** The players who fought: who killed a raider of this siege. */
+		public final Set<java.util.UUID> players = new java.util.LinkedHashSet<>();
 
 		public Siege(BlockPos hall, long began, long dawn) {
 			this.hall = hall.immutable();
@@ -138,6 +159,10 @@ public final class ThreatData extends SavedData {
 	private final Map<BlockPos, List<Past>> history = new LinkedHashMap<>();
 	private final Map<BlockPos, Siege> sieges = new LinkedHashMap<>();
 	private final Map<BlockPos, List<BlockPos>> broken = new LinkedHashMap<>();
+	/** Per hall, the game time until which its villagers are glad they held (32.6). */
+	private final Map<BlockPos, Long> held = new LinkedHashMap<>();
+	/** Per hall, the game time until which its builders mend defence builds first (32.6). */
+	private final Map<BlockPos, Long> mending = new LinkedHashMap<>();
 
 	public static ThreatData get(ServerLevel level) {
 		ThreatData data = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(ThreatData::new, ThreatData::load, null), NAME);
@@ -323,9 +348,46 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
-	/** Forgets the siege of the village round {@code hall} and its broken gates (the hall is gone; tests). */
+	// The morning after (32.6).
+
+	/** The game time until which the villagers round {@code hall} are glad they held (0: never). */
+	public long heldUntil(BlockPos hall) {
+		return held.getOrDefault(hall, 0L);
+	}
+
+	/** The game time until which the builders round {@code hall} mend defence builds first (0: never). */
+	public long mendingUntil(BlockPos hall) {
+		return mending.getOrDefault(hall, 0L);
+	}
+
+	/** The halls whose villagers are glad they held, with the game time it ends. */
+	public Map<BlockPos, Long> held() {
+		return held.isEmpty() ? Map.of() : Map.copyOf(held);
+	}
+
+	/** The halls whose builders mend defence builds first, with the game time it ends. */
+	public Map<BlockPos, Long> mending() {
+		return Map.copyOf(mending);
+	}
+
+	/** Sets the morning after of the village round {@code hall}: glad till {@code heldTill} (0: not), defences first till {@code mendTill}. */
+	public void after(BlockPos hall, long heldTill, long mendTill) {
+		if (heldTill > 0) {
+			held.put(hall.immutable(), heldTill);
+		} else {
+			held.remove(hall);
+		}
+		if (mendTill > 0) {
+			mending.put(hall.immutable(), mendTill);
+		} else {
+			mending.remove(hall);
+		}
+		setDirty();
+	}
+
+	/** Forgets the siege of the village round {@code hall}, its broken gates and its morning after (the hall is gone; tests). */
 	public void forgetSiege(BlockPos hall) {
-		if (sieges.remove(hall) != null | broken.remove(hall) != null) {
+		if (sieges.remove(hall) != null | broken.remove(hall) != null | held.remove(hall) != null | mending.remove(hall) != null) {
 			setDirty();
 		}
 	}
@@ -407,9 +469,42 @@ public final class ThreatData extends SavedData {
 			g.putLongArray("portcullis", siege.portcullis.stream().mapToLong(BlockPos::asLong).toArray());
 			g.putLongArray("ladders", siege.ladders.stream().mapToLong(BlockPos::asLong).toArray());
 			g.putBoolean("laddered", siege.laddered);
+			g.putInt("hp_factor", siege.hpFactor);
+			g.putInt("came", siege.came);
+			g.putBoolean("fled", siege.fled);
+			g.putInt("to_guards", siege.toGuards);
+			g.putInt("to_players", siege.toPlayers);
+			g.putInt("to_others", siege.toOthers);
+			ListTag kills = new ListTag();
+			for (Map.Entry<java.util.UUID, Integer> e : siege.kills.entrySet()) {
+				CompoundTag k = new CompoundTag();
+				k.putString("guard", e.getKey().toString());
+				k.putInt("count", e.getValue());
+				k.putString("name", siege.names.getOrDefault(e.getKey(), ""));
+				kills.add(k);
+			}
+			g.put("kills", kills);
+			ListTag fought = new ListTag();
+			for (java.util.UUID id : siege.players) {
+				CompoundTag k = new CompoundTag();
+				k.putString("id", id.toString());
+				fought.add(k);
+			}
+			g.put("players", fought);
 			laid.add(g);
 		}
 		tag.put("sieges", laid);
+		ListTag mornings = new ListTag();
+		Set<BlockPos> villages = new java.util.LinkedHashSet<>(held.keySet());
+		villages.addAll(mending.keySet());
+		for (BlockPos hall : villages) {
+			CompoundTag a = new CompoundTag();
+			a.putLong("hall", hall.asLong());
+			a.putLong("held", held.getOrDefault(hall, 0L));
+			a.putLong("mending", mending.getOrDefault(hall, 0L));
+			mornings.add(a);
+		}
+		tag.put("after", mornings);
 		ListTag holes = new ListTag();
 		for (Map.Entry<BlockPos, List<BlockPos>> e : broken.entrySet()) {
 			CompoundTag h = new CompoundTag();
@@ -434,6 +529,21 @@ public final class ThreatData extends SavedData {
 		history.clear();
 		sieges.clear();
 		broken.clear();
+		held.clear();
+		mending.clear();
+		ListTag mornings = Nbt.getList(tag, "after", Tag.TAG_COMPOUND);
+		for (int i = 0; i < mornings.size(); i++) {
+			CompoundTag a = Nbt.compoundAt(mornings, i);
+			if (Nbt.has(a, "hall", Tag.TAG_LONG)) {
+				BlockPos hall = BlockPos.of(Nbt.getLong(a, "hall"));
+				if (Nbt.getLong(a, "held") > 0) {
+					held.put(hall, Nbt.getLong(a, "held"));
+				}
+				if (Nbt.getLong(a, "mending") > 0) {
+					mending.put(hall, Nbt.getLong(a, "mending"));
+				}
+			}
+		}
 		ListTag laid = Nbt.getList(tag, "sieges", Tag.TAG_COMPOUND);
 		for (int i = 0; i < laid.size(); i++) {
 			CompoundTag g = Nbt.compoundAt(laid, i);
@@ -462,6 +572,31 @@ public final class ThreatData extends SavedData {
 				siege.ladders.add(BlockPos.of(pos));
 			}
 			siege.laddered = Nbt.getBoolean(g, "laddered");
+			siege.hpFactor = Math.max(1, Nbt.getInt(g, "hp_factor"));
+			siege.came = Nbt.getInt(g, "came");
+			siege.fled = Nbt.getBoolean(g, "fled");
+			siege.toGuards = Nbt.getInt(g, "to_guards");
+			siege.toPlayers = Nbt.getInt(g, "to_players");
+			siege.toOthers = Nbt.getInt(g, "to_others");
+			ListTag kills = Nbt.getList(g, "kills", Tag.TAG_COMPOUND);
+			for (int j = 0; j < kills.size(); j++) {
+				CompoundTag k = Nbt.compoundAt(kills, j);
+				try {
+					java.util.UUID id = java.util.UUID.fromString(Nbt.getString(k, "guard"));
+					siege.kills.put(id, Nbt.getInt(k, "count"));
+					siege.names.put(id, Nbt.getString(k, "name"));
+				} catch (IllegalArgumentException e) {
+					// (not an id: the entry is skipped)
+				}
+			}
+			ListTag fought = Nbt.getList(g, "players", Tag.TAG_COMPOUND);
+			for (int j = 0; j < fought.size(); j++) {
+				try {
+					siege.players.add(java.util.UUID.fromString(Nbt.getString(Nbt.compoundAt(fought, j), "id")));
+				} catch (IllegalArgumentException e) {
+					// (not an id: the entry is skipped)
+				}
+			}
 			sieges.put(siege.hall, siege);
 		}
 		ListTag holes = Nbt.getList(tag, "broken", Tag.TAG_COMPOUND);

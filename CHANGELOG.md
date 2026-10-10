@@ -24,6 +24,14 @@ asks for the steps, `latest.log` and any crash report).
   are unloaded, and back out. They are only a sight: the goods travel the saved way, and nobody can trade with, ride,
   feed, hurt or rob them. One party per village at a time, gone after two minutes, removed after a restart.
   `visibleCaravans` turns them off.
+- **Sieges, part 3: battle stations and the morning after, for 1.6** (32.6, off until 1.6 is finished): when a siege
+  begins, archers go up to the tops of Wall Towers and Lookout Towers and the walkways of gates and walls, knights
+  hold the inside of the gate the rams go for and medics stand behind them. From a station an archer shoots 24 blocks
+  (16 on the ground) and hits a quarter harder at foes 3 or more blocks below. The next dawn the chronicle has a
+  siege report with the hero of the night, players who killed a raider in a siege that was fought off are Heroes of
+  the Village for a day, villagers are 10 happier for a day ("we held against the siege"), and for 2 days builders
+  mend walls and gates before houses. New research **Ramparts** (after Fortification I): gates have twice the hit
+  points and archers on stations shoot 28 blocks.
 - **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all

@@ -96,6 +96,8 @@ public final class Sieges {
 	public static final int RAM_EVERY = 40;
 	public static final int AXE_BLOW = 4;
 	public static final int AXE_EVERY = 20;
+	/** What the Ramparts research multiplies a gate's hit points by (32.6). */
+	public static final int RAMPARTS_FACTOR = 2;
 	/** How often (director ticks) the raiders are counted again and the cracks shown again (a client forgets them after 20 s). */
 	private static final int REFRESH = 10;
 
@@ -151,6 +153,7 @@ public final class Sieges {
 
 			@Override
 			public void end(ServerLevel level, BlockPos hall, Culture culture, boolean fled) {
+				fled(level, hall, fled);
 				raidOver(level, hall);
 			}
 		});
@@ -306,6 +309,8 @@ public final class Sieges {
 		}
 		laid.ifPresent(old -> lift(level, old)); // (the last one's bars go up before this one's come down)
 		ThreatData.Siege siege = new ThreatData.Siege(hall, level.getGameTime(), nextDawn(level.getDayTime()));
+		siege.came = raiders.size();
+		siege.hpFactor = ramparts(level, hall) ? RAMPARTS_FACTOR : 1; // Ramparts (32.6): gates twice as strong
 		Vec3 from = Vec3.atCenterOf(hall);
 		if (!raiders.isEmpty()) {
 			from = Vec3.ZERO;
@@ -399,7 +404,7 @@ public final class Sieges {
 		List<Piece> sorted = new ArrayList<>(its);
 		sorted.sort(order);
 		for (Piece piece : sorted) {
-			siege.gates.add(new ThreatData.Gate(piece.pos(), hitPoints(piece.state()), lane(ways, middle, piece.local().getX()),
+			siege.gates.add(new ThreatData.Gate(piece.pos(), hitPoints(piece.state()) * siege.hpFactor, lane(ways, middle, piece.local().getX()),
 				piece.local().getY() - floor >= 2, piece.dropped()));
 		}
 		siege.breach = sorted.get(0).pos();
@@ -416,6 +421,23 @@ public final class Sieges {
 	private static int lane(List<Integer> ways, int middle, int x) {
 		int i = ways.indexOf(x);
 		return i >= 0 ? i : ways.size() + Math.abs(x - middle);
+	}
+
+	/** Whether the village round {@code hall} has the Ramparts research (32.6). */
+	public static boolean ramparts(ServerLevel level, BlockPos hall) {
+		return level.isLoaded(hall) && level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
+			&& entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.RAMPARTS) >= 1;
+	}
+
+	/** Notes for the morning's report whether the raiders left alive fled at dawn ({@code fled}) or the raid was fought off. */
+	static void fled(ServerLevel level, BlockPos hall, boolean fled) {
+		ThreatData data = ThreatData.get(level);
+		data.siege(hall).ifPresent(siege -> {
+			if (!siege.over && siege.fled != fled) {
+				siege.fled = fled;
+				data.setDirty();
+			}
+		});
 	}
 
 	/** The raid on the village round {@code hall} is over: the rams let go; the gates stay shut till dawn. */
@@ -516,6 +538,7 @@ public final class Sieges {
 			Ladders.takeAway(level, data, siege); // (also the ones a restart found standing)
 			long time = level.getDayTime();
 			if (time >= siege.dawn || time < siege.dawn - 2 * VillageNeeds.DAY) { // (or the clock was set back: don't wait days)
+				SiegeReport.write(level, siege); // the morning after (32.6)
 				lift(level, siege);
 			}
 			return;
@@ -665,7 +688,7 @@ public final class Sieges {
 		gate.hp -= damage;
 		data.setDirty();
 		if (gate.hp > 0) {
-			level.destroyBlockProgress(crackId(gate.pos), gate.pos, cracks(gate.hp, hitPoints(state)));
+			level.destroyBlockProgress(crackId(gate.pos), gate.pos, cracks(gate.hp, hitPoints(state) * siege.hpFactor));
 			return;
 		}
 		gate.hp = 0;
@@ -702,7 +725,7 @@ public final class Sieges {
 	private static void showCracks(ServerLevel level, ThreatData.Siege siege) {
 		for (ThreatData.Gate gate : siege.gates) {
 			if (gate.state == ThreatData.GateState.STANDING) {
-				int max = hitPoints(level.getBlockState(gate.pos));
+				int max = hitPoints(level.getBlockState(gate.pos)) * siege.hpFactor;
 				if (max > 0 && gate.hp < max) {
 					level.destroyBlockProgress(crackId(gate.pos), gate.pos, cracks(gate.hp, max));
 				}

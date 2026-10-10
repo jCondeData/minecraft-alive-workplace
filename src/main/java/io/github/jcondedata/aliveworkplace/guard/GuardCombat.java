@@ -43,9 +43,13 @@ public class GuardCombat extends Behavior<Villager> {
 	private static final int XP_PER_KILL = 2;
 	/** Guards with a bow shoot foes up to this far away, and keep creepers at least {@link #CREEPER_DISTANCE} away. */
 	static final double BOW_RANGE = 16;
+	/** An archer on the way to a battle station fights only foes nearer than this. */
+	private static final double STATION_FIRST = 8;
 	private static final double CREEPER_DISTANCE = 7;
 	private static final double MELEE_FROM = 4.5;
 	private static final int SHOT_COOLDOWN = 22;
+	/** The speed of a bow's arrow shot from a battle station (1.6 on the ground). */
+	private static final float STATION_SPEED = 2.2f;
 	/** Crossbows take longer to load, but their bolts fly faster and straighter. */
 	private static final int CROSSBOW_COOLDOWN = 30;
 
@@ -151,7 +155,17 @@ public class GuardCombat extends Behavior<Villager> {
 		double distance = Math.sqrt(villager.distanceToSqr(foe));
 		boolean creeper = foe instanceof net.minecraft.world.entity.monster.Creeper;
 		if (Guards.hasBow(villager) && (creeper || foe instanceof net.minecraft.world.entity.FlyingMob || distance > MELEE_FROM)) {
-			if (distance > BOW_RANGE || !villager.hasLineOfSight(foe)) {
+			// In a siege an archer with a battle station (32.6) goes there first unless the foe is close, shoots farther
+			// from it, and never leaves it to close in.
+			java.util.Optional<BlockPos> station = BattleStations.post(villager);
+			boolean posted = station.isPresent() && BattleStations.onStation(villager);
+			if (station.isPresent() && !posted && distance > STATION_FIRST) {
+				return;
+			}
+			if (distance > BattleStations.range(villager, BOW_RANGE) || !villager.hasLineOfSight(foe)) {
+				if (posted) {
+					return;
+				}
 				// Out of range or out of sight: close in (not too close to a creeper).
 				villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityTracker(foe, false), CHASE_SPEED,
 					creeper ? (int) CREEPER_DISTANCE + 1 : 1));
@@ -172,6 +186,14 @@ public class GuardCombat extends Behavior<Villager> {
 		if (creeper) {
 			// No bow any more (it broke): leave the creeper be.
 			target = null;
+			return;
+		}
+		// In a siege a knight or medic holds their spot inside the breach gate (32.6): only a foe near it draws them off.
+		java.util.Optional<BlockPos> hold = BattleStations.holding(villager);
+		if (hold.isPresent() && foe.distanceToSqr(net.minecraft.world.phys.Vec3.atBottomCenterOf(hold.get())) > BattleStations.HOLD * BattleStations.HOLD) {
+			if (!hold.get().closerToCenterThan(villager.position(), 1.5)) {
+				villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(hold.get(), CHASE_SPEED, 0));
+			}
 			return;
 		}
 		if (villager.distanceToSqr(foe) > REACH_SQR || !villager.hasLineOfSight(foe)) {
@@ -245,13 +267,22 @@ public class GuardCombat extends Behavior<Villager> {
 		double dz = foe.getZ() - villager.getZ();
 		double flat = Math.sqrt(dx * dx + dz * dz);
 		boolean crossbow = Guards.isCrossbow(bow);
+		boolean high = BattleStations.onStation(villager);
 		if (crossbow) {
 			arrow.setCritArrow(true);
 			arrow.shoot(dx, dy + flat * 0.1, dz, 2.6f, 1.5f);
+		} else if (high) {
+			// From a station the bow is drawn full: a flatter, faster, truer arrow that carries the longer range. An arrow
+			// hits for its base times its speed, so the base comes down by as much as the speed went up.
+			// (The aim is raised by the arrow's drop over the distance: half of gravity's 0.05 times the ticks of flight
+			// squared, a little more for the air.)
+			arrow.shoot(dx, dy + 0.0058 * flat * flat, dz, STATION_SPEED, 2f);
+			arrow.setBaseDamage(arrow.getBaseDamage() * 1.6 / STATION_SPEED);
 		} else {
 			arrow.shoot(dx, dy + flat * 0.2, dz, 1.6f, 4f);
 		}
-		arrow.setBaseDamage(arrow.getBaseDamage() * Guards.levelBonus(villager));
+		arrow.setBaseDamage(arrow.getBaseDamage() * Guards.levelBonus(villager)
+			* BattleStations.heightBonus(villager, foe)); // a quarter more at foes 3 or more below a station
 		arrow.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.DISALLOWED;
 		level.addFreshEntity(arrow);
 		level.playSound(null, villager.getX(), villager.getY(), villager.getZ(),
@@ -314,7 +345,7 @@ public class GuardCombat extends Behavior<Villager> {
 		return GuardRally.rallyPoint(villager).orElseGet(() -> Builders.benchPos(villager).orElse(villager.blockPosition()));
 	}
 
-	static Component title(Villager villager) {
+	public static Component title(Villager villager) {
 		return Component.translatable("message.aliveworkplace.guard.title_kind", Guards.kind(villager).title(),
 			ModAttachments.GUARD_KILLS.getOrElse(villager, 0));
 	}

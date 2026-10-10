@@ -147,6 +147,7 @@ public final class Ladders {
 
 			@Override
 			public void end(ServerLevel level, BlockPos hall, Culture culture, boolean fled) {
+				Sieges.fled(level, hall, fled);
 				Sieges.raidOver(level, hall);
 			}
 		});

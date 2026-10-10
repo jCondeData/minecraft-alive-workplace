@@ -623,6 +623,9 @@ SCENES = [
     # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
     job("siege_ladders", "Threats", "A siege: ladders over the wall",
         "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),
+    # Sieges III (ROADMAP 32.6): archers on battle stations shoot down at a siege
+    job("battle_stations", "Threats", "A siege: battle stations",
+        "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
     S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),

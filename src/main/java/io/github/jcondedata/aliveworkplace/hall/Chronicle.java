@@ -30,7 +30,9 @@ public final class Chronicle {
 		/** A story arc's chapters and endings (31.4). */
 		STORY(Items.BOOK),
 		/** A villager told a player something of their life (a heart event, 31.7). */
-		FRIEND(Items.PINK_TULIP);
+		FRIEND(Items.PINK_TULIP),
+		/** The morning's report of a siege (32.6): who came, how many fell and to whom, whether the gate held, the hero. */
+		SIEGE(Items.IRON_BARS);
 
 		public final Item icon;
 

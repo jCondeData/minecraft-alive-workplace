@@ -1641,6 +1641,7 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `workerPathRange` | 48 | how far villagers with a job look for a path in one go, in blocks; lower is lighter on the server, and farther walks are made in legs (vanilla: 48) |
 | `builderRepairs` | true | idle builders repair the buildings they finished when blocks go missing |
 | `banditCamps` | true | bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls |
+| `raiderCultures` | every culture on | who may raid, culture by culture: `"monsters": true`, `"bandits": true`, and a datapack's by its id; one set to false never comes. In the file only; it always lists every culture (`docs/wiki/raids.md`) |
 | `festivals` | true | villages with a Village Hall hold a festival every season (players can still call one with a cake) |
 | `villagerChatter` | true | villagers near a player now and then say something about their day, over their heads |
 | `villagerCouples` | true | villagers court, marry (a wedding at the bell) and mourn |

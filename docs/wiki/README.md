@@ -25,6 +25,9 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Classes](classes.md): Peasant to Noble, what each needs and gives, and the Vintner (1.8).
 - [Elders](elders.md): elders, their passing, and the Evergreen Charm that keeps a good one (1.8).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
+- [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
+- [Lairs and the Defence page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's
+  Defence page (32.3).
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).

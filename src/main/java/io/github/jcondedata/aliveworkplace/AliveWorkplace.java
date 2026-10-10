@@ -88,6 +88,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
+		io.github.jcondedata.aliveworkplace.threat.Threats.init(); // raider cultures as data (32.2)
 		io.github.jcondedata.aliveworkplace.story.QuestFiles.init(); // the quest engine's files (31.2)
 		io.github.jcondedata.aliveworkplace.story.QuestTracker.init(); // tracked quests as boss bars, reach objectives (31.3)
 		io.github.jcondedata.aliveworkplace.story.Friendship.init(); // friendship: favours, hits, the hearts look-up (31.5)

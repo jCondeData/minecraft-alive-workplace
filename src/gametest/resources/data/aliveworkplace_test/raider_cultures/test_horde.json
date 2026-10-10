@@ -1,0 +1,8 @@
+{
+  "where": { "min_villagers": 1000 },
+  "weight": 15,
+  "roster": [
+    { "entity": "minecraft:zombie", "share": 1, "gear": { "head": "minecraft:leather_helmet" } }
+  ],
+  "tactics": ["test_charge"]
+}

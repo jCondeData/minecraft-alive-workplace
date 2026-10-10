@@ -156,11 +156,17 @@ public final class Guards {
 	}
 
 	/**
-	 * Monsters only: never players, villagers, golems, pets or Pokémon. Creepers are left alone (a guard
+	 * Monsters, and any mob carrying the raider tag ({@link VillageRaids#TAG}: a raider culture may bring hoglins, which
+	 * aren't monsters to the game); never players, villagers, golems, pets or Pokémon. Creepers are left alone (a guard
 	 * with a sword would only set them off) — unless the guard has a bow (see {@link #isFoe(LivingEntity, Villager)}).
 	 */
 	public static boolean isFoe(LivingEntity entity) {
-		return entity.isAlive() && (entity instanceof Monster || entity instanceof Slime) && !(entity instanceof Creeper);
+		return entity.isAlive() && (entity instanceof Monster || entity instanceof Slime || isRaider(entity)) && !(entity instanceof Creeper);
+	}
+
+	/** One of a raid's raiders: a mob carrying {@link VillageRaids#TAG}. */
+	public static boolean isRaider(LivingEntity entity) {
+		return entity instanceof net.minecraft.world.entity.Mob && entity.getTags().contains(VillageRaids.TAG);
 	}
 
 	/** A foe for this guard: any monster, and creepers too once the guard carries a bow. */

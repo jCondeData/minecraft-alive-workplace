@@ -1,0 +1,9 @@
+{
+  "where": { "min_villagers": 1000 },
+  "weight": 5,
+  "arrival": "edge",
+  "hours": "until_noon",
+  "roster": [
+    { "entity": "minecraft:zombie", "share": 100, "role": "melee", "gear": { "head": "minecraft:leather_helmet" } }
+  ]
+}

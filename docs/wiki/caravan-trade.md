@@ -3,6 +3,8 @@
 ROADMAP 33.6 (part of 1.7, "From village to realm"; off until 1.7 is released). It builds on
 [the price board](price-board.md) and [trading at the board](board-trade.md).
 
+Roadmap items: 33.6
+
 ## What a player sees
 
 A trade route used to send the other village only what its workers were waiting for, free. It still does. Now the

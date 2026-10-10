@@ -3,6 +3,8 @@
 ROADMAP 33.5 (part of 1.7, "From village to realm"; off until 1.7 is released). It builds on
 [the price board](price-board.md).
 
+Roadmap items: 33.5
+
 ## What a player sees
 
 On the hall's **Trade** page, the **Prices** tab is a market. Every good's tooltip ends with what the village can

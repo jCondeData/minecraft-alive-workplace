@@ -152,6 +152,14 @@ public final class WorkplaceConfig {
 	public boolean villageEconomy = Expansions.on(Expansions.M33);
 	/** A caravan leaving or arriving near a player is seen: a carter leading two pack llamas (ROADMAP 33.7). Off: none is shown; the goods travel the same. */
 	public boolean visibleCaravans = Expansions.on(Expansions.M33);
+	/** A City can found a sister village with a Colony Charter from its hall's Colonies tab (ROADMAP 33.8). Off: no Colonies tab and no charters; an order on the road arrives anyway. */
+	public boolean colonies = Expansions.on(Expansions.M33);
+	/** The rank a village needs to buy a Colony Charter: "hamlet", "village", "town" or "city" (in the file only). */
+	public String colonyRank = "city";
+	/** Days between two colonies of one village. */
+	public int colonyCooldownDays = 7;
+	/** Colonies a village may found. */
+	public int coloniesPerVillage = 3;
 	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
 	public boolean villageClasses = Expansions.on(Expansions.M34);
 	/** Dawns running the next class's needs must hold for a household to rise one class. */
@@ -300,6 +308,8 @@ public final class WorkplaceConfig {
 		"arcCooldownDays", 0, 60,
 		"arcsAtOnce", 0, 20,
 		"guildsPerRank", 1, 4,
+		"colonyCooldownDays", 0, 60,
+		"coloniesPerVillage", 0, 16,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
 		"villagerElderDays", 20, 1000,
@@ -327,6 +337,7 @@ public final class WorkplaceConfig {
 			caps.add(v == null ? DEFAULT_MYTHIC_CAP.get(i) : clamp(v, 0, 10));
 		}
 		mythicLegendCap = caps;
+		colonyRank = colonyRank(colonyRank).name().toLowerCase(java.util.Locale.ROOT);
 		if (disabledArcs == null) {
 			disabledArcs = new ArrayList<>();
 		}
@@ -339,6 +350,16 @@ public final class WorkplaceConfig {
 			});
 		}
 		raiderCultures = cultures;
+	}
+
+	/** The rank {@code name} means for {@code colonyRank} ("town", "City"...); a City for anything else. */
+	static io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank colonyRank(String name) {
+		for (io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank rank : io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.values()) {
+			if (name != null && rank.name().equalsIgnoreCase(name.trim())) {
+				return rank;
+			}
+		}
+		return io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY;
 	}
 
 	/** The cultures the mod ships, all on. */
@@ -481,6 +502,11 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED = villageEconomy && Expansions.on(Expansions.M33);
 		// Off in gametests (a carter and llamas would walk through the tests next door); the caravan sight tests turn it on.
 		io.github.jcondedata.aliveworkplace.hall.CaravanSights.ENABLED = visibleCaravans && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
+		// Off in gametests (the Trade page's tests count its tabs, the advice tests their tips); the colony tests turn it on.
+		io.github.jcondedata.aliveworkplace.colony.Colonies.ENABLED = colonies && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.colony.Colonies.RANK = colonyRank(colonyRank);
+		io.github.jcondedata.aliveworkplace.colony.Colonies.COOLDOWN_DAYS = colonyCooldownDays;
+		io.github.jcondedata.aliveworkplace.colony.Colonies.PER_VILLAGE = coloniesPerVillage;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;

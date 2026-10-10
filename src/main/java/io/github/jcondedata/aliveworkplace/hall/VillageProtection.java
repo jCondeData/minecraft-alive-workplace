@@ -60,7 +60,7 @@ public final class VillageProtection {
 			}
 			// A stranger at the hall (33.5): the price board alone, whatever they hold, so they can trade there
 			if (!placing && hand == net.minecraft.world.InteractionHand.MAIN_HAND && state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL)
-				&& io.github.jcondedata.aliveworkplace.trade.TradePage.shown() && level instanceof ServerLevel server && player instanceof ServerPlayer stranger
+				&& io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED && level instanceof ServerLevel server && player instanceof ServerPlayer stranger
 				&& keeper(server, player, hit.getBlockPos()).isPresent()) {
 				io.github.jcondedata.aliveworkplace.trade.TradePage.openForStranger(stranger, hit.getBlockPos());
 				return InteractionResult.SUCCESS;

@@ -36,6 +36,23 @@ asks for the steps, `latest.log` and any crash report).
   loft for dyed wool. A Vintner or Tailor who reaches Journeyman sells their building's blueprint for 12 emeralds, the
   Steward builds one for a Vintner or Tailor with no workstation, and (once 1.8 is on) villages of all five kinds grow
   a small Winery and Tailor's Shop with a Vintner and a Tailor already at work.
+- **The settlers set out, for 1.7** (33.9, off until 1.7 is finished): right-click the hall with the Colony Charter,
+  its spot chosen, and two settlers volunteer (a builder and one more; never a guard, the only worker of a job, a
+  Legend or a child; a married volunteer brings their partner). 64 logs, 64 planks, 64 cobblestone, 32 bread, 16
+  torches, 12 glass panes and 3 beds come out of the Storehouses; what is missing goes on the village's wants and the
+  Storehouse board, and after 3 days they leave with what there is. The next morning they gather at the hall, the
+  bell rings and they walk out toward the spot; out of sight, they are on the road for 3 minutes plus a tick a
+  block. The Colonies tab shows the order ("On the road to Newbrook, there in 2 minutes") and can call it off until
+  they leave, which puts everyone and everything back.
+- **The Colony Charter, for 1.7** (33.8, off until 1.7 is finished): a City's hall gets a **Colonies** tab on its Trade
+  page that sells the owner a Colony Charter for 32 emeralds (the treasury pays what it has, you pay the rest).
+  Right-click the air with it for its map: the 2,048 blocks round the village, drawn like a vanilla map where the
+  server has the land loaded and as parchment elsewhere, a banner for every village with a hall, and the ring a colony
+  may go in (256 to 1,024 blocks from the hall, 128 clear of other halls). Click a spot, or right-click the ground
+  where you stand: a red cross marks it and the tooltip says "612 blocks north-east of Thornholm". Rename the charter
+  in an anvil to name the colony. One colony on the road at a time, 7 days between colonies, 3 a village. "What next?"
+  suggests a colony once a village is a City. New settings `colonies`, `colonyCooldownDays`, `coloniesPerVillage`, and
+  `colonyRank` in the file. The settlers themselves come with 33.9.
 - **Caravans you can see, for 1.7** (33.7, off until 1.7 is finished): when a caravan leaves or arrives in a village
   with a player within 96 blocks, a carter in the porter's outfit ("Thornholm's caravan") leads two llamas with chests
   and carpets in the village's colour (its Village Banner's, or one picked from where its hall stands) from the

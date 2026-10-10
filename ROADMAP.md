@@ -3345,7 +3345,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests: a departure spawns the carter and two llamas, which walk off and are removed; nothing spawns with no
     player near; a saved and reloaded carter is removed; the goods that arrive are the same with the switch on or off;
   - showcase scene `caravan` with a GIF of one leaving and one arriving.
-- [ ] **33.8** **The Colony Charter.** A City (`colonyRank`) can found a sister village. The Colonies tab gives the
+- [x] **33.8** (review: pending 2026-10-10) **The Colony Charter.** A City (`colonyRank`) can found a sister village. The Colonies tab gives the
   hall's owner a **Colony Charter** (a new item, drawn with the pixel-art skill on vanilla's map outline, bound to the
   hall like the Ledger) for 32 emeralds from the treasury (the player pays what the treasury lacks). Right-click the
   air with it for a map screen: the land round the village, 2,048 blocks across, drawn like a vanilla map where the
@@ -3360,7 +3360,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     the ring; a good spot is kept on the charter;
   - a test of the screen's map-to-world sum: a click lands within 16 blocks of the right place;
   - showcase scene `colony_charter` (the map screen with its ring and cross, the tooltip).
-- [ ] **33.9** **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
+- [x] **33.9** (review: pending 2026-10-10) **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
   ready:
   - two settlers volunteer: the lowest-levelled builder if there are two or more, otherwise a jobless grown-up who
     becomes the colony's builder; and a jobless villager, otherwise the lowest-levelled worker of a job the village
@@ -5205,6 +5205,29 @@ item waits.
   (9) **Off in GameTests unless a test turns it on** (like `partnerShows`): mock players left by other tests would
   send parties walking through the tests next door. (10) A party also goes when its hall is taken away or the switch
   is turned off; a timed-out party goes in a puff of smoke, one at the edge without.
+- 2026-10-10 (33.9, decisions; lane a): the settlers (`colony/Settlers`, the order's new fields in `RealmData.Order`,
+  wiki `colony-settlers.md`). The charter is used up at the hall and comes back on a call-off (no refund needed); a
+  builder mid-build and anyone whose married partner can't go don't volunteer; "three of a job" counts before anyone
+  is chosen; wants ask for oak logs, oak planks and white beds but any kind is taken. For 33.10: an order `on_road`
+  holds `settlers` (villager NBT without `id` or a fresh position, as graves keep them; `Graves.revive` shows the
+  loading), `builder` (the UUID of the settler who is or becomes the builder), `supplies` (item to count), `arrives`
+  and `cost` 3,200; nothing acts on `arrives` yet, so until 33.10 the order stays on the road and blocks the next
+  colony. The scene shortens the wait for the morning to 5 seconds (`Settlers.MUSTER_DELAY`).
+- 2026-10-10 (33.8, decisions; lane a): the Colony Charter (`colony/Colonies`, `ColonyCharterItem`, `ColonyMap`,
+  `realm/RealmData`). (1) **`colonyRank` is a word, so it's in the file only** (the screen has switches and numbers);
+  the settings count went 86 to 89. (2) **The treasury pays in whole emeralds**, the buyer the rest. (3) **A charter
+  is sold only while the village could found a colony now** (rank, nothing on the road, the wait, the cap), and only
+  to those who rule it (`mayRule`). (4) **The limits read `aliveworkplace_realms`** (`RealmData`: `colonies.orders`,
+  `colonies.founded`, `cooldowns`, as the design note's table), which this item starts and 33.9/33.10 write
+  (`putOrder`, `removeOrder`, `recordFounded`); `Order` has no settlers or supplies yet: 33.9 adds them with empty
+  defaults. (5) **Other halls are the caravans' list** (every hall that has had a round); the hall's dimension is its
+  own. (6) **The charter isn't re-bound by clicking a hall** and a hall click is left to 33.9; the colony's name is
+  the item's custom name (`ColonyCharterItem.colonyName`). (7) **The map reuses `VillageMaps.colors`** (half 1,024,
+  16 blocks a pixel), which skips unloaded chunks, on the server thread. (8) **The Trade page opens when any tab but
+  Routes shows** (`TradePage.shown`), so Colonies works with `villageEconomy` off; a stranger's price board still
+  needs the economy. (9) **Off in GameTests unless a test turns it on**, like caravan sights (other tests count the
+  tabs and the tips). Not done here: a compat test of the split payment in CobbleDollars; the map's text isn't
+  layout-checked per GUI scale as the City Plan's is.
 - 2026-10-10 (34.13, decisions; lane d): the Winery and the Tailor's Shop. (1) **Half-sunk is banked earth**: a
   blueprint's lowest layer sits on the ground, so the cellar is the ground storey with dirt and grass banked two high
   against it, its door under the landing of the outside stair; Winery II's porch and terraces are the same knoll made

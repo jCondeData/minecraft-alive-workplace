@@ -200,7 +200,106 @@ def trade_marks_gui():
     return [path]
 
 
-DRAW = [village_hall_gui, pokemon_trader_gui, trade_marks_gui]
+# The Colony Charter's map screen (ROADMAP 33.8), drawn by the client's ColonyCharterScreen:
+# - textures/gui/colony_map_marks.png (64x32): the mother village's banner (0,0) and another village's (8,0), 8x8,
+#   each a banner on its pole with a dark outline as vanilla's map markers have (red cloth for the mother village,
+#   white for the others); the red cross of the chosen spot (16,0), 8x8, vanilla's map cross in the route red; and the
+#   dashed ink circle (32,0, 17x17) round another hall: no colony within 128 blocks (8 map pixels) of it;
+# - textures/gui/colony_map_parchment.png (16x16, tiled): plain map parchment for land the server hasn't loaded, in
+#   vanilla's empty-map colours, with a few fibres a shade darker and lighter (clusters, never noise);
+# - textures/gui/colony_map_ring.png (128x128, laid over the whole map): the ring where a colony may go, two dashed
+#   ink circles 16 and 63 map pixels from the hall in the middle (256 and 1,024 blocks at 16 blocks a pixel).
+INK = ("#5a4424", "#33230f")   # the map's ink, lit (top half) and shaded: dark enough to read on grass, water and parchment
+
+
+def _circle(size, radius, dash, colours):
+    """A dashed circle of `radius` pixels round the middle of a `size` square image: one pixel wide, `dash` on, `dash` off."""
+    import math
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    c = (size - 1) / 2.0
+    steps = max(8, int(2 * math.pi * radius * 4))
+    seen = []
+    for i in range(steps):
+        a = 2 * math.pi * i / steps
+        x, y = int(round(c + radius * math.cos(a))), int(round(c + radius * math.sin(a)))
+        if (x, y) not in seen:
+            seen.append((x, y))
+    for n, (x, y) in enumerate(seen):
+        if (n // dash) % 2 == 0 and 0 <= x < size and 0 <= y < size:
+            img.putpixel((x, y), _hex(colours[0] if y <= c else colours[1]))
+    return img
+
+
+def _hex(c):
+    c = c.lstrip("#")
+    return (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16), 255)
+
+
+def colony_map_gui():
+    red, paper = P("redstone"), P("paper")
+    own = Sprite.from_ascii("""
+        .kkkkkk.
+        .ka332k.
+        .ka322k.
+        .ka221k.
+        .kakkkk.
+        .kak....
+        .kak....
+        .kkk....
+    """.strip(), {"k": "#2a1a12", "a": "#8a6a3e"}, ramp=Ramp(["#7a1414", "#9c1f1b", "#c02a22", "#e0524a"]))
+    other = Sprite.from_ascii("""
+        .kkkkkk.
+        .ka332k.
+        .ka322k.
+        .ka221k.
+        .kakkkk.
+        .kak....
+        .kak....
+        .kkk....
+    """.strip(), {"k": "#2a1a12", "a": "#8a6a3e"}, ramp=Ramp(["#a8a8a0", "#c9c9c0", "#e6e6dc", "#fcfcf2"]))
+    cross = Sprite.from_ascii("""
+        kk...kk.
+        k3k.k2k.
+        .k3k2k..
+        ..k2k...
+        .k2k1k..
+        k2k.k1k.
+        kk...kk.
+        ........
+    """.strip(), {"k": "#4a0d0a"}, ramp=Ramp(["#7a1414", "#9c1f1b", "#c02a22", "#e0524a"]))
+    marks = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
+    for i, mark in enumerate((own, other, cross)):
+        marks.paste(Image.fromarray(mark.a.astype("uint8"), "RGBA"), (i * 8, 0))
+    marks.paste(_circle(17, 8, 2, INK), (32, 0))
+    out = ASSETS / "textures" / "gui"
+    out.mkdir(parents=True, exist_ok=True)
+    marks.save(out / "colony_map_marks.png")
+    parchment = Sprite.from_ascii("""
+        2222222222222222
+        2222223322222222
+        2222222222222112
+        2112222222222222
+        2222222222332222
+        2222222222222222
+        2222211222222222
+        2332222222222222
+        2222222222221122
+        2222222332222222
+        2222222222222222
+        2211222222222222
+        2222222222233222
+        2222221122222222
+        2222222222222222
+        2222332222222112
+    """.strip(), {}, ramp=Ramp(["#b89f74", "#cbb48a", "#d6be96", "#dfc9a4"]))
+    Image.fromarray(parchment.a.astype("uint8"), "RGBA").save(out / "colony_map_parchment.png")
+    ring = _circle(128, 16, 3, INK)
+    ring.alpha_composite(_circle(128, 63, 4, INK))
+    ring.save(out / "colony_map_ring.png")
+    return [out / "colony_map_marks.png", out / "colony_map_parchment.png", out / "colony_map_ring.png"]
+
+
+DRAW = [village_hall_gui, pokemon_trader_gui, trade_marks_gui, colony_map_gui]
 
 if __name__ == "__main__":
     run(DRAW)

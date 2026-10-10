@@ -17,6 +17,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
 - [Caravans that trade](caravan-trade.md): what a caravan takes to sell, how the other village pays, what comes home, and the Routes tab's earnings (33.6).
 - [Caravans you can see](visible-caravans.md): the carter and two pack llamas that show a caravan leaving or arriving, and why they are only a sight (33.7).
+- [The Colony Charter](colony-charter.md): the hall's Colonies tab, the charter, its map and the rules for where a colony may go (33.8).
 
 **The village**
 - [The Village Hall](village-hall.md): the village at a glance, its needs, ranks, calendar, treasury and pages.

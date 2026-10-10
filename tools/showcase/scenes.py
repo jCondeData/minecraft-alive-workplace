@@ -350,6 +350,13 @@ SCENES = [
     job("caravan", "Realm", "Caravans you can see: one leaves, one arrives",
         "Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
         "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 110),
+    # The Colony Charter (ROADMAP 33.8): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
+    S("colony_charter", "Realm", "The Colony Charter: choosing where a colony goes",
+      "Thornholm, a City, sold its owner a Colony Charter on the hall's Colonies tab (the treasury paid 20 emeralds, the player 12); "
+      "the charter's map showed the loaded land like a vanilla map on parchment, a banner for Thornholm, Ashford and Farholt, the ring "
+      "256 to 1,024 blocks out and the circles round the other halls; a click put the red cross 612 blocks north-east, and the tooltip says so", 75,
+      [("01_colonies_tab", "The Colonies tab: a charter for 32 emeralds, the treasury pays 20"), ("02_colony_map", "The charter's map: banners, the ring, a place pointed at"),
+       ("03_colony_spot", "A click: the red cross, 612 blocks north-east"), ("04_colony_tooltip", "The charter's tooltip names the spot")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

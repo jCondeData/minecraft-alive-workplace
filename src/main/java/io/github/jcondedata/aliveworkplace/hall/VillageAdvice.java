@@ -117,6 +117,11 @@ public final class VillageAdvice {
 		}
 		// A Legend who lacks only one condition (29.4)
 		tips.addAll(io.github.jcondedata.aliveworkplace.legend.LegendsPage.tips(level, hall));
+		// A colony (33.8): a village of the colony rank (a City) that could send one now
+		if (io.github.jcondedata.aliveworkplace.colony.Colonies.suggest(level, hall)) {
+			tips.add(new Tip("colony", ModItems.COLONY_CHARTER, io.github.jcondedata.aliveworkplace.colony.Colonies.COST,
+				io.github.jcondedata.aliveworkplace.colony.ColonyMap.MIN, io.github.jcondedata.aliveworkplace.colony.ColonyMap.MAX));
+		}
 		VillageRanks.Rank next = VillageRanks.of(level, hall).next();
 		if (next != null) {
 			VillageRanks.Score score = VillageRanks.score(level, hall, villagers);

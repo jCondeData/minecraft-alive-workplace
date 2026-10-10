@@ -276,6 +276,32 @@ def city_plan():
                                                    "g": "#80c71f", "G": "#4f7f12", "s": "#8a8a8a", "R": ROUTE}).save(item("city_plan"))]
 
 
+# The Colony Charter (33.8): the way from the mother village (a blue banner on its pole) by an ink trail to the
+# red cross where the colony goes, and the charter's red wax seal pressed on the sheet's lower corner.
+COLONY = """
+    ................
+    ................
+    ................
+    ................
+    ................
+    ...........R....
+    ..........RRR...
+    ....bb.ii..R....
+    ....k...........
+    ....k..rwW......
+    .......WWr......
+    .......rrq......
+"""
+
+
+def colony_charter():
+    """The Colony Charter (33.8) on vanilla's map paper and outline, as the patrol map and the City Plan are: the mother
+    village's banner, a short ink trail to a red cross (the spot it marks on its map screen; upright here so its five pixels stay one cluster), and a round red wax seal
+    (the Guild Charter's wax) lit from the top-left."""
+    return [on(vmap(VANILLA_MAP, MAP_PALE), COLONY, {"R": ROUTE, "i": "#6b5a3a", "b": BLUE[2], "k": "#4a3a22",
+                                                     "r": "#7a1414", "w": "#d64545", "W": "#b02525", "q": "#5a0e0e"}).save(item("colony_charter"))]
+
+
 # --- Paper and card -------------------------------------------------------------------------------------------------
 def village_ledger():
     """The hall's account book lying open on its green cloth cover: two pages of vanilla paper ruled into accounts,
@@ -1234,7 +1260,7 @@ def gift():
 DRAW = [blank_blueprint, blueprint, shape_planner, patrol_map, delivery_note, travel_ticket, price_tag,
         village_ledger, field_marker, city_plan, quarry_marker, rally_banner, scan_tool, settlers_wagon, founders_wagon, guide_book,
         work_horn, village_banner, miners_brew, builders_tea, smiths_draught, scholars_infusion,
-        harvest_cordial, woodsmans_broth, guild_charter, cider, berry_wine, vintage_wine, work_clothes, fine_clothes, noble_robes,
+        harvest_cordial, woodsmans_broth, guild_charter, colony_charter, cider, berry_wine, vintage_wine, work_clothes, fine_clothes, noble_robes,
         gazette, illuminated_book,
         evergreen_charm, gift_wrap, gift]
 DRAW += [amethyst_ring, emerald_brooch, gold_circlet]   # the Jeweller's pieces (34.12)

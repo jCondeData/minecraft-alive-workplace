@@ -101,6 +101,10 @@ range is in brackets.
 | `edictMinDays` | 3 (0 to 30) | 1.4 | Days an edict stays in force before it can be lifted. |
 | `villageEconomy` | on | 1.7 | Once a day every village with a hall works out the goods it's known for and short of, and a price for each good. Off: nothing is worked out; the last prices are kept. See [The price board](price-board.md). |
 | `visibleCaravans` | on | 1.7 | A caravan leaving or arriving in a village with a player within 96 blocks is seen: a carter leading two pack llamas between the Storehouse and the village's edge. Off: none is shown; the goods travel the same. See [Caravans you can see](visible-caravans.md). |
+| `colonies` | on | 1.7 | A City can found a sister village: the hall's Trade page gets a Colonies tab that sells a Colony Charter, whose map chooses where the colony goes. Off: no tab, no charters, and a charter chooses no spot. See [The Colony Charter](colony-charter.md). |
+| `colonyRank` | `city` | 1.7 | The rank a village needs to buy a Colony Charter: `hamlet`, `village`, `town` or `city`. In the file only: a word isn't on the settings screen. |
+| `colonyCooldownDays` | 7 (0 to 60) | 1.7 | Days a village waits after founding a colony before the next. |
+| `coloniesPerVillage` | 3 (0 to 16) | 1.7 | Colonies one village may found in all. |
 | `villageClasses` | on | 1.8 | Households in villages with a hall climb the class ladder. Off: no classes; classes and progress stay saved. |
 | `classRiseDays` | 2 (1 to 30) | 1.8 | Dawns running the next class's needs must hold for a household to rise one class. |
 | `classFallDays` | 3 (1 to 30) | 1.8 | Dawns running a need of their own class must fail for a household to fall one class. |

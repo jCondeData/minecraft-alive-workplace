@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
  * The hall's Trade page (ROADMAP 33.4, design note M33): what the minecart in the hall's divider opens while the
  * village economy is on. Row 1 is the page's own: the way back, then a tab for each part of trade that has landed,
  * from {@link #FIRST_TAB} on in {@link Tab}'s order (Routes, Prices; Pacts, Realm and Colonies stay hidden until their
- * items {@link #register} them), the open one marked {@link #OPEN}. Row 2 is the divider; the open tab fills rows 3
+ * items {@link #register} them; Colonies landed with 33.8), the open one marked {@link #OPEN}. Row 2 is the divider; the open tab fills rows 3
  * to 6 ({@link VillageHallScreen#FIRST_ROW} onwards).
  *
  * <p><b>Prices</b> lists every trade good by its icon: what the village sells a bundle for and what it pays for one
@@ -92,7 +92,7 @@ public final class TradePage {
 	}
 
 	/** A tab that has landed: its icon in the row and what fills the page under it. */
-	private record Entry(HallPages.Icon icon, Content content) {
+	private record Entry(HallPages.Icon icon, Content content, java.util.function.BooleanSupplier shown) {
 	}
 
 	private static final Map<Tab, Entry> TABS = new EnumMap<>(Tab.class);
@@ -105,25 +105,34 @@ public final class TradePage {
 
 	static {
 		TABS.put(Tab.ROUTES, new Entry(VillageHallScreen::routesHeader, (menu, level, hall, viewer, again) ->
-			VillageHallScreen.routesList(menu, level, hall, again)));
-		TABS.put(Tab.PRICES, new Entry(TradePage::pricesTab, TradePage::prices));
+			VillageHallScreen.routesList(menu, level, hall, again), () -> true));
+		TABS.put(Tab.PRICES, new Entry(TradePage::pricesTab, TradePage::prices, () -> Economy.ENABLED));
 	}
 
 	/** Gives {@code tab} its icon and contents: from then on it shows in the row. A later item's tab calls it once, at start-up. */
 	public static synchronized void register(Tab tab, HallPages.Icon icon, Content content) {
-		TABS.put(tab, new Entry(icon, content));
+		register(tab, icon, content, () -> true);
 	}
 
-	/** Whether the minecart opens this page (the village economy is on); off, it opens the routes page as it always did. */
+	/** The same for a tab with a switch of its own: it shows in the row only while {@code shown} says so (33.8: Colonies). */
+	public static synchronized void register(Tab tab, HallPages.Icon icon, Content content, java.util.function.BooleanSupplier shown) {
+		TABS.put(tab, new Entry(icon, content, shown));
+	}
+
+	/**
+	 * Whether the minecart opens this page: the village economy is on, or another tab than Routes has landed and is
+	 * switched on (33.8: Colonies); otherwise it opens the routes page as it always did.
+	 */
 	public static boolean shown() {
-		return Economy.ENABLED;
+		return Economy.ENABLED || tabs().size() > 1;
 	}
 
-	/** The tabs in the row now, in order (Prices only while the village economy is on). */
+	/** The tabs in the row now, in order (Prices only while the village economy is on, Colonies while colonies are). */
 	public static synchronized List<Tab> tabs() {
 		List<Tab> out = new ArrayList<>();
 		for (Tab tab : Tab.values()) {
-			if (TABS.containsKey(tab) && (tab != Tab.PRICES || Economy.ENABLED)) {
+			Entry entry = TABS.get(tab);
+			if (entry != null && entry.shown().getAsBoolean()) {
 				out.add(tab);
 			}
 		}

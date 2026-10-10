@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Colony Charter, for 1.7** (33.8, off until 1.7 is finished): a City's hall gets a **Colonies** tab on its Trade
+  page that sells the owner a Colony Charter for 32 emeralds (the treasury pays what it has, you pay the rest).
+  Right-click the air with it for its map: the 2,048 blocks round the village, drawn like a vanilla map where the
+  server has the land loaded and as parchment elsewhere, a banner for every village with a hall, and the ring a colony
+  may go in (256 to 1,024 blocks from the hall, 128 clear of other halls). Click a spot, or right-click the ground
+  where you stand: a red cross marks it and the tooltip says "612 blocks north-east of Thornholm". Rename the charter
+  in an anvil to name the colony. One colony on the road at a time, 7 days between colonies, 3 a village. "What next?"
+  suggests a colony once a village is a City. New settings `colonies`, `colonyCooldownDays`, `coloniesPerVillage`, and
+  `colonyRank` in the file. The settlers themselves come with 33.9.
 - **Caravans you can see, for 1.7** (33.7, off until 1.7 is finished): when a caravan leaves or arrives in a village
   with a player within 96 blocks, a carter in the porter's outfit ("Thornholm's caravan") leads two llamas with chests
   and carpets in the village's colour (its Village Banner's, or one picked from where its hall stands) from the

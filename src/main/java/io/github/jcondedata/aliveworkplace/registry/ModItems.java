@@ -31,6 +31,8 @@ public final class ModItems {
 	/** Calls a rush in a village once a day (ROADMAP 30.11). */
 	/** The Guild Charter (ROADMAP 30.17): sneak-right-click a Master to make them their trade's Guild Master. */
 	public static final Item GUILD_CHARTER = Reg.item("guild_charter", Item::new, new Item.Properties().stacksTo(16));
+	/** The Colony Charter (ROADMAP 33.8): bought on a City's Colonies tab, it chooses where the village's colony goes. */
+	public static final io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem COLONY_CHARTER = Reg.item("colony_charter", io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem::new, new Item.Properties().stacksTo(1));
 	public static final io.github.jcondedata.aliveworkplace.hall.WorkHornItem WORK_HORN = Reg.item("work_horn", io.github.jcondedata.aliveworkplace.hall.WorkHornItem::new, new Item.Properties().stacksTo(1));
 	/** Tonics (ROADMAP 30.15): brewed by the alchemist or cooked by the chef, never crafted; what they do is data (people/Tonics). */
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem MINERS_BREW = Reg.item("miners_brew", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));
@@ -117,6 +119,7 @@ public final class ModItems {
 				output.accept(VILLAGE_LEDGER);
 				output.accept(WORK_HORN);
 				output.accept(GUILD_CHARTER);
+				output.accept(COLONY_CHARTER);
 				output.accept(ModBlocks.CRADLE);
 				output.accept(ModBlocks.HARVEST_IDOL);
 				output.accept(VILLAGE_BANNER);

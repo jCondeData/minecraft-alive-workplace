@@ -115,6 +115,14 @@ public class VillageHallBlock extends BaseEntityBlock {
 			}
 			return ItemInteractionResult.sidedSuccess(level.isClientSide());
 		}
+		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.COLONY_CHARTER)) {
+			// 33.9: the charter, its spot chosen, sends the settlers
+			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
+				io.github.jcondedata.aliveworkplace.mc.Chat.chat(serverPlayer,
+					io.github.jcondedata.aliveworkplace.colony.Settlers.send(server, pos, serverPlayer, stack).message());
+			}
+			return ItemInteractionResult.sidedSuccess(level.isClientSide());
+		}
 		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.CITY_PLAN)) {
 			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
 				io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(server, serverPlayer, stack, pos);

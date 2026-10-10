@@ -83,6 +83,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem.Ledger.STREAM_CODEC).build()
 	);
 
+	/** A Colony Charter's mother village and the spot chosen for its colony (33.8). */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem.Charter> COLONY_CHARTER = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("colony_charter"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem.Charter>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem.Charter.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem.Charter.STREAM_CODEC).build()
+	);
+
 	/** A village's plan, on the Village Hall item when the hall is broken (27.2). */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.city.CityPlan> CITY_PLAN = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

@@ -238,9 +238,10 @@ SCENES = [
     job("nurse", "Nurse", "Healing and curing villagers", "the nurse healed and cured the villagers"),
     S("pokemon_center", "Nurse", "The Pokémon Center",
       "both tiers stand in all three looks, and the nurse put the team in her Healing Machine and every Pokémon came out full", 70,
-      [("01_pokemon_center", "Pokémon Center"), ("02_pokemon_center_2", "Pokémon Center II"),
-       ("05_lodge", "Mountain Lodge look, both tiers"), ("06_plaza", "Sunny Plaza look, both tiers"),
-       ("03_healing", "In the Healing Machine"), ("04_healed", "All healed")], cobblemon=True),
+      [("02_pokemon_center_2", "Pokémon Center II"),
+       ("05_lodge", "Mountain Lodge look, both tiers"),
+       ("06_plaza", "Sunny Plaza look, both tiers"),
+       ("03_healing", "In the Healing Machine")], cobblemon=True),
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
@@ -350,6 +351,20 @@ SCENES = [
     job("caravan", "Realm", "Caravans you can see: one leaves, one arrives",
         "Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
         "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 110),
+    # The Colony Charter (ROADMAP 33.8): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
+    S("colony_charter", "Realm", "The Colony Charter: choosing where a colony goes",
+      "Thornholm, a City, sold its owner a Colony Charter on the hall's Colonies tab (the treasury paid 20 emeralds, the player 12); "
+      "the charter's map showed the loaded land like a vanilla map on parchment, a banner for Thornholm, Ashford and Farholt, the ring "
+      "256 to 1,024 blocks out and the circles round the other halls; a click put the red cross 612 blocks north-east, and the tooltip says so", 75,
+      [("01_colonies_tab", "The Colonies tab: a charter for 32 emeralds, the treasury pays 20"), ("02_colony_map", "The charter's map: banners, the ring, a place pointed at"),
+       ("03_colony_spot", "A click: the red cross, 612 blocks north-east"), ("04_colony_tooltip", "The charter's tooltip names the spot")]),
+    # The settlers set out (ROADMAP 33.9): the order at the hall, the gathering, the walk out, on the road
+    S("colony_departure", "Realm", "The settlers set out for the colony",
+      "the owner right-clicked Thornholm's hall with the Colony Charter: Dara and Tomas volunteered and the Storehouse gave their supplies; "
+      "they gathered at the hall, the bell rang and they walked out toward the spot, and once out of sight the Colonies tab read "
+      "\"On the road to Newbrook\"", 95,
+      [("01_colony_order", "The Colonies tab: the order getting ready, with its call-off"), ("02_settlers_gathered", "The settlers gathered at the hall"),
+       ("03_walking_out", "The bell has rung: they walk out toward the spot"), ("04_on_the_road", "On the road to Newbrook")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,
@@ -509,13 +524,6 @@ SCENES = [
     S("guilds", "Village Hall", "Nine guilds: Miners', Smiths', Woodsmen's, Harvest, Herders', Scholars', Healers', Merchants' and Wardens'",
       "the player chartered a Master miner, weaponsmith, lumberjack, farmer, shepherd, scholar, nurse, innkeeper and guard, the nine guilds were founded in nine finished Guildhalls, each master's card on the hall's list named their guild (and its pace where it has one), the farmer's farm reached 24 blocks, the shepherd bred up to 12, research cost a quarter less, the ill got well in 2 days, the nurse looked 48 blocks out, a 16-emerald traveller cost 12, guards trained up to Master and hit 10% harder, and the Book of Edicts' guild row showed every guild, five a page with a More guilds button", 40,
       [("01_guilds_miner", "Brokk, Guild Master of the Miners' Guild, working faster through it"),
-       ("02_guilds_smith", "Hilde, Guild Master of the Smiths' Guild"),
-       ("03_guilds_woodsman", "Rowan, Guild Master of the Woodsmen's Guild"),
-       ("04_guilds_farmer", "Wren, Guild Master of the Harvest Guild"),
-       ("05_guilds_shepherd", "Ebba, Guild Master of the Herders' Guild"),
-       ("06_guilds_scholar", "Odo, Guild Master of the Scholars' Guild"),
-       ("08_guilds_nurse", "Mira, Guild Master of the Healers' Guild"),
-       ("09_guilds_innkeeper", "Mara, Guild Master of the Merchants' Guild"),
        ("10_guilds_guard", "Wulf, Guild Master of the Wardens' Guild"),
        ("07_guilds_book", "The Book of Edicts' guild row, page one: five guilds, founded, each with its perk, and the More guilds button"),
        ("12_guilds_book_more", "The guild row's next page: the Scholars', Healers', Merchants' and Wardens' Guilds")]),
@@ -540,11 +548,9 @@ SCENES = [
        ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
-      [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"), ("02_tonics_tooltip", "What the brew does, for whom, who makes it"),
-       ("03_tonics_drunk", "She drinks it: 25% faster for 20 minutes"), ("04_tonics_status", "Her status line: 25% faster (Miner's Brew, 19 min left)"),
-       ("05_tonics_hand_smiths_draught", "Smith's Draught in hand, all six tonics in the hotbar"),
-       ("06_tonics_hand_scholars_infusion", "Scholar's Infusion in hand"), ("07_tonics_hand_harvest_cordial", "Harvest Cordial in hand"),
-       ("08_tonics_hand_woodsmans_broth", "Woodsman's Broth in hand"),
+      [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"),
+       ("02_tonics_tooltip", "What the brew does, for whom, who makes it"),
+       ("04_tonics_status", "Her status line: 25% faster (Miner's Brew, 19 min left)"),
        ("09_tonics_all_six", "A Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drink theirs")]),
     S("hall_quests", "Village Hall", "Quests, advice, the village map and the festival",
       "the quests, advice, village map, mercenaries and festival opened", 60,
@@ -654,7 +660,10 @@ SCENES = [
 BY_NAME = {s["name"]: s for s in SCENES}
 STARTUP = 30  # seconds: Gradle, the client's start-up and loading the world, per scene (GitHub runner)
 SHARD_TARGET = 30 * 60  # seconds of scenes per shard, to finish well within the hour
-MAX_SHARDS = 18  # GitHub allows 20 jobs at once on a free plan; leave room for the plan and page jobs
+# The most shards a run may use. GitHub runs 20 jobs at once on a free plan and queues the rest, so a run with more
+# shards than that takes longer but no shard does. It was 18 until the catalog passed 170 scenes: if those all ran
+# twice as long as estimated, 18 shards came to about 54 minutes each (B100).
+MAX_SHARDS = 36
 
 
 def seconds(scene, last):

@@ -55,6 +55,14 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 				screen.sync(payload);
 			}
 		});
+		// The Colony Charter's map (33.8).
+		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.colony.Colonies.Open.TYPE,
+			(payload, context) -> context.client().setScreen(new ColonyCharterScreen(payload)));
+		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.colony.Colonies.Answer.TYPE, (payload, context) -> {
+			if (context.client().screen instanceof ColonyCharterScreen screen) {
+				screen.answer(payload);
+			}
+		});
 		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Details.TYPE, (payload, context) -> {
 			if (context.client().screen instanceof BlueprintTableScreen screen) {
 				screen.setDetails(payload);

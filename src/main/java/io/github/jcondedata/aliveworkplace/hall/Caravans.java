@@ -39,13 +39,17 @@ import org.jetbrains.annotations.Nullable;
  * caravan arrives after a trip as long as the road ({@link #travelTicks}), into the other village's Storehouse chests.
  * Both chronicles note it. 27.17: each village builds its half of a road to the other ({@code CaravanRoads}); the list
  * keeps where each half ends and whether it's built ({@link Half}), and on a finished road caravans take three quarters
- * of the time.
+ * of the time. 33.6: with the village economy on a caravan also carries up to {@link #TRADE_STACKS} stacks of goods to
+ * sell ({@link Lot}), which the other village's treasury pays for when they arrive
+ * ({@link io.github.jcondedata.aliveworkplace.trade.CaravanTrade}); what it can't pay for travels home again.
  */
 public final class Caravans {
 	/** How far apart villages can trade. */
 	public static int RANGE = 2048;
 	/** Most stacks one caravan carries. */
 	public static final int CARGO_STACKS = 4;
+	/** Most stacks of goods for sale a caravan carries besides (33.6). */
+	public static final int TRADE_STACKS = 2;
 	/** A village keeps this many of anything back for itself. */
 	public static final int KEEP = 16;
 	/** Most trade routes out of one village. */
@@ -77,8 +81,35 @@ public final class Caravans {
 	/** Two halves within this many blocks of each other's ends have met: the road is one. */
 	public static final int HALVES_MEET = 4;
 
-	/** Goods on the road. */
-	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives) {
+	/** Goods of one trade good a caravan carries to sell (33.6): whole bundles of it. */
+	public record Lot(ResourceLocation good, List<ItemStack> stacks) {
+		public Lot {
+			stacks = List.copyOf(stacks);
+		}
+
+		/** How many items the lot holds. */
+		public int count() {
+			return stacks.stream().mapToInt(ItemStack::getCount).sum();
+		}
+	}
+
+	/**
+	 * Goods on the road: {@code goods} are for the village at {@code to} to keep; {@code sale} (33.6) it pays for at its
+	 * board's price when they arrive. {@code back}: a caravan bringing home what {@code from} couldn't pay for, or
+	 * couldn't buy.
+	 */
+	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back) {
+		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives) {
+			this(from, to, goods, arrives, List.of(), false);
+		}
+	}
+
+	/**
+	 * A caravan's sale the selling village hasn't booked yet (33.6): {@code items} of {@code good} sold to {@code buyer}
+	 * for {@code cents} on {@code day}. Booked (the treasury paid, the chronicle written) in the seller's next round, at
+	 * once when its hall is loaded.
+	 */
+	public record Sale(BlockPos seller, Component buyer, ResourceLocation good, int items, int cents, long day) {
 	}
 
 	/** The list of villages, routes and caravans on the road in one dimension. */
@@ -87,6 +118,8 @@ public final class Caravans {
 		final Map<BlockPos, Village> villages = new LinkedHashMap<>();
 		final Map<BlockPos, Set<BlockPos>> routes = new LinkedHashMap<>();
 		final List<Shipment> onTheRoad = new ArrayList<>();
+		/** Caravan sales their sellers haven't booked yet (33.6). */
+		final List<Sale> sales = new ArrayList<>();
 		/** The halves of roads between villages (27.17), from one hall towards another. */
 		final Map<BlockPos, Map<BlockPos, Half>> halves = new LinkedHashMap<>();
 		/** Each village's Trainer Leader (28.17); none until its hall's round writes one. */
@@ -141,6 +174,22 @@ public final class Caravans {
 			villages.remove(hall);
 			routes.remove(hall);
 			routes.values().forEach(to -> to.remove(hall));
+			sales.removeIf(s -> s.seller().equals(hall));
+			// 33.6: goods a caravan was bringing here to sell turn round for home (if home is still on the list)
+			List<Shipment> home = new ArrayList<>();
+			onTheRoad.replaceAll(s -> {
+				if (!s.to().equals(hall) || s.sale().isEmpty()) {
+					return s;
+				}
+				if (villages.containsKey(s.from())) {
+					List<ItemStack> goods = new ArrayList<>();
+					s.sale().forEach(lot -> goods.addAll(lot.stacks()));
+					home.add(new Shipment(hall, s.from(), goods, s.arrives(), List.of(), true));
+				}
+				return new Shipment(s.from(), s.to(), s.goods(), s.arrives(), List.of(), s.back());
+			});
+			onTheRoad.removeIf(s -> s.goods().isEmpty() && s.sale().isEmpty());
+			onTheRoad.addAll(home);
 			halves.remove(hall);
 			halves.values().forEach(to -> to.remove(hall));
 			leaders.remove(hall);
@@ -265,6 +314,46 @@ public final class Caravans {
 			setDirty();
 		}
 
+		/** Brings the caravans on the road to {@code hall} in now (tests: one waiting for room tries again at once). */
+		public void hurry(BlockPos hall) {
+			onTheRoad.replaceAll(s -> s.to().equals(hall) ? new Shipment(s.from(), s.to(), s.goods(), 0, s.sale(), s.back()) : s);
+			setDirty();
+		}
+
+		/** Takes every caravan to or from {@code hall} off the road (tests clean up after themselves). */
+		public void clearRoad(BlockPos hall) {
+			if (onTheRoad.removeIf(s -> s.to().equals(hall) || s.from().equals(hall))) {
+				setDirty();
+			}
+		}
+
+		/** Notes a caravan's sale for its seller to book (33.6). */
+		public void sold(Sale sale) {
+			sales.add(sale);
+			setDirty();
+		}
+
+		/** The sales {@code seller} hasn't booked yet, taken off the list. */
+		public List<Sale> takeSales(BlockPos seller) {
+			List<Sale> out = new ArrayList<>();
+			sales.removeIf(s -> {
+				if (s.seller().equals(seller)) {
+					out.add(s);
+					return true;
+				}
+				return false;
+			});
+			if (!out.isEmpty()) {
+				setDirty();
+			}
+			return out;
+		}
+
+		/** The sales waiting for their sellers (tests). */
+		public List<Sale> sales() {
+			return List.copyOf(sales);
+		}
+
 		/** The caravans for {@code hall} that have arrived by {@code now}, taken off the road. */
 		List<Shipment> arrived(BlockPos hall, long now) {
 			List<Shipment> out = new ArrayList<>();
@@ -342,9 +431,42 @@ public final class Caravans {
 					}
 				}
 				t.put("goods", goods);
+				if (!s.sale().isEmpty()) { // 33.6
+					ListTag sale = new ListTag();
+					for (Lot lot : s.sale()) {
+						CompoundTag lt = new CompoundTag();
+						lt.putString("good", lot.good().toString());
+						ListTag stacks = new ListTag();
+						for (ItemStack stack : lot.stacks()) {
+							if (!stack.isEmpty()) {
+								stacks.add(stack.save(registries));
+							}
+						}
+						lt.put("stacks", stacks);
+						sale.add(lt);
+					}
+					t.put("sale", sale);
+				}
+				if (s.back()) {
+					t.putBoolean("back", true);
+				}
 				road.add(t);
 			}
 			tag.put("road", road);
+			if (!sales.isEmpty()) { // 33.6
+				ListTag sold = new ListTag();
+				for (Sale s : sales) {
+					CompoundTag t = new CompoundTag();
+					t.putLong("seller", s.seller().asLong());
+					t.putString("buyer", Component.Serializer.toJson(s.buyer(), registries));
+					t.putString("good", s.good().toString());
+					t.putInt("items", s.items());
+					t.putInt("cents", s.cents());
+					t.putLong("day", s.day());
+					sold.add(t);
+				}
+				tag.put("sales", sold);
+			}
 			ListTag bank = new ListTag();
 			banked.forEach((hall, m) -> m.forEach((id, xp) -> {
 				CompoundTag t = new CompoundTag();
@@ -401,7 +523,32 @@ public final class Caravans {
 				for (int j = 0; j < gl.size(); j++) {
 					ItemStack.parse(registries, Nbt.compoundAt(gl, j)).ifPresent(goods::add);
 				}
-				data.onTheRoad.add(new Shipment(BlockPos.of(Nbt.getLong(t, "from")), BlockPos.of(Nbt.getLong(t, "to")), goods, Nbt.getLong(t, "arrives")));
+				List<Lot> sale = new ArrayList<>();
+				ListTag sl = Nbt.getList(t, "sale", Tag.TAG_COMPOUND); // 33.6; older saves have none
+				for (int j = 0; j < sl.size(); j++) {
+					CompoundTag lt = Nbt.compoundAt(sl, j);
+					ResourceLocation good = ResourceLocation.tryParse(Nbt.getString(lt, "good"));
+					List<ItemStack> stacks = new ArrayList<>();
+					ListTag stl = Nbt.getList(lt, "stacks", Tag.TAG_COMPOUND);
+					for (int k = 0; k < stl.size(); k++) {
+						ItemStack.parse(registries, Nbt.compoundAt(stl, k)).ifPresent(stacks::add);
+					}
+					if (good != null && !stacks.isEmpty()) {
+						sale.add(new Lot(good, stacks));
+					}
+				}
+				data.onTheRoad.add(new Shipment(BlockPos.of(Nbt.getLong(t, "from")), BlockPos.of(Nbt.getLong(t, "to")), goods, Nbt.getLong(t, "arrives"),
+					sale, Nbt.getBoolean(t, "back")));
+			}
+			ListTag sold = Nbt.getList(tag, "sales", Tag.TAG_COMPOUND); // 33.6; older saves have none
+			for (int i = 0; i < sold.size(); i++) {
+				CompoundTag t = Nbt.compoundAt(sold, i);
+				ResourceLocation good = ResourceLocation.tryParse(Nbt.getString(t, "good"));
+				Component buyer = Component.Serializer.fromJson(Nbt.getString(t, "buyer"), registries);
+				if (good != null) {
+					data.sales.add(new Sale(BlockPos.of(Nbt.getLong(t, "seller")), buyer == null ? Component.empty() : buyer, good, Nbt.getInt(t, "items"),
+						Nbt.getInt(t, "cents"), Nbt.getLong(t, "day")));
+				}
 			}
 			ListTag bank = Nbt.getList(tag, "bankedXp", Tag.TAG_COMPOUND); // 28.18; older saves have none
 			for (int i = 0; i < bank.size(); i++) {
@@ -471,6 +618,7 @@ public final class Caravans {
 			data.update(hall, VillageHalls.name(level, hall), wants(level, hall, census));
 		}
 		unload(level, hall, data);
+		io.github.jcondedata.aliveworkplace.trade.CaravanTrade.book(level, hall, data); // 33.6: what our caravans sold
 		long day = Chronicle.day(level);
 		Village us = data.village(hall);
 		if (us == null || us.lastCaravanDay() == day || data.routesFrom(hall).isEmpty()) {
@@ -482,7 +630,10 @@ public final class Caravans {
 		}
 	}
 
-	/** Loads a caravan for the village at {@code to} with what it wants and we have plenty of; null if there's nothing to send. */
+	/**
+	 * Loads a caravan for the village at {@code to} with what it wants and we have plenty of, then (33.6) with up to
+	 * {@link #TRADE_STACKS} stacks of goods to sell there; null if there's nothing to send.
+	 */
 	@Nullable
 	static Shipment send(ServerLevel level, BlockPos hall, BlockPos to, Data data) {
 		Village them = data.village(to);
@@ -505,13 +656,17 @@ public final class Caravans {
 				goods.add(new ItemStack(want.item(), taken));
 			}
 		}
-		if (goods.isEmpty()) {
+		List<Lot> sale = io.github.jcondedata.aliveworkplace.trade.CaravanTrade.load(level, hall, to, data, ours);
+		if (goods.isEmpty() && sale.isEmpty()) {
 			return null;
 		}
-		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), level.getGameTime() + travelTicks(Math.sqrt(hall.distSqr(to)), data.roadFinished(hall, to)));
+		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods),
+			level.getGameTime() + travelTicks(Math.sqrt(hall.distSqr(to)), data.roadFinished(hall, to)), sale, false);
 		data.ship(shipment);
 		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
-		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(goods)), true);
+		List<ItemStack> all = new ArrayList<>(goods);
+		sale.forEach(lot -> all.addAll(lot.stacks()));
+		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
 		return shipment;
 	}
 
@@ -535,9 +690,32 @@ public final class Caravans {
 					paid++;
 				}
 			}
-			pay(level, s.from(), paid);
-			if (!left.isEmpty()) {
-				data.ship(new Shipment(s.from(), s.to(), left, level.getGameTime() + VillageNeeds.CHECK_EVERY));
+			pay(level, s.from(), s.back() ? 0 : paid);
+			// 33.6: the goods it brought to sell; what there's no room for waits on the road with the rest, what isn't paid for goes home
+			io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Outcome sold = s.sale().isEmpty()
+				? io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Outcome.NONE
+				: io.github.jcondedata.aliveworkplace.trade.CaravanTrade.sell(level, hall, s, chests, data);
+			if (!left.isEmpty() || !sold.waiting().isEmpty()) {
+				data.ship(new Shipment(s.from(), s.to(), left, level.getGameTime() + VillageNeeds.CHECK_EVERY, sold.waiting(), s.back()));
+			}
+			if (!sold.home().isEmpty()) {
+				List<ItemStack> home = new ArrayList<>();
+				sold.home().forEach(lot -> home.addAll(lot.stacks()));
+				data.ship(new Shipment(s.to(), s.from(), home,
+					level.getGameTime() + travelTicks(Math.sqrt(s.from().distSqr(s.to())), data.roadFinished(s.from(), s.to())), List.of(), true));
+			}
+			if (s.goods().isEmpty()) {
+				continue; // only goods to sell: the sale's own lines tell it
+			}
+			if (s.back()) {
+				// our own caravan, home with what the other village didn't buy
+				if (left.size() < s.goods().size() || left.stream().mapToInt(ItemStack::getCount).sum() < s.goods().stream().mapToInt(ItemStack::getCount).sum()) {
+					Village from = data.village(s.from());
+					Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_unsold",
+						from == null ? Component.translatable("chronicle.aliveworkplace.someone") : from.name(), describe(s.goods())), true);
+					level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1.2f);
+				}
+				continue;
 			}
 			if (left.size() < s.goods().size() || left.stream().mapToInt(ItemStack::getCount).sum() < s.goods().stream().mapToInt(ItemStack::getCount).sum()) {
 				Village from = data.village(s.from());
@@ -561,7 +739,7 @@ public final class Caravans {
 	}
 
 	/** "32 × Oak Log, 16 × Bread". */
-	static Component describe(List<ItemStack> goods) {
+	public static Component describe(List<ItemStack> goods) {
 		net.minecraft.network.chat.MutableComponent out = Component.empty();
 		for (int i = 0; i < goods.size(); i++) {
 			if (i > 0) {

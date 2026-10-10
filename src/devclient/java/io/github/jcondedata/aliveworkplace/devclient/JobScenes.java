@@ -142,6 +142,35 @@ final class JobScenes {
 		data.setMarket(ridgeway, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(id.apply("timber")), List.of(), cheap, today, List.of()));
 	}
 
+	/**
+	 * The {@code caravan_trade} scene's start (33.6), whatever the halls' own rounds did meanwhile: {@link #priceBoard}'s
+	 * markets (Thornholm known for Timber at 0.8 emeralds, Ashford short of it at 1.4), both villages on the list by
+	 * name with the route to Ashford on, nothing on the road, 48 logs in Thornholm's chest and none in Ashford's,
+	 * 12.4 emeralds in Thornholm's treasury and 20 in Ashford's, and today's own caravan marked as gone so the hall's
+	 * round doesn't send it before the scene does.
+	 */
+	private static void caravanTrade(ServerLevel level) {
+		BlockPos ashford = STATION.east(180);
+		io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+		data.setWants(STATION, Component.literal("Thornholm"), List.of());
+		data.setWants(ashford, Component.literal("Ashford"), List.of());
+		priceBoard(level);
+		if (!data.routesFrom(STATION).contains(ashford)) {
+			data.toggleRoute(STATION, ashford);
+		}
+		data.clearRoad(STATION);
+		data.clearRoad(ashford);
+		data.sent(STATION, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
+		Container ours = (Container) level.getBlockEntity(new BlockPos(5, -60, -3));
+		Container theirs = (Container) level.getBlockEntity(ashford.east(5));
+		ours.clearContent();
+		ours.setItem(0, new ItemStack(Items.OAK_LOG, 48));
+		ours.setItem(1, new ItemStack(Items.BREAD, 12));
+		theirs.clearContent();
+		((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setTreasury(1240);
+		((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(ashford)).setTreasury(2000);
+	}
+
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
@@ -2042,6 +2071,87 @@ final class JobScenes {
 							"the page shows the treasury after: " + m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.TREASURY).getHoverName().getString());
 					}
 				}, 40)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// Caravans that trade (ROADMAP 33.6): Thornholm's Routes tab saying what its caravan sells in Ashford and what it
+		// earns ("Timber ×2 for 2.77 emeralds": Ashford is short of Timber and pays 1.4 a bundle), then the caravan sent
+		// and sold there (Ashford is a real second hall 180 blocks east, with its own Storehouse and treasury), and
+		// Thornholm's chronicle with "Sold 32 Timber to Ashford for 2.77 emeralds".
+		SCREENS.put("caravan_trade", new Screen("the hall's Routes tab said the caravan to Ashford sells Timber ×2 for 2.77 emeralds, the caravan sold it there, "
+			+ "and the chronicle says Sold 32 Timber to Ashford for 2.77 emeralds", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				place(level, new BlockPos(4, -60, -3), ModBlocks.STOREHOUSE);
+				chest(level, new BlockPos(5, -60, -3), new ItemStack(Items.OAK_LOG, 48), new ItemStack(Items.BREAD, 12));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setCustomName(Component.literal("Thornholm"));
+				// Ashford: a hall of its own with a Storehouse and an empty chest, kept loaded so its treasury can pay
+				BlockPos ashford = STATION.east(180);
+				level.setChunkForced(ashford.getX() >> 4, ashford.getZ() >> 4, true);
+				level.setChunkForced(ashford.east(5).getX() >> 4, ashford.getZ() >> 4, true);
+				level.setBlockAndUpdate(ashford, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				place(level, ashford.east(4), ModBlocks.STOREHOUSE);
+				chest(level, ashford.east(5));
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(ashford)).setCustomName(Component.literal("Ashford"));
+				priceBoard(level);
+			},
+			// 1: the Routes tab, the pointer on Ashford: what the caravan sells there and what it earns
+			List.of(new Step("01_routes_earnings", -2, 6, (level, player) -> {
+					caravanTrade(level);
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = -1;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							if (m.icon(slot).getHoverName().getString().equals("Ashford")) {
+								pickedSlot = slot;
+							}
+						}
+						Showcase.check(pickedSlot >= 0, "Ashford is on the Routes tab");
+						if (pickedSlot >= 0) {
+							List<String> lore = new ArrayList<>();
+							m.icon(pickedSlot).getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY)
+								.lines().forEach(l -> lore.add(l.getString()));
+							Showcase.check(lore.contains("Our caravan sells there:") && lore.contains("Timber ×2 for 2.77 emeralds"),
+								"the Routes tab says what goes to Ashford and what it earns: " + lore);
+						}
+					}
+				}, 50),
+				// 2: the caravan goes and sells in Ashford; Thornholm's chronicle, the pointer on the sale
+				new Step("02_chronicle_sold", -2, 6, (level, player) -> {
+					BlockPos ashford = STATION.east(180);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+					data.sent(STATION, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, STATION, null); // today's caravan: 32 logs to sell
+					data.hurry(ashford);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, ashford, null); // it arrives: Ashford's treasury pays Thornholm's
+					io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity ours = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity theirs = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(ashford);
+					Showcase.check(ours.treasury() == 1240 + 277 && theirs.treasury() == 2000 - 277,
+						"Ashford's treasury paid Thornholm's 2.77 emeralds: ours " + ours.treasury() + ", theirs " + theirs.treasury());
+					Container sold = (Container) level.getBlockEntity(ashford.east(5));
+					Container kept = (Container) level.getBlockEntity(new BlockPos(5, -60, -3));
+					Showcase.check(sold != null && sold.countItem(Items.OAK_LOG) == 32 && kept != null && kept.countItem(Items.OAK_LOG) == 16,
+						"32 logs went from Thornholm's Storehouse (which keeps 16) to Ashford's: " + (sold == null ? null : sold.countItem(Items.OAK_LOG))
+						+ " there, " + (kept == null ? null : kept.countItem(Items.OAK_LOG)) + " here");
+					int oursNow = io.github.jcondedata.aliveworkplace.trade.Prices.at(level, STATION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("timber"));
+					int theirsNow = io.github.jcondedata.aliveworkplace.trade.Prices.at(level, ashford, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("timber"));
+					Showcase.check(oursNow == 84 && theirsNow == 134, "both boards moved 2% a bundle: ours " + oursNow + ", theirs " + theirsNow);
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = -1;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+						List<String> lines = new ArrayList<>();
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							lines.add(m.icon(slot).getHoverName().getString());
+							if (m.icon(slot).getHoverName().getString().equals("Sold 32 Timber to Ashford for 2.77 emeralds")) {
+								pickedSlot = slot;
+							}
+						}
+						Showcase.check(pickedSlot >= 0, "the chronicle says what was sold: " + lines);
+					}
+				}, 50)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("legend_announce", new Screen("a Mythic Legend's coming was announced in chat and written in the chronicle", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

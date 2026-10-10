@@ -3300,7 +3300,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - a `ProtectionSpecGameTests` case: a stranger in a protected village trades at the board but can't collect the
     treasury, change a route or open any other page; in an open village a stranger can no longer collect;
   - showcase scene `board_trade` (buying a bundle, with the treasury before and after).
-- [ ] **33.6** **Caravans that trade.** A caravan first loads what the other village is waiting for, free, as now;
+- [x] **33.6** (review: pending 2026-10-10) **Caravans that trade.** A caravan first loads what the other village is waiting for, free, as now;
   then it fills up to 2 more stacks with goods its village is known for that the other is short of, or pays at least
   10% more for. On arrival the receiving village's treasury pays the sender's at the receiver's board price for those
   goods (what it can't afford goes back home in a caravan of its own), and both boards move as if the goods had been
@@ -5034,3 +5034,29 @@ item waits.
   now ends with the trading line. Not built here, left to their items: the feud's 25% (33.20), Common Coin's smaller
   spread (33.16), the `board_trades` reform count (33.22) and the leaderboard's "earned" (33.19; board earnings
   already go into `treasuryTotal`).
+- 2026-10-10 (33.6, decisions; lane a): caravans that trade. (1) **The 2 stacks are on top of the 4 a caravan
+  carries free** (`Caravans.TRADE_STACKS`), so a full caravan is 6 stacks. (2) **A stack for sale is whole bundles of
+  one item**, as many as fit a stack and the chests can spare over the 16 they keep (Timber: up to 4 bundles of one
+  kind of log; Stone: 1). (3) **An item the other village is waiting for is never sold**: it travels free, and the
+  caravan sells the good's next item if there is one. (4) **Which goods go first**: what the other village is short
+  of, then where it pays most against our price, then our known-for order. (5) **"Pays at least 10% more"** compares
+  the two boards' "We pay" prices (`CaravanTrade.DEARER_PERCENT`). (6) **Village to village nothing is rounded**:
+  treasuries are in cents, so B pays A to the cent, each bundle at the price the one before left (1.3 then 1.27), and
+  the page reads "2.57 emeralds" where the item's example says 2.6 (prices read to the cent since 33.4). The seller's
+  earnings stop at its treasury's cap, like all its earnings. (7) **Both boards move when the goods are sold**, not
+  when they're loaded: down in the buyer's, up in the seller's. (8) **The seller is paid and its chronicle written at
+  once if its hall is loaded, else in its next round** (a new saved list `sales` on the caravans' file; the line
+  keeps the day of the sale). (9) **What isn't paid for goes home as an ordinary caravan** (`back` on the shipment),
+  taking the road's time again; A's chronicle says "Our caravan came home from Ashford with 16 × Oak Log unsold" and
+  B's "Our treasury couldn't pay for 16 × Oak Log: Thornholm's caravan took them home". **No room in B's Storehouse
+  is different**: those bundles wait on the road and try again each round, unpaid until they go in, like any cargo.
+  (10) **Switched off mid-journey** (`villageEconomy`), goods for sale already on the road go home unsold; nothing is
+  given away. (11) **The buying hall taken away mid-journey**: the goods for sale turn round for home (free cargo to
+  a hall that's gone stays lost, as before; not this item's). **The selling hall gone**: nobody to pay or return to,
+  so the goods are unloaded where they arrived. (12) The Routes tab shows the lines for every village in range: "Our
+  caravan sells there:" with a route on, "A caravan would sell there:" without, so a player sees which route would
+  pay before opening it; they're worked out from what the Storehouses hold now. (13) Saved data: `sale` and `back`
+  on a caravan on the road and the `sales` list, all absent in older saves and read as empty. (14) Not built here,
+  left to their items: the carter and llamas (33.7), the pact that makes other players' villages pay (33.18), the
+  feud's 25% (33.20), `caravans_between_members` (33.22), and replacing the Merchant Prince's caravan pay (33.23; it
+  still pays a stack for what a village was waiting for, and nothing for a caravan coming home).

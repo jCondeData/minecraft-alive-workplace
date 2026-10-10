@@ -377,7 +377,7 @@ public final class Board {
 	}
 
 	/** Writes {@code good}'s new price after {@code steps} bundles (sold to the village: negative). */
-	private static void move(ServerLevel level, BlockPos hall, TradeGoods.Good good, int cents, int steps) {
+	static void move(ServerLevel level, BlockPos hall, TradeGoods.Good good, int cents, int steps) {
 		Caravans.Data data = Caravans.Data.get(level);
 		Market market = data.market(hall);
 		Map<ResourceLocation, Market.Price> prices = new LinkedHashMap<>(market.prices());

@@ -33,6 +33,13 @@ asks for the steps, `latest.log` and any crash report).
   more than its treasury holds or takes what its chests have no room for, and the good's tooltip says which stopped
   it. Without a Storehouse the tab says the market needs one. The treasury is on the Trade page too (a gold nugget:
   what it holds, its cap, click to collect). The board buys potions only if they heal, and no worn tools.
+- **Caravans that trade** (33.6, part of 1.7, off until it's released): a caravan still carries what the other
+  village is waiting for, free. Now it also takes up to 2 stacks of goods its own village is known for, to villages
+  that are short of them or pay at least 10% more. When it arrives, that village's treasury pays yours at its board's
+  price, both boards move 2% a bundle (down there, up at home), and both chronicles say so ("Sold 32 Timber to
+  Ashford for 2.57 emeralds"). What it can't pay for comes home in a caravan of its own, back into your Storehouse;
+  what its Storehouse has no room for waits on the road. On the Routes tab every village shows what a caravan sells
+  there and what it earns ("Timber ×2 for 2.57 emeralds").
 - **Strangers can trade in a protected village** (33.5): right-clicking the hall of a village that keeps you out now
   opens its price board, and nothing else of the hall.
 

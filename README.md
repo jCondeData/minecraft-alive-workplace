@@ -584,6 +584,13 @@ hall gets the price board and nothing else, so anyone can trade there; because t
 only the hall's owner, their friends and operators collect it, in every village (a hall nobody owns stays open to
 all).
 
+**Caravans that trade.** A trade route still sends the other village what its workers wait for, free. The same caravan
+now also takes up to 2 stacks of goods your village is **known for** to a village that is **short of** them or pays at
+least 10% more. When it arrives, that village's treasury pays yours at its board's price, both boards move 2% a bundle,
+and the chronicles say "Sold 32 Timber to Ashford for 2.57 emeralds". What it can't pay for comes home to your
+Storehouse in a caravan of its own. The Routes tab shows for every village what a caravan sells there and what it
+earns ("Timber ×2 for 2.57 emeralds"), route or no route, so you can see which route would pay.
+
 ## All the jobs at a glance
 **Vanilla jobs work as in vanilla**: place their block near a villager without a job and they take it. Most of our jobs
 **share a vanilla block** with a vanilla job, and a jobless villager by it still takes the vanilla job. For one of ours,

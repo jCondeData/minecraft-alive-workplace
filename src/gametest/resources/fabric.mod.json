@@ -103,6 +103,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TradeGoodsDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceBoardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BoardTradeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CaravanTradeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassPerkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassJobGameTests",

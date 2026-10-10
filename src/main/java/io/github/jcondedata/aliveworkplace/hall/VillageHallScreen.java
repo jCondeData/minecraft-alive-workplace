@@ -474,9 +474,15 @@ public final class VillageHallScreen {
 	/** The routes page's title (and the Routes tab of the Trade page): what caravans do and how many are on the road. */
 	public static ItemStack routesHeader(ServerLevel level, BlockPos hall) {
 		long onTheRoad = Caravans.Data.get(level).onTheRoad().stream().filter(s -> s.from().equals(hall) || s.to().equals(hall)).count();
+		List<Component> lore = new ArrayList<>();
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.routes_about", Caravans.KEEP, Caravans.CARGO_STACKS), ChatFormatting.GRAY));
+		if (io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED) { // 33.6: caravans also sell
+			lore.add(line(Component.translatable("screen.aliveworkplace.hall.routes_sell", Caravans.TRADE_STACKS,
+				io.github.jcondedata.aliveworkplace.trade.CaravanTrade.DEARER_PERCENT - 100), ChatFormatting.GRAY));
+		}
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.routes_road", onTheRoad), ChatFormatting.GRAY));
 		return icon(Items.CHEST_MINECART, Component.translatable("screen.aliveworkplace.hall.routes_title", VillageHalls.name(level, hall)),
-			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.routes_about", Caravans.KEEP, Caravans.CARGO_STACKS), ChatFormatting.GRAY),
-			line(Component.translatable("screen.aliveworkplace.hall.routes_road", onTheRoad), ChatFormatting.GRAY));
+			ChatFormatting.GOLD, lore.toArray(Component[]::new));
 	}
 
 	/**
@@ -487,6 +493,9 @@ public final class VillageHallScreen {
 		Caravans.Data data = Caravans.Data.get(level);
 		List<Caravans.Village> neighbours = Caravans.neighbours(level, hall);
 		java.util.Optional<io.github.jcondedata.aliveworkplace.legend.CaravanPayPower> pay = io.github.jcondedata.aliveworkplace.legend.CaravanPayPower.of(level, hall);
+		// 33.6: what a caravan would carry to sell in each village, out of what our Storehouses hold now
+		List<ItemStack> stock = io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED && !neighbours.isEmpty()
+			? io.github.jcondedata.aliveworkplace.trade.Board.stock(level, Caravans.storehouse(level, hall)) : List.of();
 		int slot = FIRST_ROW;
 		for (Caravans.Village other : neighbours) {
 			if (slot >= ChoiceMenu.SIZE) {
@@ -510,6 +519,15 @@ public final class VillageHallScreen {
 				}
 			} else {
 				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_wants_nothing"), ChatFormatting.DARK_GRAY));
+			}
+			List<io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Offer> offers =
+				io.github.jcondedata.aliveworkplace.trade.CaravanTrade.plan(level, hall, other.hall(), data, stock);
+			if (!offers.isEmpty()) { // "Our caravan sells there:", then "Timber ×2 for 2.6 emeralds" for each stack
+				lore.add(line(Component.translatable(sending ? "screen.aliveworkplace.hall.route_sells" : "screen.aliveworkplace.hall.route_would_sell"),
+					ChatFormatting.GREEN));
+				for (io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Offer offer : offers) {
+					lore.add(line(io.github.jcondedata.aliveworkplace.trade.CaravanTrade.line(offer), ChatFormatting.GREEN));
+				}
 			}
 			for (Component held : io.github.jcondedata.aliveworkplace.cup.CupChampions.holderLines(level, other.hall())) { // 28.21
 				lore.add(line(held, ChatFormatting.GOLD));

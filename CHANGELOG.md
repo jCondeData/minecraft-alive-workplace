@@ -31,6 +31,10 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - The hearts shown when you look at a villager no longer make the server load terrain for a player standing where
   none is loaded (fake players from other mods, B93); the mod's own test run is back from about two hours to minutes.
+- Builders no longer stand inside a closed door (B92): a builder in a doorway when a neighbour shuts the door on him,
+  or caught in any block that changed around him, walks out of it within a second or two; and a door's top half or a
+  bed's head is no longer put down on a villager, pet or player standing there (they are asked or nudged aside first,
+  as for any other block).
 
 ## 0.141.0 — 2026-10-09
 

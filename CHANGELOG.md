@@ -57,8 +57,6 @@ asks for the steps, `latest.log` and any crash report).
 - **Collecting a village's treasury is now for its owner, their friends and operators, in every village** (33.5, with
   1.7's `villageEconomy`; until then nothing changes). Before, anyone who could open the hall of an open village
   could collect; now that strangers' trades draw on the treasury, they can't. A hall nobody owns stays open to all.
-
-### Changed
 - **Raids run on a new threat engine** (32.2), the base of 1.6's threats. Monster and bandit raids look and count as
   before, but who raids is now data (`data/aliveworkplace/raider_cultures/monsters.json` and `bandits.json`; a datapack
   can add cultures of its own, with their own mobs, gear and lands). Two things work differently: a raid under way now
@@ -70,6 +68,8 @@ asks for the steps, `latest.log` and any crash report).
   1.6 is finished.
 
 ### Fixed
+- **The Pathfinder now waits for an Expert explorer** (B96): the Legend's file asked for a Journeyman Cartographer
+  (level 3) where its design says Expert (level 4). A Pathfinder who has already come stays.
 - The hearts shown when you look at a villager no longer make the server load terrain for a player standing where
   none is loaded (fake players from other mods, B93); the mod's own test run is back from about two hours to minutes.
 - Builders no longer stand inside a closed door (B92): a builder in a doorway when a neighbour shuts the door on him,

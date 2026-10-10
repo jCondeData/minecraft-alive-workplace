@@ -164,12 +164,12 @@ public class PathfinderGameTests implements net.fabricmc.fabric.api.gametest.v1.
 				helper.assertTrue(!legend.powers(ExpeditionPower.class).isEmpty() && !legend.powers(FarExpeditionsPower.class).isEmpty(), "both powers");
 				Villager explorer = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 6));
 				explorer.setNoAi(true);
-				explorer.setVillagerData(explorer.getVillagerData().setProfession(VillagerProfession.CARTOGRAPHER).setLevel(2));
+				explorer.setVillagerData(explorer.getVillagerData().setProfession(VillagerProfession.CARTOGRAPHER).setLevel(3));
 				boolean met = legend.conditions().stream().allMatch(c -> c.met(level, hall));
-				helper.assertFalse(met, "an Apprentice explorer isn't enough");
+				helper.assertFalse(met, "a Journeyman explorer isn't enough");
 				helper.assertTrue(LegendSites.qualifying(level, owner, "ruined_portal", owner.blockPosition()).isEmpty(),
 					"no Pathfinder at the portal for a village without an Expert explorer");
-				explorer.setVillagerData(explorer.getVillagerData().setLevel(3));
+				explorer.setVillagerData(explorer.getVillagerData().setLevel(4));
 				for (Condition c : legend.conditions()) {
 					helper.assertTrue(c.met(level, hall), "met with an Expert explorer: " + c.type());
 				}

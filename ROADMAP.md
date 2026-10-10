@@ -175,6 +175,7 @@ stay in the list, ticked, so their numbers stay unique.
   caused by us, and `SEASON=true tools/packtest/run.sh` fails on it. Expected: the first lookup spread out or prepared when
   recipes load, no tick over 50 ms. Test: `SEASON=true tools/packtest/run.sh` prints "ticks with over 50 ms of our code: 0"
   (a second, 98 ms tick on day 1 had its one profile sample in `FieldWork.take`: look at it with this).
+- [ ] **B102** **The settings screen cuts off 'Days to Become an Elder: 120'** (34.19, lang key aliveworkplace.config.villagerElderDays): full showcase run 38028628988 on a0abe99 (2026-10-10 05:46Z), scene config: 'every setting has a button whose label fits (86 settings: 'Days to Become an Elder: 120' is wider than its button)'. Players see the label clipped in Mod Menu's screen, as with B-fixed labels before it (Nurses Use Healing Machines, Stewards Renew Old Houses). Expected: a shorter label (for example 'Elder After Days'), so every setting fits its button at the default GUI scale and the config scene passes. Test: SCENE=config tools/screenshots/run.sh (lane d: 34.19's lang file; not run locally) (found by qa-1010-0634, 2026-10-10)
 
 ## Milestone 21: Finish 0.138.0
 

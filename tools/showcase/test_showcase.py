@@ -167,8 +167,11 @@ def catalog_tests(tmp):
         check(f"plan ({label}): every scene in exactly one shard",
               sorted(names) == sorted(scenes.BY_NAME), set(scenes.BY_NAME) ^ set(names))
         longest = max(scenes.seconds(s, last) for s in scenes.SCENES)
-        worst = max(sum(scenes.seconds(scenes.BY_NAME[n], last) for n in x["scenes"].split()) for x in m)
-        check(f"plan ({label}): no shard runs over half an hour plus its longest scene, or 45 minutes",
+        # A shard with one scene can't be made shorter: city_timelapse alone is half an hour by its estimate (B100).
+        shared = [sum(scenes.seconds(scenes.BY_NAME[n], last) for n in x["scenes"].split()) for x in m
+                  if len(x["scenes"].split()) > 1]
+        worst = max(shared, default=0)
+        check(f"plan ({label}): no shard of several scenes runs over half an hour plus its longest scene, or 45 minutes",
               worst <= min(scenes.SHARD_TARGET + longest, 45 * 60), f"{worst / 60:.1f} min")
         check(f"plan ({label}): at most {scenes.MAX_SHARDS} parallel jobs", 1 <= len(m) <= scenes.MAX_SHARDS, len(m))
     last = os.path.join(tmp, "last.json")

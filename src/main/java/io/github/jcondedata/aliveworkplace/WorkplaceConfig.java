@@ -113,6 +113,10 @@ public final class WorkplaceConfig {
 	public boolean heartEvents = Expansions.on(Expansions.M31);
 	/** Villagers with 3 hearts ask a player for help now and then (personal requests, ROADMAP 31.9). Off: nobody asks; requests already accepted can still be finished. */
 	public boolean personalRequests = Expansions.on(Expansions.M31);
+	/** Players earn a standing and titles in each village (reputation, ROADMAP 31.11). Off: nothing earned, lost, told or shown; saved standings stay. */
+	public boolean reputation = Expansions.on(Expansions.M31);
+	/** A player's title goes before what they say in chat (31.11). Off: chat lines aren't decorated; titles still count and are told. */
+	public boolean titlesInChat = Expansions.on(Expansions.M31);
 	/** Story arcs (31.4) unfold in villages, chapter by chapter. Off: none starts, and a running one ends quietly at its next round. */
 	public boolean storyArcs = Expansions.on(Expansions.M31);
 	/** Days between two story arcs in one village (also before a village's first). */
@@ -534,6 +538,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED = friendship && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED = heartEvents && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.PersonalRequests.ENABLED = personalRequests && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.story.Reputation.ENABLED = reputation && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.story.Reputation.CHAT = titlesInChat && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = storyArcs && Expansions.on(Expansions.M31);
 		// Off in gametests (an arc rolled by chance would start under a test's hall); the arc tests start theirs.
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;

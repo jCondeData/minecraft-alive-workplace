@@ -17,6 +17,18 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Reputation and titles** (31.11, part of 1.5, off until it's released): every player has a standing in every
+  village. It is earned by a daily quest (+10), a bounty (+40), a villager's own request (+25 to every helper), a
+  story chapter (+50 to everyone who helped) and a story's ending (what its file says), breaking up a bandit camp or
+  a lair (+40 to whoever brought its chief down), fighting in a raid (+20 at your third raider), coming to a festival
+  (+5) and gifts (+2, at most +10 a day per village); it is lost by hitting a villager (-10) and by killing one
+  (-150), an iron golem (-100) or a guard (-200). **Friend** at 50, **Hero** at 300, **Lord** at 1000 in a Town or
+  bigger. A new title is told to the whole server in gold with a fanfare ("Jesse is now a Hero of Thornholm!") and
+  written in the chronicle; losing one is told only to you. Your title in the village you stand in (else your best
+  anywhere) goes before what you say in chat: `[Hero of Thornholm]`. The hall's name tag tooltip shows your standing
+  and the three best regarded, and `/workplace standing` lists yours everywhere. Stories can give **honours**
+  (Kingslayer, Healer of the village, Wayfinder, Co-author), listed with your standing. For data packs: the quest
+  rewards `reputation` (`points`, `who`) and `honour` (`id`, `who`). Settings `reputation` and `titlesInChat`.
 - **Personal requests** (31.9, part of 1.5, off until it's released): a villager with 3 hearts or more may walk up
   and ask you for help. Each morning a village rolls a one-in-four chance that someone asks; they come over, ask over
   their head, and your chat gets the request with **[I'll help]** and **[Not now]** (`/workplace quest accept|decline`).

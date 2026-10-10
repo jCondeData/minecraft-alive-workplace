@@ -2967,6 +2967,57 @@ final class JobScenes {
 				Showcase.check(friends, "helping earned the request's 150 friendship and the hand-in's 10: " + points + " points with Dara");
 				return friends && io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(subject) == null;
 			}));
+		// Reputation and titles (ROADMAP 31.11): the player becomes a Hero of Thornholm (told to the whole server), their
+		// next chat line carries the title, and the hall's name tag tooltip shows their standing and the best regarded.
+		SCREENS.put("titles", new Screen("the player became a Hero of Thornholm, told to the whole server; their chat line carries the title and the hall's tooltip shows their standing",
+			new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				if (level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setCustomName(Component.literal("Thornholm"));
+				}
+			},
+			List.of(new Step("01_hero", -1, 0, (level, player) -> {
+					// Two more who made a name here before, then the deeds that make the player a Hero.
+					io.github.jcondedata.aliveworkplace.story.Reputation.add(level, STATION, java.util.UUID.nameUUIDFromBytes("Mara".getBytes()), "Mara", 120);
+					io.github.jcondedata.aliveworkplace.story.Reputation.add(level, STATION, java.util.UUID.nameUUIDFromBytes("Tobin".getBytes()), "Tobin", 35);
+					var change = io.github.jcondedata.aliveworkplace.story.Reputation.add(level, STATION, player, 320);
+					io.github.jcondedata.aliveworkplace.story.Reputation.honour(level, STATION, player.getUUID(), player.getGameProfile().getName(), "wayfinder");
+					Showcase.check(change.announced() && change.now() == io.github.jcondedata.aliveworkplace.story.Reputation.Title.HERO,
+						"320 standing made the player a Hero of Thornholm and the whole server was told: " + change);
+				}, 60),
+				new Step("02_chat", -1, 0, (level, player) -> {
+					// A chat line as the server sends it on: through its chat decorator, which is ours.
+					String said = "Good morning, Thornholm!";
+					Component decorated = level.getServer().getChatDecorator().decorate(player, Component.literal(said));
+					level.getServer().getPlayerList().broadcastChatMessage(
+						net.minecraft.network.chat.PlayerChatMessage.unsigned(player.getUUID(), said).withUnsignedContent(decorated), player,
+						net.minecraft.network.chat.ChatType.bind(net.minecraft.network.chat.ChatType.CHAT, player));
+					Showcase.check(decorated.getString().equals("[Hero of Thornholm] " + said), "the chat line carries the title: " + decorated.getString());
+				}, 60),
+				new Step("03_tooltip", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.NAME, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean shown = false;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						var lore = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.NAME).getOrDefault(net.minecraft.core.component.DataComponents.LORE,
+							net.minecraft.world.item.component.ItemLore.EMPTY).lines().stream().map(Component::getString).toList();
+						String me = player.getGameProfile().getName();
+						shown = lore.contains("Your standing: 320 (Hero)") && lore.contains("Your honours: Wayfinder") && lore.contains("1. " + me + ", Hero (320)")
+							&& lore.contains("2. Mara, Friend (120)") && lore.contains("3. Tobin, Stranger (35)");
+					}
+					Showcase.check(shown, "the hall's name tag tooltip shows the player's standing, their honour and the three best regarded");
+				}, 60)),
+			(level, player) -> {
+				player.closeContainer();
+				boolean hero = io.github.jcondedata.aliveworkplace.story.Reputation.title(level, STATION, player.getUUID())
+					== io.github.jcondedata.aliveworkplace.story.Reputation.Title.HERO;
+				boolean chronicled = level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall
+					&& hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.TITLE
+						&& e.text().getString().equals(player.getGameProfile().getName() + " became a Hero of the village"));
+				Showcase.check(hero && chronicled, "the player holds the title and the chronicle has its TITLE line");
+				return hero && chronicled;
+			}));
 		// My work (ROADMAP 31.8): at four hearts a villager tells of their work, one story per job family (the foal for
 		// those who keep animals, the fish for the fisherman). One villager of each family in turn, at four hearts, says
 		// the first line of theirs over their head and in the chat.

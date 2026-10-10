@@ -262,6 +262,7 @@ public final class Gifts {
 		}
 		int change = Friendship.add(villager, player, band.points * (nameDay ? NAME_DAY_FACTOR : 1));
 		Friendship.gifted(villager, player, today, week, thisWeek + 1);
+		Reputation.onGift(level, villager, player, band); // 31.11: a little standing in their village
 
 		Component line = Component.translatable("gift.aliveworkplace." + band.id() + "." + level.random.nextInt(LINES), item.getHoverName(), player.getDisplayName());
 		if (nameDay) {

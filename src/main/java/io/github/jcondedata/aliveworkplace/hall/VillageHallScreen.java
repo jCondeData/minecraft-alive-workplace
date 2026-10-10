@@ -170,6 +170,9 @@ public final class VillageHallScreen {
 				nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.edict_line", Edicts.name(f.id())), ChatFormatting.YELLOW));
 			}
 		}
+		for (Component standing : io.github.jcondedata.aliveworkplace.story.Reputation.hallLines(level, hall, menu.viewer())) { // 31.11
+			nameLore.add(line(standing, ChatFormatting.GRAY));
+		}
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
 			Chat.chat(p, menu.shiftClicked() ? VillageProtection.toggle(level, hall, p) : Treasury.collect(level, hall, p));

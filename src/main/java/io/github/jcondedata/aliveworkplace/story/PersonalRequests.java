@@ -668,6 +668,7 @@ public final class PersonalRequests {
 			Chat.chat(helper, Component.translatable("message.aliveworkplace.request.done", quest.poster, quest.title(), reward(quest)).withStyle(ChatFormatting.GREEN));
 			level.playSound(null, helper.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.3f);
 		}
+		Reputation.onRequestDone(level, hall, quest); // 31.11: standing for every helper, here or away
 		if (giver != null) {
 			say(giver, text(quest, "thanks", online.isEmpty() ? Component.translatable("chronicle.aliveworkplace.someone")
 				: Component.literal(online.get(0).getGameProfile().getName())));

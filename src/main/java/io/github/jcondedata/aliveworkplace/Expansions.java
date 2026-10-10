@@ -30,7 +30,7 @@ public final class Expansions {
 	/**
 	 * Milestone 31, Quests become stories (1.5). The daily quests ({@code villageQuests}) aren't behind it; the journal's
 	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and so are {@code friendship}
-	 * and {@code heartEvents} (31.7) and {@code personalRequests} (31.9).
+	 * and {@code heartEvents} (31.7) and {@code personalRequests} (31.9), {@code reputation} and {@code titlesInChat} (31.11).
 	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and {@code storyArcs},
 	 * {@code arcCooldownDays}, {@code arcsAtOnce} (31.4).
 	 */
@@ -72,7 +72,7 @@ public final class Expansions {
 				"guildsPerRank" -> M30;
 			case "jewellers" -> M34; // the Jeweller (34.12), with the rest of Classes and luxuries below
 			case "villageEconomy" -> M33;
-			case "friendship", "heartEvents", "personalRequests" -> M31;
+			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",
 				"elderPassing", "agelessElders" -> M34;

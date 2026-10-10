@@ -570,6 +570,11 @@ SCENES = [
       "at three hearts Dara walked up and asked the player for a taste of home, with [I'll help] and [Not now] in the chat; accepted, the pumpkin pie was handed in from the quest journal's Personal tab, she said her thanks and the helper got the emeralds and the friendship", 60,
       [("01_ask", "Three hearts: she walks up and asks, with [I'll help] and [Not now] in the chat"), ("02_accept", "[I'll help]: the request is open"),
        ("03_hand_in", "The journal's Personal tab: the pie to hand in"), ("04_thanks", "Handed in: her thanks, the emeralds and the friendship")]),
+    # Reputation and titles (ROADMAP 31.11): a new title told to the server, the title in chat, the hall's tooltip
+    S("titles", "Village Hall", "Reputation and titles: a Hero of Thornholm",
+      "the player's deeds made them a Hero of Thornholm, told to the whole server in gold; their next chat line carries [Hero of Thornholm], and the hall's name tag tooltip shows their standing, their honour and the three best regarded", 45,
+      [("01_hero", "300 standing: a Hero of Thornholm, told to the whole server"), ("02_chat", "A chat line with the title before it"),
+       ("03_tooltip", "The hall's name tag: your standing, your honours and the best regarded")]),
     # My work (ROADMAP 31.8): the 4-heart event of each job family, a villager of each beginning theirs
     S("heart_events_work", "Village Hall", "Heart events: the work story of every job family",
       "at four hearts a villager of each job family (and one without a trade) began the story of their work, over their head and in the chat", 45,

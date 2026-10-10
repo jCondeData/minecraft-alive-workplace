@@ -118,6 +118,12 @@ public interface Platform {
 	/** After a mob was turned into another on the server (a villager into a zombie villager, or cured back): old, new. */
 	void onMobConversion(BiConsumer<net.minecraft.world.entity.Mob, net.minecraft.world.entity.Mob> action);
 
+	/**
+	 * Decorates what a player says in chat before the server sends it on: the sender (null for a message nobody sent)
+	 * and the message's text, to the text everyone sees. Return the same text to leave it alone.
+	 */
+	void onChatDecorate(java.util.function.BiFunction<ServerPlayer, net.minecraft.network.chat.Component, net.minecraft.network.chat.Component> decorator);
+
 	/** When the server's commands are registered. */
 	void onRegisterCommands(Consumer<CommandDispatcher<CommandSourceStack>> action);
 

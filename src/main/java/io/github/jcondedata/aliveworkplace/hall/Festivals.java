@@ -338,6 +338,7 @@ public final class Festivals {
 			for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
 				gather(level, villager, square);
 			}
+			io.github.jcondedata.aliveworkplace.story.Reputation.onFestival(level, hall); // coming to it is remembered (31.11)
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 				fireworks(level, hall, entity, square, level.random);
 			}

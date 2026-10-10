@@ -2496,7 +2496,7 @@ write their own stories; nothing waits forever on a player.
   - a GameTest per request: the letter there and back between two halls; the revive with a grave; the cat at dawn; the
     schooled child; the chapel wedding and its feast; the heirloom placed once when a player comes near, with the map;
   - showcase scene `letter` (the letter carried between two villages, and the reply).
-- [ ] **31.11** **Reputation and titles.** Each player has a standing in each village: points kept by hall in
+- [x] **31.11** (review: pending 2026-10-10) **Reputation and titles.** Each player has a standing in each village: points kept by hall in
   `aliveworkplace_stories` (player → points). Earned: a daily quest +10; a personal request +25; a story chapter +50
   to everyone who helped; an arc's ending what its file says (150 in ours); a bounty +40; breaking up a bandit camp
   or, once 32.3 lands, a lair (the killer of its chief) +40; fighting in a raid (3 raiders killed) +20; coming to a
@@ -5187,4 +5187,22 @@ item waits.
   by moving the request on, with 3 hearts. (8) An unanswered offer isn't saved and lapses with the day, at no cost.
   (9) The glum mood is 10 points for one day; "3 days" of not asking means up to and including the third day after.
   (10) Items in quest files may now say what they carry: `item[enchantment=<id>]`, `item[effect=<id>]`. No review
+  package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.
+- 2026-10-10 (31.11, owner question; lane c): **may players other than the hall's owner become Lord of his village
+  on a shared server?** Built with the roadmap's default: yes, by deeds alone (1000 standing and the village at least a
+  Town; a village can have several Lords). 31.12 gives a Lord a say in the village's edicts, so say if only the owner
+  (or his friends) should be able to hold the title. Open until the owner answers.
+- 2026-10-10 (31.11, decisions; lane c): the roadmap leaves these open, decided as follows (all on the wiki page
+  `reputation.md`, "Decisions"). (1) **The title goes before the message's text, after the name**: the roadmap asks
+  for Fabric's message decorator, which can change what a player said but not the "<name>" in front of it, so a line
+  reads "<Jesse> [Hero of Thornholm] ..." and not "[Hero of Thornholm] Jesse: ...". Before the name would mean the
+  server re-sending chat as its own messages (no signatures); say if that look is worth it. (2) **Each title is told to
+  the server once per player per village**; winning one back after losing it is told only to that player. (3) Standing
+  can go below 0. (4) A gift earns its +2 unless the villager dislikes it. (5) A festival's +5 is for being in the
+  village at any moment of it, once a festival day. (6) A raid's +20 comes at the third raider killed, once per raid
+  (ours, or vanilla's pillagers while their raid is on). (7) An arc's quests count through their chapter (+50), not as
+  daily quests on top. (8) The rewards `reputation` and `honour` take `who`: `finisher` (default), `helpers`, and in an
+  arc's effects `chapter_helpers`; the Bandit King's 150 and Kingslayer are for his arc's file to say when it lands; no
+  arc of ours ships yet. (9) A Lord whose Town shrinks is a Hero until it grows back. (10) Saved per hall with the
+  village's name as last seen, so `/workplace standing` and the chat never load a far village's chunk. No review
   package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.

@@ -147,6 +147,10 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   every 10 ticks, `accept`/`decline`/`join`, `done` paying every helper, `overdue` for a missed deadline); a request is a
   `Quest` with the giver `villager` (`Quest.villager`, `text`, `festival`, `mark`) from `quests/personal/`. Conditions on the
   giver are `rules/GiverConditions`; objectives about the giver implement `Objectives.Looked` (looked at in the round).
+  Reputation and titles (31.11): `Reputation` (standing per player per hall in `Stories.Entry.standings`; `add` moves it and
+  retitles, telling a first-time title to the server; the sources call its `on...` hooks; `decorate` is the chat prefix,
+  registered through `Platform.onChatDecorate`; `hallLines` and `standingLines` are what the tooltip and the command show);
+  the rewards `reputation` and `honour` are in `Rewards`, and as arc effects go to the arc's helpers (`Reputation.arcEffect`).
   public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`).
   Story arcs (31.4): `Arcs` (loader of `data/<ns>/arcs/<id>.json` and `arc_spawns/`, the trigger, the chapters' round,
   start/next/stop), `ArcEffects` (the effects, `place` and `spawn`, the 40-tick proximity check, `talk`), `ArcState` (a

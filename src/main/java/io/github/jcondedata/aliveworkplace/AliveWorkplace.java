@@ -95,6 +95,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.story.Gifts.init(); // giving a Gift to a named villager (31.6)
 		io.github.jcondedata.aliveworkplace.story.HeartEvents.init(); // what villagers tell their friends, as data (31.7)
 		io.github.jcondedata.aliveworkplace.story.PersonalRequests.init(); // villagers ask their friends for help (31.9)
+		io.github.jcondedata.aliveworkplace.story.Reputation.init(); // standing and titles: losses, raids, lairs, the title in chat (31.11)
 		io.github.jcondedata.aliveworkplace.story.Arcs.init(); // story arcs: their files, placements and mobs, talk (31.4)
 		io.github.jcondedata.aliveworkplace.hall.Anthems.init(); // the anthem's player (29.19)
 		io.github.jcondedata.aliveworkplace.legend.Gifted.init();

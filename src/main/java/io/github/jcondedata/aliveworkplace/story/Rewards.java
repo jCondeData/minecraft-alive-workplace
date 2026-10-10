@@ -68,6 +68,8 @@ public final class Rewards {
 		register("treasury", j -> new Treasury(Objectives.positive(j, "emeralds")));
 		register("map", j -> new MapReward(Places.read(j.get("place"))));
 		register("friendship", FriendshipReward::read);
+		register("reputation", ReputationReward::read);
+		register("honour", Honour::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Reward> reader) {
@@ -392,6 +394,84 @@ public final class Rewards {
 			o.addProperty("type", type());
 			o.addProperty("points", points);
 			o.addProperty("to", to);
+			o.addProperty("who", who);
+			return o;
+		}
+	}
+
+	/**
+	 * {@code reputation} (31.11): {@code points} of standing in the village (below 0: lost), for the finisher
+	 * ({@code who}: {@code finisher}, the default) or everyone credited with progress ({@code helpers}; in an arc's
+	 * effects also {@code chapter_helpers}, those of its last chapter).
+	 */
+	public record ReputationReward(int points, String who) implements Reward {
+		static ReputationReward read(JsonObject json) {
+			int points = GsonHelper.getAsInt(json, "points");
+			if (points == 0) {
+				throw new IllegalArgumentException("'points' is 0");
+			}
+			return new ReputationReward(points, Reputation.who(json));
+		}
+
+		@Override
+		public String type() {
+			return "reputation";
+		}
+
+		@Override
+		public void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher) {
+			give(level, hall, finisher, null);
+		}
+
+		@Override
+		public void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher, @Nullable Quest quest) {
+			Reputation.paid(who, finisher, quest).forEach(player -> Reputation.add(level, hall, player, "", points));
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("points", points);
+			o.addProperty("who", who);
+			return o;
+		}
+	}
+
+	/**
+	 * {@code honour} (31.11): the village names a player ({@code who}, as {@code reputation}'s) with the honour
+	 * {@code id}: {@code kingslayer}, {@code healer}, {@code wayfinder}, {@code co_author}, or any id a pack's lang file
+	 * names under {@code honour.aliveworkplace.<id>}. Given once; listed with their standing.
+	 */
+	public record Honour(String id, String who) implements Reward {
+		static Honour read(JsonObject json) {
+			String id = GsonHelper.getAsString(json, "id");
+			if (!id.matches("[a-z0-9_]+")) {
+				throw new IllegalArgumentException("'id' must be lower-case letters, digits and _, not '" + id + "'");
+			}
+			return new Honour(id, Reputation.who(json));
+		}
+
+		@Override
+		public String type() {
+			return "honour";
+		}
+
+		@Override
+		public void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher) {
+			give(level, hall, finisher, null);
+		}
+
+		@Override
+		public void give(ServerLevel level, BlockPos hall, @Nullable ServerPlayer finisher, @Nullable Quest quest) {
+			Reputation.paid(who, finisher, quest).forEach(player -> Reputation.honour(level, hall, player, "", id));
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("id", id);
 			o.addProperty("who", who);
 			return o;
 		}

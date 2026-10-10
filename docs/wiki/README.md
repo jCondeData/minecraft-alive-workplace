@@ -15,6 +15,8 @@ How everything in the mod works, in plain words: written for the owner first, th
   keepsakes, the life story page and event files (31.7, 31.8).
 - [Personal requests](personal-requests.md): a villager's own ask, [I'll help] and [Not now], the six requests,
   deadlines and request files (31.9).
+- [Reputation and titles](reputation.md): standing in each village, what earns and costs it, Friend, Hero and Lord,
+  honours, the title in chat (31.11).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
 - [Caravans that trade](caravan-trade.md): what a caravan takes to sell, how the other village pays, what comes home, and the Routes tab's earnings (33.6).

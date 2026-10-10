@@ -94,6 +94,12 @@ public final class WorkplaceCommand {
 				.then(Commands.literal("track")
 					.then(Commands.argument("quest", UuidArgument.uuid())
 						.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), UuidArgument.getUuid(ctx, "quest"), false)))))
+			.then(Commands.literal("standing") // your standing, title and honours in every village (31.11)
+				.executes(ctx -> {
+					ServerPlayer player = ctx.getSource().getPlayerOrException();
+					io.github.jcondedata.aliveworkplace.story.Reputation.standingLines(player).forEach(line -> Chat.chat(player, line));
+					return 1;
+				}))
 			.then(Commands.literal("quest") // a villager's request: [I'll help] and [Not now] (31.9)
 				.then(Commands.literal("accept")
 					.then(Commands.argument("id", UuidArgument.uuid())

@@ -94,6 +94,7 @@ public final class Stories {
 			data.setDirty();
 		}
 		PersonalRequests.round(level, hall, entity, e); // requests move on, and someone may ask (31.9)
+		Reputation.round(level, hall, e); // titles follow the village's rank (31.11)
 		Arcs.round(level, hall, entity); // story arcs move on, end or begin (31.4)
 	}
 
@@ -418,6 +419,7 @@ public final class Stories {
 			r.give(level, hall, player, quest);
 		}
 		Friendship.onQuestDone(level, hall, quest, player); // 31.5: the poster's friendship
+		Reputation.onQuestDone(level, hall, quest, player); // 31.11: standing in the village
 		if (player != null) {
 			int emeralds = quest.emeralds();
 			Chat.chat(player, (emeralds > 0
@@ -559,6 +561,11 @@ public final class Stories {
 		long requestDay = -1;
 		boolean requestPending;
 		long requestDawn = -1;
+		/** Each player's standing here (31.11): points, the title they hold, honours. */
+		final Map<UUID, Reputation.Standing> standings = new LinkedHashMap<>();
+		/** The village's name as last seen with its hall loaded (standings are listed from anywhere). */
+		@Nullable
+		Component villageName;
 
 		static final long UNSEEN = Long.MIN_VALUE;
 	}
@@ -653,6 +660,14 @@ public final class Stories {
 					e.villageFlags.forEach(flags::putLong);
 					h.put("village_flags", flags);
 				}
+				if (!e.standings.isEmpty()) {
+					ListTag standings = new ListTag();
+					e.standings.forEach((player, s) -> standings.add(s.save(player)));
+					h.put("standings", standings);
+				}
+				if (e.villageName != null) {
+					h.putString("village_name", Rewards.json(e.villageName).toString());
+				}
 				list.add(h);
 			}
 			tag.put("halls", list);
@@ -722,6 +737,21 @@ public final class Stories {
 				CompoundTag flags = Nbt.getCompound(h, "village_flags");
 				for (String k : Nbt.keys(flags)) {
 					e.villageFlags.put(k, Nbt.getLong(flags, k));
+				}
+				// (31.11; absent in older saves: nobody has a standing yet)
+				ListTag standings = Nbt.getList(h, "standings", Tag.TAG_COMPOUND);
+				for (int j = 0; j < standings.size(); j++) {
+					CompoundTag t = Nbt.compoundAt(standings, j);
+					if (Nbt.hasUuid(t, "player")) {
+						e.standings.put(Nbt.getUuid(t, "player"), Reputation.Standing.load(t));
+					}
+				}
+				if (h.contains("village_name")) {
+					try {
+						e.villageName = Rewards.text(com.google.gson.JsonParser.parseString(Nbt.getString(h, "village_name")));
+					} catch (RuntimeException ex) {
+						e.villageName = null; // (it is read again from the hall)
+					}
 				}
 			}
 			ListTag tracks = Nbt.getList(tag, "tracked", Tag.TAG_COMPOUND);

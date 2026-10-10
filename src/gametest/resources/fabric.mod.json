@@ -196,6 +196,7 @@
 			"io.github.jcondedata.aliveworkplace.test.HeartEventGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HeartEventSetGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PersonalRequestGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ReputationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoryArcGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",

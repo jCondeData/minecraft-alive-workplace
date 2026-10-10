@@ -114,7 +114,7 @@ Season, then 4 days with all four reformed, with a Cradle, a Harvest Idol in har
 rush a day. Measured on 2026-10-10: 91.8 meals a day from the store under the edicts against 79.8 reformed (with more
 villagers), 12 emeralds for the festival against 0, nobody past the pace cap, the village growing from 35 to 51. Our
 share of the tick was under 15% on every day but the first (17.1%), and one tick on day 1 spent about 400 ms in our
-code (B100), so the run's tick check fails for now. Every day's numbers are in `docs/design/M30.md`, "Numbers from the
+code (B101), so the run's tick check fails for now. Every day's numbers are in `docs/design/M30.md`, "Numbers from the
 season run". `SeasonSoakGameTests` (5) test how the result is judged.
 
 Showcase scenes: `edicts` (the book), `long_shifts`, `reform`, `free_bread`, `large_families`, `open_gates`,

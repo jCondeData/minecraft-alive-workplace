@@ -38,8 +38,8 @@ profile samples). The daily numbers are in `docs/design/M30.md`.
 
 | Date | Run | Sprint | Our share, day 1 | Our share, days 2 to 8 | Ticks over 50 ms | Of them ours |
 |---|---|---|---|---|---|---|
-| 2026-10-10 | 4 (the reformed half alone, 4 days) | 794 ticks a second (1.26 ms a tick) | **17.2%** | 12.7% to 14.7% | 6 of 96,000 | 1, on day 1: 296 ms of a 296 ms tick, the same lookup (B100) |
-| 2026-10-10 | 3 (the fields growing) | 814 ticks a second (1.23 ms a tick) | **17.1%** | 12.4% to 14.1% | 17 of 192,000 (worst 425 ms) | 2, both on day 1: 402 ms of a 424 ms tick in the crafters' first recipe lookup (B100), and a 98 ms tick with one sample, in a farmer's harvest |
+| 2026-10-10 | 4 (the reformed half alone, 4 days) | 794 ticks a second (1.26 ms a tick) | **17.2%** | 12.7% to 14.7% | 6 of 96,000 | 1, on day 1: 296 ms of a 296 ms tick, the same lookup (B101) |
+| 2026-10-10 | 3 (the fields growing) | 814 ticks a second (1.23 ms a tick) | **17.1%** | 12.4% to 14.1% | 17 of 192,000 (worst 425 ms) | 2, both on day 1: 402 ms of a 424 ms tick in the crafters' first recipe lookup (B101), and a 98 ms tick with one sample, in a farmer's harvest |
 | 2026-10-10 | 2 (nothing growing: the store ran out) | 718 ticks a second (1.39 ms a tick) | **16.6%** | 9.2% to 13.1% | not counted properly (it counted the ticks before the sprint) | 307 ms of a 333 ms tick on day 1, the same lookup |
 | 2026-10-10 | 1 (composters too far from the chests) | 814 ticks a second (1.23 ms a tick) | **17.1%** | 12.1% to 14.3% | not recorded | not recorded |
 

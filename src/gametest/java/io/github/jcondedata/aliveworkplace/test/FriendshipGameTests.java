@@ -348,4 +348,44 @@ public class FriendshipGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B93: the hearts look-up runs in the server tick for every player, so it must never load a chunk. A player standing
+	 * where nothing is loaded (a GameTest's mock player left behind is one) sees no hearts and the chunk stays unloaded:
+	 * loading it there read it from disk every 10 ticks for each such player, and the full build took 80 minutes.
+	 */
+	//$ gametest_ticks_batch AREA '60' '"friendshipLookUnloaded"'
+	@GameTest(template = AREA, timeoutTicks = 60, batch = "friendshipLookUnloaded")
+	public void theLookUpNeverLoadsAChunk(GameTestHelper helper) {
+		village(helper, (dara, player) -> {
+			ServerLevel level = helper.getLevel();
+			Friendship.add(dara, player, 300);
+			face(player, dara);
+			helper.assertTrue(Friendship.lookLine(player) != null, "no hearts looking at Dara in a loaded chunk");
+
+			// Far out, where no test area is: nothing is loaded there.
+			BlockPos far = helper.absolutePos(HALL).offset(0, 0, 4096);
+			int cx = far.getX() >> 4;
+			int cz = far.getZ() >> 4;
+			helper.assertTrue(!level.hasChunk(cx, cz), "the far chunk is loaded before the look-up: pick another spot");
+			player.moveTo(far.getX() + 0.5, far.getY(), far.getZ() + 0.5, 0, 0);
+			helper.assertTrue(Friendship.lookedAt(player) == null && Friendship.lookLine(player) == null, "hearts shown in an unloaded chunk");
+			helper.assertTrue(!level.hasChunk(cx, cz), "the look-up loaded the player's chunk");
+
+			// On a chunk's edge, looking into the unloaded chunk next door: that one isn't loaded either.
+			Vec3 edge = helper.absoluteVec(Vec3.atBottomCenterOf(new BlockPos(5, 2, 8)));
+			int ex = net.minecraft.util.Mth.floor(edge.x) >> 4;
+			int ez = net.minecraft.util.Mth.floor(edge.z) >> 4;
+			for (int tries = 0; tries < 64 && level.hasChunk(ex, ez + 1); tries++) {
+				ez++; // walk south to the last loaded chunk
+			}
+			helper.assertTrue(level.hasChunk(ex, ez) && !level.hasChunk(ex, ez + 1), "found no loaded chunk with an unloaded one south of it");
+			player.moveTo((ex << 4) + 8.5, edge.y, (ez << 4) + 15.5, 0, 0); // yaw 0 looks south (+z)
+			player.setYHeadRot(0);
+			helper.assertTrue(Friendship.lookLine(player) == null, "hearts shown looking into an unloaded chunk");
+			helper.assertTrue(!level.hasChunk(ex, ez + 1), "the look-up loaded the chunk the player looks into");
+			level.getServer().getPlayerList().remove(player);
+			helper.succeed();
+		});
+	}
 }

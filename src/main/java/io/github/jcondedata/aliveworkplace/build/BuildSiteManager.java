@@ -31,6 +31,13 @@ public final class BuildSiteManager extends SavedData {
 	/** Most finished buildings remembered per dimension (the oldest are forgotten first). */
 	private static final int MAX_FINISHED = 2000;
 	private final java.util.ArrayDeque<Finished> finished = new java.util.ArrayDeque<>();
+	/** Counts every site or finished building added or removed (not saved): lets a reader tell the list hasn't changed (B85). */
+	private int changes;
+
+	/** A number that changes whenever a site or finished building is added or removed (not when a site works on). */
+	public int changes() {
+		return changes;
+	}
 
 	/** Remembers a finished building (replacing an older one on the same spot, such as the tier it upgraded). */
 	public void recordFinished(ResourceLocation structure, BlueprintData.Placement placement, UUID owner) {
@@ -42,12 +49,14 @@ public final class BuildSiteManager extends SavedData {
 		while (finished.size() > MAX_FINISHED) {
 			finished.removeFirst();
 		}
+		changes++;
 		setDirty();
 	}
 
 	/** Forgets the building on this spot (it was taken down). */
 	public void forgetFinished(BlueprintData.Placement placement) {
 		if (finished.removeIf(f -> f.placement().equals(placement))) {
+			changes++;
 			setDirty();
 		}
 	}
@@ -102,6 +111,7 @@ public final class BuildSiteManager extends SavedData {
 	private void add(BuildSite site) {
 		site.setOnChange(this::setDirty);
 		sites.put(site.id(), site);
+		changes++;
 		setDirty();
 	}
 
@@ -112,6 +122,7 @@ public final class BuildSiteManager extends SavedData {
 
 	public void remove(UUID id) {
 		if (sites.remove(id) != null) {
+			changes++;
 			setDirty();
 		}
 	}

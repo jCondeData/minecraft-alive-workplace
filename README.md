@@ -618,6 +618,26 @@ met they go back to work. Legends never leave, strike or not. `legendNeeds` in t
 `legends` in the config switches them off: none come, and those already settled stay as ordinary Masters of their
 trade. Each Legend that ships adds its paragraph below.
 
+## From village to realm
+
+*Part of 1.7, which isn't released yet: `villageEconomy` stays off until then.*
+
+**Specialties and prices.** Villages stop being islands. Once a day every village with a Village Hall works out up to
+three goods it's **known for** (from its workers, its biome and what its Storehouses hold) and up to three it's
+**short of**, and puts a price on each of the 28 trade goods (25 without Cobblemon), from Grain and Timber to Remedies
+and Poké Balls. A price moves a third of the way toward supply and demand each dawn, and never below half or above
+twice the good's usual price.
+
+You read it all on the hall. The minecart in the hall's divider opens the **Trade** page, which has a row of tabs:
+**Routes** is the trade routes page as it always was, and **Prices** is the price board. The board shows every good by
+its icon with what the village **pays** for a bundle and what it **sells** one for (10% more; in CobbleDollars with
+the pack), an arrow for how the price moved since yesterday (green up, red down, a grey bar for steady), a **gold
+star** on what the village is known for and a **red mark** on what it's short of. Hover a good and the tooltip also
+names the village on your trade routes where it's dearer and the one where it's cheaper ("Dearer in Ashford: 1.4
+emeralds"), so you can see where a caravan would earn. The hall's name icon gains a line, "Known for: Timber, Wool.
+Short of: Bread", and villagers talk about it: "Our Timber sells well in Ashford", "We've more Wool than we can use",
+"Bread is dear this week". A Village Ledger reaches the Trade page from afar, like the rest of the hall.
+
 ## All the jobs at a glance
 **Vanilla jobs work as in vanilla**: place their block near a villager without a job and they take it. Most of our jobs
 **share a vanilla block** with a vanilla job, and a jobless villager by it still takes the vanilla job. For one of ours,

@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblemon"
+      ]
+    }
+  ],
+  "name": {
+    "translate": "good.aliveworkplace.apricorns"
+  },
+  "icon": "cobblemon:red_apricorn",
+  "items": [
+    "#aliveworkplace:trade/apricorns"
+  ],
+  "bundle": 8,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:orchard_keeper"
+    ],
+    "biomes": [
+      "#minecraft:is_forest",
+      "#c:is_plains"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:ball_smith"
+    ]
+  },
+  "food": false,
+  "order": 40
+}

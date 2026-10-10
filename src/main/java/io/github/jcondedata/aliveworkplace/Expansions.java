@@ -35,6 +35,8 @@ public final class Expansions {
 	 * {@code arcCooldownDays}, {@code arcsAtOnce} (31.4).
 	 */
 	public static final boolean M31 = false;
+	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}. */
+	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code vintners}. */
 	public static final boolean M34 = false;
 
@@ -62,6 +64,7 @@ public final class Expansions {
 			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
+			case "villageEconomy" -> M33;
 			case "friendship", "heartEvents" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners" -> M34;

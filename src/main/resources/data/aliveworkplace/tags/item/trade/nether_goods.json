@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:quartz",
+    "minecraft:nether_wart",
+    "minecraft:blaze_rod",
+    "minecraft:glowstone_dust"
+  ]
+}

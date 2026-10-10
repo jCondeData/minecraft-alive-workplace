@@ -109,6 +109,27 @@ public final class StewardConditions {
 			return level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.research() : Research.State.EMPTY;
 		}
 
+		/** How many pieces {@link #warm} counts the village in. */
+		public static final int PIECES = 6;
+
+		/**
+		 * B85: counts one piece of the village ahead of the rules ({@code piece} 0 to {@link #PIECES} - 1: the census,
+		 * the homes, the finished buildings, the upgradable ones, the store and the jobs wanted), so the Steward's
+		 * morning can spread the counting over several ticks; the rules then read what was counted.
+		 */
+		public void warm(int piece) {
+			switch (piece) {
+				case 0 -> census();
+				case 1 -> homes();
+				case 2 -> finished();
+				case 3 -> upgradable();
+				case 4 -> store();
+				case 5 -> wanted();
+				default -> {
+				}
+			}
+		}
+
 		/** The Storehouses' chests: all their slots and the empty ones. */
 		public int[] store() {
 			if (store == null) {
@@ -387,9 +408,27 @@ public final class StewardConditions {
 
 	/** Whether the next tier of a building has more beds than it (counted from both blueprints). */
 	public static boolean addsBeds(net.minecraft.server.level.ServerLevel level, ResourceLocation structure) {
+		long now = level.getGameTime();
+		AddsBeds known = ADDS_BEDS.get(structure);
+		if (known != null && now >= known.at() && now - known.at() < ADDS_BEDS_EVERY) {
+			return known.adds();
+		}
 		ResourceLocation up = BlueprintUpgrades.upgradeOf(structure);
-		return !up.equals(structure) && beds(level, up) > beds(level, structure);
+		boolean adds = !up.equals(structure) && beds(level, up) > beds(level, structure);
+		if (ADDS_BEDS.size() > 1024) {
+			ADDS_BEDS.clear();
+		}
+		ADDS_BEDS.put(structure, new AddsBeds(now, adds));
+		return adds;
 	}
+
+	/** B85: {@link #addsBeds} as counted at a game time (both blueprints' every block), trusted for {@link #ADDS_BEDS_EVERY} ticks. */
+	private record AddsBeds(long at, boolean adds) {
+	}
+
+	/** A minute: blueprints change only with an upload or a datapack. */
+	static final int ADDS_BEDS_EVERY = 1200;
+	private static final java.util.Map<ResourceLocation, AddsBeds> ADDS_BEDS = new java.util.HashMap<>();
 
 	/** {@code homes_tier_low {share}}: more than that share of grown-ups live in tier I homes or none (the "homes" tip at 0.5). */
 	public record HomesTierLow(double share) implements Condition {

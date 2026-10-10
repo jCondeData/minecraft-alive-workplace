@@ -1,0 +1,32 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblemon"
+      ]
+    }
+  ],
+  "name": {
+    "translate": "good.aliveworkplace.berries"
+  },
+  "icon": "cobblemon:oran_berry",
+  "items": [
+    "#aliveworkplace:trade/berries"
+  ],
+  "bundle": 12,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:orchard_keeper"
+    ]
+  },
+  "wanted_in": {
+    "jobs": [
+      "aliveworkplace:nurse",
+      "aliveworkplace:rancher"
+    ]
+  },
+  "food": false,
+  "order": 41
+}

@@ -1,0 +1,36 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.timber"
+  },
+  "icon": "minecraft:oak_log",
+  "items": [
+    "#minecraft:logs"
+  ],
+  "bundle": 16,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:lumberjack"
+    ],
+    "biomes": [
+      "#minecraft:is_forest",
+      "#minecraft:is_taiga",
+      "#minecraft:is_jungle",
+      "minecraft:dark_forest"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_desert",
+      "#minecraft:is_badlands",
+      "#c:is_snowy_plains",
+      "#minecraft:is_beach"
+    ],
+    "jobs": [
+      "aliveworkplace:builder",
+      "aliveworkplace:carpenter"
+    ]
+  },
+  "food": false,
+  "order": 10
+}

@@ -1,0 +1,34 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.fish"
+  },
+  "icon": "minecraft:cooked_cod",
+  "items": [
+    "#aliveworkplace:trade/fish"
+  ],
+  "bundle": 6,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "minecraft:fisherman"
+    ],
+    "biomes": [
+      "#minecraft:is_ocean",
+      "#minecraft:is_river",
+      "#minecraft:is_beach"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_desert",
+      "#minecraft:is_badlands",
+      "#minecraft:is_mountain"
+    ],
+    "jobs": [
+      "aliveworkplace:chef",
+      "aliveworkplace:innkeeper"
+    ]
+  },
+  "food": true,
+  "order": 4
+}

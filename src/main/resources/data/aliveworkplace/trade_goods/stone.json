@@ -1,0 +1,35 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.stone"
+  },
+  "icon": "minecraft:cobblestone",
+  "items": [
+    "#aliveworkplace:trade/stone"
+  ],
+  "bundle": 64,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "aliveworkplace:miner",
+      "minecraft:mason"
+    ],
+    "biomes": [
+      "#minecraft:is_mountain",
+      "#minecraft:is_hill",
+      "#c:is_stony_shores"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_swamp",
+      "#c:is_plains",
+      "#minecraft:is_beach"
+    ],
+    "jobs": [
+      "aliveworkplace:builder",
+      "minecraft:mason"
+    ]
+  },
+  "food": false,
+  "order": 11
+}

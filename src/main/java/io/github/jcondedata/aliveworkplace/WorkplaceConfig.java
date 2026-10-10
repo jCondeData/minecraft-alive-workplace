@@ -141,6 +141,8 @@ public final class WorkplaceConfig {
 	public int guildsPerRank = 1;
 	/** Days an edict stays in force before it can be lifted. */
 	public int edictMinDays = 3;
+	/** Villages work out once a day what goods they're known for and short of, and a price for each (ROADMAP 33.2). Off: nothing is worked out; what was stays saved. */
+	public boolean villageEconomy = Expansions.on(Expansions.M33);
 	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
 	public boolean villageClasses = Expansions.on(Expansions.M34);
 	/** Dawns running the next class's needs must hold for a household to rise one class. */
@@ -398,6 +400,7 @@ public final class WorkplaceConfig {
 		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;
+		io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED = villageEconomy && Expansions.on(Expansions.M33);
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;

@@ -22,6 +22,7 @@ the same commit) and checked by the QA lane (ROADMAP 22.9). Pages are filled in 
 - [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
 - [Heart events and life stories](heart-events.md): what villagers tell their friends, the life story page and
   event files (31.7).
+- [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 
 Still to write of the first twelve: Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds,
 Legends, Pokemon partners, Classes, Elders, Config switches.

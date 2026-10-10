@@ -1374,6 +1374,65 @@ def vintner():
     return t.save_profession(ASSETS, "vintner", hat="full")
 
 
+def jeweller():
+    """A jeweller's loupe held in one eye (the villager's left: a dark barrel with a pale lens, the `glasses` helper
+    with the other eye's frame taken off again), a dark plum velvet waistcoat with gold buttons and a gold watch chain
+    to its pocket, over cream shirt sleeves with velvet cuffs and gold cufflinks, and a cut amethyst held in the
+    fingers (ROADMAP 34.12). No headwear: the biome's hat stays."""
+    t = vg.VillagerTexture()
+    velvet = vg.cloth("#43264f", spread=0.24)
+    shirt = vg.cloth(LINEN)
+    barrel = "#2b2630"
+    lens = "#bfe4f2"
+    amethyst = ["#5a3a8a", "#8a5ac0", "#c69ae8"]         # dark, mid, lit
+    vg.glasses(t, frame=barrel, lens=lens)
+    hf = t.face("hat", "front")
+    for x, y in ((0, 6), (3, 6), (1, 5), (2, 5), (1, 6), (2, 6), (1, 7), (2, 7)):   # the right eye stays bare
+        hf.put(x, y, (0, 0, 0, 0))
+    hf.put(5, 5, BRASS[3])                               # the barrel's brass rim, lit from the top-left
+    hf.put(6, 5, BRASS[1])
+
+    vg.vest(t, velvet, length=12, open_front=False, noise=0.03)
+    j = t.face("jacket", "front")
+    for x, y in ((2, 0), (3, 0), (4, 0), (5, 0), (3, 1), (4, 1)):   # the shirt showing in the waistcoat's V neck
+        j.put(x, y, shirt[4] if y == 0 else shirt[2])
+    for y in range(2, 12):                               # the buttoned front edge, a shade darker
+        j.put(4, y, velvet[0])
+    for y in (2, 4, 6, 8):                               # four gold buttons
+        j.put(3, y, GOLD[3])
+    j.put(3, 9, GOLD[0])                                 # the last button's shadow, above the level badge's row
+    for x, y, c in ((2, 7, GOLD[2]), (1, 8, GOLD[1]), (0, 8, GOLD[2])):   # the watch chain, from a button to the pocket
+        j.put(x, y, c)
+    for x in (0, 1):                                     # the watch pocket's welt
+        j.put(x, 9, velvet[0])
+    back = t.face("jacket", "back")                      # the waistcoat's cinch strap and its gold buckle
+    for x in range(1, 7):
+        back.put(x, 8, velvet[0])
+    back.put(3, 8, GOLD[3])
+    back.put(4, 8, GOLD[1])
+
+    vg.sleeves(t, shirt, noise=0)
+    for side in ("front", "west", "east", "back"):       # a velvet cuff at each wrist, a gold link on the front
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), velvet[1])
+    af = t.face("arm", "front")
+    af.put(1, af.h - 2, GOLD[2])
+    mid = t.face("arms_middle", "front")                 # a cut amethyst held up in the fingers
+    mid.put(1, 1, amethyst[2])
+    mid.put(2, 1, amethyst[1])
+    mid.put(1, 2, amethyst[1])
+    mid.put(2, 2, amethyst[0])
+    written = t.save_profession(ASSETS, "jeweller", hat=None)
+    z = t.copy()                                         # the zombie's eye behind the lens is red, not green
+    u0, v0 = vg.UV["hat"]["front"][:2]
+    for x in (5, 6):
+        z.a[v0 + 6, u0 + x] = rgba(mix(rgba(ZOMBIE_EYES[x]), rgba(lens), 0.45))
+    for p in written:
+        if "zombie_villager" in str(p) and str(p).endswith(".png"):
+            z.save(p)
+    return written
+
+
 def tailor():
     """A neat buttoned waistcoat of slate-blue wool with a pale satin back and a cinch strap, over white shirt sleeves;
     a yellow tape measure round the neck, its two ends hanging down the front at uneven lengths with inch marks; and a
@@ -1435,6 +1494,7 @@ def tailor():
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
+DRAW += [jeweller]   # 34.12
 
 if __name__ == "__main__":
     run(DRAW)

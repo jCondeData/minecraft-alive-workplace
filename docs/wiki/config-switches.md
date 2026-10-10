@@ -118,6 +118,7 @@ range is in brackets.
 | `campCooks` | on | 1.2 | Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains. Off: no Camp Cook job. |
 | `habitatKeepers` | on | 1.2 | Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle. Off: no Habitat Keeper job. |
 | `daycareKeepers` | on | 1.2 | Villagers at a Pasture Block can be made Daycare Keepers with an egg. Off: no Daycare Keeper job, and no eggs. |
+| `jewellers` | on | 1.8 | Villagers at a stonecutter can be made Jewellers with a gold nugget. Off: no Jeweller job, and Jewellers already hired stand idle. |
 | `gemGrowers` | on | 1.2 | Villagers at a stonecutter can be made Gem Growers with an amethyst shard. Off: no Gem Grower job. |
 | `habitatSightings` | on | 1.2 | Habitat Keepers tell the village of shiny, rare and Alpha wild Pokémon near their pasture. |
 | `villageHabitats` | on | 1.2 | An Expert Habitat Keeper puts one Habitat Block in a finished Habitat Garden, with Cobblemon 1.8. Off: none founded. |

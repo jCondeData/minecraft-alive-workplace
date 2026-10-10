@@ -46,6 +46,10 @@ public final class ModItems {
 		io.github.jcondedata.aliveworkplace.mc.DrinkItem.drink(3, 0.5f, null));
 	public static final io.github.jcondedata.aliveworkplace.mc.DrinkItem VINTAGE_WINE = Reg.item("vintage_wine", io.github.jcondedata.aliveworkplace.mc.DrinkItem::new,
 		io.github.jcondedata.aliveworkplace.mc.DrinkItem.drink(4, 0.6f, new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 100)));
+	/** The Jeweller's pieces (ROADMAP 34.12): luxuries the richer households want, 16 to a stack. */
+	public static final Item AMETHYST_RING = Reg.item("amethyst_ring", Item::new, new Item.Properties().stacksTo(16));
+	public static final Item EMERALD_BROOCH = Reg.item("emerald_brooch", Item::new, new Item.Properties().stacksTo(16));
+	public static final Item GOLD_CIRCLET = Reg.item("gold_circlet", Item::new, new Item.Properties().stacksTo(16));
 	/** The Tailor's clothes (ROADMAP 34.10): luxuries the households want, a set to a stack of 16. */
 	public static final Item WORK_CLOTHES = Reg.item("work_clothes", Item::new, new Item.Properties().stacksTo(16));
 	public static final Item FINE_CLOTHES = Reg.item("fine_clothes", Item::new, new Item.Properties().stacksTo(16));
@@ -113,6 +117,9 @@ public final class ModItems {
 				output.accept(CIDER);
 				output.accept(BERRY_WINE);
 				output.accept(VINTAGE_WINE);
+				output.accept(AMETHYST_RING);
+				output.accept(EMERALD_BROOCH);
+				output.accept(GOLD_CIRCLET);
 				output.accept(WORK_CLOTHES);
 				output.accept(FINE_CLOTHES);
 				output.accept(NOBLE_ROBES);

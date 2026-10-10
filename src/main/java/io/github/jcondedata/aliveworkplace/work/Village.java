@@ -62,7 +62,7 @@ public final class Village {
 		}
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		return job == ModVillagers.BUILDER || job == ModVillagers.MINER || job == ModVillagers.LUMBERJACK || job == ModVillagers.ORCHARD_KEEPER
-			|| job == ModVillagers.BALL_SMITH || job == ModVillagers.PORTER || job == ModVillagers.CHEF || job == VillagerProfession.ARMORER
+			|| job == ModVillagers.BALL_SMITH || job == ModVillagers.PORTER || job == ModVillagers.CHEF || job == VillagerProfession.ARMORER || job == ModVillagers.JEWELLER
 			|| job == ModVillagers.BEEKEEPER || job == ModVillagers.FLORIST || job == ModVillagers.RANCHER || job == ModVillagers.UNDERTAKER || job == ModVillagers.SIFTER || job == ModVillagers.NETHERWORKER || job == ModVillagers.COMPOSTER
 			|| job == ModVillagers.BERRY_BREEDER || job == ModVillagers.CAMP_COOK || job == ModVillagers.HABITAT_KEEPER || job == ModVillagers.GEM_GROWER || job == ModVillagers.VINTNER || job == ModVillagers.TAILOR
 			|| job == VillagerProfession.TOOLSMITH || job == VillagerProfession.WEAPONSMITH || job == VillagerProfession.FLETCHER

@@ -198,7 +198,9 @@ public final class Stations {
 		// The stonecutter (28.11): a jobless villager still takes it as a Mason; an amethyst shard picks the Gem Grower
 		new Station(is(PoiTypes.MASON), Blocks.STONECUTTER, List.of(
 			job(() -> VillagerProfession.MASON, any(Items.CLAY_BALL)),
-			job(() -> ModVillagers.GEM_GROWER, io.github.jcondedata.aliveworkplace.gem.GemGrowers::isShard))),
+			job(() -> ModVillagers.GEM_GROWER, io.github.jcondedata.aliveworkplace.gem.GemGrowers::isShard),
+			// a gold nugget (34.12), with config jewellers on
+			job(() -> ModVillagers.JEWELLER, io.github.jcondedata.aliveworkplace.jeweller.Jewellers::isNugget))),
 		new Station(is(PoiTypes.WEAPONSMITH), Blocks.GRINDSTONE, List.of(
 			job(() -> VillagerProfession.WEAPONSMITH, any(Items.IRON_INGOT)),
 			job(() -> ModVillagers.GUARD, tag(ItemTags.SWORDS)))),
@@ -470,6 +472,9 @@ public final class Stations {
 
 	/** Whether {@code job} can be had in this game (the Pokémon jobs need Cobblemon, the Tailor config {@code tailors}). */
 	public static boolean available(Job job) {
+		if (job.profession().get() == ModVillagers.JEWELLER && !io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED) {
+			return false; // config jewellers off: the stonecutter's tooltip names the Mason and the Gem Grower only
+		}
 		if (job.profession().get() == ModVillagers.TAILOR && !io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED) {
 			return false; // the loom's tooltip names only the Shepherd then
 		}

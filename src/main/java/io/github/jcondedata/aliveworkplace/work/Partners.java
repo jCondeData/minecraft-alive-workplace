@@ -157,6 +157,9 @@ public final class Partners {
 		if (profession == ModVillagers.GEM_GROWER) {
 			return Set.of("rock", "steel"); // Roggenrola, Carbink, Bronzor...: the clusters come loose quicker
 		}
+		if (profession == ModVillagers.JEWELLER) {
+			return Set.of("rock", "steel", "fairy"); // Carbink, Klefki, Diancie...: stones cut and metal set quicker
+		}
 		if (profession == ModVillagers.VINTNER) {
 			return Set.of("grass", "bug", "fairy"); // Bellsprout, Combee, Cutiefly...: the fruit is picked over and pressed quicker
 		}

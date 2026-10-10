@@ -183,6 +183,8 @@ public final class WorkplaceConfig {
 	public boolean daycareKeepers = Expansions.on(Expansions.M28);
 	/** Villagers at a stonecutter can be made Gem Growers with an amethyst shard (ROADMAP 28.11). Off: no Gem Grower job. */
 	public boolean gemGrowers = Expansions.on(Expansions.M28);
+	/** Villagers at a stonecutter can be made Jewellers with a gold nugget (ROADMAP 34.12). Off: no Jeweller job, and Jewellers already hired stand idle. */
+	public boolean jewellers = Expansions.on(Expansions.M34);
 	/** Habitat Keepers tell the village of shiny, rare and Alpha wild Pokémon near their pasture (ROADMAP 28.10). */
 	public boolean habitatSightings = Expansions.on(Expansions.M28);
 	/** An Expert Habitat Keeper puts one Habitat Block in a finished Habitat Garden, with Cobblemon 1.8 (ROADMAP 28.14). Off: none founded. */
@@ -436,6 +438,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.SIGHTINGS = habitatSightings && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.ENABLED = villageHabitats && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS = pokemonVillageHouses && Expansions.on(Expansions.M28);
+		io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED = jewellers && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = vintners && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED = tailors && Expansions.on(Expansions.M34);

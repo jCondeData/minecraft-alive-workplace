@@ -46,6 +46,12 @@ asks for the steps, `latest.log` and any crash report).
   a rabbit hide, a gold ingot) for the village store: the clothes the Artisans, Burghers and Nobles need. Trades, Bug
   and Normal partners, an outfit, config `tailors`. A loom's tooltip now names its jobs, and shears make a jobless
   villager by a loom its Shepherd.
+- **The Jeweller, for 1.8** (34.12, off until 1.8 is finished): sneak-right-click a villager by a stonecutter with a
+  gold nugget (a clay ball brings the Mason back, an amethyst shard still picks the Gem Grower). They make the Amethyst
+  Ring (Novice: 2 amethyst shards, 2 copper ingots), the Emerald Brooch (Apprentice: an emerald, 3 gold nuggets) and
+  the Gold Circlet (Journeyman: 2 gold ingots, an emerald, an amethyst shard) for the village store: the jewellery the
+  Burghers and Nobles look for. A Burgher's job; trades, Rock, Steel and Fairy partners, an outfit with a loupe, config
+  `jewellers`.
 - **The Vintner, for 1.8** (34.9, off until 1.8 is finished): sneak-right-click a villager by a cauldron with sweet
   berries, glow berries or an apple. They press Cider (Novice), Berry Wine (Apprentice) and Vintage Wine from Berry Wine
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable

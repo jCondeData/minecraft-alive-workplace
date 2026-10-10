@@ -28,6 +28,10 @@ asks for the steps, `latest.log` and any crash report).
 - Bandit camps saved by older versions load as they were (their file keeps its name); nothing changes in play until
   1.6 is finished.
 
+### Fixed
+- The hearts shown when you look at a villager no longer make the server load terrain for a player standing where
+  none is loaded (fake players from other mods, B93); the mod's own test run is back from about two hours to minutes.
+
 ## 0.141.0 — 2026-10-09
 
 ### Added

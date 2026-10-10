@@ -1491,7 +1491,50 @@ def tailor():
     return t.save_profession(ASSETS, "tailor", hat=None)
 
 
-DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+def printer():
+    """A long printer's apron of grey canvas, blotched with press-black ink and with a rag tucked in its pocket, over
+    white shirt sleeves held up by dark sleeve garters with a brass clip; and a green eyeshade: a leather band round
+    the brow with a green visor out over the eyes (ROADMAP 34.11). The biome's own hat still shows above the band."""
+    t = vg.VillagerTexture()
+    canvas = vg.cloth("#9a968a", spread=0.2)
+    shirt = vg.cloth(LINEN)
+    green = vg.cloth("#2f8a4a", spread=0.3)
+    ink = ["#1c1d26", "#33343f", "#55566a"]              # press-black, its edge, a thinned smear
+    garter = ["#2a2b36", "#454758"]
+
+    vg.hat(t, LEATHER, style="band", noise=0)            # the eyeshade's band
+    vg._brim(t, green, full=False, visor=3)              # and its green visor, out over the eyes
+    for side in ("front", "west", "east"):               # the visor's green binding where it meets the band
+        f = t.face("hat", side)
+        for x in range(f.w):
+            f.put(x, 5, green[1])
+
+    vg.sleeves(t, shirt, noise=0)
+    for side in ("front", "west", "east", "back"):       # sleeve garters round the upper arms
+        f = t.face("arm", side)
+        paint(f, ((x, 3) for x in range(f.w)), garter[0])
+        paint(f, ((x, 4) for x in range(f.w)), garter[1])
+    for side in ("west", "east"):                        # each with a brass clip on the outside
+        t.face("arm", side).put(1, 3, BRASS[3])
+    for side in ("front", "west", "east", "back"):       # inky cuffs: the work gets on everything
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 1) for x in range(f.w)), ink[2])
+
+    vg.apron(t, canvas, top=1, bottom=17, ties=True, bib=True, pocket=canvas[1:4])
+    j = t.face("jacket", "front")
+    paint(j, ((5, 11), (6, 11), (5, 12), (6, 12), (6, 13)), ink[0])     # a big blot on the skirt, below the crossed arms
+    paint(j, ((5, 10), (5, 13), (6, 14)), ink[1])                        # its soaked edge, running down
+    paint(j, ((6, 16),), ink[1])                                         # a drip at the hem
+    paint(j, ((1, 10), (2, 16)), ink[2])                                 # a thumb print by the pocket, a smear at the hem
+    paint(j, ((2, 12), (3, 12)), shirt[3])                               # the wiping rag in the pocket
+    j.put(3, 13, ink[1])                                                 # and the ink on it
+    mid = t.face("arms_middle", "front")                 # inky fingers where the arms cross
+    mid.put(1, 2, ink[1])
+    mid.put(2, 3, ink[2])
+    return t.save_profession(ASSETS, "printer", hat="partial")
+
+
+DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 DRAW += [jeweller]   # 34.12

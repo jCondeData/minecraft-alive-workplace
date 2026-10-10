@@ -77,6 +77,7 @@ public final class Objectives {
 		register("wait", j -> new Wait(positive(j, "days")));
 		register("reach", Reach::read);
 		register("talk", Talk::read);
+		register("spread_news", SpreadNews::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Objective> reader) {
@@ -443,6 +444,66 @@ public final class Objectives {
 			o.add("place", place.json());
 			o.addProperty("radius", radius);
 			return o;
+		}
+	}
+
+	/**
+	 * {@code spread_news} (ROADMAP 34.11): carry this week's Gazette to a village this one has a caravan route to, and hand
+	 * it in at that village's hall. Only asked while the village has a Printer (config {@code printers}) and a route out;
+	 * the Printer posts it. {@code to} is the other village's hall, chosen when the quest goes up, and {@code village}
+	 * its name that day.
+	 */
+	public record SpreadNews(Optional<BlockPos> to, String village) implements Objective {
+		static SpreadNews read(JsonObject json) {
+			Optional<BlockPos> to = json.has("to") ? Optional.of(BlockPos.of(json.get("to").getAsLong())) : Optional.empty();
+			return new SpreadNews(to, GsonHelper.getAsString(json, "village", ""));
+		}
+
+		@Override
+		public String type() {
+			return "spread_news";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return village.isEmpty() ? Component.translatable("quest.aliveworkplace.spread_news.somewhere")
+				: Component.translatable("quest.aliveworkplace.spread_news", village);
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			to.ifPresent(t -> o.addProperty("to", t.asLong()));
+			o.addProperty("village", village);
+			return o;
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			if (to.isPresent()) {
+				return this;
+			}
+			if (!io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED) {
+				return null;
+			}
+			Villager printer = context.census.workers().stream().filter(io.github.jcondedata.aliveworkplace.printer.Printers::isPrinter).findFirst().orElse(null);
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Data caravans = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(context.level);
+			java.util.List<BlockPos> routes = new java.util.ArrayList<>(caravans.routesFrom(context.hall));
+			routes.sort(java.util.Comparator.comparingLong(BlockPos::asLong)); // the same order every time, so a fixed random picks the same village
+			if (printer == null || routes.isEmpty()) {
+				return null; // no paper to carry, or nowhere to carry it
+			}
+			BlockPos there = routes.get(context.random.nextInt(routes.size()));
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Village known = caravans.village(there);
+			context.poster = name(printer);
+			return new SpreadNews(Optional.of(there), (known != null ? known.name() : VillageHalls.name(context.level, there)).getString());
 		}
 	}
 

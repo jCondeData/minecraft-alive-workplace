@@ -40,6 +40,16 @@ asks for the steps, `latest.log` and any crash report).
   dawn), Frost and Grand, in that order, each with its own rules, fair wares, feast dish, firework colours and disc.
   Villager trainers' teams and players' eligibility follow the theme. For the Workers' Cup, every pastured Pokémon now
   counts the days it helped a villager at work (once a day); it needs 3.
+- **The Printer, for 1.8** (34.11, off until 1.8 is finished): sneak-right-click a villager by a cartography table with
+  an ink sac. They print books (Novice: 3 paper and a leather make 2; kept in stock while the village has a Scholar,
+  whose research now takes books from the store and the Printers' chests first), the Village Gazette (Novice: 3 paper
+  and an ink sac make 2) and the Illuminated Book (Journeyman: a book, 2 gold nuggets, a lapis lazuli, a glow ink
+  sac). The Gazette reads like a written book, printed from the hall that day: the newest chronicle entries, the open
+  quests and what they pay, the next festival and market day, the week's births, weddings and households that rose;
+  the Illuminated Book is the whole chronicle. A new hall quest, Spread the news, pays 6 emeralds for carrying this
+  week's Gazette to the hall of a village on a caravan route. Trades (today's Gazette for 1 emerald, the Illuminated
+  Book for 8), Psychic and Normal partners, an outfit (ink-stained apron, green eyeshade, sleeve garters). Config
+  `printers`.
 - **The Tailor, for 1.8** (34.10, off until 1.8 is finished): sneak-right-click a villager by a loom with string (shears
   bring the Shepherd back). They sew Work Clothes (Novice: 3 wool of any colours, 2 leather, a string), Fine Clothes
   (Apprentice: 4 dyed wool but white, a string, 2 gold nuggets) and Noble Robes (Journeyman: 5 wool of one rich colour,

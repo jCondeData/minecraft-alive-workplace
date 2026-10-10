@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): off until that
 expansion is finished, and several of its pieces are not built yet (see Known limits).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11
 
 ## What a player sees
 
@@ -49,6 +49,16 @@ back). A Novice sews Work Clothes from 3 wool of any colours, 2 leather and a st
 colour (purple, blue, red or black), a rabbit hide and a gold ingot. The clothes are the luxuries the Artisans,
 Burghers and Nobles need, every 8 days.
 
+**The Printer (34.11).** Stand a villager by a cartography table and sneak-right-click them with an ink sac (a compass
+brings the Cartographer back, netherrack the Netherworker). A Novice prints 2 books from 3 paper and a leather (kept in
+stock only while the village has a Scholar) and 2 copies of the Village Gazette from 3 paper and an ink sac; a
+Journeyman an Illuminated Book from a book, 2 gold nuggets, a lapis lazuli and a glow ink sac. The Gazette is the
+luxury the Burghers need every 7 days, the Illuminated Book the one the Nobles want every 16. Both read like a written
+book (right-click): the Gazette is printed from the hall that day (the newest chronicle entries, the open quests and
+what they pay, the next festival and market day, the week's births, weddings and households that rose), the
+Illuminated Book is the whole chronicle. The hall quest **Spread the news** (a Printer and a caravan route) pays 6
+emeralds for this week's Gazette handed in at the hall of the village at the other end of the route.
+
 ## How it works
 
 **Classes are data.** One file each in `data/aliveworkplace/classes/`: its tier, tax, needs, wants, the jobs it
@@ -86,6 +96,7 @@ level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 | `jewellers` | on from 1.8 | Off: no Jeweller job, and Jewellers already hired stand idle |
 | `vintners` | on from 1.8 | Off: no Vintner job, and Vintners already hired stand idle |
 | `tailors` | on from 1.8 | Off: no Tailor job, and Tailors already hired stand idle |
+| `printers` | on from 1.8 | Off: no Printer job, Printers already hired stand idle, no Spread the news quest |
 
 ## Saved data
 
@@ -99,7 +110,8 @@ Ball. Households and the village's sums by class are never saved: they are worke
 ## Items, blocks, jobs, commands
 
 - Class ids: `aliveworkplace:peasant`, `aliveworkplace:artisan`, `aliveworkplace:burgher`, `aliveworkplace:noble`.
-- Jobs: Vintner (`aliveworkplace:vintner`), at a cauldron; Tailor (`aliveworkplace:tailor`), at a loom.
+- Jobs: Vintner (`aliveworkplace:vintner`), at a cauldron; Tailor (`aliveworkplace:tailor`), at a loom; Printer
+  (`aliveworkplace:printer`), at a cartography table.
 - Items: Cider (`aliveworkplace:cider`), Berry Wine (`aliveworkplace:berry_wine`), Vintage Wine
   (`aliveworkplace:vintage_wine`), Work Clothes (`aliveworkplace:work_clothes`), Fine Clothes
   (`aliveworkplace:fine_clothes`), Noble Robes (`aliveworkplace:noble_robes`).
@@ -122,6 +134,11 @@ Ball. Households and the village's sums by class are never saved: they are worke
 - Design note: a luxury is taken at dawn before the needs are checked, so one taken that dawn counts that day.
 - 34.12: the Jeweller is picked with a gold nugget, not the roadmap's amethyst shard: the shard at a stonecutter has
   picked the Gem Grower since 28.11 (design note `docs/design/M34.md`; the owner can still change it).
+- 34.11: the Gazette and the Illuminated Book are our own items (`aliveworkplace:gazette`, `aliveworkplace:illuminated_book`)
+  carrying vanilla's written-book content, so the luxury files name them and any other written book doesn't count. A
+  Gazette notes its hall and day; "this week's" is 7 days, the day it was printed included. A blank one (bought, or
+  from the creative tab) is printed where its holder stands when bought or first read. Quest objective type
+  `spread_news` (`quests/daily/spread_news.json`).
 - 34.10: Work Clothes and Fine Clothes may mix wool colours; Noble Robes need all five of one colour. The Tailor takes
   wool from the village's chests and the store, and dyes white wool themselves when dye is to hand: the dyer still
   only dyes for builders.
@@ -140,6 +157,7 @@ Ball. Households and the village's sums by class are never saved: they are worke
 
 GameTests: `ClassGameTests` (16: the four files are the ladder, each kind of need, one step a day), `ClassHallGameTests`
 (6), `ClassPerkGameTests` (7), `ClassJobGameTests` (7), `ServiceGameTests` (8), `LuxuryGameTests` (7),
-`LuxuryWorkGameTests` (7), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10).
+`LuxuryWorkGameTests` (7), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10), `PrinterGameTests` (11).
 
-Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`.
+Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,
+`printer`.

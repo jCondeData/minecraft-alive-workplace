@@ -1046,6 +1046,62 @@ def noble_robes():
     return [s.save(item("noble_robes"))]
 
 
+# The Printer's papers (34.11): drawn on vanilla's own outlines, the Gazette on the paper's and the Illuminated Book on
+# the written book's, so each reads as its kind first and as the village's second.
+def gazette():
+    """The Village Gazette (34.11): vanilla's sheet of paper, on its exact outline and shading, printed: a bold masthead
+    in press-black along the top edge, a line of grey type under it and a short one below, running the way the sheet lies."""
+    s = grid("""
+        ................
+        ................
+        .........aa.....
+        ........abca....
+        ......aacddba...
+        .....abddkkdce..
+        ...aacdkkddddae.
+        ..acbkkddddttcae
+        .acbdddddttddbe.
+        ..ecbdttdddbce..
+        ...ecbddttbee...
+        ....ecbdbfe.....
+        .....ecfee......
+        ......ee........
+        ................
+        ................
+    """, {"a": PAPER.outline_light, "e": PAPER.outline_dark,                               # vanilla paper's outline
+          "b": "#e9eaeb", "c": "#d6d6d6", "d": "#fcfcf2", "f": "#c1c1c1",                # and its face
+          "k": "#33333b", "t": "#8e8e96"})                                               # the masthead, the type
+    return [s.save(item("gazette"))]
+
+
+def illuminated_book():
+    """The Illuminated Book (34.11): vanilla's written book, on its exact outline, bound in lapis blue (the lapis of
+    its recipe) with the cover's tooled lines laid in gold leaf, gilt-edged pages (the gold nuggets), and a bright
+    initial in glow ink between the gold lines."""
+    s = grid("""
+        ................
+        ........aaa.....
+        ......aabcde....
+        ....aabcddcde...
+        ..aabdddYydcde..
+        aabddYdtdYydcde.
+        ebdcddYdtdYydcae
+        eabdcddYdddcaaf.
+        eagbdcdddbaahgh.
+        ibjgbdcbaahgghae
+        .ibjgbaahgghaaii
+        ..ibjghgghaeii..
+        ...ibjghaeii....
+        ....ibaeii......
+        .....iii........
+        ................
+    """, {"a": "#0f1c52", "e": "#182a70", "i": "#080e2c",                                 # outline: lapis-dark, darkest underneath
+          "b": "#1d3691", "c": "#2445ad", "d": "#2c52c4",                                # the cover, shaded as vanilla's
+          "Y": GOLD[3], "y": GOLD[1], "t": "#5ff0d4",                                    # gold leaf, the glow-ink initial
+          "j": GOLD[3], "g": GOLD[2], "h": GOLD[1], "f": GOLD[0]})                       # gilt page edges
+    return [s.save(item("illuminated_book"))]
+
+
 def guild_charter():
     """The Guild Charter (30.17): a rolled charter of vanilla paper lying on the diagonal like the map, its rolled ends
     showing their curl at both tips, sealed in the middle with a round of red wax (the red dye of its recipe) whose
@@ -1104,6 +1160,7 @@ DRAW = [blank_blueprint, blueprint, shape_planner, patrol_map, delivery_note, tr
         village_ledger, field_marker, city_plan, quarry_marker, rally_banner, scan_tool, settlers_wagon, founders_wagon, guide_book,
         work_horn, village_banner, miners_brew, builders_tea, smiths_draught, scholars_infusion,
         harvest_cordial, woodsmans_broth, guild_charter, cider, berry_wine, vintage_wine, work_clothes, fine_clothes, noble_robes,
+        gazette, illuminated_book,
         evergreen_charm]
 DRAW += [amethyst_ring, emerald_brooch, gold_circlet]   # the Jeweller's pieces (34.12)
 

@@ -54,6 +54,11 @@ public final class ModItems {
 	public static final Item WORK_CLOTHES = Reg.item("work_clothes", Item::new, new Item.Properties().stacksTo(16));
 	public static final Item FINE_CLOTHES = Reg.item("fine_clothes", Item::new, new Item.Properties().stacksTo(16));
 	public static final Item NOBLE_ROBES = Reg.item("noble_robes", Item::new, new Item.Properties().stacksTo(16));
+	/** The Printer's papers (ROADMAP 34.11): our own items that read like a written book, written from the hall the day they're printed. */
+	public static final io.github.jcondedata.aliveworkplace.printer.PrintedPaperItem GAZETTE = Reg.item("gazette",
+		p -> new io.github.jcondedata.aliveworkplace.printer.PrintedPaperItem(p, false), new Item.Properties().stacksTo(16));
+	public static final io.github.jcondedata.aliveworkplace.printer.PrintedPaperItem ILLUMINATED_BOOK = Reg.item("illuminated_book",
+		p -> new io.github.jcondedata.aliveworkplace.printer.PrintedPaperItem(p, true), new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
 	/** The Evergreen Charm (ROADMAP 34.19a): sneak-right-click an elder with good traits and they never pass of old age. */
 	public static final io.github.jcondedata.aliveworkplace.people.EvergreenCharmItem EVERGREEN_CHARM = Reg.item("evergreen_charm", io.github.jcondedata.aliveworkplace.people.EvergreenCharmItem::new, new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE));
 	public static final io.github.jcondedata.aliveworkplace.guard.RallyBannerItem RALLY_BANNER = Reg.item("rally_banner", io.github.jcondedata.aliveworkplace.guard.RallyBannerItem::new, new Item.Properties().stacksTo(1));
@@ -123,6 +128,8 @@ public final class ModItems {
 				output.accept(WORK_CLOTHES);
 				output.accept(FINE_CLOTHES);
 				output.accept(NOBLE_ROBES);
+				output.accept(GAZETTE);
+				output.accept(ILLUMINATED_BOOK);
 				output.accept(EVERGREEN_CHARM);
 				output.accept(CITY_PLAN);
 				output.accept(QUARRY_MARKER);

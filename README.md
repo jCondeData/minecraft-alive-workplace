@@ -602,6 +602,7 @@ placed keep working, so old worlds are fine.
 | Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them | any |
 | Shepherd | Loom (vanilla; shears bring a Tailor back to it) | shears, wheat | nothing — or sneak-right-click with shears to hire them | any |
 | Tailor | Loom + string | wool, leather, string (for the finer clothes: dyed wool, gold nuggets, a rabbit hide, a gold ingot) | nothing (keeps the village store in clothes) | any |
+| Printer | Cartography Table + an ink sac | paper, leather, ink sacs (for the Illuminated Book: a book, gold nuggets, lapis lazuli, a glow ink sac) | nothing (keeps the village store in books and Gazettes) | any |
 | Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds (with Cobblemon: bottles, a brush, bone meal) | nothing — or sneak-right-click with a lead to hire them | any |
 | Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them | any |
 | Librarian (scribe) | Lectern (vanilla), and an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them | any |
@@ -1333,6 +1334,38 @@ The porters carry the clothes to the store, and what the Tailor is short of goes
 wool, string and leather and sell the clothes of their level; Bug and Normal Pokémon help them. The recipes are data
 (`data/<namespace>/luxury_recipes/`; an input with `"mix": true` takes any of a tag's items together), so a data pack can
 add more. Config `tailors` (on once 1.8 is finished).
+
+## Printers
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Put a chest by a **cartography table**, stand a villager beside it and sneak-right-click them with an **ink sac**: they
+become a **Printer** (the table's Cartographer comes back with a compass, its Netherworker with netherrack). While they
+print, pages turn and scraps of paper fly off the press. They keep the village store in 8 of each thing they can
+print, from their own chests, the store and the village's chests.
+
+| Printed | Made from | Level | For |
+|---|---|---|---|
+| **Books** (2) | 3 paper and a leather | Novice | the Scholar's research and the builders' bookshelves; only kept in stock while the village has a Scholar |
+| **The Village Gazette** (2 copies) | 3 paper and an ink sac | Novice | Burghers, every 7 days (a need) |
+| **Illuminated Book** | a book, 2 gold nuggets, a lapis lazuli and a glow ink sac | Journeyman | Nobles, every 16 days (a want) |
+
+The **Gazette** is a written book, printed from the Village Hall that day: right-click to read it. Its front page has
+the newest entries of the village's chronicle; then come the quests open at the hall with what each pays, the next
+festival and market day, and the week's births, weddings and households that rose. The **Illuminated Book** is the
+village's whole chronicle, bound in lapis and gold. This week's Gazettes count towards the store's 8; older ones are
+old news.
+
+A village with a Printer and a caravan route posts a new hall quest, **Spread the news**: carry this week's Gazette to
+the village at the other end of the route and right-click its Village Hall with it. The copy goes into that village's
+store, its chronicle notes who brought it, and the quest pays 6 emeralds (more at higher village ranks, like the other
+daily quests). A Gazette more than a week old isn't taken.
+
+A Scholar's research takes its books from the village store first, then from the Printers' chests, then from the
+chest by their own desk. Printers buy paper, ink sacs, leather, glow ink sacs and gold nuggets, and sell today's
+Gazette for 1 emerald (Novice), books, and the Illuminated Book for 8 emeralds (Journeyman); a bought paper is
+printed the moment you buy it, from the village you stand in. Psychic and Normal Pokémon help them. The recipes are
+data (`data/<namespace>/luxury_recipes/`). Config `printers` (on once 1.8 is finished).
 
 ## Daycare Keepers (with Cobblemon)
 Stand a villager by a **Pasture Block** and sneak-right-click them with an **egg**: they become a **Daycare Keeper**.

@@ -31,7 +31,8 @@ import net.minecraft.world.item.Items;
 
 /**
  * The quest journal (ROADMAP 31.3): the hall's Quests page with four tabs along the top, Village (the daily quests),
- * Personal (31.9), Story (31.4) and Bounties (31.13); a tab whose part hasn't landed yet says so in grey. Each quest shows
+ * Personal (the villagers' own requests, 31.9), Story (31.4) and Bounties (31.13); a tab whose part hasn't landed yet says
+ * so in grey. Each quest shows
  * who asked, a line per objective with its progress, the reward and the days left. A click hands in (a {@code bring}) or
  * tracks (anything else); a shift-click always toggles Track ({@link QuestTracker}). Shown while milestone 31's gate is
  * open; while it's shut the hall shows today's page as before.
@@ -39,13 +40,13 @@ import net.minecraft.world.item.Items;
 public final class QuestJournal {
 	public enum Tab {
 		VILLAGE(2, Items.MAP, true),
-		PERSONAL(3, Items.POPPY, false),
+		PERSONAL(3, Items.POPPY, true),
 		STORY(5, Items.WRITTEN_BOOK, true),
 		BOUNTIES(6, Items.CROSSBOW, false);
 
 		public final int slot;
 		final Item item;
-		/** Whether its part of the milestone has landed (Personal 31.9 and Bounties 31.13 haven't yet). */
+		/** Whether its part of the milestone has landed (Bounties 31.13 hasn't yet). */
 		public final boolean landed;
 
 		Tab(int slot, Item item, boolean landed) {
@@ -95,6 +96,10 @@ public final class QuestJournal {
 			renderStory(menu, level, hall, viewer);
 			return;
 		}
+		if (tab == Tab.PERSONAL) {
+			renderPersonal(menu, level, hall, viewer);
+			return;
+		}
 		List<Quest> quests = Stories.open(level, hall).stream().filter(q -> q.giver.equals("hall") && !q.done()).toList();
 		if (quests.isEmpty()) {
 			menu.button(22, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_quests"), ChatFormatting.GRAY), null);
@@ -119,7 +124,7 @@ public final class QuestJournal {
 			if (!menu.shiftClicked() && now instanceof Objectives.Bring bring) {
 				int given = VillageQuests.handIn(p, hall, quest.id);
 				if (given <= 0) {
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.quest.nothing", Objectives.icon(bring.item()).getDescription())
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.quest.nothing", Objectives.name(bring.item()))
 						.withStyle(ChatFormatting.YELLOW));
 				} else {
 					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
@@ -130,6 +135,35 @@ public final class QuestJournal {
 			render(menu, level, hall, p, tab);
 			menu.broadcastChanges();
 		};
+	}
+
+	/** The first slot of the Personal tab's requests. */
+	public static final int PERSONAL_ROW = 18;
+
+	/**
+	 * The Personal tab (31.9): the requests villagers of this village have asked and someone took. A click joins it (with
+	 * 3 hearts with whoever asked); for a helper it hands in or tracks, as on the Village tab.
+	 */
+	static void renderPersonal(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer viewer) {
+		List<Quest> quests = io.github.jcondedata.aliveworkplace.story.PersonalRequests.open(level, hall);
+		if (quests.isEmpty()) {
+			menu.button(22, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.journal.personal.none"), ChatFormatting.GRAY,
+				line("screen.aliveworkplace.journal.personal.none.about", ChatFormatting.DARK_GRAY)), null);
+			return;
+		}
+		for (int i = 0; i < Math.min(quests.size(), ChoiceMenu.SIZE - PERSONAL_ROW); i++) {
+			Quest quest = quests.get(i);
+			Consumer<ServerPlayer> act = click(menu, level, hall, quest, Tab.PERSONAL);
+			menu.button(PERSONAL_ROW + i, questIcon(level, quest, viewer), p -> {
+				if (io.github.jcondedata.aliveworkplace.story.PersonalRequests.helps(quest, p.getUUID())) {
+					act.accept(p);
+					return;
+				}
+				io.github.jcondedata.aliveworkplace.story.PersonalRequests.join(p, level, quest);
+				render(menu, level, hall, p, Tab.PERSONAL);
+				menu.broadcastChanges();
+			});
+		}
 	}
 
 	/** The row the Story tab shows the chapters so far in, and the slots of the current chapter's quests. */
@@ -230,13 +264,26 @@ public final class QuestJournal {
 		}
 		if (quest.due >= 0) {
 			long days = Math.max(1, (quest.due - level.getGameTime() + 23999) / 24000);
-			lore.add(line(Component.translatable("screen.aliveworkplace.hall.quest_days", days), ChatFormatting.DARK_GRAY));
+			lore.add(line(Component.translatable(quest.festival ? "screen.aliveworkplace.request.before_festival" : "screen.aliveworkplace.hall.quest_days", days),
+				ChatFormatting.DARK_GRAY));
 		}
 		boolean tracked = QuestTracker.isTracked(viewer, quest.id);
 		if (tracked) {
 			lore.add(line("screen.aliveworkplace.journal.tracked", ChatFormatting.AQUA));
 		}
-		if (now instanceof Objectives.Bring bring) {
+		boolean helper = true;
+		if (quest.personal()) { // a villager's request (31.9): the friendship it earns, who helps, and how to join
+			lore.add(line("screen.aliveworkplace.request.friendship", ChatFormatting.LIGHT_PURPLE));
+			List<String> names = io.github.jcondedata.aliveworkplace.story.PersonalRequests.helperNames(level, quest);
+			if (!names.isEmpty()) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.request.helpers", String.join(", ", names)), ChatFormatting.GRAY));
+			}
+			helper = io.github.jcondedata.aliveworkplace.story.PersonalRequests.helps(quest, viewer.getUUID());
+		}
+		if (!helper) {
+			lore.add(line(io.github.jcondedata.aliveworkplace.story.PersonalRequests.mayHelp(level, quest, viewer) ? "screen.aliveworkplace.request.click_help"
+				: "screen.aliveworkplace.request.need_hearts", ChatFormatting.YELLOW));
+		} else if (now instanceof Objectives.Bring bring) {
 			int have = 0;
 			for (int i = 0; i < viewer.getInventory().getContainerSize(); i++) {
 				ItemStack s = viewer.getInventory().getItem(i);
@@ -279,6 +326,15 @@ public final class QuestJournal {
 		if (o instanceof Objectives.Talk) {
 			return Items.BELL;
 		}
+		if (o instanceof Objectives.LevelUp) {
+			return Items.EXPERIENCE_BOTTLE;
+		}
+		if (o instanceof Objectives.Home) {
+			return Items.RED_BED;
+		}
+		if (o instanceof Objectives.BeatGiver || o instanceof Objectives.PartnerPokemon) {
+			return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("cobblemon", "poke_ball")).orElse(Items.TARGET);
+		}
 		return Items.PAPER;
 	}
 
@@ -309,7 +365,8 @@ public final class QuestJournal {
 		ServerLevel level = io.github.jcondedata.aliveworkplace.mc.Players.level(player);
 		List<QuestTracker.Found> list = new ArrayList<>();
 		VillageHalls.nearest(level, player.blockPosition()).ifPresent(hall -> Stories.open(level, hall).stream()
-			.filter(q -> q.giver.equals("hall") && !q.done()).forEach(q -> list.add(new QuestTracker.Found(level, hall, q))));
+			.filter(q -> (q.giver.equals("hall") || q.personal() && io.github.jcondedata.aliveworkplace.story.PersonalRequests.helps(q, player.getUUID()))
+				&& !q.done()).forEach(q -> list.add(new QuestTracker.Found(level, hall, q))));
 		QuestTracker.tracked(player).filter(f -> list.stream().noneMatch(o -> o.quest().id.equals(f.quest().id))).ifPresent(list::add);
 		if (list.isEmpty()) {
 			out.add(Component.translatable("command.aliveworkplace.quests.none").withStyle(ChatFormatting.GRAY));

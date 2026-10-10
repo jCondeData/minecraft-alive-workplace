@@ -104,6 +104,8 @@ public final class WorkplaceConfig {
 	public boolean friendship = Expansions.on(Expansions.M31);
 	/** Villagers tell their friends about their lives at 2, 4, 6, 8 and 10 hearts (heart events, 31.7). Off: nobody starts telling; what was told stays. */
 	public boolean heartEvents = Expansions.on(Expansions.M31);
+	/** Villagers with 3 hearts ask a player for help now and then (personal requests, ROADMAP 31.9). Off: nobody asks; requests already accepted can still be finished. */
+	public boolean personalRequests = Expansions.on(Expansions.M31);
 	/** Story arcs (31.4) unfold in villages, chapter by chapter. Off: none starts, and a running one ends quietly at its next round. */
 	public boolean storyArcs = Expansions.on(Expansions.M31);
 	/** Days between two story arcs in one village (also before a village's first). */
@@ -470,6 +472,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.story.Stories.ENABLED = villageQuests;
 		io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED = friendship && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED = heartEvents && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.story.PersonalRequests.ENABLED = personalRequests && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = storyArcs && Expansions.on(Expansions.M31);
 		// Off in gametests (an arc rolled by chance would start under a test's hall); the arc tests start theirs.
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;

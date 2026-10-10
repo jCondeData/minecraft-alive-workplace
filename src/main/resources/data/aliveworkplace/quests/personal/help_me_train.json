@@ -1,0 +1,32 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.help_me_train.title"
+  },
+  "text": "request.aliveworkplace.help_me_train",
+  "days": 7,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    },
+    {
+      "type": "cobblemon"
+    },
+    {
+      "type": "job",
+      "jobs": [
+        "aliveworkplace:trainer",
+        "aliveworkplace:trainer_leader"
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "type": "beat_giver",
+      "days": 3
+    }
+  ],
+  "rewards": []
+}

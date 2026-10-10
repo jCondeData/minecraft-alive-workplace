@@ -1,0 +1,25 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.pokemon_friend.title"
+  },
+  "text": "request.aliveworkplace.pokemon_friend",
+  "days": 5,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    },
+    {
+      "type": "cobblemon"
+    }
+  ],
+  "objectives": [
+    {
+      "type": "partner_pokemon",
+      "radius": 16
+    }
+  ],
+  "rewards": []
+}

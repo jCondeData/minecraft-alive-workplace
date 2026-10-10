@@ -40,6 +40,7 @@ public final class Conditions {
 		register("not", j -> new Not(parse(j.getAsJsonObject("condition"))));
 		register("pastured_pokemon", PasturedPokemon::read);
 		register("alpha_near", AlphaNear::read);
+		GiverConditions.register();
 	}
 
 	public static void register(String type, Function<JsonObject, Condition> reader) {

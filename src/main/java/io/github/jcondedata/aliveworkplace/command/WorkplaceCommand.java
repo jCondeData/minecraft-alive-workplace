@@ -94,6 +94,15 @@ public final class WorkplaceCommand {
 				.then(Commands.literal("track")
 					.then(Commands.argument("quest", UuidArgument.uuid())
 						.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), UuidArgument.getUuid(ctx, "quest"), false)))))
+			.then(Commands.literal("quest") // a villager's request: [I'll help] and [Not now] (31.9)
+				.then(Commands.literal("accept")
+					.then(Commands.argument("id", UuidArgument.uuid())
+						.executes(ctx -> io.github.jcondedata.aliveworkplace.story.PersonalRequests.accept(ctx.getSource().getPlayerOrException(),
+							UuidArgument.getUuid(ctx, "id")) ? 1 : 0)))
+				.then(Commands.literal("decline")
+					.then(Commands.argument("id", UuidArgument.uuid())
+						.executes(ctx -> io.github.jcondedata.aliveworkplace.story.PersonalRequests.decline(ctx.getSource().getPlayerOrException(),
+							UuidArgument.getUuid(ctx, "id")) ? 1 : 0))))
 			.then(Commands.literal("steward")
 				.then(Commands.literal("explain")
 					.executes(WorkplaceCommand::explainSteward)))

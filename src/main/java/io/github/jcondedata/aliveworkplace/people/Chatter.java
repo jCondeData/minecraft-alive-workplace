@@ -90,7 +90,8 @@ public final class Chatter {
 			}
 			List<Villager> near = level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(NEAR, 4, NEAR),
 				v -> v.isAlive() && !v.isSleeping() && offWork(v, now) && player.hasLineOfSight(v)
-					&& io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(v) == null); // not while walking up to tell a heart event (31.7)
+					&& io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(v) == null // not while walking up to tell a heart event (31.7)
+					&& io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(v) == null); // or to ask for help (31.9)
 			if (near.isEmpty()) {
 				continue;
 			}

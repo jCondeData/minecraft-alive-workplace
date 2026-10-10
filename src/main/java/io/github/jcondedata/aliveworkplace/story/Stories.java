@@ -50,7 +50,8 @@ import org.jetbrains.annotations.Nullable;
  * and keyed by hall. The hall's board posts one quest a morning from the {@code hall} quest files (the highest priority
  * that can be posted, then by weight), up to {@link VillageQuests#MAX_OPEN}. Quests move on events (hand-ins, kills,
  * battles) and in the hall's round (waits, deadlines), never by a scan each tick. Quests saved on the hall before 1.5
- * are moved in, with their progress, the first time the engine sees the hall ({@link #migrate}).
+ * are moved in, with their progress, the first time the engine sees the hall ({@link #migrate}). A villager's own
+ * request to a player ({@link PersonalRequests}, 31.9) is an open quest here too, with the giver {@code villager}.
  */
 public final class Stories {
 	/** Config {@code villageQuests}: when off, no new quests go up; open ones stay and can still be finished. */
@@ -62,7 +63,8 @@ public final class Stories {
 		migrate(level, hall, entity);
 		long now = level.getGameTime();
 		Entry e = data.entry(hall);
-		boolean changed = e.quests.removeIf(q -> q.due >= 0 && now >= q.due);
+		boolean changed = PersonalRequests.overdue(level, hall, now) > 0; // a missed personal request costs friendship (31.9)
+		changed |= e.quests.removeIf(q -> q.due >= 0 && now >= q.due);
 		long today = Chronicle.day(level);
 		changed |= e.moods.removeIf(m -> m.until < today);
 		for (Quest q : List.copyOf(e.quests)) {
@@ -91,6 +93,7 @@ public final class Stories {
 		if (changed) {
 			data.setDirty();
 		}
+		PersonalRequests.round(level, hall, entity, e); // requests move on, and someone may ask (31.9)
 		Arcs.round(level, hall, entity); // story arcs move on, end or begin (31.4)
 	}
 
@@ -203,8 +206,14 @@ public final class Stories {
 				rewards.add(r);
 			}
 		}
-		return !changed ? quest : new Quest(quest.id, quest.file, quest.giver, quest.name, quest.poster, quest.posted, quest.due, objectives,
-			quest.progress, rewards);
+		if (!changed) {
+			return quest;
+		}
+		Quest located = new Quest(quest.id, quest.file, quest.giver, quest.name, quest.poster, quest.posted, quest.due, objectives, quest.progress, rewards);
+		located.villager = quest.villager;
+		located.text = quest.text;
+		located.festival = quest.festival;
+		return located;
 	}
 
 	/** {@code file} as a quest going up now, or null when its conditions don't hold or an objective can't be asked for. */
@@ -259,8 +268,10 @@ public final class Stories {
 			return 0;
 		}
 		int left = bring.count() - quest.progress[index];
+		// A villager's own request (31.9) goes into the chests by their workstation, or into their own hands with none there.
+		Villager keeper = quest.personal() ? PersonalRequests.giver(level, quest) : null;
 		List<BlockPos> chests = bring.station().map(p -> SupplyContainers.find(level, p, null)).filter(l -> !l.isEmpty())
-			.orElseGet(() -> VillageNeeds.store(level, hall));
+			.orElseGet(() -> keeper != null ? List.of() : VillageNeeds.store(level, hall));
 		Inventory inventory = player.getInventory();
 		int given = 0;
 		for (int i = 0; i < inventory.getContainerSize() && given < left; i++) {
@@ -270,7 +281,7 @@ public final class Stories {
 			}
 			ItemStack part = stack.split(Math.min(stack.getCount(), left - given));
 			given += part.getCount();
-			ItemStack rest = chests.isEmpty() ? part : SupplyContainers.insert(level, chests, part);
+			ItemStack rest = !chests.isEmpty() ? SupplyContainers.insert(level, chests, part) : keeper != null ? keeper.getInventory().addItem(part) : part;
 			if (!rest.isEmpty()) {
 				Block.popResource(level, hall.above(), rest);
 			}
@@ -361,6 +372,9 @@ public final class Stories {
 
 	/** Whether {@code player} may move {@code quest} on: not a one-time quest they've already finished in this village. */
 	static boolean mayHelp(ServerLevel level, BlockPos hall, Quest quest, ServerPlayer player) {
+		if (quest.personal() && !PersonalRequests.mayHelp(level, quest, player)) {
+			return false; // a villager's own request: their friends only (31.9)
+		}
 		boolean repeatable = QuestFiles.get(quest.file).map(QuestFiles.QuestFile::repeatable).orElse(true);
 		return repeatable || !Data.get(level).entry(hall).done.getOrDefault(player.getUUID(), Set.of()).contains(quest.file.toString());
 	}
@@ -387,6 +401,12 @@ public final class Stories {
 		}
 		data.setDirty();
 		QuestTracker.changed(level.getServer(), quest.id); // its bar goes
+		if (quest.personal()) {
+			// A villager's own request (31.9): every helper is paid and thanked, not only whoever finished it.
+			e.finished.add(quest.file.toString());
+			PersonalRequests.done(level, hall, quest);
+			return;
+		}
 		entity.questDone();
 		if (player != null) {
 			e.done.computeIfAbsent(player.getUUID(), k -> new java.util.LinkedHashSet<>()).add(quest.file.toString());
@@ -535,6 +555,10 @@ public final class Stories {
 		long lastArcDay = UNSEEN;
 		/** Flags an arc set for some days that outlive it (name → the last day they hold). */
 		final Map<String, Long> villageFlags = new LinkedHashMap<>();
+		/** Personal requests (31.9): the day of the last morning roll, whether it hit and nobody has asked yet, and the day of the last dawn look. */
+		long requestDay = -1;
+		boolean requestPending;
+		long requestDawn = -1;
 
 		static final long UNSEEN = Long.MIN_VALUE;
 	}
@@ -617,6 +641,13 @@ public final class Stories {
 				if (e.lastArcDay != Entry.UNSEEN) {
 					h.putLong("last_arc_day", e.lastArcDay);
 				}
+				if (e.requestDay >= 0) {
+					h.putLong("request_day", e.requestDay);
+					h.putBoolean("request_pending", e.requestPending);
+				}
+				if (e.requestDawn >= 0) {
+					h.putLong("request_dawn", e.requestDawn);
+				}
 				if (!e.villageFlags.isEmpty()) {
 					CompoundTag flags = new CompoundTag();
 					e.villageFlags.forEach(flags::putLong);
@@ -679,6 +710,14 @@ public final class Stories {
 				}
 				if (h.contains("last_arc_day")) {
 					e.lastArcDay = Nbt.getLong(h, "last_arc_day");
+				}
+				// (31.9; absent in older saves: no roll made yet)
+				if (h.contains("request_day")) {
+					e.requestDay = Nbt.getLong(h, "request_day");
+					e.requestPending = Nbt.getBoolean(h, "request_pending");
+				}
+				if (h.contains("request_dawn")) {
+					e.requestDawn = Nbt.getLong(h, "request_dawn");
 				}
 				CompoundTag flags = Nbt.getCompound(h, "village_flags");
 				for (String k : Nbt.keys(flags)) {

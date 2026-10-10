@@ -365,6 +365,13 @@ public final class ModAttachments {
 	/** The day a traveller was hired from an inn (31.7). Absent: not hired, or hired before 31.7. */
 	public static final Attachment<Long> HIRED_DAY = Attachment.saved("hired_day", com.mojang.serialization.Codec.LONG);
 
+	/**
+	 * What a missed personal request left behind (ROADMAP 31.9): the last day they won't ask anyone for anything, and the
+	 * game time until which they're glum. Absent: nothing was ever missed.
+	 */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown> REQUEST_LET_DOWN =
+		Attachment.saved("request_let_down", io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown.CODEC);
+
 	public static void init() {
 	}
 

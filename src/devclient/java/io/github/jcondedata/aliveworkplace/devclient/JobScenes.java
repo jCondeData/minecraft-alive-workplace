@@ -2883,6 +2883,90 @@ final class JobScenes {
 					+ (seeds.isEmpty() ? "nothing" : seeds.getCount() + " " + seeds.getHoverName().getString()) + ")");
 				return told && keepsake;
 			}));
+		// A personal request (ROADMAP 31.9): at three hearts Dara, a plains farmer, walks up and asks for a taste of home;
+		// the player takes it with [I'll help], hands the pumpkin pie in from the journal's Personal tab, and she thanks them.
+		SCREENS.put("personal_request", new Screen("at three hearts Dara walked up and asked for a taste of home; accepted, the pie was handed in from the journal's Personal tab and she said her thanks",
+			new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 1), MobSpawnType.COMMAND);
+				dara.setNoAi(true); // (she waits here until the scene begins)
+				dara.setYRot(0);
+				dara.setYHeadRot(0);
+				dara.setYBodyRot(0);
+				dara.setVillagerData(dara.getVillagerData().setType(net.minecraft.world.entity.npc.VillagerType.PLAINS).setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				subject = dara;
+			},
+			List.of(new Step("01_ask", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					Villager dara = subject;
+					dara.setNoAi(false);
+					// Three hearts, her two-heart story already told (so she comes over to ask, not to tell it).
+					io.github.jcondedata.aliveworkplace.story.Friendship.told(dara, player, "aliveworkplace:before_hall");
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 300);
+					var file = io.github.jcondedata.aliveworkplace.story.QuestFiles.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("personal/taste_of_home")).orElse(null);
+					var quest = file == null || !(level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) ? null
+						: io.github.jcondedata.aliveworkplace.story.PersonalRequests.resolve(level, STATION, hall,
+							io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, STATION), file, dara, player, net.minecraft.util.RandomSource.create(1));
+					Showcase.check(quest != null, "at three hearts Dara, from the plains, has a taste of home to ask for");
+					if (quest != null) {
+						io.github.jcondedata.aliveworkplace.story.PersonalRequests.propose(level, STATION, dara, player, quest,
+							io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
+					}
+				}, 90),
+				new Step("02_accept", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					var offer = io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(dara);
+					double off = Math.sqrt(dara.distanceToSqr(player));
+					Showcase.check(offer != null && offer.asked && off <= io.github.jcondedata.aliveworkplace.story.PersonalRequests.TALK_RANGE + 0.5,
+						"Dara walked up to the player and asked: " + (offer == null ? "no offer" : offer.asked ? "asked" : "not asked yet") + ", " + String.format("%.1f", off) + " blocks off");
+					if (offer != null) {
+						// [I'll help], as the click in the chat runs it.
+						level.getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "workplace quest accept " + offer.quest.id);
+					}
+					var quest = io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(dara);
+					Showcase.check(quest != null && quest.helpers.containsKey(player.getUUID()), "[I'll help] opened her request with the player as its helper");
+				}, 50),
+				new Step("03_hand_in", io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW, 6, (level, player) -> {
+					// The pie in hand, the hall's quest journal on its Personal tab.
+					player.getInventory().add(new ItemStack(Items.PUMPKIN_PIE));
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					boolean shown = false;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.QuestJournal.render(m, level, STATION, player, io.github.jcondedata.aliveworkplace.hall.QuestJournal.Tab.PERSONAL);
+						m.broadcastChanges();
+						ItemStack icon = m.icon(io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW);
+						shown = icon.is(Items.PUMPKIN_PIE) && icon.getHoverName().getString().equals("A taste of home");
+					}
+					Showcase.check(shown, "the journal's Personal tab shows \"A taste of home\" as a Pumpkin Pie to hand in");
+				}, 40),
+				new Step("04_thanks", -1, 0, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW, player); // the click that hands it in
+					}
+					player.closeContainer();
+					Villager dara = subject;
+					String me = player.getGameProfile().getName();
+					boolean done = io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(dara) == null && player.getInventory().countItem(Items.PUMPKIN_PIE) == 0
+						&& player.getInventory().countItem(Items.EMERALD) == 4;
+					boolean chronicled = level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall
+						&& hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FRIEND
+							&& e.text().getString().equals(me + " helped Dara: A taste of home"));
+					Showcase.check(done && chronicled, "the pie handed in: the request is done, 4 emeralds paid, and the chronicle says " + me + " helped Dara");
+				}, 60)),
+			(level, player) -> {
+				if (subject == null) {
+					return false;
+				}
+				int points = io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID());
+				boolean friends = points == 300 + io.github.jcondedata.aliveworkplace.story.Friendship.Favour.REQUEST.points
+					+ io.github.jcondedata.aliveworkplace.story.Friendship.Favour.HAND_IN.points;
+				Showcase.check(friends, "helping earned the request's 150 friendship and the hand-in's 10: " + points + " points with Dara");
+				return friends && io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(subject) == null;
+			}));
 		// My work (ROADMAP 31.8): at four hearts a villager tells of their work, one story per job family (the foal for
 		// those who keep animals, the fish for the fisherman). One villager of each family in turn, at four hearts, says
 		// the first line of theirs over their head and in the chat.

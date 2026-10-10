@@ -565,6 +565,11 @@ SCENES = [
       "at two hearts Dara walked up to the player, faced them and told where she comes from, line by line over her head and in the chat; it went into the chronicle and onto her life story page; at ten hearts she told what she dreams of and gave her keepsake", 75,
       [("02_telling", "Two hearts: she walks up and tells it, a line every three seconds"), ("03_told", "The last line, each also in the chat in grey"),
        ("04_life_story", "Shift-click her in the hall: her life story"), ("05_keepsake", "Ten hearts: her dream told, and her keepsake in your hand")]),
+    # A personal request (ROADMAP 31.9): the ask, the accept, the hand-in, the thanks
+    S("personal_request", "Village Hall", "A personal request: Dara asks for a taste of home",
+      "at three hearts Dara walked up and asked the player for a taste of home, with [I'll help] and [Not now] in the chat; accepted, the pumpkin pie was handed in from the quest journal's Personal tab, she said her thanks and the helper got the emeralds and the friendship", 60,
+      [("01_ask", "Three hearts: she walks up and asks, with [I'll help] and [Not now] in the chat"), ("02_accept", "[I'll help]: the request is open"),
+       ("03_hand_in", "The journal's Personal tab: the pie to hand in"), ("04_thanks", "Handed in: her thanks, the emeralds and the friendship")]),
     # My work (ROADMAP 31.8): the 4-heart event of each job family, a villager of each beginning theirs
     S("heart_events_work", "Village Hall", "Heart events: the work story of every job family",
       "at four hearts a villager of each job family (and one without a trade) began the story of their work, over their head and in the chat", 45,

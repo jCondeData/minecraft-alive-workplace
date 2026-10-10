@@ -27,7 +27,8 @@ import net.minecraft.util.GsonHelper;
 /**
  * The quest files (ROADMAP 31.2): {@code data/<ns>/quests/<group>/<id>.json}, one quest each, read when data packs load
  * (and on {@code /reload}). A malformed file is skipped with one log line naming it; {@code "enabled": false} switches
- * one off; {@code fabric:load_conditions} are honoured.
+ * one off; {@code fabric:load_conditions} are honoured. Files with the giver {@code villager} (ours under
+ * {@code quests/personal/}) are personal requests ({@link PersonalRequests}, 31.9).
  */
 public final class QuestFiles implements ResourceManagerReloadListener {
 	public static final String FOLDER = "quests";
@@ -35,7 +36,8 @@ public final class QuestFiles implements ResourceManagerReloadListener {
 
 	/** One quest file, as read. */
 	public record QuestFile(ResourceLocation id, String giver, Optional<Component> name, int weight, int priority, List<Condition> conditions,
-							List<Objectives.Objective> objectives, List<Rewards.Reward> rewards, int days, boolean repeatable) {
+							List<Objectives.Objective> objectives, List<Rewards.Reward> rewards, int days, boolean repeatable, boolean festival,
+							String text) {
 	}
 
 	private static Map<ResourceLocation, QuestFile> files = Map.of();
@@ -109,9 +111,19 @@ public final class QuestFiles implements ResourceManagerReloadListener {
 		if (days < 1) {
 			throw new IllegalArgumentException("'days' below 1");
 		}
+		// A personal request (31.9): "deadline": "festival" (before the village's next festival; "days" when it has none) or
+		// "days" (the default), and "text", the lang key its .ask, .wants and .thanks hang off.
+		String deadline = GsonHelper.getAsString(json, "deadline", "days");
+		if (!deadline.equals("days") && !deadline.equals("festival")) {
+			throw new IllegalArgumentException("unknown 'deadline' '" + deadline + "'");
+		}
+		String text = GsonHelper.getAsString(json, "text", "");
+		if (giver.equals("villager") && text.isBlank()) {
+			throw new IllegalArgumentException("a villager's request needs 'text' (the lang key of what they say)");
+		}
 		return new QuestFile(id, giver, name, weight, GsonHelper.getAsInt(json, "priority", 0),
 			Conditions.parseAll(json.has("conditions") ? json.getAsJsonArray("conditions") : new JsonArray()),
-			List.copyOf(objectives), List.copyOf(rewards), days, GsonHelper.getAsBoolean(json, "repeatable", true));
+			List.copyOf(objectives), List.copyOf(rewards), days, GsonHelper.getAsBoolean(json, "repeatable", true), deadline.equals("festival"), text);
 	}
 
 	private QuestFiles() {

@@ -2438,7 +2438,7 @@ write their own stories; nothing waits forever on a player.
   - one GameTest per variant (a loop over set-up facts) picks it, and each keepsake comes once per player;
   - `langcheck.py` clean; a review package with a still of each family's 4-heart event; the `heart_event` scene gains
     a still of a 10-heart keepsake.
-- [ ] **31.9** **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
+- [x] **31.9** (review: pending 2026-10-10) **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
   nearby, and no request open, may ask that player for help: each morning one such villager in the village is picked,
   a 25% chance. They walk up and ask over their head, and your chat gets the request with [I'll help] and [Not now]
   (clickable, through `/workplace quest accept|decline <id>`). It shows in the journal's Personal tab, on their
@@ -5174,3 +5174,16 @@ item waits.
   `true`/`false` now breaks the file instead of reading as false. (6) The 12 stills of the families' 4-heart events are
   a scene of their own, `heart_events_work` (the catalog shows 4 stills per scene; the rest are on the scene's page);
   `heart_event` gained `05_keepsake`. No review package was made by the lane: the digest makes it from the showcase.
+- 2026-10-10 (31.9, decisions; lane c): the roadmap leaves these open, decided as follows (all on the wiki page
+  `personal-requests.md`, "Decisions"). (1) **The morning roll is made once a day (25%); on a hit the pick waits for
+  the first moment that day a 3-heart villager has a friend within 24 blocks**, so a player who comes home at noon can
+  still be asked. (2) **"Before the next festival" is never under 2 days**: with the festival today or tomorrow the
+  deadline is the one after; with festivals off it is the file's days. (3) Other deadlines: home 12 days, taste of
+  home 3, tools 5, Help me train 7, a Pokémon friend 5. (4) **Every helper gets the emeralds**, not only the
+  friendship. (5) "A home of my own" is asked by anyone whose home is under tier II (`home_tier_below` 2), which also
+  covers a bed in a house no builder put up. (6) A hand-in with no chest by the giver's workstation goes into the
+  villager's own inventory, not the hall's store. (7) Others join from the Personal tab (a click), by [I'll help] or
+  by moving the request on, with 3 hearts. (8) An unanswered offer isn't saved and lapses with the day, at no cost.
+  (9) The glum mood is 10 points for one day; "3 days" of not asking means up to and including the third day after.
+  (10) Items in quest files may now say what they carry: `item[enchantment=<id>]`, `item[effect=<id>]`. No review
+  package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.

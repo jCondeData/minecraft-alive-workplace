@@ -132,6 +132,10 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   The full set (31.8): the conditions on their life now are `HeartEvents.Now` (`hungry`, `no_bed`, `raided`, `ill`, `lonely`,
   `happy`, levels, home tier, rank), `weight` orders events that ask as much, `JobFamilies` holds the twelve job families in
   code, and `Keepsakes` makes and gives the 10-heart keepsake (noted in `Friendship.Bond.keepsake`).
+  Personal requests (31.9): `PersonalRequests` (the morning roll and pick in the hall's round, the offer and its walk-up
+  every 10 ticks, `accept`/`decline`/`join`, `done` paying every helper, `overdue` for a missed deadline); a request is a
+  `Quest` with the giver `villager` (`Quest.villager`, `text`, `festival`, `mark`) from `quests/personal/`. Conditions on the
+  giver are `rules/GiverConditions`; objectives about the giver implement `Objectives.Looked` (looked at in the round).
   public calls on to it. Its conditions are in `rules/` (`food_below`, `cobblemon`, `chance`, `quest_done`, `not`).
   Story arcs (31.4): `Arcs` (loader of `data/<ns>/arcs/<id>.json` and `arc_spawns/`, the trigger, the chapters' round,
   start/next/stop), `ArcEffects` (the effects, `place` and `spawn`, the 40-tick proximity check, `talk`), `ArcState` (a

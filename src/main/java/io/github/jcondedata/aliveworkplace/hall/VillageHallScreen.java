@@ -799,6 +799,11 @@ public final class VillageHallScreen {
 		for (Component friends : io.github.jcondedata.aliveworkplace.story.Friendship.hallLines(villager, viewer)) {
 			lore.add(line(friends, ChatFormatting.LIGHT_PURPLE));
 		}
+		// "Dara wants to make Journeyman before the next festival" (31.9).
+		Component request = io.github.jcondedata.aliveworkplace.story.PersonalRequests.hallLine(level, hall, villager);
+		if (request != null) {
+			lore.add(line(request, ChatFormatting.YELLOW));
+		}
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
 		}

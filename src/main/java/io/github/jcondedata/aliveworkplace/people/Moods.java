@@ -158,6 +158,10 @@ public final class Moods {
 			score += questMood;
 			(questMood > 0 ? good : bad).add(reason("quest"));
 		}
+		if (io.github.jcondedata.aliveworkplace.story.PersonalRequests.glum(level, villager)) { // a request nobody helped with in time (31.9)
+			score -= io.github.jcondedata.aliveworkplace.story.PersonalRequests.GLUM;
+			bad.add(reason("let_down"));
+		}
 		if (io.github.jcondedata.aliveworkplace.hall.Festivals.enjoyedLately(level, villager)) {
 			int festival = io.github.jcondedata.aliveworkplace.hall.Festivals.mood(level, villager);
 			score += festival;

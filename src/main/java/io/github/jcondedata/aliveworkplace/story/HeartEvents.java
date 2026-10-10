@@ -715,7 +715,8 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 				continue;
 			}
 			List<Villager> near = level.getEntitiesOfClass(Villager.class, player.getBoundingBox().inflate(RANGE, 4, RANGE),
-				v -> v.isAlive() && !v.isSleeping() && v.distanceToSqr(player) <= RANGE * RANGE && telling(v) == null && Chatter.offWork(v, now));
+				v -> v.isAlive() && !v.isSleeping() && v.distanceToSqr(player) <= RANGE * RANGE && telling(v) == null && Chatter.offWork(v, now)
+					&& PersonalRequests.offer(v) == null); // not while they're asking for help (31.9)
 			near.sort(Comparator.comparingDouble(v -> v.distanceToSqr(player)));
 			for (Villager villager : near) {
 				Event event = pending(level, villager, player.getUUID());

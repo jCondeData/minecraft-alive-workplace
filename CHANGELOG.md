@@ -17,6 +17,20 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Personal requests** (31.9, part of 1.5, off until it's released): a villager with 3 hearts or more may walk up
+  and ask you for help. Each morning a village rolls a one-in-four chance that someone asks; they come over, ask over
+  their head, and your chat gets the request with **[I'll help]** and **[Not now]** (`/workplace quest accept|decline`).
+  Six requests: **Next level before the festival** (6 emeralds), **A home of my own** (a bed in a finished tier II
+  house, 8), **A taste of home** (a dish by where their people come from: a pumpkin pie on the plains, 16 sweet
+  berries in the taiga..., 4), **The tools of my trade** (a diamond pickaxe for the Miner, a fishing rod with Luck of
+  the Sea for the Fisherman..., into the chest by their workstation, 5), and with Cobblemon **Help me train** (beat a
+  Trainer on three different days) and **A Pokémon friend** (a Pokémon that helps their job, pastured within 16 blocks
+  of their workstation at dawn). An open request shows in the quest journal's new **Personal** tab, on their life-story
+  page and on the hall's tooltip ("Dara wants to make Journeyman before the next festival"). Other friends with 3
+  hearts can join; everyone who helped gets the reward, a heart and a half of friendship, and the chronicle a line. A
+  missed deadline costs 30 friendship, leaves them glum for a day and they ask nobody for 3 days. New quest-file
+  conditions for data packs: `hearts_at_least`, `job`, `job_family`, `level_below`, `villager_type`,
+  `home_tier_below`, `no_bed`. Setting `personalRequests`.
 - **Heart events: the full set, and keepsakes** (31.8, part of 1.5, off until it's released): villagers now have
   something to tell at every second heart. At 4 hearts, **My work**, one story per job family (the first wall a
   builder raised, the day a miner's lamp went out, the fisherman's fish that got away; someone without a trade asks

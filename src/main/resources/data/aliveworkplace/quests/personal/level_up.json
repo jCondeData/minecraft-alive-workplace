@@ -1,0 +1,32 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.level_up.title"
+  },
+  "text": "request.aliveworkplace.level_up",
+  "deadline": "festival",
+  "days": 6,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    },
+    {
+      "type": "level_below",
+      "level": 5
+    }
+  ],
+  "objectives": [
+    {
+      "type": "level_up"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 6,
+      "rank_factor": false
+    }
+  ]
+}

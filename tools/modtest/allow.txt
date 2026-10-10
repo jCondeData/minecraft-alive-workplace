@@ -23,6 +23,9 @@ Skipping quest file aliveworkplace_test:quests/test/broken
 Skipping villager tastes mypack:
 # StoryArcGameTests' pack has an arc with an unknown effect type, to prove it is skipped with one line naming it.
 Skipping story arc aliveworkplace_test:arcs/test/broken
+# ThreatGameTests' pack and the test itself feed the raider culture loader broken files (and one with keys it doesn't know) to prove each is logged and skipped.
+Skipping raider culture (aliveworkplace_test|testpack):raider_cultures/bad_
+Raider culture testpack:odd_keys: the (key|condition) '.*' isn't known and is ignored
 # HeartEventGameTests' pack has an event with one line, and the tests feed the reader more broken files, to prove each is skipped and named.
 Skipping heart event aliveworkplace_test:broken
 Skipping heart event mypack:

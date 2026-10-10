@@ -21,6 +21,12 @@ asks for the steps, `latest.log` and any crash report).
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all
   fields."). The elder look comes later, with the class outfits (34.18). `villagerAges` turns elders off.
+- **Lairs for every raider culture, for 1.6** (32.3, off until 1.6 is finished): the bandit camp's chief now has a
+  name ("Chief Harl Ashgrave", one of twenty) over his head and in every message and chronicle line, and the camp has a
+  strength (6, one more a day, 10 at most): a raid takes its raiders from it, those alive at dawn rejoin, the dead are
+  gone, so a camp that lost a costly night is weak. Any datapack culture with a `lair` makes camp the same way.
+- **The Defence page, for 1.6** (32.3): the guards icon on the Village Hall opens it: the camp, its captain, its
+  strength, roughly where it lies, the days it has stood, and the last three attacks and how they ended.
 - **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**
   page with tabs. **Routes** is the trade routes page as it was; **Prices** lists every trade good with what the
   village pays for a bundle and what it sells one for, an arrow for how the price moved since yesterday, a gold star
@@ -52,7 +58,24 @@ asks for the steps, `latest.log` and any crash report).
   1.7's `villageEconomy`; until then nothing changes). Before, anyone who could open the hall of an open village
   could collect; now that strangers' trades draw on the treasury, they can't. A hall nobody owns stays open to all.
 
+### Changed
+- **Raids run on a new threat engine** (32.2), the base of 1.6's threats. Monster and bandit raids look and count as
+  before, but who raids is now data (`data/aliveworkplace/raider_cultures/monsters.json` and `bandits.json`; a datapack
+  can add cultures of its own, with their own mobs, gear and lands). Two things work differently: a raid under way now
+  **survives a server restart** (it used to be forgotten, and never ended properly), and a raid is now **decided at
+  dusk for the next night**, so the first night after updating is quiet. Breaking up a bandit camp before the bandits'
+  hour calls their attack off. Guards now fight anything a raid brings, hoglins included. New setting `raiderCultures`
+  (in the file only): every culture and whether it may come; `villageRaids` and `banditCamps` work as before.
+- Bandit camps saved by older versions load as they were (their file keeps its name); nothing changes in play until
+  1.6 is finished.
+
 ### Fixed
+- The hearts shown when you look at a villager no longer make the server load terrain for a player standing where
+  none is loaded (fake players from other mods, B93); the mod's own test run is back from about two hours to minutes.
+- Builders no longer stand inside a closed door (B92): a builder in a doorway when a neighbour shuts the door on him,
+  or caught in any block that changed around him, walks out of it within a second or two; and a door's top half or a
+  bed's head is no longer put down on a villager, pet or player standing there (they are asked or nudged aside first,
+  as for any other block).
 - **The hearts look-up no longer loads chunks** (B93): a player standing where nothing is loaded made the server read
   that chunk from disk every half second, which slowed every tick (and the test suite from 13 to about 80 minutes).
   Out there, no hearts are shown.
@@ -215,6 +238,8 @@ asks for the steps, `latest.log` and any crash report).
   your screen, for you only; `/workplace quests` lists your quests in chat with [Track]. Quest files gain the objective
   `reach` (go near a structure, a biome or a point) and the reward `map` (a map with the place marked), the place found
   once when the quest goes up.
+
+### Changed
 
 ### Fixed
 - **The Steward's planning costs the server less** (B85): his planning at the hall is split over the second (his

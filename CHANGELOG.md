@@ -53,6 +53,10 @@ asks for the steps, `latest.log` and any crash report).
   could collect; now that strangers' trades draw on the treasury, they can't. A hall nobody owns stays open to all.
 
 ### Fixed
+- **A workstation's tooltip no longer names a job that is switched off** (B97): with `vintners` off the cauldron still
+  offered the Vintner. The same went for the Gem Grower (`gemGrowers`) at the stonecutter and, with Cobblemon, the
+  Berry Breeder, Camp Cook, Habitat Keeper and Daycare Keeper behind their switches. Now only the jobs you can
+  actually give are listed.
 - **The hearts look-up no longer loads chunks** (B93): a player standing where nothing is loaded made the server read
   that chunk from disk every half second, which slowed every tick (and the test suite from 13 to about 80 minutes).
   Out there, no hearts are shown.

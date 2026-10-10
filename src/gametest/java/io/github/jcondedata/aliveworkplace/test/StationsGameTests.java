@@ -278,6 +278,46 @@ public class StationsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A job behind a config switch leaves its workstation's tooltip while the switch is off (bug B97: the cauldron still
+	 * named the Vintner with {@code vintners} off, the stonecutter the Gem Grower with {@code gemGrowers} off), and the
+	 * block's other jobs stay. On, the tooltip names it again. (The Tailor, Printer and Jeweller: their own tests; the
+	 * Pokémon jobs' switches: StationsCompatTests.)
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aSwitchedOffJobLeavesItsBlocksTooltip(GameTestHelper helper) {
+		boolean vintners = io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED;
+		boolean gemGrowers = io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED;
+		// (set and put back within this one call: tests beside this one never see the switches off)
+		try {
+			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = true;
+			helper.assertTrue(offered(Blocks.CAULDRON).equals(List.of(VillagerProfession.LEATHERWORKER, ModVillagers.SIFTER, ModVillagers.VINTNER)),
+				"vintners on: the cauldron's tooltip offers " + offered(Blocks.CAULDRON).stream().map(StationsGameTests::name).toList());
+			helper.assertTrue(offered(Blocks.STONECUTTER).equals(List.of(VillagerProfession.MASON, ModVillagers.GEM_GROWER, ModVillagers.JEWELLER)),
+				"gemGrowers on: the stonecutter's tooltip offers " + offered(Blocks.STONECUTTER).stream().map(StationsGameTests::name).toList());
+			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = false;
+			helper.assertTrue(offered(Blocks.CAULDRON).equals(List.of(VillagerProfession.LEATHERWORKER, ModVillagers.SIFTER)),
+				"vintners off: the cauldron's tooltip offers " + offered(Blocks.CAULDRON).stream().map(StationsGameTests::name).toList());
+			helper.assertTrue(offered(Blocks.STONECUTTER).contains(ModVillagers.GEM_GROWER), "vintners off took the Gem Grower off the stonecutter");
+			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = false;
+			helper.assertTrue(offered(Blocks.STONECUTTER).equals(List.of(VillagerProfession.MASON, ModVillagers.JEWELLER)),
+				"gemGrowers off: the stonecutter's tooltip offers " + offered(Blocks.STONECUTTER).stream().map(StationsGameTests::name).toList());
+			helper.assertTrue(offered(Blocks.CAULDRON).contains(ModVillagers.VINTNER), "gemGrowers off took the Vintner off the cauldron");
+		} finally {
+			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = vintners;
+			io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers;
+		}
+		helper.succeed();
+	}
+
+	/** The jobs {@code block}'s tooltip names (StationTooltip lists the station's jobs that are {@link Stations#available}). */
+	private static List<VillagerProfession> offered(Block block) {
+		return Stations.at(block).orElseThrow().jobs().stream().filter(Stations::available).map(j -> j.profession().get()).toList();
+	}
+
 	/** The job blocks 21.1a replaced can't be crafted any more (they stay registered, so worlds keep them). */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

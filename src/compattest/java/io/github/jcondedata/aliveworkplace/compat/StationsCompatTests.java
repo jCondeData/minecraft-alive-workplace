@@ -166,6 +166,64 @@ public class StationsCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * A Pokémon job with a config switch of its own leaves its block's tooltip while the switch is off (bug B97): the
+	 * Berry Breeder the composter's, the Camp Cook the Campfire Pot's (which then lists nothing), the Habitat Keeper and
+	 * the Daycare Keeper the Pasture Block's. On, each is named again; the blocks' other jobs stay either way.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aSwitchedOffPokemonJobLeavesItsBlocksTooltip(GameTestHelper helper) {
+		Stations.Station composter = Stations.of(ModVillagers.BERRY_BREEDER).orElseThrow();
+		Stations.Station pot = Stations.of(ModVillagers.CAMP_COOK).orElseThrow();
+		Stations.Station pasture = Stations.of(ModVillagers.HABITAT_KEEPER).orElseThrow();
+		helper.assertTrue(composter.block() == Blocks.COMPOSTER && pasture == Stations.of(ModVillagers.DAYCARE_KEEPER).orElseThrow(),
+			"the Berry Breeder's block is " + composter.block() + ", and the two keepers don't share the Pasture Block");
+		boolean berryBreeders = io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED;
+		boolean campCooks = io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED;
+		boolean habitatKeepers = io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED;
+		boolean daycareKeepers = io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED;
+		// (set and put back within this one call: tests beside this one never see the switches off)
+		try {
+			io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = true;
+			helper.assertTrue(offered(composter).equals(List.of(VillagerProfession.FARMER, ModVillagers.ORCHARD_KEEPER, ModVillagers.FLORIST,
+				ModVillagers.COMPOSTER, ModVillagers.BERRY_BREEDER)), "berryBreeders on: the composter's tooltip offers " + names(composter));
+			helper.assertTrue(offered(pot).equals(List.of(ModVillagers.CAMP_COOK)), "campCooks on: the Campfire Pot's tooltip offers " + names(pot));
+			helper.assertTrue(offered(pasture).equals(List.of(ModVillagers.HABITAT_KEEPER, ModVillagers.DAYCARE_KEEPER)),
+				"both keepers on: the Pasture Block's tooltip offers " + names(pasture));
+			io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED = false;
+			helper.assertTrue(offered(composter).equals(List.of(VillagerProfession.FARMER, ModVillagers.ORCHARD_KEEPER, ModVillagers.FLORIST,
+				ModVillagers.COMPOSTER)), "berryBreeders off: the composter's tooltip offers " + names(composter));
+			io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = false;
+			helper.assertTrue(offered(pot).isEmpty(), "campCooks off: the Campfire Pot's tooltip offers " + names(pot));
+			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = false;
+			helper.assertTrue(offered(pasture).equals(List.of(ModVillagers.DAYCARE_KEEPER)),
+				"habitatKeepers off: the Pasture Block's tooltip offers " + names(pasture));
+			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = false;
+			helper.assertTrue(offered(pasture).equals(List.of(ModVillagers.HABITAT_KEEPER)),
+				"daycareKeepers off: the Pasture Block's tooltip offers " + names(pasture));
+		} finally {
+			io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED = berryBreeders;
+			io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED = campCooks;
+			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED = habitatKeepers;
+			io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers;
+		}
+		helper.succeed();
+	}
+
+	/** The jobs {@code station}'s tooltip names (StationTooltip lists the station's jobs that are {@link Stations#available}). */
+	private static List<VillagerProfession> offered(Stations.Station station) {
+		return station.jobs().stream().filter(Stations::available).map(j -> j.profession().get()).toList();
+	}
+
+	private static List<String> names(Stations.Station station) {
+		return offered(station).stream().map(StationsCompatTests::name).toList();
+	}
+
+	/**
 	 * A Poké Ball picks two jobs (Trainer at a Training Post, Pokémon Trader at a Shop Counter): the block the villager
 	 * works at decides, so a Move Tutor becomes a Trainer at their post, and back with a book.
 	 */

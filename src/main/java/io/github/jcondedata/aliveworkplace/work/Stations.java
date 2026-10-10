@@ -185,7 +185,9 @@ public final class Stations {
 			job(() -> ModVillagers.TEACHER, any(Items.BOOK)))),
 		new Station(is(PoiTypes.CARTOGRAPHER), Blocks.CARTOGRAPHY_TABLE, List.of(
 			job(() -> VillagerProfession.CARTOGRAPHER, any(Items.COMPASS)),
-			job(() -> ModVillagers.NETHERWORKER, any(Items.NETHERRACK)))),
+			job(() -> ModVillagers.NETHERWORKER, any(Items.NETHERRACK)),
+			// an ink sac (34.11), with config printers on
+			job(() -> ModVillagers.PRINTER, io.github.jcondedata.aliveworkplace.printer.Printers::isInk))),
 		new Station(is(PoiTypes.CLERIC), Blocks.BREWING_STAND, List.of(
 			job(() -> VillagerProfession.CLERIC, any(Items.GLASS_BOTTLE)),
 			job(() -> ModVillagers.NURSE, any(Items.HONEY_BOTTLE)),
@@ -472,6 +474,9 @@ public final class Stations {
 	public static boolean available(Job job) {
 		if (job.profession().get() == ModVillagers.TAILOR && !io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED) {
 			return false; // the loom's tooltip names only the Shepherd then
+		}
+		if (job.profession().get() == ModVillagers.PRINTER && !io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED) {
+			return false; // the cartography table's tooltip leaves the Printer out then
 		}
 		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job.profession().get());
 		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");

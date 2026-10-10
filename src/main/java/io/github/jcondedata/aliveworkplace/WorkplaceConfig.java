@@ -157,6 +157,8 @@ public final class WorkplaceConfig {
 	public boolean vintners = Expansions.on(Expansions.M34);
 	/** Villagers at a loom can be made Tailors with string (ROADMAP 34.10). Off: no Tailor job, and Tailors already hired stand idle. */
 	public boolean tailors = Expansions.on(Expansions.M34);
+	/** Villagers at a cartography table can be made Printers with an ink sac (ROADMAP 34.11). Off: no Printer job, Printers already hired stand idle, and no Spread the news quest goes up. */
+	public boolean printers = Expansions.on(Expansions.M34);
 	/** Villagers at a composter can be made Berry Breeders with a Cobblemon berry (ROADMAP 28.9). Off: no Berry Breeder job. */
 	public boolean berryBreeders = Expansions.on(Expansions.M28);
 	/** A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan (ROADMAP 27.5). Off: no new Stewards, and those appointed stand idle. */
@@ -439,6 +441,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = vintners && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED = tailors && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED = printers && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED = daycareKeepers && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.cup.Cups.ENABLED = festivalCup && Expansions.on(Expansions.M28);
 		io.github.jcondedata.aliveworkplace.cup.Cups.EVERY = cupEveryFestivals;

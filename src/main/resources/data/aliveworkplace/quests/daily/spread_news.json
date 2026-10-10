@@ -1,0 +1,16 @@
+{
+  "giver": "hall",
+  "weight": 3,
+  "objectives": [
+    {
+      "type": "spread_news"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 6
+    }
+  ],
+  "days": 3
+}

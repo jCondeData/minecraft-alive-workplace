@@ -163,6 +163,9 @@ public final class Partners {
 		if (profession == ModVillagers.TAILOR) {
 			return Set.of("bug", "normal"); // Spinarak, Sewaddle, Leavanny, Cinccino...: thread spun and cloth held taut
 		}
+		if (profession == ModVillagers.PRINTER) {
+			return Set.of("psychic", "normal"); // Abra, Smeargle, Porygon...: the type set by thought, the ink daubed by tail
+		}
 		if (profession == ModVillagers.DAYCARE_KEEPER) {
 			return Set.of("normal", "fairy"); // Chansey, Blissey, Togekiss...: they keep the pairs company
 		}

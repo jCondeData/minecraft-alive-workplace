@@ -3738,7 +3738,7 @@ on a real world.
   `work_clothes`, `fine_clothes`, `noble_robes`. Done when: `TailorGameTests` (picked with string at a loom, each
   garment made, the dyed-wool rules kept) pass; both outfits pass `lint.py`; scene `tailor` passes; a README section
   and job-table row.
-- [ ] **34.11** **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
+- [x] **34.11** (review: pending 2026-10-10) **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
   an **ink sac** (the table's Cartographer and Netherworker stay). Through 34.5 they make:
   - **Books**: 3 paper and a leather make 2 books (Novice). Scholars' research and builders take the store's books
     first, and with a scholar in the village the printer keeps 8 in the store;
@@ -5027,4 +5027,29 @@ item waits.
   Clothes sold at Novice, Fine Clothes at Apprentice and Expert, Noble Robes at Journeyman and Master. The clothes are
   plain items (16 to a stack): wearing them is 34.17/34.18's class outfits. The Vintner's cauldron tooltip still names
   the Vintner with `vintners` off (not changed here).
+- **34.11 (2026-10-10, decisions; lane d):** the Printer has a config switch, `printers`, gated with M34 like `tailors`;
+  with it off the cartography table's tooltip leaves the Printer out and no Spread the news quest goes up. The Gazette
+  and the Illuminated Book are our own items (`PrintedPaperItem`, as the design note says) carrying vanilla's
+  `written_book_content`; a right-click opens vanilla's book screen (the server sends the open-book packet itself, as
+  vanilla only does for its own written book). `PrinterWork` writes them as they come off the press (`Gazette.write`,
+  from the hall nearest the table; with no hall the paper says so); a blank one (bought, or from the creative tab) is
+  written when bought (`onCraftedBy`) or first read, which is how "players buy today's Gazette" works with a fixed
+  trade offer. A paper notes its hall, day and village name in its custom data. "This week's" is 7 days, the print day
+  included; only this week's Gazettes count towards the store's 8, so the Printer prints fresh ones as the old go
+  stale. The week's page lists births, weddings and households that rose (`class.rose` entries, not falls). Books:
+  the engine got one hook, `LuxuryWork.stocks`, so books are only kept in stock while the village has a Scholar (the
+  store's orders are filled either way). **Scholars** now take a topic's books from the store first, then the
+  Printers' chests (books aren't a luxury, so porters don't carry them to the store), then the desk's chest.
+  **Builders: not changed** (question for the owner's chat): builders already draw on every village stash, the store
+  and the Printer's chest among them, but in their usual order, not "the store's books first"; say if the order
+  matters. **Spread the news**: a new objective type `spread_news` and `quests/daily/spread_news.json` (weight 3, 3
+  days); asked only with a Printer and a route out of this village (`Caravans.routesFrom`); the Printer posts it. The
+  player right-clicks the other village's hall with the Gazette: the copy goes into that village's store, its
+  chronicle notes it. "Paid like a delivery": nothing in the mod pays players for deliveries yet, so it pays 6
+  emeralds like the other daily quests (times the rank factor); change the number in the file. The quest shows in
+  the journal and the tracker by its line; the hall's own quest page (`Stories.view`) only lists bring, slay and
+  battle quests, so it isn't on that page (same as `reach` and `talk` quests). The family tree a Printer prints
+  (34.x families, 2 emeralds) is that item's. Trades: paper, ink sacs, leather, glow ink sacs and gold nuggets bought
+  at levels 1 to 5; the Gazette (1 emerald) at Novice, books at Apprentice and Expert, the Illuminated Book (8) at
+  Journeyman and Master. The job scene check (`JobScenes`) now also accepts a book screen as "its screen opened".
 - **qa handoff** (qa-1009-2234, 2026-10-09 23:14Z): qa-1009-2234: main had no code pushes from 2026-10-06 06:37Z until today's 0.141.0 release commit; CI on main green (build 746, but 114 min). B93 SOLVED IN DIAGNOSIS: the 13 -> 110 min full build is Friendship.lookedAt (31.5) loading chunks for the suite's left-over mock players (see B93's status); failing test on tests/friendship-look-chunks-1009, 3-line mod fix named there and tried locally. Whoever is next on red duty or a build lane: apply it and merge that branch first, it unblocks ship, the nightly (cancelled 4 nights running at its 5 h limit, so no flake sweep, log audit, pack boot, soak, mutation or repeats results exist since 10-06) and the showcase (jobs hit their limit). Verified B87 from the showcase (config scene passes); dropped its duplicate open line. Filed the new failing showcase scenes as one triage bug. Nothing shipped: no passing tests were written this run. Next QA run: once B93's fix is on main, ship qa/ branches again, verify B60/B80/B84/B86/B91 and start on M27. Traps: the container restarted mid-run (background Gradle runs die, files stay); Maven Central 429s needed 10 Gradle tries on a cold cache (a 20 s retry loop); never pkill -f; local main in this container is a stale branch, work from origin/main; a 28-sample look after the fix showed LegendSites.scan at 32% of the server thread for about a minute (maybe one test, not looked into).

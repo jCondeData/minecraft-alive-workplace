@@ -81,7 +81,7 @@ public class LuxuryWork extends CrafterWork {
 		for (int i = 0; i < goods.size(); i++) {
 			Item good = goods.get((next + i) % goods.size());
 			long have = held.getOrDefault(good, 0L);
-			if (have >= KEEP) {
+			if (have >= KEEP || !stocks(level, villager, station, good)) {
 				continue;
 			}
 			for (int count = (int) (KEEP - have); count >= 1; count /= 2) {
@@ -102,6 +102,11 @@ public class LuxuryWork extends CrafterWork {
 			Requests.clear(villager);
 		}
 		return null;
+	}
+
+	/** Whether {@code good} is kept in stock just now (always, by default; the store's orders are filled either way). */
+	protected boolean stocks(ServerLevel level, Villager villager, BlockPos station, Item good) {
+		return true;
 	}
 
 	/** Posts the first making {@code recipe} is short of on the requests board (aged makings: only old enough ones count). */

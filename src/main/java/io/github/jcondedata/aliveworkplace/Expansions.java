@@ -35,7 +35,7 @@ public final class Expansions {
 	 * {@code arcCooldownDays}, {@code arcsAtOnce} (31.4).
 	 */
 	public static final boolean M31 = false;
-	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}. */
+	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}, {@code visibleCaravans}. */
 	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code vintners}, {@code tailors}, {@code printers}, {@code villagerAges}, {@code villagerElderDays}, {@code elderPassing}, {@code agelessElders}. */
 	public static final boolean M34 = false;
@@ -65,7 +65,7 @@ public final class Expansions {
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
 			case "jewellers" -> M34; // the Jeweller (34.12), with the rest of Classes and luxuries below
-			case "villageEconomy" -> M33;
+			case "villageEconomy", "visibleCaravans" -> M33;
 			case "friendship", "heartEvents" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",

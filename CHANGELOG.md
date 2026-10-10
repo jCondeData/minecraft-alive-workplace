@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Caravans you can see, for 1.7** (33.7, off until 1.7 is finished): when a caravan leaves or arrives in a village
+  with a player within 96 blocks, a carter in the porter's outfit ("Thornholm's caravan") leads two llamas with chests
+  and carpets in the village's colour (its Village Banner's, or one picked from where its hall stands) from the
+  Storehouse to the edge of the village, or in from the edge to the Storehouse, where the llamas stand while the goods
+  are unloaded, and back out. They are only a sight: the goods travel the saved way, and nobody can trade with, ride,
+  feed, hurt or rob them. One party per village at a time, gone after two minutes, removed after a restart.
+  `visibleCaravans` turns them off.
 - **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all

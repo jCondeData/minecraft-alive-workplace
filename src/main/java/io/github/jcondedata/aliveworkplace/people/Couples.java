@@ -96,7 +96,9 @@ public final class Couples {
 		if (!ENABLED) {
 			return;
 		}
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		// (a caravan's carter is passing through, 33.7: nobody courts him)
+		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
+			v -> v.isAlive() && !io.github.jcondedata.aliveworkplace.hall.CaravanSights.isParty(v));
 		long today = Chronicle.day(level);
 		long time = level.getDayTime() % VillageNeeds.DAY;
 		for (Villager villager : village) {

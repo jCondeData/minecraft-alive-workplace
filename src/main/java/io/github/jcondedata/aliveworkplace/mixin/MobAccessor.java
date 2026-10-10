@@ -10,4 +10,11 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface MobAccessor {
 	@Invoker("getEquipmentDropChance")
 	float aliveworkplace$dropChance(EquipmentSlot slot);
+
+	/** A mob's goals, so a caravan's pack llama can be left with none but to follow its lead (33.7). */
+	@org.spongepowered.asm.mixin.gen.Accessor("goalSelector")
+	net.minecraft.world.entity.ai.goal.GoalSelector aliveworkplace$goals();
+
+	@org.spongepowered.asm.mixin.gen.Accessor("targetSelector")
+	net.minecraft.world.entity.ai.goal.GoalSelector aliveworkplace$targets();
 }

@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97
 
 ## What a player sees
 
@@ -12,7 +12,8 @@ share a vanilla block. To start one of ours, stand the villager within about 4 b
 **sneak-right-click them holding the job's item**. A villager already working there switches the same way, and the
 block's own job comes back with its own item (wheat for a Farmer, coal for an Armorer). You are told what happened
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
-Hold Shift over a workstation in your inventory to see its jobs and their items.
+Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
+needs Cobblemon, without it) isn't listed.
 
 Chests and barrels within 8 blocks of the workstation are that worker's supply chests: tools and materials come out
 of them and the work goes into them. A line over a worker's head says what they are doing or waiting for, and
@@ -174,9 +175,9 @@ and so on). Status lines and the requests board are not saved: workers post agai
 
 ## Proof
 
-GameTests: `StationsGameTests` (11: every item gives its job at its block, a picked job stays, switching at the
-same block), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
-`StationsRetakeGameTests`, `StationsCompatTests` (10, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+GameTests: `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
+same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
+`StationsRetakeGameTests`, `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
 `PaceGameTests`.
 
 Showcase scenes: `stations` (one composter, four jobs), `staff` (every workstation with its villager), `outfits`

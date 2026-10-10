@@ -36,6 +36,13 @@ asks for the steps, `latest.log` and any crash report).
   loft for dyed wool. A Vintner or Tailor who reaches Journeyman sells their building's blueprint for 12 emeralds, the
   Steward builds one for a Vintner or Tailor with no workstation, and (once 1.8 is on) villages of all five kinds grow
   a small Winery and Tailor's Shop with a Vintner and a Tailor already at work.
+- **Caravans you can see, for 1.7** (33.7, off until 1.7 is finished): when a caravan leaves or arrives in a village
+  with a player within 96 blocks, a carter in the porter's outfit ("Thornholm's caravan") leads two llamas with chests
+  and carpets in the village's colour (its Village Banner's, or one picked from where its hall stands) from the
+  Storehouse to the edge of the village, or in from the edge to the Storehouse, where the llamas stand while the goods
+  are unloaded, and back out. They are only a sight: the goods travel the saved way, and nobody can trade with, ride,
+  feed, hurt or rob them. One party per village at a time, gone after two minutes, removed after a restart.
+  `visibleCaravans` turns them off.
 - **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all
@@ -89,6 +96,10 @@ asks for the steps, `latest.log` and any crash report).
   1.6 is finished.
 
 ### Fixed
+- **A workstation's tooltip no longer names a job that is switched off** (B97): with `vintners` off the cauldron still
+  offered the Vintner. The same went for the Gem Grower (`gemGrowers`) at the stonecutter and, with Cobblemon, the
+  Berry Breeder, Camp Cook, Habitat Keeper and Daycare Keeper behind their switches. Now only the jobs you can
+  actually give are listed.
 - The hearts shown when you look at a villager no longer make the server load terrain for a player standing where
   none is loaded (fake players from other mods, B93); the mod's own test run is back from about two hours to minutes.
 - Builders no longer stand inside a closed door (B92): a builder in a doorway when a neighbour shuts the door on him,

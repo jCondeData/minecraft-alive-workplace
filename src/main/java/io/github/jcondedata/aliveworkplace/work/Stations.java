@@ -472,18 +472,35 @@ public final class Stations {
 		return PoiTypes.forState(block.defaultBlockState()).flatMap(h -> ALL.stream().filter(s -> s.poi().test(h)).findFirst());
 	}
 
-	/** Whether {@code job} can be had in this game (the Pokémon jobs need Cobblemon, the Tailor config {@code tailors}). */
+	/**
+	 * Whether {@code job} can be had in this game: a job behind a config switch needs it on (the Tailor {@code tailors},
+	 * the Vintner {@code vintners}...), and the Pokémon jobs need Cobblemon. A workstation's tooltip names only these.
+	 */
 	public static boolean available(Job job) {
-		if (job.profession().get() == ModVillagers.JEWELLER && !io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED) {
-			return false; // config jewellers off: the stonecutter's tooltip names the Mason and the Gem Grower only
+		VillagerProfession profession = job.profession().get();
+		if (profession == ModVillagers.JEWELLER && !io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED) {
+			return false; // config jewellers off: the stonecutter's tooltip leaves the Jeweller out
 		}
-		if (job.profession().get() == ModVillagers.TAILOR && !io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED) {
+		if (profession == ModVillagers.GEM_GROWER && !io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED) {
+			return false; // config gemGrowers off: the stonecutter's tooltip leaves the Gem Grower out
+		}
+		if (profession == ModVillagers.TAILOR && !io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED) {
 			return false; // the loom's tooltip names only the Shepherd then
 		}
-		if (job.profession().get() == ModVillagers.PRINTER && !io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED) {
+		if (profession == ModVillagers.PRINTER && !io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED) {
 			return false; // the cartography table's tooltip leaves the Printer out then
 		}
-		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job.profession().get());
+		if (profession == ModVillagers.VINTNER && !io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED) {
+			return false; // config vintners off: the cauldron's tooltip names the Leatherworker and the Sifter only (bug B97)
+		}
+		// The Pokémon jobs with a switch of their own (berryBreeders, campCooks, habitatKeepers, daycareKeepers; bug B97)
+		if (profession == ModVillagers.BERRY_BREEDER && !io.github.jcondedata.aliveworkplace.berry.BerryBreeders.ENABLED
+			|| profession == ModVillagers.CAMP_COOK && !io.github.jcondedata.aliveworkplace.camp.CampCooks.ENABLED
+			|| profession == ModVillagers.HABITAT_KEEPER && !io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.ENABLED
+			|| profession == ModVillagers.DAYCARE_KEEPER && !io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.ENABLED) {
+			return false;
+		}
+		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(profession);
 		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
 	}
 

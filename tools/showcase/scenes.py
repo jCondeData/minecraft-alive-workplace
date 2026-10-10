@@ -346,6 +346,10 @@ SCENES = [
       "and the chronicle says Sold 32 Timber to Ashford for 2.77 emeralds", 60,
       [("01_routes_earnings", "The Routes tab: what the caravan sells in Ashford and what it earns"),
        ("02_chronicle_sold", "The chronicle: Sold 32 Timber to Ashford for 2.77 emeralds")]),
+    # Caravans you can see (ROADMAP 33.7): a carter and two pack llamas leave for Ashford, then Ashford's caravan arrives and unloads
+    job("caravan", "Realm", "Caravans you can see: one leaves, one arrives",
+        "Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
+        "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 110),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

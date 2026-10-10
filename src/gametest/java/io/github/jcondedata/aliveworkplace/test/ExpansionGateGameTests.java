@@ -42,7 +42,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"daycareKeepers", "gemGrowers", "jewellers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
-		"villageEconomy", "villageClasses", "friendship", "heartEvents", "storyArcs", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders");
+		"villageEconomy", "visibleCaravans", "villageClasses", "friendship", "heartEvents", "storyArcs", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "villagerElderDays");
@@ -164,8 +164,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 85 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (85 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 86 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (86 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -210,7 +210,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 85, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 86, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

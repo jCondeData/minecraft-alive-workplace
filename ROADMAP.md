@@ -2203,7 +2203,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: `langcheck.py` is clean; a GameTest per advice tip; the README's tables list every edict, tonic and guild
   data file we ship (the tester checks); showcase scene `village_talk`: villagers' lines under Long Shifts and after
   The Shift Bell.
-- [x] **30.22** (approved auto 2026-10-10) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
+- [ ] **30.22** (blocked: B99 and the owner's day-1 answer in the Notes: the tick check fails on day 1) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
   pieces that fit a night run): a City of 35 villagers with farms, a kitchen and a store, 4 in-game days under four
   edicts at once (Long Shifts, Free Bread, Large Families, Festival Season), then 4 days with all four reformed, with a
   Cradle, an idol in harvest season, a founded guild and a rush a day. Each day records: meals eaten and left, births,

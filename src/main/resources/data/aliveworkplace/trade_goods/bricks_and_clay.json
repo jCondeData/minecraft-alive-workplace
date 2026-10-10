@@ -1,0 +1,34 @@
+{
+  "name": {
+    "translate": "good.aliveworkplace.bricks_and_clay"
+  },
+  "icon": "minecraft:brick",
+  "items": [
+    "#aliveworkplace:trade/bricks_and_clay"
+  ],
+  "bundle": 10,
+  "base_price": 100,
+  "made_by": {
+    "jobs": [
+      "minecraft:mason",
+      "aliveworkplace:sifter"
+    ],
+    "biomes": [
+      "#c:is_swamp",
+      "#minecraft:is_river",
+      "#minecraft:is_badlands"
+    ]
+  },
+  "wanted_in": {
+    "biomes": [
+      "#c:is_snowy",
+      "#minecraft:is_mountain"
+    ],
+    "jobs": [
+      "aliveworkplace:builder",
+      "minecraft:mason"
+    ]
+  },
+  "food": false,
+  "order": 13
+}

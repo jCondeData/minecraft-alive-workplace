@@ -10,6 +10,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Builder](builder.md): the villager who builds blueprints.
 - [Pokémon partners](pokemon-partners.md): pastured Pokémon that help at work, and are seen doing it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).
+- [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 
 **The village**
 - [The Village Hall](village-hall.md): the village at a glance, its needs, ranks, calendar, treasury and pages.

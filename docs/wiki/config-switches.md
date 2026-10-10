@@ -25,7 +25,7 @@ column) is off whatever the file says, and isn't on the settings screen until th
 
 - The file is read once at start-up (`WorkplaceConfig`), clamped, written back and applied: each value is handed to
   the system that uses it.
-- **The expansion gate (B76).** Each expansion that has switches (1.1 to 1.5 and 1.8 today) has one flag in the code
+- **The expansion gate (B76).** Each expansion that has switches (1.1 to 1.5, 1.7 and 1.8 today) has one flag in the code
   that the release finishing it turns on. Until then its switches are forced off, even in a config file that says on. The release flips the flag
   and nothing else: the switches then default on and obey the file again.
 - **Every "needs" system has its own switch** (names, traits, moods, sickness, couples, chatter, markets,
@@ -97,6 +97,7 @@ range is in brackets.
 | `guilds` | on | 1.4 | Guilds: Guild Charters make Masters Guild Masters, and founded guilds' perks reach their members. Off: charters are refused and perks are off; guilds stay saved. |
 | `guildsPerRank` | 1 (1 to 4) | 1.4 | Guilds a village may have per rank above Hamlet (Village 1x, Town 2x, City 3x). |
 | `edictMinDays` | 3 (0 to 30) | 1.4 | Days an edict stays in force before it can be lifted. |
+| `villageEconomy` | on | 1.7 | Once a day every village with a hall works out the goods it's known for and short of, and a price for each good. Off: nothing is worked out; the last prices are kept. See [The price board](price-board.md). |
 | `villageClasses` | on | 1.8 | Households in villages with a hall climb the class ladder. Off: no classes; classes and progress stay saved. |
 | `classRiseDays` | 2 (1 to 30) | 1.8 | Dawns running the next class's needs must hold for a household to rise one class. |
 | `classFallDays` | 3 (1 to 30) | 1.8 | Dawns running a need of their own class must fail for a household to fall one class. |

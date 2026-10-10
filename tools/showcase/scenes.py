@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -327,7 +327,13 @@ SCENES = [
       [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
-      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes")]),
+      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
+    # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
+    S("price_board", "Realm", "The price board: what a village is known for and short of",
+      "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "
+      "Timber's tooltip with the dearer and the cheaper village, and the name icon's Known for line", 60,
+      [("01_price_board", "The Trade page, Prices tab"), ("02_price_tooltip", "Timber: both prices, and where it's dearer and cheaper"),
+       ("03_hall_known_for", "The hall's name icon: Known for, Short of")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

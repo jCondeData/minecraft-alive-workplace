@@ -1,0 +1,11 @@
+{
+  "name": {"text": "Test Fish"},
+  "icon": "minecraft:cooked_cod",
+  "items": ["minecraft:cooked_cod", "minecraft:cooked_salmon"],
+  "bundle": 6,
+  "base_price": 100,
+  "made_by": {"jobs": ["minecraft:fisherman"], "biomes": ["#minecraft:is_ocean", "#minecraft:is_river", "#minecraft:is_beach"]},
+  "wanted_in": {"biomes": ["minecraft:desert", "#minecraft:is_badlands"], "jobs": ["aliveworkplace:chef", "aliveworkplace:innkeeper"]},
+  "food": true,
+  "order": 4
+}

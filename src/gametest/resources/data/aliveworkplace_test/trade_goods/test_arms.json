@@ -1,0 +1,10 @@
+{
+  "name": {"text": "Test Arms"},
+  "items": ["minecraft:iron_sword", "minecraft:iron_chestplate"],
+  "bundle": 1,
+  "base_price": 300,
+  "made_by": {"jobs": ["minecraft:armorer", "minecraft:weaponsmith"]},
+  "wanted_in": {"jobs": ["aliveworkplace:guard"]},
+  "events": [{"event": "aliveworkplace:raid", "demand": 2, "days": 3}],
+  "order": 30
+}

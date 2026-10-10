@@ -60,7 +60,9 @@ public final class Chatter {
 		// A household's rise or fall (34.6), from the mood reason
 		Map.entry("class_rose", 3), Map.entry("class_fell", 3),
 		// An elder's own lines (34.19)
-		Map.entry("elder", 4));
+		Map.entry("elder", 4),
+		// The village's trade (33.4): a good that sells well elsewhere, a glut at home, something dear
+		Map.entry("trade_sells_well", 3), Map.entry("trade_glut", 3), Map.entry("trade_dear", 3));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
@@ -144,6 +146,9 @@ public final class Chatter {
 		news.addAll(civicTopics(level, villager, hall));
 		if (!io.github.jcondedata.aliveworkplace.story.Arcs.chatter(level, hall).isEmpty()) {
 			news.add("arc"); // a story arc's chapter is the talk of the village (31.4)
+		}
+		for (io.github.jcondedata.aliveworkplace.trade.TradeTalk.Line trade : io.github.jcondedata.aliveworkplace.trade.TradeTalk.lines(level, hall)) {
+			news.add(trade.topic()); // what the village is known for, has too much of and finds dear (33.4)
 		}
 		topics.addAll(news);
 		topics.addAll(news);
@@ -269,6 +274,11 @@ public final class Chatter {
 			return Component.translatable(lines.get(level.random.nextInt(lines.size()))).withStyle(ChatFormatting.ITALIC);
 		}
 		int variant = level.random.nextInt(VARIANTS.getOrDefault(topic, 1));
+		if (io.github.jcondedata.aliveworkplace.trade.TradeTalk.is(topic)) {
+			io.github.jcondedata.aliveworkplace.trade.TradeTalk.Line trade = io.github.jcondedata.aliveworkplace.trade.TradeTalk.line(level, hall, topic);
+			return trade == null ? null
+				: Component.translatable("chatter.aliveworkplace." + topic + "." + variant, trade.args()).withStyle(ChatFormatting.ITALIC);
+		}
 		Object arg = switch (topic) {
 			case "hello" -> player.getDisplayName();
 			case "bandits" -> BanditCamps.near(level, hall).map(camp -> VillageHallScreen.where(hall, camp.pos())).orElse(Component.empty());

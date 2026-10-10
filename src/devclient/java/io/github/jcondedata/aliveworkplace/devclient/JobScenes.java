@@ -102,6 +102,46 @@ final class JobScenes {
 		return v;
 	}
 
+	/**
+	 * The {@code price_board} scene's markets (33.4): Thornholm (the hall at the station) known for Timber and Wool and
+	 * short of Bread, with prices that rose, fell and stood still since yesterday, and two villages on its routes, Ashford
+	 * (where Timber is dear) and Ridgeway (where it's cheap). Written for today, so the hall's round doesn't recount it.
+	 */
+	private static void priceBoard(ServerLevel level) {
+		io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+		long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+		BlockPos ashford = STATION.east(180);
+		BlockPos ridgeway = STATION.north(220);
+		if (data.village(STATION) == null) {
+			data.setWants(STATION, Component.literal("Thornholm"), List.of());
+		}
+		if (data.village(ashford) == null) {
+			data.setWants(ashford, Component.literal("Ashford"), List.of());
+			data.setWants(ridgeway, Component.literal("Ridgeway"), List.of());
+			data.toggleRoute(STATION, ashford);
+			data.toggleRoute(ridgeway, STATION);
+		}
+		java.util.function.Function<String, net.minecraft.resources.ResourceLocation> id = io.github.jcondedata.aliveworkplace.AliveWorkplace::id;
+		// what moved since yesterday, in hundredths of an emerald: {now, yesterday}; every other good stands at its base
+		java.util.Map<String, int[]> moved = java.util.Map.of("timber", new int[]{80, 90}, "wool", new int[]{62, 70}, "bread", new int[]{168, 150},
+			"fish", new int[]{131, 124}, "iron", new int[]{112, 104}, "gold", new int[]{92, 100}, "stone", new int[]{84, 91}, "coal", new int[]{118, 110});
+		java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.trade.Market.Price> ours = new java.util.LinkedHashMap<>();
+		java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.trade.Market.Price> dear = new java.util.LinkedHashMap<>();
+		java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.trade.Market.Price> cheap = new java.util.LinkedHashMap<>();
+		for (io.github.jcondedata.aliveworkplace.trade.TradeGoods.Good good : io.github.jcondedata.aliveworkplace.trade.TradeGoods.all()) {
+			int[] m = moved.get(good.id().getPath());
+			int now = m != null ? m[0] * good.basePrice() / 100 : good.basePrice();
+			int yesterday = m != null ? m[1] * good.basePrice() / 100 : good.basePrice();
+			ours.put(good.id(), new io.github.jcondedata.aliveworkplace.trade.Market.Price(now, yesterday, 0));
+			dear.put(good.id(), new io.github.jcondedata.aliveworkplace.trade.Market.Price(good.basePrice() * 140 / 100, good.basePrice() * 140 / 100, 0));
+			cheap.put(good.id(), new io.github.jcondedata.aliveworkplace.trade.Market.Price(good.basePrice() * 72 / 100, good.basePrice() * 72 / 100, 0));
+		}
+		data.setMarket(STATION, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(id.apply("timber"), id.apply("wool")), List.of(id.apply("bread")),
+			ours, today, List.of()));
+		data.setMarket(ashford, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(), List.of(id.apply("timber")), dear, today, List.of()));
+		data.setMarket(ridgeway, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(id.apply("timber")), List.of(), cheap, today, List.of()));
+	}
+
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
@@ -1916,6 +1956,65 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
+		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
+		// name icon with "Known for: Timber, Wool. Short of: Bread".
+		SCREENS.put("price_board", new Screen("the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "
+			+ "Timber's tooltip with the dearer and the cheaper village, and the name icon's Known for line", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setCustomName(Component.literal("Thornholm"));
+				priceBoard(level);
+			},
+			// the pointer rests on the way back (slot 0), clear of the goods, so the whole board shows
+			List.of(new Step("01_price_board", 0, 6, (level, player) -> {
+					priceBoard(level); // again, should the hall's round have counted the village in between
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = -1;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.trade.TradePage.marks(m.icon(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.ROUTES.slot()))
+							.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.OPEN), "the minecart opens the Trade page on its Routes tab");
+						m.press(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot(), player);
+						int goods = 0;
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							java.util.Set<String> marks = io.github.jcondedata.aliveworkplace.trade.TradePage.marks(m.icon(slot));
+							String name = m.icon(slot).getHoverName().getString();
+							goods += m.icon(slot).isEmpty() ? 0 : 1;
+							if (name.equals("Timber")) {
+								pickedSlot = slot;
+								Showcase.check(marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.STAR)
+									&& marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.DOWN), "Timber is starred and its price fell: " + marks);
+							} else if (name.equals("Bread")) {
+								Showcase.check(marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.SHORT)
+									&& marks.contains(io.github.jcondedata.aliveworkplace.trade.TradePage.UP), "Bread is marked short and its price rose: " + marks);
+							}
+						}
+						Showcase.check(goods == io.github.jcondedata.aliveworkplace.trade.TradeGoods.all().size() && goods >= 25, "the Prices tab lists every good: " + goods);
+						Showcase.check(pickedSlot >= 0, "Timber is on the Prices tab");
+					}
+				}, 30),
+				// Timber hovered: both prices, down since yesterday, known for it, dearer in Ashford, cheaper in Ridgeway
+				new Step("02_price_tooltip", -2, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m && pickedSlot >= 0) {
+						List<String> lore = new ArrayList<>();
+						m.icon(pickedSlot).getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY)
+							.lines().forEach(l -> lore.add(l.getString()));
+						Showcase.check(lore.stream().anyMatch(l -> l.startsWith("Dearer in Ashford: ")) && lore.stream().anyMatch(l -> l.startsWith("Cheaper in Ridgeway: ")),
+							"Timber's tooltip names the dearer and the cheaper village: " + lore);
+					}
+				}, 30),
+				// Back at the hall, the name tag (slot 0) hovered: "Known for: Timber, Wool. Short of: Bread"
+				new Step("03_hall_known_for", 0, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					Component line = io.github.jcondedata.aliveworkplace.trade.TradePage.knownAndShort(level, STATION);
+					Showcase.check(line != null && line.getString().equals("Known for: Timber, Wool. Short of: Bread"),
+						"the name icon says what Thornholm is known for and short of: " + (line == null ? null : line.getString()));
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("legend_announce", new Screen("a Mythic Legend's coming was announced in chat and written in the chronicle", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				// ROADMAP 29.3: a Mythic Legend of the scene's own settles by the hall; everyone on the server hears it, in gold.

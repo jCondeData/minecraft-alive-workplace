@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:brick",
+    "minecraft:bricks",
+    "minecraft:clay_ball",
+    "minecraft:clay",
+    "#minecraft:terracotta"
+  ]
+}

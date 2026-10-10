@@ -21,6 +21,18 @@ asks for the steps, `latest.log` and any crash report).
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all
   fields."). The elder look comes later, with the class outfits (34.18). `villagerAges` turns elders off.
+- **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**
+  page with tabs. **Routes** is the trade routes page as it was; **Prices** lists every trade good with what the
+  village pays for a bundle and what it sells one for, an arrow for how the price moved since yesterday, a gold star
+  on what the village is known for and a red mark on what it's short of. A good's tooltip names the village on your
+  trade routes where it's dearer and the one where it's cheaper. The hall's name icon says "Known for: Timber, Wool.
+  Short of: Bread", villagers talk about what sells well, what there's too much of and what's dear, and the Village
+  Ledger reaches the page from afar.
+
+### Fixed
+- **The hearts look-up no longer loads chunks** (B93): a player standing where nothing is loaded made the server read
+  that chunk from disk every half second, which slowed every tick (and the test suite from 13 to about 80 minutes).
+  Out there, no hearts are shown.
 
 ## 0.141.0 — 2026-10-09
 
@@ -62,6 +74,18 @@ asks for the steps, `latest.log` and any crash report).
   the Gold Circlet (Journeyman: 2 gold ingots, an emerald, an amethyst shard) for the village store: the jewellery the
   Burghers and Nobles look for. A Burgher's job; trades, Rock, Steel and Fairy partners, an outfit with a loupe, config
   `jewellers`.
+- **The trade goods engine for 1.7** (33.2, nothing to see until the price board): trade goods are data files
+  (`data/<namespace>/trade_goods/<good>.json`). Once a day, in its hall's round, each village works out up to 3 goods
+  it's known for and 3 it's short of (from its workers' jobs, its biome, its Storehouses and what its workers wait for)
+  and a price for every good that moves a third of the way toward supply and demand each dawn, between half and twice
+  the base. A beaten raid (night, bandit or vanilla) raises demand for arms for a few days. Kept with the village's
+  caravan entry, so old saves load unchanged. Config `villageEconomy` (off until 1.7).
+- **The 28 trade goods for 1.7** (33.3, nothing to see until the price board): Grain, Bread, Roots, Fish, Meat, Fine
+  Meals, Fruit, Honey and Bone Meal; Timber, Stone, Glass, Bricks and Clay, Coal, Iron and Gold; Wool, Leather, Dyes and
+  Flowers, Paper, Tools, Arms and Armour, Arrows, Remedies and Nether Goods; and, only with Cobblemon, Apricorns, Berries
+  and Poké Balls. Each has its makers and their biomes, the biomes and jobs that want it, and a bundle priced like
+  vanilla's villager trades where there is one (20 wheat, 6 bread, 18 wool, 24 paper, 4 iron ingots for an emerald).
+  Raids raise demand for arms, arrows and remedies for 3 days, and remedies while villagers are ill.
 - **The Vintner, for 1.8** (34.9, off until 1.8 is finished): sneak-right-click a villager by a cauldron with sweet
   berries, glow berries or an apple. They press Cider (Novice), Berry Wine (Apprentice) and Vintage Wine from Berry Wine
   three days old (Journeyman) for the village store, with purple splashes at the vat; the three drinks are drinkable
@@ -151,6 +175,11 @@ asks for the steps, `latest.log` and any crash report).
   once when the quest goes up.
 
 ### Fixed
+- **The Steward's planning costs the server less** (B85): his planning at the hall is split over the second (his
+  wishes and their plot searches, then his desk half a second later), the morning's ranking counts the village a
+  piece a second instead of all in one tick, and one planning second looks up the Blueprint Tables once (every 5
+  seconds at most) instead of once per wish. Nothing a player sees changes. City benchmark: p95 0.49 → 0.38 ms a tick,
+  his planning's server time about halved, and planning is no longer the slowest call.
 - **No more log error when a traveller's camp is set down** (B68): the map's item frame on the camp's barrel is saved
   with the block it hangs on, and structures placed by the mod or by vanilla now hang their frames and paintings on the
   block where they land, so "Block-attached entity at invalid position" is no longer logged. Players saw nothing wrong.

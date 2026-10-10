@@ -16,6 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**
+  page with tabs. **Routes** is the trade routes page as it was; **Prices** lists every trade good with what the
+  village pays for a bundle and what it sells one for, an arrow for how the price moved since yesterday, a gold star
+  on what the village is known for and a red mark on what it's short of. A good's tooltip names the village on your
+  trade routes where it's dearer and the one where it's cheaper. The hall's name icon says "Known for: Timber, Wool.
+  Short of: Bread", villagers talk about what sells well, what there's too much of and what's dear, and the Village
+  Ledger reaches the page from afar.
+
 ### Fixed
 - **The hearts look-up no longer loads chunks** (B93): a player standing where nothing is loaded made the server read
   that chunk from disk every half second, which slowed every tick (and the test suite from 13 to about 80 minutes).

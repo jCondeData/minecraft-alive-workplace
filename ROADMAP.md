@@ -3266,7 +3266,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     and a desert village short of timber and fish;
   - the three Cobblemon goods load only with Cobblemon (a compat GameTest) and the other 25 without it;
   - every good has its name in `en_us.json` and an icon (`langcheck.py` clean).
-- [ ] **33.4** **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
+- [x] **33.4** (review: pending 2026-10-09) **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
   **Routes** (today's trade-routes page, unchanged), **Prices** (this item), and **Pacts**, **Realm** and
   **Colonies**, which later items fill and which stay hidden until then; the Village Ledger reaches it from afar as it
   does the rest of the hall. **Prices** lists every good with its icon, this village's price for a bundle (to sell to
@@ -4998,3 +4998,19 @@ item waits.
   Novice, Berry Wine at Apprentice and Expert, Vintage Wine at Journeyman and Master. Not done here: the "What next?"
   tip naming the Vintner (34.6 left that how-line generic).
 - **qa handoff** (qa-1006-0534, 2026-10-06 06:24Z): qa-1006-0534: B80 no longer reproduces (its trimmed 6-class suite passed 2 of 2 on 3d91db5a); the close is on qa/b80-1006 (ROADMAP only), not shipped: the full build outran the run. Next QA run: check out qa/b80-1006 and ship it. Filed B92 (soak still finds a builder in a shut spruce door after B60's fix, so B60 stays unverified). B87 has a duplicate open line under Bugs next to its ticked one. Showcase push runs on 55b0b45 were cancelled; the roads scene timing out there (not within 450 s) has no bug yet: check it in the next full showcase run.
+- 2026-10-09 (33.4, decisions; lane a): the price board. (1) **The tabs sit in slots 5 to 9 of the page's first row,
+  Routes first, not 3 to 7** as the design note's table had them: the Routes tab is the routes page's old title icon
+  in its old place, so everything that finds the routes page by it (two GameTests, `hall_pages`) still does, untouched.
+  (2) **The minecart opens the page on Routes**, not Prices (the note left it open): the routes page stays one click
+  away as it was; Prices is the next tab. (3) **With `villageEconomy` off the minecart opens the old routes page**, no
+  tab row: nothing changes for players until 1.7. (4) **No treasury icon on the page yet**: the note's slot 9 nugget
+  (collect) belongs to 33.5, which changes who may collect. (5) **"We sell" is 10% over "We pay"** (33.5's rule,
+  `TradePage.SELL_PERCENT`), prices read to the cent without needless zeros ("0.88", "1.4", "1 emerald"), and "dearer
+  in" / "cheaper in" name only villages on a route either way that have a price for the good and differ from ours.
+  (6) **The marks are drawn by the hall's own screen** from marks the icon carries (`TradePage.marks`, custom data);
+  the tooltip says the same in words. (7) Chatter: "sells well" needs a known-for good dearer on a route, "glut" a
+  known-for good under its base price, "dear" a good over its base that the village is short of (or any a fifth over).
+  The good's name keeps its capital ("Our Timber sells well in Ashford."): the server can't lower-case a translated
+  name. (8) **More than 36 goods** (a data pack adding nine or more): the tab shows the first 36 by `order`; paging can
+  come with 33.19's slot 54 toggle if anyone needs it. (9) `tools/modtest/wikicheck.py` doesn't exist yet (22.9), so
+  the wiki page (`docs/wiki/price-board.md`) was written to the page format but not machine-checked.

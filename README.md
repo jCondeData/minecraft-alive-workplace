@@ -671,6 +671,7 @@ placed keep working, so old worlds are fine.
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) | any |
 | Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) | any |
 | Vintner | Cauldron + sweet berries, glow berries or an apple | apples, sweet or glow berries (with Cobblemon any berry), glass bottles | nothing (keeps the village store in Cider and wines) | any |
+| Jeweller | Stonecutter + a gold nugget | amethyst shards, copper ingots, emeralds, gold nuggets and ingots | nothing (keeps the village store in jewellery) | Burgher |
 | Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps | any |
 | Daycare Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + an egg | emeralds (or CobbleDollars) to collect eggs | right-click: leave a pair, collect eggs | any |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) | Artisan |
@@ -688,7 +689,9 @@ placed keep working, so old worlds are fine.
 | Toolsmith | Smithing Table (vanilla) | diamonds, if you want diamond tools | nothing — or sneak-right-click with an iron ingot to hire them | any |
 | Weaponsmith | Grindstone (vanilla) | worn gear to mend (and what mends it: ingots, planks...) | nothing — or sneak-right-click with an iron ingot to hire them | any |
 | Fletcher | Fletching Table (vanilla) | sticks, string, iron (glowstone for spectral arrows) | nothing — or sneak-right-click with flint to hire them | any |
-| Shepherd | Loom (vanilla) | shears, wheat | nothing — or sneak-right-click with shears to hire them | any |
+| Shepherd | Loom (vanilla; shears bring a Tailor back to it) | shears, wheat | nothing — or sneak-right-click with shears to hire them | any |
+| Tailor | Loom + string | wool, leather, string (for the finer clothes: dyed wool, gold nuggets, a rabbit hide, a gold ingot) | nothing (keeps the village store in clothes) | any |
+| Printer | Cartography Table + an ink sac | paper, leather, ink sacs (for the Illuminated Book: a book, gold nuggets, lapis lazuli, a glow ink sac) | nothing (keeps the village store in books and Gazettes) | any |
 | Butcher (herder) | Smoker (vanilla) | empty buckets, wheat/carrots/seeds (with Cobblemon: bottles, a brush, bone meal) | nothing — or sneak-right-click with a lead to hire them | any |
 | Cleric (alchemist) | Brewing Stand (vanilla) | nether wart, glistering melon, ghast tears, blaze powder, bottles | nothing — or sneak-right-click with a glass bottle to hire them | any |
 | Librarian (scribe) | Lectern (vanilla), and an Enchanting Table | lapis | nothing — or sneak-right-click with lapis to hire them | any |
@@ -1355,6 +1358,27 @@ which blocks grow and which is ripe), so a data pack can add more. She sells ame
 Gems at Expert (1.8); Rock and Steel Pokémon help her, and a Rock partner taps each ripe cluster loose. Config
 `gemGrowers` (on).
 
+## Jewellers
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Put a chest by a **stonecutter**, stand a villager beside it and sneak-right-click them with a **gold nugget**: they
+become a **Jeweller** (a jobless villager still takes a stonecutter as a Mason; a clay ball brings the Mason back and an
+amethyst shard the Gem Grower). In a village with a hall and classes the Jeweller must be a Burgher or better. While
+they work, the stonecutter rings and filings of gold fly. They keep the village store in 8 of each piece they can
+make, from their own chests, the store and the village's chests (the gem growers' shards among them).
+
+| Piece | Made from | Level | Wanted by |
+|---|---|---|---|
+| **Amethyst Ring** | 2 amethyst shards and 2 copper ingots | Novice | Burghers, every 16 days (a want) |
+| **Emerald Brooch** | an emerald and 3 gold nuggets | Apprentice | Nobles, every 16 days (a need) |
+| **Gold Circlet** | 2 gold ingots, an emerald and an amethyst shard | Journeyman | Nobles, every 32 days (a want) |
+
+The porters carry the jewellery to the store, and what the Jeweller is short of goes on the requests board. Jewellers
+buy amethyst shards, copper and gold and sell the jewellery of their level; Rock, Steel and Fairy Pokémon help them.
+The recipes are data (`data/<namespace>/luxury_recipes/`), so a data pack can add more. Config `jewellers` (on once 1.8
+is finished).
+
 ## Vintners
 
 *Part of 1.8, Classes and luxuries: off until that expansion is finished.*
@@ -1377,6 +1401,60 @@ is short of goes on the requests board. You can drink them too: Cider fills 2 hu
 gives 5 seconds of Regeneration, and the bottle comes back. Vintners buy apples, berries and bottles and sell the drinks
 of their level; Grass, Bug and Fairy Pokémon help them. The recipes are data (`data/<namespace>/luxury_recipes/`), so a
 data pack can add more. Config `vintners` (on once 1.8 is finished).
+
+## Tailors
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Put a chest by a **loom**, stand a villager beside it and sneak-right-click them with **string**: they become a
+**Tailor** (a jobless villager still takes a loom as a Shepherd, and shears bring the Shepherd back). While they sew,
+the loom clacks and snips of thread fly. They keep the village store in 8 of each garment they can make, from their own
+chests, the store and the village's chests: the shepherds' wool, and whatever coloured wool lies there. With dye and
+white wool to hand they dye it themselves.
+
+| Garment | Made from | Level | Wanted by |
+|---|---|---|---|
+| **Work Clothes** | 3 wool of any colours, 2 leather and a string | Novice | Artisans, every 8 days (a need) |
+| **Fine Clothes** | 4 dyed wool of any colours but white, a string and 2 gold nuggets | Apprentice | Burghers, every 8 days (a need) |
+| **Noble Robes** | 5 wool of one rich colour (purple, blue, red or black), a rabbit hide and a gold ingot | Journeyman | Nobles, every 8 days (a need) |
+
+Work Clothes and Fine Clothes may mix colours; Noble Robes are cut from one cloth, so 3 purple and 2 blue make none.
+The porters carry the clothes to the store, and what the Tailor is short of goes on the requests board. Tailors buy
+wool, string and leather and sell the clothes of their level; Bug and Normal Pokémon help them. The recipes are data
+(`data/<namespace>/luxury_recipes/`; an input with `"mix": true` takes any of a tag's items together), so a data pack can
+add more. Config `tailors` (on once 1.8 is finished).
+
+## Printers
+
+*Part of 1.8, Classes and luxuries: off until that expansion is finished.*
+
+Put a chest by a **cartography table**, stand a villager beside it and sneak-right-click them with an **ink sac**: they
+become a **Printer** (the table's Cartographer comes back with a compass, its Netherworker with netherrack). While they
+print, pages turn and scraps of paper fly off the press. They keep the village store in 8 of each thing they can
+print, from their own chests, the store and the village's chests.
+
+| Printed | Made from | Level | For |
+|---|---|---|---|
+| **Books** (2) | 3 paper and a leather | Novice | the Scholar's research and the builders' bookshelves; only kept in stock while the village has a Scholar |
+| **The Village Gazette** (2 copies) | 3 paper and an ink sac | Novice | Burghers, every 7 days (a need) |
+| **Illuminated Book** | a book, 2 gold nuggets, a lapis lazuli and a glow ink sac | Journeyman | Nobles, every 16 days (a want) |
+
+The **Gazette** is a written book, printed from the Village Hall that day: right-click to read it. Its front page has
+the newest entries of the village's chronicle; then come the quests open at the hall with what each pays, the next
+festival and market day, and the week's births, weddings and households that rose. The **Illuminated Book** is the
+village's whole chronicle, bound in lapis and gold. This week's Gazettes count towards the store's 8; older ones are
+old news.
+
+A village with a Printer and a caravan route posts a new hall quest, **Spread the news**: carry this week's Gazette to
+the village at the other end of the route and right-click its Village Hall with it. The copy goes into that village's
+store, its chronicle notes who brought it, and the quest pays 6 emeralds (more at higher village ranks, like the other
+daily quests). A Gazette more than a week old isn't taken.
+
+A Scholar's research takes its books from the village store first, then from the Printers' chests, then from the
+chest by their own desk. Printers buy paper, ink sacs, leather, glow ink sacs and gold nuggets, and sell today's
+Gazette for 1 emerald (Novice), books, and the Illuminated Book for 8 emeralds (Journeyman); a bought paper is
+printed the moment you buy it, from the village you stand in. Psychic and Normal Pokémon help them. The recipes are
+data (`data/<namespace>/luxury_recipes/`). Config `printers` (on once 1.8 is finished).
 
 ## Daycare Keepers (with Cobblemon)
 Stand a villager by a **Pasture Block** and sneak-right-click them with an **egg**: they become a **Daycare Keeper**.

@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
+  notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
+  age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all
+  fields."). The elder look comes later, with the class outfits (34.18). `villagerAges` turns elders off.
 - **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**
   page with tabs. **Routes** is the trade routes page as it was; **Prices** lists every trade good with what the
   village pays for a bundle and what it sells one for, an arrow for how the price moved since yesterday, a gold star
@@ -33,6 +37,14 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.141.0 — 2026-10-09
 
 ### Added
+- **The Evergreen Charm, for 1.8** (34.19a, off until 1.8 is finished): a gold-and-green leaf pendant crafted from a
+  totem of undying, a golden apple, 2 emeralds and a heart of the sea. Sneak-right-click an elder with it and they
+  become Ageless: they never pass away, the chronicle says "Bram will never leave us" and their card on the hall's list
+  wears a gold leaf badge. Only an elder who is a Master of their trade, Gifted, a Legend, or has been happy (mood 80 or
+  more) for 20 days running takes it; anyone else refuses with the reason and you keep the charm. With it comes the
+  ground it stands on: villagers who grow up count their days, are elders after 120 (`villagerElderDays`), and pass away
+  in their sleep after 40 elder days, leaving a grave an Undertaker can bring them back from; the hall's list warns ten
+  days ahead. Config `villagerAges`, `elderPassing`, `agelessElders`.
 - **A trade screen of the Pokémon Trader's own** (28.23): the day's offers as cards (the Pokémon, its level, ball and
   shiny mark, and what it costs) beside your party, drawn like the Village Hall's screen, with a pressed-in button and
   "click again" line before a trade and a plain "no offers today" state.
@@ -40,6 +52,28 @@ asks for the steps, `latest.log` and any crash report).
   dawn), Frost and Grand, in that order, each with its own rules, fair wares, feast dish, firework colours and disc.
   Villager trainers' teams and players' eligibility follow the theme. For the Workers' Cup, every pastured Pokémon now
   counts the days it helped a villager at work (once a day); it needs 3.
+- **The Printer, for 1.8** (34.11, off until 1.8 is finished): sneak-right-click a villager by a cartography table with
+  an ink sac. They print books (Novice: 3 paper and a leather make 2; kept in stock while the village has a Scholar,
+  whose research now takes books from the store and the Printers' chests first), the Village Gazette (Novice: 3 paper
+  and an ink sac make 2) and the Illuminated Book (Journeyman: a book, 2 gold nuggets, a lapis lazuli, a glow ink
+  sac). The Gazette reads like a written book, printed from the hall that day: the newest chronicle entries, the open
+  quests and what they pay, the next festival and market day, the week's births, weddings and households that rose;
+  the Illuminated Book is the whole chronicle. A new hall quest, Spread the news, pays 6 emeralds for carrying this
+  week's Gazette to the hall of a village on a caravan route. Trades (today's Gazette for 1 emerald, the Illuminated
+  Book for 8), Psychic and Normal partners, an outfit (ink-stained apron, green eyeshade, sleeve garters). Config
+  `printers`.
+- **The Tailor, for 1.8** (34.10, off until 1.8 is finished): sneak-right-click a villager by a loom with string (shears
+  bring the Shepherd back). They sew Work Clothes (Novice: 3 wool of any colours, 2 leather, a string), Fine Clothes
+  (Apprentice: 4 dyed wool but white, a string, 2 gold nuggets) and Noble Robes (Journeyman: 5 wool of one rich colour,
+  a rabbit hide, a gold ingot) for the village store: the clothes the Artisans, Burghers and Nobles need. Trades, Bug
+  and Normal partners, an outfit, config `tailors`. A loom's tooltip now names its jobs, and shears make a jobless
+  villager by a loom its Shepherd.
+- **The Jeweller, for 1.8** (34.12, off until 1.8 is finished): sneak-right-click a villager by a stonecutter with a
+  gold nugget (a clay ball brings the Mason back, an amethyst shard still picks the Gem Grower). They make the Amethyst
+  Ring (Novice: 2 amethyst shards, 2 copper ingots), the Emerald Brooch (Apprentice: an emerald, 3 gold nuggets) and
+  the Gold Circlet (Journeyman: 2 gold ingots, an emerald, an amethyst shard) for the village store: the jewellery the
+  Burghers and Nobles look for. A Burgher's job; trades, Rock, Steel and Fairy partners, an outfit with a loupe, config
+  `jewellers`.
 - **The trade goods engine for 1.7** (33.2, nothing to see until the price board): trade goods are data files
   (`data/<namespace>/trade_goods/<good>.json`). Once a day, in its hall's round, each village works out up to 3 goods
   it's known for and 3 it's short of (from its workers' jobs, its biome, its Storehouses and what its workers wait for)
@@ -179,6 +213,10 @@ asks for the steps, `latest.log` and any crash report).
   their tables never opened a piece, and the roads took every free builder ahead of it; wall pieces now go to any
   free builder of the village, the roads and the wall take turns, and an old house at the village's edge is renewed
   too. When he approves everything himself, a renewal takes the free slot ahead of the day's homes.
+
+### Dev
+
+- **The wiki** (22.9): `docs/wiki/` explains how each feature works in plain words (the first twelve pages: Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds, Legends, Pokémon partners, Classes, Elders, Config switches), and the build now fails when a page names a setting, item, text, test or scene that no longer exists, or a finished player-visible feature has no page.
 
 ## 0.140.0 — 2026-10-05
 

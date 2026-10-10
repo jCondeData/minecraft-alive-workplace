@@ -348,6 +348,16 @@ public final class ModAttachments {
 	/** A named villager's friendships with players (ROADMAP 31.5): player → points, favours' days, gifts, heart events told. Absent: nobody has points. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.story.Friendship.Data> FRIENDSHIP = Attachment.saved("friendship", io.github.jcondedata.aliveworkplace.story.Friendship.Data.CODEC);
 
+	/** The day a villager grew up (ROADMAP 34.19; a {@code Chronicle.day}): set when a child grows up in a village with a hall. Absent: nobody knows (older saves; seeded by 34.22). */
+	public static final Attachment<Long> ADULT_SINCE = Attachment.saved("adult_since", com.mojang.serialization.Codec.LONG);
+	/** An elder made ageless with an Evergreen Charm (34.19a): they never pass of old age. Absent: false. */
+	public static final Attachment<Boolean> AGELESS = Attachment.saved("ageless", com.mojang.serialization.Codec.BOOL);
+	/** Days running their mood has been 80 or more, and the last day counted (34.19a: 20 make an elder worth a charm). Absent: none. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.LifeStages.Streak> HAPPY_STREAK = Attachment.saved("happy_streak", io.github.jcondedata.aliveworkplace.people.LifeStages.Streak.CODEC);
+	/** The day an Undertaker brought back an elder whose time had come (34.19a): they have 40 more days from it. Absent: never. */
+	public static final Attachment<Long> PASSED_DAY = Attachment.saved("passed_day", com.mojang.serialization.Codec.LONG);
+	/** The chronicle has noted that they became an elder (34.19: "Bram is an elder now", once). Absent: not yet. */
+	public static final Attachment<Boolean> ELDER_NOTED = Attachment.saved("elder_noted", com.mojang.serialization.Codec.BOOL);
 	/** Brought back from a grave (31.7), set by {@code Graves.revive}. Absent: never, or revived before 31.7. */
 	public static final Attachment<Boolean> REVIVED = Attachment.saved("revived", com.mojang.serialization.Codec.BOOL);
 	/** The partner a villager lost (31.7): their id and name, kept by {@code Couples.onDeath}. Absent: none, or widowed before 31.7. */

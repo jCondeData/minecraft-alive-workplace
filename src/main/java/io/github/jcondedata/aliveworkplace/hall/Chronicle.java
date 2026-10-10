@@ -25,6 +25,8 @@ public final class Chronicle {
 		REFORM(Items.WRITABLE_BOOK), GUILD(Items.PAPER), CUP(Items.GOLD_INGOT),
 		/** A household rose or came down in the world (34.6). */
 		CLASS(Items.GOLD_INGOT),
+		/** A villager's life stages (34.19, 34.19a): an elder made ageless. */
+		LIFE(Items.CLOCK),
 		/** A story arc's chapters and endings (31.4). */
 		STORY(Items.BOOK),
 		/** A villager told a player something of their life (a heart event, 31.7). */

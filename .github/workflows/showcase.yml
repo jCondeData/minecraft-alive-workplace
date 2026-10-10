@@ -99,7 +99,7 @@ jobs:
     if: needs.plan.outputs.any == 'true'
     name: scenes ${{ matrix.shard }}
     runs-on: ubuntu-latest
-    timeout-minutes: 58
+    timeout-minutes: 100
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}

@@ -29,6 +29,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.smith.BallSmithPackages.work(speed));
 		} else if (profession == ModVillagers.GEM_GROWER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.gem.GemGrowerWork.packages(speed));
+		} else if (profession == ModVillagers.JEWELLER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.jeweller.JewellerWork.packages(speed));
 		} else if (profession == ModVillagers.DAYCARE_KEEPER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.daycare.DaycareKeeperWork.packages(speed));
 		} else if (profession == ModVillagers.HABITAT_KEEPER) {
@@ -47,6 +49,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.city.StewardWork.packages(speed));
 		} else if (profession == ModVillagers.VINTNER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.vintner.VintnerWork.packages(speed));
+		} else if (profession == ModVillagers.TAILOR) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.tailor.TailorWork.packages(speed));
+		} else if (profession == ModVillagers.PRINTER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.printer.PrinterWork.packages(speed));
 		} else if (profession == ModVillagers.SIFTER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.sift.SifterPackages.work(speed));
 		} else if (profession == ModVillagers.SCHOLAR) {

@@ -2,6 +2,8 @@
 
 ROADMAP 31.6. Builds on friendship (31.5). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
+Roadmap items: 31.6
+
 ## What a player sees
 
 Paper, string and any dye make four **Gift Wrap**. Gift Wrap and any one item on the crafting grid make a **Gift**: a

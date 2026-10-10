@@ -146,18 +146,28 @@ public class ScholarWork extends Behavior<Villager> {
 			List<BlockPos> own = SupplyContainers.find(level, desk, null);
 			Research.Cost price = topic.cost(next, level, entity); // a quarter less with a founded Scholars' Guild (30.19)
 			Map<Item, Integer> cost = price.items();
+			// Books come out of the village store first (34.11), then the Printers' chests (where the printed ones wait for
+			// a porter), then the desk's own.
+			List<BlockPos> books = new java.util.ArrayList<>(io.github.jcondedata.aliveworkplace.hall.VillageNeeds.store(level, hall));
+			for (io.github.jcondedata.aliveworkplace.work.Village.Stash stash : io.github.jcondedata.aliveworkplace.work.Village.stashes(level, villager, desk, null)) {
+				if (stash.job() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.PRINTER) {
+					stash.chests().stream().filter(c -> !books.contains(c)).forEach(books::add);
+				}
+			}
+			own.stream().filter(c -> !books.contains(c)).forEach(books::add);
 			for (var e : cost.entrySet()) {
-				if (SupplyContainers.count(level, own, e.getKey()) < e.getValue()) {
+				List<BlockPos> from = e.getKey() == net.minecraft.world.item.Items.BOOK ? books : own;
+				if (SupplyContainers.count(level, from, e.getKey()) < e.getValue()) {
 					state = "needs";
 					detail = Research.describe(price);
-					Requests.post(villager, new ItemStack(e.getKey()), (int) (e.getValue() - SupplyContainers.count(level, own, e.getKey())),
+					Requests.post(villager, new ItemStack(e.getKey()), (int) (e.getValue() - SupplyContainers.count(level, from, e.getKey())),
 						e.getKey().getDescription(), s -> s.is(e.getKey()));
 					return;
 				}
 			}
 			Requests.clear(villager);
 			for (var e : cost.entrySet()) {
-				SupplyContainers.extract(level, own, e.getKey(), e.getValue());
+				SupplyContainers.extract(level, e.getKey() == net.minecraft.world.item.Items.BOOK ? books : own, e.getKey(), e.getValue());
 			}
 			entity.setResearch(research.paidFor());
 			level.playSound(null, desk, SoundEvents.BOOK_PAGE_TURN, SoundSource.BLOCKS, 1f, 1f);

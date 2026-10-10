@@ -43,8 +43,9 @@ import org.jetbrains.annotations.Nullable;
  * {@code {"job": "aliveworkplace:vintner", "level": 3, "inputs": [{"item": "aliveworkplace:berry_wine", "count": 1,
  * "min_age_days": 3}], "output": {"id": "aliveworkplace:vintage_wine"}, "ticks": 200}}. An input is an {@code item} or a
  * {@code tag} ({@code #} optional); {@code level} (default 1), {@code count} (1), {@code min_age_days} (0) and the
- * output's {@code count} (1) may be left out, {@code ticks} is 100 if missing. A file can be switched off with
- * {@code "enabled": false} or load conditions, like the other data files.
+ * output's {@code count} (1) may be left out, {@code ticks} is 100 if missing. A tag's {@code count} is of one of its
+ * items ("5 wool of one colour"), or with {@code "mix": true} of any of them together ("3 wool of any colour", 34.10).
+ * A file can be switched off with {@code "enabled": false} or load conditions, like the other data files.
  *
  * <p>Goods that some recipe wants aged carry the day they were made ({@link MadeDay}, the {@code made_day} component),
  * stamped by the maker; a stack without one (old stock, a player's) counts as aged.
@@ -53,8 +54,11 @@ public final class LuxuryRecipes implements ResourceManagerReloadListener {
 	private static final ResourceLocation ID = AliveWorkplace.id("luxury_recipes");
 	public static final String FOLDER = "luxury_recipes";
 
-	/** One making: one of {@code options} (an item, or a tag's items), {@code count} a craft, at least {@code minAgeDays} old. */
-	public record Input(Optional<Item> item, Optional<TagKey<Item>> tag, int count, int minAgeDays) {
+	/**
+	 * One making: one of {@code options} (an item, or a tag's items), {@code count} a craft, at least {@code minAgeDays}
+	 * old. {@code mix}: the count may be made up of several of the tag's items together.
+	 */
+	public record Input(Optional<Item> item, Optional<TagKey<Item>> tag, int count, int minAgeDays, boolean mix) {
 		/** The items that will do, in the tag's order. */
 		public List<Item> options() {
 			if (item.isPresent()) {
@@ -156,9 +160,9 @@ public final class LuxuryRecipes implements ResourceManagerReloadListener {
 			if (in.has("tag")) {
 				String tag = GsonHelper.getAsString(in, "tag");
 				ResourceLocation tagId = ClassNeeds.id(tag.startsWith("#") ? tag.substring(1) : tag, "tag");
-				inputs.add(new Input(Optional.empty(), Optional.of(TagKey.create(Registries.ITEM, tagId)), count, age));
+				inputs.add(new Input(Optional.empty(), Optional.of(TagKey.create(Registries.ITEM, tagId)), count, age, GsonHelper.getAsBoolean(in, "mix", false)));
 			} else {
-				inputs.add(new Input(Optional.of(item(GsonHelper.getAsString(in, "item"), "inputs.item")), Optional.empty(), count, age));
+				inputs.add(new Input(Optional.of(item(GsonHelper.getAsString(in, "item"), "inputs.item")), Optional.empty(), count, age, false));
 			}
 		}
 		if (inputs.isEmpty()) {

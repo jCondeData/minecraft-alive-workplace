@@ -701,6 +701,10 @@ public final class VillageHallScreen {
 		if (working) {
 			lore.add(line(levelLine(villager), ChatFormatting.GRAY));
 		}
+		// "Elder · grown 131 days" (34.19), and the gold leaf badge of an ageless one (34.19a).
+		for (io.github.jcondedata.aliveworkplace.people.LifeStages.HallLine stage : io.github.jcondedata.aliveworkplace.people.LifeStages.hallLines(level, villager)) {
+			lore.add(line(stage.text(), stage.gold() ? ChatFormatting.GOLD : ChatFormatting.GRAY));
+		}
 		List<io.github.jcondedata.aliveworkplace.people.Traits.Trait> traits = io.github.jcondedata.aliveworkplace.people.Traits.of(villager);
 		if (!traits.isEmpty()) {
 			net.minecraft.network.chat.MutableComponent list = Component.empty();

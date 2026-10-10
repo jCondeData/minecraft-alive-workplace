@@ -3,6 +3,8 @@
 ROADMAP 31.7. Builds on friendship (31.5) and gifts (31.6). Part of the 1.5 expansion: switched on when Milestone 31
 is complete.
 
+Roadmap items: 31.7
+
 ## What a player sees
 
 At 2, 4, 6, 8 and 10 hearts a villager has something to tell you. The next time you're within 8 blocks while they're

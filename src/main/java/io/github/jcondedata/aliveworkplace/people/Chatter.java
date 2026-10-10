@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Chatter: now and then a villager near a player says something, in a line over their head — what their mood is made of
  * (hungry, no bed of their own, a varied diet, a job they like), what's going on in the village (a festival, bandits
- * camped nearby, a raid, illness), or just hello. At most one line every {@link #EVERY} ticks near each player, only
+ * camped nearby, a raid, illness), an elder's memories, or just hello. At most one line every {@link #EVERY} ticks near each player, only
  * from villagers off work (a worker's line shows what they're doing), and only in villages with a Village Hall.
  * {@code villagerChatter} in the config turns it off.
  */
@@ -59,6 +59,8 @@ public final class Chatter {
 		Map.entry("rush", 2), Map.entry("tonic", 2), Map.entry("guild", 2), Map.entry("colours", 2),
 		// A household's rise or fall (34.6), from the mood reason
 		Map.entry("class_rose", 3), Map.entry("class_fell", 3),
+		// An elder's own lines (34.19)
+		Map.entry("elder", 4),
 		// The village's trade (33.4): a good that sells well elsewhere, a glut at home, something dear
 		Map.entry("trade_sells_well", 3), Map.entry("trade_glut", 3), Map.entry("trade_dear", 3));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
@@ -136,6 +138,9 @@ public final class Chatter {
 		}
 		if (villager.isBaby()) {
 			news.add("child");
+		}
+		if (LifeStages.isElder(villager, Chronicle.day(level))) {
+			news.add("elder"); // "In my day this was all fields." (34.19)
 		}
 		if (Sickness.isIll(villager)) {
 			news.add("ill");

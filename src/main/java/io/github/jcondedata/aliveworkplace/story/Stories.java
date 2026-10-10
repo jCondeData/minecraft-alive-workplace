@@ -323,6 +323,42 @@ public final class Stories {
 		});
 	}
 
+	/** The village round {@code home}'s open Spread the news quest that asks for its Gazette at the hall {@code dest} (34.11), or null. */
+	@Nullable
+	private static Quest gazetteQuest(ServerLevel level, BlockPos home, BlockPos dest) {
+		Entry e = Data.get(level).halls.get(home);
+		for (Quest q : e == null ? List.<Quest>of() : List.copyOf(e.quests)) {
+			int i = q.current();
+			if (i >= 0 && q.objectives.get(i) instanceof Objectives.SpreadNews news && news.to().isPresent() && news.to().get().equals(dest)) {
+				return q;
+			}
+		}
+		return null;
+	}
+
+	/** Whether the village round {@code home} has a quest open that asks for its Gazette at the hall {@code dest} (34.11). */
+	public static boolean wantsGazette(ServerLevel level, BlockPos home, BlockPos dest) {
+		return gazetteQuest(level, home, dest) != null;
+	}
+
+	/**
+	 * A player handed this week's Gazette of the village round {@code home} in at the hall {@code dest} (34.11): it counts
+	 * towards {@code home}'s Spread the news quest for that village. False when no such quest is open (or the player may
+	 * not help with it).
+	 */
+	public static boolean onGazette(ServerLevel level, BlockPos home, BlockPos dest, ServerPlayer player) {
+		if (!(level.getBlockEntity(home) instanceof VillageHallBlockEntity entity)) {
+			return false;
+		}
+		migrate(level, home, entity);
+		Quest q = gazetteQuest(level, home, dest);
+		if (q == null || !mayHelp(level, home, q, player)) {
+			return false;
+		}
+		progress(level, home, entity, q, q.current(), 1, player);
+		return true;
+	}
+
 	/** Whether {@code player} may move {@code quest} on: not a one-time quest they've already finished in this village. */
 	static boolean mayHelp(ServerLevel level, BlockPos hall, Quest quest, ServerPlayer player) {
 		boolean repeatable = QuestFiles.get(quest.file).map(QuestFiles.QuestFile::repeatable).orElse(true);

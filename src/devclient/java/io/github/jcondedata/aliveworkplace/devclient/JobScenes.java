@@ -154,6 +154,8 @@ final class JobScenes {
 
 	/** Villagers the scenes hand from staging to a later step (the scholar, the screen scenes' villager). */
 	private static volatile Villager scholar;
+	/** The printer scene's chest, for the Gazette the player takes out and reads (34.11). */
+	private static volatile Container printerChest;
 	private static volatile Villager subject;
 	/** classes (34.6): the couple first, then three Peasants. */
 	private static final List<Villager> classPeople = new java.util.concurrent.CopyOnWriteArrayList<>();
@@ -461,6 +463,40 @@ final class JobScenes {
 			Container c = chest(level, chestPos(), new ItemStack(Items.APPLE, 9), new ItemStack(Items.GLASS_BOTTLE, 3));
 			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.CIDER) >= 2;
 		}));
+		SCENES.put("tailor", job("the tailor sewed work clothes at the loom", 2400, (level, player) -> {
+			// ROADMAP 34.10: a loom picked with string; wool of three colours, leather and string in the chest. The Novice
+			// sews Work Clothes at the loom (it clacks, snips of thread fly) and puts them in the chest.
+			picked(level, player, STATION, Blocks.LOOM, Items.STRING);
+			Container c = chest(level, chestPos(), new ItemStack(Items.WHITE_WOOL, 5), new ItemStack(Items.BROWN_WOOL, 3),
+				new ItemStack(Items.LIGHT_GRAY_WOOL, 1), new ItemStack(Items.LEATHER, 6), new ItemStack(Items.STRING, 3));
+			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.WORK_CLOTHES) >= 2;
+		}));
+		SCENES.put("printer", new Job("the printer printed the Village Gazette at the cartography table", 2400, CAMERA, TARGET, (level, player) -> {
+			// ROADMAP 34.11: a cartography table picked with an ink sac, by a hall with a little news in its chronicle; paper
+			// and ink sacs in the chest. The Novice prints Gazettes at the table (pages turn, scraps of paper fly) and puts
+			// them in the chest; then the player takes one and reads it.
+			BlockPos hall = new BlockPos(4, -60, -5);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.atHall(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BUILT,
+				net.minecraft.network.chat.Component.literal("The new bakery opened its doors"), today);
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.atHall(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.WEDDING,
+				net.minecraft.network.chat.Component.literal("Bea and Cal were wed under the old oak"), today);
+			picked(level, player, STATION, Blocks.CARTOGRAPHY_TABLE, Items.INK_SAC);
+			Container c = chest(level, chestPos(), new ItemStack(Items.PAPER, 6), new ItemStack(Items.INK_SAC, 2));
+			printerChest = c;
+			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.GAZETTE) >= 2;
+		}, new After("04_gazette_read", (level, player) -> {
+			for (int i = 0; i < printerChest.getContainerSize(); i++) {
+				if (printerChest.getItem(i).is(io.github.jcondedata.aliveworkplace.registry.ModItems.GAZETTE)) {
+					ItemStack paper = printerChest.removeItem(i, 1);
+					player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, paper);
+					paper.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND); // a right-click: the Gazette opens
+					break;
+				}
+			}
+		}, 0, 6)));
 		SCENES.put("sifter", job("the sifter sifted gravel into loot", 1800, (level, player) -> {
 			Villager v = picked(level, player, STATION, Blocks.WATER_CAULDRON.defaultBlockState().setValue(BlockStateProperties.LEVEL_CAULDRON, 3), Items.GRAVEL);
 			chest(level, chestPos(), new ItemStack(Items.GRAVEL, 40));
@@ -1537,6 +1573,13 @@ final class JobScenes {
 			Container c = chest(level, chestPos(), new ItemStack(Items.GLASS, 2));
 			return l -> !l.getBlockState(budding.above()).is(Blocks.AMETHYST_CLUSTER) && l.getBlockState(budding).is(Blocks.BUDDING_AMETHYST)
 				&& c.countItem(Items.AMETHYST_SHARD) >= 4 && io.github.jcondedata.aliveworkplace.gem.GemGrowers.isGrower(grower);
+		}));
+		SCENES.put("jeweller", job("the jeweller made amethyst rings at the stonecutter", 2400, (level, player) -> {
+			// ROADMAP 34.12: a stonecutter picked with a gold nugget; amethyst shards and copper ingots in the chest. The
+			// Novice makes Amethyst Rings at the stonecutter (it rings, gold filings fly) and puts them in the chest.
+			picked(level, player, STATION, Blocks.STONECUTTER, Items.GOLD_NUGGET);
+			Container c = chest(level, chestPos(), new ItemStack(Items.AMETHYST_SHARD, 6), new ItemStack(Items.COPPER_INGOT, 6));
+			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.AMETHYST_RING) >= 2;
 		}));
 		SCENES.put("habitat_keeper", job("the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 2400, (level, player) -> {
 			// ROADMAP 28.10: Cobblemon's Pasture Block picked with a honey bottle; Poké Snacks and a honey bottle in the
@@ -3589,7 +3632,8 @@ final class JobScenes {
 			}
 			if (tick == doneAt + 90) {
 				ScreenshotHarness.shot(mc, job.after().shot());
-				Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>,
+				Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>
+						|| mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen, // the printer's Gazette (34.11)
 					"its screen opened (" + job.after().shot().substring(3).replace('_', ' ') + ")");
 				mc.stop();
 			}

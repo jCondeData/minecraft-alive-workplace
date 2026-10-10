@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:printer",
+  "level": 3,
+  "inputs": [{"item": "minecraft:book", "count": 1}, {"item": "minecraft:gold_nugget", "count": 2}, {"item": "minecraft:lapis_lazuli", "count": 1}, {"item": "minecraft:glow_ink_sac", "count": 1}],
+  "output": {"id": "aliveworkplace:illuminated_book", "count": 1},
+  "ticks": 160,
+  "enabled": true
+}

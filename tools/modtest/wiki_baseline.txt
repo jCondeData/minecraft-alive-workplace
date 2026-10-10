@@ -1,0 +1,40 @@
+# Roadmap items ticked with a player-visible change before the wiki existed (ROADMAP 22.9) that no page in docs/wiki/
+# covers yet. tools/modtest/wikicheck.py lets these pass; any other ticked player-visible item without a page fails
+# the build. This list only shrinks: the QA lane's backfill writes a page (oldest milestone first), adds the ids to
+# its "Roadmap items:" line and runs `python3 tools/modtest/wikicheck.py --prune`. Never add an id here.
+
+# Bugs fixed in sight of players
+B5 B6 B19
+
+# Milestone 21: the texture rebuild and the item icons
+21.1 21.1b
+
+# Milestone 22: a showcase scene for every feature
+22.3
+
+# Milestone 23: every shipped build reviewed, village house looks
+23.10 23.10a
+
+# Milestone 24: visual bugs, screens, words
+24.3 24.4 24.5
+
+# Milestone 26: the store page kit, the Guide Book, hygiene
+26.2 26.2a 26.3
+
+# Milestone 27: the new workplaces
+27.13 27.14
+
+# Milestone 28: the design note, the Pokémon Center, builds for the Pokémon jobs, village habitats, village houses
+28.1 28.7 28.7a 28.13 28.14 28.15
+
+# Milestone 29: more research trees
+29.11
+
+# Milestone 30: the civic items (Work Horn, Cradle, Village Banner, Harvest Idol, tonics)
+30.11 30.12 30.13 30.14 30.15 30.16
+
+# Milestone 31: the quest journal, story arcs, friendship
+31.3 31.4 31.5
+
+# Design notes of milestones 32 and 33
+32.1 33.1

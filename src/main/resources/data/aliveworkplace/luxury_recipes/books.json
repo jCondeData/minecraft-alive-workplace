@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:printer",
+  "level": 1,
+  "inputs": [{"item": "minecraft:paper", "count": 3}, {"item": "minecraft:leather", "count": 1}],
+  "output": {"id": "minecraft:book", "count": 2},
+  "ticks": 80,
+  "enabled": true
+}

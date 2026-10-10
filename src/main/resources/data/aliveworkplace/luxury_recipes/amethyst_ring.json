@@ -1,0 +1,8 @@
+{
+  "job": "aliveworkplace:jeweller",
+  "level": 1,
+  "inputs": [{"item": "minecraft:amethyst_shard", "count": 2}, {"item": "minecraft:copper_ingot", "count": 2}],
+  "output": {"id": "aliveworkplace:amethyst_ring", "count": 1},
+  "ticks": 80,
+  "enabled": true
+}

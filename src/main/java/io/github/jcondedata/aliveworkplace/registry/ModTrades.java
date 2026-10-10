@@ -37,8 +37,11 @@ public final class ModTrades {
 		stewardTrades();
 		campCookTrades();
 		habitatKeeperTrades();
+		jewellerTrades();
 		gemGrowerTrades();
 		vintnerTrades();
+		tailorTrades();
+		printerTrades();
 		daycareKeeperTrades();
 		trainerLeaderTrades();
 		Platform.get().addTrades(ModVillagers.BARD, 1, offers -> {
@@ -648,6 +651,88 @@ public final class ModTrades {
 		Platform.get().addTrades(ModVillagers.VINTNER, 5, offers -> {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.APPLE, 8), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(ModItems.VINTAGE_WINE, 2), 6, 30, 0.05f));
+		});
+	}
+
+	/**
+	 * Tailors (34.10): at every level they buy their makings (wool, string, leather) and sell the clothes of their level:
+	 * Work Clothes (Novice), Fine Clothes (Apprentice), Noble Robes (Journeyman and up).
+	 */
+	private static void tailorTrades() {
+		Platform.get().addTrades(ModVillagers.TAILOR, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WHITE_WOOL, 18), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(ModItems.WORK_CLOTHES), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 20), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(ModItems.FINE_CLOTHES), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.LEATHER, 6), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 14), new ItemStack(ModItems.NOBLE_ROBES), 8, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BLACK_WOOL, 18), new ItemStack(Items.EMERALD), 16, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(ModItems.FINE_CLOTHES, 2), 12, 15, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.TAILOR, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.STRING, 14), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(ModItems.NOBLE_ROBES), 6, 30, 0.05f));
+		});
+	}
+
+	/**
+	 * Jewellers (34.12): at every level they buy their makings (amethyst, copper, gold) and sell the jewellery of their
+	 * level: the Amethyst Ring (Novice), the Emerald Brooch (Apprentice), the Gold Circlet (Journeyman and up).
+	 */
+	private static void jewellerTrades() {
+		Platform.get().addTrades(ModVillagers.JEWELLER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 12), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(ModItems.AMETHYST_RING), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COPPER_INGOT, 10), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 9), new ItemStack(ModItems.EMERALD_BROOCH), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GOLD_INGOT, 3), new ItemStack(Items.EMERALD), 12, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 20), new ItemStack(ModItems.GOLD_CIRCLET), 6, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GOLD_NUGGET, 24), new ItemStack(Items.EMERALD), 12, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 16), new ItemStack(ModItems.EMERALD_BROOCH, 2), 8, 15, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.JEWELLER, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.AMETHYST_SHARD, 10), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 17), new ItemStack(ModItems.GOLD_CIRCLET), 6, 30, 0.05f));
+		});
+	}
+
+	/**
+	 * Printers (34.11): at every level they buy their makings (paper, ink, leather, glow ink, gold nuggets) and sell what
+	 * they print: today's Gazette for 1 emerald from the first day, books, and from Journeyman the Illuminated Book for
+	 * 8. The papers are written as they're bought (the items' {@code onCraftedBy}), from the buyer's village.
+	 */
+	private static void printerTrades() {
+		Platform.get().addTrades(ModVillagers.PRINTER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.PAPER, 24), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(ModItems.GAZETTE), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.PRINTER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.INK_SAC, 5), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.BOOK, 2), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.PRINTER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.LEATHER, 6), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(ModItems.ILLUMINATED_BOOK), 8, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.PRINTER, 4, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLOW_INK_SAC, 4), new ItemStack(Items.EMERALD), 16, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.BOOK, 5), 12, 15, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.PRINTER, 5, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GOLD_NUGGET, 12), new ItemStack(Items.EMERALD), 16, 30, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(ModItems.ILLUMINATED_BOOK), 8, 30, 0.05f));
 		});
 	}
 

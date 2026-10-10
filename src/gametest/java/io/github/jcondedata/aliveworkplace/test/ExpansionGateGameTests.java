@@ -39,13 +39,13 @@ public class ExpansionGateGameTests implements FabricGameTest {
 	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M31 friendship; M33 the economy; M34 classes). */
 	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls", "stewardRenewal",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
-		"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
+		"daycareKeepers", "gemGrowers", "jewellers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
-		"villageEconomy", "villageClasses", "friendship", "heartEvents", "storyArcs", "vintners");
+		"villageEconomy", "villageClasses", "friendship", "heartEvents", "storyArcs", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
-		"classRiseDays", "classFallDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce");
+		"classRiseDays", "classFallDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "villagerElderDays");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -70,6 +70,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("HabitatKeepers.SIGHTINGS", () -> HabitatKeepers.SIGHTINGS);
 		map.put("DaycareKeepers", () -> DaycareKeepers.ENABLED);
 		map.put("GemGrowers", () -> GemGrowers.ENABLED);
+		map.put("Jewellers", () -> io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED);
 		map.put("VillageHabitats", () -> VillageHabitats.ENABLED);
 		map.put("Cups", () -> io.github.jcondedata.aliveworkplace.cup.Cups.ENABLED);
 		map.put("VillageHouses.POKEMON_JOBS", () -> io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS);
@@ -85,6 +86,11 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("Guilds", () -> io.github.jcondedata.aliveworkplace.hall.Guilds.ENABLED);
 		map.put("Economy", () -> io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED);
 		map.put("Vintners", () -> io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED);
+		map.put("Tailors", () -> io.github.jcondedata.aliveworkplace.tailor.Tailors.ENABLED);
+		map.put("Printers", () -> io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED);
+		map.put("LifeStages.AGES", () -> io.github.jcondedata.aliveworkplace.people.LifeStages.AGES);
+		map.put("LifeStages.PASSING", () -> io.github.jcondedata.aliveworkplace.people.LifeStages.PASSING);
+		map.put("LifeStages.AGELESS", () -> io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS);
 		map.put("Friendship", () -> io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED);
 		map.put("HeartEvents", () -> io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED);
 		map.put("Arcs", () -> io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED);
@@ -158,8 +164,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 78 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (78 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 85 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (85 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -204,7 +210,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 78, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 85, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

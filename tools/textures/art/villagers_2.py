@@ -1374,9 +1374,170 @@ def vintner():
     return t.save_profession(ASSETS, "vintner", hat="full")
 
 
-DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+def jeweller():
+    """A jeweller's loupe held in one eye (the villager's left: a dark barrel with a pale lens, the `glasses` helper
+    with the other eye's frame taken off again), a dark plum velvet waistcoat with gold buttons and a gold watch chain
+    to its pocket, over cream shirt sleeves with velvet cuffs and gold cufflinks, and a cut amethyst held in the
+    fingers (ROADMAP 34.12). No headwear: the biome's hat stays."""
+    t = vg.VillagerTexture()
+    velvet = vg.cloth("#43264f", spread=0.24)
+    shirt = vg.cloth(LINEN)
+    barrel = "#2b2630"
+    lens = "#bfe4f2"
+    amethyst = ["#5a3a8a", "#8a5ac0", "#c69ae8"]         # dark, mid, lit
+    vg.glasses(t, frame=barrel, lens=lens)
+    hf = t.face("hat", "front")
+    for x, y in ((0, 6), (3, 6), (1, 5), (2, 5), (1, 6), (2, 6), (1, 7), (2, 7)):   # the right eye stays bare
+        hf.put(x, y, (0, 0, 0, 0))
+    hf.put(5, 5, BRASS[3])                               # the barrel's brass rim, lit from the top-left
+    hf.put(6, 5, BRASS[1])
+
+    vg.vest(t, velvet, length=12, open_front=False, noise=0.03)
+    j = t.face("jacket", "front")
+    for x, y in ((2, 0), (3, 0), (4, 0), (5, 0), (3, 1), (4, 1)):   # the shirt showing in the waistcoat's V neck
+        j.put(x, y, shirt[4] if y == 0 else shirt[2])
+    for y in range(2, 12):                               # the buttoned front edge, a shade darker
+        j.put(4, y, velvet[0])
+    for y in (2, 4, 6, 8):                               # four gold buttons
+        j.put(3, y, GOLD[3])
+    j.put(3, 9, GOLD[0])                                 # the last button's shadow, above the level badge's row
+    for x, y, c in ((2, 7, GOLD[2]), (1, 8, GOLD[1]), (0, 8, GOLD[2])):   # the watch chain, from a button to the pocket
+        j.put(x, y, c)
+    for x in (0, 1):                                     # the watch pocket's welt
+        j.put(x, 9, velvet[0])
+    back = t.face("jacket", "back")                      # the waistcoat's cinch strap and its gold buckle
+    for x in range(1, 7):
+        back.put(x, 8, velvet[0])
+    back.put(3, 8, GOLD[3])
+    back.put(4, 8, GOLD[1])
+
+    vg.sleeves(t, shirt, noise=0)
+    for side in ("front", "west", "east", "back"):       # a velvet cuff at each wrist, a gold link on the front
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), velvet[1])
+    af = t.face("arm", "front")
+    af.put(1, af.h - 2, GOLD[2])
+    mid = t.face("arms_middle", "front")                 # a cut amethyst held up in the fingers
+    mid.put(1, 1, amethyst[2])
+    mid.put(2, 1, amethyst[1])
+    mid.put(1, 2, amethyst[1])
+    mid.put(2, 2, amethyst[0])
+    written = t.save_profession(ASSETS, "jeweller", hat=None)
+    z = t.copy()                                         # the zombie's eye behind the lens is red, not green
+    u0, v0 = vg.UV["hat"]["front"][:2]
+    for x in (5, 6):
+        z.a[v0 + 6, u0 + x] = rgba(mix(rgba(ZOMBIE_EYES[x]), rgba(lens), 0.45))
+    for p in written:
+        if "zombie_villager" in str(p) and str(p).endswith(".png"):
+            z.save(p)
+    return written
+
+
+def tailor():
+    """A neat buttoned waistcoat of slate-blue wool with a pale satin back and a cinch strap, over white shirt sleeves;
+    a yellow tape measure round the neck, its two ends hanging down the front at uneven lengths with inch marks; and a
+    red pincushion strapped to the wrist with two pins in it (ROADMAP 34.10). No headwear: the biome's hat stays."""
+    t = vg.VillagerTexture()
+    wool = vg.cloth("#566579", spread=0.22)
+    satin = vg.cloth("#a3adb8", spread=0.18)
+    shirt = vg.cloth(LINEN)
+    tape = ["#b8922a", "#e8c83a", "#f6de6a"]             # the inch marks and the shaded side, the tape, lit
+    vg.vest(t, wool, length=12, open_front=False, noise=0.04)
+    back = t.face("jacket", "back")                      # the waistcoat's satin back: lit at the shoulders, a dark hem
+    for y in range(0, 12):
+        for x in range(1, 7):
+            back.put(x, y, satin[4] if y == 0 else satin[1] if y == 11 else satin[2] if x in (1, 6) else satin[3])
+    for x in range(1, 7):                                # the cinch strap across the small of the back, and its buckle
+        back.put(x, 8, wool[1])
+    back.put(3, 8, BRASS[3])
+    back.put(4, 8, BRASS[1])
+
+    j = t.face("jacket", "front")
+    for x, y in ((2, 0), (3, 0), (4, 0), (5, 0), (3, 1), (4, 1)):   # the shirt showing in the waistcoat's V neck
+        j.put(x, y, shirt[4] if y == 0 else shirt[2])
+    for y in range(2, 12):                               # the buttoned front edge, a shade darker, and its brass buttons
+        j.put(4, y, wool[1])
+    for y in (2, 5, 8):
+        j.put(3, y, BRASS[3])
+    j.put(3, 9, BRASS[1])                                # the last button's shadow, above the level badge's row
+    for x in (0, 1, 2):                                  # a welt pocket on the villager's right, a thimble's glint in it
+        j.put(x, 10, wool[0])
+    j.put(1, 10, STEEL[3])
+
+    for side in ("west", "back", "east"):                # the tape measure round the back of the neck
+        f = t.face("jacket", side)
+        f.fill(tape[1], rows=[0])
+        for x in range(2, f.w, 3):
+            f.put(x, 0, tape[0])
+    for x, end in ((1, 13), (6, 9)):                     # and its two ends down the front (the badge sits under the short one)
+        for y in range(0, end + 1):
+            j.put(x, y, tape[2] if y == 0 else tape[0] if y % 4 == 3 else tape[1])
+        j.put(x, end, BRASS[1])                          # the brass tip
+
+    vg.sleeves(t, shirt, noise=0)
+    for side in ("front", "west", "east", "back"):       # a buttoned cuff at each wrist
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), shirt[1])
+    mid = t.face("arms_middle", "front")                 # the pincushion on one wrist: a red cushion on its strap, two pins
+    cushion = ["#8f1a1a", "#c62828", "#e25a4a"]
+    mid.put(1, 1, cushion[2])
+    mid.put(2, 1, cushion[1])
+    mid.put(1, 2, cushion[1])
+    mid.put(2, 2, cushion[0])
+    mid.put(1, 0, STEEL[3])                              # a steel pin and a gold-headed one
+    mid.put(2, 0, GOLD[3])
+    for x in (0, 1, 2, 3):                               # the strap round the wrist under it
+        mid.put(x, 3, LEATHER[1])
+    return t.save_profession(ASSETS, "tailor", hat=None)
+
+
+def printer():
+    """A long printer's apron of grey canvas, blotched with press-black ink and with a rag tucked in its pocket, over
+    white shirt sleeves held up by dark sleeve garters with a brass clip; and a green eyeshade: a leather band round
+    the brow with a green visor out over the eyes (ROADMAP 34.11). The biome's own hat still shows above the band."""
+    t = vg.VillagerTexture()
+    canvas = vg.cloth("#9a968a", spread=0.2)
+    shirt = vg.cloth(LINEN)
+    green = vg.cloth("#2f8a4a", spread=0.3)
+    ink = ["#1c1d26", "#33343f", "#55566a"]              # press-black, its edge, a thinned smear
+    garter = ["#2a2b36", "#454758"]
+
+    vg.hat(t, LEATHER, style="band", noise=0)            # the eyeshade's band
+    vg._brim(t, green, full=False, visor=3)              # and its green visor, out over the eyes
+    for side in ("front", "west", "east"):               # the visor's green binding where it meets the band
+        f = t.face("hat", side)
+        for x in range(f.w):
+            f.put(x, 5, green[1])
+
+    vg.sleeves(t, shirt, noise=0)
+    for side in ("front", "west", "east", "back"):       # sleeve garters round the upper arms
+        f = t.face("arm", side)
+        paint(f, ((x, 3) for x in range(f.w)), garter[0])
+        paint(f, ((x, 4) for x in range(f.w)), garter[1])
+    for side in ("west", "east"):                        # each with a brass clip on the outside
+        t.face("arm", side).put(1, 3, BRASS[3])
+    for side in ("front", "west", "east", "back"):       # inky cuffs: the work gets on everything
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 1) for x in range(f.w)), ink[2])
+
+    vg.apron(t, canvas, top=1, bottom=17, ties=True, bib=True, pocket=canvas[1:4])
+    j = t.face("jacket", "front")
+    paint(j, ((5, 11), (6, 11), (5, 12), (6, 12), (6, 13)), ink[0])     # a big blot on the skirt, below the crossed arms
+    paint(j, ((5, 10), (5, 13), (6, 14)), ink[1])                        # its soaked edge, running down
+    paint(j, ((6, 16),), ink[1])                                         # a drip at the hem
+    paint(j, ((1, 10), (2, 16)), ink[2])                                 # a thumb print by the pocket, a smear at the hem
+    paint(j, ((2, 12), (3, 12)), shirt[3])                               # the wiping rag in the pocket
+    j.put(3, 13, ink[1])                                                 # and the ink on it
+    mid = t.face("arms_middle", "front")                 # inky fingers where the arms cross
+    mid.put(1, 2, ink[1])
+    mid.put(2, 3, ink[2])
+    return t.save_profession(ASSETS, "printer", hat="partial")
+
+
+DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
+DRAW += [jeweller]   # 34.12
 
 if __name__ == "__main__":
     run(DRAW)

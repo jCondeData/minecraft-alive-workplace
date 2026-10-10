@@ -1428,11 +1428,24 @@ public class BuilderGameTests implements FabricGameTest {
 	private static final BlockPos HELPER_BENCH = new BlockPos(5, 2, 2);
 	private static final BlockPos HELPER = new BlockPos(5, 2, 3);
 
-	/** An idle builder with a bench nearby pitches in; the build finishes correctly and both earn XP. */
-	//$ gametest_ticks_batch AREA '2400' '"crews"'
-	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crews")
+	/**
+	 * An idle builder with a bench nearby pitches in; the build finishes correctly and both earn XP.
+	 * B54: alone in its batch, with every other site in a helper's reach forgotten first. In the shared "crews" batch the
+	 * test next door (aHelperGivenItsOwnBuildLeavesTheCrew) leaves two open builds 5 blocks away, and a helper who is
+	 * free again rightly joins the nearest open build: when he joined one of those in the tick this hut was finished,
+	 * "the helper should stop once the build is done" failed although he had stopped helping here.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"crewsHelp"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "crewsHelp")
 	public void idleBuildersHelpNearbyBuilds(GameTestHelper helper) {
+		Leftovers.clear(helper);
 		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(s.level());
+		for (BuildSite other : new java.util.ArrayList<>(sites.all())) {
+			if (other != s.site() && other.bench() != null && other.bench().closerThan(s.site().bench(), 3 * Builders.MAX_SITE_DISTANCE)) {
+				sites.remove(other.id());
+			}
+		}
 		s.level().getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(true, s.level().getServer());
 		helper.setBlock(HELPER_BENCH, ModBlocks.BUILDERS_BENCH);
 		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
@@ -1449,6 +1462,49 @@ public class BuilderGameTests implements FabricGameTest {
 			helper.assertTrue(byMate >= 5, "the helper placed only " + byMate + " block(s), the lead " + byLead);
 			helper.assertFalse(Builders.isHelping(mate), "the helper should stop once the build is done");
 			helper.assertTrue(ModAttachments.BUILDER_BAG.getOrCreate(mate).isEmpty(), "the helper kept materials");
+		});
+	}
+
+	/**
+	 * QA (B54's cause, as its own check): a helper whose build is finished is idle again, so he joins the next open build
+	 * near his bench. That is why idleBuildersHelpNearbyBuilds must not share its batch with other open builds.
+	 */
+	//$ gametest_ticks_batch AREA '3000' '"crewsNext"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "crewsNext")
+	public void aFreedHelperJoinsTheNextOpenBuildNearby(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Setup s = setup(helper, TEST_HUT, HUT_ORIGIN, Rotation.NONE, hutMaterials());
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(s.level());
+		for (BuildSite other : new java.util.ArrayList<>(sites.all())) {
+			if (other != s.site() && other.bench() != null && other.bench().closerThan(s.site().bench(), 3 * Builders.MAX_SITE_DISTANCE)) {
+				sites.remove(other.id());
+			}
+		}
+		s.level().getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(true, s.level().getServer());
+		helper.setBlock(HELPER_BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager mate = helper.spawn(EntityType.VILLAGER, HELPER);
+		Builders.employ(s.level(), mate, helper.absolutePos(HELPER_BENCH));
+		BlockPos secondBench = new BlockPos(11, 2, 2);
+		helper.setBlock(secondBench, ModBlocks.BUILDERS_BENCH);
+		Villager secondLead = helper.spawn(EntityType.VILLAGER, new BlockPos(11, 2, 3));
+		Builders.employ(s.level(), secondLead, helper.absolutePos(secondBench));
+		AtomicBoolean helpedFirst = new AtomicBoolean(false);
+		java.util.concurrent.atomic.AtomicReference<BuildSite> second = new java.util.concurrent.atomic.AtomicReference<>();
+		helper.onEachTick(() -> {
+			io.github.jcondedata.aliveworkplace.build.BuilderJob job = ModAttachments.BUILDER_JOB.get(mate);
+			helpedFirst.compareAndSet(false, job != null && job.siteId().equals(s.site().id()));
+			// The second build opens only once the first is done, so the two never compete for the chest.
+			if (second.get() == null && sites.get(s.site().id()) == null) {
+				second.set(Builders.start(s.level(), secondLead, null, TEST_HUT, placement(helper, new BlockPos(11, 2, 6), Rotation.NONE)));
+			}
+		});
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			helper.assertTrue(helpedFirst.get(), "the idle builder never joined the first build");
+			helper.assertTrue(second.get() != null, "the second build hasn't opened yet");
+			io.github.jcondedata.aliveworkplace.build.BuilderJob job = ModAttachments.BUILDER_JOB.get(mate);
+			helper.assertTrue(job != null && Builders.isHelping(mate) && job.siteId().equals(second.get().id()),
+				"the freed helper didn't join the next open build: job " + job);
 		});
 	}
 

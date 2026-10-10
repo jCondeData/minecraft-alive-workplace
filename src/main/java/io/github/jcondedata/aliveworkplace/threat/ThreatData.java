@@ -37,7 +37,9 @@ import net.minecraft.world.level.saveddata.SavedData;
  * breach gate's blocks in the order the rams break them, each {@code pos}, {@code hp}, {@code state}
  * ({@code standing}, {@code broken}, {@code gone}), {@code lane} (0: the way through first opened), {@code high}
  * (above head height) and {@code dropped} (a bar of the dropped portcullis, not of the blueprint); and
- * {@code portcullis}: every bar the siege dropped, to draw up again.</li>
+ * {@code portcullis}: every bar the siege dropped, to draw up again. Since 32.5 also {@code ladders} (every rung the
+ * raiders set against a wall, to take away again; default none) and {@code laddered} (the players were told of the
+ * ladders; default false).</li>
  * <li>{@code broken} (32.4): per {@code hall}, the gate blocks rams broke that wait for a builder.</li>
  * </ul>
  */
@@ -107,6 +109,10 @@ public final class ThreatData extends SavedData {
 		public net.minecraft.core.Direction out = net.minecraft.core.Direction.SOUTH;
 		public final List<Gate> gates = new ArrayList<>();
 		public final List<BlockPos> portcullis = new ArrayList<>();
+		/** Every rung the raiders set against a wall (32.5), to take away when the raid is over. */
+		public final List<BlockPos> ladders = new ArrayList<>();
+		/** Whether the players were told that ladders are at the walls. */
+		public boolean laddered;
 
 		public Siege(BlockPos hall, long began, long dawn) {
 			this.hall = hall.immutable();
@@ -399,6 +405,8 @@ public final class ThreatData extends SavedData {
 			}
 			g.put("gates", gates);
 			g.putLongArray("portcullis", siege.portcullis.stream().mapToLong(BlockPos::asLong).toArray());
+			g.putLongArray("ladders", siege.ladders.stream().mapToLong(BlockPos::asLong).toArray());
+			g.putBoolean("laddered", siege.laddered);
 			laid.add(g);
 		}
 		tag.put("sieges", laid);
@@ -450,6 +458,10 @@ public final class ThreatData extends SavedData {
 			for (long pos : Nbt.getLongArray(g, "portcullis")) {
 				siege.portcullis.add(BlockPos.of(pos));
 			}
+			for (long pos : Nbt.getLongArray(g, "ladders")) {
+				siege.ladders.add(BlockPos.of(pos));
+			}
+			siege.laddered = Nbt.getBoolean(g, "laddered");
 			sieges.put(siege.hall, siege);
 		}
 		ListTag holes = Nbt.getList(tag, "broken", Tag.TAG_COMPOUND);

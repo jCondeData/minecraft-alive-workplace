@@ -138,6 +138,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ThreatGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LairGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SiegeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.LadderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsSpecGameTests",

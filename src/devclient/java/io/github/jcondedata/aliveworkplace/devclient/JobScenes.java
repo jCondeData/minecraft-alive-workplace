@@ -603,6 +603,72 @@ final class JobScenes {
 			return l -> l.getBlockState(middle).isAir() && ram.isAlive()
 				&& io.github.jcondedata.aliveworkplace.threat.Sieges.hitPointsLeft(l, hall, next) < io.github.jcondedata.aliveworkplace.threat.Sieges.FENCE_GATE_HP;
 		}, null));
+		// Sieges II (ROADMAP 32.5): pillagers who set ladders lay siege to a village behind Stone Walls with no gate. They
+		// set a ladder up the wall's outer face, rung by rung; the first climbs over and drops inside; then the guard on the
+		// walkway comes along the wall and throws the ladder down. (The scene only times his walk: he stands still, as the
+		// scenes' villagers do, and is moved along the walkway once the first pillager is over.)
+		SCENES.put("siege_ladders", new Job("pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 1200,
+			new Vec3(8.5, -56.0, 7.5), new Vec3(0.5, -57.5, -2.0), (level, player) -> {
+			BlockPos hall = STATION.north(12);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			// Three Stone Walls in a row, all finished builds, their battlements to the south (the camera's side); plain
+			// stone brick walls close the yard behind them, so the only way in is over.
+			BlockPos origin = STATION.offset(-3, 0, -4);
+			for (BlockPos at : List.of(origin.west(7), origin, origin.east(7))) {
+				level.getStructureManager().get(StarterBlueprints.STONE_WALL.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(StarterBlueprints.STONE_WALL.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			}
+			for (int y = 0; y < 4; y++) {
+				for (int z = -18; z <= -3; z++) {
+					level.setBlock(STATION.offset(-10, y, z), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+					level.setBlock(STATION.offset(10, y, z), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+				for (int x = -10; x <= 10; x++) {
+					level.setBlock(STATION.offset(x, y, -18), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+			}
+			Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(0, 0, -10), MobSpawnType.COMMAND);
+			villager.setNoAi(true);
+			// The guard, on the walkway (the wall's inner row, four blocks up), five blocks along from where the ladder goes.
+			Villager guard = EntityType.VILLAGER.spawn(level, STATION.offset(5, 4, -3), MobSpawnType.COMMAND);
+			guard.setVillagerData(guard.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD));
+			guard.setNoAi(true);
+			guard.setYRot(90);
+			guard.setYHeadRot(90);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Culture.read(
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase_climbers"), com.google.gson.JsonParser.parseString(
+					"{\"roster\": [{\"entity\": \"minecraft:pillager\", \"share\": 1, \"role\": \"climber\"}], \"tactics\": [\"ladders\"]}").getAsJsonObject());
+			io.github.jcondedata.aliveworkplace.threat.Culture.Member member = culture.roster().get(0);
+			List<net.minecraft.world.entity.Mob> pillagers = new java.util.ArrayList<>();
+			for (double[] at : new double[][] {{0.5, 5.5}, {-1.5, 9.5}, {2.5, 13.5}}) {
+				net.minecraft.world.entity.Mob pillager = io.github.jcondedata.aliveworkplace.threat.Threats.create(level, member);
+				pillager.moveTo(at[0], STATION.getY(), at[1], 180f, 0f);
+				pillager.finalizeSpawn(level, level.getCurrentDifficultyAt(pillager.blockPosition()), MobSpawnType.EVENT, null);
+				io.github.jcondedata.aliveworkplace.threat.Threats.outfit(level, pillager, culture, member);
+				pillager.setTarget(villager);
+				level.addFreshEntityWithPassengers(pillager);
+				pillagers.add(pillager);
+			}
+			// The scene's own raid: this culture is no datapack's, so it is put among the loaded ones for the director to find.
+			Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.threat.Culture> loaded = new LinkedHashMap<>();
+			io.github.jcondedata.aliveworkplace.threat.Threats.all().forEach(c -> loaded.put(c.id(), c));
+			loaded.put(culture.id(), culture);
+			io.github.jcondedata.aliveworkplace.threat.Threats.setForTest(loaded);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, hall, culture, pillagers);
+			Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.siege(level, hall).isPresent(), "the raid on the village behind Stone Walls is a siege");
+			return l -> {
+				boolean over = pillagers.stream().anyMatch(p -> io.github.jcondedata.aliveworkplace.threat.Ladders.over(l, hall, p.getUUID()));
+				if (over && guard.getX() > STATION.getX() + 1.5) {
+					guard.moveTo(guard.getX() - 0.15, guard.getY(), guard.getZ(), 90f, 0f); // along the walkway, to the ladder's top
+				}
+				return over && io.github.jcondedata.aliveworkplace.threat.Ladders.thrown(l, hall) > 0
+					&& io.github.jcondedata.aliveworkplace.threat.Ladders.rungs(l, hall).isEmpty();
+			};
+		}, null));
 		SCENES.put("roads", new Job("the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 9000,
 			new Vec3(0.5, -45, -26), new Vec3(0.5, -60, -6), (level, player) -> {
 			// Two cottages (stamped, on the books as built), the hall south of them, a builder with Stonework in his chest,

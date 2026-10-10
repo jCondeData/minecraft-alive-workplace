@@ -34,7 +34,11 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   `onBroken` listeners; `live()` is the Milestone 32 gate), `Sieges` (32.4, `docs/wiki/sieges.md`: the tactic `ram_gates`;
   `begin` shuts the gates, drops the portcullis and picks the breach; one director a siege every 20 ticks walks the rams to
   the gate, counts the blows against the gate blocks' hit points kept in `ThreatData.Siege`, and sends the rest through;
-  `lift` at the first dawn after; `status` for the Defence page; config `sieges`, `siegeDamage`).
+  `lift` at the first dawn after; `status` for the Defence page; config `sieges`, `siegeDamage`; `outside` moves a
+  siege's gathering point beyond the outermost wall on its side), `Ladders` (32.5: the tactic `ladders`; every 10 ticks,
+  beside the director: climbers whose path to the hall ends at a wall set a ladder up its outer face, a goal climbs them
+  over, the others follow; a guard at the top throws it down; the rungs are saved in `ThreatData.Siege.ladders` and
+  `takeAway` removes them when the raid is over).
   `guard/VillageRaids` runs the raids and the clock (`tick`, `start`, `cultureFor`), `guard/BanditCamps` is the bandits'
   face of `Lairs` (same public methods), `guard/Gates` asks `Sieges.shut` and takes its gate builds from `Sieges.gateBuilds`,
   `hall/DefencePage` the page the hall's guards icon opens; `threat/` never imports `guard/`

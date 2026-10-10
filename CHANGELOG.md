@@ -33,6 +33,14 @@ asks for the steps, `latest.log` and any crash report).
   Only the gates of finished builds break, never a gate you placed; builders put them back. The Defence page shows the
   gates, the portcullis and what is broken. New settings `sieges` and `siegeDamage`; the mobGriefing game rule off also
   keeps gates standing.
+- **Sieges: ladders over the walls, for 1.6** (32.5, off until 1.6 is finished): raiders who carry ladders (the
+  climbers of a culture with the tactic `ladders`) and find a wall in their way set a ladder up its outer face, a rung
+  every half second, up to 10 high; they climb over and drop inside, and the other raiders follow up the same ladder
+  while the gate is shut. The chat says "Ladders at the walls of Oakbrook! A guard on the wall can throw them down." A
+  guard on the walkway within 2 blocks of a ladder's top does: the whole ladder goes and whoever is on it falls.
+  Ladders go on any wall, a player's too, but only into air; every one is taken away when the raid is over, also after
+  a restart, and nothing else is changed. A siege now gathers beyond the outermost finished wall on its side, so no
+  raider appears inside the walls. With mobGriefing off no ladder is set; `sieges` off turns it all off.
 - **The Defence page, for 1.6** (32.3): the guards icon on the Village Hall opens it: the camp, its captain, its
   strength, roughly where it lies, the days it has stood, and the last three attacks and how they ended.
 - **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**

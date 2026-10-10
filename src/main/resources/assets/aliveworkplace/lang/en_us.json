@@ -1844,6 +1844,7 @@
   "message.aliveworkplace.siege.begins": "%s is under siege! The gates are shut.",
   "message.aliveworkplace.siege.begins_portcullis": "%s is under siege! The gates are shut and the portcullis is down.",
   "message.aliveworkplace.siege.breached": "The raiders have broken through a gate of %s!",
+  "message.aliveworkplace.siege.ladders": "Ladders at the walls of %s! A guard on the wall can throw them down.",
   "message.aliveworkplace.festival.today": "It's festival day in %s! Come to the bell after work: a feast, music, and fireworks at dusk.",
   "message.aliveworkplace.festival.tomorrow": "%s holds a festival tomorrow, after work: a feast, music, and fireworks at dusk.",
   "message.aliveworkplace.festival.planned": "A festival is already planned",

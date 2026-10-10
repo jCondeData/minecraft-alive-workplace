@@ -55,9 +55,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Sieges (ROADMAP 32.4): a raid by a culture whose {@code tactics} name {@link #TACTIC} on a village with at least one
- * finished wall or gate build ({@link StarterBlueprints#DEFENCES}, their upgrades and styles, and the wall kits'
- * pieces) is a siege.
+ * Sieges (ROADMAP 32.4): a raid by a culture whose {@code tactics} name {@link #TACTIC} (or {@link Ladders#TACTIC},
+ * 32.5: {@link Ladders} sets ladders against the walls) on a village with at least one finished wall or gate build
+ * ({@link StarterBlueprints#DEFENCES}, their upgrades and styles, and the wall kits' pieces) is a siege. Its raiders
+ * gather beyond the outermost finished wall on their side ({@link #outside}).
  * <ul>
  * <li><b>When it begins</b> the village's gates shut and the portcullis of every finished gate build drops: iron bars
  * across the gateway under the drawn-up ones, whatever the hour and with or without guards. Both open again at the
@@ -299,7 +300,11 @@ public final class Sieges {
 			return Optional.empty();
 		}
 		ThreatData data = ThreatData.get(level);
-		data.siege(hall).ifPresent(old -> lift(level, old)); // (the last one's bars go up before this one's come down)
+		Optional<ThreatData.Siege> laid = data.siege(hall);
+		if (laid.isPresent() && !laid.get().over && laid.get().began == level.getGameTime()) {
+			return laid; // (this raid's other tactic has just laid it)
+		}
+		laid.ifPresent(old -> lift(level, old)); // (the last one's bars go up before this one's come down)
 		ThreatData.Siege siege = new ThreatData.Siege(hall, level.getGameTime(), nextDawn(level.getDayTime()));
 		Vec3 from = Vec3.atCenterOf(hall);
 		if (!raiders.isEmpty()) {
@@ -421,6 +426,7 @@ public final class Sieges {
 				siege.over = true;
 				data.setDirty();
 			}
+			Ladders.takeAway(level, data, siege);
 			release(DIRECTORS.get(new Key(level.dimension(), hall)));
 		});
 	}
@@ -438,6 +444,7 @@ public final class Sieges {
 	 */
 	public static void lift(ServerLevel level, ThreatData.Siege siege) {
 		ThreatData data = ThreatData.get(level);
+		Ladders.takeAway(level, data, siege);
 		boolean raised = false;
 		for (BlockPos pos : siege.portcullis) {
 			if (level.getBlockState(pos).is(Blocks.IRON_BARS)) {
@@ -506,6 +513,7 @@ public final class Sieges {
 		}
 		if (siege.over) {
 			release(director);
+			Ladders.takeAway(level, data, siege); // (also the ones a restart found standing)
 			long time = level.getDayTime();
 			if (time >= siege.dawn || time < siege.dawn - 2 * VillageNeeds.DAY) { // (or the clock was set back: don't wait days)
 				lift(level, siege);
@@ -553,8 +561,8 @@ public final class Sieges {
 			for (int i = 0; i < n; i++) {
 				int index = (director.cursor + i) % n;
 				Mob mob = raiders.get(index);
-				if (ramming.contains(mob.getUUID())) {
-					continue;
+				if (ramming.contains(mob.getUUID()) || Ladders.claims(mob.getUUID())) {
+					continue; // (at the gate, or at a ladder: Ladders walks those)
 				}
 				if (open && !director.through.contains(mob.getUUID()) && mob.position().distanceToSqr(within) < 16) {
 					director.through.add(mob.getUUID());
@@ -594,7 +602,7 @@ public final class Sieges {
 	}
 
 	/** The raiders still about in the village round {@code hall} (as {@code VillageRaids.raiders} finds them). */
-	private static List<Mob> raiders(ServerLevel level, BlockPos hall) {
+	static List<Mob> raiders(ServerLevel level, BlockPos hall) {
 		int r = VillageHalls.RADIUS + 32;
 		return level.getEntitiesOfClass(Mob.class, new AABB(hall).inflate(r, 48, r), m -> m.isAlive() && m.getTags().contains(Threats.RAIDER_TAG));
 	}
@@ -702,7 +710,7 @@ public final class Sieges {
 		}
 	}
 
-	private static void tell(ServerLevel level, BlockPos hall, Component message) {
+	static void tell(ServerLevel level, BlockPos hall, Component message) {
 		double reach = VillageHalls.RADIUS + 32;
 		for (ServerPlayer player : level.getPlayers(p -> p.blockPosition().distSqr(hall) <= reach * reach)) {
 			Chat.chat(player, message);
@@ -754,6 +762,83 @@ public final class Sieges {
 			}
 		}
 		return new Status(gates, open, data.brokenGates(hall).size(), portcullis, portcullisDown(level, hall), data.siege(hall).isPresent());
+	}
+
+	/** Whether the director of the siege of the village round {@code hall} saw {@code mob} go in through the breach. */
+	static boolean through(ServerLevel level, BlockPos hall, UUID mob) {
+		Director director = DIRECTORS.get(new Key(level.dimension(), hall));
+		return director != null && director.through.contains(mob);
+	}
+
+	// Where a siege gathers.
+
+	/** Whether {@code culture} lays sieges: its tactics name {@link #TACTIC} or {@link Ladders#TACTIC}. */
+	public static boolean lays(Culture culture) {
+		return culture.tactics().contains(TACTIC) || culture.tactics().contains(Ladders.TACTIC);
+	}
+
+	/** How far beyond the outermost wall a siege gathers (the raiders scatter up to 3 blocks round the point). */
+	public static final int BEYOND = 7;
+
+	/**
+	 * Where a siege that would gather at {@code point} gathers: the same point, moved out along its line from the hall
+	 * until it is {@link #BEYOND} blocks beyond the outermost finished wall or gate build on that side, so no raider
+	 * appears inside the walls. The point itself when sieges are off, the village has no such build on that side, or it
+	 * is already beyond them. Only the column matters; the caller finds the ground.
+	 */
+	public static BlockPos outside(ServerLevel level, BlockPos hall, BlockPos point) {
+		if (!ENABLED) {
+			return point;
+		}
+		double dx = point.getX() - hall.getX();
+		double dz = point.getZ() - hall.getZ();
+		double length = Math.sqrt(dx * dx + dz * dz);
+		if (length < 1) {
+			return point;
+		}
+		dx /= length;
+		dz /= length;
+		double outer = -1;
+		for (Defence build : defences(level, hall)) {
+			BlockPos a = build.world(BlockPos.ZERO);
+			BlockPos b = build.world(new BlockPos(build.blueprint().size().getX() - 1, 0, build.blueprint().size().getZ() - 1));
+			// The build's footprint, 3 wider each way: a ring's corners and the joints between its pieces count as wall.
+			double far = leaves(hall.getX() + 0.5, hall.getZ() + 0.5, dx, dz, Math.min(a.getX(), b.getX()) - 3, Math.min(a.getZ(), b.getZ()) - 3,
+				Math.max(a.getX(), b.getX()) + 4, Math.max(a.getZ(), b.getZ()) + 4);
+			outer = Math.max(outer, far);
+		}
+		if (outer < 0 || length >= outer + BEYOND - 3) {
+			return point;
+		}
+		double out = outer + BEYOND - 3;
+		return new BlockPos(hall.getX() + (int) Math.round(dx * out), point.getY(), hall.getZ() + (int) Math.round(dz * out));
+	}
+
+	/** How far along the line from (x, z) toward (dx, dz) it leaves the box (x0, z0) to (x1, z1); -1 if it never crosses it. */
+	private static double leaves(double x, double z, double dx, double dz, double x0, double z0, double x1, double z1) {
+		double near = 0;
+		double far = Double.MAX_VALUE;
+		if (Math.abs(dx) < 1e-9) {
+			if (x < x0 || x > x1) {
+				return -1;
+			}
+		} else {
+			double t0 = (x0 - x) / dx;
+			double t1 = (x1 - x) / dx;
+			near = Math.max(near, Math.min(t0, t1));
+			far = Math.min(far, Math.max(t0, t1));
+		}
+		if (Math.abs(dz) < 1e-9) {
+			if (z < z0 || z > z1) {
+				return -1;
+			}
+		} else {
+			double t0 = (z0 - z) / dz;
+			double t1 = (z1 - z) / dz;
+			near = Math.max(near, Math.min(t0, t1));
+			far = Math.min(far, Math.max(t0, t1));
+		}
+		return far >= near && far != Double.MAX_VALUE ? far : -1;
 	}
 
 	/** Gives {@code mob} its order, and the goal that holds it to it if it hasn't got one. */

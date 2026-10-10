@@ -616,6 +616,9 @@ SCENES = [
     # Sieges I (ROADMAP 32.4): a ravager ram breaks a Palisade Gate, the cracks showing
     job("siege_gate", "Threats", "A siege: the ram at the gate",
         "the ravager ram broke a gate block of the Palisade Gate, the cracks showing, and turned on the next", 120),
+    # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
+    job("siege_ladders", "Threats", "A siege: ladders over the wall",
+        "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),
     S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),

@@ -2899,7 +2899,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     test places beside the build as a player's is never hit;
   - the portcullis is down while the siege lasts and up after it;
   - scene `siege_gate`: a GIF of a ravager breaking a Palisade Gate, the cracks showing.
-- [ ] **32.5** **Sieges II: ladders over the walls.** Raiders with role `climber`, in a culture with `ladders`, whose
+- [x] **32.5** (review: pending 2026-10-10) **Sieges II: ladders over the walls.** Raiders with role `climber`, in a culture with `ladders`, whose
   path ends at a wall set ladders up its outer face at the spot nearest them (a rung every 10 ticks, up to 10 high),
   climb over and drop inside; the rest follow up the same ladder. A guard on a walkway within 2 blocks of a ladder's
   top throws it down (the column goes, the climbers on it fall). Ladders go on any wall, a player's too, but only into

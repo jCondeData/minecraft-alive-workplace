@@ -29,6 +29,20 @@ One row per run, newest first. Ticks are milliseconds.
 |---|---|---|---|---|---|---|---|
 | 2026-10-05 | 5b489b7 | 150 (65 of 76 sites working when measured) | 2.3 / 3.5 (p99 7.3) | 18.3 / 32.8 (p99 66.1) at the start, then 8.8 / 16.5 (p99 21.1) once the builds settled | 1613 MB | 13.1% (204 of 1556 samples; 49.8% villager brains, 26.5% pathfinding, both ours included) | [nightly-tests 37297003813](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37297003813) (the nightly's performance step, same load as the Sunday job) |
 
+## A season under the edicts (30.22)
+
+`SEASON=true tools/packtest/run.sh`: a City of 35 villagers (16 with jobs) on the pack server, 8 in-game days at full
+speed, profiled for the whole run (`perf.py season.jfr --days server.log`). The run fails when our share of the server
+thread is 15% or more on any day, or any tick over 50 ms had over 50 ms of our code (its length times our share of its
+profile samples). The daily numbers are in `docs/design/M30.md`.
+
+| Date | Run | Sprint | Our share, day 1 | Our share, days 2 to 8 | Ticks over 50 ms | Of them ours |
+|---|---|---|---|---|---|---|
+| 2026-10-10 | 4 (the reformed half alone, 4 days) | 794 ticks a second (1.26 ms a tick) | **17.2%** | 12.7% to 14.7% | 6 of 96,000 | 1, on day 1: 296 ms of a 296 ms tick, the same lookup (B99) |
+| 2026-10-10 | 3 (the fields growing) | 814 ticks a second (1.23 ms a tick) | **17.1%** | 12.4% to 14.1% | 17 of 192,000 (worst 425 ms) | 2, both on day 1: 402 ms of a 424 ms tick in the crafters' first recipe lookup (B99), and a 98 ms tick with one sample, in a farmer's harvest |
+| 2026-10-10 | 2 (nothing growing: the store ran out) | 718 ticks a second (1.39 ms a tick) | **16.6%** | 9.2% to 13.1% | not counted properly (it counted the ticks before the sprint) | 307 ms of a 333 ms tick on day 1, the same lookup |
+| 2026-10-10 | 1 (composters too far from the chests) | 814 ticks a second (1.23 ms a tick) | **17.1%** | 12.1% to 14.3% | not recorded | not recorded |
+
 ## The Steward's cost: a village from a plan (27.22)
 
 - **What runs:** `CITY=true PERF=true tools/packtest/run.sh`, the same pack server as the benchmark. `/workplace city`

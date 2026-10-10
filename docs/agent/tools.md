@@ -123,6 +123,10 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `tick query` gives tick times before/after, and `tools/packtest/perf.py` reads a JFR profile of the server thread
   (share in our code by job, villager pathfinding). Workers set walk targets through `Walker.requestWalk`, which waits
   after a failed path: re-asking every tick made pathfinding over half the server's time.
+  `SEASON=true` is the season under the edicts (30.22): `/workplace season` lays out a City of 35 with farms, a kitchen
+  and a store and sprints 4 days under four edicts and 4 reformed (`SEASON_PART=edicts|reformed` for one half,
+  `SEASON_DAYS=n`); a `Season day` line a day, a `Season result:` line, and `perf.py season.jfr --days server.log` adds
+  our share of each day's tick and whose code each tick over 50 ms was in. About 8 minutes.
 - Tests that grow trees with a vanilla feature pass a fixed `RandomSource` (see `LumberjackGameTests.shapes()`): with
   the level's random, a huge fungus grows twice as tall one time in twelve and CI failed on a shape nobody had seen.
 - CI logs are readable without a token: `curl -sL https://api.github.com/repos/jCondeData/minecraft-alive-workplace/actions/jobs/<job id>/logs`

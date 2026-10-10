@@ -225,6 +225,29 @@ public class WorkHornGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * The console (no player: the season run of 30.22 calls its rush a day so) may call a rush in a village somebody
+	 * owns, once a day like anyone, and the villagers are worn out by it as by a player's.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"hornConsole"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "hornConsole")
+	public void theConsoleCallsARushInAnOwnedVillage(GameTestHelper helper) {
+		Village v = village(helper);
+		Villager farmer = grown(helper, HALL.offset(2, 0, 2));
+		helper.runAfterDelay(5, () -> {
+			ServerLevel level = helper.getLevel();
+			VillageHallBlockEntity hall = v.hall();
+			hall.setOwner(UUID.randomUUID(), "Jesse");
+			WorkHorn.Result rush = WorkHorn.blow(level, null, helper.absolutePos(HALL));
+			helper.assertTrue(rush.outcome() == WorkHorn.Outcome.RUSH, "the console's horn: " + rush);
+			helper.assertTrue(hall.hornDay() == Chronicle.day(level) && WorkHorn.rushing(level, hall), "no rush: " + hall.rushUntil());
+			helper.assertTrue(ModAttachments.WORN_OUT.has(farmer), "the farmer didn't answer");
+			WorkHorn.Result again = WorkHorn.blow(level, null, helper.absolutePos(HALL));
+			helper.assertTrue(again.outcome() == WorkHorn.Outcome.USED_TODAY, "twice a day: " + again);
+			helper.succeed();
+		});
+	}
+
 	/** Saved mid-rush, the hall keeps the day and the rush's end and a villager keeps being worn out; a hall saved before 30.11 has neither. */
 	//$ gametest_ticks_batch AREA '100' '"hornSave"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "hornSave")

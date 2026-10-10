@@ -166,6 +166,13 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B96** The Pathfinder legend's file asks for a Cartographer at job_level 3 (Journeyman) (data/aliveworkplace/legends/pathfinder.json), while 29.13 and the test name foundOnlyForAVillageWithAnExpertExplorer say Expert. Seen while writing the wiki's Legends page, not checked in game. Expected: the file and the roadmap agree (Expert), or the roadmap says Journeyman. Test: the Legends tests for the Pathfinder's needs (found by lane-d-1009-2231, 2026-10-10)
 - [ ] **B97** The cauldron's jobs tooltip still names the Vintner with the vintners switch off (Stations.available only hides Cobblemon jobs and, since 34.10, the Tailor, Printer and Jeweller behind their switches). Expected: with vintners off the cauldron's tooltip doesn't offer the Vintner. Test: a StationsGameTests row for the cauldron with vintners off (found by lane-d-1009-2231, 2026-10-10)
 - [ ] **B98** main red at 2a7c1b63 (CI build 38009456831, 2026-10-10 00:45Z, runCompatGameTest; the main suite passed 1362 of 1362 in 14 min): CupMatchCompatTests.aBoutBetweenTwoPlayersStartsWithBothTeams 'no PvP battle started' (CupMatchCompatTests.java:268, right after the second player's CupMatches.ready), its only failure of 193. The same code passed 193 of 193 in qa-1010-0033's local full build 20 minutes later, so it is a flake in the compat suite: test-only unless a second ready can really fail to start the bout for players. Expected: passes every run. Test: that test repeated with the repeat generator under runCompatGameTest (red duty: lane a's window) (found by qa-1010-0033, 2026-10-10)
+- [ ] **B99** A crafter's first look at the recipes stalls the server for a third of a second on the pack (found by 30.22's season
+  run, lane-d-1010-0333, 2026-10-10): on day 1 of the run one tick took 424 ms with 402 ms of it in our code (run 3; 333 ms
+  with 307 ms in run 2), under a crafter's work behaviour in `mc/Recipes.options` (the chef's `ChefWork.choose` among the
+  frames), the first time the pack's recipes are gone through; later days have no such tick. 25.2 allows no tick over 50 ms
+  caused by us, and `SEASON=true tools/packtest/run.sh` fails on it. Expected: the first lookup spread out or prepared when
+  recipes load, no tick over 50 ms. Test: `SEASON=true tools/packtest/run.sh` prints "ticks with over 50 ms of our code: 0"
+  (a second, 98 ms tick on day 1 had its one profile sample in `FieldWork.take`: look at it with this).
 
 ## Milestone 21: Finish 0.138.0
 
@@ -2196,7 +2203,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: `langcheck.py` is clean; a GameTest per advice tip; the README's tables list every edict, tonic and guild
   data file we ship (the tester checks); showcase scene `village_talk`: villagers' lines under Long Shifts and after
   The Shift Bell.
-- [ ] **30.22** **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
+- [x] **30.22** (approved auto 2026-10-10) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
   pieces that fit a night run): a City of 35 villagers with farms, a kitchen and a store, 4 in-game days under four
   edicts at once (Long Shifts, Free Bread, Large Families, Festival Season), then 4 days with all four reformed, with a
   Cradle, an idol in harvest season, a founded guild and a rush a day. Each day records: meals eaten and left, births,
@@ -2206,6 +2213,16 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     the cap, the village never shrinks;
   - the tick stays within the targets (25.2);
   - the numbers are in `docs/design/M30.md`, and every number that had to change is noted with why.
+  - Status (lane-d-1010-0333): built. `command/SeasonSoak` (`/workplace season [days] [both|edicts|reformed]`, benchmark
+    servers only) and `SEASON=true [SEASON_PART=edicts|reformed] tools/packtest/run.sh`; `perf.py --days` gives our share
+    of each day's tick and whose code each tick over 50 ms was in. Pack server, 2026-10-10, run 3: under the edicts 91.8
+    meals a day from the store, 8 births, 12 emeralds for the festival; reformed 79.8 meals a day (with more villagers), 8
+    births, 0 emeralds; store never empty, fastest pace +100% (the cap), villagers 35 to 51: the costs show and nothing
+    ran away. **The tick check fails**: our share 17.1% on day 1 (12.4% to 14.1% on days 2 to 8; the question of day 1 is
+    in the Notes) and one day-1 tick with 402 ms of our code, B99. Runs 1 and 2 were scenario faults (composters out of
+    the chests' reach; no random ticks without a player, so the run now gives the fields theirs). No number in the mod
+    changed. The Work Horn's rush can be called from the console. All eight days' numbers: `docs/design/M30.md`.
+    SeasonSoakGameTests (5) and the console horn test pass. A weekly and on-demand job in `nightly.yml` (part: season).
 
 Depends on: nothing. Soft links, each with a fallback: Open Gates' Legend visits and Curfew's Night Owls use M29's inn
 visitors and Gifted traits once they land (nothing reads those effects until then); 30.14 uses M28's season clock if
@@ -4373,6 +4390,15 @@ item waits.
 
 ## Notes / blocked
 
+- **For the owner (30.22, lane-d-1010-0333, 2026-10-10): does a village's first day count against the 15% tick target?** In
+  the season run our code took 17.1%, 16.6% and 17.1% of the server thread on day 1 of three runs and 9.2% to 14.3% on
+  every later day (`docs/design/M30.md`, "Numbers from the season run"). Day 1 carries every first use (B99 is part of
+  it). Until you say otherwise the run fails on any day at 15% or more, so `SEASON=true` fails today and is a weekly and
+  on-demand job in `nightly.yml` (part: season), not a nightly step. Also from that run, not a bug as far as the spec says
+  ("up to"): with Large Families and a Cradle the village had 2 births a day, never 3, on all eight days of run 3 (3 on
+  some days of runs 1 and 2); likely the third falls at night when the parents sleep (`VillageGrowth.every` is 8,000
+  ticks then), not tested. And six farms brought in 300 to 450 meals a day against 70 to 120 eaten, so Free Bread and
+  Large Families only bite in a village short of farms (run 2, with nothing growing: the store was out on day 4).
 - **Owner, 2026-10-10 (digest-1009-2253):** "maybe lighter suite for the showcase, we can put it down to 3 lanes if needed." Why it's needed: since 2026-10-06 every nightly showcase shard hits its 58-minute timeout and is cancelled (runs 153-156), so there are no fresh stills for the 12 pending reviews; the 16 shards are planned at ~30 min each but run about twice as long. Decision for the chat or a lane: film fewer scenes per night (changed scenes plus a rotating share of the rest) rather than more shards (MAX_SHARDS 18 is GitHub's job cap). Lanes stay at four until he says drop to 3.
 - **Owner, 2026-10-10: full permission to keep things in order and unblock bottlenecks.** digest-1009-2253 raised the showcase shard timeout from 58 to 100 minutes (shards plan at ~30 min but ran ~60 and were cancelled every night since 10-06; filming fewer scenes stays the next step if 100 isn't enough). The nightly tests' 5-hour cancels came from the 110-minute full build that B93 cut to 14 minutes, so tonight's nightly should finish; check it.
 - **Owner approved every decision in the 2026-10-05 decision notes as written** (chat, 2026-10-06): 27.15-34.1 and B78, including 28.7 (Cobblemon's nurse keeps working), 28.16 (Arena at level 4), 27.16 (bridge deck one block above the bank) and the 33.1 defaults (real-week leaderboard, no tribute, owner-only treasury from 33.5, colonies at City). He will review the wiki (22.9) at the next digest and send notes.

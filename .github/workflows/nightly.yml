@@ -7,11 +7,11 @@ name: nightly-tests
 on:
   schedule:
     - cron: "17 3 * * *"        # ~10 PM US Central, before the night runs
-    - cron: "41 4 * * 0"        # Sundays: the weekly benchmark (25.1), nothing else
+    - cron: "41 4 * * 0"        # Sundays: the weekly benchmark (25.1) and the season under the edicts (30.22), nothing else
   workflow_dispatch:
     inputs:
       part:
-        description: "all: everything; mutation: only the mutants and repeats (ROADMAP 22.7); benchmark: only the weekly 150-worker benchmark (25.1)"
+        description: "all: everything; mutation: only the mutants and repeats (ROADMAP 22.7); benchmark: only the weekly 150-worker benchmark (25.1); season: only the season under the edicts (30.22)"
         required: false
         default: all
 
@@ -143,6 +143,44 @@ jobs:
           path: |
             build/modtest/benchmark.log
             build/packtest/server/perf.jfr
+          if-no-files-found: ignore
+
+  # ROADMAP 30.22: a season under the edicts, weekly (the Sunday schedule, beside the benchmark) or on demand (part:
+  # season): a City of 35 in the real Cobbleverse pack, 4 in-game days under four edicts and 4 reformed, about 8 minutes.
+  # It is not in the nightly job yet: its tick check fails on day 1 until B99 is fixed (docs/design/M30.md). One half
+  # alone: SEASON_PART=edicts or reformed.
+  season:
+    if: github.event.schedule == '41 4 * * 0' || github.event.inputs.part == 'season'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build the jar
+        run: ./gradlew ":$NODE:remapJar" --stacktrace
+      - name: A season under the edicts (a City of 35, 8 days)
+        run: |
+          mkdir -p build/modtest
+          export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          SEASON=true tools/packtest/run.sh 2>&1 | tee build/modtest/season.log; status=${PIPESTATUS[0]}
+          { echo "## A season under the edicts ($(git rev-parse --short HEAD))"; echo '```'
+            grep -E "Season day |Season result:|our share of the tick|ticks over 50 ms|Season passed|did not pass" build/modtest/season.log | sed 's/^.*INFO\]: //' | cut -c1-700
+            echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: season-${{ github.run_id }}
+          path: |
+            build/modtest/season.log
+            build/packtest/server/server.log
+            build/packtest/server/season.jfr
           if-no-files-found: ignore
 
   # ROADMAP 28.2: the compat suite again with Cobblemon 1.8.1 (the full build above runs it with the pack's 1.7.3).

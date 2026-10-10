@@ -218,6 +218,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StewardJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardRoundsQaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CitySoakGameTests",
+			"io.github.jcondedata.aliveworkplace.test.SeasonSoakGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardHomesRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardCivicRulesGameTests",

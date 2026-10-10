@@ -62,10 +62,11 @@ public final class WorkHorn {
 	}
 
 	/**
-	 * {@code player} blows the horn at {@code where}: the village round it (its nearest hall) answers with a rush if it
-	 * may. The sound is the item's; this is the rest.
+	 * {@code player} (null: an operator's console, as the season run of 30.22 calls its rush a day) blows the horn at
+	 * {@code where}: the village round it (its nearest hall) answers with a rush if it may. The sound is the item's; this
+	 * is the rest.
 	 */
-	public static Result blow(ServerLevel level, Player player, BlockPos where) {
+	public static Result blow(ServerLevel level, @Nullable Player player, BlockPos where) {
 		if (!ENABLED) {
 			return new Result(Outcome.DISABLED, null);
 		}
@@ -74,7 +75,7 @@ public final class WorkHorn {
 			return new Result(Outcome.NO_VILLAGE, Component.translatable("message.aliveworkplace.work_horn.no_village").withStyle(ChatFormatting.GRAY));
 		}
 		Component village = VillageHalls.name(level, hallPos);
-		if (!VillageProtection.mayBuild(level, hall, player)) {
+		if (player != null && !VillageProtection.mayBuild(level, hall, player)) {
 			return new Result(Outcome.NOT_ALLOWED, Component.translatable("message.aliveworkplace.work_horn.not_allowed", hall.ownerName(), village)
 				.withStyle(ChatFormatting.RED));
 		}

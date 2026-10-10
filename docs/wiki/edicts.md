@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): off until that expansion is finished.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22
 
 ## What a player sees
 
@@ -76,6 +76,8 @@ the hall loads.
 - Texts: `edict.aliveworkplace.long_shifts` and `edict.aliveworkplace.long_shifts.desc` (and the same for each
   edict), `reform.aliveworkplace.shift_bell`.
 - Command (operators): `/workplace edict proclaim|lift <id>` in the village you stand in.
+- Command (benchmark servers only, `-Daliveworkplace.benchmark=true`): `/workplace season [days] [both|edicts|reformed]`,
+  the season run of 30.22 (see Proof).
 
 ## Decisions
 
@@ -105,6 +107,15 @@ GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, ran
 `EdictBookGameTests` (6), `ReformGameTests` (7), `FamilyEdictGameTests` (5), `OpenGatesGameTests` (6),
 `TreasuryEdictGameTests` (8), `CurfewGameTests` (6), `ConscriptionGameTests` (6), `CivicTalkGameTests` (7),
 `PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`.
+
+A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen
+and a store on the real pack server and runs it 4 days under Long Shifts, Free Bread, Large Families and Festival
+Season, then 4 days with all four reformed, with a Cradle, a Harvest Idol in harvest season, a founded guild and a
+rush a day. Measured on 2026-10-10: 91.8 meals a day from the store under the edicts against 79.8 reformed (with more
+villagers), 12 emeralds for the festival against 0, nobody past the pace cap, the village growing from 35 to 51. Our
+share of the tick was under 15% on every day but the first (17.1%), and one tick on day 1 spent about 400 ms in our
+code (B99), so the run's tick check fails for now. Every day's numbers are in `docs/design/M30.md`, "Numbers from the
+season run". `SeasonSoakGameTests` (5) test how the result is judged.
 
 Showcase scenes: `edicts` (the book), `long_shifts`, `reform`, `free_bread`, `large_families`, `open_gates`,
 `festival_season`, `tithe`, `curfew`, `conscription`, `village_talk`.

@@ -14,6 +14,12 @@
 #   SOAK=true DEBUG=true ...                   # the same, with the builders' [builder N] lines in the log
 #   CITY=true [PERF=true] tools/packtest/run.sh   # 27.22, the 1.1 yardstick: a village from a plan, its Steward running it for
 #                                              # 6 in-game days (CITY_DAYS=n); prints the "City result:" line, PERF=true adds a profile
+#   SEASON=true tools/packtest/run.sh          # 30.22, a season under the edicts: a City of 35 with farms, a kitchen and a store,
+#                                              # 4 in-game days (SEASON_DAYS=n) under Long Shifts, Free Bread, Large Families and
+#                                              # Festival Season, then 4 with all four reformed; a "Season day" line a day, the
+#                                              # "Season result:" line, and our share of each day's tick from a profile
+#   SEASON=true SEASON_PART=edicts ...         # one half on its own in a fresh village (edicts | reformed): half the time,
+#                                              # for a night job; its costs aren't judged (nothing to compare with)
 #   SOAK=true SOAK_SPLIT=true ...              # 23.5: each builder's materials split between at most 3 chests by its
 #                                              # bench and the village storehouses (with porters) it must find itself
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
@@ -66,7 +72,7 @@ rm -f console && mkfifo console
 sleep 100000 > console &
 KEEP=$!
 JAVA_OPTS=""
-if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ] || [ "${CITY:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
+if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ] || [ "${CITY:-false}" = "true" ] || [ "${SEASON:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
 # DEBUG=true: the builders log what they are doing every 2 seconds ([builder N] lines), to look into a stall.
 if [ "${DEBUG:-false}" = "true" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.debug=true"; fi
 java -Xmx5G -Xms1G $JAVA_OPTS -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
@@ -201,6 +207,61 @@ p95 = float(re.search(r"p95 ([\d.]+) ms", line).group(1))
 ok = (m and m.group(1) == m.group(2) and int(m.group(2)) > 0 and "Keep Clear: none;" in line
       and re.search(r"; 0 stalls; items off: none;", line) and p95 < 0.5)
 print("City passed." if ok else "The city run did not pass.")
+sys.exit(0 if ok else 1)
+EOF
+  exit $?
+fi
+
+# Season mode (30.22): a City of 35 villagers in harvest season with farms, a kitchen and a store, a Cradle, a Harvest
+# Idol, a founded guild and a rush a day; SEASON_DAYS (4) in-game days under four edicts, then as many with all four
+# reformed, at full speed (/tick sprint). SEASON_PART=edicts or reformed runs one half on its own. Passes only when the
+# result says the costs show (both halves) and nothing ran away, and our code took under 15% of the tick every day
+# (25.2's target, from a profile of the whole run: tools/packtest/perf.py --days).
+if [ "${SEASON:-false}" = "true" ]; then
+  SEASON_DAYS="${SEASON_DAYS:-4}"
+  SEASON_PART="${SEASON_PART:-both}"
+  TOTAL=$SEASON_DAYS
+  if [ "$SEASON_PART" = "both" ]; then TOTAL=$(( 2 * SEASON_DAYS )); fi
+  say "forceload add 920 920 1080 1080" 60
+  say "execute positioned 1000 75 1000 run workplace season $SEASON_DAYS $SEASON_PART" 30
+  jcmd $PID JFR.start name=season settings=profile filename="$PWD/season.jfr" > /dev/null || true
+  sleep 5
+  say "tick sprint $(( TOTAL * 24000 + 1200 ))" 5
+  for _ in $(seq 1 $(( ${SEASON_MINUTES:-60} * 4 ))); do
+    sleep 15
+    grep -q "Season result:" server.log && break
+    kill -0 $PID 2>/dev/null || break
+  done
+  jcmd $PID JFR.stop name=season > /dev/null 2>&1 || true
+  say "tick sprint stop" 3
+  say "stop" 30
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- season (full log: $SERVER/server.log)"
+  grep -E "Season: |Season day |Season result:|Sprint completed|Crash|Exception" server.log | cut -c1-1500 | grep -v "No data fixer" || true
+  rm -f season-profile.txt
+  if [ -f season.jfr ]; then python3 ../../../tools/packtest/perf.py season.jfr --days server.log | tee season-profile.txt; fi
+  python3 - server.log season-profile.txt <<'EOF'
+import os, re, sys
+line = next((l for l in open(sys.argv[1], errors="replace") if "Season result:" in l), None)
+if line is None:
+    sys.exit("No Season result line: the run didn't end.")
+ok = "DON'T SHOW" not in line and "ran away: nothing" in line
+profile = open(sys.argv[2]).read() if os.path.exists(sys.argv[2]) else ""
+shares = [float(x) for x in re.findall(r"our share of the tick, day \d+ \(\w+\): ([\d.]+)%", profile)]
+ours_over = re.search(r"ticks with over 50 ms of our code: (\d+)", profile)
+if ours_over and int(ours_over.group(1)) > 0:
+    print(f"{ours_over.group(1)} tick(s) had over 50 ms of our code (25.2: none).")
+    ok = False
+if not shares:
+    print("No profile: our share of the tick wasn't measured.")
+    ok = False
+elif max(shares) >= 15:
+    print(f"Our code took {max(shares):.1f}% of the tick on its worst day: over the 15% target (25.2).")
+    ok = False
+else:
+    print(f"Our share of the tick: {max(shares):.1f}% on the worst day (target: under 15%).")
+print("Season passed." if ok else "The season run did not pass.")
 sys.exit(0 if ok else 1)
 EOF
   exit $?

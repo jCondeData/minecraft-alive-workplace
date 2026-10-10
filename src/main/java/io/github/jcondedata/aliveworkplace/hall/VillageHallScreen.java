@@ -204,15 +204,23 @@ public final class VillageHallScreen {
 		List<Component> guardLore = new ArrayList<>();
 		guardLore.add(line(census.guards() > 0 ? "screen.aliveworkplace.hall.guarded" : "screen.aliveworkplace.hall.unguarded",
 			census.guards() > 0 ? ChatFormatting.GRAY : ChatFormatting.YELLOW));
-		guardLore.add(io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
+		// The lair by the village (32.3): whose it is and where; while Milestone 32 is closed, the bandit camp's old line.
+		boolean defence = DefencePage.open();
+		guardLore.add(defence ? DefencePage.hallLine(level, hall) : io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
 			.map(camp -> line(Component.translatable("screen.aliveworkplace.hall.bandits", where(hall, camp.pos())), ChatFormatting.RED))
 			.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY)));
 		// The Golem Smith's golems (29.15), a line each.
 		for (Component golem : io.github.jcondedata.aliveworkplace.legend.GolemSmith.hallLines(level, hall)) {
 			guardLore.add(line(golem, ChatFormatting.GOLD));
 		}
+		if (defence) {
+			guardLore.add(line("screen.aliveworkplace.hall.defence_click", ChatFormatting.DARK_GRAY));
+		}
 		menu.button(GUARDS, icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.hall.guards", census.guards()), ChatFormatting.WHITE,
-			guardLore.toArray(Component[]::new)), null);
+			guardLore.toArray(Component[]::new)), !defence ? null : p -> {
+			DefencePage.render(menu, level, hall); // the Defence page (32.3)
+			menu.broadcastChanges();
+		});
 		menu.button(WELLBEING, wellbeingIcon(needs), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), p -> {

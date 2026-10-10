@@ -24,6 +24,17 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   `Gates` (the fence gates of finished Gatehouses/Palisade Gates shut at night; the builds are in `defence.py`),
   `GuardCombat` (in their CORE package, any activity), `GuardRally` (answering the bell), `GuardPatrol` (WORK: gear up, patrol),
   `Guards` (who is a foe, damage, extra health), `Mercenaries` (hired at the hall till dawn); `VillagerPanicTriggerMixin` keeps them from panicking
+- `threat/` — the threat engine (ROADMAP 32.2; `docs/wiki/raids.md`): `Threats` (the raider cultures read from
+  `data/*/raider_cultures/*.json`, `pick` by weight, `create`/`outfit` a raider, the `chanceFactor` hook with `addFactor`,
+  `registerTactic`, config `raiderCultures` → `DISABLED`), `Culture` (one file: where, arrival, hours, roster with roles and
+  gear, captain, tactics, lair, loot, message keys), `Conditions` (the shared `where` toolbox: biomes, coast, Nether link,
+  rank, head count), `ThreatData` (saved `aliveworkplace_threats`: raids under way, each hall's threat clock and its last
+  three attacks), `Lairs` (32.3, `docs/wiki/lairs.md`: the camp of every culture with a `lair`, saved as
+  `aliveworkplace_bandit_camps`; `found`, `round`, the captain's name, the strength with `raidSize`/`sent`/`back`,
+  `onBroken` listeners; `live()` is the Milestone 32 gate).
+  `guard/VillageRaids` runs the raids and the clock (`tick`, `start`, `cultureFor`), `guard/BanditCamps` is the bandits'
+  face of `Lairs` (same public methods), `hall/DefencePage` the page the hall's guards icon opens; `threat/` never
+  imports `guard/`
 - `shop/` — player shops: `ShopCounterBlock`/`ShopCounterBlockEntity` (price list, sales log), `Shops` (offers from stock, sales,
   the CobbleDollars shop screen), `ShopLedger` (CobbleDollars owed to offline owners);
   mixins on `Villager.mobInteract` (refresh offers) and `AbstractVillager.notifyTrade` (move the goods and payment)

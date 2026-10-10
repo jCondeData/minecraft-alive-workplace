@@ -1,0 +1,5 @@
+{
+  "roster": [
+    { "entity": "minecraft:no_such_mob", "share": 100, "role": "melee" }
+  ]
+}

@@ -3776,6 +3776,40 @@ final class JobScenes {
 				new Step("04_ledger_opens", -1, 6, (level, player) ->
 					ModItems.VILLAGE_LEDGER.use(level, player, InteractionHand.MAIN_HAND), 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// The Defence page (32.3): the hall's guards icon opens it; a bandit camp stands out beyond the village.
+		SCREENS.put("defence_page", new Screen("the hall's guards icon opened the Defence page: the bandit camp, its named chief, its strength and the last attacks",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				// The camp, out behind the hall; two attacks the village has already seen.
+				var camp = io.github.jcondedata.aliveworkplace.guard.BanditCamps.found(level, STATION, new BlockPos(STATION.getX() + 26, -61, STATION.getZ() - 30));
+				Showcase.check(camp != null, "a bandit camp stands by the village");
+				long day = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+				var threats = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
+				threats.remember(STATION, new io.github.jcondedata.aliveworkplace.threat.ThreatData.Past(day - 4,
+					io.github.jcondedata.aliveworkplace.threat.Threats.MONSTERS, 7, 7, false));
+				threats.remember(STATION, new io.github.jcondedata.aliveworkplace.threat.ThreatData.Past(day - 1,
+					io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS, 5, 3, true));
+			},
+			// The captain's slot hovered: his name; then the strength.
+			List.of(new Step("01_defence_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.CAPTAIN, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
+						String captain = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.CAPTAIN).getHoverName().getString();
+						Showcase.check(captain.startsWith("Chief ") && !captain.contains("aliveworkplace"), "the Defence page names the camp's chief: " + captain);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.STRENGTH).getCount() == 6,
+							"the Defence page counts the camp's strength of 6: " + m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.STRENGTH).getCount());
+					}
+				}, 30),
+				new Step("02_defence_strength", io.github.jcondedata.aliveworkplace.hall.DefencePage.STRENGTH, 6, null, 30),
+				new Step("03_defence_attacks", io.github.jcondedata.aliveworkplace.hall.DefencePage.HISTORY[0], 6, null, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU
+				&& m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.LAIR).is(Items.CAMPFIRE)));
 		SCREENS.put("research_trees", new Screen("a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

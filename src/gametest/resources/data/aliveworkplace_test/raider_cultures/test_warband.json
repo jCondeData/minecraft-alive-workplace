@@ -1,0 +1,24 @@
+{
+  "where": { "min_villagers": 1000 },
+  "weight": 30,
+  "arrival": "edge",
+  "hours": "night",
+  "name": "entity.aliveworkplace.bandit",
+  "roster": [
+    { "entity": "minecraft:husk", "share": 60, "role": "melee",
+      "gear": { "mainhand": "minecraft:iron_sword", "head": "minecraft:leather_helmet" } },
+    { "entity": "minecraft:stray", "share": 30, "role": "ranged",
+      "gear": { "head": "minecraft:chainmail_helmet", "offhand": "minecraft:shield" } },
+    { "entity": "minecraft:hoglin", "share": 10, "role": "ram" }
+  ],
+  "captain": {
+    "entity": "minecraft:vindicator",
+    "gear": { "head": "ominous_banner", "chest": "minecraft:iron_chestplate" },
+    "health": 20,
+    "names": "threat.aliveworkplace_test.test_warband.names"
+  },
+  "tactics": ["test_charge", "no_such_tactic"],
+  "lair": { "structure": "aliveworkplace:camp/bandit_camp", "strength": 7 },
+  "loot": "aliveworkplace:chests/bandit_camp",
+  "messages": "message.aliveworkplace_test.test_warband"
+}

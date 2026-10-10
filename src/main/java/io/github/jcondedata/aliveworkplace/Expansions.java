@@ -35,6 +35,12 @@ public final class Expansions {
 	 * {@code arcCooldownDays}, {@code arcsAtOnce} (31.4).
 	 */
 	public static final boolean M31 = false;
+	/**
+	 * Milestone 32, Threats worth building walls for (1.6). While it's closed lairs are today's bandit camps: the chief
+	 * has no name, a raid isn't held to the lair's strength, and the hall's guards icon opens no Defence page (design note
+	 * M32, "The expansion gate").
+	 */
+	public static final boolean M32 = false;
 	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}. */
 	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code vintners}, {@code tailors}, {@code printers}, {@code villagerAges}, {@code villagerElderDays}, {@code elderPassing}, {@code agelessElders}. */

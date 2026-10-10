@@ -25,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -46,7 +47,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -93,6 +97,10 @@ public class BuilderWork extends Behavior<Villager> {
 	/** Place attempts on a spot someone is standing in before moving on to other blocks. */
 	private static final int MAX_BLOCKED_ATTEMPTS = 25;
 	private static final int STEP_ASIDE_TICKS = 40;
+	/** B92: a builder standing inside a block walks out for this long, then hops (shorter than stepping aside: it is clipping). */
+	private static final int STEP_OUT_TICKS = 20;
+	/** B92: how far inside a block the builder's body must be to count as standing in it (leaning on a wall isn't). */
+	private static final double INSIDE_MARGIN = 0.05;
 
 	private int workTimer;
 	private int waitTimer;
@@ -116,6 +124,8 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	private BlockPos stepAsideFrom;
 	private int stepAsideTicks;
+	/** B92: ticks until the builder looks again for a way out of the block it stands in, after finding none. */
+	private int stepOutWait;
 	/** True while helping another builder's site (this tick). */
 	private boolean helping;
 	/** Ticks the lead has waited this stage for helpers to finish the last blocks they claimed (23.1a). */
@@ -235,6 +245,27 @@ public class BuilderWork extends Behavior<Villager> {
 					walkTo(villager, stepAsideSpot, 0);
 				}
 				return;
+			}
+		}
+
+		// 0b. B92: standing still inside a block (a door a crewmate shut on it in a doorway, a block that changed shape
+		// around it): walk out of it like out of a build spot, rather than stand there clipping until the next block is out
+		// of reach. Nothing here is saved: after a reload the builder is found inside the block again and steps out again.
+		if (stepOutWait > 0) {
+			stepOutWait--;
+		} else if (villager.getNavigation().isDone() && !villager.isPassenger()) {
+			BlockPos inside = insideBlock(level, villager);
+			if (inside != null) {
+				BlockPos spot = freshSpot(level, plan, inside, villager, new AABB(inside));
+				if (spot == null) {
+					stepOutWait = STEP_ASIDE_TICKS;
+				} else {
+					stepAsideSpot = spot;
+					stepAsideFrom = inside;
+					stepAsideTicks = STEP_OUT_TICKS;
+					walkTo(villager, spot, 0);
+					return;
+				}
 			}
 		}
 
@@ -665,6 +696,27 @@ public class BuilderWork extends Behavior<Villager> {
 	private static BlockPos freshSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos from, Villager villager, AABB avoid) {
 		BlockPos spot = findStandingSpot(level, plan, from, villager.blockPosition(), avoid, REACH - 0.5);
 		return spot != null ? spot : findStandingSpot(level, null, from, villager.blockPosition(), avoid, REACH - 0.5);
+	}
+
+	/**
+	 * The block the villager's body is inside, or null (B92). Its box is taken a little smaller, so a wall it leans on or
+	 * the floor it stands on doesn't count: only a block whose shape changed around it does, as a door shut on it.
+	 * The margin is half the showcase check's (a tenth of a block), so whatever that check sees, this does too. Shapes
+	 * are asked for as this villager meets them (scaffolding and powder snow it stands in have none), and the row of
+	 * blocks under its feet is looked at too: a fence or a wall there is a block and a half tall.
+	 */
+	@Nullable
+	public static BlockPos insideBlock(ServerLevel level, Villager villager) {
+		AABB body = villager.getBoundingBox().deflate(INSIDE_MARGIN);
+		CollisionContext context = CollisionContext.of(villager);
+		for (BlockPos p : BlockPos.betweenClosed(Mth.floor(body.minX), Mth.floor(body.minY) - 1, Mth.floor(body.minZ),
+				Mth.floor(body.maxX), Mth.floor(body.maxY), Mth.floor(body.maxZ))) {
+			VoxelShape shape = level.getBlockState(p).getCollisionShape(level, p, context);
+			if (!shape.isEmpty() && Shapes.joinIsNotEmpty(shape.move(p.getX(), p.getY(), p.getZ()), Shapes.create(body), BooleanOp.AND)) {
+				return p.immutable();
+			}
+		}
+		return null;
 	}
 
 	/** Teleports the builder onto {@code spot}, only if there's still room to stand there (B60). */
@@ -1197,7 +1249,13 @@ public class BuilderWork extends Behavior<Villager> {
 			return;
 		}
 		if (!level.isUnobstructed(state, pos, CollisionContext.empty())) {
-			handleObstruction(level, villager, site, plan, pos);
+			handleObstruction(level, villager, site, plan, step, pos);
+			return;
+		}
+		// B92: the other half too (a door's top, a bed's head). It was put down unchecked, onto whoever stood there.
+		if (step.secondaryPos() != null && step.secondaryState() != null
+			&& !level.isUnobstructed(step.secondaryState(), step.secondaryPos(), CollisionContext.empty())) {
+			handleObstruction(level, villager, site, plan, step, step.secondaryPos());
 			return;
 		}
 		blockedAttempts = 0;
@@ -1256,18 +1314,22 @@ public class BuilderWork extends Behavior<Villager> {
 	/**
 	 * Something is standing where the next block goes. The builder steps out of its own way, shoos
 	 * animals and Pokémon, asks players to move, and after a while works on other blocks first.
+	 * {@code at} is the block of the step they stand in: the step's own, or its other half (B92); whoever moves is
+	 * sent clear of both halves, so stepping off a bed's foot never lands on its head.
 	 */
-	private void handleObstruction(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos pos) {
-		AABB box = new AABB(pos);
+	private void handleObstruction(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuildPlan.Step step, BlockPos at) {
+		BlockPos pos = step.pos();
+		AABB box = new AABB(at);
+		AABB keepOff = step.secondaryPos() == null ? new AABB(pos) : new AABB(pos).minmax(new AABB(step.secondaryPos()));
 		List<Entity> blockers = level.getEntities((Entity) null, box, e -> e.isAlive() && e.blocksBuilding && !e.isSpectator());
 		if (blockers.contains(villager)) {
-			BlockPos spot = findStandingSpot(level, plan, pos, villager.blockPosition(), box, REACH - 0.5);
+			BlockPos spot = findStandingSpot(level, plan, pos, villager.blockPosition(), keepOff, REACH - 0.5);
 			if (spot == null) {
-				spot = findStandingSpot(level, null, pos, villager.blockPosition(), box, REACH - 0.5);
+				spot = findStandingSpot(level, null, pos, villager.blockPosition(), keepOff, REACH - 0.5);
 			}
 			if (spot != null && ++blockedAttempts <= MAX_BLOCKED_ATTEMPTS) {
 				stepAsideSpot = spot;
-				stepAsideFrom = pos;
+				stepAsideFrom = at;
 				stepAsideTicks = STEP_ASIDE_TICKS;
 			} else {
 				blockedAttempts = 0;
@@ -1280,11 +1342,11 @@ public class BuilderWork extends Behavior<Villager> {
 			if (e instanceof Player player) {
 				Chat.actionBar(player, Component.translatable("message.aliveworkplace.in_the_way", villager.getDisplayName()));
 			} else {
-				shoo(level, plan, e, pos, blockedAttempts);
+				shoo(level, plan, e, at, keepOff, blockedAttempts);
 			}
 		}
 		if (first != null) {
-			setDetail(site, Component.translatable("message.aliveworkplace.status.blocked_by", first.getDisplayName(), pos.getX(), pos.getY(), pos.getZ()));
+			setDetail(site, Component.translatable("message.aliveworkplace.status.blocked_by", first.getDisplayName(), at.getX(), at.getY(), at.getZ()));
 		}
 		if (++blockedAttempts > MAX_BLOCKED_ATTEMPTS) {
 			blockedAttempts = 0;
@@ -1294,9 +1356,9 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	/** Nudges a mob off a build spot; if it keeps standing there, moves it next to the site. */
-	private static void shoo(ServerLevel level, BuildPlan plan, Entity entity, BlockPos pos, int attempt) {
+	private static void shoo(ServerLevel level, BuildPlan plan, Entity entity, BlockPos pos, AABB keepOff, int attempt) {
 		if (attempt >= 4) {
-			BlockPos spot = findStandingSpot(level, plan, entity.blockPosition(), entity.blockPosition(), new AABB(pos), 4.0);
+			BlockPos spot = findStandingSpot(level, plan, entity.blockPosition(), entity.blockPosition(), keepOff, 4.0);
 			if (spot != null) {
 				level.sendParticles(ParticleTypes.POOF, entity.getX(), entity.getY() + 0.5, entity.getZ(), 4, 0.2, 0.2, 0.2, 0.01);
 				entity.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);

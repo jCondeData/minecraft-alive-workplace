@@ -29,6 +29,13 @@ asks for the steps, `latest.log` and any crash report).
   Radical Cobblemon Trainers, your level cap plus 5). Named "Rogue Ursaring", it glows for whoever took its bounty
   within 32 blocks; beat it or catch it (and keep it) for 16 emeralds times the rank factor, once. Bounty rewards are
   now paid in CobbleDollars where that mod keeps the money. Config `rogueBounties`.
+- **The Bandit King's fort and the King** (31.15): three new builds that rise a stage a dawn 110 to 150 blocks from a
+  village, each on the one before: a palisade of sharpened logs round a yard with a fire and tents; two watchtowers
+  and a stable; the King's keep with his war banner over the door, a throne, a treasure chest and a postern at the back.
+  The King ("Grimwald, the Bandit King") wears a golden crown and iron, swings a diamond axe, has 150 health and a boss
+  bar, and at half health blows a goat horn that calls four bandits out of the keep, once; his men keep to the fort.
+  His chest always holds the King's Crown (Protection III, Unbreaking III) with emeralds, gold, diamonds and an
+  enchanted sword or crossbow. The story that brings him comes with 31.16.
 - **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
   15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
   family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)

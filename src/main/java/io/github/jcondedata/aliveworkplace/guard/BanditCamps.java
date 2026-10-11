@@ -77,6 +77,14 @@ public final class BanditCamps {
 		return Lairs.site(level, hall, near, far, random);
 	}
 
+	/**
+	 * Whether the ground round {@code ground} is fairly flat, dry and open over a footprint {@code halfX} by {@code halfZ}
+	 * blocks each way: a camp's test, widened (the Bandit King's fort, 31.15).
+	 */
+	public static boolean fits(ServerLevel level, BlockPos ground, int halfX, int halfZ) {
+		return Lairs.fits(level, ground, false, halfX, halfZ);
+	}
+
 	/** Sets the camp down with its middle at {@code ground} and its band in it; null if the camp's blueprint is missing. */
 	@Nullable
 	public static Camp found(ServerLevel level, BlockPos hall, BlockPos ground) {

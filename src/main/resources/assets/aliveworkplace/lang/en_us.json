@@ -1790,6 +1790,8 @@
   "message.aliveworkplace.shapes.drawn": "Drew %s: %s blocks of %s. Give it to a builder.",
   "entity.aliveworkplace.bandit": "Bandit",
   "entity.aliveworkplace.bandit_chief": "Bandit Chief",
+  "entity.aliveworkplace.bandit_king": "%s, the Bandit King",
+  "item.aliveworkplace.kings_crown": "The King's Crown",
   "message.aliveworkplace.bandits.camp": "Smoke rises beyond %s: bandits have made camp %s. Until their chief falls, they'll raid the village at night.",
   "message.aliveworkplace.bandits.broken_up": "The bandit camp near %s is broken up: its chief has fallen and the band has scattered.",
   "message.aliveworkplace.raid.bandits": "%s bandits are raiding %s!",

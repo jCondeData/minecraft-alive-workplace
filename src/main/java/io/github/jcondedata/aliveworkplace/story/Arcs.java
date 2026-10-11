@@ -112,6 +112,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 			}
 		});
 		Platform.get().onEntityLoad((entity, level) -> ArcEffects.onLoad(level, entity));
+		io.github.jcondedata.aliveworkplace.guard.BanditFort.init(); // the Bandit King's fort: its men keep home, the King's bar and horn (31.15)
 		Platform.get().onUseEntity((player, level, hand, entity, hit) -> ArcEffects.onTalk(player, level, hand, entity));
 	}
 

@@ -608,6 +608,12 @@ SCENES = [
       [("01_poster", "The Bounties tab: the rogue's poster"),
        ("02_rogue", "The Rogue Ursaring, huge and glowing for its bounty's taker"),
        ("03_claim", "Beaten: the bounty paid")], cobblemon=True),
+    # The Bandit King, I: the fort and the King (ROADMAP 31.15): the fort's three stages set down one after another
+    S("bandit_fort", "Village Hall", "The Bandit King's fort rising a stage at a time",
+      "the Bandit King's fort set down a stage at a time, as his story arc does a stage a dawn: a palisade of sharpened logs round a yard with a fire, tents and a gate, four bandits in it; then two watchtowers with ladders and a stable; then the King's keep with his war banner over the door and the King inside", 45,
+      [("01_palisade", "Stage 1: the palisade, the gate, the fire and the tents"),
+       ("02_towers", "Stage 2: two watchtowers and a stable"),
+       ("03_keep", "Stage 3: the King's keep, his banner over the door")]),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",

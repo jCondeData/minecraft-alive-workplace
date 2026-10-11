@@ -174,6 +174,20 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/** The bandit_fort scene's fort: its middle on the flat ground in front of the camera. */
+	private static final BlockPos BANDIT_FORT_GROUND = new BlockPos(0, -61, -20);
+
+	private static io.github.jcondedata.aliveworkplace.guard.BanditFort.Fort banditFort() {
+		return io.github.jcondedata.aliveworkplace.guard.BanditFort.at(BANDIT_FORT_GROUND, net.minecraft.world.level.block.Rotation.NONE);
+	}
+
+	/** The fort's men hold still for the camera. */
+	private static void stillFortMen(ServerLevel level) {
+		for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
+			mob.setNoAi(true);
+		}
+	}
+
 	record Screen(String what, Vec3 camera, Vec3 target, BiConsumer<ServerLevel, ServerPlayer> stage, List<Step> steps,
 				  BiPredicate<ServerLevel, ServerPlayer> ok) {
 	}
@@ -3382,6 +3396,36 @@ final class JobScenes {
 					}
 					Showcase.check(paid && io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).isEmpty(), "the win paid the bounty once");
 				}, 40)),
+			(level, player) -> true));
+		// The Bandit King's fort (ROADMAP 31.15): its three stages set down one after another, as the arc does a stage a
+		// dawn: the palisade, fire and tents; the watchtowers and stable; the King's keep with his banner over the door.
+		SCREENS.put("bandit_fort", new Screen("the Bandit King's fort rising a stage at a time: a palisade of sharpened logs round a yard with a fire, tents and a gate; then two watchtowers and a stable; then the King's keep with his war banner over the door, the King inside",
+			new Vec3(24.5, -46, 10.5), new Vec3(0.5, -57, -20.5),
+			(level, player) -> {
+				for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
+					mob.discard();
+				}
+			},
+			List.of(new Step("01_palisade", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 0, false);
+					stillFortMen(level);
+					Showcase.check(placed && io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40).size() == 4,
+						"the palisade, fire and tents stand, four bandits in the yard");
+				}, 50),
+				new Step("02_towers", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 1, false);
+					stillFortMen(level);
+					Showcase.check(placed && level.getBlockState(banditFort().at(new BlockPos(1, 3, 2))).is(net.minecraft.world.level.block.Blocks.LADDER),
+						"the watchtowers (with ladders) and the stable stand");
+				}, 50),
+				new Step("03_keep", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 2, false);
+					stillFortMen(level);
+					long kings = io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40).stream()
+						.filter(m -> m.getTags().contains(io.github.jcondedata.aliveworkplace.guard.BanditKing.TAG)).count();
+					Showcase.check(placed && kings == 1 && level.getBlockState(banditFort().at(new BlockPos(14, 4, 16))).is(net.minecraft.world.level.block.Blocks.BLACK_WALL_BANNER),
+						"the keep stands with the war banner over its door, the King inside");
+				}, 60)),
 			(level, player) -> true));
 		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the

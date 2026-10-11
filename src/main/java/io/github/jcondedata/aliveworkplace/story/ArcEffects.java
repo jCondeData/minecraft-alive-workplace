@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.guard.BanditFort;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
@@ -73,7 +74,7 @@ public final class ArcEffects {
 	/** How far round a mob its boss bar shows. */
 	static final int BAR_RANGE = 48;
 	private static final Map<UUID, ServerBossEvent> BARS = new HashMap<>();
-	private static final Set<String> RULES = Set.of("ring", "road", "biome", "after", "offset");
+	private static final Set<String> RULES = Set.of("ring", "road", "biome", "after", "offset", "fort");
 
 	/** Checks an effect when its arc is read; throws {@link IllegalArgumentException} naming the bad field. */
 	static void validate(JsonObject json) {
@@ -299,6 +300,20 @@ public final class ArcEffects {
 			int distance = near + random.nextInt(far - near + 1);
 			return hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
 		}
+		if (rule.has("fort")) {
+			// The Bandit King's fort (31.15): fit ground NEAR to FAR out when it's loaded now; else a column there, and the
+			// ground round it is tested when the first stage is built.
+			JsonArray ring = rule.get("fort").isJsonArray() ? rule.getAsJsonArray("fort") : null;
+			int near = ring != null ? ring.get(0).getAsInt() : BanditFort.NEAR;
+			int far = ring != null ? Math.max(near, ring.get(ring.size() - 1).getAsInt()) : BanditFort.FAR;
+			BlockPos fit = BanditFort.site(level, hall, near, far, random);
+			if (fit != null) {
+				return fit;
+			}
+			double angle = random.nextDouble() * Math.PI * 2;
+			int distance = near + random.nextInt(far - near + 1);
+			return hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
+		}
 		if (rule.has("offset")) {
 			JsonArray o = rule.getAsJsonArray("offset");
 			return hall.offset(o.get(0).getAsInt(), 0, o.get(o.size() - 1).getAsInt());
@@ -348,10 +363,11 @@ public final class ArcEffects {
 		Rotation rotation = Rotation.values()[Math.floorMod(p.rotation, 4)];
 		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
 		BlockPos origin = p.origin;
+		boolean fort = BanditFort.isFort(p.stages);
 		if (origin == null) {
 			Vec3i size = template.getSize(rotation);
 			BoundingBox box = null;
-			for (BlockPos column : tries(p.spot)) {
+			for (BlockPos column : fort ? tries(p.spot, 16) : tries(p.spot)) {
 				if (!level.isLoaded(column)) {
 					continue;
 				}
@@ -361,7 +377,7 @@ public final class ArcEffects {
 				if (!level.isLoaded(new BlockPos(b.minX(), b.minY(), b.minZ())) || !level.isLoaded(new BlockPos(b.maxX(), b.minY(), b.maxZ()))) {
 					return false; // wait for the rest to load
 				}
-				if (natural(level, b)) {
+				if (fort ? BanditFort.fits(level, ground) : natural(level, b)) { // (the fort: the camps' test, widened; 31.15)
 					origin = o;
 					box = b;
 					break;
@@ -393,6 +409,10 @@ public final class ArcEffects {
 			p.spot = new BlockPos((box.minX() + box.maxX()) / 2, box.minY() + 1, (box.minZ() + box.maxZ()) / 2);
 		}
 		template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2);
+		if (fort) {
+			// The fort's stage brings its men; the keep its treasure and its postern, open if the deserter told of it.
+			BanditFort.placed(level, new BanditFort.Fort(origin, rotation), BanditFort.stageOf(p.stages.get(p.placed)), s.flags.containsKey(BanditFort.POSTERN_FLAG));
+		}
 		p.placed++;
 		p.nextDay = Chronicle.day(level) + 1;
 		PLACED.incrementAndGet();
@@ -403,9 +423,14 @@ public final class ArcEffects {
 
 	/** The spot, then columns round it out to 32 blocks. */
 	private static List<BlockPos> tries(BlockPos spot) {
+		return tries(spot, 32);
+	}
+
+	/** The spot, then columns round it out to {@code most} blocks. */
+	private static List<BlockPos> tries(BlockPos spot, int most) {
 		List<BlockPos> out = new ArrayList<>();
 		out.add(spot);
-		for (int r = 8; r <= 32; r += 8) {
+		for (int r = 8; r <= most; r += 8) {
 			for (int i = 0; i < 8; i++) {
 				double a = Math.PI / 4 * i;
 				out.add(spot.offset((int) Math.round(Math.cos(a) * r), 0, (int) Math.round(Math.sin(a) * r)));

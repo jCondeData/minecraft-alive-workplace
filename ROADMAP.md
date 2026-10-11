@@ -2649,7 +2649,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests (`runCompatGameTest`): the species, level and name for its biome and rank; a win and a capture
     each pay once; plain GameTest: never posted without Cobblemon;
   - showcase scene `bounty_rogue` (Cobblemon: the poster, the rogue, the claim).
-- [ ] **31.15** **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
+- [x] **31.15** (review: pending 2026-10-11) **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
   (`STYLE.md`, rendered), each standing on the one before like a blueprint upgrade: `story/bandit_fort` (a palisade of
   sharpened logs round a yard, a gate, a fire and tents), `story/bandit_fort_2` (two corner watchtowers with ladders,
   and a stable) and `story/bandit_fort_3` (the King's keep: a timber-and-cobblestone hall with a throne, his banner

@@ -19,6 +19,7 @@ How everything in the mod works, in plain words: written for the owner first, th
   honours, the title in chat (31.11).
 - [The bounty board and bandit captains](bounties.md): bounties posted by villages, the Bounty Board, captains'
   quirks and hideouts, the Wanted Poster and the Captain's Insignia (1.5).
+- [The Bandit King](bandit-king.md): his fort rising a stage a dawn, the King, his horn and his treasure (31.15).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 - [The player guide](player-guide.md): the separate, plain-language site for players, published with the showcase (22.10).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).

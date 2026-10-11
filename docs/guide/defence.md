@@ -43,6 +43,20 @@ feel less safe while it stands. Until the chief falls, the night raids come from
 scatters, the chest in his tent is yours (emeralds, iron, gold, maybe a diamond) and the chronicle remembers who did it.
 The village then has a few days' peace.
 
+## The Bandit King
+
+A bigger story can bring a **Bandit King**. His fort goes up 110 to 150 blocks from the village, a stage each dawn: first
+a palisade of sharpened logs round a yard with a fire and tents, then two watchtowers and a stable, then his **keep**
+with his black war banner (a red skull) over the door.
+
+The King himself is a vindicator with a golden crown, iron armour and a diamond axe, much tougher than a chief, and a
+boss bar shows his health when you're within about 30 blocks. At half health he blows a goat horn and four more
+bandits rush out of the keep, but only once. His men stay inside the palisade, and the ones on the towers stay up there.
+
+His **treasure chest** sits beside his throne: emeralds, gold, diamonds, an enchanted sword or crossbow, and always
+**the King's Crown**, a golden helmet with Protection III and Unbreaking III. Look for a small door in the palisade behind
+the keep: sometimes it's left open.
+
 ## Leading your guards
 
 - **Rally Banner** (any banner and an iron ingot): sneak-right-click up to twelve guards with it to enlist them, then

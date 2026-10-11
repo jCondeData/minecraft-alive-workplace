@@ -1,0 +1,119 @@
+{
+  "name": {
+    "translate": "arc.aliveworkplace.fair_ledger"
+  },
+  "side": true,
+  "trigger": {
+    "event": "reform"
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:minecraft:librarian|job:aliveworkplace:scholar",
+      "name": {
+        "translate": "arc.aliveworkplace.fair_ledger.asker"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.fair_ledger.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.fair_ledger.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/fair_ledger/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.fair_ledger.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.fair_ledger.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.fair_ledger.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.fair_ledger.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.fair_ledger.2.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 0
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.fair_ledger.2"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.fair_ledger.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.fair_ledger.3.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 1
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.fair_ledger.3"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.fair_ledger.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.fair_ledger.4.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 2
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.fair_ledger.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:tithe"
+    },
+    {
+      "type": "reform_ending",
+      "ending": "fair_ledger"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.fair_ledger.ending"
+      }
+    },
+    {
+      "type": "reputation",
+      "points": 60,
+      "who": "helpers"
+    }
+  ]
+}

@@ -43,6 +43,11 @@ asks for the steps, `latest.log` and any crash report).
   without it counting toward the member's rank, and its idle scholars help the capital at half pace. The capital's
   research screen gets a Realm tab with realm topics that the capital's scholars research, paid from the realm
   treasury, and that help every member village. Packs add their own in `data/<ns>/realm_research/`.
+- **The eight reforms as stories** (31.22, part of 1.5): with story arcs on, each edict's reform is told as a short
+  story. A villager of the fitting trade asks for it, the three steps follow as its quests, and the ending leaves
+  something lasting: the Shift Bell beside the hall ringing the work day in and out, a harvest supper, a midwife, an old
+  soldier in iron, a grand festival, the Fair Ledger, two Street Lamp blueprints and a lamplit night, or a drill day at
+  the Training Dummies. The edict is reformed for that village as before.
 - **Peaceful settings and the threat level** (32.21): a new **Threat Level** setting, 0 to 3 (normally 2). At 0 no
   raids, raiders' camps, sieges or disasters come at all; at 1 they come half as often, raiders walk in (no rams,
   ladders or sand ramps), witches never hex and there is no plague; at 3 they come half again as often with a quarter

@@ -189,6 +189,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B113** (approved auto 2026-10-11) StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts failed in CI build 817 (42a90dbd, 2026-10-11 12:12Z) with 'stops: 3' right after appointing the Steward: two zones were painted, so a third stop came from an earlier batch's leftovers at the same spot, a Storehouse built outside its own test area (never cleared) or a saved build site whose stewardHall is this hall (StewardRoundsQa doesn't clear either). Passes in narrowed runs. Expected: exactly the two zone stops in any test order; the test clears leftover steward sites and storehouses near its area first. Test: StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts (found by lane-a-1011-1233, 2026-10-11)
 - [ ] **B114** Local full build hung for ~2 h (lane-d-1011-1233, main 42a90dbd + lane d's 34.18-34.22, 2026-10-11 13:47Z): the GameTest server thread parked in ServerChunkCache.getChunk while clearing a test structure in batch golemSmithSentry; no timeout ever failed the run. Expected: the suite finishes or fails a test, never hangs. Test: runGameTest (QA lane: test-only) (found by lane-d-1011-1233, 2026-10-11)
 - [x] **B115** (approved auto 2026-10-11) LifeStageGameTests.anElderWalksSlower failed once in a local full runGameTest (lane-c-1011-1532, main 79a86396+B104 fix, 2026-10-11): elder at 78% of an adult's speed, test needs under 80%... i.e. 'over 80%' check missed; passed in the next two full suites. Expected: the elder speed check holds on every run. Test: anElderWalksSlower repeated 20x (tester skill's repeat generator); test-only flake, QA lane (see B95/B99) (found by lane-c-1011-1532, 2026-10-11) Status (qa-1011-1834): fixed in ece97b4af: the distance floor is 74% of the younger villager's (was 80%); the test passed at 85% when run alone, and exact speed modifiers are still asserted. Not repeated 20x here (nightly repeats cover it).
+- [ ] **B116** StewardSafetyGameTests.proposalsStopWhileTwoSitesWaitAndStartOnceSupplied fails ('no proposal once supplied: wishes 1, plot Optional.empty, spot Verdict[...well...]') whenever LuxuryWorkshopsGameTests runs in the same suite: 2 of 2 on main 683c3737 with only those two classes, 10/10 when alone, so another class's leftovers reach it; its 'plot' diagnostic also looks up Request(List.of(WELL),"homes") while StewardDesk.plan searches BlueprintLooks.forVillage's request, so it doesn't show the real blocker. Also LuxuryWorkshopsGameTests luxuryWorkshopBuilt_print_shop failed once in a full suite ('the aliveworkplace:printer works at null', 9404 ticks after built), 4 of 4 passes in small runs. Expected: both pass in the full suite. Test: ./gradlew runGameTest with both classes (QA lane: test-only; found by lane-b-1011-1833) (found by lane-b-1011-1833, 2026-10-11)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -562,6 +563,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     docs/performance.md, "The 60-minute soak"); left: run it and read the numbers. Sessions can't dispatch workflows (403 from the GitHub tools), so the soak
     waits for the owner's chat to run nightly-tests with part `soak`, or for a schedule to be added for it.
   - Status (digest-1011-1253, 2026-10-11 19:05Z): the owner started both runs by hand: soak 38166107551 (part soak) and benchmark 38166303120 (part benchmark), on main as of that minute. Lanes: read their results (soak-<run> artifact, perf.log) with `perf.py` and `soakheap.py`, add the rows to docs/performance.md, and tick 25.4 if heap is flat within 5% and no error of ours; use the benchmark's numbers for 25.3's 50 ms target. Don't ask him to run them again.
+  - Results (digest-1011-1253, 2026-10-11 20:30Z; the owner's runs, GitHub's runner): **benchmark 38166303120 passed**: our code a tick p50 1.0 to 1.1 ms, p99 4.2 to 12.2 ms, **0 of 2,400 measured ticks over 50 ms of ours** (worst 44.5 ms, PorterWork), 1 tick of 155.6 ms during setup (BuilderWork's biggest call 26.4 ms), heap after GC 1,638 MB. **Soak 38166107551 failed its own verdict**: heap after GC 1,637 / 1,634 / 1,597 / 1,567 / 1,578 / 1,572 / 1,467 MB at minutes 0 to 60, so it fell 10.2% from minute 10 (no growth, so no leak sign; the check is two-sided and flags a fall too); 7 ticks with over 50 ms of ours in the hour, and one `BuilderWork` call of 1,757.9 ms (worst), others 102 to 133 ms in tree, hall, supply-container and miner checks near 19:09 (the start). Lanes: (1) decide whether `soakheap.py` should fail only on growth (a drop is not a leak): say so in docs/performance.md; (2) find what made `BuilderWork` take 1.7 s in one call (artifact `soak-38166107551`, `soak-0.jfr`) and cap it; (3) rerun is the owner's click, ask once after the fix lands.
 - [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README
@@ -2878,7 +2880,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests: catches count by type, biome, time and height; `show`; `battle_leader`; Thessaly comes when
     there's no leader nearby; the book lists the catches; plain GameTest: without Cobblemon the arc never starts;
   - showcase scene `professors_thesis` (Cobblemon: the professor's request, a catch counting, the published thesis).
-- [ ] **31.22** **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
+- [x] **31.22** (review: pending 2026-10-11) **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
   waits (`sessions.py pause --blocked "needs M30's reforms"`). Through the reform's `arc` field (30.5), each reform
   becomes a short arc of the same name: an opening chapter where a villager of the fitting trade asks you for it
   (`talk`), then M30's three steps as its quests with M30's numbers, then an ending scene that leaves something
@@ -4481,6 +4483,17 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-11 (31.22, lane-b-1011-1833): **the eight reforms as stories** decisions: (1) a reform story starts from
+  the hall's round (`Reforms.round`) when its edict is in force, not by a trigger chance, so the ask comes the morning
+  the edict is proclaimed; it only starts when arcs start by themselves (`Arcs.AUTO`, off in GameTests like every arc);
+  (2) the asker's fallbacks are written as role alternatives (`"villager": "job:a|job:b|any"`, new in the arc
+  format); "else a mother" (the Midwives) and "else a Cheerful villager" (the Festival Fund) fall back to any grown
+  villager, since roles are cast by trade only; (3) with nobody of the trade to ask (a village without a Guard for The
+  Watchful Gate or The Militia Drill), M30's steps go up on the quest page as before, and progress carries over either
+  way; (4) the steps are posted by a `reform_step` effect straight from the edict's reform, so the story's numbers can
+  never drift from M30's; (5) the Shift Bell needs a level 3 by 3 of natural ground 3 to 12 blocks out; with none the
+  edict is still reformed, without the bell.
 
 - 2026-10-11 (34.23, lane-d-1011-1532): **the update rehearsal passed**: report [docs/owner/rehearsal-1.8.md](docs/owner/rehearsal-1.8.md),
   owner's steps [docs/owner/updating-to-1.8.md](docs/owner/updating-to-1.8.md), tool `tools/packtest/rehearsal.sh`. A

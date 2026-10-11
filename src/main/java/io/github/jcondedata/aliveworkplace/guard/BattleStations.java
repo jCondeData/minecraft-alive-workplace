@@ -60,7 +60,8 @@ import net.minecraft.world.phys.AABB;
  * {@code GuardCombat}'s 16 on the ground) and does {@link #HEIGHT_BONUS} times the damage to a foe {@link #HEIGHT} or
  * more blocks below.
  *
- * <p>One watch per siege, every {@link #EVERY} ticks (never in the siege director's tick), sending at most
+ * <p>One watch per siege, every {@link #EVERY} ticks and on the first tick after it begins (never in the siege
+ * director's tick), sending at most
  * {@link #MAX_PATHS} guards on their way a tick. Villagers cannot path up a ladder, so a guard who has come within
  * {@link #CLIMB_REACH} blocks of the foot of his station and stands below it climbs: he is set on the station with a
  * ladder's sound. Nothing here is saved: stations and who holds which are found again after a restart. (In
@@ -116,8 +117,11 @@ public final class BattleStations {
 
 	public static void init() {
 		Platform.get().onLevelTick(level -> {
-			if (level.getGameTime() % EVERY == OFFSET) {
-				tick(level);
+			long phase = level.getGameTime() % EVERY;
+			if (phase == OFFSET) {
+				tick(level, false);
+			} else if (phase != 0) {
+				tick(level, true); // a siege that has just begun gets its first watch at once
 			}
 			if (!PLACES.isEmpty()) {
 				stay(level);
@@ -279,15 +283,25 @@ public final class BattleStations {
 
 	// The watch.
 
-	private static void tick(ServerLevel level) {
+	/**
+	 * The watches of {@code level}'s sieges; with {@code onlyNew}, only of a siege that has none yet. Without that, a
+	 * siege begun just after a watch would leave its archers up to {@link #EVERY} ticks with no station, and they would
+	 * close in on the nearest foe on the ground as on any other day.
+	 */
+	private static void tick(ServerLevel level, boolean onlyNew) {
 		ThreatData data = ThreatData.get(level);
 		Set<Key> live = new HashSet<>();
 		for (ThreatData.Siege siege : data.sieges()) {
 			if (!siege.over && Sieges.ENABLED) {
 				Key key = new Key(level.dimension(), siege.hall);
 				live.add(key);
-				step(level, siege, WATCHES.computeIfAbsent(key, k -> new Watch()));
+				if (!onlyNew || !WATCHES.containsKey(key)) {
+					step(level, siege, WATCHES.computeIfAbsent(key, k -> new Watch()));
+				}
 			}
+		}
+		if (onlyNew) {
+			return;
 		}
 		WATCHES.entrySet().removeIf(e -> {
 			if (e.getKey().dimension() != level.dimension() || live.contains(e.getKey())) {

@@ -482,6 +482,14 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     `city/StewardCost` does) to tell a long tick of ours from a catch-up run, and the benchmark on GitHub's runner
     (nightly-tests, `part: benchmark`) for numbers comparable with the 2026-10-05 row. B103 (lane d) holds the
     day-1 frames of the season run.
+  - Status (lane-a-1011-0633): the per-tick timer of our code is in (`command/OurTickCost`, `mixin/BehaviorMixin`, the
+    platform's tick handlers wrapped only with `-Daliveworkplace.benchmark=true`): after `/workplace benchmark` the log
+    gets a `Benchmark: our code a tick` line a minute (p50, p99, max and its biggest call) and a line for each tick with
+    over 50 ms of ours; `perf.py ... --ticks server.log` sums them and marks each `--spikes` stretch (docs/performance.md).
+    Not compiled or run yet: the coordinator's full build held the machine past this run's time limit, so
+    `BenchmarkCostGameTests` (3 tests) and the benchmark are untested. Left: compileJava, checkLayers, runGameTest with
+    only `BenchmarkCostGameTests`, then `PERF=true VILLAGES=3 PLOTS=25 tools/packtest/run.sh` and read our max tick from
+    the `--ticks` summary; tick 25.3 if it is under 50 ms (share was 14.7%).
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.

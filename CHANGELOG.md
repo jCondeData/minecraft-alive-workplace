@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.143.0 — 2026-10-11
+
 ### Added
 - **The Realm Map, for 1.7** (33.21, off until 1.7 is finished): the Realm tab of any member's hall draws the realm on
   an empty map, scaled so every member fits: a banner for each member in the realm's colour (the capital's named

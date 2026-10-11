@@ -138,7 +138,7 @@ final class RenewalScene {
 		steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 			.setLevel(Stewards.MIN_BUILDER_LEVEL));
 		steward.setVillagerXp(70);
-		Stewards.appoint(player, steward, plan);
+		ScreenshotHarness.appointSteward(player, steward, plan);
 		ModAttachments.STEWARD_ROUND_DAY.set(steward, StewardWishes.day(level));
 		builder = EntityType.VILLAGER.spawn(level, TABLE.west(), MobSpawnType.COMMAND);
 		Builders.employ(level, builder, TABLE);

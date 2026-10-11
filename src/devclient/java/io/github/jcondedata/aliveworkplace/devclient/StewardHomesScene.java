@@ -1,6 +1,5 @@
 package io.github.jcondedata.aliveworkplace.devclient;
 
-import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.city.CityPlan;
 import io.github.jcondedata.aliveworkplace.city.CityPlanItem;
@@ -44,6 +43,7 @@ final class StewardHomesScene {
 	private int dayStart;
 	private volatile boolean started;
 	private volatile boolean built;
+	private int homesBuilt;
 	private volatile Villager steward;
 
 	void tick(Minecraft mc, MinecraftServer server) {
@@ -64,7 +64,11 @@ final class StewardHomesScene {
 			if (day > 0) {
 				ScreenshotHarness.shot(mc, String.format("%02d_steward_homes_day_%d", day, day));
 				int done = day;
-				server.execute(() -> Showcase.check(started, "day " + done + ": the Steward started a home build himself"));
+				boolean began = started; // read now: the field is reset just below, before the server runs the check
+				if (began && built) {
+					homesBuilt++;
+				}
+				server.execute(() -> Showcase.check(began, "day " + done + ": the Steward started a home build himself"));
 			}
 			day++;
 			dayStart = tick;
@@ -72,9 +76,9 @@ final class StewardHomesScene {
 			built = false;
 			if (day > DAYS) {
 				server.execute(() -> {
-					ServerLevel level = server.overworld();
-					long homes = BuildSiteManager.get(level).finishedNear(level, HALL, 48).size();
-					Showcase.check(homes >= 2, "the Homes zone filled over three days (" + homes + " finished buildings)");
+					// A new house or an upgrade that adds beds (the homes_upgrade rule comes first when one does): both count
+					int homes = homesBuilt;
+					Showcase.check(homes >= 2, "the Homes zone filled over three days (" + homes + " home builds finished)");
 				});
 				mc.stop();
 				return;
@@ -146,6 +150,7 @@ final class StewardHomesScene {
 		for (int i = 0; i < 3; i++) {
 			BlockPos table = HALL.offset(-6 + 3 * i, 0, -6);
 			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			ScreenshotHarness.fileRecords(level, table, 1); // the table's workstation record, which vanilla files only in its next task: without it nobody is employed
 			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
 			Builders.employ(level, builder, table);
 		}
@@ -154,7 +159,7 @@ final class StewardHomesScene {
 		steward = EntityType.VILLAGER.spawn(level, HALL.south(2), MobSpawnType.COMMAND);
 		steward.setVillagerData(steward.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(Stewards.MIN_BUILDER_LEVEL));
 		steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-		Stewards.appoint(player, steward, plan);
+		ScreenshotHarness.appointSteward(player, steward, plan);
 		Showcase.check(StewardDesk.mode(level, HALL) == CityPlan.Mode.RUN, "the Steward runs the village");
 		ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(HALL).add(4, 22, 26), Vec3.atCenterOf(HALL.offset(22, 0, 0)));
 	}

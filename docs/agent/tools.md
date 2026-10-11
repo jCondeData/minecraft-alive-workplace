@@ -28,6 +28,9 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
 
 - `./gradlew build` — every node: compile + `checkLayers` + jar + gametests (+ compat gametests on 1.21.1). CI runs exactly this
 - `./gradlew runGameTest` — only the gametests (~10 s of game time, ~1 min total)
+- Neither test run can hang (B114): `GameTestWatchdog` fails it when no server tick finishes for 300 s
+  (`-PgametestStallSeconds=N`), writing every thread's stack to the log and to `gametest-hang.txt` in the run
+  directory; running out of heap ends it at once; Gradle stops a run past `-PgametestTimeoutMinutes` (120)
 - `./gradlew runCompatGameTest` — gametests in `src/compattest` with Chipped, Rechiseled, Supplementaries, Cobblemon, Repurposed Structures, CobbleDollars, Mega Showdown (+ Accessories, owo-lib), and the pack's
   Handcrafted, Beautify, CobbleFurnies, Carved Wood, Moar Concrete, Sophisticated Storage, Tom's Storage, and Cobbleworkers (not in the pack) (+ libraries)
   installed from Modrinth maven (`tests.compat_mods` in the toml's 1.21.1 section; bundled jars are unpacked into

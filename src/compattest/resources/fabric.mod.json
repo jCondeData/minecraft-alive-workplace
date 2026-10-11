@@ -6,7 +6,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"io.github.jcondedata.aliveworkplace.compat.CompatTestSetup"
+			"io.github.jcondedata.aliveworkplace.compat.CompatTestSetup",
+			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",

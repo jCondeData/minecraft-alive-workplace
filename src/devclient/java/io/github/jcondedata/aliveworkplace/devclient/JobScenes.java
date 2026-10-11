@@ -661,7 +661,7 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, STATION);
 			Villager v = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
 			v.setVillagerData(v.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER).setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL)); v.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, v, cityPlan);
+			ScreenshotHarness.appointSteward(player, v, cityPlan);
 			return l -> io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(l, v)
 				&& v.distanceToSqr(STATION.getCenter()) < 16 && !io.github.jcondedata.aliveworkplace.city.StewardWork.holdsPlan(v);
 		}, null));
@@ -1455,8 +1455,12 @@ final class JobScenes {
 			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 			chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
 				new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.COBBLESTONE, 32),
-				new ItemStack(Items.STONE_BRICK_STAIRS, 16));
+				new ItemStack(Items.STONE_BRICK_STAIRS, 16),
+				// the street's lamp posts
+				new ItemStack(Items.STONE_BRICK_WALL, 16), new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 24),
+				new ItemStack(Items.DARK_OAK_TRAPDOOR, 8), new ItemStack(Items.LANTERN, 8));
 			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+			ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 			io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
 			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
@@ -1464,7 +1468,7 @@ final class JobScenes {
 			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			ScreenshotHarness.appointSteward(player, steward, cityPlan);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED, "stewardRoads is on");
 			return l -> {
 				var road = hall.plan().roads().get(0);
@@ -1503,6 +1507,7 @@ final class JobScenes {
 				new ItemStack(Items.STONE_BRICK_STAIRS, 32), new ItemStack(Items.STONE_BRICK_WALL, 32), new ItemStack(Items.CHISELED_STONE_BRICKS, 8),
 				new ItemStack(Items.DARK_OAK_FENCE, 16), new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 8));
 			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+			ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 			io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
 			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
@@ -1510,7 +1515,7 @@ final class JobScenes {
 			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			ScreenshotHarness.appointSteward(player, steward, cityPlan);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED, "stewardRoads is on");
 			return l -> {
 				var road = hall.plan().roads().get(0);
@@ -1551,6 +1556,7 @@ final class JobScenes {
 					new ItemStack(Items.STONE_BRICK_WALL, 16), new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 8),
 					new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 4));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 				ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
 				io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
@@ -1558,7 +1564,7 @@ final class JobScenes {
 				steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 					.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 				steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-				io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+				ScreenshotHarness.appointSteward(player, steward, cityPlan);
 				data.setWants(hallAt, Component.literal(names[i]), List.of());
 			}
 			data.toggleRoute(halls[0], halls[1]);
@@ -1611,6 +1617,7 @@ final class JobScenes {
 					new ItemStack(Items.LANTERN, 16), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE, 64),
 					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.east(), MobSpawnType.COMMAND);
+				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 			}
 			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
@@ -1619,7 +1626,7 @@ final class JobScenes {
 			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			ScreenshotHarness.appointSteward(player, steward, cityPlan);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.Walls.ENABLED, "stewardWalls is on");
 			Showcase.check(!io.github.jcondedata.aliveworkplace.city.Walls.pieces(level, hallAt).isEmpty(), "the wall line has pieces to build");
 			return l -> {

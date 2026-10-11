@@ -13,7 +13,7 @@
     {"type": "pastured_pokemon", "count": 25, "types": 10}
   ],
   "arrive": [
-    {"way": "visit", "place": "inn"}
+    {"way": "visit", "place": "inn", "conditions": [{"type": "title_at_least", "title": "hero"}]}
   ],
   "needs": {"luxury": "books"},
   "powers": [

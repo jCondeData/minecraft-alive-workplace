@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
+  15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
+  family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)
+  is named after you; at 10 hearts a villager sends you a weekly parcel with a letter; Legends visit only villages
+  where someone is a Friend (Rare) or a Hero (Legendary); a Lord may set edicts and a Hero may propose one to the owner.
+
 ### Fixed
 - **Fewer stalls on a new world's first day on big packs** (B103): the mod's classes are now loaded in the background
   while the server starts, instead of in the middle of a tick the first time a hall round, a worker's check of the

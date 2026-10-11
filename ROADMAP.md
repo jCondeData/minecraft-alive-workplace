@@ -2537,7 +2537,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: each source and loss; the thresholds and Lord's Town rule; the announcement once per title; the
     decorated chat text; honours listed; two players kept apart; a save/reload round trip;
   - screenshots of a titled chat line and the hall tooltip; a README section; showcase scene `titles`.
-- [ ] **31.12** **What friendship and titles are worth.**
+- [x] **31.12** (review: pending 2026-10-11) **What friendship and titles are worth.**
   - **Cheaper trades**: 5% off at 4 hearts and 5% more a heart, 30% at most; a title adds 5% (Friend), 10% (Hero) or
     15% (Lord); 40% at most together. A mixin at the end of `Villager.updateSpecialPrices`, on top of vanilla's gossip
     and Hero of the Village; no price under 1. Players' shops aren't touched.

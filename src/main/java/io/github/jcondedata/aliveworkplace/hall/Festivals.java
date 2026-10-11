@@ -151,10 +151,12 @@ public final class Festivals {
 		int left = NobleBalls.isBall(entity, today) ? (int) (VillageNeeds.DAY - timeOfDay(level)) : (int) (Curfew.festivalEnd(entity) - timeOfDay(level));
 		for (ServerPlayer player : level.getPlayers(p -> VillageHalls.area(hall).contains(p.position()))) {
 			MobEffectInstance hero = player.getEffect(MobEffects.HERO_OF_THE_VILLAGE);
-			if (hero == null || hero.getAmplifier() == 0 && hero.getDuration() < left) {
-				player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, left, 0, true, true));
+			int amplifier = io.github.jcondedata.aliveworkplace.story.FriendPerks.heroLevel(level, hall, player); // II for Heroes and Lords (31.12)
+			if (hero == null || hero.getAmplifier() < amplifier || hero.getAmplifier() == amplifier && hero.getDuration() < left) {
+				player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, left, amplifier, true, true));
 			}
 			io.github.jcondedata.aliveworkplace.story.Friendship.onFestival(level, hall, player); // at the festival with them (31.5)
+			io.github.jcondedata.aliveworkplace.story.FriendPerks.festivalGifts(level, hall, player); // friends bring gifts (31.12)
 		}
 	}
 

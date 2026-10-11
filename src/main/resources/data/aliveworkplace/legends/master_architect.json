@@ -13,7 +13,7 @@
     {"type": "finished", "styles": 3}
   ],
   "arrive": [
-    {"way": "visit", "place": "inn"}
+    {"way": "visit", "place": "inn", "conditions": [{"type": "title_at_least", "title": "hero"}]}
   ],
   "needs": {"luxury": "jewels"},
   "powers": [

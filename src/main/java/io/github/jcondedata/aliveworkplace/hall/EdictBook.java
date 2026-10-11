@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  * The Book of Edicts (ROADMAP 30.4): the village's page of laws, opened from the hall's lectern button (slot 9) or by
  * sneak-using a Village Ledger. At the top the village's name; the second row holds its edict slots (one per rank: in
  * force with its days, free, or locked with the rank that opens it); below, every edict with its boost and cost. Click
- * an edict twice to proclaim it, once to lift one in force. Only the hall's owner, friends and operators may click;
+ * an edict twice to proclaim it, once to lift one in force. Only the hall's owner, friends, operators and the village's Lords may click (a Hero proposes one to the owner, 31.12);
  * everyone else reads it and is told why. The last row is kept for the civic items and guilds: the Work Horn's state first (30.11), then the Cradle (30.12), then the village's colours (30.13), then its guilds (30.17), paged when there are more than the row holds.
  */
 public final class EdictBook {
@@ -142,7 +142,16 @@ public final class EdictBook {
 			} else {
 				boolean ready = here == armed;
 				menu.button(here, edictIcon(entity, edict, null, today, ready), p -> {
-					if (!VillageProtection.mayBuild(level, entity, p)) {
+					if (!io.github.jcondedata.aliveworkplace.story.Reputation.maySetEdicts(level, hall, p)) { // the owner's side, or a Lord (31.12)
+						if (io.github.jcondedata.aliveworkplace.story.Reputation.mayProposeEdicts(level, hall, p)) { // a Hero proposes it to the owner
+							if (!ready) {
+								refresh(menu, level, hall, back, here, guildPage);
+								return;
+							}
+							EdictProposals.propose(level, hall, p, edict);
+							refresh(menu, level, hall, back, -1, guildPage);
+							return;
+						}
 						Chat.chat(p, Component.translatable("message.aliveworkplace.edict.not_allowed", entity.ownerName(), village)
 							.withStyle(ChatFormatting.RED));
 						return;

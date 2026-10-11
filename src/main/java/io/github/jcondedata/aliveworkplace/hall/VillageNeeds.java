@@ -152,6 +152,7 @@ public final class VillageNeeds {
 			}
 			io.github.jcondedata.aliveworkplace.people.Sickness.round(level, villager, (int) (DAY / CHECK_EVERY));
 			io.github.jcondedata.aliveworkplace.people.Families.round(level, hall, villager);
+			io.github.jcondedata.aliveworkplace.story.FriendPerks.parcels(level, villager); // letters from friends (31.12)
 			io.github.jcondedata.aliveworkplace.legend.Gifted.keep(villager);
 			Long meal = ModAttachments.LAST_MEAL.get(villager);
 			if (meal == null) {

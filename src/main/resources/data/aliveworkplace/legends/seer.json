@@ -10,7 +10,7 @@
   ],
   "conditions": [],
   "arrive": [
-    {"way": "visit", "place": "chapel", "chance": 0.5},
+    {"way": "visit", "place": "chapel", "chance": 0.5, "conditions": [{"type": "title_at_least", "title": "friend"}]},
     {"way": "born", "trades": ["minecraft:cleric"]}
   ],
   "needs": {"luxury": "jewels"},

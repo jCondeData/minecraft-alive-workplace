@@ -58,6 +58,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long moodRolledDay;
 	/** The day of the last raid on the village (see {@code guard/VillageRaids}). */
 	private long lastRaidDay = -100;
+	/**
+	 * The disaster under way or foretold (32.15; saved as {@code disaster}, absent: none), the day it begins (or began;
+	 * {@code disasterSince}, -1), its last day ({@code disasterEnds}, absent or -1: until rain) and the day the last one
+	 * ended ({@code lastDisasterDay}, -100: never).
+	 */
+	private net.minecraft.resources.ResourceLocation disaster;
+	private long disasterSince = -1;
+	private long disasterEnds = -1;
+	private long lastDisasterDay = -100;
 	/** The day of the village's next (or last) festival, when it last feasted, when a player last called one. */
 	private long festivalDay = -1;
 	private long feastDay = -1;
@@ -196,6 +205,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				hall.setChanged();
 			});
 			io.github.jcondedata.aliveworkplace.guard.Warnings.round(server, pos, census.villagers(), census.guards()); // a day's warning (32.14)
+			io.github.jcondedata.aliveworkplace.threat.Disasters.round(server, pos, hall, census); // the disaster engine (32.15)
 			Conscription.round(server, pos, hall);
 			Cradles.round(server, pos, VillageNeeds.CHECK_EVERY);
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {
@@ -273,6 +283,36 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	public void setLastRaidDay(long day) {
 		this.lastRaidDay = day;
+		setChanged();
+	}
+
+	/** The disaster under way or foretold (32.15), or null. */
+	@org.jetbrains.annotations.Nullable
+	public net.minecraft.resources.ResourceLocation disaster() {
+		return disaster;
+	}
+
+	/** The day the disaster begins or began; -1 without one. */
+	public long disasterSince() {
+		return disasterSince;
+	}
+
+	/** The disaster's last day; -1: until rain. */
+	public long disasterEnds() {
+		return disasterEnds;
+	}
+
+	/** The day the last disaster ended; -100 if never. */
+	public long lastDisasterDay() {
+		return lastDisasterDay;
+	}
+
+	/** Sets the disaster under way ({@link io.github.jcondedata.aliveworkplace.threat.Disasters} only). */
+	public void setDisaster(@org.jetbrains.annotations.Nullable net.minecraft.resources.ResourceLocation id, long since, long ends, long lastDay) {
+		this.disaster = id;
+		this.disasterSince = id == null ? -1 : since;
+		this.disasterEnds = id == null ? -1 : ends;
+		this.lastDisasterDay = lastDay;
 		setChanged();
 	}
 
@@ -838,6 +878,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		questsDone = Nbt.getInt(tag, "questsDone");
 		lastMarketDay = tag.contains("lastMarketDay") ? Nbt.getLong(tag, "lastMarketDay") : -1;
 		lastRaidDay = tag.contains("lastRaidDay") ? Nbt.getLong(tag, "lastRaidDay") : -100;
+		disaster = tag.contains("disaster") ? net.minecraft.resources.ResourceLocation.tryParse(Nbt.getString(tag, "disaster")) : null;
+		disasterSince = disaster != null && tag.contains("disasterSince") ? Nbt.getLong(tag, "disasterSince") : -1;
+		disasterEnds = disaster != null && tag.contains("disasterEnds") ? Nbt.getLong(tag, "disasterEnds") : -1;
+		lastDisasterDay = tag.contains("lastDisasterDay") ? Nbt.getLong(tag, "lastDisasterDay") : -100;
 		festivalDay = tag.contains("festivalDay") ? Nbt.getLong(tag, "festivalDay") : -1;
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
@@ -948,6 +992,16 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("questsDone", questsDone);
 		tag.putLong("lastMarketDay", lastMarketDay);
 		tag.putLong("lastRaidDay", lastRaidDay);
+		if (disaster != null) {
+			tag.putString("disaster", disaster.toString());
+			tag.putLong("disasterSince", disasterSince);
+			if (disasterEnds >= 0) {
+				tag.putLong("disasterEnds", disasterEnds);
+			}
+		}
+		if (lastDisasterDay != -100) {
+			tag.putLong("lastDisasterDay", lastDisasterDay);
+		}
 		tag.putLong("festivalDay", festivalDay);
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);

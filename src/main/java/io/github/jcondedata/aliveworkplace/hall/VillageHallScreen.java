@@ -231,7 +231,8 @@ public final class VillageHallScreen {
 			DefencePage.render(menu, level, hall); // the Defence page (32.3)
 			menu.broadcastChanges();
 		});
-		menu.button(WELLBEING, wellbeingIcon(needs), null);
+		menu.button(WELLBEING, wellbeingIcon(needs, level.getBlockEntity(hall) instanceof VillageHallBlockEntity e
+			? io.github.jcondedata.aliveworkplace.threat.Disasters.line(e, Chronicle.day(level)) : null), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), p -> {
 			PieceLooks.render(menu, level, hall);
@@ -958,6 +959,23 @@ public final class VillageHallScreen {
 
 	/** How well the village is kept: fed, in a bed, safe and lit, and the pace of work it makes. */
 	static ItemStack wellbeingIcon(VillageNeeds.Needs needs) {
+		return wellbeingIcon(needs, null);
+	}
+
+	/** The same, with the disaster under way or foretold (32.15) in red at the top. */
+	static ItemStack wellbeingIcon(VillageNeeds.Needs needs, @org.jetbrains.annotations.Nullable Component disaster) {
+		ItemStack icon = wellbeingIcon0(needs);
+		if (disaster != null) {
+			net.minecraft.world.item.component.ItemLore lore = icon.getOrDefault(net.minecraft.core.component.DataComponents.LORE,
+				net.minecraft.world.item.component.ItemLore.EMPTY);
+			List<Component> lines = new ArrayList<>(lore.lines());
+			lines.add(0, line(disaster, ChatFormatting.RED));
+			icon.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(lines));
+		}
+		return icon;
+	}
+
+	private static ItemStack wellbeingIcon0(VillageNeeds.Needs needs) {
 		int pace = needs.pacePercent();
 		Component paceLine = pace > 0 ? line(Component.translatable("screen.aliveworkplace.hall.faster", pace), ChatFormatting.GREEN)
 			: pace < 0 ? line(Component.translatable("screen.aliveworkplace.hall.slower", -pace), ChatFormatting.RED)

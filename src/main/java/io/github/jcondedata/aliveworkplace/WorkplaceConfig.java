@@ -98,6 +98,12 @@ public final class WorkplaceConfig {
 	 */
 	public Map<String, Boolean> raiderCultures = defaultCultures();
 	/**
+	 * Every disaster by id (ROADMAP 32.15): ours by their path ({@code drought}), a datapack's by its whole id. One set to
+	 * false never starts, and one under way ends at once. In the file only; a disaster the file doesn't list is added,
+	 * on, when the world's data loads.
+	 */
+	public Map<String, Boolean> disasters = new java.util.TreeMap<>();
+	/**
 	 * A raid by a culture that rams gates on a village with a finished wall or gate build is a siege: the gates shut, the
 	 * portcullis drops and the rams go for the gate (ROADMAP 32.4). Off: every raid is a plain one.
 	 */
@@ -375,6 +381,11 @@ public final class WorkplaceConfig {
 			});
 		}
 		raiderCultures = cultures;
+		if (disasters == null) {
+			disasters = new java.util.TreeMap<>();
+		}
+		disasters.replaceAll((id, on) -> on == null || on);
+		disasters.keySet().removeIf(java.util.Objects::isNull);
 	}
 
 	/** The rank {@code name} means for {@code colonyRank} ("town", "City"...); a City for anything else. */
@@ -409,6 +420,30 @@ public final class WorkplaceConfig {
 		if (added || !Files.exists(configDir.resolve(FILE))) {
 			config.save(configDir);
 		}
+	}
+
+	/** Lists the disasters {@code ids} in the config file, each on, if they aren't there yet (32.15). */
+	public static void listDisasters(Path configDir, java.util.Collection<String> ids) {
+		WorkplaceConfig config = load(configDir);
+		config.clamp();
+		boolean added = false;
+		for (String id : ids) {
+			added |= config.disasters.putIfAbsent(id, true) == null;
+		}
+		if (added) {
+			config.save(configDir);
+		}
+	}
+
+	/** The disasters switched off: those set to false in {@code disasters}. */
+	public java.util.Set<String> disastersOff() {
+		java.util.Set<String> off = new java.util.TreeSet<>();
+		disasters.forEach((id, on) -> {
+			if (!on) {
+				off.add(id);
+			}
+		});
+		return off;
 	}
 
 	/** The cultures switched off: those set to false in {@code raiderCultures}, and ours whose own switch is off. */
@@ -583,6 +618,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
+		io.github.jcondedata.aliveworkplace.threat.Disasters.DISABLED = disastersOff(); // 32.15
 		io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED = festivals && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Chatter.ENABLED = villagerChatter && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;

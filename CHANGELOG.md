@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The disaster engine** (32.15): datapacks can describe disasters (`data/<ns>/disasters/<id>.json`) that strike a
+  village one at a time, with 7 days' rest after one: crops grow slower, farmland dries, cauldrons drain, villagers fall
+  ill and pass it on, are unhappy, fires start or a job slows. A village with the right job or a lookout is told a day
+  ahead; it ends after its days or with rain, shows on the wellbeing icon, in What next? and the chronicle, and each
+  can be switched off (`disasters`). No disaster ships yet.
 - **A day's warning** (32.14): a guard posted within 24 blocks of a finished Lookout Tower or Wall Tower sees a raid
   coming the evening before ("Smoke on the north road: ... will strike tomorrow night"); a Scout there also counts
   them. Players in the village and the hall's owner are told, the chronicle, guards icon and Defence page show it; on

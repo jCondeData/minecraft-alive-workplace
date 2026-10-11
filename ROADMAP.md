@@ -3102,7 +3102,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the attack; one without isn't told until it starts; in the warned village the gates are shut and the portcullis is
     down at dusk, and the archers are on their stations before the raiders appear;
   - scene `warning`: the guard on the tower at dusk, the chat line, the gates shutting (GIF).
-- [ ] **32.15** **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
+- [x] **32.15** (approved auto 2026-10-11) **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
   is one disaster:
   - `when`: conditions from the same toolbox as the raider cultures, plus the weather (thunder; no rain for N days)
     and the share of wooden blocks in the village's finished builds (sampled once a day); `chance` a day; `duration`

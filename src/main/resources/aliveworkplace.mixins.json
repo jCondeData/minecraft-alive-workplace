@@ -9,6 +9,8 @@
 		"BlockStateBaseMixin",
 		"BrainMixin",
 		"BrewingStandAccessor",
+		"DroughtCropMixin",
+		"DroughtFarmlandMixin",
 		"CaravanPartyMixin",
 		"EntityAccessor",
 		"ExplosionMixin",

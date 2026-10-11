@@ -43,11 +43,11 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
-		"sieges", "siegeDamage");
+		"sieges", "siegeDamage", "wonders", "wonderLegends");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "villagerElderDays", "colonyCooldownDays",
-		"coloniesPerVillage", "realmMaxMembers");
+		"coloniesPerVillage", "realmMaxMembers", "wonderServerLimit");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -101,6 +101,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("Arcs", () -> io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED);
 		map.put("Sieges", () -> io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED);
 		map.put("Sieges.DAMAGE", () -> io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE);
+		map.put("Wonders", () -> io.github.jcondedata.aliveworkplace.wonder.Wonders.ENABLED);
+		map.put("Wonders.LEGENDS", () -> io.github.jcondedata.aliveworkplace.wonder.Wonders.LEGENDS);
 		return map;
 	}
 
@@ -132,7 +134,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			});
 			protection[0] = VillageProtection.ENABLED;
 		});
-		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M31 && !Expansions.M33 && !Expansions.M34,
+		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M31 && !Expansions.M33 && !Expansions.M34 && !Expansions.M35,
 			"a milestone was marked complete: move its switches out of this test");
 		helper.assertTrue(on.isEmpty(), "a 0.139.0 config turned on unfinished expansions: " + on);
 		helper.assertTrue(protection[0], "a finished feature's switch (villageProtection) should still work");
@@ -171,8 +173,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 98 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (98 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 101 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (101 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -217,7 +219,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 102, "every option on the screen in GameTests (34.22 added classGraceDays)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 105, "every option on the screen in GameTests (35.2 added wonders, wonderLegends and wonderServerLimit)");
 		helper.succeed();
 	}
 }

@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Wonders as data** (35.2, 2.0, still switched off): a Wonder is one file, `data/<namespace>/wonders/<id>.json` (its
+  name, icon, requirements, stages with their parts and goods, powers and crew), so a server owner's own Wonder works
+  like ours; a file with a mistake is logged with its path and the reason and skipped. Requirements use the Legends'
+  condition toolbox, with two new types, `coastal` and `mod_loaded`, and a `stand_in` for `legend`; every Wonder also
+  needs the Master Architect (stand-in: a Master builder). The caps: `wonderCaps` by rank (Town 1, City 2), one of each
+  kind per village, one going up at a time, `wonderServerLimit`, `disabledWonders`, and the `wonders` and
+  `wonderLegends` switches. `/workplace wonders` lists every Wonder on the server with its village, owner and stage.
 - **Classes switch on by themselves** (34.22, 1.8): every village with a hall from an older save finds its places, 16
   villagers every 30 seconds: each household gets the highest class it already qualifies for (luxuries aside, at most
   Burgher), children their parents', grown-ups an age spread over the last 100 days and a family name. The chronicle

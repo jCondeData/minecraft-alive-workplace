@@ -2,10 +2,10 @@
 
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
-what its village or its realm can do while it stands. Part of 2.0 (Wonders): only the design is written so far (see
-Known limits); the full plan is the design note, docs/design/M35.md.
+what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps are
+built, behind the 2.0 switch (see Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1
+Roadmap items: 35.1, 35.2
 
 ## What a player sees
 
@@ -30,25 +30,77 @@ Every Wonder also needs the Master Architect (stand-in: a Master builder).
 
 ## How it works
 
-Not built yet. Each stage's parts will be ordinary builds of the builder, pointing back to their Wonder and using the
-Foundation Stone as their bench, so the chests near the stone are the stockpile. Requirements use the same condition
-toolbox as Legends; powers are looked up per village and switch off when the Wonder is damaged. The design note has the
-data format, the condition and power types, and every fallback while a linked expansion is off.
+**A Wonder is a data file** (35.2), `data/<namespace>/wonders/<id>.json`, read whenever data packs load, so a server
+owner can add their own Wonder with a data pack and it works like ours. The file holds:
+
+- `name` and `description`: lang keys. `icon`: any item.
+- `requirements`: a list of conditions (below).
+- `stages`: each a `name`, its blueprint `parts` (a structure id and its `offset` from the Wonder's corner), and its
+  `goods`, each `{"item"` or `"tag", "count", "job"}`, with an optional `potion` to name a kind of potion.
+- `powers`: `[{"type": ..., numbers}]`. The types are listed in the design note; each Wonder's item makes its own work.
+- `crew` (default 12, at most 32) and `enabled` (false: the file is skipped). `fabric:load_conditions` are honoured,
+  so a Wonder can need a mod (the Stadium will need Cobblemon).
+
+A file with a mistake (an unknown condition or power type, a missing field, a count of 0, an unknown item, job or
+potion, a stage without parts) is skipped and the log says which file and why; the other files still load.
+
+**Requirements** use the same condition toolbox as Legends (`rank_at_least`, `research_levels`, `finished`,
+`villagers`, `job_level`, `caravan_routes`, `iron_golems`, `meal_kinds`, `pastured_pokemon`, …), plus two types new
+in 35.2:
+
+- `coastal`: an ocean or beach within 48 blocks of the hall. It is the same coast check the drowned pirates use, looked
+  at once a day per hall, so both agree on what a coast is.
+- `mod_loaded` (`mod`): that mod is installed.
+
+`legend` gained an optional `stand_in`, a list of conditions: while Legends are off, `wonderLegends` is off, or that
+Legend's file isn't loaded, the stand-in list must hold instead (all of it). A `legend` without one reads as before.
+`pastured_pokemon` counts through the Cobblemon census; without Cobblemon it is always false.
+
+**Every Wonder needs the Master Architect** to draw up its plans. The mod adds this line to every Wonder itself (with a
+Master builder as the stand-in), so no file can leave it out.
+
+**The caps** (checked before the requirements):
+
+- a village may hold `wonderCaps` Wonders by rank: Hamlet 0, Village 0, Town 1, City 2 (finished or going up);
+- one of each kind per village;
+- one Wonder going up per village at a time;
+- `wonderServerLimit` villages on the server may each build the same kind (0: no limit);
+- a Wonder in `disabledWonders` can't be started.
+
+Each refusal says why ("Wonders: 1 of 1 for a Town.", "This village already has the Great Cathedral.").
+
+Each Wonder in progress or finished is recorded per dimension, with its village's hall, the player who started it, its
+stage and the days it was begun and finished. The Wonders page (35.3) and the Foundation Stone (35.4) will use these
+checks; stage parts are ordinary builds of the builder, using the Foundation Stone as their bench.
 
 ## Switches
 
-None yet. The design note plans eight (wonders, wonderCaps, wonderLegends, wonderServerLimit, disabledWonders,
-wonderCrew, builderScaffolding, wonderStanding), all off until 2.0 is finished, like every expansion's.
+All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
+
+| Switch | Default | Off means |
+|---|---|---|
+| `wonders` | on | no new Wonders; finished ones keep their blocks, everything stays saved |
+| `wonderLegends` | on | each Wonder's Legends are replaced by their stand-ins |
+| `wonderServerLimit` | 0 (0 to 64) | how many villages may each build the same kind; 0 is no limit |
+| `wonderCaps` | 0, 0, 1, 2 | file only: Wonders per village by rank (each 0 to 8; a short list is filled from the defaults) |
+| `disabledWonders` | empty | file only: Wonder ids that can't be started (`great_cathedral` or `pack:id`) |
+
+Later items add three more: the most builders on one Wonder, builders' scaffolding, and how much of a Wonder must stand
+for its powers.
 
 ## Saved data
 
-None yet. Planned: a new saved file of Wonders per dimension, and two optional fields on a build site (the Wonder it
-belongs to, and its scaffolding). Nothing existing is renamed, so old worlds load unchanged.
+A new saved file per dimension, `aliveworkplace_wonders`, with a list of `sites`: each with its `id`, `wonder`, `hall`,
+`owner` and `ownerName`, `stage` (default 1), `begun` and `finished` (absent until it is). A world saved before 35.2 has
+no such file and loads unchanged. Planned (35.4 and later): the placement, the stone and the parts' build sites, and two
+optional fields on a build site.
 
 ## Items, blocks, jobs, commands
 
-None yet. Planned: the Wonder Plan (an item), the Foundation Stone (a block), and a command listing every Wonder on the
-server.
+- `/workplace wonders`: every Wonder on the server, one line each: its name, village, owner and stage ("stage 2 of 3,
+  …" or "finished on day 12"). While `wonders` is off it says "Wonders are off."
+
+Planned: the Wonder Plan (an item) and the Foundation Stone (a block).
 
 ## Decisions
 
@@ -59,8 +111,16 @@ server.
 
 ## Known limits
 
-- Only the design note (35.1) exists. Nothing of Wonders is in game yet.
+- No Wonder can be started in game yet: there's no page, plan or stone (35.3, 35.4), and none of our eight Wonders'
+  files ships yet (35.9 to 35.23). Everything is behind the 2.0 switch.
+- A stage's `parts` are only checked to be valid ids; that the structures exist is checked once the plans are drawn
+  (35.3).
+- Powers are read and checked for their type only; what each does comes with its Wonder.
 
 ## Proof
 
-The design note, docs/design/M35.md. No GameTests or showcase scenes yet.
+The design note, docs/design/M35.md. GameTests in `WonderDataGameTests`: the test folly's file loads (gametest
+resources only), broken files are skipped with their reasons, a Wonder from a data pack on disk loads beside ours,
+every requirement type holds and fails, `legend` falls back to its stand-in, the caps (a Town with one can't start a
+second and a City can, the same kind twice, one going up, `wonderServerLimit 1`, disabled, off), `/workplace wonders`,
+the switches and the gate, and the saved sites. No showcase scene (nothing to see yet).

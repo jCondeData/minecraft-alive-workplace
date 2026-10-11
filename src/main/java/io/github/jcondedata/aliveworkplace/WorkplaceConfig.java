@@ -248,6 +248,19 @@ public final class WorkplaceConfig {
 	public boolean pokemonVillageHouses = Expansions.on(Expansions.M28);
 	/** With Cobblemon, a village with a hall, a finished Arena and Village rank holds its festivals as a Festival Cup (ROADMAP 28.17). Off: no Cups. */
 	public boolean festivalCup = Expansions.on(Expansions.M28);
+	/** Towns and Cities can raise Wonders (M35). Off: no new Wonders; finished ones keep their blocks, their powers stop, and everything stays saved. */
+	public boolean wonders = Expansions.on(Expansions.M35);
+	/**
+	 * Wonders a village may hold, by its rank: Hamlet, Village, Town, City. Edited in the file only (a list isn't on the
+	 * settings screen); each is clamped to 0-8, a short list is filled from the defaults.
+	 */
+	public List<Integer> wonderCaps = new ArrayList<>(DEFAULT_WONDER_CAPS);
+	/** A Wonder needs its Legends in the village. Off: each Legend's stand-in (a Master of a trade, ...) is asked for instead. */
+	public boolean wonderLegends = Expansions.on(Expansions.M35);
+	/** How many villages on the server may each build the same kind of Wonder (0: no limit). */
+	public int wonderServerLimit = 0;
+	/** Wonder ids that can't be started ({@code great_cathedral} or {@code pack:id}); one already finished keeps its blocks and powers. File only. */
+	public List<String> disabledWonders = new ArrayList<>();
 	/** Which of a host's festivals are Cups: every one (1), every second (2), ... (owner, 28.1a: every festival). */
 	public int cupEveryFestivals = 1;
 	/** Days in each of the village calendar's four seasons (each has a festival on its middle day). */
@@ -353,7 +366,8 @@ public final class WorkplaceConfig {
 		"dollarsPerEmerald", 1, 10_000,
 		"stewardMaxOpenBuilds", 1, 8,
 		"caravanRoadReach", 32, 512,
-		"cupEveryFestivals", 1, 8);
+		"cupEveryFestivals", 1, 8,
+		"wonderServerLimit", 0, 64);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -371,6 +385,15 @@ public final class WorkplaceConfig {
 			caps.add(v == null ? DEFAULT_MYTHIC_CAP.get(i) : clamp(v, 0, 10));
 		}
 		mythicLegendCap = caps;
+		List<Integer> wonderCapList = new ArrayList<>();
+		for (int i = 0; i < DEFAULT_WONDER_CAPS.size(); i++) {
+			Integer v = wonderCaps != null && i < wonderCaps.size() ? wonderCaps.get(i) : null;
+			wonderCapList.add(v == null ? DEFAULT_WONDER_CAPS.get(i) : clamp(v, 0, 8));
+		}
+		wonderCaps = wonderCapList;
+		if (disabledWonders == null) {
+			disabledWonders = new ArrayList<>();
+		}
 		colonyRank = colonyRank(colonyRank).name().toLowerCase(java.util.Locale.ROOT);
 		if (disabledArcs == null) {
 			disabledArcs = new ArrayList<>();
@@ -439,6 +462,24 @@ public final class WorkplaceConfig {
 
 	/** The Mythic Legend caps by rank (Hamlet, Village, Town, City) when the file doesn't say. */
 	public static final List<Integer> DEFAULT_MYTHIC_CAP = List.of(0, 0, 1, 2);
+	/** The Wonder caps by rank (Hamlet, Village, Town, City) when the file doesn't say. */
+	public static final List<Integer> DEFAULT_WONDER_CAPS = List.of(0, 0, 1, 2);
+
+	/** {@code disabledWonders}' entries as ids: a bare name is ours ({@code great_cathedral}: {@code aliveworkplace:great_cathedral}). */
+	static java.util.Set<net.minecraft.resources.ResourceLocation> wonderIds(List<String> names) {
+		java.util.Set<net.minecraft.resources.ResourceLocation> out = new java.util.LinkedHashSet<>();
+		for (String name : names) {
+			if (name == null || name.isBlank()) {
+				continue;
+			}
+			String full = name.trim().contains(":") ? name.trim() : AliveWorkplace.MOD_ID + ":" + name.trim();
+			net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(full);
+			if (id != null) {
+				out.add(id);
+			}
+		}
+		return java.util.Collections.unmodifiableSet(out);
+	}
 
 	/**
 	 * Every option on the settings screen, in the file's order: a boolean (a switch) or an int (with its
@@ -627,6 +668,12 @@ public final class WorkplaceConfig {
 		// Off in gametests (a round could start or end a strike a test staged); the needs tests turn it on.
 		io.github.jcondedata.aliveworkplace.legend.LegendNeeds.ENABLED = legendNeeds && Expansions.on(Expansions.M29) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.legend.Legends.MYTHIC_CAP = mythicLegendCap.stream().mapToInt(Integer::intValue).toArray();
+		// Wonders (35.2), behind M35's gate.
+		io.github.jcondedata.aliveworkplace.wonder.Wonders.ENABLED = wonders && Expansions.on(Expansions.M35);
+		io.github.jcondedata.aliveworkplace.wonder.Wonders.LEGENDS = wonderLegends && Expansions.on(Expansions.M35);
+		io.github.jcondedata.aliveworkplace.wonder.Wonders.CAPS = wonderCaps.stream().mapToInt(Integer::intValue).toArray();
+		io.github.jcondedata.aliveworkplace.wonder.Wonders.SERVER_LIMIT = wonderServerLimit;
+		io.github.jcondedata.aliveworkplace.wonder.Wonders.DISABLED = wonderIds(disabledWonders);
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.

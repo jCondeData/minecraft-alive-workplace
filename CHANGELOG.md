@@ -27,6 +27,10 @@ asks for the steps, `latest.log` and any crash report).
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
   lost the faster walk. A worker now always walks at their own pace.
+- **Dark oak chimneys in the renders rise whole again** (B106): in the review renders of the grand homes and the Manor
+  in the dark oak style, the chimneys' stone turned to deepslate with no direction, which the renderer drew as
+  nothing, so only the smoking tops showed. Styled renders now give such blocks the game's default (upright); in game
+  the chimneys were always whole, and a new test checks every chimney stays solid in all five styles.
 ### Added
 - **Six more personal requests, for 1.5** (31.10). A friend with 3 hearts may now also ask you to carry **a letter to
   family** in another village (a sealed letter; bring their relative's reply back, and if you lose it they write

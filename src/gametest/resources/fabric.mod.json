@@ -18,6 +18,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BuildersShareSpareGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CraftersShareSpareGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RecipeIndexGameTests",
+			"io.github.jcondedata.aliveworkplace.test.PathBudgetGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSpareMaterialsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaB28BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StallWatchGameTests",

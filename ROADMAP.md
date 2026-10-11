@@ -464,6 +464,17 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 
   Never touch the world from another thread: C2ME and similar mods crash on it. Done when: the benchmark meets the
   targets.
+  - Status (2026-10-11): profiled the benchmark locally (docs/performance.md, the 2026-10-11 rows). Our share 14.7%,
+    then 14.5% (under the 15% target); the biggest single cost is vanilla's path searches for walk targets (18-19%), so
+    villagers now get a budget of 12 path searches a level a tick, a walk held back at most 10 ticks
+    (`work/PathBudget`, `mixin/MoveToTargetSinkMixin`, PathBudgetGameTests). No gain shows in one local run each
+    (busy start p50 31.0 ms against 19.3, settled 12.6 against 10.6, path searches 18.1% against 18.8%); a GitHub run
+    should confirm it costs nothing, or it comes out. Nothing else on the list shows in the profile: no POI search, flood fill or area scan of ours
+    over 0.3%. Left: the "no tick over 50 ms from us" target is still unmet by `perf.py --spikes`' measure (2 busy
+    stretches with over 50 ms of ours, 332 ms x 5/25 samples), but those stretches are ticks run back to back while
+    the server catches up at the start, with no frame of ours concentrated in them; next, a per-tick timer of our job
+    behaviours (as `city/StewardCost` does for the Steward) to tell a single long tick of ours from a catch-up run,
+    and the benchmark on GitHub's runner for numbers comparable with the 2026-10-05 row.
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.

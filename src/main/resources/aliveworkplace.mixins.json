@@ -16,6 +16,7 @@
 		"IronPactMixin",
 		"IronWillMixin",
 		"MobAccessor",
+		"MoveToTargetSinkMixin",
 		"PlayerListMixin",
 		"PoiManagerMixin",
 		"ServerLevelMixin",

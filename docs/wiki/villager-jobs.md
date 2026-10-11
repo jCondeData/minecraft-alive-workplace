@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97, B101
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97, B101, 25.3
 
 ## What a player sees
 
@@ -115,6 +115,11 @@ once when the server starts and again after every `/reload`, not on a worker's f
 look went through every recipe in one tick and stalled the server for a third of a second. A plan tries at most
 500 recipes (a fence from logs tries five), and all of a world's crafters together at most 1,500 in one tick;
 past that, a crafter looks again a few seconds later.
+
+**Walking in a crowd (25.3).** Finding a path is the costliest thing a villager does. In a world with many villagers,
+at most 12 of them start a path search in the same tick; the rest start theirs a tick or two later, and none waits
+more than half a second. A player sees nothing of it, except that a big village starting work at once no longer
+makes the server stutter. Paths already being walked carry on as before.
 
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 

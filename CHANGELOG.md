@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.143.0 — 2026-10-11
+
 ### Added
 - **The Lighthouse's design, for 2.0** (35.11, nothing to start in game until Wonders is finished): the second Wonder's
   building, a tower banded in white and red on a stepped stone mole at the water's edge (25 by 33, 46 high, about 5,000

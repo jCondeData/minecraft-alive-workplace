@@ -17,6 +17,7 @@ import net.minecraft.sounds.SoundSource;
  * With the village economy on (33.5) the treasury also pays for what players sell at the price board and keeps what
  * they pay there, so only the hall's owner, their friends and operators collect it ({@link #mayCollect}).
  * A Merchant Prince's bank (29.17) adds interest each day on what it holds and lets it hold more ({@link #cap(VillageHallBlockEntity)}).
+ * A village in a realm pays the realm's levy out of each day's takings first (33.13, {@code RealmTreasury#levy}).
  */
 public final class Treasury {
 	public static boolean ENABLED = true;
@@ -88,6 +89,7 @@ public final class Treasury {
 		float wellbeing = entity.needs() == null ? 0.5f : entity.needs().wellbeing();
 		long days = Math.min(MAX_DAYS, day - last);
 		long add = (long) takings(workers, wellbeing, rank) * days;
+		add -= io.github.jcondedata.aliveworkplace.realm.RealmTreasury.levy(level, hall, add); // the realm's levy first (33.13)
 		int before = entity.treasury();
 		long cap = cap(entity) * 100L;
 		long held = before;

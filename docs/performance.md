@@ -106,6 +106,20 @@ modules left out as on a real Java 21 install.
   then every busy stretch of 50 ms or more (the thread sleeps between ticks, so a run of samples with no gap over 25 ms
   is one tick, or ticks back to back), with our share of its samples and the frames it spent them in, and the garbage
   collector's pauses of 20 ms or more. An estimate: time the thread spends blocked or paused isn't sampled.
+- **Our code's own time a tick (25.3):** the profile can't tell a long tick of ours from ticks the server runs back to
+  back to catch up, so in the benchmark the mod times itself. Once `/workplace benchmark` has placed its workers,
+  every job behaviour of ours (start, tick and stop, `mixin/BehaviorMixin`) and every server and level tick handler of
+  ours (wrapped by the platform) is measured with `System.nanoTime()` and added up per server tick
+  (`command/OurTickCost`). The log gets a `Benchmark: our code a tick over the last 1200 ticks: p50 / p99 / max` line
+  each minute (the max with its biggest single call) and a `Benchmark: a tick with N ms of our code` line for each tick
+  with over 50 ms of ours. `perf.py ... --ticks server.log` (run.sh passes it) sums them up and, with `--spikes`, says
+  for each long stretch whether a tick of ours over 50 ms was logged then. Only with `-Daliveworkplace.benchmark=true`
+  (the pack test's measuring modes); on a normal server the handlers aren't wrapped and the behaviours' check is one
+  field read.
+  First local run (2026-10-11, `PERF=true VILLAGES=3 PLOTS=25`, a loaded 7 GB container): p50 2.3 / 4.2 ms and p99
+  37.5 / 28.9 ms of ours a tick in the two measured minutes, but 13 of 2,400 ticks with over 50 ms of ours (worst
+  118.7 ms; 450.9 ms during the setup), the biggest single calls in `LumberjackWork` (66.8 ms) and `BuilderWork`
+  (64.2 ms); share 16.7%. The "no tick over 50 ms from us" target is not met yet (ROADMAP 25.3).
 - **Where:** run the nightly-tests workflow with `part: soak` (job `soak`, 110-minute limit, Java 21). The readings,
   the verdict and the long ticks are in the run's summary; the log, `soak-heap.txt` and the profiles in its
   `soak-<run>` artifact.

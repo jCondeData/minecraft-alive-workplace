@@ -5,6 +5,7 @@
 	"mixins": [
 		"AbstractVillagerMixin",
 		"AxeItemAccessor",
+		"BehaviorMixin",
 		"BlockItemMixin",
 		"BlockStateBaseMixin",
 		"BrainMixin",

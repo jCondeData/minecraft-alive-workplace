@@ -386,6 +386,13 @@ SCENES = [
       "capital: Rowan owns the other two villages, so the tab shows a vote for a day, its count and the two buttons", 70,
       [("01_the_letter", "Rowan's letter: an invitation for Ashford"), ("02_the_invitation", "Ashford's Realm tab: Join or Decline"),
        ("03_the_vote", "The vote: move the capital to Ashford?"), ("04_vote_for", "Vote for Ashford, with every village you own")]),
+    # The realm treasury (ROADMAP 33.13): the levy from every member, the icon's movements, a gift of emeralds
+    S("realm_treasury", "Realm", "The realm treasury: the levy and its movements",
+      "Thornholm founded a realm and added Ashford and Farholt, a County; four mornings each member paid the 10% levy on its "
+      "takings into the realm treasury, and the Realm tab's treasury icon lists what it holds of 512 emeralds and the movements "
+      "by day; a shift-click with twelve emeralds gave them all, and the levy's icon shows 10%", 60,
+      [("01_treasury_tooltip", "The treasury: four mornings of the levy"), ("02_after_a_gift", "Twelve emeralds given with a shift-click"),
+       ("03_the_levy", "The levy: 10% of each member's takings")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

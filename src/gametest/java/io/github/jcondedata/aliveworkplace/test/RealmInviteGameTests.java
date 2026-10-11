@@ -179,9 +179,10 @@ public class RealmInviteGameTests implements FabricGameTest {
 			helper.assertTrue(RealmInvites.invite(land.level(), land.hall(0), land.at(i), land.owner()).ok(), "inviting " + i);
 			helper.assertTrue(RealmInvites.accept(land.level(), land.hall(i), id, them).ok(), "accepting " + i);
 		}
-		// the realm's state: its name, its arms, its rank (the treasury, research and edicts of 33.13 on will live on it too)
+		// the realm's state: its name, its arms, its rank, its treasury and levy (33.13; research and edicts will live on it too)
 		land.data().putRealm(land.data().realm(id).withName(Optional.of(Component.literal("Eldmark"))).withArms(Optional.of(new VillageBanners.Colours(DyeColor.BLUE,
-			net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY))));
+			net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY))).withLevy(20));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.realm.RealmTreasury.give(land.level(), land.hall(0), land.owner(), new ItemStack(Items.EMERALD, 7), true).ok(), "giving to the treasury");
 		helper.assertTrue("county".equals(land.data().realm(id).rank()), "three villages with a Town capital: " + land.data().realm(id).rank());
 		// the neighbour puts their village forward on its tab
 		ChoiceMenu tab = RealmGameTests.realmTab(helper, land, 1, them);
@@ -211,7 +212,8 @@ public class RealmInviteGameTests implements FabricGameTest {
 		helper.assertTrue(realm != null && realm.capital().equals(land.at(1)) && realm.members().get(0).hall().equals(land.at(1)), "the capital didn't move: " + realm);
 		helper.assertTrue(land.data().vote(id) == null, "the vote is still open");
 		helper.assertTrue(realm.name().map(Component::getString).orElse("").equals("Eldmark") && realm.arms().map(VillageBanners.Colours::base).orElse(null) == DyeColor.BLUE
-			&& "county".equals(realm.rank()) && realm.members().size() == 3, "the realm's state didn't go with it: " + realm);
+			&& "county".equals(realm.rank()) && realm.members().size() == 3 && realm.treasury() == 700 && realm.levy() == 20 && realm.ledger().size() == 1,
+			"the realm's state didn't go with it: " + realm);
 		helper.assertTrue(!land.level().getEntitiesOfClass(FireworkRocketEntity.class, new AABB(land.hall(1)).inflate(4, 8, 4)).isEmpty(), "no fireworks over the new capital");
 		String moved = "The capital moved from " + land.name(0) + " to " + land.name(1) + ": the realm is now the County of Eldmark";
 		for (int i = 0; i < 3; i++) {

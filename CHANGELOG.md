@@ -27,6 +27,13 @@ asks for the steps, `latest.log` and any crash report).
   them. Players in the village and the hall's owner are told, the chronicle, guards icon and Defence page show it; on
   the day the gates shut and the portcullis drops from noon, and at dusk the guards take battle stations and the
   villagers go in. Without a lookout, What next? says to build one.
+- **The realm treasury, for 1.7** (33.13, off until 1.7 is finished): every member of a realm pays a levy of its
+  daily takings into the realm treasury before the rest goes into its own (10% by default; the capital's owner picks
+  0, 5, 10 or 20% on the Realm tab). The treasury holds up to 256 emeralds for a Barony, 512 for a County, 1,024 for a
+  Duchy and 2,048 for a Kingdom. Anyone can give to it (click its icon with emeralds: one; shift-click: the stack; or
+  CobbleDollars with the pack); only the capital's owner, their friends and operators take from it (right-click). Its
+  tooltip lists the last 20 movements with the day and the reason. Realm research, relief riders and edicts will pay
+  from it.
 - **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
   captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
   journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built
@@ -72,6 +79,9 @@ asks for the steps, `latest.log` and any crash report).
   pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
   The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
   34.18's render layer.
+- The benchmark times our own code each tick (25.3, testers, benchmark servers only): with
+  `-Daliveworkplace.benchmark=true` the log gets our code's p50, p99 and worst tick each minute and a line for each
+  tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the

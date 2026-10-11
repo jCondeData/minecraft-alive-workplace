@@ -141,6 +141,15 @@ asks for the steps, `latest.log` and any crash report).
   finer house, the village a City, a festival in their honour, or nothing more at all. After the 10-heart story they
   give you a **keepsake**, once: "Dara's Lucky Pick" (an iron pickaxe with Fortune), "Dara's Grandmother's Seeds",
   "Dara's Secret Recipe" (a book with her pumpkin pie, and two pies) and nine more, one per job family.
+- **Founding a realm, for 1.7** (33.11, off until 1.7 is finished): a Town's hall gets a **Realm** tab on its Trade
+  page. Found a realm and the village is the capital of "the Barony of Thornholm"; one click adds any of your own (or
+  a friend's) villages within 2,048 blocks, and colonies join their mother's realm by themselves. Three villages with
+  a Town capital make a County, five with a City a Duchy, eight with two Cities a Kingdom: each rank up sends
+  fireworks over the capital, a chat line to every member's owner and a new title. The tab lists the members (the
+  capital crowned; rank, villagers, wellbeing, distance, owner), takes a banner for the realm's arms and a named Name
+  Tag for its name; members can leave and the capital can let one go. A broken capital passes the crown to the
+  biggest Town left, or the realm ends. The hall's name icon names the realm and "What next?" suggests one. New
+  settings `realms` and `realmMaxMembers` (12).
 - **The settlers set out, for 1.7** (33.9, off until 1.7 is finished): right-click the hall with the Colony Charter,
   its spot chosen, and two settlers volunteer (a builder and one more; never a guard, the only worker of a job, a
   Legend or a child; a married volunteer brings their partner). 64 logs, 64 planks, 64 cobblestone, 32 bread, 16

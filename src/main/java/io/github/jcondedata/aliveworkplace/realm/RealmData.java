@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.realm;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.hall.VillageBanners;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +31,10 @@ import org.jetbrains.annotations.Nullable;
  * The server-wide saved file {@code aliveworkplace_realms} (design note M33, "Save data"), kept in the overworld's data
  * storage so it is one file for the server; villages are named by dimension and hall position. ROADMAP 33.8 starts it
  * with the colonies' part: the orders on the road, the colonies founded, and each mother village's count and last
- * colony day. Everything is empty by default, so an older world loads unchanged; a part that can't be read is left
- * empty and logged, never a crash.
+ * colony day. 33.11 adds the realms themselves ({@link Realm}) and what the halls' rounds last saw of every village
+ * ({@link Known}: name, owner, rank, villagers, wellbeing), so a realm's tab reads its members without loading them.
+ * Everything is empty by default, so an older world loads unchanged; a part that can't be read is left empty and logged,
+ * never a crash.
  */
 public final class RealmData extends SavedData {
 	private static final String NAME = "aliveworkplace_realms";
@@ -118,6 +123,93 @@ public final class RealmData extends SavedData {
 		).apply(i, Cooldown::new));
 	}
 
+	/** A realm's arms (33.11): a banner design, as the hall keeps a village's colours. */
+	public static final Codec<VillageBanners.Colours> ARMS_CODEC = RecordCodecBuilder.create(i -> i.group(
+		DyeColor.CODEC.fieldOf("base").forGetter(VillageBanners.Colours::base),
+		BannerPatternLayers.CODEC.optionalFieldOf("patterns", BannerPatternLayers.EMPTY).forGetter(VillageBanners.Colours::patterns)
+	).apply(i, VillageBanners.Colours::new));
+
+	/** A village in a realm (33.11): its hall and the day it joined. */
+	public record Member(GlobalPos hall, long joined) {
+		public static final Codec<Member> CODEC = RecordCodecBuilder.create(i -> i.group(
+			GlobalPos.CODEC.fieldOf("hall").forGetter(Member::hall),
+			Codec.LONG.optionalFieldOf("joined", 0L).forGetter(Member::joined)
+		).apply(i, Member::new));
+	}
+
+	/**
+	 * A realm (33.11): its id, its own name (a Name Tag's; absent: the capital's), the capital, the members (the capital
+	 * first), the arms (absent until a banner sets them), the rank last counted (a {@code Realms.Rank} name, so a rank up
+	 * is noticed once) and the day it was founded. Later items add their keys (levy, treasury, research...) with defaults.
+	 */
+	public record Realm(UUID id, Optional<Component> name, GlobalPos capital, List<Member> members, Optional<VillageBanners.Colours> arms, String rank,
+						long founded) {
+		public static final Codec<Realm> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("id").forGetter(Realm::id),
+			ComponentSerialization.CODEC.optionalFieldOf("name").forGetter(Realm::name),
+			GlobalPos.CODEC.fieldOf("capital").forGetter(Realm::capital),
+			Member.CODEC.listOf().optionalFieldOf("members", List.of()).forGetter(Realm::members),
+			ARMS_CODEC.optionalFieldOf("arms").forGetter(Realm::arms),
+			Codec.STRING.optionalFieldOf("rank", "barony").forGetter(Realm::rank),
+			Codec.LONG.optionalFieldOf("founded", 0L).forGetter(Realm::founded)
+		).apply(i, Realm::new));
+
+		public Realm {
+			members = List.copyOf(members);
+		}
+
+		/** Whether {@code hall} is one of its villages. */
+		public boolean has(GlobalPos hall) {
+			return members.stream().anyMatch(m -> m.hall().equals(hall));
+		}
+
+		public Realm withName(Optional<Component> name) {
+			return new Realm(id, name, capital, members, arms, rank, founded);
+		}
+
+		public Realm withCapital(GlobalPos capital) {
+			return new Realm(id, name, capital, members, arms, rank, founded);
+		}
+
+		public Realm withMembers(List<Member> members) {
+			return new Realm(id, name, capital, members, arms, rank, founded);
+		}
+
+		public Realm withArms(Optional<VillageBanners.Colours> arms) {
+			return new Realm(id, name, capital, members, arms, rank, founded);
+		}
+
+		public Realm withRank(String rank) {
+			return new Realm(id, name, capital, members, arms, rank, founded);
+		}
+	}
+
+	/**
+	 * What a hall's last round saw of its village (33.11): its name, owner (and the owner's name), rank, villagers,
+	 * wellbeing in percent, and when. A realm's tab and its rank count read these for villages that aren't loaded.
+	 */
+	public record Known(GlobalPos hall, Component name, Optional<UUID> owner, String ownerName, String rank, int villagers, int wellbeing, long seen) {
+		public static final Codec<Known> CODEC = RecordCodecBuilder.create(i -> i.group(
+			GlobalPos.CODEC.fieldOf("hall").forGetter(Known::hall),
+			ComponentSerialization.CODEC.optionalFieldOf("name", Component.empty()).forGetter(Known::name),
+			UUIDUtil.CODEC.optionalFieldOf("owner").forGetter(Known::owner),
+			Codec.STRING.optionalFieldOf("ownerName", "").forGetter(Known::ownerName),
+			Codec.STRING.optionalFieldOf("rank", "hamlet").forGetter(Known::rank),
+			Codec.INT.optionalFieldOf("villagers", 0).forGetter(Known::villagers),
+			Codec.INT.optionalFieldOf("wellbeing", 0).forGetter(Known::wellbeing),
+			Codec.LONG.optionalFieldOf("seen", 0L).forGetter(Known::seen)
+		).apply(i, Known::new));
+
+		/** The same, ignoring when it was seen (whether a round has anything new to save). */
+		boolean sameAs(Known other) {
+			return hall.equals(other.hall) && name.equals(other.name) && owner.equals(other.owner) && ownerName.equals(other.ownerName)
+				&& rank.equals(other.rank) && villagers == other.villagers && wellbeing == other.wellbeing;
+		}
+	}
+
+	private final List<Realm> realms = new ArrayList<>();
+	private final List<Known> known = new ArrayList<>();
+
 	private final List<Order> orders = new ArrayList<>();
 	private final List<Founded> founded = new ArrayList<>();
 	private final List<Cooldown> cooldowns = new ArrayList<>();
@@ -189,6 +281,96 @@ public final class RealmData extends SavedData {
 		return new Cooldown(mother, -1, 0);
 	}
 
+	// ---- realms (33.11) -------------------------------------------------------------------------------------------------
+
+	/** Every realm, oldest first. */
+	public List<Realm> realms() {
+		return List.copyOf(realms);
+	}
+
+	/** The realm {@code hall} is in, or null. */
+	@Nullable
+	public Realm realmOf(GlobalPos hall) {
+		for (Realm r : realms) {
+			if (r.has(hall)) {
+				return r;
+			}
+		}
+		return null;
+	}
+
+	/** The realm with {@code id}, or null. */
+	@Nullable
+	public Realm realm(UUID id) {
+		for (Realm r : realms) {
+			if (r.id().equals(id)) {
+				return r;
+			}
+		}
+		return null;
+	}
+
+	/** Adds {@code realm}, or puts it in the place of the one with its id. */
+	public void putRealm(Realm realm) {
+		for (int i = 0; i < realms.size(); i++) {
+			if (realms.get(i).id().equals(realm.id())) {
+				realms.set(i, realm);
+				setDirty();
+				return;
+			}
+		}
+		realms.add(realm);
+		setDirty();
+	}
+
+	/** Ends the realm with {@code id}. */
+	public void removeRealm(UUID id) {
+		if (realms.removeIf(r -> r.id().equals(id))) {
+			setDirty();
+		}
+	}
+
+	/** What the last round of {@code hall} saw, or null. */
+	@Nullable
+	public Known known(GlobalPos hall) {
+		for (Known k : known) {
+			if (k.hall().equals(hall)) {
+				return k;
+			}
+		}
+		return null;
+	}
+
+	/** Every village a round has seen. */
+	public List<Known> knownVillages() {
+		return List.copyOf(known);
+	}
+
+	/** Keeps what a round saw of a village (saved only when something but the time changed). */
+	public void putKnown(Known seen) {
+		Known was = known(seen.hall());
+		if (was != null && was.sameAs(seen)) {
+			return;
+		}
+		known.removeIf(k -> k.hall().equals(seen.hall()));
+		known.add(seen);
+		setDirty();
+	}
+
+	/** Forgets a village whose hall is gone. */
+	public void forgetKnown(GlobalPos hall) {
+		if (known.removeIf(k -> k.hall().equals(hall))) {
+			setDirty();
+		}
+	}
+
+	/** Forgets every realm and village seen (tests). */
+	public void clearRealms() {
+		realms.clear();
+		known.clear();
+		setDirty();
+	}
+
 	/** Forgets everything about colonies (tests). */
 	public void clearColonies() {
 		orders.clear();
@@ -205,6 +387,8 @@ public final class RealmData extends SavedData {
 		Founded.CODEC.listOf().encodeStart(ops, founded).result().ifPresent(t -> colonies.put("founded", t));
 		tag.put("colonies", colonies);
 		Cooldown.CODEC.listOf().encodeStart(ops, cooldowns).result().ifPresent(t -> tag.put("cooldowns", t));
+		Realm.CODEC.listOf().encodeStart(ops, realms).result().ifPresent(t -> tag.put("realms", t));
+		Known.CODEC.listOf().encodeStart(ops, known).result().ifPresent(t -> tag.put("known", t));
 		return tag;
 	}
 
@@ -215,6 +399,8 @@ public final class RealmData extends SavedData {
 		read(Order.CODEC, colonies.get("orders"), ops, data.orders, "colony orders");
 		read(Founded.CODEC, colonies.get("founded"), ops, data.founded, "founded colonies");
 		read(Cooldown.CODEC, tag.get("cooldowns"), ops, data.cooldowns, "colony cooldowns");
+		read(Realm.CODEC, tag.get("realms"), ops, data.realms, "realms");
+		read(Known.CODEC, tag.get("known"), ops, data.known, "villages seen");
 		return data;
 	}
 

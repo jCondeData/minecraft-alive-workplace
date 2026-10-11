@@ -369,6 +369,7 @@ public final class ColonyArrival {
 		GlobalPos colonyAt = GlobalPos.of(level.dimension(), hall);
 		data.removeOrder(order.mother());
 		data.recordFounded(order.mother(), colonyAt, day);
+		io.github.jcondedata.aliveworkplace.realm.Realms.colonyFounded(level, order.mother(), colonyAt); // a colony joins its mother's realm (33.11)
 		Caravans.Data caravans = Caravans.Data.get(level);
 		caravans.setWants(hall, colony, List.of());
 		caravans.addSisters(motherHall, hall);

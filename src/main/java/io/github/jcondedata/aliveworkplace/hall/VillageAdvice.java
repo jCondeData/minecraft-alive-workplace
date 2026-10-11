@@ -119,6 +119,10 @@ public final class VillageAdvice {
 		}
 		// A Legend who lacks only one condition (29.4)
 		tips.addAll(io.github.jcondedata.aliveworkplace.legend.LegendsPage.tips(level, hall));
+		// A realm (33.11): a Town or better with an owner, in no realm yet
+		if (io.github.jcondedata.aliveworkplace.realm.Realms.suggest(level, hall)) {
+			tips.add(new Tip("realm", Items.GOLDEN_HELMET, io.github.jcondedata.aliveworkplace.realm.Realms.FOUNDING_RANK.title()));
+		}
 		// A colony (33.8): a village of the colony rank (a City) that could send one now
 		if (io.github.jcondedata.aliveworkplace.colony.Colonies.suggest(level, hall)) {
 			tips.add(new Tip("colony", ModItems.COLONY_CHARTER, io.github.jcondedata.aliveworkplace.colony.Colonies.COST,

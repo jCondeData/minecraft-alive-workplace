@@ -139,6 +139,10 @@ public final class VillageHallScreen {
 			nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank_next", next.title(), next.villagers, score.villagers(), next.buildings,
 				score.buildings(), next.research, score.research()), ChatFormatting.YELLOW));
 		}
+		Component realm = io.github.jcondedata.aliveworkplace.realm.Realms.hallLine(level, hall); // 33.11
+		if (realm != null) {
+			nameLore.add(line(realm, ChatFormatting.GOLD));
+		}
 		Component goods = io.github.jcondedata.aliveworkplace.trade.TradePage.knownAndShort(level, hall); // 33.4
 		if (goods != null) {
 			nameLore.add(line(goods, ChatFormatting.YELLOW));

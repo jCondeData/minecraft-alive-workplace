@@ -3196,7 +3196,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   next? suggests each when the village lacks its job and its disaster can come there. Done when: the three pass
   `check.py`; a render package shows each front and back; a builder builds each in a test and a jobless villager there
   takes the job with its item; the `defences` scene films them too.
-- [ ] **32.20** **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
+- [x] **32.20** (review: pending 2026-10-11) **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
   `BlueprintUpgrades`), with the minecraft-architect skill: **Palisade II** (a fighting step, and a ditch of pointed
   dripstone stakes in front), **Stone Wall II** (timber hoardings over the battlements: a roofed walkway with murder
   holes), **Wall Tower II** (a roofed top with an archers' gallery, two stations a side) and **Gatehouse II** (a

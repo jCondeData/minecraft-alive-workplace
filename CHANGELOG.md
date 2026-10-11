@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Defence upgrades** (32.20): **Palisade II** (a fighting step, and a ditch of pointed dripstone stakes in front),
+  **Stone Wall II** (timber hoardings: a roofed walkway with murder holes), **Wall Tower II** (a roofed top with an
+  archers' gallery, two stations a side) and **Gatehouse II** (a barbican: a second gate and portcullis, murder holes
+  over the gateway). In a siege both portcullises drop and the barbican's gate is broken first; the guards shut both
+  gates at night.
 - **Houses for the answering jobs** (32.19): the Blueprint Table has a **Fire Station** (a stone ground floor with the
   Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), a **Well House** (a roofed
   well down to water with the Well Keeper's cauldron, a trough and benches) and a **Physician's House** (the brewing

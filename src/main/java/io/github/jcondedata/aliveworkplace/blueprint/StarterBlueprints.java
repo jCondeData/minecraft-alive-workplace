@@ -365,6 +365,14 @@ public final class StarterBlueprints {
 	public static final Entry WALL_TOWER = new Entry(AliveWorkplace.id("wall_tower"), new Vec3i(5, 10, 5));
 	/** A stone gatehouse (its gates shut at night). */
 	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
+	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes. */
+	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 6, 4));
+	/** Timber hoardings over the battlements: a roofed walkway with murder holes. */
+	public static final Entry STONE_WALL_2 = new Entry(AliveWorkplace.id("stone_wall_2"), new Vec3i(7, 9, 4));
+	/** A roofed top with an archers' gallery, two stations a side. */
+	public static final Entry WALL_TOWER_2 = new Entry(AliveWorkplace.id("wall_tower_2"), new Vec3i(5, 12, 5));
+	/** A barbican in front: a second gate and portcullis, murder holes over the gateway. */
+	public static final Entry GATEHOUSE_2 = new Entry(AliveWorkplace.id("gatehouse_2"), new Vec3i(11, 9, 10));
 
 	/**
 	 * Buildable copies of our plains village houses (ROADMAP 27.11), one workplace per job the Steward asks for: the
@@ -415,7 +423,8 @@ public final class StarterBlueprints {
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);
 
 	/** Walls and gates. */
-	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, WALL_TOWER, GATEHOUSE);
+	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_2, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, STONE_WALL_2, WALL_TOWER, WALL_TOWER_2,
+		GATEHOUSE, GATEHOUSE_2);
 
 	private StarterBlueprints() {
 	}

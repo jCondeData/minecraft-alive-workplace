@@ -144,7 +144,7 @@ public class SiegeGameTests implements FabricGameTest {
 		int depth = build.size().getZ();
 		// Its back row (the blueprint's last z but one for the Gatehouse, whose last row is the doorstep) stands in the front wall.
 		int x0 = 14 - width / 2;
-		int z0 = build == StarterBlueprints.GATEHOUSE ? FRONT - 3 : FRONT - (depth - 1);
+		int z0 = gatehouse(build) ? FRONT - 3 : FRONT - (depth - 1);
 		for (int y = 2; y <= 5; y++) {
 			for (int x = WEST; x <= EAST; x++) {
 				helper.setBlock(new BlockPos(x, y, BACK), Blocks.STONE_BRICKS);
@@ -182,8 +182,13 @@ public class SiegeGameTests implements FabricGameTest {
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
 		double x = mob.getX() - base.getX();
 		double z = mob.getZ() - base.getZ();
-		int inside = yard.build() == StarterBlueprints.GATEHOUSE ? FRONT - 3 : FRONT - 1;
+		int inside = gatehouse(yard.build()) ? FRONT - 3 : FRONT - 1;
 		return mob.isAlive() && z < inside && z > BACK && x > WEST && x < EAST + 1;
+	}
+
+	/** The Gatehouse or Gatehouse II (32.20): their towers' back row stands in the yard's wall, the barbican out in front. */
+	private static boolean gatehouse(StarterBlueprints.Entry build) {
+		return build == StarterBlueprints.GATEHOUSE || build == StarterBlueprints.GATEHOUSE_2;
 	}
 
 	private static boolean isFenceGate(ServerLevel level, BlockPos pos) {
@@ -327,6 +332,138 @@ public class SiegeGameTests implements FabricGameTest {
 					+ ", gate " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 2)));
 			}
 		});
+	}
+
+	/**
+	 * Gatehouse II (32.20), the 32.4 gate test again. The same yard with a Gatehouse, then with a Gatehouse II: when its
+	 * siege begins both portcullises drop (twelve bars), both gates are shut, and the breach is the middle of the
+	 * barbican's gate, the first thing the rams meet (all of the barbican's gate and portcullis go before the ram walks
+	 * in to the inner one); the pillager behind the ram takes longer to get through than through the Gatehouse, and the
+	 * fence gates of both wait for a builder.
+	 */
+	//$ gametest_ticks_batch AREA '12000' '"siegeGatehouseII"'
+	@GameTest(template = AREA, timeoutTicks = 12000, batch = "siegeGatehouseII")
+	public void aGatehouseIITakesLongerThanAGatehouse(GameTestHelper helper) {
+		Yard first = yard(helper, StarterBlueprints.GATEHOUSE);
+		ServerLevel level = first.level();
+		Mob[] mobs = {raider(helper, first, Culture.Role.RAM, 14.5, 24.5), raider(helper, first, Culture.Role.RANGED, 14.5, 27.5)};
+		VillageRaids.track(level, first.hall(), first.culture(), List.of(mobs[0], mobs[1]));
+		long[] took = {-1, -1}; // through the Gatehouse; when the Gatehouse II's siege began
+		Yard[] second = new Yard[1];
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (took[0] < 0) {
+				if (through(helper, first, mobs[1])) {
+					took[0] = tick;
+					// The same yard again, with Gatehouse II in its wall.
+					mobs[0].discard();
+					mobs[1].discard();
+					first.villager().discard();
+					Sieges.lift(level, first.siege(helper));
+					VillageRaids.forget(first.hall());
+					BuildSiteManager.get(level).forgetFinished(new BlueprintData.Placement(level.dimension().location(), first.origin(), Rotation.NONE, Mirror.NONE));
+					for (int x = WEST; x <= EAST; x++) {
+						for (int y = 2; y <= 10; y++) {
+							for (int z = FRONT - 3; z <= FRONT + 7; z++) {
+								helper.setBlock(new BlockPos(x, y, z), Blocks.AIR);
+							}
+						}
+					}
+					second[0] = rebuild(helper, StarterBlueprints.GATEHOUSE_2, first.culture());
+					Yard yard = second[0];
+					mobs[0] = raider(helper, yard, Culture.Role.RAM, 14.5, 24.5);
+					mobs[1] = raider(helper, yard, Culture.Role.RANGED, 14.5, 27.5);
+					VillageRaids.track(level, yard.hall(), yard.culture(), List.of(mobs[0], mobs[1]));
+					took[1] = tick;
+					ThreatData.Siege siege = yard.siege(helper);
+					for (int x = 4; x <= 6; x++) {
+						for (int z : new int[] {3, 7}) {
+							helper.assertTrue(level.getBlockState(yard.at(x, 3, z)).is(Blocks.IRON_BARS), "the drawn-up bars are gone at x " + x + ", z " + z);
+							helper.assertTrue(level.getBlockState(yard.at(x, 2, z)).is(Blocks.IRON_BARS) && level.getBlockState(yard.at(x, 1, z)).is(Blocks.IRON_BARS),
+								"a portcullis didn't drop at x " + x + ", z " + z);
+						}
+						helper.assertTrue(!level.getBlockState(yard.at(x, 1, 2)).getValue(FenceGateBlock.OPEN), "the inner gate is open at x " + x);
+						helper.assertTrue(!level.getBlockState(yard.at(x, 1, 8)).getValue(FenceGateBlock.OPEN), "the barbican's gate is open at x " + x);
+					}
+					helper.assertTrue(siege.portcullis.size() == 12, "twelve bars dropped: " + siege.portcullis.size());
+					helper.assertTrue(siege.breach != null && siege.breach.equals(yard.at(5, 1, 8)), "the breach is the barbican's middle gate: " + siege.breach);
+				} else if (tick > 2600) {
+					helper.fail("the pillager isn't through the Gatehouse within 2600 ticks: it is at " + mobs[1].position());
+				}
+				return;
+			}
+			Yard yard = second[0];
+			long since = tick - took[1];
+			if (through(helper, yard, mobs[1])) {
+				helper.assertTrue(since > took[0], "through Gatehouse II in " + since + " ticks, through the Gatehouse in " + took[0]);
+				helper.assertTrue(level.getBlockState(yard.at(5, 1, 8)).isAir() && level.getBlockState(yard.at(5, 1, 7)).isAir()
+					&& level.getBlockState(yard.at(5, 1, 3)).isAir() && level.getBlockState(yard.at(5, 1, 2)).isAir(), "the pillager is through, but the middle way isn't broken");
+				List<BlockPos> broken = ThreatData.get(level).brokenGates(yard.hall());
+				helper.assertTrue(broken.contains(yard.at(5, 1, 8)) && broken.contains(yard.at(5, 1, 2)) && !broken.contains(yard.at(5, 1, 7)),
+					"for the builder: " + broken);
+				helper.succeed();
+			} else if (since > 8500) {
+				helper.fail("the pillager isn't through Gatehouse II after 8500 ticks: it is at " + mobs[1].position() + ", the ram at " + mobs[0].position()
+					+ ", outer gate " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 8)) + ", outer bars " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 7))
+					+ ", inner bars " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 3)) + ", inner gate " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 2)));
+			}
+		});
+	}
+
+	/**
+	 * The defence upgrades (32.20) are what Gates, sieges and battle stations know: all four are defences with battle
+	 * stations and keep most of their base; Gatehouse II is a gate build whose six fence gates (both gates) the hall's
+	 * round opens and shuts; Wall Tower II's gallery has two stations a side; Stone Wall II's roofed walkway is still a
+	 * station all along.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"defenceUpgrades"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "defenceUpgrades")
+	public void theDefenceUpgradesAreKnown(GameTestHelper helper) {
+		Yard yard = yard(helper, StarterBlueprints.GATEHOUSE_2);
+		ServerLevel level = yard.level();
+		java.util.Map<StarterBlueprints.Entry, StarterBlueprints.Entry> bases = java.util.Map.of(StarterBlueprints.PALISADE_2, StarterBlueprints.PALISADE,
+			StarterBlueprints.STONE_WALL_2, StarterBlueprints.STONE_WALL, StarterBlueprints.WALL_TOWER_2, StarterBlueprints.WALL_TOWER,
+			StarterBlueprints.GATEHOUSE_2, StarterBlueprints.GATEHOUSE);
+		for (var e : bases.entrySet()) {
+			ResourceLocation id = e.getKey().id();
+			helper.assertTrue(StarterBlueprints.DEFENCES.contains(e.getKey()), id + " isn't in the Blueprint Table's defences");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.baseOf(id).equals(Optional.of(e.getValue().id())), id + " doesn't upgrade " + e.getValue().id());
+			helper.assertTrue(Sieges.isDefence(id) && io.github.jcondedata.aliveworkplace.guard.BattleStations.hasStations(id), id + " isn't a defence with stations");
+			var up = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, id).orElseThrow();
+			var base = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, e.getValue().id()).orElseThrow();
+			java.util.Map<BlockPos, BlockState> at = new java.util.HashMap<>();
+			up.blocks().forEach(b -> at.put(b.pos(), b.state()));
+			long solid = base.blocks().stream().filter(b -> !b.state().isAir()).count();
+			long kept = base.blocks().stream().filter(b -> !b.state().isAir() && b.state().equals(at.get(b.pos()))).count();
+			helper.assertTrue(kept >= solid * 0.6, id + " keeps only " + kept + " of its base's " + solid + " blocks");
+		}
+		helper.assertTrue(Sieges.isGated(StarterBlueprints.GATEHOUSE_2.id()) && !Sieges.isGated(StarterBlueprints.WALL_TOWER_2.id()), "Gatehouse II's gates aren't the village's");
+		// The hall's round: open in the morning, shut at nightfall, both gates.
+		int opened = Gates.shut(level, yard.hall(), false);
+		helper.assertTrue(opened == 6, "the round opened " + opened + " fence gates, not six");
+		helper.assertTrue(level.getBlockState(yard.at(5, 1, 8)).getValue(FenceGateBlock.OPEN) && level.getBlockState(yard.at(5, 1, 2)).getValue(FenceGateBlock.OPEN), "a gate stayed shut");
+		int shut = Gates.shut(level, yard.hall(), true);
+		helper.assertTrue(shut == 6, "the round shut " + shut + " fence gates, not six");
+		// Battle stations
+		var tower = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, StarterBlueprints.WALL_TOWER_2.id()).orElseThrow();
+		List<BlockPos> spots = io.github.jcondedata.aliveworkplace.guard.BattleStations.spots(tower);
+		for (int side = 0; side < 4; side++) {
+			final int s = side;
+			long n = spots.stream().filter(p -> p.getY() == 7 && switch (s) {
+				case 0 -> p.getZ() == 0;
+				case 1 -> p.getZ() == 4;
+				case 2 -> p.getX() == 0;
+				default -> p.getX() == 4;
+			}).count();
+			helper.assertTrue(n == 2, "Wall Tower II's side " + side + " has " + n + " stations, not two: " + spots);
+		}
+		var wall = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, StarterBlueprints.STONE_WALL_2.id()).orElseThrow();
+		long walk = io.github.jcondedata.aliveworkplace.guard.BattleStations.spots(wall).stream().filter(p -> p.getY() == 3 && p.getZ() == 1).count();
+		helper.assertTrue(walk == 7, "Stone Wall II's roofed walkway has " + walk + " stations, not seven");
+		var barbican = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, StarterBlueprints.GATEHOUSE_2.id()).orElseThrow();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.BattleStations.spots(barbican).stream().anyMatch(p -> p.getZ() >= 4),
+			"no station on the barbican");
+		helper.succeed();
 	}
 
 	/**

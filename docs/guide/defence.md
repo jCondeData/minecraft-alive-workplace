@@ -88,6 +88,11 @@ The Blueprint Table has a wooden **Palisade**, a **Palisade Gate**, a **Stone Wa
 the corners and a **Gatehouse**. Stand inside the village and place them facing out. In a village with a hall and a
 guard, the gates are **shut at nightfall** and opened in the morning (you can still open them yourself).
 
+Each has an upgrade: click the II onto the finished build and a builder adds only what's new. **Palisade II** has a
+fighting step and a ditch of dripstone stakes in front, **Stone Wall II** a roofed timber walkway with murder holes,
+**Wall Tower II** a roofed archers' gallery, and **Gatehouse II** a barbican with a second gate and portcullis: in a
+siege raiders have to break both, so it holds several times as long.
+
 ## Research that helps
 
 At the scholar's lectern, **Drill** makes guards hit harder, **Fortification** lets them turn aside blows, and **Warding**

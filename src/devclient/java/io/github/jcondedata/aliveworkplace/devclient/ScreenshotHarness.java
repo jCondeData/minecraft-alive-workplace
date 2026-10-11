@@ -3087,7 +3087,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private void galleryScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		List<StarterBlueprints.Entry> all = "decor".equals(System.getProperty("aliveworkplace.scene")) ? StarterBlueprints.DECORATIONS
-			// the walls and gates, then the answering jobs' houses (ROADMAP 32.19): the Fire Station, Well House, Physician's House
+			// the walls and gates, each beside its upgrade (ROADMAP 32.20), then the answering jobs' houses (ROADMAP 32.19): the
+			// Fire Station, Well House, Physician's House
 			: "defences".equals(System.getProperty("aliveworkplace.scene"))
 				? java.util.stream.Stream.concat(StarterBlueprints.DEFENCES.stream(), StarterBlueprints.ANSWERING_HOUSES.stream()).toList()
 			: "workshops".equals(System.getProperty("aliveworkplace.scene")) ? List.of(StarterBlueprints.TINKERS_WORKSHOP, StarterBlueprints.TINKERS_WORKSHOP_2, StarterBlueprints.NETHER_GATE, StarterBlueprints.NETHER_GATE_2)

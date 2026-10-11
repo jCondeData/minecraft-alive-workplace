@@ -372,6 +372,17 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown> REQUEST_LET_DOWN =
 		Attachment.saved("request_let_down", io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown.CODEC);
 
+	/** A retired elder (ROADMAP 34.20): the day they retired and the trade they left; they never take a job again. Absent: not retired. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Retired> RETIRED = Attachment.saved("retired", io.github.jcondedata.aliveworkplace.people.Retirement.Retired.CODEC);
+	/** A successor shadowing the elder they take over from (34.20): who, and since which day. Absent: not shadowing. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Shadow> RETIRE_SHADOW = Attachment.saved("retire_shadow", io.github.jcondedata.aliveworkplace.people.Retirement.Shadow.CODEC);
+	/** An elder who would like to retire but has nobody to take over (34.20, shown on the hall's list). Absent: false. */
+	public static final Attachment<Boolean> RETIRE_WAITING = Attachment.saved("retire_waiting", com.mojang.serialization.Codec.BOOL);
+	/** The pupil a retired elder teaches (34.20). Absent: none. */
+	public static final Attachment<java.util.UUID> MENTORING = Attachment.saved("mentoring", net.minecraft.core.UUIDUtil.CODEC);
+	/** A Novice or Apprentice taught by a retired elder (34.20: they learn 50% faster) until a game time. Absent: nobody teaches them. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Teacher> TAUGHT_BY = Attachment.saved("taught_by", io.github.jcondedata.aliveworkplace.people.Retirement.Teacher.CODEC);
+
 	public static void init() {
 	}
 

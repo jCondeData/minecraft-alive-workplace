@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): off until that
 expansion is finished, and several of its pieces are not built yet (see Known limits).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.18
 
 ## What a player sees
 
@@ -97,6 +97,7 @@ level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 | `vintners` | on from 1.8 | Off: no Vintner job, and Vintners already hired stand idle |
 | `tailors` | on from 1.8 | Off: no Tailor job, and Tailors already hired stand idle |
 | `printers` | on from 1.8 | Off: no Printer job, Printers already hired stand idle, no Spread the news quest |
+| `classOutfits` | on from 1.8 | Off: villagers wear only their job's outfit (no class layer, no elder's face) and no class packet is sent |
 
 ## Saved data
 
@@ -162,8 +163,11 @@ drawn, three versions of each, and the owner picks on a picker page; until he do
 - What a villager wears, bottom to top: their class's layer, then the elder's face if they are an elder (children wear
   their class's too, never the elder's; with `villagerAges` off nobody wears the elder's face). `people/ClassOutfits`
   says this for 34.18's render layer.
-- Nothing draws these layers in game yet: the client render layer and the packet that tells the client a villager's
-  class and age are 34.18.
+- In game (34.18): two client render layers on the villager model (never the zombie villager's), the class's over the
+  job's outfit and then the elder's face, on grown villagers and children alike. The client learns each villager's
+  class and stage of life from a small packet (`aliveworkplace:class_look`: entity id, class, layer, stage) sent when a
+  player starts tracking the villager and again when either changes (a household rises or falls, a child takes their
+  parents' class, a villager becomes an elder). `classOutfits` off: nothing is sent or drawn. Scene `class_outfits`.
 - Recipes: `tools/textures/art/classes.py` (`PICKED` names the version shipped). The picker page:
   `python3 tools/textures/picks/classes_page.py` writes `build/texture-picks/classes/index.html` with every version on
   the villager model over six jobs in all seven biomes; picks and notes are saved in its `classes` collection.

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Retirement and apprentices** (34.20, 1.8): an elder with a job retires once a jobless villager can take over (their
+  own child first), at most one a village every 3 days and never while they hold a site, a quarry, Pokémon, fossils or
+  parcels. The successor spends 2 days "learning from Bram", then takes the workstation, the job one level below and its
+  fields, routes and orders. Retired elders keep their trades, never work again, and mentor Novices and Apprentices of
+  their old trade, who learn 50% faster ("taught by Bram"). Chronicle entries; config `elderRetirement`.
 - **The player guide** (22.10): a website for players, the link to send friends
   (https://jcondedata.github.io/minecraft-alive-workplace/player-guide/): getting started, every job and how to set it
   up, the Builder and blueprints, the Village Hall, village life, quests, festivals and markets, trade and caravans,
@@ -27,6 +32,9 @@ asks for the steps, `latest.log` and any crash report).
   pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
   The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
   34.18's render layer.
+- **Dressed by class, in game** (34.18): Artisans, Burghers and Nobles now wear their class over their job's outfit,
+  children too, and elders have grey brows and a beard; it changes as soon as a household rises or falls or a villager
+  becomes an elder. Zombie villagers never wear it. `classOutfits` in the settings turns it off.
 
 ### Fixed
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the

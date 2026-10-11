@@ -1,12 +1,12 @@
-# Elders and the Evergreen Charm
+# Elders, retirement and the Evergreen Charm
 
 Life stages for villagers: after a long grown life a villager becomes an elder and, in time, passes in their sleep,
 unless a player gives a good elder an Evergreen Charm. Part of 1.8 (Classes and luxuries): off for players until 1.8
 is finished. Built so far: ages, the slower walk, the "quiet old age" mood, the elders' chatter and the chronicle's note
-(34.19), the passing and the charm (34.19a). Still planned and not in the game: the elder look (34.18), retirement and
-mentoring (34.20) and the seeding of everyone's age (34.22); this page grows with them.
+(34.19), the passing and the charm (34.19a), retirement, apprentices and mentoring (34.20). Still planned and not in the
+game: the elder look (34.18) and the seeding of everyone's age (34.22); this page grows with them.
 
-Roadmap items: 34.19, 34.19a, B95, B99, B102
+Roadmap items: 34.19, 34.19a, 34.20, B95, B99, B102
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -26,6 +26,22 @@ An elder:
   village, once.", "Sit a while. The young ones are always in a hurry."
 
 They do not look any different yet: the elder look comes with the class outfits (34.18).
+
+**Retirement.** An elder with a job retires once someone can take over, at most one villager a village every 3 days.
+The successor is their own grown child without a job, else any jobless grown villager whose class the job allows
+([Classes](classes.md)). The chronicle says "Tom is learning the Farmer trade from Bram, who would like to retire", and
+for 2 days Tom follows Bram about with "learning from Bram" over his head. Then Tom takes Bram's workstation and the job
+one level below Bram's (at least Apprentice: an Expert's successor is a Journeyman, a Novice's an Apprentice), with the
+job's assignments: field, tree farm, orchard, courier routes, patrol route, ball orders and who hired them. The
+chronicle says "Bram retired from the Farmer trade after 132 days grown" and "Tom took over the Farmer trade from Bram,
+as Journeyman". With nobody to take over, the elder keeps working and their card on the hall's list says "Bram would
+like to retire: the village needs a jobless villager to take over". An elder never retires while holding something for
+a player or a build: a site or a queue (builder), a quarry (miner), Pokémon in their daycare, fossils being revived,
+parcels on their round.
+
+A **retired** elder never takes a job again, but players can still trade with them (they keep their trades). Their
+card says "Retired Farmer · mentors the young". By day they stand by a Novice or Apprentice of their old trade in the
+village, who learns 50% faster ("taught by Bram" over their head and on their card), or else sit by the hall.
 
 Forty elder days later their time comes: they pass away in
 their sleep (or, with no bed, once night has fallen) and leave a grave. The village is told in chat, the chronicle
@@ -78,12 +94,25 @@ undying, a golden apple, 2 emeralds and a heart of the sea (any arrangement). Sn
   left; an elder always gets a grave, even with no job and no name.
 - **Brought back.** An elder whose time had come and whom an Undertaker revives gets `passed_day` = that day and 40 more
   days from it (otherwise they would pass again the same night and waste the golden apple). A charm clears it.
+- **Retirement** (`people/Retirement`) runs in the hall's round, after the passing. A successor's shadowing ends in the
+  hand-over once 2 `Chronicle.day`s have passed and the elder holds nothing; if the elder dies, retires otherwise or the
+  successor takes another job, it is called off. While anyone in the village shadows, and for 3 days after a
+  retirement, no new one starts. The oldest elder goes first; one who holds something is passed over until they don't.
+  At the hand-over the elder lets go of the workstation (`Stations.releaseOld`) and becomes jobless with their trades put
+  back; the successor gets it through `VillageHalls.assign` (or the job by order when the elder had no workstation),
+  then the level and its least xp. The assignments are moved as they are (`Retirement.ASSIGNMENTS`).
+- **Never re-employed.** `WorkerLimits.refuse` turns down any job for a retired villager (by themselves at a
+  workstation, or by order), and their search for a workstation sees none (`WorkerLimits.hideFull`).
+- **Mentoring.** Each round a retired elder picks a Novice or Apprentice of their old trade (the same pupil as before,
+  else the nearest) and teaches them for 90 seconds (`taught_by`), renewed every round. Taught, every xp they earn is
+  half again: through `Traits.xp` (builders' levels) and from trades (`Villager.rewardTradeXp`, a mixin). The retired
+  elder walks to the pupil by day, or to the hall.
 - **Ageless** is one saved flag. It only stops the passing: an ageless elder keeps the slower walk, the quiet old age
   and the talk.
 
 ## Switches
 
-All four belong to 1.8 (`Expansions.M34`): off for players, whatever the file says, until 1.8 is finished.
+All five belong to 1.8 (`Expansions.M34`): off for players, whatever the file says, until 1.8 is finished.
 
 - `villagerAges` (true): villagers become elders. Off: nobody is an elder, so nobody is slowed, has the quiet old age,
   talks like one or passes; `adult_since` is kept, so turning it on again makes them the elders they were all along.
@@ -92,6 +121,8 @@ All four belong to 1.8 (`Expansions.M34`): off for players, whatever the file sa
 - `elderPassing` (true; owner, 2026-10-06): elders pass after 40 elder days. Off: nobody dies of old age, and a charm is
   refused as not needed.
 - `agelessElders` (true): Evergreen Charms work. Off: charms are refused and kept; elders already ageless stay ageless.
+- `elderRetirement` (true, 34.20): elders retire and mentor. Off: nobody starts retiring; a shadowing under way still
+  ends in its hand-over, and those retired stay retired and still mentor.
 
 ## Saved data
 
@@ -101,7 +132,11 @@ On the villager (attachments; every one optional, so older saves load unchanged)
 - `ageless` (absent: false);
 - `happy_streak`: {`days` 0, `day` 0}, the happy days running and the last day counted (absent: none);
 - `passed_day` (absent: never brought back from old age);
-- `elder_noted` (absent: the chronicle hasn't noted them as an elder yet).
+- `elder_noted` (absent: the chronicle hasn't noted them as an elder yet);
+- `retired`: {`day`, `trade`, `level`}, a retired elder (absent: not retired);
+- `retire_shadow`: {`elder`, `elder_name`, `since`}, a successor learning from an elder (absent: not shadowing);
+- `retire_waiting` (absent: false), an elder with nobody to take over;
+- `mentoring` (a pupil's id) and `taught_by`: {`mentor`, `mentor_name`, `until`} (absent: no teaching).
 
 The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknown kind as `FOUNDED`.
 
@@ -132,6 +167,15 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 - 34.19a: the hall's card warns from 10 days before, so the player knows when a charm is needed.
 - 34.19a: the charm is a sneak-right-click on any villager; it never opens trades and never changes a job.
 
+- 34.20: retirement starts in the hall's round and runs on its days; the 3 days count from a retirement, and a
+  shadowing under way also holds the next one back, so a village never has two at once.
+- 34.20: a retired elder keeps their trades (no restocking without a workstation) and the level they had; a retired
+  Master still counts as a Master for the Evergreen Charm.
+- 34.20: "a jobless grown villager" leaves out elders and the retired: an elder never takes over from another.
+- 34.20: the successor's own trades are those of their new level (vanilla makes them when the job is new).
+- 34.20: "taught" lasts 90 seconds after the round that saw the pair, so a mentor who stops (the pupil levels up past
+  Apprentice, either leaves the village) stops teaching within a round.
+
 ## Known limits
 
 - Planned, not built, so no player sees it (34.18): the elder look. Its art is drawn (34.17: `class/elder.png`, grey
@@ -140,13 +184,10 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
   34.18 should draw the look for whoever `LifeStages.stage` calls an elder, and send its packet where the chronicle's
   note is written (`LifeStages.becameElder`).
 - Only the walks our jobs ask for are slower (through `Walker`); vanilla's own strolls are not.
-- Planned, not built (34.20): an elder with a job retires once a successor can take over (their own grown child
-  without a job, else any jobless grown villager whose class the job allows, see [Classes](classes.md)), at most one
-  villager a village every 3 days; the retired elder mentors a Novice or Apprentice of their old trade. An elder will
-  never retire while holding something for a player or a build.
+- The successor's shadowing walk and the mentor's walk use the villager's own tick, so with the village far from
+  every player nothing moves; the hand-over still happens in the hall's round.
+- A retired elder "sits by the hall": they walk there and stand; there is no seat to sit on yet.
 - Until 34.22 seeds ages, only children who grow up from now on ever become elders.
-- A Master who retires (34.20) and loses their level would stop counting as a Master; 34.20 must keep the old level
-  or its own flag for this check.
 - The happy-day count needs a Village Hall and `villagerMoods` on; without them only Masters, Gifted and Legends qualify.
 - An elder in a village whose hall is never loaded at night doesn't pass until it is.
 
@@ -173,3 +214,12 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
   (`anElderPassesInTheirSleepAndLeavesAGrave`); each switch off, and a child grown up getting today
   (`theConfigSwitches`).
 - Showcase scene: `ageless_elder` (a refusal, the charm taken, the night after 45 elder days, the badge).
+- GameTests: `RetirementGameTests`: the full hand-over in order, the own child chosen over another, two days of
+  shadowing kept through a save, then the composter, the level one below, the assignments, the kept trades and both
+  chronicle lines (`aFullHandOverInOrder`); each "never while" case and the start once nothing is held
+  (`neverWhileTheyHoldSomething`); nobody to take over and the hall's line, `elderRetirement` off, one at a time and 3
+  days apart, a Novice's successor an Apprentice, a Master's an Expert, a retired Master still a Master
+  (`oneRetirementEveryThreeDays`); a retired elder refused a workstation, a job by order and the successor's place
+  (`aRetiredElderIsNeverReEmployed`); the mentor's 50% and "taught by Bram" (`aMentorTeachesFiftyPercentFaster`); the
+  switch (`theConfigSwitch`).
+- Showcase scene: `retirement` (learning from Bram, the hand-over and Bram's card, taught by Bram).

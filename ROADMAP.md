@@ -3871,7 +3871,7 @@ on a real world.
   Each previewed on the villager model in every biome, over six different jobs. Until the owner picks, v1 of each is
   the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
   wired in as the textures.
-- [ ] **34.18** **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
+- [x] **34.18** (review: pending 2026-10-11) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
   and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
   villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new
   `Platform` event) and whenever either changes; `classOutfits` in the config turns the layers off. The owner's picks
@@ -3898,7 +3898,7 @@ on a real world.
   it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
   (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
   40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
-- [ ] **34.20** **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
+- [x] **34.20** (review: pending 2026-10-11) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
     (34.8); with nobody, the elder keeps working and the hall says "Bram would like to retire: the village needs a
@@ -4417,6 +4417,7 @@ item waits.
 
 ## Notes / blocked
 
+- 2026-10-11 lane-d-1011-0332: 34.18 and 34.20 are built and ticked on `wip/lane-d` but not yet full-built together. The first full build on the merge failed 3 tests: B104 (known flake), B107 (LegendGuests, filed by lane b) and PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap ("no barrel"; passes on main CI, cause not found, maybe a flake); the rerun was cut off at the end of the run. Next lane-d run: merge `wip/lane-d` into main, run the full build, look at the heirloom test if it fails again, push.
 - **The player guide (22.10, lane-d-1011-0332, 2026-10-11): published at `/player-guide/`, not `/guide/`.** The Guide
   Book's showcase scene is named `guide`, so the showcase site's `/guide/` folder is already its pictures; renaming the
   scene would break its history. The guide's pages are `docs/guide/*.md`; `tools/playerguide/site.py` turns them into
@@ -4456,6 +4457,15 @@ item waits.
   (3,200, treasury and player shares alike) goes back into the mother's treasury on a no-room return; sister routes
   carry no goods for sale and can't be turned off; a colony with no Storehouse yet unloads caravans into the chests by
   its hall.
+- 2026-10-11 (34.18, decisions; lane d): `people/ClassLook` sends `aliveworkplace:class_look` (entity id, class, the
+  class's layer, life stage) on tracking and from every change: `SocialClasses.seed`, a household's rise or fall (only
+  when the class really changed), a child following their parents, and `LifeStages.becameElder`. **The tracking event
+  already existed** (`Platform.onStartTracking`, added for 29.4's Legend look), so no new one was added. Client:
+  `ClassLookLayer` (class) and `ClassLookLayer.Elder` (face, never on a baby) on `VillagerRenderer` only, so zombie
+  villagers never wear them; drawn before the Legend outfit and guard armor. A child growing up sends nothing: the
+  client reads `isBaby` itself, and a grown-up child is not an elder. `classOutfits` (M34-gated like its siblings) stops
+  both the sending and the drawing. `PICKED` stays v1 until the owner picks. The test drives a mock player's chunk
+  acks and `ChunkMap.move` so the real tracking event fires.
 - 2026-10-11 (34.17, decisions and a hand-over to 34.18; lane d): the twelve layers are drawn in
   `tools/textures/art/classes.py` (lint clean); v1 of each ships at `textures/entity/villager/class/<class>.png`, and the
   elder's face at `class/elder.png` (the same folder, so all of 34.17 is in one place). The picker page is

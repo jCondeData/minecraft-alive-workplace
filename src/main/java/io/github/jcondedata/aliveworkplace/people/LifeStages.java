@@ -217,6 +217,7 @@ public final class LifeStages {
 	 */
 	private static void becameElder(ServerLevel level, BlockPos hall, Villager villager) {
 		ModAttachments.ELDER_NOTED.set(villager, true);
+		ClassLook.update(villager); // the elder's look (34.18)
 		if (!isAgeless(villager)) {
 			Chronicle.atHall(level, hall, Chronicle.Kind.LIFE, Component.translatable("chronicle.aliveworkplace.elder", villager.getDisplayName()));
 		}
@@ -327,6 +328,10 @@ public final class LifeStages {
 		if (job != VillagerProfession.NONE && job != VillagerProfession.NITWIT && villager.getVillagerData().getLevel() >= VillagerData.MAX_VILLAGER_LEVEL) {
 			return Trait.MASTER;
 		}
+		Retirement.Retired retired = ModAttachments.RETIRED.get(villager);
+		if (retired != null && retired.level() >= VillagerData.MAX_VILLAGER_LEVEL) {
+			return Trait.MASTER; // a Master who retired (34.20) is one still
+		}
 		return happyDays(villager) >= HAPPY_DAYS ? Trait.HAPPY : null;
 	}
 
@@ -392,6 +397,9 @@ public final class LifeStages {
 				lines.add(new HallLine(Component.translatable(left == 0 ? "screen.aliveworkplace.hall.elder_tonight"
 					: AGELESS ? "screen.aliveworkplace.hall.elder_days_left_charm" : "screen.aliveworkplace.hall.elder_days_left", left), false));
 			}
+		}
+		for (Component line : Retirement.hallLines(level, villager)) { // 34.20
+			lines.add(new HallLine(line, false));
 		}
 		return lines;
 	}

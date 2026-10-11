@@ -190,6 +190,10 @@ public final class WorkplaceConfig {
 	public boolean elderPassing = Expansions.on(Expansions.M34);
 	/** An Evergreen Charm makes an elder with good traits ageless (ROADMAP 34.19a). Off: charms are refused; elders already ageless stay so. */
 	public boolean agelessElders = Expansions.on(Expansions.M34);
+	/** Villagers wear their class over their job's outfit, and elders an elder's look (ROADMAP 34.18). Off: only the job's outfit is drawn. */
+	public boolean classOutfits = Expansions.on(Expansions.M34);
+	/** An elder with a job retires once someone can take over, and mentors the village's Novices and Apprentices (ROADMAP 34.20). Off: nobody starts retiring; those retired stay retired. */
+	public boolean elderRetirement = Expansions.on(Expansions.M34);
 	/** Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple (ROADMAP 34.9). Off: no Vintner job, and Vintners already hired stand idle. */
 	public boolean vintners = Expansions.on(Expansions.M34);
 	/** Villagers at a loom can be made Tailors with string (ROADMAP 34.10). Off: no Tailor job, and Tailors already hired stand idle. */
@@ -512,6 +516,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.LifeStages.ELDER_DAYS = villagerElderDays;
 		io.github.jcondedata.aliveworkplace.people.LifeStages.PASSING = elderPassing && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS = agelessElders && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.ClassLook.ENABLED = classOutfits && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.Retirement.ENABLED = elderRetirement && Expansions.on(Expansions.M34);
 		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;

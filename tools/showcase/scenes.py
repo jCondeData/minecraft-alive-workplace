@@ -553,6 +553,17 @@ SCENES = [
       [("01_elders_card", "Bram's card: an elder, grown 120 days, with a quiet old age"),
        ("02_elders_talk", "\"In my day this was all fields.\""),
        ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
+    # Dressed by class (ROADMAP 34.18): the four classes in three jobs each, and an elder, in daylight
+    S("class_outfits", "Village Hall", "Dressed by class: the four classes and an elder",
+      "twelve villagers stood in four columns, Peasant, Artisan, Burgher and Noble, each a farmer, a librarian and a toolsmith, every one wearing their class over a job outfit that still reads; the client was told each one's class and stage of life; Bram, an elder Noble, wore grey brows and a beard as well", 25,
+      [("01_class_outfits_rows", "Peasant, Artisan, Burgher, Noble (left to right), each a farmer, a librarian and a toolsmith"),
+       ("02_class_outfits_elder", "Bram, an elder Noble farmer, beside a grown Noble toolsmith")]),
+    # Retirement and apprentices (ROADMAP 34.20): Tom shadows his father Bram, takes over his composter, and Bram mentors Ida
+    S("retirement", "Village Hall", "Retirement and apprentices",
+      "the hall's round picked Tom, Bram's jobless son, and \"learning from Bram\" showed over his head; two days on Tom had Bram's composter and the farmer's job as a Journeyman (one level below Bram's Expert), Bram was retired and kept his trades, the chronicle noted the retirement and the hand-over, Bram's card on the hall's list said \"Retired Farmer · mentors the young\", and Ida, a Novice farmer, was \"taught by Bram\" and learned 50% faster", 30,
+      [("01_retirement_learning", "Tom shadows his father: \"learning from Bram\""),
+       ("02_retirement_card", "Two days on: Bram's card, retired"),
+       ("03_retirement_taught", "Bram mentors Ida, a Novice farmer: \"taught by Bram\"")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"),

@@ -18,6 +18,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Reputation and titles](reputation.md): standing in each village, what earns and costs it, Friend, Hero and Lord,
   honours, the title in chat (31.11).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
+- [The player guide](player-guide.md): the separate, plain-language site for players, published with the showcase (22.10).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
 - [Caravans that trade](caravan-trade.md): what a caravan takes to sell, how the other village pays, what comes home, and the Routes tab's earnings (33.6).
 - [Caravans you can see](visible-caravans.md): the carter and two pack llamas that show a caravan leaving or arriving, and why they are only a sight (33.7).

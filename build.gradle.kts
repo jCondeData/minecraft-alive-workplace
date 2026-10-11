@@ -1,3 +1,5 @@
+import java.time.Duration
+
 // The build of one Minecraft version node (versions/<mc>/), shared by all of them. Stonecutter writes the sources for
 // each node from src/ (see stonecutter.gradle.kts); per-node values come from stonecutter.properties.toml. Branch on
 // what a node declares there or on sc.current.parsed, never on a hard-coded version.
@@ -88,6 +90,16 @@ val compattest: SourceSet? = if (compatTestMods.isNotEmpty()) sourceSets.create(
 } else null
 
 compattest?.let { loom.createRemapConfigurations(it) }
+
+// The GameTest watchdog (B114: fails a run whose server thread stops ticking, with every thread's stack) runs in the
+// compat tests too: its one file, copied from the gametest sources into the compattest source set.
+compattest?.let { set ->
+    val watchdogSource = tasks.register<Sync>("compatWatchdogSource") {
+        from(rootProject.file("src/gametest/java")) { include("**/test/GameTestWatchdog.java") }
+        into(layout.buildDirectory.dir("generated/compatWatchdog"))
+    }
+    set.java.srcDir(watchdogSource)
+}
 devclient?.let { loom.createRemapConfigurations(it) }
 
 loom {
@@ -291,6 +303,16 @@ tasks {
         if (findProperty("builderDebug") == "true") {
             (this as JavaExec).jvmArgs("-Daliveworkplace.debug=true")
         }
+    }
+
+    // A GameTest run never hangs silently (B114). The watchdog (GameTestWatchdog) halts the server with every thread's
+    // stack when no tick finishes for 300 s (-PgametestStallSeconds=N); running out of heap ends the run at once instead
+    // of leaving a chunk waited on forever; and Gradle stops a run past -PgametestTimeoutMinutes (120: the full suite
+    // takes about 15 min locally, 7 on CI).
+    matching { it.name == "runGameTest" || it.name == "runCompatGameTest" }.configureEach {
+        (this as JavaExec).jvmArgs("-XX:+ExitOnOutOfMemoryError")
+        findProperty("gametestStallSeconds")?.let { jvmArgs("-Daliveworkplace.gametestStallSeconds=$it") }
+        timeout.set(Duration.ofMinutes(findProperty("gametestTimeoutMinutes")?.toString()?.toLong() ?: 120L))
     }
 
     // The compat test server needs an accepted EULA in its run directory, like runGameTest; `build` runs it.

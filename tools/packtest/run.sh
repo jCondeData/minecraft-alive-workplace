@@ -22,6 +22,9 @@
 #                                              # 4 in-game days (SEASON_DAYS=n) under Long Shifts, Free Bread, Large Families and
 #                                              # Festival Season, then 4 with all four reformed; a "Season day" line a day, the
 #                                              # "Season result:" line, and our share of each day's tick from a profile
+#   tools/packtest/rehearsal.sh                # 34.23, the update rehearsal: REHEARSAL=old seeds three villages with the old
+#                                              # release's jar and runs a day; REHEARSAL=new (KEEP_WORLD=true) opens them with
+#                                              # this jar, gates open, for DAYS=2 days; rehearsal.py writes the report
 #   SEASON=true SEASON_PART=edicts ...         # one half on its own in a fresh village (edicts | reformed): half the time,
 #                                              # for a night job; its costs aren't judged (nothing to compare with)
 #   SOAK=true SOAK_SPLIT=true ...              # 23.5: each builder's materials split between at most 3 chests by its
@@ -76,7 +79,9 @@ rm -f console && mkfifo console
 sleep 100000 > console &
 KEEP=$!
 JAVA_OPTS=""
-if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ] || [ "${CITY:-false}" = "true" ] || [ "${SEASON:-false}" = "true" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
+if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ] || [ "${CITY:-false}" = "true" ] || [ "${SEASON:-false}" = "true" ] || [ -n "${REHEARSAL:-}" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
+# The rehearsal's second half runs as 1.8 will ship: every expansion's gate open (the flags in Expansions.java).
+if [ "${REHEARSAL:-}" = "new" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.shots=true"; fi
 # DEBUG=true: the builders log what they are doing every 2 seconds ([builder N] lines), to look into a stall.
 if [ "${DEBUG:-false}" = "true" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.debug=true"; fi
 java -Xmx5G -Xms1G $JAVA_OPTS -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
@@ -89,6 +94,68 @@ done
 grep -q "Alive Workplace ready" server.log || { echo "Alive Workplace didn't load"; }
 
 say() { echo "$1" > console; sleep "${2:-3}"; }
+
+# Rehearsal mode (34.23, run by tools/packtest/rehearsal.sh): REHEARSAL=old seeds the three villages with the old
+# release's jar, lets them live a day and writes the "before" report; REHEARSAL=new (KEEP_WORLD=true) opens that world
+# with this jar, which writes the containers as it loaded them and times the class seeding, then runs DAYS days.
+sprint() {   # $1: ticks; waits for the sprint to end (at most $2 minutes)
+  say "tick sprint $1" 5
+  for _ in $(seq 1 $(( ${2:-20} * 6 ))); do
+    sleep 10
+    [ "$(grep -c "Sprint completed" server.log || true)" -gt "${SPRINTS:-0}" ] && break
+    kill -0 $PID 2>/dev/null || break
+  done
+  SPRINTS=$(grep -c "Sprint completed" server.log || true)
+}
+if [ "${REHEARSAL:-}" = "old" ]; then
+  for x in 1000 1300 1600; do say "forceload add $(( x - 48 )) 952 $(( x + 48 )) 1048" 20; done
+  say "gamerule doDaylightCycle true"
+  say "time set 0"
+  say "execute positioned 1000 100 1000 run workplace rehearsal seed" 30
+  # Ground level: the seed command lays its own ground at y 100 - 1 (SeasonSoak.ground); nothing else is needed.
+  sprint 25200 20   # into day 1: the first takings (a new hall takes nothing on its first day)
+  say "workplace rehearsal report before" 10
+  say "tick freeze" 3
+  say "save-all flush" 15
+  say "stop" 40
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- rehearsal, the old jar (full log: $SERVER/server.log)"
+  grep -E "Rehearsal|Sprint completed|Crash|Exception" server.log | grep -v "No data fixer\|Error loading class" | cut -c1-300 || true
+  [ -f world/rehearsal/before.json ] || { echo "No before report: the old half didn't finish."; exit 1; }
+  exit 0
+fi
+if [ "${REHEARSAL:-}" = "control" ]; then
+  # The control: the same saved world kept on the old jar for the same days, to compare the takings with.
+  sleep 60
+  sprint $(( ${DAYS:-2} * 24000 )) 40
+  say "workplace rehearsal report control" 10
+  say "stop" 40
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- rehearsal, the control on the old jar (full log: $SERVER/server.log)"
+  grep -E "Rehearsal|Sprint completed" server.log | cut -c1-300 || true
+  [ -f world/rehearsal/control.json ] || { echo "No control report."; exit 1; }
+  exit 0
+fi
+if [ "${REHEARSAL:-}" = "new" ]; then
+  # The forced chunks were saved with the world; the seeding round of each hall is timed by Rehearsal itself.
+  for _ in $(seq 1 30); do
+    sleep 10
+    grep -q "Rehearsal seeding:" server.log && break
+  done
+  say "tick query" 5
+  say "workplace rehearsal report opened" 10
+  sprint $(( ${DAYS:-2} * 24000 )) 40
+  say "workplace rehearsal report after" 10
+  say "stop" 40
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- rehearsal, this jar (full log: $SERVER/server.log)"
+  grep -E "Rehearsal|Sprint completed|Percentiles|Crash|Exception" server.log | grep -v "No data fixer\|Error loading class" | cut -c1-300 || true
+  [ -f world/rehearsal/after.json ] || { echo "No after report: the new half didn't finish."; exit 1; }
+  exit 0
+fi
 
 # Sites mode (21.2's old-world check): open the world as it was left (KEEP_WORLD=true), let the workers carry on for a
 # minute, list the sites and stop. Run PERF=true with JAR=<an older release's jar> first to make that world.

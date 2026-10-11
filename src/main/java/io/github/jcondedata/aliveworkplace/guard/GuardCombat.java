@@ -40,7 +40,7 @@ public class GuardCombat extends Behavior<Villager> {
 	private static final int COOLDOWN = 14;
 	private static final double REACH_SQR = 2.6 * 2.6;
 	private static final float CHASE_SPEED = 0.75f;
-	private static final int XP_PER_KILL = 2;
+	static final int XP_PER_KILL = 2;
 	/** Guards with a bow shoot foes up to this far away, and keep creepers at least {@link #CREEPER_DISTANCE} away. */
 	static final double BOW_RANGE = 16;
 	/** An archer on the way to a battle station fights only foes nearer than this. */

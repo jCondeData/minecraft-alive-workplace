@@ -149,6 +149,8 @@
 			"io.github.jcondedata.aliveworkplace.test.RaidGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ThreatGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LairGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ScoutGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WarPartyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WarbandGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PirateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DesertRaiderGameTests",

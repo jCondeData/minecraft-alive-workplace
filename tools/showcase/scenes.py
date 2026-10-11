@@ -697,6 +697,14 @@ SCENES = [
     # Piglin incursions (ROADMAP 32.10): the Blackstone Outpost, piglins through its portal, one carrying off gold
     job("piglins", "Threats", "Piglin incursions: the outpost, the portal, the plunder",
         "the piglins' blackstone outpost stood west of the Town; a raid stepped out of its portal and a piglin passing the village's chests carried off a stack of gold", 150),
+    # Scouts (ROADMAP 32.12): the scout on a rise with the spyglass, then the Scouting Report map in hand
+    job("scouts", "Threats", "Scouts: a look at the lair, a map home",
+        "the scout walked up the rise, raised the spyglass at the bandit camp and came home with the Scouting Report; the player held its map, the camp marked with a red X", 150,
+        [("04_report_in_hand", "The Scouting Report in hand")]),
+    # Marching on the lair (ROADMAP 32.13): the war party and the Siege-breakers into the war camp, the Warlord falling, the loot
+    job("war_party", "Threats", "Marching on the lair: the war party, the Warlord, the loot",
+        "the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 150,
+        [("04_loot", "The war camp's loot chest")]),
     # Witch covens (ROADMAP 32.11): the Coven Hut in the swamp at night, a hex, witches throwing potions over a palisade
     job("coven", "Threats", "Witch covens: the hut, the hex, potions over the wall",
         "the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 150),

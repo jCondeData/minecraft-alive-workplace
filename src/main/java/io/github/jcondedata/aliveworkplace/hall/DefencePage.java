@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
+import io.github.jcondedata.aliveworkplace.guard.WarParties;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
@@ -31,6 +32,11 @@ import net.minecraft.world.item.Items;
  * the five slots say "No camp near", and for how long none will come after one was broken up.</li>
  * <li>Bottom row ({@link #HISTORY}): the last three attacks, newest first — the day, who came, how many came and fell,
  * and whether the village fought them off or the rest got away.</li>
+ * <li>{@link #SCOUT} (32.12): with a lair standing, "Scout the lair" (a click sends the village's scout, by day), the
+ * scout out, or what was found: the lair's exact place, strength and captain. Once it is known, the {@link #WHERE} slot
+ * gives the exact place too.</li>
+ * <li>{@link #MUSTER} and {@link #SIEGE_BREAKERS} (32.13): muster three in four guards under the player's Rally Banner
+ * (without one, the page says to craft one), and hire the Siege-breakers ({@link WarParties}).</li>
  * <li>Third row, {@link #GATES} (32.4): the village's gates — how many, open or shut, the portcullis up or down, whether
  * a siege holds them shut, and the gate blocks rams broke that wait for a builder.</li>
  * </ul>
@@ -46,8 +52,14 @@ public final class DefencePage {
 	public static final int STRENGTH = 12;
 	public static final int WHERE = 13;
 	public static final int STOOD = 14;
+	/** Scouting the lair (32.12): "Scout the lair", a scout out, or what the last one found. */
+	public static final int SCOUT = 16;
 	/** The village's gates (32.4). */
 	public static final int GATES = 19;
+	/** Muster a war party under the player's Rally Banner (32.13). */
+	public static final int MUSTER = 21;
+	/** Hire the Siege-breakers (32.13). */
+	public static final int SIEGE_BREAKERS = 23;
 	/** The last three attacks, newest first. */
 	public static final int[] HISTORY = {46, 48, 50};
 
@@ -90,6 +102,18 @@ public final class DefencePage {
 			}
 		}
 		menu.button(GATES, gates(level, hall), null);
+		menu.button(MUSTER, muster(level, hall), p -> {
+			WarParties.Muster result = WarParties.muster(level, hall, p);
+			io.github.jcondedata.aliveworkplace.mc.Chat.chat(p, WarParties.said(level, hall, result,
+				result == WarParties.Muster.MUSTERED ? WarParties.marchers(level, hall).size() : 0));
+			render(menu, level, hall);
+			menu.broadcastChanges();
+		});
+		menu.button(SIEGE_BREAKERS, siegeBreakers(level, hall), p -> {
+			io.github.jcondedata.aliveworkplace.mc.Chat.chat(p, WarParties.hire(level, hall, p));
+			render(menu, level, hall);
+			menu.broadcastChanges();
+		});
 		List<ThreatData.Past> past = ThreatData.get(level).past(hall);
 		for (int i = 0; i < Math.min(HISTORY.length, past.size()); i++) {
 			menu.button(HISTORY[i], attack(past.get(i)), null);
@@ -123,12 +147,79 @@ public final class DefencePage {
 		strength.add(VillageHallScreen.line("screen.aliveworkplace.defence.strength_hint", ChatFormatting.DARK_GRAY));
 		menu.button(STRENGTH, VillageHallScreen.icon(counted(Items.CROSSBOW, lair.strength()),
 			Component.translatable("screen.aliveworkplace.defence.strength", lair.strength()), ChatFormatting.WHITE, strength.toArray(Component[]::new)), null);
-		menu.button(WHERE, VillageHallScreen.icon(Items.MAP, roughly(hall, lair.pos()).copy(), ChatFormatting.WHITE,
-			VillageHallScreen.line("screen.aliveworkplace.defence.where_hint", ChatFormatting.GRAY)), null);
+		Optional<io.github.jcondedata.aliveworkplace.guard.Scouts.Known> known = io.github.jcondedata.aliveworkplace.guard.Scouts.known(level, hall);
+		menu.button(WHERE, known.isPresent()
+			? VillageHallScreen.icon(Items.FILLED_MAP, roughly(hall, lair.pos()).copy(), ChatFormatting.WHITE,
+				VillageHallScreen.line(exact(lair.pos()), ChatFormatting.AQUA),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.where_scouted", known.get().by(), known.get().day()), ChatFormatting.GRAY))
+			: VillageHallScreen.icon(Items.MAP, roughly(hall, lair.pos()).copy(), ChatFormatting.WHITE,
+				VillageHallScreen.line("screen.aliveworkplace.defence.where_hint", ChatFormatting.GRAY)), null);
+		menu.button(SCOUT, scout(level, hall, lair, known), p -> {
+			io.github.jcondedata.aliveworkplace.guard.Scouts.send(p, level, hall);
+			render(menu, level, hall);
+			menu.broadcastChanges();
+		});
 		long days = Math.max(0, Chronicle.day(level) - lair.day());
 		menu.button(STOOD, VillageHallScreen.icon(counted(Items.CLOCK, days),
 			days == 0 ? Component.translatable("screen.aliveworkplace.defence.stood_today") : Words.counted("screen.aliveworkplace.defence.stood", days, days),
 			ChatFormatting.WHITE, VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.stood_since", lair.day()), ChatFormatting.GRAY)), null);
+	}
+
+	/** "At 120, 64, -340": a lair's exact place, once a scout found it. */
+	private static Component exact(BlockPos pos) {
+		return Component.translatable("screen.aliveworkplace.defence.exact", pos.getX(), pos.getY(), pos.getZ());
+	}
+
+	/** The scouting slot: what a scout found (the exact place, strength and captain), a scout out, or "Scout the lair". */
+	private static ItemStack scout(ServerLevel level, BlockPos hall, Lairs.Lair lair,
+			Optional<io.github.jcondedata.aliveworkplace.guard.Scouts.Known> known) {
+		Optional<io.github.jcondedata.aliveworkplace.guard.Scouts.Mission> out = io.github.jcondedata.aliveworkplace.guard.Scouts.mission(level, hall);
+		int count = io.github.jcondedata.aliveworkplace.guard.Scouts.scouts(level, hall).size();
+		Component send = count == 0 ? VillageHallScreen.line("screen.aliveworkplace.defence.scout_none", ChatFormatting.YELLOW)
+			: VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.scout_count", count, count), ChatFormatting.GRAY);
+		if (out.isPresent()) {
+			long minutes = Math.max(0, (level.getGameTime() - out.get().started()) / 20 / 60);
+			return VillageHallScreen.icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.defence.scout_out", out.get().name()), ChatFormatting.AQUA,
+				VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.scout_out_since", minutes, minutes), ChatFormatting.GRAY),
+				VillageHallScreen.line("screen.aliveworkplace.defence.scout_lost_hint", ChatFormatting.DARK_GRAY));
+		}
+		if (known.isPresent()) {
+			return VillageHallScreen.icon(Items.FILLED_MAP, Component.translatable(known.get().trailed() ? "screen.aliveworkplace.defence.scouted_trailed"
+					: "screen.aliveworkplace.defence.scouted", known.get().by()), ChatFormatting.GREEN,
+				VillageHallScreen.line(exact(lair.pos()), ChatFormatting.AQUA),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.scouted_captain", Lairs.captainName(lair)), ChatFormatting.GOLD),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.strength", lair.strength()), ChatFormatting.RED),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.scouted_day", known.get().day()), ChatFormatting.GRAY),
+				send, VillageHallScreen.line("screen.aliveworkplace.defence.scout_again", ChatFormatting.DARK_GRAY));
+		}
+		return VillageHallScreen.icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.defence.scout"), ChatFormatting.WHITE,
+			VillageHallScreen.line("screen.aliveworkplace.defence.scout_hint", ChatFormatting.GRAY), send,
+			VillageHallScreen.line("screen.aliveworkplace.defence.scout_click", ChatFormatting.YELLOW));
+	}
+
+	/** "Muster a war party": how many guards would march and how many keep the walls. */
+	private static ItemStack muster(ServerLevel level, BlockPos hall) {
+		int marching = WarParties.marchers(level, hall).size();
+		int guards = VillageHalls.census(level, hall).guards();
+		return VillageHallScreen.icon(Items.WHITE_BANNER, Component.translatable("screen.aliveworkplace.defence.muster"), ChatFormatting.GOLD,
+			VillageHallScreen.line("screen.aliveworkplace.defence.muster_hint", ChatFormatting.GRAY),
+			VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.muster_count", marching, marching, Math.max(0, guards - marching)),
+				marching > 0 ? ChatFormatting.AQUA : ChatFormatting.YELLOW),
+			VillageHallScreen.line("screen.aliveworkplace.defence.muster_banner", ChatFormatting.DARK_GRAY),
+			VillageHallScreen.line("screen.aliveworkplace.defence.muster_click", ChatFormatting.YELLOW));
+	}
+
+	/** The Siege-breakers: who they are, their price, how long they stay, or that they're here. */
+	private static ItemStack siegeBreakers(ServerLevel level, BlockPos hall) {
+		long here = io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream().filter(WarParties::isSiegeBreaker).count();
+		int price = WarParties.price(level, hall);
+		return VillageHallScreen.icon(Items.CROSSBOW, Component.translatable("screen.aliveworkplace.defence.siege_breakers"), ChatFormatting.GOLD,
+			VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_who", ChatFormatting.GRAY),
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.siege_breakers_price",
+				io.github.jcondedata.aliveworkplace.work.Money.describe((long) price * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, price)), ChatFormatting.GREEN),
+			VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_stay", ChatFormatting.GRAY),
+			here > 0 ? VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.siege_breakers_here", here, here), ChatFormatting.AQUA)
+				: VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_click", ChatFormatting.YELLOW));
 	}
 
 	/** The gates: open or shut, the portcullis up or down, a siege holding them, and what rams broke. */

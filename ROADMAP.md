@@ -3593,7 +3593,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     fight (a zombie dies to them) and leave after the raid; the treasury pays; a village outside any realm gets no
     one; a vanilla raid calls them too;
   - showcase scene `relief` with a GIF of the riders arriving and fighting.
-- [ ] **33.18** **Trade pacts and alliances.** Villages of different owners deal through offers. On the Pacts tab an
+- [x] **33.18** (review: pending 2026-10-11) **Trade pacts and alliances.** Villages of different owners deal through offers. On the Pacts tab an
   owner picks another player's village within caravan range and offers a **trade pact** or an **alliance**; the offer
   reaches that owner as a letter in their mailbox (or at the post office) and as a line on their hall's Pacts tab with
   Accept and Decline, and lapses after 3 days. From now on a caravan route to another owner's village needs a pact;

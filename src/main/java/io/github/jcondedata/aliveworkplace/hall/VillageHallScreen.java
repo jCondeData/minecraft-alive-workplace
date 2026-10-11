@@ -566,6 +566,9 @@ public final class VillageHallScreen {
 			} else if (receiving) {
 				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_receiving"), ChatFormatting.AQUA));
 			}
+			if (!sister && !sending && !io.github.jcondedata.aliveworkplace.realm.Pacts.mayRoute(level, hall, other.hall())) { // 33.18
+				lore.add(line(Component.translatable("screen.aliveworkplace.pact.route_needs_pact"), ChatFormatting.YELLOW));
+			}
 			lore.add(line(Component.translatable(sending ? "screen.aliveworkplace.hall.route_on" : "screen.aliveworkplace.hall.route_off"),
 				sending ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 			// Each village by its banner, when it has colours (30.13); else by a cart, loaded if this one sends it goods.
@@ -575,6 +578,10 @@ public final class VillageHallScreen {
 			menu.button(slot++, icon, p -> {
 				if (sister) {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.route_sister", other.name()).withStyle(ChatFormatting.LIGHT_PURPLE));
+					return;
+				}
+				if (!sending && !io.github.jcondedata.aliveworkplace.realm.Pacts.mayRoute(level, hall, other.hall())) { // 33.18: another owner's village needs a pact
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.pact.route_needs_pact", other.name()).withStyle(ChatFormatting.YELLOW));
 					return;
 				}
 				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall))

@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Trade pacts and alliances, for 1.7** (33.18, off until 1.7 is finished): the Trade page's new Pacts tab offers
+  another player's village within caravan range a trade pact or an alliance, by letter; they accept or decline on
+  their Pacts tab within 3 days. Caravan routes to another owner's village now need a pact (routes from before 1.7
+  become pacts), and pact caravans are paid for what they bring unless the sender turns on gifts. Allies send relief
+  riders to each other's raids within 1,024 blocks. A pact ends at once, an alliance after a day's notice. Settings
+  `tradePacts` and `alliances`.
 - **The realm's research topics, for 1.7** (33.16, off until 1.7 is finished): the capital's Realm tab now has the
   realm's eight topics in place of the six interim ones: Royal Roads (caravans between the realm's villages 25% sooner
   a level), Common Coin (the board's spread 3 points narrower a level), Royal Post (parcels between the realm's

@@ -386,6 +386,13 @@ SCENES = [
       "capital: Rowan owns the other two villages, so the tab shows a vote for a day, its count and the two buttons", 70,
       [("01_the_letter", "Rowan's letter: an invitation for Ashford"), ("02_the_invitation", "Ashford's Realm tab: Join or Decline"),
        ("03_the_vote", "The vote: move the capital to Ashford?"), ("04_vote_for", "Vote for Ashford, with every village you own")]),
+    # Trade pacts and alliances (ROADMAP 33.18): the offer's letter, the Pacts tab with Accept and Decline, the alliance
+    S("pacts", "Realm", "A trade pact or alliance with another player's village",
+      "Rowan, who owns Thornholm, offered Ashford, the player's Town, an alliance: the letter came to the player, who read it; "
+      "Ashford's Pacts tab offered Accept an alliance with Thornholm or Decline, and the player accepted: the tab shows the "
+      "alliance, its gifts switch and its End button", 65,
+      [("01_the_letter", "Rowan's letter: an alliance offered to Ashford"), ("02_the_offer", "Ashford's Pacts tab: Accept or Decline"),
+       ("03_the_alliance", "The alliance with Thornholm, and its End button")]),
     # The realm treasury (ROADMAP 33.13): the levy from every member, the icon's movements, a gift of emeralds
     S("realm_treasury", "Realm", "The realm treasury: the levy and its movements",
       "Thornholm founded a realm and added Ashford and Farholt, a County; four mornings each member paid the 10% levy on its "

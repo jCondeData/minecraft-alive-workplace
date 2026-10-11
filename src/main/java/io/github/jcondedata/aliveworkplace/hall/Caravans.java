@@ -801,16 +801,23 @@ public final class Caravans {
 		for (Shipment s : arrived) {
 			List<ItemStack> left = new ArrayList<>();
 			int paid = 0;
+			List<ItemStack> delivered = new ArrayList<>();
 			for (ItemStack stack : s.goods()) {
 				ItemStack rest = chests.isEmpty() ? stack.copy() : SupplyContainers.insert(level, chests, stack.copy());
 				if (!rest.isEmpty()) {
 					left.add(rest);
+				}
+				if (rest.getCount() < stack.getCount()) {
+					delivered.add(stack.copyWithCount(stack.getCount() - rest.getCount()));
 				}
 				if (rest.getCount() < stack.getCount() && us != null && us.wants().stream().anyMatch(w -> w.item() == stack.getItem())) {
 					paid++;
 				}
 			}
 			pay(level, s.from(), s.back() ? 0 : paid);
+			if (!s.back()) {
+				payPact(level, hall, s.from(), delivered, data); // 33.18
+			}
 			// 33.6: the goods it brought to sell; what there's no room for waits on the road with the rest, what isn't paid for goes home
 			io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Outcome sold = s.sale().isEmpty()
 				? io.github.jcondedata.aliveworkplace.trade.CaravanTrade.Outcome.NONE
@@ -860,6 +867,42 @@ public final class Caravans {
 		}
 		io.github.jcondedata.aliveworkplace.legend.CaravanPayPower.of(level, from)
 			.ifPresent(p -> Tithe.put(entity, stacks * p.emeralds() * 100));
+	}
+
+	/**
+	 * A pact caravan (33.18) from {@code from} delivered {@code delivered} of what {@code hall} waited for: {@code hall}
+	 * pays for each trade good among them at its board's price a bundle (part bundles in proportion), as far as its
+	 * treasury goes; the seller books it as a sale. Nothing when the sender gives, between friends, or with pacts off.
+	 */
+	public static int payPact(ServerLevel level, BlockPos hall, BlockPos from, List<ItemStack> delivered, Data data) {
+		if (delivered.isEmpty() || io.github.jcondedata.aliveworkplace.realm.Pacts.pact(level, from, hall) == null
+			|| io.github.jcondedata.aliveworkplace.realm.Pacts.gives(level, from, hall)
+			|| !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
+			return 0;
+		}
+		Village buyer = data.village(hall);
+		Component buyerName = buyer == null ? VillageHalls.name(level, hall) : buyer.name();
+		int total = 0;
+		for (ItemStack stack : delivered) {
+			for (io.github.jcondedata.aliveworkplace.trade.TradeGoods.Good good : io.github.jcondedata.aliveworkplace.trade.TradeGoods.all()) {
+				if (!good.matches(stack)) {
+					continue;
+				}
+				int cents = Math.min(entity.treasury(), io.github.jcondedata.aliveworkplace.trade.Board.price(level, hall, good) * stack.getCount() / Math.max(1, good.bundle()));
+				if (cents > 0) {
+					entity.setTreasury(entity.treasury() - cents);
+					data.sold(new Sale(from, buyerName, good.id(), stack.getCount(), cents, Chronicle.day(level)));
+					total += cents;
+				}
+				break;
+			}
+		}
+		if (total > 0) {
+			Village seller = data.village(from);
+			Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.pact.paid",
+				seller == null ? Component.translatable("chronicle.aliveworkplace.someone") : seller.name(), io.github.jcondedata.aliveworkplace.trade.TradePage.money(total)));
+		}
+		return total;
 	}
 
 	private static int count(List<ItemStack> stacks) {

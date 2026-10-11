@@ -41,7 +41,7 @@ public final class Expansions {
 	 * M32, "The expansion gate"). Its switches: {@code sieges}, {@code siegeDamage} (32.4), {@code firewardens} (32.16), {@code wellKeepers} (32.17), {@code physicians} (32.18).
 	 */
 	public static final boolean M32 = false;
-	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}, {@code visibleCaravans}, {@code colonies}, {@code colonyRank}, {@code colonyCooldownDays}, {@code coloniesPerVillage}, {@code realms}, {@code realmMaxMembers}, {@code realmRelief}. */
+	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}, {@code visibleCaravans}, {@code colonies}, {@code colonyRank}, {@code colonyCooldownDays}, {@code coloniesPerVillage}, {@code realms}, {@code realmMaxMembers}, {@code realmRelief}, {@code tradePacts}, {@code alliances}. */
 	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code classGraceDays}, {@code vintners}, {@code tailors}, {@code printers}, {@code villagerAges}, {@code villagerElderDays}, {@code elderPassing}, {@code agelessElders}, {@code classOutfits}, {@code elderRetirement}, {@code familyNames}. */
 	public static final boolean M34 = false;
@@ -100,7 +100,7 @@ public final class Expansions {
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> "M30";
 			case "jewellers" -> "M34"; // the Jeweller (34.12), with the rest of Classes and luxuries below
-			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage", "realms", "realmMaxMembers", "realmRelief" -> "M33";
+			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage", "realms", "realmMaxMembers", "realmRelief", "tradePacts", "alliances" -> "M33";
 			case "sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians" -> "M32";
 			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> "M31";
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "bountyBoard", "rogueBounties" -> "M31";

@@ -147,11 +147,25 @@ public final class Relief {
 
 	/** Each second: a raided realm member that hasn't called yet calls; one no longer raided may call again next time. */
 	static void watch(MinecraftServer server) {
-		if (!ENABLED || !Realms.ENABLED) {
+		if (!ENABLED) {
 			return;
 		}
-		for (RealmData.Realm realm : RealmData.get(server).realms()) {
-			for (GlobalPos member : Realms.members(realm)) {
+		java.util.Set<GlobalPos> watched = new java.util.LinkedHashSet<>();
+		if (Realms.ENABLED) {
+			for (RealmData.Realm realm : RealmData.get(server).realms()) {
+				watched.addAll(Realms.members(realm));
+			}
+		}
+		if (io.github.jcondedata.aliveworkplace.realm.Pacts.ENABLED && io.github.jcondedata.aliveworkplace.realm.Pacts.ALLIANCES) { // 33.18: allied villages too
+			for (io.github.jcondedata.aliveworkplace.realm.Pacts.Pact pact : io.github.jcondedata.aliveworkplace.realm.Pacts.Data.get(server).pacts()) {
+				if (pact.alliance()) {
+					watched.add(pact.a());
+					watched.add(pact.b());
+				}
+			}
+		}
+		{
+			for (GlobalPos member : watched) {
 				ServerLevel level = server.getLevel(member.dimension());
 				if (level == null || !level.isLoaded(member.pos())) {
 					continue;
@@ -174,18 +188,68 @@ public final class Relief {
 	 * watch each second; anything else that knows of a raid may call this too.
 	 */
 	public static int call(ServerLevel level, BlockPos hall) {
-		if (!ENABLED || !Realms.ENABLED) {
+		if (!ENABLED) {
 			return 0;
 		}
-		RealmData.Realm realm = Realms.realmOf(level, hall);
+		RealmData.Realm realm = Realms.ENABLED ? Realms.realmOf(level, hall) : null;
 		GlobalPos at = GlobalPos.of(level.dimension(), hall);
-		if (realm == null || CALLED.containsKey(at)) {
+		MinecraftServer server = level.getServer();
+		List<GlobalPos> allies = allies(server, at, realm);
+		if (realm == null && allies.isEmpty() || CALLED.containsKey(at)) {
 			return 0;
 		}
-		MinecraftServer server = level.getServer();
 		long now = level.getGameTime();
 		CALLED.put(at, now);
 		Component targetName = VillageHalls.name(level, hall);
+		int total = realm == null ? 0 : realmBands(level, hall, at, realm, targetName, now);
+		// 33.18: allies (and their realms) within RANGE send their own bands, at their own cost, and both owners hear
+		for (GlobalPos home : allies) {
+			if (total >= MAX_RIDERS || !home.dimension().equals(level.dimension()) || home.pos().distSqr(hall) > (double) RANGE * RANGE) {
+				continue;
+			}
+			int guards = guards(server, home);
+			if (guards < MIN_GUARDS) {
+				continue;
+			}
+			int riders = Math.min(band(guards, 0), MAX_RIDERS - total);
+			Component homeName = Realms.name(server, home);
+			long ride = Math.max(MIN_RIDE, (long) Math.ceil(Math.sqrt(home.pos().distSqr(hall)) / BLOCKS_PER_TICK));
+			ON_THE_ROAD.add(new Band(at, home, homeName, riders, now, now + ride, false));
+			AWAY.put(home, at);
+			total += riders;
+			Chronicle.atHall(level, home.pos(), Chronicle.Kind.RAID, Component.translatable("chronicle.aliveworkplace.relief_sent_ally", riders, targetName));
+			io.github.jcondedata.aliveworkplace.realm.Pacts.tell(server, home, null,
+				Component.translatable("message.aliveworkplace.pact.ally_riders_sent", homeName, riders, targetName).withStyle(net.minecraft.ChatFormatting.GOLD));
+			io.github.jcondedata.aliveworkplace.realm.Pacts.tell(server, at, null,
+				Component.translatable("message.aliveworkplace.pact.ally_riders_coming", riders, homeName, targetName).withStyle(net.minecraft.ChatFormatting.GREEN));
+		}
+		return total;
+	}
+
+	/** The villages that answer {@code at}'s raid as allies (33.18): its allies and its realm's, and their realms' members, not its own realm's. */
+	static List<GlobalPos> allies(MinecraftServer server, GlobalPos at, @org.jetbrains.annotations.Nullable RealmData.Realm realm) {
+		java.util.Set<GlobalPos> ours = new java.util.LinkedHashSet<>();
+		ours.add(at);
+		if (realm != null) {
+			ours.addAll(Realms.members(realm));
+		}
+		java.util.Set<GlobalPos> out = new java.util.LinkedHashSet<>();
+		for (GlobalPos v : ours) {
+			for (GlobalPos ally : io.github.jcondedata.aliveworkplace.realm.Pacts.allies(server, v)) {
+				out.add(ally);
+				RealmData.Realm theirs = Realms.ENABLED ? RealmData.get(server).realmOf(ally) : null;
+				if (theirs != null) {
+					out.addAll(Realms.members(theirs));
+				}
+			}
+		}
+		out.removeAll(ours);
+		return List.copyOf(out);
+	}
+
+	/** The realm's bands for its member {@code hall} (33.17); returns how many riders set out. */
+	private static int realmBands(ServerLevel level, BlockPos hall, GlobalPos at, RealmData.Realm realm, Component targetName, long now) {
+		MinecraftServer server = level.getServer();
 		int levies = leviesBonus(server, realm);
 		int total = 0;
 		List<GlobalPos> homes = new ArrayList<>(Realms.members(realm));

@@ -3188,7 +3188,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     physician has seen passes it on less; the Remedy cures a hexed and a plague-ill villager, where a honey bottle
     cures neither; the plague ends a day after the last cure; the recipe crafts;
   - scene `plague`: the physician going house to house with the Remedy (GIF), and the hall's list of the ill.
-- [ ] **32.19** **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
+- [x] **32.19** (review: pending 2026-10-11) **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
   renders), in the Blueprint Table, each with its job's block and no other job block: the **Fire Station** (a stone
   ground floor with the Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), the
   **Well House** (a roofed well shaft down to water with the Well Keeper's cauldron, a trough and a bench) and the

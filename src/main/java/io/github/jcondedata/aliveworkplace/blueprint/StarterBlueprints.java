@@ -303,6 +303,20 @@ public final class StarterBlueprints {
 	/** An open eight-sided bandstand with a jukebox (Bard), in the Gardens; it adds 3 to a village's beauty, no upgrade. */
 	public static final Entry BANDSTAND = new Entry(AliveWorkplace.id("bandstand"), new Vec3i(11, 10, 11));
 
+	/**
+	 * The houses of the jobs that answer a disaster (ROADMAP 32.19, tools/blueprints/answering.py), each with its job's
+	 * block and no other. The Fire Station: a stone ground floor with the Firewarden's grindstone, a water basin and
+	 * buckets on racks, under a timber watch loft.
+	 */
+	public static final Entry FIRE_STATION = new Entry(AliveWorkplace.id("fire_station"), new Vec3i(11, 14, 11));
+	/** A roofed well on a stone platform, its shaft down to water, the Well Keeper's cauldron, a trough and benches. */
+	public static final Entry WELL_HOUSE = new Entry(AliveWorkplace.id("well_house"), new Vec3i(11, 13, 12));
+	/** A white ward with the Physician's brewing stand, four beds behind screens (the quarantine ward) and a herb garden. */
+	public static final Entry PHYSICIANS_HOUSE = new Entry(AliveWorkplace.id("physicians_house"), new Vec3i(13, 12, 13));
+
+	/** The three houses of 32.19, in the order What next? and the scene show them. */
+	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
+
 	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done. */
 	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(11, 9, 7));
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
@@ -395,7 +409,7 @@ public final class StarterBlueprints {
 		GUILDHALL, GUILDHALL_2);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);

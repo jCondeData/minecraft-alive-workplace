@@ -636,6 +636,51 @@ public final class Disasters implements ResourceManagerReloadListener {
 		return tips;
 	}
 
+	/**
+	 * ROADMAP 32.19: the house of each job that answers a disaster, by the job's id: the Fire Station for the Firewarden,
+	 * the Well House for the Well Keeper, the Physician's House for the Physician.
+	 */
+	public static final Map<ResourceLocation, ResourceLocation> ANSWER_HOUSES = Map.of(
+		AliveWorkplace.id("firewarden"), io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.FIRE_STATION.id(),
+		AliveWorkplace.id("well_keeper"), io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.WELL_HOUSE.id(),
+		AliveWorkplace.id("physician"), io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.PHYSICIANS_HOUSE.id());
+
+	/**
+	 * What next?'s house tips (32.19): for each disaster that's switched on and can come to this village (its
+	 * {@code when} holds here: wood enough for a fire, a town for the plague; the weather it waits for aside), whose
+	 * answering job the game has and the village lacks, build that job's house. In the order of {@link #all()}.
+	 */
+	public static List<VillageAdvice.Tip> houseTips(ServerLevel level, BlockPos hall, VillageHalls.Census census) {
+		List<VillageAdvice.Tip> tips = new ArrayList<>();
+		if (!live()) {
+			return tips;
+		}
+		List<ResourceLocation> held = villagers(census).stream()
+			.map(v -> BuiltInRegistries.VILLAGER_PROFESSION.getKey(v.getVillagerData().getProfession())).toList();
+		for (Disaster d : all()) {
+			if (!enabled(d.id()) || d.answeredBy().isEmpty()) {
+				continue;
+			}
+			ResourceLocation job = d.answeredBy().get();
+			ResourceLocation house = ANSWER_HOUSES.get(job);
+			if (house == null || held.contains(job)) {
+				continue;
+			}
+			net.minecraft.world.entity.npc.VillagerProfession profession = BuiltInRegistries.VILLAGER_PROFESSION.get(job);
+			Optional<io.github.jcondedata.aliveworkplace.work.Stations.Station> station = io.github.jcondedata.aliveworkplace.work.Stations.of(profession);
+			Optional<io.github.jcondedata.aliveworkplace.work.Stations.Job> picks = station.flatMap(s -> s.jobs().stream()
+				.filter(j -> j.profession().get() == profession).findFirst());
+			if (picks.isEmpty() || !io.github.jcondedata.aliveworkplace.work.Stations.available(picks.get()) || !d.when().test(level, hall, census)) {
+				continue;
+			}
+			tips.add(new VillageAdvice.Tip("disaster_house", station.get().block().asItem(), name(d),
+				io.github.jcondedata.aliveworkplace.blueprint.Blueprints.displayName(house),
+				Component.translatable("entity.minecraft.villager." + job.getPath()), station.get().block().getName(),
+				Component.translatable(io.github.jcondedata.aliveworkplace.work.Stations.itemKey(picks.get()))));
+		}
+		return tips;
+	}
+
 	private Disasters() {
 	}
 }

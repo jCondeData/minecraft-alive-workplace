@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Houses for the answering jobs** (32.19): the Blueprint Table has a **Fire Station** (a stone ground floor with the
+  Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), a **Well House** (a roofed
+  well down to water with the Well Keeper's cauldron, a trough and benches) and a **Physician's House** (the brewing
+  stand, a herb garden and four ward beds behind screens). Each has its job's block and no other. What next? suggests
+  each when the village lacks its job and its disaster can come there ("Drought can come here: build a Well House").
 - **Plague and the Physician** (32.18, behind the 1.6 expansion): a Town or bigger may suffer a plague (3% a day, twice
   that with more villagers than beds; a coven's hexed or a traveller from far away can bring it too). While it lasts,
   each hall round a villager within 3 blocks of an ill one catches it 1 in 5 (less with Medicine research); the ill

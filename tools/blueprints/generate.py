@@ -27,6 +27,7 @@ from pokemon_looks import *
 from pokemon_jobs import *
 from guildhall import *
 from arena import *
+from answering import *
 from styles import styled
 
 
@@ -156,6 +157,8 @@ if __name__ == "__main__":
     for name, draw in (("print_shop", print_shop), ("print_shop_2", print_shop_2), ("jewellers_workshop", jewellers_workshop),
                        ("jewellers_workshop_2", jewellers_workshop_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
+    for name, draw in (("fire_station", fire_station), ("well_house", well_house), ("physicians_house", physicians_house)):
+        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

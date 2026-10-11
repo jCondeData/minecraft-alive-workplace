@@ -27,6 +27,13 @@ also read the wells and the sky: with a Well Keeper in the village, you hear of 
 With **Cobblemon**, keep Water-type Pokémon in a Pasture Block near the cauldron: they help fill and pour the buckets
 faster.
 
+## The Well House
+
+The **Blueprint Table** has a **Well House** for your builder to put up: a roofed well on a stone platform, its shaft
+down to water, with the Well Keeper's cauldron, a water trough and benches. Stand a villager by its cauldron and hand
+them a shovel, and the village has its Well Keeper. A drought can come to any village, so when yours has no Well
+Keeper, **What next?** at the hall suggests the Well House.
+
 ## Settings
 
 **Well Keepers** in the settings screen turns the job off (Well Keepers already hired stand idle). To turn droughts off

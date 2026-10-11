@@ -787,7 +787,9 @@ SCENES = [
         "the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 150),
     job("battle_stations", "Threats", "A siege: battle stations",
         "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
-    S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
+    # With the answering jobs' houses since 32.19: the Fire Station, the Well House and the Physician's House
+    S("defences", "Build families", "Walls and gates, and the answering jobs' houses",
+      "every wall and gate was placed, then the Fire Station, the Well House and the Physician's House", 90, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),
     # With Cobblemon since 28.15: the Pokémon jobs' houses grow too (POKEMON_HOUSE_WEIGHT makes them likely)

@@ -53,15 +53,25 @@ public final class Walker {
 	 */
 	public static int requestWalk(Villager villager, BlockPos pos, float speed, int closeEnough, int retryWait) {
 		var brain = villager.getBrain();
-		boolean set = brain.getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getTarget().currentBlockPosition().equals(pos)).orElse(false);
-		if (set) {
+		float pace = speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
+			* io.github.jcondedata.aliveworkplace.people.LifeStages.walk(villager);
+		var set = brain.getMemory(MemoryModuleType.WALK_TARGET).filter(t -> t.getTarget().currentBlockPosition().equals(pos));
+		if (set.isPresent()) {
+			if (Math.abs(set.get().getSpeedModifier() - pace) > 1.0e-4f) {
+				// Vanilla's idle behaviour walks a villager to what he looks at, at its own 0.5, and we make him look at the
+				// goal: a target at our goal that isn't ours. It gets our pace (B95: an elder walked at full speed), with
+				// no new path search, since the goal is the same.
+				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
+				if (!villager.getNavigation().isDone()) {
+					villager.getNavigation().setSpeedModifier(pace);
+				}
+			}
 			return 0;
 		}
 		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) && retryWait + 1 < RETRY_TICKS) {
 			return retryWait + 1;
 		}
-		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
-			* io.github.jcondedata.aliveworkplace.people.LifeStages.walk(villager), closeEnough));
+		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
 		return 0;
 	}
 

@@ -29,7 +29,7 @@ GROUPS = [
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
-    "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
+    "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
     "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
 ]
 
@@ -623,6 +623,15 @@ SCENES = [
     S("workplaces", "Build families", "A workplace for every worker: the 12 village houses a builder can build",
       "every workplace was placed", 90, [("30_*@spread", "")]),
     S("decor", "Build families", "Decorations", "every decoration was placed", 120, [("30_*@spread", "")]),
+    # Sieges I (ROADMAP 32.4): a ravager ram breaks a Palisade Gate, the cracks showing
+    job("siege_gate", "Threats", "A siege: the ram at the gate",
+        "the ravager ram broke a gate block of the Palisade Gate, the cracks showing, and turned on the next", 120),
+    # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
+    job("siege_ladders", "Threats", "A siege: ladders over the wall",
+        "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),
+    # Sieges III (ROADMAP 32.6): archers on battle stations shoot down at a siege
+    job("battle_stations", "Threats", "A siege: battle stations",
+        "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
     S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),

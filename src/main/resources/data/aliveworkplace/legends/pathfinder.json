@@ -9,7 +9,7 @@
     "legend.aliveworkplace.pathfinder.name.3"
   ],
   "conditions": [
-    {"type": "job_level", "job": "minecraft:cartographer", "level": 3, "count": 1}
+    {"type": "job_level", "job": "minecraft:cartographer", "level": 4, "count": 1}
   ],
   "arrive": [
     {"way": "found", "site": "ruined_portal"},

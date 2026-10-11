@@ -93,8 +93,8 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 
 - A lair whose culture is switched off in `raiderCultures` stays until its captain falls (it sends no raids); the
   design's "leaves at the next dawn" is not built yet.
-- The Defence page's other rows (gates, scouts, war party, next attack, At peace) come with 32.4, 32.12 to 32.14 and
-  32.21; "where" is always rough until scouts exist.
+- The Defence page's gates slot is on [Sieges](sieges.md); its other rows (scouts, war party, next attack, At peace)
+  come with 32.12 to 32.14 and 32.21; "where" is always rough until scouts exist.
 - A lair of a structure other than the bandit camp puts its captain and band round the middle of its floor; cultures
   that need their own spots, water or a portal add them in their own items (32.7 to 32.11).
 

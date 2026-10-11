@@ -49,6 +49,8 @@ import org.jetbrains.annotations.Nullable;
  * <b>The threat clock:</b> at dusk, in the hall's round, each hall rolls the attack for the <i>next</i> night (with
  * {@link #chance} and {@link #REST_DAYS}), so there is a day in which a warning can be given; the attack then comes
  * that night at its hour, unless its culture was switched off or its lair broken up meanwhile.
+ * A culture that lays sieges gathers beyond the village's outermost finished wall on its side
+ * ({@code Sieges.outside}, 32.5).
  */
 public final class VillageRaids {
 	public static boolean ENABLED = true;
@@ -96,6 +98,17 @@ public final class VillageRaids {
 	 */
 	public static Raid track(ServerLevel level, BlockPos hall, int raiders) {
 		return begin(level, hall, Threats.MONSTERS, raiders);
+	}
+
+	/**
+	 * As {@link #track(ServerLevel, BlockPos, int)}, a raid by {@code culture} whose {@code raiders} already stand in the
+	 * world (each carrying {@link #TAG}): its tactics begin as they do in {@link #start}, so a culture that rams gates
+	 * lays its siege (32.4).
+	 */
+	public static Raid track(ServerLevel level, BlockPos hall, Culture culture, List<Mob> raiders) {
+		Raid raid = begin(level, hall, culture.id(), raiders.size());
+		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, raiders));
+		return raid;
 	}
 
 	private static Raid begin(ServerLevel level, BlockPos hall, net.minecraft.resources.ResourceLocation culture, int raiders) {
@@ -347,6 +360,13 @@ public final class VillageRaids {
 		}
 		if (gather == null) {
 			return null;
+		}
+		if (!portal && io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture)) {
+			// A siege gathers beyond the outermost finished wall on its side (32.5): no raider appears inside the walls.
+			BlockPos beyond = io.github.jcondedata.aliveworkplace.threat.Sieges.outside(level, hall, gather);
+			if (!beyond.equals(gather) && level.isLoaded(beyond)) {
+				gather = surface(level, beyond);
+			}
 		}
 		BlockPos from = gather;
 		boolean atPortal = portal;

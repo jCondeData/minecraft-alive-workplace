@@ -36,13 +36,14 @@ import net.minecraft.gametest.framework.GameTestHelper;
  * moment (synchronously, so no other test sees it) and put the defaults back after.
  */
 public class ExpansionGateGameTests implements FabricGameTest {
-	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M31 friendship; M33 the economy; M34 classes). */
+	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M31 friendship; M32 sieges; M33 the economy; M34 classes). */
 	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls", "stewardRenewal",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 		"daycareKeepers", "gemGrowers", "jewellers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
-		"villageEconomy", "visibleCaravans", "colonies", "villageClasses", "friendship", "heartEvents", "storyArcs", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders");
+		"villageEconomy", "visibleCaravans", "colonies", "villageClasses", "friendship", "heartEvents", "storyArcs", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders",
+		"sieges", "siegeDamage");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "villagerElderDays", "colonyCooldownDays",
@@ -95,6 +96,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("Friendship", () -> io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED);
 		map.put("HeartEvents", () -> io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED);
 		map.put("Arcs", () -> io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED);
+		map.put("Sieges", () -> io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED);
+		map.put("Sieges.DAMAGE", () -> io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE);
 		return map;
 	}
 
@@ -165,8 +168,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 89 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (89 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 91 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (91 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -211,7 +214,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 89, "every option on the screen in GameTests");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 91, "every option on the screen in GameTests");
 		helper.succeed();
 	}
 }

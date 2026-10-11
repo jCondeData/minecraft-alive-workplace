@@ -109,30 +109,53 @@ public class FerryEdgeGameTests implements FabricGameTest {
 		// A small room in the Nether, under this test's own spot (x and z as here, at y 100): floor, post, air around
 		BlockPos here = helper.absolutePos(new BlockPos(0, 0, 0));
 		BlockPos post = new BlockPos(here.getX(), 100, here.getZ());
-		nether.getChunk(post);
-		for (BlockPos p : BlockPos.betweenClosed(post.offset(-3, -1, -3), post.offset(3, 3, 3))) {
-			nether.setBlockAndUpdate(p, p.getY() == post.getY() - 1 ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.AIR.defaultBlockState());
-		}
-		nether.setBlockAndUpdate(post, ModBlocks.TRAVEL_POST.defaultBlockState());
+		// B108: never nether.getChunk(post): that blocks the server thread on the other dimension's chunk (a local full
+		// build hung 14 minutes there). A forced-chunk ticket loads it on the server's own schedule; the test waits for it.
+		net.minecraft.world.level.ChunkPos chunk = new net.minecraft.world.level.ChunkPos(post);
+		nether.setChunkForced(chunk.x, chunk.z, true);
 		TravelNetwork network = TravelNetwork.get(helper.getLevel().getServer());
-		TravelNetwork.Post fortress = network.add(GlobalPos.of(Level.NETHER, post), "Fortress Gate");
-		ItemStack ticket = Ferrymen.ticket(fortress);
-		helper.runAfterDelay(2, () -> {
-			helper.assertTrue(Ferrymen.travel(player, ticket), "the ticket to the Nether didn't work at the post");
-			helper.assertTrue(player.getVehicle() != null && Boats.isBoat(player.getVehicle()), "no boat ride first");
+		whenLoaded(helper, nether, chunk, 0, () -> {
+			for (BlockPos p : BlockPos.betweenClosed(post.offset(-3, -1, -3), post.offset(3, 3, 3))) {
+				nether.setBlockAndUpdate(p, p.getY() == post.getY() - 1 ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.AIR.defaultBlockState());
+			}
+			nether.setBlockAndUpdate(post, ModBlocks.TRAVEL_POST.defaultBlockState());
+			TravelNetwork.Post fortress = network.add(GlobalPos.of(Level.NETHER, post), "Fortress Gate");
+			ItemStack ticket = Ferrymen.ticket(fortress);
+			helper.runAfterDelay(2, () -> {
+				helper.assertTrue(Ferrymen.travel(player, ticket), "the ticket to the Nether didn't work at the post");
+				helper.assertTrue(player.getVehicle() != null && Boats.isBoat(player.getVehicle()), "no boat ride first");
+			});
+			helper.runAfterDelay(2 + FerryRides.RIDE_TICKS + 3, () -> {
+				try {
+					helper.assertFalse(FerryRides.riding(player), "still on the ride");
+					helper.assertTrue(player.level() == nether, "arrived in " + player.level().dimension().location());
+					helper.assertTrue(player.blockPosition().closerThan(post, 4), "arrived at " + player.blockPosition() + ", the post is at " + post);
+					helper.assertTrue(nether.getBlockState(player.blockPosition().below()).isSolid() && !nether.getBlockState(player.blockPosition()).isSolid(),
+						"not standing on the floor: " + nether.getBlockState(player.blockPosition()) + " at " + player.blockPosition());
+					helper.assertTrue(network.known(player.getUUID(), null).contains(fortress), "the Nether post isn't among the places they know");
+					helper.assertFalse(boatsLeft(helper), "the ferry boat was left behind in the Overworld");
+					helper.assertTrue(ferryman.getVehicle() == null && ferryman.position().distanceTo(ferrymanHome) < 2 && ferryman.level() == helper.getLevel(),
+						"the ferryman didn't get back to his jetty: " + helper.relativePos(ferryman.blockPosition()));
+				} finally {
+					nether.setChunkForced(chunk.x, chunk.z, false);
+				}
+				helper.succeed();
+			});
 		});
-		helper.runAfterDelay(2 + FerryRides.RIDE_TICKS + 3, () -> {
-			helper.assertFalse(FerryRides.riding(player), "still on the ride");
-			helper.assertTrue(player.level() == nether, "arrived in " + player.level().dimension().location());
-			helper.assertTrue(player.blockPosition().closerThan(post, 4), "arrived at " + player.blockPosition() + ", the post is at " + post);
-			helper.assertTrue(nether.getBlockState(player.blockPosition().below()).isSolid() && !nether.getBlockState(player.blockPosition()).isSolid(),
-				"not standing on the floor: " + nether.getBlockState(player.blockPosition()) + " at " + player.blockPosition());
-			helper.assertTrue(network.known(player.getUUID(), null).contains(fortress), "the Nether post isn't among the places they know");
-			helper.assertFalse(boatsLeft(helper), "the ferry boat was left behind in the Overworld");
-			helper.assertTrue(ferryman.getVehicle() == null && ferryman.position().distanceTo(ferrymanHome) < 2 && ferryman.level() == helper.getLevel(),
-				"the ferryman didn't get back to his jetty: " + helper.relativePos(ferryman.blockPosition()));
-			helper.succeed();
-		});
+	}
+
+	/** Runs {@code then} once the chunk is loaded (at most 100 ticks of waiting), without ever blocking the server thread. */
+	private static void whenLoaded(GameTestHelper helper, ServerLevel level, net.minecraft.world.level.ChunkPos chunk, int waited, Runnable then) {
+		if (level.hasChunk(chunk.x, chunk.z)) {
+			then.run();
+			return;
+		}
+		if (waited > 100) {
+			level.setChunkForced(chunk.x, chunk.z, false);
+			helper.fail("the Nether chunk " + chunk + " didn't load in 100 ticks");
+			return;
+		}
+		helper.runAfterDelay(1, () -> whenLoaded(helper, level, chunk, waited + 1, then));
 	}
 
 	/**

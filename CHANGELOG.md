@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The player guide** (22.10): a website for players, the link to send friends
+  (https://jcondedata.github.io/minecraft-alive-workplace/player-guide/): getting started, every job and how to set it
+  up, the Builder and blueprints, the Village Hall, village life, quests, festivals and markets, trade and caravans,
+  threats and defence, Pokémon and villagers, and the settings a server owner can change, each with the nightly
+  showcase's pictures. It is rebuilt every night with the showcase.
 - **Class outfits, drawn** (34.17): what Artisans, Burghers and Nobles wear over their job's outfit, and an elder's
   face, three versions of each for the owner to pick from (version 1 ships until he does: a neckerchief and belt
   pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
@@ -27,6 +32,10 @@ asks for the steps, `latest.log` and any crash report).
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
   lost the faster walk. A worker now always walks at their own pace.
+- **Dark oak chimneys in the renders rise whole again** (B106): in the review renders of the grand homes and the Manor
+  in the dark oak style, the chimneys' stone turned to deepslate with no direction, which the renderer drew as
+  nothing, so only the smoking tops showed. Styled renders now give such blocks the game's default (upright); in game
+  the chimneys were always whole, and a new test checks every chimney stays solid in all five styles.
 ### Added
 - **Desert raiders, for 1.6** (32.9). By a desert or badlands Town, husks open a half-buried **Tomb Camp** with an
   obelisk under their **Pharaoh**: while he lives, a husk that falls near him gets up again once, in a burst of sand.

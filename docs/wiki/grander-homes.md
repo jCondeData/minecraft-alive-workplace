@@ -4,7 +4,7 @@ What a home is worth to the [classes](classes.md): every home has a grade, and t
 Burghers and the Nobles the homes their class asks for: the Artisan's House, the Burgher's Townhouse and the Noble's
 Manor. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.15, 34.16
+Roadmap items: 34.15, 34.16, B106
 
 ## What a player sees
 
@@ -135,6 +135,9 @@ worked out from the finished buildings already saved.
   the five styles): [front](../media/manor-front.png), [back](../media/manor-back.png), [above](../media/manor-top.png).
   Renders of a style use
   `tools/blueprints/styles.py`, which applies the style files' swaps to a drawing.
+- B106: a style that turns a block into one standing on an axis (stone into deepslate in dark oak) gives it the
+  game's default, upright, in renders too; before, the dark oak renders showed the chimneys as floating tops. In game
+  they were always whole; `StyleGameTests.chimneysStayWholeInEveryStyle` checks every chimney in every style.
 
 ## Known limits
 

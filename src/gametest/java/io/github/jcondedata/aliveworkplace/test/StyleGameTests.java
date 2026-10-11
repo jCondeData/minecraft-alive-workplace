@@ -9,7 +9,9 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.StylePicker;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -21,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -132,6 +135,53 @@ public class StyleGameTests implements FabricGameTest {
 		helper.assertTrue(leftEnd.getX() == a.maxX(), "the left end should land on the right: " + leftEnd + " in " + a);
 		menu.press(StylePicker.MIRROR, player);
 		helper.assertFalse(BlueprintItem.data(player.getMainHandItem()).orElseThrow().mirrored(), "flipped back");
+		helper.succeed();
+	}
+
+	/**
+	 * ROADMAP B106: a chimney rises unbroken in every style. Every campfire on top of a solid stack, in every blueprint of
+	 * the library, still stands on a solid stack (each block a full, solid one) once the blueprint is restyled.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void chimneysStayWholeInEveryStyle(GameTestHelper helper) {
+		var server = helper.getLevel().getServer();
+		var level = helper.getLevel();
+		Map<String, Integer> chimneys = new HashMap<>();
+		for (ResourceLocation id : BlueprintLibrary.list(server, false)) {
+			if (!id.getNamespace().equals("aliveworkplace") || BlueprintStyles.styleOf(id).isPresent()) {
+				continue;
+			}
+			Blueprint base = BlueprintLibrary.get(server, id).orElse(null);
+			if (base == null) {
+				continue;
+			}
+			Map<BlockPos, BlockState> at = new HashMap<>();
+			for (Blueprint.Entry e : base.blocks()) {
+				at.put(e.pos(), e.state());
+			}
+			for (Blueprint.Entry e : base.blocks()) {
+				if (!(e.state().getBlock() instanceof CampfireBlock)) {
+					continue;
+				}
+				BlockPos below = e.pos().below();
+				if (at.get(below) == null || !at.get(below).isSolidRender(level, BlockPos.ZERO)) {
+					continue; // a campfire on a floor or a slab, not on a chimney
+				}
+				chimneys.merge(id.getPath(), 1, Integer::sum);
+				for (BlueprintStyles.Style style : BlueprintStyles.all()) {
+					for (BlockPos p = below; at.get(p) != null && at.get(p).isSolidRender(level, BlockPos.ZERO); p = p.below()) {
+						BlockState styled = BlueprintStyles.apply(style, at.get(p));
+						helper.assertTrue(styled.isSolidRender(level, BlockPos.ZERO),
+							id.getPath() + " in " + style.name() + ": the chimney under " + e.pos() + " breaks at " + p + " (" + at.get(p) + " -> " + styled + ")");
+					}
+				}
+			}
+		}
+		for (String home : List.of("manor", "manor_2", "manor_3", "townhouse", "artisans_house", "starter_cottage")) {
+			helper.assertTrue(chimneys.getOrDefault(home, 0) >= 1, "no chimney found in " + home + ": " + chimneys);
+		}
+		helper.assertTrue(chimneys.getOrDefault("manor", 0) == 2, "the Manor has a chimney up each gable: " + chimneys);
 		helper.succeed();
 	}
 }

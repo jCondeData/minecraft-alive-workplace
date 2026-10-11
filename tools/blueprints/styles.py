@@ -14,6 +14,11 @@ from kit import ROOT, Build
 
 STYLES = os.path.join(ROOT, "src/main/resources/data/aliveworkplace/blueprint_styles")
 NOT_REAL = {"minecraft:copper_lantern", "minecraft:cut_sandstone_stairs", "minecraft:dark_oak_wall"}
+# Blocks that stand on an axis (pillars): the game gives one a source block lacked its default, axis=y, so a stone
+# chimney turned deepslate stays a column. Without it the renderer has no model for the block and draws nothing
+# (ROADMAP B106: dark_oak chimneys looked like floating tops).
+PILLARS = re.compile(r"minecraft:(.+_(log|wood|stem|hyphae)|deepslate|basalt|polished_basalt|quartz_pillar|purpur_pillar"
+                     r"|bone_block|hay_block|muddy_mangrove_roots|ochre_froglight|verdant_froglight|pearlescent_froglight)")
 
 
 def _rules(style):
@@ -36,6 +41,9 @@ def styled(b, style):
     rules = _rules(style)
     out = Build(b.w, b.h, b.d)
     for pos, (name, props) in b.blocks.items():
-        out.blocks[pos] = (_swap(rules, name), props)
+        to = _swap(rules, name)
+        if to != name and PILLARS.fullmatch(to) and not any(k == "axis" for k, _ in props):
+            props = tuple(sorted(props + (("axis", "y"),)))
+        out.blocks[pos] = (to, props)
     out.nbt = dict(getattr(b, "nbt", {}))
     return out

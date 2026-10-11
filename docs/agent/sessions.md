@@ -42,7 +42,7 @@ the full build runs once per 2-3 features.
    `sessions.py show <id>`, build its whole Done when, write its GameTests and run only them with `runGameTest`, add
    its showcase scene to the harness and `tools/showcase/scenes.py` if a player sees it, add the CHANGELOG line, update the feature's page in `docs/wiki/` in the same commit (roadmap 22.9: what changed for a
    player, its switches, saved fields, decisions, tests and scenes, in the format of `docs/wiki/README.md`; add the
-   item's id to the page's "Roadmap items:" line; `python3 tools/modtest/wikicheck.py` must pass, and `build` runs it), tick
+   item's id to the page's "Roadmap items:" line; `python3 tools/modtest/wikicheck.py` must pass, and `build` runs it), and its page in the player guide `docs/guide/` if a player sees it (roadmap 22.10: what a player does and sees, plain words, no backend, rules in `docs/guide/README.md`; an expansion's content goes in when its switch turns on; `python3 tools/modtest/guidecheck.py` must pass), tick
    it (`sessions.py done <id> --review` if a player sees it, else `done <id>`), commit locally with the work and the
    tick (stage files by name), don't push, and reply in 5 lines: what was built, files, tests, anything left". Keep
    your own context small: read its reply, not its files. One feature per subagent; two only if both are tiny.
@@ -162,6 +162,8 @@ test to ship, not a bug. Each run, after checking CI and the nightly issue:
    sentence. A sentence that is wrong or missing: fix the page (ship it with your tests). The page is right and the
    mod is wrong: file a bug (`sessions.py bug`). No page: write it now and add the item's id to its "Roadmap items:"
    line. `python3 tools/modtest/wikicheck.py` must pass (the build runs it as `checkWiki`).
+   The same goes for **the player guide** (roadmap 22.10, `docs/guide/README.md`): read the item's guide page against
+   what a player sees; fix it, or write the lines it lacks. `python3 tools/modtest/guidecheck.py` must pass (`checkGuide`).
    When nothing is waiting: **backfill one missing wiki page per run, oldest milestone first** (the ids in
    `tools/modtest/wiki_baseline.txt`: write the page from the code, lang file, tests and scenes, add the ids to its
    line, link it in the index, then `wikicheck.py --prune`; never add to the baseline), then the release check if one
@@ -188,7 +190,8 @@ the new jar and nothing is lost. Report it in the Notes.
      `python3 tools/agent/progress.py` as a code block, one line per stage (1.1 to 2.0), and say how each moved since the last
      digest. **Link the wiki** (roadmap 22.9; it is the last line `progress.py` prints, keep it):
      https://github.com/jCondeData/minecraft-alive-workplace/tree/main/docs/wiki, and name the pages written or
-     changed since the last digest. Then what landed since the last digest (one line each), what the QA lane found overnight, the
+     changed since the last digest. **Link the player guide** too (roadmap 22.10, the line above it in `progress.py`):
+     https://jcondedata.github.io/minecraft-alive-workplace/player-guide/, the link the owner sends friends. Then what landed since the last digest (one line each), what the QA lane found overnight, the
      lanes' health (a lane with no push in 3 hours, a red run on `main`), releases, and only the decisions that are
      his.
   3. **The evening digest releases** (CLAUDE.md "Releasing") when something new landed since the last release,

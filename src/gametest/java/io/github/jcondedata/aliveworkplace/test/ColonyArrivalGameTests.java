@@ -266,6 +266,10 @@ public class ColonyArrivalGameTests implements FabricGameTest {
 			VillageHallBlockEntity colony = (VillageHallBlockEntity) level.getBlockEntity(hall);
 			helper.assertTrue(VillageHalls.name(level, hall).getString().equals("Newbrook") && m.owner().getUUID().equals(colony.owner()),
 				"the hall's name and owner: " + VillageHalls.name(level, hall).getString() + " " + colony.owner());
+			// the Colony Camp (33.14): the hall on its timber platform under the striped awning, two wagons
+			helper.assertTrue(level.getBlockState(hall.below()).is(Blocks.SPRUCE_PLANKS)
+				&& (level.getBlockState(hall.above(3)).is(Blocks.RED_WOOL) || level.getBlockState(hall.above(3)).is(Blocks.WHITE_WOOL)),
+				"the hall isn't under the Colony Camp's awning: " + level.getBlockState(hall.below()) + " / " + level.getBlockState(hall.above(3)));
 			BlockPos table = find(helper, ModBlocks.BLUEPRINT_TABLE);
 			BlockPos post = find(helper, ModBlocks.TRAVEL_POST);
 			helper.assertTrue(table != null && post != null && post.distManhattan(hall) <= 8, "the camp's table or the post is missing: " + table + " " + post);

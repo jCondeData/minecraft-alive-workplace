@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released).
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13
+Roadmap items: 33.11, 33.12, 33.13, 33.14
 
 ## What a player sees
 
@@ -210,10 +210,51 @@ Lane a, 2026-10-11 (also in ROADMAP's Notes):
 - Movements name villages and players by their names at the time (kept as text), so they read the same after a
   rename.
 
+## The Royal Hall (33.14)
+
+**What a player sees.** On the capital's Realm tab, where a member's tab has "Put forward as capital", a lectern
+button: **Royal Hall**. Its lines say what it does ("Finished within 32 blocks of the capital's hall, it doubles what
+the realm treasury holds (the Royal Hall II: three times)"), what stands now, and for the capital's owner (friends and
+operators too) "Click with a Blank Blueprint in your inventory to draw it". A click takes one Blank Blueprint (none in
+creative) and gives the Royal Hall blueprint in the capital's style ("Drawn: Royal Hall. Have a builder put it up within
+32 blocks of Thornholm's hall"); with a Royal Hall standing it draws the **Royal Hall II**; with the II standing it says
+so. The treasury's tooltip adds "The Royal Hall by the capital: 2 times the cap" (or 3), and its "Holds x of y" counts
+the raised cap. On the village map a Royal Hall is marked as a hall.
+
+**The builds** (`tools/blueprints/realm.py`, renders as drawn and in the five styles in `docs/media/royal-hall-front.png`,
+`-back.png`, `royal-hall-2-front.png`, `-back.png`):
+- Royal Hall (`realm/royal_hall`, 19 x 16 x 25): a stone great hall (15 x 17) with pilasters and buttresses, tall
+  windows four to a side, a deepslate gable roof front to back with a rose window in the front gable, a gabled porch
+  with the realm's red-and-gold banners; inside a red runner to a two-step dais with the seat of state (a dark oak
+  throne on gold) under banners, banners down both walls, benches, a minstrels' gallery over the door (ladder), beams
+  with hanging lanterns; behind the dais the vault, a lower annex with four chests.
+- Royal Hall II (`realm/royal_hall_2`, 27 x 22 x 25, the upgrade on the same origin): a four-floor keep tower with a
+  crenellated top and the realm's banner on a pole, and a treasury wing with chests along both walls, a counting table
+  and barred windows, both through doors from the hall's east bays.
+
+**How it works.** `RoyalHalls.multiplier` looks at the build site manager's finished buildings whose origin is within
+32 blocks of the capital's hall: a Royal Hall II (any style, `BlueprintStyles.base`) gives 3, a Royal
+Hall 2, else 1, and 1 with realms off. `RealmTreasury.cap(server, realm)` is the rank's cap times that, used by the levy,
+gifts and the icon. Nothing new is saved: the finished-buildings list is already saved, so a hall taken down, or a
+capital moved to another village, changes the cap at once. `realm/` blueprints are kept out of the Blueprint Table
+(`BlueprintLibrary.isWorldgenPiece`), like `research/`.
+
+**Decisions (33.14).**
+- The cap goes by the finished-buildings list instead of a saved flag on the realm, so it can't drift from what
+  stands (a hall broken or replaced) and older saves need nothing.
+- "Within 32 blocks" is measured to the build's origin (its front corner), as the village map and other building
+  checks do.
+- The drawn blueprint is in the capital's style (the first of its finished buildings' styles that the hall comes in),
+  as the colony's starter builds are.
+- A treasury already over a lowered cap (the hall came down) keeps what it holds; the levy and gifts stop until it is
+  under the cap again.
+- The Colony Camp's flag is a plain white banner: the realm's arms can't go on a placed template's banner without new
+  code in the arrival, left for the arms work.
+
 ## Known limits
 
 - No research, relief riders or edicts yet (33.14 to 33.17, 33.21, 33.22); the treasury and the arms are there for them.
-- `realm_treasury` hasn't been filmed yet (GitHub films it after the push).
+- `realm_treasury` hasn't been filmed yet (GitHub films it after the push). Nor has `realm_builds` (33.14).
 - The members' villagers and wellbeing are as their last round saw them (every half minute while loaded); a village
   far from players shows its last numbers.
 - Fireworks go up only if the capital is loaded at the rank up (a rank up counted in a far member's round has its
@@ -226,6 +267,12 @@ Lane a, 2026-10-11 (also in ROADMAP's Notes):
 - The invitation letter is written in the server's language (English), like the settlers' letter.
 
 ## Proof
+- `RealmBuildsGameTests` (33.14): `theColonyCampPlacesWhole`, `theCapitalDrawsTheRoyalHall` (the tab's button, refused
+  without a Blank Blueprint, the drawn line, hidden from the table, a hall on the map, the II next, nothing after),
+  `theRoyalHallRaisesTheCap` (40 blocks off: no; styled: twice, gifts up to 512; II: three times; realms off; taken
+  down), `buildsTheRoyalHall`, `buildsTheRoyalHallII` (a builder with the materials stocked).
+  `ColonyArrivalGameTests.settlersArriveAndFoundTheColony` checks the hall stands on the Colony Camp's platform under
+  its awning.
 
 - `RealmGameTests` (9): `foundARealmAndAddOnesOwnVillages` (through the tab, a friend's village too, the members'
   lines, the name icons), `onlyATownFoundsARealm` (the refusal, a stranger, the "What next?" tip),

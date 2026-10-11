@@ -71,6 +71,12 @@ public final class Trees {
 	 */
 	public static void forEachLog(net.minecraft.server.level.ServerLevel level, net.minecraft.world.level.levelgen.structure.BoundingBox box,
 			java.util.function.Consumer<net.minecraft.core.BlockPos> action) {
+		forEach(level, box, Trees::isLog, action);
+	}
+
+	/** The same for any kind of block: every block in {@code box} that {@code kind} accepts, skipping chunk sections with none. */
+	public static void forEach(net.minecraft.server.level.ServerLevel level, net.minecraft.world.level.levelgen.structure.BoundingBox box,
+			java.util.function.Predicate<BlockState> kind, java.util.function.Consumer<net.minecraft.core.BlockPos> action) {
 		int minY = Math.max(box.minY(), level.getMinBuildHeight());
 		int maxY = Math.min(box.maxY(), level.getMaxBuildHeight() - 1);
 		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
@@ -81,7 +87,7 @@ public final class Trees {
 				net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunk(cx, cz);
 				for (int sy = minY >> 4; sy <= maxY >> 4; sy++) {
 					net.minecraft.world.level.chunk.LevelChunkSection section = chunk.getSection(chunk.getSectionIndexFromSectionY(sy));
-					if (section.hasOnlyAir() || !section.maybeHas(Trees::isLog)) {
+					if (section.hasOnlyAir() || !section.maybeHas(kind)) {
 						continue;
 					}
 					int x0 = Math.max(box.minX(), cx << 4), x1 = Math.min(box.maxX(), (cx << 4) + 15);
@@ -90,7 +96,7 @@ public final class Trees {
 					for (int y = y0; y <= y1; y++) {
 						for (int z = z0; z <= z1; z++) {
 							for (int x = x0; x <= x1; x++) {
-								if (isLog(section.getBlockState(x & 15, y & 15, z & 15))) {
+								if (kind.test(section.getBlockState(x & 15, y & 15, z & 15))) {
 									action.accept(new net.minecraft.core.BlockPos(x, y, z));
 								}
 							}

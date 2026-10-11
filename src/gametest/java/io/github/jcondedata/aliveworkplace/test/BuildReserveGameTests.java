@@ -132,6 +132,33 @@ public class BuildReserveGameTests implements net.fabricmc.fabric.api.gametest.v
 		helper.succeed();
 	}
 
+	/**
+	 * 25.3: a site's remaining need is counted once and reused while the site hasn't moved on (a big village's waiting
+	 * builders recounted every other build block by block); once its builder places a block or makes a supply run, it is
+	 * counted again from the world.
+	 */
+	//$ gametest_ticks_batch HUGE '100' '"b84NeedCache"'
+	@GameTest(template = HUGE, timeoutTicks = 100, batch = "b84NeedCache")
+	public void aSitesNeedIsCountedAgainOnceItMovesOn(GameTestHelper helper) {
+		Setup s = setup(helper);
+		java.util.Map<net.minecraft.world.item.Item, Integer> before = BuildReserve.of(s.level(), s.store()).reserved();
+		io.github.jcondedata.aliveworkplace.build.BuildPlan plan = s.site().plan(s.level());
+		io.github.jcondedata.aliveworkplace.build.BuildPlan.Step step = s.site().upcoming(plan, Integer.MAX_VALUE).stream()
+			.filter(st -> !st.requirements().isEmpty() && before.containsKey(io.github.jcondedata.aliveworkplace.build.MaterialFamilies.key(st.requirements().get(0).item()))
+				&& !io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(s.level().getBlockState(st.pos()), st.state()))
+			.findFirst().orElseThrow(() -> new GameTestAssertException("no step of the Farmstead needs a kept-back item: " + before));
+		net.minecraft.world.item.Item item = io.github.jcondedata.aliveworkplace.build.MaterialFamilies.key(step.requirements().get(0).item());
+		// The block appears without the site moving on: the count is reused.
+		s.level().setBlock(step.pos(), step.state(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+		helper.assertTrue(BuildReserve.of(s.level(), s.store()).reserved().equals(before), "counted again though the site didn't move on");
+		// Its builder makes a supply run: the site has moved on, and the block is counted as done.
+		s.site().supplied();
+		int after = BuildReserve.of(s.level(), s.store()).reserved(item);
+		helper.assertTrue(after < before.get(item), "still keeps back " + after + " " + item + " after the block went in (was " + before.get(item) + ")");
+		done(s);
+		helper.succeed();
+	}
+
 	private static Setup setup(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.village(helper, 48);

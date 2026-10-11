@@ -130,6 +130,12 @@ final class RealmTab {
 		// choosing the capital (33.12): put this member forward; a vote running, with its two buttons
 		if (!atCapital) {
 			putForward(menu, level, hall, realm, viewer, again);
+		} else {
+			// the Royal Hall (33.14): the capital's owner draws it for a Blank Blueprint
+			menu.button(RoyalHalls.BUTTON, RoyalHalls.icon(level, hall, realm, rules), !rules ? null : p -> {
+				said(level, p, RoyalHalls.draw(level, hall, p));
+				again.run();
+			});
 		}
 		RealmData.Vote vote = RealmData.get(server).vote(realm.id());
 		if (vote != null) {

@@ -188,7 +188,7 @@ public class RealmInviteGameTests implements FabricGameTest {
 		ChoiceMenu tab = RealmGameTests.realmTab(helper, land, 1, them);
 		ItemStack put = tab.icon(Realms.PUT_FORWARD);
 		helper.assertTrue(put.is(Items.BELL) && put.getHoverName().getString().equals("Put " + land.name(1) + " forward as capital"), "no Put forward button: " + put);
-		helper.assertTrue(RealmGameTests.realmTab(helper, land, 0, land.owner()).icon(Realms.PUT_FORWARD).isEmpty(), "the capital can be put forward");
+		helper.assertTrue(RealmGameTests.realmTab(helper, land, 0, land.owner()).icon(Realms.PUT_FORWARD).is(Items.LECTERN), "the capital can be put forward (its slot has the Royal Hall)");
 		tab.press(Realms.PUT_FORWARD, them);
 		RealmData.Vote vote = land.data().vote(id);
 		helper.assertTrue(vote != null && vote.candidate().equals(land.at(1)), "no vote: " + vote);
@@ -283,7 +283,7 @@ public class RealmInviteGameTests implements FabricGameTest {
 		helper.assertTrue(!land.level().getEntitiesOfClass(FireworkRocketEntity.class, new AABB(land.hall(1)).inflate(4, 8, 4)).isEmpty(), "no fireworks");
 		helper.assertTrue(RealmGameTests.chronicled(land, 0, "The capital moved from " + land.name(0) + " to " + land.name(1) + ": the realm is now the Barony of " + land.name(1)),
 			"no chronicle line: " + land.entity(0).chronicle());
-		helper.assertTrue(tab.icon(Realms.PUT_FORWARD).isEmpty(), "the new capital still offers itself");
+		helper.assertTrue(tab.icon(Realms.PUT_FORWARD).is(Items.LECTERN), "the new capital still offers itself (its slot has the Royal Hall)");
 		helper.succeed();
 	}
 

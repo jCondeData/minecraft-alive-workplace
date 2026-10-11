@@ -194,9 +194,15 @@ public class LumberjackWork extends Behavior<Villager> {
 				notTrees.clear();
 				notTreesUntil = gameTime + 1200;
 			}
-			tree = findTree(level, block, villager.blockPosition(), farm, unreachable,
+			Search search = findTree(level, block, villager.blockPosition(), farm, unreachable,
 				io.github.jcondedata.aliveworkplace.work.Requests.wantedLogs(io.github.jcondedata.aliveworkplace.work.Requests.forVillage(level, villager, block)),
-				notTrees);
+				notTrees, FILLS_PER_SEARCH);
+			tree = search.tree();
+			if (search.more()) {
+				searchTimer = 1; // more trunks to look at: the search goes on next tick, a few trees at a time
+				status(villager, Phase.LOOKING);
+				return;
+			}
 			// Nothing to fell for a while: look less often (a sapling takes minutes to grow anyway).
 			emptySearches = tree == null ? emptySearches + 1 : 0;
 			searchTimer = emptySearches >= 3 ? SEARCH_EVERY * 5 : SEARCH_EVERY;
@@ -377,13 +383,26 @@ public class LumberjackWork extends Behavior<Villager> {
 	@Nullable
 	public static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable,
 			Set<net.minecraft.world.item.Item> wanted) {
-		return findTree(level, block, from, farm, unreachable, wanted, new java.util.HashSet<>());
+		return findTree(level, block, from, farm, unreachable, wanted, new java.util.HashSet<>(), Integer.MAX_VALUE).tree();
 	}
 
-	/** The same, skipping (and adding to) {@code notTrees}: logs already found not to be part of a tree. */
-	@Nullable
-	static BlockPos findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable,
-			Set<net.minecraft.world.item.Item> wanted, Set<BlockPos> notTrees) {
+	/**
+	 * At most this many trees are worked out (a flood fill of up to {@link Trees#MAX_LOGS} logs and their leaves each) in one
+	 * search (25.3: a forest of log pillars or a log cabin once cost a lumberjack over 60 ms in one tick). A search that
+	 * runs out goes on a tick later where it stopped, since every trunk that wasn't a tree is in {@code notTrees}.
+	 */
+	public static final int FILLS_PER_SEARCH = 6;
+
+	/** What a search found: the tree's lowest log, or null; {@code more} when it stopped at its budget before looking at every trunk. */
+	public record Search(@Nullable BlockPos tree, boolean more) {
+	}
+
+	/**
+	 * The same, skipping (and adding to) {@code notTrees}: logs already found not to be part of a tree (or of a tree that
+	 * can't be got at), and working out at most {@code fills} trees.
+	 */
+	public static Search findTree(ServerLevel level, BlockPos block, BlockPos from, @Nullable BoundingBox farm, Set<BlockPos> unreachable,
+			Set<net.minecraft.world.item.Item> wanted, Set<BlockPos> notTrees, int fills) {
 		List<BoundingBox> keepOut = new java.util.ArrayList<>();
 		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
@@ -415,6 +434,9 @@ public class LumberjackWork extends Behavior<Villager> {
 			if (!checked.add(trunk.pos())) {
 				continue;
 			}
+			if (fills-- <= 0) {
+				return new Search(null, true); // the rest next tick
+			}
 			Optional<Trees.Tree> t = Trees.treeAt(level, trunk.pos());
 			if (t.isEmpty()) {
 				notTrees.add(trunk.pos());
@@ -422,10 +444,11 @@ public class LumberjackWork extends Behavior<Villager> {
 			}
 			checked.addAll(t.get().base());
 			if (!unreachable.contains(t.get().lowest())) {
-				return t.get().lowest();
+				return new Search(t.get().lowest(), false);
 			}
+			notTrees.addAll(t.get().base()); // can't be got at: not worked out again in the searches that follow
 		}
-		return null;
+		return new Search(null, false);
 	}
 
 	// --- bone meal -----------------------------------------------------------------------------
@@ -440,11 +463,13 @@ public class LumberjackWork extends Behavior<Villager> {
 		fed.keySet().removeIf(p -> !level.getBlockState(p).is(net.minecraft.tags.BlockTags.SAPLINGS));
 		List<BlockPos> candidates = new java.util.ArrayList<>(replanted);
 		if (farm != null) {
-			for (BlockPos p : BlockPos.betweenClosed(farm.minX(), farm.minY() - 2, farm.minZ(), farm.maxX(), farm.maxY() + 2, farm.maxZ())) {
-				if (isFeedable(level, p)) {
-					candidates.add(p.immutable());
-				}
-			}
+			// Only the chunk sections with a sapling in them are looked through (25.3: a big farm was a block-by-block scan).
+			Trees.forEach(level, new BoundingBox(farm.minX(), farm.minY() - 2, farm.minZ(), farm.maxX(), farm.maxY() + 2, farm.maxZ()),
+				state -> state.is(net.minecraft.tags.BlockTags.SAPLINGS), p -> {
+					if (isFeedable(level, p)) {
+						candidates.add(p);
+					}
+				});
 		}
 		BlockPos best = null;
 		for (BlockPos p : candidates) {

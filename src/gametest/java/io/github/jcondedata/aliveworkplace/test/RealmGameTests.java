@@ -50,7 +50,7 @@ public class RealmGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
 
 	/** A test's villages: their halls, side by side, the first owned by {@code owner}, who hears every chat line. */
-	private record Land(ServerLevel level, ServerPlayer owner, List<Component> heard, List<BlockPos> halls) {
+	record Land(ServerLevel level, ServerPlayer owner, List<Component> heard, List<BlockPos> halls) {
 		BlockPos hall(int i) {
 			return halls.get(i);
 		}
@@ -77,7 +77,7 @@ public class RealmGameTests implements FabricGameTest {
 	 * round (as the hall's own round does) with {@code 5 + i} villagers; realms on, no hall rounds during the test, the
 	 * realm records empty. Everything is put back after.
 	 */
-	private static Land land(GameTestHelper helper, VillageRanks.Rank... ranks) {
+	static Land land(GameTestHelper helper, VillageRanks.Rank... ranks) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
@@ -113,7 +113,7 @@ public class RealmGameTests implements FabricGameTest {
 	}
 
 	/** A player who keeps every chat line they're shown. */
-	private static ServerPlayer listener(GameTestHelper helper, List<Component> seen, String name) {
+	static ServerPlayer listener(GameTestHelper helper, List<Component> seen, String name) {
 		ServerLevel level = helper.getLevel();
 		var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(new com.mojang.authlib.GameProfile(UUID.randomUUID(), name), false);
 		ServerPlayer player = new ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation()) {
@@ -132,7 +132,7 @@ public class RealmGameTests implements FabricGameTest {
 	}
 
 	/** The hall's screen, its minecart pressed and the Realm tab opened: the way a player gets there. */
-	private static ChoiceMenu realmTab(GameTestHelper helper, Land land, int hall, ServerPlayer player) {
+	static ChoiceMenu realmTab(GameTestHelper helper, Land land, int hall, ServerPlayer player) {
 		ChoiceMenu menu = VillageHallScreen.forTest(player, land.hall(hall));
 		menu.press(VillageHallScreen.ROUTES, player);
 		ItemStack tab = menu.icon(TradePage.Tab.REALM.slot());
@@ -142,20 +142,20 @@ public class RealmGameTests implements FabricGameTest {
 		return menu;
 	}
 
-	private static List<String> lore(ItemStack stack) {
+	static List<String> lore(ItemStack stack) {
 		return stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).lines().stream().map(Component::getString).toList();
 	}
 
-	private static boolean heard(Land land, String line) {
+	static boolean heard(Land land, String line) {
 		return land.heard().stream().anyMatch(c -> c.getString().equals(line));
 	}
 
-	private static boolean chronicled(Land land, int hall, String line) {
+	static boolean chronicled(Land land, int hall, String line) {
 		return land.entity(hall).chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.REALM && e.text().getString().equals(line));
 	}
 
 	/** Founds the realm at hall 0 through its tab and returns the menu. */
-	private static ChoiceMenu found(GameTestHelper helper, Land land) {
+	static ChoiceMenu found(GameTestHelper helper, Land land) {
 		ChoiceMenu menu = realmTab(helper, land, 0, land.owner());
 		ItemStack button = menu.icon(Realms.FOUND);
 		helper.assertTrue(button.is(Items.GOLDEN_HELMET) && button.getHoverName().getString().equals("Found a realm"), "no Found button: " + button);

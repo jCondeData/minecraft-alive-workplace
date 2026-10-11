@@ -30,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
  * (click with a named Name Tag to rename it), its arms (click with a banner to set them), the way out, the members
  * (the capital with a crown; rank, villagers, wellbeing, distance and owner; a click lets one go) and, for those who
  * rule the capital, the villages within reach they may add with one click. Everyone who may open the hall may read it.
+ * 33.12: other players' villages to invite (a letter goes), the invitations waiting on a village's tab (accept or
+ * decline), a member's "Put forward as capital", and a capital vote with its two buttons.
  */
 final class RealmTab {
 	/** A gold helmet: the realm's crown. */
@@ -47,6 +49,7 @@ final class RealmTab {
 		RealmData.Realm realm = Realms.realmOf(level, hall);
 		if (realm == null) {
 			foundButton(menu, level, hall, viewer, again);
+			invitations(menu, level, hall, viewer, again);
 			return;
 		}
 		GlobalPos here = GlobalPos.of(level.dimension(), hall);
@@ -101,6 +104,15 @@ final class RealmTab {
 			again.run();
 		});
 
+		// choosing the capital (33.12): put this member forward; a vote running, with its two buttons
+		if (!atCapital) {
+			putForward(menu, level, hall, realm, viewer, again);
+		}
+		RealmData.Vote vote = RealmData.get(server).vote(realm.id());
+		if (vote != null) {
+			vote(menu, level, hall, realm, vote, viewer, again);
+		}
+
 		// the members, the capital first
 		int slot = Realms.MEMBERS;
 		for (RealmData.Member m : realm.members()) {
@@ -125,7 +137,137 @@ final class RealmTab {
 					again.run();
 				});
 			}
+			// other players' villages: invite them (33.12)
+			for (GlobalPos other : invitable(server, realm, viewer)) {
+				if (slot >= ChoiceMenu.SIZE) {
+					break;
+				}
+				RealmData.Invite sent = RealmData.get(server).invite(realm.id(), other);
+				boolean waiting = sent != null && !RealmInvites.lapsed(sent, RealmInvites.now(server));
+				menu.button(slot++, invitable(server, hall, other, waiting ? sent : null), waiting ? null : p -> {
+					said(level, p, RealmInvites.invite(level, hall, other, p));
+					again.run();
+				});
+			}
 		}
+	}
+
+	/** "Put forward as capital": what it takes, and why not, for the viewer. */
+	static void putForward(ChoiceMenu menu, ServerLevel level, BlockPos hall, RealmData.Realm realm, @Nullable ServerPlayer viewer, Runnable again) {
+		MinecraftServer server = level.getServer();
+		GlobalPos here = GlobalPos.of(level.dimension(), hall);
+		Component village = VillageHalls.name(level, hall);
+		List<Component> lore = new ArrayList<>();
+		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.put_forward_about", Realms.FOUNDING_RANK.title()), ChatFormatting.GRAY));
+		lore.add(VillageHallScreen.line("screen.aliveworkplace.realm.put_forward_vote", ChatFormatting.GRAY));
+		Realms.Refusal refusal = viewer == null ? null : CapitalVotes.refusal(server, RealmData.get(server), realm, here, viewer);
+		Component why = refusal == null ? null : switch (refusal) {
+			case NOT_YOURS, NO_OWNER -> Component.translatable("message.aliveworkplace.realm.put_forward_not_yours", Realms.ownerName(server, here), village);
+			case RANK -> Component.translatable("message.aliveworkplace.realm.capital_rank", village, Realms.FOUNDING_RANK.title(), Realms.rankOf(server, here).title());
+			case VOTING -> Component.translatable("message.aliveworkplace.realm.voting", Realms.name(server, RealmData.get(server).vote(realm.id()).candidate()));
+			default -> null;
+		};
+		lore.add(why != null ? VillageHallScreen.line(why, ChatFormatting.RED) : VillageHallScreen.line("screen.aliveworkplace.realm.put_forward_how", ChatFormatting.DARK_GRAY));
+		menu.button(Realms.PUT_FORWARD, VillageHallScreen.icon(Items.BELL, Component.translatable("screen.aliveworkplace.realm.put_forward", village),
+			why == null ? ChatFormatting.GOLD : ChatFormatting.GRAY, lore.toArray(Component[]::new)), p -> {
+			said(level, p, CapitalVotes.putForward(level, hall, p));
+			again.run();
+		});
+	}
+
+	/** A capital vote: who's put forward, the count so far, the time left; for and against for those who own a member. */
+	static void vote(ChoiceMenu menu, ServerLevel level, BlockPos hall, RealmData.Realm realm, RealmData.Vote vote, @Nullable ServerPlayer viewer, Runnable again) {
+		MinecraftServer server = level.getServer();
+		Component candidate = Realms.name(server, vote.candidate());
+		CapitalVotes.Tally tally = CapitalVotes.tally(realm, vote);
+		long left = Math.max(0, CapitalVotes.DAY - (RealmInvites.now(server) - vote.started()));
+		List<GlobalPos> mine = viewer == null ? List.of() : CapitalVotes.ballotsOf(server, realm, viewer.getUUID());
+		Boolean cast = mine.isEmpty() ? null : vote.ballot(mine.get(0));
+		menu.button(Realms.VOTE, VillageHallScreen.icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.realm.vote", candidate), ChatFormatting.GOLD,
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_from", Realms.name(server, realm.capital()), candidate), ChatFormatting.GRAY),
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_count", tally.yes(), tally.no()), ChatFormatting.AQUA),
+			VillageHallScreen.line("screen.aliveworkplace.realm.vote_rule", ChatFormatting.GRAY),
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_left", Math.max(1, (left + 999) / 1000)), ChatFormatting.YELLOW),
+			VillageHallScreen.line(mine.isEmpty() ? Component.translatable("screen.aliveworkplace.realm.vote_none")
+				: cast == null ? Component.translatable("screen.aliveworkplace.realm.vote_yours_none", mine.size())
+				: Component.translatable(cast ? "screen.aliveworkplace.realm.vote_yours_for" : "screen.aliveworkplace.realm.vote_yours_against", mine.size()),
+				ChatFormatting.DARK_GRAY)), null);
+		if (mine.isEmpty()) {
+			return;
+		}
+		menu.button(Realms.VOTE_FOR, VillageHallScreen.icon(Items.LIME_WOOL, Component.translatable("screen.aliveworkplace.realm.vote_for", candidate), ChatFormatting.GREEN,
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_how", mine.size()), ChatFormatting.DARK_GRAY)), p -> {
+			said(level, p, CapitalVotes.vote(level, hall, p, true));
+			again.run();
+		});
+		menu.button(Realms.VOTE_AGAINST, VillageHallScreen.icon(Items.RED_WOOL, Component.translatable("screen.aliveworkplace.realm.vote_against",
+				Realms.name(server, realm.capital())), ChatFormatting.RED,
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.vote_how", mine.size()), ChatFormatting.DARK_GRAY)), p -> {
+			said(level, p, CapitalVotes.vote(level, hall, p, false));
+			again.run();
+		});
+	}
+
+	/** Outside a realm (33.12): each open invitation, an Accept and a Decline button side by side. */
+	static void invitations(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable ServerPlayer viewer, Runnable again) {
+		MinecraftServer server = level.getServer();
+		GlobalPos here = GlobalPos.of(level.dimension(), hall);
+		long now = RealmInvites.now(server);
+		int slot = Realms.INVITES;
+		for (RealmData.Invite invite : RealmInvites.to(server, here, now)) {
+			if (slot + 1 >= ChoiceMenu.SIZE) {
+				break;
+			}
+			RealmData.Realm realm = RealmData.get(server).realm(invite.realm());
+			Component title = Realms.title(server, realm);
+			long left = Math.max(0, RealmInvites.LAPSE - (now - invite.sent()));
+			Component lapses = Component.translatable("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000);
+			ItemStack shown = realm.arms().map(VillageBanners.Colours::banner).orElseGet(() -> new ItemStack(Items.WHITE_BANNER));
+			menu.button(slot, VillageHallScreen.icon(shown, Component.translatable("screen.aliveworkplace.realm.accept", title), ChatFormatting.GREEN,
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.invite_from", Realms.ownerName(server, realm.capital()),
+					Realms.name(server, realm.capital())), ChatFormatting.GRAY),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.members", realm.members().size(), Realms.MAX_MEMBERS), ChatFormatting.GRAY),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_where", VillageHallScreen.where(hall, realm.capital().pos())), ChatFormatting.GRAY),
+				VillageHallScreen.line(lapses, ChatFormatting.YELLOW),
+				VillageHallScreen.line("screen.aliveworkplace.realm.accept_how", ChatFormatting.DARK_GRAY)), p -> {
+				said(level, p, RealmInvites.accept(level, hall, invite.realm(), p));
+				again.run();
+			});
+			menu.button(slot + 1, VillageHallScreen.icon(Items.BARRIER, Component.translatable("screen.aliveworkplace.realm.decline", title), ChatFormatting.RED,
+				VillageHallScreen.line("screen.aliveworkplace.realm.decline_how", ChatFormatting.DARK_GRAY)), p -> {
+				said(level, p, RealmInvites.decline(level, hall, invite.realm(), p));
+				again.run();
+			});
+			slot += 2;
+		}
+	}
+
+	/** Other players' villages (not a friend's) the viewer may invite: seen by a round, in reach, in no realm; nearest first. */
+	static List<GlobalPos> invitable(MinecraftServer server, RealmData.Realm realm, ServerPlayer viewer) {
+		RealmData data = RealmData.get(server);
+		List<GlobalPos> out = new ArrayList<>();
+		for (RealmData.Known k : data.knownVillages()) {
+			UUID owner = Realms.ownerOf(server, k.hall());
+			if (owner != null && !Friends.get(server).mayDirect(owner, viewer.getUUID()) && RealmInvites.reach(server, data, realm, k.hall()) == null) {
+				out.add(k.hall());
+			}
+		}
+		BlockPos capital = realm.capital().pos();
+		out.sort(java.util.Comparator.comparingDouble(g -> g.pos().distSqr(capital)));
+		return out;
+	}
+
+	/** A village to invite: a book and quill, where it is, its rank and owner; or, invited, how long the invitation has left. */
+	static ItemStack invitable(MinecraftServer server, BlockPos hall, GlobalPos other, @Nullable RealmData.Invite sent) {
+		VillageRanks.Rank rank = Realms.rankOf(server, other);
+		long left = sent == null ? 0 : Math.max(0, RealmInvites.LAPSE - (RealmInvites.now(server) - sent.sent()));
+		return VillageHallScreen.icon(sent == null ? Items.WRITABLE_BOOK : Items.PAPER, Component.translatable(sent == null ? "screen.aliveworkplace.realm.invite"
+				: "screen.aliveworkplace.realm.invite_sent", Realms.name(server, other)), sent == null ? ChatFormatting.AQUA : ChatFormatting.GRAY,
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_rank", rank.title()), ChatFormatting.AQUA),
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_where", VillageHallScreen.where(hall, other.pos())), ChatFormatting.GRAY),
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.member_owner", Realms.ownerName(server, other)), ChatFormatting.GRAY),
+			VillageHallScreen.line(sent == null ? Component.translatable("screen.aliveworkplace.realm.invite_how")
+				: Component.translatable("screen.aliveworkplace.realm.invite_left", left / 24000, (left % 24000) / 1000), sent == null ? ChatFormatting.DARK_GRAY : ChatFormatting.YELLOW));
 	}
 
 	/** Not in a realm: the button that founds one, with what it takes and why not. */

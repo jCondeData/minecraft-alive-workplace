@@ -3447,7 +3447,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     rank up, the capital's hall broken (the crown passes, or the realm ends);
   - the realm survives save and reload;
   - showcase scene `realm` (the tab, the rank-up fireworks).
-- [ ] **33.12** **Other players' villages, and choosing the capital.** The capital's owner can invite a village
+- [x] **33.12** (review: pending 2026-10-11) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
   another player owns: a letter goes to that owner's mailbox (or waits at the post office), with a line on their Realm
   tab to accept or decline within 3 days. Any member that's a Town or better can be put forward as capital by its
   owner: if one player owns every member it moves at once; otherwise each member's owner gets a vote on the Realm tab
@@ -4449,6 +4449,15 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (33.12, decisions and a hook for 33.13; lane a; details in `docs/wiki/realms.md`, Decisions (33.12)): a
+  capital vote is one ballot per member village, cast by its owner (one click votes all their members; the proposer's
+  start "for"); the invitation's line on the tab is two buttons, Join and Decline; invitations lapse and votes end by
+  the overworld's clock, settled every 5 s while `realms` is on. **For 33.13 on:** the realm has no treasury, research
+  or edicts yet, so the capital move carries the realm's record as a whole (id, name, arms, rank, members): keep the
+  treasury, research and edicts on `RealmData.Realm` (new keys with defaults) and they move by themselves; anything kept
+  per village can follow through `Realms.onCapitalMoved`. The Done when's "moves the capital and its treasury" is tested
+  as "and its state" (name, arms, rank) until 33.13 adds the treasury: 33.13 should add it to
+  `RealmInviteGameTests.aVoteWithAMajorityMovesTheCapital`.
 - 2026-10-11 (33.11, decisions; lane a; details in `docs/wiki/realms.md`, Decisions): a realm of one is already a
   Barony (the spec names a just-founded realm "the Barony of Thornholm"), so "Barony (2 villages)" is read as the rank
   of a realm of two and the first rank up is a County; the founding has its own fireworks. "That they or a friend own":

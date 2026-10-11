@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * with the colonies' part: the orders on the road, the colonies founded, and each mother village's count and last
  * colony day. 33.11 adds the realms themselves ({@link Realm}) and what the halls' rounds last saw of every village
  * ({@link Known}: name, owner, rank, villagers, wellbeing), so a realm's tab reads its members without loading them.
+ * 33.12 adds the invitations to other players' villages ({@link Invite}) and the capital votes ({@link Vote}).
  * Everything is empty by default, so an older world loads unchanged; a part that can't be read is left empty and logged,
  * never a crash.
  */
@@ -207,8 +208,68 @@ public final class RealmData extends SavedData {
 		}
 	}
 
+	/**
+	 * An invitation (33.12): the realm's capital asked the village at {@code village}, owned by {@code owner} (another
+	 * player), to join, at game time {@code sent}. It is answered on the village's Realm tab, or lapses after
+	 * {@code RealmInvites.LAPSE}.
+	 */
+	public record Invite(UUID realm, GlobalPos village, UUID owner, long sent) {
+		public static final Codec<Invite> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("realm").forGetter(Invite::realm),
+			GlobalPos.CODEC.fieldOf("village").forGetter(Invite::village),
+			UUIDUtil.CODEC.fieldOf("owner").forGetter(Invite::owner),
+			Codec.LONG.optionalFieldOf("sent", 0L).forGetter(Invite::sent)
+		).apply(i, Invite::new));
+	}
+
+	/** A member village's vote (33.12): for moving the capital, or against. */
+	public record Ballot(GlobalPos hall, boolean yes) {
+		public static final Codec<Ballot> CODEC = RecordCodecBuilder.create(i -> i.group(
+			GlobalPos.CODEC.fieldOf("hall").forGetter(Ballot::hall),
+			Codec.BOOL.optionalFieldOf("yes", false).forGetter(Ballot::yes)
+		).apply(i, Ballot::new));
+	}
+
+	/**
+	 * A vote on moving a realm's capital (33.12): the member put forward, when the vote opened (game time) and the
+	 * members' ballots so far. A member that hasn't voted counts for the current capital.
+	 */
+	public record Vote(UUID realm, GlobalPos candidate, long started, List<Ballot> ballots) {
+		public static final Codec<Vote> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("realm").forGetter(Vote::realm),
+			GlobalPos.CODEC.fieldOf("candidate").forGetter(Vote::candidate),
+			Codec.LONG.optionalFieldOf("started", 0L).forGetter(Vote::started),
+			Ballot.CODEC.listOf().optionalFieldOf("ballots", List.of()).forGetter(Vote::ballots)
+		).apply(i, Vote::new));
+
+		public Vote {
+			ballots = List.copyOf(ballots);
+		}
+
+		/** {@code hall}'s ballot, or null if it hasn't voted. */
+		@Nullable
+		public Boolean ballot(GlobalPos hall) {
+			for (Ballot b : ballots) {
+				if (b.hall().equals(hall)) {
+					return b.yes();
+				}
+			}
+			return null;
+		}
+
+		/** The same vote with {@code hall}'s ballot cast (or changed). */
+		public Vote cast(GlobalPos hall, boolean yes) {
+			List<Ballot> now = new ArrayList<>(ballots);
+			now.removeIf(b -> b.hall().equals(hall));
+			now.add(new Ballot(hall, yes));
+			return new Vote(realm, candidate, started, now);
+		}
+	}
+
 	private final List<Realm> realms = new ArrayList<>();
 	private final List<Known> known = new ArrayList<>();
+	private final List<Invite> invites = new ArrayList<>();
+	private final List<Vote> votes = new ArrayList<>();
 
 	private final List<Order> orders = new ArrayList<>();
 	private final List<Founded> founded = new ArrayList<>();
@@ -325,7 +386,76 @@ public final class RealmData extends SavedData {
 
 	/** Ends the realm with {@code id}. */
 	public void removeRealm(UUID id) {
-		if (realms.removeIf(r -> r.id().equals(id))) {
+		if (realms.removeIf(r -> r.id().equals(id)) | invites.removeIf(i -> i.realm().equals(id)) | votes.removeIf(v -> v.realm().equals(id))) {
+			setDirty();
+		}
+	}
+
+	// ---- invitations and votes (33.12) ----------------------------------------------------------------------------------
+
+	/** Every invitation not yet answered, oldest first (lapsed ones until the next settling). */
+	public List<Invite> invites() {
+		return List.copyOf(invites);
+	}
+
+	/** {@code realm}'s invitation to {@code village}, or null. */
+	@Nullable
+	public Invite invite(UUID realm, GlobalPos village) {
+		for (Invite i : invites) {
+			if (i.realm().equals(realm) && i.village().equals(village)) {
+				return i;
+			}
+		}
+		return null;
+	}
+
+	/** Adds {@code invite}, in place of the same realm's earlier one to the same village. */
+	public void putInvite(Invite invite) {
+		invites.removeIf(i -> i.realm().equals(invite.realm()) && i.village().equals(invite.village()));
+		invites.add(invite);
+		setDirty();
+	}
+
+	/** Takes {@code realm}'s invitation to {@code village} off the list. */
+	public void removeInvite(UUID realm, GlobalPos village) {
+		if (invites.removeIf(i -> i.realm().equals(realm) && i.village().equals(village))) {
+			setDirty();
+		}
+	}
+
+	/** Takes every invitation to {@code village} off the list (it joined a realm, or its hall is gone). */
+	public void removeInvitesTo(GlobalPos village) {
+		if (invites.removeIf(i -> i.village().equals(village))) {
+			setDirty();
+		}
+	}
+
+	/** Every capital vote running. */
+	public List<Vote> votes() {
+		return List.copyOf(votes);
+	}
+
+	/** {@code realm}'s capital vote, or null (a realm has one at a time). */
+	@Nullable
+	public Vote vote(UUID realm) {
+		for (Vote v : votes) {
+			if (v.realm().equals(realm)) {
+				return v;
+			}
+		}
+		return null;
+	}
+
+	/** Adds {@code vote}, in place of the realm's earlier one. */
+	public void putVote(Vote vote) {
+		votes.removeIf(v -> v.realm().equals(vote.realm()));
+		votes.add(vote);
+		setDirty();
+	}
+
+	/** Ends {@code realm}'s vote. */
+	public void removeVote(UUID realm) {
+		if (votes.removeIf(v -> v.realm().equals(realm))) {
 			setDirty();
 		}
 	}
@@ -368,6 +498,8 @@ public final class RealmData extends SavedData {
 	public void clearRealms() {
 		realms.clear();
 		known.clear();
+		invites.clear();
+		votes.clear();
 		setDirty();
 	}
 
@@ -389,6 +521,8 @@ public final class RealmData extends SavedData {
 		Cooldown.CODEC.listOf().encodeStart(ops, cooldowns).result().ifPresent(t -> tag.put("cooldowns", t));
 		Realm.CODEC.listOf().encodeStart(ops, realms).result().ifPresent(t -> tag.put("realms", t));
 		Known.CODEC.listOf().encodeStart(ops, known).result().ifPresent(t -> tag.put("known", t));
+		Invite.CODEC.listOf().encodeStart(ops, invites).result().ifPresent(t -> tag.put("invites", t));
+		Vote.CODEC.listOf().encodeStart(ops, votes).result().ifPresent(t -> tag.put("votes", t));
 		return tag;
 	}
 
@@ -401,6 +535,8 @@ public final class RealmData extends SavedData {
 		read(Cooldown.CODEC, tag.get("cooldowns"), ops, data.cooldowns, "colony cooldowns");
 		read(Realm.CODEC, tag.get("realms"), ops, data.realms, "realms");
 		read(Known.CODEC, tag.get("known"), ops, data.known, "villages seen");
+		read(Invite.CODEC, tag.get("invites"), ops, data.invites, "realm invitations");
+		read(Vote.CODEC, tag.get("votes"), ops, data.votes, "capital votes");
 		return data;
 	}
 

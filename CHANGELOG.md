@@ -150,6 +150,12 @@ asks for the steps, `latest.log` and any crash report).
   Tag for its name; members can leave and the capital can let one go. A broken capital passes the crown to the
   biggest Town left, or the realm ends. The hall's name icon names the realm and "What next?" suggests one. New
   settings `realms` and `realmMaxMembers` (12).
+- **Other players' villages, and choosing the capital, for 1.7** (33.12, off until 1.7 is finished): the capital's
+  Realm tab invites another player's village: a letter goes to its owner (their mailbox, their hands, or the Postal
+  Desk), and its own Realm tab offers Join or Decline for 3 days. Any member that's a Town can be put forward as
+  capital: with one owner it moves at once, otherwise the members' owners vote on the tab for a day (not voting counts
+  for the current capital; a tie keeps it). The realm moves with all it has, with fireworks over the new capital and a
+  line in every member's chronicle.
 - **The settlers set out, for 1.7** (33.9, off until 1.7 is finished): right-click the hall with the Colony Charter,
   its spot chosen, and two settlers volunteer (a builder and one more; never a guard, the only worker of a job, a
   Legend or a child; a married volunteer brings their partner). 64 logs, 64 planks, 64 cobblestone, 32 bread, 16

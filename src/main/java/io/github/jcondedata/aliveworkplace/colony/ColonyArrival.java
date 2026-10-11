@@ -20,8 +20,6 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.legend.Founder;
 import io.github.jcondedata.aliveworkplace.mail.Mail;
-import io.github.jcondedata.aliveworkplace.mail.Parcel;
-import io.github.jcondedata.aliveworkplace.mail.PostOffice;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.realm.RealmData;
@@ -616,21 +614,6 @@ public final class ColonyArrival {
 	 * into their hands if they're online, otherwise waiting for them at any Postal Desk.
 	 */
 	static void letter(MinecraftServer server, UUID to, String toName, String from, String text, GlobalPos origin) {
-		ItemStack letter = Mail.letter(from, text);
-		PostOffice office = PostOffice.get(server);
-		ServerPlayer online = server.getPlayerList().getPlayer(to);
-		if (office.mailboxOf(to) == null && online != null) {
-			if (!online.getInventory().add(letter)) {
-				online.drop(letter, false);
-			}
-			return;
-		}
-		Parcel parcel = office.post(UUID.nameUUIDFromBytes(("colony:" + origin).getBytes(java.nio.charset.StandardCharsets.UTF_8)), from, to, toName, origin,
-			server.overworld().getGameTime(), List.of(letter));
-		parcel.setStatus(Parcel.Status.IN_TRANSIT);
-		office.changed();
-		if (office.mailboxOf(to) != null && office.deliver(server, parcel)) {
-			office.remove(parcel);
-		}
+		Mail.sendLetter(server, UUID.nameUUIDFromBytes(("colony:" + origin).getBytes(java.nio.charset.StandardCharsets.UTF_8)), from, to, toName, text, origin);
 	}
 }

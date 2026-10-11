@@ -67,6 +67,13 @@ public final class Realms {
 	public static final int ARMS = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1;
 	public static final int LEAVE = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 8;
 	public static final int MEMBERS = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 9;
+	/** 33.12: a member's "Put forward as capital", and a capital vote's line with its two buttons. */
+	public static final int PUT_FORWARD = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 3;
+	public static final int VOTE = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 5;
+	public static final int VOTE_FOR = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 6;
+	public static final int VOTE_AGAINST = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 7;
+	/** 33.12: outside a realm, the invitations from row 4 on, each an Accept and a Decline button side by side. */
+	public static final int INVITES = MEMBERS;
 
 	/** A realm's rank, from its members. */
 	public enum Rank {
@@ -106,7 +113,7 @@ public final class Realms {
 	/** Why something wasn't done. */
 	public enum Refusal {
 		OFF, NO_HALL, NO_OWNER, NOT_YOURS, RANK, IN_REALM, NOT_CAPITAL, OTHER_WORLD, TOO_FAR, STRANGER, TAKEN, FULL, NOT_MEMBER, CAPITAL, NO_NAME,
-		NO_BANNER
+		NO_BANNER, INVITED, NO_INVITE, LAPSED, VOTING, NO_VOTE, NOT_VOTER
 	}
 
 	/** What came of a click: the refusal (null: done) and what to tell the player. */
@@ -118,6 +125,59 @@ public final class Realms {
 
 	public static void init() {
 		TradePage.register(TradePage.Tab.REALM, Realms::tabIcon, Realms::tab, () -> ENABLED);
+		io.github.jcondedata.aliveworkplace.platform.Platform.get().onServerTick(server -> {
+			if (ENABLED && server.getTickCount() % 100 == 0) {
+				settle(server, server.overworld().getGameTime());
+			}
+		});
+	}
+
+	/** Invitations lapse and capital votes end when their time is up (every five seconds, and from GameTests with a given time). */
+	public static void settle(MinecraftServer server, long now) {
+		if (!ENABLED) {
+			return; // off: invitations and votes wait, as the realms do
+		}
+		RealmInvites.settle(server, now);
+		CapitalVotes.settle(server, now);
+	}
+
+	/**
+	 * Called with the realm as it was and as it is when its capital moves (a vote, or one owner's choice; 33.12). Every
+	 * part of a realm's state kept on {@link RealmData.Realm} (name, arms, rank, and the treasury, research and edicts of
+	 * 33.13 on, which belong there) goes with it by itself; a part kept per village registers here to move along.
+	 */
+	public interface CapitalMoved {
+		void moved(MinecraftServer server, RealmData.Realm was, RealmData.Realm now);
+	}
+
+	private static final List<CapitalMoved> CAPITAL_MOVED = new ArrayList<>();
+
+	public static void onCapitalMoved(CapitalMoved listener) {
+		CAPITAL_MOVED.add(listener);
+	}
+
+	/**
+	 * Moves {@code realm}'s capital to its member {@code to} (33.12): the realm keeps its id and everything on it, the new
+	 * capital heads the list; fireworks over it, a chat line to every member's owner online and a chronicle line in every
+	 * loaded member. The rank is counted again (a smaller capital can lower it).
+	 */
+	static RealmData.Realm moveCapital(MinecraftServer server, RealmData.Realm realm, GlobalPos to) {
+		Component from = name(server, realm.capital());
+		Component was = title(server, realm);
+		List<RealmData.Member> members = new ArrayList<>();
+		realm.members().stream().filter(m -> m.hall().equals(to)).forEach(members::add);
+		realm.members().stream().filter(m -> !m.hall().equals(to)).forEach(members::add);
+		RealmData.Realm kept = realm.withCapital(to).withMembers(members);
+		RealmData.get(server).putRealm(kept);
+		kept = recount(server, kept);
+		for (CapitalMoved listener : CAPITAL_MOVED) {
+			listener.moved(server, realm, kept);
+		}
+		Component now = title(server, kept);
+		fireworks(server, to);
+		tellOwners(server, kept, Component.translatable("message.aliveworkplace.realm.capital_moved", was, name(server, to), now).withStyle(ChatFormatting.GOLD));
+		chronicle(server, kept, Component.translatable("chronicle.aliveworkplace.realm.capital_moved", from, name(server, to), now));
+		return kept;
 	}
 
 	// ---- what a village is, loaded or not -------------------------------------------------------------------------------
@@ -447,6 +507,7 @@ public final class Realms {
 
 	/** Puts {@code hall} in {@code realm} and notes it in both chronicles. */
 	static RealmData.Realm join(MinecraftServer server, RealmData.Realm realm, GlobalPos hall, long day) {
+		RealmData.get(server).removeInvitesTo(hall); // in a realm now: other realms' invitations are moot (33.12)
 		List<RealmData.Member> members = new ArrayList<>(realm.members());
 		members.add(new RealmData.Member(hall, day));
 		RealmData.Realm kept = realm.withMembers(members);
@@ -613,6 +674,7 @@ public final class Realms {
 				}
 			}
 		}
+		data.removeInvitesTo(at);
 		data.forgetKnown(at);
 	}
 

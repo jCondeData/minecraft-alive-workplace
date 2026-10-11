@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released).
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11
+Roadmap items: 33.11, 33.12
 
 ## What a player sees
 
@@ -30,6 +30,31 @@ Colonies. Everyone who may open the hall may read it.
   Ashford"**, with its rank, where it is and its owner. One click adds it: "Ashford has joined the Barony of
   Thornholm."
 
+**Other players' villages (33.12).** After the villages to add, the capital's tab lists, for those who rule it, the
+villages within reach that belong to another player (not a friend): a book and quill, **"Invite Ashford"**, with its
+rank, where it is and its owner. A click sends that owner a letter ("Rowan, who rules the Barony of Thornholm, invites
+Ashford to join the realm...") the way a colony's letter goes: into their mailbox if they have one, into their hands if
+they're online, otherwise it waits for them at any Postal Desk. They're also told in chat if online. The capital's tab
+then shows "Ashford: invited", with the days and hours left. On **Ashford's** Realm tab (outside a realm), under Found a
+realm, each open invitation is a pair of buttons: **Join the Barony of Thornholm** (the realm's banner: who invites,
+its size, where the capital is, the time left) and **Decline**. Joining works like being added (its colonies come
+too); declining or not answering within **3 days** leaves it out. The capital's owner hears either way, and its
+chronicle notes the invitation, a decline or a lapse.
+
+**Choosing the capital (33.12).** On a member's tab, **Put Ashford forward as capital** (a bell): any member that's a
+Town or better, by its owner (their friends, operators). If one player owns every member, the capital moves at once.
+Otherwise a **vote** runs for a day: every member's owner online hears of it, and every member's tab shows it ("Vote:
+move the capital to Ashford?", the count so far, the hours left) with **Vote for Ashford** and **Vote to keep
+Thornholm**. A player's vote counts once for every member they own; they may change it until the day is up. Then the
+move needs more villages for it than against: a village that didn't vote counts for the current capital, and a tie
+keeps it ("The vote is over, villages for Ashford: 1, against: 1. The capital stays at Thornholm."). The proposer's
+villages start out for it. A realm has one vote at a time. When the capital moves, the realm keeps everything (its
+id, name, arms, rank, and later its treasury, research and edicts), fireworks go up over the new capital, every
+member's owner online reads "The capital of the County of Eldmark moves to Ashford: ..." and every loaded member's
+chronicle notes it. From then on the realm's decisions (adding, inviting, letting go, the name, the arms, and the levy,
+research and edicts of later items) are for whoever rules the new capital. Anyone may still leave their own village
+out at any time.
+
 **Rank ups.** When the members make a higher rank, fireworks go up over the capital's hall, every member's owner who
 is online reads "Rejoice! the Barony of Thornholm has risen to the County of Thornholm.", every loaded member's
 chronicle notes it, and the realm takes its new title everywhere.
@@ -46,7 +71,7 @@ member.
   member**. A hall nobody owns founds nothing.
 - **Which villages can be added:** in the capital's dimension, within 2,048 blocks of the capital's hall (measured
   flat), in no realm, its hall still there, and owned by the player or by someone who has made the player a friend
-  (`/workplace friend add`). Another player's village that isn't a friend's waits for invitations (33.12).
+  (`/workplace friend add`). Another player's village that isn't a friend's is invited instead (33.12).
 - **Colonies join their mother's realm by themselves:** a colony founded while its mother is in a realm joins on
   arrival (33.10), and when a village founds a realm or is added to one, the colonies it founded (and theirs) join
   with it, while there is room and they are in the same dimension.
@@ -74,11 +99,18 @@ member.
   (`Realms.arms`, the same painting as guards' shields in the village's colours), and the realm's map banners and
   caravans use them in later items. A realm founded by a village with a Village Banner's colours starts with them.
 
+- **Invitations and votes** are settled every five seconds while realms are on: an invitation lapses after 3 days
+  (72,000 ticks) and a vote ends after a day (24,000 ticks), both by the overworld's clock. A vote whose village has
+  left the realm, become the capital already, or dropped below a Town is void. A realm that ends takes its invitations
+  and vote with it; a village that joins any realm loses its other invitations; a broken hall loses its invitations.
+- **The realm's state moves with the capital** because it lives on the realm, not on the capital village. Anything a
+  later item keeps per village can follow the move through `Realms.onCapitalMoved`.
+
 ## Switches
 
 | Key | Default | What it does |
 |---|---|---|
-| `realms` | on from 1.7 (off until then) | Off: no Realm tab, nothing founded, added or joined, no name icon line or tip, and the arms aren't used. Realms stay saved and come back when it is turned on. A broken hall still leaves its realm. |
+| `realms` | on from 1.7 (off until then) | Off: no Realm tab, nothing founded, added, invited, joined or voted on, no name icon line or tip, and the arms aren't used; invitations don't lapse and votes don't end. Realms, invitations and votes stay saved and come back when it is turned on. A broken hall still leaves its realm. |
 | `realmMaxMembers` | 12 (2 to 32) | Villages one realm may hold. |
 
 ## Saved data
@@ -93,11 +125,16 @@ empty in a world that never had them:
 - `known`: what each hall's last round saw: `hall`, `name`, `owner` (absent: none), `ownerName`, `rank`,
   `villagers`, `wellbeing` (percent), `seen` (game time). Forgotten when the hall is broken.
 
+- `invites` (33.12): `realm` (id), `village` (dimension and position), `owner` (UUID), `sent` (game time).
+- `votes` (33.12): `realm` (id), `candidate` (dimension and position), `started` (game time) and `ballots` (a list of
+  `hall` and `yes`).
+
 ## Items, blocks, jobs, commands
 
 - The Trade page's tab `REALM`.
 - Chronicle kind `REALM` (a gold helmet): founded, joined, left, let go, a member lost, rank ups, renamed, new arms,
   the crown passed, the realm ended.
+- 33.12's letters are ordinary written books (the mail's letters), sent through the post office's parcels.
 - No new item, block, job or command (`/workplace realm info|disband` for operators is in the design note, not built
   yet).
 
@@ -117,9 +154,24 @@ All 33.11, lane a, 2026-10-11 (also in ROADMAP's Notes):
 - In GameTests realms are off unless a test turns them on, like colonies: other tests count the Trade page's tabs
   and the "What next?" tips.
 
+## Decisions (33.12)
+
+Lane a, 2026-10-11 (also in ROADMAP's Notes):
+
+- A vote is one ballot per member village, cast by its owner (not their friends or operators); a player owning several
+  members votes for all of them with one click. The proposer's villages start out for the move.
+- "If one player owns every member": whoever may put the village forward (that owner, their friends, operators) moves
+  it at once.
+- The realm's treasury, research and edicts don't exist yet (33.13 on). Everything a realm has is kept on its record in
+  `aliveworkplace_realms`, so it moves with the capital by itself; 33.13 on should keep their state there too (or follow
+  `Realms.onCapitalMoved`). The GameTest checks the realm's name, arms, rank and members move.
+- The invitation's line on the tab is two buttons (Join, Decline), not one line with a right click, so it works by plain
+  clicks like the rest of the tab.
+- The capital's owner who invites a friend's or their own village through the invitation path just adds it, as before.
+- An invited village that isn't loaded is invited by what its last round saw (owner, rank), like adding.
+
 ## Known limits
 
-- Another player's village (not a friend's) can't join yet: invitations and the capital vote are 33.12.
 - No treasury, levy, research, relief riders or edicts yet (33.13 to 33.17, 33.21, 33.22); the arms are stored for them.
 - The members' villagers and wellbeing are as their last round saw them (every half minute while loaded); a village
   far from players shows its last numbers.
@@ -128,7 +180,9 @@ All 33.11, lane a, 2026-10-11 (also in ROADMAP's Notes):
 - More than 27 members and candidates together don't fit the tab (with the default 12 members, at most 15
   candidates show, nearest first).
 - The rank-up fireworks and the tab have been seen only in the showcase scene's checks; it hasn't been filmed yet
-  (GitHub films it after the push).
+  (GitHub films it after the push). The same goes for `realm_invite` (33.12).
+- Votes and invitations are counted by the overworld's clock; a vote's last hours show rounded up.
+- The invitation letter is written in the server's language (English), like the settlers' letter.
 
 ## Proof
 
@@ -139,5 +193,12 @@ All 33.11, lane a, 2026-10-11 (also in ROADMAP's Notes):
   hall's round), `theCapitalsHallBroken` (a member's hall, the crown passing twice, the realm ending),
   `nameArmsAndSaveAndReload`, `coloniesJoinTheirMothersRealm`, `theSwitchOff`.
 - `ConfigGameTests` and `ExpansionGateGameTests` count the two new settings.
+- `RealmInviteGameTests` (7, 33.12, two owners): `anAcceptedInvitationJoins` (the Invite button, the letter in hand,
+  the chat line, Join on the neighbour's tab, decisions stay with the capital, leaving), `aDeclinedOrLapsedInvitationDoesnt`
+  (Decline from the tab, the letter waiting at the post office, the lapse at 3 days, a late answer refused),
+  `aVoteWithAMajorityMovesTheCapital` (Put forward on the tab, the vote's line and buttons, 2 against 1, the realm's
+  name, arms and rank moving, fireworks, the chronicle in every member, the new capital's owner ruling),
+  `aTieKeepsTheCapital` (also a Village refused, a stranger, an outsider, changing a vote, not voting counted for the
+  capital), `oneOwnerMovesTheCapitalAtOnce`, `invitesAndVotesSurviveSaveAndReload`, `theSwitchOff`.
 
-Showcase scenes: `realm`
+Showcase scenes: `realm`, `realm_invite`

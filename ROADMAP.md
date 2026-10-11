@@ -3037,7 +3037,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     removes the portal blocks and turns the rest of the band zombified;
   - the outpost passes `check.py` and its render is in the package;
   - scene `piglins`: the outpost, piglins coming through and one carrying off gold (GIF).
-- [ ] **32.11** **Witch covens.** `witch_coven.json`: swamps and mangrove swamps; Village and up; tactics `hex`; no
+- [x] **32.11** (review: pending 2026-10-11) **Witch covens.** `witch_coven.json`: swamps and mangrove swamps; Village and up; tactics `hex`; no
   rams or ladders: witches stand 12–20 blocks outside the walls and throw splash potions over them (slowness, weakness
   and poison at villagers, harming at guards) and heal each other, so archers on stations matter most. Their lair is
   the **Coven Hut** (`camp/coven_hut`, minecraft-architect skill: a hut on mangrove stilts over water, the coven's

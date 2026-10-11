@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Witch covens, for 1.6** (32.11). A swamp village of Village rank or more may get a **Coven Hut** beyond its
+  edge: a hut on mangrove stilts over a pond, brewing stands, hanging lanterns, a herb garden, a black cat and the
+  coven's cauldron over a fire. Every night it stands the coven **hexes** one to three villagers (a swirl of witch
+  particles): they fall ill with something **no nurse's remedy cures** and that doesn't pass by itself. In a raid the
+  witches **stand 12 to 20 blocks outside the walls and throw potions over them** (slowness, weakness, poison at
+  villagers, harming at guards) and heal each other. Their **Coven Mother** blinks away after three hits in a row.
+  **Kill her or break her cauldron** and every hex lifts at once.
 - **The player guide** (22.10): a website for players, the link to send friends
   (https://jcondedata.github.io/minecraft-alive-workplace/player-guide/): getting started, every job and how to set it
   up, the Builder and blueprints, the Village Hall, village life, quests, festivals and markets, trade and caravans,

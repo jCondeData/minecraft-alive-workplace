@@ -128,6 +128,7 @@ if __name__ == "__main__":
     pirate_ship().save(os.path.join(MAIN_STRUCTURES, "camp"), "pirate_ship")  # ROADMAP 32.8
     tomb_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "tomb_camp")  # ROADMAP 32.9
     blackstone_outpost().save(os.path.join(MAIN_STRUCTURES, "camp"), "blackstone_outpost")  # ROADMAP 32.10
+    coven_hut().save(os.path.join(MAIN_STRUCTURES, "camp"), "coven_hut")  # ROADMAP 32.11
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
         draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)

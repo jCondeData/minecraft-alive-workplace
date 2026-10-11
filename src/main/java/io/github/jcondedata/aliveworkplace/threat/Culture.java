@@ -38,7 +38,8 @@ import org.jetbrains.annotations.Nullable;
  * "Chief" of "Chief Harl Ashgrave"), or {@code name}: the lang key of the one name he always has ("Silas Brine", 32.8),
  * {@code raises} (32.9: {@code entity}, {@code radius}, {@code delay}, {@code health}: while he lives, such a mob
  * falling near him rises once more), {@code zombifies_band} (32.10, the Warlord: when he falls, his band left in the
- * Overworld turns zombified, {@link Piglins}), and {@code leads}: from this rank of village on ({@code town}, {@code city}) he leads
+ * Overworld turns zombified, {@link Piglins}), {@code blinks} (32.11, the Coven Mother: {@code after}, {@code near}, {@code far}:
+ * after so many hits in a row she blinks away, {@link Covens}), and {@code leads}: from this rank of village on ({@code town}, {@code city}) he leads
  * the raids from his lair himself (32.7), and falls with his lair wherever he is brought down;</li>
  * <li>{@code extras}: who comes with every raid besides the roster, by the village's rank, as many as {@code count}
  * gives for the highest rank it names that the village has reached ({@code {"town": 1, "city": 2}}): the warband's
@@ -49,7 +50,8 @@ import org.jetbrains.annotations.Nullable;
  * the sea (32.8, {@link Ships}) {@code waterline} (the template's y of the sea's top block), {@code near} and {@code far}
  * (blocks from the hall), {@code depth} (the least depth of water under it) and {@code sinks} (when its captain falls
  * it burns and sinks, its chest left on a raft); {@code portal} (32.10: the lair has a lit Nether portal its raiders
- * step out of, put out when it is broken, {@link Piglins}); for a lair on land {@code near} and {@code far} (blocks from the
+ * step out of, put out when it is broken, {@link Piglins}); {@code wet} (32.11: it may stand over water, the Coven
+ * Hut in a swamp); for a lair on land {@code near} and {@code far} (blocks from the
  * hall it makes camp; 80 and 104 when not given); and {@code captain_at}, where in the template its captain stands;</li>
  * <li>{@code loot} (a loot table: the chests of its lair hold it), {@code messages} and {@code chronicle}: a key prefix
  * ({@code <prefix>.raid}), or the keys themselves by event ({@code {"raid": "message.aliveworkplace.raid.begins"}}).
@@ -108,6 +110,13 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 	public record Raise(ResourceLocation entity, int radius, int delay, double health) {
 	}
 
+	/**
+	 * How a captain blinks away (32.11, the Coven Mother): after {@code after} hits in a row she is gone in a puff of ender
+	 * particles to somewhere {@code near} to {@code far} blocks off ({@link Covens}).
+	 */
+	public record Blink(int after, int near, int far) {
+	}
+
 	/** One line of the roster: the mob, its share of the raid, its role and what it carries (slot → item id or {@link #OMINOUS_BANNER}). */
 	public record Member(ResourceLocation entity, int share, Role role, Map<EquipmentSlot, String> gear) {
 	}
@@ -117,7 +126,12 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 	 * the rank of village from which he leads his lair's raids himself (none: he never leaves it).
 	 */
 	public record Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title,
-		Optional<VillageRanks.Rank> leads, Optional<String> name, Optional<Raise> raises, boolean zombifiesBand) {
+		Optional<VillageRanks.Rank> leads, Optional<String> name, Optional<Raise> raises, boolean zombifiesBand, Optional<Blink> blinks) {
+		public Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title,
+			Optional<VillageRanks.Rank> leads, Optional<String> name, Optional<Raise> raises, boolean zombifiesBand) {
+			this(entity, gear, health, names, title, leads, name, raises, zombifiesBand, Optional.empty());
+		}
+
 		public Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title,
 			Optional<VillageRanks.Rank> leads, Optional<String> name, Optional<Raise> raises) {
 			this(entity, gear, health, names, title, leads, name, raises, false);
@@ -175,7 +189,12 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 	 * and the item that stands for it on the Defence page.
 	 */
 	public record Lair(ResourceLocation structure, int strength, int growth, int max, int homeMax, ResourceLocation icon, Optional<Sea> sea,
-		Optional<BlockPos> captainAt, boolean portal, int near, int far) {
+		Optional<BlockPos> captainAt, boolean portal, int near, int far, boolean wet) {
+		public Lair(ResourceLocation structure, int strength, int growth, int max, int homeMax, ResourceLocation icon, Optional<Sea> sea,
+			Optional<BlockPos> captainAt, boolean portal, int near, int far) {
+			this(structure, strength, growth, max, homeMax, icon, sea, captainAt, portal, near, far, false);
+		}
+
 		public Lair(ResourceLocation structure, int strength, int growth, int max, int homeMax, ResourceLocation icon, Optional<Sea> sea,
 			Optional<BlockPos> captainAt) {
 			this(structure, strength, growth, max, homeMax, icon, sea, captainAt, false, Lairs.NEAR, Lairs.FAR);
@@ -258,7 +277,7 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 			captain = Optional.of(new Captain(entity(c), gear(c), health, Optional.ofNullable(c.has("names") ? c.get("names").getAsString() : null),
 				Optional.ofNullable(c.has("title") ? c.get("title").getAsString() : null), c.has("leads") ? Optional.of(rank(c.get("leads").getAsString())) : Optional.empty(),
 				Optional.ofNullable(c.has("name") ? c.get("name").getAsString() : null), raise(c),
-				c.has("zombifies_band") && c.get("zombifies_band").getAsBoolean()));
+				c.has("zombifies_band") && c.get("zombifies_band").getAsBoolean(), blink(c)));
 		}
 		List<String> tactics = new ArrayList<>();
 		if (json.has("tactics")) {
@@ -295,7 +314,8 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 			}
 			lair = Optional.of(new Lair(location(l.get("structure").getAsString(), "structure"), strength, integer(l, "growth", 0, 0, 64), max,
 				integer(l, "home_max", Math.min(8, max), 1, 16), icon, sea, captainAt, l.has("portal") && l.get("portal").getAsBoolean(),
-				sea.isPresent() ? Lairs.NEAR : near(l), sea.isPresent() ? Lairs.FAR : integer(l, "far", Math.max(near(l), Lairs.FAR), near(l), 200)));
+				sea.isPresent() ? Lairs.NEAR : near(l), sea.isPresent() ? Lairs.FAR : integer(l, "far", Math.max(near(l), Lairs.FAR), near(l), 200),
+				l.has("wet") && l.get("wet").getAsBoolean()));
 			if (l.has("loot")) {
 				loot = Optional.of(location(l.get("loot").getAsString(), "loot"));
 			}
@@ -339,6 +359,16 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 			throw new IllegalArgumentException("raises: health must be over 0 and at most 1, not " + health);
 		}
 		return Optional.of(new Raise(entity(r), integer(r, "radius", 24, 1, 64), integer(r, "delay", 60, 1, 1200), health));
+	}
+
+	/** A captain's {@code blinks} (32.11): {@code after} (hits in a row, 3), {@code near} (8) and {@code far} (12) blocks. */
+	private static Optional<Blink> blink(JsonObject captain) {
+		if (!captain.has("blinks")) {
+			return Optional.empty();
+		}
+		JsonObject b = captain.getAsJsonObject("blinks");
+		int near = integer(b, "near", 8, 2, 32);
+		return Optional.of(new Blink(integer(b, "after", 3, 1, 20), near, integer(b, "far", Math.max(near, 12), near, 48)));
 	}
 
 	private static VillageRanks.Rank rank(String name) {

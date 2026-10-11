@@ -46,6 +46,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Drowned pirates](pirates.md): the Pirate Ship at anchor, the crew that wades ashore, Captain Silas Brine, and the ship that burns and sinks (32.8).
 - [Desert raiders](desert.md): the Tomb Camp, the Pharaoh whose husks rise again, sand ramps over the walls, sieges until noon (32.9).
 - [Piglin incursions](piglins.md): the Blackstone Outpost and its portal, piglins that never zombify, plunder of the village's gold, the Warlord whose fall puts the portal out (32.10).
+- [Witch covens](covens.md): the Coven Hut on its stilts, the nightly hex no nurse can cure, witches who throw potions over the walls, the Coven Mother who blinks away (32.11).
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).

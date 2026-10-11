@@ -46,7 +46,9 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   `raises`; a husk falling near the living Pharaoh rises once after 3 s), `Piglins` (32.10, `docs/wiki/piglins.md`: raiding and
   lair piglins never zombify and are steered at villagers through their brains; a lair's `portal` they step out of and
   that goes out when it's broken; a captain's `zombifies_band`), `Plunder` (32.10: the tactic `plunder`, gold from the
-  village's chests carried on the raider, dropped on death, taken home at dawn and counted for the siege report), `guard/BattleStations` (32.6: one watch a siege, every 20 ticks in its own
+  village's chests carried on the raider, dropped on death, taken home at dawn and counted for the siege report), `Covens` (32.11,
+  `docs/wiki/covens.md`: the tactic `hex`, witches held 12 to 20 blocks off the walls throwing potions over them; the
+  nightly hex, a `Sickness` of kind `ill_kind` = hex that only breaking the coven cures; her cauldron; a captain's `blinks`), `guard/BattleStations` (32.6: one watch a siege, every 20 ticks in its own
   tick: reads the walkway spots of finished wall, gate and Lookout Tower blueprints once each, gives archers the
   stations, knights and medics their places inside the breach; `post`, `onStation`, `range`, `heightBonus` are what
   `GuardCombat`, `GuardRally` and `GuardPatrol` ask; nothing saved), `threat/SiegeReport` (32.6: `onDeath` counts a

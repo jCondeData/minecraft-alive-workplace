@@ -764,3 +764,181 @@ def blackstone_outpost():
             if b.blocks.get((x, 0, z), ("",))[0] == "minecraft:air":
                 del b.blocks[(x, 0, z)]
     return b
+
+
+def coven_hut():
+    """
+    The witches' Coven Hut (ROADMAP 32.11), 17 x 18 x 17, set down at once like the other camps, in a swamp. Design:
+    - a pond fills the back two thirds of the ground (water in the bottom layer, lily pads on it), ringed with mud,
+      podzol and grass, moss in clusters at the water's edge;
+    - over it the hut stands on mangrove stilts: six log posts with mangrove roots tangled round their feet hold a
+      mangrove plank platform at y 3, one block wider than the hut, with a deck in front reached by stairs from the
+      shore; a mangrove fence rail round the deck, a lantern on each front post;
+    - the hut (9 x 7) has a dark oak log frame with mangrove plank infill, purple-tinted panes in the bays with dark oak
+      shutters, a dark oak door in the middle of its front (the north, z = 0 side) under a hanging lantern; a dark oak
+      gable roof with a one-block overhang, the ridge running along the long side, a king post and two little windows in
+      each gable, a mossy cobblestone chimney up the back with a campfire smoking on it;
+    - inside: two brewing stands, the coven's loot chest (chests/coven_hut) between bookshelves at the back, barrels
+      with potted mushrooms, candles, a lantern, and the black cat;
+    - on the shore in front, the coven's cauldron (the one whose breaking breaks the coven) over a lit campfire on a
+      mossy cobblestone hearth, a brewing stand and barrels by it; on the other side the herb garden: blue orchids,
+      alliums, ferns and mushrooms on podzol inside a mangrove fence.
+    """
+    W, H, D = 17, 18, 17
+    b = Build(W, H, D)
+    rim = Mix((5, "grass_block"), (3, "mud"), (3, "podzol"), (1, "moss_block"), seed=211)
+    cx, cz = 8, 10
+    pond = set()
+    for x in range(W):
+        for z in range(D):
+            r = ((x - cx) / 7.6) ** 2 + ((z - cz) / 6.4) ** 2
+            if z >= 5 and (r <= 0.82 or r <= 1.0 and (x * 5 + z * 3) % 4 != 0):
+                pond.add((x, z))
+                b.set(x, 0, z, "water", level="0")
+            else:
+                b.set(x, 0, z, rim.at(x, 0, z), **({"snowy": False} if rim.at(x, 0, z) in ("grass_block", "podzol") else {}))
+    for x, z in ((2, 9), (14, 12), (5, 15), (11, 15), (13, 7)):
+        if (x, z) in pond:
+            b.set(x, 1, z, "lily_pad")
+
+    # the stilts and the platform at y 3: x 3..13, z 4..13 (the deck is z 4..5)
+    PX0, PX1, PZ0, PZ1, PY = 3, 13, 4, 13, 3
+    for x, z in ((PX0, PZ0), (PX1, PZ0), (PX0, PZ1), (PX1, PZ1), (8, PZ0), (8, PZ1)):
+        for y in range(0, PY):
+            b.set(x, y, z, "mangrove_log", axis="y")
+        for dx, dz in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            if (x + dx, z + dz) in pond and (x + dx + z + dz) % 2 == 0:
+                b.set(x + dx, 0, z + dz, "mangrove_roots", waterlogged=True)
+                if (dx + dz) > 0:
+                    b.set(x + dx, 1, z + dz, "mangrove_roots", waterlogged=False)
+    for x in range(PX0, PX1 + 1):
+        for z in range(PZ0, PZ1 + 1):
+            b.set(x, PY, z, "mangrove_planks")
+    for x in range(PX0, PX1 + 1):  # beams under the platform's edges, round the posts
+        for z in (PZ0, PZ1):
+            if x not in (PX0, PX1, 8):
+                b.set(x, PY - 1, z, "stripped_mangrove_log", axis="x")
+    # the deck's rail, the way up in its middle, lanterns on the front posts
+    for x in range(PX0, PX1 + 1):
+        if x not in (7, 8, 9):
+            fence(b, x, PY + 1, PZ0, "mangrove_fence")
+    for z in range(PZ0, 7):
+        fence(b, PX0, PY + 1, z, "mangrove_fence")
+        fence(b, PX1, PY + 1, z, "mangrove_fence")
+    lantern(b, PX0, PY + 2, PZ0)
+    lantern(b, PX1, PY + 2, PZ0)
+    for x in (7, 8, 9):  # stairs up from the shore
+        stairs(b, x, 1, 2, "mangrove_stairs", "south")
+        b.set(x, 1, 3, "mangrove_planks")
+        stairs(b, x, 2, 3, "mangrove_stairs", "south")
+        b.set(x, 0, 2, "mud_bricks")
+        b.set(x, 0, 3, "mud_bricks")
+
+    # the hut: x 4..12, z 6..12, walls y 4..7
+    HX0, HX1, HZ0, HZ1 = 4, 12, 6, 12
+    for y in range(PY + 1, PY + 5):
+        for x in range(HX0, HX1 + 1):
+            for z in range(HZ0, HZ1 + 1):
+                if x in (HX0, HX1) or z in (HZ0, HZ1):
+                    post = x in (HX0, 8, HX1) and z in (HZ0, HZ1) or z in (HZ0, 9, HZ1) and x in (HX0, HX1)
+                    b.set(x, y, z, "dark_oak_log" if post else "mangrove_planks", **({"axis": "y"} if post else {}))
+    for x in range(HX0, HX1 + 1):
+        for z in (HZ0, HZ1):
+            b.set(x, PY + 4, z, "dark_oak_log", axis="x")
+    for z in range(HZ0, HZ1 + 1):
+        for x in (HX0, HX1):
+            b.set(x, PY + 4, z, "dark_oak_log", axis="z")
+    door(b, 8, PY + 1, HZ0, "dark_oak_door", "north")
+    b.set(8, PY + 3, HZ0, "dark_oak_log", axis="y")
+    for x in (6, 10):
+        window(b, x, PY + 2, HZ0, "north", glass="purple_stained_glass_pane", shutters="dark_oak_trapdoor")
+        window(b, x, PY + 2, HZ1, "south", glass="purple_stained_glass_pane", shutters="dark_oak_trapdoor")
+    for z in (7, 11):
+        window(b, HX0, PY + 2, z, "west", glass="purple_stained_glass_pane", shutters="dark_oak_trapdoor")
+        window(b, HX1, PY + 2, z, "east", glass="purple_stained_glass_pane", shutters="dark_oak_trapdoor")
+    top = gable_roof(b, HX0 - 1, HX1 + 1, HZ0 - 1, HZ1 + 1, PY + 5, DARK_OAK, axis="x", gable="mangrove_planks",
+                     gable_at=(HX0, HX1), eave_trim=DARK_OAK)
+    for x in (HX0, HX1):  # a king post up each gable, a little window beside it
+        for y in range(PY + 5, top):
+            b.set(x, y, 9, "dark_oak_log", axis="y")
+        pane(b, x, PY + 6, 8, "purple_stained_glass_pane")
+        pane(b, x, PY + 6, 10, "purple_stained_glass_pane")
+    # the chimney up the back slope
+    for y in range(PY + 1, PY + 10):
+        b.set(10, y, HZ1 + 1, "mossy_cobblestone" if y % 3 else "cobblestone")
+    b.set(10, PY + 10, HZ1 + 1, "campfire", lit=True, signal_fire=False, facing="north", waterlogged=False)
+    # a lantern hanging over the door from the eave
+    lantern(b, 8, PY + 4, HZ0 - 1, hanging=True)
+
+    # inside: floor y 3, standing at y 4
+    for x in range(HX0 + 1, HX1):
+        for z in range(HZ0 + 1, HZ1):
+            b.set(x, PY + 1, z, "air")
+    b.set(5, PY + 1, 11, "brewing_stand", has_bottle_0=True, has_bottle_1=True, has_bottle_2=False)
+    b.set(11, PY + 1, 11, "brewing_stand", has_bottle_0=False, has_bottle_1=True, has_bottle_2=True)
+    for x in (7, 9):
+        b.set(x, PY + 1, 11, "bookshelf")
+        b.set(x, PY + 2, 11, "bookshelf")
+    b.set_nbt(8, PY + 1, 11, Compound({"LootTable": String("aliveworkplace:chests/coven_hut"), "id": String("minecraft:chest")}))
+    b.set(8, PY + 1, 11, "chest", facing="north", type="single", waterlogged=False)
+    b.set(8, PY + 2, 11, "candle", candles="3", lit=True, waterlogged=False)
+    for x, z, pot in ((5, 7, "potted_red_mushroom"), (11, 7, "potted_brown_mushroom")):
+        b.set(x, PY + 1, z, "barrel", facing="up", open=False)
+        b.set(x, PY + 2, z, pot)
+    b.set(5, PY + 1, 9, "barrel", facing="up", open=False)  # (the coven's one cauldron stands outside: breaking it breaks the coven)
+    b.set(5, PY + 2, 9, "candle", candles="2", lit=True, waterlogged=False)
+    b.set(11, PY + 1, 9, "barrel", facing="up", open=False)
+    lantern(b, 11, PY + 2, 9)
+    b.set(7, PY + 1, 7, "purple_carpet")
+    b.set(8, PY + 1, 8, "purple_carpet")
+    b.set(9, PY + 1, 8, "purple_carpet")
+    b.set(8, PY + 1, 9, "purple_carpet")
+    cat(b, 9, PY + 1, 9)
+
+    # the coven's cauldron on the shore, front right: a mossy cobblestone hearth, a lit campfire, the cauldron over it
+    for x in range(11, 16):
+        for z in range(0, 4):
+            if abs(x - 13) + abs(z - 1.5) <= 3:
+                b.set(x, 0, z, "mossy_cobblestone" if (x + z) % 3 else "cobblestone")
+    b.set(13, 1, 1, "campfire", lit=True, signal_fire=False, facing="north", waterlogged=False)
+    b.set(13, 2, 1, "water_cauldron", level="3")
+    b.set(15, 1, 2, "brewing_stand", has_bottle_0=True, has_bottle_1=False, has_bottle_2=True)
+    b.set(11, 1, 0, "barrel", facing="up", open=False)
+    b.set(11, 2, 0, "potted_red_mushroom")
+    b.set(15, 1, 0, "barrel", facing="north", open=False)
+    b.set(12, 1, 3, "candle", candles="2", lit=True, waterlogged=False)
+
+    # the herb garden, front left: a fenced podzol bed of swamp herbs and mushrooms
+    flower_bed(b, 1, 0, 5, 3, 0, ["blue_orchid", "allium", "fern", "brown_mushroom", "red_mushroom", "blue_orchid", None], soil="podzol")
+    for x in range(0, 7):
+        for z in (0, 4) if x in (0, 6) else (4,):
+            fence(b, x, 1, z, "mangrove_fence")
+    for z in range(0, 5):
+        fence(b, 0, 1, z, "mangrove_fence")
+        if z != 2:
+            fence(b, 6, 1, z, "mangrove_fence")
+    b.set(6, 1, 2, "mangrove_fence_gate", facing="east", open=False, in_wall=False, powered=False)
+    b.set(6, 0, 2, "mud")
+    # mushrooms at the stilts' feet and round the rim, moss on the bank
+    for x, z, m in ((2, 4, "red_mushroom"), (14, 5, "brown_mushroom"), (1, 12, "brown_mushroom"), (15, 9, "red_mushroom"),
+                    (16, 14, "brown_mushroom"), (0, 7, "red_mushroom")):
+        if (x, z) not in pond:
+            b.set(x, 0, z, "podzol", snowy=False)
+            b.set(x, 1, z, m)
+    for x, z in ((1, 5), (15, 6), (0, 10), (16, 11)):
+        if (x, z) not in pond and b.get(x, 1, z) is None:
+            b.set(x, 1, z, "moss_carpet")
+    b.fill_air()
+    return b
+
+
+def cat(b, x, y, z):
+    """A black cat (the witches' own: vanilla's all_black, the cat of swamp huts) sitting at (x, y, z) when placed."""
+    from nbtlib import Double, Int as NInt, Byte
+    b.entities = getattr(b, "entities", [])
+    b.entities.append(Compound({
+        "pos": List[Double]([Double(x + 0.5), Double(y), Double(z + 0.5)]),
+        "blockPos": List[NInt]([NInt(x), NInt(y), NInt(z)]),
+        "nbt": Compound({"id": String("minecraft:cat"), "variant": String("minecraft:all_black"), "PersistenceRequired": Byte(1),
+                         "Sitting": Byte(1)}),
+    }))

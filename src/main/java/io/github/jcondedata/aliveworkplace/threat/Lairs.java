@@ -265,7 +265,7 @@ public final class Lairs {
 			Optional<Culture.Lair> spec = Threats.get(comer.get()).flatMap(Culture::lair);
 			StructureTemplate ship = spec.flatMap(Culture.Lair::sea).isPresent() ? level.getStructureManager().get(spec.get().structure()).orElse(null) : null;
 			BlockPos site = spec.flatMap(Culture.Lair::sea).isEmpty()
-				? site(level, hall, spec.map(Culture.Lair::near).orElse(NEAR), spec.map(Culture.Lair::far).orElse(FAR), random)
+				? site(level, hall, spec.map(Culture.Lair::near).orElse(NEAR), spec.map(Culture.Lair::far).orElse(FAR), random, spec.map(Culture.Lair::wet).orElse(false))
 				: ship == null ? null : Ships.site(level, hall, spec.get().sea().get(), ship, random);
 			if (site != null) {
 				found(level, hall, site, comer.get());
@@ -432,6 +432,12 @@ public final class Lairs {
 	/** Somewhere out beyond the village for a lair: loaded, dry, fairly flat and open; null if there's nowhere. */
 	@Nullable
 	public static BlockPos site(ServerLevel level, BlockPos hall, int near, int far, RandomSource random) {
+		return site(level, hall, near, far, random, false);
+	}
+
+	/** As {@link #site(ServerLevel, BlockPos, int, int, RandomSource)}; {@code wet}: water may lie there (32.11, a swamp's Coven Hut). */
+	@Nullable
+	public static BlockPos site(ServerLevel level, BlockPos hall, int near, int far, RandomSource random, boolean wet) {
 		for (int tries = 0; tries < 12; tries++) {
 			double angle = random.nextDouble() * Math.PI * 2;
 			int distance = near + random.nextInt(far - near + 1);
@@ -440,7 +446,7 @@ public final class Lairs {
 				continue;
 			}
 			BlockPos ground = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column).below();
-			if (Math.abs(ground.getY() - hall.getY()) > 32 || !fits(level, ground)) {
+			if (Math.abs(ground.getY() - hall.getY()) > 32 || !fits(level, ground, wet)) {
 				continue;
 			}
 			if (!VillageHalls.nearest(level, ground).map(other -> other.distSqr(ground) > (double) near * near / 2).orElse(true)) {
@@ -453,13 +459,18 @@ public final class Lairs {
 
 	/** The ground round {@code ground} is flat enough, dry and open for a camp. */
 	static boolean fits(ServerLevel level, BlockPos ground) {
+		return fits(level, ground, false);
+	}
+
+	/** As {@link #fits(ServerLevel, BlockPos)}; {@code wet}: shallow water is no bar (a swamp's pools). */
+	static boolean fits(ServerLevel level, BlockPos ground, boolean wet) {
 		int uneven = 0;
 		int blocked = 0;
 		for (int dx = -7; dx <= 7; dx++) {
 			for (int dz = -6; dz <= 6; dz++) {
 				BlockPos top = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ground.offset(dx, 0, dz)).below();
-				if (!level.getFluidState(top).isEmpty() || !level.getFluidState(top.above()).isEmpty()) {
-					return false;
+				if (wet ? !level.getFluidState(top.below(2)).isEmpty() : !level.getFluidState(top).isEmpty() || !level.getFluidState(top.above()).isEmpty()) {
+					return false; // (wet: no deeper than two blocks)
 				}
 				if (Math.abs(top.getY() - ground.getY()) > 1) {
 					uneven++;

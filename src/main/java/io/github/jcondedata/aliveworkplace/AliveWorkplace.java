@@ -100,6 +100,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.threat.Ships.init(); // the pirate ship: lairs on the sea, sinking (32.8)
 		io.github.jcondedata.aliveworkplace.threat.Piglins.init(); // piglin raiders: never zombify, go for villagers (32.10)
 		io.github.jcondedata.aliveworkplace.threat.Plunder.init(); // the tactic plunder: gold from the village's chests (32.10)
+		io.github.jcondedata.aliveworkplace.threat.Covens.init(); // witch covens: the hex tactic, nightly hexes, the Coven Mother (32.11)
 		io.github.jcondedata.aliveworkplace.guard.BattleStations.init(); // battle stations (32.6)
 		io.github.jcondedata.aliveworkplace.story.QuestFiles.init(); // the quest engine's files (31.2)
 		io.github.jcondedata.aliveworkplace.story.QuestTracker.init(); // tracked quests as boss bars, reach objectives (31.3)

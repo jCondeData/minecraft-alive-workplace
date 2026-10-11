@@ -238,6 +238,22 @@ public final class Sieges {
 		return !defences(level, hall).isEmpty();
 	}
 
+	/**
+	 * Where the walls of the village round {@code hall} stand (32.11, the witches keep their distance from them): the
+	 * world position of every solid block of its finished wall and gate builds, as their blueprints draw them.
+	 */
+	public static List<BlockPos> wallBlocks(ServerLevel level, BlockPos hall) {
+		List<BlockPos> out = new ArrayList<>();
+		for (Defence build : defences(level, hall)) {
+			for (Blueprint.Entry e : build.blueprint().blocks()) {
+				if (!e.state().isAir() && e.state().blocksMotion()) {
+					out.add(build.world(e.pos()));
+				}
+			}
+		}
+		return out;
+	}
+
 	/** Whether rams can break {@code state} at all: a fence gate, a door, iron bars. */
 	public static boolean isGate(BlockState state) {
 		return hitPoints(state) > 0;

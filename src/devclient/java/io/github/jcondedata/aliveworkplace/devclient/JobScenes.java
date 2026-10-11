@@ -828,6 +828,69 @@ final class JobScenes {
 				return took[0] >= 0 && l.getGameTime() - took[0] > 100 && !carrying.isEmpty();
 			};
 		}, null));
+		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
+		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
+		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.
+		SCENES.put("coven", new Job("the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 1400,
+			new Vec3(15.5, -51.0, 6.5), new Vec3(-1.5, -59.0, -15.5), (level, player) -> {
+			BlockPos hall = STATION.south(9);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.threat.Covens.Data.get(level).forget(hall);
+			level.setDayTime(13600);
+			// The village's palisade, finished, and three villagers behind it.
+			BlockPos wall = STATION.offset(-3, 0, 0);
+			level.getStructureManager().get(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.PALISADE.id()).orElseThrow()
+				.placeInWorld(level, wall, wall, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.PALISADE.id(),
+				new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), wall,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), java.util.UUID.randomUUID());
+			List<Villager> people = new java.util.ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(-2 + i * 2, 0, 4), MobSpawnType.COMMAND);
+				villager.setNoAi(true);
+				people.add(villager);
+			}
+			// The Coven Hut (the hall of a Village for as long as the raid is made).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("witch_coven");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, -36), id);
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Coven Mother "),
+				"the witches raised their Coven Hut, under a named Coven Mother");
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Covens.cauldron(level, lair) != null, "the hut has the coven's cauldron");
+			List<Villager> hexed = lair == null ? List.of() : io.github.jcondedata.aliveworkplace.threat.Covens.hexNight(level, lair, net.minecraft.util.RandomSource.create(2L));
+			Showcase.check(!hexed.isEmpty() && hexed.stream().allMatch(io.github.jcondedata.aliveworkplace.people.Sickness::isHexed), "the coven hexed " + hexed.size() + " villagers");
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 12, 0,
+				Double.NaN, culture, net.minecraft.util.RandomSource.create(4L));
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			Showcase.check(raid != null && raid.raiders() > 0, "the coven's witches came out to raid");
+			List<BlockPos> walls = io.github.jcondedata.aliveworkplace.threat.Sieges.wallBlocks(level, hall);
+			int[] potions = {0};
+			java.util.Set<java.util.UUID> seen = new java.util.HashSet<>();
+			long[] began = {-1};
+			return l -> {
+				if (began[0] < 0) {
+					began[0] = l.getGameTime();
+				}
+				for (net.minecraft.world.entity.projectile.ThrownPotion p : l.getEntitiesOfClass(net.minecraft.world.entity.projectile.ThrownPotion.class,
+					new net.minecraft.world.phys.AABB(STATION).inflate(40), p -> p.getOwner() instanceof net.minecraft.world.entity.monster.Witch)) {
+					if (seen.add(p.getUUID())) {
+						potions[0]++;
+					}
+				}
+				List<net.minecraft.world.entity.Mob> witches = l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(STATION).inflate(60),
+					m -> m.isAlive() && m instanceof net.minecraft.world.entity.monster.Witch && m.getTags().contains(io.github.jcondedata.aliveworkplace.threat.Threats.RAIDER_TAG));
+				boolean off = !witches.isEmpty() && witches.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.threat.Covens.wallDistance(m.getX(), m.getZ(), walls) >= 10);
+				if (potions[0] >= 4 && off && l.getGameTime() - began[0] > 300) {
+					Showcase.check(true, "the witches stood off the palisade and threw " + potions[0] + " potions over it");
+					return true;
+				}
+				return false;
+			};
+		}, null));
 		// Sieges II (ROADMAP 32.5): pillagers who set ladders lay siege to a village behind Stone Walls with no gate. They
 		// set a ladder up the wall's outer face, rung by rung; the first climbs over and drops inside; then the guard on the
 		// walkway comes along the wall and throws the ladder down. (The scene only times his walk: he stands still, as the

@@ -387,8 +387,8 @@ public final class VillageRaids {
 		if (gather == null) {
 			return null;
 		}
-		if (!portal && io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture)) {
-			// A siege gathers beyond the outermost finished wall on its side (32.5): no raider appears inside the walls.
+		if (!portal && (io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture) || culture.tactics().contains(io.github.jcondedata.aliveworkplace.threat.Covens.TACTIC))) {
+			// A siege gathers beyond the outermost finished wall on its side (32.5), and so does a coven (32.11): no raider appears inside the walls.
 			BlockPos beyond = io.github.jcondedata.aliveworkplace.threat.Sieges.outside(level, hall, gather);
 			if (!beyond.equals(gather) && level.isLoaded(beyond)) {
 				gather = surface(level, beyond);

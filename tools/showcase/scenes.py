@@ -665,6 +665,9 @@ SCENES = [
     # Piglin incursions (ROADMAP 32.10): the Blackstone Outpost, piglins through its portal, one carrying off gold
     job("piglins", "Threats", "Piglin incursions: the outpost, the portal, the plunder",
         "the piglins' blackstone outpost stood west of the Town; a raid stepped out of its portal and a piglin passing the village's chests carried off a stack of gold", 150),
+    # Witch covens (ROADMAP 32.11): the Coven Hut in the swamp at night, a hex, witches throwing potions over a palisade
+    job("coven", "Threats", "Witch covens: the hut, the hex, potions over the wall",
+        "the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 150),
     # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
     job("siege_ladders", "Threats", "A siege: ladders over the wall",
         "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),

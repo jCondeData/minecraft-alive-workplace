@@ -5931,5 +5931,11 @@
   "item.aliveworkplace.fair_ledger.title": "The Fair Ledger of %s",
   "item.aliveworkplace.fair_ledger.author": "The Village Clerk",
   "item.aliveworkplace.fair_ledger.row": "Day %s: %s emeralds",
-  "item.aliveworkplace.fair_ledger.page": "The Fair Ledger of %s\n\nThe treasury's takings:\n%s\n\nIn all: %s emeralds"
+  "item.aliveworkplace.fair_ledger.page": "The Fair Ledger of %s\n\nThe treasury's takings:\n%s\n\nIn all: %s emeralds",
+  "wonder.aliveworkplace.great_cathedral.name": "The Great Cathedral",
+  "wonder.aliveworkplace.great_cathedral.description": "A Gothic cathedral on a cross plan: two west towers under stone spires, a rose window over a deep west door, flying buttresses along the nave. Undertakers bring the village's dead back by morning, weddings held there are blessed, and the whole village is the more beautiful for it.",
+  "wonder.aliveworkplace.great_cathedral.stage.1": "I. The Foundations and the West Front",
+  "wonder.aliveworkplace.great_cathedral.stage.2": "II. The Nave",
+  "wonder.aliveworkplace.great_cathedral.stage.3": "III. The Transepts and the Choir",
+  "wonder.aliveworkplace.great_cathedral.stage.4": "IV. The Towers and the Rose Window"
 }

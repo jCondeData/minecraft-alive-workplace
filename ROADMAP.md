@@ -4172,7 +4172,7 @@ Legends.
     builders repair it and it comes back; finished Wonders survive a save and reload;
   - a GameTest checks the server-wide message and the chronicle lines;
   - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
-- [ ] **35.9** **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
+- [x] **35.9** (review: pending 2026-10-11) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
   critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
   `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two
   west towers 44 high under stone spires reaching 52. A nave of five bays under a steep deepslate-tile roof; aisles

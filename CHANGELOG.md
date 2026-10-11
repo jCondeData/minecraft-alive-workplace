@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Great Cathedral's design, for 2.0** (35.9, nothing to start in game until Wonders is finished): the first
+  Wonder's building, a Gothic cathedral on a cross plan (39 across the transepts, 55 long, two west towers under stone
+  spires reaching 52, about 14,250 blocks) with a rose window over a deep west door, flying buttresses, a rounded apse,
+  open belfries with three bells, pews, an altar of gold and candles, three side chapels and a sacristy. It rises in
+  four tidy stages (the Foundations and the West Front, the Nave, the Transepts and the Choir, the Towers and the Rose
+  Window), each with its goods from the village's jobs, in its Wonder data file.
 - **Trade pacts and alliances, for 1.7** (33.18, off until 1.7 is finished): the Trade page's new Pacts tab offers
   another player's village within caravan range a trade pact or an alliance, by letter; they accept or decline on
   their Pacts tab within 3 days. Caravan routes to another owner's village now need a pact (routes from before 1.7

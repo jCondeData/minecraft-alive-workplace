@@ -49,7 +49,7 @@ How everything in the mod works, in plain words: written for the owner first, th
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
   rules (1.8).
 - [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).
-- [Wonders](wonders.md): the eight Wonders, what each needs and gives; only the design so far (2.0).
+- [Wonders](wonders.md): the eight Wonders, what each needs and gives; the design and the Great Cathedral's building so far (2.0).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 - [Lairs and the Defence page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's

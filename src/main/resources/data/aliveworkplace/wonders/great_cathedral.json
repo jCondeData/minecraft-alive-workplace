@@ -1,0 +1,158 @@
+{
+  "name": "wonder.aliveworkplace.great_cathedral.name",
+  "description": "wonder.aliveworkplace.great_cathedral.description",
+  "icon": "minecraft:bell",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:seer",
+      "stand_in": [
+        {
+          "type": "job_level",
+          "job": "minecraft:cleric",
+          "level": 5,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "type": "finished",
+      "blueprint": "aliveworkplace:chapel",
+      "count": 3
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.great_cathedral.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_cathedral/stage_1_0",
+          "offset": [0, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_cathedral/stage_1_1",
+          "offset": [0, 0, 28]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:bread",
+          "count": 128,
+          "job": "aliveworkplace:chef"
+        },
+        {
+          "item": "minecraft:iron_pickaxe",
+          "count": 8,
+          "job": "minecraft:toolsmith"
+        },
+        {
+          "item": "minecraft:gold_ingot",
+          "count": 16,
+          "job": "minecraft:armorer"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_cathedral.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_cathedral/stage_2_0",
+          "offset": [6, 1, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:white_candle",
+          "count": 64,
+          "job": "minecraft:leatherworker"
+        },
+        {
+          "item": "minecraft:honeycomb",
+          "count": 32,
+          "job": "aliveworkplace:beekeeper"
+        },
+        {
+          "item": "minecraft:white_wool",
+          "count": 64,
+          "job": "minecraft:shepherd"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_cathedral.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_cathedral/stage_3_0",
+          "offset": [0, 1, 38]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:book",
+          "count": 16,
+          "job": "minecraft:librarian"
+        },
+        {
+          "item": "minecraft:potion",
+          "count": 12,
+          "potion": "minecraft:healing",
+          "job": "minecraft:cleric"
+        },
+        {
+          "tag": "minecraft:small_flowers",
+          "count": 64,
+          "job": "aliveworkplace:florist"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_cathedral.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_cathedral/stage_4_0",
+          "offset": [5, 14, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:chiseled_stone_bricks",
+          "count": 32,
+          "job": "minecraft:mason"
+        },
+        {
+          "item": "minecraft:cake",
+          "count": 16,
+          "job": "aliveworkplace:chef"
+        },
+        {
+          "item": "minecraft:bone_meal",
+          "count": 64,
+          "job": "aliveworkplace:composter"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "undertakers",
+      "search": "village",
+      "revive_by": "morning"
+    },
+    {
+      "type": "weddings",
+      "mood": 15,
+      "days": 3,
+      "gifted_factor": 2.0
+    },
+    {
+      "type": "beauty",
+      "points": 8
+    }
+  ]
+}

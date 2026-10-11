@@ -1985,6 +1985,494 @@ def great_library_section(cut_x=GC[0]):
     return out
 
 
+# --- the Observatory -----------------------------------------------------------------------------------------------------
+# On paper (35.17), 31 x 43 x 31, the front (the grand stair and the courtyard) at z = 0:
+# - A raised terrace, 31 x 28 and four high (y 0-3), of deepslate bricks under a polished blackstone rim and balustrade,
+#   a stair of five wide steps up its front (z 0-2) between two lamp posts.
+# - The courtyard (z 4-12) paved in deepslate tiles ruled by polished blackstone lines, with amethyst set in it: a
+#   compass star round the sundial, studs along the path, a ring round the tower's foot. On the west the sundial: a round
+#   stone face (smooth stone slabs ringed by polished blackstone stairs, chiseled hour stones at the quarters) round its
+#   gnomon (a polished blackstone wall rising to a lightning rod). On the east the orrery: four blackstone posts and a
+#   ring beam carrying a gold sun on a chain at the middle and five planets on chains round it (iron, copper, lapis,
+#   redstone and raw gold, each on its own orbit and height).
+# - The tower, round, centred on (15, 20): 15 across and 30 high (y 4-33), deepslate bricks with tiles and cracked ones
+#   in them, three thick to the second floor, two above; eight polished blackstone pilasters up its height, blackstone
+#   bands at the floors (13, 23), a plinth at its foot; tall windows on the four sides of each storey; its door on the
+#   courtyard under a blackstone hood. Inside: a spiral stair of dark oak round a newel to the top, floors at 13 and 23
+#   (the Seer's study below with bookshelves and a lectern, a store of barrels and chests above), lanterns.
+# - The top (y 33): a floor right across, a walk round the dome behind a blackstone parapet: the viewing platform.
+# - The dome (34-39), 12 across, of cut copper, with a slit of tinted glass three wide from its foot to its crown on the
+#   courtyard side and a door onto the walk at the back.
+# - The great telescope: a barrel of cut copper 12 long and two thick on a blackstone mount inside the dome, leaning up
+#   and out of the slit over the courtyard, a ring of copper at its mouth and an eyepiece at its foot.
+# - The low wings either side of the tower (x 1-7 and 23-29, z 15-25), deepslate brick walls under hipped deepslate-tile
+#   roofs: the star-chart room on the west (a cartography table on a carpet chart of the night sky, a lectern, chart
+#   shelves) and the Seer's lodging on the east (a bed, a brewing stand, a barrel, a table), each with a door onto the
+#   courtyard and one into the tower.
+# - Palette (60/30/10): deepslate bricks and tiles; polished blackstone trim; cut copper; amethyst in the paving. Panes.
+# - Stages, each ending tidy: I the Terrace and the Courtyard (the terrace, the stair, the paving, the sundial and the
+#   two wings); II the Tower (its walls, floors, stair and rooms, the top floor and the parapet); III the Dome (its shell
+#   and slit, the door, its lamps); IV the Great Telescope and the Orrery.
+OW, OH, OD = 31, 43, 31
+OC = (15, 20)  # the tower's centre
+O_TOP = 33  # the tower's top floor
+O_FLOORS = (13, 23)
+O_WALL = Mix((7, "deepslate_bricks"), (2, "deepslate_tiles"), (1, "cracked_deepslate_bricks"), seed=41)
+O_TERRACE = Mix((6, "deepslate_bricks"), (3, "cobbled_deepslate"), (1, "cracked_deepslate_bricks"), seed=42)
+BLACKSTONE = Family("polished_blackstone", "polished_blackstone_stairs", "polished_blackstone_slab",
+                    wall="polished_blackstone_wall")
+BLACKSTONE_BRICK = Family("polished_blackstone_bricks", "polished_blackstone_brick_stairs",
+                          "polished_blackstone_brick_slab", wall="polished_blackstone_brick_wall")
+O_DOME_R = 5.9
+O_SUNDIAL = (7, 8)
+O_ORRERY = (23, 8)
+
+
+def o_r(x, z):
+    return math.hypot(x - OC[0], z - OC[1])
+
+
+def o_wall(y):
+    outer = disc(7.4, OC)
+    return outer - disc(4.4 if y < O_FLOORS[1] else 5.4, OC)
+
+
+def o_inside(y):
+    return disc(7.4, OC) - o_wall(y)
+
+
+def o_core():
+    return {(OC[0] + dx, OC[1] + dz) for dx in (-1, 0, 1) for dz in (-1, 0, 1)}
+
+
+O_DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
+
+
+def o_ray(y, d):
+    wall = o_wall(y)
+    out = [(OC[0] + d[0] * k, OC[1] + d[1] * k) for k in range(1, 9)]
+    return list(reversed([c for c in out if c in wall]))
+
+
+def o_pilasters():
+    """Eight cells a block proud of the tower, on its diagonals and between the windows."""
+    ring = outline(disc(8.4, OC)) - disc(7.4, OC)
+    out = []
+    for angle in range(22, 360, 45):
+        a = math.radians(angle + 0.5)
+        out.append(min(ring, key=lambda c: math.hypot(c[0] - OC[0] - 8 * math.cos(a), c[1] - OC[1] - 8 * math.sin(a))))
+    return out
+
+
+O_WINGS = ((1, 7, "west"), (23, 29, "east"))  # x from, x to, the side; z 15-25
+
+
+# --- stage I: the terrace and the courtyard -----------------------------------------------------------------------------
+def o_terrace(b):
+    cells = {(x, z) for x in range(OW) for z in range(3, OD)}
+    rim = outline(cells, corners=True)
+    tower = disc(8.4, OC)
+    for x, z in cells:
+        for y in range(0, 3):
+            b.set(x, y, z, "polished_blackstone_bricks" if (x, z) in rim and y == 2 else O_TERRACE.at(x, y, z))
+        b.set(x, 3, z, o_paving(x, z, rim, tower))
+    # the stair up the front: five steps wide, four high (z 0-2 and into the rim), lamp posts either side
+    for x in range(13, 18):
+        for i, z in enumerate((0, 1, 2)):
+            for y in range(0, i):
+                b.set(x, y, z, O_TERRACE.at(x, y, z))
+            stairs(b, x, i, z, DEEPSLATE_BRICK, "south")
+        b.clear(x, 3, 3, x, 3, 3)
+        stairs(b, x, 3, 3, DEEPSLATE_BRICK, "south")
+        for y in range(0, 3):
+            b.set(x, y, 3, O_TERRACE.at(x, y, 3))
+    for x in (12, 18):
+        for z in (0, 1, 2):
+            for y in range(0, 4 if z == 2 else 1 + z):
+                b.set(x, y, z, "polished_blackstone_bricks")
+    for x in (12, 18):
+        for y in range(4, 6):
+            wall_block(b, x, y, 3, "polished_blackstone_wall")
+        lantern(b, x, 6, 3)
+    # the balustrade round the rim, open at the stair
+    for x, z in rim:
+        if z == 3 and 12 <= x <= 18:
+            continue
+        wall_block(b, x, 4, z, "polished_blackstone_wall")
+    for x, z in ((0, 3), (30, 3), (0, 30), (30, 30), (0, 14), (30, 14)):
+        b.set(x, 4, z, "polished_blackstone_bricks")
+        lamp_post(b, x, 5, z, post="polished_blackstone_wall", height=1)
+
+
+def o_paving(x, z, rim, tower):
+    if (x, z) in rim:
+        return "polished_blackstone"
+    sx, sz = O_SUNDIAL
+    d = math.hypot(x - sx, z - sz)
+    if 4 <= z <= 13 and (x - sx == 0 or z - sz == 0 or abs(x - sx) == abs(z - sz)) and 3 <= d <= 4.3:
+        return "amethyst_block"  # the compass star's points
+    if 13 <= x <= 17 and 4 <= z <= 12:  # the path to the door
+        if x in (13, 17):
+            return "polished_blackstone"
+        return "amethyst_block" if x == 15 and z % 3 == 0 else "deepslate_tiles"
+    if (x, z) in outline(tower) and (x + z) % 4 == 0:
+        return "amethyst_block"
+    if x % 6 == 3 or z % 6 == 3:
+        return "polished_blackstone"
+    return "deepslate_tiles"
+
+
+def o_sundial(b):
+    """The sundial: a round face of smooth stone ringed by blackstone stairs, chiseled stones at the four quarters, the
+    gnomon a blackstone wall leaning to a lightning rod."""
+    sx, sz = O_SUNDIAL
+    face = disc(2.4, O_SUNDIAL)
+    ring = outline(disc(3.4, O_SUNDIAL)) - face
+    for x, z in face:
+        if (x, z) == O_SUNDIAL:
+            continue
+        if abs(x - sx) + abs(z - sz) == 2 and (x == sx or z == sz):
+            b.set(x, 4, z, "chiseled_polished_blackstone")
+        else:
+            slab(b, x, 4, z, "smooth_stone_slab")
+    for x, z in disc(3.4, O_SUNDIAL) - face:
+        dx, dz = x - sx, z - sz
+        facing = ("west" if dx > 0 else "east") if abs(dx) >= abs(dz) else ("north" if dz > 0 else "south")
+        stairs(b, x, 4, z, BLACKSTONE, facing)
+    b.set(sx, 4, sz, "polished_blackstone")
+    wall_block(b, sx, 5, sz, "polished_blackstone_wall")
+    wall_block(b, sx, 6, sz, "polished_blackstone_wall")
+    b.set(sx, 7, sz, "lightning_rod", facing="up", powered=False, waterlogged=False)
+
+
+def o_wing(b, x0, x1, side):
+    z0, z1 = 15, 25
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            edge = x in (x0, x1) or z in (z0, z1)
+            corner = x in (x0, x1) and z in (z0, z1)
+            for y in range(4, 8):
+                if corner:
+                    b.set(x, y, z, "polished_blackstone_bricks")
+                elif edge:
+                    b.set(x, y, z, "polished_blackstone" if y == 4 else O_WALL.at(x, y, z))
+    # windows: two each side, one in the end
+    outer = x0 if side == "west" else x1
+    inner = x1 if side == "west" else x0
+    for z in (17, 23):
+        for y in (5, 6):
+            pane(b, outer, y, z)
+    mid = (x0 + x1) // 2
+    for x in (mid - 2, mid + 2):
+        for y in (5, 6):
+            pane(b, x, y, z1)
+    # the doors: onto the courtyard, and into the tower
+    door(b, mid, 4, z0, "dark_oak_door", "north")
+    stairs(b, mid, 7, z0 - 1, BLACKSTONE, "south", top=True)
+    lantern(b, mid - 1, 4, z0 - 1)
+    b.clear(inner, 4, 20, inner, 5, 20)
+    hip_roof(b, x0 - 1 if side == "west" else x0, x1 if side == "west" else x1 + 1, z0 - 1, z1 + 1, 8, DEEPSLATE_TILE)
+    # the ceiling and lamps
+    for x in range(x0 + 1, x1):
+        for z in range(z0 + 1, z1):
+            if b.get(x, 8, z) is None:
+                b.set(x, 8, z, "dark_oak_planks")
+    for z in (18, 22):
+        lantern(b, mid, 7, z, hanging=True)
+    if side == "west":
+        o_chart_room(b, x0, x1)
+    else:
+        o_lodging(b, x0, x1)
+
+
+O_SKY = ["bbbbbybbb", "bybbbbbyb", "bbbpbbbbb", "bbbbbbyb.", "ybbbybbbb", "bbbbbbbpb", "bybbbbbbb", "bbbbybbyb",
+         "bbbbbbbbb"]
+
+
+def o_chart_room(b, x0, x1):
+    """The star-chart room: a carpet chart of the night sky (black, with yellow stars and a purple planet) round a
+    cartography table, a lectern with the star book, shelves of charts and a map on the wall."""
+    colours = {"b": "black_carpet", "y": "yellow_carpet", "p": "purple_carpet", ".": "white_carpet"}
+    for i, x in enumerate(range(x0 + 1, x1)):
+        for j, z in enumerate(range(16, 25)):
+            b.set(x, 4, z, colours[O_SKY[j % len(O_SKY)][i % 9]])
+    mid = (x0 + x1) // 2
+    b.set(mid, 4, 20, "cartography_table")
+    b.set(mid, 4, 22, "lectern", facing="north", has_book=False, powered=False)
+    for z in (16, 17, 23, 24):
+        b.set(x0 + 1, 4, z, "chiseled_bookshelf", facing="east", slot_0_occupied=False, slot_1_occupied=False,
+              slot_2_occupied=False, slot_3_occupied=False, slot_4_occupied=False, slot_5_occupied=False)
+        b.set(x0 + 1, 5, z, "bookshelf")
+    b.set(x0 + 1, 4, 20, "barrel", facing="up", open=False)
+
+
+def o_lodging(b, x0, x1):
+    """The Seer's lodging: a bed, a brewing stand on a table, a barrel, a chair and rugs."""
+    mid = (x0 + x1) // 2
+    for x in range(x0 + 1, x1):
+        for z in range(16, 25):
+            if (x + z) % 2 == 0 and 2 <= x - x0 <= 4 and 18 <= z <= 22:
+                b.set(x, 4, z, "purple_carpet")
+    b.set(x1 - 1, 4, 23, "purple_bed", facing="north", part="foot", occupied=False)
+    b.set(x1 - 1, 4, 24, "purple_bed", facing="north", part="head", occupied=False)
+    b.set(x1 - 1, 4, 16, "polished_blackstone")
+    b.set(x1 - 1, 5, 16, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
+    b.set(x1 - 1, 4, 17, "barrel", facing="up", open=False)
+    b.set(x1 - 1, 4, 18, "dark_oak_stairs", facing="east", half="bottom", shape="straight", waterlogged=False)
+    b.set(x1 - 1, 4, 22, "bookshelf")
+
+
+def stage_o1(b):
+    o_terrace(b)
+    o_sundial(b)
+    for x0, x1, side in O_WINGS:
+        o_wing(b, x0, x1, side)
+
+
+# --- stage II: the tower -------------------------------------------------------------------------------------------------
+def o_spiral(b, y0, y1):
+    for y in range(y0, y1 + 1):
+        n = y - 4
+        dx, dz = SPIRAL[n % 8]
+        stairs(b, OC[0] + dx, y, OC[1] + dz, DARK_OAK, SPIRAL_FACING[n % 8])
+        log(b, OC[0], y, OC[1], "dark_oak_log")
+
+
+def o_tower(b):
+    for y in range(4, O_TOP):
+        band = y == 4 or y in O_FLOORS or y == O_TOP - 1
+        for x, z in o_wall(y):
+            b.set(x, y, z, "polished_blackstone" if band else O_WALL.at(x, y, z))
+    # the plinth round its foot and the pilasters up its height, ending in a cap under the parapet
+    for x, z in outline(disc(8.4, OC)) - disc(7.4, OC):
+        if b.get(x, 4, z) is None:
+            stairs(b, x, 4, z, BLACKSTONE, o_toward(x, z))
+    for x, z in o_pilasters():
+        for y in range(4, O_TOP - 1):
+            if b.get(x, y, z) is None or y == 4 and b.stage_of.get((x, y, z)) is None:
+                b.set(x, y, z, "polished_blackstone_bricks")
+        stairs(b, x, O_TOP - 1, z, BLACKSTONE, o_toward(x, z), top=True)
+    # windows on the four sides of each storey, two tall, with a blackstone sill
+    for y in (8, 17, 27):
+        for d in O_DIRS:
+            if y == 8 and d != (0, 1):  # the ground storey: the door on the front, the wings either side
+                continue
+            for yy in (y, y + 1, y + 2):
+                cells = o_ray(yy, d)
+                pane(b, cells[0][0], yy, cells[0][1])
+                for c in cells[1:]:
+                    b.clear(c[0], yy, c[1], c[0], yy, c[1])
+            x, z = o_ray(y - 1, d)[0]
+            stairs(b, x + d[0], y - 1, z + d[1], BLACKSTONE, o_toward(x + d[0], z + d[1]), top=True)
+    # the door onto the courtyard under a hood, and the openings into the wings
+    cells = o_ray(4, (0, -1))
+    x, z = cells[0]
+    for c in cells[1:]:
+        b.clear(c[0], 4, c[1], c[0], 5, c[1])
+    door(b, x, 4, z, "dark_oak_door", "north")
+    for xx in (x - 1, x, x + 1):
+        stairs(b, xx, 7, z - 1, BLACKSTONE, "south", top=True)
+    for d in ((-1, 0), (1, 0)):
+        for c in o_ray(4, d):
+            b.clear(c[0], 4, c[1], c[0], 5, c[1])
+    o_spiral(b, 4, O_TOP)
+    # floors (the stair well left open) and the top: right across, a parapet round its edge
+    for y in O_FLOORS:
+        for x, z in o_inside(y + 1):
+            if (x, z) not in o_core() and b.get(x, y, z) is None:
+                b.set(x, y, z, "dark_oak_planks")
+    top = disc(7.4, OC)
+    for x, z in top:
+        if (x, z) in o_core():
+            continue
+        b.set(x, O_TOP, z, "polished_blackstone" if (x, z) in outline(top) else "deepslate_tiles")
+    for x, z in outline(top, corners=True):
+        wall_block(b, x, O_TOP + 1, z, "polished_blackstone_wall")
+    for x, z in ((OC[0] - 7, OC[1]), (OC[0] + 7, OC[1]), (OC[0], OC[1] + 7)):
+        b.set(x, O_TOP + 1, z, "polished_blackstone_bricks")
+        lantern(b, x, O_TOP + 2, z)
+    o_rooms(b)
+
+
+def o_toward(x, z):
+    return toward(x - OC[0], z - OC[1])
+
+
+def o_rooms(b):
+    """The Seer's study on the ground floor, the store above, the instrument room under the top, lanterns in each."""
+    y = 4
+    inside = o_inside(y)
+    for x, z in inside:
+        r = o_r(x, z)
+        if r >= 3.6 and (x, z) not in o_core() and b.get(x, y, z) is None:
+            if abs(x - OC[0]) >= 2 and abs(z - OC[1]) >= 2:
+                b.set(x, y, z, "bookshelf")
+                if b.get(x, y + 1, z) is None:
+                    b.set(x, y + 1, z, "bookshelf")
+    b.set(OC[0] + 2, 4, OC[1] + 3, "lectern", facing="north", has_book=False, powered=False)
+    for y in (4, O_FLOORS[0] + 1, O_FLOORS[1] + 1):
+        for dx, dz in ((2, -2), (-2, 2)):
+            if b.get(OC[0] + dx, y, OC[1] + dz) is None:
+                lantern(b, OC[0] + dx, y, OC[1] + dz)
+    y = O_FLOORS[0] + 1
+    for x, z in sorted(o_inside(y)):
+        if o_r(x, z) >= 4.4 and abs(x - OC[0]) >= 2 and abs(z - OC[1]) >= 2 and b.get(x, y, z) is None:
+            b.set(x, y, z, "barrel" if (x + z) % 2 else "chest", **({"facing": "up", "open": False} if (x + z) % 2 else
+                  {"facing": o_toward(x, z), "type": "single", "waterlogged": False}))
+    y = O_FLOORS[1] + 1
+    b.set(OC[0] - 3, y, OC[1] - 2, "cartography_table")
+    b.set(OC[0] + 3, y, OC[1] + 2, "lectern", facing="west", has_book=False, powered=False)
+    b.set(OC[0] + 3, y, OC[1] - 2, "chiseled_bookshelf", facing="west", slot_0_occupied=False, slot_1_occupied=False,
+          slot_2_occupied=False, slot_3_occupied=False, slot_4_occupied=False, slot_5_occupied=False)
+
+
+def stage_o2(b):
+    o_tower(b)
+
+
+# --- stage III: the dome ------------------------------------------------------------------------------------------------
+def o_telescope():
+    """The telescope's barrel, lower end first: 12 long and two high, from the mount up and out of the slit."""
+    cells = []
+    for i in range(12):
+        z = OC[1] + 2 - i
+        y = O_TOP + 2 + int(i * 0.45)
+        cells += [(OC[0], y, z), (OC[0], y + 1, z)]
+    return cells
+
+
+O_DRUM = 2  # the dome's drum: two courses of blackstone under the copper
+
+
+def o_dome_cells():
+    """The drum (O_TOP + 1 to O_TOP + O_DRUM) and the copper hemisphere on it, as {cell: distance from its centre}."""
+    out = {}
+    base = O_TOP + O_DRUM
+    for y in range(O_TOP + 1, base + 7):
+        for x in range(OC[0] - 7, OC[0] + 8):
+            for z in range(OC[1] - 7, OC[1] + 8):
+                d = math.sqrt((x - OC[0]) ** 2 + (max(y - base, 0)) ** 2 + (z - OC[1]) ** 2)
+                if O_DOME_R - 1.3 < d <= O_DOME_R or (d <= O_DOME_R and y == base + 6):
+                    out[(x, y, z)] = d
+    return out
+
+
+def stage_o3(b):
+    scope = set(o_telescope())
+    cells = o_dome_cells()
+    doorway = {(x, y, z) for (x, y, z) in cells if x == OC[0] and z > OC[1] and y in (O_TOP + 1, O_TOP + 2)}
+    for (x, y, z) in sorted(cells):
+        if (x, y, z) in scope or (x, y, z) in doorway:
+            continue
+        if abs(x - OC[0]) <= 1 and z < OC[1] and y >= O_TOP + 3:
+            b.set(x, y, z, "tinted_glass")
+        elif y <= O_TOP + O_DRUM:
+            b.set(x, y, z, "polished_blackstone_bricks" if y == O_TOP + 1 else "polished_blackstone")
+        else:
+            b.set(x, y, z, "cut_copper")
+    b.set(OC[0], O_TOP + O_DRUM + 6, OC[1], "lightning_rod", facing="up", powered=False, waterlogged=False)
+    zd = max(z for (x, y, z) in doorway)
+    door(b, OC[0], O_TOP + 1, zd, "dark_oak_door", "south")
+    for x, z in ((OC[0] - 3, OC[1] + 2), (OC[0] + 3, OC[1] - 1), (OC[0] - 3, OC[1] - 2)):
+        lantern(b, x, O_TOP + 1, z)
+    b.set(OC[0] + 3, O_TOP + 1, OC[1] + 2, "lectern", facing="west", has_book=False, powered=False)
+
+
+# --- stage IV: the great telescope and the orrery ------------------------------------------------------------------------
+def o_great_telescope(b):
+    cells = o_telescope()
+    x0, y0, z0 = cells[0]
+    for y in range(O_TOP + 1, y0):
+        if y < y0 - 1:
+            wall_block(b, x0, y, z0, "polished_blackstone_wall")
+        else:
+            b.set(x0, y, z0, "chiseled_polished_blackstone")
+    for x, y, z in cells:
+        b.set(x, y, z, "cut_copper")
+    # the eyepiece at its foot, a collar of copper round its mouth
+    xe, ye, ze = cells[0]
+    stairs(b, xe, ye, ze + 1, CUT_COPPER, "north")
+    xm, ym, zm = cells[-1]
+    for dx in (-1, 1):
+        slab(b, xm + dx, ym, zm, CUT_COPPER, top=True)
+        slab(b, xm + dx, ym + 1, zm, CUT_COPPER)
+
+
+O_PLANETS = ((2, 0, 7, "iron_block"), (0, 3, 6, "copper_block"), (-3, -1, 7, "lapis_block"),
+             (1, -3, 6, "redstone_block"), (-2, 2, 6, "raw_gold_block"))
+
+
+def o_orrery(b):
+    """Four blackstone posts and a ring beam (y 4-9) over a blackstone dais; the gold sun on a chain at the middle, five
+    planets on chains round it, each at its own height."""
+    ox, oz = O_ORRERY
+    for x, z in disc(4.4, O_ORRERY):
+        if b.get(x, 4, z) is None:
+            slab(b, x, 4, z, BLACKSTONE)
+    posts_at = [(ox - 3, oz - 3), (ox + 3, oz - 3), (ox - 3, oz + 3), (ox + 3, oz + 3)]
+    for x, z in posts_at:
+        b.set(x, 4, z, "polished_blackstone_bricks")
+        for y in range(5, 10):
+            wall_block(b, x, y, z, "polished_blackstone_wall")
+    for x in range(ox - 3, ox + 4):
+        for z in range(oz - 3, oz + 4):
+            if x in (ox - 3, ox + 3) or z in (oz - 3, oz + 3) or x == ox or z == oz:
+                if (x, z) in posts_at:
+                    b.set(x, 10, z, "polished_blackstone_bricks")
+                else:
+                    slab(b, x, 10, z, BLACKSTONE, top=True)
+    b.set(ox, 10, oz, "chiseled_polished_blackstone")
+    chain(b, ox, 9, oz)
+    chain(b, ox, 8, oz)
+    b.set(ox, 7, oz, "gold_block")
+    for dx, dz, y, name in O_PLANETS:
+        x, z = ox + dx, oz + dz
+        if not (x in (ox - 3, ox + 3) or z in (oz - 3, oz + 3) or x == ox or z == oz):
+            # hang from a beam of its own across the ring
+            for xx in range(ox - 3, ox + 4):
+                if b.get(xx, 10, z) is None:
+                    slab(b, xx, 10, z, BLACKSTONE, top=True)
+        for yy in range(y + 1, 10):
+            chain(b, x, yy, z)
+        b.set(x, y, z, name)
+
+
+def chain(b, x, y, z):
+    b.set(x, y, z, "chain", axis="y", waterlogged=False)
+
+
+def stage_o4(b):
+    o_great_telescope(b)
+    o_orrery(b)
+
+
+def observatory():
+    b = StagedBuild(OW, OH, OD)
+    b.begin(1)
+    stage_o1(b)
+    b.begin(2)
+    stage_o2(b)
+    b.begin(3)
+    stage_o3(b)
+    b.begin(4)
+    stage_o4(b)
+    return b
+
+
+def observatory_stage(stage=None):
+    """For the renders only: the Observatory as it stands after a stage (whole by default)."""
+    stages = observatory().stage_builds()
+    return stages[(stage or len(stages)) - 1]
+
+
+def observatory_section(cut_x=OC[0]):
+    """For the renders only: the whole Observatory cut open along x = cut_x (the east half taken away)."""
+    s = observatory_stage()
+    out = Build(OW, OH, OD)
+    out.blocks = {p: v for p, v in s.blocks.items() if p[0] <= cut_x}
+    return out
+
+
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
 def goods(*lines):
     out = []
@@ -2085,6 +2573,34 @@ WONDERS = {
         ],
         "powers": [
             {"type": "research_tier", "tier": 2},
+        ],
+    },
+    "observatory": {
+        "draw": observatory,
+        "icon": "minecraft:spyglass",
+        "crew": 12,
+        "requirements": [
+            {"type": "rank_at_least", "rank": "town"},
+            {"type": "legend", "id": "aliveworkplace:seer",
+             "stand_in": [{"type": "job_level", "job": "minecraft:cleric", "level": 5, "count": 1}]},
+        ],
+        "goods": [
+            goods(("item", "minecraft:lapis_lazuli", 32, "aliveworkplace:sifter"),
+                  ("item", "minecraft:cooked_chicken", 64, "aliveworkplace:chef"),
+                  ("item", "minecraft:filled_map", 8, "minecraft:cartographer")),
+            goods(("item", "minecraft:copper_ingot", 64, "minecraft:armorer"),
+                  ("item", "minecraft:spyglass", 4, "minecraft:toolsmith"),
+                  ("item", "minecraft:amethyst_shard", 32, "aliveworkplace:miner")),
+            goods(("item", "minecraft:book", 16, "minecraft:librarian"),
+                  ("item", "minecraft:tinted_glass", 8, "aliveworkplace:carpenter"),
+                  ("item", "minecraft:feather", 32, "minecraft:butcher")),
+            goods(("item", "minecraft:chain", 32, "aliveworkplace:tinkerer"),
+                  ("item", "minecraft:gold_ingot", 9, "minecraft:armorer"),
+                  ("item", "minecraft:pumpkin_pie", 32, "aliveworkplace:chef")),
+        ],
+        "powers": [
+            {"type": "sky_chart", "size": 1024},
+            {"type": "forecast"},
         ],
     },
 }

@@ -6021,5 +6021,11 @@
   "wonder.aliveworkplace.great_library.stage.1": "The Stacks",
   "wonder.aliveworkplace.great_library.stage.2": "The Galleries",
   "wonder.aliveworkplace.great_library.stage.3": "The Rotunda",
-  "wonder.aliveworkplace.great_library.stage.4": "The Dome and the Portico"
+  "wonder.aliveworkplace.great_library.stage.4": "The Dome and the Portico",
+  "wonder.aliveworkplace.observatory.name": "Observatory",
+  "wonder.aliveworkplace.observatory.description": "A round tower under a copper dome on a raised terrace, its great telescope leaning out of a slit of tinted glass, with a star-chart room, a sundial and an orrery in the courtyard. The Seer charts the land for a thousand blocks around and reads the coming days.",
+  "wonder.aliveworkplace.observatory.stage.1": "The Terrace and the Courtyard",
+  "wonder.aliveworkplace.observatory.stage.2": "The Tower",
+  "wonder.aliveworkplace.observatory.stage.3": "The Dome",
+  "wonder.aliveworkplace.observatory.stage.4": "The Great Telescope and the Orrery"
 }

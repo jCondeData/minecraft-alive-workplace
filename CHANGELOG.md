@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Observatory's design, for 2.0** (35.17, nothing to start in game until Wonders is finished): the fourth
+  Wonder's building, a round deepslate tower 15 across and 30 high under a copper dome on a raised terrace 31 by 31
+  (about 8,400 blocks): a slit of tinted glass in the dome with a great copper telescope leaning out of it, a viewing
+  walk round the dome reached by a spiral stair, a star-chart room and the Seer's lodging in two low wings, and a
+  courtyard paved with amethyst round a sundial and an orrery of a gold sun and five planets on chains. It rises in
+  four tidy stages (the Terrace and the Courtyard, the Tower, the Dome, the Great Telescope and the Orrery), each with
+  its goods.
 - **The Great Library's design, for 2.0** (35.13, nothing to start in game until Wonders is finished): the third
   Wonder's building, a domed library on a cross plan (41 by 41, 34 high, about 15,000 blocks) on a terrace with four
   corner gardens: a portico of six quartz columns under a low pediment over a grand stair, a rotunda under a ribbed

@@ -3,10 +3,10 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse and the Great Library) are built, behind the 2.0 switch (see
+Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library and the Observatory) are built, behind the 2.0 switch (see
 Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13
+Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.17
 
 ## What a player sees
 
@@ -97,6 +97,26 @@ sugar cane (Farmer), 64 leather (Butcher), 64 spruce logs (Lumberjack); II 64 bo
 64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves (Librarian). It needs a Town, 20 research levels and
 the Old Sage (or a Master Scholar while Legends are off). Its power, a second research tier, comes with 35.14.
 
+**The Observatory** (35.17) is drawn: a round tower 15 across and 30 high under a copper dome, on a raised terrace 31
+by 31 (42 high to the dome's vane, about 8,400 blocks) of deepslate bricks behind a polished blackstone balustrade, a
+wide stair up its front. The tower is deepslate bricks and tiles with polished blackstone bands at its floors, eight
+blackstone pilasters up its height and tall windows; inside, a dark oak spiral stair climbs past the Seer's study
+(bookshelves and a lectern), a store of chests and barrels and the instrument room (a cartography table, a lectern)
+to the top, where a walk behind a blackstone parapet runs round the dome: the viewing platform. The dome, of cut copper
+on a blackstone drum (it weathers green), has a slit of tinted glass three wide from its foot to its crown on the
+courtyard side and a door onto the walk at the back; the great telescope, a cut copper barrel 12 long on a blackstone
+mount, leans up and out of the slit over the courtyard. Two low wings under hipped deepslate-tile roofs flank the
+tower: the star-chart room (a cartography table on a carpet chart of the night sky, a lectern, chart shelves) and the
+Seer's lodging (a bed, a brewing stand, a barrel). The courtyard is paved in deepslate tiles ruled by blackstone, with
+amethyst set in it: a compass star round the sundial (a round stone face and its gnomon), studs along the path and a
+ring round the tower's foot. Opposite the sundial stands the orrery: a gold sun on a chain under a blackstone frame,
+with five planets (iron, copper, lapis, redstone and raw gold) hung on chains round it. Its stages: I *The Terrace and
+the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the Orrery*. Its goods: I 32 lapis lazuli
+(Sifter), 64 cooked chicken (Chef), 8 explorer's maps (Cartographer); II 64 copper ingots (Armorer), 4 spyglasses
+(Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers (Butcher);
+IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). It needs a Town and the Seer (or a Master
+Cleric while Legends are off). Its powers, the Sky Chart and the Coming days page, come with 35.18.
+
 ## How it works
 
 **A Wonder is a data file** (35.2), `data/<namespace>/wonders/<id>.json`, read whenever data packs load, so a server
@@ -153,7 +173,7 @@ checks; stage parts are ordinary builds of the builder, using the Foundation Sto
 **Our Wonders' designs** (35.9 on) are drawn whole in `tools/blueprints/wonders.py`, one function each, stage by stage
 on a staged build that refuses to draw over an earlier stage's block; `wonder_stages()` cuts each stage into parts and
 `wonders.py` writes the Wonder's data file (`aliveworkplace:great_cathedral` is
-`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`) with those parts, so the two always agree. Each stage is checked
+`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`, `aliveworkplace:observatory` is `.../observatory.json`) with those parts, so the two always agree. Each stage is checked
 as it will stand, on the stages before it (nothing held up by nothing), and every stage leaves the site tidy, since the
 village lives beside it for days.
 
@@ -215,9 +235,9 @@ Planned: the Foundation Stone (a block).
 ## Known limits
 
 - No Wonder can be started in game yet: the plan can be drawn and placed, but there's no Foundation Stone to hand it
-  over (35.4). The Great Cathedral's, the Lighthouse's and the Great Library's files ship (35.9, 35.11, 35.13), so they
-  are on the Wonders page behind the 2.0 switch; their powers come with 35.10, 35.12 and 35.14, and the other five
-  Wonders' files with 35.15 to 35.23. Everything is behind the 2.0 switch.
+  over (35.4). The Great Cathedral's, the Lighthouse's, the Great Library's and the Observatory's files ship (35.9,
+  35.11, 35.13, 35.17), so they are on the Wonders page behind the 2.0 switch; their powers come with 35.10, 35.12,
+  35.14 and 35.18, and the other four Wonders' files with 35.15 to 35.23. Everything is behind the 2.0 switch.
 - A Wonder going up shows "how far along" by its stages done; the parts' own progress joins with 35.4.
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
@@ -241,7 +261,7 @@ the plan is refused outside the village and over a finished building and goes do
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library), and it uses no retired job block, no calcite and nothing a player can't get.
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory), and it uses no retired job block, no calcite and nothing a player can't get.
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded

@@ -4293,7 +4293,7 @@ Legends.
     iron; a damaged Wall turns both off;
   - scene `wonder_great_wall`: the time-lapse, then a night raid gathering on the open side while the sentries watch;
     its GIF and powers are in the README.
-- [ ] **35.17** **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
+- [x] **35.17** (review: pending 2026-10-11) **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
   across and 30 high under a copper dome with a slit of tinted glass, a great telescope of cut copper 12 long leaning
   out of the slit, a star-chart room in a low wing with a cartography table and a lectern, a courtyard with a sundial
   (a stone face and its gnomon) and an orrery (a gold sun with planets hung on chains), and a spiral stair up to a

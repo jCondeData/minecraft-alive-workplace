@@ -213,6 +213,8 @@ public final class CobblemonCompat {
 		CobblemonCupMatches.init();
 		io.github.jcondedata.aliveworkplace.legend.PokemonCensus.EXTENSION.register("cobblemon", new CobblemonProfessor()); // 29.21
 		io.github.jcondedata.aliveworkplace.legend.WildPokemon.EXTENSION.register("cobblemon", new CobblemonRanger()); // 29.22
+		io.github.jcondedata.aliveworkplace.story.RoguePokemon.EXTENSION.register("cobblemon", new CobblemonRogues()); // 31.14
+		CobblemonRogues.init();
 	}
 
 	private CobblemonCompat() {

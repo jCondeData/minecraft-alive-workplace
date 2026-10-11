@@ -1,0 +1,3 @@
+{"biomes": ["minecraft:jagged_peaks", "minecraft:stony_peaks", "minecraft:frozen_peaks", "minecraft:windswept_hills", "minecraft:windswept_gravelly_hills",
+  "#minecraft:is_mountain", "#minecraft:is_hill"],
+ "species": ["cobblemon:onix", "cobblemon:golem", "cobblemon:aggron"]}

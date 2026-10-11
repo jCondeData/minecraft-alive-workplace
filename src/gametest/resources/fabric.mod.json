@@ -214,6 +214,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ReputationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FriendPerksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BountyGameTests",
+			"io.github.jcondedata.aliveworkplace.test.RogueBountyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoryArcGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",

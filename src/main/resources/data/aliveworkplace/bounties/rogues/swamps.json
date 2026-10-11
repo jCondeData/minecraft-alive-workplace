@@ -1,0 +1,3 @@
+{"biomes": ["minecraft:swamp", "minecraft:mangrove_swamp", "minecraft:jungle", "minecraft:sparse_jungle", "minecraft:bamboo_jungle", "#minecraft:is_jungle",
+  "#c:is_swamp"],
+ "species": ["cobblemon:tangrowth", "cobblemon:toxicroak", "cobblemon:swampert"]}

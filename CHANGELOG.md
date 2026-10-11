@@ -23,6 +23,12 @@ asks for the steps, `latest.log` and any crash report).
   when you come near; each captain has a quirk (Ironhide, Fleetfoot, Crossbow Ace, Beast Rider, Night Stalker, Warlord,
   Hexer). His Captain's Insignia pays 12 emeralds times the rank factor, once; a lair's captain is paid to his killer.
   Config `bountyBoard`.
+- **Rogue Pokémon bounties** (31.14, with Cobblemon): half the bounties are on a rogue, a wild Pokémon half again as
+  big (an Alpha on Cobblemon 1.8) roaming 150 to 250 blocks out, its species from the biome there (Ursaring in a
+  forest, Mamoswine in the snow, Kingler on a beach and 21 more) and its level 35, 50 or 65 by the village's rank (with
+  Radical Cobblemon Trainers, your level cap plus 5). Named "Rogue Ursaring", it glows for whoever took its bounty
+  within 32 blocks; beat it or catch it (and keep it) for 16 emeralds times the rank factor, once. Bounty rewards are
+  now paid in CobbleDollars where that mod keeps the money. Config `rogueBounties`.
 - **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
   15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
   family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)

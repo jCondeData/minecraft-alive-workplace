@@ -2621,7 +2621,7 @@ write their own stories; nothing waits forever on a player.
     bounties;
   - the three textures pass `lint.py`; a README section; showcase scene `bounty` (GIF: the board, the poster, the
     hideout, the claim).
-- [ ] **31.14** **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
+- [x] **31.14** (review: pending 2026-10-11) **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
   point `story/RoguePokemon` filled by `compat/cobblemon/CobblemonRogues`; without Cobblemon this kind is never
   posted. Config `rogueBounties` (true). A rogue is a wild Pokémon grown huge and mean that roams within 24 blocks of
   a spot 150 to 250 blocks from the hall, spawned with Cobblemon's own spawning from

@@ -89,6 +89,7 @@ range is in brackets.
 | `titlesInChat` | on | 1.5 | Your title in the village you stand in (else your best anywhere) goes before what you say in chat. Off: chat lines are left alone; titles still count and are told. See [Reputation and titles](reputation.md). |
 | `storyArcs` | on | 1.5 | Story arcs (roadmap 31.4) unfold in villages, chapter by chapter. Off: none starts, and a running one ends quietly at its next round. |
 | `bountyBoard` | on | 1.5 | From Village rank, villages post bounties on named bandit captains (two at most, one every 3 days, 7 days each). Off: nothing new is posted; open bounties still pay. See [The bounty board](bounties.md). |
+| `rogueBounties` | on | 1.5 | With Cobblemon, half the bounties are on a rogue Pokémon: huge, level 35 to 65 by rank, roaming 150 to 250 blocks out; beaten or caught it pays 16 emeralds times the rank factor. Off: no rogue is posted. Never without Cobblemon. See [The bounty board](bounties.md). |
 | `arcCooldownDays` | 8 (0 to 60) | 1.5 | Days between two story arcs in one village (also before a village's first). |
 | `arcsAtOnce` | 3 (0 to 20) | 1.5 | Story arcs running at once on the whole server (side arcs not counted); 0: none. |
 | `disabledArcs` | empty |  | Story arc ids that never start; a running one ends at its next round. In the file only. |

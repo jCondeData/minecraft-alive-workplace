@@ -131,6 +131,8 @@ public final class WorkplaceConfig {
 	public boolean storyArcs = Expansions.on(Expansions.M31);
 	/** From Village rank, villages post bounties on named bandit captains (the Bounty Board, ROADMAP 31.13). Off: nothing new is posted; open bounties still pay. */
 	public boolean bountyBoard = Expansions.on(Expansions.M31);
+	/** With Cobblemon, half the bounties are on a rogue Pokémon roaming 150 to 250 blocks out (ROADMAP 31.14). Off: no rogue is posted; open ones still pay. Never without Cobblemon. */
+	public boolean rogueBounties = Expansions.on(Expansions.M31);
 	/** Days between two story arcs in one village (also before a village's first). */
 	public int arcCooldownDays = 8;
 	/** Story arcs running at once on the whole server (side arcs not counted); 0: none. */
@@ -586,6 +588,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.story.Reputation.CHAT = titlesInChat && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = storyArcs && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.bounty.Bounties.ENABLED = bountyBoard && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.bounty.Rogues.ENABLED = rogueBounties && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.bounty.Bounties.AUTO = System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (an arc rolled by chance would start under a test's hall); the arc tests start theirs.
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;

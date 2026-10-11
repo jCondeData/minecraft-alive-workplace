@@ -588,6 +588,12 @@ SCENES = [
        ("02_poster", "The Bounties tab: the Wanted Poster's tooltip"),
        ("03_captain", "Grimwald the Red, Ironhide, and his band"),
        ("04_claim", "The insignia handed in: paid once")]),
+    # Rogue Pokémon bounties (ROADMAP 31.14, Cobblemon): the poster, the huge glowing rogue, the bounty paid for the win
+    S("bounty_rogue", "Village Hall", "A rogue Pokémon bounty: the poster, the Rogue Ursaring, the reward",
+      "a Town's Bounty Board with a poster on a Rogue Ursaring (level 50, where it was last seen, 24 emeralds); the rogue, half again as big and glowing for the player who took its bounty; beaten, and the bounty paid once", 45,
+      [("01_poster", "The Bounties tab: the rogue's poster"),
+       ("02_rogue", "The Rogue Ursaring, huge and glowing for its bounty's taker"),
+       ("03_claim", "Beaten: the bounty paid")], cobblemon=True),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",

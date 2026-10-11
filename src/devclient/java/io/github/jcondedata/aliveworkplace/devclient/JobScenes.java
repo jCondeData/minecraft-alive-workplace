@@ -3090,6 +3090,54 @@ final class JobScenes {
 					Showcase.check(claim == io.github.jcondedata.aliveworkplace.bounty.Bounties.Claim.PAID, "the insignia paid: " + claim);
 				}, 40)),
 			(level, player) -> true));
+		// Rogue Pokémon bounties (ROADMAP 31.14, Cobblemon): the poster on the board, the huge Rogue Ursaring glowing for
+		// the player who took its bounty, and the bounty paid when it's beaten.
+		SCREENS.put("bounty_rogue", new Screen("a Town's Bounty Board with a poster on a Rogue Ursaring (level 50, where it was last seen, 24 emeralds); the rogue itself, half again as big and glowing for the player who took its bounty; beaten, and the bounty paid",
+			new Vec3(1.5, -59, 5.5), new Vec3(0.5, -58.5, -2.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+					.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				level.setBlockAndUpdate(new BlockPos(2, -60, 1), ModBlocks.BOUNTY_BOARD.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.forget(level);
+			},
+			List.of(new Step("01_poster", io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW, 6, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Rogues.post(level, STATION, net.minecraft.resources.ResourceLocation.parse("cobblemon:ursaring"),
+						new BlockPos(-1, -60, -4));
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.boardPlaced(level, new BlockPos(2, -60, 1));
+					io.github.jcondedata.aliveworkplace.bounty.BountyPage.openAtBoard(player, level, new BlockPos(2, -60, 1));
+					Showcase.check(b.name(level).getString().equals("Rogue Ursaring") && b.rogueLevel == 50 && b.reward == 24,
+						"a Town posts a level-50 Rogue Ursaring for 24 emeralds: " + b.name(level).getString() + ", " + b.rogueLevel + ", " + b.reward);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW).is(ModItems.WANTED_POSTER), "the Bounties tab shows the rogue's poster");
+				}, 40),
+				new Step("02_rogue", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.take(player, level, b);
+					var rogue = io.github.jcondedata.aliveworkplace.bounty.Rogues.spawn(level, b, player);
+					if (rogue instanceof net.minecraft.world.entity.Mob mob) {
+						mob.setNoAi(true);
+						mob.setYRot(0);
+						mob.setYHeadRot(0);
+					}
+					io.github.jcondedata.aliveworkplace.bounty.Rogues.glow(level);
+					Showcase.check(rogue != null && io.github.jcondedata.aliveworkplace.bounty.Rogues.glowingFor(b).contains(player.getUUID()),
+						"the Rogue Ursaring stands and glows for the player who took its bounty");
+				}, 60),
+				new Step("03_claim", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					var rogue = io.github.jcondedata.aliveworkplace.bounty.Rogues.rogue(level, b);
+					boolean paid = io.github.jcondedata.aliveworkplace.bounty.Rogues.beaten(level.getServer(), b.id, player, false);
+					if (rogue != null) {
+						level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, rogue.getX(), rogue.getY() + 1, rogue.getZ(), 20, 0.6, 0.8, 0.6, 0.02);
+						rogue.discard();
+					}
+					Showcase.check(paid && io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).isEmpty(), "the win paid the bounty once");
+				}, 40)),
+			(level, player) -> true));
 		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
 		// hall's tooltip says when her name day is.

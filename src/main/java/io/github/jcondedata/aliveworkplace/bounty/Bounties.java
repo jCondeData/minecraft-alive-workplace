@@ -90,7 +90,8 @@ import org.jetbrains.annotations.Nullable;
  * journal, also opened by a Bounty Board) gives a Wanted Poster and a map to the hideout. He drops his Captain's
  * Insignia; handed in at the board or the hall it pays {@link #REWARD} emeralds times the rank factor, once. An
  * unclaimed bounty comes down after {@link #LIFE_DAYS} days and the band leaves in a puff. A standing lair's captain
- * (32.3) is posted too, and paid to his killer when he falls. Config {@code bountyBoard}.
+ * (32.3) is posted too, and paid to his killer when he falls. Config {@code bountyBoard}. With Cobblemon, half the
+ * posters are on a rogue Pokémon instead ({@link Rogues}, 31.14).
  *
  * <p>Names come from {@code data/<namespace>/bounties/captains.json} ({@code first_names}, {@code epithets}), quirks
  * from {@code bounties/quirks/<id>.json} (the mob, its gear and enchantments, effects, extra health, mount, band size,
@@ -146,6 +147,11 @@ public final class Bounties implements ResourceManagerReloadListener {
 					check(level);
 				}
 			}
+			if (server.getTickCount() % Rogues.GLOW_EVERY == 0) {
+				for (ServerLevel level : server.getAllLevels()) {
+					Rogues.glow(level); // a rogue glows for its bounty's takers (31.14)
+				}
+			}
 		});
 		Lairs.onBroken(Bounties::lairBroken);
 	}
@@ -165,6 +171,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 	@Override
 	public void onResourceManagerReload(ResourceManager manager) {
 		Map<ResourceLocation, Quirk> read = new LinkedHashMap<>();
+		Map<ResourceLocation, Rogues.Group> rogues = new LinkedHashMap<>();
 		for (Map.Entry<ResourceLocation, Resource> e : new java.util.TreeMap<>(manager.listResources(FOLDER, p -> p.getPath().endsWith(".json"))).entrySet()) {
 			String path = e.getKey().getPath().substring(FOLDER.length() + 1, e.getKey().getPath().length() - ".json".length());
 			try (Reader reader = e.getValue().openAsReader()) {
@@ -181,12 +188,16 @@ public final class Bounties implements ResourceManagerReloadListener {
 				} else if (path.startsWith("quirks/")) {
 					ResourceLocation id = ResourceLocation.fromNamespaceAndPath(e.getKey().getNamespace(), path.substring("quirks/".length()));
 					read.put(id, readQuirk(id, json));
+				} else if (path.startsWith("rogues/")) {
+					ResourceLocation id = ResourceLocation.fromNamespaceAndPath(e.getKey().getNamespace(), path.substring("rogues/".length()));
+					rogues.put(id, Rogues.read(id, json));
 				}
 			} catch (Exception ex) {
 				AliveWorkplace.LOG.warn("Skipping bounty file {}: {}", e.getKey(), ex.getMessage());
 			}
 		}
 		quirks = java.util.Collections.unmodifiableMap(read);
+		Rogues.setGroups(rogues);
 	}
 
 	public static Quirk readQuirk(ResourceLocation id, JsonObject json) {
@@ -245,6 +256,11 @@ public final class Bounties implements ResourceManagerReloadListener {
 		@Nullable
 		public UUID killer;
 		public final Set<UUID> takers = new LinkedHashSet<>();
+		/** A rogue Pokémon's species (31.14), or null for a captain; the rogue's UUID is {@link #captain}. */
+		@Nullable
+		public ResourceLocation rogue;
+		/** A rogue's level. */
+		public int rogueLevel;
 
 		public Bounty(UUID id, BlockPos hall, int first, int epithet, ResourceLocation quirk, ArcState.ArcPlace hideout, long posted, int reward, boolean lair) {
 			this.id = id;
@@ -260,6 +276,9 @@ public final class Bounties implements ResourceManagerReloadListener {
 
 		/** "Grimwald the Red" (a lair's captain: his lair's name for him). */
 		public Component name(ServerLevel level) {
+			if (rogue != null) {
+				return Component.translatable("bounty.aliveworkplace.rogue_name", io.github.jcondedata.aliveworkplace.story.RoguePokemon.nameOf(rogue));
+			}
 			if (lair) {
 				return Lairs.all(level).stream().filter(l -> l.captain().equals(captain)).findFirst().map(Lairs::captainName)
 					.orElseGet(() -> Component.translatable("entity.aliveworkplace.raider_captain"));
@@ -275,6 +294,9 @@ public final class Bounties implements ResourceManagerReloadListener {
 		}
 
 		public Component quirkName() {
+			if (rogue != null) {
+				return Component.translatable("bounty.aliveworkplace.quirk.rogue", rogueLevel);
+			}
 			return lair ? Component.translatable("bounty.aliveworkplace.quirk.lair")
 				: Component.translatable("bounty." + quirk.getNamespace() + ".quirk." + quirk.getPath());
 		}
@@ -306,6 +328,10 @@ public final class Bounties implements ResourceManagerReloadListener {
 			ListTag t = new ListTag();
 			takers.forEach(u -> t.add(StringTag.valueOf(u.toString())));
 			c.put("takers", t);
+			if (rogue != null) {
+				c.putString("rogue", rogue.toString());
+				c.putInt("rogue_level", rogueLevel);
+			}
 			CompoundTag h = new CompoundTag();
 			h.putLong("spot", hideout.spot.asLong());
 			h.putInt("placed", hideout.placed);
@@ -344,6 +370,10 @@ public final class Bounties implements ResourceManagerReloadListener {
 			ListTag takers = Nbt.getList(c, "takers", Tag.TAG_STRING);
 			for (int i = 0; i < takers.size(); i++) {
 				b.takers.add(UUID.fromString(Nbt.stringAt(takers, i)));
+			}
+			if (Nbt.has(c, "rogue", Tag.TAG_STRING)) {
+				b.rogue = ResourceLocation.tryParse(Nbt.getString(c, "rogue"));
+				b.rogueLevel = Nbt.getInt(c, "rogue_level");
 			}
 			return b;
 		}
@@ -386,7 +416,10 @@ public final class Bounties implements ResourceManagerReloadListener {
 			}
 		});
 		if (AUTO && mayPost(level, hall)) {
-			post(level, hall, level.random);
+			// with Cobblemon, half the posters are on a rogue Pokémon (31.14); a captain if no spot round has one
+			if (!Rogues.available() || !level.random.nextBoolean() || Rogues.post(level, hall, level.random) == null) {
+				post(level, hall, level.random);
+			}
 		}
 	}
 
@@ -451,6 +484,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 		Data data = Data.get(level);
 		data.bounties.remove(b.id);
 		data.setDirty();
+		Rogues.forget(b.id);
 		if (!b.lair) {
 			for (Mob mob : band(level, b)) {
 				level.sendParticles(ParticleTypes.POOF, mob.getX(), mob.getY() + 0.5, mob.getZ(), 12, 0.3, 0.5, 0.3, 0.02);
@@ -459,7 +493,8 @@ public final class Bounties implements ResourceManagerReloadListener {
 		}
 		Component name = b.name(level);
 		for (ServerPlayer player : players(level, b.hall)) {
-			Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.expired", name).withStyle(ChatFormatting.GRAY));
+			Chat.chat(player, Component.translatable(b.rogue != null ? "message.aliveworkplace.bounty.rogue_expired" : "message.aliveworkplace.bounty.expired", name)
+				.withStyle(ChatFormatting.GRAY));
 		}
 		Chronicle.record(level, b.hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.expired", name));
 		refreshBoards(level);
@@ -493,6 +528,10 @@ public final class Bounties implements ResourceManagerReloadListener {
 		ArcState state = new ArcState(AliveWorkplace.id("bounty").toString());
 		for (Bounty b : List.copyOf(data.bounties.values())) {
 			if (b.lair) {
+				continue;
+			}
+			if (b.rogue != null) {
+				Rogues.check(level, b);
 				continue;
 			}
 			ArcState.ArcPlace p = b.hideout;
@@ -759,7 +798,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 				data.claimed.add(b.id);
 				data.setDirty();
 				if (by instanceof ServerPlayer player) {
-					Money.pay(player, 0, b.reward);
+					pay(player, b.reward);
 					io.github.jcondedata.aliveworkplace.story.Reputation.add(level, b.hall, player, io.github.jcondedata.aliveworkplace.story.Reputation.BOUNTY);
 					Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.paid", b.reward, name).withStyle(ChatFormatting.GREEN));
 					Chronicle.record(level, b.hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.claimed", player.getDisplayName(), name, b.reward));
@@ -796,13 +835,18 @@ public final class Bounties implements ResourceManagerReloadListener {
 		data.bounties.remove(id);
 		data.claimed.add(id);
 		data.setDirty();
-		Money.pay(player, 0, b.reward);
+		pay(player, b.reward);
 		io.github.jcondedata.aliveworkplace.story.Reputation.add(level, hall, player, io.github.jcondedata.aliveworkplace.story.Reputation.BOUNTY);
 		Chat.chat(player, Component.translatable("message.aliveworkplace.bounty.paid", b.reward, name).withStyle(ChatFormatting.GREEN));
 		Chronicle.record(level, hall, Chronicle.Kind.BOUNTY, Component.translatable("chronicle.aliveworkplace.bounty.claimed", player.getDisplayName(), name, b.reward));
 		level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
 		refreshBoards(level);
 		return Claim.PAID;
+	}
+
+	/** Pays a bounty: {@code emeralds}, or as many CobbleDollars' worth where that mod keeps the money. */
+	static void pay(ServerPlayer player, int emeralds) {
+		Money.pay(player, (long) emeralds * Money.DOLLARS_PER_EMERALD, emeralds);
 	}
 
 	/** Hands in the first insignia {@code player} carries. */
@@ -827,7 +871,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 			return null;
 		}
 		Bounty b = open.get(level.random.nextInt(open.size()));
-		return Component.translatable("chatter.aliveworkplace.bounty." + variant, b.name(level), VillageHallScreen.where(hall, b.hideout.spot));
+		return Component.translatable((b.rogue != null ? "chatter.aliveworkplace.bounty.rogue." : "chatter.aliveworkplace.bounty.") + variant, b.name(level), VillageHallScreen.where(hall, b.hideout.spot));
 	}
 
 	/** A board was placed (or loaded with a click): it is known and shows the posters of its village. */
@@ -871,7 +915,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 		}
 	}
 
-	private static List<ServerPlayer> players(ServerLevel level, BlockPos hall) {
+	static List<ServerPlayer> players(ServerLevel level, BlockPos hall) {
 		double r = VillageHalls.RADIUS + 32;
 		return level.getPlayers(p -> p.blockPosition().distSqr(hall) <= r * r);
 	}
@@ -884,6 +928,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 		data.claimed.clear();
 		data.boards.clear();
 		data.setDirty();
+		Rogues.forget();
 	}
 
 	// ---- Saved -----------------------------------------------------------------------------------------------------

@@ -1,0 +1,10 @@
+{
+  "when": [
+    {"households_want_grade": {"grade": 3, "at_least": 1}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:manor", "zone": "homes"}},
+  "priority": 44,
+  "why": "steward.aliveworkplace.why.homes_class",
+  "cooldown_days": 4,
+  "min_rank": "town"
+}

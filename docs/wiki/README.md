@@ -32,8 +32,9 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Classes](classes.md): Peasant to Noble, what each needs and gives, and the Vintner (1.8).
 - [The luxury workshops](luxury-workshops.md): the Winery, the Tailor's Shop, the Print Shop and the Jeweller's Workshop, their II, the village houses,
   the Journeyman's blueprint and the Steward's rules (1.8).
-- [Grander homes](grander-homes.md): home grades, the Artisan's House and the Burgher's Townhouse, the households that
-  want a grander home, the builders who sell them and the Steward's rules (1.8).
+- [Grander homes](grander-homes.md): home grades, the Artisan's House, the Burgher's Townhouse and the Noble's Manor
+  (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
+  rules (1.8).
 - [Elders](elders.md): elders, their passing, and the Evergreen Charm that keeps a good one (1.8).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).

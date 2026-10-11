@@ -5,6 +5,7 @@ Stone House: I a stone cottage with a bed downstairs and one in the attic; II a 
 more beds; III a stone wing at the back with two more.
 """
 from kit import *
+from decor import fountain_basin
 
 STONE_HOUSE_WALL = STONE_MIX
 STONE_HOUSE_QUOIN = "stone_bricks"
@@ -575,5 +576,314 @@ def townhouse_3():
     for z in list(range(6, 12)) + [0]:
         if b.get(10, 13, z) is None:
             stairs(b, 10, 13, z, TOWNHOUSE_ROOF, "west")
+    b.fill_air()
+    return b
+
+
+# --- Grander homes (ROADMAP 34.16): the Noble's Manor ---------------------------------------------------------------
+# The house stands back from the street behind a gravelled forecourt (z 0-6), walls x 2-16, z 7-15; Manor II adds the
+# walled formal garden behind (z 15-23), Manor III the gatehouse on the street (z 1-4) and the ballroom wing on the east
+# (walls x 16-24, z 7-15). The ball's venue is the ballroom's middle, MANOR_BALLROOM (NobleBalls.BALLROOM).
+MANOR_WALL = Mix((7, "stone_bricks"), (2, "stone"), (1, "cracked_stone_bricks"), seed=41)
+MANOR_QUOIN = "polished_andesite"
+MANOR_FRAME = "dark_oak_log"
+MANOR_ROOF = DEEPSLATE_TILE
+MANOR_BALLROOM = (20, 1, 11)
+
+
+def _bush(b, x, y, z):
+    b.set(x, y, z, "oak_leaves", distance=1, persistent=True, waterlogged=False)
+
+
+def manor_house(b):
+    """The Manor every tier shares: a stone house of two storeys (walls x 2-16, z 7-15) round a double-height hall with
+    a grand stair up to a gallery, the dining room west of it and a parlour east, two bedrooms over them, under a slate
+    roof with dormers front and back and a chimney up each gable; a gravelled forecourt with clipped hedges before it."""
+    # The forecourt: gravel, an andesite apron at the door, clipped hedges down both sides, two lamps
+    box(b, 4, 0, 0, 14, 0, 6, "gravel")
+    box(b, 8, 0, 5, 10, 0, 6, "polished_andesite")
+    for z in range(0, 7):
+        for x in (3, 15):
+            b.set(x, 0, z, "grass_block", snowy=False)
+            _bush(b, x, 1, z)
+    for x in (5, 13):
+        lamp_post(b, x, 1, 3, "dark_oak_fence", height=2)
+    # The shell: plinth, stone walls, andesite quoins and pilasters at the hall's walls, dark oak string courses
+    plinth(b, 2, 7, 16, 15, FOUNDATION_MIX, floor="spruce_planks")
+    for x in range(7, 12):
+        for z in range(8, 15):
+            b.set(x, 0, z, "polished_andesite" if (x + z) % 2 else "polished_diorite")  # the hall's chequered floor
+    walls(b, 2, 7, 16, 15, 1, 9, MANOR_WALL)
+    posts(b, [(2, 7), (16, 7), (2, 15), (16, 15), (6, 7), (12, 7), (6, 15), (12, 15)], 1, 9, MANOR_QUOIN)
+    beam_ring(b, 2, 7, 16, 15, 5, MANOR_FRAME)
+    beam_ring(b, 2, 7, 16, 15, 10, MANOR_FRAME)
+    # Inside walls between the hall and the rooms either side (doorways below and off the gallery above)
+    for x in (6, 12):
+        for z in range(8, 15):
+            for y in list(range(1, 5)) + list(range(6, 10)):
+                b.set(x, y, z, MANOR_WALL.at(x, y, z))
+        for y in (1, 2):
+            b.set(x, y, 9, "air")
+        for y in (6, 7):
+            b.set(x, y, 13, "air")
+    # The upper floor over the rooms, and the gallery across the back of the hall
+    box(b, 3, 5, 8, 5, 5, 14, "spruce_planks")
+    box(b, 13, 5, 8, 15, 5, 14, "spruce_planks")
+    box(b, 7, 5, 13, 11, 5, 14, "dark_oak_planks")
+    # The grand stair: three wide up the middle of the hall to the gallery, solid underneath
+    for i, z in enumerate(range(8, 13)):
+        for x in (8, 9, 10):
+            stairs(b, x, i + 1, z, DARK_OAK, "south")
+            for y in range(1, i + 1):
+                b.set(x, y, z, "dark_oak_planks")
+    for x in (7, 11):  # newel posts at the stair foot and a rail along the gallery's ends
+        fence(b, x, 6, 13, "dark_oak_fence")
+    # The front door under a slab hood, a lamp either side of the step
+    door(b, 9, 1, 7, "dark_oak_door", "south")
+    b.set(9, 3, 7, "chiseled_stone_bricks")
+    for x in (8, 9, 10):
+        slab(b, x, 3, 6, DARK_OAK, top=True)
+    for x in (8, 10):
+        lantern(b, x, 1, 6)
+    # The back door (the garden's from II on)
+    door(b, 9, 1, 15, "dark_oak_door", "north")
+    # Windows: shuttered below, tall above, the hall's tall window over the door
+    for z, out in ((7, "north"), (15, "south")):
+        for x in (4, 7, 11, 14):  # (the hall's either side of the door without shutters, which would crowd it)
+            window(b, x, 2, z, out, height=2, shutters="dark_oak_trapdoor" if x in (4, 14) else None, sill=STONE_BRICK)
+        for x in (4, 14):
+            window(b, x, 6, z, out, height=3, sill=STONE_BRICK)
+        window(b, 9, 6, z, out, height=3, sill=STONE_BRICK if z == 15 else None)
+    for x, out in ((2, "west"), (16, "east")):
+        for y, h in ((2, 2), (6, 3)):
+            window(b, x, y, 12, out, height=h, sill=STONE_BRICK)
+    # The roof: slate, its ridge along the front, the gables in stone, a dormer over each bedroom front and back
+    roofs(b,
+          lambda t: gable_roof(t, 1, 17, 6, 16, 10, MANOR_ROOF, axis="x", gable=MANOR_WALL, gable_at=(2, 16), ridge=MANOR_ROOF),
+          *[lambda t, x=x, z0=z0: gable_roof(t, x - 2, x + 2, z0, z0 + 2, 11, MANOR_ROOF, axis="z", gable=MANOR_WALL,
+                                              gable_at=(z0 + 1,), ridge=MANOR_ROOF)
+            for x in (4, 14) for z0 in (6, 14)])
+    for x in (4, 14):
+        for z in (7, 15):
+            pane(b, x, 12, z)
+    for x in (2, 16):
+        chimney(b, x, 9, 1, 16, STONE_MIX)
+    # The hall's chandelier on a tie beam under the ridge
+    for x in range(3, 16):
+        log(b, x, 10, 11, MANOR_FRAME, axis="x")
+    b.set(9, 9, 11, "chain", axis="y", waterlogged=False)
+    lantern(b, 9, 8, 11, hanging=True)
+    lantern(b, 7, 9, 11, hanging=True)
+    lantern(b, 11, 9, 11, hanging=True)
+    b.set(7, 1, 14, "potted_fern")
+    b.set(11, 1, 14, "potted_fern")
+    # The dining room (west): a long table, chairs down both sides, the sideboard
+    for z in (10, 11, 12):
+        fence(b, 4, 1, z, "dark_oak_fence")
+        b.set(4, 2, z, "dark_oak_pressure_plate", powered=False)
+        stairs(b, 3, 1, z, DARK_OAK, "west")
+        stairs(b, 5, 1, z, DARK_OAK, "east")
+    b.set(3, 1, 14, "barrel", facing="up", open=False)
+    b.set(4, 1, 14, "chest", facing="north", type="single", waterlogged=False)
+    b.set(5, 1, 14, "barrel", facing="up", open=False)
+    lantern(b, 3, 2, 14)
+    lantern(b, 4, 4, 11, hanging=True)
+    # The parlour (east): the stove, books, a chair by the fire, stores
+    b.set(15, 1, 8, "smoker", facing="west", lit=False)
+    b.set(15, 1, 10, "crafting_table")
+    b.set(15, 1, 14, "bookshelf")
+    b.set(14, 1, 14, "bookshelf")
+    stairs(b, 13, 1, 11, SPRUCE, "west")
+    box(b, 13, 1, 9, 14, 1, 10, "red_carpet")
+    b.set(13, 1, 14, "barrel", facing="up", open=False)
+    lantern(b, 14, 4, 11, hanging=True)
+    # Upstairs west: the main bedroom (two beds), a wardrobe chest, a rug
+    b.bed(3, 6, 10, "purple", facing="north")
+    b.bed(4, 6, 10, "purple", facing="north")
+    b.set(5, 6, 8, "chest", facing="west", type="single", waterlogged=False)
+    box(b, 3, 6, 11, 5, 6, 12, "purple_carpet")
+    b.set(3, 6, 14, "bookshelf")
+    lantern(b, 3, 7, 14)
+    # Upstairs east: the second bedroom
+    b.bed(15, 6, 10, "light_blue", facing="north")
+    b.set(13, 6, 8, "chest", facing="east", type="single", waterlogged=False)
+    box(b, 13, 6, 11, 15, 6, 12, "light_blue_carpet")
+    b.set(15, 6, 14, "barrel", facing="up", open=False)
+    lantern(b, 15, 7, 14)
+
+
+def manor():
+    """19 x 18 x 17: the Noble's Manor (grade III) — a stone house of two storeys behind a gravelled forecourt with
+    clipped hedges: a chequered hall with a grand stair up to a gallery, the dining room and parlour either side, two
+    bedrooms above, a slate roof with dormers and a chimney up each gable."""
+    b = Build(19, 18, 17)
+    manor_house(b)
+    b.fill_air()
+    return b
+
+
+def manor_garden(b):
+    """Manor II's walled formal garden behind the house (z 15-23): stone walls with caps, gravel walks round a fountain
+    and across, four clipped-hedge parterres with flowers in them, lamps at the walks' corners, a gate at the back."""
+    for z in range(15, 24):
+        for x in (0, 18):
+            for y in (0, 1, 2):
+                b.set(x, y, z, MANOR_WALL)
+            slab(b, x, 3, z, STONE_BRICK)
+    for x in range(1, 18):
+        for y in (0, 1, 2):
+            b.set(x, y, 23, MANOR_WALL)
+        slab(b, x, 3, 23, STONE_BRICK)
+    for x in (1, 17):  # the walls meet the house's back corners
+        for y in (0, 1, 2):
+            b.set(x, y, 15, MANOR_WALL)
+        slab(b, x, 3, 15, STONE_BRICK)
+    for x in (0, 18):
+        b.set(x, 3, 23, "stone_bricks")
+        lantern(b, x, 4, 23)
+    for y in (1, 2):
+        b.set(9, y, 23, "air")
+    b.set(9, 1, 23, "dark_oak_fence_gate", facing="south", in_wall=True, open=False, powered=False)
+    # The walks: a ring of gravel round the fountain, out to the side walls and the gate
+    for x in range(6, 13):
+        for z in range(16, 23):
+            if x in (6, 12) or z in (16, 22):
+                b.set(x, 0, z, "gravel")
+    for x in list(range(1, 6)) + list(range(13, 18)):
+        b.set(x, 0, 19, "gravel")
+    fountain_basin(b, 9, 19)
+    # The parterres: clipped box hedges round a bed of flowers, one in each corner
+    for x0 in (1, 13):
+        for z0 in (16, 20):
+            for x in range(x0, x0 + 5):
+                for z in range(z0, z0 + 3):
+                    if z == z0 + 1 and x0 < x < x0 + 4:
+                        continue
+                    b.set(x, 0, z, "grass_block", snowy=False)
+                    _bush(b, x, 1, z)
+            flower_bed(b, x0 + 1, z0 + 1, x0 + 3, z0 + 1, 0, ["red_tulip", "white_tulip", "oxeye_daisy", "allium"])
+    for x in (6, 12):
+        for z in (16, 22):
+            lamp_post(b, x, 1, z, "dark_oak_fence", height=2)
+
+
+def manor_2():
+    """Upgrade of the Manor (same origin and front): a walled formal garden behind, through the back door — clipped
+    hedges, a fountain and gravel walks. 19 x 18 x 24."""
+    b = manor().grow(19, 18, 24)
+    manor_garden(b)
+    b.fill_air()
+    return b
+
+
+def manor_gatehouse(b):
+    """Manor III's gatehouse on the street (walls x 6-12, z 1-4): an arched passage through to the forecourt, a porter's
+    room over it under a slate hip roof, and the forecourt walled in from it to the house and the ballroom wing."""
+    for x in range(3, 16):  # the forecourt's front rows (gravel, hedges) make way
+        b.clear(x, 0, 0, x, 3, 0)
+    b.clear(5, 0, 3, 5, 3, 3)
+    b.clear(13, 0, 3, 13, 3, 3)
+    plinth(b, 6, 1, 12, 4, FOUNDATION_MIX, floor="gravel")
+    for y in range(1, 4):  # solid piers either side of the passage
+        for z in range(1, 5):
+            for x in (6, 7, 11, 12):
+                b.set(x, y, z, "stone_bricks" if (x, z) in ((6, 1), (12, 1), (6, 4), (12, 4)) else MANOR_WALL.at(x, y, z))
+    for z in (1, 4):  # the arch
+        stairs(b, 8, 3, z, STONE_BRICK, "east", top=True)
+        stairs(b, 10, 3, z, STONE_BRICK, "west", top=True)
+        b.set(9, 4, z, "chiseled_stone_bricks")
+    beam_ring(b, 6, 1, 12, 4, 4, MANOR_FRAME)
+    box(b, 7, 4, 2, 11, 4, 3, "dark_oak_planks")
+    walls(b, 6, 1, 12, 4, 5, 6, MANOR_WALL)  # (low, so a builder on the room's floor reaches the roof's top)
+    posts(b, [(6, 1), (12, 1), (6, 4), (12, 4)], 5, 6, MANOR_QUOIN)
+    beam_ring(b, 6, 1, 12, 4, 7, MANOR_FRAME)
+    hip_roof(b, 5, 13, 0, 5, 7, MANOR_ROOF)
+    for y in range(1, 5):  # the ladder up from the passage, through a hatch in the floor
+        b.set(8, y, 3, "ladder", facing="east", waterlogged=False)
+    for z, out in ((1, "north"), (4, "south")):
+        window(b, 9, 5, z, out, height=2, shutters="dark_oak_trapdoor", sill=STONE_BRICK)
+    window(b, 6, 5, 2, "west", height=2)
+    window(b, 12, 5, 2, "east", height=2)
+    lantern(b, 9, 3, 2, hanging=True)
+    # The porter's room: a bench, a barrel, a lamp
+    stairs(b, 10, 5, 2, SPRUCE, "east")
+    b.set(11, 5, 3, "barrel", facing="up", open=False)
+    lantern(b, 11, 5, 2)
+    # The forecourt walls: along the street, down the west side to the garden, on the east to the ballroom wing
+    for x in list(range(0, 6)) + list(range(13, 19)):
+        for y in (0, 1, 2):
+            b.set(x, y, 1, MANOR_WALL)
+        slab(b, x, 3, 1, STONE_BRICK)
+    for z in range(2, 15):
+        for y in (0, 1, 2):
+            b.set(0, y, z, MANOR_WALL)
+        slab(b, 0, 3, z, STONE_BRICK)
+    for z in range(2, 7):
+        for y in (0, 1, 2):
+            b.set(18, y, z, MANOR_WALL)
+        slab(b, 18, 3, z, STONE_BRICK)
+    for x in (0, 18):
+        b.set(x, 3, 1, "stone_bricks")
+        lantern(b, x, 4, 1)
+
+
+def manor_ballroom(b):
+    """Manor III's ballroom wing on the east (walls x 16-24, z 7-15, the house's east wall its west): one tall room with
+    a chequered floor, tall windows between pilasters, three chandeliers on a tie beam, a musicians' dais with a jukebox
+    and note blocks, under a lower slate roof. A doorway from the parlour."""
+    plinth(b, 16, 7, 24, 15, FOUNDATION_MIX)
+    for x in range(17, 24):
+        for z in range(8, 15):
+            b.set(x, 0, z, "polished_andesite" if (x + z) % 2 else "polished_diorite")
+    for y in range(1, 7):
+        for x in range(17, 25):
+            for z in (7, 15):
+                b.set(x, y, z, MANOR_WALL.at(x, y, z))
+        for z in range(8, 15):
+            b.set(24, y, z, MANOR_WALL.at(24, y, z))
+    posts(b, [(24, 7), (24, 15), (19, 7), (21, 7), (19, 15), (21, 15)], 1, 6, MANOR_QUOIN)
+    for x in range(17, 25):
+        log(b, x, 7, 7, MANOR_FRAME, axis="x")
+        log(b, x, 7, 15, MANOR_FRAME, axis="x")
+    for z in range(8, 15):
+        log(b, 24, 7, z, MANOR_FRAME, axis="z")
+    for x in range(17, 24):  # the tie beam the chandeliers hang from
+        log(b, x, 7, 11, MANOR_FRAME, axis="x")
+    keep = {p: v for p, v in b.blocks.items() if p[0] <= 17 and p[1] >= 10}
+    gable_roof(b, 17, 25, 6, 16, 7, MANOR_ROOF, axis="x", gable=MANOR_WALL, gable_at=(24, 24), ridge=MANOR_ROOF)
+    b.blocks.update(keep)
+    pane(b, 24, 9, 11)
+    for z, out in ((7, "north"), (15, "south")):
+        for x in (18, 20, 22):
+            window(b, x, 2, z, out, height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+    for z in (9, 13):
+        window(b, 24, 2, z, "east", height=3, sill=STONE_BRICK, lintel=STONE_BRICK)
+    # The doorway from the parlour
+    for y in (1, 2):
+        b.set(16, y, 12, "air")
+    b.set(16, 3, 12, MANOR_WALL.at(16, 3, 12))  # the old window's top pane walled up over the doorway
+    b.blocks.pop((17, 1, 12), None)  # and its sill (inside now)
+    # Chandeliers, the dais, pots in the corners, benches down the sides
+    for x in (18, 20, 22):
+        b.set(x, 6, 11, "chain", axis="y", waterlogged=False)
+        lantern(b, x, 5, 11, hanging=True)
+    for x in (18, 19, 21, 22):
+        slab(b, x, 1, 14, DIORITE, top=False)
+    b.set(20, 1, 14, "jukebox", has_record=False)
+    b.set(17, 1, 14, "note_block", instrument="harp", note=0, powered=False)
+    b.set(23, 1, 14, "note_block", instrument="harp", note=0, powered=False)
+    for x, z in ((17, 8), (23, 8)):
+        b.set(x, 1, z, "potted_azalea_bush")
+    for z in (9, 10):
+        stairs(b, 23, 1, z, DARK_OAK, "east")
+    lantern(b, 23, 1, 12)
+
+
+def manor_3():
+    """Upgrade of Manor II (same origin and front): a gatehouse on the street with an arched passage and a porter's
+    room, the forecourt walled in, and a ballroom wing on the east where the Noble's Ball is held. 26 x 18 x 24."""
+    b = manor_2().grow(26, 18, 24)
+    manor_gatehouse(b)
+    manor_ballroom(b)
     b.fill_air()
     return b

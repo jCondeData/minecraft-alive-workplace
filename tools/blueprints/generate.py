@@ -120,6 +120,8 @@ if __name__ == "__main__":
     for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2), ("townhouse", townhouse),
                        ("townhouse_2", townhouse_2), ("townhouse_3", townhouse_3)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.15
+    for name, draw in (("manor", manor), ("manor_2", manor_2), ("manor_3", manor_3)):
+        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.16
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")

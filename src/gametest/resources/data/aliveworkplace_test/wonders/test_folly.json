@@ -1,0 +1,91 @@
+{
+  "name": "wonder.aliveworkplace_test.test_folly.name",
+  "description": "wonder.aliveworkplace_test.test_folly.description",
+  "icon": "minecraft:stone_bricks",
+  "enabled": true,
+  "crew": 4,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "villagers",
+      "count": 2
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace_test.test_folly.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace_test:wonder/test_folly/stage_1_0",
+          "offset": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:bread",
+          "count": 8,
+          "job": "aliveworkplace:chef"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace_test.test_folly.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace_test:wonder/test_folly/stage_2_0",
+          "offset": [
+            0,
+            7,
+            0
+          ]
+        }
+      ],
+      "goods": [
+        {
+          "tag": "minecraft:small_flowers",
+          "count": 4,
+          "job": "aliveworkplace:florist"
+        },
+        {
+          "item": "minecraft:potion",
+          "potion": "minecraft:healing",
+          "count": 2,
+          "job": "minecraft:cleric"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace_test.test_folly.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace_test:wonder/test_folly/stage_3_0",
+          "offset": [
+            1,
+            13,
+            1
+          ]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:white_candle",
+          "count": 4,
+          "job": "minecraft:leatherworker"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "beauty",
+      "points": 2
+    }
+  ]
+}

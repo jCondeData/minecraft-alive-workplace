@@ -105,6 +105,21 @@ public final class BuildSite {
 	@Nullable
 	private BlockPos stewardHall;
 
+	/** The Wonder this build is a part of (35.4, {@code WonderSite.id}), or null for an ordinary build. */
+	@Nullable
+	private UUID wonder;
+
+	/** The Wonder this build is a part of, or null for an ordinary build. */
+	@Nullable
+	public UUID wonder() {
+		return wonder;
+	}
+
+	public void setWonder(@Nullable UUID wonder) {
+		this.wonder = wonder;
+		onChange.run();
+	}
+
 	/** The hall whose Steward started this build, or null if a player handed it over. */
 	@Nullable
 	public BlockPos stewardHall() {
@@ -631,6 +646,9 @@ public final class BuildSite {
 		if (playerBlocks > 0) {
 			tag.putInt("player_blocks", playerBlocks);
 		}
+		if (wonder != null) {
+			Nbt.putUuid(tag, "wonder", wonder);
+		}
 		return tag;
 	}
 
@@ -668,6 +686,7 @@ public final class BuildSite {
 		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;
 		site.waitingSince = Nbt.has(tag, "waiting_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "waiting_since") : NOT_WAITING;
 		site.playerBlocks = Nbt.getInt(tag, "player_blocks");
+		site.wonder = Nbt.hasUuid(tag, "wonder") ? Nbt.getUuid(tag, "wonder") : null;
 		return site;
 	}
 

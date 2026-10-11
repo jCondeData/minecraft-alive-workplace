@@ -33,6 +33,10 @@ public final class BlueprintLibrary {
 	}
 
 	public static Optional<Blueprint> get(MinecraftServer server, ResourceLocation id) {
+		if (io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isPresent()) {
+			// A Wonder's whole blueprint (35.3): its stages' parts merged, kept until the Wonders load again.
+			return io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.whole(server, id);
+		}
 		Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
 		if (styled.isPresent()) {
 			// A blueprint in another style: the base with its blocks swapped (as drawn if the style is gone).
@@ -86,7 +90,8 @@ public final class BlueprintLibrary {
 			|| id.getPath().startsWith("realm/") // realm/: drawn on a realm capital's Realm tab (33.14, see realm/RoyalHalls)
 			|| id.getPath().startsWith("camp/") // camp/: set up at once by a Settler's Wagon
 			|| id.getPath().startsWith("legend/") // legend/: a found Legend's camp, set down at once (29.9)
-			|| id.getPath().startsWith("story/")); // story/: set down by a story arc (31.15's Bandit King's fort)
+			|| id.getPath().startsWith("story/") // story/: set down by a story arc (31.15's Bandit King's fort)
+			|| id.getPath().startsWith("wonder/")); // wonder/: a Wonder's stage parts, raised from its Wonder Plan (35.3)
 	}
 
 	private BlueprintLibrary() {

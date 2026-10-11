@@ -35,6 +35,8 @@ public final class ModItems {
 	public static final Item GUILD_CHARTER = Reg.item("guild_charter", Item::new, new Item.Properties().stacksTo(16));
 	/** The Colony Charter (ROADMAP 33.8): bought on a City's Colonies tab, it chooses where the village's colony goes. */
 	public static final io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem COLONY_CHARTER = Reg.item("colony_charter", io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem::new, new Item.Properties().stacksTo(1));
+	/** A Wonder Plan (35.3): the whole Wonder's blueprint, drawn up on the hall's Wonders page. */
+	public static final io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem WONDER_PLAN = Reg.item("wonder_plan", io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem::new, new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE));
 	public static final io.github.jcondedata.aliveworkplace.hall.WorkHornItem WORK_HORN = Reg.item("work_horn", io.github.jcondedata.aliveworkplace.hall.WorkHornItem::new, new Item.Properties().stacksTo(1));
 	/** Tonics (ROADMAP 30.15): brewed by the alchemist or cooked by the chef, never crafted; what they do is data (people/Tonics). */
 	public static final io.github.jcondedata.aliveworkplace.people.TonicItem MINERS_BREW = Reg.item("miners_brew", io.github.jcondedata.aliveworkplace.people.TonicItem::new, new Item.Properties().stacksTo(16));

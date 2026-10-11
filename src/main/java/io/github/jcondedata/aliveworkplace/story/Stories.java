@@ -402,6 +402,7 @@ public final class Stories {
 		}
 		data.setDirty();
 		QuestTracker.changed(level.getServer(), quest.id); // its bar goes
+		BanditKingStory.questFinished(level, hall); // 31.16: the neighbours' pledge
 		if (quest.personal()) {
 			// A villager's own request (31.9): every helper is paid and thanked, not only whoever finished it.
 			e.finished.add(quest.file.toString());
@@ -428,6 +429,19 @@ public final class Stories {
 			level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6f, 1.3f);
 		}
 		Arcs.questDone(level, hall, quest, player); // a story arc's quest moves its chapter on (31.4)
+	}
+
+	/** How many bandit camps were broken up near the village round {@code hall} (31.16). */
+	public static int banditCampsBroken(ServerLevel level, BlockPos hall) {
+		Entry e = Data.get(level).halls.get(hall);
+		return e == null ? 0 : e.banditCampsBroken;
+	}
+
+	/** One more bandit camp near the village round {@code hall} was broken up (31.16). */
+	public static void banditCampBroken(ServerLevel level, BlockPos hall) {
+		Data data = Data.get(level);
+		data.entry(hall).banditCampsBroken++;
+		data.setDirty();
 	}
 
 	/** Whether anyone has finished the quest file {@code file} in the village round {@code hall}. */
@@ -557,6 +571,8 @@ public final class Stories {
 		long lastArcDay = UNSEEN;
 		/** Flags an arc set for some days that outlive it (name → the last day they hold). */
 		final Map<String, Long> villageFlags = new LinkedHashMap<>();
+		/** Bandit camps broken up near the village (31.16: the Bandit King comes once there are 2); 0 in saves from before. */
+		int banditCampsBroken;
 		/** Personal requests (31.9): the day of the last morning roll, whether it hit and nobody has asked yet, and the day of the last dawn look. */
 		long requestDay = -1;
 		boolean requestPending;
@@ -655,6 +671,9 @@ public final class Stories {
 				if (e.requestDawn >= 0) {
 					h.putLong("request_dawn", e.requestDawn);
 				}
+				if (e.banditCampsBroken > 0) {
+					h.putInt("bandit_camps_broken", e.banditCampsBroken);
+				}
 				if (!e.villageFlags.isEmpty()) {
 					CompoundTag flags = new CompoundTag();
 					e.villageFlags.forEach(flags::putLong);
@@ -734,6 +753,7 @@ public final class Stories {
 				if (h.contains("request_dawn")) {
 					e.requestDawn = Nbt.getLong(h, "request_dawn");
 				}
+				e.banditCampsBroken = Nbt.getInt(h, "bandit_camps_broken"); // (0 when missing)
 				CompoundTag flags = Nbt.getCompound(h, "village_flags");
 				for (String k : Nbt.keys(flags)) {
 					e.villageFlags.put(k, Nbt.getLong(flags, k));

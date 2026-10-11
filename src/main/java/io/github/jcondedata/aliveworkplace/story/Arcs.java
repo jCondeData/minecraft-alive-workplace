@@ -112,6 +112,8 @@ public final class Arcs implements ResourceManagerReloadListener {
 			}
 		});
 		Platform.get().onEntityLoad((entity, level) -> ArcEffects.onLoad(level, entity));
+		io.github.jcondedata.aliveworkplace.guard.BanditFort.init(); // the Bandit King's fort: its men keep home, the King's bar and horn (31.15)
+		BanditKingStory.init(); // the Bandit King's story (31.16); before onTalk, so Pell asks for his bread first
 		Platform.get().onUseEntity((player, level, hand, entity, hit) -> ArcEffects.onTalk(player, level, hand, entity));
 	}
 
@@ -695,6 +697,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 			if (player != null) {
 				s.last = player.getUUID();
 			}
+			BanditKingStory.arcQuestDone(level, s, quest); // 31.16: an ally won
 			Stories.Data.get(level).setDirty();
 			advance(level, hall, e, s);
 			return;

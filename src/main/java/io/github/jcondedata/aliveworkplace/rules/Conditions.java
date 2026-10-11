@@ -41,6 +41,7 @@ public final class Conditions {
 		register("pastured_pokemon", PasturedPokemon::read);
 		register("alpha_near", AlphaNear::read);
 		register("title_at_least", TitleAtLeast::read); // 31.12
+		register("bandit_camps_broken", BanditCampsBroken::read); // 31.16
 		GiverConditions.register();
 	}
 

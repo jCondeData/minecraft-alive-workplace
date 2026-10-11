@@ -615,6 +615,27 @@ SCENES = [
       [("01_poster", "The Bounties tab: the rogue's poster"),
        ("02_rogue", "The Rogue Ursaring, huge and glowing for its bounty's taker"),
        ("03_claim", "Beaten: the bounty paid")], cobblemon=True),
+    # The Bandit King, I: the fort and the King (ROADMAP 31.15): the fort's three stages set down one after another
+    S("bandit_fort", "Village Hall", "The Bandit King's fort rising a stage at a time",
+      "the Bandit King's fort set down a stage at a time, as his story arc does a stage a dawn: a palisade of sharpened logs round a yard with a fire, tents and a gate, four bandits in it; then two watchtowers with ladders and a stable; then the King's keep with his war banner over the door and the King inside", 45,
+      [("01_palisade", "Stage 1: the palisade, the gate, the fire and the tents"),
+       ("02_towers", "Stage 2: two watchtowers and a stable"),
+       ("03_keep", "Stage 3: the King's keep, his banner over the door")]),
+    # The Bandit King, II: the story (ROADMAP 31.16): the banners taken, the fort rising a stage a day, the storm, the King's fall
+    S("bandit_king", "Village Hall", "The Bandit King's story: the banners, the fort, the storm, the King's fall",
+      "the Bandit King's story arc: three war banners, black with a red skull, flown over his camps and taken; the next dawn his fort rises, a stage a day; at the storm the allies won stand before the gate (3 guards of a neighbouring village, 6 mercenaries) and the keep's postern is open, as Pell the deserter told; then the King falls", 60,
+      [("01_banners", "Three war banners of the Bandit King"),
+       ("02_banners_taken", "The banners taken"),
+       ("03_fort_day_1", "Day 1: the fort's palisade"),
+       ("04_fort_day_2", "Day 2: the watchtowers"),
+       ("05_fort_day_3", "Day 3: the keep, its postern open"),
+       ("06_storm", "The storm: 3 guards and 6 mercenaries"),
+       ("07_king_falls", "The Bandit King falls")]),
+    # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
+    S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
+      "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,
+      [("01_patches", "The eight far herbs, a patch of each on its own ground"),
+       ("02_tonic", "The Three-Herb Tonic in hand")]),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",

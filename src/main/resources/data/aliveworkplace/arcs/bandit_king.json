@@ -1,0 +1,70 @@
+{
+  "name": {"translate": "arc.aliveworkplace.bandit_king"},
+  "threat": true,
+  "trigger": {
+    "chance": 0.08,
+    "conditions": [
+      {"type": "rank_at_least", "rank": "town"},
+      {"type": "bandit_camps_broken", "count": 2}
+    ]
+  },
+  "chapters": [
+    {
+      "name": {"translate": "arc.aliveworkplace.bandit_king.1"},
+      "intro": ["arc.aliveworkplace.bandit_king.1.intro.1", "arc.aliveworkplace.bandit_king.1.intro.2"],
+      "on_start": [
+        {"type": "place", "key": "first_camp", "template": "aliveworkplace:camp/bandit_camp", "rule": {"ring": [80, 104]}},
+        {"type": "place", "key": "camp", "count": 2, "template": "aliveworkplace:camp/bandit_camp", "rule": {"ring": [80, 104]}},
+        {"type": "spawn", "entity": "minecraft:vindicator", "key": "captain", "at": "first_camp", "name": {"translate": "entity.aliveworkplace.king_captain"},
+          "gear": {"head": "minecraft:iron_helmet", "chest": "minecraft:iron_chestplate", "mainhand": "minecraft:iron_axe"}, "health": 36, "restrict": 14},
+        {"type": "spawn", "entity": "minecraft:vindicator", "key": "captain", "at": "camp", "name": {"translate": "entity.aliveworkplace.king_captain"},
+          "gear": {"head": "minecraft:iron_helmet", "chest": "minecraft:iron_chestplate", "mainhand": "minecraft:iron_axe"}, "health": 36, "restrict": 14},
+        {"type": "spawn", "entity": "minecraft:vindicator", "key": "bandit", "at": "first_camp", "count": 2, "name": {"translate": "entity.aliveworkplace.bandit"}, "restrict": 14},
+        {"type": "spawn", "entity": "minecraft:pillager", "key": "bandit_archer", "at": "first_camp", "count": 2, "name": {"translate": "entity.aliveworkplace.bandit"}, "restrict": 14},
+        {"type": "spawn", "entity": "minecraft:vindicator", "key": "bandit", "at": "camp", "count": 2, "name": {"translate": "entity.aliveworkplace.bandit"}, "restrict": 14},
+        {"type": "spawn", "entity": "minecraft:pillager", "key": "bandit_archer", "at": "camp", "count": 1, "name": {"translate": "entity.aliveworkplace.bandit"}, "restrict": 14}
+      ],
+      "needs_flags": ["banners_taken"],
+      "delay_days": 1,
+      "chatter": ["chatter.aliveworkplace.bandit_king.banner"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.bandit_king.2"},
+      "intro": ["arc.aliveworkplace.bandit_king.2.intro.1", "arc.aliveworkplace.bandit_king.2.intro.2"],
+      "on_start": [
+        {"type": "place", "key": "fort", "stages": ["aliveworkplace:story/bandit_fort", "aliveworkplace:story/bandit_fort_2", "aliveworkplace:story/bandit_fort_3"], "rule": {"fort": true}},
+        {"type": "spawn", "entity": "minecraft:villager", "key": "pell", "role": "pell", "at": "first_camp", "name": {"translate": "entity.aliveworkplace.pell"}, "restrict": 4}
+      ],
+      "quests": [
+        {"id": "aliveworkplace:arc/bandit_king/swords_for_hire", "name": {"translate": "arc.aliveworkplace.bandit_king.swords"},
+          "objectives": [{"type": "bring", "item": "minecraft:emerald", "count": 24, "to": "hall"}]},
+        {"id": "aliveworkplace:arc/bandit_king/deserter", "name": {"translate": "arc.aliveworkplace.bandit_king.deserter"},
+          "objectives": [{"type": "talk", "villager": "pell", "says": "arc.aliveworkplace.bandit_king.pell_says"}]}
+      ],
+      "complete": [],
+      "needs_flags": ["fort_done"],
+      "chatter": ["chatter.aliveworkplace.bandit_king.fort"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.bandit_king.3"},
+      "intro": ["arc.aliveworkplace.bandit_king.3.intro.1", "arc.aliveworkplace.bandit_king.3.intro.2"],
+      "on_start": [
+        {"type": "bandit_king", "step": "storm"}
+      ],
+      "needs_flags": ["king_dead"],
+      "time_limit_days": 10,
+      "on_fail": [
+        {"type": "bandit_king", "step": "tribute"},
+        {"type": "village_mood", "points": -10, "days": 3, "reason": {"translate": "mood.aliveworkplace.reason.tribute"}}
+      ],
+      "chatter": ["chatter.aliveworkplace.bandit_king.storm"]
+    }
+  ],
+  "ending": [
+    {"type": "bandit_king", "step": "ending"},
+    {"type": "festival"},
+    {"type": "reputation", "points": 150, "who": "chapter_helpers"},
+    {"type": "honour", "id": "kingslayer", "who": "chapter_helpers"},
+    {"type": "flag", "flag": "no_bandit_camps", "days": 10}
+  ]
+}

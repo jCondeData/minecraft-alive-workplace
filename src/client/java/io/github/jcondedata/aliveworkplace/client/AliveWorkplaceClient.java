@@ -17,6 +17,9 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		MadeDayTooltip.init();
 		LegendLookLayer.init();
 		GolemRoleLayer.init();
+		// The far herbs (31.17) are cut out like vanilla's flowers.
+		io.github.jcondedata.aliveworkplace.herb.Herbs.all().forEach(herb -> net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE
+			.putBlock(herb, net.minecraft.client.renderer.RenderType.cutout()));
 		io.github.jcondedata.aliveworkplace.guide.GuideBookItem.open = () -> Minecraft.getInstance()
 			.setScreen(new io.github.jcondedata.aliveworkplace.client.guide.GuideScreen());
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX_MENU, MailboxScreen::new);

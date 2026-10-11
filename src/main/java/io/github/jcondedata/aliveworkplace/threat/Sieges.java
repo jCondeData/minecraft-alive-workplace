@@ -324,6 +324,7 @@ public final class Sieges {
 			return laid; // (this raid's other tactic has just laid it)
 		}
 		laid.ifPresent(old -> lift(level, old)); // (the last one's bars go up before this one's come down)
+		raise(level, data, hall, false); // bars dropped ahead of a warned attack (32.14) come down again as this siege's
 		ThreatData.Siege siege = new ThreatData.Siege(hall, level.getGameTime(), nextDawn(level.getDayTime()));
 		siege.came = raiders.size();
 		siege.hpFactor = ramparts(level, hall) ? RAMPARTS_FACTOR : 1; // Ramparts (32.6): gates twice as strong
@@ -339,7 +340,7 @@ public final class Sieges {
 		Map<Defence, List<Piece>> bars = new HashMap<>();
 		for (Defence build : builds) {
 			if (isGated(build.finished().structure())) {
-				bars.put(build, drop(level, build, siege));
+				bars.put(build, drop(level, build, siege.portcullis));
 			}
 		}
 		pickBreach(level, siege, builds, bars, from);
@@ -356,7 +357,7 @@ public final class Sieges {
 	 * Drops the portcullis of {@code build}: under every iron bar its blueprint draws up, bars down through the gateway
 	 * (where the blueprint has air) to the floor. Returns the bars dropped, which the siege remembers to draw up again.
 	 */
-	private static List<Piece> drop(ServerLevel level, Defence build, ThreatData.Siege siege) {
+	private static List<Piece> drop(ServerLevel level, Defence build, List<BlockPos> into) {
 		Map<BlockPos, BlockState> plan = new HashMap<>();
 		for (Blueprint.Entry e : build.blueprint().blocks()) {
 			plan.put(e.pos(), e.state());
@@ -377,7 +378,7 @@ public final class Sieges {
 					break;
 				}
 				level.setBlock(pos, Block.updateFromNeighbourShapes(Blocks.IRON_BARS.defaultBlockState(), level, pos), 3);
-				siege.portcullis.add(pos.immutable());
+				into.add(pos.immutable());
 				dropped.add(new Piece(pos.immutable(), local, level.getBlockState(pos), true));
 			}
 		}
@@ -437,6 +438,60 @@ public final class Sieges {
 	private static int lane(List<Integer> ways, int middle, int x) {
 		int i = ways.indexOf(x);
 		return i >= 0 ? i : ways.size() + Math.abs(x - middle);
+	}
+
+	/**
+	 * A day's warning (32.14): the gates of the village round {@code hall} shut and the portcullis of every finished gate
+	 * build drops ahead of a warned attack, with no siege yet. The bars are kept on the hall's clock: a siege that begins
+	 * takes them over, else {@link #raise} draws them up. Returns how many bars dropped now.
+	 */
+	public static int brace(ServerLevel level, BlockPos hall) {
+		if (!ENABLED || siege(level, hall).isPresent()) {
+			return 0;
+		}
+		ThreatData data = ThreatData.get(level);
+		List<Defence> builds = defences(level, hall);
+		setGates(level, builds, true);
+		List<BlockPos> bars = new ArrayList<>(data.braced(hall));
+		int before = bars.size();
+		if (before == 0) {
+			for (Defence build : builds) {
+				if (isGated(build.finished().structure())) {
+					drop(level, build, bars);
+				}
+			}
+			if (!bars.isEmpty()) {
+				data.braced(hall, bars);
+			}
+		}
+		return bars.size() - before;
+	}
+
+	/**
+	 * Draws up the bars dropped ahead of a warned attack on the village round {@code hall} (the day is over and no siege
+	 * took them; with {@code loud} false, silently, as a siege beginning drops them again). Returns how many went up.
+	 */
+	public static int raise(ServerLevel level, BlockPos hall, boolean loud) {
+		return raise(level, ThreatData.get(level), hall, loud);
+	}
+
+	private static int raise(ServerLevel level, ThreatData data, BlockPos hall, boolean loud) {
+		List<BlockPos> bars = data.braced(hall);
+		if (bars.isEmpty()) {
+			return 0;
+		}
+		int raised = 0;
+		for (BlockPos pos : bars) {
+			if (level.getBlockState(pos).is(Blocks.IRON_BARS)) {
+				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+				raised++;
+			}
+		}
+		if (loud && raised > 0) {
+			level.playSound(null, bars.get(0), SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, 1f, 0.6f);
+		}
+		data.braced(hall, List.of());
+		return raised;
 	}
 
 	/** Whether the village round {@code hall} has the Ramparts research (32.6). */
@@ -780,7 +835,8 @@ public final class Sieges {
 
 	/** Whether a portcullis of the village round {@code hall} is down. */
 	public static boolean portcullisDown(ServerLevel level, BlockPos hall) {
-		return siege(level, hall).map(s -> s.portcullis.stream().anyMatch(p -> level.getBlockState(p).is(Blocks.IRON_BARS))).orElse(false);
+		return siege(level, hall).map(s -> s.portcullis.stream().anyMatch(p -> level.getBlockState(p).is(Blocks.IRON_BARS))).orElse(false)
+			|| ThreatData.get(level).braced(hall).stream().anyMatch(p -> level.getBlockState(p).is(Blocks.IRON_BARS)); // (or ahead of a warned attack, 32.14)
 	}
 
 	/** How the gates of the village round {@code hall} stand, for the Defence page. */

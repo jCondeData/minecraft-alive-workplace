@@ -22,9 +22,9 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Upkeep: an idle builder looks over the buildings they (or whoever they work for) finished nearby every so often, and
- * when blocks are missing — a creeper's hole, a raid, a window someone broke — sets about putting them back
- * ({@link BuildPlan#repair}: only the holes are filled, with the builder's usual materials; nothing players put there is
- * touched). {@code builderRepairs} in the config turns it off.
+ * when blocks are missing — a creeper's hole, a raid, a window someone broke, what a village fire burned (32.16, once
+ * it's out) — sets about putting them back ({@link BuildPlan#repair}: only the holes are filled, with the builder's
+ * usual materials; nothing players put there is touched). {@code builderRepairs} in the config turns it off.
  */
 public final class Upkeep {
 	public static boolean ENABLED = true;
@@ -84,6 +84,9 @@ public final class Upkeep {
 		for (BuildSiteManager.Finished f : finished) {
 			if (!looksAfter(level, builder, f.owner()) || manager.all().stream().anyMatch(s -> s.placement().equals(f.placement()))) {
 				continue;
+			}
+			if (io.github.jcondedata.aliveworkplace.threat.VillageFire.nearestFire(level, f.placement().origin(), 16).isPresent()) {
+				continue; // still burning (32.16): what burned goes back once the fire is out
 			}
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, f.structure());
 			if (blueprint.isEmpty()) {

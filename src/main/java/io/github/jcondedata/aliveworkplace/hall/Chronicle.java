@@ -38,7 +38,13 @@ public final class Chronicle {
 		/** A realm founded, joined, left, renamed, risen in rank or ended (33.11). */
 		REALM(Items.GOLDEN_HELMET),
 		/** A bounty posted, its captain fallen, its insignia handed in (and by whom), or the bounty come down (31.13). */
-		BOUNTY(Items.CROSSBOW);
+		BOUNTY(Items.CROSSBOW),
+		/** A fire in the village, begun and put out (32.15, 32.16). */
+		FIRE(Items.FLINT_AND_STEEL),
+		/** A drought, begun, foretold and ended (32.15, 32.17). */
+		DROUGHT(Items.DEAD_BUSH),
+		/** A plague, begun, foretold and ended (32.15, 32.18). */
+		PLAGUE(Items.FERMENTED_SPIDER_EYE);
 
 		public final Item icon;
 

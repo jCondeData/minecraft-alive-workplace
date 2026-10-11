@@ -72,6 +72,12 @@ public final class ModAttachments {
 	/** Which quarry a miner is digging. */
 	public static final Attachment<BuilderJob> MINER_JOB = Attachment.saved("miner_job", BuilderJob.CODEC);
 
+	/** How many of their two buckets a firewarden has full (ROADMAP 32.16); none saved: both full. */
+	public static final Attachment<Integer> FIREWARDEN_WATER = Attachment.saved("firewarden_water", com.mojang.serialization.Codec.INT);
+
+	/** Whether a Well Keeper carries a full bucket (ROADMAP 32.17): 1 full, none saved or 0 empty. */
+	public static final Attachment<Integer> WELL_KEEPER_WATER = Attachment.saved("well_keeper_water", com.mojang.serialization.Codec.INT);
+
 	/** How many trees a lumberjack has cut down (shown above its head). */
 	public static final Attachment<Integer> TREES_FELLED = Attachment.saved("trees_felled", com.mojang.serialization.Codec.INT);
 
@@ -182,6 +188,10 @@ public final class ModAttachments {
 
 	/** What kind of illness a villager has (ROADMAP 32.11): {@code hex}, a coven's curse, or {@code grey_cough} (31.18); absent: an ordinary one. */
 	public static final Attachment<String> ILL_KIND = Attachment.saved("ill_kind", com.mojang.serialization.Codec.STRING);
+	/** Until when (game time) a Remedy keeps a villager well (ROADMAP 32.18); none saved: no Remedy. */
+	public static final Attachment<Long> WELL_UNTIL = Attachment.saved("well_until", com.mojang.serialization.Codec.LONG);
+	/** The plague's ill a Physician has seen (32.18): they keep to their house and pass it on only to those sharing it. */
+	public static final Attachment<Boolean> PLAGUE_SEEN = Attachment.saved("plague_seen", com.mojang.serialization.Codec.BOOL);
 
 	/** Until when a nurse's remedy eases a villager's Grey Cough (31.18): no slowness till then; absent: not eased. */
 	public static final Attachment<Long> ILL_EASED_UNTIL = Attachment.saved("ill_eased_until", com.mojang.serialization.Codec.LONG);

@@ -1534,10 +1534,160 @@ def printer():
     return t.save_profession(ASSETS, "printer", hat="partial")
 
 
+def firewarden():
+    """The village's fire watch (ROADMAP 32.16): a red leather fire helmet with a wide brim, a brass comb over the crown
+    and a brass shield on the front; a long dark navy wool coat buttoned in brass, with a band of straw-yellow wool at
+    the hem and round the cuffs so they're seen through smoke; a leather belt with a brass buckle; heavy leather
+    gloves; and a hatchet slung across the back. Full headwear: the helmet replaces the biome's hat."""
+    t = vg.VillagerTexture()
+    helmet = vg.cloth("#9a2a1e", spread=0.26)
+    coat = vg.cloth("#2c3550", spread=0.22)
+    band = vg.cloth("#d8b23a", spread=0.2)
+    gloves = vg.cloth("#7a4a26", n=4)
+    vg.hat(t, helmet, style="brim", band=helmet[0])
+    hf = t.face("hat", "front")                          # the brass shield on the helmet's front
+    for x, y, c in ((3, 0, BRASS[3]), (4, 0, BRASS[2]), (2, 1, BRASS[3]), (3, 1, BRASS[2]), (4, 1, BRASS[2]),
+                    (5, 1, BRASS[1]), (3, 2, BRASS[2]), (4, 2, BRASS[1])):
+        hf.put(x, y, c)
+    top = t.face("hat", "top")                           # the brass comb, front to back over the crown
+    for y in range(top.h):
+        top.put(3, y, BRASS[3] if y < top.h // 2 else BRASS[2])
+        top.put(4, y, BRASS[1])
+    for side in ("front", "back"):                       # the comb's ends where it meets the crown's rim
+        f = t.face("hat", side)
+        f.put(3 if side == "front" else 4, 0, BRASS[3] if side == "front" else BRASS[1])
+
+    vg.vest(t, coat, length=18, open_front=False, noise=0.03)
+    j = t.face("jacket", "front")
+    for y in range(0, 18):                               # the buttoned front edge
+        j.put(4, y, coat[0])
+    for y in (1, 3, 5, 7):                               # brass buttons above the crossed arms' line
+        j.put(3, y, BRASS[3])
+    for side in SIDES:                                   # the straw-yellow band at the hem, seen through smoke
+        f = t.face("jacket", side)
+        paint(f, ((x, 15) for x in range(f.w)), band[3])
+        paint(f, ((x, 16) for x in range(f.w)), band[2])
+        paint(f, ((x, 17) for x in range(f.w)), coat[1])
+    vg.belt(t, vg.cloth("#5e3a1e", n=4), row=10, buckle=BRASS[3])
+    back = t.face("jacket", "back")                      # a hatchet slung across the back: haft and steel head
+    for i, (x, y) in enumerate(((1, 13), (2, 12), (3, 11), (4, 10), (5, 9), (6, 8))):
+        back.put(x, y, "#8a6a3e" if i % 2 else "#a8844e")
+    for x, y, c in ((5, 6, STEEL[3]), (6, 6, STEEL[2]), (7, 7, STEEL[1]), (6, 7, STEEL[2]), (7, 8, STEEL[0])):
+        back.put(x, y, c)
+
+    vg.sleeves(t, coat, gloves=gloves)
+    for side in ("front", "west", "east", "back"):       # the yellow band round each cuff
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), band[3])
+    return t.save_profession(ASSETS, "firewarden", hat="full")
+
+
+def well_keeper():
+    """The village's water carrier (ROADMAP 32.17): a wide straw sun hat with a river-blue band; a long linen smock
+    under a deep teal-blue wool tabard, darkened at the hem where the water splashes; a leather yoke over both
+    shoulders; a wooden bucket with an iron hoop at the right hip, a coil of rope on the left side, a tin dipper on
+    the right; and the shovel that is their tool slung down the back. Teal sleeves with the linen rolled over the cuff, wet
+    leather gloves. Full headwear: the sun hat replaces the biome's hat."""
+    t = vg.VillagerTexture()
+    straw = Ramp(["#8c6d2c", "#b8964a", "#d6b86a", "#e8d08c"], name="straw")
+    tabard = vg.cloth("#2f6b78", spread=0.24)
+    smock = vg.cloth("#d9d2bc", spread=0.14)
+    blue = vg.cloth("#3f86c4", n=4)
+    yoke = vg.cloth("#6a4224", n=4)
+    vg.hat(t, straw, style="brim", band=blue[1])
+    for side in SIDES:                                   # the straw's weave: a darker stitch every other pixel
+        f = t.face("hat", side)
+        for x in range(0, f.w, 2):
+            f.put(x, 0, straw[2])
+    vg.vest(t, smock, length=18, open_front=False, noise=0.02)
+    vg.vest(t, tabard, length=16, open_front=False, noise=0.03)
+    for side in SIDES:                                   # wet hem: the tabard's last row darker, the smock below it
+        f = t.face("jacket", side)
+        paint(f, ((x, 15) for x in range(f.w)), tabard[0])
+        paint(f, ((x, 16) for x in range(f.w)), smock[2])
+        paint(f, ((x, 17) for x in range(f.w)), smock[1])
+    j = t.face("jacket", "front")
+    for y in range(0, 6):                                # the yoke's straps over the shoulders, down the chest
+        j.put(1, y, yoke[2] if y % 2 else yoke[1])
+        j.put(6, y, yoke[2] if y % 2 else yoke[1])
+    vg.belt(t, yoke, row=10, buckle=STEEL[3])
+    for x, y, c in ((0, 11, "#6a4a2a"), (1, 11, "#8a6a3e"), (2, 11, "#8a6a3e"), (3, 11, "#6a4a2a"),   # the bucket at the hip
+                    (0, 12, STEEL[1]), (1, 12, STEEL[2]), (2, 12, STEEL[2]), (3, 12, STEEL[1]),
+                    (0, 13, "#6a4a2a"), (1, 13, "#a8844e"), (2, 13, "#8a6a3e"), (3, 13, "#5a3c22"),
+                    (1, 10, blue[3]), (2, 10, blue[2])):                                               # water at its rim
+        j.put(x, y, c)
+    east = t.face("jacket", "east")                      # the coil of rope on the left side
+    for x, y in ((1, 11), (2, 11), (3, 11), (1, 12), (3, 12), (1, 13), (2, 13), (3, 13)):
+        east.put(x, y, ROPE[2] if y == 11 else ROPE[1])
+    east.put(2, 12, ROPE[0])
+    west = t.face("jacket", "west")                      # a tin dipper on the right side
+    paint(west, ((2, 11), (2, 12)), STEEL[2])
+    west.put(2, 13, STEEL[1])
+    west.put(3, 13, STEEL[0])
+    back = t.face("jacket", "back")                      # the yoke crossing the back, the shovel slung under it
+    for x in range(back.w):
+        back.put(x, 1, yoke[1])
+    for y in range(2, 12):                               # the shovel's haft, the grip at the top
+        back.put(4, y, "#a8844e" if y % 2 else "#8a6a3e")
+    paint(back, ((3, 2), (5, 2)), "#6a4a2a")
+    for x, y, c in ((3, 12, STEEL[2]), (4, 12, STEEL[3]), (5, 12, STEEL[1]),      # the blade
+                    (3, 13, STEEL[2]), (4, 13, STEEL[2]), (5, 13, STEEL[1]), (4, 14, STEEL[0])):
+        back.put(x, y, c)
+    vg.sleeves(t, tabard, gloves=vg.cloth("#5e3a1e", n=4))
+    for side in ("front", "west", "east", "back"):       # the linen smock's sleeve rolled up over the cuff
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), smock[2])
+    return t.save_profession(ASSETS, "well_keeper", hat="full")
+
+
+def physician():
+    """The village's doctor (ROADMAP 32.18), who goes house to house in a plague: a long sober coat of deep
+    bottle-green wool over a white linen shirt with a high collar, a dark felt hat with a narrow brim, round
+    spectacles; a leather satchel on a strap across the chest (a brass clasp, a Remedy's amber neck showing), a
+    pouch of herbs at the belt and a sprig of lavender in the hatband; dark gloves. Full headwear: the hat replaces
+    the biome's hat."""
+    t = vg.VillagerTexture()
+    felt = vg.cloth("#2c2a2e", n=4)
+    coat = vg.cloth("#2f5a44", spread=0.24)
+    linen = vg.cloth("#e4e0d4", spread=0.12)
+    leather = vg.cloth("#6a4224", n=4)
+    vg.hat(t, felt, style="brim", band=leather[1])
+    f = t.face("hat", "front")                           # a lavender sprig tucked into the band
+    f.put(f.w - 2, 0, "#9a7cc8")
+    f.put(f.w - 2, 1, "#6a8a3a")
+    vg.glasses(t, frame="#8c7a3a")
+    vg.vest(t, linen, length=18, open_front=False, noise=0.02)
+    vg.vest(t, coat, length=18, open_front=True, noise=0.03)
+    vg.collar(t, linen, rows=2)
+    j = t.face("jacket", "front")
+    for i in range(0, 9):                                # the satchel strap from the right shoulder to the left hip
+        x = 7 - i * 6 // 8
+        j.put(x, i, leather[2] if i % 2 else leather[1])
+    for x, y, c in ((0, 9, leather[1]), (1, 9, leather[2]), (2, 9, leather[2]), (3, 9, leather[1]),   # the satchel
+                    (0, 10, leather[0]), (1, 10, "#c9a23a"), (2, 10, leather[1]), (3, 10, leather[0]),
+                    (0, 11, leather[0]), (1, 11, leather[1]), (2, 11, leather[1]), (3, 11, leather[0]),
+                    (2, 8, "#d48a2c")):                                                              # a Remedy's neck
+        j.put(x, y, c)
+    vg.belt(t, leather, row=12, buckle="#c9a23a")
+    west = t.face("jacket", "west")                      # the pouch of herbs at the belt
+    paint(west, ((1, 13), (2, 13), (1, 14), (2, 14)), leather[1])
+    west.put(2, 12, "#6a8a3a")
+    back = t.face("jacket", "back")                      # the strap across the back, the coat's vent
+    for i in range(0, 9):
+        back.put(i * 6 // 8, i, leather[1])
+    for y in range(13, 18):
+        back.put(4, y, coat[0])
+    vg.sleeves(t, coat, cuff=linen[2], gloves=vg.cloth("#2a2420", n=4))
+    return t.save_profession(ASSETS, "physician", hat="full")
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 DRAW += [jeweller]   # 34.12
+DRAW += [firewarden]   # 32.16
+DRAW += [well_keeper]   # 32.17
+DRAW += [physician]   # 32.18
 
 if __name__ == "__main__":
     run(DRAW)

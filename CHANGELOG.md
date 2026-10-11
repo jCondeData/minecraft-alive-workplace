@@ -23,6 +23,41 @@ asks for the steps, `latest.log` and any crash report).
   Royal Hall on its Realm tab for a Blank Blueprint: a stone great hall with a dais and throne, banners, a gallery and
   the realm's vault, and its upgrade with a keep tower and a treasury wing. Finished within 32 blocks of the capital's
   hall it doubles what the realm treasury holds (the Royal Hall II: three times). It shows on the village map as a hall.
+- **Plague and the Physician** (32.18, behind the 1.6 expansion): a Town or bigger may suffer a plague (3% a day, twice
+  that with more villagers than beds; a coven's hexed or a traveller from far away can bring it too). While it lasts,
+  each hall round a villager within 3 blocks of an ill one catches it 1 in 5 (less with Medicine research); the ill
+  don't get well by themselves, the Nurse can't cure them, and after two days they stay in bed. It ends when no one has
+  been ill for a day. The new **Physician** (brewing stand + glistering melon slice) foretells the outbreak at its first
+  case, goes house to house, sends the ill home (then they pass it on only in their own house) and cures them with the
+  new **Remedy** (a glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye; they brew it from
+  those makings in their chest too): it cures any illness, hexes included, and keeps a villager well for 10 days.
+  Right-click a villager with one to give it; drink one to lose poison, wither, hunger and nausea. The hall's list marks
+  the plague's ill. Config `physicians`.
+- **Drought and the Well Keeper** (32.17, behind the 1.6 expansion): after five days without rain a village may fall
+  into a drought (5% a day; desert, savanna and badlands villages 15%, twice that with a desert raiders' lair near),
+  lasting 3 to 5 days until rain ends it. Crops, stems and berry bushes grow at a quarter pace, farmland dries, water
+  cauldrons lose a level a day and villagers are unhappy ("The wells are low") unless the village has a finished Well
+  or Fountain. The new **Well Keeper** (cauldron + a shovel) carries water from the nearest well, river or pond to the
+  fields, each bucket wetting 9 farmland whose crops grow at full pace that day; between droughts they keep the
+  cauldrons full and dry farmland wet, and they foretell the next drought a day ahead. Water-type partners speed them.
+  Config `wellKeepers`.
+- **Fire and the Firewarden** (32.16, behind the 1.6 expansion): wooden villages can burn, from lightning in a
+  thunderstorm (1 in 3), a chimney spark on a dry day (2%) or a raider's burning arrow (1 in 4, with `mobGriefing`).
+  The fire spreads by the game's own rules but only through the builders' blocks, never a player's, and the builders
+  put back what burned. The new **Firewarden** (grindstone + water bucket) runs to the fire with two buckets and
+  douses it in steam, refilling at water near the grindstone; from Journeyman they ring the bell for a bucket brigade,
+  and with Cobblemon pastured Water types douse fires at range. The chronicle says what burned and who put it out.
+  Config `firewardens`.
+- **The disaster engine** (32.15): datapacks can describe disasters (`data/<ns>/disasters/<id>.json`) that strike a
+  village one at a time, with 7 days' rest after one: crops grow slower, farmland dries, cauldrons drain, villagers fall
+  ill and pass it on, are unhappy, fires start or a job slows. A village with the right job or a lookout is told a day
+  ahead; it ends after its days or with rain, shows on the wellbeing icon, in What next? and the chronicle, and each
+  can be switched off (`disasters`). No disaster ships yet.
+- **A day's warning** (32.14): a guard posted within 24 blocks of a finished Lookout Tower or Wall Tower sees a raid
+  coming the evening before ("Smoke on the north road: ... will strike tomorrow night"); a Scout there also counts
+  them. Players in the village and the hall's owner are told, the chronicle, guards icon and Defence page show it; on
+  the day the gates shut and the portcullis drops from noon, and at dusk the guards take battle stations and the
+  villagers go in. Without a lookout, What next? says to build one.
 - **The realm treasury, for 1.7** (33.13, off until 1.7 is finished): every member of a realm pays a levy of its
   daily takings into the realm treasury before the rest goes into its own (10% by default; the capital's owner picks
   0, 5, 10 or 20% on the Realm tab). The treasury holds up to 256 emeralds for a Barony, 512 for a County, 1,024 for a

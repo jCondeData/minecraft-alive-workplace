@@ -564,4 +564,18 @@ public class PriceBoardGameTests implements FabricGameTest {
 		helper.assertTrue(List.copyOf(TradePage.marks(icon)).equals(List.of(TradePage.STAR, TradePage.UP)), "marks: " + TradePage.marks(icon));
 		helper.succeed();
 	}
+
+	/** The Prices tab's own tooltip says the village sells at 10% more than it pays (SELL_PERCENT 110), not 210%. */
+	//$ gametest_ticks_batch AREA '100' '"priceBoardTip"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "priceBoardTip")
+	public void thePricesTabSaysSellingCostsTenPercentMore(GameTestHelper helper) {
+		BlockPos hall = hall(helper);
+		ServerPlayer player = player(helper);
+		helper.runAfterDelay(2, () -> {
+			ChoiceMenu menu = board(helper, player, hall);
+			String first = String.join(" ", lore(menu.icon(TradePage.Tab.PRICES.slot())));
+			helper.assertTrue(first.contains("(10% more)"), "the Prices tab's tooltip: " + first);
+			helper.succeed();
+		});
+	}
 }

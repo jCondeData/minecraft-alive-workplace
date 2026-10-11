@@ -228,7 +228,9 @@ public final class Lairs {
 		Data data = Data.get(level);
 		Lair lair = data.lairs.get(hall);
 		if (lair != null) {
-			if (level.isPositionEntityTicking(lair.pos())) {
+			// (a captain who leads the raid under way is at the village, maybe out of loaded ground: his death is told by onDeath)
+			boolean leading = leads(level, lair) && ThreatData.get(level).raid(hall).map(r -> r.culture().equals(lair.culture())).orElse(false);
+			if (!leading && level.isPositionEntityTicking(lair.pos())) {
 				Entity captain = level.getEntity(lair.captain());
 				if (!(captain instanceof LivingEntity living) || !living.isAlive()) {
 					breakUp(level, lair, null);
@@ -270,7 +272,8 @@ public final class Lairs {
 	public static Optional<ResourceLocation> comer(ServerLevel level, BlockPos hall, boolean bandits, RandomSource random) {
 		List<Culture> fitting = new ArrayList<>();
 		for (Culture culture : Threats.all()) {
-			boolean on = culture.id().equals(Threats.BANDITS) ? bandits : ENABLED;
+			// (while Milestone 32 isn't finished a lair is the bandit camp, 32.3's gate: no other culture makes camp by chance)
+			boolean on = culture.id().equals(Threats.BANDITS) ? bandits : ENABLED && live();
 			if (on && culture.needsLair() && Threats.fits(level, hall, culture, () -> VillageHalls.census(level, hall).villagers())) {
 				fitting.add(culture);
 			}
@@ -359,6 +362,60 @@ public final class Lairs {
 		if (lair != null) {
 			data.put(lair.with(strength, lair.grown(), Math.min(lair.out(), Math.max(0, strength)), lair.lost()));
 		}
+	}
+
+	// The captain at the head of a raid (32.7).
+
+	/**
+	 * Whether the captain of {@code lair} leads its raids himself: his culture's {@code captain.leads} rank is reached
+	 * by the village it preys on (the Warlord at a City), and lairs are {@link #live}.
+	 */
+	public static boolean leads(ServerLevel level, Lair lair) {
+		return live() && Threats.get(lair.culture()).flatMap(Culture::captain).map(c -> c.leadsAt(VillageRanks.of(level, lair.hall()))).orElse(false);
+	}
+
+	/**
+	 * The captain of {@code lair} goes with the raid, from {@code at}: he leaves his lair's ground and is one of the
+	 * raiders (tagged as they are) till the raid ends. Null if he isn't about (his lair's ground isn't loaded).
+	 */
+	@Nullable
+	public static Mob lead(ServerLevel level, Lair lair, BlockPos at) {
+		if (!(level.getEntity(lair.captain()) instanceof Mob captain) || !captain.isAlive()) {
+			return null;
+		}
+		if (captain instanceof PathfinderMob pathfinder) {
+			pathfinder.clearRestriction();
+		}
+		captain.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+		captain.addTag(Threats.RAIDER_TAG);
+		captain.addTag(Culture.Role.MELEE.tag());
+		return captain;
+	}
+
+	/** Whether {@code mob} is a lair's captain out leading a raid. */
+	public static boolean leading(Mob mob) {
+		return mob.getTags().contains(CAPTAIN_TAG) && mob.getTags().contains(Threats.RAIDER_TAG);
+	}
+
+	/**
+	 * The raid {@code captain} led is over and he lived: he goes back to his lair (when it still stands; else he is
+	 * gone, as the others at dawn).
+	 */
+	public static void comeHome(ServerLevel level, Mob captain) {
+		captain.removeTag(Threats.RAIDER_TAG);
+		captain.removeTag(Culture.Role.MELEE.tag());
+		captain.setTarget(null);
+		for (Lair lair : Data.get(level).lairs.values()) {
+			if (lair.captain().equals(captain.getUUID())) {
+				BlockPos at = level.isLoaded(lair.pos()) ? standNear(level, lair.pos(), 0) : lair.pos().above();
+				captain.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+				if (captain instanceof PathfinderMob pathfinder) {
+					pathfinder.restrictTo(lair.pos(), KEEP);
+				}
+				return;
+			}
+		}
+		captain.discard();
 	}
 
 	// Founding.

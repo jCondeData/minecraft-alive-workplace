@@ -246,6 +246,11 @@ public final class ClassNeeds {
 			return homes;
 		}
 
+		/** The grade of the building {@code villager}'s bed is in (0 for none), worked out once a dawn (34.15). */
+		public int homeGrade(Villager villager) {
+			return grades.computeIfAbsent(villager, v -> buildingAt(VillageNeeds.bed(level, v)).map(b -> b.home().tier()).orElse(0));
+		}
+
 		/** The building {@code bed} is in, if any. */
 		public Optional<Homes.Building> buildingAt(@Nullable BlockPos bed) {
 			return bed == null ? Optional.empty() : Homes.in(homes(), bed);
@@ -276,8 +281,7 @@ public final class ClassNeeds {
 	public static boolean holds(Need need, Villager villager, Village village) {
 		ServerLevel level = village.level;
 		return switch (need) {
-			case Home h -> village.grades.computeIfAbsent(villager, v -> village.buildingAt(VillageNeeds.bed(level, v)).map(b -> b.home().tier()).orElse(0))
-				>= h.grade();
+			case Home h -> village.homeGrade(villager) >= h.grade();
 			case FedDays f -> SocialClasses.progress(villager).fed() >= f.days();
 			case DietNeed d -> Diet.of(villager).ordinal() >= d.kind().ordinal();
 			case Beauty b -> village.beauty.computeIfAbsent(villager, v -> beauty(level, v)) >= b.points();

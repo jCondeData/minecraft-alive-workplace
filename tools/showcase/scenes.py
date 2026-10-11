@@ -29,7 +29,7 @@ GROUPS = [
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
-    "Guard", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
+    "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
     "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
 ]
 
@@ -630,6 +630,18 @@ SCENES = [
     S("workplaces", "Build families", "A workplace for every worker: the 12 village houses a builder can build",
       "every workplace was placed", 90, [("30_*@spread", "")]),
     S("decor", "Build families", "Decorations", "every decoration was placed", 120, [("30_*@spread", "")]),
+    # Sieges I (ROADMAP 32.4): a ravager ram breaks a Palisade Gate, the cracks showing
+    job("siege_gate", "Threats", "A siege: the ram at the gate",
+        "the ravager ram broke a gate block of the Palisade Gate, the cracks showing, and turned on the next", 120),
+    # Pillager warbands (ROADMAP 32.7): the war camp and its Warlord, and the warband's siege on a palisaded Town
+    job("warband", "Threats", "A pillager warband: the war camp and its siege",
+        "a pillager warband made its war camp south of the Town and laid siege to its Palisade Gate: the ravager ram broke a gate block", 150),
+    # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
+    job("siege_ladders", "Threats", "A siege: ladders over the wall",
+        "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),
+    # Sieges III (ROADMAP 32.6): archers on battle stations shoot down at a siege
+    job("battle_stations", "Threats", "A siege: battle stations",
+        "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
     S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),
@@ -648,6 +660,13 @@ SCENES = [
            ("16_tailors_shop_2", "Tailor's Shop II: the cutting room and the drying loft"),
            ("18_print_shop", "The Print Shop: brick and timber, the skylight over the press"),
            ("25_jewellers_workshop_2_back", "Jeweller's Workshop II: the strong room behind")]),
+    # Grander homes (ROADMAP 34.15): the Artisan's House and the Burgher's Townhouse, every tier, then in the five styles
+    S("grand_houses", "Build families", "The Artisan's House (I, II) and the Burgher's Townhouse (I, II, III), and both in the five styles",
+      "the Artisan's House (I, II) and the Townhouse (I, II, III) stand with their beds and grades, and both in all five styles",
+      150, [("14_townhouse", "The Burgher's Townhouse: a brick shop below, two jettied timber storeys, a slate gable"),
+           ("17_townhouse_2_back", "Townhouse II: the walled courtyard garden behind"),
+           ("18_townhouse_3", "Townhouse III: the corner tower with the study at the top"),
+           ("13_artisans_house_2_back", "Artisan's House II: the workshop wing at the back")]),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
       "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
       [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),

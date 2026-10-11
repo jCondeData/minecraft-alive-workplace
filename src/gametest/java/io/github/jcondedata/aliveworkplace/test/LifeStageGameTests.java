@@ -185,6 +185,36 @@ public class LifeStageGameTests implements FabricGameTest {
 		});
 	}
 
+	/** A walk target vanilla set at the worker's own goal (it walks villagers to what they look at, at 0.5) gets the elder's pace too (B95). */
+	//$ gametest_ticks_batch AREA '100' '"lifeStageVanillaWalk"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "lifeStageVanillaWalk")
+	public void aVanillaWalkToTheSameGoalIsSlowedToo(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.after(helper, () -> LifeStages.AGES = true);
+		ServerLevel level = helper.getLevel();
+		long today = Chronicle.day(level);
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		bram.setNoAi(true);
+		tom.setNoAi(true);
+		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(tom, today - 30);
+		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 12));
+		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 12));
+		// What SetWalkTargetFromLookTarget leaves once Walker has made them look at the goal.
+		bram.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new net.minecraft.world.entity.ai.memory.WalkTarget(bramGoal, 0.5f, 2));
+		tom.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new net.minecraft.world.entity.ai.memory.WalkTarget(tomGoal, 0.5f, 2));
+		Walker.requestWalk(bram, bramGoal, 0.5f, 1, 0);
+		Walker.requestWalk(tom, tomGoal, 0.5f, 1, 0);
+		float elder = speed(bram);
+		float young = speed(tom);
+		bram.discard();
+		tom.discard();
+		helper.assertTrue(Math.abs(elder - 0.5f * LifeStages.ELDER_WALK) < 0.001f, "the elder's walk after vanilla set it at the same goal: " + elder);
+		helper.assertTrue(Math.abs(young - 0.5f) < 0.001f, "the younger villager's walk after vanilla set it at the same goal: " + young);
+		helper.succeed();
+	}
+
 	/** "A quiet old age" (+5) for an elder who is fed and has a bed, first on the hall's card; not hungry, not without a bed; and elders talk like elders. */
 	//$ gametest_ticks_batch AREA '100' '"lifeStageMood"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "lifeStageMood")

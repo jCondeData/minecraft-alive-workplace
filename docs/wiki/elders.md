@@ -6,7 +6,7 @@ is finished. Built so far: ages, the slower walk, the "quiet old age" mood, the 
 (34.19), the passing and the charm (34.19a). Still planned and not in the game: the elder look (34.18), retirement and
 mentoring (34.20) and the seeding of everyone's age (34.22); this page grows with them.
 
-Roadmap items: 34.19, 34.19a
+Roadmap items: 34.19, 34.19a, B102
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -83,7 +83,8 @@ All four belong to 1.8 (`Expansions.M34`): off for players, whatever the file sa
 
 - `villagerAges` (true): villagers become elders. Off: nobody is an elder, so nobody is slowed, has the quiet old age,
   talks like one or passes; `adult_since` is kept, so turning it on again makes them the elders they were all along.
-- `villagerElderDays` (120, 20 to 1000): grown days before a villager is an elder.
+- `villagerElderDays` (120, 20 to 1000): grown days before a villager is an elder. Its settings button reads "Days
+  Until Elder" (B102: the longer "Days to Become an Elder: 120" was cut off on its button).
 - `elderPassing` (true; owner, 2026-10-06): elders pass after 40 elder days. Off: nobody dies of old age, and a charm is
   refused as not needed.
 - `agelessElders` (true): Evergreen Charms work. Off: charms are refused and kept; elders already ageless stay ageless.

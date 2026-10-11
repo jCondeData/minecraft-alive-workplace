@@ -31,6 +31,8 @@ import net.minecraft.world.item.Items;
  * the five slots say "No camp near", and for how long none will come after one was broken up.</li>
  * <li>Bottom row ({@link #HISTORY}): the last three attacks, newest first — the day, who came, how many came and fell,
  * and whether the village fought them off or the rest got away.</li>
+ * <li>Third row, {@link #GATES} (32.4): the village's gates — how many, open or shut, the portcullis up or down, whether
+ * a siege holds them shut, and the gate blocks rams broke that wait for a builder.</li>
  * </ul>
  * Everyone who may open the hall may read it. Later items of Milestone 32 add the gates, the scouts, the war party, the
  * next attack and At peace to the rows between. The page is open while lairs are {@link Lairs#live}.
@@ -44,6 +46,8 @@ public final class DefencePage {
 	public static final int STRENGTH = 12;
 	public static final int WHERE = 13;
 	public static final int STOOD = 14;
+	/** The village's gates (32.4). */
+	public static final int GATES = 19;
 	/** The last three attacks, newest first. */
 	public static final int[] HISTORY = {46, 48, 50};
 
@@ -85,6 +89,7 @@ public final class DefencePage {
 						: Component.translatable("screen.aliveworkplace.defence.no_lair_hint"), ChatFormatting.DARK_GRAY)), null);
 			}
 		}
+		menu.button(GATES, gates(level, hall), null);
 		List<ThreatData.Past> past = ThreatData.get(level).past(hall);
 		for (int i = 0; i < Math.min(HISTORY.length, past.size()); i++) {
 			menu.button(HISTORY[i], attack(past.get(i)), null);
@@ -124,6 +129,32 @@ public final class DefencePage {
 		menu.button(STOOD, VillageHallScreen.icon(counted(Items.CLOCK, days),
 			days == 0 ? Component.translatable("screen.aliveworkplace.defence.stood_today") : Words.counted("screen.aliveworkplace.defence.stood", days, days),
 			ChatFormatting.WHITE, VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.stood_since", lair.day()), ChatFormatting.GRAY)), null);
+	}
+
+	/** The gates: open or shut, the portcullis up or down, a siege holding them, and what rams broke. */
+	public static ItemStack gates(ServerLevel level, BlockPos hall) {
+		io.github.jcondedata.aliveworkplace.threat.Sieges.Status status = io.github.jcondedata.aliveworkplace.threat.Sieges.status(level, hall);
+		if (status.gates() == 0 && !status.portcullis() && status.broken() == 0) {
+			return VillageHallScreen.icon(Items.OAK_FENCE_GATE, Component.translatable("screen.aliveworkplace.defence.no_gates"), ChatFormatting.GRAY,
+				VillageHallScreen.line("screen.aliveworkplace.defence.no_gates_hint", ChatFormatting.DARK_GRAY));
+		}
+		boolean shut = status.open() == 0;
+		List<Component> lines = new ArrayList<>();
+		lines.add(VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.gate_blocks", status.gates(), status.gates()), ChatFormatting.GRAY));
+		if (status.portcullis()) {
+			lines.add(VillageHallScreen.line(status.down() ? "screen.aliveworkplace.defence.portcullis_down" : "screen.aliveworkplace.defence.portcullis_up",
+				status.down() ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+		}
+		if (status.siege()) {
+			lines.add(VillageHallScreen.line("screen.aliveworkplace.defence.gates_siege", ChatFormatting.RED));
+		}
+		if (status.broken() > 0) {
+			lines.add(VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.gates_broken", status.broken(), status.broken()), ChatFormatting.RED));
+		}
+		lines.add(VillageHallScreen.line("screen.aliveworkplace.defence.gates_hint", ChatFormatting.DARK_GRAY));
+		return VillageHallScreen.icon(status.down() ? Items.IRON_BARS : Items.SPRUCE_FENCE_GATE,
+			Component.translatable(shut ? "screen.aliveworkplace.defence.gates_shut" : "screen.aliveworkplace.defence.gates_open"),
+			status.broken() > 0 ? ChatFormatting.RED : ChatFormatting.WHITE, lines.toArray(Component[]::new));
 	}
 
 	/** One past attack: its culture's icon counting those who came, the day and who, how many fell and how it ended. */

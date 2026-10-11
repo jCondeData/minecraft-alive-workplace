@@ -845,6 +845,45 @@ public final class ModTrades {
 		villager.getOffers().add(blueprint(entry, LUXURY_BLUEPRINT_PRICE));
 	}
 
+	/** What a builder asks for the Artisan's House (34.15). */
+	public static final int ARTISANS_HOUSE_PRICE = 10;
+	/** What a builder asks for the Burgher's Townhouse (34.15). */
+	public static final int TOWNHOUSE_PRICE = 14;
+	/** The class whose households let a village's builders sell the Townhouse (34.15). */
+	public static final net.minecraft.resources.ResourceLocation ARTISAN = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("artisan");
+
+	/**
+	 * The grander homes a builder sells (ROADMAP 34.15): the Artisan's House from Apprentice on, and the Burgher's
+	 * Townhouse once the village round them (the nearest hall's) has a household of Artisans or higher. Added when they
+	 * level up and when a player opens their trades (the mixin's hooks on {@code increaseMerchantCareer} and
+	 * {@code updateSpecialPrices}) rather than listed with the level's trades, which show two picked at random; never
+	 * added twice, and once added theirs like any other trade.
+	 */
+	public static void builderHomes(net.minecraft.world.entity.npc.Villager villager) {
+		if (villager.getVillagerData().getProfession() != ModVillagers.BUILDER || !(villager.level() instanceof net.minecraft.server.level.ServerLevel level)) {
+			return;
+		}
+		if (villager.getVillagerData().getLevel() >= 2
+				&& !io.github.jcondedata.aliveworkplace.build.UpgradeOffers.sells(villager, StarterBlueprints.ARTISANS_HOUSE.id())) {
+			villager.getOffers().add(blueprint(StarterBlueprints.ARTISANS_HOUSE, ARTISANS_HOUSE_PRICE));
+		}
+		if (!io.github.jcondedata.aliveworkplace.build.UpgradeOffers.sells(villager, StarterBlueprints.TOWNHOUSE.id())
+				&& hasArtisans(level, villager.blockPosition())) {
+			villager.getOffers().add(blueprint(StarterBlueprints.TOWNHOUSE, TOWNHOUSE_PRICE));
+		}
+	}
+
+	/** Whether the village round the hall nearest {@code pos} has a household of Artisans or a higher class. */
+	public static boolean hasArtisans(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos) {
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass artisan = io.github.jcondedata.aliveworkplace.people.SocialClasses.get(ARTISAN);
+		if (!io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED || artisan == null) {
+			return false;
+		}
+		return io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, pos)
+			.map(hall -> io.github.jcondedata.aliveworkplace.hall.ClassesPage.households(level, hall).stream().anyMatch(p -> p.social().tier() >= artisan.tier()))
+			.orElse(false);
+	}
+
 	private static MerchantOffer blueprint(StarterBlueprints.Entry entry, int emeralds) {
 		return new MerchantOffer(new ItemCost(Items.EMERALD, emeralds), BlueprintItem.create(entry.id(), entry.size()), 3, 10, 0.05f);
 	}

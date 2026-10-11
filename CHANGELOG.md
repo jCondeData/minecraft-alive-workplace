@@ -28,6 +28,25 @@ asks for the steps, `latest.log` and any crash report).
   side of the camp. Mother and colony become sister villages, with a free caravan route both ways outside the route
   limit; both chronicles note the founding and the owner gets a letter. With no room near the spot (all water, a
   cliff) the settlers come home, the supplies go back and the charter's cost goes back into the treasury.
+### Added
+- **Pillager warbands, for 1.6** (32.7): by a Town or City in the plains, forests, taiga, snowy lands or savanna, a
+  pillager warband may raise a War Camp (a ring of sharpened logs, three tents, the Warlord's tent and its chest, a
+  ravager pen, a siege yard, the ominous banner on a pole), three times as likely as bandits. Its named Warlord wears
+  iron and the ominous banner; its raids are sieges with ladders and ravager rams (one at a Town, two and an evoker at
+  a City), and at a City the Warlord leads them himself: bring him down at the walls and his camp breaks.
+
+- **Grander homes (1.8).** Two new houses in the Blueprint Table: the **Artisan's House** (a narrow timber house with a
+  stone workroom below and two beds above; its II adds a workshop wing and a third bed) and the **Burgher's
+  Townhouse** (three storeys of brick and timber with a shop window and two bedrooms; its II a walled courtyard garden
+  and a third bedroom; its III a corner tower with a study). Every home now has a grade: its tier, or more if a
+  `homes/` data file says so (the Townhouse is grade II, its upgrades III). Builders sell the Artisan's House from
+  Apprentice and the Townhouse once the village has Artisans. "What next?" names the households that want a grander
+  home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
+  Artisan's House or a Townhouse for them.
+
+### Fixed
+
+- The settings screen no longer cuts off the elder setting: it now reads "Days Until Elder" (B102).
 
 ## 0.142.0 — 2026-10-10
 
@@ -75,6 +94,14 @@ asks for the steps, `latest.log` and any crash report).
   are unloaded, and back out. They are only a sight: the goods travel the saved way, and nobody can trade with, ride,
   feed, hurt or rob them. One party per village at a time, gone after two minutes, removed after a restart.
   `visibleCaravans` turns them off.
+- **Sieges, part 3: battle stations and the morning after, for 1.6** (32.6, off until 1.6 is finished): when a siege
+  begins, archers go up to the tops of Wall Towers and Lookout Towers and the walkways of gates and walls, knights
+  hold the inside of the gate the rams go for and medics stand behind them. From a station an archer shoots 24 blocks
+  (16 on the ground) and hits a quarter harder at foes 3 or more blocks below. The next dawn the chronicle has a
+  siege report with the hero of the night, players who killed a raider in a siege that was fought off are Heroes of
+  the Village for a day, villagers are 10 happier for a day ("we held against the siege"), and for 2 days builders
+  mend walls and gates before houses. New research **Ramparts** (after Fortification I): gates have twice the hit
+  points and archers on stations shoot 28 blocks.
 - **Elders, for 1.8** (34.19, off until 1.8 is finished): after 120 grown days a villager is an elder. The chronicle
   notes the day ("Bram is an elder now"), they walk 15% slower on their work's errands, their mood has "a quiet old
   age" (+5) while they are fed and have a bed, and off work they have four lines of their own ("In my day this was all
@@ -83,6 +110,22 @@ asks for the steps, `latest.log` and any crash report).
   name ("Chief Harl Ashgrave", one of twenty) over his head and in every message and chronicle line, and the camp has a
   strength (6, one more a day, 10 at most): a raid takes its raiders from it, those alive at dawn rejoin, the dead are
   gone, so a camp that lost a costly night is weak. Any datapack culture with a `lair` makes camp the same way.
+- **Sieges: rams and gates, for 1.6** (32.4, off until 1.6 is finished): a raid by raiders who ram gates on a village
+  with a finished wall or gate is a siege. The gates shut at once, whatever the hour, and the Gatehouse's portcullis
+  drops; both open again at the first dawn after. A ravager ram (or raiders with axes) pounds the gate nearest the
+  raiders: every blow is heard, the cracks grow, and the block breaks without dropping anything (a fence gate has 60
+  hit points, a door 80, iron bars 150: about 10 seconds through a Palisade Gate, about a minute through a Gatehouse).
+  Only the gates of finished builds break, never a gate you placed; builders put them back. The Defence page shows the
+  gates, the portcullis and what is broken. New settings `sieges` and `siegeDamage`; the mobGriefing game rule off also
+  keeps gates standing.
+- **Sieges: ladders over the walls, for 1.6** (32.5, off until 1.6 is finished): raiders who carry ladders (the
+  climbers of a culture with the tactic `ladders`) and find a wall in their way set a ladder up its outer face, a rung
+  every half second, up to 10 high; they climb over and drop inside, and the other raiders follow up the same ladder
+  while the gate is shut. The chat says "Ladders at the walls of Oakbrook! A guard on the wall can throw them down." A
+  guard on the walkway within 2 blocks of a ladder's top does: the whole ladder goes and whoever is on it falls.
+  Ladders go on any wall, a player's too, but only into air; every one is taken away when the raid is over, also after
+  a restart, and nothing else is changed. A siege now gathers beyond the outermost finished wall on its side, so no
+  raider appears inside the walls. With mobGriefing off no ladder is set; `sieges` off turns it all off.
 - **The Defence page, for 1.6** (32.3): the guards icon on the Village Hall opens it: the camp, its captain, its
   strength, roughly where it lies, the days it has stood, and the last three attacks and how they ended.
 - **The price board** (33.4, part of 1.7, off until it's released): the minecart on the Village Hall opens a **Trade**
@@ -115,8 +158,6 @@ asks for the steps, `latest.log` and any crash report).
 - **Collecting a village's treasury is now for its owner, their friends and operators, in every village** (33.5, with
   1.7's `villageEconomy`; until then nothing changes). Before, anyone who could open the hall of an open village
   could collect; now that strangers' trades draw on the treasury, they can't. A hall nobody owns stays open to all.
-
-### Changed
 - **Raids run on a new threat engine** (32.2), the base of 1.6's threats. Monster and bandit raids look and count as
   before, but who raids is now data (`data/aliveworkplace/raider_cultures/monsters.json` and `bandits.json`; a datapack
   can add cultures of its own, with their own mobs, gear and lands). Two things work differently: a raid under way now
@@ -128,6 +169,10 @@ asks for the steps, `latest.log` and any crash report).
   1.6 is finished.
 
 ### Fixed
+- **Elders and the nimble keep their own pace** (B95): now and then a worker on the way to a job walked at the plain
+  villager speed instead (an elder at full speed, a nimble villager no faster than the rest). They hold their pace now.
+- **The Pathfinder now waits for an Expert explorer** (B96): the Legend's file asked for a Journeyman Cartographer
+  (level 3) where its design says Expert (level 4). A Pathfinder who has already come stays.
 - **A workstation's tooltip no longer names a job that is switched off** (B97): with `vintners` off the cauldron still
   offered the Vintner. The same went for the Gem Grower (`gemGrowers`) at the stonecutter and, with Cobblemon, the
   Berry Breeder, Camp Cook, Habitat Keeper and Daycare Keeper behind their switches. Now only the jobs you can

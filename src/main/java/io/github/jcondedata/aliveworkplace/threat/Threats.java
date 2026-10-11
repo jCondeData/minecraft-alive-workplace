@@ -54,6 +54,8 @@ public final class Threats implements ResourceManagerReloadListener {
 	public static final ResourceLocation BANDITS = AliveWorkplace.id("bandits");
 	/** The tag every raider carries (the same as {@code VillageRaids.TAG}): whoever has it is a foe to guards. */
 	public static final String RAIDER_TAG = "aliveworkplace_raider";
+	/** The tag of a culture's {@code extras} in a raid (32.7): no part of a lair's band, they never rejoin it. */
+	public static final String EXTRA_TAG = "aliveworkplace_raid_extra";
 	/**
 	 * The cultures the config switches off: {@code raiderCultures} entries set to false ({@code monsters}, or
 	 * {@code pack:id}), and {@code monsters} or {@code bandits} when {@code villageRaids} or {@code banditCamps} is off.

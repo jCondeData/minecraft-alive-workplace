@@ -184,9 +184,9 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B108** (approved auto 2026-10-11) FerryEdgeGameTests.aTicketToAnotherDimensionTakesYouThere hung a local full build (lane-a-1011-0332, 2026-10-11 ~05:54Z): the server thread sat 14 minutes in ServerChunkCache.getChunk (managedBlock) called from FerryEdgeGameTests.java:112, loading a chunk in the other dimension synchronously, and the suite never finished. Expected: the test never blocks the server thread on another dimension's chunk (load it with a ticket and wait ticks, or a timeout). Test: the full runGameTest finishes; the repeat generator on that test (test-only, QA lane) (found by lane-a-1011-0332, 2026-10-11) Fixed (qa-1011-0733): the test forces the Nether chunk with a ticket and waits for it with runAfterDelay instead of nether.getChunk; FerryEdgeGameTests passes 4 of 4.
 - [ ] **B109** PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap failed once in lane-a-1011-0633's local full build (07:50Z, main cee378e4 + 33.11/33.12, realms off in tests): 'no barrel: BlockPos{x=-12667502, y=-58, z=14421448}' - the diary heirloom was placed (other.placed set) 17 blocks past the test's z edge, at a spot that held no non-empty barrel, so with PLACE_CHUNKS = 0 it still chose a spot near another test's area or that spot was cleared by a neighbour. Passed on main CI 805. Test-only (QA lane). Expected: passes every run. Test: the repeat generator on that test in the full suite (found by lane-a-1011-0633, 2026-10-11)
 - [ ] **B110** PartnersAllCompatTests.aCombeeCirclesTheHive failed once in lane-c-1011-0633's local full build (main cee378e4 + 31.12/31.13/31.14, 2026-10-11 09:01Z): '(…) no hive show: [] (this worker had a show 0 ticks ago)', then passed in the next runCompatGameTest (202/202). Expected: passes in every run. Test: runCompatGameTest a few times (QA lane: test-only flake) (found by lane-c-1011-0633, 2026-10-11) (found by lane-c-1011-0633, 2026-10-11)
-- [x] **B111** (approved auto 2026-10-11) PiglinGameTests.aPiglinPassingAChestTakesItsGoldAndDropsItWhenKilled failed in the full suite on main CI build 812 (cfeebd5b, 2026-10-11 09:39Z): 'the gold isn't shown' (the piglin carried the gold but its HEAD slot was not the gold ingot at tick 45); it passes alone (8 of 8 with ExpansionGateGameTests, qa-1011-1034). Plunder.carry only shows the gold when HEAD is empty, so something filled the head first (roster gear, or state another test leaves). Expected: passes every run. Test: repeat the test 10x with the repeat generator inside the full piglin batch (QA lane, test-only until a cause in Plunder or Threats.outfit is seen) (found by qa-1011-1034, 2026-10-11) (found by qa-1011-1034, 2026-10-11)
-- [x] **B112** (fixed by lane-d-1011-0933: openGround waits until the forced chunks tick) ScoutGameTests.aScoutSentToALair60BlocksOffGetsWithin24AndIsHomeWithin2400Ticks fails whenever it runs in one GameTest run with CheckBugGameTests and StewardRoundsQaGameTests (origin/main d845255e, narrowed to those 3 classes, lane-a-1011-0933 at 12:00Z): 'the scout slot: [... No scout: sneak-right-click a guard with a spyglass ...]' at ScoutGameTests.java:232, so the hall counts no scout; passes alone and with other classes, and in main CI's full order. Also failed in lane-a's local full build (11:39Z) with CheckBugGameTests.aStrangersArrowsDontHurtTheVillage and StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts, which both pass in narrowed runs. Test-only (QA lane): likely a leftover guard post or village from another batch at the same spot; the scoutTrip test doesn't call Leftovers.clear. Expected: passes in any order. Test: those 3 classes narrowed, then the repeat generator (found by lane-a-1011-0933, 2026-10-11)
-- [ ] **B113** StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts failed in CI build 817 (42a90dbd, 2026-10-11 12:12Z) with 'stops: 3' right after appointing the Steward: two zones were painted, so a third stop came from an earlier batch's leftovers at the same spot, a Storehouse built outside its own test area (never cleared) or a saved build site whose stewardHall is this hall (StewardRoundsQa doesn't clear either). Passes in narrowed runs. Expected: exactly the two zone stops in any test order; the test clears leftover steward sites and storehouses near its area first. Test: StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts (found by lane-a-1011-1233, 2026-10-11)
+- [ ] **B111** PiglinGameTests.aPiglinPassingAChestTakesItsGoldAndDropsItWhenKilled failed in the full suite on main CI build 812 (cfeebd5b, 2026-10-11 09:39Z): 'the gold isn't shown' (the piglin carried the gold but its HEAD slot was not the gold ingot at tick 45); it passes alone (8 of 8 with ExpansionGateGameTests, qa-1011-1034). Plunder.carry only shows the gold when HEAD is empty, so something filled the head first (roster gear, or state another test leaves). Expected: passes every run. Test: repeat the test 10x with the repeat generator inside the full piglin batch (QA lane, test-only until a cause in Plunder or Threats.outfit is seen) (found by qa-1011-1034, 2026-10-11) (found by qa-1011-1034, 2026-10-11)
+- [x] **B112** (approved auto 2026-10-11) ScoutGameTests.aScoutSentToALair60BlocksOffGetsWithin24AndIsHomeWithin2400Ticks fails whenever it runs in one GameTest run with CheckBugGameTests and StewardRoundsQaGameTests (origin/main d845255e, narrowed to those 3 classes, lane-a-1011-0933 at 12:00Z): 'the scout slot: [... No scout: sneak-right-click a guard with a spyglass ...]' at ScoutGameTests.java:232, so the hall counts no scout; passes alone and with other classes, and in main CI's full order. Also failed in lane-a's local full build (11:39Z) with CheckBugGameTests.aStrangersArrowsDontHurtTheVillage and StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts, which both pass in narrowed runs. Test-only (QA lane): likely a leftover guard post or village from another batch at the same spot; the scoutTrip test doesn't call Leftovers.clear. Expected: passes in any order. Test: those 3 classes narrowed, then the repeat generator (found by lane-a-1011-0933, 2026-10-11)
+- [x] **B113** (approved auto 2026-10-11) StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts failed in CI build 817 (42a90dbd, 2026-10-11 12:12Z) with 'stops: 3' right after appointing the Steward: two zones were painted, so a third stop came from an earlier batch's leftovers at the same spot, a Storehouse built outside its own test area (never cleared) or a saved build site whose stewardHall is this hall (StewardRoundsQa doesn't clear either). Passes in narrowed runs. Expected: exactly the two zone stops in any test order; the test clears leftover steward sites and storehouses near its area first. Test: StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts (found by lane-a-1011-1233, 2026-10-11)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -3894,7 +3894,7 @@ on a real world.
   Each previewed on the villager model in every biome, over six different jobs. Until the owner picks, v1 of each is
   the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
   wired in as the textures.
-- [x] **34.18** (review: pending 2026-10-11) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
+- [ ] **34.18** **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
   and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
   villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new
   `Platform` event) and whenever either changes; `classOutfits` in the config turns the layers off. The owner's picks
@@ -3921,7 +3921,7 @@ on a real world.
   it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
   (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
   40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
-- [x] **34.20** (review: pending 2026-10-11) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
+- [ ] **34.20** **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
     (34.8); with nobody, the elder keeps working and the hall says "Bram would like to retire: the village needs a
@@ -3938,7 +3938,7 @@ on a real world.
 
   Done when: `RetirementGameTests` (a full hand-over in order, each "never while" case, the level and assignments
   carried over, a retired elder never re-employed, the mentor's 50%) pass; scene `retirement` passes.
-- [x] **34.21** (review: pending 2026-10-11) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
+- [ ] **34.21** **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
   fields in `Families.Parents`; old records keep their names only). The hall keeps the village's **Book of
   Families**: everyone who has lived there (id, name, family name, the day they were born or grew up, the day they
   died, parents, partner, trade), up to 400, the longest dead forgotten first. **Family names**: a villager whose
@@ -3949,7 +3949,7 @@ on a real world.
   Ashby"), and a family's third generation is noted. The Printer (34.11) prints any family's tree as a written book
   for 2 emeralds. `familyNames` in the config. Done when: `FamilyTreeGameTests` (three generations, a death, the 400
   cap, a reload, an old Parents record without ids) pass; scene `family_tree` passes.
-- [x] **34.22** (review: pending 2026-10-11) **Switching it on for every village at once.** The owner's live server gets classes the moment it
+- [ ] **34.22** **Switching it on for every village at once.** The owner's live server gets classes the moment it
   runs 1.8, in every village with a hall, so the first rounds after the update must be safe. When a hall's round
   finds it has never been seeded (`classesVersion` 0, a new saved field on the hall):
   - it seeds 16 villagers a round, so a big City takes a few minutes: each household gets the highest class whose
@@ -4440,7 +4440,6 @@ item waits.
 
 ## Notes / blocked
 
-- 2026-10-11 lane-d-1011-0332: 34.18 and 34.20 are built and ticked on `wip/lane-d` but not yet full-built together. The first full build on the merge failed 3 tests: B104 (known flake), B107 (LegendGuests, filed by lane b) and PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap ("no barrel"; passes on main CI, cause not found, maybe a flake); the rerun was cut off at the end of the run. Next lane-d run: merge `wip/lane-d` into main, run the full build, look at the heirloom test if it fails again, push.
 - **The player guide (22.10, lane-d-1011-0332, 2026-10-11): published at `/player-guide/`, not `/guide/`.** The Guide
   Book's showcase scene is named `guide`, so the showcase site's `/guide/` folder is already its pictures; renaming the
   scene would break its history. The guide's pages are `docs/guide/*.md`; `tools/playerguide/site.py` turns them into
@@ -4505,51 +4504,6 @@ item waits.
   (3,200, treasury and player shares alike) goes back into the mother's treasury on a no-room return; sister routes
   carry no goods for sale and can't be turned off; a colony with no Storehouse yet unloads caravans into the chests by
   its hall.
-- 2026-10-11 (34.22, decisions; lane d): `people/ClassMigration` (the design note's `hall/ClassMigration`; it works
-  on villagers) runs first in the hall's round, before `FamilyBook.round`, so ages and family names are written before
-  the book. Hall NBT `classesVersion` (0) and `classGraceUntil` (0); nothing about progress is saved: who has
-  `social_class` is seeded, so a crash re-seeds only the rest. Our choices: seeding caps at the ladder's third class (as
-  34.8's travellers), reads `fed_days` as fed now (no fed dawns were counted before 1.8), and a child takes the higher
-  of its parents' classes by id, else its building's, else Peasant; a couple is never split, so a round may seed 17; a
-  newcomer married to someone already seeded takes the higher class. Ages: `adult_since` = today - (0..99 from the
-  UUID), only where absent; the book entry an earlier round wrote with today as the grown-up day gets the seeded day.
-  "Nobody falls, nobody retires" (`ClassMigration.quiet`) covers the grace only (seeding takes a few rounds, a fall 3
-  dawns), luxuries drop out of the mood's lacking count in the grace, and `classGraceDays` 0 means no grace (the chat
-  line then has no days). The hall's own round seeds only with `ClassMigration.AUTO`, off in GameTests like
-  `villageClasses` (a hall round would seed other class tests' villagers mid-test). After the first
-  seeding a villager without a class is seeded at the next round, quietly. The chronicle and chat count people, not
-  households; the counts use `class.<ns>.<id>.one/.many` (a pack's class without them reads "3 Guildmaster"). The
-  hall shows the days left on the Classes tab and page header and a clock on the Classes page (each class's
-  luxuries). `/workplace classes status|reseed` needs permission 2; reseed keeps ages and family names. The scene's
-  "before" has classes off (else the hall's own round would seed them first). Details: `docs/wiki/classes.md`.
-- 2026-10-11 (34.21, decisions; lane d): `people/FamilyBook` keeps each hall's Book of Families (hall NBT `families`,
-  plus `familiesNoted` for the third generations already noted) and gives family names (villager attachment
-  `family_name`, 1 to 60, `family_name.aliveworkplace.<n>`, founded by UUID); `Families.Parents` got `mother_id` and
-  `father_id` (absent in older records). The book and Family page have no switch of their own: they come with 1.8
-  (`FamilyBook.ENABLED` = `Expansions.M34`); `familyNames` (M34-gated) only hides the names, which are still given, so
-  turning it on again loses nothing. Our choices: villagers have no gender, so the chronicle says "grandchild" ("Mira was
-  born to Dara and Tomas, grandchild of Bram Ashby and Ilse Corwen") and the page has one "Brothers and sisters" group;
-  a baby takes the first parent's family (the one the birth picks first), else the other's; babies born at the hall are
-  named at once (they were named at the next round) so the line can say who; a family's third generation is one more
-  than a parent of the same family, noted once per family as a `LIFE` entry. The Family button sits on the villager's
-  life story page (shift-click on the hall's list; slot 8), and a click on any relative opens theirs. The Printer prints
-  from that page (any family, by opening anyone's), taking 2 emeralds from the player (CobbleDollars at the usual rate)
-  and needing a Printer in the village: a fixed trade offer could not say which family. The tree is a plain written book
-  (as the design note says), two people a page. An old record without ids is matched to a living villager by the
-  parent's name for the family name only; the book keeps its parents unknown. Over 400 the longest dead go first, and
-  with nobody dead the first written in. Not changed: the old birth line ("A baby was born to ...") is kept when no
-  grandparent is known, and the grown-up line has no family name. The player guide is untouched (1.8 is still gated;
-  docs/guide/README.md: content goes in with the release that turns it on). Details: `docs/wiki/elders.md`.
-- 2026-10-11 (lane d, lane-d-1011-0633): `wip/lane-d` holds 34.18, 34.20, 34.21 and 34.22, merged with main at 09:00Z. Full builds found and fixed 4 tests broken by them (family names on the hall's list; a duplicate `class.<id>.one` lang key). The last full build ran 1,218 batches and then the GameTest server ran out of heap (`OutOfMemoryError: Java heap space`, 09:16Z), so nothing was proven green. LuxuryWorkGameTests.makesWhatsShortAndStopsAtEight and VillageGameTests.thePrintShopsPrinterTakesItsPress each failed once in a full run and passed every time alone. Next lane d run: merge main, full build (check whether the heap runs out on main too, or only with FamilyBook/ClassMigration), push.
-- 2026-10-11 (34.18, decisions; lane d): `people/ClassLook` sends `aliveworkplace:class_look` (entity id, class, the
-  class's layer, life stage) on tracking and from every change: `SocialClasses.seed`, a household's rise or fall (only
-  when the class really changed), a child following their parents, and `LifeStages.becameElder`. **The tracking event
-  already existed** (`Platform.onStartTracking`, added for 29.4's Legend look), so no new one was added. Client:
-  `ClassLookLayer` (class) and `ClassLookLayer.Elder` (face, never on a baby) on `VillagerRenderer` only, so zombie
-  villagers never wear them; drawn before the Legend outfit and guard armor. A child growing up sends nothing: the
-  client reads `isBaby` itself, and a grown-up child is not an elder. `classOutfits` (M34-gated like its siblings) stops
-  both the sending and the drawing. `PICKED` stays v1 until the owner picks. The test drives a mock player's chunk
-  acks and `ChunkMap.move` so the real tracking event fires.
 - 2026-10-11 (34.17, decisions and a hand-over to 34.18; lane d): the twelve layers are drawn in
   `tools/textures/art/classes.py` (lint clean); v1 of each ships at `textures/entity/villager/class/<class>.png`, and the
   elder's face at `class/elder.png` (the same folder, so all of 34.17 is in one place). The picker page is

@@ -126,9 +126,11 @@ public class ScoutGameTests implements FabricGameTest {
 	 * Open ground for a long walk, away from every test area (the framework walls each one in with barriers, and they
 	 * stand in rows): 5000 blocks east of this one. Only the chunks the walk crosses are kept loaded, a strip {@code length}
 	 * blocks east and a chunk to either side, and every one is let go when the test ends (with whatever stood on them):
-	 * a wider block of forced ground once ran the full suite out of memory. Returns the spot on the ground there.
+	 * a wider block of forced ground once ran the full suite out of memory. Runs {@code then} with the spot on the ground
+	 * there once the strip's entities are loaded (B112): a chunk is loaded at once, but its entities only some ticks later,
+	 * and until then a villager put there is in no search, so the hall counted no scout when no earlier test had been there.
 	 */
-	private static BlockPos openGround(GameTestHelper helper, int length) {
+	private static void openGround(GameTestHelper helper, int length, java.util.function.Consumer<BlockPos> then) {
 		ServerLevel level = helper.getLevel();
 		BlockPos here = helper.absolutePos(HALL);
 		int x0 = here.getX() + 5000;
@@ -146,19 +148,10 @@ public class ScoutGameTests implements FabricGameTest {
 				e -> !(e instanceof ServerPlayer)).forEach(net.minecraft.world.entity.Entity::discard);
 			forced.forEach(c -> level.setChunkForced((int) c[0], (int) c[1], false));
 		});
-		// Loaded is not yet ticking: until the chunk system's queued work promotes them, their entity sections are hidden,
-		// so a scout added there isn't found by the hall ("No scout", B112) and doesn't walk. Run that work now, for at
-		// most 10 s (never block the server thread for good, as B108's wait in another dimension once did).
-		long deadline = System.nanoTime() + 10_000_000_000L;
-		while (!forced.stream().allMatch(c -> level.isPositionEntityTicking(new BlockPos(((int) c[0] << 4) + 8, here.getY(), ((int) c[1] << 4) + 8)))
-			&& System.nanoTime() < deadline) {
-			if (!level.getChunkSource().pollTask()) {
-				java.util.concurrent.locks.LockSupport.parkNanos(100_000L);
-			}
-		}
-		helper.assertTrue(forced.stream().allMatch(c -> level.isPositionEntityTicking(new BlockPos(((int) c[0] << 4) + 8, here.getY(), ((int) c[1] << 4) + 8))),
-			"the open ground 5000 blocks east isn't ticking after 10 s");
-		return new BlockPos(x0, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x0, z0), z0);
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(forced.stream().allMatch(c -> level.areEntitiesLoaded(net.minecraft.world.level.ChunkPos.asLong((int) c[0], (int) c[1]))),
+				"the open ground's entities aren't loaded"))
+			.thenExecute(() -> then.accept(new BlockPos(x0, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x0, z0), z0)));
 	}
 
 	private static List<String> lines(ItemStack icon) {
@@ -224,7 +217,10 @@ public class ScoutGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		// The village out on open ground: its hall, the scout's post and chest, the scout.
 		// The walk reaches no further than the lookout, 24 blocks short of the lair, and a leg (16) past it.
-		BlockPos hall = openGround(helper, 60 - Scouts.SIGHT + 16);
+		openGround(helper, 60 - Scouts.SIGHT + 16, hall -> scoutTrip(helper, level, hall));
+	}
+
+	private static void scoutTrip(GameTestHelper helper, ServerLevel level, BlockPos hall) {
 		BlockPos post = hall.offset(3, 0, 3);
 		BlockPos chestAt = hall.offset(3, 0, 5);
 		level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());

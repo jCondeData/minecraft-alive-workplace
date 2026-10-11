@@ -79,6 +79,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.init();
 		io.github.jcondedata.aliveworkplace.colony.Colonies.init();
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
+		io.github.jcondedata.aliveworkplace.people.ClassLook.init(); // dressed by class, in game (34.18)
 		io.github.jcondedata.aliveworkplace.people.HomeGrades.init(); // 34.15: data files that grade homes
 		io.github.jcondedata.aliveworkplace.hall.ClassesPage.init(); // the hall's Classes page (34.6)
 		io.github.jcondedata.aliveworkplace.hall.Services.init(); // services nearby (34.3)

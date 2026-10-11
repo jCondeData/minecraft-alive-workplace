@@ -268,6 +268,7 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 	public static void seed(Villager villager, SocialClass c) {
 		ModAttachments.SOCIAL_CLASS.set(villager, c.id());
 		ModAttachments.CLASS_PROGRESS.remove(villager);
+		ClassLook.update(villager);
 	}
 
 	public static Progress progress(Villager villager) {
@@ -441,7 +442,11 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 		int turn = after.tier() > current.tier() ? 1 : after.tier() < current.tier() ? -1 : 0;
 		List<UUID> who = new ArrayList<>();
 		for (Villager v : household.members()) {
+			boolean changed = !after.id().equals(ModAttachments.SOCIAL_CLASS.get(v));
 			ModAttachments.SOCIAL_CLASS.set(v, after.id());
+			if (changed) {
+				ClassLook.update(v);
+			}
 			ModAttachments.CLASS_PROGRESS.set(v, new Progress(met, missed, progress(v).fed(), today));
 			Standing was = ModAttachments.CLASS_STANDING.get(v);
 			ModAttachments.CLASS_STANDING.set(v, turn != 0 ? new Standing(today, lacking, today, turn, wants)
@@ -538,8 +543,9 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 					best = c;
 				}
 			}
-			if (best != null) {
+			if (best != null && !best.id().equals(ModAttachments.SOCIAL_CLASS.get(child))) {
 				ModAttachments.SOCIAL_CLASS.set(child, best.id());
+				ClassLook.update(child);
 			}
 		}
 		Progress p = progress(child);

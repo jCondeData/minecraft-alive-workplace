@@ -27,6 +27,9 @@ asks for the steps, `latest.log` and any crash report).
   pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
   The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
   34.18's render layer.
+- **Dressed by class, in game** (34.18): Artisans, Burghers and Nobles now wear their class over their job's outfit,
+  children too, and elders have grey brows and a beard; it changes as soon as a household rises or falls or a villager
+  becomes an elder. Zombie villagers never wear it. `classOutfits` in the settings turns it off.
 
 ### Fixed
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its

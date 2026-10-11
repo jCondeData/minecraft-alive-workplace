@@ -217,6 +217,7 @@ public final class LifeStages {
 	 */
 	private static void becameElder(ServerLevel level, BlockPos hall, Villager villager) {
 		ModAttachments.ELDER_NOTED.set(villager, true);
+		ClassLook.update(villager); // the elder's look (34.18)
 		if (!isAgeless(villager)) {
 			Chronicle.atHall(level, hall, Chronicle.Kind.LIFE, Component.translatable("chronicle.aliveworkplace.elder", villager.getDisplayName()));
 		}

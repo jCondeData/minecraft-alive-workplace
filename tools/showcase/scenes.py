@@ -546,6 +546,11 @@ SCENES = [
       [("01_elders_card", "Bram's card: an elder, grown 120 days, with a quiet old age"),
        ("02_elders_talk", "\"In my day this was all fields.\""),
        ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
+    # Dressed by class (ROADMAP 34.18): the four classes in three jobs each, and an elder, in daylight
+    S("class_outfits", "Village Hall", "Dressed by class: the four classes and an elder",
+      "twelve villagers stood in four columns, Peasant, Artisan, Burgher and Noble, each a farmer, a librarian and a toolsmith, every one wearing their class over a job outfit that still reads; the client was told each one's class and stage of life; Bram, an elder Noble, wore grey brows and a beard as well", 25,
+      [("01_class_outfits_rows", "Peasant, Artisan, Burgher, Noble (left to right), each a farmer, a librarian and a toolsmith"),
+       ("02_class_outfits_elder", "Bram, an elder Noble farmer, beside a grown Noble toolsmith")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"),

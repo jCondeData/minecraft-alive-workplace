@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Classes switch on by themselves** (34.22, 1.8): every village with a hall from an older save finds its places, 16
+  villagers every 30 seconds: each household gets the highest class it already qualifies for (luxuries aside, at most
+  Burgher), children their parents', grown-ups an age spread over the last 100 days and a family name. The chronicle
+  and the players there hear it once ("The people of Thornholm found their places: 14 peasants, 6 artisans and 2
+  burghers"), then a week of settling in (`classGraceDays`, 7): nobody falls a class, luxuries aren't needed yet,
+  nobody retires, and the Classes page says "Settling in: 5 days left" with what each class will need. Nobody loses a
+  job, no rank or takings drop, and build sites, quarries, daycare Pokémon, fossils and parcels are untouched.
+  Operators: `/workplace classes status` and `/workplace classes reseed`.
 - **Family trees** (34.21, 1.8): every villager in a village with a hall has a family name, founded or taken from a
   parent, shown on the hall as "Dara (Ashby)" (the name over their head never changes). Each hall keeps the Book of
   Families: up to 400 people who lived there, the longest dead forgotten first. A villager's page has a Family button:

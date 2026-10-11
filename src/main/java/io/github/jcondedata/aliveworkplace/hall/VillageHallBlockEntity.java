@@ -65,6 +65,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** Whether the next festival is a Noble's Ball (34.7: every other one in a village with a Noble), and the day of the last ball (-100: none). */
 	private boolean ballTurn;
 	private long ballDay = -100;
+	/** Classes switched on here (34.22): 0 never seeded (halls saved before 1.8), 1 seeded with 1.8's rules; and the last day of settling in (0: none). */
+	private int classesVersion;
+	private long classGraceUntil;
 	/** The village's own Habitat Block (ROADMAP 28.14), or null. */
 	@org.jetbrains.annotations.Nullable
 	private net.minecraft.core.BlockPos habitat;
@@ -177,6 +180,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
+			io.github.jcondedata.aliveworkplace.people.ClassMigration.round(server, pos, hall); // classes switched on: 16 seeded a round (34.22)
 			io.github.jcondedata.aliveworkplace.people.FamilyBook.round(server, pos, hall); // family names and the Book of Families (34.21)
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
 			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
@@ -464,6 +468,21 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	public boolean ballTurn() {
 		return ballTurn;
+	}
+
+	public int classesVersion() {
+		return classesVersion;
+	}
+
+	public long classGraceUntil() {
+		return classGraceUntil;
+	}
+
+	/** Classes seeded (34.22) at {@code version}, settling in until {@code graceUntil}; version 0 seeds them again. */
+	public void setClasses(int version, long graceUntil) {
+		classesVersion = version;
+		classGraceUntil = graceUntil;
+		setChanged();
 	}
 
 	public void setBallTurn(boolean turn) {
@@ -849,6 +868,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
 		ballTurn = tag.contains("ballTurn") && Nbt.getBoolean(tag, "ballTurn");
+		classesVersion = Nbt.getInt(tag, "classesVersion");
+		classGraceUntil = Nbt.getLong(tag, "classGraceUntil");
 		families.load(tag, registries);
 		ballDay = tag.contains("ballDay") ? Nbt.getLong(tag, "ballDay") : -100;
 		habitat = tag.contains("habitat") ? net.minecraft.core.BlockPos.of(Nbt.getLong(tag, "habitat")) : null;
@@ -960,6 +981,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
 		tag.putBoolean("ballTurn", ballTurn);
+		tag.putInt("classesVersion", classesVersion);
+		tag.putLong("classGraceUntil", classGraceUntil);
 		families.save(tag, registries);
 		tag.putLong("ballDay", ballDay);
 		if (habitat != null) {

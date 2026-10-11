@@ -3926,7 +3926,7 @@ on a real world.
   Ashby"), and a family's third generation is noted. The Printer (34.11) prints any family's tree as a written book
   for 2 emeralds. `familyNames` in the config. Done when: `FamilyTreeGameTests` (three generations, a death, the 400
   cap, a reload, an old Parents record without ids) pass; scene `family_tree` passes.
-- [ ] **34.22** **Switching it on for every village at once.** The owner's live server gets classes the moment it
+- [x] **34.22** (review: pending 2026-10-11) **Switching it on for every village at once.** The owner's live server gets classes the moment it
   runs 1.8, in every village with a hall, so the first rounds after the update must be safe. When a hall's round
   finds it has never been seeded (`classesVersion` 0, a new saved field on the hall):
   - it seeds 16 villagers a round, so a big City takes a few minutes: each household gets the highest class whose
@@ -4457,6 +4457,23 @@ item waits.
   (3,200, treasury and player shares alike) goes back into the mother's treasury on a no-room return; sister routes
   carry no goods for sale and can't be turned off; a colony with no Storehouse yet unloads caravans into the chests by
   its hall.
+- 2026-10-11 (34.22, decisions; lane d): `people/ClassMigration` (the design note's `hall/ClassMigration`; it works
+  on villagers) runs first in the hall's round, before `FamilyBook.round`, so ages and family names are written before
+  the book. Hall NBT `classesVersion` (0) and `classGraceUntil` (0); nothing about progress is saved: who has
+  `social_class` is seeded, so a crash re-seeds only the rest. Our choices: seeding caps at the ladder's third class (as
+  34.8's travellers), reads `fed_days` as fed now (no fed dawns were counted before 1.8), and a child takes the higher
+  of its parents' classes by id, else its building's, else Peasant; a couple is never split, so a round may seed 17; a
+  newcomer married to someone already seeded takes the higher class. Ages: `adult_since` = today - (0..99 from the
+  UUID), only where absent; the book entry an earlier round wrote with today as the grown-up day gets the seeded day.
+  "Nobody falls, nobody retires" (`ClassMigration.quiet`) covers the grace only (seeding takes a few rounds, a fall 3
+  dawns), luxuries drop out of the mood's lacking count in the grace, and `classGraceDays` 0 means no grace (the chat
+  line then has no days). The hall's own round seeds only with `ClassMigration.AUTO`, off in GameTests like
+  `villageClasses` (a hall round would seed other class tests' villagers mid-test). After the first
+  seeding a villager without a class is seeded at the next round, quietly. The chronicle and chat count people, not
+  households; the counts use `class.<ns>.<id>.one/.many` (a pack's class without them reads "3 Guildmaster"). The
+  hall shows the days left on the Classes tab and page header and a clock on the Classes page (each class's
+  luxuries). `/workplace classes status|reseed` needs permission 2; reseed keeps ages and family names. The scene's
+  "before" has classes off (else the hall's own round would seed them first). Details: `docs/wiki/classes.md`.
 - 2026-10-11 (34.21, decisions; lane d): `people/FamilyBook` keeps each hall's Book of Families (hall NBT `families`,
   plus `familiesNoted` for the third generations already noted) and gives family names (villager attachment
   `family_name`, 1 to 60, `family_name.aliveworkplace.<n>`, founded by UUID); `Families.Parents` got `mother_id` and

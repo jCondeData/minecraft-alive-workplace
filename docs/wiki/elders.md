@@ -4,8 +4,8 @@ Life stages for villagers: after a long grown life a villager becomes an elder a
 unless a player gives a good elder an Evergreen Charm; and every family keeps a tree. Part of 1.8 (Classes and luxuries): off for players until 1.8
 is finished. Built so far: ages, the slower walk, the "quiet old age" mood, the elders' chatter and the chronicle's note
 (34.19), the passing and the charm (34.19a), retirement, apprentices and mentoring (34.20), family names, the Book of
-Families, the Family page and the Printer's family tree (34.21). Still planned and not in the
-game: the elder look (34.18) and the seeding of everyone's age (34.22); this page grows with them.
+Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
+on (34.22, [Classes](classes.md)).
 
 Roadmap items: 34.19, 34.19a, 34.20, 34.21, B95, B99, B102
 
@@ -82,8 +82,9 @@ everyone of the family, generation by generation, two to a page.
 
 - **Age.** `adult_since` is the `Chronicle.day` a villager grew up. It is written when a child grows up in a hall's
   round (`Families.round`). Whether someone is an elder is never saved: it is `today - adult_since >= villagerElderDays`
-  (`people/LifeStages`). A villager with no `adult_since` (everyone in a world from before 1.8, until 34.22 seeds them)
-  is never an elder and never passes.
+  (`people/LifeStages`). A villager with no `adult_since` is never an elder and never passes;
+  in a world from before 1.8 the hall's first rounds give everyone one, spread over the last 100 days by their UUID
+  (34.22), so the first elders come about three weeks later, one at a time.
 - **The chronicle's note.** The hall's round writes "Bram is an elder now" (kind `LIFE`) the first time it sees them
   as an elder, and marks them `elder_noted` so it is written once: on the day itself, or, if the village wasn't loaded
   that day, the next time it is. An elder an Evergreen Charm already wrote into the chronicle gets no second line.
@@ -249,13 +250,12 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 - The successor's shadowing walk and the mentor's walk use the villager's own tick, so with the village far from
   every player nothing moves; the hand-over still happens in the hall's round.
 - A retired elder "sits by the hall": they walk there and stand; there is no seat to sit on yet.
-- Until 34.22 seeds ages, only children who grow up from now on ever become elders.
 - The happy-day count needs a Village Hall and `villagerMoods` on; without them only Masters, Gifted and Legends qualify.
 - An elder in a village whose hall is never loaded at night doesn't pass until it is.
 - A villager who leaves the village alive (a colony's settler, one who wanders off) stays in its book as living; the
   book only learns of deaths near a hall.
 - Villagers already grown when the book first meets them are dated from that day (or the day they grew up, when known);
-  34.22's seeding of ages does not rewrite the book.
+  34.22's seeding of ages rewrites the day of an entry the book wrote before it (the book had dated them that day).
 - A family's third generation is noted only when the baby is born in a loaded village with a hall; one born the vanilla
   way is noted at the hall's next round, without the grandparents' birth line.
 

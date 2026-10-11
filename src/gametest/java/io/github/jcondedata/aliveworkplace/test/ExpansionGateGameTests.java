@@ -46,7 +46,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"sieges", "siegeDamage");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
-		"classRiseDays", "classFallDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "villagerElderDays", "colonyCooldownDays",
+		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "villagerElderDays", "colonyCooldownDays",
 		"coloniesPerVillage");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
@@ -171,8 +171,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 97 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (97 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 98 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (98 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -217,7 +217,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 97, "every option on the screen in GameTests (34.21 added familyNames)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 98, "every option on the screen in GameTests (34.22 added classGraceDays)");
 		helper.succeed();
 	}
 }

@@ -170,7 +170,7 @@ public final class Retirement {
 				mentor(level, elder, all);
 			}
 		}
-		if (!ENABLED || busy || all.stream().anyMatch(v -> {
+		if (!ENABLED || busy || ClassMigration.quiet(level, hall, day) || all.stream().anyMatch(v -> { // nobody retires while classes settle in (34.22)
 			Retired r = ModAttachments.RETIRED.get(v);
 			return r != null && day - r.day() < EVERY_DAYS;
 		})) {

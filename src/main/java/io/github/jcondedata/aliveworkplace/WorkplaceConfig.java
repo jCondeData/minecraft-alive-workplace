@@ -182,6 +182,8 @@ public final class WorkplaceConfig {
 	public int classRiseDays = 2;
 	/** Dawns running a need of their own class must fail for a household to fall one class. */
 	public int classFallDays = 3;
+	/** Days a village settles in after classes are switched on there (ROADMAP 34.22): nobody falls a class, luxuries aren't needed yet, nobody retires. */
+	public int classGraceDays = 7;
 	/** Grown villagers count their days and become elders (ROADMAP 34.19). Off: nobody is an elder, so nobody passes of old age; the day they grew up stays saved. */
 	public boolean villagerAges = Expansions.on(Expansions.M34);
 	/** Grown days before a villager is an elder. */
@@ -334,6 +336,7 @@ public final class WorkplaceConfig {
 		"coloniesPerVillage", 0, 16,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
+		"classGraceDays", 0, 30,
 		"villagerElderDays", 20, 1000,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
@@ -534,6 +537,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.colony.Colonies.COOLDOWN_DAYS = colonyCooldownDays;
 		io.github.jcondedata.aliveworkplace.colony.Colonies.PER_VILLAGE = coloniesPerVillage;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
+		io.github.jcondedata.aliveworkplace.people.ClassMigration.GRACE_DAYS = classGraceDays;
+		// Off in gametests (a hall's round would seed a test's villagers mid-test); the migration tests turn it on.
+		io.github.jcondedata.aliveworkplace.people.ClassMigration.AUTO = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;

@@ -113,6 +113,7 @@ range is in brackets.
 | `villageClasses` | on | 1.8 | Households in villages with a hall climb the class ladder. Off: no classes; classes and progress stay saved. |
 | `classRiseDays` | 2 (1 to 30) | 1.8 | Dawns running the next class's needs must hold for a household to rise one class. |
 | `classFallDays` | 3 (1 to 30) | 1.8 | Dawns running a need of their own class must fail for a household to fall one class. |
+| `classGraceDays` | 7 (0 to 30) | 1.8 | Days a village settles in after classes are switched on there: nobody falls a class, luxuries aren't needed yet, nobody retires. |
 | `vintners` | on | 1.8 | Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple. Off: no Vintner job, and Vintners already hired stand idle. |
 | `tailors` | on | 1.8 | Villagers at a loom can be made Tailors with string. Off: no Tailor job, and Tailors already hired stand idle. |
 | `printers` | on | 1.8 | Villagers at a cartography table can be made Printers with an ink sac. Off: no Printer job, Printers already hired stand idle, and no Spread the news quest goes up. |

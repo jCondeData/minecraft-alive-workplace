@@ -48,7 +48,8 @@ import org.jetbrains.annotations.Nullable;
  * held {@link #RISE_DAYS} dawns running the household rises one class; when a need of its own class failed
  * {@link #FALL_DAYS} dawns running it falls one, never below the lowest (Peasant). One step a day at most: each
  * household is counted once a day ({@code class_progress.day}). Children take the class of the grown-ups who sleep in
- * their building. Villagers without a class yet ({@code social_class} absent) are left for seeding (34.22).
+ * their building. Villagers without a class yet ({@code social_class} absent) are left for seeding ({@link ClassMigration},
+ * 34.22); while a village settles in after it, nobody falls and luxuries aren't needed.
  * {@code villageClasses} in the config turns it all off; what's saved stays.
  */
 public final class SocialClasses implements ResourceManagerReloadListener {
@@ -416,7 +417,9 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 		boolean ownHeld = ClassNeeds.allHold(current.needs(), household.members(), village);
 		boolean nextHeld = next != null && ClassNeeds.allHold(next.needs(), household.members(), village);
 		int met = nextHeld ? lead.met() + 1 : 0;
-		int missed = ownHeld || below == null ? 0 : lead.missed() + 1;
+		// Settling in after classes were switched on (34.22): nobody falls, and luxuries are taken but not yet needed.
+		boolean settling = ClassMigration.quiet(level, village.hall, today);
+		int missed = ownHeld || below == null || settling ? 0 : lead.missed() + 1;
 		SocialClass after = current;
 		if (next != null && met >= RISE_DAYS) {
 			after = next;
@@ -429,7 +432,7 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 		}
 		int lacking = 0;
 		for (ClassNeeds.Need need : after.needs()) {
-			if (!ClassNeeds.holds(need, household.members(), village)) {
+			if (!(settling && need instanceof ClassNeeds.Luxury) && !ClassNeeds.holds(need, household.members(), village)) {
 				lacking++;
 			}
 		}

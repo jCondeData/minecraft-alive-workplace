@@ -628,6 +628,12 @@ SCENES = [
       "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
       [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
        ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
+    # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
+    S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
+      "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,
+      [("01_class_switch_on_before", "Before: the Classes tab with classes still off"),
+       ("02_class_switch_on_tab", "After: the tab counts each class, settling in for 7 days"),
+       ("03_class_switch_on_page", "The Classes page's clock: what each class will need")]),
     # Higher jobs need higher classes (ROADMAP 34.8): a Peasant refused the Scholar's paper, a Burgher taking it
     S("class_jobs", "Village Hall", "Higher jobs need higher classes",
       "a Peasant was refused the Scholar's paper (the job needs a Burgher), and a Burgher took it", 30,

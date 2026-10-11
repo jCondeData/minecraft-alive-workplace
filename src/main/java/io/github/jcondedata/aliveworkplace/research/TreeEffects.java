@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The toolbox effects the Legends' research trees need (ROADMAP 29.11), registered with {@link CivicEffects} so edicts,
  * tonics and guilds may use them too. Each is read by the one system it changes, from the effects of the village's
- * edicts and of its research trees together ({@link ResearchTrees#effects}):
+ * edicts, of its research trees ({@link ResearchTrees#effects}) and of its realm's research ({@link RealmResearch#effects}) together:
  * <ul>
  * <li>{@code wellbeing} ({@code percent}, optional {@code at_least}): {@code VillageNeeds}' wellbeing, points added, and
  * never below the highest {@code at_least};</li>
@@ -124,7 +124,7 @@ public final class TreeEffects {
 
 	/** The effect sums in force in {@code hall}'s village: its edicts' and its research trees'. */
 	private static List<CivicEffects.Sum> sums(@Nullable VillageHallBlockEntity hall) {
-		return hall == null ? List.of() : List.of(CivicEffects.of(hall), ResearchTrees.effects(hall));
+		return hall == null ? List.of() : List.of(CivicEffects.of(hall), ResearchTrees.effects(hall), RealmResearch.effects(hall));
 	}
 
 	private static List<CivicEffects.Sum> sums(ServerLevel level, BlockPos hall) {

@@ -525,7 +525,7 @@ public final class Sieges {
 	/** Whether the village round {@code hall} has the Ramparts research (32.6). */
 	public static boolean ramparts(ServerLevel level, BlockPos hall) {
 		return level.isLoaded(hall) && level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
-			&& entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.RAMPARTS) >= 1;
+			&& io.github.jcondedata.aliveworkplace.research.Research.of(level, hall, entity).level(io.github.jcondedata.aliveworkplace.research.Research.Topic.RAMPARTS) >= 1;
 	}
 
 	/** Notes for the morning's report whether the raiders left alive fled at dawn ({@code fled}) or the raid was fought off. */

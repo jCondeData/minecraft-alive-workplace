@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Shared research** (33.15, part of 1.7): a realm's villages use the capital's research where it is ahead ("Level 2
+  from the capital", not counted toward their rank), and their idle scholars help the capital's research at half speed.
+  The capital's research screen gets a **Realm** row: realm topics (Common Law, Royal Physicians, Guild Exchange, The
+  Realm's Peace) chosen by the capital's owner, paid from the realm treasury and in force in every village of the realm.
+  Data packs add their own in `data/<ns>/realm_research/`.
 - **Peaceful settings and the threat level** (32.21): a new **Threat Level** setting, 0 to 3 (normally 2). At 0 no
   raids, raiders' camps, sieges or disasters come at all; at 1 they come half as often, raiders walk in (no rams,
   ladders or sand ramps), witches never hex and there is no plague; at 3 they come half again as often with a quarter

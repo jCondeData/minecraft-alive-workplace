@@ -132,6 +132,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RealmGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmInviteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmTreasuryGameTests",
+			"io.github.jcondedata.aliveworkplace.test.RealmResearchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RealmBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColonySettlersGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColonyArrivalGameTests",

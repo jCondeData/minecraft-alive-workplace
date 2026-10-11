@@ -119,7 +119,7 @@ public final class VillageNeeds {
 			.map(pos -> level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity ? entity : null).orElse(null);
 		pace = hall == null ? new Pace(1f, 1f, now + PACE_TICKS)
 			: new Pace(hall.needs() != null ? hall.needs().factor() : 1f,
-				swiftHands(hall.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.SWIFT_HANDS)), now + PACE_TICKS);
+				swiftHands(io.github.jcondedata.aliveworkplace.research.Research.of(level, hall.getBlockPos(), hall).level(io.github.jcondedata.aliveworkplace.research.Research.Topic.SWIFT_HANDS)), now + PACE_TICKS);
 		synchronized (PACE) {
 			PACE.put(villager, pace);
 		}
@@ -239,7 +239,7 @@ public final class VillageNeeds {
 		float guarded = Math.min(1f, guards / (float) Math.max(1, (villagers + VILLAGERS_PER_GUARD - 1) / VILLAGERS_PER_GUARD));
 		float litShare = villagers == 0 ? 1f : lit / (float) villagers;
 		int hearth = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
-			? entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.HEARTH) : 0;
+			? io.github.jcondedata.aliveworkplace.research.Research.of(level, hall, entity).level(io.github.jcondedata.aliveworkplace.research.Research.Topic.HEARTH) : 0;
 		int beauty = Decorations.beauty(level, hall);
 		float cheer = Math.min(io.github.jcondedata.aliveworkplace.people.Traits.MAX_CHEER, cheerful * io.github.jcondedata.aliveworkplace.people.Traits.CHEER);
 		float safe = Curfew.safeNow(level, hall) ? 1f : (0.5f * guarded + 0.5f * litShare) // Curfew: the nights count as safe (30.9)

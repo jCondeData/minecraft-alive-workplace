@@ -123,6 +123,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Anthems.init(); // the anthem's player (29.19)
 		io.github.jcondedata.aliveworkplace.legend.Gifted.init();
 		io.github.jcondedata.aliveworkplace.research.ResearchTrees.init();
+		io.github.jcondedata.aliveworkplace.research.RealmResearch.init();
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.init();
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.init();
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.init();

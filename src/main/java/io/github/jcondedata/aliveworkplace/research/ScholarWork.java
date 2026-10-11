@@ -106,13 +106,20 @@ public class ScholarWork extends Behavior<Villager> {
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.scholar.title",
 				ModAttachments.RESEARCH_DONE.getOrElse(villager, 0)), -1f,
 			Component.translatable("message.aliveworkplace.scholar.state." + state, detail)
-				.withStyle(state.equals("needs") || state.equals("no_hall") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+				.withStyle(state.equals("needs") || state.equals("no_hall") || state.equals("realm_treasury") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 
 	void work(ServerLevel level, Villager villager, BlockPos desk, boolean atDesk) {
 		BlockPos hall = VillageHalls.nearest(level, desk).orElse(null);
 		if (hall == null || !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			state = "no_hall";
+			return;
+		}
+		// The capital's scholars put the realm's chosen research before the village's own (33.15).
+		RealmResearch.Outcome realm = RealmResearch.work(level, villager, desk, hall, progress(villager), atDesk);
+		if (realm != null) {
+			state = realm.state();
+			detail = realm.detail();
 			return;
 		}
 		Research.State research = entity.research();
@@ -128,6 +135,18 @@ public class ScholarWork extends Behavior<Villager> {
 			if (helped != null) {
 				state = "helping";
 				detail = helped.name();
+				Requests.clear(villager);
+				if (atDesk) {
+					villager.swing(InteractionHand.MAIN_HAND);
+					level.sendParticles(ParticleTypes.ENCHANT, desk.getX() + 0.5, desk.getY() + 1.3, desk.getZ() + 0.5, 3, 0.3, 0.2, 0.3, 0.5);
+				}
+				return;
+			}
+			// Still nothing: a member of a realm's scholars help the capital at half speed (33.15).
+			Component capital = RealmResearch.helpCapital(level, villager, hall, progress(villager), atDesk);
+			if (capital != null) {
+				state = "capital";
+				detail = capital;
 				Requests.clear(villager);
 				if (atDesk) {
 					villager.swing(InteractionHand.MAIN_HAND);
@@ -191,7 +210,7 @@ public class ScholarWork extends Behavior<Villager> {
 		finish(level, villager, desk, hall, entity, topic, next);
 	}
 
-	private static void finish(ServerLevel level, Villager villager, BlockPos desk, BlockPos hall, VillageHallBlockEntity entity,
+	static void finish(ServerLevel level, Villager villager, BlockPos desk, BlockPos hall, VillageHallBlockEntity entity,
 							   Research.Topic topic, int lvl) {
 		entity.setResearch(entity.research().finish());
 		Research.forget();

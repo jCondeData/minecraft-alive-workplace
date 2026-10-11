@@ -155,10 +155,11 @@ public final class RealmData extends SavedData {
 	 * first), the arms (absent until a banner sets them), the rank last counted (a {@code Realms.Rank} name, so a rank up
 	 * is noticed once) and the day it was founded. 33.13 adds the treasury: the levy in percent (10 by default), what it
 	 * holds in hundredths of an emerald (none by default) and its last movements, newest last. Later items add their keys
-	 * (research, edicts...) with defaults.
+	 * (research, edicts...) with defaults; 33.15 keeps the realm's research (none by default).
 	 */
 	public record Realm(UUID id, Optional<Component> name, GlobalPos capital, List<Member> members, Optional<VillageBanners.Colours> arms, String rank,
-						long founded, int levy, long treasury, List<Movement> ledger) {
+						long founded, int levy, long treasury, List<Movement> ledger,
+						io.github.jcondedata.aliveworkplace.research.Research.State research) {
 		/** The levy a realm starts with, and an older file's realms (33.13). */
 		public static final int DEFAULT_LEVY = 10;
 
@@ -172,7 +173,9 @@ public final class RealmData extends SavedData {
 			Codec.LONG.optionalFieldOf("founded", 0L).forGetter(Realm::founded),
 			Codec.INT.optionalFieldOf("levy", DEFAULT_LEVY).forGetter(Realm::levy),
 			Codec.LONG.optionalFieldOf("treasury", 0L).forGetter(Realm::treasury),
-			Movement.CODEC.listOf().optionalFieldOf("ledger", List.of()).forGetter(Realm::ledger)
+			Movement.CODEC.listOf().optionalFieldOf("ledger", List.of()).forGetter(Realm::ledger),
+			io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.optionalFieldOf("research",
+				io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY).forGetter(Realm::research)
 		).apply(i, Realm::new));
 
 		public Realm {
@@ -186,37 +189,48 @@ public final class RealmData extends SavedData {
 			this(id, name, capital, members, arms, rank, founded, DEFAULT_LEVY, 0L, List.of());
 		}
 
+		/** A realm as 33.13 knew it: no realm research yet (33.15). */
+		public Realm(UUID id, Optional<Component> name, GlobalPos capital, List<Member> members, Optional<VillageBanners.Colours> arms, String rank,
+					 long founded, int levy, long treasury, List<Movement> ledger) {
+			this(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY);
+		}
+
 		/** Whether {@code hall} is one of its villages. */
 		public boolean has(GlobalPos hall) {
 			return members.stream().anyMatch(m -> m.hall().equals(hall));
 		}
 
 		public Realm withName(Optional<Component> name) {
-			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
 		}
 
 		public Realm withCapital(GlobalPos capital) {
-			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
 		}
 
 		public Realm withMembers(List<Member> members) {
-			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
 		}
 
 		public Realm withArms(Optional<VillageBanners.Colours> arms) {
-			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
 		}
 
 		public Realm withRank(String rank) {
-			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
 		}
 
 		public Realm withLevy(int levy) {
-			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
 		}
 
 		public Realm withTreasury(long treasury, List<Movement> ledger) {
-			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
+		}
+
+		/** The realm's research (33.15): its topics' levels, the topic the capital's scholars are on, how far, and whether paid. */
+		public Realm withResearch(io.github.jcondedata.aliveworkplace.research.Research.State research) {
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger, research);
 		}
 	}
 

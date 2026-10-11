@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -393,6 +393,13 @@ SCENES = [
       "by day; a shift-click with twelve emeralds gave them all, and the levy's icon shows 10%", 60,
       [("01_treasury_tooltip", "The treasury: four mornings of the levy"), ("02_after_a_gift", "Twelve emeralds given with a shift-click"),
        ("03_the_levy", "The levy: 10% of each member's takings")]),
+    # Shared research (ROADMAP 33.15): the capital's Realm row, and a member's levels from the capital
+    S("realm_research", "Realm", "Shared research: the Realm row and levels from the capital",
+      "Thornholm founded a realm with Ashford and Farholt; the realm has Common Law II and the capital's scholars are on "
+      "Guild Exchange, paid from the realm treasury. The capital's research screen shows the Realm row: its label with the "
+      "treasury, and the realm topics with their effects and costs. Ashford's own screen shows Drill II from the capital", 60,
+      [("01_realm_row", "The capital's Realm row"), ("02_realm_topic", "A realm topic: Guild Exchange, being researched"),
+       ("03_from_the_capital", "Ashford: Drill II from the capital")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

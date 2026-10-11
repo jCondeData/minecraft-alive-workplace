@@ -221,11 +221,19 @@ public final class Research {
 		return state;
 	}
 
-	/** The research of the village round {@code pos}. */
+	/**
+	 * The research of the village round {@code pos}; in a realm's member, each topic at the higher of its own level and
+	 * the capital's (33.15, {@link RealmResearch#shared}).
+	 */
 	public static State at(ServerLevel level, BlockPos pos) {
 		return VillageHalls.nearest(level, pos)
-			.map(hall -> level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.research() : State.EMPTY)
+			.map(hall -> level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? of(level, hall, entity) : State.EMPTY)
 			.orElse(State.EMPTY);
+	}
+
+	/** The research of the village of the hall {@code entity} at {@code hall}, the capital's levels shared (33.15). Its rank counts its own levels only. */
+	public static State of(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		return RealmResearch.shared(level, hall, entity.research());
 	}
 
 	public static int level(Villager villager, Topic topic) {
@@ -235,6 +243,7 @@ public final class Research {
 	/** Forget what was looked up (tests). */
 	public static void forget() {
 		CACHE.clear();
+		RealmResearch.forget();
 	}
 
 	/** "16 Paper, 2 Book, 4 Emerald". */

@@ -1,0 +1,22 @@
+{
+  "icon": "minecraft:bell",
+  "name": {
+    "translate": "realm_research.aliveworkplace.kings_peace"
+  },
+  "description": {
+    "translate": "realm_research.aliveworkplace.kings_peace.description"
+  },
+  "order": 4,
+  "levels": 2,
+  "points": 6000,
+  "paper": 16,
+  "books": 4,
+  "emeralds": 48,
+  "needs": {
+    "common_law": 2
+  },
+  "effect": {
+    "type": "raid_chance",
+    "amount": -15
+  }
+}

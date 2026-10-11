@@ -1,0 +1,19 @@
+{
+  "icon": "minecraft:writable_book",
+  "name": {
+    "translate": "realm_research.aliveworkplace.common_law"
+  },
+  "description": {
+    "translate": "realm_research.aliveworkplace.common_law.description"
+  },
+  "order": 1,
+  "levels": 2,
+  "points": 3600,
+  "paper": 16,
+  "books": 2,
+  "emeralds": 24,
+  "effect": {
+    "type": "wellbeing",
+    "amount": 5
+  }
+}

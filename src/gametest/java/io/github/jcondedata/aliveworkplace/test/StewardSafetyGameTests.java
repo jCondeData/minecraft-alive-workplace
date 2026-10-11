@@ -83,6 +83,11 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 
 	private static Village village(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B116: a Storehouse or hall another batch left just outside the area (so never cleared) is in this village. A
+		// Storehouse is a stop on the Steward's round: with LuxuryWorkshopsGameTests' batches before it, one 18 blocks
+		// north sent him the long way round and the pause test's proposal never came.
+		Leftovers.stewardSites(helper);
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox near = new BoundingBox(a.getX() - 40, level.getMinBuildHeight(), a.getZ() - 40, a.getX() + 70, level.getMaxBuildHeight(), a.getZ() + 70);
@@ -267,8 +272,9 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 			helper.assertTrue(supplied.get() >= 0, "not supplied yet");
 			helper.assertTrue(!StewardSafety.paused(v.level(), v.hall()), "still paused once supplied");
 			helper.assertTrue(!StewardDesk.of(v.level(), v.hall()).proposals().isEmpty(), "no proposal once supplied: wishes "
-				+ StewardWishes.of(v.level(), v.hall()).wishes().size() + ", plot " + Plots.result(v.level(), v.hall(), new Plots.Request(List.of(WELL), "homes"))
-				+ ", spot " + checkSpot(helper, v));
+				+ StewardWishes.of(v.level(), v.hall()).wishes().size() + ", plot " // the request StewardDesk.plan looks up
+				+ StewardWishes.plotFor(v.level(), v.hall(), wish()).flatMap(r -> Plots.result(v.level(), v.hall(), r))
+				+ ", spot " + checkSpot(helper, v) + ", round done " + io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(v.level(), v.steward()));
 		});
 	}
 

@@ -2741,7 +2741,7 @@ write their own stories; nothing waits forever on a player.
     spreads; `herb_patch` plants only on fit ground;
   - all textures pass `lint.py`; a preview sheet in the review package; showcase scene `herbs` (all eight patches, and
     the tonic in hand).
-- [ ] **31.18** **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
+- [x] **31.18** (review: pending 2026-10-11) **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
   village of Village rank or more with 12 villagers or more, `villagerSickness` on, 6% a day. A new illness, the
   **Grey Cough**, a kind in the illness-kind attachment beside `ILL_SINCE` (32.11 adds the same attachment for hexes;
   whichever item lands first adds it, ordinary when absent, so old saves are unchanged): it doesn't pass by itself, a

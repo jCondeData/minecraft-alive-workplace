@@ -636,6 +636,13 @@ SCENES = [
       "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,
       [("01_patches", "The eight far herbs, a patch of each on its own ground"),
        ("02_tonic", "The Three-Herb Tonic in hand")]),
+    # The Sickness, II: the Grey Cough (ROADMAP 31.18): the coughing village, a far herb's patch, the brew, the cure round
+    S("sickness", "Village Hall", "The Grey Cough: the coughing village, a far herb, the brew and the cure going round",
+      "four of eight villagers coughing grey smoke with the Grey Cough; a patch of Sea Lavender, one of the far herbs, on its gravel; Nurse Ada at her brewing stand with 'Brewing the cure' and 40% over her head; then she takes the Three-Herb Tonic round, villager by villager, hearts over each, until everyone is well", 45,
+      [("01_coughing", "Four villagers coughing the Grey Cough, and a patch of Sea Lavender, a far herb"),
+       ("02_brewing", "Brewing the cure: the nurse at her stand"),
+       ("03_cure_round", "The cure goes round"),
+       ("04_all_well", "Everyone well again")]),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",

@@ -1,7 +1,8 @@
 # The far herbs and the Three-Herb Tonic
 
 Eight rare plants that grow only in far-off biomes, and the tonic a healer makes from them: the first part of the
-Sickness story (ROADMAP 31.17; the healer and the story itself come in 31.18). Part of the 1.5 expansion.
+Sickness story (ROADMAP 31.17; the healer and the story itself are [The Sickness](the-sickness.md), 31.18). Part of
+the 1.5 expansion.
 
 Roadmap items: 31.17
 
@@ -16,8 +17,8 @@ Roadmap items: 31.17
 - **They stay put.** Like a flower, a herb can be picked (it drops itself) and planted again on its own ground, but it
   never spreads, never grows into anything and takes no bone meal.
 - **The Glowcap gives light 5** and only grows in shade: something must stand over it, such as a dark forest's leaves.
-- **The Three-Herb Tonic** is a round bottle of green tonic with leaves tied round its neck. Nothing makes it yet: a
-  healer will, from three herbs, in 31.18.
+- **The Three-Herb Tonic** is a round bottle of green tonic with leaves tied round its neck. In the Sickness story a
+  village's healer brews it from three far herbs and takes it round to cure the Grey Cough (31.18).
 
 ## How it works
 
@@ -76,8 +77,8 @@ none. The herbs are only planted by story arcs, so the arcs' own switches decide
 
 ## Known limits
 
-- Nothing makes or uses the Three-Herb Tonic yet: the healer and the Sickness arc are 31.18.
-- No arc plants herbs yet; `herb_patch` is ready for 31.18's arc.
+- Only the Sickness story (31.18) plants herbs and brews the Three-Herb Tonic; the tonic can't be crafted or drunk by a
+  player.
 - The herbs can't go in a flower pot.
 
 ## Proof

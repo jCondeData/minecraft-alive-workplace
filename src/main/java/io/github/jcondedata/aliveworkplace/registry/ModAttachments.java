@@ -180,8 +180,11 @@ public final class ModAttachments {
 	/** When a villager fell ill (see {@code people/Sickness}); absent while they're well. */
 	public static final Attachment<Long> ILL_SINCE = Attachment.saved("ill_since", com.mojang.serialization.Codec.LONG);
 
-	/** What kind of illness a villager has (ROADMAP 32.11): {@code hex}, a coven's curse; absent: an ordinary one. */
+	/** What kind of illness a villager has (ROADMAP 32.11): {@code hex}, a coven's curse, or {@code grey_cough} (31.18); absent: an ordinary one. */
 	public static final Attachment<String> ILL_KIND = Attachment.saved("ill_kind", com.mojang.serialization.Codec.STRING);
+
+	/** Until when a nurse's remedy eases a villager's Grey Cough (31.18): no slowness till then; absent: not eased. */
+	public static final Attachment<Long> ILL_EASED_UNTIL = Attachment.saved("ill_eased_until", com.mojang.serialization.Codec.LONG);
 
 	/** The day a Steward last finished his morning rounds (27.5); absent: not yet. */
 	public static final Attachment<Long> STEWARD_ROUND_DAY = Attachment.saved("steward_round_day", com.mojang.serialization.Codec.LONG);

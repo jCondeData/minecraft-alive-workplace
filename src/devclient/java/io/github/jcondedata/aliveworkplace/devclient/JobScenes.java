@@ -194,6 +194,51 @@ final class JobScenes {
 		return new BlockPos(-13 + 9 * (i % 4), -60, i < 4 ? -6 : -15);
 	}
 
+	/** The sickness scene (31.18): the nurse's brewing stand, the villagers' and the nurse's tags, the villagers' names. */
+	private static final BlockPos SICKNESS_STAND = new BlockPos(8, -60, -10);
+	private static final String SICKNESS_TAG = "aliveworkplace_scene_sickness";
+	private static final String SICKNESS_NURSE = "aliveworkplace_scene_sickness_nurse";
+	private static final String[] SICKNESS_NAMES = {"Bram", "Ilse", "Odo", "Mira", "Tobin", "Wenna", "Jory", "Elda"};
+
+	/** The sickness scene's coughing villagers cough again (grey smoke); how many cough. */
+	private static int sicknessCough(ServerLevel level) {
+		int n = 0;
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8), v -> v.getTags().contains(SICKNESS_TAG))) {
+			if (io.github.jcondedata.aliveworkplace.people.Sickness.isGrey(v)) {
+				io.github.jcondedata.aliveworkplace.people.Sickness.cough(level, v);
+				n++;
+			}
+		}
+		return n;
+	}
+
+	@org.jetbrains.annotations.Nullable
+	private static Villager sicknessNurse(ServerLevel level) {
+		return level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8), v -> v.getTags().contains(SICKNESS_NURSE))
+			.stream().findFirst().orElse(null);
+	}
+
+	/** The nurse takes the tonic round until {@code upTo} of the coughing are well; how many she gave it to. */
+	private static int sicknessCure(ServerLevel level, int upTo) {
+		Villager nurse = sicknessNurse(level);
+		if (nurse == null) {
+			return 0;
+		}
+		nurse.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(ModItems.THREE_HERB_TONIC));
+		int given = 0;
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8), v -> v.getTags().contains(SICKNESS_TAG))) {
+			if (given >= upTo || !io.github.jcondedata.aliveworkplace.people.Sickness.isGrey(v)) {
+				continue;
+			}
+			nurse.teleportTo(v.getX() + 1, v.getY(), v.getZ());
+			io.github.jcondedata.aliveworkplace.story.SicknessStory.give(level, nurse, v);
+			given++;
+		}
+		io.github.jcondedata.aliveworkplace.work.WorkerStatus.set(nurse, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.round"),
+			1f - sicknessCough(level) / 4f, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.round_line", sicknessCough(level)));
+		return given;
+	}
+
 	/** The bandit_king scene's front: the ground before the fort's gate, where the banners fly and the allies stand. */
 	private static final BlockPos BANDIT_KING_FRONT = new BlockPos(0, -60, -2);
 
@@ -3597,6 +3642,74 @@ final class JobScenes {
 					player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.THREE_HERB_TONIC));
 					Showcase.check(player.getMainHandItem().is(ModItems.THREE_HERB_TONIC), "the Three-Herb Tonic in hand");
 				}, 40)),
+			(level, player) -> true));
+		// The Sickness, II: the Grey Cough (ROADMAP 31.18): eight villagers, four of them coughing grey; a patch of Sea
+		// Lavender, one of the far herbs, on its gravel; the nurse brewing the Three-Herb Tonic at her brewing stand; then
+		// the cure going round, villager by villager, until everyone is well.
+		SCREENS.put("sickness", new Screen("the Grey Cough: four of eight villagers coughing grey smoke; a patch of Sea Lavender, a far herb, on its gravel; Nurse Ada brewing the Three-Herb Tonic at her brewing stand (Brewing the cure 40%); then the tonic going round until everyone is well",
+			new Vec3(0.5, -58.4, 4.5), new Vec3(0.5, -60.6, -12),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-18, -61, -21, 19, -54, 0)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8))) {
+					v.discard();
+				}
+				for (BlockPos p : BlockPos.betweenClosed(-10, -61, -15, -6, -61, -11)) {
+					level.setBlock(p, net.minecraft.world.level.block.Blocks.GRAVEL.defaultBlockState(), 2);
+				}
+				level.setBlock(SICKNESS_STAND, net.minecraft.world.level.block.Blocks.BREWING_STAND.defaultBlockState(), 2);
+				level.setDayTime(6000);
+			},
+			List.of(new Step("01_coughing", -1, 0, (level, player) -> {
+					int[][] at = {{-5, -6}, {-2, -7}, {1, -6}, {4, -7}, {-4, -10}, {-1, -9}, {2, -10}, {5, -9}};
+					for (int i = 0; i < at.length; i++) {
+						Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(at[i][0], -60, at[i][1]), MobSpawnType.COMMAND);
+						v.setNoAi(true);
+						v.setYRot(0);
+						v.setYHeadRot(0);
+						v.setCustomName(net.minecraft.network.chat.Component.literal(SICKNESS_NAMES[i]));
+						v.addTag(SICKNESS_TAG);
+						if (i % 2 == 0) {
+							io.github.jcondedata.aliveworkplace.people.Sickness.greyCough(level, v);
+						}
+					}
+					Villager nurse = EntityType.VILLAGER.spawn(level, SICKNESS_STAND.offset(-1, 0, 0), MobSpawnType.COMMAND);
+					nurse.setNoAi(true);
+					nurse.setYRot(0);
+					nurse.setYHeadRot(0);
+					nurse.setVillagerData(nurse.getVillagerData().setProfession(ModVillagers.NURSE).setLevel(2));
+					nurse.setVillagerXp(70);
+					nurse.setCustomName(net.minecraft.network.chat.Component.literal("Nurse Ada"));
+					nurse.addTag(SICKNESS_NURSE);
+					int n = io.github.jcondedata.aliveworkplace.herb.Herbs.patch(level, new BlockPos(-8, -60, -13), ModBlocks.SEA_LAVENDER,
+						net.minecraft.util.RandomSource.create(3118));
+					Showcase.check(sicknessCough(level) == 4, "four of the eight villagers cough the Grey Cough");
+					Showcase.check(n >= io.github.jcondedata.aliveworkplace.herb.Herbs.LEAST, "a patch of " + n + " Sea Lavender, a far herb, on its gravel");
+				}, 60),
+				new Step("02_brewing", -1, 0, (level, player) -> {
+					Villager nurse = sicknessNurse(level);
+					if (nurse != null) {
+						io.github.jcondedata.aliveworkplace.work.WorkerStatus.set(nurse, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.brewing"), 0.4f,
+							net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.brewing_line"));
+						level.sendParticles(net.minecraft.core.particles.ParticleTypes.EFFECT, SICKNESS_STAND.getX() + 0.5, SICKNESS_STAND.getY() + 1.1, SICKNESS_STAND.getZ() + 0.5, 12, 0.2, 0.2, 0.2, 0.01);
+					}
+					sicknessCough(level);
+					Showcase.check(nurse != null && io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(nurse, level.getGameTime()) != null, "Nurse Ada brewing the cure at her stand");
+				}, 50),
+				new Step("03_cure_round", -1, 0, (level, player) -> {
+					Showcase.check(sicknessCure(level, 2) == 2, "the tonic goes round: two villagers well, two still coughing");
+				}, 60),
+				new Step("04_all_well", -1, 0, (level, player) -> {
+					sicknessCure(level, 4);
+					Villager nurse = sicknessNurse(level);
+					if (nurse != null) {
+						nurse.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+						nurse.teleportTo(SICKNESS_STAND.getX() - 0.5, SICKNESS_STAND.getY(), SICKNESS_STAND.getZ() + 0.5);
+					}
+					Showcase.check(sicknessCough(level) == 0, "everyone is well again");
+				}, 50)),
 			(level, player) -> true));
 		// The Bandit King, II: the story (ROADMAP 31.16): the three camps' war banners (black, a red skull), taken; the
 		// fort rising a stage a day; the storm with the allies won (3 guards of a neighbour, 6 mercenaries) and the postern

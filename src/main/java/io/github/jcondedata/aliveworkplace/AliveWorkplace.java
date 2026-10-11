@@ -45,6 +45,7 @@ public final class AliveWorkplace {
 		ModTrades.init();
 
 		io.github.jcondedata.aliveworkplace.hall.CaravanSights.init(); // 33.7; first, so a click on a carter or his llamas stops here
+		io.github.jcondedata.aliveworkplace.story.SicknessStory.init(); // 31.18; before BuilderEvents, so a click on the healer is the story's first
 		BuilderEvents.init();
 		io.github.jcondedata.aliveworkplace.shop.ShopLedger.init();
 		TableServer.init();

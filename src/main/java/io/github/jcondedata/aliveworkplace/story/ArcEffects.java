@@ -66,7 +66,7 @@ import org.jetbrains.annotations.Nullable;
  * What a story arc's chapters do (ROADMAP 31.4): {@code announce}, {@code chronicle} (a STORY line), {@code place} (a
  * template at a spot found by a rule, built once a player comes near), {@code spawn} (named mobs with gear, extra health
  * and a boss bar, kept home), {@code give_map}, {@code festival}, {@code flag}, {@code start_quest}, {@code end_arc},
- * {@code chatter}, {@code herb_patch} (5 to 9 of a far herb on fit ground round a spot, planted once a player comes near;
+ * {@code chatter}, {@code bandit_king} (31.16), {@code sickness} (31.18), {@code herb_patch} (5 to 9 of a far herb on fit ground round a spot, planted once a player comes near;
  * 31.17), and every reward of the quest toolbox ({@link Rewards}: {@code village_mood}, {@code money},
  * {@code item}, {@code treasury}...). Waiting placements and spawned mobs are checked every {@link Arcs#CHECK_EVERY}
  * ticks with one distance check per player ({@link #check}).
@@ -117,6 +117,7 @@ public final class ArcEffects {
 			case "festival", "chatter" -> {
 			}
 			case "bandit_king" -> BanditKingStory.validate(GsonHelper.getAsString(json, "step", ""));
+			case "sickness" -> SicknessStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "herb_patch" -> {
 				String herb = GsonHelper.getAsString(json, "herb", "");
 				if (Herbs.byId(herb) == null) {
@@ -273,6 +274,7 @@ public final class ArcEffects {
 			case "end_arc" -> s.endWith = GsonHelper.getAsString(json, "ending", "failed");
 			case "reputation", "honour" -> Reputation.arcEffect(level, hall, s, json); // to the arc's helpers (31.11)
 			case "bandit_king" -> BanditKingStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.16
+			case "sickness" -> SicknessStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.18
 			case "chatter" -> {
 				if (json.has("lines")) {
 					json.getAsJsonArray("lines").forEach(l -> s.chatter.add(l.getAsString()));

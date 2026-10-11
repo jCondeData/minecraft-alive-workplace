@@ -42,6 +42,7 @@ public final class Conditions {
 		register("alpha_near", AlphaNear::read);
 		register("title_at_least", TitleAtLeast::read); // 31.12
 		register("bandit_camps_broken", BanditCampsBroken::read); // 31.16
+		register("villager_sickness", j -> new VillagerSickness()); // 31.18
 		GiverConditions.register();
 	}
 

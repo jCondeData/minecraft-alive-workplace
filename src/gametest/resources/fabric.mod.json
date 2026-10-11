@@ -227,6 +227,7 @@
 			"io.github.jcondedata.aliveworkplace.test.HerbGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BanditFortGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BanditKingStoryGameTests",
+			"io.github.jcondedata.aliveworkplace.test.SicknessStoryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestJournalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoryArcGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWardingGameTests",

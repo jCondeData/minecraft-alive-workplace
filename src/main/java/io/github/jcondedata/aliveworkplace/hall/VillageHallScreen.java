@@ -830,8 +830,9 @@ public final class VillageHallScreen {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
 		}
 		if (io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager)) {
-			lore.add(line(io.github.jcondedata.aliveworkplace.people.Sickness.isHexed(villager) ? "screen.aliveworkplace.hall.hexed" : "screen.aliveworkplace.hall.ill",
-				ChatFormatting.RED)); // a coven's hex (32.11)
+			lore.add(line(io.github.jcondedata.aliveworkplace.people.Sickness.isHexed(villager) ? "screen.aliveworkplace.hall.hexed"
+				: io.github.jcondedata.aliveworkplace.people.Sickness.isGrey(villager) ? "screen.aliveworkplace.hall.grey_cough" : "screen.aliveworkplace.hall.ill",
+				ChatFormatting.RED)); // a coven's hex (32.11), the Grey Cough (31.18)
 		}
 		if (VillageNeeds.isHungry(villager, level.getGameTime())) {
 			lore.add(line("screen.aliveworkplace.hall.hungry", ChatFormatting.RED));

@@ -3,7 +3,7 @@
 How the mod keeps a server with many working villagers running smoothly: the benchmark that measures it, and the
 limits on the mod's own heavier jobs (milestone 25).
 
-Roadmap items: 25.1, 25.3
+Roadmap items: 25.1, 25.3, 25.4
 
 ## What a player sees
 
@@ -31,6 +31,13 @@ builder waiting for materials no longer recounts every other build of the villag
 - **Other builds' needs reused (25.3).** What another build still needs (to keep its materials back in shared chests)
   is counted from its whole plan once and reused for up to 100 ticks (5 seconds) while that build hasn't moved on. A
   block placed or a supply run of its builder counts it again at once.
+- **Recounts on a budget (25.4).** Those counts read each remaining block of a build from the world, so a builder
+  fetching from a store with many builds queued at it could recount all of them in one tick. Now the recounts read at
+  most 4,096 blocks a level a tick between them; past that, a build's last count stands a little longer, and a build
+  never counted yet keeps its whole remaining plan back (more than it needs, never less) until a later tick counts it.
+- **The hour-long soak (25.4).** `PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 tools/packtest/run.sh` keeps the
+  benchmark running for an hour and reads the heap after a full GC every 10 minutes; `tools/packtest/soakheap.py`
+  fails the run only if the heap grows more than 5% from minute 10 (a falling heap is not a leak).
 
 ## Switches
 
@@ -50,6 +57,10 @@ none (the caches above live only in memory; a reloaded lumberjack starts its sea
 - 25.2 (owner's targets, used until confirmed): our code under 15% of the server tick at 150 workers, and no tick over
   50 ms caused by us.
 - 25.3: felling a tree stays in one tick: spread over ticks, the leaves would be seen hanging in the air.
+- 25.4: the soak fails on heap growth only. The first soak's heap fell 10.2% over the hour as its builds finished,
+  and the old check failed it for that.
+- 25.4: a build never counted when the budget runs out keeps its whole plan back rather than nothing, so no builder or
+  crafter takes what another build will need (B31) during that tick.
 - 25.3: a per-level budget for villager path searches was tried and taken out again: it showed no gain in the
   benchmark and was shared unfairly by every villager in a level.
 
@@ -69,6 +80,10 @@ none (the caches above live only in memory; a reloaded lumberjack starts its sea
 - `LumberjackGameTests.lumberjackReloadedMidSearchStillFellsTheTree`: saved and loaded mid-search, it still fells it.
 - `BuildReserveGameTests.aSitesNeedIsCountedAgainOnceItMovesOn`: the reused count, and a fresh count once the site
   moves on.
+- `BuildReserveGameTests.otherBuildsNeedsAreRecountedAFewAtATime`: with enough Farmsteads queued at one bench to
+  pass the budget three times, one count reads at most the budget plus one build, keeps back at least what they need,
+  and is exact within a few ticks.
+- `tools/packtest/test_soakheap.py`: the soak's verdict passes a falling heap and fails a growing one.
 - `BenchmarkCostGameTests.theTickTimerCountsOurWorkOnceAndResetsEachTick`,
   `BenchmarkCostGameTests.theTickTimerDoesNothingWhenOff`: the per-tick timer.
 - Showcase scenes: none (nothing new to see).

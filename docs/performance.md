@@ -27,6 +27,7 @@ One row per run, newest first. Ticks are milliseconds.
 
 | Date | Commit | Workers | Idle p50 / p95 | Busy p50 / p95 | Heap after GC | Our share of the server thread | Run |
 |---|---|---|---|---|---|---|---|
+| 2026-10-11 | 09fe0f7 | 150 (68 of 78 sites working when measured) | 2.4 / 3.5 (p99 15.8) | 11.1 / 19.7 (p99 27.7), then 8.3 / 14.1 (p99 19.2) | 1638 MB | 12.9% (153 of 1184 samples). Our code a tick (the mod's timer, 25.3): p50 1.0 to 1.1 ms, p99 4.2 to 12.2 ms, **0 of 2,400 measured ticks over 50 ms** (worst 44.5 ms, `PorterWork` 22.7 ms); one of 155.6 ms during the setup (`BuilderWork`'s biggest call 26.4 ms) | [nightly-tests 38166303120](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/38166303120) (`part: benchmark`, GitHub's runner, started by the owner) |
 | 2026-10-05 | 5b489b7 | 150 (65 of 76 sites working when measured) | 2.3 / 3.5 (p99 7.3) | 18.3 / 32.8 (p99 66.1) at the start, then 8.8 / 16.5 (p99 21.1) once the builds settled | 1613 MB | 13.1% (204 of 1556 samples; 49.8% villager brains, 26.5% pathfinding, both ours included) | [nightly-tests 37297003813](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37297003813) (the nightly's performance step, same load as the Sunday job) |
 
 ## A season under the edicts (30.22)
@@ -87,7 +88,7 @@ modules left out as on a real Java 21 install.
 
 | Date | Check | Result |
 |---|---|---|
-| pending | 60-minute soak (heap flat ±5%, p99 spikes attributed) | pending: run nightly-tests with `part: soak` and add the readings here |
+| 2026-10-11 | 60-minute soak (nightly-tests [38166107551](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/38166107551), 09fe0f7, GitHub's runner) | No error of ours. Heap after GC 1,637 / 1,634 / 1,597 / 1,567 / 1,578 / 1,572 / 1,467 MB at minutes 0 to 60: it fell 10.2% from minute 10 and never grew, so no leak sign; the run failed only because the check then was two-sided (now it fails on growth only). Server ticks p50 23.0 ms at the start, 4.4 to 6.8 ms later. Our share 11.4% (843 of 7,388 samples). Our code a tick: median p50 0.6 ms, worst minute's p99 13.9 ms; 7 ticks with over 50 ms of ours in the hour: 1,759.1 ms (`BuilderWork` 1,757.9 ms) at 19:10:30, 752.6 ms (`CrafterWork` 746.0 ms) at 19:10:44, 658.5 ms (`LumberjackWork` 657.2 ms) at 20:00:43, 413.1 ms (`BuilderWork` 411.5 ms) at 19:13:34, 218.4, 114.8 (`MinerWork` 85.4 ms) and 97.8 ms during the setup. The 1.7 s call was a stall, not builder work: the profile has 143 ms of samples then, one in a builder, and it came as the harness's first 90-second recording ended; the 746 and 657 ms calls fell on the second the harness ran its full GC (`jcmd GC.run`, minutes 0 and 50). This build predates the stall figures (GC pauses, time off the CPU), which label such ticks now. Rerun after 25.4's fix: pending |
 | 2026-10-04 | Client (`SCENE=config PERF_STACK=true`) | 96 mods, all nine performance mods loaded; the scene's 2 checks pass and the world renders behind the screen; only warnings are other mods' optional mixins and the container's missing sound device |
 | 2026-10-05 | Benchmark load on the pack's stack (nightly-tests 37297003813, 5b489b7) | Runs clean with the six server mods: our share 13.1% (target under 15%); busy p99 66.1 ms at the start, 21.1 ms later (target: none over 50 ms from us, not yet attributed); heap 1613 MB after GC once, but no 60-minute soak yet, so the flat-heap target is unmeasured |
 | 2026-10-04 | Pack boot (`tools/packtest/run.sh`, 0.138.0 + 25.5) | 252 mods loaded, the six server mods among them; no error from Alive Workplace or the performance mods (the 37 error lines are the pack's own: empty registries, data fixers, Cobblemon dex files) |
@@ -101,7 +102,10 @@ modules left out as on a real Java 21 install.
   and the queries, so the collection's pause isn't counted). Each reading prints as `Soak heap after GC, minute N`.
 - **The verdict:** `tools/packtest/soakheap.py` judges the readings from minute 10 on (`SOAK_SETTLE`; the builds fill
   up the first minutes) against the minute-10 one and prints the `Soak verdict:` line. The run fails when any is more
-  than 5% off, or fewer than two were taken.
+  than 5% **above** it, or fewer than two were taken. Only growth fails: a heap that falls is not a leak (decided
+  2026-10-11, after the first soak's heap fell 10.2% as its builds finished and the old two-sided check failed it);
+  a fall past 5% is still printed (`lowest -N% ... (a fall is not a leak)`). `python3 tools/packtest/test_soakheap.py`
+  checks the verdict (growth fails, a fall passes).
 - **The p99 spikes:** `perf.py --spikes soak-*.jfr` reads all the profiles together: our share of the server thread,
   then every busy stretch of 50 ms or more (the thread sleeps between ticks, so a run of samples with no gap over 25 ms
   is one tick, or ticks back to back), with our share of its samples and the frames it spent them in, and the garbage
@@ -125,6 +129,12 @@ modules left out as on a real Java 21 install.
   worked out once per class (`ClassValue`), since the check runs for every behaviour of every mob each tick.
   Builders change at most 12 blocks a level a tick between them (`build/BuildBudget`): a place or break is a world
   block update, and with many sites their work timers line up; past the budget a builder waits a tick (nothing saved).
+  Recounting what the other builds still need (the materials a builder or crafter keeps back for them, B31 and 23.5)
+  reads each of their remaining blocks from the world; a builder fetching from a store with many builds queued at it
+  could do every one of them in one call. Since 25.4 those recounts read at most 4,096 blocks a level a tick between
+  them (`BuildBudget.RECOUNT_READS_PER_TICK`; the recount that crosses it finishes). Past it, a build's last count is
+  reused a little longer, and a build never counted keeps its whole remaining plan back (more than it needs, never
+  less) until a later tick counts it; nothing is saved, so a reload changes nothing.
   First local run (2026-10-11, `PERF=true VILLAGES=3 PLOTS=25`, a loaded 7 GB container): p50 2.3 / 4.2 ms and p99
   37.5 / 28.9 ms of ours a tick in the two measured minutes, but 13 of 2,400 ticks with over 50 ms of ours (worst
   118.7 ms; 450.9 ms during the setup), the biggest single calls in `LumberjackWork` (66.8 ms) and `BuilderWork`

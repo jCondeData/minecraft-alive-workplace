@@ -416,8 +416,12 @@ public final class Builders {
 	 * their plain block) and keyed by the plain block's item.
 	 */
 	public static Map<Item, Integer> remainingNeed(ServerLevel level, BuildSite site, BuildPlan plan) {
+		return needOf(level, site.upcoming(plan, Integer.MAX_VALUE));
+	}
+
+	private static Map<Item, Integer> needOf(ServerLevel level, List<BuildPlan.Step> upcoming) {
 		Map<Item, Integer> need = new LinkedHashMap<>();
-		for (BuildPlan.Step step : site.upcoming(plan, Integer.MAX_VALUE)) {
+		for (BuildPlan.Step step : upcoming) {
 			if (!MaterialRules.matches(level.getBlockState(step.pos()), step.state())) {
 				for (MaterialRules.Requirement r : step.requirements()) {
 					need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
@@ -441,15 +445,33 @@ public final class Builders {
 	 * {@link BuildSite#progressMark} stays the same (25.3: every waiting builder of a big village went through every other
 	 * site's whole plan, block by block, which cost over 60 ms in one tick). Read-only for callers.
 	 */
-	static Map<Item, Integer> remainingNeedOfOther(ServerLevel level, BuildSite site, BuildPlan plan) {
+	public static Map<Item, Integer> remainingNeedOfOther(ServerLevel level, BuildSite site, BuildPlan plan) {
 		long now = level.getGameTime();
 		long mark = site.progressMark();
 		CachedNeed c = NEED_CACHE.get(site);
 		if (c != null && c.mark() == mark && now < c.until() && now >= c.until() - NEED_CACHE_TICKS) {
 			return c.need();
 		}
-		Map<Item, Integer> need = java.util.Collections.unmodifiableMap(remainingNeed(level, site, plan));
+		if (!BuildBudget.mayRecount(level, now)) {
+			// 25.4: this tick's recounts are spent. The last count stands a little longer; a site never counted keeps its
+			// whole remaining plan back (more, never less, than it needs) until a later tick counts it from the world.
+			return c != null ? c.need() : java.util.Collections.unmodifiableMap(plannedNeed(site, plan));
+		}
+		List<BuildPlan.Step> upcoming = site.upcoming(plan, Integer.MAX_VALUE);
+		BuildBudget.read(level, now, upcoming.size());
+		Map<Item, Integer> need = java.util.Collections.unmodifiableMap(needOf(level, upcoming));
 		NEED_CACHE.put(site, new CachedNeed(mark, now + NEED_CACHE_TICKS, need));
+		return need;
+	}
+
+	/** What the rest of {@code site}'s plan takes, without looking at the world: what's already in counts as needed. */
+	static Map<Item, Integer> plannedNeed(BuildSite site, BuildPlan plan) {
+		Map<Item, Integer> need = new LinkedHashMap<>();
+		for (BuildPlan.Step step : site.upcoming(plan, Integer.MAX_VALUE)) {
+			for (MaterialRules.Requirement r : step.requirements()) {
+				need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
+			}
+		}
 		return need;
 	}
 

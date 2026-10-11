@@ -224,6 +224,9 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Big villages: a builder fetching from a store with many builds queued at it no longer recounts every one of them
+  block by block in one tick; the recounts are spread over a few ticks (25.4). Testers: the hour-long soak fails only
+  when the heap grows, not when it falls.
 - Hired swords fight at once (B117): mercenaries hired at the hall, the Siege-breakers, the Bandit King's allies and
   the old soldier who settles after a reform could stand idle beside a monster until the world was reloaded. They now
   take up a guard's ways the moment they arrive.

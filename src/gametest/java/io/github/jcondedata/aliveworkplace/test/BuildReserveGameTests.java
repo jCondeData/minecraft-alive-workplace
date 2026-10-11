@@ -159,6 +159,55 @@ public class BuildReserveGameTests implements net.fabricmc.fabric.api.gametest.v
 		helper.succeed();
 	}
 
+	/**
+	 * 25.4: recounting what the other builds at a bench still need reads at most the tick's budget of blocks (plus the
+	 * one site that crosses it) in one call, however many builds are queued there; a build not counted yet keeps its
+	 * whole remaining plan back (never less than it needs), and within a few ticks every count is exact.
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"b84NeedBudget"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "b84NeedBudget")
+	public void otherBuildsNeedsAreRecountedAFewAtATime(GameTestHelper helper) {
+		Setup s = setup(helper);
+		ServerLevel level = s.level();
+		int budget = io.github.jcondedata.aliveworkplace.build.BuildBudget.RECOUNT_READS_PER_TICK;
+		List<BuildSite> sites = new java.util.ArrayList<>(List.of(s.site()));
+		int total = s.site().upcoming(s.site().plan(level), Integer.MAX_VALUE).size();
+		int biggest = total;
+		while (total <= 3 * budget && sites.size() < 40) {
+			BuildSite queued = Builders.enqueue(level, s.builder(), null, FARMSTEAD, s.site().placement());
+			Leftovers.after(helper, () -> BuildSiteManager.get(level).remove(queued.id()));
+			int size = queued.upcoming(queued.plan(level), Integer.MAX_VALUE).size(); // planned ahead, as its builder would
+			total += size;
+			biggest = Math.max(biggest, size);
+			sites.add(queued);
+		}
+		helper.assertTrue(total > 2 * budget, sites.size() + " Farmsteads need only " + total + " blocks: too few to pass the budget");
+		java.util.Map<net.minecraft.world.item.Item, Integer> exact = new java.util.HashMap<>();
+		for (BuildSite site : sites) {
+			Builders.remainingNeed(level, site, site.plan(level)).forEach((item, n) -> exact.merge(item, n, Integer::sum));
+		}
+		BlockPos bench = helper.absolutePos(BENCH);
+		long now = level.getGameTime();
+		java.util.Map<net.minecraft.world.item.Item, Integer> first = Builders.reservedAt(level, bench, null);
+		long reads = io.github.jcondedata.aliveworkplace.build.BuildBudget.readsUsed(level, now);
+		helper.assertTrue(reads > 0 && reads <= budget + biggest,
+			"one call read " + reads + " blocks for " + sites.size() + " builds (" + total + " in all; budget " + budget + " + " + biggest + ")");
+		exact.forEach((item, n) -> helper.assertTrue(first.getOrDefault(item, 0) >= n,
+			"kept back " + first.getOrDefault(item, 0) + " " + item + " while the builds still need " + n));
+		final int cap = budget + biggest;
+		helper.succeedWhen(() -> {
+			long t = level.getGameTime();
+			java.util.Map<net.minecraft.world.item.Item, Integer> counted = Builders.reservedAt(level, bench, null);
+			long r = io.github.jcondedata.aliveworkplace.build.BuildBudget.readsUsed(level, t);
+			if (r > cap) {
+				throw new GameTestAssertException("a later tick read " + r + " blocks (cap " + cap + ")");
+			}
+			if (!counted.equals(exact)) {
+				throw new GameTestAssertException("not counted exactly yet: " + counted + " against " + exact);
+			}
+		});
+	}
+
 	private static Setup setup(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.village(helper, 48);

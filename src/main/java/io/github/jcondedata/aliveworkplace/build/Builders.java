@@ -427,6 +427,32 @@ public final class Builders {
 		return need;
 	}
 
+	/** How long another site's {@link #remainingNeed} is reused while that site hasn't moved on (25.3). */
+	static final int NEED_CACHE_TICKS = 100;
+
+	private record CachedNeed(long mark, long until, Map<Item, Integer> need) {
+	}
+
+	/** Server thread only; a site that's gone is dropped with it. */
+	private static final Map<BuildSite, CachedNeed> NEED_CACHE = new java.util.WeakHashMap<>();
+
+	/**
+	 * {@link #remainingNeed} of a site other than the asker's, reused for up to {@link #NEED_CACHE_TICKS} while the site's
+	 * {@link BuildSite#progressMark} stays the same (25.3: every waiting builder of a big village went through every other
+	 * site's whole plan, block by block, which cost over 60 ms in one tick). Read-only for callers.
+	 */
+	static Map<Item, Integer> remainingNeedOfOther(ServerLevel level, BuildSite site, BuildPlan plan) {
+		long now = level.getGameTime();
+		long mark = site.progressMark();
+		CachedNeed c = NEED_CACHE.get(site);
+		if (c != null && c.mark() == mark && now < c.until() && now >= c.until() - NEED_CACHE_TICKS) {
+			return c.need();
+		}
+		Map<Item, Integer> need = java.util.Collections.unmodifiableMap(remainingNeed(level, site, plan));
+		NEED_CACHE.put(site, new CachedNeed(mark, now + NEED_CACHE_TICKS, need));
+		return need;
+	}
+
 	/**
 	 * What the builds at {@code bench} (the one under way and those queued after it), other than {@code except}, still
 	 * need, by family key: their builder's chests keep that much for them, so another builder only takes what is spare
@@ -441,7 +467,7 @@ public final class Builders {
 			}
 			BuildPlan otherPlan = other.plan(level);
 			if (otherPlan != null) {
-				remainingNeed(level, other, otherPlan).forEach((item, n) -> out.merge(item, n, Integer::sum));
+				remainingNeedOfOther(level, other, otherPlan).forEach((item, n) -> out.merge(item, n, Integer::sum));
 				if (other.builder() != null) {
 					builders.add(other.builder());
 				}
@@ -515,7 +541,7 @@ public final class Builders {
 				continue;
 			}
 			Map<Item, Integer> need = byBench.computeIfAbsent(bench, b -> new java.util.HashMap<>());
-			remainingNeed(level, other, plan).forEach((item, n) -> need.merge(item, n, Integer::sum));
+			remainingNeedOfOther(level, other, plan).forEach((item, n) -> need.merge(item, n, Integer::sum));
 			if (other.builder() != null) {
 				buildersAt.computeIfAbsent(bench, b -> new java.util.HashSet<>()).add(other.builder());
 			}

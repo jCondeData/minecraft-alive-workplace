@@ -99,7 +99,7 @@ public final class BuildReserve {
 				continue;
 			}
 			Map<Item, Integer> need = byBench.computeIfAbsent(bench, b -> new HashMap<>());
-			Builders.remainingNeed(level, site, plan).forEach((item, n) -> need.merge(item, n, Integer::sum));
+			Builders.remainingNeedOfOther(level, site, plan).forEach((item, n) -> need.merge(item, n, Integer::sum));
 			if (site.builder() != null) {
 				buildersAt.computeIfAbsent(bench, b -> new HashSet<>()).add(site.builder());
 			}

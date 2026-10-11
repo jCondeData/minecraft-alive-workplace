@@ -74,6 +74,10 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Villages with many lumberjacks and builders run smoother: a lumberjack in a wood full of log pillars or log cabins
+  now looks a few trunks over at a time instead of all of them in one go (it may take a moment longer to pick its
+  tree there), a tree farm's saplings are found without going over every block of the farm, and a builder waiting for
+  materials no longer recounts every other build of the village block by block each time.
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the
   crafters' recipes are sorted and their ingredients worked out once when the server starts and after each `/reload`,
   and the crafters' planning has a limit per plan and per tick (a crafter past it looks again a few seconds later).

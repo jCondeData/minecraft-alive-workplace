@@ -95,6 +95,68 @@ public class LumberjackGameTests implements FabricGameTest {
 		});
 	}
 
+	/** Sixteen bare log pillars (not trees: no leaves) between the lumberjack and an oak. */
+	private static void logPillars(GameTestHelper helper) {
+		for (int x = 5; x <= 11; x += 2) {
+			for (int z = 3; z <= 9; z += 2) {
+				helper.setBlock(new BlockPos(x, 1, z), Blocks.GRASS_BLOCK);
+				helper.setBlock(new BlockPos(x, 2, z), Blocks.OAK_LOG);
+				helper.setBlock(new BlockPos(x, 3, z), Blocks.OAK_LOG);
+			}
+		}
+	}
+
+	/**
+	 * 25.3: one search works out at most {@link io.github.jcondedata.aliveworkplace.wood.LumberjackWork#FILLS_PER_SEARCH}
+	 * trees; past a crowd of log pillars nearer than the real tree, the searches that follow go on where it stopped and find it.
+	 */
+	//$ gametest_ticks AREA '200'
+	@GameTest(template = AREA, timeoutTicks = 200)
+	public void treeSearchesWorkOutAFewTreesAtATime(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(BLOCK, ModBlocks.CHOPPING_BLOCK);
+		logPillars(helper);
+		BlockPos oak = new BlockPos(14, 2, 14);
+		growOak(helper, oak);
+		BlockPos from = helper.absolutePos(new BlockPos(3, 2, 3));
+		int cap = io.github.jcondedata.aliveworkplace.wood.LumberjackWork.FILLS_PER_SEARCH;
+		java.util.Set<BlockPos> notTrees = new java.util.HashSet<>();
+		io.github.jcondedata.aliveworkplace.wood.LumberjackWork.Search search = null;
+		int calls = 0;
+		while (calls < 10) {
+			int before = notTrees.size();
+			search = io.github.jcondedata.aliveworkplace.wood.LumberjackWork.findTree(level, helper.absolutePos(BLOCK), from, null,
+				java.util.Set.of(), java.util.Set.of(), notTrees, cap);
+			calls++;
+			helper.assertTrue(notTrees.size() - before <= cap, "one search worked out " + (notTrees.size() - before) + " trunks, over " + cap);
+			if (calls == 1) {
+				helper.assertTrue(search.tree() == null && search.more(), "the first search should stop at its budget among the pillars: " + search);
+			}
+			if (!search.more()) {
+				break;
+			}
+		}
+		helper.assertTrue(search.tree() != null && search.tree().equals(helper.absolutePos(oak)),
+			"the oak should be found past the pillars, not " + search.tree() + " after " + calls + " searches");
+		helper.assertTrue(calls <= 16 / cap + 1, "took " + calls + " searches");
+		helper.assertTrue(notTrees.size() == 16, "every pillar is remembered as not a tree: " + notTrees.size());
+		helper.succeed();
+	}
+
+	/** 25.3: a lumberjack behind a crowd of log pillars still walks over to the oak beyond them and fells it. */
+	//$ gametest_ticks AREA '3000'
+	@GameTest(template = AREA, timeoutTicks = 3000)
+	public void lumberjackFindsTheTreeBeyondLogPillars(GameTestHelper helper) {
+		logPillars(helper);
+		BlockPos base = new BlockPos(14, 2, 14);
+		growOak(helper, base);
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.OAK_SAPLING));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(villager, 0) == 1, "the oak isn't down yet");
+			helper.assertBlockPresent(Blocks.OAK_LOG, new BlockPos(5, 2, 3)); // the pillars stand
+		});
+	}
+
 	/** Grows a real oak tree (the vanilla feature) on a grass block at {@code base}. */
 	private static void growOak(GameTestHelper helper, BlockPos base) {
 		ServerLevel level = helper.getLevel();

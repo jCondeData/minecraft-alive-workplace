@@ -503,6 +503,15 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     (tree scans, chunk loads, wall-clock GC pauses count too) to find what makes one call take 50 ms+, cap it, and
     rerun on GitHub's runner (nightly-tests, `part: benchmark`); make `ours` cheaper (a per-class cache) so the
     timer doesn't add to the share.
+  - Status (lane-a-1011-0933, caps): from a code read of the two calls the timer named (not profiled): a lumberjack's
+    tree search works out at most 6 trees (flood fills) per call (`LumberjackWork.FILLS_PER_SEARCH`) and goes on next
+    tick where it stopped (non-trees and unreachable trees stay in `notTrees` for a minute); the tree farm's sapling
+    search skips chunk sections without a sapling (`Trees.forEach`); builders reuse another site's remaining needs
+    (`Builders.remainingNeedOfOther`, reservations of other builds) for up to 100 ticks while that site's
+    `progressMark` is unchanged. Felling stays one tick (spreading it would show as leaves hanging in the air);
+    `BuilderWork`'s skip loop (256 cheap checks) and lookahead (768 steps, once per chest trip) left as they are.
+    GameTests `treeSearchesWorkOutAFewTreesAtATime`, `lumberjackFindsTheTreeBeyondLogPillars`. Left: the benchmark
+    rerun (`PERF=true VILLAGES=3 PLOTS=25`, `perf.py --ticks`) to see the over-50 ms ticks gone.
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.

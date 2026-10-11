@@ -181,6 +181,19 @@ final class JobScenes {
 		return io.github.jcondedata.aliveworkplace.guard.BanditFort.at(BANDIT_FORT_GROUND, net.minecraft.world.level.block.Rotation.NONE);
 	}
 
+	/** The herbs scene's pads (31.17): each herb with its ground; the first four in front, the rest behind. */
+	private static final Object[][] HERB_PADS = {
+		{ModBlocks.SUNTHISTLE, net.minecraft.world.level.block.Blocks.RED_SAND}, {ModBlocks.FROSTBLOOM, net.minecraft.world.level.block.Blocks.SNOW_BLOCK},
+		{ModBlocks.PEAKMOSS, net.minecraft.world.level.block.Blocks.STONE}, {ModBlocks.GLOWCAP, net.minecraft.world.level.block.Blocks.PODZOL},
+		{ModBlocks.SEA_LAVENDER, net.minecraft.world.level.block.Blocks.GRAVEL}, {ModBlocks.MIREWORT, net.minecraft.world.level.block.Blocks.MUD},
+		{ModBlocks.JUNGLE_ORCHID, net.minecraft.world.level.block.Blocks.GRASS_BLOCK}, {ModBlocks.PETAL_BALM, net.minecraft.world.level.block.Blocks.GRASS_BLOCK},
+	};
+
+	/** The middle of herb pad {@code i} (where its herbs stand): 9 blocks apart, so no patch reaches the next pad. */
+	private static BlockPos herbPad(int i) {
+		return new BlockPos(-13 + 9 * (i % 4), -60, i < 4 ? -6 : -15);
+	}
+
 	/** The bandit_king scene's front: the ground before the fort's gate, where the banners fly and the allies stand. */
 	private static final BlockPos BANDIT_KING_FRONT = new BlockPos(0, -60, -2);
 
@@ -3545,6 +3558,45 @@ final class JobScenes {
 					Showcase.check(placed && kings == 1 && level.getBlockState(banditFort().at(new BlockPos(14, 4, 16))).is(net.minecraft.world.level.block.Blocks.BLACK_WALL_BANNER),
 						"the keep stands with the war banner over its door, the King inside");
 				}, 60)),
+			(level, player) -> true));
+		// The Sickness, I: eight far herbs (ROADMAP 31.17): a 5 x 5 pad of each herb's ground in a field of coarse dirt (no
+		// herb's ground), a herb_patch planted on each, the Glowcap's under a leaf canopy; then the Three-Herb Tonic in hand.
+		SCREENS.put("herbs", new Screen("eight patches of the far herbs, each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone, Glowcap on podzol under leaves (in front); Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass (behind); then the Three-Herb Tonic in hand",
+			new Vec3(0.5, -58.4, 4.5), new Vec3(0.5, -60.6, -12),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-18, -61, -21, 19, -54, 0)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.COARSE_DIRT.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (int i = 0; i < HERB_PADS.length; i++) {
+					BlockPos middle = herbPad(i);
+					for (BlockPos p : BlockPos.betweenClosed(middle.offset(-2, -1, -2), middle.offset(2, -1, 2))) {
+						level.setBlock(p, ((net.minecraft.world.level.block.Block) HERB_PADS[i][1]).defaultBlockState(), 2);
+					}
+				}
+				BlockPos glow = herbPad(3);
+				for (BlockPos p : BlockPos.betweenClosed(glow.offset(-3, 3, -3), glow.offset(3, 3, 3))) { // the Glowcap's shade
+					level.setBlock(p, net.minecraft.world.level.block.Blocks.DARK_OAK_LEAVES.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true), 2);
+				}
+				level.setDayTime(6000);
+			},
+			List.of(new Step("01_patches", -1, 0, (level, player) -> {
+					var random = net.minecraft.util.RandomSource.create(3117);
+					StringBuilder counts = new StringBuilder();
+					boolean all = true;
+					for (int i = 0; i < HERB_PADS.length; i++) {
+						var herb = (io.github.jcondedata.aliveworkplace.herb.HerbBlock) HERB_PADS[i][0];
+						int n = io.github.jcondedata.aliveworkplace.herb.Herbs.patch(level, herbPad(i), herb, random);
+						counts.append(' ').append(n);
+						all &= n >= io.github.jcondedata.aliveworkplace.herb.Herbs.LEAST && n <= io.github.jcondedata.aliveworkplace.herb.Herbs.MOST;
+					}
+					Showcase.check(all, "5 to 9 of each herb planted on its pad:" + counts);
+				}, 50),
+				new Step("02_tonic", -1, 0, (level, player) -> {
+					player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.THREE_HERB_TONIC));
+					Showcase.check(player.getMainHandItem().is(ModItems.THREE_HERB_TONIC), "the Three-Herb Tonic in hand");
+				}, 40)),
 			(level, player) -> true));
 		// The Bandit King, II: the story (ROADMAP 31.16): the three camps' war banners (black, a red skull), taken; the
 		// fort rising a stage a day; the storm with the allies won (3 guards of a neighbour, 6 mercenaries) and the postern

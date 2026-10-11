@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The far herbs** (31.17): eight rare plants drawn like vanilla's flowers (Frostbloom, Sunthistle, Mirewort, Peakmoss, Jungle Orchid, Sea Lavender, the glowing Glowcap and Petal Balm), each growing on its own ground in its own biomes (biome and ground tags datapacks can add to). They never generate or spread, so no world changes: story arcs plant them with the new `herb_patch` effect, 5 to 9 on fit ground. Also the Three-Herb Tonic, a bottle of green tonic a healer will make (31.18).
 - **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
   captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
   journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built

@@ -324,8 +324,12 @@ public class ColonyArrivalGameTests implements FabricGameTest {
 			routes.press(TradePage.Tab.ROUTES.slot(), m.owner());
 			List<String> lore = null;
 			for (int slot = VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+				// (a Newbrook left over from another colony test in the level shows too, farther off: take ours, the sister)
 				if (routes.icon(slot).getHoverName().getString().equals("Newbrook")) {
-					lore = BoardTradeGameTests.lore(routes.icon(slot));
+					List<String> here = BoardTradeGameTests.lore(routes.icon(slot));
+					if (lore == null || here.contains("Sister village: caravans both ways, free, outside the limit")) {
+						lore = here;
+					}
 				}
 			}
 			helper.assertTrue(lore != null && lore.contains("Sister village: caravans both ways, free, outside the limit"), "the routes page: " + lore);

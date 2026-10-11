@@ -225,67 +225,74 @@ public class ScoutGameTests implements FabricGameTest {
 		scout.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 		scout.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SPYGLASS));
 		Lairs.Lair lair = farLair(helper, hall, 60);
-		ServerPlayer player = player(helper);
-		ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
-		menu.press(VillageHallScreen.GUARDS, player);
-		List<String> before = lines(menu.icon(DefencePage.SCOUT));
-		helper.assertTrue(before.get(0).equals("Scout the lair") && before.contains("1 scout in the village"), "the scout slot: " + before);
-		helper.assertTrue(lines(menu.icon(DefencePage.WHERE)).stream().noneMatch(l -> l.startsWith("At ")), "the exact place known before scouting");
-		menu.press(DefencePage.SCOUT, player);
-		helper.assertTrue(Scouts.out(scout), "the scout wasn't sent");
-		helper.assertTrue(lines(menu.icon(DefencePage.SCOUT)).get(0).contains("is out scouting"), "the page while out: " + lines(menu.icon(DefencePage.SCOUT)));
-		menu.press(DefencePage.SCOUT, player); // a second click sends nobody else
-		double[] nearest = {Double.MAX_VALUE};
-		boolean[] raised = {false};
-		StringBuilder marks = new StringBuilder();
-		helper.onEachTick(() -> {
-			double was = nearest[0];
-			nearest[0] = Math.min(nearest[0], flat(scout.blockPosition(), lair.pos()));
-			if ((int) (was / 5) != (int) (nearest[0] / 5)) {
-				marks.append((int) nearest[0]).append("@").append(helper.getTick()).append(' ');
-			}
-			raised[0] |= scout.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.SPYGLASS);
-		});
-		helper.succeedWhen(() -> {
-			helper.assertTrue(scout.isAlive(), "the scout died");
-			helper.assertFalse(Scouts.out(scout), "still out; nearest to the lair " + (int) nearest[0] + ", at " + scout.blockPosition()
-				+ ", mission " + Scouts.missionOf(level, scout.getUUID()) + ", " + Scouts.describe(scout) + ", marks " + marks);
-			helper.assertTrue(nearest[0] <= Scouts.SIGHT, "never within 24 blocks: " + nearest[0]);
-			helper.assertTrue(raised[0], "never raised the spyglass");
-			helper.assertTrue(flat(scout.blockPosition(), post) <= 4, "not home: " + scout.blockPosition());
-			helper.assertTrue(scout.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.SPYGLASS) && scout.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.IRON_SWORD),
-				"the hands after: " + scout.getItemBySlot(EquipmentSlot.MAINHAND) + " / " + scout.getItemBySlot(EquipmentSlot.OFFHAND));
-			Container chest = (Container) level.getBlockEntity(chestAt);
-			ItemStack report = ItemStack.EMPTY;
-			for (int i = 0; i < chest.getContainerSize(); i++) {
-				if (chest.getItem(i).is(Items.FILLED_MAP)) {
-					report = chest.getItem(i);
+		// B112: the scout and its post stand 5000 blocks out, in chunks forced a moment ago; whether the game already
+		// counts entities there (getEntitiesOfClass) depended on the batch that ran just before, so the hall saw no
+		// scout. Two ticks later the chunks are settled.
+		helper.runAfterDelay(2, () -> {
+			ServerPlayer player = player(helper);
+			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+			menu.press(VillageHallScreen.GUARDS, player);
+			List<String> before = lines(menu.icon(DefencePage.SCOUT));
+			helper.assertTrue(before.get(0).equals("Scout the lair") && before.contains("1 scout in the village"), "the scout slot: " + before + "; radius " + VillageHalls.RADIUS + ", scout alive=" + scout.isAlive() + " at " + scout.blockPosition()
+				+ " hall " + hall + " hands " + scout.getItemBySlot(EquipmentSlot.MAINHAND) + "/" + scout.getItemBySlot(EquipmentSlot.OFFHAND)
+				+ " scouts=" + io.github.jcondedata.aliveworkplace.guard.Scouts.scouts(level, hall).size());
+			helper.assertTrue(lines(menu.icon(DefencePage.WHERE)).stream().noneMatch(l -> l.startsWith("At ")), "the exact place known before scouting");
+			menu.press(DefencePage.SCOUT, player);
+			helper.assertTrue(Scouts.out(scout), "the scout wasn't sent");
+			helper.assertTrue(lines(menu.icon(DefencePage.SCOUT)).get(0).contains("is out scouting"), "the page while out: " + lines(menu.icon(DefencePage.SCOUT)));
+			menu.press(DefencePage.SCOUT, player); // a second click sends nobody else
+			double[] nearest = {Double.MAX_VALUE};
+			boolean[] raised = {false};
+			StringBuilder marks = new StringBuilder();
+			helper.onEachTick(() -> {
+				double was = nearest[0];
+				nearest[0] = Math.min(nearest[0], flat(scout.blockPosition(), lair.pos()));
+				if ((int) (was / 5) != (int) (nearest[0] / 5)) {
+					marks.append((int) nearest[0]).append("@").append(helper.getTick()).append(' ');
 				}
-			}
-			helper.assertFalse(report.isEmpty(), "no report in the chest");
-			MapDecorations decorations = report.getOrDefault(DataComponents.MAP_DECORATIONS, MapDecorations.EMPTY);
-			MapDecorations.Entry x = decorations.decorations().get("+");
-			helper.assertTrue(x != null && x.type().value() == net.minecraft.world.level.saveddata.maps.MapDecorationTypes.RED_X.value()
-				&& (int) x.x() == lair.pos().getX() && (int) x.z() == lair.pos().getZ(), "the red X: " + decorations);
-			helper.assertTrue(report.get(DataComponents.MAP_ID) != null, "the map has no id");
-			List<String> tip = lines(report);
-			helper.assertTrue(tip.get(0).equals("Scouting Report: Bandit camp"), "the report's name: " + tip);
-			helper.assertTrue(tip.contains("Raiders: Bandits") && tip.stream().anyMatch(l -> l.startsWith("Captain: ")) && tip.contains("Strength: 7"),
-				"the report's tooltip: " + tip);
-			// The page: the exact place, who found it, the captain and strength.
-			DefencePage.render(menu, level, hall);
-			String exact = "At " + lair.pos().getX() + ", " + lair.pos().getY() + ", " + lair.pos().getZ();
-			helper.assertTrue(lines(menu.icon(DefencePage.WHERE)).contains(exact), "the exact place: " + lines(menu.icon(DefencePage.WHERE)));
-			List<String> found = lines(menu.icon(DefencePage.SCOUT));
-			helper.assertTrue(found.get(0).startsWith("Scouted by") && found.contains(exact) && found.contains("Strength: 7")
-				&& found.stream().anyMatch(l -> l.startsWith("Captain: ")), "the scout slot: " + found);
-			for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
-				for (String line : lines(menu.icon(slot))) {
-					helper.assertFalse(line.contains("aliveworkplace.") || line.contains("%"), "slot " + slot + " shows a raw line: " + line);
+				raised[0] |= scout.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.SPYGLASS);
+			});
+			helper.succeedWhen(() -> {
+				helper.assertTrue(scout.isAlive(), "the scout died");
+				helper.assertFalse(Scouts.out(scout), "still out; nearest to the lair " + (int) nearest[0] + ", at " + scout.blockPosition()
+					+ ", mission " + Scouts.missionOf(level, scout.getUUID()) + ", " + Scouts.describe(scout) + ", marks " + marks);
+				helper.assertTrue(nearest[0] <= Scouts.SIGHT, "never within 24 blocks: " + nearest[0]);
+				helper.assertTrue(raised[0], "never raised the spyglass");
+				helper.assertTrue(flat(scout.blockPosition(), post) <= 4, "not home: " + scout.blockPosition());
+				helper.assertTrue(scout.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.SPYGLASS) && scout.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.IRON_SWORD),
+					"the hands after: " + scout.getItemBySlot(EquipmentSlot.MAINHAND) + " / " + scout.getItemBySlot(EquipmentSlot.OFFHAND));
+				Container chest = (Container) level.getBlockEntity(chestAt);
+				ItemStack report = ItemStack.EMPTY;
+				for (int i = 0; i < chest.getContainerSize(); i++) {
+					if (chest.getItem(i).is(Items.FILLED_MAP)) {
+						report = chest.getItem(i);
+					}
 				}
-			}
-			helper.assertTrue(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && entity.chronicle().stream()
-				.anyMatch(e -> e.text().getString().contains("came back from scouting the lair")), "the chronicle");
+				helper.assertFalse(report.isEmpty(), "no report in the chest");
+				MapDecorations decorations = report.getOrDefault(DataComponents.MAP_DECORATIONS, MapDecorations.EMPTY);
+				MapDecorations.Entry x = decorations.decorations().get("+");
+				helper.assertTrue(x != null && x.type().value() == net.minecraft.world.level.saveddata.maps.MapDecorationTypes.RED_X.value()
+					&& (int) x.x() == lair.pos().getX() && (int) x.z() == lair.pos().getZ(), "the red X: " + decorations);
+				helper.assertTrue(report.get(DataComponents.MAP_ID) != null, "the map has no id");
+				List<String> tip = lines(report);
+				helper.assertTrue(tip.get(0).equals("Scouting Report: Bandit camp"), "the report's name: " + tip);
+				helper.assertTrue(tip.contains("Raiders: Bandits") && tip.stream().anyMatch(l -> l.startsWith("Captain: ")) && tip.contains("Strength: 7"),
+					"the report's tooltip: " + tip);
+				// The page: the exact place, who found it, the captain and strength.
+				DefencePage.render(menu, level, hall);
+				String exact = "At " + lair.pos().getX() + ", " + lair.pos().getY() + ", " + lair.pos().getZ();
+				helper.assertTrue(lines(menu.icon(DefencePage.WHERE)).contains(exact), "the exact place: " + lines(menu.icon(DefencePage.WHERE)));
+				List<String> found = lines(menu.icon(DefencePage.SCOUT));
+				helper.assertTrue(found.get(0).startsWith("Scouted by") && found.contains(exact) && found.contains("Strength: 7")
+					&& found.stream().anyMatch(l -> l.startsWith("Captain: ")), "the scout slot: " + found);
+				for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
+					for (String line : lines(menu.icon(slot))) {
+						helper.assertFalse(line.contains("aliveworkplace.") || line.contains("%"), "slot " + slot + " shows a raw line: " + line);
+					}
+				}
+				helper.assertTrue(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && entity.chronicle().stream()
+					.anyMatch(e -> e.text().getString().contains("came back from scouting the lair")), "the chronicle");
+			});
 		});
 	}
 

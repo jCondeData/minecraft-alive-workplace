@@ -98,6 +98,12 @@ public final class WorkplaceConfig {
 	 */
 	public Map<String, Boolean> raiderCultures = defaultCultures();
 	/**
+	 * Every disaster by id (ROADMAP 32.15): ours by their path ({@code drought}), a datapack's by its whole id. One set to
+	 * false never starts, and one under way ends at once. In the file only; a disaster the file doesn't list is added,
+	 * on, when the world's data loads.
+	 */
+	public Map<String, Boolean> disasters = new java.util.TreeMap<>();
+	/**
 	 * A raid by a culture that rams gates on a village with a finished wall or gate build is a siege: the gates shut, the
 	 * portcullis drops and the rams go for the gate (ROADMAP 32.4). Off: every raid is a plain one.
 	 */
@@ -107,6 +113,23 @@ public final class WorkplaceConfig {
 	 * hold however hard they are hit. The {@code mobGriefing} gamerule off does the same.
 	 */
 	public boolean siegeDamage = Expansions.on(Expansions.M32);
+	/**
+	 * Villagers at a grindstone can be made Firewardens with a water bucket (ROADMAP 32.16): they put out the village's
+	 * fires. Off: no Firewarden job, and Firewardens already hired stand idle.
+	 */
+	public boolean firewardens = Expansions.on(Expansions.M32);
+	/**
+	 * Villagers at a cauldron can be made Well Keepers with a shovel (ROADMAP 32.17): in a drought they carry water to
+	 * the fields, and between droughts they keep the cauldrons full and the farmland wet. Off: no Well Keeper job, and
+	 * Well Keepers already hired stand idle.
+	 */
+	public boolean wellKeepers = Expansions.on(Expansions.M32);
+	/**
+	 * Villagers at a brewing stand can be made Physicians with a glistering melon slice (ROADMAP 32.18): in a plague they
+	 * go house to house, send the ill home and cure them with Remedies. Off: no Physician job, and Physicians already
+	 * hired stand idle.
+	 */
+	public boolean physicians = Expansions.on(Expansions.M32);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -137,6 +160,8 @@ public final class WorkplaceConfig {
 	public int arcCooldownDays = 8;
 	/** Story arcs running at once on the whole server (side arcs not counted); 0: none. */
 	public int arcsAtOnce = 3;
+	/** One caravan in this many on a road over 300 blocks goes missing, starting the Lost Caravan (ROADMAP 31.20); 0: none. */
+	public int lostCaravanChance = 20;
 	/** Story arc ids that never start ({@code bandit_king} or {@code pack:id}); a running one ends at its next round. File only. */
 	public List<String> disabledArcs = new ArrayList<>();
 	/** A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). */
@@ -275,7 +300,15 @@ public final class WorkplaceConfig {
 	 */
 	@SuppressWarnings("unused")
 	private int configVersion = VERSION;
-	static final int VERSION = 2;
+	static final int VERSION = 3;
+	/**
+	 * The expansions whose gates were open when the file was written ({@link Expansions#open()}; not an option). A gated
+	 * switch saved while its gate was closed holds its closed default, {@code false}, which is no player's choice: when
+	 * that expansion is finished, {@link #parse} gives such a switch its new default (34.23's rehearsal: a 0.142.0 file
+	 * kept classes off under 1.8).
+	 */
+	@SuppressWarnings("unused")
+	private java.util.List<String> expansionsOpen = Expansions.open();
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	public static final String FILE = "aliveworkplace.json";
@@ -325,6 +358,28 @@ public final class WorkplaceConfig {
 			config.seasonDays = 16;
 		}
 		config.configVersion = VERSION;
+		// Which gates were open when the file was written: its list, or none in a file a jar of format 2 wrote (0.139.0 to
+		// the last release before this); a file with neither (written by hand, or older) is taken as it says.
+		java.util.List<String> written = new java.util.ArrayList<>();
+		com.google.gson.JsonObject object = tree.isJsonObject() ? tree.getAsJsonObject() : new com.google.gson.JsonObject();
+		boolean recorded = object.get("expansionsOpen") instanceof com.google.gson.JsonArray;
+		if (recorded) {
+			object.getAsJsonArray("expansionsOpen").forEach(e -> written.add(e.getAsString()));
+		}
+		boolean closedWhenWritten = recorded || (object.has("configVersion") && object.get("configVersion").getAsInt() < 3);
+		WorkplaceConfig defaults = new WorkplaceConfig();
+		for (java.lang.reflect.Field field : WorkplaceConfig.class.getFields()) {
+			String milestone = Expansions.milestone(field.getName());
+			if (field.getType() == boolean.class && !java.lang.reflect.Modifier.isStatic(field.getModifiers()) && milestone != null && closedWhenWritten
+				&& Expansions.on(Expansions.flag(milestone)) && !written.contains(milestone)) {
+				try {
+					field.setBoolean(config, field.getBoolean(defaults)); // saved while its gate was closed: not a choice
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+		}
+		config.expansionsOpen = Expansions.open();
 		config.clamp();
 		return config;
 	}
@@ -352,6 +407,7 @@ public final class WorkplaceConfig {
 		"edictMinDays", 0, 30,
 		"arcCooldownDays", 0, 60,
 		"arcsAtOnce", 0, 20,
+		"lostCaravanChance", 0, 1000,
 		"guildsPerRank", 1, 4,
 		"colonyCooldownDays", 0, 60,
 		"coloniesPerVillage", 0, 16,
@@ -407,6 +463,11 @@ public final class WorkplaceConfig {
 			});
 		}
 		raiderCultures = cultures;
+		if (disasters == null) {
+			disasters = new java.util.TreeMap<>();
+		}
+		disasters.replaceAll((id, on) -> on == null || on);
+		disasters.keySet().removeIf(java.util.Objects::isNull);
 	}
 
 	/** The rank {@code name} means for {@code colonyRank} ("town", "City"...); a City for anything else. */
@@ -441,6 +502,30 @@ public final class WorkplaceConfig {
 		if (added || !Files.exists(configDir.resolve(FILE))) {
 			config.save(configDir);
 		}
+	}
+
+	/** Lists the disasters {@code ids} in the config file, each on, if they aren't there yet (32.15). */
+	public static void listDisasters(Path configDir, java.util.Collection<String> ids) {
+		WorkplaceConfig config = load(configDir);
+		config.clamp();
+		boolean added = false;
+		for (String id : ids) {
+			added |= config.disasters.putIfAbsent(id, true) == null;
+		}
+		if (added) {
+			config.save(configDir);
+		}
+	}
+
+	/** The disasters switched off: those set to false in {@code disasters}. */
+	public java.util.Set<String> disastersOff() {
+		java.util.Set<String> off = new java.util.TreeSet<>();
+		disasters.forEach((id, on) -> {
+			if (!on) {
+				off.add(id);
+			}
+		});
+		return off;
 	}
 
 	/** The cultures switched off: those set to false in {@code raiderCultures}, and ours whose own switch is off. */
@@ -638,8 +723,12 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.threat.Lairs.ENABLED = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED = sieges && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = firewardens && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = wellKeepers && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
+		io.github.jcondedata.aliveworkplace.threat.Disasters.DISABLED = disastersOff(); // 32.15
 		io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED = festivals && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Chatter.ENABLED = villagerChatter && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;
@@ -659,6 +748,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.story.Arcs.COOLDOWN_DAYS = arcCooldownDays;
 		io.github.jcondedata.aliveworkplace.story.Arcs.AT_ONCE = arcsAtOnce;
+		io.github.jcondedata.aliveworkplace.story.LostCaravanStory.CHANCE = lostCaravanChance;
 		io.github.jcondedata.aliveworkplace.story.Arcs.DISABLED = disabledArcs.stream().filter(java.util.Objects::nonNull).collect(java.util.stream.Collectors.toUnmodifiableSet());
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends && Expansions.on(Expansions.M29);
 		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites && Expansions.on(Expansions.M29);

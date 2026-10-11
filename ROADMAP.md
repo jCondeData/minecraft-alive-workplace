@@ -176,16 +176,19 @@ stay in the list, ticked, so their numbers stay unique.
   recipes load, no tick over 50 ms. Test: `SEASON=true tools/packtest/run.sh` prints "ticks with over 50 ms of our code: 0"
   (a second, 98 ms tick on day 1 had its one profile sample in `FieldWork.take`: look at it with this).
 - [x] **B102** (approved 2026-10-11) **The settings screen cuts off 'Days to Become an Elder: 120'** (34.19, lang key aliveworkplace.config.villagerElderDays): full showcase run 38028628988 on a0abe99 (2026-10-10 05:46Z), scene config: 'every setting has a button whose label fits (86 settings: 'Days to Become an Elder: 120' is wider than its button)'. Players see the label clipped in Mod Menu's screen, as with B-fixed labels before it (Nurses Use Healing Machines, Stewards Renew Old Houses). Expected: a shorter label (for example 'Elder After Days'), so every setting fits its button at the default GUI scale and the config scene passes. Test: SCENE=config tools/screenshots/run.sh (lane d: 34.19's lang file; not run locally) (found by qa-1010-0634, 2026-10-10)
-- [ ] **B103** Three day-1 ticks over 50 ms of our code remain on the pack after B101's fix (found by B101's season run, lane-a-1011-0032, 2026-10-11): `SEASON=true tools/packtest/run.sh` printed 'ticks with over 50 ms of our code: 3', all on day 1, with `Village.mates` 149 ms, `work.Gated` 108 ms and `Cradles.round` 91 ms among the frames (no crafting or recipe frame any more); the same run had our code at 16.2%/17.4% of the tick on its worst day, over 25.2's 15% (16.5% before B101). Expected: no tick over 50 ms caused by us. Test: the season run prints 'ticks with over 50 ms of our code: 0'. (found by lane-a-1011-0032, 2026-10-11) Progress (lane-c-1011-0332, 2026-10-11, not ticked): the long day-1 ticks were mostly first-use class loading (the pack's LibJF transformer reads every class and its interfaces as it loads), plus a chest search that could wait on a chunk. Our classes (and the integrations of installed mods, 1,292 on the pack) are now loaded on a background thread while the server starts (ClassWarmup), and SupplyContainers looks only in loaded chunks via getChunkNow. Season runs: main before, 4 ticks with over 50 ms of ours (290 ms crafting, 110 ms a Caravans class load, two one-sample ticks), 16.3% worst day; with this, 1 tick, the 289 ms crafting spike that B101 fixes on origin/wip/lane-a (not on main yet), 14.9% worst day, and no class of ours loaded on the server thread. A run with B101 merged in a scratch tree (before integrations were warmed too) had 2 day-1 ticks: 79 ms (1 of 1 samples, a vanilla class loaded under FieldWork) and 51 ms (crafting plus a Cobblemon-integration class load). Left: B101 to land; the rest is vanilla or other mods' classes loaded the first time vanilla code runs (a child growing up in Cradles.round loads Lithium's VoxelShapeHelper), which loading ahead can't reach without loading the whole game.
-- [ ] **B104** BattleStationGameTests.knightsHoldTheGateAndMedicsStandBehind flakes (about 1 in 10 repeats; failed in lane-b-1011-0032's full build): siege tests that run beside it set the global Sieges.ENABLED = false at their tick 0 (BattleStationGameTests ~344, LadderGameTests ~489/557, SiegeGameTests ~459), and teardowns call the global BattleStations.forget() (~114, ~410), so the station watch drops every village's places mid-test; the knight ends 12 blocks from the hall with no post. Same rate with and without 2e3a55d7. Expected: the tests that switch sieges off or forget stations don't touch other tests' villages (own batch, or per-village forget). Test: BattleStationGameTests (QA lane: test-only) (found by lane-b-1011-0032, 2026-10-11) QA note (qa-1011-0533): with only BattleStation/Ladder/Siege classes, the knights test failed 2 of the first 4 local runs ('the knight's place Optional.empty' at tick 90+, batch right after ladderBroken) and passed 18 of 18 afterwards, warm and cold daemon; its failure message now prints sieges on/off, game time, siege over, guards alive, knight position and hall radius so the next failure names the cause. Status (lane-b-1011-0332): the cause above doesn't fit: every test that switches sieges off or forgets stations already has its own batch, and batches run one after another. 0 of 20 repeats alone, 0 of 20 mixed with the Siege/Ladder/Pirate/DesertRaider/Conscription classes. Leads, not tested: village() clears entities but not leftover finished sites, halls or sieges near the area; or the raider dies before tick 45, ending the siege and dropping the post. Needs the real failure message (CI run 38108164087 on 0bc6b41 failed on it; junit.xml of a failing run).
+- [ ] **B103** Three day-1 ticks over 50 ms of our code remain on the pack after B101's fix (found by B101's season run, lane-a-1011-0032, 2026-10-11): `SEASON=true tools/packtest/run.sh` printed 'ticks with over 50 ms of our code: 3', all on day 1, with `Village.mates` 149 ms, `work.Gated` 108 ms and `Cradles.round` 91 ms among the frames (no crafting or recipe frame any more); the same run had our code at 16.2%/17.4% of the tick on its worst day, over 25.2's 15% (16.5% before B101). Expected: no tick over 50 ms caused by us. Test: the season run prints 'ticks with over 50 ms of our code: 0'. (found by lane-a-1011-0032, 2026-10-11) Progress (lane-c-1011-0332, 2026-10-11, not ticked): the long day-1 ticks were mostly first-use class loading (the pack's LibJF transformer reads every class and its interfaces as it loads), plus a chest search that could wait on a chunk. Our classes (and the integrations of installed mods, 1,292 on the pack) are now loaded on a background thread while the server starts (ClassWarmup), and SupplyContainers looks only in loaded chunks via getChunkNow. Season runs: main before, 4 ticks with over 50 ms of ours (290 ms crafting, 110 ms a Caravans class load, two one-sample ticks), 16.3% worst day; with this, 1 tick, the 289 ms crafting spike that B101 fixes on origin/wip/lane-a (not on main yet), 14.9% worst day, and no class of ours loaded on the server thread. A run with B101 merged in a scratch tree (before integrations were warmed too) had 2 day-1 ticks: 79 ms (1 of 1 samples, a vanilla class loaded under FieldWork) and 51 ms (crafting plus a Cobblemon-integration class load). Left: B101 to land; the rest is vanilla or other mods' classes loaded the first time vanilla code runs (a child growing up in Cradles.round loads Lithium's VoxelShapeHelper), which loading ahead can't reach without loading the whole game. Progress (lane-c-1011-0933, 2026-10-11, not ticked): a season run on main with B101 and ClassWarmup both in printed 'ticks with over 50 ms of our code: 5' and 16.1% of the tick on its worst day (day 1; days 2-8 12.4% down to 8.1%). The five, read from the JFR stacks: day 1, 156 ms in Cradles.round (7 of 7 samples, all class loading: a child growing up makes vanilla refresh its size, which calls Lithium's VoxelShapeHelper.getClosestPointTo, which loads its own and fastutil classes through LibJF's transformer); day 1, 93 ms in Gated > FieldWork > Village.stashes (1 sample, at HashSet.<init>: a stall, not work); day 2, 80 ms in SeasonSoak$Day.line (the JDK linking a string concatenation on first use); day 1, 65 ms in SeasonSoak.grow (1 sample, a stall); day 1, 61 ms in SeasonSoak.everyone > Pace.of > VillageNeeds.pace > VillageHalls.nearest (3 of 3 samples, the harness's first look at every villager's pace, one POI search each, cold code). Three of the five are the season harness itself (command.SeasonSoak), which never runs in play; none is a frame of our code doing steady work, and the run also logged a CodeCache GC Threshold collection (86 ms) at the start, a JIT warm-up sign. No code changed. Left: the Lithium class load can't be reached from our code without naming another mod's classes; whether the harness's own frames should count as 'ours' (or warm up before measuring) is a test-bar question for the QA lane or owner, not changed here.
+- [x] **B104** (approved auto 2026-10-11) BattleStationGameTests.knightsHoldTheGateAndMedicsStandBehind flakes (about 1 in 10 repeats; failed in lane-b-1011-0032's full build): siege tests that run beside it set the global Sieges.ENABLED = false at their tick 0 (BattleStationGameTests ~344, LadderGameTests ~489/557, SiegeGameTests ~459), and teardowns call the global BattleStations.forget() (~114, ~410), so the station watch drops every village's places mid-test; the knight ends 12 blocks from the hall with no post. Same rate with and without 2e3a55d7. Expected: the tests that switch sieges off or forget stations don't touch other tests' villages (own batch, or per-village forget). Test: BattleStationGameTests (QA lane: test-only) (found by lane-b-1011-0032, 2026-10-11) QA note (qa-1011-0533): with only BattleStation/Ladder/Siege classes, the knights test failed 2 of the first 4 local runs ('the knight's place Optional.empty' at tick 90+, batch right after ladderBroken) and passed 18 of 18 afterwards, warm and cold daemon; its failure message now prints sieges on/off, game time, siege over, guards alive, knight position and hall radius so the next failure names the cause. Status (lane-b-1011-0332): the cause above doesn't fit: every test that switches sieges off or forgets stations already has its own batch, and batches run one after another. 0 of 20 repeats alone, 0 of 20 mixed with the Siege/Ladder/Pirate/DesertRaider/Conscription classes. Leads, not tested: village() clears entities but not leftover finished sites, halls or sieges near the area; or the raider dies before tick 45, ending the siege and dropping the post. Needs the real failure message (CI run 38108164087 on 0bc6b41 failed on it; junit.xml of a failing run).
 - [ ] **B105** main is red on CI run 788 (38104166456, 2871cc70, 2026-10-11 02:08Z): BattleStationGameTests.aSiegeBegunJustAfterAWatchGetsItsStationsAtOnce failed in the full suite with 'he shot at a foe 15.19 blocks off from the ground' (an arrow owned by that archer exists after the siege began, so he shot from the ground and not from a station; the foe starts 18 blocks off and he had closed 3 blocks). It passed on run 787 (31030b98, which has 32.6's fix c7b76352), passes locally in its own class (9 of 9) so it only fails in the full suite; 32.7's changes to VillageRaids.track/spawn are the only change in between and don't touch the stations. A player would see a guard walk to the ground and shoot at a siege instead of manning his tower. Expected: a siege begun any part of the second gives archers their stations before they shoot, in every suite order. Test: aSiegeBegunJustAfterAWatchGetsItsStationsAtOnce (red on main run 788; junit in artifact gametest-report-2871cc70) (found by qa-1011-0233, 2026-10-11)
 - [x] **B106** (review: pending 2026-10-11) In the dark_oak style the grand homes' chimneys render as floating tops (34.15's houses and 34.16's Manor, seen in lane-d-1011-0332's Manor renders docs/media/manor-*.png). Expected: chimneys rise unbroken from the roof in every style; the style's block swaps likely drop the chimney shaft. Test: a blueprint check that every chimney top has a solid column under it in each style. (found by lane-d-1011-0332, 2026-10-11)
 - [x] **B107** (approved auto 2026-10-11) LegendGuestsGameTests.theTermsMatchTheNeeds failed in a full local build (lane-b-1011-0332, main 3a803748 = origin/main + 32.8/32.9, 2026-10-11): junit.xml says 'no home, a tick: [✔ A home of their own (tier III or better), ✘ Their luxury once a week: books, ✔ A happy village, ...]', i.e. the guest's home need read as met before the test builds terms_manor_3. LegendGuests.freeHome finds any HOME poi within VillageHalls.RADIUS 64 of the hall inside a finished tier III building (BuildSiteManager.finishedIn), so a bed plus a finished-site record left by an earlier test near that grid spot counts (batches before it: edictSave, moodsFollowTheirDay, guardShootsACreeper, legendGuestsWhen). Passes 3/3 with LegendGuestsGameTests alone (8/8 each); not seen in recent CI runs; 32.8/32.9 touch no beds, homes, legends or tier III sites (their one recordFinished is a Stone Wall, forgotten after). Expected: passes in any order (e.g. shrink VillageHalls.RADIUS for the test, as caa26c8f did for B56, or clear finished sites and beds round the hall first). Test: the test itself in a few full runs (QA lane: test-only flake) (found by lane-b-1011-0332, 2026-10-11)
 - [x] **B108** (approved auto 2026-10-11) FerryEdgeGameTests.aTicketToAnotherDimensionTakesYouThere hung a local full build (lane-a-1011-0332, 2026-10-11 ~05:54Z): the server thread sat 14 minutes in ServerChunkCache.getChunk (managedBlock) called from FerryEdgeGameTests.java:112, loading a chunk in the other dimension synchronously, and the suite never finished. Expected: the test never blocks the server thread on another dimension's chunk (load it with a ticket and wait ticks, or a timeout). Test: the full runGameTest finishes; the repeat generator on that test (test-only, QA lane) (found by lane-a-1011-0332, 2026-10-11) Fixed (qa-1011-0733): the test forces the Nether chunk with a ticket and waits for it with runAfterDelay instead of nether.getChunk; FerryEdgeGameTests passes 4 of 4.
 - [ ] **B109** PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap failed once in lane-a-1011-0633's local full build (07:50Z, main cee378e4 + 33.11/33.12, realms off in tests): 'no barrel: BlockPos{x=-12667502, y=-58, z=14421448}' - the diary heirloom was placed (other.placed set) 17 blocks past the test's z edge, at a spot that held no non-empty barrel, so with PLACE_CHUNKS = 0 it still chose a spot near another test's area or that spot was cleared by a neighbour. Passed on main CI 805. Test-only (QA lane). Expected: passes every run. Test: the repeat generator on that test in the full suite (found by lane-a-1011-0633, 2026-10-11)
 - [ ] **B110** PartnersAllCompatTests.aCombeeCirclesTheHive failed once in lane-c-1011-0633's local full build (main cee378e4 + 31.12/31.13/31.14, 2026-10-11 09:01Z): '(…) no hive show: [] (this worker had a show 0 ticks ago)', then passed in the next runCompatGameTest (202/202). Expected: passes in every run. Test: runCompatGameTest a few times (QA lane: test-only flake) (found by lane-c-1011-0633, 2026-10-11) (found by lane-c-1011-0633, 2026-10-11)
-- [ ] **B111** PiglinGameTests.aPiglinPassingAChestTakesItsGoldAndDropsItWhenKilled failed in the full suite on main CI build 812 (cfeebd5b, 2026-10-11 09:39Z): 'the gold isn't shown' (the piglin carried the gold but its HEAD slot was not the gold ingot at tick 45); it passes alone (8 of 8 with ExpansionGateGameTests, qa-1011-1034). Plunder.carry only shows the gold when HEAD is empty, so something filled the head first (roster gear, or state another test leaves). Expected: passes every run. Test: repeat the test 10x with the repeat generator inside the full piglin batch (QA lane, test-only until a cause in Plunder or Threats.outfit is seen) (found by qa-1011-1034, 2026-10-11) (found by qa-1011-1034, 2026-10-11)
-- [ ] **B112** ScoutGameTests.aScoutSentToALair60BlocksOffGetsWithin24AndIsHomeWithin2400Ticks fails whenever it runs in one GameTest run with CheckBugGameTests and StewardRoundsQaGameTests (origin/main d845255e, narrowed to those 3 classes, lane-a-1011-0933 at 12:00Z): 'the scout slot: [... No scout: sneak-right-click a guard with a spyglass ...]' at ScoutGameTests.java:232, so the hall counts no scout; passes alone and with other classes, and in main CI's full order. Also failed in lane-a's local full build (11:39Z) with CheckBugGameTests.aStrangersArrowsDontHurtTheVillage and StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts, which both pass in narrowed runs. Test-only (QA lane): likely a leftover guard post or village from another batch at the same spot; the scoutTrip test doesn't call Leftovers.clear. Expected: passes in any order. Test: those 3 classes narrowed, then the repeat generator (found by lane-a-1011-0933, 2026-10-11)
+- [x] **B111** (approved auto 2026-10-11) PiglinGameTests.aPiglinPassingAChestTakesItsGoldAndDropsItWhenKilled failed in the full suite on main CI build 812 (cfeebd5b, 2026-10-11 09:39Z): 'the gold isn't shown' (the piglin carried the gold but its HEAD slot was not the gold ingot at tick 45); it passes alone (8 of 8 with ExpansionGateGameTests, qa-1011-1034). Plunder.carry only shows the gold when HEAD is empty, so something filled the head first (roster gear, or state another test leaves). Expected: passes every run. Test: repeat the test 10x with the repeat generator inside the full piglin batch (QA lane, test-only until a cause in Plunder or Threats.outfit is seen) (found by qa-1011-1034, 2026-10-11) (found by qa-1011-1034, 2026-10-11)
+- [x] **B112** (approved auto 2026-10-11) ScoutGameTests.aScoutSentToALair60BlocksOffGetsWithin24AndIsHomeWithin2400Ticks fails whenever it runs in one GameTest run with CheckBugGameTests and StewardRoundsQaGameTests (origin/main d845255e, narrowed to those 3 classes, lane-a-1011-0933 at 12:00Z): 'the scout slot: [... No scout: sneak-right-click a guard with a spyglass ...]' at ScoutGameTests.java:232, so the hall counts no scout; passes alone and with other classes, and in main CI's full order. Also failed in lane-a's local full build (11:39Z) with CheckBugGameTests.aStrangersArrowsDontHurtTheVillage and StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts, which both pass in narrowed runs. Test-only (QA lane): likely a leftover guard post or village from another batch at the same spot; the scoutTrip test doesn't call Leftovers.clear. Expected: passes in any order. Test: those 3 classes narrowed, then the repeat generator (found by lane-a-1011-0933, 2026-10-11)
+- [x] **B113** (approved auto 2026-10-11) StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts failed in CI build 817 (42a90dbd, 2026-10-11 12:12Z) with 'stops: 3' right after appointing the Steward: two zones were painted, so a third stop came from an earlier batch's leftovers at the same spot, a Storehouse built outside its own test area (never cleared) or a saved build site whose stewardHall is this hall (StewardRoundsQa doesn't clear either). Passes in narrowed runs. Expected: exactly the two zone stops in any test order; the test clears leftover steward sites and storehouses near its area first. Test: StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts (found by lane-a-1011-1233, 2026-10-11)
+- [ ] **B114** Local full build hung for ~2 h (lane-d-1011-1233, main 42a90dbd + lane d's 34.18-34.22, 2026-10-11 13:47Z): the GameTest server thread parked in ServerChunkCache.getChunk while clearing a test structure in batch golemSmithSentry; no timeout ever failed the run. Expected: the suite finishes or fails a test, never hangs. Test: runGameTest (QA lane: test-only) (found by lane-d-1011-1233, 2026-10-11)
+- [ ] **B115** LifeStageGameTests.anElderWalksSlower failed once in a local full runGameTest (lane-c-1011-1532, main 79a86396+B104 fix, 2026-10-11): elder at 78% of an adult's speed, test needs under 80%... i.e. 'over 80%' check missed; passed in the next two full suites. Expected: the elder speed check holds on every run. Test: anElderWalksSlower repeated 20x (tester skill's repeat generator); test-only flake, QA lane (see B95/B99) (found by lane-c-1011-1532, 2026-10-11)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -502,6 +505,28 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     (tree scans, chunk loads, wall-clock GC pauses count too) to find what makes one call take 50 ms+, cap it, and
     rerun on GitHub's runner (nightly-tests, `part: benchmark`); make `ours` cheaper (a per-class cache) so the
     timer doesn't add to the share.
+  - Status (lane-a-1011-0933, caps): from a code read of the two calls the timer named (not profiled): a lumberjack's
+    tree search works out at most 6 trees (flood fills) per call (`LumberjackWork.FILLS_PER_SEARCH`) and goes on next
+    tick where it stopped (non-trees and unreachable trees stay in `notTrees` for a minute); the tree farm's sapling
+    search skips chunk sections without a sapling (`Trees.forEach`); builders reuse another site's remaining needs
+    (`Builders.remainingNeedOfOther`, reservations of other builds) for up to 100 ticks while that site's
+    `progressMark` is unchanged. Felling stays one tick (spreading it would show as leaves hanging in the air);
+    `BuilderWork`'s skip loop (256 cheap checks) and lookahead (768 steps, once per chest trip) left as they are.
+    GameTests `treeSearchesWorkOutAFewTreesAtATime`, `lumberjackFindsTheTreeBeyondLogPillars`. Left: the benchmark
+    rerun (`PERF=true VILLAGES=3 PLOTS=25`, `perf.py --ticks`) to see the over-50 ms ticks gone.
+  - Status (lane-a-1011-1233): the caps are merged into `main` and tested: `checkLayers` and 159 GameTests of the
+    lumberjack, builder, build-reserve, crew, chaos, steps, config and benchmark-cost classes pass, with 2 new ones
+    (`lumberjackReloadedMidSearchStillFellsTheTree`: saved and loaded mid-search, it still fells the oak;
+    `aSitesNeedIsCountedAgainOnceItMovesOn`: the reused count, and a fresh one once the site moves on). One local
+    benchmark (`PERF=true VILLAGES=3 PLOTS=25`, the pack, Java 21, the 7 GB container; server ticks p50 34.1 / 15.4
+    ms): our code a tick p50 1.6 / 1.9 ms, p99 25.1 / 13.9 ms; **3 of 2,400 measured ticks over 50 ms of ours** (was
+    13; worst 80.5 ms, was 118.7), plus 3 during the setup (worst 216.8 ms in a `MinerWork` call, was 450.9);
+    `LumberjackWork`'s biggest call 27.6 ms (was 66.8). Profile share 17.5% (was 16.7%; one run each, 1,742 samples).
+    Target still unmet, so not ticked. Left: the worst measured ticks are many small calls together (80.5 ms with
+    its biggest call 7.8 ms: a catch-up tick or a GC pause in wall time) and one `BuilderWork` call of 53.1 ms (the
+    profile's builder frames are `breakBlock` and `place`, world block updates); next, log GC pauses beside the timer
+    to tell them apart, cap `BuilderWork`'s calls per tick per level, and rerun on GitHub's runner
+    (nightly-tests, `part: benchmark`) for comparable numbers.
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.
@@ -2669,7 +2694,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests (`runCompatGameTest`): the species, level and name for its biome and rank; a win and a capture
     each pay once; plain GameTest: never posted without Cobblemon;
   - showcase scene `bounty_rogue` (Cobblemon: the poster, the rogue, the claim).
-- [ ] **31.15** **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
+- [x] **31.15** (review: pending 2026-10-11) **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
   (`STYLE.md`, rendered), each standing on the one before like a blueprint upgrade: `story/bandit_fort` (a palisade of
   sharpened logs round a yard, a gate, a fire and tents), `story/bandit_fort_2` (two corner watchtowers with ladders,
   and a stable) and `story/bandit_fort_3` (the King's keep: a timber-and-cobblestone hall with a throne, his banner
@@ -2687,7 +2712,7 @@ write their own stories; nothing waits forever on a player.
     touched; the King's gear, health and boss bar; the horn calls 4 bandits once; the chest always has the crown;
   - renders of the three stages, front and back, in the review package; showcase scene `bandit_fort` (the three stages
     placed one after another).
-- [ ] **31.16** **The Bandit King, II: the story.** `arcs/bandit_king.json`, an arc marked `threat`. It starts in a
+- [x] **31.16** (review: pending 2026-10-11) **The Bandit King, II: the story.** `arcs/bandit_king.json`, an arc marked `threat`. It starts in a
   Town or bigger that has broken up at least 2 bandit camps (a count kept in `aliveworkplace_stories` from this item
   on; `BanditCamps.breakUp`, or 32.3's lair breaking once that has landed, adds to it), 8% a day, with `banditCamps`
   on. Its camps are the arc's own (`place` and `spawn`), not `BanditCamps`' camp or 32.3's one lair a village, so they
@@ -2719,7 +2744,7 @@ write their own stories; nothing waits forever on a player.
     the open postern, and Pell joining after); the tribute takes a third of the treasury; the ending pays;
   - showcase scene `bandit_king` (GIF: the three banners, the fort rising a stage a day, the storm with allies, the
     King falling).
-- [ ] **31.17** **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
+- [x] **31.17** (review: pending 2026-10-11) **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
   pixel-art skill like vanilla's flowers. They never generate in the world: only an arc plants them, so no world
   changes. Each grows in its biomes (a biome tag of ours, `aliveworkplace:herb_biomes/<herb>`, so datapacks and biome
   mods can add to it):
@@ -2741,7 +2766,7 @@ write their own stories; nothing waits forever on a player.
     spreads; `herb_patch` plants only on fit ground;
   - all textures pass `lint.py`; a preview sheet in the review package; showcase scene `herbs` (all eight patches, and
     the tonic in hand).
-- [ ] **31.18** **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
+- [x] **31.18** (review: pending 2026-10-11) **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
   village of Village rank or more with 12 villagers or more, `villagerSickness` on, 6% a day. A new illness, the
   **Grey Cough**, a kind in the illness-kind attachment beside `ILL_SINCE` (32.11 adds the same attachment for hexes;
   whichever item lands first adds it, ordinary when absent, so old saves are unchanged): it doesn't pass by itself, a
@@ -2769,7 +2794,7 @@ write their own stories; nothing waits forever on a player.
     Physician, else Doctor Wren); the herb choice with a stubbed locator (forced biome answers); the brew and the cure
     round; the failure path;
   - showcase scene `sickness` (GIF: the coughing village, a herb patch, the cure going round).
-- [ ] **31.19** **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
+- [x] **31.19** (review: pending 2026-10-11) **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
   (`STYLE.md`, rendered): `story/caravan_wreck` (the settlers' covered wagon on its side, a broken wheel, spilled
   crates and barrels, a lantern in the grass); `story/raiders_stockade` (a small pillager stockade: a palisade, a
   tent, a campfire, a loot chest and a cage of iron bars with a gate for a captive); and five trail marks,
@@ -2785,7 +2810,7 @@ write their own stories; nothing waits forever on a player.
     marks in order only (reaching mark 3 first counts nothing);
   - renders of the wreck, the stockade and the five marks in the review package; showcase scene `caravan_trail` (the
     wreck, a mark, the stockade).
-- [ ] **31.20** **The Lost Caravan, II: the story.** `arcs/lost_caravan.json`. When a caravan sets off on a road
+- [x] **31.20** (review: pending 2026-10-11) **The Lost Caravan, II: the story.** `arcs/lost_caravan.json`. When a caravan sets off on a road
   longer than 300 blocks (`hall/Caravans`), 1 in 20 goes missing (config `lostCaravanChance`, 20), if neither village
   has an arc running; its goods are held by the arc. Chapters:
   1. **Overdue**: the caravan doesn't arrive; both halls are told ("The caravan from Thornholm to Ashford is a day
@@ -2806,7 +2831,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: a shipment goes missing when forced; each chapter moves on by its objective; Tobin follows, waits and
     joins; the chest holds the shipment's own goods; the delivery quest pays; the failure path;
   - showcase scene `lost_caravan` (GIF: the wreck, the trail, freeing Tobin, walking him home).
-- [ ] **31.21** **The Professor's Thesis** (Cobblemon). `arcs/professors_thesis.json`, loaded only with Cobblemon. Its
+- [x] **31.21** (review: pending 2026-10-11) **The Professor's Thesis** (Cobblemon). `arcs/professors_thesis.json`, loaded only with Cobblemon. Its
   patron is the village's Pokémon Professor (29.21); until that lands, the village's best Scholar at Expert or above,
   called "Professor <name>" for the arc. It starts in a Town with a Scholar or the Professor, 6% a day. New objectives
   through `compat/cobblemon` (Cobblemon's capture and battle events; find their exact names with `api.py`): `catch` (a
@@ -3106,7 +3131,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     10 days' rest, double XP and a chronicle line with their names;
   - scene `war_party`: the player leading guards and siege-breakers into a war camp, the Warlord falling, the loot
     (GIF).
-- [ ] **32.14** **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
+- [x] **32.14** (review: pending 2026-10-11) **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
   Lookout Tower or Wall Tower (a day's warning); a Scout there (the same, with the raiders' number and side); the Seer
   (needs M29's Seer item: two days' warning; until it lands this source is skipped); and a list other systems add to
   (M35's Lighthouse). When the clock (32.2) sets an attack and the village has a source:
@@ -3122,7 +3147,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the attack; one without isn't told until it starts; in the warned village the gates are shut and the portcullis is
     down at dusk, and the archers are on their stations before the raiders appear;
   - scene `warning`: the guard on the tower at dusk, the chat line, the gates shutting (GIF).
-- [ ] **32.15** **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
+- [x] **32.15** (approved auto 2026-10-11) **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
   is one disaster:
   - `when`: conditions from the same toolbox as the raider cultures, plus the weather (thunder; no rain for N days)
     and the share of wooden blocks in the village's finished builds (sampled once a day); `chance` a day; `duration`
@@ -3139,7 +3164,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   disaster id, each on by default. Done when: a test datapack disaster applies each effect (a GameTest each), ends
   after its time or with rain, and survives a save and load of the hall; switched off, it never starts. No disaster
   ships yet: lands with `--no-review`.
-- [ ] **32.16** **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
+- [x] **32.16** (review: pending 2026-10-11) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
   a lightning strike in the hall's area in a thunderstorm sets a finished wooden build's roof alight (1 in 3), a
   chimney spark 2% a day in a drought, and the pirate gunners' burning arrows (32.8) light the wooden block they hit
   (1 in 4, with `mobGriefing`). A village fire spreads by the game's own fire (`doFireTick`), but never to a block the
@@ -3158,7 +3183,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the job starts from the grindstone and a water bucket, and the station tooltip lists it;
   - a builder puts the burned blocks back;
   - scene `fire`: a roof catching and the firewarden putting it out (GIF).
-- [ ] **32.17** **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
+- [x] **32.17** (review: pending 2026-10-11) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
   others 5% a day after 5 days without rain, twice as likely while a desert raiders' lair stands; it lasts 3–5 days
   and rain ends it. In the hall's area: crops, stems and berry bushes grow at a quarter pace, farmland dries, water
   cauldrons lose a level a day, and villagers are 10 less happy ("the wells are low") unless the village has a
@@ -3171,7 +3196,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     called), watered wheat at the usual rate; the Well Keeper wets dry farmland within 600 ticks; rain ends the
     drought; a finished Well takes the mood reason away;
   - scene `drought`: dry fields and the keeper carrying water to them (GIF).
-- [ ] **32.18** **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
+- [x] **32.18** (review: pending 2026-10-11) **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
   villagers than beds; a coven's hexed (32.11) or a traveller from far away (`inn/`) can start one too. While it lasts
   illness passes on: each hall round, a well villager who spent it within 3 blocks of an ill one catches it 1 in 5
   (less with Medicine research); the ill don't get well by themselves, the nurse's remedies don't cure them, and after
@@ -3186,7 +3211,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     physician has seen passes it on less; the Remedy cures a hexed and a plague-ill villager, where a honey bottle
     cures neither; the plague ends a day after the last cure; the recipe crafts;
   - scene `plague`: the physician going house to house with the Remedy (GIF), and the hall's list of the ill.
-- [ ] **32.19** **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
+- [x] **32.19** (review: pending 2026-10-11) **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
   renders), in the Blueprint Table, each with its job's block and no other job block: the **Fire Station** (a stone
   ground floor with the Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), the
   **Well House** (a roofed well shaft down to water with the Well Keeper's cauldron, a trough and a bench) and the
@@ -3194,7 +3219,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   next? suggests each when the village lacks its job and its disaster can come there. Done when: the three pass
   `check.py`; a render package shows each front and back; a builder builds each in a test and a jobless villager there
   takes the job with its item; the `defences` scene films them too.
-- [ ] **32.20** **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
+- [x] **32.20** (review: pending 2026-10-11) **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
   `BlueprintUpgrades`), with the minecraft-architect skill: **Palisade II** (a fighting step, and a ditch of pointed
   dripstone stakes in front), **Stone Wall II** (timber hoardings over the battlements: a roofed walkway with murder
   holes), **Wall Tower II** (a roofed top with an archers' gallery, two stations a side) and **Gatehouse II** (a
@@ -3491,7 +3516,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     can give but not take; the movements are listed right;
   - it survives save and reload;
   - showcase scene `realm_treasury` (the icon and its tooltip).
-- [ ] **33.14** **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
+- [x] **33.14** (review: pending 2026-10-11) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
   generator, checked against `STYLE.md` in renders, in all five styles:
   - **Colony Camp** (`camp/colony_camp`, about 15 x 6 x 13, placed at once like the settlers' camp): two covered
     wagons, a Village Hall under a canvas awning on a timber platform, a Blueprint Table with a lamp, a stack of
@@ -3970,7 +3995,7 @@ on a real world.
   Scholar in a plain house, a married couple, a child, a builder mid-build, a rancher with daycare boarders, a hall
   of City rank), prove each bullet, including a save and reload part-way through seeding and a second round that
   changes nothing; scene `class_switch_on` (the hall's pages before and after) passes.
-- [ ] **34.23** **A rehearsal on a real world.** With `tools/packtest` on the Cobbleverse pack: a world made with the
+- [x] **34.23** (approved auto 2026-10-11) **A rehearsal on a real world.** With `tools/packtest` on the Cobbleverse pack: a world made with the
   last release before 1.8, with three villages with halls (a Hamlet of 6; a Town of 22 with research and couples; a
   City of 36 with every class-gated job, children, a build in progress, daycare boarders, fossils reviving, mail on
   the way), saved, then opened with the 1.8 jar and run for 2 in-game days. Done when: the log audit is clean; the
@@ -4004,7 +4029,7 @@ Legends.
   table of the eight Wonders with their Legend, its stand-in, their other requirements and powers; and how every link
   to another milestone falls back until that milestone lands. Done when: the note is on `main` with all of these, and
   its review package is sent.
-- [ ] **35.2** **Wonder data, requirements and caps.** A Wonder is one data file,
+- [x] **35.2** (approved auto 2026-10-11) **Wonder data, requirements and caps.** A Wonder is one data file,
   `data/<namespace>/wonders/<id>.json`, loaded by a reload listener (through `Platform`) into a new `wonder/Wonders`:
   its name and description (lang keys), an icon item, its requirements, its stages (each a name, its blueprint parts
   with their offsets, and its goods as `{"item" or "tag", "count", "job"}`), its powers (`[{"type": ..., numbers}]`),
@@ -4439,6 +4464,39 @@ item waits.
 
 ## Notes / blocked
 
+- 2026-10-11 (34.23, lane-d-1011-1532): **the update rehearsal passed**: report [docs/owner/rehearsal-1.8.md](docs/owner/rehearsal-1.8.md),
+  owner's steps [docs/owner/updating-to-1.8.md](docs/owner/updating-to-1.8.md), tool `tools/packtest/rehearsal.sh`. A
+  0.142.0 world (Cobbleverse 1.7.42; Hamlet 6, Town 22, City 36 seeded by `/workplace rehearsal seed`) opened with main
+  (dd04c190 + this change) and every gate open: classes seeded in 420 ticks (tick p95 42.7 ms, worst 1047 ms,
+  unattributed), 44 of 44 jobs kept, ranks hamlet/town/city kept, takings equal to the same days on the old jar
+  (0.78 / 4.62 / 9.10 emeralds a day), 37 containers and 2,037 items equal on loading, daycare boarders, the fossil
+  revival, the parcel in transit and the build in STRUCTURE all kept; log audit exit 0 (pack registry errors only).
+  **Found and fixed:** a config file written while a gate was closed holds `false` for its switches, so the first
+  rehearsal opened with classes off (as the owner's server would have): `WorkplaceConfig.parse` now gives such switches
+  their new default (the file records `expansionsOpen`; a format-2 file, 0.139.0 to 0.142.0, counts as all closed; config
+  format 3), `ExpansionGateGameTests.aFileFromBeforeTheReleaseTakesTheNewDefaults`.
+  Decisions: (1) the old jar is the v0.142.0 tag built with `command/Rehearsal.java` copied in (the published jar
+  can't seed); (2) "1.8" is run as main with `-Daliveworkplace.shots=true` (every gate open; M34 is still false);
+  (3) takings are compared with a control (the saved world on the old jar for the same 2 days), since they drift by
+  themselves (an earlier run without it showed 9.90 on day 1 vs 9.10 on days 2-3 for both jars); (4) the staged homes are
+  beds in the open, so everyone seeds as a Peasant. Open: the 1 s worst tick in the seeding window needs a JFR profile
+  to say whose it is.
+
+- **Fire and the Firewarden (32.16, lane-b-1011-1233, 2026-10-11): decisions.** `village_fire.json` is a disaster
+  file (so `disasters` switches it) whose daily roll never starts it (`chance` 0, no `fires_a_day`): its fires are
+  short events kept per village in memory, set off by its `ignition` block (lightning 0.334, chimney 0.02 while
+  `dry_days` 5 or a drought is under way, burning arrows 0.25 from raider-tagged shooters). "Likelier the more wood":
+  the `when` gate (wood share 0.3) and two `factors` of 1.25 (at 0.5 and 0.7). In a village a fire with no builders'
+  block left beside it goes out at age 15 (else it smoulders on a player's roof forever); the brigade's bell swings
+  and rings without vanilla's ring (which sends villagers to hide); a new Firewarden has both buckets full; builders
+  skip a build with fire within 16 blocks. The guide page `docs/guide/fire.md` went in now, as 32.14's lines did,
+  though M32 is still closed: the release that opens M32 should check it.
+
+- **A day's warning (32.14, lane-b-1011-0933, 2026-10-11): the Seer is not a source yet.** The spec skips the Seer
+  until M29's Seer item lands; besides, with a Seer in the village the night is foretold at dawn by the Seer's own
+  round (29.16), which bypasses the threat clock, and the clock rolls only one day ahead, so two days' warning needs
+  the clock to roll two nights. Decided: `guard/Warnings.SOURCES` is the list other systems add to; the Seer joins
+  when its item lands, with the clock rolling a night further for it.
 - 2026-10-11 lane-d-1011-0332: 34.18 and 34.20 are built and ticked on `wip/lane-d` but not yet full-built together. The first full build on the merge failed 3 tests: B104 (known flake), B107 (LegendGuests, filed by lane b) and PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap ("no barrel"; passes on main CI, cause not found, maybe a flake); the rerun was cut off at the end of the run. Next lane-d run: merge `wip/lane-d` into main, run the full build, look at the heirloom test if it fails again, push.
 - **The player guide (22.10, lane-d-1011-0332, 2026-10-11): published at `/player-guide/`, not `/guide/`.** The Guide
   Book's showcase scene is named `guide`, so the showcase site's `/guide/` folder is already its pictures; renaming the

@@ -102,6 +102,9 @@ public final class BattleStations {
 		Map<BlockPos, Integer> stations = Map.of();
 		boolean found;
 		boolean ramparts;
+		/** Ahead of a warned attack (32.14): no siege yet, its side known from the clock. */
+		@org.jetbrains.annotations.Nullable
+		ThreatData.Siege alert;
 		int cursor;
 		int most;
 		final Set<UUID> guards = new HashSet<>();
@@ -313,6 +316,24 @@ public final class BattleStations {
 				}
 			}
 		}
+		// The evening of a warned attack (32.14): the guards take their stations before the raiders come.
+		for (BlockPos hall : data.warnedHalls()) {
+			Key key = new Key(level.dimension(), hall);
+			if (!Sieges.ENABLED || live.contains(key) || data.siege(hall).isPresent() || !level.isLoaded(hall) || !Warnings.evening(level, hall)) {
+				continue;
+			}
+			live.add(key);
+			boolean fresh = !WATCHES.containsKey(key);
+			Watch watch = WATCHES.computeIfAbsent(key, k -> new Watch());
+			if (watch.alert == null) {
+				ThreatData.Siege alert = new ThreatData.Siege(hall, level.getGameTime(), Sieges.nextDawn(level.getDayTime()));
+				data.attacks(hall).stream().filter(a -> a.day() == data.warned(hall)).findFirst().ifPresent(a -> alert.out = Warnings.out(a));
+				watch.alert = alert;
+			}
+			if (!onlyNew || fresh) {
+				step(level, watch.alert, watch);
+			}
+		}
 		if (onlyNew) {
 			return;
 		}
@@ -340,6 +361,9 @@ public final class BattleStations {
 	}
 
 	private static void step(ServerLevel level, ThreatData.Siege siege, Watch watch) {
+		if (siege != watch.alert) {
+			watch.alert = null; // the siege has begun: its breach and side from now on
+		}
 		if (!watch.found) {
 			watch.stations = byBuild(level, siege.hall);
 			watch.found = true;
@@ -396,7 +420,7 @@ public final class BattleStations {
 				// walks; then the highest; then the nearest the breach (with none: the farthest out from the hall).
 				pos = watch.stations.keySet().stream()
 					.filter(s -> !taken.contains(s) && flat(s, home) <= (double) POST_REACH * POST_REACH && standable(level, s))
-					.min(Comparator.<BlockPos>comparingInt(s -> side(siege, s) ? 0 : 1).thenComparingInt(s -> manned.getOrDefault(watch.stations.get(s), 0))
+					.min(Comparator.<BlockPos>comparingInt(s -> side(siege, s, watch.alert == siege) ? 0 : 1).thenComparingInt(s -> manned.getOrDefault(watch.stations.get(s), 0))
 						.thenComparingInt(s -> -s.getY())
 						.thenComparingDouble(s -> siege.breach == null ? -flat(s, siege.hall) : flat(s, siege.breach.relative(siege.out, 4))).thenComparingLong(BlockPos::asLong))
 					.orElse(null);
@@ -460,8 +484,8 @@ public final class BattleStations {
 	}
 
 	/** Whether the station {@code s} is over the breach's side of the village: from the hall, toward the outside of the breach. */
-	private static boolean side(ThreatData.Siege siege, BlockPos s) {
-		return siege.breach != null && (s.getX() - siege.hall.getX()) * siege.out.getStepX() + (s.getZ() - siege.hall.getZ()) * siege.out.getStepZ() > 0;
+	private static boolean side(ThreatData.Siege siege, BlockPos s, boolean alert) {
+		return (siege.breach != null || alert) && (s.getX() - siege.hall.getX()) * siege.out.getStepX() + (s.getZ() - siege.hall.getZ()) * siege.out.getStepZ() > 0;
 	}
 
 	/** The ground at or near the height of {@code pos}: the first spot to stand on from two above it down to three below. */

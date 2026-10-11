@@ -112,6 +112,10 @@ public final class Arcs implements ResourceManagerReloadListener {
 			}
 		});
 		Platform.get().onEntityLoad((entity, level) -> ArcEffects.onLoad(level, entity));
+		io.github.jcondedata.aliveworkplace.guard.BanditFort.init(); // the Bandit King's fort: its men keep home, the King's bar and horn (31.15)
+		BanditKingStory.init(); // the Bandit King's story (31.16); before onTalk, so Pell asks for his bread first
+		LostCaravanStory.init(); // the Lost Caravan's story (31.20)
+		ProfessorsThesis.init(); // the Professor's Thesis (31.21); before onTalk, so the professor looks at the party first
 		Platform.get().onUseEntity((player, level, hand, entity, hit) -> ArcEffects.onTalk(player, level, hand, entity));
 	}
 
@@ -580,6 +584,9 @@ public final class Arcs implements ResourceManagerReloadListener {
 			ArcState.Role role = s.roles.get(talk.role());
 			return role == null ? talk : new Objectives.Talk(talk.role(), Optional.of(role.name()), talk.says());
 		}
+		if (o instanceof CaravanTrail.FollowTrail trail) {
+			return CaravanTrail.cast(s, trail);
+		}
 		if (o instanceof Objectives.Kill kill && kill.role() != null) {
 			ArcState.Role role = s.roles.get(kill.role());
 			return role == null ? kill : new Objectives.Kill(kill.entity(), kill.count(), true, Optional.of(role.name()));
@@ -695,6 +702,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 			if (player != null) {
 				s.last = player.getUUID();
 			}
+			BanditKingStory.arcQuestDone(level, s, quest); // 31.16: an ally won
 			Stories.Data.get(level).setDirty();
 			advance(level, hall, e, s);
 			return;

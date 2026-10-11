@@ -45,6 +45,7 @@ public final class AliveWorkplace {
 		ModTrades.init();
 
 		io.github.jcondedata.aliveworkplace.hall.CaravanSights.init(); // 33.7; first, so a click on a carter or his llamas stops here
+		io.github.jcondedata.aliveworkplace.story.SicknessStory.init(); // 31.18; before BuilderEvents, so a click on the healer is the story's first
 		BuilderEvents.init();
 		io.github.jcondedata.aliveworkplace.shop.ShopLedger.init();
 		TableServer.init();
@@ -98,6 +99,9 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.init(); // Wonders as data (35.2)
 		io.github.jcondedata.aliveworkplace.threat.Threats.init(); // raider cultures as data (32.2)
+		io.github.jcondedata.aliveworkplace.threat.Disasters.init(); // disasters as data (32.15)
+		io.github.jcondedata.aliveworkplace.people.RemedyItem.init(); // the Physician's Remedy given to a villager (32.18)
+		io.github.jcondedata.aliveworkplace.threat.VillageFire.init(); // the village fire and the Firewarden (32.16)
 		io.github.jcondedata.aliveworkplace.threat.Sieges.init(); // rams and gates (32.4)
 		io.github.jcondedata.aliveworkplace.threat.Ladders.init(); // ladders over the walls (32.5)
 		io.github.jcondedata.aliveworkplace.threat.SandRamps.init(); // sand ramps against the walls (32.9)
@@ -137,6 +141,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.command.Soak.init();
 		io.github.jcondedata.aliveworkplace.command.CitySoak.init(); // 27.22
 		io.github.jcondedata.aliveworkplace.command.SeasonSoak.init(); // 30.22
+		io.github.jcondedata.aliveworkplace.command.Rehearsal.init(); // 34.23
 		Platform.get().onServerStarting(server -> ClassWarmup.start()); // B103: no class loading stalls on day 1
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}

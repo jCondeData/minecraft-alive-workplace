@@ -147,6 +147,7 @@ public final class Trainers {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.lost", trainer.getDisplayName()).withStyle(ChatFormatting.GRAY));
 		} else {
 			io.github.jcondedata.aliveworkplace.story.PersonalRequests.onBattleWon(trainer, player); // "Help me train" (31.9)
+			io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.onTrainerWon((ServerLevel) trainer.level(), trainer, player); // 31.21
 			long day = trainer.level().getDayTime() / 24000L;
 			Map<UUID, Long> paid = new HashMap<>(ModAttachments.TRAINER_REWARDS.getOrElse(trainer, Map.of()));
 			Long last = paid.get(playerId);

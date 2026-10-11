@@ -465,11 +465,20 @@ public class PersonalErrandGameTests implements FabricGameTest {
 					&& (box instanceof net.minecraft.world.level.block.entity.ChestBlockEntity || box instanceof BarrelBlockEntity)) {
 					box.clearContent();
 					level.removeBlock(leftover, false);
+				} else if (level.getBlockEntity(leftover) instanceof net.minecraft.world.level.block.entity.BrushableBlockEntity) {
+					// put() prefers a brushable block to a new barrel when no chest is near (B109).
+					level.removeBlock(leftover, false);
 				}
+			}
+			for (net.minecraft.world.entity.vehicle.MinecartChest cart : level.getEntitiesOfClass(net.minecraft.world.entity.vehicle.MinecartChest.class,
+				new net.minecraft.world.phys.AABB(chunk.getPos().getMinBlockX(), level.getMinBuildHeight(), chunk.getPos().getMinBlockZ(),
+					chunk.getPos().getMaxBlockX() + 1, level.getMaxBuildHeight(), chunk.getPos().getMaxBlockZ() + 1))) {
+				cart.discard();
 			}
 			Quest other = acceptedFile(helper, heirloomAt(helper, emptyRel, "diary"), finn, me);
 			helper.assertTrue(RequestErrands.placeHeirlooms(level) == 1 && other.placed != null
-				&& level.getBlockEntity(other.placed) instanceof BarrelBlockEntity barrel && !barrel.isEmpty(), "no barrel: " + other.placed);
+				&& level.getBlockEntity(other.placed) instanceof BarrelBlockEntity barrel && !barrel.isEmpty(),
+				"no barrel: " + other.placed + " (wanted near " + helper.absolutePos(emptyRel) + ", found " + (other.placed == null ? null : level.getBlockState(other.placed)) + ")");
 			ItemStack diary = ((BarrelBlockEntity) level.getBlockEntity(other.placed)).getItem(13);
 			helper.assertTrue(diary.is(Items.WRITTEN_BOOK) && diary.getHoverName().getString().equals("Great-aunt's Diary")
 				&& diary.get(DataComponents.WRITTEN_BOOK_CONTENT).pages().size() == 3, "the diary: " + diary);

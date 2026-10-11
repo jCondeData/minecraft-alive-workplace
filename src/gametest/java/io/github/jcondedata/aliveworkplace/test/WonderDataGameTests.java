@@ -143,7 +143,7 @@ public class WonderDataGameTests implements FabricGameTest {
 		files.put(ResourceLocation.parse("owner_pack:wonders/bad_count.json"), GOOD.replace("\"count\": 16", "\"count\": 0"));
 		files.put(ResourceLocation.parse("owner_pack:wonders/bad_job.json"), GOOD.replace("aliveworkplace:chef", "aliveworkplace:cheff"));
 		files.put(ResourceLocation.parse("owner_pack:wonders/no_stages.json"), GOOD.replaceAll("\"stages\": \\[.*\\]}\\],", "\"stages\": [],"));
-		files.put(ResourceLocation.parse("owner_pack:wonders/no_parts.json"), GOOD.replaceAll("\"parts\": \\[[^]]*\\]", "\"parts\": []"));
+		files.put(ResourceLocation.parse("owner_pack:wonders/no_parts.json"), GOOD.replaceAll("\"parts\": \\[\\{[^}]*\\}\\]", "\"parts\": []"));
 		files.put(ResourceLocation.parse("owner_pack:wonders/bad_icon.json"), GOOD.replace("minecraft:bell", "minecraft:no_such_item"));
 		files.put(ResourceLocation.parse("owner_pack:wonders/switched_off.json"), "{\"enabled\": false}");
 		files.put(ResourceLocation.parse("owner_pack:wonders/needs_a_mod.json"),

@@ -58,6 +58,9 @@ public class NurseWork extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
+		if (io.github.jcondedata.aliveworkplace.story.SicknessStory.busy(level, villager)) {
+			return; // brewing the Three-Herb Tonic, or taking it round (31.18): the story shows what she's doing
+		}
 		WorkerStatus.set(villager, Component.translatable("entity.minecraft.villager.nurse"), -1f, state);
 		if (++timer % EVERY != 0) {
 			return;
@@ -82,10 +85,15 @@ public class NurseWork extends Behavior<Villager> {
 		return io.github.jcondedata.aliveworkplace.hall.Guilds.radius(nurse, CURE_RANGE);
 	}
 
-	/** Cures the nearest ill villager if there's a remedy by the station; what she's doing, for her status. */
-	static Component cure(ServerLevel level, Villager nurse) {
+	/**
+	 * Cures the nearest ill villager if there's a remedy by the station; what she's doing, for her status. The Grey Cough
+	 * (31.18) a remedy only eases for a day.
+	 */
+	public static Component cure(ServerLevel level, Villager nurse) {
+		long now = level.getGameTime();
 		List<Villager> ill = level.getEntitiesOfClass(Villager.class, nurse.getBoundingBox().inflate(cureRange(nurse), 8, cureRange(nurse)),
-				v -> v.isAlive() && Sickness.isIll(v) && !Sickness.isHexed(v)).stream() // (a hex is beyond her remedies, 32.11)
+				v -> v.isAlive() && Sickness.isIll(v) && !Sickness.isHexed(v) && !Sickness.isPlagueIll(v) // (a hex, 32.11, or the plague, 32.18, is beyond her remedies)
+					&& !(Sickness.isGrey(v) && Sickness.eased(v, now))).stream() // (an eased Grey Cough waits for the day to pass)
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(nurse))).toList();
 		if (ill.isEmpty()) {
 			Requests.clear(nurse);
@@ -108,12 +116,18 @@ public class NurseWork extends Behavior<Villager> {
 				nurse.spawnAtLocation(rest);
 			}
 		}
-		Sickness.recover(level, patient);
+		boolean grey = Sickness.isGrey(patient);
+		if (grey) {
+			Sickness.ease(level, patient); // the Grey Cough: the slowness goes for a day, the cough stays (31.18)
+		} else {
+			Sickness.recover(level, patient);
+		}
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(nurse, "cure", patient.blockPosition()); // and over the villager cured (ROADMAP 28.6)
 		level.sendParticles(ParticleTypes.HEART, patient.getX(), patient.getY() + patient.getBbHeight() + 0.3, patient.getZ(), 4, 0.3, 0.2, 0.3, 0);
 		level.playSound(null, patient.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 0.6f, 1.1f);
 		ModAttachments.VILLAGERS_CURED.set(nurse, ModAttachments.VILLAGERS_CURED.getOrElse(nurse, 0) + 1);
 		BuilderLevels.addXp(level, nurse, 2, null);
-		return Component.translatable("message.aliveworkplace.nurse.state.cured", patient.getDisplayName()).withStyle(ChatFormatting.GREEN);
+		return Component.translatable(grey ? "message.aliveworkplace.nurse.state.eased" : "message.aliveworkplace.nurse.state.cured", patient.getDisplayName())
+			.withStyle(grey ? ChatFormatting.YELLOW : ChatFormatting.GREEN);
 	}
 }

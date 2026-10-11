@@ -255,6 +255,9 @@ public final class Lairs {
 		if (resting(level, hall) > 0) {
 			return;
 		}
+		if (io.github.jcondedata.aliveworkplace.story.Stories.villageFlag(level, hall, "no_bandit_camps")) {
+			bandits = false; // the Bandit King's fall keeps the bandits off for a while (31.16)
+		}
 		Optional<ResourceLocation> comer = comer(level, hall, bandits, random);
 		if (comer.isEmpty()) {
 			return;
@@ -464,10 +467,20 @@ public final class Lairs {
 
 	/** As {@link #fits(ServerLevel, BlockPos)}; {@code wet}: shallow water is no bar (a swamp's pools). */
 	static boolean fits(ServerLevel level, BlockPos ground, boolean wet) {
+		return fits(level, ground, wet, 7, 6);
+	}
+
+	/**
+	 * As {@link #fits(ServerLevel, BlockPos, boolean)} over a footprint {@code halfX} and {@code halfZ} blocks each way
+	 * from {@code ground} (a camp's is 7 by 6; the Bandit King's fort, 31.15, is wider): no more uneven or blocked
+	 * columns than a camp allows for its size.
+	 */
+	public static boolean fits(ServerLevel level, BlockPos ground, boolean wet, int halfX, int halfZ) {
+		int allowed = (2 * halfX + 1) * (2 * halfZ + 1) * 20 / 195; // a camp: 20 of its 195 columns
 		int uneven = 0;
 		int blocked = 0;
-		for (int dx = -7; dx <= 7; dx++) {
-			for (int dz = -6; dz <= 6; dz++) {
+		for (int dx = -halfX; dx <= halfX; dx++) {
+			for (int dz = -halfZ; dz <= halfZ; dz++) {
 				BlockPos top = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ground.offset(dx, 0, dz)).below();
 				if (wet ? !level.getFluidState(top.below(2)).isEmpty() : !level.getFluidState(top).isEmpty() || !level.getFluidState(top.above()).isEmpty()) {
 					return false; // (wet: no deeper than two blocks)
@@ -480,7 +493,7 @@ public final class Lairs {
 				}
 			}
 		}
-		return uneven <= 20 && blocked <= 20;
+		return uneven <= allowed && blocked <= allowed;
 	}
 
 	/**
@@ -560,7 +573,7 @@ public final class Lairs {
 	}
 
 	/** Clears the ground of a lair on land (the grass, a bush), fills under it so nothing floats, and sets it down. */
-	private static void clearAndPlace(ServerLevel level, StructureTemplate template, BlockPos origin, StructurePlaceSettings settings, BoundingBox box) {
+	public static void clearAndPlace(ServerLevel level, StructureTemplate template, BlockPos origin, StructurePlaceSettings settings, BoundingBox box) {
 		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY() + 1, box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
 			if (!level.getBlockState(p).isAir()) {
 				level.removeBlock(p, false); // the grass, a bush, a sapling

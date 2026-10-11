@@ -19,6 +19,14 @@ How everything in the mod works, in plain words: written for the owner first, th
   honours, the title in chat (31.11).
 - [The bounty board and bandit captains](bounties.md): bounties posted by villages, the Bounty Board, captains'
   quirks and hideouts, the Wanted Poster and the Captain's Insignia (1.5).
+- [The Bandit King](bandit-king.md): his fort rising a stage a dawn, the King, his horn and his treasure (31.15).
+- [The Lost Caravan](lost-caravan.md): a caravan gone missing, the settlers' wreck, the five marks of the trail,
+  `follow_trail`, the raiders' stockade, the carter freed and walked home, the lost goods (31.19, 31.20).
+- [The Professor's Thesis](professors-thesis.md): a Cobblemon arc: six thesis topics, catches by type, biome, time and
+  height, an evolved catch shown, a rival village's Leader or Thessaly beaten, the published book (31.21).
+- [The Sickness](the-sickness.md): the Grey Cough, the village's healer or Doctor Wren, three far herbs, the brew and
+  the cure round (31.18).
+- [The far herbs](far-herbs.md): eight rare plants planted only by story arcs, their biomes and ground, the Glowcap's shade, `herb_patch` and the Three-Herb Tonic (31.17).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 - [The player guide](player-guide.md): the separate, plain-language site for players, published with the showcase (22.10).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
@@ -52,6 +60,10 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Piglin incursions](piglins.md): the Blackstone Outpost and its portal, piglins that never zombify, plunder of the village's gold, the Warlord whose fall puts the portal out (32.10).
 - [Witch covens](covens.md): the Coven Hut on its stilts, the nightly hex no nurse can cure, witches who throw potions over the walls, the Coven Mother who blinks away (32.11).
 - [Scouts](scouts.md): a guard with a spyglass, sent from the Defence page to look the lair over and bring home a Scouting Report map; raiders trailed home at dawn (32.12).
+- [Disasters](disasters.md): disasters as data, one at a time per village, foretold, their effects and how they end (32.15).
+- [Drought and the Well Keeper](drought.md): the drought's chance, its effects on crops, farmland, cauldrons and moods, the Well and the Fountain, and the Well Keeper who carries water to the fields (32.17).
+- [Plague and the Physician](plague.md): the plague's chance and carriers, how it passes on, beds and its end, the Physician who goes house to house and the Remedy (32.18).
+- [Village fire and the Firewarden](village-fire.md): lightning, chimney sparks and burning arrows, fire that only burns the builders' work, the Firewarden, the bucket brigade and Water-type partners (32.16).
 - [Marching on the lair](war-party.md): mustering a war party under the Rally Banner, the Siege-breakers, the band turning out and a broken lair's rewards (32.13).
 
 **Villages that build themselves**
@@ -63,6 +75,8 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 **For server owners**
 - [Config switches](config-switches.md): every setting and game rule with its default, and the expansion gate.
+- [Big villages stay smooth](performance.md): the benchmark, our own time a tick, and the limits on tree searches and
+  build counts (25.1, 25.3).
 
 ## Who keeps it true
 

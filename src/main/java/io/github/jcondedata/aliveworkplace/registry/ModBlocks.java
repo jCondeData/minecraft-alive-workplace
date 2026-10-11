@@ -188,6 +188,35 @@ public final class ModBlocks {
 			.noOcclusion()
 			.ignitedByLava());
 
+	// The Sickness's eight far herbs (ROADMAP 31.17): plants like vanilla's flowers that never generate or spread; only a
+	// story arc's herb_patch plants them. Each stands on its ground tag (aliveworkplace:herb_ground/<herb>).
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock FROSTBLOOM = Reg.block("frostbloom", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.ICE));
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock SUNTHISTLE = Reg.block("sunthistle", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.COLOR_YELLOW));
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock MIREWORT = Reg.block("mirewort", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.COLOR_PURPLE));
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock PEAKMOSS = Reg.block("peakmoss", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.GLOW_LICHEN));
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock JUNGLE_ORCHID = Reg.block("jungle_orchid", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.COLOR_MAGENTA));
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock SEA_LAVENDER = Reg.block("sea_lavender", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.COLOR_PURPLE));
+	/** The Glowcap: a pale mushroom giving light 5, only in shade (a dark forest's canopy). */
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock GLOWCAP = Reg.block("glowcap", p -> new io.github.jcondedata.aliveworkplace.herb.HerbBlock(p, true), BlockBehaviour.Properties.of()
+			.mapColor(net.minecraft.world.level.material.MapColor.TERRACOTTA_WHITE)
+			.noCollission()
+			.instabreak()
+			.sound(net.minecraft.world.level.block.SoundType.GRASS)
+			.lightLevel(state -> 5)
+			.pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock PETAL_BALM = Reg.block("petal_balm", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.COLOR_PINK));
+
+	/** A herb's properties: a flower's (no collision, broken at a touch, offset a little in its block). */
+	private static BlockBehaviour.Properties herb(net.minecraft.world.level.material.MapColor color) {
+		return BlockBehaviour.Properties.of()
+			.mapColor(color)
+			.noCollission()
+			.instabreak()
+			.sound(net.minecraft.world.level.block.SoundType.GRASS)
+			.offsetType(BlockBehaviour.OffsetType.XZ)
+			.pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY);
+	}
+
 	public static void init() {
 	}
 

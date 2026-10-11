@@ -4,11 +4,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.city.PlayerBuilt;
+import io.github.jcondedata.aliveworkplace.guard.BanditFort;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.herb.HerbBlock;
+import io.github.jcondedata.aliveworkplace.herb.Herbs;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import java.util.ArrayList;
@@ -63,7 +67,8 @@ import org.jetbrains.annotations.Nullable;
  * What a story arc's chapters do (ROADMAP 31.4): {@code announce}, {@code chronicle} (a STORY line), {@code place} (a
  * template at a spot found by a rule, built once a player comes near), {@code spawn} (named mobs with gear, extra health
  * and a boss bar, kept home), {@code give_map}, {@code festival}, {@code flag}, {@code start_quest}, {@code end_arc},
- * {@code chatter}, and every reward of the quest toolbox ({@link Rewards}: {@code village_mood}, {@code money},
+ * {@code chatter}, {@code bandit_king} (31.16), {@code sickness} (31.18), {@code herb_patch} (5 to 9 of a far herb on fit ground round a spot, planted once a player comes near;
+ * 31.17), and every reward of the quest toolbox ({@link Rewards}: {@code village_mood}, {@code money},
  * {@code item}, {@code treasury}...). Waiting placements and spawned mobs are checked every {@link Arcs#CHECK_EVERY}
  * ticks with one distance check per player ({@link #check}).
  */
@@ -73,7 +78,7 @@ public final class ArcEffects {
 	/** How far round a mob its boss bar shows. */
 	static final int BAR_RANGE = 48;
 	private static final Map<UUID, ServerBossEvent> BARS = new HashMap<>();
-	private static final Set<String> RULES = Set.of("ring", "road", "biome", "after", "offset");
+	private static final Set<String> RULES = Set.of("ring", "road", "biome", "after", "offset", "fort", "between");
 
 	/** Checks an effect when its arc is read; throws {@link IllegalArgumentException} naming the bad field. */
 	static void validate(JsonObject json) {
@@ -83,8 +88,8 @@ public final class ArcEffects {
 			case "chronicle" -> Rewards.text(json.get("line"));
 			case "place" -> {
 				key(json);
-				if (!json.has("template") && !json.has("stages")) {
-					throw new IllegalArgumentException("place: needs 'template' or 'stages'");
+				if (!json.has("template") && !json.has("stages") && !json.has("each")) {
+					throw new IllegalArgumentException("place: needs 'template', 'stages' or 'each'");
 				}
 				for (String t : templates(json)) {
 					if (ResourceLocation.tryParse(t) == null) {
@@ -97,6 +102,9 @@ public final class ArcEffects {
 				}
 				if (rule.has("after") && !rule.has("distance")) {
 					throw new IllegalArgumentException("place: 'after' needs 'distance'");
+				}
+				if (rule.has("between") && (!rule.get("between").isJsonArray() || rule.getAsJsonArray("between").size() != 2)) {
+					throw new IllegalArgumentException("place: 'between' needs two place keys");
 				}
 			}
 			case "spawn" -> {
@@ -111,6 +119,23 @@ public final class ArcEffects {
 			}
 			case "give_map" -> GsonHelper.getAsString(json, "at");
 			case "festival", "chatter" -> {
+			}
+			case "bandit_king" -> BanditKingStory.validate(GsonHelper.getAsString(json, "step", ""));
+			case "sickness" -> SicknessStory.validate(GsonHelper.getAsString(json, "step", ""));
+			case "lost_caravan" -> LostCaravanStory.validate(GsonHelper.getAsString(json, "step", ""));
+			case "professors_thesis" -> ProfessorsThesis.validate(GsonHelper.getAsString(json, "step", ""));
+			case "herb_patch" -> {
+				String herb = GsonHelper.getAsString(json, "herb", "");
+				if (Herbs.byId(herb) == null) {
+					throw new IllegalArgumentException("herb_patch: no herb '" + herb + "'");
+				}
+				String key = GsonHelper.getAsString(json, "key", "herbs");
+				if (key.isEmpty() || key.contains("#")) {
+					throw new IllegalArgumentException("herb_patch: bad 'key'");
+				}
+				if (json.has("rule") && GsonHelper.getAsJsonObject(json, "rule").keySet().stream().noneMatch(RULES::contains)) {
+					throw new IllegalArgumentException("herb_patch: 'rule' needs one of " + RULES);
+				}
 			}
 			case "flag" -> GsonHelper.getAsString(json, "flag");
 			case "start_quest" -> {
@@ -174,7 +199,9 @@ public final class ArcEffects {
 
 	private static List<String> templates(JsonObject json) {
 		List<String> out = new ArrayList<>();
-		if (json.has("stages")) {
+		if (json.has("each")) {
+			json.getAsJsonArray("each").forEach(e -> out.add(e.getAsString())); // (checked here; each place gets one, 31.19)
+		} else if (json.has("stages")) {
 			json.getAsJsonArray("stages").forEach(e -> out.add(e.getAsString()));
 		} else {
 			out.add(GsonHelper.getAsString(json, "template"));
@@ -211,6 +238,7 @@ public final class ArcEffects {
 			}
 			case "chronicle" -> Chronicle.atHall(level, hall, Chronicle.Kind.STORY, Rewards.text(json.get("line")));
 			case "place" -> place(level, hall, s, json);
+			case "herb_patch" -> herbPatch(level, hall, s, json);
 			case "spawn" -> spawnEffect(level, hall, s, json);
 			case "give_map" -> {
 				ArcState.ArcPlace p = s.place(GsonHelper.getAsString(json, "at"));
@@ -253,6 +281,10 @@ public final class ArcEffects {
 			}
 			case "end_arc" -> s.endWith = GsonHelper.getAsString(json, "ending", "failed");
 			case "reputation", "honour" -> Reputation.arcEffect(level, hall, s, json); // to the arc's helpers (31.11)
+			case "bandit_king" -> BanditKingStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.16
+			case "sickness" -> SicknessStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.18
+			case "lost_caravan" -> LostCaravanStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.20
+			case "professors_thesis" -> ProfessorsThesis.effect(level, hall, e, s, arc, GsonHelper.getAsString(json, "step")); // 31.21
 			case "chatter" -> {
 				if (json.has("lines")) {
 					json.getAsJsonArray("lines").forEach(l -> s.chatter.add(l.getAsString()));
@@ -267,34 +299,121 @@ public final class ArcEffects {
 
 	// ---- place -----------------------------------------------------------------------------------------------------
 
-	/** {@code place}: the spot (or {@code count} spots) chosen now by the rule; each is built once a player comes near. */
+	/**
+	 * {@code place}: the spot (or {@code count} spots) chosen now by the rule; each is built once a player comes near.
+	 * With {@code each} (a list of templates, 31.19) there is one place per template, each with its own.
+	 */
 	static void place(ServerLevel level, BlockPos hall, ArcState s, JsonObject json) {
 		String key = key(json);
-		int count = Math.max(1, GsonHelper.getAsInt(json, "count", 1));
+		List<String> each = json.has("each") ? templates(json) : null;
+		int count = each != null ? each.size() : Math.max(1, GsonHelper.getAsInt(json, "count", 1));
 		JsonObject rule = GsonHelper.getAsJsonObject(json, "rule");
 		for (int i = 0; i < count; i++) {
 			String k = i == 0 ? key : key + "#" + (i + 1);
-			BlockPos spot = spot(level, hall, s, rule);
+			List<String> stages = each != null ? List.of(each.get(i)) : templates(json);
+			BlockPos spot = spot(level, hall, s, rule, i, count);
 			if (spot == null) {
 				AliveWorkplace.LOG.info("Story arc {}: no spot found for '{}' ({}); it isn't built", s.id, k, rule);
-				ArcState.ArcPlace p = new ArcState.ArcPlace(k, hall, templates(json), 0);
+				ArcState.ArcPlace p = new ArcState.ArcPlace(k, hall, stages, 0);
 				p.skipped = true;
 				s.places.add(p);
 				continue;
 			}
-			s.places.add(new ArcState.ArcPlace(k, spot, templates(json), level.random.nextInt(4)));
+			s.places.add(new ArcState.ArcPlace(k, spot, stages, level.random.nextInt(4)));
 		}
 		doneFlags(level, s);
+	}
+
+	// ---- herb_patch (31.17) ------------------------------------------------------------------------------------------
+
+	/** What a herb patch's place holds in place of a template: this, then the herb's id. */
+	static final String HERB_STAGE = "herb_patch:";
+
+	/**
+	 * {@code herb_patch}: a place (key {@code key}, default {@code herbs}) at the spot its {@code rule} picks (by default
+	 * the nearest of the herb's own biomes, {@code #aliveworkplace:herb_biomes/<herb>}); once a player comes near, 5 to 9
+	 * of the herb are planted on fit ground within 6 blocks of it ({@link Herbs#patch}).
+	 */
+	public static void herbPatch(ServerLevel level, BlockPos hall, ArcState s, JsonObject json) {
+		HerbBlock herb = Herbs.byId(GsonHelper.getAsString(json, "herb"));
+		if (herb == null) {
+			throw new IllegalArgumentException("herb_patch: no herb '" + GsonHelper.getAsString(json, "herb") + "'");
+		}
+		String key = GsonHelper.getAsString(json, "key", "herbs");
+		JsonObject rule = json.has("rule") ? GsonHelper.getAsJsonObject(json, "rule") : new JsonObject();
+		if (!json.has("rule")) {
+			rule.addProperty("biome", "#" + Herbs.biomes(herb).location());
+		}
+		List<String> stage = List.of(HERB_STAGE + BuiltInRegistries.BLOCK.getKey(herb));
+		BlockPos spot = spot(level, hall, s, rule);
+		if (spot == null) {
+			AliveWorkplace.LOG.info("Story arc {}: no spot found for the herb patch '{}' ({}); it isn't planted", s.id, key, rule);
+			ArcState.ArcPlace p = new ArcState.ArcPlace(key, hall, stage, 0);
+			p.skipped = true;
+			s.places.add(p);
+		} else {
+			s.places.add(new ArcState.ArcPlace(key, spot, stage, 0));
+		}
+		doneFlags(level, s);
+	}
+
+	/** Plants a herb patch's place once its ground is loaded; false if it must wait. */
+	private static boolean plantPatch(ServerLevel level, ArcState s, ArcState.ArcPlace p) {
+		int r = Herbs.RADIUS;
+		if (!level.isLoaded(p.spot.offset(-r, 0, -r)) || !level.isLoaded(p.spot.offset(r, 0, r))
+			|| !level.isLoaded(p.spot.offset(-r, 0, r)) || !level.isLoaded(p.spot.offset(r, 0, -r))) {
+			return false;
+		}
+		HerbBlock herb = Herbs.byId(p.stages.get(p.placed).substring(HERB_STAGE.length()));
+		int planted = herb == null ? 0 : Herbs.patch(level, p.spot, herb, level.random);
+		p.placed++;
+		AliveWorkplace.LOG.info("Story arc {} planted {} {} at {} for '{}'", s.id, planted, p.stages.get(p.placed - 1).substring(HERB_STAGE.length()), p.spot, p.key);
+		doneFlags(level, s);
+		return true;
 	}
 
 	/** The column a rule picks: a ring round the hall, a share along a caravan road, a biome, past another place, an offset. */
 	@Nullable
 	public static BlockPos spot(ServerLevel level, BlockPos hall, ArcState s, JsonObject rule) {
+		return spot(level, hall, s, rule, 0, 1);
+	}
+
+	/**
+	 * As {@link #spot(ServerLevel, BlockPos, ArcState, JsonObject)} for the {@code index}-th of {@code count} places of
+	 * one {@code place} (the rule {@code between} spreads them evenly between two other places, 31.19).
+	 */
+	@Nullable
+	public static BlockPos spot(ServerLevel level, BlockPos hall, ArcState s, JsonObject rule, int index, int count) {
 		var random = level.random;
+		if (rule.has("between")) {
+			// The Lost Caravan's marks (31.19): evenly along the line from one place to the other, the ends left out.
+			JsonArray ends = rule.getAsJsonArray("between");
+			ArcState.ArcPlace a = s.place(ends.get(0).getAsString());
+			ArcState.ArcPlace b = s.place(ends.get(1).getAsString());
+			if (a == null || b == null || a.spot == null || b.spot == null || a.skipped && a.placed == 0 && a.spot.equals(hall)
+				|| b.skipped && b.placed == 0 && b.spot.equals(hall)) {
+				return null;
+			}
+			return CaravanTrail.between(a.spot, b.spot, index, count);
+		}
 		if (rule.has("ring")) {
 			JsonArray ring = rule.getAsJsonArray("ring");
 			int near = ring.get(0).getAsInt();
 			int far = Math.max(near, ring.get(1).getAsInt());
+			double angle = random.nextDouble() * Math.PI * 2;
+			int distance = near + random.nextInt(far - near + 1);
+			return hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
+		}
+		if (rule.has("fort")) {
+			// The Bandit King's fort (31.15): fit ground NEAR to FAR out when it's loaded now; else a column there, and the
+			// ground round it is tested when the first stage is built.
+			JsonArray ring = rule.get("fort").isJsonArray() ? rule.getAsJsonArray("fort") : null;
+			int near = ring != null ? ring.get(0).getAsInt() : BanditFort.NEAR;
+			int far = ring != null ? Math.max(near, ring.get(ring.size() - 1).getAsInt()) : BanditFort.FAR;
+			BlockPos fit = BanditFort.site(level, hall, near, far, random);
+			if (fit != null) {
+				return fit;
+			}
 			double angle = random.nextDouble() * Math.PI * 2;
 			int distance = near + random.nextInt(far - near + 1);
 			return hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
@@ -306,13 +425,15 @@ public final class ArcEffects {
 		if (rule.has("road")) {
 			float share = rule.get("road").getAsFloat();
 			Set<BlockPos> routes = Caravans.Data.get(level).routesFrom(hall);
-			BlockPos to = routes.stream().min(java.util.Comparator.comparingDouble(p -> p.distSqr(hall)))
+			BlockPos to = LostCaravanStory.to(s) != null ? LostCaravanStory.to(s) : routes.stream().min(java.util.Comparator.comparingDouble(p -> p.distSqr(hall)))
 				.orElseGet(() -> Caravans.neighbours(level, hall).stream().map(Caravans.Village::hall).findFirst().orElse(null));
-			if (to == null) {
-				return null;
-			}
-			return new BlockPos((int) Math.round(hall.getX() + (to.getX() - hall.getX()) * share), hall.getY(),
+			BlockPos onRoad = to == null ? null : new BlockPos((int) Math.round(hall.getX() + (to.getX() - hall.getX()) * share), hall.getY(),
 				(int) Math.round(hall.getZ() + (to.getZ() - hall.getZ()) * share));
+			if (rule.has("or")) {
+				// The Lost Caravan's wreck (31.19): on the road when that's fit ground, else this far out (its way, or any way).
+				return CaravanTrail.road(level, hall, onRoad, to, rule.get("or").getAsInt(), random);
+			}
+			return onRoad;
 		}
 		if (rule.has("biome")) {
 			JsonObject b = new JsonObject();
@@ -328,6 +449,9 @@ public final class ArcEffects {
 			JsonArray d = rule.getAsJsonArray("distance");
 			int near = d.get(0).getAsInt();
 			int far = Math.max(near, d.get(d.size() - 1).getAsInt());
+			if (GsonHelper.getAsBoolean(rule, "away", false)) {
+				return CaravanTrail.away(level, hall, other.spot, near, far, random); // the raiders' stockade (31.19)
+			}
 			double angle = random.nextDouble() * Math.PI * 2;
 			int distance = near + random.nextInt(far - near + 1);
 			return other.spot.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
@@ -337,6 +461,9 @@ public final class ArcEffects {
 
 	/** Builds the next stage of {@code p} (its first: on clear natural ground near its spot); false if it must wait. */
 	public static boolean build(ServerLevel level, ArcState s, ArcState.ArcPlace p) {
+		if (p.stages.get(p.placed).startsWith(HERB_STAGE)) {
+			return plantPatch(level, s, p); // a herb patch, not a build (31.17)
+		}
 		ResourceLocation id = ResourceLocation.tryParse(p.stages.get(p.placed));
 		StructureTemplate template = id == null ? null : level.getStructureManager().get(id).orElse(null);
 		if (template == null) {
@@ -348,10 +475,12 @@ public final class ArcEffects {
 		Rotation rotation = Rotation.values()[Math.floorMod(p.rotation, 4)];
 		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
 		BlockPos origin = p.origin;
+		boolean fort = BanditFort.isFort(p.stages);
+		boolean trail = CaravanTrail.isTrail(p.stages); // the Lost Caravan's builds lie on uneven ground (31.19)
 		if (origin == null) {
 			Vec3i size = template.getSize(rotation);
 			BoundingBox box = null;
-			for (BlockPos column : tries(p.spot)) {
+			for (BlockPos column : fort ? tries(p.spot, 16) : tries(p.spot)) {
 				if (!level.isLoaded(column)) {
 					continue;
 				}
@@ -361,7 +490,10 @@ public final class ArcEffects {
 				if (!level.isLoaded(new BlockPos(b.minX(), b.minY(), b.minZ())) || !level.isLoaded(new BlockPos(b.maxX(), b.minY(), b.maxZ()))) {
 					return false; // wait for the rest to load
 				}
-				if (natural(level, b)) {
+				boolean fits = fort ? BanditFort.fits(level, ground) // (the fort: the camps' test, widened; 31.15)
+					: trail ? CaravanTrail.fits(level, ground, b)
+					: natural(level, b) && !PlayerBuilt.get(level).marked(new BoundingBox(b.minX(), b.minY() - 4, b.minZ(), b.maxX(), b.maxY(), b.maxZ()));
+				if (fits) {
 					origin = o;
 					box = b;
 					break;
@@ -393,8 +525,14 @@ public final class ArcEffects {
 			p.spot = new BlockPos((box.minX() + box.maxX()) / 2, box.minY() + 1, (box.minZ() + box.maxZ()) / 2);
 		}
 		template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2);
+		if (fort) {
+			// The fort's stage brings its men; the keep its treasure and its postern, open if the deserter told of it.
+			BanditFort.placed(level, new BanditFort.Fort(origin, rotation), BanditFort.stageOf(p.stages.get(p.placed)), s.flags.containsKey(BanditFort.POSTERN_FLAG));
+		}
 		p.placed++;
 		p.nextDay = Chronicle.day(level) + 1;
+		BanditKingStory.built(level, s, p); // a camp's war banner (31.16)
+		LostCaravanStory.built(level, s, p); // the carter in the stockade's cage, the goods in its chest (31.20)
 		PLACED.incrementAndGet();
 		AliveWorkplace.LOG.info("Story arc {} built {} ({} of {}) at {}", s.id, p.stages.get(p.placed - 1), p.placed, p.stages.size(), p.spot);
 		doneFlags(level, s);
@@ -403,9 +541,14 @@ public final class ArcEffects {
 
 	/** The spot, then columns round it out to 32 blocks. */
 	private static List<BlockPos> tries(BlockPos spot) {
+		return tries(spot, 32);
+	}
+
+	/** The spot, then columns round it out to {@code most} blocks. */
+	private static List<BlockPos> tries(BlockPos spot, int most) {
 		List<BlockPos> out = new ArrayList<>();
 		out.add(spot);
-		for (int r = 8; r <= 32; r += 8) {
+		for (int r = 8; r <= most; r += 8) {
 			for (int i = 0; i < 8; i++) {
 				double a = Math.PI / 4 * i;
 				out.add(spot.offset((int) Math.round(Math.cos(a) * r), 0, (int) Math.round(Math.sin(a) * r)));
@@ -702,6 +845,9 @@ public final class ArcEffects {
 
 	/** An arc mob loads that no running arc knows (its arc ended while it was away): it's gone. */
 	static void onLoad(ServerLevel level, Entity entity) {
+		if (LostCaravanStory.onLoad(level, entity)) {
+			return; // (31.20)
+		}
 		if (!entity.getTags().contains(Arcs.MOB_TAG)) {
 			return;
 		}

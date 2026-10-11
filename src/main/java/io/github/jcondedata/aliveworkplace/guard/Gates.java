@@ -2,7 +2,6 @@ package io.github.jcondedata.aliveworkplace.guard;
 
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
-import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
@@ -22,7 +21,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * minute). Players can still open them by hand.
  *
  * <p>In a siege (ROADMAP 32.4, {@code threat/Sieges}) they shut at once, whatever the hour and with or without guards,
- * and the portcullis of every gate build drops; they stay shut until the first dawn after.
+ * and the portcullis of every gate build drops; they stay shut until the first dawn after. On the day of an attack the
+ * village was warned of ({@link Warnings}, 32.14) they shut from noon.
  */
 public final class Gates {
 	/** The blueprints whose fence gates are the village's gates: the two we ship, and every wall kit's gate (27.18). */
@@ -41,7 +41,8 @@ public final class Gates {
 	 * none. Returns how many gates moved.
 	 */
 	public static int round(ServerLevel level, BlockPos hall, int guards) {
-		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall);
+		// A siege keeps them shut; so does a warned attack's day, from noon (32.14).
+		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall) || Warnings.ready(level, hall);
 		if (guards <= 0 && !siege) {
 			return 0;
 		}
@@ -50,10 +51,9 @@ public final class Gates {
 
 	/** Shuts ({@code shut}) or opens the gates of the village round {@code hall} now. Returns how many gates moved. */
 	public static int shut(ServerLevel level, BlockPos hall, boolean shut) {
-		Set<ResourceLocation> gated = gated();
 		int moved = 0;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
-			if (!gated.contains(BlueprintStyles.base(f.structure()))) {
+			if (!io.github.jcondedata.aliveworkplace.threat.Sieges.isGated(f.structure())) { // in any style or tier: Gatehouse II's two gates (32.20)
 				continue;
 			}
 			Blueprint blueprint = BlueprintLibrary.get(level, f.structure()).orElse(null);

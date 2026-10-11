@@ -174,6 +174,106 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/** The lost_caravan scene's carter (31.20). */
+	private static final String LOST_CARAVAN_TOBIN = "aliveworkplace_scene_tobin";
+
+	/** The caravan_trail scene's builds (31.19): where each one's middle goes. */
+	private static final BlockPos CARAVAN_WRECK = new BlockPos(-16, -61, -22);
+	private static final BlockPos CARAVAN_MARK = new BlockPos(2, -61, -22);
+	private static final BlockPos CARAVAN_STOCKADE = new BlockPos(24, -61, -24);
+
+	/** One of the trail's builds set down as its arc sets it down (fit ground round its spot). */
+	private static io.github.jcondedata.aliveworkplace.story.ArcState.ArcPlace caravanPiece(ServerLevel level, net.minecraft.resources.ResourceLocation template, BlockPos middle) {
+		var s = new io.github.jcondedata.aliveworkplace.story.ArcState("aliveworkplace:lost_caravan");
+		var p = new io.github.jcondedata.aliveworkplace.story.ArcState.ArcPlace("piece", middle, List.of(template.toString()), 0);
+		s.places.add(p);
+		io.github.jcondedata.aliveworkplace.story.ArcEffects.build(level, s, p);
+		return p;
+	}
+
+	/** Puts the camera at {@code camera} looking at {@code target}. */
+	private static void aim(ServerLevel level, ServerPlayer player, Vec3 camera, Vec3 target) {
+		Vec3 d = target.subtract(camera);
+		float yaw = (float) (Math.toDegrees(Math.atan2(-d.x, d.z)));
+		float pitch = (float) (-Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z))));
+		player.teleportTo(level, camera.x, camera.y, camera.z, yaw, pitch);
+	}
+
+	/** The bandit_fort scene's fort: its middle on the flat ground in front of the camera. */
+	private static final BlockPos BANDIT_FORT_GROUND = new BlockPos(0, -61, -20);
+
+	private static io.github.jcondedata.aliveworkplace.guard.BanditFort.Fort banditFort() {
+		return io.github.jcondedata.aliveworkplace.guard.BanditFort.at(BANDIT_FORT_GROUND, net.minecraft.world.level.block.Rotation.NONE);
+	}
+
+	/** The herbs scene's pads (31.17): each herb with its ground; the first four in front, the rest behind. */
+	private static final Object[][] HERB_PADS = {
+		{ModBlocks.SUNTHISTLE, net.minecraft.world.level.block.Blocks.RED_SAND}, {ModBlocks.FROSTBLOOM, net.minecraft.world.level.block.Blocks.SNOW_BLOCK},
+		{ModBlocks.PEAKMOSS, net.minecraft.world.level.block.Blocks.STONE}, {ModBlocks.GLOWCAP, net.minecraft.world.level.block.Blocks.PODZOL},
+		{ModBlocks.SEA_LAVENDER, net.minecraft.world.level.block.Blocks.GRAVEL}, {ModBlocks.MIREWORT, net.minecraft.world.level.block.Blocks.MUD},
+		{ModBlocks.JUNGLE_ORCHID, net.minecraft.world.level.block.Blocks.GRASS_BLOCK}, {ModBlocks.PETAL_BALM, net.minecraft.world.level.block.Blocks.GRASS_BLOCK},
+	};
+
+	/** The middle of herb pad {@code i} (where its herbs stand): 9 blocks apart, so no patch reaches the next pad. */
+	private static BlockPos herbPad(int i) {
+		return new BlockPos(-13 + 9 * (i % 4), -60, i < 4 ? -6 : -15);
+	}
+
+	/** The sickness scene (31.18): the nurse's brewing stand, the villagers' and the nurse's tags, the villagers' names. */
+	private static final BlockPos SICKNESS_STAND = new BlockPos(8, -60, -10);
+	private static final String SICKNESS_TAG = "aliveworkplace_scene_sickness";
+	private static final String SICKNESS_NURSE = "aliveworkplace_scene_sickness_nurse";
+	private static final String[] SICKNESS_NAMES = {"Bram", "Ilse", "Odo", "Mira", "Tobin", "Wenna", "Jory", "Elda"};
+
+	/** The sickness scene's coughing villagers cough again (grey smoke); how many cough. */
+	private static int sicknessCough(ServerLevel level) {
+		int n = 0;
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8), v -> v.getTags().contains(SICKNESS_TAG))) {
+			if (io.github.jcondedata.aliveworkplace.people.Sickness.isGrey(v)) {
+				io.github.jcondedata.aliveworkplace.people.Sickness.cough(level, v);
+				n++;
+			}
+		}
+		return n;
+	}
+
+	@org.jetbrains.annotations.Nullable
+	private static Villager sicknessNurse(ServerLevel level) {
+		return level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8), v -> v.getTags().contains(SICKNESS_NURSE))
+			.stream().findFirst().orElse(null);
+	}
+
+	/** The nurse takes the tonic round until {@code upTo} of the coughing are well; how many she gave it to. */
+	private static int sicknessCure(ServerLevel level, int upTo) {
+		Villager nurse = sicknessNurse(level);
+		if (nurse == null) {
+			return 0;
+		}
+		nurse.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(ModItems.THREE_HERB_TONIC));
+		int given = 0;
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8), v -> v.getTags().contains(SICKNESS_TAG))) {
+			if (given >= upTo || !io.github.jcondedata.aliveworkplace.people.Sickness.isGrey(v)) {
+				continue;
+			}
+			nurse.teleportTo(v.getX() + 1, v.getY(), v.getZ());
+			io.github.jcondedata.aliveworkplace.story.SicknessStory.give(level, nurse, v);
+			given++;
+		}
+		io.github.jcondedata.aliveworkplace.work.WorkerStatus.set(nurse, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.round"),
+			1f - sicknessCough(level) / 4f, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.round_line", sicknessCough(level)));
+		return given;
+	}
+
+	/** The bandit_king scene's front: the ground before the fort's gate, where the banners fly and the allies stand. */
+	private static final BlockPos BANDIT_KING_FRONT = new BlockPos(0, -60, -2);
+
+	/** The fort's men hold still for the camera. */
+	private static void stillFortMen(ServerLevel level) {
+		for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
+			mob.setNoAi(true);
+		}
+	}
+
 	record Screen(String what, Vec3 camera, Vec3 target, BiConsumer<ServerLevel, ServerPlayer> stage, List<Step> steps,
 				  BiPredicate<ServerLevel, ServerPlayer> ok) {
 	}
@@ -700,6 +800,143 @@ final class JobScenes {
 					&& l.getBlockState(new BlockPos(0, -60, 14)).is(net.minecraft.world.level.block.Blocks.CHEST);
 			};
 		}, null));
+		// Village fire (ROADMAP 32.16): a Starter Cottage the builders finished, its roof struck by lightning and catching; the
+		// Firewarden at the grindstone (picked with a water bucket) runs over and throws bucket after bucket on it, steam
+		// rising, refilling at the pond by the grindstone, until it's out and the chronicle says so.
+		SCENES.put("fire", new Job("the Starter Cottage's roof caught fire and the Firewarden ran over from the grindstone and put it out with buckets of water", 1600,
+			new Vec3(10.5, -52.0, 9.5), new Vec3(-1.0, -56.0, -9.0), (level, player) -> {
+			io.github.jcondedata.aliveworkplace.threat.VillageFire.forget();
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos origin = STATION.offset(-5, 0, -15);
+			level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(),
+				origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			// The pond the firewarden fills the buckets at, beside the grindstone.
+			for (int x = 3; x <= 5; x++) {
+				for (int z = 1; z <= 3; z++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+				}
+			}
+			Villager warden = picked(level, player, STATION, Blocks.GRINDSTONE.defaultBlockState()
+				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)
+				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH), Items.WATER_BUCKET);
+			io.github.jcondedata.aliveworkplace.work.FirewardenWork.setWater(warden, 1);
+			long began = level.getGameTime();
+			boolean[] lit = {false};
+			return l -> {
+				if (!lit[0] && l.getGameTime() - began >= 60) {
+					lit[0] = true;
+					l.getServer().execute(() -> {
+						// The strike that sets it off (only the flash: the roof is lit here, as the strike would, so the scene
+						// doesn't wait on the 1 in 3).
+						net.minecraft.world.entity.LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(l);
+						bolt.moveTo(Vec3.atBottomCenterOf(origin.offset(5, 9, 5)));
+						bolt.setVisualOnly(true);
+						l.addFreshEntity(bolt);
+						Showcase.check(io.github.jcondedata.aliveworkplace.threat.VillageFire.igniteNear(l, hall, origin.offset(5, 8, 5),
+							net.minecraft.util.RandomSource.create(3L)).isPresent(), "the cottage's roof caught fire");
+						for (int i = 0; i < 2; i++) {
+							io.github.jcondedata.aliveworkplace.threat.VillageFire.igniteNear(l, hall, origin.offset(2 + 6 * i, 8, 4),
+								net.minecraft.util.RandomSource.create(5L + i));
+						}
+					});
+				}
+				return lit[0] && l.getGameTime() - began > 200 && io.github.jcondedata.aliveworkplace.threat.VillageFire.incident(l, hall).isEmpty()
+					&& warden.getVillagerXp() > 1;
+			};
+		}, null));
+		// Drought (ROADMAP 32.17): a wheat field gone dry (farmland at moisture 0, dead bushes round it) in a village under
+		// a drought; the Well Keeper at the cauldron (picked with a shovel) fills a bucket at the pond and carries it to the
+		// field, bucket after bucket, each wetting 9 farmland dark again in a splash.
+		SCENES.put("drought", new Job("the fields were dry in the drought, and the Well Keeper carried water from the pond to them, bucket after bucket", 1600,
+			new Vec3(11.5, -53.0, 5.5), new Vec3(0.0, -60.0, -7.0), (level, player) -> {
+			level.setDayTime(2000);
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			// The field: 9 x 5 farmland dried right out, wheat of all ages on it, dead bushes on coarse dirt round it.
+			net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(7L);
+			List<BlockPos> field = new ArrayList<>();
+			for (int x = -4; x <= 4; x++) {
+				for (int z = -11; z <= -7; z++) {
+					BlockPos soil = STATION.offset(x, -1, z);
+					level.setBlockAndUpdate(soil, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 0));
+					level.setBlockAndUpdate(soil.above(), ((net.minecraft.world.level.block.CropBlock) net.minecraft.world.level.block.Blocks.WHEAT)
+						.getStateForAge(random.nextInt(4)));
+					field.add(soil);
+				}
+			}
+			for (int[] d : new int[][] {{-6, -12}, {-6, -8}, {6, -10}, {6, -6}, {-2, -13}, {3, -13}}) {
+				BlockPos at = STATION.offset(d[0], -1, d[1]);
+				level.setBlockAndUpdate(at, net.minecraft.world.level.block.Blocks.COARSE_DIRT.defaultBlockState());
+				level.setBlockAndUpdate(at.above(), net.minecraft.world.level.block.Blocks.DEAD_BUSH.defaultBlockState());
+			}
+			// The pond the keeper fills the bucket at, beside the cauldron.
+			for (int x = 3; x <= 5; x++) {
+				for (int z = 1; z <= 3; z++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+				}
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			io.github.jcondedata.aliveworkplace.threat.Disaster drought = io.github.jcondedata.aliveworkplace.threat.Drought.get().orElse(null);
+			Showcase.check(drought != null && entity != null, "the drought is loaded and the hall stands");
+			if (drought != null && entity != null) {
+				entity.setDisaster(null, -1, -1, -100);
+				io.github.jcondedata.aliveworkplace.threat.Disasters.start(level, hall, entity, drought,
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, hall), net.minecraft.util.RandomSource.create(1L));
+			}
+			Villager keeper = picked(level, player, STATION, Blocks.CAULDRON, Items.IRON_SHOVEL);
+			return l -> {
+				long watered = field.stream().filter(p -> io.github.jcondedata.aliveworkplace.threat.Drought.watered(l, p)).count();
+				return watered >= 18 && keeper.getVillagerXp() > 1 && io.github.jcondedata.aliveworkplace.threat.Drought.in(l, STATION.offset(0, -1, -9));
+			};
+		}, null));
+		// Plague (ROADMAP 32.18): three villagers ill with the plague, each by the bed of their own house up the street; the
+		// Physician at the brewing stand (picked with a glistering melon slice) takes a Remedy from the chest and goes house
+		// to house: two Remedies cure two of them in a puff of hearts, the third is seen and sent home to bed. Then the
+		// hall's list of the village, where the one still ill shows "Ill with the plague: seen by the Physician, kept at home".
+		SCENES.put("plague", new Job("a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed",
+			1800, new Vec3(0.5, -55.0, 6.5), new Vec3(0.0, -60.0, -8.0), (level, player) -> {
+			level.setDayTime(2000);
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			Villager physician = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GLISTERING_MELON_SLICE);
+			chest(level, chestPos(), new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.REMEDY, 2), new ItemStack(Items.GLASS_BOTTLE, 3));
+			List<Villager> ill = new ArrayList<>();
+			int[][] houses = {{-7, -8}, {0, -13}, {7, -8}};
+			for (int[] h : houses) {
+				BlockPos foot = STATION.offset(h[0], 0, h[1]);
+				level.setBlockAndUpdate(foot, Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+					.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+				level.setBlockAndUpdate(foot.north(), Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+					.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				Villager v = EntityType.VILLAGER.spawn(level, foot.south(), MobSpawnType.COMMAND);
+				v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), foot.north()));
+				ill.add(v);
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			io.github.jcondedata.aliveworkplace.threat.Disaster plague = io.github.jcondedata.aliveworkplace.threat.Disasters.get(io.github.jcondedata.aliveworkplace.threat.Plague.ID).orElse(null);
+			Showcase.check(plague != null && entity != null, "the plague is loaded and the hall stands");
+			for (Villager v : ill) {
+				io.github.jcondedata.aliveworkplace.people.Sickness.catchPlague(level, v);
+			}
+			if (plague != null && entity != null) {
+				entity.setDisaster(null, -1, -1, -100);
+				io.github.jcondedata.aliveworkplace.threat.Disasters.start(level, hall, entity, plague,
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, hall), net.minecraft.util.RandomSource.create(1L));
+			}
+			Showcase.check(ill.stream().allMatch(io.github.jcondedata.aliveworkplace.people.Sickness::isPlagueIll), "three villagers are ill with the plague");
+			return l -> {
+				long cured = ill.stream().filter(v -> !io.github.jcondedata.aliveworkplace.people.Sickness.isIll(v)).count();
+				long seen = ill.stream().filter(io.github.jcondedata.aliveworkplace.threat.Plague::seen).count();
+				return cured >= 2 && seen >= 1 && physician.getVillagerXp() > 1;
+			};
+		}, new After("04_hall_list_of_the_ill", (level, player) -> {
+			ScreenshotHarness.hover(player, Vec3.atCenterOf(STATION.offset(0, 0, -24)), 180, 10);
+			io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION.offset(0, 0, -26));
+		}, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6)));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks
@@ -1130,6 +1367,62 @@ final class JobScenes {
 				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
 				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
 				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
+			};
+		}, null));
+		// A day's warning (ROADMAP 32.14): a Gatehouse with a Wall Tower beside it and a Village Hall behind, an archer
+		// posted by the tower. The clock has set tonight's attack from the south (the camera's side); the archer saw it
+		// coming, so the chat says so. At noon the gates shut and the portcullis drops; at dusk the archer climbs the tower.
+		SCENES.put("warning", new Job("the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 1500,
+			new Vec3(14.5, -51.0, 12.5), new Vec3(1.5, -56.5, -3.0), (level, player) -> {
+			long base = (level.getDayTime() / 24000) * 24000;
+			level.setDayTime(base + 5800);
+			BlockPos hall = STATION.north(14);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			Map<BlockPos, StarterBlueprints.Entry> builds = new LinkedHashMap<>();
+			builds.put(STATION.offset(-5, 0, -6), StarterBlueprints.GATEHOUSE);
+			builds.put(STATION.offset(6, 0, -6), StarterBlueprints.WALL_TOWER);
+			builds.forEach((at, entry) -> {
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(entry.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			});
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			if (level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity) {
+				entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			}
+			BlockPos post = STATION.offset(4, 0, -13);
+			level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+			Villager archer = EntityType.VILLAGER.spawn(level, STATION.offset(4, 0, -11), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, archer, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+			archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+			archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, new ItemStack(net.minecraft.world.item.Items.BOW));
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData data = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
+			data.forgetClock(hall);
+			data.forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.guard.BattleStations.forget();
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			data.rolled(hall, today, new io.github.jcondedata.aliveworkplace.threat.ThreatData.Attack(today, io.github.jcondedata.aliveworkplace.threat.Threats.MONSTERS,
+				Math.PI / 2, 17000)); // from the south, late in the night
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Warnings.warn(level, hall, 10, 1), "the archer by the Wall Tower warned the village");
+			Showcase.check(!io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(level, hall), "the portcullis is up in the morning");
+			int[] phase = {0};
+			return l -> {
+				io.github.jcondedata.aliveworkplace.guard.Gates.round(l, hall, 1);
+				io.github.jcondedata.aliveworkplace.guard.Warnings.round(l, hall, 10, 1);
+				if (phase[0] == 0 && io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(l, hall)) {
+					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.status(l, hall).open() == 0, "the gates shut at noon");
+					phase[0] = 1;
+				} else if (phase[0] >= 1 && phase[0] < 100) {
+					phase[0]++; // a few seconds with the gates shut in the sun
+				} else if (phase[0] == 100) {
+					l.setDayTime(base + io.github.jcondedata.aliveworkplace.guard.VillageRaids.DUSK + 20);
+					phase[0] = 101;
+				}
+				return phase[0] == 101 && io.github.jcondedata.aliveworkplace.guard.BattleStations.onStation(archer)
+					&& io.github.jcondedata.aliveworkplace.threat.ThreatData.get(l).raid(hall).isEmpty();
 			};
 		}, null));
 		SCENES.put("roads", new Job("the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 9000,
@@ -3110,6 +3403,65 @@ final class JobScenes {
 						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.SPYGLASS), "the Pokédex opened on its own tab");
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// The Professor's Thesis (ROADMAP 31.21, Cobblemon): an Expert Scholar, Professor Alder, by the hall asks for field
+		// notes on Life in the Cold; a Snorunt caught in the snow counts; Thessaly beaten, the thesis is published as a book.
+		SCREENS.put("professors_thesis", new Screen("the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author",
+			new Vec3(0.5, -58.0, 6.5), new Vec3(0.5, -59.5, 0.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				io.github.jcondedata.aliveworkplace.story.Arcs.stopAll(level, STATION);
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				subject.setVillagerData(subject.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.SCHOLAR).setLevel(4));
+				subject.setCustomName(Component.literal("Alder"));
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+			},
+			List.of(new Step("01_request", -1, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.FORCE_TOPIC = "cold";
+					var arc = io.github.jcondedata.aliveworkplace.story.Arcs.get(io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.ARC).orElse(null);
+					var s = arc == null ? null : io.github.jcondedata.aliveworkplace.story.Arcs.start(level, STATION, arc);
+					io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.FORCE_TOPIC = null;
+					Showcase.check(s != null && s.quests.size() == 3, "Professor Alder asks for three field notes");
+				}, 60),
+				new Step("02_catch", -1, 0, (level, player) -> {
+					party(player, "snorunt level=14");
+					var snorunt = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player).get(0);
+					var real = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonThesis.info(level, snorunt, STATION.south(4), false);
+					var info = new io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.CatchInfo(real.uuid(), real.species(), real.name(), real.types(), real.pos(),
+						level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME).getHolderOrThrow(net.minecraft.world.level.biome.Biomes.SNOWY_PLAINS),
+						real.dayTime(), real.moonPhase(), real.day(), false);
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.onCatch(level, player, info), "the Snorunt caught in the snow counts");
+				}, 50),
+				new Step("03_published", -1, 0, (level, player) -> {
+					var s = io.github.jcondedata.aliveworkplace.story.Arcs.running(level, STATION);
+					if (s != null) {
+						io.github.jcondedata.aliveworkplace.story.Arcs.next(level, STATION);
+						io.github.jcondedata.aliveworkplace.story.Arcs.next(level, STATION);
+						var thessaly = io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.thessaly(level, s);
+						if (thessaly != null) {
+							io.github.jcondedata.aliveworkplace.trainer.Trainers.battleOver(level.getServer(), thessaly.getUUID(), player.getUUID(), true);
+						}
+					}
+					ItemStack book = ItemStack.EMPTY;
+					for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+						if (player.getInventory().getItem(i).is(Items.WRITTEN_BOOK)) {
+							book = player.getInventory().getItem(i).copy();
+						}
+					}
+					player.setItemInHand(InteractionHand.MAIN_HAND, book);
+					if (!book.isEmpty()) {
+						player.openItemGui(book, InteractionHand.MAIN_HAND);
+					}
+					Showcase.check(!book.isEmpty() && io.github.jcondedata.aliveworkplace.story.Arcs.running(level, STATION) == null,
+						"the thesis is published as a book");
+				}, 60)),
+			(level, player) -> true));
 		SCREENS.put("legend_ranger", new Screen("the Pokémon Ranger in a red vest and capture styler by the hall, an Alpha calmed with sparkles, and a wild Pikachu befriended into the owner's pasture",
 			new Vec3(0.5, -57.5, 7.5), new Vec3(0.5, -59.5, -1.5),
 			(level, player) -> {
@@ -3497,6 +3849,328 @@ final class JobScenes {
 						rogue.discard();
 					}
 					Showcase.check(paid && io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).isEmpty(), "the win paid the bounty once");
+				}, 40)),
+			(level, player) -> true));
+		// The Bandit King's fort (ROADMAP 31.15): its three stages set down one after another, as the arc does a stage a
+		// dawn: the palisade, fire and tents; the watchtowers and stable; the King's keep with his banner over the door.
+		SCREENS.put("bandit_fort", new Screen("the Bandit King's fort rising a stage at a time: a palisade of sharpened logs round a yard with a fire, tents and a gate; then two watchtowers and a stable; then the King's keep with his war banner over the door, the King inside",
+			new Vec3(24.5, -46, 10.5), new Vec3(0.5, -57, -20.5),
+			(level, player) -> {
+				for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
+					mob.discard();
+				}
+			},
+			List.of(new Step("01_palisade", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 0, false);
+					stillFortMen(level);
+					Showcase.check(placed && io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40).size() == 4,
+						"the palisade, fire and tents stand, four bandits in the yard");
+				}, 50),
+				new Step("02_towers", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 1, false);
+					stillFortMen(level);
+					Showcase.check(placed && level.getBlockState(banditFort().at(new BlockPos(1, 3, 2))).is(net.minecraft.world.level.block.Blocks.LADDER),
+						"the watchtowers (with ladders) and the stable stand");
+				}, 50),
+				new Step("03_keep", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 2, false);
+					stillFortMen(level);
+					long kings = io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40).stream()
+						.filter(m -> m.getTags().contains(io.github.jcondedata.aliveworkplace.guard.BanditKing.TAG)).count();
+					Showcase.check(placed && kings == 1 && level.getBlockState(banditFort().at(new BlockPos(14, 4, 16))).is(net.minecraft.world.level.block.Blocks.BLACK_WALL_BANNER),
+						"the keep stands with the war banner over its door, the King inside");
+				}, 60)),
+			(level, player) -> true));
+		// The Lost Caravan, I: the wreck and the trail (ROADMAP 31.19): the three kinds of build the arc lays along the trail,
+		// each set down the arc's way (ArcEffects.build: fit ground, a hump cut and a hollow filled): the settlers' wagon on its
+		// side, a mark (the torn banner) with the action bar pointing on, and the raiders' stockade with its cage.
+		SCREENS.put("caravan_trail", new Screen("the Lost Caravan's trail: the settlers' covered wagon on its side, a wheel broken off, crates and barrels spilled, a lantern in the grass; a mark of the trail, a torn white banner on a fence post, with 'The tracks go on to the east' over the hotbar; the raiders' stockade, a palisade round a tent, a fire, a loot chest and an iron-barred cage",
+			new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-32, -61, -44, 38, -44, -4)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (BlockPos p : BlockPos.betweenClosed(-13, -60, -19, -12, -60, -18)) { // a hump the wreck's ground is cut from
+					level.setBlock(p, net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState(), 2);
+				}
+				io.github.jcondedata.aliveworkplace.city.PlayerBuilt.get(level).forget(new net.minecraft.world.level.levelgen.structure.BoundingBox(-32, -64, -44, 38, -44, -4));
+				level.setDayTime(5000);
+			},
+			List.of(new Step("01_wreck", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.WRECK, CARAVAN_WRECK);
+					aim(level, player, new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5));
+					Showcase.check(p.placed == 1 && level.getBlockState(p.origin.offset(2, 1, 5)).is(net.minecraft.world.level.block.Blocks.WHITE_WOOL),
+						"the wagon lies on its side, its canvas torn");
+				}, 50),
+				new Step("02_mark", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.MARKS.get(2), CARAVAN_MARK);
+					aim(level, player, new Vec3(-2.5, -58, -27.5), new Vec3(1.5, -59.5, -21.5));
+					io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, Component.translatable("message.aliveworkplace.trail.next",
+						io.github.jcondedata.aliveworkplace.story.CaravanTrail.direction(p.spot, CARAVAN_STOCKADE)).withStyle(net.minecraft.ChatFormatting.GOLD));
+					Showcase.check(p.placed == 1 && level.getBlockState(p.origin.offset(1, 3, 1)).is(net.minecraft.world.level.block.Blocks.WHITE_BANNER),
+						"the mark: a torn white banner on a fence post, the tracks pointing on");
+				}, 40),
+				new Step("03_stockade", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.STOCKADE, CARAVAN_STOCKADE);
+					aim(level, player, new Vec3(24.5, -48, -46.5), new Vec3(24.5, -60, -24.5));
+					Showcase.check(p.placed == 1 && level.getBlockState(p.origin.offset(io.github.jcondedata.aliveworkplace.story.CaravanTrail.CAGE_DOOR))
+						.is(net.minecraft.world.level.block.Blocks.IRON_DOOR), "the stockade stands, its cage shut");
+				}, 50)),
+			(level, player) -> true));
+		// The Lost Caravan, II: the story (ROADMAP 31.20): the wreck found, a mark of the trail pointing on, the carter
+		// caged in the raiders' stockade (set down by the arc's own build, which cages him and fills the chest with the
+		// lost goods) and the cage opened, then the carter following the player home.
+		SCREENS.put("lost_caravan", new Screen("the Lost Caravan: the settlers' wagon on its side with 'The caravan's wreck: tracks lead away from the road' over the hotbar; a torn banner on the trail with the tracks pointing on; Tobin the carter behind the iron gate of the raiders' cage, the gate swung open and 'You came for me! Take me home' in chat; Tobin walking after the player out of the stockade",
+			new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-32, -61, -44, 38, -44, -4)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-32, -64, -44, 38, -44, -4))) {
+					v.discard();
+				}
+				io.github.jcondedata.aliveworkplace.city.PlayerBuilt.get(level).forget(new net.minecraft.world.level.levelgen.structure.BoundingBox(-32, -64, -44, 38, -44, -4));
+				level.setDayTime(5000);
+			},
+			List.of(new Step("01_wreck", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.WRECK, CARAVAN_WRECK);
+					aim(level, player, new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5));
+					io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, Component.translatable("message.aliveworkplace.lost_caravan.wreck_found")
+						.withStyle(net.minecraft.ChatFormatting.GOLD));
+					Showcase.check(p.placed == 1, "the wreck lies by the road");
+				}, 50),
+				new Step("02_trail", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.MARKS.get(2), CARAVAN_MARK);
+					aim(level, player, new Vec3(-2.5, -58, -27.5), new Vec3(1.5, -59.5, -21.5));
+					io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, Component.translatable("message.aliveworkplace.trail.next",
+						io.github.jcondedata.aliveworkplace.story.CaravanTrail.direction(p.spot, CARAVAN_STOCKADE)).withStyle(net.minecraft.ChatFormatting.GOLD));
+					Showcase.check(p.placed == 1, "a mark of the trail, the tracks pointing on");
+				}, 40),
+				new Step("03_freed", -1, 0, (level, player) -> {
+					var s = new io.github.jcondedata.aliveworkplace.story.ArcState(io.github.jcondedata.aliveworkplace.story.LostCaravanStory.ARC.toString());
+					io.github.jcondedata.aliveworkplace.story.LostCaravanStory.hold(s, new BlockPos(400, -60, 0),
+						List.of(new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.BREAD, 12)));
+					var p = new io.github.jcondedata.aliveworkplace.story.ArcState.ArcPlace(io.github.jcondedata.aliveworkplace.story.LostCaravanStory.STOCKADE,
+						CARAVAN_STOCKADE, List.of(io.github.jcondedata.aliveworkplace.story.CaravanTrail.STOCKADE.toString()), 0);
+					s.places.add(p);
+					io.github.jcondedata.aliveworkplace.story.ArcEffects.build(level, s, p); // (the arc's own build fills the chest with the lost goods)
+					BlockPos door = p.origin.offset(io.github.jcondedata.aliveworkplace.story.CaravanTrail.CAGE_DOOR);
+					// The arc's carter belongs to a running arc (this scene's isn't one, so he leaves as he loads): one stands in for him.
+					Villager tobin = net.minecraft.world.entity.EntityType.VILLAGER.create(level);
+					if (tobin != null) {
+						tobin.moveTo(door.getX() + 0.5, door.getY(), door.getZ() + 2.5, 0f, 0f);
+						tobin.setCustomName(io.github.jcondedata.aliveworkplace.people.Names.name(65)); // Tobin
+						tobin.setCustomNameVisible(true);
+						tobin.addTag(LOST_CARAVAN_TOBIN);
+						tobin.setNoAi(true);
+						level.addFreshEntity(tobin);
+					}
+					var chest = level.getBlockEntity(p.origin.offset(io.github.jcondedata.aliveworkplace.story.CaravanTrail.LOOT_CHEST));
+					for (BlockPos d : List.of(door, door.above())) {
+						var st = level.getBlockState(d);
+						if (st.hasProperty(net.minecraft.world.level.block.DoorBlock.OPEN)) {
+							level.setBlock(d, st.setValue(net.minecraft.world.level.block.DoorBlock.OPEN, true), 2);
+						}
+					}
+					aim(level, player, Vec3.atCenterOf(door).add(0.5, 1.4, -4.5), Vec3.atCenterOf(door).add(0, 0, 2));
+					if (tobin != null) {
+						io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, Component.translatable("message.aliveworkplace.arc.says", tobin.getDisplayName(),
+							Component.translatable("message.aliveworkplace.lost_caravan.freed")).withStyle(net.minecraft.ChatFormatting.WHITE));
+					}
+					Showcase.check(tobin != null && level.getBlockState(door).is(net.minecraft.world.level.block.Blocks.IRON_DOOR)
+						&& chest instanceof net.minecraft.world.Container box && box.countItem(Items.OAK_LOG) == 32,
+						"Tobin in the raiders' cage, its gate open, the lost goods in the raiders' chest");
+				}, 50),
+				new Step("04_home", -1, 0, (level, player) -> {
+					Villager tobin = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-32, -64, -44, 38, -44, -4),
+						v -> v.getTags().contains(LOST_CARAVAN_TOBIN)).stream().findFirst().orElse(null);
+					aim(level, player, new Vec3(CARAVAN_STOCKADE.getX() + 0.5, -58.4, CARAVAN_STOCKADE.getZ() - 14.5), new Vec3(CARAVAN_STOCKADE.getX() + 2.5, -60, CARAVAN_STOCKADE.getZ() + 4.5));
+					if (tobin != null) {
+						tobin.setNoAi(false);
+						tobin.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET,
+							new net.minecraft.world.entity.ai.memory.WalkTarget(new net.minecraft.world.entity.ai.behavior.EntityTracker(player, false), 0.6f, 2));
+					}
+					Showcase.check(tobin != null, "Tobin follows the player out of the stockade, home");
+				}, 80)),
+			(level, player) -> true));
+		// The Sickness, I: eight far herbs (ROADMAP 31.17): a 5 x 5 pad of each herb's ground in a field of coarse dirt (no
+		// herb's ground), a herb_patch planted on each, the Glowcap's under a leaf canopy; then the Three-Herb Tonic in hand.
+		SCREENS.put("herbs", new Screen("eight patches of the far herbs, each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone, Glowcap on podzol under leaves (in front); Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass (behind); then the Three-Herb Tonic in hand",
+			new Vec3(0.5, -58.4, 4.5), new Vec3(0.5, -60.6, -12),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-18, -61, -21, 19, -54, 0)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.COARSE_DIRT.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (int i = 0; i < HERB_PADS.length; i++) {
+					BlockPos middle = herbPad(i);
+					for (BlockPos p : BlockPos.betweenClosed(middle.offset(-2, -1, -2), middle.offset(2, -1, 2))) {
+						level.setBlock(p, ((net.minecraft.world.level.block.Block) HERB_PADS[i][1]).defaultBlockState(), 2);
+					}
+				}
+				BlockPos glow = herbPad(3);
+				for (BlockPos p : BlockPos.betweenClosed(glow.offset(-3, 3, -3), glow.offset(3, 3, 3))) { // the Glowcap's shade
+					level.setBlock(p, net.minecraft.world.level.block.Blocks.DARK_OAK_LEAVES.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true), 2);
+				}
+				level.setDayTime(6000);
+			},
+			List.of(new Step("01_patches", -1, 0, (level, player) -> {
+					var random = net.minecraft.util.RandomSource.create(3117);
+					StringBuilder counts = new StringBuilder();
+					boolean all = true;
+					for (int i = 0; i < HERB_PADS.length; i++) {
+						var herb = (io.github.jcondedata.aliveworkplace.herb.HerbBlock) HERB_PADS[i][0];
+						int n = io.github.jcondedata.aliveworkplace.herb.Herbs.patch(level, herbPad(i), herb, random);
+						counts.append(' ').append(n);
+						all &= n >= io.github.jcondedata.aliveworkplace.herb.Herbs.LEAST && n <= io.github.jcondedata.aliveworkplace.herb.Herbs.MOST;
+					}
+					Showcase.check(all, "5 to 9 of each herb planted on its pad:" + counts);
+				}, 50),
+				new Step("02_tonic", -1, 0, (level, player) -> {
+					player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.THREE_HERB_TONIC));
+					Showcase.check(player.getMainHandItem().is(ModItems.THREE_HERB_TONIC), "the Three-Herb Tonic in hand");
+				}, 40)),
+			(level, player) -> true));
+		// The Sickness, II: the Grey Cough (ROADMAP 31.18): eight villagers, four of them coughing grey; a patch of Sea
+		// Lavender, one of the far herbs, on its gravel; the nurse brewing the Three-Herb Tonic at her brewing stand; then
+		// the cure going round, villager by villager, until everyone is well.
+		SCREENS.put("sickness", new Screen("the Grey Cough: four of eight villagers coughing grey smoke; a patch of Sea Lavender, a far herb, on its gravel; Nurse Ada brewing the Three-Herb Tonic at her brewing stand (Brewing the cure 40%); then the tonic going round until everyone is well",
+			new Vec3(0.5, -58.4, 4.5), new Vec3(0.5, -60.6, -12),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-18, -61, -21, 19, -54, 0)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-24, -64, -28, 24, -50, 8))) {
+					v.discard();
+				}
+				for (BlockPos p : BlockPos.betweenClosed(-10, -61, -15, -6, -61, -11)) {
+					level.setBlock(p, net.minecraft.world.level.block.Blocks.GRAVEL.defaultBlockState(), 2);
+				}
+				level.setBlock(SICKNESS_STAND, net.minecraft.world.level.block.Blocks.BREWING_STAND.defaultBlockState(), 2);
+				level.setDayTime(6000);
+			},
+			List.of(new Step("01_coughing", -1, 0, (level, player) -> {
+					int[][] at = {{-5, -6}, {-2, -7}, {1, -6}, {4, -7}, {-4, -10}, {-1, -9}, {2, -10}, {5, -9}};
+					for (int i = 0; i < at.length; i++) {
+						Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(at[i][0], -60, at[i][1]), MobSpawnType.COMMAND);
+						v.setNoAi(true);
+						v.setYRot(0);
+						v.setYHeadRot(0);
+						v.setCustomName(net.minecraft.network.chat.Component.literal(SICKNESS_NAMES[i]));
+						v.addTag(SICKNESS_TAG);
+						if (i % 2 == 0) {
+							io.github.jcondedata.aliveworkplace.people.Sickness.greyCough(level, v);
+						}
+					}
+					Villager nurse = EntityType.VILLAGER.spawn(level, SICKNESS_STAND.offset(-1, 0, 0), MobSpawnType.COMMAND);
+					nurse.setNoAi(true);
+					nurse.setYRot(0);
+					nurse.setYHeadRot(0);
+					nurse.setVillagerData(nurse.getVillagerData().setProfession(ModVillagers.NURSE).setLevel(2));
+					nurse.setVillagerXp(70);
+					nurse.setCustomName(net.minecraft.network.chat.Component.literal("Nurse Ada"));
+					nurse.addTag(SICKNESS_NURSE);
+					int n = io.github.jcondedata.aliveworkplace.herb.Herbs.patch(level, new BlockPos(-8, -60, -13), ModBlocks.SEA_LAVENDER,
+						net.minecraft.util.RandomSource.create(3118));
+					Showcase.check(sicknessCough(level) == 4, "four of the eight villagers cough the Grey Cough");
+					Showcase.check(n >= io.github.jcondedata.aliveworkplace.herb.Herbs.LEAST, "a patch of " + n + " Sea Lavender, a far herb, on its gravel");
+				}, 60),
+				new Step("02_brewing", -1, 0, (level, player) -> {
+					Villager nurse = sicknessNurse(level);
+					if (nurse != null) {
+						io.github.jcondedata.aliveworkplace.work.WorkerStatus.set(nurse, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.brewing"), 0.4f,
+							net.minecraft.network.chat.Component.translatable("message.aliveworkplace.sickness.status.brewing_line"));
+						level.sendParticles(net.minecraft.core.particles.ParticleTypes.EFFECT, SICKNESS_STAND.getX() + 0.5, SICKNESS_STAND.getY() + 1.1, SICKNESS_STAND.getZ() + 0.5, 12, 0.2, 0.2, 0.2, 0.01);
+					}
+					sicknessCough(level);
+					Showcase.check(nurse != null && io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(nurse, level.getGameTime()) != null, "Nurse Ada brewing the cure at her stand");
+				}, 50),
+				new Step("03_cure_round", -1, 0, (level, player) -> {
+					Showcase.check(sicknessCure(level, 2) == 2, "the tonic goes round: two villagers well, two still coughing");
+				}, 60),
+				new Step("04_all_well", -1, 0, (level, player) -> {
+					sicknessCure(level, 4);
+					Villager nurse = sicknessNurse(level);
+					if (nurse != null) {
+						nurse.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+						nurse.teleportTo(SICKNESS_STAND.getX() - 0.5, SICKNESS_STAND.getY(), SICKNESS_STAND.getZ() + 0.5);
+					}
+					Showcase.check(sicknessCough(level) == 0, "everyone is well again");
+				}, 50)),
+			(level, player) -> true));
+		// The Bandit King, II: the story (ROADMAP 31.16): the three camps' war banners (black, a red skull), taken; the
+		// fort rising a stage a day; the storm with the allies won (3 guards of a neighbour, 6 mercenaries) and the postern
+		// Pell told of left open; the King falling.
+		SCREENS.put("bandit_king", new Screen("the Bandit King's story: three war banners, black with a red skull, flown over his camps and taken; his fort rising a stage a day; the storm with the allies won (3 guards of the neighbours, 6 mercenaries) and the keep's postern open; the King falling",
+			new Vec3(24.5, -46, 10.5), new Vec3(0.5, -57, -20.5),
+			(level, player) -> {
+				for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
+					mob.discard();
+				}
+				for (var v : io.github.jcondedata.aliveworkplace.story.BanditKingStory.allies(level, BANDIT_KING_FRONT)) {
+					v.discard();
+				}
+			},
+			List.of(new Step("01_banners", -1, 0, (level, player) -> {
+					int raised = 0;
+					for (int x : new int[] {-8, 0, 8}) {
+						BlockPos at = io.github.jcondedata.aliveworkplace.story.BanditKingStory.raiseBanner(level, BANDIT_KING_FRONT.offset(x, 0, 2));
+						if (at != null && io.github.jcondedata.aliveworkplace.story.BanditKingStory.isWarBanner(level, at)) {
+							raised++;
+						}
+					}
+					Showcase.check(raised == 3, "three war banners, black with a red skull, fly over the camps");
+				}, 50),
+				new Step("02_banners_taken", -1, 0, (level, player) -> {
+					int taken = 0;
+					for (BlockPos p : BlockPos.betweenClosed(BANDIT_KING_FRONT.offset(-12, -2, -4), BANDIT_KING_FRONT.offset(12, 3, 8))) {
+						if (io.github.jcondedata.aliveworkplace.story.BanditKingStory.isWarBanner(level, p)) {
+							level.destroyBlock(p.immutable(), true, player);
+							taken++;
+						}
+					}
+					Showcase.check(taken == 3, "the three war banners are taken");
+				}, 40),
+				new Step("03_fort_day_1", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 0, false);
+					stillFortMen(level);
+					Showcase.check(placed, "the next dawn: the fort's palisade, fire and tents");
+				}, 40),
+				new Step("04_fort_day_2", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 1, false);
+					stillFortMen(level);
+					Showcase.check(placed, "a day on: the watchtowers and the stable");
+				}, 40),
+				new Step("05_fort_day_3", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 2, true);
+					stillFortMen(level);
+					Showcase.check(placed && level.getBlockState(banditFort().at(io.github.jcondedata.aliveworkplace.guard.BanditFort.POSTERN))
+						.getValue(net.minecraft.world.level.block.DoorBlock.OPEN), "a day on: the King's keep, its postern left open as Pell told");
+				}, 40),
+				new Step("06_storm", -1, 0, (level, player) -> {
+					for (int i = 0; i < 3; i++) {
+						io.github.jcondedata.aliveworkplace.story.BanditKingStory.ally(level, BANDIT_KING_FRONT,
+							Component.translatable("entity.aliveworkplace.king_ally.neighbour", "Thornholm"), i);
+					}
+					for (int i = 3; i < 9; i++) {
+						io.github.jcondedata.aliveworkplace.story.BanditKingStory.ally(level, BANDIT_KING_FRONT, Component.translatable("entity.aliveworkplace.mercenary"), i);
+					}
+					var allies = io.github.jcondedata.aliveworkplace.story.BanditKingStory.allies(level, BANDIT_KING_FRONT);
+					allies.forEach(v -> v.setNoAi(true));
+					Showcase.check(allies.size() == 9, "the storm: 3 guards of the neighbours and 6 mercenaries before the gate");
+				}, 50),
+				new Step("07_king_falls", -1, 0, (level, player) -> {
+					var king = io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40).stream()
+						.filter(m -> m.getTags().contains(io.github.jcondedata.aliveworkplace.guard.BanditKing.TAG)).findFirst().orElse(null);
+					if (king != null) {
+						king.setNoAi(false);
+						king.hurt(level.damageSources().playerAttack(player), 10000f);
+					}
+					Showcase.check(king != null && !king.isAlive(), "the Bandit King falls");
 				}, 40)),
 			(level, player) -> true));
 		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps

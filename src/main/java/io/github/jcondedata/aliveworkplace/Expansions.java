@@ -38,7 +38,7 @@ public final class Expansions {
 	/**
 	 * Milestone 32, Threats worth building walls for (1.6). While it's closed lairs are today's bandit camps: the chief
 	 * has no name, a raid isn't held to the lair's strength, and the hall's guards icon opens no Defence page (design note
-	 * M32, "The expansion gate"). Its switches: {@code sieges}, {@code siegeDamage} (32.4).
+	 * M32, "The expansion gate"). Its switches: {@code sieges}, {@code siegeDamage} (32.4), {@code firewardens} (32.16), {@code wellKeepers} (32.17), {@code physicians} (32.18).
 	 */
 	public static final boolean M32 = false;
 	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}, {@code visibleCaravans}, {@code colonies}, {@code colonyRank}, {@code colonyCooldownDays}, {@code coloniesPerVillage}, {@code realms}, {@code realmMaxMembers}. */
@@ -67,23 +67,53 @@ public final class Expansions {
 
 	/** The milestone flag of a config option that belongs to an unfinished-or-finished expansion, or null for one that doesn't. */
 	static Boolean milestoneOf(String option) {
+		String milestone = milestone(option);
+		return milestone == null ? null : flag(milestone);
+	}
+
+	/** A milestone's flag by its name ("M34"). */
+	static boolean flag(String milestone) {
+		return switch (milestone) {
+			case "M27" -> M27;
+			case "M28" -> M28;
+			case "M29" -> M29;
+			case "M30" -> M30;
+			case "M31" -> M31;
+			case "M32" -> M32;
+			case "M33" -> M33;
+			case "M34" -> M34;
+			case "M35" -> M35;
+			default -> false;
+		};
+	}
+
+	/** Every milestone with a gate, by name. */
+	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35");
+
+	/** The milestones whose gates are open now ({@link #on}): what a config file written now records (34.23). */
+	static java.util.List<String> open() {
+		return MILESTONES.stream().filter(m -> on(flag(m))).toList();
+	}
+
+	/** The milestone ("M34") of a config option that belongs to an expansion, or null for one that doesn't. */
+	static String milestone(String option) {
 		return switch (option) {
 			case "steward", "stewardSelfRun", "stewardMaxOpenBuilds", "stewardRoads", "caravanRoads", "caravanRoadReach",
-				"stewardWalls", "stewardRenewal" -> M27;
+				"stewardWalls", "stewardRenewal" -> "M27";
 			case "partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
-				"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup", "cupEveryFestivals" -> M28;
-			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> M29;
+				"daycareKeepers", "gemGrowers", "villageHabitats", "pokemonVillageHouses", "festivalCup", "cupEveryFestivals" -> "M28";
+			case "legends", "legendNeeds", "legendSites", "strangeMoods", "giftedChance" -> "M29";
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
-				"guildsPerRank" -> M30;
-			case "jewellers" -> M34; // the Jeweller (34.12), with the rest of Classes and luxuries below
-			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage", "realms", "realmMaxMembers" -> M33;
-			case "sieges", "siegeDamage" -> M32;
-			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> M31;
-			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "bountyBoard", "rogueBounties" -> M31;
+				"guildsPerRank" -> "M30";
+			case "jewellers" -> "M34"; // the Jeweller (34.12), with the rest of Classes and luxuries below
+			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage", "realms", "realmMaxMembers" -> "M33";
+			case "sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians" -> "M32";
+			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> "M31";
+			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "bountyBoard", "rogueBounties" -> "M31";
 			case "villageClasses", "classRiseDays", "classFallDays", "classGraceDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",
-				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> M34;
+				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> "M34";
 			case "wonders", "wonderCaps", "wonderLegends", "wonderServerLimit", "disabledWonders", "wonderCrew", "builderScaffolding",
-				"wonderStanding" -> M35;
+				"wonderStanding" -> "M35";
 			default -> null;
 		};
 	}

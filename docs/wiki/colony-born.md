@@ -4,13 +4,18 @@ ROADMAP 33.10 (part of 1.7, "From village to realm"; off until 1.7 is released).
 the settlers [sent with the charter](colony-settlers.md) reach the spot, make camp, raise a Village Hall and a Travel
 Post, and their builder starts the colony's first two buildings.
 
-Roadmap items: 33.10
+Roadmap items: 33.10, 33.14
 
 ## What a player sees
 
 When the journey is over, the settlers make camp on the nearest open ground within 48 blocks of the spot: the
-Settler's Wagon's camp (a covered wagon with a chest, a Blueprint Table, a campfire and two bedrolls), turned to face
-the mother village, with the colony's **Village Hall** and a **Travel Post** two blocks in front of it.
+**Colony Camp** (33.14, `camp/colony_camp`, 15 x 6 x 13: two covered wagons, a timber platform under a striped canvas
+awning, a Blueprint Table with a lamp, supply crates round the chest, a campfire with log seats and a cooking pot,
+three bedrolls and a flagpole with a white banner), turned to face the mother village. The colony's **Village Hall**
+stands on the platform under the awning and the **Travel Post** at the front right by its lantern (template spots
+(7, 1, 7) and (10, 0, 3), `ColonyArrival.HALL_IN_CAMP`/`POST_IN_CAMP`). Without the Colony Camp's template (a data pack
+removed it) the settlers fall back on the Settler's Wagon's camp with the hall and post two blocks in front of it.
+Renders, as drawn and in the five styles: `docs/media/colony-camp-front.png`, `-back.png`.
 
 - The hall carries the name the charter was given in an anvil (or a made-up one), belongs to the mother village's
   owner, and its chronicle opens with "Founded on day 41 by settlers from Thornholm: Dara and Tomas". The mother's
@@ -41,7 +46,7 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
 - Once the spot is in ticking chunks (or after 30 seconds, with what has loaded) the settlers look for the camp: every
   third block within 48 of the spot, nearest first. A place counts if the ground there isn't water, the camp's box is
   as open and as level as the Settler's Wagon asks (`SettlersWagonItem.roomFor`), nothing wet is in or under it, and
-  the hall's and post's spots have ground within a block. The ground is found from the height map, past trees.
+  (with the old camp only) the hall's and post's spots have ground within a block. The ground is found from the height map, past trees.
 - The mother's hall chunk is loaded once (one chunk) to read its owner, name and chronicle.
 - Builds: the cottage tries one side first, the storehouse the other, each 2, 4 then 7 blocks from the camp, its front
   in line with the camp's. A footprint is level enough when at most 15% of its columns are more than 2 blocks above or

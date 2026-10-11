@@ -19,12 +19,16 @@ from countryside import *
 from nether import *
 from yards import *
 from bandits import *
+from bandit_fort import bandit_fort, bandit_fort_2, bandit_fort_3
+from caravan import caravan_wreck, raiders_stockade, trail_1, trail_2, trail_3, trail_4, trail_5, TRAIL
 from legend_sites import *
 from pokemon import *
 from pokemon_looks import *
 from pokemon_jobs import *
 from guildhall import *
 from arena import *
+from answering import *
+from realm import *
 from styles import styled
 
 
@@ -124,16 +128,26 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.16
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
+    for name, draw in (("bandit_fort", bandit_fort), ("bandit_fort_2", bandit_fort_2), ("bandit_fort_3", bandit_fort_3)):
+        draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
+    caravan_wreck().save(os.path.join(MAIN_STRUCTURES, "story"), "caravan_wreck")  # ROADMAP 31.19: the Lost Caravan's trail
+    raiders_stockade().save(os.path.join(MAIN_STRUCTURES, "story"), "raiders_stockade")
+    for i, draw in enumerate(TRAIL, 1):
+        draw().save(os.path.join(MAIN_STRUCTURES, "story"), f"trail_{i}")
     war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")
     pirate_ship().save(os.path.join(MAIN_STRUCTURES, "camp"), "pirate_ship")  # ROADMAP 32.8
     tomb_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "tomb_camp")  # ROADMAP 32.9
     blackstone_outpost().save(os.path.join(MAIN_STRUCTURES, "camp"), "blackstone_outpost")  # ROADMAP 32.10
     coven_hut().save(os.path.join(MAIN_STRUCTURES, "camp"), "coven_hut")  # ROADMAP 32.11
+    colony_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "colony_camp")  # ROADMAP 33.14
+    royal_hall().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall")  # ROADMAP 33.14
+    royal_hall_2().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall_2")
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
         draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("palisade_tower", palisade_tower), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
-                       ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2)):
+                       ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2),
+                       ("palisade_2", palisade_2), ("stone_wall_2", stone_wall_2), ("wall_tower_2", wall_tower_2), ("gatehouse_2", gatehouse_2)):
         draw().save(MAIN_STRUCTURES, name)
     tinkers_workshop().save(MAIN_STRUCTURES, "tinkers_workshop")
     tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")
@@ -148,6 +162,8 @@ if __name__ == "__main__":
     for name, draw in (("print_shop", print_shop), ("print_shop_2", print_shop_2), ("jewellers_workshop", jewellers_workshop),
                        ("jewellers_workshop_2", jewellers_workshop_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
+    for name, draw in (("fire_station", fire_station), ("well_house", well_house), ("physicians_house", physicians_house)):
+        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

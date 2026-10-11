@@ -207,7 +207,7 @@ public final class Sieges {
 	}
 
 	/** Whether {@code structure} is a gate build (its gates shut, its portcullis drops): one of {@link #gateBuilds}, in any style or tier. */
-	private static boolean isGated(ResourceLocation structure) {
+	public static boolean isGated(ResourceLocation structure) {
 		Set<ResourceLocation> gated = gateBuilds();
 		ResourceLocation base = BlueprintStyles.base(structure);
 		for (int i = 0; i < 4; i++) {
@@ -324,6 +324,7 @@ public final class Sieges {
 			return laid; // (this raid's other tactic has just laid it)
 		}
 		laid.ifPresent(old -> lift(level, old)); // (the last one's bars go up before this one's come down)
+		raise(level, data, hall, false); // bars dropped ahead of a warned attack (32.14) come down again as this siege's
 		ThreatData.Siege siege = new ThreatData.Siege(hall, level.getGameTime(), nextDawn(level.getDayTime()));
 		siege.came = raiders.size();
 		siege.hpFactor = ramparts(level, hall) ? RAMPARTS_FACTOR : 1; // Ramparts (32.6): gates twice as strong
@@ -339,7 +340,7 @@ public final class Sieges {
 		Map<Defence, List<Piece>> bars = new HashMap<>();
 		for (Defence build : builds) {
 			if (isGated(build.finished().structure())) {
-				bars.put(build, drop(level, build, siege));
+				bars.put(build, drop(level, build, siege.portcullis));
 			}
 		}
 		pickBreach(level, siege, builds, bars, from);
@@ -356,7 +357,7 @@ public final class Sieges {
 	 * Drops the portcullis of {@code build}: under every iron bar its blueprint draws up, bars down through the gateway
 	 * (where the blueprint has air) to the floor. Returns the bars dropped, which the siege remembers to draw up again.
 	 */
-	private static List<Piece> drop(ServerLevel level, Defence build, ThreatData.Siege siege) {
+	private static List<Piece> drop(ServerLevel level, Defence build, List<BlockPos> into) {
 		Map<BlockPos, BlockState> plan = new HashMap<>();
 		for (Blueprint.Entry e : build.blueprint().blocks()) {
 			plan.put(e.pos(), e.state());
@@ -377,7 +378,7 @@ public final class Sieges {
 					break;
 				}
 				level.setBlock(pos, Block.updateFromNeighbourShapes(Blocks.IRON_BARS.defaultBlockState(), level, pos), 3);
-				siege.portcullis.add(pos.immutable());
+				into.add(pos.immutable());
 				dropped.add(new Piece(pos.immutable(), local, level.getBlockState(pos), true));
 			}
 		}
@@ -414,7 +415,35 @@ public final class Sieges {
 		List<Integer> ways = new ArrayList<>(new TreeSet<>(its.stream().filter(p -> p.local().getY() - floor < 2).map(p -> p.local().getX()).toList()));
 		int middle = ways.get(ways.size() / 2);
 		ways.sort(Comparator.<Integer>comparingInt(x -> Math.abs(x - middle)).thenComparingInt(x -> x));
-		Comparator<Piece> order = Comparator.<Piece>comparingInt(p -> p.local().getY() - floor < 2 ? 0 : 1)
+		// Gate lines (32.20): the build's gate blocks grouped by depth (blueprint z), blocks a step apart in one line. A
+		// build with a gate in front of its gate (Gatehouse II's barbican) has two lines: the outer one goes all of it,
+		// the drawn-up bars too, so the ram can walk in to the next; a build with one line (every other) is unchanged.
+		List<Integer> depths = new ArrayList<>(new TreeSet<>(its.stream().map(p -> p.local().getZ()).toList()));
+		Map<Integer, Integer> line = new HashMap<>();
+		int lines = 0;
+		for (int i = 0; i < depths.size(); i++) {
+			if (i > 0 && depths.get(i) - depths.get(i - 1) > 1) {
+				lines++;
+			}
+			line.put(depths.get(i), lines);
+		}
+		if (lines > 0) {
+			// Outermost first: the line with the gate block nearest the raiders.
+			Map<Integer, Double> near = new HashMap<>();
+			for (Piece p : its) {
+				near.merge(line.get(p.local().getZ()), Vec3.atCenterOf(p.pos()).distanceToSqr(from), Math::min);
+			}
+			List<Integer> outward = new ArrayList<>(near.keySet());
+			outward.sort(Comparator.comparingDouble(near::get));
+			Map<Integer, Integer> rank = new HashMap<>();
+			for (int i = 0; i < outward.size(); i++) {
+				rank.put(outward.get(i), i);
+			}
+			line.replaceAll((z, l) -> rank.get(l));
+		}
+		int last = lines;
+		Comparator<Piece> order = Comparator.<Piece>comparingInt(p -> line.get(p.local().getZ()) < last ? line.get(p.local().getZ()) : last)
+			.thenComparingInt(p -> p.local().getY() - floor < 2 ? 0 : 1)
 			.thenComparingInt(p -> lane(ways, middle, p.local().getX()))
 			.thenComparingDouble(p -> Vec3.atCenterOf(p.pos()).distanceToSqr(from));
 		List<Piece> sorted = new ArrayList<>(its);
@@ -437,6 +466,60 @@ public final class Sieges {
 	private static int lane(List<Integer> ways, int middle, int x) {
 		int i = ways.indexOf(x);
 		return i >= 0 ? i : ways.size() + Math.abs(x - middle);
+	}
+
+	/**
+	 * A day's warning (32.14): the gates of the village round {@code hall} shut and the portcullis of every finished gate
+	 * build drops ahead of a warned attack, with no siege yet. The bars are kept on the hall's clock: a siege that begins
+	 * takes them over, else {@link #raise} draws them up. Returns how many bars dropped now.
+	 */
+	public static int brace(ServerLevel level, BlockPos hall) {
+		if (!ENABLED || siege(level, hall).isPresent()) {
+			return 0;
+		}
+		ThreatData data = ThreatData.get(level);
+		List<Defence> builds = defences(level, hall);
+		setGates(level, builds, true);
+		List<BlockPos> bars = new ArrayList<>(data.braced(hall));
+		int before = bars.size();
+		if (before == 0) {
+			for (Defence build : builds) {
+				if (isGated(build.finished().structure())) {
+					drop(level, build, bars);
+				}
+			}
+			if (!bars.isEmpty()) {
+				data.braced(hall, bars);
+			}
+		}
+		return bars.size() - before;
+	}
+
+	/**
+	 * Draws up the bars dropped ahead of a warned attack on the village round {@code hall} (the day is over and no siege
+	 * took them; with {@code loud} false, silently, as a siege beginning drops them again). Returns how many went up.
+	 */
+	public static int raise(ServerLevel level, BlockPos hall, boolean loud) {
+		return raise(level, ThreatData.get(level), hall, loud);
+	}
+
+	private static int raise(ServerLevel level, ThreatData data, BlockPos hall, boolean loud) {
+		List<BlockPos> bars = data.braced(hall);
+		if (bars.isEmpty()) {
+			return 0;
+		}
+		int raised = 0;
+		for (BlockPos pos : bars) {
+			if (level.getBlockState(pos).is(Blocks.IRON_BARS)) {
+				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+				raised++;
+			}
+		}
+		if (loud && raised > 0) {
+			level.playSound(null, bars.get(0), SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, 1f, 0.6f);
+		}
+		data.braced(hall, List.of());
+		return raised;
 	}
 
 	/** Whether the village round {@code hall} has the Ramparts research (32.6). */
@@ -598,7 +681,16 @@ public final class Sieges {
 		if (siege.breach != null && !raiders.isEmpty()) {
 			boolean open = open(siege);
 			Vec3 gate = Vec3.atBottomCenterOf(siege.breach);
-			Vec3 within = gate.add(siege.out.getStepX() * -6, 0, siege.out.getStepZ() * -6);
+			// Through is six blocks inside the innermost gate line: a barbican's breach is its outer gate (32.20), the
+			// way in goes on through the inner gate. (A gate a step behind the breach, as the Gatehouse's, changes nothing.)
+			int deeper = 0;
+			for (ThreatData.Gate g : siege.gates) {
+				if (g.lane == 0 && !g.high) {
+					deeper = Math.max(deeper, -((g.pos.getX() - siege.breach.getX()) * siege.out.getStepX() + (g.pos.getZ() - siege.breach.getZ()) * siege.out.getStepZ()));
+				}
+			}
+			int in = 6 + (deeper > 1 ? deeper : 0);
+			Vec3 within = gate.add(siege.out.getStepX() * -in, 0, siege.out.getStepZ() * -in);
 			int n = raiders.size();
 			for (int i = 0; i < n; i++) {
 				int index = (director.cursor + i) % n;
@@ -780,7 +872,8 @@ public final class Sieges {
 
 	/** Whether a portcullis of the village round {@code hall} is down. */
 	public static boolean portcullisDown(ServerLevel level, BlockPos hall) {
-		return siege(level, hall).map(s -> s.portcullis.stream().anyMatch(p -> level.getBlockState(p).is(Blocks.IRON_BARS))).orElse(false);
+		return siege(level, hall).map(s -> s.portcullis.stream().anyMatch(p -> level.getBlockState(p).is(Blocks.IRON_BARS))).orElse(false)
+			|| ThreatData.get(level).braced(hall).stream().anyMatch(p -> level.getBlockState(p).is(Blocks.IRON_BARS)); // (or ahead of a warned attack, 32.14)
 	}
 
 	/** How the gates of the village round {@code hall} stand, for the Defence page. */

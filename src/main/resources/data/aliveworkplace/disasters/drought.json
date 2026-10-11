@@ -1,0 +1,25 @@
+{
+  "chance": 0.05,
+  "requires": [
+    { "when": { "dry_days": 1 } },
+    { "unless": { "biomes": ["#minecraft:is_savanna", "#minecraft:is_badlands", "minecraft:desert"] }, "when": { "dry_days": 5 } }
+  ],
+  "factors": [
+    { "if": { "biomes": ["#minecraft:is_savanna", "#minecraft:is_badlands", "minecraft:desert"] }, "chance": 0.15 },
+    { "if": { "lair_standing": "aliveworkplace:desert_raiders" }, "times": 2 }
+  ],
+  "duration": { "min_days": 3, "max_days": 5, "ends_with_rain": true },
+  "effects": [
+    { "type": "crop_growth", "factor": 0.25 },
+    { "type": "farmland_dries" },
+    { "type": "cauldrons_drain", "levels_a_day": 1 },
+    { "type": "mood", "amount": -10, "reason": "mood.aliveworkplace.reason.drought",
+      "unless_built": ["aliveworkplace:well", "aliveworkplace:well_2", "aliveworkplace:fountain"] }
+  ],
+  "answered_by": "aliveworkplace:well_keeper",
+  "foretold_by": ["aliveworkplace:well_keeper"],
+  "foretell_days": 1,
+  "messages": "disaster.aliveworkplace.drought",
+  "chronicle": "chronicle.aliveworkplace.drought",
+  "kind": "drought"
+}

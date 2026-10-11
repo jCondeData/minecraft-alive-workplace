@@ -61,6 +61,8 @@ public final class QuestTracker {
 					refresh(player);
 					if (tick % 40 == 0) {
 						checkReach(player);
+						CaravanTrail.check(player); // 31.19: the marks of a trail
+						LostCaravanStory.check(player); // 31.20: the lost goods brought in
 					}
 				}
 			}

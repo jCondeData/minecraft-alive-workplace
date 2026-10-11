@@ -218,6 +218,47 @@ public class PastureCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A firewarden's partners douse fires (ROADMAP 32.16): a Squirtle pastured near the grindstone puts out a fire in the
+	 * village at range, to the firewarden's credit; a Charmander there doesn't (only Water types).
+	 */
+	//$ gametest_ticks_batch AREA '400' '"firewarden_partners"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "firewarden_partners")
+	public void pasturedWaterTypesDouseTheFire(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		int radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 20;
+		io.github.jcondedata.aliveworkplace.threat.VillageFire.forget();
+		io.github.jcondedata.aliveworkplace.threat.VillageFire.resetPartners();
+		helper.setBlock(new BlockPos(13, 2, 2), ModBlocks.VILLAGE_HALL);
+		BlockPos grindstone = new BlockPos(2, 2, 2);
+		helper.setBlock(grindstone, Blocks.GRINDSTONE.defaultBlockState().setValue(
+			net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR));
+		Villager warden = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		warden.setNoAi(true); // only the Pokémon put this one out
+		Jobs.employ(level, warden, helper.absolutePos(grindstone), net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, ModVillagers.FIREWARDEN);
+		BlockPos pasture = pasture(helper, new BlockPos(8, 2, 8));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		pastured(helper, pasture, player, "squirtle", Direction.NORTH);
+		pastured(helper, pasture, player, "charmander", Direction.WEST);
+		BlockPos log = new BlockPos(12, 2, 12);
+		helper.setBlock(log, Blocks.OAK_LOG);
+		helper.runAfterDelay(10, () -> {
+			Partners.forget(warden);
+			helper.assertTrue(Partners.helpers(warden).size() == 1, "partners: " + Partners.helpers(warden));
+			BlockPos fire = helper.absolutePos(log.above());
+			level.setBlockAndUpdate(fire, net.minecraft.world.level.block.BaseFireBlock.getState(level, fire));
+		});
+		helper.onEachTick(() -> io.github.jcondedata.aliveworkplace.threat.VillageFire.onDuty(warden, level.getGameTime()));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(helper.getTick() > 12 && !level.getBlockState(helper.absolutePos(log.above())).is(net.minecraft.tags.BlockTags.FIRE),
+				"the fire is still burning");
+			var incident = io.github.jcondedata.aliveworkplace.threat.VillageFire.incident(level, helper.absolutePos(new BlockPos(13, 2, 2)));
+			helper.assertTrue(incident.map(i -> i.dousedBy(warden.getUUID()) > 0).orElse(false), "the Squirtle's douse isn't the firewarden's");
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = radius;
+		});
+	}
+
 	/** A shepherd shears a Wooloo kept in a pasture by the loom, like a sheep. */
 	//$ gametest_ticks_batch AREA '1200' '"shepherd_wooloo"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "shepherd_wooloo")

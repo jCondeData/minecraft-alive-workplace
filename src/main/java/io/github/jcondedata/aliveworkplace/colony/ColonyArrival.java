@@ -100,6 +100,11 @@ public final class ColonyArrival {
 	/** Where the hall and the post stand: two blocks in front of the camp, left and right of the campfire (camp template space). */
 	private static final BlockPos HALL_AT = new BlockPos(2, 0, -2);
 	private static final BlockPos POST_AT = new BlockPos(8, 0, -2);
+	/** The colony's own camp (33.14): two wagons, the hall under an awning on a timber platform, the post at the front. */
+	public static final ResourceLocation COLONY_CAMP = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("camp/colony_camp");
+	/** Where the hall and the post stand in the Colony Camp (template space): on the platform, and at the front right. */
+	static final BlockPos HALL_IN_CAMP = new BlockPos(7, 1, 7);
+	static final BlockPos POST_IN_CAMP = new BlockPos(10, 0, 3);
 	/** Room left between the camp and a build beside it, nearest first. */
 	private static final int[] GAPS = {2, 4, 7};
 	/** Most a footprint's ground may rise or fall from where the build stands, and how many of its columns may do so. */
@@ -216,16 +221,22 @@ public final class ColonyArrival {
 			if (front == null) {
 				continue;
 			}
-			BoundingBox box = SettlersWagonItem.campBox(level, front, rotation);
+			boolean colonyCamp = hasColonyCamp(level);
+			BoundingBox box = SettlersWagonItem.campBox(level, colonyCamp ? COLONY_CAMP : SettlersWagonItem.CAMP, front, rotation);
 			if (box == null) {
 				return null; // no camp to place at all
 			}
 			if (loaded(level, box) && dry(level, box) && SettlersWagonItem.roomFor(level, box)
-				&& standsOn(level, at(box, front, rotation, HALL_AT)) && standsOn(level, at(box, front, rotation, POST_AT))) {
+				&& (colonyCamp || standsOn(level, at(box, front, rotation, HALL_AT)) && standsOn(level, at(box, front, rotation, POST_AT)))) {
 				return new Camp(front, facing, box);
 			}
 		}
 		return null;
+	}
+
+	/** Whether the Colony Camp's template is there (it ships with the mod; an older settlers' camp stands in without it). */
+	static boolean hasColonyCamp(ServerLevel level) {
+		return level.getStructureManager().get(COLONY_CAMP).isPresent();
 	}
 
 	/** Whether every chunk under {@code box} is loaded. */
@@ -286,11 +297,15 @@ public final class ColonyArrival {
 		Rotation rotation = BlueprintItem.rotationFacing(camp.facing());
 
 		// The camp, its hall and its post.
-		BoundingBox box = SettlersWagonItem.placeCamp(level, camp.front(), rotation);
-		BlockPos hall = place(level, at(box, camp.front(), rotation, HALL_AT),
-			ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, camp.facing()));
-		BlockPos post = place(level, at(box, camp.front(), rotation, POST_AT),
-			ModBlocks.TRAVEL_POST.defaultBlockState().setValue(TravelPostBlock.FACING, camp.facing()));
+		boolean colonyCamp = hasColonyCamp(level);
+		BoundingBox box = SettlersWagonItem.placeCamp(level, colonyCamp ? COLONY_CAMP : SettlersWagonItem.CAMP, camp.front(), rotation);
+		BlockState hallState = ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, camp.facing());
+		BlockState postState = ModBlocks.TRAVEL_POST.defaultBlockState().setValue(TravelPostBlock.FACING, camp.facing());
+		// the Colony Camp has their places: the hall under the awning on the platform, the post by its lantern (33.14)
+		BlockPos hall = colonyCamp ? placeExactly(level, at(box, camp.front(), rotation, HALL_IN_CAMP), hallState)
+			: place(level, at(box, camp.front(), rotation, HALL_AT), hallState);
+		BlockPos post = colonyCamp ? placeExactly(level, at(box, camp.front(), rotation, POST_IN_CAMP), postState)
+			: place(level, at(box, camp.front(), rotation, POST_AT), postState);
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
 		order.name().ifPresent(n -> entity.setCustomName(Component.literal(n.getString())));
 		if (owner != null) {
@@ -409,6 +424,15 @@ public final class ColonyArrival {
 		return at.immutable();
 	}
 
+	/** Places {@code state} at {@code pos} in a camp that left room for it, with dirt under it if there's no ground; where it went. */
+	private static BlockPos placeExactly(ServerLevel level, BlockPos pos, BlockState state) {
+		if (level.getBlockState(pos.below()).canBeReplaced()) {
+			level.setBlockAndUpdate(pos.below(), Blocks.DIRT.defaultBlockState());
+		}
+		level.setBlockAndUpdate(pos, state);
+		return pos.immutable();
+	}
+
 	/** The camp's chest, emptied of what its loot table would bring (the settlers brought their own). */
 	@Nullable
 	private static ChestBlockEntity chest(ServerLevel level, BoundingBox box) {
@@ -438,7 +462,7 @@ public final class ColonyArrival {
 	}
 
 	/** {@code base} in the first of the mother's styles it comes in (none: as drawn). */
-	static ResourceLocation styled(ServerLevel level, ResourceLocation base, List<String> styles) {
+	public static ResourceLocation styled(ServerLevel level, ResourceLocation base, List<String> styles) {
 		for (String style : styles) {
 			ResourceLocation id = BlueprintStyles.styled(base, style);
 			if (BlueprintLibrary.get(level, id).isPresent()) {

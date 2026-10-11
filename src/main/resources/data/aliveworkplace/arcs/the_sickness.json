@@ -1,0 +1,47 @@
+{
+  "name": {"translate": "arc.aliveworkplace.the_sickness"},
+  "threat": true,
+  "trigger": {
+    "chance": 0.06,
+    "conditions": [
+      {"type": "rank_at_least", "rank": "village"},
+      {"type": "villagers", "count": 12},
+      {"type": "villager_sickness"}
+    ]
+  },
+  "chapters": [
+    {
+      "name": {"translate": "arc.aliveworkplace.the_sickness.1"},
+      "intro": ["arc.aliveworkplace.the_sickness.1.intro.1", "arc.aliveworkplace.the_sickness.1.intro.2"],
+      "on_start": [
+        {"type": "sickness", "step": "outbreak"}
+      ],
+      "needs_flags": ["healer_told"],
+      "chatter": ["chatter.aliveworkplace.the_sickness.cough", "chatter.aliveworkplace.the_sickness.healer"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.the_sickness.2"},
+      "intro": ["arc.aliveworkplace.the_sickness.2.intro.1", "arc.aliveworkplace.the_sickness.2.intro.2"],
+      "on_start": [
+        {"type": "sickness", "step": "herbs"}
+      ],
+      "needs_flags": ["herbs_given"],
+      "chatter": ["chatter.aliveworkplace.the_sickness.herbs", "chatter.aliveworkplace.the_sickness.cough"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.the_sickness.3"},
+      "intro": ["arc.aliveworkplace.the_sickness.3.intro.1"],
+      "on_start": [
+        {"type": "sickness", "step": "brew"}
+      ],
+      "needs_flags": ["cured"],
+      "chatter": ["chatter.aliveworkplace.the_sickness.brew"]
+    }
+  ],
+  "ending": [
+    {"type": "sickness", "step": "ending"},
+    {"type": "festival"},
+    {"type": "reputation", "points": 150, "who": "helpers"},
+    {"type": "honour", "id": "healer", "who": "helpers"}
+  ]
+}

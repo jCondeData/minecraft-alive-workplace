@@ -30,6 +30,8 @@ public final class ModItems {
 	public static final io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem VILLAGE_LEDGER = Reg.item("village_ledger", io.github.jcondedata.aliveworkplace.hall.VillageLedgerItem::new, new Item.Properties().stacksTo(1));
 	/** Calls a rush in a village once a day (ROADMAP 30.11). */
 	/** The Guild Charter (ROADMAP 30.17): sneak-right-click a Master to make them their trade's Guild Master. */
+	/** The Three-Herb Tonic (ROADMAP 31.17): a bottle of green tonic a healer makes from three far herbs (31.18). */
+	public static final Item THREE_HERB_TONIC = Reg.item("three_herb_tonic", Item::new, new Item.Properties().stacksTo(16));
 	public static final Item GUILD_CHARTER = Reg.item("guild_charter", Item::new, new Item.Properties().stacksTo(16));
 	/** The Colony Charter (ROADMAP 33.8): bought on a City's Colonies tab, it chooses where the village's colony goes. */
 	public static final io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem COLONY_CHARTER = Reg.item("colony_charter", io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem::new, new Item.Properties().stacksTo(1));
@@ -103,6 +105,10 @@ public final class ModItems {
 	public static final net.minecraft.world.item.crafting.RecipeSerializer<io.github.jcondedata.aliveworkplace.story.GiftItem.Recipe> GIFT_RECIPE = Registry.register(
 		BuiltInRegistries.RECIPE_SERIALIZER, AliveWorkplace.id("gift"), io.github.jcondedata.aliveworkplace.story.GiftItem.RECIPE);
 
+	/** The Physician's Remedy (ROADMAP 32.18): cures any illness, hexes and the plague included; drinkable. */
+	public static final io.github.jcondedata.aliveworkplace.people.RemedyItem REMEDY = Reg.item("remedy", io.github.jcondedata.aliveworkplace.people.RemedyItem::new,
+		io.github.jcondedata.aliveworkplace.people.RemedyItem.properties());
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -134,9 +140,12 @@ public final class ModItems {
 				output.accept(SCHOLARS_INFUSION);
 				output.accept(HARVEST_CORDIAL);
 				output.accept(WOODSMANS_BROTH);
+				io.github.jcondedata.aliveworkplace.herb.Herbs.all().forEach(output::accept); // the far herbs (31.17)
+				output.accept(THREE_HERB_TONIC);
 				output.accept(CIDER);
 				output.accept(BERRY_WINE);
 				output.accept(VINTAGE_WINE);
+				output.accept(REMEDY);
 				output.accept(AMETHYST_RING);
 				output.accept(EMERALD_BROOCH);
 				output.accept(GOLD_CIRCLET);

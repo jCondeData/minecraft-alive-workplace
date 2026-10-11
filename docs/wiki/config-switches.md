@@ -28,6 +28,12 @@ column) is off whatever the file says, and isn't on the settings screen until th
 - **The expansion gate (B76).** Each expansion that has switches (1.1 to 1.5, 1.7, 1.8 and 2.0 today) has one flag in the code
   that the release finishing it turns on. Until then its switches are forced off, even in a config file that says on. The release flips the flag
   and nothing else: the switches then default on and obey the file again.
+- **A file from before the release (34.23).** The file records which expansions were open when it was written
+  (a list in the file; files written by 0.139.0 to 0.142.0 have none, so none were). A switch of an expansion that was
+  still closed then holds `false` only because that was its default, so once the expansion is out it takes its new
+  default, on; a switch turned off after the release stays off. A file with neither the list nor a format number
+  (written by hand) is taken as it says.
+  Without this, a server that ran an earlier version kept 1.8's classes off (found by the update rehearsal).
 - **Every "needs" system has its own switch** (names, traits, moods, sickness, couples, chatter, markets,
   festivals, raids, bandit camps, the treasury, repairs, paths). Set it to false and the village simply goes without
   it; nothing else needs looking after.
@@ -75,7 +81,11 @@ range is in brackets.
 | `villageRaids` | on |  | Monsters raid bigger villages with a Village Hall at night now and then. |
 | `banditCamps` | on |  | Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls. |
 | `raiderCultures` | every culture on |  | One on/off switch per raider culture, by its id (`monsters`, `bandits`, and any a data pack adds); a culture set to false never raids or makes camp. `villageRaids` and `banditCamps` still switch `monsters` and `bandits`. In the file only: a map isn't on the settings screen. |
+| `disasters` | every disaster on |  | One on/off switch per disaster, by its id (ours by their path, a data pack's by its whole id); one set to false never starts, and one under way ends at once (32.15). In the file only: a map isn't on the settings screen. |
 | `sieges` | on | 1.6 | A raid by raiders who ram gates on a village with a finished wall or gate build is a siege: the gates shut, the portcullis drops and the rams go for the gate; raiders with ladders set them against the walls (32.5). Off: every raid is a plain one, with no rams and no ladders. See [Sieges](sieges.md). |
+| `firewardens` | on | 1.6 | Villagers at a grindstone can be made Firewardens with a water bucket: they put out the village's fires. Off: no Firewarden job, and Firewardens already hired stand idle. |
+| `wellKeepers` | on | 1.6 | Villagers at a cauldron can be made Well Keepers with a shovel: they water the fields in a drought and keep the cauldrons full and the farmland wet between droughts. Off: no Well Keeper job, and Well Keepers already hired stand idle. |
+| `physicians` | on | 1.6 | Villagers at a brewing stand can be made Physicians with a glistering melon slice: they go house to house in a plague, send the ill home and cure them with Remedies. Off: no Physician job, and Physicians already hired stand idle. |
 | `siegeDamage` | on | 1.6 | In a siege, rams break the gate blocks of finished wall and gate builds (builders put them back). Off: gates hold however hard they are hit; the vanilla mobGriefing game rule off does the same. |
 | `festivals` | on |  | Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). |
 | `villagerChatter` | on |  | Villagers near a player now and then say something about their day, over their heads. |
@@ -92,6 +102,7 @@ range is in brackets.
 | `rogueBounties` | on | 1.5 | With Cobblemon, half the bounties are on a rogue Pokémon: huge, level 35 to 65 by rank, roaming 150 to 250 blocks out; beaten or caught it pays 16 emeralds times the rank factor. Off: no rogue is posted. Never without Cobblemon. See [The bounty board](bounties.md). |
 | `arcCooldownDays` | 8 (0 to 60) | 1.5 | Days between two story arcs in one village (also before a village's first). |
 | `arcsAtOnce` | 3 (0 to 20) | 1.5 | Story arcs running at once on the whole server (side arcs not counted); 0: none. |
+| `lostCaravanChance` | 20 (0 to 1000) | 1.5 | One caravan in this many on a road over 300 blocks goes missing and starts the Lost Caravan; 0: none. |
 | `disabledArcs` | empty |  | Story arc ids that never start; a running one ends at its next round. In the file only. |
 | `villageProtection` | on |  | A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). |
 | `partnerShows` | on | 1.2 | Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... |
@@ -188,6 +199,8 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 
 - B76 (owner, 2026-10-05): an expansion's switches stay off until every item of its milestone is done, so a
   half-built expansion never reaches a player. Version 0.139.0 had written them on; the gate overrides such files.
+- 34.23: files written while a gate was closed hold `false` for its switches; the release that opens it treats that as
+  the old default, not a choice, so updating switches the expansion on.
 - 25.5: caps like MineColonies' for server owners, and every "needs" system easy to switch off, because
   "babysitting" is the top complaint about big colony mods.
 - 23.6 (owner's call): villages keep working when no player is near; `keepVillagesWorking` is the way out.
@@ -206,8 +219,9 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 ## Proof
 
 GameTests: `ConfigGameTests` (4: the file is read, clamped and applied; every radius and village number; every
-setting has its words and range; saved settings are read back), `ExpansionGateGameTests` (3: an old config with the
-switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates),
+setting has its words and range; saved settings are read back), `ExpansionGateGameTests` (4: an old config with the
+switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates; a file from before
+the release takes the new defaults, a later choice holds),
 `HallSpecGameTests.theConfigsSwitchesOutsideTests`, `ProtectionSpecGameTests.theConfigSwitchesProtectionOff`,
 `RoadGameTests.withStewardRoadsOffNothingIsBuilt`, `WallGameTests.withStewardWallsOffNothingIsProposedOrBuilt`,
 `CaravanRoadGameTests.withCaravanRoadsOffNoRoadIsPlanned`, `GiftedGameTests.giftedChanceZeroMeansNobody`.

@@ -24,6 +24,114 @@ asks for the steps, `latest.log` and any crash report).
   needs the Master Architect (stand-in: a Master builder). The caps: `wonderCaps` by rank (Town 1, City 2), one of each
   kind per village, one going up at a time, `wonderServerLimit`, `disabledWonders`, and the `wonders` and
   `wonderLegends` switches. `/workplace wonders` lists every Wonder on the server with its village, owner and stage.
+- **The Colony Camp and the Royal Hall, for 1.7** (33.14, off until 1.7 is finished): a new colony now starts from
+  the Colony Camp, two covered wagons round its Village Hall under a striped awning, with the Blueprint Table, supply
+  crates, a campfire with a cooking pot, three bedrolls, the Travel Post and a flagpole. A realm's capital draws the
+  Royal Hall on its Realm tab for a Blank Blueprint: a stone great hall with a dais and throne, banners, a gallery and
+  the realm's vault, and its upgrade with a keep tower and a treasury wing. Finished within 32 blocks of the capital's
+  hall it doubles what the realm treasury holds (the Royal Hall II: three times). It shows on the village map as a hall.
+- **The Professor's Thesis, for 1.5** (31.21, Cobblemon, off until 1.5 is finished): in a Town with the Pokémon
+  Professor or an Expert Scholar ("Professor Alder"), 6% a day, the professor writes a thesis on one of six topics
+  (Life in the Cold, Fire and Stone, Creatures of the Night, The Forest's Web, Sea and Shore, Living Fossils). Catch
+  three Pokémon by type, biome, time of day or height (or have a Fossil Scientist revive one), show the professor one
+  of them evolved or a Pokémon at friendship 200, then beat the Trainer Leader of a nearby village, or the rival
+  scholar Thessaly who comes to the hall. The thesis is published as a book listing your catches with you as
+  co-author: 3 Rare Candies, an Ability Capsule, +150 standing, the honour Co-author and a free research level.
+- **The Lost Caravan, for 1.5** (31.20, off until 1.5 is finished): one caravan in 20 on a road over 300 blocks goes
+  missing (`lostCaravanChance`). Both halls hear it's overdue and the sending hall hands out a map: find the wreck,
+  follow the five marks to the raiders' stockade, and open the cage. The carter (a villager with one of the village
+  names) follows whoever freed him, catching up from 32 blocks and waiting further than 64, and joins the village he
+  reaches at Journeyman: +150 standing in both villages, +100 friendship with him and the honour Wayfinder. The
+  stockade's chest holds the lost goods; bring them to the receiving hall for 8 emeralds and +50 standing there. After 7
+  days without a rescue he finds his own way home with nothing, and the goods are lost.
+- **Defence upgrades** (32.20): **Palisade II** (a fighting step, and a ditch of pointed dripstone stakes in front),
+  **Stone Wall II** (timber hoardings: a roofed walkway with murder holes), **Wall Tower II** (a roofed top with an
+  archers' gallery, two stations a side) and **Gatehouse II** (a barbican: a second gate and portcullis, murder holes
+  over the gateway). In a siege both portcullises drop and the barbican's gate is broken first; the guards shut both
+  gates at night.
+- **Houses for the answering jobs** (32.19): the Blueprint Table has a **Fire Station** (a stone ground floor with the
+  Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), a **Well House** (a roofed
+  well down to water with the Well Keeper's cauldron, a trough and benches) and a **Physician's House** (the brewing
+  stand, a herb garden and four ward beds behind screens). Each has its job's block and no other. What next? suggests
+  each when the village lacks its job and its disaster can come there ("Drought can come here: build a Well House").
+- **Plague and the Physician** (32.18, behind the 1.6 expansion): a Town or bigger may suffer a plague (3% a day, twice
+  that with more villagers than beds; a coven's hexed or a traveller from far away can bring it too). While it lasts,
+  each hall round a villager within 3 blocks of an ill one catches it 1 in 5 (less with Medicine research); the ill
+  don't get well by themselves, the Nurse can't cure them, and after two days they stay in bed. It ends when no one has
+  been ill for a day. The new **Physician** (brewing stand + glistering melon slice) foretells the outbreak at its first
+  case, goes house to house, sends the ill home (then they pass it on only in their own house) and cures them with the
+  new **Remedy** (a glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye; they brew it from
+  those makings in their chest too): it cures any illness, hexes included, and keeps a villager well for 10 days.
+  Right-click a villager with one to give it; drink one to lose poison, wither, hunger and nausea. The hall's list marks
+  the plague's ill. Config `physicians`.
+- **Drought and the Well Keeper** (32.17, behind the 1.6 expansion): after five days without rain a village may fall
+  into a drought (5% a day; desert, savanna and badlands villages 15%, twice that with a desert raiders' lair near),
+  lasting 3 to 5 days until rain ends it. Crops, stems and berry bushes grow at a quarter pace, farmland dries, water
+  cauldrons lose a level a day and villagers are unhappy ("The wells are low") unless the village has a finished Well
+  or Fountain. The new **Well Keeper** (cauldron + a shovel) carries water from the nearest well, river or pond to the
+  fields, each bucket wetting 9 farmland whose crops grow at full pace that day; between droughts they keep the
+  cauldrons full and dry farmland wet, and they foretell the next drought a day ahead. Water-type partners speed them.
+  Config `wellKeepers`.
+- **Fire and the Firewarden** (32.16, behind the 1.6 expansion): wooden villages can burn, from lightning in a
+  thunderstorm (1 in 3), a chimney spark on a dry day (2%) or a raider's burning arrow (1 in 4, with `mobGriefing`).
+  The fire spreads by the game's own rules but only through the builders' blocks, never a player's, and the builders
+  put back what burned. The new **Firewarden** (grindstone + water bucket) runs to the fire with two buckets and
+  douses it in steam, refilling at water near the grindstone; from Journeyman they ring the bell for a bucket brigade,
+  and with Cobblemon pastured Water types douse fires at range. The chronicle says what burned and who put it out.
+  Config `firewardens`.
+- **The disaster engine** (32.15): datapacks can describe disasters (`data/<ns>/disasters/<id>.json`) that strike a
+  village one at a time, with 7 days' rest after one: crops grow slower, farmland dries, cauldrons drain, villagers fall
+  ill and pass it on, are unhappy, fires start or a job slows. A village with the right job or a lookout is told a day
+  ahead; it ends after its days or with rain, shows on the wellbeing icon, in What next? and the chronicle, and each
+  can be switched off (`disasters`). No disaster ships yet.
+- **A day's warning** (32.14): a guard posted within 24 blocks of a finished Lookout Tower or Wall Tower sees a raid
+  coming the evening before ("Smoke on the north road: ... will strike tomorrow night"); a Scout there also counts
+  them. Players in the village and the hall's owner are told, the chronicle, guards icon and Defence page show it; on
+  the day the gates shut and the portcullis drops from noon, and at dusk the guards take battle stations and the
+  villagers go in. Without a lookout, What next? says to build one.
+- **The realm treasury, for 1.7** (33.13, off until 1.7 is finished): every member of a realm pays a levy of its
+  daily takings into the realm treasury before the rest goes into its own (10% by default; the capital's owner picks
+  0, 5, 10 or 20% on the Realm tab). The treasury holds up to 256 emeralds for a Barony, 512 for a County, 1,024 for a
+  Duchy and 2,048 for a Kingdom. Anyone can give to it (click its icon with emeralds: one; shift-click: the stack; or
+  CobbleDollars with the pack); only the capital's owner, their friends and operators take from it (right-click). Its
+  tooltip lists the last 20 movements with the day and the reason. Realm research, relief riders and edicts will pay
+  from it.
+- **The Lost Caravan's trail** (31.19, for the Lost Caravan story): the settlers' covered wagon wrecked on its side, five marks of a trail (a dropped lantern, a smashed barrel, a torn white banner, cart ruts, an arrow-studded crate) and the raiders' stockade with its tent, fire, loot chest and iron-barred cage, each lying on the land as it is and never over anything a player built. A new quest objective, follow the tracks: reach the marks in order, and the action bar says where they go next ("The tracks go on to the north-east").
+- **The Sickness: the Grey Cough** (31.18): a new story arc in villages of Village rank with 12 villagers or more (illness on). Three villagers fall ill with the Grey Cough, which no nurse's remedy cures (it only eases the slowness for a day) and which passes on at night to those who work or sleep nearby, never past half the village. Talk to the village's Nurse, or to Doctor Wren, a travelling physician who comes when there's none: they name the three far herbs nearest the village and give you a map to each. Bring 3 of each and they brew the Three-Herb Tonic over half a day, then take it round. Everyone well brings a thanksgiving festival, +150 standing, the honour Healer of the village and +100 friendship with each who was ill; after 15 days without the cure it runs its course and the village is low for 5 days.
+- **The far herbs** (31.17): eight rare plants drawn like vanilla's flowers (Frostbloom, Sunthistle, Mirewort, Peakmoss, Jungle Orchid, Sea Lavender, the glowing Glowcap and Petal Balm), each growing on its own ground in its own biomes (biome and ground tags datapacks can add to). They never generate or spread, so no world changes: story arcs plant them with the new `herb_patch` effect, 5 to 9 on fit ground. Also the Three-Herb Tonic, a bottle of green tonic a healer will make (31.18).
+- **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
+  captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
+  journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built
+  when you come near; each captain has a quirk (Ironhide, Fleetfoot, Crossbow Ace, Beast Rider, Night Stalker, Warlord,
+  Hexer). His Captain's Insignia pays 12 emeralds times the rank factor, once; a lair's captain is paid to his killer.
+  Config `bountyBoard`.
+- **Rogue Pokémon bounties** (31.14, with Cobblemon): half the bounties are on a rogue, a wild Pokémon half again as
+  big (an Alpha on Cobblemon 1.8) roaming 150 to 250 blocks out, its species from the biome there (Ursaring in a
+  forest, Mamoswine in the snow, Kingler on a beach and 21 more) and its level 35, 50 or 65 by the village's rank (with
+  Radical Cobblemon Trainers, your level cap plus 5). Named "Rogue Ursaring", it glows for whoever took its bounty
+  within 32 blocks; beat it or catch it (and keep it) for 16 emeralds times the rank factor, once. Bounty rewards are
+  now paid in CobbleDollars where that mod keeps the money. Config `rogueBounties`.
+- **The Bandit King's fort and the King** (31.15): three new builds that rise a stage a dawn 110 to 150 blocks from a
+  village, each on the one before: a palisade of sharpened logs round a yard with a fire and tents; two watchtowers
+  and a stable; the King's keep with his war banner over the door, a throne, a treasure chest and a postern at the back.
+  The King ("Grimwald, the Bandit King") wears a golden crown and iron, swings a diamond axe, has 150 health and a boss
+  bar, and at half health blows a goat horn that calls four bandits out of the keep, once; his men keep to the fort.
+  His chest always holds the King's Crown (Protection III, Unbreaking III) with emeralds, gold, diamonds and an
+  enchanted sword or crossbow. The story that brings him comes with 31.16.
+- **The Bandit King's story** (31.16): a Town or bigger that has broken up two bandit camps may face him (8% a day,
+  with `banditCamps` on). Three camps go up at once 80 to 104 blocks out, their chiefs "Captain of the Bandit King",
+  each flying his war banner (black, a red skull): take all three. The next dawn his fort rises a stage a day; win
+  allies before the keep stands: a quest done at a neighbouring village brings 3 of its guards, 24 emeralds at the hall
+  6 mercenaries, and 16 bread for Pell the deserter (by the first camp's ashes) opens the keep's postern and wins him
+  for the village. At the storm, raise a Rally Banner near the fort and your guards and allies follow; his raiders come
+  every second night until he falls. Kill him for his treasure, a festival, +150 reputation to everyone who fought,
+  the honour Kingslayer and 10 days without bandit camps; if he still stands after 10 days he takes a third of the
+  treasury, leaves his fort a ruin, and moods drop 10 for 3 days. The village now counts the bandit camps it broke up.
+- **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
+  15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
+  family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)
+  is named after you; at 10 hearts a villager sends you a weekly parcel with a letter; Legends visit only villages
+  where someone is a Friend (Rare) or a Hero (Legendary); a Lord may set edicts and a Hero may propose one to the owner.
 - **Classes switch on by themselves** (34.22, 1.8): every village with a hall from an older save finds its places, 16
   villagers every 30 seconds: each household gets the highest class it already qualifies for (luxuries aside, at most
   Burgher), children their parents', grown-ups an age spread over the last 100 days and a family name. The chronicle
@@ -43,30 +151,6 @@ asks for the steps, `latest.log` and any crash report).
   parcels. The successor spends 2 days "learning from Bram", then takes the workstation, the job one level below and its
   fields, routes and orders. Retired elders keep their trades, never work again, and mentor Novices and Apprentices of
   their old trade, who learn 50% faster ("taught by Bram"). Chronicle entries; config `elderRetirement`.
-- **The realm treasury, for 1.7** (33.13, off until 1.7 is finished): every member of a realm pays a levy of its
-  daily takings into the realm treasury before the rest goes into its own (10% by default; the capital's owner picks
-  0, 5, 10 or 20% on the Realm tab). The treasury holds up to 256 emeralds for a Barony, 512 for a County, 1,024 for a
-  Duchy and 2,048 for a Kingdom. Anyone can give to it (click its icon with emeralds: one; shift-click: the stack; or
-  CobbleDollars with the pack); only the capital's owner, their friends and operators take from it (right-click). Its
-  tooltip lists the last 20 movements with the day and the reason. Realm research, relief riders and edicts will pay
-  from it.
-- **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
-  captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
-  journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built
-  when you come near; each captain has a quirk (Ironhide, Fleetfoot, Crossbow Ace, Beast Rider, Night Stalker, Warlord,
-  Hexer). His Captain's Insignia pays 12 emeralds times the rank factor, once; a lair's captain is paid to his killer.
-  Config `bountyBoard`.
-- **Rogue Pokémon bounties** (31.14, with Cobblemon): half the bounties are on a rogue, a wild Pokémon half again as
-  big (an Alpha on Cobblemon 1.8) roaming 150 to 250 blocks out, its species from the biome there (Ursaring in a
-  forest, Mamoswine in the snow, Kingler on a beach and 21 more) and its level 35, 50 or 65 by the village's rank (with
-  Radical Cobblemon Trainers, your level cap plus 5). Named "Rogue Ursaring", it glows for whoever took its bounty
-  within 32 blocks; beat it or catch it (and keep it) for 16 emeralds times the rank factor, once. Bounty rewards are
-  now paid in CobbleDollars where that mod keeps the money. Config `rogueBounties`.
-- **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
-  15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
-  family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)
-  is named after you; at 10 hearts a villager sends you a weekly parcel with a letter; Legends visit only villages
-  where someone is a Friend (Rare) or a Hero (Legendary); a Lord may set edicts and a Hero may propose one to the owner.
 - **Marching on the lair, for 1.6** (32.13). On the hall's Defence page, **Muster a war party** puts three in four of
   the village's guards (up to 12) on the Rally Banner in your inventory and raises it; they gather by the hall. **Hire
   the Siege-breakers**: two crossbows, two knights and a medic for 30 emeralds (3 less a level of Commerce), who stay
@@ -103,6 +187,15 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Villages with many lumberjacks and builders run smoother: a lumberjack in a wood full of log pillars or log cabins
+  now looks a few trunks over at a time instead of all of them in one go (it may take a moment longer to pick its
+  tree there), a tree farm's saplings are found without going over every block of the farm, and a builder waiting for
+  materials no longer recounts every other build of the village block by block each time.
+- Updating no longer leaves a finished expansion switched off (34.23): a config file written by an earlier version held
+  `false` for the switches of expansions that weren't out yet, and the new version obeyed it, so a server updating to
+  1.8 would have kept classes, ages and family names off. Such switches now take their new default; a switch turned off
+  after the update stays off. Found by the update rehearsal (`tools/packtest/rehearsal.sh`, a 0.142.0 world opened with
+  1.8 on the Cobbleverse pack).
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the
   crafters' recipes are sorted and their ingredients worked out once when the server starts and after each `/reload`,
   and the crafters' planning has a limit per plan and per tick (a crafter past it looks again a few seconds later).

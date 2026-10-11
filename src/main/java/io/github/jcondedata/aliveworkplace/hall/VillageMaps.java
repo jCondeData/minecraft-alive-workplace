@@ -64,22 +64,22 @@ public final class VillageMaps {
 	public static Optional<Kind> kindOf(ResourceLocation blueprint) {
 		ResourceLocation id = BlueprintStyles.parse(blueprint).map(BlueprintStyles.Styled::base).orElse(blueprint);
 		String path = id.getPath();
-		if (path.startsWith("shapes/") || path.startsWith("camp/") || path.startsWith("legend/") || path.startsWith("roads/")) {
+		if (path.startsWith("shapes/") || path.startsWith("camp/") || path.startsWith("legend/") || path.startsWith("story/") || path.startsWith("roads/")) {
 			return Optional.empty();
 		}
 		String name = path.substring(path.lastIndexOf('/') + 1).replaceAll("_\\d+$", "");
 		return Optional.ofNullable(switch (name) {
 			case "starter_cottage", "stone_house", "terrace", "inn", "artisans_house", "townhouse", "manor" -> Kind.HOMES;
 			case "schoolhouse", "library", "research_lab", "map_room" -> Kind.LEARNING;
-			case "healing_center", "pokemon_center", "graveyard", "daycare" -> Kind.CARE;
+			case "healing_center", "pokemon_center", "graveyard", "daycare", "well_house", "physicians_house" -> Kind.CARE;
 			case "storehouse", "supply_shop", "market_stall", "market_square" -> Kind.TRADE;
 			case "berry_farm", "ranch", "apiary_garden", "flower_shop", "compost_yard", "sifting_shed", "camp_kitchen", "berry_nursery",
 				"habitat_garden", "gem_grotto", "farmstead", "fishers_hut" -> Kind.FARMS;
-			case "lookout_tower", "barracks", "gatehouse", "wall_tower", "palisade_gate", "palisade_tower" -> Kind.DEFENCE;
+			case "lookout_tower", "barracks", "fire_station", "gatehouse", "wall_tower", "palisade_gate", "palisade_tower" -> Kind.DEFENCE;
 			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage",
 				"winery", "tailors_shop", "print_shop", "jewellers_workshop" -> Kind.WORKSHOPS;
 			case "well", "fountain", "gazebo", "chapel", "bandstand" -> Kind.DECORATIONS;
-			case "town_hall", "guildhall" -> Kind.HALL;
+			case "town_hall", "guildhall", "royal_hall" -> Kind.HALL;
 			case "street_lamp", "park_bench", "palisade", "stone_wall" -> null;
 			default -> Kind.OTHER;
 		});

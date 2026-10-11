@@ -750,12 +750,18 @@ public final class Caravans {
 		}
 		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods),
 			level.getGameTime() + travelTicks(Math.sqrt(hall.distSqr(to)), data.roadFinished(hall, to)), sale, false);
-		data.ship(shipment);
-		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
 		List<ItemStack> all = new ArrayList<>(goods);
 		sale.forEach(lot -> all.addAll(lot.stacks()));
+		// 31.20: on a long road, one caravan in lostCaravanChance goes missing; the Lost Caravan's arc holds its goods
+		boolean lost = io.github.jcondedata.aliveworkplace.story.LostCaravanStory.lose(level, hall, to, all, level.random);
+		if (!lost) {
+			data.ship(shipment);
+		}
+		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
 		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
-		CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
+		if (!lost) {
+			CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
+		}
 		return shipment;
 	}
 

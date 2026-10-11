@@ -447,6 +447,11 @@ SCENES = [
       "the Pokémon Professor in a white lab coat by the hall, hints about the player's party, and the Pokédex research tab", 50,
       [("01_professor", "The Professor by the hall"), ("02_professor_hints", "Hints: IVs in words, nature, hidden ability, EVs"),
        ("03_pokedex_tab", "The Pokédex tab")], cobblemon=True),
+    # The Professor's Thesis (ROADMAP 31.21, Cobblemon): the request, a catch counting, the published thesis
+    S("professors_thesis", "Village Hall", "The Professor's Thesis: the request, a catch, the published book",
+      "the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author", 50,
+      [("01_request", "The professor's request"), ("02_catch", "A catch counts in the field notes"),
+       ("03_published", "The published thesis")], cobblemon=True),
     # The Pokémon Ranger (ROADMAP 29.22, Cobblemon): settled by the hall in a red vest, an Alpha calmed, a wild Pikachu befriended
     S("legend_ranger", "Legends", "The Pokémon Ranger calms an Alpha and befriends a Pikachu",
       "the Pokémon Ranger in a red vest and capture styler by the hall, an Alpha calmed with sparkles, and a wild Pikachu befriended into the owner's pasture", 50,
@@ -633,6 +638,44 @@ SCENES = [
       [("01_poster", "The Bounties tab: the rogue's poster"),
        ("02_rogue", "The Rogue Ursaring, huge and glowing for its bounty's taker"),
        ("03_claim", "Beaten: the bounty paid")], cobblemon=True),
+    # The Bandit King, I: the fort and the King (ROADMAP 31.15): the fort's three stages set down one after another
+    S("bandit_fort", "Village Hall", "The Bandit King's fort rising a stage at a time",
+      "the Bandit King's fort set down a stage at a time, as his story arc does a stage a dawn: a palisade of sharpened logs round a yard with a fire, tents and a gate, four bandits in it; then two watchtowers with ladders and a stable; then the King's keep with his war banner over the door and the King inside", 45,
+      [("01_palisade", "Stage 1: the palisade, the gate, the fire and the tents"),
+       ("02_towers", "Stage 2: two watchtowers and a stable"),
+       ("03_keep", "Stage 3: the King's keep, his banner over the door")]),
+    # The Bandit King, II: the story (ROADMAP 31.16): the banners taken, the fort rising a stage a day, the storm, the King's fall
+    S("bandit_king", "Village Hall", "The Bandit King's story: the banners, the fort, the storm, the King's fall",
+      "the Bandit King's story arc: three war banners, black with a red skull, flown over his camps and taken; the next dawn his fort rises, a stage a day; at the storm the allies won stand before the gate (3 guards of a neighbouring village, 6 mercenaries) and the keep's postern is open, as Pell the deserter told; then the King falls", 60,
+      [("01_banners", "Three war banners of the Bandit King"),
+       ("05_fort_day_3", "Day 3: the keep, its postern open"),
+       ("06_storm", "The storm: 3 guards and 6 mercenaries"),
+       ("07_king_falls", "The Bandit King falls")]),
+    # The Lost Caravan, I: the wreck and the trail (ROADMAP 31.19): the wreck, a mark of the trail and the stockade
+    S("caravan_trail", "Village Hall", "The Lost Caravan's trail: the wreck, a mark and the raiders' stockade",
+      "the builds the Lost Caravan's story lays along its trail, each set down the arc's way on fit ground: the settlers' covered wagon on its side with a wheel broken off, crates and barrels spilled and a lantern in the grass; a mark of the trail, a torn white banner on a fence post, with 'The tracks go on to the east' over the hotbar; then the raiders' stockade, a palisade round a tent, a fire, a loot chest and an iron-barred cage", 40,
+      [("01_wreck", "The wreck: the settlers' wagon on its side"),
+       ("02_mark", "A mark of the trail, the tracks pointing on"),
+       ("03_stockade", "The raiders' stockade and its cage")]),
+    # The Lost Caravan, II: the story (ROADMAP 31.20): the wreck found, the trail, the carter freed and walked home
+    S("lost_caravan", "Village Hall", "The Lost Caravan: the wreck, the trail, freeing Tobin and walking him home",
+      "the Lost Caravan's story: the settlers' wagon on its side with 'The caravan's wreck: tracks lead away from the road' over the hotbar; a torn banner on the trail with the tracks pointing on; Tobin the carter in the raiders' cage, its iron gate open and his 'You came for me! Take me home, I'll keep up.' in chat; then Tobin walking after the player out of the stockade", 45,
+      [("01_wreck", "The wreck found by the road"),
+       ("02_trail", "The trail, the tracks pointing on"),
+       ("03_freed", "Tobin in the raiders' cage, the gate open"),
+       ("04_home", "Tobin follows the player home")]),
+    # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
+    S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
+      "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,
+      [("01_patches", "The eight far herbs, a patch of each on its own ground"),
+       ("02_tonic", "The Three-Herb Tonic in hand")]),
+    # The Sickness, II: the Grey Cough (ROADMAP 31.18): the coughing village, a far herb's patch, the brew, the cure round
+    S("sickness", "Village Hall", "The Grey Cough: the coughing village, a far herb, the brew and the cure going round",
+      "four of eight villagers coughing grey smoke with the Grey Cough; a patch of Sea Lavender, one of the far herbs, on its gravel; Nurse Ada at her brewing stand with 'Brewing the cure' and 40% over her head; then she takes the Three-Herb Tonic round, villager by villager, hearts over each, until everyone is well", 45,
+      [("01_coughing", "Four villagers coughing the Grey Cough, and a patch of Sea Lavender, a far herb"),
+       ("02_brewing", "Brewing the cure: the nurse at her stand"),
+       ("03_cure_round", "The cure goes round"),
+       ("04_all_well", "Everyone well again")]),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",
@@ -722,6 +765,15 @@ SCENES = [
     # Drowned pirates (ROADMAP 32.8): the Pirate Ship at anchor at dusk, the crew wading ashore, the ship sinking
     job("pirates", "Threats", "Drowned pirates: the ship, the landing, the sinking",
         "the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 150),
+    # Village fire (ROADMAP 32.16): a roof catching, and the Firewarden putting it out with buckets of water
+    job("fire", "Threats", "Village fire: the roof catches, the Firewarden puts it out",
+        "the Starter Cottage's roof caught fire and the Firewarden ran over from the grindstone and put it out with buckets of water", 150),
+    # Drought (ROADMAP 32.17): dry fields in a drought, and the Well Keeper carrying water to them from the pond
+    job("drought", "Threats", "Drought: the dry fields and the Well Keeper's buckets",
+        "the fields were dry in the drought, and the Well Keeper carried water from the pond to them, bucket after bucket", 150),
+    # Plague (ROADMAP 32.18): the Physician going house to house with Remedies, then the hall's list of the ill
+    job("plague", "Threats", "Plague: the Physician goes house to house with the Remedy",
+        "a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed", 150),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),
@@ -743,9 +795,14 @@ SCENES = [
     job("siege_ladders", "Threats", "A siege: ladders over the wall",
         "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),
     # Sieges III (ROADMAP 32.6): archers on battle stations shoot down at a siege
+    job("warning", "Threats", "A day's warning",
+        "the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 150),
     job("battle_stations", "Threats", "A siege: battle stations",
         "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
-    S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
+    # With the answering jobs' houses since 32.19 (the Fire Station, the Well House and the Physician's House) and the
+    # defence upgrades since 32.20 (Palisade II, Stone Wall II, Wall Tower II, Gatehouse II, each beside its base)
+    S("defences", "Build families", "Walls and gates with their upgrades, and the answering jobs' houses",
+      "every wall and gate was placed beside its upgrade (Palisade II's stake ditch, Stone Wall II's hoardings, Wall Tower II's roofed gallery, Gatehouse II's barbican), then the Fire Station, the Well House and the Physician's House", 120, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),
     # With Cobblemon since 28.15: the Pokémon jobs' houses grow too (POKEMON_HOUSE_WEIGHT makes them likely)
@@ -771,6 +828,11 @@ SCENES = [
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
+    S("realm_builds", "Realm builds", "The Colony Camp, the Royal Hall and the Royal Hall II, and all three in the five styles",
+      "the Colony Camp, the Royal Hall and the Royal Hall II stand as drawn and in the five styles, the camp with its table and chest, each hall with its vault and on the map as a hall",
+      200, [("10_colony_camp", "The Colony Camp: two wagons, the Village Hall under a striped awning, the campfire and the Travel Post"),
+           ("12_royal_hall", "The Royal Hall: a stone great hall with a gabled porch and a rose window"),
+           ("15_royal_hall_2_back", "Royal Hall II from behind: the keep tower, the treasury wing and the vault")]),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
       "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
       [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),

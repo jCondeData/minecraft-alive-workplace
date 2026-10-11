@@ -382,6 +382,10 @@ public final class StarterBlueprints {
 	/** Drawn up by a village's scholars (Architecture research), not in the Blueprint Table: a stone hall with a bell tower. */
 	public static final Entry TOWN_HALL = new Entry(AliveWorkplace.id("research/town_hall"), new Vec3i(13, 16, 13));
 
+	/** Drawn on a realm capital's Realm tab (33.14), not in the Blueprint Table: a stone great hall, and its tower and treasury wing. */
+	public static final Entry ROYAL_HALL = new Entry(AliveWorkplace.id("realm/royal_hall"), new Vec3i(19, 16, 25));
+	public static final Entry ROYAL_HALL_2 = new Entry(AliveWorkplace.id("realm/royal_hall_2"), new Vec3i(27, 22, 25));
+
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,

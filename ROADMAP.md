@@ -3514,7 +3514,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     can give but not take; the movements are listed right;
   - it survives save and reload;
   - showcase scene `realm_treasury` (the icon and its tooltip).
-- [ ] **33.14** **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
+- [x] **33.14** (review: pending 2026-10-11) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
   generator, checked against `STYLE.md` in renders, in all five styles:
   - **Colony Camp** (`camp/colony_camp`, about 15 x 6 x 13, placed at once like the settlers' camp): two covered
     wagons, a Village Hall under a canvas awning on a timber platform, a Blueprint Table with a lamp, a stack of

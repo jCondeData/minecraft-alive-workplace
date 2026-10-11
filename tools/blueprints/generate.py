@@ -25,6 +25,7 @@ from pokemon_looks import *
 from pokemon_jobs import *
 from guildhall import *
 from arena import *
+from realm import *
 from styles import styled
 
 
@@ -129,6 +130,9 @@ if __name__ == "__main__":
     tomb_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "tomb_camp")  # ROADMAP 32.9
     blackstone_outpost().save(os.path.join(MAIN_STRUCTURES, "camp"), "blackstone_outpost")  # ROADMAP 32.10
     coven_hut().save(os.path.join(MAIN_STRUCTURES, "camp"), "coven_hut")  # ROADMAP 32.11
+    colony_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "colony_camp")  # ROADMAP 33.14
+    royal_hall().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall")  # ROADMAP 33.14
+    royal_hall_2().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall_2")
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
         draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)

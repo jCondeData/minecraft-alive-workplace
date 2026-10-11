@@ -129,7 +129,13 @@ public class SettlersWagonItem extends Item {
 	/** Where the camp would stand with its front's middle at {@code front}, its front turned by {@code rotation}; null without its template. */
 	@Nullable
 	public static BoundingBox campBox(ServerLevel level, BlockPos front, Rotation rotation) {
-		StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
+		return campBox(level, CAMP, front, rotation);
+	}
+
+	/** Where camp {@code camp} (a template) would stand with its front's middle at {@code front}; null without its template (the Colony Camp, 33.14). */
+	@Nullable
+	public static BoundingBox campBox(ServerLevel level, ResourceLocation camp, BlockPos front, Rotation rotation) {
+		StructureTemplate template = level.getStructureManager().get(camp).orElse(null);
 		if (template == null) {
 			return null;
 		}
@@ -160,7 +166,13 @@ public class SettlersWagonItem extends Item {
 	/** Clears the camp's space (the tall grass, a sapling, a stray rock) and places the camp there; its box, or null without its template. */
 	@Nullable
 	public static BoundingBox placeCamp(ServerLevel level, BlockPos front, Rotation rotation) {
-		StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
+		return placeCamp(level, CAMP, front, rotation);
+	}
+
+	/** Places camp {@code camp} (a template) as {@link #placeCamp(ServerLevel, BlockPos, Rotation)} does; its box, or null without its template. */
+	@Nullable
+	public static BoundingBox placeCamp(ServerLevel level, ResourceLocation camp, BlockPos front, Rotation rotation) {
+		StructureTemplate template = level.getStructureManager().get(camp).orElse(null);
 		if (template == null) {
 			return null;
 		}

@@ -83,6 +83,7 @@ public final class BlueprintLibrary {
 	public static boolean isWorldgenPiece(ResourceLocation id) {
 		return id.getNamespace().equals(AliveWorkplace.MOD_ID) && (id.getPath().startsWith("village/") || id.getPath().startsWith("compat_test/")
 			|| id.getPath().startsWith("research/") // research/: drawn up by a village's scholars (see research/Research)
+			|| id.getPath().startsWith("realm/") // realm/: drawn on a realm capital's Realm tab (33.14, see realm/RoyalHalls)
 			|| id.getPath().startsWith("camp/") // camp/: set up at once by a Settler's Wagon
 			|| id.getPath().startsWith("legend/")); // legend/: a found Legend's camp, set down at once (29.9)
 	}

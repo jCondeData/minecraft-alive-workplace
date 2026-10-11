@@ -47,8 +47,13 @@ public final class RealmTreasury {
 	}
 
 	/** Most the treasury of {@code realm} holds, in hundredths of an emerald. */
-	public static long capCents(RealmData.Realm realm) {
-		return cap(Realms.Rank.parse(realm.rank())) * 100L;
+	public static long capCents(MinecraftServer server, RealmData.Realm realm) {
+		return cap(server, realm) * 100L;
+	}
+
+	/** Most emeralds {@code realm}'s treasury holds: its rank's cap, doubled by a finished Royal Hall by the capital's hall, tripled by a Royal Hall II (33.14). */
+	public static int cap(MinecraftServer server, RealmData.Realm realm) {
+		return cap(Realms.Rank.parse(realm.rank())) * RoyalHalls.multiplier(server, realm);
 	}
 
 	/** The levy on {@code takings} at {@code percent}, in hundredths of an emerald (rounded down). */
@@ -70,7 +75,7 @@ public final class RealmTreasury {
 		if (realm == null) {
 			return 0;
 		}
-		long cut = Math.min(levyOn(takings, realm.levy()), Math.max(0, capCents(realm) - realm.treasury()));
+		long cut = Math.min(levyOn(takings, realm.levy()), Math.max(0, capCents(server, realm) - realm.treasury()));
 		if (cut <= 0) {
 			return 0;
 		}
@@ -128,10 +133,10 @@ public final class RealmTreasury {
 		if (!emeralds && !(carried.isEmpty() && Money.cobbleDollars())) {
 			return Realms.refused(Realms.Refusal.NO_MONEY, Component.translatable("message.aliveworkplace.realm.treasury.give_how"));
 		}
-		int room = (int) Math.min(Integer.MAX_VALUE, (capCents(realm) - realm.treasury()) / 100);
+		int room = (int) Math.min(Integer.MAX_VALUE, (capCents(server, realm) - realm.treasury()) / 100);
 		if (room <= 0) {
 			return Realms.refused(Realms.Refusal.FULL, Component.translatable("message.aliveworkplace.realm.treasury.full", Realms.title(server, realm),
-				cap(Realms.Rank.parse(realm.rank()))));
+				cap(server, realm)));
 		}
 		int count;
 		if (emeralds) {
@@ -221,8 +226,12 @@ public final class RealmTreasury {
 	/** The treasury's icon: an emerald block; what it holds of its cap, the levy, the last movements and how to give or take. */
 	static ItemStack icon(MinecraftServer server, RealmData.Realm realm, @Nullable ServerPlayer viewer) {
 		List<Component> lore = new ArrayList<>();
-		int cap = cap(Realms.Rank.parse(realm.rank()));
+		int cap = cap(server, realm);
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.treasury.holds", emeralds(realm.treasury()), cap), ChatFormatting.GREEN));
+		int times = RoyalHalls.multiplier(server, realm);
+		if (times > 1) {
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.treasury.royal_hall", times), ChatFormatting.GOLD));
+		}
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.treasury.levy_line", realm.levy()), ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.realm.treasury.pays_for", ChatFormatting.GRAY));
 		if (realm.ledger().isEmpty()) {

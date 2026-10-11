@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Colony Camp and the Royal Hall, for 1.7** (33.14, off until 1.7 is finished): a new colony now starts from
+  the Colony Camp, two covered wagons round its Village Hall under a striped awning, with the Blueprint Table, supply
+  crates, a campfire with a cooking pot, three bedrolls, the Travel Post and a flagpole. A realm's capital draws the
+  Royal Hall on its Realm tab for a Blank Blueprint: a stone great hall with a dais and throne, banners, a gallery and
+  the realm's vault, and its upgrade with a keep tower and a treasury wing. Finished within 32 blocks of the capital's
+  hall it doubles what the realm treasury holds (the Royal Hall II: three times). It shows on the village map as a hall.
 - **The realm treasury, for 1.7** (33.13, off until 1.7 is finished): every member of a realm pays a levy of its
   daily takings into the realm treasury before the rest goes into its own (10% by default; the capital's owner picks
   0, 5, 10 or 20% on the Realm tab). The treasury holds up to 256 emeralds for a Barony, 512 for a County, 1,024 for a

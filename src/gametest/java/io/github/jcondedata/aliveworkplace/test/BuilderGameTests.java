@@ -1838,7 +1838,7 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, entry, new BlockPos(9, 2, 9));
 	}
 
-	private void buildStarter(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {
+	static void buildStarter(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {
 		Blueprint blueprint = BlueprintLibrary.get(helper.getLevel(), entry.id())
 			.orElseThrow(() -> new GameTestAssertException("missing starter blueprint " + entry.id()));
 		BuildPlan plan = BuildPlan.create(blueprint, placement(helper, origin, Rotation.NONE));

@@ -39,6 +39,12 @@ Oakvale tomorrow night", even when you're away (if you own the hall). The next d
 drops from noon, and at dusk the guards climb to their stations and the villagers go indoors before the raiders come.
 The hall's guards icon and Defence page show the coming attack. Without a lookout, the horn is your only warning.
 
+**A quieter world.** Whoever runs the server can turn the **Threat Level** setting down: at 0 no raiders or bandit camps
+come at all, at 1 they come half as often. At 3 they come half again as often, and a quarter more raiders come each
+time. On **Peaceful** difficulty no raiders come, whatever the setting says. The hall's guards icon tells you when
+nothing will come. Operators can also start and end raids themselves for an event with `/workplace threat` (see
+[Settings](settings.md)).
+
 ## Bandit camps
 
 Once a village reaches Village rank, **bandits** may make camp 80 to 100 blocks out: tents round a fire, a **Bandit

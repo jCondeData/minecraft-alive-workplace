@@ -140,7 +140,8 @@ public final class VillageRaids {
 	 * effects' {@code raids}: Curfew, 30.9, half as likely; research's {@code raid_chance}, 29.11; whatever else adds itself).
 	 */
 	public static float chance(ServerLevel level, BlockPos hall, int villagers) {
-		return nightlyChance(villagers) * (Lairs.near(level, hall).isPresent() ? 2 : 1) * Threats.chanceFactor(level, hall);
+		return nightlyChance(villagers) * (Lairs.near(level, hall).isPresent() ? 2 : 1) * Threats.chanceFactor(level, hall)
+			* Threats.scale(level, hall); // the threat level and At peace (32.21)
 	}
 
 	/** The chance a night that a village of {@code villagers} is raided. */
@@ -187,6 +188,10 @@ public final class VillageRaids {
 			} else {
 				culture.ifPresent(c -> Threats.tactics(c).forEach(t -> t.round(level, hall, c, left)));
 			}
+			return;
+		}
+		if (Threats.quiet(level, hall)) {
+			data.drop(hall, Long.MAX_VALUE, false); // nothing comes to a quiet village (32.21): the attacks the clock set are off
 			return;
 		}
 		long day = Chronicle.day(level);
@@ -254,7 +259,7 @@ public final class VillageRaids {
 	 */
 	public static int expected(ServerLevel level, BlockPos hall, int villagers, int guards, net.minecraft.resources.ResourceLocation culture) {
 		int plain = Math.min(MAX_RAIDERS, 3 + villagers / 4);
-		int size = Math.min(MAX_RAIDERS, plain + Math.min(4, guards / 2));
+		int size = Threats.more(Math.min(MAX_RAIDERS, plain + Math.min(4, guards / 2))); // a quarter more when the threat level is hard (32.21)
 		return Lairs.of(level, hall, culture).map(c -> Lairs.raidSize(c, size)).orElse(size);
 	}
 
@@ -356,6 +361,7 @@ public final class VillageRaids {
 		Optional<Lairs.Lair> camp = Lairs.of(level, hall, culture.id());
 		int plain = Math.min(MAX_RAIDERS, 3 + villagers / 4);
 		int size = Math.min(MAX_RAIDERS, plain + Math.min(4, guards / 2)); // (those past the plain ones come in iron)
+		size = Threats.more(size); // a quarter more when the threat level is hard (32.21)
 		if (camp.isPresent()) {
 			size = Lairs.raidSize(camp.get(), size);
 			if (size <= 0) {
@@ -397,7 +403,7 @@ public final class VillageRaids {
 		if (gather == null) {
 			return null;
 		}
-		if (!portal && (io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture) || culture.tactics().contains(io.github.jcondedata.aliveworkplace.threat.Covens.TACTIC))) {
+		if (!portal && (io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture) || culture.tactics().contains(io.github.jcondedata.aliveworkplace.threat.Covens.TACTIC) && !Threats.gentle())) {
 			// A siege gathers beyond the outermost finished wall on its side (32.5), and so does a coven (32.11): no raider appears inside the walls.
 			BlockPos beyond = io.github.jcondedata.aliveworkplace.threat.Sieges.outside(level, hall, gather);
 			if (!beyond.equals(gather) && level.isLoaded(beyond)) {
@@ -504,6 +510,38 @@ public final class VillageRaids {
 			: Component.translatable(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
 		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, spawned));
 		return raid;
+	}
+
+	/**
+	 * Calls off the raid under way on the village round {@code hall} (an operator's {@code /workplace threat end}, 32.21):
+	 * its raiders go at once (a captain back to his camp, the band's own back to their lair), its tactics end as when
+	 * raiders leave at dawn (the gates open again), and the village is told. Nothing goes into the list of past attacks.
+	 * False when no raid is under way.
+	 */
+	public static boolean callOff(ServerLevel level, BlockPos hall) {
+		ThreatData data = ThreatData.get(level);
+		ThreatData.Under raid = data.raid(hall).orElse(null);
+		if (raid == null) {
+			return false;
+		}
+		List<Mob> left = raiders(level, hall);
+		int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
+		for (Mob m : left) {
+			level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+			if (Lairs.leading(m)) {
+				Lairs.comeHome(level, m);
+			} else {
+				m.discard();
+			}
+		}
+		data.end(hall);
+		Lairs.back(level, hall, raid.culture(), band);
+		Threats.get(raid.culture()).ifPresent(c -> Threats.tactics(c).forEach(t -> t.end(level, hall, c, true)));
+		Component name = VillageHalls.name(level, hall);
+		for (ServerPlayer player : players(level, hall)) {
+			Chat.chat(player, Component.translatable("message.aliveworkplace.raid.called_off", name).withStyle(ChatFormatting.GREEN));
+		}
+		return true;
 	}
 
 	/** The raid is over: {@code survivors} of its raiders were still about (they fled; 0 when it was fought off). */

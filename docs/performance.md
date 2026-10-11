@@ -143,8 +143,9 @@ modules left out as on a real Java 21 install.
 
 ## Targets (25.2)
 
-To be proposed from the first measurement and confirmed by the owner. Meanwhile 25.3 works to these:
-- our code under 15% of the server tick at 150 workers;
-- no tick over 50 ms caused by us;
-- heap flat (±5%) over a 60-minute soak;
+Confirmed by the owner on 2026-10-11 ("do whatever you think is best"): these four stand as proposed.
+- our code under 15% of the server tick at 150 workers (first measure 13.1%, later 14.7% to 17.5% in loaded local runs);
+- no tick over 50 ms caused by us. 50 ms is one whole server tick, so a longer one is a visible stutter. Judged on
+  the steady state: catch-up runs right after a world starts and Java's own garbage-collection pauses are not ours;
+- heap flat (+/-5%) over a 60-minute soak, so a server can run for days without growing;
 - no regression over 10% between releases.

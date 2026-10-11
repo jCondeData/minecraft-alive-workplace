@@ -61,6 +61,13 @@ public final class Threats implements ResourceManagerReloadListener {
 	 * {@code pack:id}), and {@code monsters} or {@code bandits} when {@code villageRaids} or {@code banditCamps} is off.
 	 */
 	public static Set<String> DISABLED = Set.of();
+	/**
+	 * Config {@code threatLevel} (ROADMAP 32.21): 0, no raids, lairs, sieges or disasters at all; 1, gentle (half as
+	 * often, no sieges, no hexes, no plague); 2, normal; 3, hard (half again as often, a quarter more raiders).
+	 */
+	public static int LEVEL = 2;
+	/** The tactics a gentle threat level (1) leaves out: rams, ladders and sand ramps (no sieges) and hexes. */
+	public static final Set<String> GENTLE_SKIPS = Set.of("ram_gates", "ladders", "sand_ramps", "hex");
 
 	private static Map<ResourceLocation, Culture> cultures = Map.of();
 	private static final Map<ResourceLocation, Factor> FACTORS = new ConcurrentHashMap<>();
@@ -221,6 +228,57 @@ public final class Threats implements ResourceManagerReloadListener {
 		return Optional.of(candidates.get(candidates.size() - 1));
 	}
 
+	// The threat level and At peace (32.21).
+
+	/** How often raids, lairs and disasters come at {@link #LEVEL}: 0, a half, as usual, or half again. */
+	public static float often() {
+		return often(LEVEL);
+	}
+
+	/** How often they come at threat level {@code threatLevel}. */
+	public static float often(int threatLevel) {
+		return switch (Math.max(0, Math.min(3, threatLevel))) {
+			case 0 -> 0f;
+			case 1 -> 0.5f;
+			case 3 -> 1.5f;
+			default -> 1f;
+		};
+	}
+
+	/** Whether the threat level is gentle (1): no sieges, no hexes, no plague. */
+	public static boolean gentle() {
+		return LEVEL == 1;
+	}
+
+	/** How many raiders come of {@code raiders} at {@link #LEVEL}: a quarter more (rounded up) when it is hard (3). */
+	public static int more(int raiders) {
+		return LEVEL >= 3 ? (int) Math.ceil(raiders * 1.25) : raiders;
+	}
+
+	/**
+	 * Whether nothing comes to the village round {@code hall}: the threat level is 0, the world is on Peaceful, or the
+	 * hall's owner set the village At peace. No raid, lair or disaster starts there, a raid the clock set doesn't come,
+	 * and a lair standing by it leaves at the next dawn.
+	 */
+	public static boolean quiet(ServerLevel level, BlockPos hall) {
+		return quiet(LEVEL, level.getDifficulty(), atPeace(level, hall));
+	}
+
+	/** {@link #quiet(ServerLevel, BlockPos)} for a threat level, a difficulty and whether the village is At peace. */
+	public static boolean quiet(int threatLevel, net.minecraft.world.Difficulty difficulty, boolean atPeace) {
+		return threatLevel <= 0 || difficulty == net.minecraft.world.Difficulty.PEACEFUL || atPeace;
+	}
+
+	/** Whether the hall's owner set the village round {@code hall} At peace (on its Defence page). */
+	public static boolean atPeace(ServerLevel level, BlockPos hall) {
+		return level.isLoaded(hall) && level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity e && e.atPeace();
+	}
+
+	/** What the village round {@code hall} multiplies the chance of a raid, lair or disaster by: 0 when {@link #quiet}, else {@link #often}. */
+	public static float scale(ServerLevel level, BlockPos hall) {
+		return quiet(level, hall) ? 0f : often();
+	}
+
 	// The chance of an attack.
 
 	/**
@@ -255,10 +313,16 @@ public final class Threats implements ResourceManagerReloadListener {
 		TACTICS.remove(name);
 	}
 
-	/** The tactics of {@code culture} the engine knows, in the file's order; the others are skipped. */
+	/**
+	 * The tactics of {@code culture} the engine knows, in the file's order; the others are skipped, and so are
+	 * {@link #GENTLE_SKIPS} at a gentle threat level (raiders walk in only, and nobody hexes).
+	 */
 	public static List<Tactic> tactics(Culture culture) {
 		List<Tactic> known = new ArrayList<>();
 		for (String name : culture.tactics()) {
+			if (gentle() && GENTLE_SKIPS.contains(name)) {
+				continue;
+			}
 			Tactic tactic = TACTICS.get(name);
 			if (tactic != null) {
 				known.add(tactic);

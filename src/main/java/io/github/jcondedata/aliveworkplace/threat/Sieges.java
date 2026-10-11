@@ -907,8 +907,11 @@ public final class Sieges {
 
 	// Where a siege gathers.
 
-	/** Whether {@code culture} lays sieges: its tactics name {@link #TACTIC} or {@link Ladders#TACTIC}. */
+	/** Whether {@code culture} lays sieges: its tactics name {@link #TACTIC}, {@link Ladders#TACTIC} or {@link SandRamps#TACTIC}; none at a gentle threat level. */
 	public static boolean lays(Culture culture) {
+		if (Threats.gentle()) {
+			return false; // a gentle threat level (32.21): no sieges, raiders walk in only
+		}
 		return culture.tactics().contains(TACTIC) || culture.tactics().contains(Ladders.TACTIC) || culture.tactics().contains(SandRamps.TACTIC);
 	}
 

@@ -37,6 +37,7 @@ import net.minecraft.world.item.Items;
  * gives the exact place too.</li>
  * <li>{@link #MUSTER} and {@link #SIEGE_BREAKERS} (32.13): muster three in four guards under the player's Rally Banner
  * (without one, the page says to craft one), and hire the Siege-breakers ({@link WarParties}).</li>
+ * <li>{@link #AT_PEACE} (32.21): the hall's owner sets the village At peace ({@link AtPeace}), or lets threats come again.</li>
  * <li>Third row, {@link #GATES} (32.4): the village's gates — how many, open or shut, the portcullis up or down, whether
  * a siege holds them shut, and the gate blocks rams broke that wait for a builder.</li>
  * </ul>
@@ -62,6 +63,8 @@ public final class DefencePage {
 	public static final int SIEGE_BREAKERS = 23;
 	/** The next attack, when the village was warned of it (32.14), or what it takes to see one coming. */
 	public static final int NEXT = 25;
+	/** At peace (32.21): the hall's owner sets the village at peace; no raids, camps or disasters come. */
+	public static final int AT_PEACE = 8;
 	/** The last three attacks, newest first. */
 	public static final int[] HISTORY = {46, 48, 50};
 
@@ -110,6 +113,11 @@ public final class DefencePage {
 						: Component.translatable("screen.aliveworkplace.defence.no_lair_hint"), ChatFormatting.DARK_GRAY)), null);
 			}
 		}
+		menu.button(AT_PEACE, AtPeace.icon(level, hall, menu.viewer()), p -> {
+			io.github.jcondedata.aliveworkplace.mc.Chat.chat(p, AtPeace.toggle(level, hall, p));
+			render(menu, level, hall);
+			menu.broadcastChanges();
+		});
 		menu.button(GATES, gates(level, hall), null);
 		menu.button(NEXT, next(level, hall), null);
 		menu.button(MUSTER, muster(level, hall), p -> {

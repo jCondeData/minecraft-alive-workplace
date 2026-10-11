@@ -88,6 +88,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private java.util.UUID owner;
 	private String ownerName = "";
 	private boolean protectedVillage;
+	/** At peace (32.21): no raids, lairs or disasters come; off in halls saved before. */
+	private boolean atPeace;
+	/** The day the village was set At peace (a lair standing leaves at the dawn after it); -1 when it isn't. */
+	private long peaceSince = -1;
 	/** The village's City Plan (27.2): empty until someone paints it. */
 	private io.github.jcondedata.aliveworkplace.city.CityPlan plan = io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY;
 	private long lastTaxDay = -1;
@@ -626,6 +630,23 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return planUndo.size();
 	}
 
+	/** Whether the owner set the village At peace (32.21): no raids, lairs or disasters come. */
+	public boolean atPeace() {
+		return atPeace;
+	}
+
+	/** The day the village was set At peace; -1 when it isn't. */
+	public long peaceSince() {
+		return peaceSince;
+	}
+
+	/** Sets the village At peace (since {@code day}) or not. */
+	public void setAtPeace(boolean on, long day) {
+		atPeace = on;
+		peaceSince = on ? day : -1;
+		setChanged();
+	}
+
 	public void setProtected(boolean on) {
 		protectedVillage = on;
 		setChanged();
@@ -962,6 +983,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		owner = Nbt.hasUuid(tag, "owner") ? Nbt.getUuid(tag, "owner") : null;
 		ownerName = Nbt.getString(tag, "ownerName");
 		protectedVillage = Nbt.getBoolean(tag, "protected");
+		atPeace = Nbt.getBoolean(tag, "atPeace");
+		peaceSince = atPeace && tag.contains("peaceSince") ? Nbt.getLong(tag, "peaceSince") : -1;
 		stewardPlaceChecked = Nbt.getBoolean(tag, "stewardPlaceChecked");
 		plan = io.github.jcondedata.aliveworkplace.city.CityPlan.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("plan"))
 			.result().orElse(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY);
@@ -1089,6 +1112,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			tag.putString("ownerName", ownerName);
 		}
 		tag.putBoolean("protected", protectedVillage);
+		if (atPeace) {
+			tag.putBoolean("atPeace", true);
+			tag.putLong("peaceSince", peaceSince);
+		}
 		tag.putBoolean("stewardPlaceChecked", stewardPlaceChecked);
 		if (!plan.isEmpty() || plan.mode() != io.github.jcondedata.aliveworkplace.city.CityPlan.Mode.ASK) {
 			io.github.jcondedata.aliveworkplace.city.CityPlan.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, plan).result().ifPresent(t -> tag.put("plan", t));

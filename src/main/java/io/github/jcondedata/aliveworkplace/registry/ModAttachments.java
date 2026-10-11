@@ -180,6 +180,9 @@ public final class ModAttachments {
 	/** When a villager fell ill (see {@code people/Sickness}); absent while they're well. */
 	public static final Attachment<Long> ILL_SINCE = Attachment.saved("ill_since", com.mojang.serialization.Codec.LONG);
 
+	/** What kind of illness a villager has (ROADMAP 32.11): {@code hex}, a coven's curse; absent: an ordinary one. */
+	public static final Attachment<String> ILL_KIND = Attachment.saved("ill_kind", com.mojang.serialization.Codec.STRING);
+
 	/** The day a Steward last finished his morning rounds (27.5); absent: not yet. */
 	public static final Attachment<Long> STEWARD_ROUND_DAY = Attachment.saved("steward_round_day", com.mojang.serialization.Codec.LONG);
 
@@ -384,6 +387,8 @@ public final class ModAttachments {
 	public static final Attachment<java.util.UUID> MENTORING = Attachment.saved("mentoring", net.minecraft.core.UUIDUtil.CODEC);
 	/** A Novice or Apprentice taught by a retired elder (34.20: they learn 50% faster) until a game time. Absent: nobody teaches them. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Teacher> TAUGHT_BY = Attachment.saved("taught_by", io.github.jcondedata.aliveworkplace.people.Retirement.Teacher.CODEC);
+	/** The gold a raider carries off from a village's chest (ROADMAP 32.10, threat/Plunder): dropped if it's killed, taken home at dawn. */
+	public static final Attachment<net.minecraft.world.item.ItemStack> PLUNDER = Attachment.saved("plunder", net.minecraft.world.item.ItemStack.CODEC);
 
 	public static void init() {
 	}

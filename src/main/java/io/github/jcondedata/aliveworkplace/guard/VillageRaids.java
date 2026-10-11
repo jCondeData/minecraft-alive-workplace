@@ -164,6 +164,7 @@ public final class VillageRaids {
 		if (raid != null) {
 			List<Mob> left = raiders(level, hall);
 			Optional<Culture> culture = Threats.get(raid.culture());
+			boolean sea = culture.map(c -> c.arrival() == Culture.Arrival.SHORE).orElse(false);
 			// Most raiders leave at dawn; a culture whose hours are until_noon stays through the morning.
 			boolean over = culture.map(c -> c.hours() == Culture.Hours.UNTIL_NOON).orElse(false) ? time >= 6000 && time < 13500 : !isNight(level);
 			if (left.isEmpty()) {
@@ -172,7 +173,10 @@ public final class VillageRaids {
 				// Those of the lair's band who lived rejoin it; the extras and a captain who led them don't count (32.7).
 				int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
 				left.forEach(m -> {
-					level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+					culture.ifPresent(c -> Threats.tactics(c).forEach(t -> t.leave(level, hall, c, m))); // (what they carry goes with them, 32.10)
+					// (those who came from the sea go back into it, 32.8)
+					level.sendParticles(sea ? net.minecraft.core.particles.ParticleTypes.SPLASH : net.minecraft.core.particles.ParticleTypes.POOF,
+						m.getX(), m.getY() + 0.5, m.getZ(), sea ? 30 : 10, 0.3, 0.5, 0.3, 0.02);
 					if (Lairs.leading(m)) {
 						Lairs.comeHome(level, m); // the Warlord goes back to his camp
 					} else {
@@ -351,16 +355,31 @@ public final class VillageRaids {
 		int raiders = size;
 		boolean foretold = !Double.isNaN(angle);
 		boolean portal = false;
+		boolean wading = false;
 		BlockPos gather = null;
 		if (foretold) {
 			gather = foretoldPoint(level, hall, angle);
 		} else if (culture.arrival() == Culture.Arrival.LAIR) {
 			gather = camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5)).orElse(null);
 		} else if (culture.arrival() == Culture.Arrival.SHORE) {
-			gather = shorePoint(level, hall);
+			// From a ship they wade ashore at the village's beach nearest it (32.8), not from the land side.
+			BlockPos beach = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Ships.beach(level, hall, c.pos())).orElse(null);
+			if (beach != null) {
+				gather = io.github.jcondedata.aliveworkplace.threat.Ships.wading(level, beach, camp.get().pos());
+				wading = true;
+			} else {
+				gather = shorePoint(level, hall);
+			}
 		} else if (culture.arrival() == Culture.Arrival.PORTAL) {
-			gather = Conditions.netherLink(level, hall).filter(level::isLoaded).orElse(null);
+			// Out of their lair's own portal (32.10: the Blackstone Outpost's), else out of the village's.
+			gather = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Piglins.portal(level, c)).orElse(null);
+			if (gather == null) {
+				gather = Conditions.netherLink(level, hall).filter(level::isLoaded).orElse(null);
+			}
 			portal = gather != null;
+			if (portal) {
+				io.github.jcondedata.aliveworkplace.threat.Piglins.stepOut(level, gather);
+			}
 		}
 		if (gather == null) {
 			gather = gatheringPoint(level, hall);
@@ -368,8 +387,8 @@ public final class VillageRaids {
 		if (gather == null) {
 			return null;
 		}
-		if (!portal && io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture)) {
-			// A siege gathers beyond the outermost finished wall on its side (32.5): no raider appears inside the walls.
+		if (!portal && (io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture) || culture.tactics().contains(io.github.jcondedata.aliveworkplace.threat.Covens.TACTIC))) {
+			// A siege gathers beyond the outermost finished wall on its side (32.5), and so does a coven (32.11): no raider appears inside the walls.
 			BlockPos beyond = io.github.jcondedata.aliveworkplace.threat.Sieges.outside(level, hall, gather);
 			if (!beyond.equals(gather) && level.isLoaded(beyond)) {
 				gather = surface(level, beyond);
@@ -377,7 +396,8 @@ public final class VillageRaids {
 		}
 		BlockPos from = gather;
 		boolean atPortal = portal;
-		int scatter = foretold ? scatter(VillageHalls.RADIUS * 0.6) : 3;
+		boolean wades = wading;
+		int scatter = foretold ? scatter(VillageHalls.RADIUS * 0.6) : wading ? 1 : 3;
 		List<Villager> targets = level.getEntitiesOfClass(Villager.class, new AABB(hall).inflate(VillageHalls.RADIUS, 16, VillageHalls.RADIUS),
 			Villager::isAlive);
 		List<Mob> spawned = new ArrayList<>();
@@ -387,8 +407,7 @@ public final class VillageRaids {
 			if (mob == null) {
 				continue;
 			}
-			BlockPos at = atPortal ? beside(level, from, random)
-				: surface(level, from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter));
+			BlockPos at = atPortal ? beside(level, from, random) : near(level, from, scatter, wades, random);
 			mob.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, random.nextFloat() * 360f, 0f);
 			mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 			Threats.outfit(level, mob, culture, member);
@@ -590,6 +609,15 @@ public final class VillageRaids {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Where a raider gathering at {@code from} stands: within {@code scatter} blocks of it, on the ground; one wading in
+	 * ({@code wades}, from a ship, 32.8) on the water there, looking down from just over it.
+	 */
+	private static BlockPos near(ServerLevel level, BlockPos from, int scatter, boolean wades, RandomSource random) {
+		BlockPos column = from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter);
+		return wades ? io.github.jcondedata.aliveworkplace.threat.Ships.standAt(level, column, from.getY() + 2) : surface(level, column);
 	}
 
 	/** A place to stand at or right beside {@code portal}, at its height (raiders stepping out of it). */

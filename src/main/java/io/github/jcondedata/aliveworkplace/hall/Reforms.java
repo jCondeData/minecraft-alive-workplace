@@ -34,7 +34,12 @@ import org.jetbrains.annotations.Nullable;
  * <p>Steps are today's quest kinds: {@code bring} (an item and a count), {@code slay} (a count of monsters) and
  * {@code battle} (beat one of the village's trainers), which uses its {@code fallback} step when Cobblemon or a trainer
  * is missing (no fallback written: clear out {@link VillageQuests#MONSTERS} monsters for the same pay). A reform and
- * each step may carry an {@code arc} id for M31's story arcs; it loads and is kept, but nothing reads it yet.
+ * each step may carry an {@code arc} id for M31's story arcs.
+ *
+ * <p>With {@code storyArcs} on, a reform whose {@code arc} names a loaded arc is told as that story (31.22,
+ * {@link io.github.jcondedata.aliveworkplace.story.ReformStories}): the arc, a side arc, runs in place of the steps on
+ * the quest page, and its ending's {@code reform_edict} reward reforms the edict ({@link #reform}). A village that has
+ * begun the plain steps (one is up) finishes them as they are.
  */
 public final class Reforms {
 	/** Kinds as a file writes them: "bring", "slay", "battle". */
@@ -189,6 +194,10 @@ public final class Reforms {
 				continue;
 			}
 			int step = progress.step();
+			if (io.github.jcondedata.aliveworkplace.story.ReformStories.tells(level, hall, f.id(), reform.get(), step,
+				quests.stream().anyMatch(q -> q.reform().map(r -> r.edict().equals(f.id())).orElse(false)))) {
+				continue; // told as its story (31.22)
+			}
 			changed |= quests.removeIf(q -> q.reform().map(r -> r.edict().equals(f.id()) && r.step() != step).orElse(false));
 			if (quests.stream().anyMatch(q -> q.reform().map(r -> r.edict().equals(f.id())).orElse(false)) || today < progress.nextDay()) {
 				continue;
@@ -237,6 +246,27 @@ public final class Reforms {
 			}
 			return;
 		}
+		reform(level, hall, entity, done.edict());
+	}
+
+	/**
+	 * Reforms the edict {@code id} in {@code entity}'s village for good, now: its boost stays and its cost goes (the
+	 * last reform step, or a reform story's {@code reform_edict}, 31.22). Fireworks over the hall, the village told, the
+	 * chronicle. Nothing if it is reformed already.
+	 */
+	public static void reform(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, String id) {
+		if (reformed(entity, id)) {
+			return;
+		}
+		Optional<Reform> reform = of(id);
+		int steps = reform.map(r -> r.steps().size()).orElse(1);
+		VillageQuests.Quest[] up = entity.quests().stream().filter(q -> q.reform().map(r -> r.edict().equals(id)).orElse(false)).toArray(VillageQuests.Quest[]::new);
+		if (up.length > 0) {
+			List<VillageQuests.Quest> quests = new ArrayList<>(entity.quests());
+			quests.removeAll(List.of(up));
+			entity.setQuests(quests);
+		}
+		VillageQuests.ReformStep done = new VillageQuests.ReformStep(id, steps - 1);
 		save(entity, new Progress(done.edict(), steps, true, Chronicle.day(level)));
 		Component edict = Edicts.name(done.edict());
 		Component name = reform.map(Reform::name).orElse(edict);

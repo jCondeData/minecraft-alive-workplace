@@ -705,6 +705,11 @@ SCENES = [
       "a story arc began (its chapters told in chat), the Story tab showed the first chapter ticked and the second with its quest, and the chronicle kept them", 50,
       [("01_story_announced", "The chapters told in chat as they begin"), ("02_story_tab", "The Story tab: chapter 1 ticked, chapter 2 running with its quest"),
        ("03_story_chronicle", "The chronicle's story lines")]),
+    # The reforms as stories (ROADMAP 31.22): The Shift Bell, from the Toolsmith's ask to the bell ringing
+    S("reform_story", "Village Hall", "The Shift Bell as a story: the Toolsmith's ask, the steps, the bell ringing",
+      "The Shift Bell as a story: the Toolsmith asks for a bell, the three steps are handed in, and the bell on its post beside the hall rings in the work day", 50,
+      [("01_toolsmith_asks", "The Toolsmith asks for a bell"), ("02_steps_handed_in", "The steps handed in: the bell on its post beside the hall"),
+       ("03_bell_rings", "The Shift Bell rings in the work day")]),
     # Classes at the Village Hall (ROADMAP 34.6): a household rises at dawn, then the hall's Classes tab and page
     S("classes", "Village Hall", "Classes: a household rises, and the Classes page",
       "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,

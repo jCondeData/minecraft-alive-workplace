@@ -70,6 +70,7 @@ public final class Rewards {
 		register("friendship", FriendshipReward::read);
 		register("reputation", ReputationReward::read);
 		register("honour", Honour::read);
+		register("reform_edict", ReformStories.ReformEdict::read); // 31.22
 	}
 
 	public static void register(String type, Function<JsonObject, Reward> reader) {

@@ -1,0 +1,159 @@
+{
+  "name": {
+    "translate": "reform.aliveworkplace.lamplighters"
+  },
+  "side": true,
+  "trigger": {
+    "chance": 0
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:aliveworkplace:porter|any",
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.role"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/lamplighters/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.lamplighters.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.lamplighters.ask.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.2.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/lamplighters/step_1",
+          "name": {
+            "translate": "arc.aliveworkplace.lamplighters.step.1"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:lantern",
+              "count": 192
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 5
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.2"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.3.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/lamplighters/step_2",
+          "name": {
+            "translate": "arc.aliveworkplace.lamplighters.step.2"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:glowstone",
+              "count": 96
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 4
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.3"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.4.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/lamplighters/step_3",
+          "name": {
+            "translate": "arc.aliveworkplace.lamplighters.step.3"
+          },
+          "objectives": [
+            {
+              "type": "kill",
+              "entity": "monster",
+              "count": 32
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 6
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform",
+      "step": "street_lamps"
+    },
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:curfew"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.reform_story.lamplighters"
+      }
+    }
+  ]
+}

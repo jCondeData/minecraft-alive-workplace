@@ -24,6 +24,8 @@ How everything in the mod works, in plain words: written for the owner first, th
   `follow_trail`, the raiders' stockade, the carter freed and walked home, the lost goods (31.19, 31.20).
 - [The Professor's Thesis](professors-thesis.md): a Cobblemon arc: six thesis topics, catches by type, biome, time and
   height, an evolved catch shown, a rival village's Leader or Thessaly beaten, the published book (31.21).
+- [The reforms as stories](reform-stories.md): the eight reforms told as side arcs: who asks, M30's steps, the bell,
+  the supper, the midwife, the old soldier, the grand festival, the Fair Ledger, the lamps and drill day (31.22).
 - [The Sickness](the-sickness.md): the Grey Cough, the village's healer or Doctor Wren, three far herbs, the brew and
   the cure round (31.18).
 - [The far herbs](far-herbs.md): eight rare plants planted only by story arcs, their biomes and ground, the Glowcap's shade, `herb_patch` and the Three-Herb Tonic (31.17).

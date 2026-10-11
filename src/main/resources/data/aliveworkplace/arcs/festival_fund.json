@@ -1,0 +1,159 @@
+{
+  "name": {
+    "translate": "reform.aliveworkplace.festival_fund"
+  },
+  "side": true,
+  "trigger": {
+    "chance": 0
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:aliveworkplace:bard|trait:cheerful",
+      "name": {
+        "translate": "arc.aliveworkplace.festival_fund.role"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.festival_fund.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.festival_fund.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/festival_fund/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.festival_fund.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.festival_fund.ask.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.festival_fund.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.festival_fund.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.festival_fund.2.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/festival_fund/step_1",
+          "name": {
+            "translate": "arc.aliveworkplace.festival_fund.step.1"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:cake",
+              "count": 24
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 5
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.festival_fund.2"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.festival_fund.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.festival_fund.3.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/festival_fund/step_2",
+          "name": {
+            "translate": "arc.aliveworkplace.festival_fund.step.2"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:firework_rocket",
+              "count": 256
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 5
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.festival_fund.3"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.festival_fund.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.festival_fund.4.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/festival_fund/step_3",
+          "name": {
+            "translate": "arc.aliveworkplace.festival_fund.step.3"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:note_block",
+              "count": 48
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 4
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.festival_fund.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform",
+      "step": "grand_festival"
+    },
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:festival_season"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.reform_story.festival_fund"
+      }
+    }
+  ]
+}

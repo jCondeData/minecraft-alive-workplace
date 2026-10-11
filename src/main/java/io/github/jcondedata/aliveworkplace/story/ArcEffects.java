@@ -124,6 +124,7 @@ public final class ArcEffects {
 			case "sickness" -> SicknessStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "lost_caravan" -> LostCaravanStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "professors_thesis" -> ProfessorsThesis.validate(GsonHelper.getAsString(json, "step", ""));
+			case "reform" -> ReformStories.validate(GsonHelper.getAsString(json, "step", "")); // 31.22
 			case "herb_patch" -> {
 				String herb = GsonHelper.getAsString(json, "herb", "");
 				if (Herbs.byId(herb) == null) {
@@ -285,6 +286,7 @@ public final class ArcEffects {
 			case "sickness" -> SicknessStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.18
 			case "lost_caravan" -> LostCaravanStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.20
 			case "professors_thesis" -> ProfessorsThesis.effect(level, hall, e, s, arc, GsonHelper.getAsString(json, "step")); // 31.21
+			case "reform" -> ReformStories.effect(level, hall, e, s, GsonHelper.getAsString(json, "step")); // 31.22
 			case "chatter" -> {
 				if (json.has("lines")) {
 					json.getAsJsonArray("lines").forEach(l -> s.chatter.add(l.getAsString()));
@@ -884,11 +886,16 @@ public final class ArcEffects {
 			level.addFreshEntity(v);
 			return v;
 		}
-		List<Villager> all = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), x -> x.isAlive() && !x.isBaby()
+		List<Villager> grown = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), x -> x.isAlive() && !x.isBaby()
 			&& x.getTags().stream().noneMatch(t -> t.startsWith("aliveworkplace_role_")));
-		if (spec.villager().startsWith("job:")) {
-			ResourceLocation job = ResourceLocation.tryParse(spec.villager().substring(4));
-			all = all.stream().filter(x -> BuiltInRegistries.VILLAGER_PROFESSION.getKey(x.getVillagerData().getProfession()).equals(job)).toList();
+		// Alternatives in order, split by '|' (31.22: "job:minecraft:toolsmith|job:minecraft:weaponsmith"): the first that
+		// anyone fits is cast from.
+		List<Villager> all = List.of();
+		for (String alt : spec.villager().split("\\|")) {
+			all = grown.stream().filter(x -> fits(level, grown, x, alt)).toList();
+			if (!all.isEmpty()) {
+				break;
+			}
 		}
 		if (all.isEmpty()) {
 			return null;
@@ -898,6 +905,38 @@ public final class ArcEffects {
 		v.addTag(arcTag(arc.id().toString()));
 		v.addTag(roleTag(key));
 		return v;
+	}
+
+	/**
+	 * Whether {@code x} fits the role kind {@code alt}: {@code any}, {@code job:<profession>}, {@code mother} (a mother of
+	 * a villager here) or {@code trait:<trait>} (31.22).
+	 */
+	static boolean fits(ServerLevel level, List<Villager> here, Villager x, String alt) {
+		if (alt.equals("any")) {
+			return true;
+		}
+		if (alt.startsWith("job:")) {
+			ResourceLocation job = ResourceLocation.tryParse(alt.substring(4));
+			return BuiltInRegistries.VILLAGER_PROFESSION.getKey(x.getVillagerData().getProfession()).equals(job);
+		}
+		if (alt.equals("mother")) {
+			for (Villager child : level.getEntitiesOfClass(Villager.class, VillageHalls.area(x.blockPosition()).inflate(16), Villager::isAlive)) {
+				io.github.jcondedata.aliveworkplace.people.Families.Parents p = io.github.jcondedata.aliveworkplace.people.Families.parents(child);
+				if (p != null && x.getUUID().equals(p.motherId())) {
+					return true;
+				}
+			}
+			return false;
+		}
+		if (alt.startsWith("trait:")) {
+			try {
+				return io.github.jcondedata.aliveworkplace.people.Traits.has(x, io.github.jcondedata.aliveworkplace.people.Traits.Trait.valueOf(
+					alt.substring(6).toUpperCase(java.util.Locale.ROOT)));
+			} catch (IllegalArgumentException e) {
+				return false;
+			}
+		}
+		return false;
 	}
 
 	/** A right-click on a villager an arc's {@code talk} names: it counts, and they say their line. */

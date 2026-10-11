@@ -1,0 +1,159 @@
+{
+  "name": {
+    "translate": "reform.aliveworkplace.midwives"
+  },
+  "side": true,
+  "trigger": {
+    "chance": 0
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:aliveworkplace:nurse|mother",
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.role"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/midwives/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.midwives.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.midwives.ask.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.midwives.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.2.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/midwives/step_1",
+          "name": {
+            "translate": "arc.aliveworkplace.midwives.step.1"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:honey_bottle",
+              "count": 48
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 4
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.midwives.2"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.3.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/midwives/step_2",
+          "name": {
+            "translate": "arc.aliveworkplace.midwives.step.2"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:white_wool",
+              "count": 192
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 3
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.midwives.3"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.4.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/midwives/step_3",
+          "name": {
+            "translate": "arc.aliveworkplace.midwives.step.3"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:golden_carrot",
+              "count": 64
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 5
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.midwives.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform",
+      "step": "midwife"
+    },
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:large_families"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.reform_story.midwives"
+      }
+    }
+  ]
+}

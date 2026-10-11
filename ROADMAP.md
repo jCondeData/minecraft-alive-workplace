@@ -2861,7 +2861,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests: catches count by type, biome, time and height; `show`; `battle_leader`; Thessaly comes when
     there's no leader nearby; the book lists the catches; plain GameTest: without Cobblemon the arc never starts;
   - showcase scene `professors_thesis` (Cobblemon: the professor's request, a catch counting, the published thesis).
-- [ ] **31.22** **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
+- [x] **31.22** (review: pending 2026-10-11) **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
   waits (`sessions.py pause --blocked "needs M30's reforms"`). Through the reform's `arc` field (30.5), each reform
   becomes a short arc of the same name: an opening chapter where a villager of the fitting trade asks you for it
   (`talk`), then M30's three steps as its quests with M30's numbers, then an ending scene that leaves something

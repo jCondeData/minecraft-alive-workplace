@@ -8,6 +8,7 @@
   "excludes": [],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.shift_bell"},
+    "arc": "aliveworkplace:shift_bell",
     "line": {"translate": "reform.aliveworkplace.shift_bell.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:clock", "count": 24, "reward": 5},

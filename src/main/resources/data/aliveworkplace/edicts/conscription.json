@@ -8,6 +8,7 @@
   "excludes": [],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.militia_drill"},
+    "arc": "aliveworkplace:militia_drill",
     "line": {"translate": "reform.aliveworkplace.militia_drill.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:iron_sword", "count": 32, "reward": 6},

@@ -289,7 +289,7 @@ public final class ArcEffects {
 
 	/** The column a rule picks: a ring round the hall, a share along a caravan road, a biome, past another place, an offset. */
 	@Nullable
-	static BlockPos spot(ServerLevel level, BlockPos hall, ArcState s, JsonObject rule) {
+	public static BlockPos spot(ServerLevel level, BlockPos hall, ArcState s, JsonObject rule) {
 		var random = level.random;
 		if (rule.has("ring")) {
 			JsonArray ring = rule.getAsJsonArray("ring");
@@ -336,7 +336,7 @@ public final class ArcEffects {
 	}
 
 	/** Builds the next stage of {@code p} (its first: on clear natural ground near its spot); false if it must wait. */
-	static boolean build(ServerLevel level, ArcState s, ArcState.ArcPlace p) {
+	public static boolean build(ServerLevel level, ArcState s, ArcState.ArcPlace p) {
 		ResourceLocation id = ResourceLocation.tryParse(p.stages.get(p.placed));
 		StructureTemplate template = id == null ? null : level.getStructureManager().get(id).orElse(null);
 		if (template == null) {
@@ -568,7 +568,7 @@ public final class ArcEffects {
 	// ---- the 40-tick check -----------------------------------------------------------------------------------------
 
 	/** Whether a player (not a spectator) is within {@link Arcs#NEAR} blocks of {@code pos}, across the ground. */
-	static boolean near(ServerLevel level, BlockPos pos) {
+	public static boolean near(ServerLevel level, BlockPos pos) {
 		double r = (double) Arcs.NEAR * Arcs.NEAR;
 		for (ServerPlayer player : level.players()) {
 			double dx = player.getX() - (pos.getX() + 0.5);

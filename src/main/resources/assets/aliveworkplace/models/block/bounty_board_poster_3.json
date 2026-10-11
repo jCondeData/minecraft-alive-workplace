@@ -1,0 +1,31 @@
+{
+  "textures": {
+    "board": "aliveworkplace:block/bounty_board",
+    "particle": "aliveworkplace:block/bounty_board"
+  },
+  "elements": [
+    {
+      "from": [
+        9,
+        5,
+        5.9
+      ],
+      "to": [
+        13,
+        9,
+        6
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            12,
+            4,
+            16
+          ],
+          "texture": "#board"
+        }
+      }
+    }
+  ]
+}

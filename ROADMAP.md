@@ -2567,7 +2567,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: the price at every heart and title step and the 40% cap; one festival gift per villager per festival;
     the named baby once; the weekly parcel arriving; `title_at_least`;
   - a screenshot of a discounted trade screen; showcase scene `festival_gifts`.
-- [ ] **31.13** **The bounty board and bandit captains.** A new block, the **Bounty Board** (planks, sticks and paper;
+- [x] **31.13** (review: pending 2026-10-11) **The bounty board and bandit captains.** A new block, the **Bounty Board** (planks, sticks and paper;
   a notice board on two posts, drawn with the pixel-art skill like vanilla's wooden blocks, its face showing 0 to 4
   posters as block states): right-click it for the Bounties tab of the nearest hall's journal (the tab works without a
   board too). From Village rank a village posts a bounty while it has fewer than 2 open, at most one every 3 days;

@@ -574,6 +574,13 @@ SCENES = [
       "at the festival Bo the mason and Dara the farmer, with 6 hearts or more, each brought their family's gift (16 stone bricks, 6 apples) and Ana with 3 hearts didn't; then Dara's trade screen for a Hero of the village with ten hearts: 20 emeralds cost 12, 5 cost 3", 45,
       [("01_festival_gifts", "Two friends bring their festival gifts, one each"),
        ("02_discounted_trade", "A Hero with ten hearts: 40% off Dara's trades")]),
+    # The bounty board and bandit captains (ROADMAP 31.13): the board's posters, the Wanted Poster, the captain, the claim
+    S("bounty", "Village Hall", "The bounty board: posters, a wanted captain and his insignia",
+      "a Bounty Board by the hall shows two posters; its Bounties tab shows Grimwald the Red's poster (his quirk, where he was seen, the reward); Ironhide stands in full iron with his band; his insignia is handed in for 15 emeralds", 45,
+      [("01_board", "The Bounty Board shows a poster for each open bounty"),
+       ("02_poster", "The Bounties tab: the Wanted Poster's tooltip"),
+       ("03_captain", "Grimwald the Red, Ironhide, and his band"),
+       ("04_claim", "The insignia handed in: paid once")]),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",

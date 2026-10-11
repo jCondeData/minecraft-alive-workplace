@@ -1,0 +1,11 @@
+{
+  "entity": "minecraft:vindicator",
+  "gear": {
+    "head": "minecraft:iron_helmet",
+    "chest": "minecraft:iron_chestplate",
+    "legs": "minecraft:iron_leggings",
+    "feet": "minecraft:iron_boots",
+    "mainhand": "minecraft:iron_axe"
+  },
+  "health": 20
+}

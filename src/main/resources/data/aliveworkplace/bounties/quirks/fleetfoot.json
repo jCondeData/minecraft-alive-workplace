@@ -1,0 +1,12 @@
+{
+  "entity": "minecraft:vindicator",
+  "gear": {
+    "mainhand": "minecraft:iron_axe"
+  },
+  "effects": [
+    {
+      "id": "minecraft:speed",
+      "amplifier": 1
+    }
+  ]
+}

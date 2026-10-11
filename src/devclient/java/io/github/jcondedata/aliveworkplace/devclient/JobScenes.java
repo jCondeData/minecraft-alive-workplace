@@ -3043,6 +3043,53 @@ final class JobScenes {
 						+ ", " + offers.get(1).getCostA().getCount() + ", " + offers.get(2).getCostA().getCount());
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof net.minecraft.world.inventory.MerchantMenu));
+		// The bounty board and bandit captains (ROADMAP 31.13): the board with its posters, the Wanted Poster's tooltip
+		// in the journal's Bounties tab, the captain at his hideout, and the insignia handed in.
+		SCREENS.put("bounty", new Screen("a Bounty Board by the hall showing two posters; the Bounties tab with Grimwald the Red's poster (name, quirk, where he was seen, the reward); Ironhide himself in iron with his band; his insignia handed in for 15 emeralds",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+					.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+				level.setBlockAndUpdate(new BlockPos(2, -60, 1), ModBlocks.BOUNTY_BOARD.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.forget(level);
+			},
+			List.of(new Step("01_board", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.post(level, STATION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("ironhide"), 0, 0,
+						STATION.offset(110, 0, -110));
+					level.setDayTime(level.getDayTime() + 3 * io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY);
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.post(level, STATION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("hexer"), 8, 3,
+						STATION.offset(-150, 0, 40));
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.boardPlaced(level, new BlockPos(2, -60, 1));
+					Showcase.check(b != null && level.getBlockState(new BlockPos(2, -60, 1)).getValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.POSTERS) == 2,
+						"two bounties posted, two posters on the board");
+				}, 40),
+				new Step("02_poster", io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.bounty.BountyPage.openAtBoard(player, level, new BlockPos(2, -60, 1));
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW).is(ModItems.WANTED_POSTER), "the Bounties tab shows the poster");
+				}, 40),
+				new Step("03_captain", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					boolean up = io.github.jcondedata.aliveworkplace.bounty.Bounties.raise(level, b, new BlockPos(1, -60, -3), new BlockPos(1, -60, -5));
+					for (var mob : io.github.jcondedata.aliveworkplace.bounty.Bounties.band(level, b)) {
+						mob.setNoAi(true);
+					}
+					Showcase.check(up, "Grimwald the Red stands with his band");
+				}, 40),
+				new Step("04_claim", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					if (level.getEntity(b.captain) instanceof net.minecraft.world.entity.LivingEntity captain) {
+						captain.hurt(level.damageSources().playerAttack(player), 1000f);
+					}
+					player.getInventory().add(io.github.jcondedata.aliveworkplace.bounty.Bounties.insignia(level, b));
+					var claim = io.github.jcondedata.aliveworkplace.bounty.Bounties.claimAny(player, level, STATION);
+					Showcase.check(claim == io.github.jcondedata.aliveworkplace.bounty.Bounties.Claim.PAID, "the insignia paid: " + claim);
+				}, 40)),
+			(level, player) -> true));
 		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
 		// hall's tooltip says when her name day is.

@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
+  captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
+  journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built
+  when you come near; each captain has a quirk (Ironhide, Fleetfoot, Crossbow Ace, Beast Rider, Night Stalker, Warlord,
+  Hexer). His Captain's Insignia pays 12 emeralds times the rank factor, once; a lair's captain is paid to his killer.
+  Config `bountyBoard`.
 - **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
   15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
   family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)

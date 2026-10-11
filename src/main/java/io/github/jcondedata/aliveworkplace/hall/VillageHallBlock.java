@@ -109,6 +109,13 @@ public class VillageHallBlock extends BaseEntityBlock {
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
 											  BlockHitResult hit) {
+		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.CAPTAINS_INSIGNIA)) {
+			// 31.13: a captain's insignia handed in for his bounty
+			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.claim(serverPlayer, server, pos, stack);
+			}
+			return ItemInteractionResult.sidedSuccess(level.isClientSide());
+		}
 		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.VILLAGE_LEDGER)) {
 			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
 				VillageLedgerItem.bind(server, serverPlayer, stack, pos);

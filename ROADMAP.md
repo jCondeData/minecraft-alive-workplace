@@ -496,7 +496,8 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - Status (lane-a-1011-0332): soak part added (`PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 tools/packtest/run.sh`:
     the benchmark's measurement every 10 min, heap after GC judged by `tools/packtest/soakheap.py` within 5% of minute
     10; the long ticks in the profiles named by `perf.py --spikes`; nightly-tests job `soak`, input `part: soak`;
-    docs/performance.md, "The 60-minute soak"); left: run it and read the numbers.
+    docs/performance.md, "The 60-minute soak"); left: run it and read the numbers. Sessions can't dispatch workflows (403 from the GitHub tools), so the soak
+    waits for the owner's chat to run nightly-tests with part `soak`, or for a schedule to be added for it.
 - [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README

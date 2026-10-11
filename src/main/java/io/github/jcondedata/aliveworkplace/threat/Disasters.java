@@ -195,6 +195,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 		if (raining(level)) {
 			RAIN.put(level.dimension().location().toString(), day);
 		}
+		VillageFire.chimney(level, pos, hall, census, level.random); // a chimney spark on a dry day (32.16), once a day
 		ResourceLocation id = hall.disaster();
 		if (id != null) {
 			Optional<Disaster> d = on(id);

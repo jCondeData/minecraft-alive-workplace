@@ -122,7 +122,10 @@ abstract class VillagerGoalPackagesMixin {
 		}
 	}
 
-	/** Guards fight in every activity, so their combat goes in CORE; so does a conscript's (Conscription, 30.10). */
+	/**
+	 * Guards fight in every activity, so their combat goes in CORE; so does a conscript's (Conscription, 30.10), a
+	 * firewarden's work and the bucket brigade (32.16).
+	 */
 	@Inject(method = "getCorePackage", at = @At("RETURN"), cancellable = true)
 	private static void aliveworkplace$guardCorePackage(VillagerProfession profession, float speed,
 			CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
@@ -131,8 +134,17 @@ abstract class VillagerGoalPackagesMixin {
 		ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> core =
 			ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>builder()
 				.add(Pair.of(0, new io.github.jcondedata.aliveworkplace.guard.MilitiaCombat()))
+				// A firewarden's bell calls villagers off their day to a bucket brigade (32.16): anyone may be called.
+				.add(Pair.of(0, new io.github.jcondedata.aliveworkplace.work.FireBrigade()))
 				.addAll(cir.getReturnValue())
 				.build();
+		if (profession == ModVillagers.FIREWARDEN) {
+			// Firewardens answer a fire day or night (32.16), so their work goes in CORE too.
+			core = ImmutableList.<Pair<Integer, ? extends BehaviorControl<? super Villager>>>builder()
+				.add(Pair.of(0, new io.github.jcondedata.aliveworkplace.work.FirewardenWork()))
+				.addAll(core)
+				.build();
+		}
 		cir.setReturnValue(profession == ModVillagers.GUARD ? io.github.jcondedata.aliveworkplace.guard.GuardPackages.core(core) : core);
 	}
 

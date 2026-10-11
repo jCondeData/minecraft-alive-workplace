@@ -70,6 +70,7 @@ public class StationsGameTests implements FabricGameTest {
 			new Row(Blocks.SMOKER, Items.LEAD, VillagerProfession.BUTCHER),
 			new Row(Blocks.STONECUTTER, Items.GOLD_NUGGET, ModVillagers.JEWELLER),
 			new Row(Blocks.GRINDSTONE, Items.IRON_SWORD, ModVillagers.GUARD),
+			new Row(Blocks.GRINDSTONE, Items.WATER_BUCKET, ModVillagers.FIREWARDEN),
 			new Row(Blocks.GRINDSTONE, Items.IRON_INGOT, VillagerProfession.WEAPONSMITH),
 			new Row(Blocks.CRAFTING_TABLE, Items.OAK_PLANKS, ModVillagers.CARPENTER),
 			new Row(Blocks.BEEHIVE, Items.GLASS_BOTTLE, ModVillagers.BEEKEEPER),

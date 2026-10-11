@@ -54,6 +54,7 @@ sneak-right-clicking a worker with an empty hand shows their status.
 | Armorer (smelter) | Blast Furnace (vanilla) | any |
 | Weaponsmith | Grindstone (vanilla) | any |
 | Guard | Grindstone + a sword | any |
+| Firewarden | Grindstone + a water bucket | any |
 | Fletcher | Fletching Table (vanilla) | any |
 | Shepherd | Loom (vanilla) | any |
 | Fisherman | Barrel (vanilla) | any |
@@ -144,6 +145,7 @@ chunks, and the search never waits for a chunk.
 | `daycareKeepers` | on from 1.2 | The Daycare Keeper job |
 | `gemGrowers` | on from 1.2 | The Gem Grower job |
 | `jewellers` | on from 1.8 | The Jeweller job |
+| `firewardens` | on from 1.6 | The Firewarden job |
 
 ## Saved data
 

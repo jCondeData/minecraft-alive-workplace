@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Fire and the Firewarden** (32.16, behind the 1.6 expansion): wooden villages can burn, from lightning in a
+  thunderstorm (1 in 3), a chimney spark on a dry day (2%) or a raider's burning arrow (1 in 4, with `mobGriefing`).
+  The fire spreads by the game's own rules but only through the builders' blocks, never a player's, and the builders
+  put back what burned. The new **Firewarden** (grindstone + water bucket) runs to the fire with two buckets and
+  douses it in steam, refilling at water near the grindstone; from Journeyman they ring the bell for a bucket brigade,
+  and with Cobblemon pastured Water types douse fires at range. The chronicle says what burned and who put it out.
+  Config `firewardens`.
 - **The disaster engine** (32.15): datapacks can describe disasters (`data/<ns>/disasters/<id>.json`) that strike a
   village one at a time, with 7 days' rest after one: crops grow slower, farmland dries, cauldrons drain, villagers fall
   ill and pass it on, are unhappy, fires start or a job slows. A village with the right job or a lookout is told a day

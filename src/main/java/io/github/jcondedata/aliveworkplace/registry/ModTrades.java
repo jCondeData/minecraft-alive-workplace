@@ -38,6 +38,7 @@ public final class ModTrades {
 		campCookTrades();
 		habitatKeeperTrades();
 		jewellerTrades();
+		firewardenTrades();
 		gemGrowerTrades();
 		vintnerTrades();
 		tailorTrades();
@@ -184,6 +185,30 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.IRON_AXE), 3, 15, 0.05f)));
 		Platform.get().addTrades(ModVillagers.LUMBERJACK, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.CHERRY_SAPLING, 2), 6, 30, 0.05f)));
+	}
+
+	/**
+	 * Firewardens (32.16): they buy what puts fires out and keeps them from starting (buckets, clay, kelp to dry) and sell
+	 * fire-safe things: a water bucket, a campfire for a safe hearth, a fire resistance potion and, at Master, a lightning rod.
+	 */
+	private static void firewardenTrades() {
+		Platform.get().addTrades(ModVillagers.FIREWARDEN, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BUCKET, 1), new ItemStack(Items.EMERALD), 12, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.WATER_BUCKET), 8, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.FIREWARDEN, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.CLAY_BALL, 10), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.CAMPFIRE), 8, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.FIREWARDEN, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.KELP, 24), new ItemStack(Items.EMERALD), 12, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.BRICKS, 8), 12, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.FIREWARDEN, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8),
+				net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.FIRE_RESISTANCE), 4, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.FIREWARDEN, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(Items.LIGHTNING_ROD), 4, 30, 0.05f)));
 	}
 
 	private static void guardTrades() {

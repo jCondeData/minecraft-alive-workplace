@@ -25,14 +25,36 @@ import net.minecraft.resources.ResourceLocation;
  * {@code foretell_days} (default 1), {@code messages} (the lang key prefix of its chat lines: {@code .name}, {@code .start},
  * {@code .foretold}, {@code .end}; absent: the engine's own lines, naming it by its id), {@code chronicle} (the same for
  * the chronicle: {@code .start}, {@code .foretold}, {@code .end}) and
- * {@code kind} ({@code fire}, {@code drought} or {@code plague}; default by its effects).</li>
+ * {@code kind} ({@code fire}, {@code drought} or {@code plague}; default by its effects);</li>
+ * <li>{@code ignition} (32.16, the village fire's): the chances that set a finished wooden build alight, before the
+ * {@code factors}' {@code times} where they hold: {@code lightning} (a strike in the village in a thunderstorm),
+ * {@code chimney} (a chimney spark, once a day while {@code chimney_when} holds or a drought is under way) and
+ * {@code burning_arrow} (a raider's burning arrow on a builder's wooden block, with {@code mobGriefing}).</li>
  * </ul>
  */
 public record Disaster(ResourceLocation id, DisasterConditions when, double chance, List<Factor> factors, List<Require> requires, int minDays,
 	int maxDays, boolean endsWithRain, List<Effect> effects, Optional<ResourceLocation> answeredBy, List<String> foretoldBy, int foretellDays,
-	String messages, String chronicle, Chronicle.Kind kind) {
+	String messages, String chronicle, Chronicle.Kind kind, Ignition ignition) {
 	private static final Set<String> KEYS = Set.of("when", "chance", "factors", "requires", "duration", "effects", "answered_by", "foretold_by",
-		"foretell_days", "messages", "chronicle", "kind");
+		"foretell_days", "messages", "chronicle", "kind", "ignition");
+
+	/** What sets a fire going (32.16): each a chance from 0 to 1; none in a file without {@code ignition}. */
+	public record Ignition(double lightning, double chimney, DisasterConditions chimneyWhen, double burningArrow) {
+		public static final Ignition NONE = new Ignition(0, 0, DisasterConditions.ANY, 0);
+
+		static Ignition read(JsonObject json, String file) {
+			double lightning = json.has("lightning") ? json.get("lightning").getAsDouble() : 0;
+			double chimney = json.has("chimney") ? json.get("chimney").getAsDouble() : 0;
+			double arrow = json.has("burning_arrow") ? json.get("burning_arrow").getAsDouble() : 0;
+			for (double d : new double[] {lightning, chimney, arrow}) {
+				if (d < 0 || d > 1) {
+					throw new IllegalArgumentException("ignition: a chance must be 0 to 1, not " + d);
+				}
+			}
+			DisasterConditions when = json.has("chimney_when") ? DisasterConditions.read(json.getAsJsonObject("chimney_when"), file) : DisasterConditions.ANY;
+			return new Ignition(lightning, chimney, when, arrow);
+		}
+	}
 
 	/** Where its {@code iff} holds, the day's chance is {@code chance} (if set, else unchanged) times {@code times}. */
 	public record Factor(DisasterConditions iff, Optional<Double> chance, double times) {
@@ -177,7 +199,8 @@ public record Disaster(ResourceLocation id, DisasterConditions when, double chan
 		}
 		return new Disaster(id, when, chance, List.copyOf(factors), List.copyOf(requires), min, max, rain, List.copyOf(effects),
 			json.has("answered_by") ? Optional.of(ResourceLocation.parse(json.get("answered_by").getAsString())) : Optional.empty(),
-			List.copyOf(foretold), json.has("foretell_days") ? Math.max(0, json.get("foretell_days").getAsInt()) : 1, messages, chronicle, kind);
+			List.copyOf(foretold), json.has("foretell_days") ? Math.max(0, json.get("foretell_days").getAsInt()) : 1, messages, chronicle, kind,
+			json.has("ignition") ? Ignition.read(json.getAsJsonObject("ignition"), file) : Ignition.NONE);
 	}
 
 	/** The {@code foretold_by} entry for 32.14's sources of warning (a guard or scout by a tower, the Seer's list). */

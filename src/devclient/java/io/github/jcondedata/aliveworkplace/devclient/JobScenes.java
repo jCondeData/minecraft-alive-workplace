@@ -700,6 +700,53 @@ final class JobScenes {
 					&& l.getBlockState(new BlockPos(0, -60, 14)).is(net.minecraft.world.level.block.Blocks.CHEST);
 			};
 		}, null));
+		// Village fire (ROADMAP 32.16): a Starter Cottage the builders finished, its roof struck by lightning and catching; the
+		// Firewarden at the grindstone (picked with a water bucket) runs over and throws bucket after bucket on it, steam
+		// rising, refilling at the pond by the grindstone, until it's out and the chronicle says so.
+		SCENES.put("fire", new Job("the Starter Cottage's roof caught fire and the Firewarden ran over from the grindstone and put it out with buckets of water", 1600,
+			new Vec3(10.5, -52.0, 9.5), new Vec3(-1.0, -56.0, -9.0), (level, player) -> {
+			io.github.jcondedata.aliveworkplace.threat.VillageFire.forget();
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos origin = STATION.offset(-5, 0, -15);
+			level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(),
+				origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			// The pond the firewarden fills the buckets at, beside the grindstone.
+			for (int x = 3; x <= 5; x++) {
+				for (int z = 1; z <= 3; z++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+				}
+			}
+			Villager warden = picked(level, player, STATION, Blocks.GRINDSTONE.defaultBlockState()
+				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)
+				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH), Items.WATER_BUCKET);
+			io.github.jcondedata.aliveworkplace.work.FirewardenWork.setWater(warden, 1);
+			long began = level.getGameTime();
+			boolean[] lit = {false};
+			return l -> {
+				if (!lit[0] && l.getGameTime() - began >= 60) {
+					lit[0] = true;
+					l.getServer().execute(() -> {
+						// The strike that sets it off (only the flash: the roof is lit here, as the strike would, so the scene
+						// doesn't wait on the 1 in 3).
+						net.minecraft.world.entity.LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(l);
+						bolt.moveTo(Vec3.atBottomCenterOf(origin.offset(5, 9, 5)));
+						bolt.setVisualOnly(true);
+						l.addFreshEntity(bolt);
+						Showcase.check(io.github.jcondedata.aliveworkplace.threat.VillageFire.igniteNear(l, hall, origin.offset(5, 8, 5),
+							net.minecraft.util.RandomSource.create(3L)).isPresent(), "the cottage's roof caught fire");
+						for (int i = 0; i < 2; i++) {
+							io.github.jcondedata.aliveworkplace.threat.VillageFire.igniteNear(l, hall, origin.offset(2 + 6 * i, 8, 4),
+								net.minecraft.util.RandomSource.create(5L + i));
+						}
+					});
+				}
+				return lit[0] && l.getGameTime() - began > 200 && io.github.jcondedata.aliveworkplace.threat.VillageFire.incident(l, hall).isEmpty()
+					&& warden.getVillagerXp() > 1;
+			};
+		}, null));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks

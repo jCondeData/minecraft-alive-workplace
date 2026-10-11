@@ -113,6 +113,11 @@ public final class WorkplaceConfig {
 	 * hold however hard they are hit. The {@code mobGriefing} gamerule off does the same.
 	 */
 	public boolean siegeDamage = Expansions.on(Expansions.M32);
+	/**
+	 * Villagers at a grindstone can be made Firewardens with a water bucket (ROADMAP 32.16): they put out the village's
+	 * fires. Off: no Firewarden job, and Firewardens already hired stand idle.
+	 */
+	public boolean firewardens = Expansions.on(Expansions.M32);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -616,6 +621,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.threat.Lairs.ENABLED = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED = sieges && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = firewardens && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
 		io.github.jcondedata.aliveworkplace.threat.Disasters.DISABLED = disastersOff(); // 32.15

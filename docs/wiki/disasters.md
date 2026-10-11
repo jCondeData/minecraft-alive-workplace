@@ -2,8 +2,9 @@
 
 ROADMAP 32.15. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests run with it on. The engine that lets a fire, a drought or a plague strike a village,
-described as data the way the raider cultures are (see [Raids and threats](raids.md)). **No disaster ships yet**:
-the drought, plague and village fire come with 32.16 to 32.18; a datapack can add its own today.
+described as data the way the raider cultures are (see [Raids and threats](raids.md)). The village fire ships with
+32.16 ([Village fire and the Firewarden](village-fire.md)); the drought and plague come with 32.17 and 32.18, and a
+datapack can add its own today.
 
 Roadmap items: 32.15
 
@@ -73,7 +74,7 @@ none (the chronicle gains the kinds `FIRE`, `DROUGHT` and `PLAGUE`).
 
 ## Known limits
 
-- No disaster ships yet (32.16 to 32.18 add them).
+- Only the village fire ships so far (32.17 and 32.18 add the drought and plague).
 - The days since rain count from the first round the server saw after a restart.
 - After a restart, the daily effects (a fire, a cauldron's level) may happen a second time that day.
 - `wood_share` samples round each finished build's corner, so a very large build is only partly seen.

@@ -205,7 +205,9 @@ public final class Stations {
 			job(() -> ModVillagers.JEWELLER, io.github.jcondedata.aliveworkplace.jeweller.Jewellers::isNugget))),
 		new Station(is(PoiTypes.WEAPONSMITH), Blocks.GRINDSTONE, List.of(
 			job(() -> VillagerProfession.WEAPONSMITH, any(Items.IRON_INGOT)),
-			job(() -> ModVillagers.GUARD, tag(ItemTags.SWORDS)))),
+			job(() -> ModVillagers.GUARD, tag(ItemTags.SWORDS)),
+			// a water bucket (32.16), with config firewardens on: the village watch shares the guards' block
+			job(() -> ModVillagers.FIREWARDEN, FirewardenWork::isWaterBucket))),
 		new Station(is(ModVillagers.CRAFTING_TABLE_POI), Blocks.CRAFTING_TABLE, List.of(
 			job(() -> ModVillagers.CARPENTER, tag(ItemTags.PLANKS)))),
 		new Station(is(PoiTypes.BEEHIVE, PoiTypes.BEE_NEST), Blocks.BEEHIVE, List.of(
@@ -478,6 +480,9 @@ public final class Stations {
 	 */
 	public static boolean available(Job job) {
 		VillagerProfession profession = job.profession().get();
+		if (profession == ModVillagers.FIREWARDEN && (!FirewardenWork.ENABLED || !io.github.jcondedata.aliveworkplace.threat.VillageFire.live())) {
+			return false; // config firewardens off (or village fires off): the grindstone's tooltip names the Weaponsmith and the Guard only
+		}
 		if (profession == ModVillagers.JEWELLER && !io.github.jcondedata.aliveworkplace.jeweller.Jewellers.ENABLED) {
 			return false; // config jewellers off: the stonecutter's tooltip leaves the Jeweller out
 		}

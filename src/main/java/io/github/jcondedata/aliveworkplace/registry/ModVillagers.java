@@ -729,6 +729,24 @@ public final class ModVillagers {
 	);
 
 	/**
+	 * Puts out the village's fires (ROADMAP 32.16): at a grindstone, only ever by a water bucket, with config
+	 * {@code firewardens}. A jobless villager by a grindstone still becomes a Weaponsmith, which vanilla registers first;
+	 * the grindstone is the village watch's block, shared with the guards (21.1a).
+	 */
+	public static final VillagerProfession FIREWARDEN = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("firewarden"),
+		new VillagerProfession(
+			"firewarden",
+			holder -> holder.is(PoiTypes.WEAPONSMITH),
+			holder -> holder.is(PoiTypes.WEAPONSMITH),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_WEAPONSMITH
+		)
+	);
+
+	/**
 	 * Makes jewellery at a stonecutter (ROADMAP 34.12): only ever by a gold nugget, with config {@code jewellers}. A
 	 * jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
 	 */

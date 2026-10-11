@@ -36,6 +36,7 @@ This guide is everything you need to play. No code, no jargon: just what you do 
 - [Festivals and market days](festivals-and-markets.md): feasts, fireworks, the calendar and travelling traders.
 - [Trade and caravans](trade-and-caravans.md): villages that supply each other, and selling from your own shop.
 - [Threats and defence](defence.md): guards, raids, bandit camps, walls, and how to fight back.
+- [Fire and the Firewarden](fire.md): how a wooden village catches fire, and the villager who puts it out.
 
 ## With Cobblemon
 

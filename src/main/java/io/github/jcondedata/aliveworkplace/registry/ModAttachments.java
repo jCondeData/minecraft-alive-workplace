@@ -72,6 +72,9 @@ public final class ModAttachments {
 	/** Which quarry a miner is digging. */
 	public static final Attachment<BuilderJob> MINER_JOB = Attachment.saved("miner_job", BuilderJob.CODEC);
 
+	/** How many of their two buckets a firewarden has full (ROADMAP 32.16); none saved: both full. */
+	public static final Attachment<Integer> FIREWARDEN_WATER = Attachment.saved("firewarden_water", com.mojang.serialization.Codec.INT);
+
 	/** How many trees a lumberjack has cut down (shown above its head). */
 	public static final Attachment<Integer> TREES_FELLED = Attachment.saved("trees_felled", com.mojang.serialization.Codec.INT);
 

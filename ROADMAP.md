@@ -3139,7 +3139,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   disaster id, each on by default. Done when: a test datapack disaster applies each effect (a GameTest each), ends
   after its time or with rain, and survives a save and load of the hall; switched off, it never starts. No disaster
   ships yet: lands with `--no-review`.
-- [ ] **32.16** **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
+- [x] **32.16** (review: pending 2026-10-11) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
   a lightning strike in the hall's area in a thunderstorm sets a finished wooden build's roof alight (1 in 3), a
   chimney spark 2% a day in a drought, and the pirate gunners' burning arrows (32.8) light the wooden block they hit
   (1 in 4, with `mobGriefing`). A village fire spreads by the game's own fire (`doFireTick`), but never to a block the
@@ -4438,6 +4438,16 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- **Fire and the Firewarden (32.16, lane-b-1011-1233, 2026-10-11): decisions.** `village_fire.json` is a disaster
+  file (so `disasters` switches it) whose daily roll never starts it (`chance` 0, no `fires_a_day`): its fires are
+  short events kept per village in memory, set off by its `ignition` block (lightning 0.334, chimney 0.02 while
+  `dry_days` 5 or a drought is under way, burning arrows 0.25 from raider-tagged shooters). "Likelier the more wood":
+  the `when` gate (wood share 0.3) and two `factors` of 1.25 (at 0.5 and 0.7). In a village a fire with no builders'
+  block left beside it goes out at age 15 (else it smoulders on a player's roof forever); the brigade's bell swings
+  and rings without vanilla's ring (which sends villagers to hide); a new Firewarden has both buckets full; builders
+  skip a build with fire within 16 blocks. The guide page `docs/guide/fire.md` went in now, as 32.14's lines did,
+  though M32 is still closed: the release that opens M32 should check it.
 
 - **A day's warning (32.14, lane-b-1011-0933, 2026-10-11): the Seer is not a source yet.** The spec skips the Seer
   until M29's Seer item lands; besides, with a Seer in the village the night is foretold at dawn by the Seer's own

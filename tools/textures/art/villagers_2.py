@@ -1534,10 +1534,59 @@ def printer():
     return t.save_profession(ASSETS, "printer", hat="partial")
 
 
+def firewarden():
+    """The village's fire watch (ROADMAP 32.16): a red leather fire helmet with a wide brim, a brass comb over the crown
+    and a brass shield on the front; a long dark navy wool coat buttoned in brass, with a band of straw-yellow wool at
+    the hem and round the cuffs so they're seen through smoke; a leather belt with a brass buckle; heavy leather
+    gloves; and a hatchet slung across the back. Full headwear: the helmet replaces the biome's hat."""
+    t = vg.VillagerTexture()
+    helmet = vg.cloth("#9a2a1e", spread=0.26)
+    coat = vg.cloth("#2c3550", spread=0.22)
+    band = vg.cloth("#d8b23a", spread=0.2)
+    gloves = vg.cloth("#7a4a26", n=4)
+    vg.hat(t, helmet, style="brim", band=helmet[0])
+    hf = t.face("hat", "front")                          # the brass shield on the helmet's front
+    for x, y, c in ((3, 0, BRASS[3]), (4, 0, BRASS[2]), (2, 1, BRASS[3]), (3, 1, BRASS[2]), (4, 1, BRASS[2]),
+                    (5, 1, BRASS[1]), (3, 2, BRASS[2]), (4, 2, BRASS[1])):
+        hf.put(x, y, c)
+    top = t.face("hat", "top")                           # the brass comb, front to back over the crown
+    for y in range(top.h):
+        top.put(3, y, BRASS[3] if y < top.h // 2 else BRASS[2])
+        top.put(4, y, BRASS[1])
+    for side in ("front", "back"):                       # the comb's ends where it meets the crown's rim
+        f = t.face("hat", side)
+        f.put(3 if side == "front" else 4, 0, BRASS[3] if side == "front" else BRASS[1])
+
+    vg.vest(t, coat, length=18, open_front=False, noise=0.03)
+    j = t.face("jacket", "front")
+    for y in range(0, 18):                               # the buttoned front edge
+        j.put(4, y, coat[0])
+    for y in (1, 3, 5, 7):                               # brass buttons above the crossed arms' line
+        j.put(3, y, BRASS[3])
+    for side in SIDES:                                   # the straw-yellow band at the hem, seen through smoke
+        f = t.face("jacket", side)
+        paint(f, ((x, 15) for x in range(f.w)), band[3])
+        paint(f, ((x, 16) for x in range(f.w)), band[2])
+        paint(f, ((x, 17) for x in range(f.w)), coat[1])
+    vg.belt(t, vg.cloth("#5e3a1e", n=4), row=10, buckle=BRASS[3])
+    back = t.face("jacket", "back")                      # a hatchet slung across the back: haft and steel head
+    for i, (x, y) in enumerate(((1, 13), (2, 12), (3, 11), (4, 10), (5, 9), (6, 8))):
+        back.put(x, y, "#8a6a3e" if i % 2 else "#a8844e")
+    for x, y, c in ((5, 6, STEEL[3]), (6, 6, STEEL[2]), (7, 7, STEEL[1]), (6, 7, STEEL[2]), (7, 8, STEEL[0])):
+        back.put(x, y, c)
+
+    vg.sleeves(t, coat, gloves=gloves)
+    for side in ("front", "west", "east", "back"):       # the yellow band round each cuff
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), band[3])
+    return t.save_profession(ASSETS, "firewarden", hat="full")
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 DRAW += [jeweller]   # 34.12
+DRAW += [firewarden]   # 32.16
 
 if __name__ == "__main__":
     run(DRAW)

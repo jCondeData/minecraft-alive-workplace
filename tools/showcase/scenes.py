@@ -698,6 +698,9 @@ SCENES = [
     # Drowned pirates (ROADMAP 32.8): the Pirate Ship at anchor at dusk, the crew wading ashore, the ship sinking
     job("pirates", "Threats", "Drowned pirates: the ship, the landing, the sinking",
         "the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 150),
+    # Village fire (ROADMAP 32.16): a roof catching, and the Firewarden putting it out with buckets of water
+    job("fire", "Threats", "Village fire: the roof catches, the Firewarden puts it out",
+        "the Starter Cottage's roof caught fire and the Firewarden ran over from the grindstone and put it out with buckets of water", 150),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),

@@ -139,12 +139,29 @@ public final class RealmData extends SavedData {
 	}
 
 	/**
+	 * A movement in a realm's treasury (33.13): the day (as the chronicle counts them), what went in (positive) or out
+	 * (negative), in hundredths of an emerald, and why ("Levy from Thornholm", "Given by Alex", a spending's reason).
+	 */
+	public record Movement(long day, long cents, Component reason) {
+		public static final Codec<Movement> CODEC = RecordCodecBuilder.create(i -> i.group(
+			Codec.LONG.optionalFieldOf("day", 0L).forGetter(Movement::day),
+			Codec.LONG.optionalFieldOf("cents", 0L).forGetter(Movement::cents),
+			ComponentSerialization.CODEC.optionalFieldOf("reason", Component.empty()).forGetter(Movement::reason)
+		).apply(i, Movement::new));
+	}
+
+	/**
 	 * A realm (33.11): its id, its own name (a Name Tag's; absent: the capital's), the capital, the members (the capital
 	 * first), the arms (absent until a banner sets them), the rank last counted (a {@code Realms.Rank} name, so a rank up
-	 * is noticed once) and the day it was founded. Later items add their keys (levy, treasury, research...) with defaults.
+	 * is noticed once) and the day it was founded. 33.13 adds the treasury: the levy in percent (10 by default), what it
+	 * holds in hundredths of an emerald (none by default) and its last movements, newest last. Later items add their keys
+	 * (research, edicts...) with defaults.
 	 */
 	public record Realm(UUID id, Optional<Component> name, GlobalPos capital, List<Member> members, Optional<VillageBanners.Colours> arms, String rank,
-						long founded) {
+						long founded, int levy, long treasury, List<Movement> ledger) {
+		/** The levy a realm starts with, and an older file's realms (33.13). */
+		public static final int DEFAULT_LEVY = 10;
+
 		public static final Codec<Realm> CODEC = RecordCodecBuilder.create(i -> i.group(
 			UUIDUtil.CODEC.fieldOf("id").forGetter(Realm::id),
 			ComponentSerialization.CODEC.optionalFieldOf("name").forGetter(Realm::name),
@@ -152,11 +169,21 @@ public final class RealmData extends SavedData {
 			Member.CODEC.listOf().optionalFieldOf("members", List.of()).forGetter(Realm::members),
 			ARMS_CODEC.optionalFieldOf("arms").forGetter(Realm::arms),
 			Codec.STRING.optionalFieldOf("rank", "barony").forGetter(Realm::rank),
-			Codec.LONG.optionalFieldOf("founded", 0L).forGetter(Realm::founded)
+			Codec.LONG.optionalFieldOf("founded", 0L).forGetter(Realm::founded),
+			Codec.INT.optionalFieldOf("levy", DEFAULT_LEVY).forGetter(Realm::levy),
+			Codec.LONG.optionalFieldOf("treasury", 0L).forGetter(Realm::treasury),
+			Movement.CODEC.listOf().optionalFieldOf("ledger", List.of()).forGetter(Realm::ledger)
 		).apply(i, Realm::new));
 
 		public Realm {
 			members = List.copyOf(members);
+			ledger = List.copyOf(ledger);
+		}
+
+		/** A realm as 33.11 knew it: the default levy, an empty treasury. */
+		public Realm(UUID id, Optional<Component> name, GlobalPos capital, List<Member> members, Optional<VillageBanners.Colours> arms, String rank,
+					 long founded) {
+			this(id, name, capital, members, arms, rank, founded, DEFAULT_LEVY, 0L, List.of());
 		}
 
 		/** Whether {@code hall} is one of its villages. */
@@ -165,23 +192,31 @@ public final class RealmData extends SavedData {
 		}
 
 		public Realm withName(Optional<Component> name) {
-			return new Realm(id, name, capital, members, arms, rank, founded);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
 		}
 
 		public Realm withCapital(GlobalPos capital) {
-			return new Realm(id, name, capital, members, arms, rank, founded);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
 		}
 
 		public Realm withMembers(List<Member> members) {
-			return new Realm(id, name, capital, members, arms, rank, founded);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
 		}
 
 		public Realm withArms(Optional<VillageBanners.Colours> arms) {
-			return new Realm(id, name, capital, members, arms, rank, founded);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
 		}
 
 		public Realm withRank(String rank) {
-			return new Realm(id, name, capital, members, arms, rank, founded);
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+		}
+
+		public Realm withLevy(int levy) {
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
+		}
+
+		public Realm withTreasury(long treasury, List<Movement> ledger) {
+			return new Realm(id, name, capital, members, arms, rank, founded, levy, treasury, ledger);
 		}
 	}
 

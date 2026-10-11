@@ -31,7 +31,8 @@ import org.jetbrains.annotations.Nullable;
  * (the capital with a crown; rank, villagers, wellbeing, distance and owner; a click lets one go) and, for those who
  * rule the capital, the villages within reach they may add with one click. Everyone who may open the hall may read it.
  * 33.12: other players' villages to invite (a letter goes), the invitations waiting on a village's tab (accept or
- * decline), a member's "Put forward as capital", and a capital vote with its two buttons.
+ * decline), a member's "Put forward as capital", and a capital vote with its two buttons. 33.13: the realm treasury
+ * (give with emeralds, take with a right-click) and the levy (the capital's owner clicks through 0, 5, 10 and 20%).
  */
 final class RealmTab {
 	/** A gold helmet: the realm's crown. */
@@ -93,6 +94,28 @@ final class RealmTab {
 				said(level, p, result);
 				again.run();
 			});
+
+		// the treasury (33.13): click with emeralds to give, right-click to take; and the levy, set from the capital
+		menu.button(RealmTreasury.TREASURY, RealmTreasury.icon(server, realm, viewer), p -> {
+			ItemStack carried = menu.getCarried();
+			Realms.Result result;
+			if (carried.isEmpty() && menu.rightClicked()) {
+				result = RealmTreasury.take(level, hall, p, menu.shiftClicked());
+			} else if (carried.is(Items.EMERALD) || carried.isEmpty() && io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()) {
+				result = RealmTreasury.give(level, hall, p, carried, menu.shiftClicked());
+			} else if (carried.isEmpty()) {
+				return; // a plain click: the tooltip says what to click with
+			} else {
+				result = RealmTreasury.give(level, hall, p, carried, false); // the wrong thing carried: says what to give
+			}
+			said(level, p, result);
+			again.run();
+		});
+		boolean setsLevy = rules && atCapital;
+		menu.button(RealmTreasury.LEVY, RealmTreasury.levyIcon(realm, setsLevy), !setsLevy ? null : p -> {
+			said(level, p, RealmTreasury.nextLevy(level, hall, p));
+			again.run();
+		});
 
 		// the way out: leave (a member), give up the crown (the capital)
 		boolean mayLeave = viewer == null || Realms.mayRule(server, here, viewer);

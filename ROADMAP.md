@@ -3477,7 +3477,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests with two owners: an accepted invitation joins; a declined or lapsed one doesn't; a vote with a majority
     moves the capital and its treasury; a tie keeps it;
   - showcase scene `realm_invite` (the letter, the tab with the vote).
-- [ ] **33.13** **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
+- [x] **33.13** (review: pending 2026-10-11) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
   realm treasury before the rest goes into its own: the **levy**, 0, 5, 10 (the default) or 20%, set by the capital's
   owner on the Realm tab. It's kept in the realm's saved data, so it never needs the capital loaded, and holds up to
   256 emeralds for a Barony, 512 for a County, 1,024 for a Duchy and 2,048 for a Kingdom. It pays for realm research,
@@ -4469,6 +4469,12 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (33.13, decisions; lane a; details in `docs/wiki/realms.md`, Decisions (33.13)): the treasury, levy and
+  last 20 movements live on `RealmData.Realm` (`levy` default 10, `treasury` in hundredths, `ledger`), so they move
+  with the capital (now checked in `aVoteWithAMajorityMovesTheCapital`); a realm that ends loses what it held. Taking
+  is a right-click (shift: a stack of 64) so a left click stays giving; with CobbleDollars an empty-hand click gives an
+  emerald's (shift: a stack's) worth from the balance. A levy that doesn't fit under the cap stays with the village.
+  Spending for 33.14 on: `RealmTreasury.spend(server, realm, cents, reason)`.
 - 2026-10-11 (33.12, decisions and a hook for 33.13; lane a; details in `docs/wiki/realms.md`, Decisions (33.12)): a
   capital vote is one ballot per member village, cast by its owner (one click votes all their members; the proposer's
   start "for"); the invitation's line on the tab is two buttons, Join and Decline; invitations lapse and votes end by

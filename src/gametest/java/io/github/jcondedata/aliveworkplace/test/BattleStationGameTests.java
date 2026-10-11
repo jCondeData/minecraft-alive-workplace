@@ -340,7 +340,14 @@ public class BattleStationGameTests implements FabricGameTest {
 		Villager knight = guard(helper, new ItemStack(Items.SHIELD), 12, 21);
 		Villager medic = guard(helper, PotionContents.createItemStack(Items.POTION, Potions.HEALING), 14, 21);
 		Villager plain = guard(helper, ItemStack.EMPTY, 10, 21);
-		Mob foe = raider(helper, 16.5, 29.5);
+		// The raider stands 8 blocks out from the knight's place, beyond HOLD (6): at 6.0 exactly (z 29.5) a knight who
+		// had gone after it before the siege began (the gate is 7 wide, guards walk round it) counted it as near his spot
+		// and never came back. The guards fight the raid (the plain guard all through it), and one of them could kill
+		// this husk, which can't fight back, before the knight and medic reach their places: that ends the raid and the
+		// siege, and their places with it (B104, "over true", the husk killed by a guard). This test is about the places,
+		// so the raider outlasts it.
+		Mob foe = raider(helper, 16.5, 31.5);
+		foe.setInvulnerable(true);
 		Sieges.ENABLED = false;
 		VillageRaids.track(level, village.hall(), village.culture(), List.of(foe));
 		helper.assertTrue(Sieges.siege(level, village.hall()).isEmpty(), "a siege with the switch off");
@@ -364,7 +371,8 @@ public class BattleStationGameTests implements FabricGameTest {
 			Optional<BlockPos> m = BattleStations.post(medic);
 			helper.assertTrue(k.isPresent() && m.isPresent(), "the knight's place " + k + ", the medic's " + m + "; sieges on " + Sieges.ENABLED
 				+ ", game time " + level.getGameTime() + ", over " + village.siege(helper).over + ", guards alive " + knight.isAlive() + "/" + medic.isAlive()
-				+ ", knight at " + knight.blockPosition() + ", hall " + village.hall() + ", radius " + VillageHalls.RADIUS);
+				+ ", knight at " + knight.blockPosition() + ", hall " + village.hall() + ", radius " + VillageHalls.RADIUS
+				+ ", raider alive " + foe.isAlive() + " (removed " + foe.getRemovalReason() + ", last hurt by " + foe.getLastHurtByMob() + ")");
 			helper.assertTrue(k.get().getX() == breach.getX() && k.get().getZ() == breach.getZ() - BattleStations.KNIGHT_BACK, "the knight's place " + k + ", the breach " + breach);
 			helper.assertTrue(m.get().getX() == breach.getX() && m.get().getZ() == breach.getZ() - BattleStations.MEDIC_BACK, "the medic's place " + m + ", the breach " + breach);
 			helper.assertTrue(!BattleStations.stationed(plain) && !BattleStations.onStation(knight), "the plain guard has a place, or the knight's counts as a station");

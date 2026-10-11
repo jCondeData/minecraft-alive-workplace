@@ -56,6 +56,8 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("BERRY_GOAL", ResourceLocation.parse("cobblemon:sitrus_berry"));
 		samples.put("HABITAT_LURE", "typing/fire");
 		samples.put("ILL_KIND", "hex"); // (32.11)
+		samples.put("RELIEF_RIDER", new io.github.jcondedata.aliveworkplace.guard.Relief.Rider(new net.minecraft.core.BlockPos(4, 70, -9),
+			net.minecraft.core.GlobalPos.of(net.minecraft.world.level.Level.OVERWORLD, new net.minecraft.core.BlockPos(-300, 64, 12)))); // (33.17)
 		samples.put("SIGHTINGS", List.of(new io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting(
 			Component.translatable("message.aliveworkplace.habitat_keeper.sighting.shiny", Component.translatable("cobblemon.species.eevee.name")), "shiny", new BlockPos(12, 70, -40), 12L)));
 		samples.put("SIGHTED", List.of(A, B));

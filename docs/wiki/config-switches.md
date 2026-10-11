@@ -125,6 +125,7 @@ range is in brackets.
 | `coloniesPerVillage` | 3 (0 to 16) | 1.7 | Colonies one village may found in all. |
 | `realms` | on | 1.7 | A Town or better can found a realm on its hall's Realm tab and add its owner's (and friends') villages within 2,048 blocks; colonies join their mother's realm. Off: no Realm tab, nothing founded or joined; realms stay saved and come back. See [Founding a realm](realms.md). |
 | `realmMaxMembers` | 12 (2 to 32) | 1.7 | Villages one realm may hold. |
+| `realmRelief` | on | 1.7 | When a realm village is raided, the capital and members within 1,024 blocks send riders, an emerald each from the realm treasury. |
 | `villageClasses` | on | 1.8 | Households in villages with a hall climb the class ladder. Off: no classes; classes and progress stay saved. |
 | `classRiseDays` | 2 (1 to 30) | 1.8 | Dawns running the next class's needs must hold for a household to rise one class. |
 | `classFallDays` | 3 (1 to 30) | 1.8 | Dawns running a need of their own class must fail for a household to fall one class. |

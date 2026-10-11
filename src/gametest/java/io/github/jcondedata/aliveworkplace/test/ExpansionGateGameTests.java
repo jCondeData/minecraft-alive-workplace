@@ -42,7 +42,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"daycareKeepers", "gemGrowers", "jewellers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
-		"villageEconomy", "visibleCaravans", "colonies", "realms", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
+		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
 		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
@@ -174,8 +174,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 106 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (106 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 107 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (107 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -274,7 +274,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 106, "every option on the screen in GameTests (31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 107, "every option on the screen in GameTests (33.17 realmRelief, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 }

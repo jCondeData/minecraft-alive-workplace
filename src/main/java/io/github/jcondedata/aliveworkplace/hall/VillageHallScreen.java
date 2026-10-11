@@ -223,6 +223,10 @@ public final class VillageHallScreen {
 		for (Component golem : io.github.jcondedata.aliveworkplace.legend.GolemSmith.hallLines(level, hall)) {
 			guardLore.add(line(golem, ChatFormatting.GOLD));
 		}
+		Component relief = io.github.jcondedata.aliveworkplace.guard.Relief.hallLine(level, hall); // guards away helping (33.17)
+		if (relief != null) {
+			guardLore.add(line(relief, ChatFormatting.AQUA));
+		}
 		if (defence) {
 			guardLore.add(line("screen.aliveworkplace.hall.defence_click", ChatFormatting.DARK_GRAY));
 		}

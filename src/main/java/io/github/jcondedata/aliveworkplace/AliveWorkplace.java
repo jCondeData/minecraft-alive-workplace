@@ -56,6 +56,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.fish.Fishers.init();
 		io.github.jcondedata.aliveworkplace.travel.FerryRides.init();
 		io.github.jcondedata.aliveworkplace.guard.Cavalry.init();
+		io.github.jcondedata.aliveworkplace.guard.Relief.init();
 		io.github.jcondedata.aliveworkplace.guard.Scouts.init(); // scouts sent to the lair, and what they bring home (32.12)
 		io.github.jcondedata.aliveworkplace.mail.Mail.init();
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.init();

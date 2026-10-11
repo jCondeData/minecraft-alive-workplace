@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released).
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16
+Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17
 
 ## What a player sees
 
@@ -135,6 +135,7 @@ member.
 |---|---|---|
 | `realms` | on from 1.7 (off until then) | Off: no Realm tab, nothing founded, added, invited, joined or voted on, no name icon line or tip, and the arms aren't used; invitations don't lapse and votes don't end. Realms, invitations and votes stay saved and come back when it is turned on. A broken hall still leaves its realm. |
 | `realmMaxMembers` | 12 (2 to 32) | Villages one realm may hold. |
+| `realmRelief` | on (with 1.7) | Raided realm villages get riders from the capital and near members (33.17). |
 
 ## Saved data
 
@@ -320,10 +321,42 @@ logged and skipped; one that needs a topic that isn't there is skipped too.
   by `Colonies.cost` and `Settlers.load`, and `granary` by `RealmResearch.granaries` at each overworld dawn. Concord
   uses the toolbox's `wellbeing`, so it goes through the edicts' sum like 33.15's effects.
 
+## Relief in a raid (33.17)
+
+**What a player sees.** When a village of a realm is raided (our night raids and bandit raids, a siege of Milestone 32,
+or a vanilla pillager raid at it), the realm sends help. The capital always sends a band; every other member in the
+same dimension within 1,024 blocks with 2 guards or more sends one too. A band is one rider for every 3 guards the
+village has (at least 1, at most 3, plus one per level of the realm's Levies research), 6 riders at most in all. After
+a ride of a tick per 4 blocks (at least 30 seconds) they come on saddled horses to the village's edge on their home's
+side; when the capital itself is raided they muster before its finished Royal Hall. Each is named for their home
+("Ashford's guard"), wears iron and carries a shield painted with the realm's arms (plain without arms). Players in
+the village are told "2 guards from Ashford ride in to help Brookfield!".
+
+They fight as guards anywhere in the raided village. When the raid is over they stay a minute more (until dawn at the
+latest), then ride off with their horses in a puff. Each rider costs the realm treasury an emerald, paid when the band
+sets out (a movement "2 riders from Ashford to help Brookfield"); a member's band the treasury can't pay stays home,
+and the capital's comes anyway. While its riders are away, the sender's hall's Guards icon says **2 guards away
+helping Brookfield**; the sender's chronicle notes "2 guards rode to help Brookfield in a raid" and the raided
+village's "2 guards from Ashford rode in to help against the raid".
+
+**How it works.** `guard/Relief` watches each second: a realm member whose chunk is loaded and that is raided
+(`VillageRaids.raided`: a raid in `ThreatData`, which sieges are too, or a vanilla raid) calls `Relief.call` once a
+raid; anything else may call it as well. Guards are counted among the villagers round the sender's hall (not
+mercenaries or riders); a member that isn't loaded counts none, so only the capital comes from an unloaded village.
+Riders are guards on a stay like mercenaries (`MERCENARY_UNTIL`, until dawn) with a saved `relief_rider` attachment
+(the village helped, their home); each tick after the raid they cut their stay to a minute. Their horses carry the tag
+`aliveworkplace_relief_horse` and go when nobody rides them. Levies (33.16) is read as the realm research topic
+`levies` through `RealmResearch`; until it exists it adds nothing.
+
+- The `realmRelief` switch (on with 1.7) off, or `realms` off: nobody comes.
+- Riders don't count as the village's own (no beds, no babies, not hired mercenaries).
+
 ## Known limits
 
-- No relief riders or edicts yet (33.17, 33.21, 33.22); the treasury and the arms are there for them. Levies are
-  counted (`RealmResearch.reliefRiders`) but change nothing a player sees until 33.17's relief bands read them.
+- No edicts yet (33.21, 33.22). Bands still on the road and the hall's "away" line are kept in memory only: a restart
+  mid-ride loses the band (already paid) and the village, if still raided, calls again; riders who have arrived are
+  saved and still leave on time. A rider's horse that dies drops its saddle. `relief` hasn't been filmed yet (GitHub
+  films it after the push).
 - Granaries only move meals between members whose halls are loaded at dawn and in one dimension; Concord, like the
   33.15 effects, is off with the `edicts` switch off (the other seven topics aren't).
 - Realm research effects reach the edicts' toolbox, so with the `edicts` switch off they are off too (the scholars'
@@ -351,6 +384,10 @@ logged and skipped; one that needs a topic that isn't there is skipped too.
   `leviesCountRiders` (I and II, realms off), `chartersCheapenColonies` (32, 24, 16; the treasury's share; the
   settlers' load), `concordRaisesWellbeing` (I and II, the 25% pace top), `granariesFeedTheHungry` (not without it,
   32 by caravan from the fullest store, no route taken, not to a member with enough).
+- `ReliefGameTests` (3, 33.17): `aRaidBringsTheRealmsRiders` (two bands after exactly 600 ticks, 3 emeralds paid,
+  mounted, named, the realm's arms, the home's side, saved and loaded, a zombie killed by a rider, gone with their horses after the
+  raid, the hall line and both chronicles), `noRealmNoSwitchNoMoney` (no realm, `realmRelief` off, an empty treasury
+  brings only the capital's band, once a raid, band sizes), `aVanillaRaidCallsThemToo`.
 - `RealmBuildsGameTests` (33.14): `theColonyCampPlacesWhole`, `theCapitalDrawsTheRoyalHall` (the tab's button, refused
   without a Blank Blueprint, the drawn line, hidden from the table, a hall on the map, the II next, nothing after),
   `theRoyalHallRaisesTheCap` (40 blocks off: no; styled: twice, gifts up to 512; II: three times; realms off; taken

@@ -401,6 +401,13 @@ SCENES = [
       "what it needs (Concord I, Royal Roads II); Ashford's own research screen shows Drill II from the capital", 60,
       [("01_the_realm_tab", "The capital's research screen: the Realm tab"), ("02_the_realm_row", "The Realm row: the eight realm topics"),
        ("03_a_realm_topic", "A realm topic: its price and what it needs"), ("04_from_the_capital", "Ashford: Drill from the capital")]),
+    # Relief in a raid (ROADMAP 33.17): zombies raid Ashford; the capital's and Brookfield's riders come on horseback
+    S("relief", "Realm", "Relief in a raid: riders from the realm",
+      "zombies raid Ashford at night; Thornholm, the capital, and Brookfield, a member with 6 guards, send three riders, who "
+      "arrive on horseback at Ashford's edge from their homes' sides, named \"Brookfield's guard\", their shields in the "
+      "realm's red, and ride into the raiders (the ride is shortened to 3 seconds for the film)", 40,
+      [("01_relief", "The raid on Ashford"), ("05_relief", "The riders arrive"), ("10_relief", "They ride into the zombies"),
+       ("15_relief", "The fight")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

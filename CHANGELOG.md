@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Lost Caravan, for 1.5** (31.20, off until 1.5 is finished): one caravan in 20 on a road over 300 blocks goes
+  missing (`lostCaravanChance`). Both halls hear it's overdue and the sending hall hands out a map: find the wreck,
+  follow the five marks to the raiders' stockade, and open the cage. The carter (a villager with one of the village
+  names) follows whoever freed him, catching up from 32 blocks and waiting further than 64, and joins the village he
+  reaches at Journeyman: +150 standing in both villages, +100 friendship with him and the honour Wayfinder. The
+  stockade's chest holds the lost goods; bring them to the receiving hall for 8 emeralds and +50 standing there. After 7
+  days without a rescue he finds his own way home with nothing, and the goods are lost.
 - **The realm treasury, for 1.7** (33.13, off until 1.7 is finished): every member of a realm pays a levy of its
   daily takings into the realm treasury before the rest goes into its own (10% by default; the capital's owner picks
   0, 5, 10 or 20% on the Realm tab). The treasury holds up to 256 emeralds for a Barony, 512 for a County, 1,024 for a

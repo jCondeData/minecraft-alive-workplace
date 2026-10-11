@@ -92,6 +92,7 @@ range is in brackets.
 | `rogueBounties` | on | 1.5 | With Cobblemon, half the bounties are on a rogue Pokémon: huge, level 35 to 65 by rank, roaming 150 to 250 blocks out; beaten or caught it pays 16 emeralds times the rank factor. Off: no rogue is posted. Never without Cobblemon. See [The bounty board](bounties.md). |
 | `arcCooldownDays` | 8 (0 to 60) | 1.5 | Days between two story arcs in one village (also before a village's first). |
 | `arcsAtOnce` | 3 (0 to 20) | 1.5 | Story arcs running at once on the whole server (side arcs not counted); 0: none. |
+| `lostCaravanChance` | 20 (0 to 1000) | 1.5 | One caravan in this many on a road over 300 blocks goes missing and starts the Lost Caravan; 0: none. |
 | `disabledArcs` | empty |  | Story arc ids that never start; a running one ends at its next round. In the file only. |
 | `villageProtection` | on |  | A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). |
 | `partnerShows` | on | 1.2 | Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... |

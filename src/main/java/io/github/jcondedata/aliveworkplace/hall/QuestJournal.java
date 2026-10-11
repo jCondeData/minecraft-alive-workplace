@@ -330,6 +330,9 @@ public final class QuestJournal {
 		if (o instanceof io.github.jcondedata.aliveworkplace.story.CaravanTrail.FollowTrail) {
 			return Items.LANTERN;
 		}
+		if (o instanceof io.github.jcondedata.aliveworkplace.story.LostCaravanStory.DeliverGoods) {
+			return Items.CHEST;
+		}
 		if (o instanceof Objectives.Talk) {
 			return Items.BELL;
 		}

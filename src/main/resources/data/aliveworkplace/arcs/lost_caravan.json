@@ -1,0 +1,52 @@
+{
+  "name": {"translate": "arc.aliveworkplace.lost_caravan"},
+  "trigger": {"event": "caravan_lost"},
+  "chapters": [
+    {
+      "name": {"translate": "arc.aliveworkplace.lost_caravan.1"},
+      "intro": ["arc.aliveworkplace.lost_caravan.1.intro.1", "arc.aliveworkplace.lost_caravan.1.intro.2"],
+      "on_start": [
+        {"type": "lost_caravan", "step": "overdue"},
+        {"type": "place", "key": "wreck", "template": "aliveworkplace:story/caravan_wreck", "rule": {"road": 0.333, "or": 150}},
+        {"type": "place", "key": "stockade", "template": "aliveworkplace:story/raiders_stockade", "rule": {"after": "wreck", "distance": [120, 180], "away": true}},
+        {"type": "place", "key": "trail", "each": ["aliveworkplace:story/trail_1", "aliveworkplace:story/trail_2", "aliveworkplace:story/trail_3",
+          "aliveworkplace:story/trail_4", "aliveworkplace:story/trail_5"], "rule": {"between": ["wreck", "stockade"]}},
+        {"type": "give_map", "at": "wreck"}
+      ],
+      "needs_flags": ["wreck_found"],
+      "chatter": ["chatter.aliveworkplace.lost_caravan.overdue"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.lost_caravan.2"},
+      "intro": ["arc.aliveworkplace.lost_caravan.2.intro.1"],
+      "on_start": [
+        {"type": "spawn", "entity": "minecraft:vindicator", "key": "raider_captain", "at": "stockade", "name": {"translate": "entity.aliveworkplace.raider_captain"},
+          "gear": {"head": "minecraft:chainmail_helmet", "chest": "minecraft:iron_chestplate", "mainhand": "minecraft:iron_axe"}, "health": 20, "restrict": 10},
+        {"type": "spawn", "entity": "minecraft:vindicator", "key": "raider", "at": "stockade", "count": 2, "name": {"translate": "entity.aliveworkplace.bandit"}, "restrict": 10},
+        {"type": "spawn", "entity": "minecraft:pillager", "key": "raider_archer", "at": "stockade", "count": 2, "name": {"translate": "entity.aliveworkplace.bandit"}, "restrict": 10}
+      ],
+      "quests": [
+        {"id": "aliveworkplace:arc/lost_caravan/the_tracks", "name": {"translate": "arc.aliveworkplace.lost_caravan.tracks"},
+          "objectives": [{"type": "follow_trail", "trail": "trail", "then": "stockade"}]}
+      ],
+      "chatter": ["chatter.aliveworkplace.lost_caravan.tracks"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.lost_caravan.3"},
+      "intro": ["arc.aliveworkplace.lost_caravan.3.intro.1", "arc.aliveworkplace.lost_caravan.3.intro.2"],
+      "quests": [
+        {"id": "aliveworkplace:arc/lost_caravan/the_goods", "name": {"translate": "arc.aliveworkplace.lost_caravan.goods"},
+          "objectives": [{"type": "deliver_goods"}],
+          "rewards": [{"type": "money", "emeralds": 8}]}
+      ],
+      "complete": [],
+      "needs_flags": ["tobin_home"],
+      "chatter": ["chatter.aliveworkplace.lost_caravan.captive"]
+    }
+  ],
+  "ending": [
+    {"type": "lost_caravan", "step": "ending"},
+    {"type": "reputation", "points": 150, "who": "helpers"},
+    {"type": "honour", "id": "wayfinder", "who": "helpers"}
+  ]
+}

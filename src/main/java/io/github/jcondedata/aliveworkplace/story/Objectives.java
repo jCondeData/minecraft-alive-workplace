@@ -117,6 +117,7 @@ public final class Objectives {
 		register("build", RequestErrands.Build::read);
 		register("fetch", RequestErrands.Fetch::read);
 		register("follow_trail", CaravanTrail.FollowTrail::read); // 31.19
+		register("deliver_goods", LostCaravanStory.DeliverGoods::read); // 31.20
 	}
 
 	public static void register(String type, Function<JsonObject, Objective> reader) {

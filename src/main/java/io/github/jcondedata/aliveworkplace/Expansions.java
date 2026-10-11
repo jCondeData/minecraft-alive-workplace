@@ -74,7 +74,7 @@ public final class Expansions {
 			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage", "realms", "realmMaxMembers" -> M33;
 			case "sieges", "siegeDamage" -> M32;
 			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> M31;
-			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "bountyBoard", "rogueBounties" -> M31;
+			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "bountyBoard", "rogueBounties" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "classGraceDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",
 				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> M34;
 			default -> null;

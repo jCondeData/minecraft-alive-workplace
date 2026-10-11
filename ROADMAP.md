@@ -2786,7 +2786,7 @@ write their own stories; nothing waits forever on a player.
     marks in order only (reaching mark 3 first counts nothing);
   - renders of the wreck, the stockade and the five marks in the review package; showcase scene `caravan_trail` (the
     wreck, a mark, the stockade).
-- [ ] **31.20** **The Lost Caravan, II: the story.** `arcs/lost_caravan.json`. When a caravan sets off on a road
+- [x] **31.20** (review: pending 2026-10-11) **The Lost Caravan, II: the story.** `arcs/lost_caravan.json`. When a caravan sets off on a road
   longer than 300 blocks (`hall/Caravans`), 1 in 20 goes missing (config `lostCaravanChance`, 20), if neither village
   has an arc running; its goods are held by the arc. Chapters:
   1. **Overdue**: the caravan doesn't arrive; both halls are told ("The caravan from Thornholm to Ashford is a day

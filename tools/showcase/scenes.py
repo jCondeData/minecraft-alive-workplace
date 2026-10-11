@@ -652,6 +652,13 @@ SCENES = [
       [("01_wreck", "The wreck: the settlers' wagon on its side"),
        ("02_mark", "A mark of the trail, the tracks pointing on"),
        ("03_stockade", "The raiders' stockade and its cage")]),
+    # The Lost Caravan, II: the story (ROADMAP 31.20): the wreck found, the trail, the carter freed and walked home
+    S("lost_caravan", "Village Hall", "The Lost Caravan: the wreck, the trail, freeing Tobin and walking him home",
+      "the Lost Caravan's story: the settlers' wagon on its side with 'The caravan's wreck: tracks lead away from the road' over the hotbar; a torn banner on the trail with the tracks pointing on; Tobin the carter in the raiders' cage, its iron gate open and his 'You came for me! Take me home, I'll keep up.' in chat; then Tobin walking after the player out of the stockade", 45,
+      [("01_wreck", "The wreck found by the road"),
+       ("02_trail", "The trail, the tracks pointing on"),
+       ("03_freed", "Tobin in the raiders' cage, the gate open"),
+       ("04_home", "Tobin follows the player home")]),
     # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
     S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
       "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,

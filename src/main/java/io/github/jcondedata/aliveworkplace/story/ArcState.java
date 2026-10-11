@@ -57,6 +57,9 @@ public final class ArcState {
 	@Nullable
 	String endWith;
 
+	/** A story's own data, which its effects and flags can't hold (31.20: the Lost Caravan's destination, goods, carter's leader); empty for most. */
+	public CompoundTag extra = new CompoundTag();
+
 	public static final long FOREVER = Long.MAX_VALUE;
 
 	public ArcState(String id) {
@@ -143,7 +146,7 @@ public final class ArcState {
 		return null;
 	}
 
-	CompoundTag save() {
+	public CompoundTag save() {
 		CompoundTag t = new CompoundTag();
 		t.putString("id", id);
 		t.putInt("chapter", chapter);
@@ -213,6 +216,9 @@ public final class ArcState {
 		if (last != null) {
 			Nbt.putUuid(t, "last", last);
 		}
+		if (!extra.isEmpty()) {
+			t.put("extra", extra.copy());
+		}
 		return t;
 	}
 
@@ -228,7 +234,7 @@ public final class ArcState {
 		}
 	}
 
-	static ArcState load(CompoundTag t) {
+	public static ArcState load(CompoundTag t) {
 		ArcState s = new ArcState(Nbt.getString(t, "id"));
 		s.chapter = Nbt.getInt(t, "chapter");
 		s.started = Nbt.getBoolean(t, "started");
@@ -285,6 +291,7 @@ public final class ArcState {
 			s.chatter.add(Nbt.stringAt(ch, i));
 		}
 		s.last = Nbt.hasUuid(t, "last") ? Nbt.getUuid(t, "last") : null;
+		s.extra = Nbt.getCompound(t, "extra").copy(); // (empty in saves from before 31.20)
 		return s;
 	}
 }

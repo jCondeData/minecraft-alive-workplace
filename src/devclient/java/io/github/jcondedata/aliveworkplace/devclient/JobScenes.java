@@ -174,6 +174,9 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/** The lost_caravan scene's carter (31.20). */
+	private static final String LOST_CARAVAN_TOBIN = "aliveworkplace_scene_tobin";
+
 	/** The caravan_trail scene's builds (31.19): where each one's middle goes. */
 	private static final BlockPos CARAVAN_WRECK = new BlockPos(-16, -61, -22);
 	private static final BlockPos CARAVAN_MARK = new BlockPos(2, -61, -22);
@@ -3662,6 +3665,83 @@ final class JobScenes {
 					Showcase.check(p.placed == 1 && level.getBlockState(p.origin.offset(io.github.jcondedata.aliveworkplace.story.CaravanTrail.CAGE_DOOR))
 						.is(net.minecraft.world.level.block.Blocks.IRON_DOOR), "the stockade stands, its cage shut");
 				}, 50)),
+			(level, player) -> true));
+		// The Lost Caravan, II: the story (ROADMAP 31.20): the wreck found, a mark of the trail pointing on, the carter
+		// caged in the raiders' stockade (set down by the arc's own build, which cages him and fills the chest with the
+		// lost goods) and the cage opened, then the carter following the player home.
+		SCREENS.put("lost_caravan", new Screen("the Lost Caravan: the settlers' wagon on its side with 'The caravan's wreck: tracks lead away from the road' over the hotbar; a torn banner on the trail with the tracks pointing on; Tobin the carter behind the iron gate of the raiders' cage, the gate swung open and 'You came for me! Take me home' in chat; Tobin walking after the player out of the stockade",
+			new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-32, -61, -44, 38, -44, -4)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-32, -64, -44, 38, -44, -4))) {
+					v.discard();
+				}
+				io.github.jcondedata.aliveworkplace.city.PlayerBuilt.get(level).forget(new net.minecraft.world.level.levelgen.structure.BoundingBox(-32, -64, -44, 38, -44, -4));
+				level.setDayTime(5000);
+			},
+			List.of(new Step("01_wreck", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.WRECK, CARAVAN_WRECK);
+					aim(level, player, new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5));
+					io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, Component.translatable("message.aliveworkplace.lost_caravan.wreck_found")
+						.withStyle(net.minecraft.ChatFormatting.GOLD));
+					Showcase.check(p.placed == 1, "the wreck lies by the road");
+				}, 50),
+				new Step("02_trail", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.MARKS.get(2), CARAVAN_MARK);
+					aim(level, player, new Vec3(-2.5, -58, -27.5), new Vec3(1.5, -59.5, -21.5));
+					io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, Component.translatable("message.aliveworkplace.trail.next",
+						io.github.jcondedata.aliveworkplace.story.CaravanTrail.direction(p.spot, CARAVAN_STOCKADE)).withStyle(net.minecraft.ChatFormatting.GOLD));
+					Showcase.check(p.placed == 1, "a mark of the trail, the tracks pointing on");
+				}, 40),
+				new Step("03_freed", -1, 0, (level, player) -> {
+					var s = new io.github.jcondedata.aliveworkplace.story.ArcState(io.github.jcondedata.aliveworkplace.story.LostCaravanStory.ARC.toString());
+					io.github.jcondedata.aliveworkplace.story.LostCaravanStory.hold(s, new BlockPos(400, -60, 0),
+						List.of(new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.BREAD, 12)));
+					var p = new io.github.jcondedata.aliveworkplace.story.ArcState.ArcPlace(io.github.jcondedata.aliveworkplace.story.LostCaravanStory.STOCKADE,
+						CARAVAN_STOCKADE, List.of(io.github.jcondedata.aliveworkplace.story.CaravanTrail.STOCKADE.toString()), 0);
+					s.places.add(p);
+					io.github.jcondedata.aliveworkplace.story.ArcEffects.build(level, s, p); // (the arc's own build fills the chest with the lost goods)
+					BlockPos door = p.origin.offset(io.github.jcondedata.aliveworkplace.story.CaravanTrail.CAGE_DOOR);
+					// The arc's carter belongs to a running arc (this scene's isn't one, so he leaves as he loads): one stands in for him.
+					Villager tobin = net.minecraft.world.entity.EntityType.VILLAGER.create(level);
+					if (tobin != null) {
+						tobin.moveTo(door.getX() + 0.5, door.getY(), door.getZ() + 2.5, 0f, 0f);
+						tobin.setCustomName(io.github.jcondedata.aliveworkplace.people.Names.name(65)); // Tobin
+						tobin.setCustomNameVisible(true);
+						tobin.addTag(LOST_CARAVAN_TOBIN);
+						tobin.setNoAi(true);
+						level.addFreshEntity(tobin);
+					}
+					var chest = level.getBlockEntity(p.origin.offset(io.github.jcondedata.aliveworkplace.story.CaravanTrail.LOOT_CHEST));
+					for (BlockPos d : List.of(door, door.above())) {
+						var st = level.getBlockState(d);
+						if (st.hasProperty(net.minecraft.world.level.block.DoorBlock.OPEN)) {
+							level.setBlock(d, st.setValue(net.minecraft.world.level.block.DoorBlock.OPEN, true), 2);
+						}
+					}
+					aim(level, player, Vec3.atCenterOf(door).add(0.5, 1.4, -4.5), Vec3.atCenterOf(door).add(0, 0, 2));
+					if (tobin != null) {
+						io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, Component.translatable("message.aliveworkplace.arc.says", tobin.getDisplayName(),
+							Component.translatable("message.aliveworkplace.lost_caravan.freed")).withStyle(net.minecraft.ChatFormatting.WHITE));
+					}
+					Showcase.check(tobin != null && level.getBlockState(door).is(net.minecraft.world.level.block.Blocks.IRON_DOOR)
+						&& chest instanceof net.minecraft.world.Container box && box.countItem(Items.OAK_LOG) == 32,
+						"Tobin in the raiders' cage, its gate open, the lost goods in the raiders' chest");
+				}, 50),
+				new Step("04_home", -1, 0, (level, player) -> {
+					Villager tobin = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-32, -64, -44, 38, -44, -4),
+						v -> v.getTags().contains(LOST_CARAVAN_TOBIN)).stream().findFirst().orElse(null);
+					aim(level, player, new Vec3(CARAVAN_STOCKADE.getX() + 0.5, -58.4, CARAVAN_STOCKADE.getZ() - 14.5), new Vec3(CARAVAN_STOCKADE.getX() + 2.5, -60, CARAVAN_STOCKADE.getZ() + 4.5));
+					if (tobin != null) {
+						tobin.setNoAi(false);
+						tobin.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET,
+							new net.minecraft.world.entity.ai.memory.WalkTarget(new net.minecraft.world.entity.ai.behavior.EntityTracker(player, false), 0.6f, 2));
+					}
+					Showcase.check(tobin != null, "Tobin follows the player out of the stockade, home");
+				}, 80)),
 			(level, player) -> true));
 		// The Sickness, I: eight far herbs (ROADMAP 31.17): a 5 x 5 pad of each herb's ground in a field of coarse dirt (no
 		// herb's ground), a herb_patch planted on each, the Glowcap's under a leaf canopy; then the Three-Herb Tonic in hand.

@@ -122,6 +122,7 @@ public final class ArcEffects {
 			}
 			case "bandit_king" -> BanditKingStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "sickness" -> SicknessStory.validate(GsonHelper.getAsString(json, "step", ""));
+			case "lost_caravan" -> LostCaravanStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "herb_patch" -> {
 				String herb = GsonHelper.getAsString(json, "herb", "");
 				if (Herbs.byId(herb) == null) {
@@ -281,6 +282,7 @@ public final class ArcEffects {
 			case "reputation", "honour" -> Reputation.arcEffect(level, hall, s, json); // to the arc's helpers (31.11)
 			case "bandit_king" -> BanditKingStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.16
 			case "sickness" -> SicknessStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.18
+			case "lost_caravan" -> LostCaravanStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.20
 			case "chatter" -> {
 				if (json.has("lines")) {
 					json.getAsJsonArray("lines").forEach(l -> s.chatter.add(l.getAsString()));
@@ -421,7 +423,7 @@ public final class ArcEffects {
 		if (rule.has("road")) {
 			float share = rule.get("road").getAsFloat();
 			Set<BlockPos> routes = Caravans.Data.get(level).routesFrom(hall);
-			BlockPos to = routes.stream().min(java.util.Comparator.comparingDouble(p -> p.distSqr(hall)))
+			BlockPos to = LostCaravanStory.to(s) != null ? LostCaravanStory.to(s) : routes.stream().min(java.util.Comparator.comparingDouble(p -> p.distSqr(hall)))
 				.orElseGet(() -> Caravans.neighbours(level, hall).stream().map(Caravans.Village::hall).findFirst().orElse(null));
 			BlockPos onRoad = to == null ? null : new BlockPos((int) Math.round(hall.getX() + (to.getX() - hall.getX()) * share), hall.getY(),
 				(int) Math.round(hall.getZ() + (to.getZ() - hall.getZ()) * share));
@@ -528,6 +530,7 @@ public final class ArcEffects {
 		p.placed++;
 		p.nextDay = Chronicle.day(level) + 1;
 		BanditKingStory.built(level, s, p); // a camp's war banner (31.16)
+		LostCaravanStory.built(level, s, p); // the carter in the stockade's cage, the goods in its chest (31.20)
 		PLACED.incrementAndGet();
 		AliveWorkplace.LOG.info("Story arc {} built {} ({} of {}) at {}", s.id, p.stages.get(p.placed - 1), p.placed, p.stages.size(), p.spot);
 		doneFlags(level, s);
@@ -840,6 +843,9 @@ public final class ArcEffects {
 
 	/** An arc mob loads that no running arc knows (its arc ended while it was away): it's gone. */
 	static void onLoad(ServerLevel level, Entity entity) {
+		if (LostCaravanStory.onLoad(level, entity)) {
+			return; // (31.20)
+		}
 		if (!entity.getTags().contains(Arcs.MOB_TAG)) {
 			return;
 		}

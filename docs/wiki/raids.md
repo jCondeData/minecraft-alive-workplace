@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2
+Roadmap items: 32.2, 32.14
 
 ## What a player sees
 
@@ -14,6 +14,24 @@ raid from their camp until their chief falls. Two things changed under the same 
   but the village no longer counted as raided and never got its "fought off" or "fled at dawn" line.
 - An attack is now **decided a day ahead**. At dusk each hall rolls whether raiders come the *next* night, so there is a
   day in which a warning can be given (32.14 adds the warnings; until then the horn is still the first you hear of it).
+
+## A day's warning (32.14)
+
+A village that keeps watch hears of an attack **the evening before**, when the clock sets it:
+
+- **Who keeps watch.** A guard whose Guard Post is within 24 blocks of a finished **Lookout Tower** or **Wall Tower**
+  (any style or tier) says who comes and from which side; a **Scout** posted there (not out on a mission) also counts
+  them ("about 9 strong"). Other systems add sources to `guard/Warnings.SOURCES` (M35's Lighthouse). The Seer is not a
+  source yet (ROADMAP Notes, 32.14).
+- **Told at once.** Players in the village, and the hall's owner wherever they are online, read "Smoke on the north
+  road: Warlord Harl's band will strike Oakvale tomorrow night." The chronicle has it; the guards icon says "Raiders
+  tomorrow night, from the north" and the Defence page's new slot shows the attack, who and the side.
+- **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
+  battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
+  dropped bars over; if no attack came, the bars go up the next morning.
+- **Without a source** the horn is the only warning, as before; the Defence page says "No lookout" and What next? says
+  to build a Lookout Tower and post a guard by it.
+- The warning and the dropped bars are saved on the hall's clock (`warned`, `braced`; a save from before has none).
 
 ## How it works
 
@@ -146,4 +164,9 @@ None.
   the clock's attack a day after the roll, the rest days, raids off; the conditions on a real hall, the portal arrival,
   the chance hook; cultures switched off never picked, the config file listing every culture).
 - Unchanged and passing: `RaidGameTests`, `HallSpecGameTests`, `CheckBugGameTests`.
-- No showcase scene: nothing new to see.
+- No showcase scene for 32.2: nothing new to see.
+- 32.14: `WarningGameTests` (a village with an archer by its Wall Tower warned at dusk, 25500 ticks ahead, in the
+  chronicle and on the Defence page, saved and loaded, a scout's count; a village without one not told and asked for a
+  lookout; on the warned day the gates shut and the portcullis down at noon, the archer on the tower within 400 ticks
+  of dusk and the villagers in, the siege taking the bars over; the bars up when no attack came, raids and sieges
+  switched off, every new sentence). Scene `warning`.

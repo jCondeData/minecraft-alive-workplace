@@ -216,6 +216,9 @@ public final class VillageHallScreen {
 		guardLore.add(defence ? DefencePage.hallLine(level, hall) : io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
 			.map(camp -> line(Component.translatable("screen.aliveworkplace.hall.bandits", where(hall, camp.pos())), ChatFormatting.RED))
 			.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY)));
+		if (defence) {
+			DefencePage.attackLine(level, hall).ifPresent(guardLore::add); // a day's warning (32.14)
+		}
 		// The Golem Smith's golems (29.15), a line each.
 		for (Component golem : io.github.jcondedata.aliveworkplace.legend.GolemSmith.hallLines(level, hall)) {
 			guardLore.add(line(golem, ChatFormatting.GOLD));
@@ -228,7 +231,8 @@ public final class VillageHallScreen {
 			DefencePage.render(menu, level, hall); // the Defence page (32.3)
 			menu.broadcastChanges();
 		});
-		menu.button(WELLBEING, wellbeingIcon(needs), null);
+		menu.button(WELLBEING, wellbeingIcon(needs, level.getBlockEntity(hall) instanceof VillageHallBlockEntity e
+			? io.github.jcondedata.aliveworkplace.threat.Disasters.line(e, Chronicle.day(level)) : null), null);
 		menu.button(REQUESTS, requestsIcon(census.requests()), null);
 		menu.button(BUILDS, buildsIcon(census.builds()), p -> {
 			PieceLooks.render(menu, level, hall);
@@ -829,7 +833,11 @@ public final class VillageHallScreen {
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
 		}
-		if (io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager)) {
+		if (io.github.jcondedata.aliveworkplace.people.Sickness.isPlagueIll(villager)) { // the plague (32.18): seen, in bed
+			lore.add(line(io.github.jcondedata.aliveworkplace.threat.Plague.bedridden(level, villager) ? "screen.aliveworkplace.hall.plague_bed"
+				: io.github.jcondedata.aliveworkplace.threat.Plague.seen(villager) ? "screen.aliveworkplace.hall.plague_seen" : "screen.aliveworkplace.hall.plague",
+				ChatFormatting.DARK_RED));
+		} else if (io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager)) {
 			lore.add(line(io.github.jcondedata.aliveworkplace.people.Sickness.isHexed(villager) ? "screen.aliveworkplace.hall.hexed"
 				: io.github.jcondedata.aliveworkplace.people.Sickness.isGrey(villager) ? "screen.aliveworkplace.hall.grey_cough" : "screen.aliveworkplace.hall.ill",
 				ChatFormatting.RED)); // a coven's hex (32.11), the Grey Cough (31.18)
@@ -956,6 +964,23 @@ public final class VillageHallScreen {
 
 	/** How well the village is kept: fed, in a bed, safe and lit, and the pace of work it makes. */
 	static ItemStack wellbeingIcon(VillageNeeds.Needs needs) {
+		return wellbeingIcon(needs, null);
+	}
+
+	/** The same, with the disaster under way or foretold (32.15) in red at the top. */
+	static ItemStack wellbeingIcon(VillageNeeds.Needs needs, @org.jetbrains.annotations.Nullable Component disaster) {
+		ItemStack icon = wellbeingIcon0(needs);
+		if (disaster != null) {
+			net.minecraft.world.item.component.ItemLore lore = icon.getOrDefault(net.minecraft.core.component.DataComponents.LORE,
+				net.minecraft.world.item.component.ItemLore.EMPTY);
+			List<Component> lines = new ArrayList<>(lore.lines());
+			lines.add(0, line(disaster, ChatFormatting.RED));
+			icon.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(lines));
+		}
+		return icon;
+	}
+
+	private static ItemStack wellbeingIcon0(VillageNeeds.Needs needs) {
 		int pace = needs.pacePercent();
 		Component paceLine = pace > 0 ? line(Component.translatable("screen.aliveworkplace.hall.faster", pace), ChatFormatting.GREEN)
 			: pace < 0 ? line(Component.translatable("screen.aliveworkplace.hall.slower", -pace), ChatFormatting.RED)

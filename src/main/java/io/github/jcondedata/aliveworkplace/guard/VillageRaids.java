@@ -248,6 +248,16 @@ public final class VillageRaids {
 		return Threats.pick(level, hall, villagers, random);
 	}
 
+	/**
+	 * About how many raiders a raid by {@code culture} would bring to the village of {@code villagers} and {@code guards}
+	 * round {@code hall} now, as {@link #start} sends them (a scout's count, 32.14; the culture's extras and captain aside).
+	 */
+	public static int expected(ServerLevel level, BlockPos hall, int villagers, int guards, net.minecraft.resources.ResourceLocation culture) {
+		int plain = Math.min(MAX_RAIDERS, 3 + villagers / 4);
+		int size = Math.min(MAX_RAIDERS, plain + Math.min(4, guards / 2));
+		return Lairs.of(level, hall, culture).map(c -> Lairs.raidSize(c, size)).orElse(size);
+	}
+
 	/** The raiders still about in the village round {@code hall}. */
 	public static List<Mob> raiders(ServerLevel level, BlockPos hall) {
 		int r = VillageHalls.RADIUS + 32;

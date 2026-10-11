@@ -3107,7 +3107,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     10 days' rest, double XP and a chronicle line with their names;
   - scene `war_party`: the player leading guards and siege-breakers into a war camp, the Warlord falling, the loot
     (GIF).
-- [ ] **32.14** **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
+- [x] **32.14** (review: pending 2026-10-11) **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
   Lookout Tower or Wall Tower (a day's warning); a Scout there (the same, with the raiders' number and side); the Seer
   (needs M29's Seer item: two days' warning; until it lands this source is skipped); and a list other systems add to
   (M35's Lighthouse). When the clock (32.2) sets an attack and the village has a source:
@@ -3123,7 +3123,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the attack; one without isn't told until it starts; in the warned village the gates are shut and the portcullis is
     down at dusk, and the archers are on their stations before the raiders appear;
   - scene `warning`: the guard on the tower at dusk, the chat line, the gates shutting (GIF).
-- [ ] **32.15** **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
+- [x] **32.15** (approved auto 2026-10-11) **The disaster engine.** `threat/Disasters` loads `data/aliveworkplace/disasters/<id>.json`; one file
   is one disaster:
   - `when`: conditions from the same toolbox as the raider cultures, plus the weather (thunder; no rain for N days)
     and the share of wooden blocks in the village's finished builds (sampled once a day); `chance` a day; `duration`
@@ -3140,7 +3140,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   disaster id, each on by default. Done when: a test datapack disaster applies each effect (a GameTest each), ends
   after its time or with rain, and survives a save and load of the hall; switched off, it never starts. No disaster
   ships yet: lands with `--no-review`.
-- [ ] **32.16** **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
+- [x] **32.16** (review: pending 2026-10-11) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
   a lightning strike in the hall's area in a thunderstorm sets a finished wooden build's roof alight (1 in 3), a
   chimney spark 2% a day in a drought, and the pirate gunners' burning arrows (32.8) light the wooden block they hit
   (1 in 4, with `mobGriefing`). A village fire spreads by the game's own fire (`doFireTick`), but never to a block the
@@ -3159,7 +3159,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the job starts from the grindstone and a water bucket, and the station tooltip lists it;
   - a builder puts the burned blocks back;
   - scene `fire`: a roof catching and the firewarden putting it out (GIF).
-- [ ] **32.17** **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
+- [x] **32.17** (review: pending 2026-10-11) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
   others 5% a day after 5 days without rain, twice as likely while a desert raiders' lair stands; it lasts 3–5 days
   and rain ends it. In the hall's area: crops, stems and berry bushes grow at a quarter pace, farmland dries, water
   cauldrons lose a level a day, and villagers are 10 less happy ("the wells are low") unless the village has a
@@ -3172,7 +3172,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     called), watered wheat at the usual rate; the Well Keeper wets dry farmland within 600 ticks; rain ends the
     drought; a finished Well takes the mood reason away;
   - scene `drought`: dry fields and the keeper carrying water to them (GIF).
-- [ ] **32.18** **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
+- [x] **32.18** (review: pending 2026-10-11) **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
   villagers than beds; a coven's hexed (32.11) or a traveller from far away (`inn/`) can start one too. While it lasts
   illness passes on: each hall round, a well villager who spent it within 3 blocks of an ill one catches it 1 in 5
   (less with Medicine research); the ill don't get well by themselves, the nurse's remedies don't cure them, and after
@@ -4440,6 +4440,21 @@ item waits.
 
 ## Notes / blocked
 
+- **Fire and the Firewarden (32.16, lane-b-1011-1233, 2026-10-11): decisions.** `village_fire.json` is a disaster
+  file (so `disasters` switches it) whose daily roll never starts it (`chance` 0, no `fires_a_day`): its fires are
+  short events kept per village in memory, set off by its `ignition` block (lightning 0.334, chimney 0.02 while
+  `dry_days` 5 or a drought is under way, burning arrows 0.25 from raider-tagged shooters). "Likelier the more wood":
+  the `when` gate (wood share 0.3) and two `factors` of 1.25 (at 0.5 and 0.7). In a village a fire with no builders'
+  block left beside it goes out at age 15 (else it smoulders on a player's roof forever); the brigade's bell swings
+  and rings without vanilla's ring (which sends villagers to hide); a new Firewarden has both buckets full; builders
+  skip a build with fire within 16 blocks. The guide page `docs/guide/fire.md` went in now, as 32.14's lines did,
+  though M32 is still closed: the release that opens M32 should check it.
+
+- **A day's warning (32.14, lane-b-1011-0933, 2026-10-11): the Seer is not a source yet.** The spec skips the Seer
+  until M29's Seer item lands; besides, with a Seer in the village the night is foretold at dawn by the Seer's own
+  round (29.16), which bypasses the threat clock, and the clock rolls only one day ahead, so two days' warning needs
+  the clock to roll two nights. Decided: `guard/Warnings.SOURCES` is the list other systems add to; the Seer joins
+  when its item lands, with the clock rolling a night further for it.
 - 2026-10-11 lane-d-1011-0332: 34.18 and 34.20 are built and ticked on `wip/lane-d` but not yet full-built together. The first full build on the merge failed 3 tests: B104 (known flake), B107 (LegendGuests, filed by lane b) and PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap ("no barrel"; passes on main CI, cause not found, maybe a flake); the rerun was cut off at the end of the run. Next lane-d run: merge `wip/lane-d` into main, run the full build, look at the heirloom test if it fails again, push.
 - **The player guide (22.10, lane-d-1011-0332, 2026-10-11): published at `/player-guide/`, not `/guide/`.** The Guide
   Book's showcase scene is named `guide`, so the showcase site's `/guide/` folder is already its pictures; renaming the

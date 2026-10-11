@@ -729,6 +729,60 @@ public final class ModVillagers {
 	);
 
 	/**
+	 * Goes house to house in a plague (ROADMAP 32.18): at a brewing stand, only ever by a glistering melon slice, with
+	 * config {@code physicians}. A jobless villager by a brewing stand still becomes a Cleric, which vanilla registers
+	 * first; the brewing stand is shared with the Nurse and the Undertaker.
+	 */
+	public static final VillagerProfession PHYSICIAN = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("physician"),
+		new VillagerProfession(
+			"physician",
+			holder -> holder.is(PoiTypes.CLERIC),
+			holder -> holder.is(PoiTypes.CLERIC),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CLERIC
+		)
+	);
+
+	/**
+	 * Carries water to the village's fields in a drought and keeps its cauldrons full (ROADMAP 32.17): at a cauldron, only
+	 * ever by a shovel, with config {@code wellKeepers}. A jobless villager by a cauldron still becomes a Leatherworker,
+	 * which vanilla registers first; the cauldron is shared with the Sifter and the Vintner.
+	 */
+	public static final VillagerProfession WELL_KEEPER = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("well_keeper"),
+		new VillagerProfession(
+			"well_keeper",
+			holder -> holder.is(PoiTypes.LEATHERWORKER),
+			holder -> holder.is(PoiTypes.LEATHERWORKER),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.BUCKET_FILL
+		)
+	);
+
+	/**
+	 * Puts out the village's fires (ROADMAP 32.16): at a grindstone, only ever by a water bucket, with config
+	 * {@code firewardens}. A jobless villager by a grindstone still becomes a Weaponsmith, which vanilla registers first;
+	 * the grindstone is the village watch's block, shared with the guards (21.1a).
+	 */
+	public static final VillagerProfession FIREWARDEN = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("firewarden"),
+		new VillagerProfession(
+			"firewarden",
+			holder -> holder.is(PoiTypes.WEAPONSMITH),
+			holder -> holder.is(PoiTypes.WEAPONSMITH),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_WEAPONSMITH
+		)
+	);
+
+	/**
 	 * Makes jewellery at a stonecutter (ROADMAP 34.12): only ever by a gold nugget, with config {@code jewellers}. A
 	 * jobless villager by a stonecutter still becomes a Mason, which vanilla registers first.
 	 */
@@ -867,7 +921,8 @@ public final class ModVillagers {
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
-			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER;
+			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER
+			|| profession == PHYSICIAN;
 	}
 
 	/**

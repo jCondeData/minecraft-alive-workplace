@@ -243,6 +243,12 @@ public final class Moods {
 			score += warband.points();
 			good.add(warband.reason());
 		}
+		// The disaster in their village (32.15): "the wells are low".
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason disaster = io.github.jcondedata.aliveworkplace.threat.Disasters.mood(level, villager);
+		if (disaster != null) {
+			score += disaster.points();
+			(disaster.points() >= 0 ? good : bad).add(disaster.reason());
+		}
 		// The Festival Cup their village holds (28.21).
 		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason cup = io.github.jcondedata.aliveworkplace.cup.CupChampions.mood(level, villager);
 		if (cup != null) {

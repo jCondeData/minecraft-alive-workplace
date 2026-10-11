@@ -94,6 +94,7 @@ public final class BanditCamps {
 
 	/** Every death: the chief falling breaks up his camp. */
 	public static void onDeath(ServerLevel level, LivingEntity entity, DamageSource source) {
+		WarParties.onDeath(level, entity, source); // double XP at a lair, and who killed there (32.13), before the lair may break
 		Lairs.onDeath(level, entity, source);
 	}
 

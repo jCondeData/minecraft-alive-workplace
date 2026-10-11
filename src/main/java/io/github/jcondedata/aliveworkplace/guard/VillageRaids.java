@@ -502,6 +502,9 @@ public final class VillageRaids {
 		data.end(hall);
 		data.remember(hall, new ThreatData.Past(Chronicle.day(level), raid.culture(), raid.raiders(), Math.max(0, raid.raiders() - survivors), fled));
 		Lairs.back(level, hall, raid.culture(), survivors); // those alive rejoin their lair, the dead are gone
+		if (fled) {
+			Scouts.trail(level, hall, raid.culture()); // a scout trails them home: the lair's place is known (32.12)
+		}
 		Threats.get(raid.culture()).ifPresent(c -> Threats.tactics(c).forEach(t -> t.end(level, hall, c, fled)));
 		io.github.jcondedata.aliveworkplace.trade.TradeGoods.event(level, hall, io.github.jcondedata.aliveworkplace.trade.TradeGoods.RAID); // 33.2: arms wanted for a few days
 		Component name = VillageHalls.name(level, hall);

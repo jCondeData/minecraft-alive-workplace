@@ -50,6 +50,17 @@ asks for the steps, `latest.log` and any crash report).
   family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)
   is named after you; at 10 hearts a villager sends you a weekly parcel with a letter; Legends visit only villages
   where someone is a Friend (Rare) or a Hero (Legendary); a Lord may set edicts and a Hero may propose one to the owner.
+- **Marching on the lair, for 1.6** (32.13). On the hall's Defence page, **Muster a war party** puts three in four of
+  the village's guards (up to 12) on the Rally Banner in your inventory and raises it; they gather by the hall. **Hire
+  the Siege-breakers**: two crossbows, two knights and a medic for 30 emeralds (3 less a level of Commerce), who stay
+  until the lair falls or two dawns pass. At the lair the band turns out six at a time; at a City the captain fights at
+  the front. Guards earn double experience for kills at a lair, and a lair broken by a war party gives 10 days' peace,
+  a chronicle line naming you and every guard who killed there, and +10 mood for two days ("the warband is broken").
+- **Scouts, for 1.6** (32.12). Sneak-right-click a guard with a **spyglass** and they're a **Scout** (you get back what
+  they held). From the hall's Defence page, **Scout the lair** sends one out by day: they walk to within 24 blocks of
+  the lair, raise the spyglass and come home; the band ignores a scout more than 8 blocks off. Back home the page shows
+  the lair's **exact place**, strength and captain, and a **Scouting Report** waits in the chest by their grindstone:
+  a map with a red X on the lair. A scout not back within a day is lost. Scouts also trail raiders who flee at dawn.
 - **Witch covens, for 1.6** (32.11). A swamp village of Village rank or more may get a **Coven Hut** beyond its
   edge: a hut on mangrove stilts over a pond, brewing stands, hanging lanterns, a herb garden, a black cat and the
   coven's cauldron over a fire. Every night it stands the coven **hexes** one to three villagers (a swirl of witch

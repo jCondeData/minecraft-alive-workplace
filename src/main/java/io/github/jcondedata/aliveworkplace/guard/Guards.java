@@ -35,7 +35,9 @@ public final class Guards {
 		/** A shield: blocks blows from in front. */
 		KNIGHT,
 		/** A healing or regeneration potion in hand: tends the wounded with the potions they carry. */
-		MEDIC;
+		MEDIC,
+		/** A spyglass: sent from the Defence page to scout the lair ({@link Scouts}, 32.12). */
+		SCOUT;
 
 		public net.minecraft.network.chat.Component title() {
 			return net.minecraft.network.chat.Component.translatable("guard_kind.aliveworkplace." + name().toLowerCase(java.util.Locale.ROOT));
@@ -44,6 +46,10 @@ public final class Guards {
 
 	public static Kind kind(Villager guard) {
 		ItemStack off = guard.getItemBySlot(EquipmentSlot.OFFHAND);
+		// (a scout raising the spyglass holds it in the main hand for a moment)
+		if (Scouts.isSpyglass(off) || Scouts.isSpyglass(guard.getItemBySlot(EquipmentSlot.MAINHAND))) {
+			return Kind.SCOUT;
+		}
 		if (isBow(off)) {
 			return Kind.ARCHER;
 		}
@@ -54,6 +60,31 @@ public final class Guards {
 			return Kind.MEDIC;
 		}
 		return Kind.GUARD;
+	}
+
+	/**
+	 * Whether a player may hand {@code stack} to a guard to make their kind (sneak-right-click): a bow or crossbow, a
+	 * shield, a healing potion, and once lairs are live (Milestone 32) a spyglass.
+	 */
+	public static boolean makesKind(ItemStack stack) {
+		return isBow(stack) || isShield(stack) || isMedicine(stack) || Scouts.isSpyglass(stack) && io.github.jcondedata.aliveworkplace.threat.Lairs.live();
+	}
+
+	/**
+	 * A player hands {@code held} to a guard (sneak-right-click): one of it goes in their off hand, which makes their kind;
+	 * what they held there goes to the player (or drops at their feet). The action bar names the guard's new kind.
+	 */
+	public static void hand(net.minecraft.server.level.ServerPlayer player, net.minecraft.world.entity.npc.Villager villager, ItemStack held) {
+		ItemStack old = villager.getItemBySlot(EquipmentSlot.OFFHAND);
+		villager.setItemSlot(EquipmentSlot.OFFHAND, held.split(1));
+		villager.setDropChance(EquipmentSlot.OFFHAND, 0f);
+		if (!old.isEmpty() && !player.getInventory().add(old)) {
+			player.drop(old, false);
+		}
+		io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.guard.kind",
+			villager.getDisplayName(), kind(villager).title()).withStyle(net.minecraft.ChatFormatting.GREEN));
+		villager.level().playSound(null, villager.blockPosition(), net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC.value(),
+			net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
 	}
 
 	public static boolean isShield(ItemStack stack) {

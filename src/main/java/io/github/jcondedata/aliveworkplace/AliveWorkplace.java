@@ -55,10 +55,12 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.fish.Fishers.init();
 		io.github.jcondedata.aliveworkplace.travel.FerryRides.init();
 		io.github.jcondedata.aliveworkplace.guard.Cavalry.init();
+		io.github.jcondedata.aliveworkplace.guard.Scouts.init(); // scouts sent to the lair, and what they bring home (32.12)
 		io.github.jcondedata.aliveworkplace.mail.Mail.init();
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.init();
 		io.github.jcondedata.aliveworkplace.guard.GuardPartners.init();
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
+		io.github.jcondedata.aliveworkplace.guard.WarParties.init(); // marching on the lair (32.13)
 		io.github.jcondedata.aliveworkplace.hall.Festivals.init();
 		io.github.jcondedata.aliveworkplace.hall.Banquets.init();
 		io.github.jcondedata.aliveworkplace.hall.Curfew.init();

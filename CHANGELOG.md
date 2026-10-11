@@ -51,6 +51,9 @@ asks for the steps, `latest.log` and any crash report).
   pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
   The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
   34.18's render layer.
+- The benchmark times our own code each tick (25.3, testers, benchmark servers only): with
+  `-Daliveworkplace.benchmark=true` the log gets our code's p50, p99 and worst tick each minute and a line for each
+  tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the

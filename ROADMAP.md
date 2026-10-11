@@ -490,6 +490,16 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     `BenchmarkCostGameTests` (3 tests) and the benchmark are untested. Left: compileJava, checkLayers, runGameTest with
     only `BenchmarkCostGameTests`, then `PERF=true VILLAGES=3 PLOTS=25 tools/packtest/run.sh` and read our max tick from
     the `--ticks` summary; tick 25.3 if it is under 50 ms (share was 14.7%).
+  - Status (lane-a-1011-0933): the timer compiles, `checkLayers` passes and `BenchmarkCostGameTests` pass (3 of 3);
+    off on normal servers (handlers unwrapped, behaviours one field read). One local benchmark (`PERF=true VILLAGES=3
+    PLOTS=25`, the pack, a loaded 7 GB container: server ticks p50 54 / 34 ms in the two measures): our code a tick p50
+    2.3 / 4.2 ms and p99 37.5 / 28.9 ms over two minutes, but **13 of 2,400 ticks had over 50 ms of ours** (worst 118.7
+    ms), plus 6 during the setup between the villages' `/workplace benchmark` calls (worst 450.9 ms); our profile share
+    16.7% (1.0% of it the timer's own `OurTickCost.ours` check). The biggest single calls are `LumberjackWork` (up to
+    66.8 ms) and `BuilderWork` (up to 64.2 ms). Target unmet. Left: time inside `LumberjackWork` and `BuilderWork`
+    (tree scans, chunk loads, wall-clock GC pauses count too) to find what makes one call take 50 ms+, cap it, and
+    rerun on GitHub's runner (nightly-tests, `part: benchmark`); make `ours` cheaper (a per-class cache) so the
+    timer doesn't add to the share.
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.

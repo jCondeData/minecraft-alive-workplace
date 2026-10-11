@@ -116,6 +116,10 @@ modules left out as on a real Java 21 install.
   for each long stretch whether a tick of ours over 50 ms was logged then. Only with `-Daliveworkplace.benchmark=true`
   (the pack test's measuring modes); on a normal server the handlers aren't wrapped and the behaviours' check is one
   field read.
+  First local run (2026-10-11, `PERF=true VILLAGES=3 PLOTS=25`, a loaded 7 GB container): p50 2.3 / 4.2 ms and p99
+  37.5 / 28.9 ms of ours a tick in the two measured minutes, but 13 of 2,400 ticks with over 50 ms of ours (worst
+  118.7 ms; 450.9 ms during the setup), the biggest single calls in `LumberjackWork` (66.8 ms) and `BuilderWork`
+  (64.2 ms); share 16.7%. The "no tick over 50 ms from us" target is not met yet (ROADMAP 25.3).
 - **Where:** run the nightly-tests workflow with `part: soak` (job `soak`, 110-minute limit, Java 21). The readings,
   the verdict and the long ticks are in the run's summary; the log, `soak-heap.txt` and the profiles in its
   `soak-<run>` artifact.

@@ -4145,7 +4145,7 @@
   "screen.aliveworkplace.hall.elder_days_left_charm": "Their time comes in %s days (an Evergreen Charm keeps them)",
   "aliveworkplace.config.villagerAges": "Villager Ages",
   "aliveworkplace.config.villagerAges.tooltip": "Grown villagers count their days and become elders. Off: nobody is an elder, so nobody passes away of old age; the day each grew up stays saved.",
-  "aliveworkplace.config.villagerElderDays": "Days to Become an Elder",
+  "aliveworkplace.config.villagerElderDays": "Days Until Elder",
   "aliveworkplace.config.villagerElderDays.tooltip": "Days a villager has been grown up before they are an elder.",
   "aliveworkplace.config.elderPassing": "Elders Pass Away",
   "aliveworkplace.config.elderPassing.tooltip": "An elder passes away in the night after 40 elder days and leaves a grave (an Undertaker can bring them back; an Evergreen Charm keeps them for good). Off: elders never die of old age.",

@@ -27,6 +27,10 @@ asks for the steps, `latest.log` and any crash report).
   home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
   Artisan's House or a Townhouse for them.
 
+### Fixed
+
+- The settings screen no longer cuts off the elder setting: it now reads "Days Until Elder" (B102).
+
 ## 0.142.0 — 2026-10-10
 
 ### Added

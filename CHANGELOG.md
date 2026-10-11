@@ -186,6 +186,9 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Big building villages run smoother: builders in one world place or break at most 12 blocks a tick between them (a
+  builder whose turn falls past that waits one tick). The benchmark's timer now tells a long tick of ours from a
+  garbage collection pause or a busy machine (the tick's GC pauses and time off the CPU in each long tick's line).
 - Villages with many lumberjacks and builders run smoother: a lumberjack in a wood full of log pillars or log cabins
   now looks a few trunks over at a time instead of all of them in one go (it may take a moment longer to pick its
   tree there), a tree farm's saplings are found without going over every block of the farm, and a builder waiting for

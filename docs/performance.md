@@ -116,6 +116,15 @@ modules left out as on a real Java 21 install.
   for each long stretch whether a tick of ours over 50 ms was logged then. Only with `-Daliveworkplace.benchmark=true`
   (the pack test's measuring modes); on a normal server the handlers aren't wrapped and the behaviours' check is one
   field read.
+  A long tick isn't always ours: a garbage collection pause stops every thread, and on a loaded machine the server
+  thread can wait for the CPU, both in the middle of one of our calls. So each tick also reads the collectors' pause
+  total and the server thread's CPU time once, and each long tick's line says the tick's own length, its GC pauses,
+  the time the thread was off the CPU, and `ours on the CPU`: our time without the larger of the two (an estimate; a
+  stall may have fallen outside our calls). The target is judged by that last figure; the minute lines and `perf.py
+  --ticks` count both (`ticks with over 50 ms of ours` and `on the CPU without GC pauses`). Whether a class is ours is
+  worked out once per class (`ClassValue`), since the check runs for every behaviour of every mob each tick.
+  Builders change at most 12 blocks a level a tick between them (`build/BuildBudget`): a place or break is a world
+  block update, and with many sites their work timers line up; past the budget a builder waits a tick (nothing saved).
   First local run (2026-10-11, `PERF=true VILLAGES=3 PLOTS=25`, a loaded 7 GB container): p50 2.3 / 4.2 ms and p99
   37.5 / 28.9 ms of ours a tick in the two measured minutes, but 13 of 2,400 ticks with over 50 ms of ours (worst
   118.7 ms; 450.9 ms during the setup), the biggest single calls in `LumberjackWork` (66.8 ms) and `BuilderWork`
@@ -123,6 +132,11 @@ modules left out as on a real Java 21 install.
   Second local run (2026-10-11, after the tree-search caps and the reused build counts): p50 1.6 / 1.9 ms and p99
   25.1 / 13.9 ms; 3 of 2,400 ticks with over 50 ms of ours (worst 80.5 ms; 216.8 ms during the setup), the biggest
   single calls `BuilderWork` (53.1 ms) and `LumberjackWork` (27.6 ms); share 17.5%. Still not met.
+  Third local run (2026-10-11, with the stall figures and the builders' block budget): p50 1.9 / 2.4 ms and p99
+  30.3 / 16.0 ms; 5 of 2,400 ticks with over 50 ms of ours, 4 of them stalls (one GC pause of 47 ms inside a builder's
+  call, three with the server thread 42 to 565 ms off the CPU on the loaded container), so 1 over 50 ms on the CPU
+  (52.5 ms, many small calls); during the setup 264.9 ms on the CPU as the second village's miners start. Share 16.1%
+  (the timer's own check 0.2%, was 1.0%). Still not met.
 - **Where:** run the nightly-tests workflow with `part: soak` (job `soak`, 110-minute limit, Java 21). The readings,
   the verdict and the long ticks are in the run's summary; the log, `soak-heap.txt` and the profiles in its
   `soak-<run>` artifact.

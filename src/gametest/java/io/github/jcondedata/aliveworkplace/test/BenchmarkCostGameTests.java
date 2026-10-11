@@ -102,6 +102,58 @@ public class BenchmarkCostGameTests implements net.fabricmc.fabric.api.gametest.
 		helper.succeed();
 	}
 
+	/**
+	 * A long tick of ours that a GC pause explains isn't counted against us; one with no stall is, and both lines say
+	 * the tick's length, pauses and time off the CPU.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void aLongTickWithAGcPauseIsToldApart(GameTestHelper helper) {
+		List<String> lines = new ArrayList<>();
+		OurTickCost.begin(lines::add);
+		try {
+			OurTickCost.enter(this);
+			busy(60_000_000L);
+			OurTickCost.exit(this);
+			OurTickCost.endTick(70_000_000L, 1_000_000_000L, 70_000_000L); // a (made-up) 1 s pause in the tick
+			helper.assertTrue(OurTickCost.longTicks() == 1 && OurTickCost.longTicksOnCpu() == 0,
+				"the paused tick: long " + OurTickCost.longTicks() + ", on the CPU " + OurTickCost.longTicksOnCpu());
+			helper.assertTrue(lines.size() == 1 && lines.get(0).contains("GC pauses 1000.0 ms")
+				&& lines.get(0).contains("the server thread off the CPU 0.0 ms") && lines.get(0).endsWith("ours on the CPU 0.0 ms"),
+				"the paused tick's line: " + lines);
+			OurTickCost.enter(this);
+			busy(60_000_000L);
+			OurTickCost.exit(this);
+			OurTickCost.endTick(60_000_000L, 0L, 10_000_000_000L); // no pause, the thread on the CPU throughout
+			helper.assertTrue(OurTickCost.longTicks() == 2 && OurTickCost.longTicksOnCpu() == 1,
+				"the plain tick: long " + OurTickCost.longTicks() + ", on the CPU " + OurTickCost.longTicksOnCpu());
+			OurTickCost.enter(this);
+			busy(60_000_000L);
+			OurTickCost.exit(this);
+			OurTickCost.endTick(); // figures unknown: all of it counts as ours
+			helper.assertTrue(OurTickCost.longTicksOnCpu() == 2 && lines.get(2).contains("GC pauses unknown"), "unknown figures: " + lines);
+		} finally {
+			OurTickCost.finish();
+		}
+		helper.assertTrue(lines.get(lines.size() - 1).contains("on the CPU without GC pauses: 2 (worst "), "window line: " + lines);
+		helper.succeed();
+	}
+
+	/** Builders' block changes per level and tick stop at the budget and start afresh the next tick (25.3). */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void buildersBlockChangesStopAtTheTickBudget(GameTestHelper helper) {
+		Object level = new Object();
+		int taken = 0;
+		while (io.github.jcondedata.aliveworkplace.build.BuildBudget.take(level, 100L) && taken < 1000) {
+			taken++;
+		}
+		helper.assertTrue(taken == io.github.jcondedata.aliveworkplace.build.BuildBudget.CHANGES_PER_TICK, "took " + taken + " in one tick");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.BuildBudget.take(level, 101L), "the next tick had no budget");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.build.BuildBudget.take(new Object(), 100L), "another level shared the budget");
+		helper.succeed();
+	}
+
 	private static void busy(long nanos) {
 		long until = System.nanoTime() + nanos;
 		while (System.nanoTime() < until) {

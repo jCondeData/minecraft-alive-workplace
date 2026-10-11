@@ -1,9 +1,14 @@
 package io.github.jcondedata.aliveworkplace.command;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
+import net.minecraft.server.MinecraftServer;
 
 /**
  * What our own code costs each server tick in the benchmark (ROADMAP 25.3): every job behaviour of ours (its start,
@@ -16,6 +21,12 @@ import java.util.function.Consumer;
  * recording; until then every call is one field read, and without the property the tick handlers aren't even wrapped.
  * Every {@link #WINDOW} ticks it logs a "Benchmark: our code a tick" line (p50, p99, the worst tick and its biggest
  * call), and each tick with over {@link #LONG_MS} ms of ours gets a line of its own.
+ *
+ * <p>A long tick can also be a stall that only happened to fall in our code: a garbage collection pause (every thread
+ * stops) or the server thread waiting for the CPU on a loaded machine. So each tick also reads, once, the collectors'
+ * total pause time and the server thread's CPU time: a long tick's line says the tick's own length, the pauses and the
+ * time the thread was off the CPU, and what is left of ours without them ("on the CPU"). That last figure is what the
+ * "no tick over 50 ms caused by us" target is judged by.
  */
 public final class OurTickCost {
 	/** The property the pack test's measuring modes set; read once. */
@@ -42,6 +53,21 @@ public final class OurTickCost {
 	private static long lastTick;
 	private static long worst;
 	private static int longTicks;
+	/** Long ticks still over {@link #LONG_MS} without the tick's GC pauses and off-CPU time, and their worst. */
+	private static int longOnCpu;
+	private static long worstOnCpu;
+	/** The collectors' pause total and the server thread's CPU time at the last tick's end (-1: not read yet). */
+	private static long lastGc = -1L;
+	private static long lastCpu = -1L;
+	/** Whether a class is ours, once per class: {@code ours} runs for every behaviour of every mob each tick. */
+	private static final ClassValue<Boolean> OURS_BY_CLASS = new ClassValue<>() {
+		@Override
+		protected Boolean computeValue(Class<?> type) {
+			return type.getName().startsWith(OURS);
+		}
+	};
+	private static List<GarbageCollectorMXBean> collectors;
+	private static ThreadMXBean threads;
 
 	private OurTickCost() {
 	}
@@ -60,6 +86,10 @@ public final class OurTickCost {
 		lastTick = 0L;
 		worst = 0L;
 		longTicks = 0;
+		longOnCpu = 0;
+		worstOnCpu = 0L;
+		lastGc = -1L;
+		lastCpu = -1L;
 		recording = true;
 	}
 
@@ -102,11 +132,35 @@ public final class OurTickCost {
 	}
 
 	private static boolean ours(Object who) {
-		return who != null && who.getClass().getName().startsWith(OURS);
+		return who != null && OURS_BY_CLASS.get(who.getClass());
 	}
 
-	/** Once a server tick: the tick's total goes into the window. */
+	/** Once a server tick, at its end: the tick's total goes into the window, with the tick's stalls read once. */
+	public static void endTick(MinecraftServer server) {
+		if (!recording) {
+			return;
+		}
+		long[] times = server.getTickTimesNanos();
+		long wall = times[server.getTickCount() % times.length]; // tallied just before the server's end-tick event
+		long gc = gcNanos();
+		long cpu = cpuNanos();
+		long gcInTick = lastGc < 0 || gc < 0 ? -1L : gc - lastGc;
+		long cpuInTick = lastCpu < 0 || cpu < 0 ? -1L : cpu - lastCpu;
+		lastGc = gc;
+		lastCpu = cpu;
+		endTick(wall, gcInTick, cpuInTick);
+	}
+
+	/** A tick's end with no stall figures (tests). */
 	public static void endTick() {
+		endTick(-1L, -1L, -1L);
+	}
+
+	/**
+	 * A tick's end: {@code tickNanos} the tick's own length, {@code gcNanos} the collectors' pauses and
+	 * {@code cpuNanos} the server thread's CPU time since the last tick's end; -1 for a figure not known.
+	 */
+	public static void endTick(long tickNanos, long gcNanos, long cpuNanos) {
 		if (!recording) {
 			return;
 		}
@@ -128,7 +182,14 @@ public final class OurTickCost {
 		}
 		if (tick / 1_000_000.0 > LONG_MS) {
 			longTicks++;
-			log.accept("Benchmark: a tick with " + ms(tick) + " of our code (biggest call: " + what + ")");
+			long onCpu = onCpu(tick, tickNanos, gcNanos, cpuNanos);
+			if (onCpu / 1_000_000.0 > LONG_MS) {
+				longOnCpu++;
+			}
+			worstOnCpu = Math.max(worstOnCpu, onCpu);
+			log.accept("Benchmark: a tick with " + ms(tick) + " of our code (biggest call: " + what + "); the tick "
+				+ known(tickNanos) + ", GC pauses " + known(gcNanos) + ", the server thread off the CPU "
+				+ known(offCpu(tickNanos, cpuNanos)) + "; ours on the CPU " + ms(onCpu));
 		}
 		if (filled == WINDOW) {
 			logWindow();
@@ -140,7 +201,7 @@ public final class OurTickCost {
 		log.accept("Benchmark: our code a tick over the last " + filled + " ticks: p50 " + ms(percentile(part, 50))
 			+ ", p99 " + ms(percentile(part, 99)) + ", max " + ms(windowWorst) + " (biggest call: " + windowWorstWhat
 			+ "); ticks with over " + (int) LONG_MS + " ms of ours so far: " + longTicks + " of " + ticks
-			+ " (worst " + ms(worst) + ")");
+			+ " (worst " + ms(worst) + "), on the CPU without GC pauses: " + longOnCpu + " (worst " + ms(worstOnCpu) + ")");
 		filled = 0;
 		windowWorst = 0L;
 		windowWorstWhat = "none";
@@ -161,6 +222,56 @@ public final class OurTickCost {
 
 	public static int longTicks() {
 		return longTicks;
+	}
+
+	/** Long ticks still over {@link #LONG_MS} once the tick's GC pauses and off-CPU time are taken out. */
+	public static int longTicksOnCpu() {
+		return longOnCpu;
+	}
+
+	/**
+	 * Our time in a tick without the tick's stalls: the larger of its GC pauses and the server thread's time off the
+	 * CPU is taken out (both stop our calls as much as anyone's; an estimate, since a stall may have fallen outside our
+	 * calls). Unknown figures take nothing out.
+	 */
+	static long onCpu(long ours, long tickNanos, long gcNanos, long cpuNanos) {
+		long stall = Math.max(Math.max(0L, gcNanos), Math.max(0L, offCpu(tickNanos, cpuNanos)));
+		return Math.max(0L, ours - stall);
+	}
+
+	/** The tick's length minus the thread's CPU time, -1 if either is unknown (CPU time also counts the tasks run
+	 * between ticks, so this never overstates the time off the CPU). */
+	static long offCpu(long tickNanos, long cpuNanos) {
+		return tickNanos < 0 || cpuNanos < 0 ? -1L : Math.max(0L, tickNanos - cpuNanos);
+	}
+
+	private static String known(long nanos) {
+		return nanos < 0 ? "unknown" : ms(nanos);
+	}
+
+	/** The collectors' pause time so far (ZGC's and Shenandoah's "Cycles" beans count concurrent work, left out). */
+	private static long gcNanos() {
+		if (collectors == null) {
+			collectors = ManagementFactory.getGarbageCollectorMXBeans().stream()
+				.filter(c -> !c.getName().contains("Cycles")).toList();
+		}
+		long total = 0L;
+		for (GarbageCollectorMXBean c : collectors) {
+			long t = c.getCollectionTime();
+			if (t < 0) {
+				return -1L;
+			}
+			total += t;
+		}
+		return total * 1_000_000L;
+	}
+
+	/** The calling (server) thread's CPU time, -1 where the JVM can't tell. */
+	private static long cpuNanos() {
+		if (threads == null) {
+			threads = ManagementFactory.getThreadMXBean();
+		}
+		return threads.isCurrentThreadCpuTimeSupported() ? threads.getCurrentThreadCpuTime() : -1L;
 	}
 
 	/** The {@code p}-th percentile (0-100) of {@code nanos} by the nearest-rank method; 0 for none. */

@@ -53,7 +53,7 @@ public final class Benchmark {
 		if (!Boolean.getBoolean("aliveworkplace.benchmark")) {
 			return;
 		}
-		Platform.get().onServerTick(server -> OurTickCost.endTick()); // 25.3: our code's time a tick
+		Platform.get().onServerTick(OurTickCost::endTick); // 25.3: our code's time a tick
 		Platform.get().onRegisterCommands(dispatcher -> dispatcher.register(
 			Commands.literal("workplace").then(Commands.literal("benchmark")
 				.requires(s -> s.hasPermission(4))

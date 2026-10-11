@@ -527,6 +527,22 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     profile's builder frames are `breakBlock` and `place`, world block updates); next, log GC pauses beside the timer
     to tell them apart, cap `BuilderWork`'s calls per tick per level, and rerun on GitHub's runner
     (nightly-tests, `part: benchmark`) for comparable numbers.
+  - Status (lane-a-1011-1833, stalls and a builder budget): each tick of the benchmark's timer now also reads the
+    collectors' pause total and the server thread's CPU time (once a tick), and each long tick's line gives the tick's
+    length, its GC pauses, the thread's time off the CPU and `ours on the CPU` (ours without the larger stall);
+    `perf.py --ticks` counts both. `OurTickCost.ours` caches per class (`ClassValue`): 0.2% of the samples, was 1.0%.
+    Builders change at most 12 blocks a level a tick between them (`build/BuildBudget`, not saved; past it a builder
+    waits a tick). Tested: `checkLayers` and 135 GameTests of the builder, crew, chaos, site steps/save and
+    benchmark-cost classes pass, 2 new (`aLongTickWithAGcPauseIsToldApart`, `buildersBlockChangesStopAtTheTickBudget`).
+    One local benchmark (`PERF=true VILLAGES=3 PLOTS=25`, the pack, Java 21, the loaded 7 GB container; server ticks
+    p50 29.0 / 17.3 ms): our code a tick p50 1.9 / 2.4 ms, p99 30.3 / 16.0 ms; 5 of 2,400 measured ticks over 50 ms
+    of ours, but 4 of them were stalls (a 49.1 ms `BuilderWork` call holding a 47 ms GC pause, 3 lumberjack ticks
+    with the thread 42-565 ms off the CPU), so **1 of 2,400 over 50 ms on the CPU: 52.5 ms** (many small calls, the
+    biggest `BuilderWork` 4.2 ms); during the setup, 2 more on the CPU (264.9 ms in a 394.5 ms tick with `MinerWork`'s
+    48.8 ms call, as the second village's workers start; 55.4 ms). Profile share 16.1% (was 17.5%; 2,633 samples).
+    Target still unmet, so not ticked. Left: the setup spike (many miners starting their first scan in one tick:
+    spread their first search), the share (12.2% of it under `work.Gated` behaviours: profile which jobs), and a run
+    on GitHub's runner (nightly-tests, `part: benchmark`), where a free CPU should take out the off-CPU stalls.
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.

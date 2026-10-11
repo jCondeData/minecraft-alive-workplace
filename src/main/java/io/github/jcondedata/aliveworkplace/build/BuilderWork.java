@@ -403,6 +403,9 @@ public class BuilderWork extends Behavior<Villager> {
 			workTimer--;
 			return;
 		}
+		if (!BuildBudget.take(level)) {
+			return; // 25.3: the level's block changes for this tick are spent; try again next tick
+		}
 		workTimer = BuilderLevels.delay(level, villager);
 		if (action == Action.BREAK && site.stage() == BuildPlan.Stage.DECONSTRUCT) {
 			takeDown(level, villager, site, bag, bench, step);

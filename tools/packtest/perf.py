@@ -85,7 +85,7 @@ def stretches(times_frames, gap_ms=SPIKE_GAP):
 
 
 def spikes(paths, top=10, log=None):
-    ours_long = [second for second, _, _ in our_ticks(log)[1]] if log else None
+    ours_long = [second for second, *_ in our_ticks(log)[1]] if log else None
     long = []
     pauses = []
     for path in paths:
@@ -138,9 +138,12 @@ def our_ticks(log):
         m = re.search(r"Benchmark: our code a tick over the last \d+ ticks: p50 ([\d.]+) ms, p99 ([\d.]+) ms, max ([\d.]+) ms \(biggest call: (.*?)\);", line)
         if m:
             windows.append((float(m.group(1)), float(m.group(2)), float(m.group(3)), m.group(4)))
-        m = re.search(r"\[(\d\d):(\d\d):(\d\d)\].*Benchmark: a tick with ([\d.]+) ms of our code \(biggest call: (.*)\)", line)
+        m = re.search(r"\[(\d\d):(\d\d):(\d\d)\].*Benchmark: a tick with ([\d.]+) ms of our code \(biggest call: (.*?)\)(?:; (.*); ours on the CPU ([\d.]+) ms)?", line)
         if m:
-            longs.append((int(m.group(1)) * 3600 + int(m.group(2)) * 60 + int(m.group(3)), float(m.group(4)), m.group(5)))
+            # Since the GC/CPU figures (25.3): the stalls, and ours without them; older lines count all of it as ours.
+            on_cpu = float(m.group(7)) if m.group(7) else float(m.group(4))
+            longs.append((int(m.group(1)) * 3600 + int(m.group(2)) * 60 + int(m.group(3)), float(m.group(4)), m.group(5),
+                          m.group(6) or "", on_cpu))
     return windows, longs
 
 
@@ -153,9 +156,12 @@ def print_our_ticks(log):
     worst = max(windows, key=lambda w: w[2])
     print(f"  max {worst[2]:.1f} ms ({worst[3]}); worst minute's p99 {max(w[1] for w in windows):.1f} ms; "
           f"median p50 {sorted(w[0] for w in windows)[len(windows) // 2]:.1f} ms")
-    print(f"  ticks with over {SPIKE_MS} ms of our code: {len(longs)}")
-    for second, ms, what in sorted(longs, key=lambda x: -x[1])[:5]:
-        print(f"    {ms:.1f} ms at {second // 3600:02d}:{second // 60 % 60:02d}:{second % 60:02d} (biggest call: {what})")
+    on_cpu = [x for x in longs if x[4] > SPIKE_MS]
+    print(f"  ticks with over {SPIKE_MS} ms of our code: {len(longs)}; still over {SPIKE_MS} ms on the CPU without "
+          f"GC pauses: {len(on_cpu)}" + (f" (worst {max(x[4] for x in on_cpu):.1f} ms)" if on_cpu else ""))
+    for second, ms, what, stalls, cpu in sorted(longs, key=lambda x: -x[1])[:8]:
+        print(f"    {ms:.1f} ms at {second // 3600:02d}:{second // 60 % 60:02d}:{second % 60:02d} (biggest call: {what})"
+              + (f"; {stalls}; on the CPU {cpu:.1f} ms" if stalls else ""))
 
 
 def long_ticks(log):

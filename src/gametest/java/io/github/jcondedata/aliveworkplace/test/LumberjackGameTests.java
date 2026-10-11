@@ -157,6 +157,34 @@ public class LumberjackGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * 25.3: saved and loaded (as its chunk does it) while its search is still going through the pillars, a few trunks a
+	 * tick: the new lumberjack starts its search again and still fells the oak.
+	 */
+	//$ gametest_ticks_batch AREA '3000' '"lumberjackReloadMidSearch"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "lumberjackReloadMidSearch")
+	public void lumberjackReloadedMidSearchStillFellsTheTree(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		logPillars(helper);
+		growOak(helper, new BlockPos(14, 2, 14));
+		Villager[] jack = { setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.OAK_SAPLING)) };
+		helper.runAfterDelay(2, () -> {
+			// 16 pillars at 6 a tick: the search isn't through them yet.
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(jack[0], 0) == 0, "felled before the reload");
+			net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+			helper.assertTrue(jack[0].save(tag), "the lumberjack wasn't saved");
+			jack[0].discard();
+			net.minecraft.world.entity.Entity loaded = EntityType.loadEntityRecursive(tag, helper.getLevel(), e -> e);
+			helper.assertTrue(loaded instanceof Villager && helper.getLevel().addFreshEntity(loaded), "the lumberjack didn't load again: " + loaded);
+			jack[0] = (Villager) loaded;
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(jack[0].isAlive(), "the lumberjack is gone");
+			helper.assertTrue(ModAttachments.TREES_FELLED.getOrElse(jack[0], 0) == 1, "the oak isn't down yet");
+			helper.assertBlockPresent(Blocks.OAK_LOG, new BlockPos(5, 2, 3)); // the pillars stand
+		});
+	}
+
 	/** Grows a real oak tree (the vanilla feature) on a grass block at {@code base}. */
 	private static void growOak(GameTestHelper helper, BlockPos base) {
 		ServerLevel level = helper.getLevel();

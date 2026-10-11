@@ -62,6 +62,8 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 **For server owners**
 - [Config switches](config-switches.md): every setting and game rule with its default, and the expansion gate.
+- [Big villages stay smooth](performance.md): the benchmark, our own time a tick, and the limits on tree searches and
+  build counts (25.1, 25.3).
 
 ## Who keeps it true
 

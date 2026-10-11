@@ -512,6 +512,19 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     `BuilderWork`'s skip loop (256 cheap checks) and lookahead (768 steps, once per chest trip) left as they are.
     GameTests `treeSearchesWorkOutAFewTreesAtATime`, `lumberjackFindsTheTreeBeyondLogPillars`. Left: the benchmark
     rerun (`PERF=true VILLAGES=3 PLOTS=25`, `perf.py --ticks`) to see the over-50 ms ticks gone.
+  - Status (lane-a-1011-1233): the caps are merged into `main` and tested: `checkLayers` and 159 GameTests of the
+    lumberjack, builder, build-reserve, crew, chaos, steps, config and benchmark-cost classes pass, with 2 new ones
+    (`lumberjackReloadedMidSearchStillFellsTheTree`: saved and loaded mid-search, it still fells the oak;
+    `aSitesNeedIsCountedAgainOnceItMovesOn`: the reused count, and a fresh one once the site moves on). One local
+    benchmark (`PERF=true VILLAGES=3 PLOTS=25`, the pack, Java 21, the 7 GB container; server ticks p50 34.1 / 15.4
+    ms): our code a tick p50 1.6 / 1.9 ms, p99 25.1 / 13.9 ms; **3 of 2,400 measured ticks over 50 ms of ours** (was
+    13; worst 80.5 ms, was 118.7), plus 3 during the setup (worst 216.8 ms in a `MinerWork` call, was 450.9);
+    `LumberjackWork`'s biggest call 27.6 ms (was 66.8). Profile share 17.5% (was 16.7%; one run each, 1,742 samples).
+    Target still unmet, so not ticked. Left: the worst measured ticks are many small calls together (80.5 ms with
+    its biggest call 7.8 ms: a catch-up tick or a GC pause in wall time) and one `BuilderWork` call of 53.1 ms (the
+    profile's builder frames are `breakBlock` and `place`, world block updates); next, log GC pauses beside the timer
+    to tell them apart, cap `BuilderWork`'s calls per tick per level, and rerun on GitHub's runner
+    (nightly-tests, `part: benchmark`) for comparable numbers.
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.

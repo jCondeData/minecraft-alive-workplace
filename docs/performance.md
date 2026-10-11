@@ -120,6 +120,9 @@ modules left out as on a real Java 21 install.
   37.5 / 28.9 ms of ours a tick in the two measured minutes, but 13 of 2,400 ticks with over 50 ms of ours (worst
   118.7 ms; 450.9 ms during the setup), the biggest single calls in `LumberjackWork` (66.8 ms) and `BuilderWork`
   (64.2 ms); share 16.7%. The "no tick over 50 ms from us" target is not met yet (ROADMAP 25.3).
+  Second local run (2026-10-11, after the tree-search caps and the reused build counts): p50 1.6 / 1.9 ms and p99
+  25.1 / 13.9 ms; 3 of 2,400 ticks with over 50 ms of ours (worst 80.5 ms; 216.8 ms during the setup), the biggest
+  single calls `BuilderWork` (53.1 ms) and `LumberjackWork` (27.6 ms); share 17.5%. Still not met.
 - **Where:** run the nightly-tests workflow with `part: soak` (job `soak`, 110-minute limit, Java 21). The readings,
   the verdict and the long ticks are in the run's summary; the log, `soak-heap.txt` and the profiles in its
   `soak-<run>` artifact.

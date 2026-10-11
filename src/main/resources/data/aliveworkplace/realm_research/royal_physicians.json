@@ -1,0 +1,22 @@
+{
+  "icon": "minecraft:glistering_melon_slice",
+  "name": {
+    "translate": "realm_research.aliveworkplace.royal_physicians"
+  },
+  "description": {
+    "translate": "realm_research.aliveworkplace.royal_physicians.description"
+  },
+  "order": 2,
+  "levels": 2,
+  "points": 4800,
+  "paper": 16,
+  "books": 4,
+  "emeralds": 32,
+  "needs": {
+    "common_law": 1
+  },
+  "effect": {
+    "type": "illness",
+    "amount": -20
+  }
+}

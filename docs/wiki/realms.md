@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released).
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13, 33.14
+Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15
 
 ## What a player sees
 
@@ -146,7 +146,8 @@ empty in a world that never had them:
   `patterns`), `rank` (`barony`, `county`, `duchy`, `kingdom`: the rank last counted, so a rank up is celebrated once)
   and `founded` (day). 33.13 adds `levy` (percent, default 10), `treasury` (hundredths of an emerald, default 0) and
   `ledger` (the last 20 movements, oldest first: `day`, `cents`, negative going out, and `reason`, a component),
-  so an older file's realms load with the default levy and an empty treasury.
+  so an older file's realms load with the default levy and an empty treasury. 33.15 adds `research`: the realm's
+  research, as a village's (`levels` by topic key, `current`, `progress`, `paid`); absent: none.
 - `known`: what each hall's last round saw: `hall`, `name`, `owner` (absent: none), `ownerName`, `rank`,
   `villagers`, `wellbeing` (percent), `seen` (game time). Forgotten when the hall is broken.
 
@@ -251,9 +252,49 @@ capital moved to another village, changes the cap at once. `realm/` blueprints a
 - The Colony Camp's flag is a plain white banner: the realm's arms can't go on a placed template's banner without new
   code in the arrival, left for the arms work.
 
+## Shared research (33.15)
+
+**What a player sees.** In a realm, a member's research screen shows each scholars' topic the capital knows better
+in gold, with "Level 2 from the capital": the member's guards hit as hard as the capital's Drill, its jobs are as quick
+as its Swift Hands, and so on. A member's scholars with nothing chosen at home say "helping the scholars of
+Thornholm" and work on the capital's topic. The capital's research screen has a **Realm** row under the topics: a gold
+helmet ("Realm research": the topic in hand, how far, what it waits for and what the treasury holds), then the realm
+topics. Clicking one (only the capital's owner, their friends and operators may) sets the capital's scholars on it:
+they take its paper and books from the chests by their desk and its emeralds from the realm treasury, and work on it
+before their own topic. When a level is done every member's players hear "Realm research in the Barony of Thornholm:
+Common Law I is done. Wellbeing in every village of the realm: +5 points a level", and the capital's chronicle notes
+it. The shipped topics: **Common Law** (wellbeing +5 a level, 2 levels), **Royal Physicians** (illness 20% rarer a level;
+after Common Law I), **Guild Exchange** (10% more XP a level; after Common Law I) and **The Realm's Peace** (night raids
+15% rarer a level; after Common Law II).
+
+**How it works.** `Research.at` (and `Research.of(level, hall, entity)`, which the Village Hall's pace and wellbeing, the
+Ramparts and the Warding read) gives a member, for each topic of the scholars' tree, the higher of its own level and the
+capital's (`RealmResearch.shared`); a capital whose chunk isn't loaded counts as last seen. The rank reads the hall's
+own levels, so shared ones never count toward it. A member scholar with nothing of its own (and no Legend's tree to help)
+adds half its points to the capital's paid-for topic, else to the realm's paid-for topic (`RealmResearch.helpCapital`).
+Realm topics are data: one file each, `data/<ns>/realm_research/<topic>.json`, with `icon`, `name`, `description`,
+`levels` (1-10), `points`, `paper`, `books` and `emeralds` a level (each times the level, as the scholars' tree), `needs`
+(topic key to level; ours by path, a pack's in full) and `effect`: `{"type": ..., "amount": ...}`, one of `wellbeing`
+(points), `xp` (percent), `illness` (percent, negative is rarer), `loot_luck` (luck) and `raid_chance` (percent), each an
+amount a level. The effects count in every village of the realm, through the same sums as the Legends' research trees
+(`TreeEffects`). The row holds 5 topics; a file that fails to read, names an unknown effect type or an unknown topic,
+or doesn't fit is logged ("Skipping realm research <path>: <reason>") and skipped. Realms off: nothing is shared, no
+row, no effects; the realm's research stays saved.
+
+**Decisions (33.15).** The realm's research is kept with the realm, not the capital's hall, so it stays when the crown
+moves. The capital's scholars put a chosen realm topic before the village's own (the owner chose to pay for it from the
+treasury); choosing one is for whoever rules the capital, like the levy. Effects use the research trees' toolbox, so
+every type already has a system that reads it. Paper and books come from the desk's chests and the village store, the
+emeralds only from the treasury.
+
 ## Known limits
 
-- No research, relief riders or edicts yet (33.14 to 33.17, 33.21, 33.22); the treasury and the arms are there for them.
+- Realm topics have no "exclusive" groups or counters, unlike the Legends' trees; 5 at most show.
+- A member's research screen shows the capital's levels but chooses and pays for its own as before (a topic the
+  capital has may still be researched at home).
+- `realm_research` hasn't been filmed yet (GitHub films it after the push).
+
+- No relief riders or edicts yet (33.16, 33.17, 33.21, 33.22); the treasury and the arms are there for them.
 - `realm_treasury` hasn't been filmed yet (GitHub films it after the push). Nor has `realm_builds` (33.14).
 - The members' villagers and wellbeing are as their last round saw them (every half minute while loaded); a village
   far from players shows its last numbers.
@@ -296,4 +337,10 @@ capital moved to another village, changes the cap at once. `realm/` blueprints a
   stack), `theMovementsAreListed` (newest first with day and reason, a spend, only 20 kept), `itSurvivesSaveAndReload`
   (and an older file's realm).
 
-Showcase scenes: `realm`, `realm_invite`, `realm_treasury`
+- `RealmResearchGameTests` (6, 33.15): `aMembersGuardsUseTheCapitalsDrill` (30% harder, "Level 3 from the capital",
+  the rank unchanged, a higher own level, realms off, after leaving), `anIdleMemberScholarHelpsTheCapital`,
+  `aRealmTopicIsPaidFromTheTreasuryAndFinishes` (the Realm row, a stranger, a locked topic, a member refused, the
+  treasury and chest paid, the done line, the chronicle, the members' XP), `anEmptyTreasuryWaits`, `aReloadKeepsIt` (a
+  real `/reload`, a save, an older realm), `brokenFilesAreSkipped`.
+
+Showcase scenes: `realm`, `realm_invite`, `realm_treasury`, `realm_research`

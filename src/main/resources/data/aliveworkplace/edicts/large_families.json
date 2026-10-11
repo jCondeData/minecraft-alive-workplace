@@ -10,6 +10,7 @@
   ],
   "excludes": [],
   "reform": {
+    "arc": "aliveworkplace:midwives",
     "name": {"translate": "reform.aliveworkplace.midwives"},
     "line": {"translate": "reform.aliveworkplace.midwives.line"},
     "steps": [

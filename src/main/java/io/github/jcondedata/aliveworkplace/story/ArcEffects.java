@@ -150,6 +150,7 @@ public final class ArcEffects {
 					QuestFiles.read(AliveWorkplace.id("arc/inline"), q);
 				}
 			}
+			case "reform_step", "reform_ending" -> ReformStories.validate(json); // 31.22
 			case "end_arc" -> {
 				String ending = GsonHelper.getAsString(json, "ending", "failed");
 				if (!Set.of("done", "failed", "quiet").contains(ending)) {
@@ -280,6 +281,8 @@ public final class ArcEffects {
 				Arcs.quest(level, hall, s, ref);
 			}
 			case "end_arc" -> s.endWith = GsonHelper.getAsString(json, "ending", "failed");
+			case "reform_step" -> ReformStories.step(level, hall, s, arc, GsonHelper.getAsInt(json, "step")); // 31.22
+			case "reform_ending" -> ReformStories.ending(level, hall, s, arc, GsonHelper.getAsString(json, "ending")); // 31.22
 			case "reputation", "honour" -> Reputation.arcEffect(level, hall, s, json); // to the arc's helpers (31.11)
 			case "bandit_king" -> BanditKingStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.16
 			case "sickness" -> SicknessStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.18
@@ -884,11 +887,18 @@ public final class ArcEffects {
 			level.addFreshEntity(v);
 			return v;
 		}
-		List<Villager> all = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), x -> x.isAlive() && !x.isBaby()
+		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), x -> x.isAlive() && !x.isBaby()
 			&& x.getTags().stream().noneMatch(t -> t.startsWith("aliveworkplace_role_")));
-		if (spec.villager().startsWith("job:")) {
-			ResourceLocation job = ResourceLocation.tryParse(spec.villager().substring(4));
-			all = all.stream().filter(x -> BuiltInRegistries.VILLAGER_PROFESSION.getKey(x.getVillagerData().getProfession()).equals(job)).toList();
+		List<Villager> all = List.of();
+		for (String alt : spec.villager().split("\\|")) { // alternatives in order (31.22: "the Toolsmith, else any smith")
+			all = everyone;
+			if (alt.startsWith("job:")) {
+				ResourceLocation job = ResourceLocation.tryParse(alt.substring(4));
+				all = everyone.stream().filter(x -> BuiltInRegistries.VILLAGER_PROFESSION.getKey(x.getVillagerData().getProfession()).equals(job)).toList();
+			}
+			if (!all.isEmpty()) {
+				break;
+			}
 		}
 		if (all.isEmpty()) {
 			return null;

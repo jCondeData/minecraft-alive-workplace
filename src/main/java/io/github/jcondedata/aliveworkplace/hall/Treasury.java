@@ -99,6 +99,7 @@ public final class Treasury {
 		}
 		entity.setTreasury((int) Math.max(before, Math.min(cap, held + add)));
 		entity.addTreasuryTotal(entity.treasury() - before);
+		io.github.jcondedata.aliveworkplace.story.ReformStories.takings(level, hall, day, entity.treasury() - before); // the Fair Ledger (31.22)
 	}
 
 	/**

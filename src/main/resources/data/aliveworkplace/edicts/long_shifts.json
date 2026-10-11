@@ -7,6 +7,7 @@
   "cost": [{"type": "aliveworkplace:mood", "points": -10, "reason": {"translate": "mood.aliveworkplace.reason.long_shifts"}}],
   "excludes": [],
   "reform": {
+    "arc": "aliveworkplace:shift_bell",
     "name": {"translate": "reform.aliveworkplace.shift_bell"},
     "line": {"translate": "reform.aliveworkplace.shift_bell.line"},
     "steps": [

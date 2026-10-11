@@ -176,6 +176,9 @@ final class JobScenes {
 
 	/** The lost_caravan scene's carter (31.20). */
 	private static final String LOST_CARAVAN_TOBIN = "aliveworkplace_scene_tobin";
+	/** The reform_story scene's hall and Toolsmith (31.22). */
+	private static final BlockPos REFORM_HALL = new BlockPos(0, -60, -16);
+	private static final String REFORM_SMITH = "aliveworkplace_showcase_reform_smith";
 
 	/** The caravan_trail scene's builds (31.19): where each one's middle goes. */
 	private static final BlockPos CARAVAN_WRECK = new BlockPos(-16, -61, -22);
@@ -4001,6 +4004,93 @@ final class JobScenes {
 					}
 					Showcase.check(tobin != null, "Tobin follows the player out of the stockade, home");
 				}, 80)),
+			(level, player) -> true));
+		// The eight reforms as stories (ROADMAP 31.22): The Shift Bell, from the Toolsmith's ask to the bell ringing the work
+		// day in. Long Shifts is in force; the hall's round starts the story, the Toolsmith asks, M30's three steps are
+		// handed in a day apart, and the ending sets the Shift Bell on the grass beside the hall; at the start of the work
+		// day it rings.
+		SCREENS.put("reform_story", new Screen("The Shift Bell as a story: the Toolsmith by the hall asking for a bell to ring the long shifts in and out (his words in chat); the three steps (clocks, gold, bread) handed in; the ending: the Shift Bell, a bell under a little roof between two dark oak posts on the grass beside the hall, ringing at the start of the work day",
+			new Vec3(0.5, -57.5, -1.5), new Vec3(1.5, -59.5, -13.5),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-20, -61, -34, 20, -50, 4)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (Villager v : level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(-90, -64, -100, 90, -40, 70))) {
+					v.discard();
+				}
+				level.setBlock(REFORM_HALL, io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL.defaultBlockState(), 3);
+				level.setBlock(REFORM_HALL.offset(4, 0, 1), net.minecraft.world.level.block.Blocks.SMITHING_TABLE.defaultBlockState(), 3);
+				Villager smith = net.minecraft.world.entity.EntityType.VILLAGER.create(level);
+				if (smith != null) {
+					smith.moveTo(REFORM_HALL.getX() + 2.5, REFORM_HALL.getY(), REFORM_HALL.getZ() + 3.5, 180f, 0f);
+					smith.setVillagerData(smith.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH).setLevel(2));
+					smith.setVillagerXp(20);
+					smith.setNoAi(true);
+					smith.addTag(REFORM_SMITH);
+					level.addFreshEntity(smith);
+				}
+				level.setDayTime(1000);
+			},
+			List.of(new Step("01_ask", -1, 0, (level, player) -> {
+					var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(REFORM_HALL);
+					String edict = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("long_shifts").toString();
+					entity.setReforms(List.of());
+					entity.setEdicts(List.of(new io.github.jcondedata.aliveworkplace.hall.Edicts.InForce(edict,
+						io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level))));
+					io.github.jcondedata.aliveworkplace.story.Arcs.stopAll(level, REFORM_HALL);
+					boolean auto = io.github.jcondedata.aliveworkplace.story.Arcs.AUTO;
+					io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = true;
+					io.github.jcondedata.aliveworkplace.hall.Reforms.round(level, REFORM_HALL, entity);
+					io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = auto;
+					Villager smith = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(REFORM_HALL).inflate(8),
+						v -> v.getTags().contains(REFORM_SMITH)).stream().findFirst().orElse(null);
+					aim(level, player, new Vec3(REFORM_HALL.getX() + 2.5, REFORM_HALL.getY() + 1.6, REFORM_HALL.getZ() + 7.5),
+						new Vec3(REFORM_HALL.getX() + 2.5, REFORM_HALL.getY() + 1.4, REFORM_HALL.getZ() + 3.5));
+					boolean talked = smith != null && io.github.jcondedata.aliveworkplace.story.ArcEffects.onTalk(player, level, InteractionHand.MAIN_HAND, smith)
+						== net.minecraft.world.InteractionResult.SUCCESS;
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.Arcs.side(level, REFORM_HALL).size() == 1 && talked,
+						"Long Shifts in force: The Shift Bell begins and the Toolsmith asks for it");
+				}, 60),
+				new Step("02_steps", -1, 0, (level, player) -> {
+					var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(REFORM_HALL);
+					long day = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+					for (int n = 0; n < 3; n++) {
+						if (n > 0) {
+							level.setDayTime((day + n - 1) * 24000L + 1000);
+							io.github.jcondedata.aliveworkplace.story.Arcs.round(level, REFORM_HALL, entity);
+						}
+						for (var q : io.github.jcondedata.aliveworkplace.story.Stories.open(level, REFORM_HALL)) {
+							if (q.arc != null && q.objectives.get(0) instanceof io.github.jcondedata.aliveworkplace.story.Objectives.Bring b) {
+								var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(b.item()));
+								for (int left = b.count(); left > 0; left -= 64) {
+									player.getInventory().add(new ItemStack(item, Math.min(64, left)));
+								}
+								io.github.jcondedata.aliveworkplace.story.Stories.handIn(player, REFORM_HALL, q.id);
+							}
+						}
+					}
+					aim(level, player, new Vec3(0.5, -57.5, -1.5), new Vec3(1.5, -59.5, -13.5));
+					Showcase.check(io.github.jcondedata.aliveworkplace.hall.Reforms.reformed(entity, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("long_shifts").toString()),
+						"the three steps handed in: Long Shifts reformed");
+				}, 60),
+				new Step("03_bell", -1, 0, (level, player) -> {
+					BlockPos bell = io.github.jcondedata.aliveworkplace.story.ReformStories.bell(level, REFORM_HALL);
+					if (bell != null) {
+						aim(level, player, Vec3.atCenterOf(bell).add(3.5, 0.5, 5.5), Vec3.atCenterOf(bell).add(0, -1, 0));
+					}
+					Showcase.check(bell != null && level.getBlockState(bell).is(net.minecraft.world.level.block.Blocks.BELL), "the Shift Bell stands beside the hall");
+				}, 40),
+				new Step("04_ringing", -1, 0, (level, player) -> {
+					BlockPos bell = io.github.jcondedata.aliveworkplace.story.ReformStories.bell(level, REFORM_HALL);
+					int rings = io.github.jcondedata.aliveworkplace.story.ReformStories.RINGS.get();
+					level.setDayTime((level.getDayTime() / 24000L + 1) * 24000L + io.github.jcondedata.aliveworkplace.story.ReformStories.RING_START);
+					io.github.jcondedata.aliveworkplace.story.ReformStories.tick(level);
+					if (bell != null) {
+						aim(level, player, Vec3.atCenterOf(bell).add(3.5, 0.5, 5.5), Vec3.atCenterOf(bell).add(0, -1, 0));
+					}
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.ReformStories.RINGS.get() > rings, "the bell rings the work day in");
+				}, 50)),
 			(level, player) -> true));
 		// The Sickness, I: eight far herbs (ROADMAP 31.17): a 5 x 5 pad of each herb's ground in a field of coarse dirt (no
 		// herb's ground), a herb_patch planted on each, the Glowcap's under a leaf canopy; then the Three-Herb Tonic in hand.

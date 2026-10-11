@@ -1,0 +1,22 @@
+{
+  "icon": "minecraft:experience_bottle",
+  "name": {
+    "translate": "realm_research.aliveworkplace.guild_exchange"
+  },
+  "description": {
+    "translate": "realm_research.aliveworkplace.guild_exchange.description"
+  },
+  "order": 3,
+  "levels": 2,
+  "points": 4800,
+  "paper": 24,
+  "books": 2,
+  "emeralds": 32,
+  "needs": {
+    "common_law": 1
+  },
+  "effect": {
+    "type": "xp",
+    "amount": 10
+  }
+}

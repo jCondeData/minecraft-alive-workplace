@@ -1,0 +1,119 @@
+{
+  "name": {
+    "translate": "arc.aliveworkplace.lamplighters"
+  },
+  "side": true,
+  "trigger": {
+    "event": "reform"
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:aliveworkplace:porter|any",
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.asker"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/lamplighters/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.lamplighters.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.lamplighters.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.2.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 0
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.2"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.3.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 1
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.3"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.lamplighters.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.lamplighters.4.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 2
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.lamplighters.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:curfew"
+    },
+    {
+      "type": "reform_ending",
+      "ending": "lamplighters"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.lamplighters.ending"
+      }
+    },
+    {
+      "type": "reputation",
+      "points": 60,
+      "who": "helpers"
+    }
+  ]
+}

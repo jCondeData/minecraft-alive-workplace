@@ -2699,7 +2699,7 @@ write their own stories; nothing waits forever on a player.
     the open postern, and Pell joining after); the tribute takes a third of the treasury; the ending pays;
   - showcase scene `bandit_king` (GIF: the three banners, the fort rising a stage a day, the storm with allies, the
     King falling).
-- [ ] **31.17** **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
+- [x] **31.17** (review: pending 2026-10-11) **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
   pixel-art skill like vanilla's flowers. They never generate in the world: only an arc plants them, so no world
   changes. Each grows in its biomes (a biome tag of ours, `aliveworkplace:herb_biomes/<herb>`, so datapacks and biome
   mods can add to it):

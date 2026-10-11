@@ -624,6 +624,11 @@ SCENES = [
        ("05_fort_day_3", "Day 3: the keep, its postern open"),
        ("06_storm", "The storm: 3 guards and 6 mercenaries"),
        ("07_king_falls", "The Bandit King falls")]),
+    # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
+    S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
+      "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,
+      [("01_patches", "The eight far herbs, a patch of each on its own ground"),
+       ("02_tonic", "The Three-Herb Tonic in hand")]),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",

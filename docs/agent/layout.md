@@ -41,7 +41,9 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   `takeAway` removes them when the raid is over), `Ships` (32.8, `docs/wiki/pirates.md`: lairs on the sea, a culture's
   `lair.waterline`; `site` on deep enough water with the bow to the village, `place`, `beach`/`wading` where the crew comes
   ashore, `sink` puts the loot chest on a raft and takes the ship's own blocks down over 10 s; saved as
-  `aliveworkplace_ships`), `guard/BattleStations` (32.6: one watch a siege, every 20 ticks in its own
+  `aliveworkplace_ships`), `SandRamps` (32.9, `docs/wiki/desert.md`: the tactic `sand_ramps`; climbers pile a sand ramp
+  against the wall in stages, recorded with the siege and taken away like ladders), `Risings` (32.9: a captain's
+  `raises`; a husk falling near the living Pharaoh rises once after 3 s), `guard/BattleStations` (32.6: one watch a siege, every 20 ticks in its own
   tick: reads the walkway spots of finished wall, gate and Lookout Tower blueprints once each, gives archers the
   stations, knights and medics their places inside the breach; `post`, `onStation`, `range`, `heightBonus` are what
   `GuardCombat`, `GuardRally` and `GuardPatrol` ask; nothing saved), `threat/SiegeReport` (32.6: `onDeath` counts a

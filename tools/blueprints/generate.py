@@ -124,6 +124,7 @@ if __name__ == "__main__":
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")
     pirate_ship().save(os.path.join(MAIN_STRUCTURES, "camp"), "pirate_ship")  # ROADMAP 32.8
+    tomb_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "tomb_camp")  # ROADMAP 32.9
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
         draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)

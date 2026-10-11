@@ -2984,7 +2984,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     captain's death removes every ship block but a block the test placed on deck, and leaves the chest;
   - the ship passes `check.py` and its render is in the package;
   - scene `pirates`: the ship at anchor at dusk, the crew wading ashore, the ship sinking (GIF).
-- [ ] **32.9** **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
+- [x] **32.9** (review: pending 2026-10-11) **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
   hours `until_noon` (husks don't burn, so a siege goes on until noon). Their lair is the **Tomb Camp**
   (`camp/tomb_camp`, minecraft-architect skill: a half-buried sandstone tomb with an obelisk, sun-bleached awnings,
   bone blocks and dead bushes, the Pharaoh's sarcophagus as the loot chest). The roster: husks 55%, husks in gold

@@ -36,7 +36,8 @@ import org.jetbrains.annotations.Nullable;
  * <li>{@code captain}: {@code entity}, {@code gear}, {@code health} (extra), {@code names} (the lang key of his list
  * of names: {@code <names>.1} to {@code <names>.20}) and {@code title} (the lang key of what goes before the name:
  * "Chief" of "Chief Harl Ashgrave"), or {@code name}: the lang key of the one name he always has ("Silas Brine", 32.8),
- * and {@code leads}: from this rank of village on ({@code town}, {@code city}) he leads
+ * {@code raises} (32.9: {@code entity}, {@code radius}, {@code delay}, {@code health}: while he lives, such a mob
+ * falling near him rises once more), and {@code leads}: from this rank of village on ({@code town}, {@code city}) he leads
  * the raids from his lair himself (32.7), and falls with his lair wherever he is brought down;</li>
  * <li>{@code extras}: who comes with every raid besides the roster, by the village's rank, as many as {@code count}
  * gives for the highest rank it names that the village has reached ({@code {"town": 1, "city": 2}}): the warband's
@@ -97,6 +98,13 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 		}
 	}
 
+	/**
+	 * What a captain raises (32.9, the Pharaoh): while he lives, a mob of {@code entity} that falls within {@code radius}
+	 * blocks of him rises once more after {@code delay} ticks, at {@code health} of its full health.
+	 */
+	public record Raise(ResourceLocation entity, int radius, int delay, double health) {
+	}
+
 	/** One line of the roster: the mob, its share of the raid, its role and what it carries (slot → item id or {@link #OMINOUS_BANNER}). */
 	public record Member(ResourceLocation entity, int share, Role role, Map<EquipmentSlot, String> gear) {
 	}
@@ -106,7 +114,12 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 	 * the rank of village from which he leads his lair's raids himself (none: he never leaves it).
 	 */
 	public record Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title,
-		Optional<VillageRanks.Rank> leads, Optional<String> name) {
+		Optional<VillageRanks.Rank> leads, Optional<String> name, Optional<Raise> raises) {
+		public Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title,
+			Optional<VillageRanks.Rank> leads, Optional<String> name) {
+			this(entity, gear, health, names, title, leads, name, Optional.empty());
+		}
+
 		public Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title) {
 			this(entity, gear, health, names, title, Optional.empty(), Optional.empty());
 		}
@@ -231,7 +244,7 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 			}
 			captain = Optional.of(new Captain(entity(c), gear(c), health, Optional.ofNullable(c.has("names") ? c.get("names").getAsString() : null),
 				Optional.ofNullable(c.has("title") ? c.get("title").getAsString() : null), c.has("leads") ? Optional.of(rank(c.get("leads").getAsString())) : Optional.empty(),
-				Optional.ofNullable(c.has("name") ? c.get("name").getAsString() : null)));
+				Optional.ofNullable(c.has("name") ? c.get("name").getAsString() : null), raise(c)));
 		}
 		List<String> tactics = new ArrayList<>();
 		if (json.has("tactics")) {
@@ -293,6 +306,19 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 		Optional<String> name = Optional.ofNullable(json.has("name") ? json.get("name").getAsString() : null);
 		return new Culture(id, where, weight, arrival, hours, List.copyOf(roster), name, captain, List.copyOf(tactics), lair, loot,
 			keys(json, "messages"), keys(json, "chronicle"), List.copyOf(extras));
+	}
+
+	/** A captain's {@code raises} (32.9): {@code entity}, {@code radius} (blocks, 24), {@code delay} (ticks, 60) and {@code health} (0.5). */
+	private static Optional<Raise> raise(JsonObject captain) {
+		if (!captain.has("raises")) {
+			return Optional.empty();
+		}
+		JsonObject r = captain.getAsJsonObject("raises");
+		double health = r.has("health") ? r.get("health").getAsDouble() : 0.5;
+		if (health <= 0 || health > 1) {
+			throw new IllegalArgumentException("raises: health must be over 0 and at most 1, not " + health);
+		}
+		return Optional.of(new Raise(entity(r), integer(r, "radius", 24, 1, 64), integer(r, "delay", 60, 1, 1200), health));
 	}
 
 	private static VillageRanks.Rank rank(String name) {

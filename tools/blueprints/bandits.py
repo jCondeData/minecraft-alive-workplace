@@ -483,3 +483,140 @@ def pirate_ship():
         if block[0] == "minecraft:air" and pos not in hold:
             del b.blocks[pos]
     return b
+
+
+def tomb_camp():
+    """
+    The desert raiders' Tomb Camp (ROADMAP 32.9), 19 x 11 x 19, set down at once like the other camps. Design:
+    - the ground is the desert's own: sand with a little smooth sandstone and red sand worn into it;
+    - a half-buried sandstone tomb at the back (9 x 9): cut sandstone walls with a chiseled band and an orange
+      terracotta stripe, a stepped roof of three shrinking courses, a doorway between two chiseled pillars; dunes of sand
+      heaped against its sides and back up to two blocks, so it seems to rise out of the desert;
+    - inside, a smooth sandstone floor with a terracotta inlay, torches in the corners, urns (decorated-looking flower
+      pots) and the Pharaoh's sarcophagus at the back: the loot chest boxed in smooth sandstone with a chiseled head;
+    - in front of it the obelisk, the highest thing in the camp: a cut sandstone needle on a stepped base, a chiseled
+      band near the top and a gold cap;
+    - two sun-bleached awnings (white and pale grey cloth on stripped birch posts) over the camp's seats and a fire pit;
+    - bone blocks half sunk in the sand, a skull, dead bushes scattered about.
+    """
+    W, H, D = 19, 11, 19
+    b = Build(W, H, D)
+    ground = Mix((14, "sand"), (2, "smooth_sandstone"), (1, "red_sand"), (1, "sandstone"), seed=97)
+    for x in range(W):
+        for z in range(D):
+            b.set(x, 0, z, ground.at(x, 0, z))
+
+    # the tomb: x 5..13, z 9..17, the doorway in its front (z = 9)
+    X0, X1, Z0, Z1 = 5, 13, 9, 17
+    wall = Mix((7, "cut_sandstone"), (2, "sandstone"), (1, "smooth_sandstone"), seed=98)
+    for x in range(X0, X1 + 1):
+        for z in range(Z0, Z1 + 1):
+            edge = x in (X0, X1) or z in (Z0, Z1)
+            b.set(x, 0, z, "smooth_sandstone" if edge else ("orange_terracotta" if (x + z) % 4 == 0 and 7 <= x <= 11 and 11 <= z <= 15 else "smooth_sandstone"))
+            if edge:
+                for y in range(1, 6):
+                    if y == 3:
+                        b.set(x, y, z, "orange_terracotta")
+                    elif y == 5:
+                        b.set(x, y, z, "chiseled_sandstone" if (x + z) % 2 == 0 else "cut_sandstone")
+                    else:
+                        b.set(x, y, z, wall.at(x, y, z))
+    # the blue inlay in the middle of the floor, as the desert temples have
+    b.set(9, 0, 13, "blue_terracotta")
+    # the stepped roof: three courses, each one in from the last
+    for i, y in enumerate((6, 7, 8)):
+        for x in range(X0 + i, X1 + 1 - i):
+            for z in range(Z0 + i, Z1 + 1 - i):
+                edge = x in (X0 + i, X1 - i) or z in (Z0 + i, Z1 - i)
+                if edge or y == 8:
+                    b.set(x, y, z, "smooth_sandstone" if i < 2 else "cut_sandstone")
+    for x in range(X0 + 1, X1):
+        for z in range(Z0 + 1, Z1):
+            b.set(x, 6, z, "smooth_sandstone")
+    b.set(9, 9, 13, "chiseled_sandstone")
+    # the doorway: 3 wide, 3 high, between chiseled pillars that stand a block proud
+    for x in (8, 9, 10):
+        for y in (1, 2, 3):
+            b.set(x, y, Z0, "air")
+    for x in (7, 11):
+        for y in range(1, 5):
+            b.set(x, y, Z0 - 1, "chiseled_sandstone" if y in (1, 4) else "cut_sandstone")
+    for x in range(7, 12):
+        b.set(x, 4, Z0, "chiseled_sandstone")
+        if 7 < x < 11:
+            b.set(x, 4, Z0 - 1, "cut_sandstone")  # the lintel over the doorway
+        stairs(b, x, 5, Z0 - 1, "sandstone_stairs", "north")
+    b.set(8, 0, Z0 - 1, "smooth_sandstone")
+    b.set(9, 0, Z0 - 1, "smooth_sandstone")
+    b.set(10, 0, Z0 - 1, "smooth_sandstone")
+    # inside: torches, urns, the sarcophagus
+    for x, z in ((X0 + 1, Z0 + 1), (X1 - 1, Z0 + 1), (X0 + 1, Z1 - 1), (X1 - 1, Z1 - 1)):
+        b.set(x, 1, z, "torch")
+    for x, z in ((X0 + 1, 13), (X1 - 1, 13)):
+        b.set(x, 1, z, "flower_pot")
+        b.set(x, 1, z + 1, "decorated_pot", facing="north", cracked=False, waterlogged=False)
+    for z in (14, 15, 16):
+        b.set(8, 1, z, "smooth_sandstone")
+        b.set(10, 1, z, "smooth_sandstone")
+    b.set(9, 1, 16, "chiseled_sandstone")
+    b.set(9, 2, 16, "skeleton_skull", rotation="0")
+    b.set_nbt(9, 1, 15, Compound({"LootTable": String("aliveworkplace:chests/pharaohs_tomb"), "id": String("minecraft:chest")}))
+    b.set(9, 1, 15, "chest", facing="north", type="single", waterlogged=False)
+    slab(b, 9, 1, 14, "smooth_sandstone_slab")
+    b.set(8, 2, 14, "candle", candles=3, lit=True, waterlogged=False)
+    b.set(10, 2, 14, "candle", candles=2, lit=True, waterlogged=False)
+    # the dunes heaped against the sides and back: two high next to the wall, one high a block further out
+    for x in range(X0 - 2, X1 + 3):
+        for z in range(Z0 + 1, D):
+            if X0 <= x <= X1 and z <= Z1:
+                continue
+            dist = max(X0 - x, x - X1, z - Z1, 0)
+            if dist == 1:
+                for y in (1, 2):
+                    b.set(x, y, z, "sand")
+            elif dist == 2 and (x + z) % 3 != 0:
+                b.set(x, 1, z, "sand")
+    for x in range(X0 - 1, X1 + 2):
+        if x in (X0 - 1, X1 + 1):
+            b.set(x, 1, Z0, "sand")
+
+    # the obelisk, front left: a stepped base, a needle, a gold cap
+    OX, OZ = 3, 4
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            b.set(OX + dx, 1, OZ + dz, "smooth_sandstone")
+    for dx, dz, f in ((0, -2, "north"), (0, 2, "south"), (-2, 0, "west"), (2, 0, "east")):
+        stairs(b, OX + dx, 1, OZ + dz, "smooth_sandstone_stairs", "south" if f == "north" else "north" if f == "south" else "east" if f == "west" else "west")
+    for y in range(2, 9):
+        b.set(OX, y, OZ, "chiseled_sandstone" if y in (2, 7) else "cut_sandstone")
+    b.set(OX, 9, OZ, "gold_block")
+    b.set(OX, 10, OZ, "end_rod", facing="up")
+
+    # two sun-bleached awnings over the seats and the fire pit, front right
+    def awning(x0, z0, w, d, cloth):
+        for x, z in ((x0, z0), (x0 + w - 1, z0), (x0, z0 + d - 1), (x0 + w - 1, z0 + d - 1)):
+            for y in (1, 2):
+                fence(b, x, y, z, "birch_fence")
+        for x in range(x0, x0 + w):
+            for z in range(z0, z0 + d):
+                b.set(x, 3, z, cloth if (x + z) % 2 == 0 else "white_wool")
+    awning(10, 2, 4, 3, "light_gray_wool")
+    awning(15, 5, 3, 4, "white_wool")
+    b.set(11, 1, 3, "barrel", facing="up", open=False)
+    log(b, 12, 1, 4, "stripped_birch_log", axis="x")
+    log(b, 16, 1, 7, "stripped_birch_log", axis="z")
+    # the fire pit between them, ringed with sandstone
+    b.set(13, 0, 7, "sandstone")
+    b.set(13, 1, 7, "campfire", facing="south", lit=True, signal_fire=False, waterlogged=False)
+    for dx, dz in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        slab(b, 13 + dx, 1, 7 + dz, "sandstone_slab")
+
+    # bones half sunk in the sand, a skull, dead bushes
+    for x, z, axis in ((1, 9, "x"), (2, 15, "z"), (16, 1, "y"), (17, 13, "x"), (7, 2, "z")):
+        b.set(x, 0, z, "bone_block", axis=axis)
+    b.set(6, 1, 5, "bone_block", axis="z")
+    b.set(15, 1, 16, "skeleton_skull", rotation="6")
+    for x, z in ((0, 1), (6, 0), (9, 5), (17, 3), (1, 12), (18, 10), (0, 17), (14, 12), (4, 8), (12, 0)):
+        b.set(x, 1, z, "dead_bush")
+    b.fill_air()
+    return b

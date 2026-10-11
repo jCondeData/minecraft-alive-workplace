@@ -603,6 +603,7 @@ public final class Lairs {
 			mob.setCustomNameVisible(named(lair));
 			if (chief.isPresent()) {
 				Threats.equip(level, mob, chief.get().gear());
+				Risings.mark(mob, chief.get()); // the Pharaoh raises the fallen (32.9)
 			} else {
 				mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 				mob.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));

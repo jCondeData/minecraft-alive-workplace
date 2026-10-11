@@ -700,6 +700,86 @@ final class JobScenes {
 					&& l.getBlockState(new BlockPos(0, -60, 14)).is(net.minecraft.world.level.block.Blocks.CHEST);
 			};
 		}, null));
+		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
+		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
+		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks
+		// falls by his tomb and gets up again three seconds later in a burst of sand.
+		SCENES.put("desert_raiders", new Job("the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 1500,
+			new Vec3(20.5, -48.0, 22.5), new Vec3(-4.5, -58.0, -2.0), (level, player) -> {
+			BlockPos hall = STATION.north(12);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			BlockPos origin = STATION.offset(-3, 0, -4);
+			for (BlockPos at : List.of(origin.west(7), origin, origin.east(7))) {
+				level.getStructureManager().get(StarterBlueprints.STONE_WALL.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(StarterBlueprints.STONE_WALL.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			}
+			for (int y = 0; y < 4; y++) {
+				for (int z = -18; z <= -3; z++) {
+					level.setBlock(STATION.offset(-10, y, z), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+					level.setBlock(STATION.offset(10, y, z), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+				for (int x = -10; x <= 10; x++) {
+					level.setBlock(STATION.offset(x, y, -18), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+			}
+			// The desert outside the walls.
+			for (int x = -40; x <= 24; x++) {
+				for (int z = -2; z <= 30; z++) {
+					level.setBlock(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.SAND.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+			}
+			Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(0, 0, -10), MobSpawnType.COMMAND);
+			villager.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.threat.Risings.forget();
+			level.setDayTime(1000);
+			// The Tomb Camp, west of the walls (the hall of a Town for as long as the camp is made).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("desert_raiders");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(-26, -1, 14), id);
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Pharaoh "),
+				"the desert raiders opened their Tomb Camp, under a named Pharaoh");
+			java.util.UUID pharaoh = lair.captain();
+			Showcase.check(level.getEntity(pharaoh) instanceof net.minecraft.world.entity.Mob p && p.getTags().contains(io.github.jcondedata.aliveworkplace.threat.Risings.RAISER_TAG),
+				"the Pharaoh raises the fallen");
+			// The siege: two husk climbers outside the middle wall.
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.threat.Culture.Member member = culture.roster().stream()
+				.filter(m -> m.role() == io.github.jcondedata.aliveworkplace.threat.Culture.Role.CLIMBER).findFirst().orElseThrow();
+			List<net.minecraft.world.entity.Mob> husks = new java.util.ArrayList<>();
+			for (double[] at : new double[][] {{0.5, 8.5}, {2.5, 11.5}}) {
+				net.minecraft.world.entity.Mob husk = io.github.jcondedata.aliveworkplace.threat.Threats.create(level, member);
+				husk.moveTo(at[0], STATION.getY(), at[1], 180f, 0f);
+				husk.finalizeSpawn(level, level.getCurrentDifficultyAt(husk.blockPosition()), MobSpawnType.EVENT, null);
+				io.github.jcondedata.aliveworkplace.threat.Threats.outfit(level, husk, culture, member);
+				husk.setTarget(villager);
+				level.addFreshEntityWithPassengers(husk);
+				husks.add(husk);
+			}
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, hall, culture, husks);
+			Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.siege(level, hall).isPresent(), "the desert raid on the walled Town is a siege");
+			long[] fell = {-1};
+			return l -> {
+				boolean over = husks.stream().anyMatch(h -> io.github.jcondedata.aliveworkplace.threat.SandRamps.over(l, hall, h.getUUID()));
+				if (over && fell[0] < 0 && l.getEntity(pharaoh) instanceof net.minecraft.world.entity.Mob p) {
+					// One of his husks falls by the tomb.
+					List<net.minecraft.world.entity.Mob> band = io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, lair).stream()
+						.filter(m -> m != p && m.getType() == EntityType.HUSK && m.distanceTo(p) < 20).toList();
+					if (!band.isEmpty()) {
+						band.get(0).hurt(l.damageSources().fellOutOfWorld(), 1000f);
+						fell[0] = l.getGameTime();
+					}
+				}
+				return over && fell[0] >= 0 && l.getGameTime() - fell[0] > 80 && !l.getEntitiesOfClass(net.minecraft.world.entity.monster.Husk.class,
+					new net.minecraft.world.phys.AABB(STATION).inflate(60), h -> h.isAlive() && h.getTags().contains(io.github.jcondedata.aliveworkplace.threat.Risings.RISEN_TAG)).isEmpty();
+			};
+		}, null));
 		// Sieges II (ROADMAP 32.5): pillagers who set ladders lay siege to a village behind Stone Walls with no gate. They
 		// set a ladder up the wall's outer face, rung by rung; the first climbs over and drops inside; then the guard on the
 		// walkway comes along the wall and throws the ladder down. (The scene only times his walk: he stands still, as the

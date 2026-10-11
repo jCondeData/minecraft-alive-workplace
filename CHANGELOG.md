@@ -21,6 +21,10 @@ asks for the steps, `latest.log` and any crash report).
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
   lost the faster walk. A worker now always walks at their own pace.
 ### Added
+- **Desert raiders, for 1.6** (32.9). By a desert or badlands Town, husks open a half-buried **Tomb Camp** with an
+  obelisk under their **Pharaoh**: while he lives, a husk that falls near him gets up again once, in a burst of sand.
+  They pile **sand ramps** against the walls where pillagers set ladders (gone after the siege), stay until noon, and
+  the Pharaoh's sarcophagus holds gold, emeralds, a golden apple and now and then the dune armour trim.
 - **Six more personal requests, for 1.5** (31.10). A friend with 3 hearts may now also ask you to carry **a letter to
   family** in another village (a sealed letter; bring their relative's reply back, and if you lose it they write
   another), to **bring back their love** from the grave (an Undertaker revives them, and the two marry again), for **a

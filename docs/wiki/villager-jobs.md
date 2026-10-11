@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97, B101
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97, B101, B103
 
 ## What a player sees
 
@@ -116,6 +116,11 @@ look went through every recipe in one tick and stalled the server for a third of
 500 recipes (a fence from logs tries five), and all of a world's crafters together at most 1,500 in one tick;
 past that, a crafter looks again a few seconds later.
 
+**No first-day stalls (B103).** The mod's classes are loaded on a background thread while the server starts, so the
+first hall round, village-mates check or cradle of a new world doesn't wait for them in the middle of a tick (on a big
+pack every class loaded goes through other mods' transformers first). Supply chests are looked for only in loaded
+chunks, and the search never waits for a chunk.
+
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 
 ## Switches
@@ -185,7 +190,7 @@ and so on). Status lines and the requests board are not saved: workers post agai
 GameTests: `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
-`PaceGameTests`.
+`PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks).
 
 Showcase scenes: `stations` (one composter, four jobs), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

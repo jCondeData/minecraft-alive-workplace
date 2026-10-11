@@ -457,6 +457,16 @@ public class PersonalErrandGameTests implements FabricGameTest {
 			Villager finn = PersonalRequestGameTests.worker(helper, new BlockPos(12, 2, 4), "Finn", "minecraft:farmer", 2);
 			Friendship.add(finn, me, 300);
 			BlockPos emptyRel = new BlockPos(3, 2, 14);
+			// An earlier batch's chest or barrel left in this chunk (outside its own area, so never cleared) would take the
+			// heirloom instead: which test stands next door changes whenever tests are added.
+			var chunk = level.getChunkAt(helper.absolutePos(emptyRel));
+			for (BlockPos leftover : List.copyOf(chunk.getBlockEntities().keySet())) {
+				if (level.getBlockEntity(leftover) instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity box
+					&& (box instanceof net.minecraft.world.level.block.entity.ChestBlockEntity || box instanceof BarrelBlockEntity)) {
+					box.clearContent();
+					level.removeBlock(leftover, false);
+				}
+			}
 			Quest other = acceptedFile(helper, heirloomAt(helper, emptyRel, "diary"), finn, me);
 			helper.assertTrue(RequestErrands.placeHeirlooms(level) == 1 && other.placed != null
 				&& level.getBlockEntity(other.placed) instanceof BarrelBlockEntity barrel && !barrel.isEmpty(), "no barrel: " + other.placed);

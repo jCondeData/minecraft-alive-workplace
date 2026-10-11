@@ -1,0 +1,8 @@
+{
+  "entity": "minecraft:vindicator",
+  "gear": {
+    "head": "minecraft:iron_helmet",
+    "mainhand": "minecraft:iron_axe"
+  },
+  "band": 5
+}

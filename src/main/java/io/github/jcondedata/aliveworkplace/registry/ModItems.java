@@ -96,6 +96,9 @@ public final class ModItems {
 	/** Gift Wrap (31.6): paper, string and any dye make four; wrapped round any one item it makes a Gift. */
 	public static final Item GIFT_WRAP = Reg.item("gift_wrap", Item::new, new Item.Properties());
 	/** The Gift (31.6): an item in Gift Wrap, for a named villager (story/Gifts). */
+	/** A bounty's Wanted Poster and the captain's insignia (31.13). */
+	public static final Item WANTED_POSTER = Reg.item("wanted_poster", Item::new, new Item.Properties().stacksTo(1));
+	public static final Item CAPTAINS_INSIGNIA = Reg.item("captains_insignia", Item::new, new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON));
 	public static final io.github.jcondedata.aliveworkplace.story.GiftItem GIFT = Reg.item("gift", io.github.jcondedata.aliveworkplace.story.GiftItem::new, new Item.Properties().stacksTo(1));
 	public static final net.minecraft.world.item.crafting.RecipeSerializer<io.github.jcondedata.aliveworkplace.story.GiftItem.Recipe> GIFT_RECIPE = Registry.register(
 		BuiltInRegistries.RECIPE_SERIALIZER, AliveWorkplace.id("gift"), io.github.jcondedata.aliveworkplace.story.GiftItem.RECIPE);
@@ -122,6 +125,7 @@ public final class ModItems {
 				output.accept(COLONY_CHARTER);
 				output.accept(ModBlocks.CRADLE);
 				output.accept(ModBlocks.HARVEST_IDOL);
+				output.accept(ModBlocks.BOUNTY_BOARD);
 				output.accept(VILLAGE_BANNER);
 				output.accept(GIFT_WRAP);
 				output.accept(MINERS_BREW);

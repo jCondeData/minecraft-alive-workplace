@@ -174,6 +174,22 @@ public final class LegendGuests {
 		return legend.ways("visit").stream().filter(w -> place.equals(w.has("place") ? w.get("place").getAsString() : "inn")).toList();
 	}
 
+	/**
+	 * Whether the village round {@code hall} meets a visit {@code way}'s own {@code conditions} (31.12: a Rare Legend comes
+	 * only where some player is a Friend or better, a Legendary or Mythic one where some player is a Hero or better).
+	 */
+	public static boolean wayMet(ServerLevel level, BlockPos hall, JsonObject way) {
+		if (!way.has("conditions")) {
+			return true;
+		}
+		for (io.github.jcondedata.aliveworkplace.rules.Condition c : io.github.jcondedata.aliveworkplace.rules.Conditions.parseAll(way.getAsJsonArray("conditions"))) {
+			if (!c.met(level, hall)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/** The chance a visit {@code way} has in the village round {@code hall}: its own (1 in 4 by default) times {@link Legends#visitFactor}. */
 	public static float chance(ServerLevel level, BlockPos hall, JsonObject way) {
 		float base = way.has("chance") ? way.get("chance").getAsFloat() : CHANCE;
@@ -191,7 +207,7 @@ public final class LegendGuests {
 			return out;
 		}
 		for (Legend legend : Legends.all()) {
-			List<JsonObject> ways = ways(legend, place);
+			List<JsonObject> ways = ways(legend, place).stream().filter(w -> wayMet(level, hall, w)).toList(); // the way's own conditions (31.12)
 			if (ways.isEmpty()) {
 				continue;
 			}

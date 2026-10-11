@@ -277,7 +277,7 @@ public class EdictGameTests implements FabricGameTest {
 			ServerPlayer stranger = helper.makeMockServerPlayerInLevel();
 			entity.setOwner(UUID.randomUUID(), "Jesse");
 			Edicts.Result refused = Edicts.proclaim(level, hall, stranger, Edicts.get(LONG_SHIFTS).orElseThrow());
-			helper.assertTrue(!refused.done() && refused.message().getString().equals("Only Jesse and their friends can proclaim edicts in " + name + "."),
+			helper.assertTrue(!refused.done() && refused.message().getString().equals("Only Jesse, their friends and the village's Lords can proclaim edicts in " + name + "."),
 				"a stranger: " + refused.message().getString());
 			helper.assertTrue(entity.edicts().isEmpty(), "proclaimed by a stranger");
 
@@ -288,7 +288,7 @@ public class EdictGameTests implements FabricGameTest {
 			entity.setOwner(UUID.randomUUID(), "Jesse");
 			entity.setEdicts(List.of(new Edicts.InForce(LONG_SHIFTS.toString(), Chronicle.day(level) - 5)));
 			Edicts.Result lift = Edicts.lift(level, hall, stranger, LONG_SHIFTS.toString());
-			helper.assertTrue(!lift.done() && lift.message().getString().equals("Only Jesse and their friends can lift edicts in " + name + "."),
+			helper.assertTrue(!lift.done() && lift.message().getString().equals("Only Jesse, their friends and the village's Lords can lift edicts in " + name + "."),
 				"a stranger lifting: " + lift.message().getString());
 
 			entity.setOwner(stranger.getUUID(), stranger.getGameProfile().getName());

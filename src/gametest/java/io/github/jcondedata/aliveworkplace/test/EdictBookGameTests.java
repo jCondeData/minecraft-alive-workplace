@@ -178,7 +178,7 @@ public class EdictBookGameTests implements FabricGameTest {
 			click(menu, EdictBook.SLOTS[0], stranger);
 			helper.assertTrue(entity.edicts().size() == 1, "a stranger lifted Long Shifts");
 			helper.assertTrue(Component.translatable("message.aliveworkplace.edict.not_allowed", "Jesse", "Oakvale").getString()
-				.equals("Only Jesse and their friends can proclaim edicts in Oakvale."), "the refusal's words");
+				.equals("Only Jesse, their friends and the village's Lords can proclaim edicts in Oakvale."), "the refusal's words");
 			helper.succeed();
 		});
 	}

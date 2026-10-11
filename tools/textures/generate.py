@@ -15,6 +15,7 @@ The recipes are in tools/textures/art/, one module per set, drawn with the owner
 - items.py           the item icons, each drawn like vanilla draws its kind (books, maps, sticks...)
 - gui.py             screen backgrounds drawn like vanilla's workstation screens (the Village Hall's)
 - banners.py         banner patterns of our own (the Cup), drawn like vanilla's emblem patterns
+- bounty.py          the Bounty Board, the Wanted Poster and the Captain's Insignia (31.13)
 Outputs go to src/main/resources/assets/aliveworkplace/textures/ (or $ALIVE_ASSETS), plus the mod's icon.png.
 Check them with tools/textures/pxlib/lint.py and preview.py (see the pixel-art skill).
 """
@@ -29,7 +30,7 @@ sys.path.insert(0, str(ART))
 import artlib  # noqa: E402
 from PIL import Image  # noqa: E402
 
-MODULES = ["builders", "workstations_1", "workstations_2", "workstations_3", "villagers_1", "villagers_2", "classes", "golems", "items", "gui", "banners"]
+MODULES = ["builders", "workstations_1", "workstations_2", "workstations_3", "villagers_1", "villagers_2", "classes", "golems", "items", "gui", "banners", "bounty"]
 
 
 def icon():

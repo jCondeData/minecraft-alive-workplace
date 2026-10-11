@@ -622,6 +622,30 @@ Events are data, `data/<namespace>/heart_events/<id>.json`: the `hearts`, a `whe
 mother, father, partner, children and the day they were hired as `%1$s` to `%8$s`. Details:
 [docs/wiki/heart-events.md](docs/wiki/heart-events.md).
 
+### The bounty board and bandit captains
+
+From **Village** rank a village posts a **bounty** on a named bandit captain ("Grimwald the Red") now and then: two
+open at most, one every 3 days, each up for 7 days. Craft a **Bounty Board** (a paper between two planks, three planks
+under them, two sticks at the bottom corners) and set it up in the village: its face shows a poster for each open bounty, up to four, and
+a right-click opens the **Bounties** tab of the hall's journal (the tab is in the hall's journal too, board or not).
+
+Click a bounty to take it: you get a **Wanted Poster** (his name, his quirk, where he was last seen, "160 blocks
+north-east", and the reward) and a map with a red X on his hideout, a bandit camp 120 to 200 blocks out with his own
+banner on a pole by the fire. The hideout is built, with him and his band of 2 or 3 in it, when a player first comes
+within 96 blocks. Every captain has one quirk: **Ironhide** (full iron, 20 more health), **Fleetfoot** (Speed II),
+**Crossbow Ace** (a pillager with a Multishot, Quick Charge II crossbow), **Beast Rider** (on a ravager), **Night
+Stalker** (unseen at night until he's hit), **Warlord** (a band of five) or **Hexer** (an evoker).
+
+He drops his **Captain's Insignia**. Hand it in at the board, at the hall (right-click with it) or with the journal's
+hand-in button: 12 emeralds times the village's rank factor (15 at Village rank), once, to whoever hands it in, and a
+bounty's standing (+40). The chronicle says who. An unclaimed bounty comes down after 7 days and the band leaves in a
+puff. A captain holding a lair near the village is posted too, and his bounty is paid to whoever brings him down.
+Villagers gossip about where the captains were seen.
+
+Names come from `data/<namespace>/bounties/captains.json` and quirks from `bounties/quirks/<id>.json` (the mob, its
+gear and enchantments, effects, extra health, mount, band size, `night_invisible`), so a data pack can add its own.
+`bountyBoard` in the config turns new bounties off. Details: [docs/wiki/bounties.md](docs/wiki/bounties.md).
+
 ## Legends
 
 Now and then a village that has earned it gains a **Legend**: one named villager, a Master of their trade, with powers

@@ -42,7 +42,7 @@ public final class Chatter {
 	public static final int EVERY = 400;
 	static final double NEAR = 10;
 	/** How many ways there are to say each thing (the lines are {@code chatter.aliveworkplace.<topic>.<n>}). */
-	static final Map<String, Integer> VARIANTS = Map.ofEntries(Map.entry("hello", 3), Map.entry("festival_on", 2),
+	static final Map<String, Integer> VARIANTS = Map.ofEntries(Map.entry("hello", 3), Map.entry("bounty", 3), Map.entry("festival_on", 2),
 		Map.entry("festival_today", 2), Map.entry("festival_after", 2), Map.entry("bandits", 2), Map.entry("raid", 2),
 		Map.entry("child", 2), Map.entry("ill", 2), Map.entry("hungry", 2), Map.entry("fed", 2), Map.entry("no_bed", 2),
 		Map.entry("bed", 1), Map.entry("job", 2), Map.entry("no_job", 2), Map.entry("varied_diet", 1), Map.entry("same_food", 2),
@@ -149,6 +149,9 @@ public final class Chatter {
 		}
 		news.addAll(legendTopics(level, villager, hall));
 		news.addAll(civicTopics(level, villager, hall));
+		if (io.github.jcondedata.aliveworkplace.bounty.Bounties.gossip(level, hall, 0) != null) {
+			news.add("bounty"); // where a wanted captain was seen (31.13)
+		}
 		if (!io.github.jcondedata.aliveworkplace.story.Arcs.chatter(level, hall).isEmpty()) {
 			news.add("arc"); // a story arc's chapter is the talk of the village (31.4)
 		}
@@ -279,6 +282,10 @@ public final class Chatter {
 			return Component.translatable(lines.get(level.random.nextInt(lines.size()))).withStyle(ChatFormatting.ITALIC);
 		}
 		int variant = level.random.nextInt(VARIANTS.getOrDefault(topic, 1));
+		if (topic.equals("bounty")) {
+			Component gossip = io.github.jcondedata.aliveworkplace.bounty.Bounties.gossip(level, hall, variant);
+			return gossip == null ? null : gossip.copy().withStyle(ChatFormatting.ITALIC);
+		}
 		if (io.github.jcondedata.aliveworkplace.trade.TradeTalk.is(topic)) {
 			io.github.jcondedata.aliveworkplace.trade.TradeTalk.Line trade = io.github.jcondedata.aliveworkplace.trade.TradeTalk.line(level, hall, topic);
 			return trade == null ? null

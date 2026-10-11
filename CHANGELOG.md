@@ -17,6 +17,17 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
+  captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
+  journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built
+  when you come near; each captain has a quirk (Ironhide, Fleetfoot, Crossbow Ace, Beast Rider, Night Stalker, Warlord,
+  Hexer). His Captain's Insignia pays 12 emeralds times the rank factor, once; a lair's captain is paid to his killer.
+  Config `bountyBoard`.
+- **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
+  15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
+  family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)
+  is named after you; at 10 hearts a villager sends you a weekly parcel with a letter; Legends visit only villages
+  where someone is a Friend (Rare) or a Hero (Legendary); a Lord may set edicts and a Hero may propose one to the owner.
 - **The player guide** (22.10): a website for players, the link to send friends
   (https://jcondedata.github.io/minecraft-alive-workplace/player-guide/): getting started, every job and how to set it
   up, the Builder and blueprints, the Village Hall, village life, quests, festivals and markets, trade and caravans,
@@ -40,6 +51,9 @@ asks for the steps, `latest.log` and any crash report).
   side of the camp. Mother and colony become sister villages, with a free caravan route both ways outside the route
   limit; both chronicles note the founding and the owner gets a letter. With no room near the spot (all water, a
   cliff) the settlers come home, the supplies go back and the charter's cost goes back into the treasury.
+- **Fewer stalls on a new world's first day on big packs** (B103): the mod's classes are now loaded in the background
+  while the server starts, instead of in the middle of a tick the first time a hall round, a worker's check of the
+  village's chests or a cradle at night needs them; a worker's chest search no longer waits for a chunk.
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
   lost the faster walk. A worker now always walks at their own pace.

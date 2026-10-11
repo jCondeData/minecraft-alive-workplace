@@ -74,7 +74,7 @@ public final class Expansions {
 			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage" -> M33;
 			case "sieges", "siegeDamage" -> M32;
 			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> M31;
-			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
+			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "bountyBoard" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",
 				"elderPassing", "agelessElders" -> M34;
 			default -> null;

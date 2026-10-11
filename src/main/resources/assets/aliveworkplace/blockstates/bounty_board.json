@@ -1,0 +1,195 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "posters": "1|2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "posters": "1|2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "posters": "1|2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "posters": "1|2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "posters": "2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "posters": "2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "posters": "2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "posters": "2|3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "posters": "3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "posters": "3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "posters": "3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "posters": "3|4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "posters": "4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "posters": "4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "posters": "4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "posters": "4"
+      },
+      "apply": {
+        "model": "aliveworkplace:block/bounty_board_poster_4",
+        "y": 270
+      }
+    }
+  ]
+}

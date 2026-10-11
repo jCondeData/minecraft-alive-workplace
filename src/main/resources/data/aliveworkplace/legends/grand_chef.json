@@ -13,7 +13,7 @@
   ],
   "arrive": [
     {"way": "inspired", "trades": ["aliveworkplace:chef"]},
-    {"way": "visit", "place": "inn"},
+    {"way": "visit", "place": "inn", "conditions": [{"type": "title_at_least", "title": "friend"}]},
     {"way": "born", "trades": ["aliveworkplace:chef"]}
   ],
   "masterwork": {

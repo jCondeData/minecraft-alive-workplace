@@ -104,6 +104,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.story.HeartEvents.init(); // what villagers tell their friends, as data (31.7)
 		io.github.jcondedata.aliveworkplace.story.PersonalRequests.init(); // villagers ask their friends for help (31.9)
 		io.github.jcondedata.aliveworkplace.story.Reputation.init(); // standing and titles: losses, raids, lairs, the title in chat (31.11)
+		io.github.jcondedata.aliveworkplace.bounty.Bounties.init(); // the bounty board and bandit captains (31.13)
 		io.github.jcondedata.aliveworkplace.story.Arcs.init(); // story arcs: their files, placements and mobs, talk (31.4)
 		io.github.jcondedata.aliveworkplace.hall.Anthems.init(); // the anthem's player (29.19)
 		io.github.jcondedata.aliveworkplace.legend.Gifted.init();
@@ -125,6 +126,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.command.Soak.init();
 		io.github.jcondedata.aliveworkplace.command.CitySoak.init(); // 27.22
 		io.github.jcondedata.aliveworkplace.command.SeasonSoak.init(); // 30.22
+		Platform.get().onServerStarting(server -> ClassWarmup.start()); // B103: no class loading stalls on day 1
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}
 

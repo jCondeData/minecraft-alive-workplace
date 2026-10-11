@@ -10,7 +10,7 @@
   ],
   "conditions": [],
   "arrive": [
-    {"way": "visit", "place": "festival", "crowd": 30},
+    {"way": "visit", "place": "festival", "crowd": 30, "conditions": [{"type": "title_at_least", "title": "friend"}]},
     {"way": "born", "trades": ["aliveworkplace:bard"]}
   ],
   "needs": {"luxury": "books"},

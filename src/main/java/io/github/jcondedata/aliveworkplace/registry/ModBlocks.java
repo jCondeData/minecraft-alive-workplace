@@ -180,6 +180,14 @@ public final class ModBlocks {
 	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.hall.HarvestIdolBlockEntity> HARVEST_IDOL_ENTITY =
 		Reg.blockEntity("harvest_idol", io.github.jcondedata.aliveworkplace.hall.HarvestIdolBlockEntity::new, HARVEST_IDOL);
 
+	/** The Bounty Board (ROADMAP 31.13): a notice board on two posts showing the village's open bounties. */
+	public static final io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock BOUNTY_BOARD = Reg.block("bounty_board", io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(net.minecraft.world.level.material.MapColor.WOOD)
+			.strength(1.5f)
+			.sound(net.minecraft.world.level.block.SoundType.WOOD)
+			.noOcclusion()
+			.ignitedByLava());
+
 	public static void init() {
 	}
 

@@ -1,0 +1,7 @@
+{
+  "entity": "minecraft:vindicator",
+  "gear": {
+    "mainhand": "minecraft:iron_axe"
+  },
+  "mount": "minecraft:ravager"
+}

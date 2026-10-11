@@ -109,6 +109,15 @@ public final class WorkplaceCommand {
 					.then(Commands.argument("id", UuidArgument.uuid())
 						.executes(ctx -> io.github.jcondedata.aliveworkplace.story.PersonalRequests.decline(ctx.getSource().getPlayerOrException(),
 							UuidArgument.getUuid(ctx, "id")) ? 1 : 0))))
+			.then(Commands.literal("proposal") // a Hero's proposed edict: the owner's [Approve] and [Refuse] (31.12)
+				.then(Commands.literal("approve")
+					.then(Commands.argument("id", UuidArgument.uuid())
+						.executes(ctx -> io.github.jcondedata.aliveworkplace.hall.EdictProposals.answer(ctx.getSource().getPlayerOrException(),
+							UuidArgument.getUuid(ctx, "id"), true) ? 1 : 0)))
+				.then(Commands.literal("refuse")
+					.then(Commands.argument("id", UuidArgument.uuid())
+						.executes(ctx -> io.github.jcondedata.aliveworkplace.hall.EdictProposals.answer(ctx.getSource().getPlayerOrException(),
+							UuidArgument.getUuid(ctx, "id"), false) ? 1 : 0))))
 			.then(Commands.literal("steward")
 				.then(Commands.literal("explain")
 					.executes(WorkplaceCommand::explainSteward)))

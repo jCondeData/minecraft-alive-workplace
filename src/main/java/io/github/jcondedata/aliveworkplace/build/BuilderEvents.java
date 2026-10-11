@@ -450,6 +450,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 				io.github.jcondedata.aliveworkplace.threat.SiegeReport.onDeath(level, entity, source); // a siege counts its dead (32.6)
 				io.github.jcondedata.aliveworkplace.guard.BanditCamps.onDeath(level, entity, source);
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.onDeath(level, entity, source); // a bounty captain drops his insignia (31.13)
 				io.github.jcondedata.aliveworkplace.story.Arcs.onDeath(level, entity); // an arc's mob isn't put back (31.4)
 				io.github.jcondedata.aliveworkplace.hall.VillageQuests.onKill(level, entity, source);
 			}

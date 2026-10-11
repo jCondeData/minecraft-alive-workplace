@@ -211,4 +211,10 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.legend.Gifted.discount((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.hall.TradeFairs.discount((Villager) (Object) this); // a trade fair's day (29.17)
 	}
+
+	/** What friendship and titles are worth (31.12): cheaper trades from hearts and the title, after vanilla's gossip and Hero discounts. */
+	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
+	private void aliveworkplace$friendPrices(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.story.FriendPerks.prices((Villager) (Object) this, player);
+	}
 }

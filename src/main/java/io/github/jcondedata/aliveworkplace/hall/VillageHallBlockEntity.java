@@ -170,6 +170,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.trade.Economy.round(server, pos, census); // known for, short of, prices (33.2): after the caravans' list is up to date
 			io.github.jcondedata.aliveworkplace.guard.Gates.round(server, pos, census.guards());
 			io.github.jcondedata.aliveworkplace.guard.BanditCamps.round(server, pos);
+			io.github.jcondedata.aliveworkplace.bounty.Bounties.round(server, pos); // bounties posted and taken down (31.13)
 			Festivals.round(server, pos, hall, census.villagers());
 			io.github.jcondedata.aliveworkplace.cup.Cups.round(server, pos, hall); // 28.17: after the caravans' list is up to date
 			io.github.jcondedata.aliveworkplace.legend.LegendSlots.round(server, pos);

@@ -2989,6 +2989,107 @@ final class JobScenes {
 					Showcase.check(shown, "the hall's tooltip for Dara shows your hearts and her best friends");
 				}, 30)),
 			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 310));
+		// What friendship and titles are worth (ROADMAP 31.12): at a festival Bo the mason (7 hearts) and Dara the farmer
+		// (6 hearts) each bring the player their family's gift, Ana (3 hearts) doesn't; then at ten hearts, and a Hero of the
+		// village, Dara's 20-emerald trade costs 12 (30% for the hearts and 10% for the title).
+		SCREENS.put("festival_gifts", new Screen("at the festival Bo and Dara brought their gifts (16 stone bricks, 6 apples) and Ana, with 3 hearts, didn't; then Dara's trade screen for a Hero with ten hearts: 20 emeralds cost 12",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				classPeople.clear();
+				String[] names = {"Bo", "Dara", "Ana"};
+				VillagerProfession[] jobs = {VillagerProfession.MASON, VillagerProfession.FARMER, VillagerProfession.LIBRARIAN};
+				for (int i = 0; i < 3; i++) {
+					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-1 + 2 * i, -60, 1), MobSpawnType.COMMAND);
+					v.setNoAi(true);
+					v.setYRot(0);
+					v.setYHeadRot(0);
+					v.setYBodyRot(0);
+					v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(2));
+					v.setCustomName(Component.literal(names[i]));
+					classPeople.add(v);
+				}
+				Villager dara = classPeople.get(1);
+				var offers = new net.minecraft.world.item.trading.MerchantOffers();
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 20),
+					new ItemStack(Items.GOLDEN_CARROT, 3), 12, 5, 0.05f));
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 5),
+					new ItemStack(Items.PUMPKIN_PIE, 4), 12, 5, 0.05f));
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 1),
+					new ItemStack(Items.BREAD, 6), 12, 1, 0.05f));
+				dara.setOffers(offers);
+				subject = dara;
+			},
+			List.of(new Step("01_festival_gifts", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look the villagers' hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					int[] hearts = {7, 6, 3};
+					for (int i = 0; i < 3; i++) {
+						io.github.jcondedata.aliveworkplace.story.Friendship.add(classPeople.get(i), player, hearts[i] * 100);
+					}
+					int brought = io.github.jcondedata.aliveworkplace.story.FriendPerks.festivalGifts(level, STATION, player);
+					int again = io.github.jcondedata.aliveworkplace.story.FriendPerks.festivalGifts(level, STATION, player);
+					Showcase.check(brought == 2 && again == 0, "two friends with 6 hearts or more brought a gift, once: " + brought + ", then " + again);
+				}, 50),
+				new Step("02_discounted_trade", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 400); // ten hearts
+					io.github.jcondedata.aliveworkplace.story.Reputation.add(level, STATION, player, 300); // a Hero of the village
+					dara.mobInteract(player, InteractionHand.MAIN_HAND);
+					var offers = dara.getOffers();
+					Showcase.check(offers.get(0).getCostA().getCount() == 12 && offers.get(1).getCostA().getCount() == 3
+						&& offers.get(2).getCostA().getCount() == 1, "a Hero with ten hearts: 12, 3 and 1 emeralds, got " + offers.get(0).getCostA().getCount()
+						+ ", " + offers.get(1).getCostA().getCount() + ", " + offers.get(2).getCostA().getCount());
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof net.minecraft.world.inventory.MerchantMenu));
+		// The bounty board and bandit captains (ROADMAP 31.13): the board with its posters, the Wanted Poster's tooltip
+		// in the journal's Bounties tab, the captain at his hideout, and the insignia handed in.
+		SCREENS.put("bounty", new Screen("a Bounty Board by the hall showing two posters; the Bounties tab with Grimwald the Red's poster (name, quirk, where he was seen, the reward); Ironhide himself in iron with his band; his insignia handed in for 15 emeralds",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+					.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+				level.setBlockAndUpdate(new BlockPos(2, -60, 1), ModBlocks.BOUNTY_BOARD.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.forget(level);
+			},
+			List.of(new Step("01_board", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.post(level, STATION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("ironhide"), 0, 0,
+						STATION.offset(110, 0, -110));
+					level.setDayTime(level.getDayTime() + 3 * io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY);
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.post(level, STATION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("hexer"), 8, 3,
+						STATION.offset(-150, 0, 40));
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.boardPlaced(level, new BlockPos(2, -60, 1));
+					Showcase.check(b != null && level.getBlockState(new BlockPos(2, -60, 1)).getValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.POSTERS) == 2,
+						"two bounties posted, two posters on the board");
+				}, 40),
+				new Step("02_poster", io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.bounty.BountyPage.openAtBoard(player, level, new BlockPos(2, -60, 1));
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW).is(ModItems.WANTED_POSTER), "the Bounties tab shows the poster");
+				}, 40),
+				new Step("03_captain", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					boolean up = io.github.jcondedata.aliveworkplace.bounty.Bounties.raise(level, b, new BlockPos(1, -60, -3), new BlockPos(1, -60, -5));
+					for (var mob : io.github.jcondedata.aliveworkplace.bounty.Bounties.band(level, b)) {
+						mob.setNoAi(true);
+					}
+					Showcase.check(up, "Grimwald the Red stands with his band");
+				}, 40),
+				new Step("04_claim", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					if (level.getEntity(b.captain) instanceof net.minecraft.world.entity.LivingEntity captain) {
+						captain.hurt(level.damageSources().playerAttack(player), 1000f);
+					}
+					player.getInventory().add(io.github.jcondedata.aliveworkplace.bounty.Bounties.insignia(level, b));
+					var claim = io.github.jcondedata.aliveworkplace.bounty.Bounties.claimAny(player, level, STATION);
+					Showcase.check(claim == io.github.jcondedata.aliveworkplace.bounty.Bounties.Claim.PAID, "the insignia paid: " + claim);
+				}, 40)),
+			(level, player) -> true));
 		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
 		// hall's tooltip says when her name day is.

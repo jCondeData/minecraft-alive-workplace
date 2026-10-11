@@ -131,7 +131,7 @@ final class OldHousesScene {
 		steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 			.setLevel(Stewards.MIN_BUILDER_LEVEL));
 		steward.setVillagerXp(70);
-		Stewards.appoint(player, steward, plan);
+		ScreenshotHarness.appointSteward(player, steward, plan);
 		ModAttachments.STEWARD_ROUND_DAY.set(steward, StewardWishes.day(level));
 		OldHouses.request(level, HALL);
 		ScreenshotHarness.hover(player, Vec3.atCenterOf(HALL).add(-3, 2, 4), 200, 20);

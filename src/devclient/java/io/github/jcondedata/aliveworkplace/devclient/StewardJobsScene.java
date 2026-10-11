@@ -140,7 +140,7 @@ final class StewardJobsScene {
 		CityPlanItem.bind(level, player, plan, HALL);
 		steward = EntityType.VILLAGER.spawn(level, HALL.south(2), MobSpawnType.COMMAND);
 		steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER).setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL)); steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-		Stewards.appoint(player, steward, plan);
+		ScreenshotHarness.appointSteward(player, steward, plan);
 		ModAttachments.STEWARD_ROUND_DAY.set(steward, StewardWishes.day(level));
 		level.setBlockAndUpdate(HALL.offset(-7, 0, 9), Blocks.COMPOSTER.defaultBlockState());
 		level.setBlockAndUpdate(HALL.offset(8, 0, 10), Blocks.GRINDSTONE.defaultBlockState());

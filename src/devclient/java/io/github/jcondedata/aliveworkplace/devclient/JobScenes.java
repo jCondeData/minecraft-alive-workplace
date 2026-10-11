@@ -658,7 +658,7 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, STATION);
 			Villager v = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
 			v.setVillagerData(v.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER).setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL)); v.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, v, cityPlan);
+			ScreenshotHarness.appointSteward(player, v, cityPlan);
 			return l -> io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(l, v)
 				&& v.distanceToSqr(STATION.getCenter()) < 16 && !io.github.jcondedata.aliveworkplace.city.StewardWork.holdsPlan(v);
 		}, null));
@@ -1461,7 +1461,7 @@ final class JobScenes {
 			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			ScreenshotHarness.appointSteward(player, steward, cityPlan);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED, "stewardRoads is on");
 			return l -> {
 				var road = hall.plan().roads().get(0);
@@ -1507,7 +1507,7 @@ final class JobScenes {
 			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			ScreenshotHarness.appointSteward(player, steward, cityPlan);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.Roads.ENABLED, "stewardRoads is on");
 			return l -> {
 				var road = hall.plan().roads().get(0);
@@ -1555,7 +1555,7 @@ final class JobScenes {
 				steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 					.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 				steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-				io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+				ScreenshotHarness.appointSteward(player, steward, cityPlan);
 				data.setWants(hallAt, Component.literal(names[i]), List.of());
 			}
 			data.toggleRoute(halls[0], halls[1]);
@@ -1616,7 +1616,7 @@ final class JobScenes {
 			steward.setVillagerData(steward.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER)
 				.setLevel(io.github.jcondedata.aliveworkplace.city.Stewards.MIN_BUILDER_LEVEL));
 			steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-			io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, steward, cityPlan);
+			ScreenshotHarness.appointSteward(player, steward, cityPlan);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.Walls.ENABLED, "stewardWalls is on");
 			Showcase.check(!io.github.jcondedata.aliveworkplace.city.Walls.pieces(level, hallAt).isEmpty(), "the wall line has pieces to build");
 			return l -> {

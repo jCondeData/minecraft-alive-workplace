@@ -3243,6 +3243,57 @@ public class ScreenshotHarness implements ClientModInitializer {
 		return target.add(9, 13, 9);
 	}
 
+	/**
+	 * Appoints {@code villager} Steward with {@code plan}, as a player's sneak-right-click does (B62, B94). Blocks placed
+	 * in the same server task as this call have no workstation record yet: vanilla files a placed block's record in a
+	 * task of its own that runs after the current one ({@code ServerLevel.onBlockStateChange}). A Steward is appointed
+	 * only at a hall with a free place, so the appointment was refused, and the Steward's plots and jobs find Blueprint
+	 * Tables and workstations by their records, so a scene staging them in one go found none. The records of the blocks
+	 * around the hall are filed first, as those tasks do a moment later (they then find them filed and do nothing). A
+	 * player places the hall and the tables long before he appoints anyone, so the game itself never meets this.
+	 */
+	static void appointSteward(ServerPlayer player, Villager villager, ItemStack plan) {
+		ServerLevel level = (ServerLevel) villager.level();
+		var bound = plan.get(io.github.jcondedata.aliveworkplace.registry.ModComponents.CITY_PLAN_HALL);
+		if (bound != null && bound.hall().dimension().equals(level.dimension())) {
+			fileRecords(level, bound.hall().pos(), io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+		}
+		Showcase.check(io.github.jcondedata.aliveworkplace.city.Stewards.appoint(player, villager, plan) == net.minecraft.world.InteractionResult.SUCCESS,
+			"the seasoned Builder was made Steward of the hall");
+	}
+
+	/** Files now the workstation (and bed) records that vanilla's own tasks would file a moment later, within {@code radius} of {@code centre}, 16 blocks up and down. */
+	static void fileRecords(ServerLevel level, BlockPos centre, int radius) {
+		var poi = level.getPoiManager();
+		for (int cx = (centre.getX() - radius) >> 4; cx <= (centre.getX() + radius) >> 4; cx++) {
+			for (int cz = (centre.getZ() - radius) >> 4; cz <= (centre.getZ() + radius) >> 4; cz++) {
+				if (!(level.getChunkSource().getChunkNow(cx, cz) instanceof net.minecraft.world.level.chunk.LevelChunk chunk)) {
+					continue;
+				}
+				for (int sy = (centre.getY() - 16) >> 4; sy <= (centre.getY() + 16) >> 4; sy++) {
+					int index = level.getSectionIndexFromSectionY(sy);
+					if (index < 0 || index >= chunk.getSections().length) {
+						continue;
+					}
+					var section = chunk.getSection(index);
+					if (section.hasOnlyAir() || !section.maybeHas(net.minecraft.world.entity.ai.village.poi.PoiTypes::hasPoi)) {
+						continue;
+					}
+					for (int y = 0; y < 16; y++) {
+						for (int z = 0; z < 16; z++) {
+							for (int x = 0; x < 16; x++) {
+								BlockPos pos = new BlockPos((cx << 4) + x, (sy << 4) + y, (cz << 4) + z);
+								if (poi.getType(pos).isEmpty()) {
+									net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(section.getBlockState(x, y, z)).ifPresent(type -> poi.add(pos, type));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	static void hoverLookingAt(ServerPlayer player, Vec3 pos, Vec3 target) {
 		Vec3 d = target.subtract(pos);
 		float yaw = (float) (Math.toDegrees(Math.atan2(d.z, d.x)) - 90);

@@ -154,7 +154,7 @@ final class StewardHomesScene {
 		steward = EntityType.VILLAGER.spawn(level, HALL.south(2), MobSpawnType.COMMAND);
 		steward.setVillagerData(steward.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(Stewards.MIN_BUILDER_LEVEL));
 		steward.setVillagerXp(70); // a seasoned Builder (27.1a)
-		Stewards.appoint(player, steward, plan);
+		ScreenshotHarness.appointSteward(player, steward, plan);
 		Showcase.check(StewardDesk.mode(level, HALL) == CityPlan.Mode.RUN, "the Steward runs the village");
 		ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(HALL).add(4, 22, 26), Vec3.atCenterOf(HALL.offset(22, 0, 0)));
 	}

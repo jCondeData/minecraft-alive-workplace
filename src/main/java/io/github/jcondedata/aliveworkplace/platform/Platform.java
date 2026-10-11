@@ -68,6 +68,9 @@ public interface Platform {
 
 	Path configDir();
 
+	/** The roots (a jar's root, or class folders in a dev run) this mod's own files are loaded from; empty if unknown. */
+	List<Path> modRoots();
+
 	// ---- events ----------------------------------------------------------------------------------------------------
 
 	/** Once the server is starting (datapacks loaded, levels not yet). */

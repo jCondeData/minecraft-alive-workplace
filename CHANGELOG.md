@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- **Fewer stalls on a new world's first day on big packs** (B103): the mod's classes are now loaded in the background
+  while the server starts, instead of in the middle of a tick the first time a hall round, a worker's check of the
+  village's chests or a cradle at night needs them; a worker's chest search no longer waits for a chunk.
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
   lost the faster walk. A worker now always walks at their own pace.

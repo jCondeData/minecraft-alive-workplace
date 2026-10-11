@@ -97,6 +97,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BuildReserveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MaterialListGameTests",
 			"io.github.jcondedata.aliveworkplace.test.KeepVillagesWorkingGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ClassWarmupGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMaterialListGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaKeepVillagesWorkingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RepeatNewTests",

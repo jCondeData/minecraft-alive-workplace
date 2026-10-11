@@ -108,6 +108,12 @@ public final class FabricPlatform implements Platform {
 		return FabricLoader.getInstance().getConfigDir();
 	}
 
+	@Override
+	public java.util.List<java.nio.file.Path> modRoots() {
+		return FabricLoader.getInstance().getModContainer(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID)
+			.map(c -> java.util.List.copyOf(c.getRootPaths())).orElse(java.util.List.of());
+	}
+
 	// ---- events ----------------------------------------------------------------------------------------------------
 
 	@Override

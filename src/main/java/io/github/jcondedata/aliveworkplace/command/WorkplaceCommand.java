@@ -491,6 +491,12 @@ public final class WorkplaceCommand {
 				source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
 				return 0;
 			}
+			if (site.wonder() != null) {
+				// A Wonder's part (35.4): the whole Wonder ends, what's built stays and the plan comes back.
+				io.github.jcondedata.aliveworkplace.wonder.WonderStages.cancel(level, site.wonder());
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.wonder_cancelled"), false);
+				return 1;
+			}
 			Builders.cancel(level, site);
 			source.sendSuccess(() -> Component.translatable("command.aliveworkplace.cancelled", Blueprints.displayName(site.structure())), false);
 			return 1;

@@ -202,6 +202,7 @@
 			"io.github.jcondedata.aliveworkplace.test.LegendEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WonderStageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSlotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendsHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CupGameTests",

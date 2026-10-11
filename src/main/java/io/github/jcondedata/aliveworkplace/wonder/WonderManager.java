@@ -86,6 +86,24 @@ public final class WonderManager extends SavedData {
 		}
 	}
 
+	/** Records where a site's Wonder went down and where its Foundation Stone is (35.4). */
+	public void place(UUID id, io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement, BlockPos stone) {
+		WonderSite site = sites.get(id);
+		if (site != null) {
+			sites.put(id, site.placedAt(placement, stone));
+			setDirty();
+		}
+	}
+
+	/** Records the build sites of a site's current stage (35.4). */
+	public void setParts(UUID id, List<UUID> parts) {
+		WonderSite site = sites.get(id);
+		if (site != null) {
+			sites.put(id, site.withParts(parts));
+			setDirty();
+		}
+	}
+
 	/** Forgets a site (a cancelled Wonder, or a test's). */
 	public void remove(UUID id) {
 		if (sites.remove(id) != null) {

@@ -237,6 +237,7 @@
   "command.aliveworkplace.no_sites": "No builds in progress.",
   "command.aliveworkplace.not_owner": "Only the player who started this build (or an operator) can cancel it.",
   "command.aliveworkplace.no_such_site": "No build with that id.",
+  "command.aliveworkplace.wonder_cancelled": "Cancelled the Wonder. What's built stays, and its Wonder Plan has come back.",
   "command.aliveworkplace.cancelled": "Cancelled the build of %s. Its blueprint is still placed there: hand it back to carry on, or click the ground to move it.",
   "gamerule.workplaceFreeMaterials": "Alive Workplace: builders need no materials",
   "gamerule.workplaceBuildDelay": "Alive Workplace: ticks per block placed by builders",

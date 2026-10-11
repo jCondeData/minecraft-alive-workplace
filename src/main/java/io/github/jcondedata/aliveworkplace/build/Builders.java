@@ -778,6 +778,9 @@ public final class Builders {
 
 	/** The blueprint goes to the owner if online, else into the supply chests, else on the ground. */
 	private static void giveBack(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {
+		if (site.wonder() != null) {
+			return; // a Wonder's part (35.4): the Wonder Plan comes back instead (WonderStages.cancel)
+		}
 		if (site.isSteward() || io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
 			return; // the Steward's build (27.8) or a house's new outside (23.10a): nobody handed a blueprint over, so none comes back
 		}

@@ -298,7 +298,10 @@ public final class ClassNeeds {
 		return Homes.of(level, villager).map(Homes.Home::tier).orElse(0);
 	}
 
-	/** The beauty near {@code villager}'s home: the points of the decorations finished within {@link #BEAUTY_RANGE} of their bed. */
+	/**
+	 * The beauty near {@code villager}'s home: the points of the decorations finished within {@link #BEAUTY_RANGE} of their
+	 * bed, and their home's own garden ({@link HomeGrades#gardenBeauty}: the Manor II's counts 3, 34.16).
+	 */
 	public static int beauty(ServerLevel level, Villager villager) {
 		BlockPos bed = VillageNeeds.bed(level, villager);
 		if (bed == null) {
@@ -308,7 +311,7 @@ public final class ClassNeeds {
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, bed, BEAUTY_RANGE)) {
 			points += Decorations.points(f.structure());
 		}
-		return points;
+		return points + Homes.of(level, villager).map(h -> HomeGrades.gardenBeauty(h.structure())).orElse(0); // their own garden (34.16)
 	}
 
 	private static boolean standing(Village village, Building need) {

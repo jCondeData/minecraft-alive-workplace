@@ -851,10 +851,15 @@ public final class ModTrades {
 	public static final int TOWNHOUSE_PRICE = 14;
 	/** The class whose households let a village's builders sell the Townhouse (34.15). */
 	public static final net.minecraft.resources.ResourceLocation ARTISAN = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("artisan");
+	/** What a builder asks for the Noble's Manor (34.16). */
+	public static final int MANOR_PRICE = 20;
+	/** The class whose households let a village's builders sell the Manor (34.16). */
+	public static final net.minecraft.resources.ResourceLocation BURGHER = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("burgher");
 
 	/**
 	 * The grander homes a builder sells (ROADMAP 34.15): the Artisan's House from Apprentice on, and the Burgher's
-	 * Townhouse once the village round them (the nearest hall's) has a household of Artisans or higher. Added when they
+	 * Townhouse once the village round them (the nearest hall's) has a household of Artisans or higher, and the Noble's
+	 * Manor (34.16) once it has a household of Burghers or higher. Added when they
 	 * level up and when a player opens their trades (the mixin's hooks on {@code increaseMerchantCareer} and
 	 * {@code updateSpecialPrices}) rather than listed with the level's trades, which show two picked at random; never
 	 * added twice, and once added theirs like any other trade.
@@ -871,16 +876,25 @@ public final class ModTrades {
 				&& hasArtisans(level, villager.blockPosition())) {
 			villager.getOffers().add(blueprint(StarterBlueprints.TOWNHOUSE, TOWNHOUSE_PRICE));
 		}
+		if (!io.github.jcondedata.aliveworkplace.build.UpgradeOffers.sells(villager, StarterBlueprints.MANOR.id())
+				&& hasClass(level, villager.blockPosition(), BURGHER)) {
+			villager.getOffers().add(blueprint(StarterBlueprints.MANOR, MANOR_PRICE)); // 34.16
+		}
 	}
 
 	/** Whether the village round the hall nearest {@code pos} has a household of Artisans or a higher class. */
 	public static boolean hasArtisans(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos) {
-		io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass artisan = io.github.jcondedata.aliveworkplace.people.SocialClasses.get(ARTISAN);
-		if (!io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED || artisan == null) {
+		return hasClass(level, pos, ARTISAN);
+	}
+
+	/** Whether the village round the hall nearest {@code pos} has a household of class {@code id} or a higher class. */
+	public static boolean hasClass(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos, net.minecraft.resources.ResourceLocation id) {
+		io.github.jcondedata.aliveworkplace.people.SocialClasses.SocialClass social = io.github.jcondedata.aliveworkplace.people.SocialClasses.get(id);
+		if (!io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED || social == null) {
 			return false;
 		}
 		return io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, pos)
-			.map(hall -> io.github.jcondedata.aliveworkplace.hall.ClassesPage.households(level, hall).stream().anyMatch(p -> p.social().tier() >= artisan.tier()))
+			.map(hall -> io.github.jcondedata.aliveworkplace.hall.ClassesPage.households(level, hall).stream().anyMatch(p -> p.social().tier() >= social.tier()))
 			.orElse(false);
 	}
 

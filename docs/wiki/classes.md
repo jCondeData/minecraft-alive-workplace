@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): off until that
 expansion is finished, and several of its pieces are not built yet (see Known limits).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17
 
 ## What a player sees
 
@@ -143,6 +143,31 @@ Ball. Households and the village's sums by class are never saved: they are worke
   wool from the village's chests and the store, and dyes white wool themselves when dye is to hand: the dyer still
   only dyes for builders.
 
+## Dressed by class (34.17)
+
+Each class but the Peasant has a layer worn over the job's outfit, and elders a face layer (34.19's look). The art is
+drawn, three versions of each, and the owner picks on a picker page; until he does, version 1 of each ships:
+
+| Layer | Version 1 (shipped) | Version 2 | Version 3 |
+|---|---|---|---|
+| Artisan | a blue neckerchief and a belt pouch | a leather tool belt (hammer, chisel, files, nails) | rolled sleeves and an ochre waistcoat |
+| Burgher | a white collar, dark cuffs and a watch chain | a dark frock coat's buttoned edge, a pocket square | a short green shoulder cape |
+| Noble | a crimson mantle with ermine and a chain of office | an emerald velvet half-cape with gold embroidery | a blue sash with a jewelled clasp |
+| Elder | grey brows and a short beard | white hair at the temples | spectacles and a full grey beard |
+
+- Textures: `textures/entity/villager/class/<class>.png` (`artisan`, `burgher`, `noble`; the class file's `outfit`
+  names it) and `class/elder.png`. A Peasant has no `outfit`, so the job's outfit stays as the owner approved it.
+- The rules every layer keeps: never on the head (the job's and the biome's hats stay), nothing under the level badge,
+  the back painted, the job's apron and hat still in view. The elder's layer is only the face, under any hat.
+- What a villager wears, bottom to top: their class's layer, then the elder's face if they are an elder (children wear
+  their class's too, never the elder's; with `villagerAges` off nobody wears the elder's face). `people/ClassOutfits`
+  says this for 34.18's render layer.
+- Nothing draws these layers in game yet: the client render layer and the packet that tells the client a villager's
+  class and age are 34.18.
+- Recipes: `tools/textures/art/classes.py` (`PICKED` names the version shipped). The picker page:
+  `python3 tools/textures/picks/classes_page.py` writes `build/texture-picks/classes/index.html` with every version on
+  the villager model over six jobs in all seven biomes; picks and notes are saved in its `classes` collection.
+
 ## Known limits
 
 - **Nobody can rise past Artisan yet with the mod's own data.** The Burgher needs the Gazette, and the Printer who
@@ -150,14 +175,16 @@ Ball. Households and the village's sums by class are never saved: they are worke
   luxury files today, and a luxury without a file is a need that never holds.
 - Villagers have no class until their village is seeded, and seeding (34.22) isn't built: on a real world every
   villager is still without a class, and the job gate doesn't apply to them.
-- The grander homes (34.15, 34.16), class outfits (34.17, 34.18), elders and family trees are not built.
+- The grander homes (34.15, 34.16), the class outfits in game (34.18) and family trees are not built: the outfits'
+  art is (34.17), but no player sees it until 34.18's render layer.
 - In GameTests classes are switched off unless a class test turns them on, so other tests' numbers don't move.
 
 ## Proof
 
 GameTests: `ClassGameTests` (16: the four files are the ladder, each kind of need, one step a day), `ClassHallGameTests`
 (6), `ClassPerkGameTests` (7), `ClassJobGameTests` (7), `ServiceGameTests` (8), `LuxuryGameTests` (7),
-`LuxuryWorkGameTests` (7), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10), `PrinterGameTests` (11).
+`LuxuryWorkGameTests` (7), `ClassOutfitGameTests` (2: every class but the Peasant names a 64x64 layer that ships, and
+what a villager wears by class and age), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10), `PrinterGameTests` (11).
 
 Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,
 `printer`.

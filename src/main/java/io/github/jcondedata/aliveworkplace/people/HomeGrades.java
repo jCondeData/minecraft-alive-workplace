@@ -23,6 +23,10 @@ import net.minecraft.util.GsonHelper;
  * "grade": 2}}: that blueprint (in any style) is that grade, and each of its upgrades one more, up to {@link #MAX}. A
  * file never lowers a grade, and a blueprint's own tier above III (an imported {@code manor_4}) stays what it is. A
  * broken file is skipped with a warning naming it.
+ *
+ * <p>A file may also name a garden (ROADMAP 34.16): {@code "garden": {"tier": 2, "beauty": 3}} — from that tier on
+ * (the Manor's walled garden comes with Manor II) the home's own garden counts that much beauty for the people who live
+ * there ({@link ClassNeeds#beauty}), on top of the decorations near their bed.
  */
 public final class HomeGrades implements ResourceManagerReloadListener {
 	private static final ResourceLocation ID = AliveWorkplace.id("home_grades");
@@ -32,6 +36,12 @@ public final class HomeGrades implements ResourceManagerReloadListener {
 
 	/** The grade each family's base blueprint is given ({@link ClassNeeds#root}: no style, no tier). */
 	private static volatile Map<ResourceLocation, Integer> grades = Map.of();
+	/** A home's garden: from {@code tier} on it counts {@code beauty} for the people who live there. */
+	public record Garden(int tier, int beauty) {
+	}
+
+	/** The garden each family's base blueprint is given, if its file names one. */
+	private static volatile Map<ResourceLocation, Garden> gardens = Map.of();
 
 	public static void init() {
 		Platform.get().onDataReload(ID, new HomeGrades());
@@ -58,6 +68,7 @@ public final class HomeGrades implements ResourceManagerReloadListener {
 	/** Reads every home grade file (by file id); a broken one is skipped with a warning naming it. */
 	public static void load(Map<ResourceLocation, JsonElement> files) {
 		Map<ResourceLocation, Integer> out = new HashMap<>();
+		Map<ResourceLocation, Garden> gardensOut = new HashMap<>();
 		for (Map.Entry<ResourceLocation, JsonElement> e : new TreeMap<>(files).entrySet()) {
 			try {
 				JsonObject o = GsonHelper.convertToJsonObject(e.getValue(), "home grade");
@@ -66,12 +77,32 @@ public final class HomeGrades implements ResourceManagerReloadListener {
 				if (grade < 1 || grade > MAX) {
 					throw new JsonSyntaxException("grade: " + grade + " is not between 1 and " + MAX);
 				}
+				Garden garden = null;
+				if (o.has("garden")) {
+					JsonObject g = GsonHelper.getAsJsonObject(o, "garden");
+					int tier = GsonHelper.getAsInt(g, "tier", 1);
+					int beauty = GsonHelper.getAsInt(g, "beauty");
+					if (tier < 1 || beauty < 0) {
+						throw new JsonSyntaxException("garden: tier " + tier + " or beauty " + beauty + " out of range");
+					}
+					garden = new Garden(tier, beauty);
+				}
 				out.merge(ClassNeeds.root(blueprint), grade, Math::max);
+				if (garden != null) {
+					gardensOut.put(ClassNeeds.root(blueprint), garden);
+				}
 			} catch (Exception ex) {
 				AliveWorkplace.LOG.warn("Skipping home grade {}: {}", e.getKey(), ex.getMessage());
 			}
 		}
 		grades = Map.copyOf(out);
+		gardens = Map.copyOf(gardensOut);
+	}
+
+	/** The beauty the garden of a home built from {@code structure} counts for its people (0 if it has none yet). */
+	public static int gardenBeauty(ResourceLocation structure) {
+		Garden garden = gardens.get(ClassNeeds.root(structure));
+		return garden != null && BlueprintUpgrades.tier(structure) >= garden.tier() ? garden.beauty() : 0;
 	}
 
 	/** The grade a data file gives {@code blueprint}'s family (its base), or 0 for none. */

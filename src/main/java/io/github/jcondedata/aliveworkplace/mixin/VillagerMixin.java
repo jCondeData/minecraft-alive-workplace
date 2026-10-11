@@ -45,6 +45,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Legends.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Gifted.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.people.Retirement.tick((Villager) (Object) this); // shadows and mentors (34.20)
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;
@@ -107,6 +108,16 @@ abstract class VillagerMixin {
 	/** Set when a villager who went to school is taking their first job: they start a level up once it's set. */
 	@org.spongepowered.asm.mixin.Unique
 	private boolean aliveworkplace$headStart;
+
+	/** A Novice or Apprentice a retired elder teaches learns 50% faster from trades too (34.20). */
+	@Inject(method = "rewardTradeXp", at = @At("TAIL"))
+	private void aliveworkplace$taught(net.minecraft.world.item.trading.MerchantOffer offer, CallbackInfo ci) {
+		Villager self = (Villager) (Object) this;
+		int more = io.github.jcondedata.aliveworkplace.people.Retirement.extraXp(self, offer.getXp(), self.getRandom());
+		if (more > 0) {
+			self.setVillagerXp(self.getVillagerXp() + more);
+		}
+	}
 
 	/** A jobless villager doesn't take a free workstation in a village that has its workers (25.5, {@code maxWorkersPerVillage}). */
 	@Inject(method = "setVillagerData", at = @At("HEAD"), cancellable = true)

@@ -39,7 +39,7 @@ import net.minecraft.world.level.block.Blocks;
  * Hall. A day passes: the chronicle notes "Bram is an elder now". Stills: Bram's card on the hall's list ("Elder · grown
  * 120 days", and "a quiet old age" first in his mood: he is fed and has a bed); Bram saying "In my day this was all
  * fields."; the two walking the same way side by side, Bram behind. Its checks: each of those read from the game, and
- * Bram covering about 15% less ground than Tom in the same time. (The elder look is 34.18's and is not drawn yet.)
+ * Bram covering about 15% less ground than Tom in the same time. (The elder's look, 34.18, shows on Bram from his first elder day.)
  */
 final class EldersScene {
 	private static final BlockPos HALL = new BlockPos(0, -60, -3);

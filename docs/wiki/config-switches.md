@@ -117,6 +117,7 @@ range is in brackets.
 | `villageClasses` | on | 1.8 | Households in villages with a hall climb the class ladder. Off: no classes; classes and progress stay saved. |
 | `classRiseDays` | 2 (1 to 30) | 1.8 | Dawns running the next class's needs must hold for a household to rise one class. |
 | `classFallDays` | 3 (1 to 30) | 1.8 | Dawns running a need of their own class must fail for a household to fall one class. |
+| `classGraceDays` | 7 (0 to 30) | 1.8 | Days a village settles in after classes are switched on there: nobody falls a class, luxuries aren't needed yet, nobody retires. |
 | `vintners` | on | 1.8 | Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple. Off: no Vintner job, and Vintners already hired stand idle. |
 | `tailors` | on | 1.8 | Villagers at a loom can be made Tailors with string. Off: no Tailor job, and Tailors already hired stand idle. |
 | `printers` | on | 1.8 | Villagers at a cartography table can be made Printers with an ink sac. Off: no Printer job, Printers already hired stand idle, and no Spread the news quest goes up. |
@@ -124,6 +125,9 @@ range is in brackets.
 | `villagerElderDays` | 120 (20 to 1000) | 1.8 | Grown days before a villager is an elder. |
 | `elderPassing` | on | 1.8 | Elders pass in their sleep after 40 elder days and leave a grave. Off: nobody dies of old age, and an Evergreen Charm is refused as not needed. |
 | `agelessElders` | on | 1.8 | Evergreen Charms work: a good elder who takes one never passes. Off: charms are refused and kept; elders already ageless stay ageless. |
+| `classOutfits` | on | 1.8 | Villagers wear their class over their job's outfit, and elders grey brows and a beard. Off: only the job's outfit is drawn. |
+| `elderRetirement` | on | 1.8 | An elder with a job retires once a jobless villager can take over (one a village every 3 days) and mentors Novices and Apprentices of their old trade. Off: nobody starts retiring; those retired stay retired. |
+| `familyNames` | on | 1.8 | Every villager in a village with a hall has a family name, shown on the hall ("Dara (Ashby)") and in the chronicle; children take a parent's. Off: no family names are shown (they are still kept); the Book of Families, the Family page and printed trees go by first names. See [Elders](elders.md). |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |
 | `steward` | on | 1.1 | A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan. Off: no new Stewards, and those appointed stand idle. |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | 1.1 | The most builds a Steward may have open at once, whatever his level and the village's rank. |

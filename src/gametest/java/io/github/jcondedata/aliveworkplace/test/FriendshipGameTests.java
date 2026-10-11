@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.people.Couples;
+import io.github.jcondedata.aliveworkplace.people.FamilyBook;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.story.Friendship;
@@ -277,7 +278,7 @@ public class FriendshipGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			ItemStack icon = null;
 			for (int slot = VillageHallScreen.FIRST_PERSON; slot < ChoiceMenu.SIZE; slot++) {
 				ItemStack s = menu.icon(slot);
-				if (s.has(DataComponents.CUSTOM_NAME) && s.get(DataComponents.CUSTOM_NAME).getString().equals("Dara")) {
+				if (s.has(DataComponents.CUSTOM_NAME) && s.get(DataComponents.CUSTOM_NAME).getString().equals(FamilyBook.hallName(dara).getString())) { // "Dara (Ashby)" (34.21)
 					icon = s;
 				}
 			}

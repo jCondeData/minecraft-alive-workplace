@@ -39,7 +39,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Grander homes](grander-homes.md): home grades, the Artisan's House, the Burgher's Townhouse and the Noble's Manor
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
   rules (1.8).
-- [Elders](elders.md): elders, their passing, and the Evergreen Charm that keeps a good one (1.8).
+- [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 - [Lairs and the Defence page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's

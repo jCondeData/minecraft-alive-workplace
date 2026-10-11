@@ -3873,7 +3873,7 @@ on a real world.
   Each previewed on the villager model in every biome, over six different jobs. Until the owner picks, v1 of each is
   the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
   wired in as the textures.
-- [ ] **34.18** **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
+- [x] **34.18** (review: pending 2026-10-11) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
   and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
   villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new
   `Platform` event) and whenever either changes; `classOutfits` in the config turns the layers off. The owner's picks
@@ -3900,7 +3900,7 @@ on a real world.
   it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
   (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
   40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
-- [ ] **34.20** **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
+- [x] **34.20** (review: pending 2026-10-11) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
     (34.8); with nobody, the elder keeps working and the hall says "Bram would like to retire: the village needs a
@@ -3917,7 +3917,7 @@ on a real world.
 
   Done when: `RetirementGameTests` (a full hand-over in order, each "never while" case, the level and assignments
   carried over, a retired elder never re-employed, the mentor's 50%) pass; scene `retirement` passes.
-- [ ] **34.21** **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
+- [x] **34.21** (review: pending 2026-10-11) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
   fields in `Families.Parents`; old records keep their names only). The hall keeps the village's **Book of
   Families**: everyone who has lived there (id, name, family name, the day they were born or grew up, the day they
   died, parents, partner, trade), up to 400, the longest dead forgotten first. **Family names**: a villager whose
@@ -3928,7 +3928,7 @@ on a real world.
   Ashby"), and a family's third generation is noted. The Printer (34.11) prints any family's tree as a written book
   for 2 emeralds. `familyNames` in the config. Done when: `FamilyTreeGameTests` (three generations, a death, the 400
   cap, a reload, an old Parents record without ids) pass; scene `family_tree` passes.
-- [ ] **34.22** **Switching it on for every village at once.** The owner's live server gets classes the moment it
+- [x] **34.22** (review: pending 2026-10-11) **Switching it on for every village at once.** The owner's live server gets classes the moment it
   runs 1.8, in every village with a hall, so the first rounds after the update must be safe. When a hall's round
   finds it has never been seeded (`classesVersion` 0, a new saved field on the hall):
   - it seeds 16 villagers a round, so a big City takes a few minutes: each household gets the highest class whose
@@ -4419,6 +4419,7 @@ item waits.
 
 ## Notes / blocked
 
+- 2026-10-11 lane-d-1011-0332: 34.18 and 34.20 are built and ticked on `wip/lane-d` but not yet full-built together. The first full build on the merge failed 3 tests: B104 (known flake), B107 (LegendGuests, filed by lane b) and PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap ("no barrel"; passes on main CI, cause not found, maybe a flake); the rerun was cut off at the end of the run. Next lane-d run: merge `wip/lane-d` into main, run the full build, look at the heirloom test if it fails again, push.
 - **The player guide (22.10, lane-d-1011-0332, 2026-10-11): published at `/player-guide/`, not `/guide/`.** The Guide
   Book's showcase scene is named `guide`, so the showcase site's `/guide/` folder is already its pictures; renaming the
   scene would break its history. The guide's pages are `docs/guide/*.md`; `tools/playerguide/site.py` turns them into
@@ -4477,6 +4478,51 @@ item waits.
   (3,200, treasury and player shares alike) goes back into the mother's treasury on a no-room return; sister routes
   carry no goods for sale and can't be turned off; a colony with no Storehouse yet unloads caravans into the chests by
   its hall.
+- 2026-10-11 (34.22, decisions; lane d): `people/ClassMigration` (the design note's `hall/ClassMigration`; it works
+  on villagers) runs first in the hall's round, before `FamilyBook.round`, so ages and family names are written before
+  the book. Hall NBT `classesVersion` (0) and `classGraceUntil` (0); nothing about progress is saved: who has
+  `social_class` is seeded, so a crash re-seeds only the rest. Our choices: seeding caps at the ladder's third class (as
+  34.8's travellers), reads `fed_days` as fed now (no fed dawns were counted before 1.8), and a child takes the higher
+  of its parents' classes by id, else its building's, else Peasant; a couple is never split, so a round may seed 17; a
+  newcomer married to someone already seeded takes the higher class. Ages: `adult_since` = today - (0..99 from the
+  UUID), only where absent; the book entry an earlier round wrote with today as the grown-up day gets the seeded day.
+  "Nobody falls, nobody retires" (`ClassMigration.quiet`) covers the grace only (seeding takes a few rounds, a fall 3
+  dawns), luxuries drop out of the mood's lacking count in the grace, and `classGraceDays` 0 means no grace (the chat
+  line then has no days). The hall's own round seeds only with `ClassMigration.AUTO`, off in GameTests like
+  `villageClasses` (a hall round would seed other class tests' villagers mid-test). After the first
+  seeding a villager without a class is seeded at the next round, quietly. The chronicle and chat count people, not
+  households; the counts use `class.<ns>.<id>.one/.many` (a pack's class without them reads "3 Guildmaster"). The
+  hall shows the days left on the Classes tab and page header and a clock on the Classes page (each class's
+  luxuries). `/workplace classes status|reseed` needs permission 2; reseed keeps ages and family names. The scene's
+  "before" has classes off (else the hall's own round would seed them first). Details: `docs/wiki/classes.md`.
+- 2026-10-11 (34.21, decisions; lane d): `people/FamilyBook` keeps each hall's Book of Families (hall NBT `families`,
+  plus `familiesNoted` for the third generations already noted) and gives family names (villager attachment
+  `family_name`, 1 to 60, `family_name.aliveworkplace.<n>`, founded by UUID); `Families.Parents` got `mother_id` and
+  `father_id` (absent in older records). The book and Family page have no switch of their own: they come with 1.8
+  (`FamilyBook.ENABLED` = `Expansions.M34`); `familyNames` (M34-gated) only hides the names, which are still given, so
+  turning it on again loses nothing. Our choices: villagers have no gender, so the chronicle says "grandchild" ("Mira was
+  born to Dara and Tomas, grandchild of Bram Ashby and Ilse Corwen") and the page has one "Brothers and sisters" group;
+  a baby takes the first parent's family (the one the birth picks first), else the other's; babies born at the hall are
+  named at once (they were named at the next round) so the line can say who; a family's third generation is one more
+  than a parent of the same family, noted once per family as a `LIFE` entry. The Family button sits on the villager's
+  life story page (shift-click on the hall's list; slot 8), and a click on any relative opens theirs. The Printer prints
+  from that page (any family, by opening anyone's), taking 2 emeralds from the player (CobbleDollars at the usual rate)
+  and needing a Printer in the village: a fixed trade offer could not say which family. The tree is a plain written book
+  (as the design note says), two people a page. An old record without ids is matched to a living villager by the
+  parent's name for the family name only; the book keeps its parents unknown. Over 400 the longest dead go first, and
+  with nobody dead the first written in. Not changed: the old birth line ("A baby was born to ...") is kept when no
+  grandparent is known, and the grown-up line has no family name. The player guide is untouched (1.8 is still gated;
+  docs/guide/README.md: content goes in with the release that turns it on). Details: `docs/wiki/elders.md`.
+- 2026-10-11 (lane d, lane-d-1011-0633): `wip/lane-d` holds 34.18, 34.20, 34.21 and 34.22, merged with main at 09:00Z. Full builds found and fixed 4 tests broken by them (family names on the hall's list; a duplicate `class.<id>.one` lang key). The last full build ran 1,218 batches and then the GameTest server ran out of heap (`OutOfMemoryError: Java heap space`, 09:16Z), so nothing was proven green. LuxuryWorkGameTests.makesWhatsShortAndStopsAtEight and VillageGameTests.thePrintShopsPrinterTakesItsPress each failed once in a full run and passed every time alone. Next lane d run: merge main, full build (check whether the heap runs out on main too, or only with FamilyBook/ClassMigration), push.
+- 2026-10-11 (34.18, decisions; lane d): `people/ClassLook` sends `aliveworkplace:class_look` (entity id, class, the
+  class's layer, life stage) on tracking and from every change: `SocialClasses.seed`, a household's rise or fall (only
+  when the class really changed), a child following their parents, and `LifeStages.becameElder`. **The tracking event
+  already existed** (`Platform.onStartTracking`, added for 29.4's Legend look), so no new one was added. Client:
+  `ClassLookLayer` (class) and `ClassLookLayer.Elder` (face, never on a baby) on `VillagerRenderer` only, so zombie
+  villagers never wear them; drawn before the Legend outfit and guard armor. A child growing up sends nothing: the
+  client reads `isBaby` itself, and a grown-up child is not an elder. `classOutfits` (M34-gated like its siblings) stops
+  both the sending and the drawing. `PICKED` stays v1 until the owner picks. The test drives a mock player's chunk
+  acks and `ChunkMap.move` so the real tracking event fires.
 - 2026-10-11 (34.17, decisions and a hand-over to 34.18; lane d): the twelve layers are drawn in
   `tools/textures/art/classes.py` (lint clean); v1 of each ships at `textures/entity/villager/class/<class>.png`, and the
   elder's face at `class/elder.png` (the same folder, so all of 34.17 is in one place). The picker page is

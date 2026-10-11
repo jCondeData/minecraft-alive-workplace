@@ -170,6 +170,9 @@ public final class VillageHallScreen {
 				nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.edict_line", Edicts.name(f.id())), ChatFormatting.YELLOW));
 			}
 		}
+		for (Component standing : io.github.jcondedata.aliveworkplace.story.Reputation.hallLines(level, hall, menu.viewer())) { // 31.11
+			nameLore.add(line(standing, ChatFormatting.GRAY));
+		}
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
 		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
 			Chat.chat(p, menu.shiftClicked() ? VillageProtection.toggle(level, hall, p) : Treasury.collect(level, hall, p));
@@ -813,6 +816,11 @@ public final class VillageHallScreen {
 		// "Your hearts: ♥♥♥♡♡♡♡♡♡♡", "Best friends: Jesse, Alex" (31.5).
 		for (Component friends : io.github.jcondedata.aliveworkplace.story.Friendship.hallLines(villager, viewer)) {
 			lore.add(line(friends, ChatFormatting.LIGHT_PURPLE));
+		}
+		// "Dara wants to make Journeyman before the next festival" (31.9).
+		Component request = io.github.jcondedata.aliveworkplace.story.PersonalRequests.hallLine(level, hall, villager);
+		if (request != null) {
+			lore.add(line(request, ChatFormatting.YELLOW));
 		}
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));

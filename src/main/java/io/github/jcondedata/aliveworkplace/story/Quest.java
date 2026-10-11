@@ -38,6 +38,19 @@ public final class Quest {
 	/** The story arc that posted it (31.4), or null. */
 	@Nullable
 	public String arc;
+	/** The villager who asked (a personal request, 31.9), or null. */
+	@Nullable
+	public UUID villager;
+	/** A personal request's texts: the lang key its {@code .ask}, {@code .wants} and {@code .thanks} hang off, or null. */
+	@Nullable
+	public String text;
+	/** Whether it's due "before the next festival" rather than in a number of days (31.9). */
+	public boolean festival;
+	/** The last day it moved on, for objectives that count different days ({@code beat_giver}); -1: never. */
+	public long mark = -1;
+	/** Where a {@code fetch} objective's heirloom was put (31.10), or null while it waits for a helper to come near. */
+	@Nullable
+	public net.minecraft.core.BlockPos placed;
 
 	public Quest(UUID id, ResourceLocation file, String giver, Optional<Component> name, String poster, long posted, long due,
 				 List<Objectives.Objective> objectives, int[] progress, List<Rewards.Reward> rewards) {
@@ -78,6 +91,11 @@ public final class Quest {
 		return name.orElseGet(() -> objectives.get(0).line());
 	}
 
+	/** Whether a villager asked a player for it in person (31.9). */
+	public boolean personal() {
+		return giver.equals("villager") && villager != null;
+	}
+
 	public int emeralds() {
 		return Rewards.emeralds(rewards);
 	}
@@ -115,6 +133,21 @@ public final class Quest {
 		if (arc != null) {
 			tag.putString("arc", arc);
 		}
+		if (villager != null) {
+			Nbt.putUuid(tag, "villager", villager);
+		}
+		if (text != null) {
+			tag.putString("text", text);
+		}
+		if (festival) {
+			tag.putBoolean("festival", true);
+		}
+		if (mark >= 0) {
+			tag.putLong("mark", mark);
+		}
+		if (placed != null) {
+			tag.putLong("placed", placed.asLong());
+		}
 		return tag;
 	}
 
@@ -148,6 +181,17 @@ public final class Quest {
 		if (tag.contains("arc")) {
 			quest.arc = Nbt.getString(tag, "arc");
 		}
+		// (31.9; absent in older saves: not a personal request)
+		if (Nbt.hasUuid(tag, "villager")) {
+			quest.villager = Nbt.getUuid(tag, "villager");
+		}
+		if (tag.contains("text")) {
+			quest.text = Nbt.getString(tag, "text");
+		}
+		quest.festival = tag.contains("festival") && Nbt.getBoolean(tag, "festival");
+		quest.mark = tag.contains("mark") ? Nbt.getLong(tag, "mark") : -1;
+		// (31.10; absent in older saves: no heirloom put anywhere yet)
+		quest.placed = tag.contains("placed") ? net.minecraft.core.BlockPos.of(Nbt.getLong(tag, "placed")) : null;
 		return quest;
 	}
 

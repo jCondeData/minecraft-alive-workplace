@@ -1,0 +1,21 @@
+{
+  "hearts": 10,
+  "when": {
+    "jobs": [
+      "aliveworkplace:miner",
+      "minecraft:armorer",
+      "minecraft:toolsmith",
+      "minecraft:weaponsmith",
+      "aliveworkplace:sifter"
+    ]
+  },
+  "weight": 3,
+  "lines": [
+    "heart_event.aliveworkplace.dream_nether.1",
+    "heart_event.aliveworkplace.dream_nether.2",
+    "heart_event.aliveworkplace.dream_nether.3",
+    "heart_event.aliveworkplace.dream_nether.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.dream_nether",
+  "story": "life_story.aliveworkplace.dream_nether"
+}

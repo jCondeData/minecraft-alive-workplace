@@ -1,0 +1,27 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.letter_to_family.title"
+  },
+  "text": "request.aliveworkplace.letter_to_family",
+  "days": 7,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    }
+  ],
+  "objectives": [
+    {
+      "type": "deliver"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 4,
+      "rank_factor": false
+    }
+  ]
+}

@@ -104,7 +104,10 @@ public final class Couples {
 		for (Villager villager : village) {
 			Partner p = partner(villager);
 			if (p != null && !p.married() && today - p.since() >= COURTSHIP_DAYS && time >= 6000 && time < 11000
-				&& level.getEntity(p.id()) instanceof Villager other && other.isAlive() && village.contains(other)) {
+				&& level.getEntity(p.id()) instanceof Villager other && other.isAlive() && village.contains(other)
+				// A chapel-wedding request open (31.10): the wedding waits for the Chapel, up to its own days.
+				&& (today - p.since() >= io.github.jcondedata.aliveworkplace.story.RequestErrands.CHAPEL_WAIT_DAYS
+					|| !io.github.jcondedata.aliveworkplace.story.RequestErrands.awaitsChapel(villager, other))) {
 				wed(level, hall, villager, other);
 			}
 		}

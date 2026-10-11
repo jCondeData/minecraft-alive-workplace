@@ -1,0 +1,16 @@
+{
+  "name": "The Test of Standing",
+  "trigger": {"chance": 0},
+  "chapters": [
+    {
+      "name": "Apples for the hall",
+      "intro": ["The hall wants apples, and will remember who brought them."],
+      "quests": [{"name": "Apples for the hall", "objectives": [{"type": "bring", "item": "minecraft:apple", "count": 2}]}]
+    }
+  ],
+  "ending": [
+    {"type": "reputation", "points": 150, "who": "chapter_helpers"},
+    {"type": "honour", "id": "kingslayer", "who": "chapter_helpers"},
+    {"type": "honour", "id": "healer", "who": "helpers"}
+  ]
+}

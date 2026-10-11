@@ -28,6 +28,17 @@ asks for the steps, `latest.log` and any crash report).
   side of the camp. Mother and colony become sister villages, with a free caravan route both ways outside the route
   limit; both chronicles note the founding and the owner gets a letter. With no room near the spot (all water, a
   cliff) the settlers come home, the supplies go back and the charter's cost goes back into the treasury.
+- **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
+  own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
+  lost the faster walk. A worker now always walks at their own pace.
+### Added
+- **Six more personal requests, for 1.5** (31.10). A friend with 3 hearts may now also ask you to carry **a letter to
+  family** in another village (a sealed letter; bring their relative's reply back, and if you lose it they write
+  another), to **bring back their love** from the grave (an Undertaker revives them, and the two marry again), for **a
+  cat by the door** (a cat or a tamed wolf by their bed at dawn), to see their child **off to school**, for **a chapel
+  wedding** (the couple wait up to 5 days for a Chapel, then marry there with a feast for the whole village) and for
+  **the lost heirloom** (you get a map; the heirloom turns up in a chest at a ruined portal, shipwreck, trail ruins or
+  mineshaft when you get there, and its story goes in the chronicle when it's home).
 ### Added
 - **Pillager warbands, for 1.6** (32.7): by a Town or City in the plains, forests, taiga, snowy lands or savanna, a
   pillager warband may raise a War Camp (a ring of sharpened logs, three tents, the Warlord's tent and its chest, a
@@ -70,6 +81,42 @@ asks for the steps, `latest.log` and any crash report).
   loft for dyed wool. A Vintner or Tailor who reaches Journeyman sells their building's blueprint for 12 emeralds, the
   Steward builds one for a Vintner or Tailor with no workstation, and (once 1.8 is on) villages of all five kinds grow
   a small Winery and Tailor's Shop with a Vintner and a Tailor already at work.
+- **Reputation and titles** (31.11, part of 1.5, off until it's released): every player has a standing in every
+  village. It is earned by a daily quest (+10), a bounty (+40), a villager's own request (+25 to every helper), a
+  story chapter (+50 to everyone who helped) and a story's ending (what its file says), breaking up a bandit camp or
+  a lair (+40 to whoever brought its chief down), fighting in a raid (+20 at your third raider), coming to a festival
+  (+5) and gifts (+2, at most +10 a day per village); it is lost by hitting a villager (-10) and by killing one
+  (-150), an iron golem (-100) or a guard (-200). **Friend** at 50, **Hero** at 300, **Lord** at 1000 in a Town or
+  bigger. A new title is told to the whole server in gold with a fanfare ("Jesse is now a Hero of Thornholm!") and
+  written in the chronicle; losing one is told only to you. Your title in the village you stand in (else your best
+  anywhere) goes before what you say in chat: `[Hero of Thornholm]`. The hall's name tag tooltip shows your standing
+  and the three best regarded, and `/workplace standing` lists yours everywhere. Stories can give **honours**
+  (Kingslayer, Healer of the village, Wayfinder, Co-author), listed with your standing. For data packs: the quest
+  rewards `reputation` (`points`, `who`) and `honour` (`id`, `who`). Settings `reputation` and `titlesInChat`.
+- **Personal requests** (31.9, part of 1.5, off until it's released): a villager with 3 hearts or more may walk up
+  and ask you for help. Each morning a village rolls a one-in-four chance that someone asks; they come over, ask over
+  their head, and your chat gets the request with **[I'll help]** and **[Not now]** (`/workplace quest accept|decline`).
+  Six requests: **Next level before the festival** (6 emeralds), **A home of my own** (a bed in a finished tier II
+  house, 8), **A taste of home** (a dish by where their people come from: a pumpkin pie on the plains, 16 sweet
+  berries in the taiga..., 4), **The tools of my trade** (a diamond pickaxe for the Miner, a fishing rod with Luck of
+  the Sea for the Fisherman..., into the chest by their workstation, 5), and with Cobblemon **Help me train** (beat a
+  Trainer on three different days) and **A Pokémon friend** (a Pokémon that helps their job, pastured within 16 blocks
+  of their workstation at dawn). An open request shows in the quest journal's new **Personal** tab, on their life-story
+  page and on the hall's tooltip ("Dara wants to make Journeyman before the next festival"). Other friends with 3
+  hearts can join; everyone who helped gets the reward, a heart and a half of friendship, and the chronicle a line. A
+  missed deadline costs 30 friendship, leaves them glum for a day and they ask nobody for 3 days. New quest-file
+  conditions for data packs: `hearts_at_least`, `job`, `job_family`, `level_below`, `villager_type`,
+  `home_tier_below`, `no_bed`. Setting `personalRequests`.
+- **Heart events: the full set, and keepsakes** (31.8, part of 1.5, off until it's released): villagers now have
+  something to tell at every second heart. At 4 hearts, **My work**, one story per job family (the first wall a
+  builder raised, the day a miner's lamp went out, the fisherman's fish that got away; someone without a trade asks
+  whether the free Loom near the hall might be for them). At 6, **What keeps me up at night**, from their life now:
+  hunger, no bed of their own, raids, illness in the house, loneliness, or worry about you. At 8, **The people I
+  love**: their partner and the wedding day, who they're courting, their children by name, the partner they lost,
+  their parents, or the whole village. At 10, **What I dream of**: to be a Master, to see the Nether or the sea, a
+  finer house, the village a City, a festival in their honour, or nothing more at all. After the 10-heart story they
+  give you a **keepsake**, once: "Dara's Lucky Pick" (an iron pickaxe with Fortune), "Dara's Grandmother's Seeds",
+  "Dara's Secret Recipe" (a book with her pumpkin pie, and two pies) and nine more, one per job family.
 - **The settlers set out, for 1.7** (33.9, off until 1.7 is finished): right-click the hall with the Colony Charter,
   its spot chosen, and two settlers volunteer (a builder and one more; never a guard, the only worker of a job, a
   Legend or a child; a married volunteer brings their partner). 64 logs, 64 planks, 64 cobblestone, 32 bread, 16

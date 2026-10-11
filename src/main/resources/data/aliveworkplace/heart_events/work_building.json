@@ -1,0 +1,20 @@
+{
+  "hearts": 4,
+  "when": {
+    "jobs": [
+      "aliveworkplace:builder",
+      "aliveworkplace:carpenter",
+      "minecraft:mason",
+      "aliveworkplace:tinkerer",
+      "minecraft:leatherworker"
+    ]
+  },
+  "lines": [
+    "heart_event.aliveworkplace.work_building.1",
+    "heart_event.aliveworkplace.work_building.2",
+    "heart_event.aliveworkplace.work_building.3",
+    "heart_event.aliveworkplace.work_building.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.work_building",
+  "story": "life_story.aliveworkplace.work_building"
+}

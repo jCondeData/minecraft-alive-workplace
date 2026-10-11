@@ -486,6 +486,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 				continue;
 			}
 			if (complete(s, c, today)) {
+				Reputation.onChapterDone(level, hall, s); // 31.11: standing for everyone who helped in it
 				closeChapter(level, hall, e, s, today, c.delayDays());
 				continue;
 			}

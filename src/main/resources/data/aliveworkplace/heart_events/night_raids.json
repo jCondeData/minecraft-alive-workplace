@@ -1,0 +1,16 @@
+{
+  "hearts": 6,
+  "when": {
+    "raided": true
+  },
+  "weight": 3,
+  "lines": [
+    "heart_event.aliveworkplace.night_raids.1",
+    "heart_event.aliveworkplace.night_raids.2",
+    "heart_event.aliveworkplace.night_raids.3",
+    "heart_event.aliveworkplace.night_raids.4",
+    "heart_event.aliveworkplace.night_raids.5"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.night_raids",
+  "story": "life_story.aliveworkplace.night_raids"
+}

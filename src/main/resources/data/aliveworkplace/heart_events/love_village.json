@@ -1,0 +1,11 @@
+{
+  "hearts": 8,
+  "lines": [
+    "heart_event.aliveworkplace.love_village.1",
+    "heart_event.aliveworkplace.love_village.2",
+    "heart_event.aliveworkplace.love_village.3",
+    "heart_event.aliveworkplace.love_village.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.love_village",
+  "story": "life_story.aliveworkplace.love_village"
+}

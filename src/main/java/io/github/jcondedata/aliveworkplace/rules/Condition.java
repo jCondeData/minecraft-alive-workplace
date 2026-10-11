@@ -3,6 +3,9 @@ package io.github.jcondedata.aliveworkplace.rules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.npc.Villager;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Something a village must have, read from a data file ({@link Conditions#parse}): a Legend's conditions (M29), and later
@@ -17,6 +20,14 @@ public interface Condition {
 
 	default boolean met(ServerLevel level, BlockPos hall) {
 		return progress(level, hall).met();
+	}
+
+	/**
+	 * Whether it holds for a quest {@code giver} asks {@code player} for (a personal request, ROADMAP 31.9). A condition on
+	 * the village ignores both; one on the giver ({@link GiverConditions}) reads them, and never holds without a giver.
+	 */
+	default boolean met(ServerLevel level, BlockPos hall, @Nullable Villager giver, @Nullable ServerPlayer player) {
+		return met(level, hall);
 	}
 
 	/** {@code have} of {@code need}, and the line the player reads ("kinds of meal in the store: 5 of 8"). */

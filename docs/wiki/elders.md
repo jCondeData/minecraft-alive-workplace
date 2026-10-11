@@ -6,7 +6,7 @@ is finished. Built so far: ages, the slower walk, the "quiet old age" mood, the 
 (34.19), the passing and the charm (34.19a). Still planned and not in the game: the elder look (34.18), retirement and
 mentoring (34.20) and the seeding of everyone's age (34.22); this page grows with them.
 
-Roadmap items: 34.19, 34.19a, B102
+Roadmap items: 34.19, 34.19a, B95, B99, B102
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -61,6 +61,10 @@ undying, a golden apple, 2 emeralds and a heart of the sea (any arrangement). Sn
 - **The walk.** `work/Walker` multiplies every walk it asks for by `LifeStages.walk`: 0.922 for an elder. A mob's pace
   goes with the square of that number, so 0.922 is 15% less ground in the same time (0.85 would be 28% less). It slows
   the walks our jobs ask for; a stroll the game itself decides on (wandering, going to bed) keeps vanilla's pace.
+  The game can still take a job's walk over: Walker also sets where the villager looks, and when its walk target is
+  dropped for a moment (a path that failed), vanilla walks to that same block at its own pace (0.5). So when Walker finds
+  its block already set at another pace, it sets it again at its own and changes the pace of the walk under way
+  (B99); before, the elder then walked the rest of the way at full speed, and a nimble villager lost the faster walk.
 - **The mood.** `Moods` adds 5 for an elder who is fed (ate within their day) and has a bed. Because it lifts the mood,
   it also helps an elder towards the 20 happy days below.
 - **The talk.** `Chatter` has the topic `elder` (four lines), as likely as any village news.
@@ -150,7 +154,9 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 - GameTests: `LifeStageGameTests`: the world's clock moved on to grown day 119 (not an elder) and 120 (an elder, the
   hall's line, the chronicle's note once), and 30 configured days (`aVillagerIsAnElderAfterTheConfiguredDays`); the walk
   target every worker gets, an ageless elder's too, and two villagers walking side by side for 60 ticks, the elder
-  covering 80 to 90% of the ground (`anElderWalksSlower`); the mood 5 higher than a younger villager's same day, first on
+  covering 80 to 90% of the ground (`anElderWalksSlower`); a walk the game took over at its own pace asked again at the
+  elder's (`b95AnElderIsAskedAgainWhenVanillaTakesTheWalkOver`) and a walk the game had already started slowing to 80 to
+  90% (`b95AnElderSlowsAWalkVanillaStarted`); the mood 5 higher than a younger villager's same day, first on
   the card, gone when hungry or without a bed, and the four lines word for word (`aFedAndHousedElderHasAQuietOldAge`);
   a reload, an older save's villager, an elder made ageless before this version (`aReloadKeepsTheDay`); a child grown up
   in the hall's own round, and an elder noted by it (`aChildGrowingUpIsGrownFromToday`); `villagerAges` off and on again

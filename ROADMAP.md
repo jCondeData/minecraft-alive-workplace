@@ -460,7 +460,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - Status (lane-a-1004-0932): built: `PERF=true VILLAGES=3 PLOTS=25` (150 workers, heap after GC), the nightly's performance step runs it every night and a Sunday `benchmark` job (or `part: benchmark`) on its own; method in docs/performance.md. Left: copy the first run's numbers (nightly-tests run tonight, `perf.log` in its artifact) into docs/performance.md's table and tick. Sessions can't start workflows (403), so it waits for tonight's run.
 
   Done when: the numbers are recorded and the nightly job repeats them weekly.
-- [ ] **25.2** **Targets.** Propose these after 25.1's first measurement, and ask the owner to confirm them. Carry on
+- [x] **25.2** (approved auto 2026-10-11) **Targets.** Propose these after 25.1's first measurement, and ask the owner to confirm them. Carry on
   with 25.3 in the meantime, using these numbers:
   - our code under 15% of the server tick at 150 workers;
   - no tick over 50 ms caused by us;

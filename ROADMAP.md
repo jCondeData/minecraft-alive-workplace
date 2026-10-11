@@ -3881,7 +3881,7 @@ on a real world.
   it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
   (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
   40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
-- [ ] **34.20** **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
+- [x] **34.20** (review: pending 2026-10-11) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
     (34.8); with nobody, the elder keeps working and the hall says "Bram would like to retire: the village needs a

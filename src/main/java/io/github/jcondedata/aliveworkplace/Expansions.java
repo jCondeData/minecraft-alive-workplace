@@ -76,7 +76,7 @@ public final class Expansions {
 			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> M31;
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",
-				"elderPassing", "agelessElders" -> M34;
+				"elderPassing", "agelessElders", "elderRetirement" -> M34;
 			default -> null;
 		};
 	}

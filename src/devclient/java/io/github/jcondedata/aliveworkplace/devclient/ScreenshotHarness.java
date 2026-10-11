@@ -88,6 +88,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final TonicsScene tonics = new TonicsScene();
 	private final AgelessElderScene agelessElder = new AgelessElderScene();
 	private final EldersScene elders = new EldersScene();
+	private final RetirementScene retirement = new RetirementScene();
 	private final VillageTalkScene villageTalk = new VillageTalkScene();
 	private final CityPlanGroundScene cityPlanGround = new CityPlanGroundScene();
 	private final PartnersScene partners = new PartnersScene();
@@ -286,6 +287,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("elders".equals(System.getProperty("aliveworkplace.scene"))) {
 			elders.tick(mc);
+			return;
+		}
+		if ("retirement".equals(System.getProperty("aliveworkplace.scene"))) {
+			retirement.tick(mc);
 			return;
 		}
 		if ("cradle".equals(System.getProperty("aliveworkplace.scene"))) {

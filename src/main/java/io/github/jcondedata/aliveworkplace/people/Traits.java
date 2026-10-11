@@ -110,6 +110,10 @@ public final class Traits {
 	 * (a gift, 29.6; with Clever too, still three times). The fraction goes by chance.
 	 */
 	public static int xp(Villager villager, int xp, RandomSource random) {
+		return xpOwn(villager, xp, random) + Retirement.extraXp(villager, xp, random); // a mentor's teaching (34.20)
+	}
+
+	private static int xpOwn(Villager villager, int xp, RandomSource random) {
 		float gift = io.github.jcondedata.aliveworkplace.legend.Gifted.xpFactor(villager);
 		// The village's xp effects (research trees and edicts, 29.11): every villager learns that much faster.
 		float village = xp <= 0 ? 0f : io.github.jcondedata.aliveworkplace.research.TreeEffects.xpPercent(villager) / 100f;

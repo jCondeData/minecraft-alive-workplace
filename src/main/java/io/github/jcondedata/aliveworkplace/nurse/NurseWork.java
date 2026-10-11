@@ -85,7 +85,7 @@ public class NurseWork extends Behavior<Villager> {
 	/** Cures the nearest ill villager if there's a remedy by the station; what she's doing, for her status. */
 	static Component cure(ServerLevel level, Villager nurse) {
 		List<Villager> ill = level.getEntitiesOfClass(Villager.class, nurse.getBoundingBox().inflate(cureRange(nurse), 8, cureRange(nurse)),
-				v -> v.isAlive() && Sickness.isIll(v)).stream()
+				v -> v.isAlive() && Sickness.isIll(v) && !Sickness.isHexed(v)).stream() // (a hex is beyond her remedies, 32.11)
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(nurse))).toList();
 		if (ill.isEmpty()) {
 			Requests.clear(nurse);

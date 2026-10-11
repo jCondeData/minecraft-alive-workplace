@@ -103,7 +103,10 @@ public final class SiegeReport {
 		List<ThreatData.Past> past = ThreatData.get(level).past(siege.hall);
 		Optional<Culture> culture = past.isEmpty() ? Optional.empty() : Threats.get(past.get(0).culture());
 		String key = culture.map(c -> c.chronicle().key("siege", "chronicle.aliveworkplace.siege")).orElse("chronicle.aliveworkplace.siege");
-		return Component.translatable(key, Math.max(siege.came, fell), fell, siege.toGuards, siege.toPlayers, gate, best);
+		Component report = Component.translatable(key, Math.max(siege.came, fell), fell, siege.toGuards, siege.toPlayers, gate, best);
+		// What the raiders carried off (32.10, plunder): "... 12 gold was carried off."
+		int lost = ThreatData.get(level).plundered(siege.hall);
+		return lost <= 0 ? report : Component.translatable("chronicle.aliveworkplace.siege_plundered", report, lost);
 	}
 
 	/**
@@ -112,6 +115,7 @@ public final class SiegeReport {
 	 */
 	public static void write(ServerLevel level, ThreatData.Siege siege) {
 		Chronicle.atHall(level, siege.hall, Chronicle.Kind.SIEGE, text(level, siege));
+		ThreatData.get(level).forgetPlunder(siege.hall); // (told)
 		long now = level.getGameTime();
 		boolean won = !siege.fled;
 		if (won) {

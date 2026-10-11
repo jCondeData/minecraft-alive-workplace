@@ -55,6 +55,7 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("ORCHARD", new FieldJob(new BoundingBox(-5, 70, -6, 3, 72, 4), false));
 		samples.put("BERRY_GOAL", ResourceLocation.parse("cobblemon:sitrus_berry"));
 		samples.put("HABITAT_LURE", "typing/fire");
+		samples.put("ILL_KIND", "hex"); // (32.11)
 		samples.put("SIGHTINGS", List.of(new io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.Sighting(
 			Component.translatable("message.aliveworkplace.habitat_keeper.sighting.shiny", Component.translatable("cobblemon.species.eevee.name")), "shiny", new BlockPos(12, 70, -40), 12L)));
 		samples.put("SIGHTED", List.of(A, B));
@@ -162,6 +163,7 @@ public class SavedDataGameTests implements FabricGameTest {
 				throw new IllegalStateException(e);
 			}
 			if (field.getName().equals("BUILDER_BAG")) continue; // checked on its own: BuilderBag has no equals
+			if (field.getName().equals("PLUNDER")) continue; // an ItemStack has no equals: PiglinGameTests saves and loads it (32.10)
 			Object value = samples.containsKey(field.getName()) ? samples.get(field.getName())
 				: plain(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0], n);
 			if (value == null) missing.add(field.getName());

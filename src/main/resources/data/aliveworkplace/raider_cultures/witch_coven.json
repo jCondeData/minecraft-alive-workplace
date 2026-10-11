@@ -1,0 +1,47 @@
+{
+  "where": {
+    "min_rank": "village",
+    "biomes": ["minecraft:swamp", "minecraft:mangrove_swamp"]
+  },
+  "weight": 30,
+  "arrival": "lair",
+  "hours": "night",
+  "name": "entity.aliveworkplace.coven_raider",
+  "roster": [
+    { "entity": "minecraft:witch", "share": 70, "role": "ranged" },
+    { "entity": "minecraft:zombie_villager", "share": 30, "role": "melee",
+      "gear": { "head": "minecraft:leather_helmet[dyed_color={rgb:4864586}]" } }
+  ],
+  "captain": {
+    "entity": "minecraft:witch",
+    "health": 40,
+    "names": "threat.aliveworkplace.witch_coven.names",
+    "title": "threat.aliveworkplace.witch_coven.title",
+    "blinks": { "after": 3, "near": 8, "far": 12 }
+  },
+  "tactics": ["hex"],
+  "lair": {
+    "structure": "aliveworkplace:camp/coven_hut", "strength": 8, "growth": 1, "max": 14, "home_max": 6, "icon": "minecraft:cauldron",
+    "captain_at": [8, 4, 5], "wet": true, "near": 56, "far": 80
+  },
+  "loot": "aliveworkplace:chests/coven_hut",
+  "messages": {
+    "raid": "message.aliveworkplace.coven.raid",
+    "raid_named": "message.aliveworkplace.coven.raid_named",
+    "camp": "message.aliveworkplace.coven.camp",
+    "camp_named": "message.aliveworkplace.coven.camp_named",
+    "broken": "message.aliveworkplace.coven.broken",
+    "broken_named": "message.aliveworkplace.coven.broken_named"
+  },
+  "chronicle": {
+    "raid": "chronicle.aliveworkplace.coven.raid",
+    "raid_named": "chronicle.aliveworkplace.coven.raid_named",
+    "camp": "chronicle.aliveworkplace.coven.camp",
+    "camp_named": "chronicle.aliveworkplace.coven.camp_named",
+    "broken": "chronicle.aliveworkplace.coven.broken",
+    "broken_named": "chronicle.aliveworkplace.coven.broken_named",
+    "broken_by": "chronicle.aliveworkplace.coven.broken_by",
+    "broken_by_named": "chronicle.aliveworkplace.coven.broken_by_named",
+    "hex": "chronicle.aliveworkplace.coven.hex"
+  }
+}

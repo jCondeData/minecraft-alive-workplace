@@ -20,6 +20,11 @@ import net.minecraft.world.item.alchemy.PotionContents;
  * themselves after {@link #RECOVERY}, or at once when a Nurse gives them a remedy from her chest (a honey bottle, a
  * bucket of milk, or a potion of healing or regeneration — see {@code NurseWork}). {@code villagerSickness} in the
  * config turns it off.
+ *
+ * <p>A <b>hex</b> (ROADMAP 32.11) is an illness of another kind ({@code ModAttachments.ILL_KIND} {@link #HEX}; an
+ * ordinary illness has none): a witch coven by the village lays it on a few villagers a night ({@code threat/Covens}).
+ * The hexed are ill as the others are, with a swirl of witch particles in place of the sneeze, but the nurse's remedies
+ * don't touch it and it doesn't pass by itself: it ends when the coven is broken, or when no coven is left by them.
  */
 public final class Sickness {
 	/** Whether villagers fall ill at all. */
@@ -35,6 +40,28 @@ public final class Sickness {
 
 	public static boolean isIll(Villager villager) {
 		return ModAttachments.ILL_SINCE.has(villager);
+	}
+
+	/** The kind of illness a hex is. */
+	public static final String HEX = "hex";
+
+	/** Whether {@code villager} is ill with a coven's hex (32.11). */
+	public static boolean isHexed(Villager villager) {
+		return isIll(villager) && HEX.equals(ModAttachments.ILL_KIND.get(villager));
+	}
+
+	/** {@code villager} is hexed (32.11): ill with a curse no remedy touches, in a swirl of witch particles. */
+	public static void hex(ServerLevel level, Villager villager) {
+		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());
+		ModAttachments.ILL_KIND.set(villager, HEX);
+		villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
+		swirl(level, villager);
+		level.playSound(null, villager.blockPosition(), SoundEvents.WITCH_CELEBRATE, SoundSource.HOSTILE, 0.8f, 1f);
+	}
+
+	/** The witch particles over the hexed. */
+	public static void swirl(ServerLevel level, Villager villager) {
+		level.sendParticles(ParticleTypes.WITCH, villager.getX(), villager.getY() + villager.getBbHeight() + 0.2, villager.getZ(), 16, 0.35, 0.4, 0.35, 0.05);
 	}
 
 	/** How long {@code villager}'s illness lasts without a nurse: {@link #RECOVERY}, with its founded guilds' {@code recovery_days} (30.20) and the village's {@code illness} days (29.11). */
@@ -56,6 +83,16 @@ public final class Sickness {
 		Long since = ModAttachments.ILL_SINCE.get(villager);
 		long now = level.getGameTime();
 		if (since != null) {
+			if (isHexed(villager)) {
+				// A hex doesn't pass with time, nor for the Hardy; it lifts once no coven is left by them (32.11).
+				if (!io.github.jcondedata.aliveworkplace.threat.Covens.cursed(level, villager)) {
+					recover(level, villager);
+				} else {
+					villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
+					swirl(level, villager);
+				}
+				return;
+			}
 			if (now - since >= recovery(villager) ||io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
 				recover(level, villager);
 			} else {
@@ -90,8 +127,8 @@ public final class Sickness {
 
 	/** {@code villager} falls ill, unless they're Hardy (29.7), who never do. */
 	public static void fallIll(ServerLevel level, Villager villager) {
-		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
-			return;
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager) || isHexed(villager)) {
+			return; // (nor does an ordinary illness take the place of a hex)
 		}
 		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());
 		villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
@@ -101,6 +138,7 @@ public final class Sickness {
 	/** Well again: the slowness goes, and a little happy puff. */
 	public static void recover(ServerLevel level, Villager villager) {
 		ModAttachments.ILL_SINCE.remove(villager);
+		ModAttachments.ILL_KIND.remove(villager);
 		villager.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.2, villager.getZ(), 8, 0.4, 0.5, 0.4, 0);
 	}

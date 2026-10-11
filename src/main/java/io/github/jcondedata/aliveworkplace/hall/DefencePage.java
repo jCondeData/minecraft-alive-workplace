@@ -60,12 +60,21 @@ public final class DefencePage {
 	public static final int MUSTER = 21;
 	/** Hire the Siege-breakers (32.13). */
 	public static final int SIEGE_BREAKERS = 23;
+	/** The next attack, when the village was warned of it (32.14), or what it takes to see one coming. */
+	public static final int NEXT = 25;
 	/** The last three attacks, newest first. */
 	public static final int[] HISTORY = {46, 48, 50};
 
 	/** Whether the hall's guards icon opens the page. */
 	public static boolean open() {
 		return Lairs.live();
+	}
+
+	/** The guards icon's line for a warned attack (32.14): "Raiders tomorrow night, from the north"; empty when none is known. */
+	static Optional<Component> attackLine(ServerLevel level, BlockPos hall) {
+		return io.github.jcondedata.aliveworkplace.guard.Warnings.warned(level, hall).map(a -> VillageHallScreen.line(Component.translatable(
+			a.day() <= Chronicle.day(level) ? "screen.aliveworkplace.hall.attack_tonight" : "screen.aliveworkplace.hall.attack_tomorrow",
+			io.github.jcondedata.aliveworkplace.guard.Warnings.side(hall, a)), ChatFormatting.RED));
 	}
 
 	/** The line on the hall's guards icon: whose lair is camped where, or that none is near. */
@@ -102,6 +111,7 @@ public final class DefencePage {
 			}
 		}
 		menu.button(GATES, gates(level, hall), null);
+		menu.button(NEXT, next(level, hall), null);
 		menu.button(MUSTER, muster(level, hall), p -> {
 			WarParties.Muster result = WarParties.muster(level, hall, p);
 			io.github.jcondedata.aliveworkplace.mc.Chat.chat(p, WarParties.said(level, hall, result,
@@ -220,6 +230,27 @@ public final class DefencePage {
 			VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_stay", ChatFormatting.GRAY),
 			here > 0 ? VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.siege_breakers_here", here, here), ChatFormatting.AQUA)
 				: VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_click", ChatFormatting.YELLOW));
+	}
+
+	/** The next attack (32.14): when, who and from which side, if the village was warned; else who keeps watch, or that nobody does. */
+	public static ItemStack next(ServerLevel level, BlockPos hall) {
+		Optional<ThreatData.Attack> warned = io.github.jcondedata.aliveworkplace.guard.Warnings.warned(level, hall);
+		if (warned.isPresent()) {
+			ThreatData.Attack attack = warned.get();
+			boolean tonight = attack.day() <= Chronicle.day(level);
+			return VillageHallScreen.icon(Items.BELL, Component.translatable(tonight ? "screen.aliveworkplace.defence.next_tonight" : "screen.aliveworkplace.defence.next_tomorrow"),
+				ChatFormatting.RED,
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.next_who",
+					io.github.jcondedata.aliveworkplace.guard.Warnings.who(level, hall, attack), io.github.jcondedata.aliveworkplace.guard.Warnings.side(hall, attack)), ChatFormatting.GOLD),
+				VillageHallScreen.line("screen.aliveworkplace.defence.next_ready", ChatFormatting.GRAY));
+		}
+		Optional<io.github.jcondedata.aliveworkplace.guard.Warnings.Source> source = io.github.jcondedata.aliveworkplace.guard.Warnings.source(level, hall);
+		if (source.isPresent()) {
+			return VillageHallScreen.icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.defence.next_none"), ChatFormatting.GREEN,
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.next_watch", source.get().who()), ChatFormatting.GRAY));
+		}
+		return VillageHallScreen.icon(Items.GRAY_STAINED_GLASS_PANE, Component.translatable("screen.aliveworkplace.defence.next_blind"), ChatFormatting.YELLOW,
+			VillageHallScreen.line("screen.aliveworkplace.defence.next_blind_hint", ChatFormatting.DARK_GRAY));
 	}
 
 	/** The gates: open or shut, the portcullis up or down, a siege holding them, and what rams broke. */

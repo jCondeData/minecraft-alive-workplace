@@ -195,6 +195,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				hall.lastRaidDay = day;
 				hall.setChanged();
 			});
+			io.github.jcondedata.aliveworkplace.guard.Warnings.round(server, pos, census.villagers(), census.guards()); // a day's warning (32.14)
 			Conscription.round(server, pos, hall);
 			Cradles.round(server, pos, VillageNeeds.CHECK_EVERY);
 			if (VillageGrowth.grow(server, pos, hall.needs, hall.lastBirth) != null) {

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A day's warning** (32.14): a guard posted within 24 blocks of a finished Lookout Tower or Wall Tower sees a raid
+  coming the evening before ("Smoke on the north road: ... will strike tomorrow night"); a Scout there also counts
+  them. Players in the village and the hall's owner are told, the chronicle, guards icon and Defence page show it; on
+  the day the gates shut and the portcullis drops from noon, and at dusk the guards take battle stations and the
+  villagers go in. Without a lookout, What next? says to build one.
 - **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
   captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
   journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built

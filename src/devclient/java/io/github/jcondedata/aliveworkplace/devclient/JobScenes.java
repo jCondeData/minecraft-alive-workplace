@@ -1132,6 +1132,62 @@ final class JobScenes {
 				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
 			};
 		}, null));
+		// A day's warning (ROADMAP 32.14): a Gatehouse with a Wall Tower beside it and a Village Hall behind, an archer
+		// posted by the tower. The clock has set tonight's attack from the south (the camera's side); the archer saw it
+		// coming, so the chat says so. At noon the gates shut and the portcullis drops; at dusk the archer climbs the tower.
+		SCENES.put("warning", new Job("the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 1500,
+			new Vec3(14.5, -51.0, 12.5), new Vec3(1.5, -56.5, -3.0), (level, player) -> {
+			long base = (level.getDayTime() / 24000) * 24000;
+			level.setDayTime(base + 5800);
+			BlockPos hall = STATION.north(14);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			Map<BlockPos, StarterBlueprints.Entry> builds = new LinkedHashMap<>();
+			builds.put(STATION.offset(-5, 0, -6), StarterBlueprints.GATEHOUSE);
+			builds.put(STATION.offset(6, 0, -6), StarterBlueprints.WALL_TOWER);
+			builds.forEach((at, entry) -> {
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(entry.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			});
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			if (level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity) {
+				entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			}
+			BlockPos post = STATION.offset(4, 0, -13);
+			level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+			Villager archer = EntityType.VILLAGER.spawn(level, STATION.offset(4, 0, -11), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, archer, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+			archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+			archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, new ItemStack(net.minecraft.world.item.Items.BOW));
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData data = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
+			data.forgetClock(hall);
+			data.forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.guard.BattleStations.forget();
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			data.rolled(hall, today, new io.github.jcondedata.aliveworkplace.threat.ThreatData.Attack(today, io.github.jcondedata.aliveworkplace.threat.Threats.MONSTERS,
+				Math.PI / 2, 17000)); // from the south, late in the night
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Warnings.warn(level, hall, 10, 1), "the archer by the Wall Tower warned the village");
+			Showcase.check(!io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(level, hall), "the portcullis is up in the morning");
+			int[] phase = {0};
+			return l -> {
+				io.github.jcondedata.aliveworkplace.guard.Gates.round(l, hall, 1);
+				io.github.jcondedata.aliveworkplace.guard.Warnings.round(l, hall, 10, 1);
+				if (phase[0] == 0 && io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(l, hall)) {
+					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.status(l, hall).open() == 0, "the gates shut at noon");
+					phase[0] = 1;
+				} else if (phase[0] >= 1 && phase[0] < 100) {
+					phase[0]++; // a few seconds with the gates shut in the sun
+				} else if (phase[0] == 100) {
+					l.setDayTime(base + io.github.jcondedata.aliveworkplace.guard.VillageRaids.DUSK + 20);
+					phase[0] = 101;
+				}
+				return phase[0] == 101 && io.github.jcondedata.aliveworkplace.guard.BattleStations.onStation(archer)
+					&& io.github.jcondedata.aliveworkplace.threat.ThreatData.get(l).raid(hall).isEmpty();
+			};
+		}, null));
 		SCENES.put("roads", new Job("the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 9000,
 			new Vec3(0.5, -45, -26), new Vec3(0.5, -60, -6), (level, player) -> {
 			// Two cottages (stamped, on the books as built), the hall south of them, a builder with Stonework in his chest,

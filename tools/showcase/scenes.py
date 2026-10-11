@@ -712,6 +712,8 @@ SCENES = [
     job("siege_ladders", "Threats", "A siege: ladders over the wall",
         "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),
     # Sieges III (ROADMAP 32.6): archers on battle stations shoot down at a siege
+    job("warning", "Threats", "A day's warning",
+        "the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 150),
     job("battle_stations", "Threats", "A siege: battle stations",
         "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
     S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),

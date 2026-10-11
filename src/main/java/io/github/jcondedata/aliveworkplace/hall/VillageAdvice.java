@@ -71,6 +71,11 @@ public final class VillageAdvice {
 		}
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
 			.ifPresent(camp -> tips.add(new Tip("bandits", Items.CROSSBOW, VillageHallScreen.where(hall, camp.pos()))));
+		// No lookout: the horn is the only warning of a raid (32.14).
+		if (DefencePage.open() && io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED && villagers >= io.github.jcondedata.aliveworkplace.guard.VillageRaids.MIN_VILLAGERS
+			&& io.github.jcondedata.aliveworkplace.guard.Warnings.source(level, hall).isEmpty()) {
+			tips.add(new Tip("lookout", Items.SPYGLASS));
+		}
 		long ill = ill(level, hall);
 		if (ill > 0) {
 			tips.add(new Tip("ill", Items.GLISTERING_MELON_SLICE, ill));

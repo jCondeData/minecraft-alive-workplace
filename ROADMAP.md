@@ -3086,7 +3086,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     10 days' rest, double XP and a chronicle line with their names;
   - scene `war_party`: the player leading guards and siege-breakers into a war camp, the Warlord falling, the loot
     (GIF).
-- [ ] **32.14** **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
+- [x] **32.14** (review: pending 2026-10-11) **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
   Lookout Tower or Wall Tower (a day's warning); a Scout there (the same, with the raiders' number and side); the Seer
   (needs M29's Seer item: two days' warning; until it lands this source is skipped); and a list other systems add to
   (M35's Lighthouse). When the clock (32.2) sets an attack and the village has a source:
@@ -4419,6 +4419,11 @@ item waits.
 
 ## Notes / blocked
 
+- **A day's warning (32.14, lane-b-1011-0933, 2026-10-11): the Seer is not a source yet.** The spec skips the Seer
+  until M29's Seer item lands; besides, with a Seer in the village the night is foretold at dawn by the Seer's own
+  round (29.16), which bypasses the threat clock, and the clock rolls only one day ahead, so two days' warning needs
+  the clock to roll two nights. Decided: `guard/Warnings.SOURCES` is the list other systems add to; the Seer joins
+  when its item lands, with the clock rolling a night further for it.
 - **The player guide (22.10, lane-d-1011-0332, 2026-10-11): published at `/player-guide/`, not `/guide/`.** The Guide
   Book's showcase scene is named `guide`, so the showcase site's `/guide/` folder is already its pictures; renaming the
   scene would break its history. The guide's pages are `docs/guide/*.md`; `tools/playerguide/site.py` turns them into

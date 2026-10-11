@@ -160,6 +160,10 @@ public final class ThreatData extends SavedData {
 	static final class Clock {
 		long rolled = -1;
 		final List<Attack> attacks = new ArrayList<>();
+		/** The day of the attack the village was warned of (32.14; -1: none, as in a save from before it). */
+		long warned = -1;
+		/** The portcullis bars dropped ahead of a warned attack (32.14), to draw up again or hand to the siege. */
+		final List<BlockPos> braced = new ArrayList<>();
 	}
 
 	/** The data of every dimension loaded since the server started (for the few callers that know a hall but no level). */
@@ -301,6 +305,37 @@ public final class ThreatData extends SavedData {
 		if (clock != null && clock.attacks.removeIf(a -> a.day() < day || too && a.day() == day)) {
 			setDirty();
 		}
+	}
+
+	/** The day of the attack the village round {@code hall} was warned of (32.14), or -1. */
+	public long warned(BlockPos hall) {
+		Clock clock = clocks.get(hall);
+		return clock == null ? -1 : clock.warned;
+	}
+
+	/** The village round {@code hall} was warned of the attack of {@code day} (32.14). */
+	public void warned(BlockPos hall, long day) {
+		clocks.computeIfAbsent(hall.immutable(), h -> new Clock()).warned = day;
+		setDirty();
+	}
+
+	/** The halls whose clocks hold a warning (32.14). */
+	public List<BlockPos> warnedHalls() {
+		return clocks.entrySet().stream().filter(e -> e.getValue().warned >= 0).map(Map.Entry::getKey).toList();
+	}
+
+	/** The portcullis bars dropped ahead of a warned attack on the village round {@code hall} (32.14). */
+	public List<BlockPos> braced(BlockPos hall) {
+		Clock clock = clocks.get(hall);
+		return clock == null ? List.of() : List.copyOf(clock.braced);
+	}
+
+	/** Sets the portcullis bars dropped ahead of a warned attack (empty: none down). */
+	public void braced(BlockPos hall, List<BlockPos> bars) {
+		Clock clock = clocks.computeIfAbsent(hall.immutable(), h -> new Clock());
+		clock.braced.clear();
+		bars.forEach(b -> clock.braced.add(b.immutable()));
+		setDirty();
 	}
 
 	/** Forgets the hall's clock (the hall is gone; tests). */
@@ -456,6 +491,8 @@ public final class ThreatData extends SavedData {
 				attacks.add(a);
 			}
 			c.put("attacks", attacks);
+			c.putLong("warned", e.getValue().warned);
+			c.putLongArray("braced", e.getValue().braced.stream().mapToLong(BlockPos::asLong).toArray());
 			halls.add(c);
 		}
 		tag.put("clock", halls);
@@ -712,6 +749,10 @@ public final class ThreatData extends SavedData {
 				CompoundTag a = Nbt.compoundAt(attacks, j);
 				long at = Nbt.has(a, "at", Tag.TAG_LONG) ? Nbt.getLong(a, "at") : 13500;
 				clock.attacks.add(new Attack(Nbt.getLong(a, "day"), culture(a), Nbt.getDouble(a, "angle"), at));
+			}
+			clock.warned = Nbt.has(c, "warned", Tag.TAG_LONG) ? Nbt.getLong(c, "warned") : -1;
+			for (long bar : Nbt.getLongArray(c, "braced")) {
+				clock.braced.add(BlockPos.of(bar));
 			}
 			clocks.put(BlockPos.of(Nbt.getLong(c, "hall")), clock);
 		}

@@ -33,6 +33,12 @@ the raid, and the more guards it has, the more raiders come in iron. The bell ri
 village, and players in the village are told. The raid ends when the raiders are dead, or at dawn when the last ones
 flee. The chronicle remembers every raid. Never more than one every three nights.
 
+**See them coming.** Post a guard (or a Scout) at a Guard Post near a finished Lookout Tower or Wall Tower, and the
+village hears of a raid the evening before: you get a message like "Smoke on the north road: the Bandits will strike
+Oakvale tomorrow night", even when you're away (if you own the hall). The next day the gates shut and the portcullis
+drops from noon, and at dusk the guards climb to their stations and the villagers go indoors before the raiders come.
+The hall's guards icon and Defence page show the coming attack. Without a lookout, the horn is your only warning.
+
 ## Bandit camps
 
 Once a village reaches Village rank, **bandits** may make camp 80 to 100 blocks out: tents round a fire, a **Bandit

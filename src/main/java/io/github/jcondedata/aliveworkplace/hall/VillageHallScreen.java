@@ -216,6 +216,9 @@ public final class VillageHallScreen {
 		guardLore.add(defence ? DefencePage.hallLine(level, hall) : io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
 			.map(camp -> line(Component.translatable("screen.aliveworkplace.hall.bandits", where(hall, camp.pos())), ChatFormatting.RED))
 			.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY)));
+		if (defence) {
+			DefencePage.attackLine(level, hall).ifPresent(guardLore::add); // a day's warning (32.14)
+		}
 		// The Golem Smith's golems (29.15), a line each.
 		for (Component golem : io.github.jcondedata.aliveworkplace.legend.GolemSmith.hallLines(level, hall)) {
 			guardLore.add(line(golem, ChatFormatting.GOLD));

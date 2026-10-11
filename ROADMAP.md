@@ -4400,6 +4400,7 @@ item waits.
 
 ## Notes / blocked
 
+- 2026-10-11 lane-d-1011-0332: 34.18 and 34.20 are built and ticked on `wip/lane-d` but not yet full-built together. The first full build on the merge failed 3 tests: B104 (known flake), B107 (LegendGuests, filed by lane b) and PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap ("no barrel"; passes on main CI, cause not found, maybe a flake); the rerun was cut off at the end of the run. Next lane-d run: merge `wip/lane-d` into main, run the full build, look at the heirloom test if it fails again, push.
 - **The player guide (22.10, lane-d-1011-0332, 2026-10-11): published at `/player-guide/`, not `/guide/`.** The Guide
   Book's showcase scene is named `guide`, so the showcase site's `/guide/` folder is already its pictures; renaming the
   scene would break its history. The guide's pages are `docs/guide/*.md`; `tools/playerguide/site.py` turns them into

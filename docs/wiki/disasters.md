@@ -12,9 +12,9 @@ Roadmap items: 32.15
 - **The news.** When a disaster comes, players in the village and the hall's owner (wherever they are) read
   "Drought has come to Oakvale." If the village has someone who foretells it (a job the disaster names, or a guard or
   scout by a lookout tower: the day's-warning sources of 32.14), they read it a day ahead instead: "Ana foretells it:
-  Drought will come to Oakvale in 1 day(s)." When it ends: "Drought is over in Oakvale."
-- **The hall.** The wellbeing icon has a red first line ("Drought: 2 day(s) left", "Drought, until it rains" or
-  "Drought foretold, in 1 day(s)"). What next? lists it, and names the job that answers it when the village has none.
+  Drought will come to Oakvale. Days until it strikes: 1." When it ends: "Drought is over in Oakvale."
+- **The hall.** The wellbeing icon has a red first line ("Drought (days left: 2)", "Drought, until it rains" or
+  "Drought foretold (days until it strikes: 1)"). What next? lists it, and names the job that answers it when the village has none.
 - **The chronicle** has it begin, foretold and end, under the new kinds **Fire**, **Drought** and **Plague**.
 - **What it does** depends on the disaster's effects: crops grow slower, farmland dries even by water, water cauldrons
   lose a level a day, villagers fall ill and pass it on, are unhappy (a mood reason, "Drought in the village"), fires

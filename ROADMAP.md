@@ -179,7 +179,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B103** Three day-1 ticks over 50 ms of our code remain on the pack after B101's fix (found by B101's season run, lane-a-1011-0032, 2026-10-11): `SEASON=true tools/packtest/run.sh` printed 'ticks with over 50 ms of our code: 3', all on day 1, with `Village.mates` 149 ms, `work.Gated` 108 ms and `Cradles.round` 91 ms among the frames (no crafting or recipe frame any more); the same run had our code at 16.2%/17.4% of the tick on its worst day, over 25.2's 15% (16.5% before B101). Expected: no tick over 50 ms caused by us. Test: the season run prints 'ticks with over 50 ms of our code: 0'. (found by lane-a-1011-0032, 2026-10-11) Progress (lane-c-1011-0332, 2026-10-11, not ticked): the long day-1 ticks were mostly first-use class loading (the pack's LibJF transformer reads every class and its interfaces as it loads), plus a chest search that could wait on a chunk. Our classes (and the integrations of installed mods, 1,292 on the pack) are now loaded on a background thread while the server starts (ClassWarmup), and SupplyContainers looks only in loaded chunks via getChunkNow. Season runs: main before, 4 ticks with over 50 ms of ours (290 ms crafting, 110 ms a Caravans class load, two one-sample ticks), 16.3% worst day; with this, 1 tick, the 289 ms crafting spike that B101 fixes on origin/wip/lane-a (not on main yet), 14.9% worst day, and no class of ours loaded on the server thread. A run with B101 merged in a scratch tree (before integrations were warmed too) had 2 day-1 ticks: 79 ms (1 of 1 samples, a vanilla class loaded under FieldWork) and 51 ms (crafting plus a Cobblemon-integration class load). Left: B101 to land; the rest is vanilla or other mods' classes loaded the first time vanilla code runs (a child growing up in Cradles.round loads Lithium's VoxelShapeHelper), which loading ahead can't reach without loading the whole game. Progress (lane-c-1011-0933, 2026-10-11, not ticked): a season run on main with B101 and ClassWarmup both in printed 'ticks with over 50 ms of our code: 5' and 16.1% of the tick on its worst day (day 1; days 2-8 12.4% down to 8.1%). The five, read from the JFR stacks: day 1, 156 ms in Cradles.round (7 of 7 samples, all class loading: a child growing up makes vanilla refresh its size, which calls Lithium's VoxelShapeHelper.getClosestPointTo, which loads its own and fastutil classes through LibJF's transformer); day 1, 93 ms in Gated > FieldWork > Village.stashes (1 sample, at HashSet.<init>: a stall, not work); day 2, 80 ms in SeasonSoak$Day.line (the JDK linking a string concatenation on first use); day 1, 65 ms in SeasonSoak.grow (1 sample, a stall); day 1, 61 ms in SeasonSoak.everyone > Pace.of > VillageNeeds.pace > VillageHalls.nearest (3 of 3 samples, the harness's first look at every villager's pace, one POI search each, cold code). Three of the five are the season harness itself (command.SeasonSoak), which never runs in play; none is a frame of our code doing steady work, and the run also logged a CodeCache GC Threshold collection (86 ms) at the start, a JIT warm-up sign. No code changed. Left: the Lithium class load can't be reached from our code without naming another mod's classes; whether the harness's own frames should count as 'ours' (or warm up before measuring) is a test-bar question for the QA lane or owner, not changed here.
 - [x] **B104** (approved auto 2026-10-11) BattleStationGameTests.knightsHoldTheGateAndMedicsStandBehind flakes (about 1 in 10 repeats; failed in lane-b-1011-0032's full build): siege tests that run beside it set the global Sieges.ENABLED = false at their tick 0 (BattleStationGameTests ~344, LadderGameTests ~489/557, SiegeGameTests ~459), and teardowns call the global BattleStations.forget() (~114, ~410), so the station watch drops every village's places mid-test; the knight ends 12 blocks from the hall with no post. Same rate with and without 2e3a55d7. Expected: the tests that switch sieges off or forget stations don't touch other tests' villages (own batch, or per-village forget). Test: BattleStationGameTests (QA lane: test-only) (found by lane-b-1011-0032, 2026-10-11) QA note (qa-1011-0533): with only BattleStation/Ladder/Siege classes, the knights test failed 2 of the first 4 local runs ('the knight's place Optional.empty' at tick 90+, batch right after ladderBroken) and passed 18 of 18 afterwards, warm and cold daemon; its failure message now prints sieges on/off, game time, siege over, guards alive, knight position and hall radius so the next failure names the cause. Status (lane-b-1011-0332): the cause above doesn't fit: every test that switches sieges off or forgets stations already has its own batch, and batches run one after another. 0 of 20 repeats alone, 0 of 20 mixed with the Siege/Ladder/Pirate/DesertRaider/Conscription classes. Leads, not tested: village() clears entities but not leftover finished sites, halls or sieges near the area; or the raider dies before tick 45, ending the siege and dropping the post. Needs the real failure message (CI run 38108164087 on 0bc6b41 failed on it; junit.xml of a failing run).
 - [ ] **B105** main is red on CI run 788 (38104166456, 2871cc70, 2026-10-11 02:08Z): BattleStationGameTests.aSiegeBegunJustAfterAWatchGetsItsStationsAtOnce failed in the full suite with 'he shot at a foe 15.19 blocks off from the ground' (an arrow owned by that archer exists after the siege began, so he shot from the ground and not from a station; the foe starts 18 blocks off and he had closed 3 blocks). It passed on run 787 (31030b98, which has 32.6's fix c7b76352), passes locally in its own class (9 of 9) so it only fails in the full suite; 32.7's changes to VillageRaids.track/spawn are the only change in between and don't touch the stations. A player would see a guard walk to the ground and shoot at a siege instead of manning his tower. Expected: a siege begun any part of the second gives archers their stations before they shoot, in every suite order. Test: aSiegeBegunJustAfterAWatchGetsItsStationsAtOnce (red on main run 788; junit in artifact gametest-report-2871cc70) (found by qa-1011-0233, 2026-10-11)
-- [x] **B106** (review: pending 2026-10-11) In the dark_oak style the grand homes' chimneys render as floating tops (34.15's houses and 34.16's Manor, seen in lane-d-1011-0332's Manor renders docs/media/manor-*.png). Expected: chimneys rise unbroken from the roof in every style; the style's block swaps likely drop the chimney shaft. Test: a blueprint check that every chimney top has a solid column under it in each style. (found by lane-d-1011-0332, 2026-10-11)
+- [x] **B106** (approved 2026-10-11) In the dark_oak style the grand homes' chimneys render as floating tops (34.15's houses and 34.16's Manor, seen in lane-d-1011-0332's Manor renders docs/media/manor-*.png). Expected: chimneys rise unbroken from the roof in every style; the style's block swaps likely drop the chimney shaft. Test: a blueprint check that every chimney top has a solid column under it in each style. (found by lane-d-1011-0332, 2026-10-11)
 - [x] **B107** (approved auto 2026-10-11) LegendGuestsGameTests.theTermsMatchTheNeeds failed in a full local build (lane-b-1011-0332, main 3a803748 = origin/main + 32.8/32.9, 2026-10-11): junit.xml says 'no home, a tick: [✔ A home of their own (tier III or better), ✘ Their luxury once a week: books, ✔ A happy village, ...]', i.e. the guest's home need read as met before the test builds terms_manor_3. LegendGuests.freeHome finds any HOME poi within VillageHalls.RADIUS 64 of the hall inside a finished tier III building (BuildSiteManager.finishedIn), so a bed plus a finished-site record left by an earlier test near that grid spot counts (batches before it: edictSave, moodsFollowTheirDay, guardShootsACreeper, legendGuestsWhen). Passes 3/3 with LegendGuestsGameTests alone (8/8 each); not seen in recent CI runs; 32.8/32.9 touch no beds, homes, legends or tier III sites (their one recordFinished is a Stone Wall, forgotten after). Expected: passes in any order (e.g. shrink VillageHalls.RADIUS for the test, as caa26c8f did for B56, or clear finished sites and beds round the hall first). Test: the test itself in a few full runs (QA lane: test-only flake) (found by lane-b-1011-0332, 2026-10-11)
 - [x] **B108** (approved auto 2026-10-11) FerryEdgeGameTests.aTicketToAnotherDimensionTakesYouThere hung a local full build (lane-a-1011-0332, 2026-10-11 ~05:54Z): the server thread sat 14 minutes in ServerChunkCache.getChunk (managedBlock) called from FerryEdgeGameTests.java:112, loading a chunk in the other dimension synchronously, and the suite never finished. Expected: the test never blocks the server thread on another dimension's chunk (load it with a ticket and wait ticks, or a timeout). Test: the full runGameTest finishes; the repeat generator on that test (test-only, QA lane) (found by lane-a-1011-0332, 2026-10-11) Fixed (qa-1011-0733): the test forces the Nether chunk with a ticket and waits for it with runAfterDelay instead of nether.getChunk; FerryEdgeGameTests passes 4 of 4.
 - [ ] **B109** PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap failed once in lane-a-1011-0633's local full build (07:50Z, main cee378e4 + 33.11/33.12, realms off in tests): 'no barrel: BlockPos{x=-12667502, y=-58, z=14421448}' - the diary heirloom was placed (other.placed set) 17 blocks past the test's z edge, at a spot that held no non-empty barrel, so with PLACE_CHUNKS = 0 it still chose a spot near another test's area or that spot was cleared by a neighbour. Passed on main CI 805. Test-only (QA lane). Expected: passes every run. Test: the repeat generator on that test in the full suite (found by lane-a-1011-0633, 2026-10-11)
@@ -361,7 +361,7 @@ Before polishing, make sure nothing regresses unnoticed.
   no longer exists, or a ticked item with a player-visible change has no page; the first twelve pages are written
   (Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds, Legends, Pokemon partners, Classes,
   Elders, Config switches) and the digest links the wiki; the QA lane's step list in sessions.md says so.
-- [x] **22.10** (review: pending 2026-10-11) **The player guide: a wiki for players** (owner, 2026-10-10: "the wiki is good but I meant it more so for users of the mod ... a player facing wiki I can send friends when this goes live that doesn't show backend stuff"). `docs/wiki/` (22.9) stays as the builders' and QA's reference. Add a second, separate site for players: `docs/guide/`, published on the showcase's GitHub Pages site under `/guide/` (or its own Pages site; the lane decides and notes it), plain pages a friend can read with no GitHub knowledge. Rules: never mention roadmap ids, lanes, tests, scenes, config keys' internals, saved fields, file formats, "known limits" or version plans; write only what a player does and sees (getting started, the jobs and how to set each up, the Builder and blueprints, the Village Hall and its tabs, Pokémon partners, festivals and the Cup, quests, friendship and gifts, trade and caravans, classes and luxuries, threats and how to defend, legends; settings a server owner can change, in plain words). Include screenshots from the showcase scenes (they are already filmed nightly). Only features that are switched on in the release; expansion content that is still off is left out until its expansion ships. Done when: an index and a page for every player-visible system shipped in 1.0 exist; `tools/modtest/wikicheck.py`-style check (or a small script) fails the build if a guide page contains a roadmap id, "ROADMAP", "GameTest" or a path under `src/`; the same lane-and-QA rule as 22.9 keeps it true (the lane that changes a feature updates its guide page in the same commit); the digest links the guide and the owner can send the link to friends. Owner reviews the first pages from a screenshot sheet (`--review`).
+- [x] **22.10** (approved 2026-10-11) **The player guide: a wiki for players** (owner, 2026-10-10: "the wiki is good but I meant it more so for users of the mod ... a player facing wiki I can send friends when this goes live that doesn't show backend stuff"). `docs/wiki/` (22.9) stays as the builders' and QA's reference. Add a second, separate site for players: `docs/guide/`, published on the showcase's GitHub Pages site under `/guide/` (or its own Pages site; the lane decides and notes it), plain pages a friend can read with no GitHub knowledge. Rules: never mention roadmap ids, lanes, tests, scenes, config keys' internals, saved fields, file formats, "known limits" or version plans; write only what a player does and sees (getting started, the jobs and how to set each up, the Builder and blueprints, the Village Hall and its tabs, Pokémon partners, festivals and the Cup, quests, friendship and gifts, trade and caravans, classes and luxuries, threats and how to defend, legends; settings a server owner can change, in plain words). Include screenshots from the showcase scenes (they are already filmed nightly). Only features that are switched on in the release; expansion content that is still off is left out until its expansion ships. Done when: an index and a page for every player-visible system shipped in 1.0 exist; `tools/modtest/wikicheck.py`-style check (or a small script) fails the build if a guide page contains a roadmap id, "ROADMAP", "GameTest" or a path under `src/`; the same lane-and-QA rule as 22.9 keeps it true (the lane that changes a feature updates its guide page in the same commit); the digest links the guide and the owner can send the link to friends. Owner reviews the first pages from a screenshot sheet (`--review`).
 
 ## Milestone 23: Builders never need babysitting (priority 1)
 
@@ -2605,7 +2605,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: each source and loss; the thresholds and Lord's Town rule; the announcement once per title; the
     decorated chat text; honours listed; two players kept apart; a save/reload round trip;
   - screenshots of a titled chat line and the hall tooltip; a README section; showcase scene `titles`.
-- [x] **31.12** (review: pending 2026-10-11) **What friendship and titles are worth.**
+- [x] **31.12** (approved 2026-10-11) **What friendship and titles are worth.**
   - **Cheaper trades**: 5% off at 4 hearts and 5% more a heart, 30% at most; a title adds 5% (Friend), 10% (Hero) or
     15% (Lord); 40% at most together. A mixin at the end of `Villager.updateSpecialPrices`, on top of vanilla's gossip
     and Hero of the Village; no price under 1. Players' shops aren't touched.
@@ -2632,7 +2632,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: the price at every heart and title step and the 40% cap; one festival gift per villager per festival;
     the named baby once; the weekly parcel arriving; `title_at_least`;
   - a screenshot of a discounted trade screen; showcase scene `festival_gifts`.
-- [x] **31.13** (review: pending 2026-10-11) **The bounty board and bandit captains.** A new block, the **Bounty Board** (planks, sticks and paper;
+- [x] **31.13** (approved 2026-10-11) **The bounty board and bandit captains.** A new block, the **Bounty Board** (planks, sticks and paper;
   a notice board on two posts, drawn with the pixel-art skill like vanilla's wooden blocks, its face showing 0 to 4
   posters as block states): right-click it for the Bounties tab of the nearest hall's journal (the tab works without a
   board too). From Village rank a village posts a bounty while it has fewer than 2 open, at most one every 3 days;
@@ -2668,7 +2668,7 @@ write their own stories; nothing waits forever on a player.
     bounties;
   - the three textures pass `lint.py`; a README section; showcase scene `bounty` (GIF: the board, the poster, the
     hideout, the claim).
-- [x] **31.14** (review: pending 2026-10-11) **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
+- [x] **31.14** (approved 2026-10-11) **Rogue Pokémon bounties** (Cobblemon). The board's second kind of poster, through a new extension
   point `story/RoguePokemon` filled by `compat/cobblemon/CobblemonRogues`; without Cobblemon this kind is never
   posted. Config `rogueBounties` (true). A rogue is a wild Pokémon grown huge and mean that roams within 24 blocks of
   a spot 150 to 250 blocks from the hall, spawned with Cobblemon's own spawning from
@@ -3036,7 +3036,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     camp;
   - the camp passes `check.py` and its render is in the package;
   - scene `warband`: the war camp, then a GIF of the warband's siege on a walled village.
-- [x] **32.8** (review: pending 2026-10-11) **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
+- [x] **32.8** (approved 2026-10-11) **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
   up; arrival `shore`. Their lair is the **Pirate Ship** (`camp/pirate_ship`, about 27 x 20 x 9, minecraft-architect
   skill: a two-masted dark oak sloop with black sails, a crow's nest, the captain's cabin with the loot chest, the
   Jolly Roger (a black banner with the skull) at the stern), anchored on water at least 5 deep, 40–70 blocks out, its
@@ -3052,7 +3052,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     captain's death removes every ship block but a block the test placed on deck, and leaves the chest;
   - the ship passes `check.py` and its render is in the package;
   - scene `pirates`: the ship at anchor at dusk, the crew wading ashore, the ship sinking (GIF).
-- [x] **32.9** (review: pending 2026-10-11) **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
+- [x] **32.9** (approved 2026-10-11) **Desert raiders.** `desert_raiders.json`: desert and badlands; Town and up; tactics `sand_ramps`;
   hours `until_noon` (husks don't burn, so a siege goes on until noon). Their lair is the **Tomb Camp**
   (`camp/tomb_camp`, minecraft-architect skill: a half-buried sandstone tomb with an obelisk, sun-bleached awnings,
   bone blocks and dead bushes, the Pharaoh's sarcophagus as the loot chest). The roster: husks 55%, husks in gold
@@ -3067,7 +3067,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     at mid-morning and over at noon;
   - the camp passes `check.py` and its render is in the package;
   - scene `desert_raiders`: the tomb camp, a sand ramp rising against a wall and a husk getting up again (GIF).
-- [x] **32.10** (review: pending 2026-10-11) **Piglin incursions.** `piglin_incursion.json`: any land, for villages with a `nether_link` (the
+- [x] **32.10** (approved 2026-10-11) **Piglin incursions.** `piglin_incursion.json`: any land, for villages with a `nether_link` (the
   netherworkers' trips draw them); Town and up; arrival `portal`; tactics `ram_gates` and `plunder`. Their lair is the
   **Blackstone Outpost** (`camp/blackstone_outpost`, minecraft-architect skill: a lit portal of obsidian and crying
   obsidian on a blackstone and netherrack platform, gold blocks, a basalt pillar with a piglin banner, a hoglin pen),
@@ -3084,7 +3084,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     removes the portal blocks and turns the rest of the band zombified;
   - the outpost passes `check.py` and its render is in the package;
   - scene `piglins`: the outpost, piglins coming through and one carrying off gold (GIF).
-- [x] **32.11** (review: pending 2026-10-11) **Witch covens.** `witch_coven.json`: swamps and mangrove swamps; Village and up; tactics `hex`; no
+- [x] **32.11** (approved 2026-10-11) **Witch covens.** `witch_coven.json`: swamps and mangrove swamps; Village and up; tactics `hex`; no
   rams or ladders: witches stand 12–20 blocks outside the walls and throw splash potions over them (slowness, weakness
   and poison at villagers, harming at guards) and heal each other, so archers on stations matter most. Their lair is
   the **Coven Hut** (`camp/coven_hut`, minecraft-architect skill: a hut on mangrove stilts over water, the coven's
@@ -3101,7 +3101,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     least 10 blocks from a finished wall; the Coven Mother blinks after three hits;
   - the hut passes `check.py` and its render is in the package;
   - scene `coven`: the hut in the swamp at night, then witches throwing potions over a palisade (GIF).
-- [x] **32.12** (review: pending 2026-10-11) **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
+- [x] **32.12** (approved 2026-10-11) **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
   **Scout** (held in the off hand like the other kinds' items; you get back what they held; "Scout" over their head).
   From the Defence page, "Scout the lair" sends one out by day: they walk (or ride, `Cavalry`) to within 24 blocks of
   the lair, raise the spyglass (its sound) and come home; the band ignores a scout more than 8 blocks off. Back home,
@@ -3114,7 +3114,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     blocks away, the scout gets within 24 blocks of it and is home within 2400 ticks; the report map has its
     decoration at the lair; a bandit doesn't go for a scout 10 blocks away;
   - scene `scouts`: the scout on a rise with the spyglass, then the report map in hand (GIF).
-- [x] **32.13** (review: pending 2026-10-11) **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
+- [x] **32.13** (approved 2026-10-11) **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
   guards (up to 12; the rest keep the walls) are enlisted on the Rally Banner in the player's inventory, it's raised,
   and they gather by the hall (without a banner the page says to craft one). A new mercenary contract on the same
   page, **Siege-breakers**: five (two with crossbows, two knights, a medic) for 30 emeralds (3 less a level of
@@ -3453,7 +3453,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     puts everyone and everything back;
   - the order survives save and reload mid-journey;
   - showcase scene `colony_departure` (the settlers gathered at the hall, a GIF of them walking out).
-- [x] **33.10** (review: pending 2026-10-11) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
+- [x] **33.10** (approved 2026-10-11) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
   `KeepLoaded`'s) and the settlers make camp on the nearest open ground within 48 blocks (the Settler's Wagon's
   `makeCamp` checks; until 33.14's Colony Camp lands, the settlers' camp with a Village Hall and a Travel Post set
   beside it). Then:
@@ -3477,7 +3477,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     sites; the sister route exists outside the cap; both chronicles have their lines;
   - a GameTest where there's no room: everyone and everything is back home;
   - showcase scene `colony` with a GIF of the arrival and the first walls going up.
-- [x] **33.11** (review: pending 2026-10-11) **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
+- [x] **33.11** (approved 2026-10-11) **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
   realm** with this village as its capital, named after it ("the Barony of Thornholm"; a named Name Tag clicked on the
   realm's icon renames it). The capital's owner adds, with one click, any village within 2,048 blocks that they or a
   friend own; colonies join their mother's realm by themselves; a member's owner can leave at any time and the capital
@@ -3494,7 +3494,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     rank up, the capital's hall broken (the crown passes, or the realm ends);
   - the realm survives save and reload;
   - showcase scene `realm` (the tab, the rank-up fireworks).
-- [x] **33.12** (review: pending 2026-10-11) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
+- [x] **33.12** (approved 2026-10-11) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
   another player owns: a letter goes to that owner's mailbox (or waits at the post office), with a line on their Realm
   tab to accept or decline within 3 days. Any member that's a Town or better can be put forward as capital by its
   owner: if one player owns every member it moves at once; otherwise each member's owner gets a vote on the Realm tab
@@ -3504,7 +3504,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests with two owners: an accepted invitation joins; a declined or lapsed one doesn't; a vote with a majority
     moves the capital and its treasury; a tie keeps it;
   - showcase scene `realm_invite` (the letter, the tab with the vote).
-- [x] **33.13** (review: pending 2026-10-11) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
+- [x] **33.13** (approved 2026-10-11) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
   realm treasury before the rest goes into its own: the **levy**, 0, 5, 10 (the default) or 20%, set by the capital's
   owner on the Realm tab. It's kept in the realm's saved data, so it never needs the capital loaded, and holds up to
   256 emeralds for a Barony, 512 for a County, 1,024 for a Duchy and 2,048 for a Kingdom. It pays for realm research,
@@ -3895,7 +3895,7 @@ on a real world.
   build a Townhouse or Manor like any other build; before that, the tip alone. Done when: `HomeGradeGameTests` (a bed
   in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
   five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
-- [x] **34.16** (review: pending 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
+- [x] **34.16** (approved 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
   hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
   garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's
   Noble's Ball is held). Builders sell it once the village has a Burgher household; its garden counts 3 beauty for

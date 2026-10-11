@@ -252,7 +252,7 @@ public final class ClassMigration {
 
 	/** "14 peasants", "1 burgher" (a data pack's class without words of its own: "3 Guildmaster"). */
 	public static Component count(SocialClass c, int n) {
-		String key = "class." + c.id().getNamespace() + "." + c.id().getPath() + (n == 1 ? ".one" : ".many");
+		String key = "class." + c.id().getNamespace() + "." + c.id().getPath() + ".count" + (n == 1 ? ".one" : "");
 		return Component.translatableWithFallback(key, "%s %s", n, c.name());
 	}
 

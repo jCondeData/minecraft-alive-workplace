@@ -644,14 +644,14 @@ public class ClassMigrationGameTests implements net.fabricmc.fabric.api.gametest
 		texts.put(t("message.aliveworkplace.class.seeded_one", "Thornholm", "14 peasants", 1),
 			"The people of Thornholm found their places: 14 peasants. They have a day to settle in: the Village Hall's Classes page says what each class will need.");
 		texts.put(t("message.aliveworkplace.class.seeded_no_grace", "Thornholm", "14 peasants", 0), "The people of Thornholm found their places: 14 peasants.");
-		texts.put(t("class.aliveworkplace.peasant.one", 1), "1 peasant");
-		texts.put(t("class.aliveworkplace.peasant.many", 14), "14 peasants");
-		texts.put(t("class.aliveworkplace.artisan.one", 1), "1 artisan");
-		texts.put(t("class.aliveworkplace.artisan.many", 6), "6 artisans");
-		texts.put(t("class.aliveworkplace.burgher.one", 1), "1 burgher");
-		texts.put(t("class.aliveworkplace.burgher.many", 2), "2 burghers");
-		texts.put(t("class.aliveworkplace.noble.one", 1), "1 noble");
-		texts.put(t("class.aliveworkplace.noble.many", 2), "2 nobles");
+		texts.put(t("class.aliveworkplace.peasant.count.one", 1), "1 peasant");
+		texts.put(t("class.aliveworkplace.peasant.count", 14), "14 peasants");
+		texts.put(t("class.aliveworkplace.artisan.count.one", 1), "1 artisan");
+		texts.put(t("class.aliveworkplace.artisan.count", 6), "6 artisans");
+		texts.put(t("class.aliveworkplace.burgher.count.one", 1), "1 burgher");
+		texts.put(t("class.aliveworkplace.burgher.count", 2), "2 burghers");
+		texts.put(t("class.aliveworkplace.noble.count.one", 1), "1 noble");
+		texts.put(t("class.aliveworkplace.noble.count", 2), "2 nobles");
 		texts.put(t("screen.aliveworkplace.classes.settling", 5), "Settling in: 5 days left");
 		texts.put(t("screen.aliveworkplace.classes.settling_one"), "Settling in: 1 day left");
 		texts.put(t("screen.aliveworkplace.classes.settling_about"), "Until then nobody falls a class, luxuries aren't needed yet and nobody retires.");

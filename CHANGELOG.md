@@ -265,7 +265,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 
 - When a siege begins, archers get their battle stations before they fight: none closes in on a raider or shoots
-  from the ground first while his station is still being handed out (32.6).
+  from the ground first while his station is still being handed out, in any part of the tick the siege begins
+  (32.6, B105).
 - The settings screen no longer cuts off the elder setting: it now reads "Days Until Elder" (B102).
 
 ## 0.142.0 — 2026-10-10

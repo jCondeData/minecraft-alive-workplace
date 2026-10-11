@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): off until that
 expansion is finished, and several of its pieces are not built yet (see Known limits).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.18, 34.22
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22
 
 ## What a player sees
 
@@ -180,17 +180,17 @@ Ball, `classesVersion` (0: never seeded; 1: seeded with 1.8's rules) and `classG
   re-seed gives the same ages. The hall's `families` book entry written before seeding gets the seeded age. The
   migration lives in `people/ClassMigration` (the design note's `hall/ClassMigration`: it works on villagers).
 
-## Dressed by class (34.17)
+## Dressed by class (34.17, 34.17a)
 
-Each class but the Peasant has a layer worn over the job's outfit, and elders a face layer (34.19's look). The art is
-drawn, three versions of each, and the owner picks on a picker page; until he does, version 1 of each ships:
+Each class but the Peasant has a layer worn over the job's outfit, and elders a face layer (34.19's look). Three
+versions of each were drawn for a pick round; the owner picked one per row on 2026-10-11 (34.17a), and only those ship:
 
-| Layer | Version 1 (shipped) | Version 2 | Version 3 |
-|---|---|---|---|
-| Artisan | a blue neckerchief and a belt pouch | a leather tool belt (hammer, chisel, files, nails) | rolled sleeves and an ochre waistcoat |
-| Burgher | a white collar, dark cuffs and a watch chain | a dark frock coat's buttoned edge, a pocket square | a short green shoulder cape |
-| Noble | a crimson mantle with ermine and a chain of office | an emerald velvet half-cape with gold embroidery | a blue sash with a jewelled clasp |
-| Elder | grey brows and a short beard | white hair at the temples | spectacles and a full grey beard |
+| Layer | What it is (the owner's pick) |
+|---|---|
+| Artisan (version 1) | a blue neckerchief knotted behind, and a leather belt pouch with a brass stud |
+| Burgher (version 2) | the buttoned edge of a dark frock coat with brass buttons, its tails behind, a pocket square at the breast |
+| Noble (version 1) | a crimson mantle with an ermine collar and hem, and a gold chain of office |
+| Elder (version 1) | grey brows and a short grey beard |
 
 - Textures: `textures/entity/villager/class/<class>.png` (`artisan`, `burgher`, `noble`; the class file's `outfit`
   names it) and `class/elder.png`. A Peasant has no `outfit`, so the job's outfit stays as the owner approved it.
@@ -204,9 +204,9 @@ drawn, three versions of each, and the owner picks on a picker page; until he do
   class and stage of life from a small packet (`aliveworkplace:class_look`: entity id, class, layer, stage) sent when a
   player starts tracking the villager and again when either changes (a household rises or falls, a child takes their
   parents' class, a villager becomes an elder). `classOutfits` off: nothing is sent or drawn. Scene `class_outfits`.
-- Recipes: `tools/textures/art/classes.py` (`PICKED` names the version shipped). The picker page:
-  `python3 tools/textures/picks/classes_page.py` writes `build/texture-picks/classes/index.html` with every version on
-  the villager model over six jobs in all seven biomes; picks and notes are saved in its `classes` collection.
+- Recipes: `tools/textures/art/classes.py`, one per layer (`LAYERS`). The versions not picked, and the picker page
+  that showed them, were removed in 34.17a. Nothing saved names a version: a villager's look follows their saved class
+  and age, so worlds from before the pick show the picked looks at once.
 
 ## Known limits
 

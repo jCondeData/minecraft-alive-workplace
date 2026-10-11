@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.hall.HallPages;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlock;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -93,6 +94,7 @@ final class CupThemesScene {
 				CupData.Cup cup = CupData.get(server.overworld()).cup(HALL);
 				cup.theme = theme.id();
 				cup.closed = false;
+				holdTown(server.overworld());
 				VillageHallScreen.open(player, HALL);
 				if (player.containerMenu instanceof ChoiceMenu m) {
 					m.press(HallPages.slot(CupPage.PAGE), player);
@@ -128,12 +130,26 @@ final class CupThemesScene {
 		}
 	}
 
+	/**
+	 * The staged Town: the hall's round counts the rank again from its villagers and buildings (one Trainer Leader makes
+	 * a Hamlet, too small to host), so the scene keeps the Town it stages: a count on record (the first round waits for
+	 * the next check) and the rank set again before each page is read.
+	 */
+	private static void holdTown(ServerLevel level) {
+		if (level.getBlockEntity(HALL) instanceof VillageHallBlockEntity hall) {
+			if (hall.needs() == null) {
+				hall.setNeeds(new VillageNeeds.Needs(1, 1, 1, 1, 1, 0, 0, 1f));
+			}
+			hall.setRank(VillageRanks.Rank.TOWN);
+		}
+	}
+
 	/** The host: a Town with an Arena II on record, its Leader Mira, and one trade partner with a Leader on record. */
 	private void stage(MinecraftServer server) {
 		ServerLevel level = server.overworld();
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
-		hall.setRank(VillageRanks.Rank.TOWN);
+		holdTown(level);
 		hall.setCustomName(Component.literal("Thornholm"));
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.ARENA_2.id(),
 			new BlueprintData.Placement(level.dimension().location(), HALL.offset(8, 0, 4), Rotation.NONE, Mirror.NONE), UUID.randomUUID());

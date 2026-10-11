@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHallBlock;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -67,24 +68,29 @@ final class CupPageScene {
 		if (tick == 90) {
 			server.execute(() -> {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				holdTown(server.overworld());
 				VillageHallScreen.open(player, HALL);
 			});
 		}
 		if (tick == 105) {
 			server.execute(() -> {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				holdTown(server.overworld());
 				if (player.containerMenu instanceof ChoiceMenu m) {
 					m.press(HallPages.slot(CupPage.PAGE), player);
 					m.press(CupPage.SIGN_UP, player);
 					CupData.Cup cup = CupData.get(server.overworld()).existing(HALL);
 					signed = cup != null && cup.signups.stream().anyMatch(s -> s.player().equals(player.getUUID()));
+					// judged here, where it's known: the client's tick can come round before this task has run
+					Showcase.check(signed, "the player signed up from the Cup page");
 					Showcase.check(m.icon(CupPage.CARD).getHoverName().getString().equals("Grand Cup"), "the Cup page shows the Grand Cup's card ("
 						+ m.icon(CupPage.CARD).getHoverName().getString() + ")");
+				} else {
+					Showcase.check(false, "the hall's screen is open for the Cup page");
 				}
 			});
 		}
 		if (tick == 120) {
-			Showcase.check(signed, "the player signed up from the Cup page");
 			ScreenshotHarness.pointAt(mc, CupPage.CARD);
 		}
 		if (tick == 135) {
@@ -112,8 +118,10 @@ final class CupPageScene {
 		ServerLevel level = server.overworld();
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
-		hall.setRank(VillageRanks.Rank.TOWN);
+		holdTown(level);
 		hall.setCustomName(Component.literal("Thornholm"));
+		// the player within reach of the hall, where the showcase's world spawns him (a world with its spawn elsewhere too)
+		server.getPlayerList().getPlayers().get(0).teleportTo(level, 2.5, -60, 10.5, 164f, 0f);
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.ARENA_2.id(),
 			new BlueprintData.Placement(level.dimension().location(), HALL.offset(8, 0, 4), Rotation.NONE, Mirror.NONE), UUID.randomUUID());
 		Cups.COBBLEMON = true; // the scene runs with Cobblemon; this only makes sure a run without it still shows the page
@@ -140,6 +148,20 @@ final class CupPageScene {
 		CupData.get(level).setDirty();
 		Showcase.check(Cups.circuit(level, HALL).size() == 3, "the circuit is the host and its two trade partners");
 		Showcase.check(VillageHalls.name(level, HALL).getString().equals("Thornholm"), "the host is Thornholm");
+	}
+
+	/**
+	 * The staged Town: the hall's round counts the rank again from its villagers and buildings (three Trainers make a
+	 * Hamlet, too small to host), so the scene keeps the Town it stages: a count on record (the first round waits for
+	 * the next check) and the rank set again before the page is read.
+	 */
+	static void holdTown(ServerLevel level) {
+		if (level.getBlockEntity(HALL) instanceof VillageHallBlockEntity hall) {
+			if (hall.needs() == null) {
+				hall.setNeeds(new VillageNeeds.Needs(3, 3, 3, 3, 1, 0, 0, 1f));
+			}
+			hall.setRank(VillageRanks.Rank.TOWN);
+		}
 	}
 
 	private static void villager(ServerLevel level, BlockPos at, boolean leader, int lvl, String name) {

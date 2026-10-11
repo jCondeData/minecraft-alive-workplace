@@ -1,0 +1,27 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.off_to_school.title"
+  },
+  "text": "request.aliveworkplace.off_to_school",
+  "days": 10,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    }
+  ],
+  "objectives": [
+    {
+      "type": "schooled"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 4,
+      "rank_factor": false
+    }
+  ]
+}

@@ -580,6 +580,11 @@ SCENES = [
       "at three hearts Dara walked up and asked the player for a taste of home, with [I'll help] and [Not now] in the chat; accepted, the pumpkin pie was handed in from the quest journal's Personal tab, she said her thanks and the helper got the emeralds and the friendship", 60,
       [("01_ask", "Three hearts: she walks up and asks, with [I'll help] and [Not now] in the chat"), ("02_accept", "[I'll help]: the request is open"),
        ("03_hand_in", "The journal's Personal tab: the pie to hand in"), ("04_thanks", "Handed in: her thanks, the emeralds and the friendship")]),
+    # A letter to family (ROADMAP 31.10): the letter carried between two villages, and the reply
+    S("letter", "Village Hall", "A letter to family: to Mira in Elmford, and the reply home",
+      "Dara asked the player to carry a sealed letter to Mira in Elmford, a village 40 blocks away; Mira read it and wrote back, and the reply came home: the request done, paid, and a line in both villages' chronicles", 60,
+      [("01_ask", "Three hearts: Dara asks for a letter carried to Mira in Elmford"), ("02_letter", "[I'll help]: the sealed letter in hand"),
+       ("03_delivered", "In Elmford: Mira reads it and writes back"), ("04_reply", "Home again: the reply to Dara, and her thanks")]),
     # Reputation and titles (ROADMAP 31.11): a new title told to the server, the title in chat, the hall's tooltip
     S("titles", "Village Hall", "Reputation and titles: a Hero of Thornholm",
       "the player's deeds made them a Hero of Thornholm, told to the whole server in gold; their next chat line carries [Hero of Thornholm], and the hall's name tag tooltip shows their standing, their honour and the three best regarded", 45,

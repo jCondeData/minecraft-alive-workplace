@@ -16,6 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Six more personal requests, for 1.5** (31.10). A friend with 3 hearts may now also ask you to carry **a letter to
+  family** in another village (a sealed letter; bring their relative's reply back, and if you lose it they write
+  another), to **bring back their love** from the grave (an Undertaker revives them, and the two marry again), for **a
+  cat by the door** (a cat or a tamed wolf by their bed at dawn), to see their child **off to school**, for **a chapel
+  wedding** (the couple wait up to 5 days for a Chapel, then marry there with a feast for the whole village) and for
+  **the lost heirloom** (you get a map; the heirloom turns up in a chest at a ruined portal, shipwreck, trail ruins or
+  mineshaft when you get there, and its story goes in the chronicle when it's home).
+
 ## 0.142.0 — 2026-10-10
 
 ### Added

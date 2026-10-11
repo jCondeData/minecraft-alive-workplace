@@ -3028,6 +3028,104 @@ final class JobScenes {
 				Showcase.check(friends, "helping earned the request's 150 friendship and the hand-in's 10: " + points + " points with Dara");
 				return friends && io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(subject) == null;
 			}));
+		// A letter to family (ROADMAP 31.10): Dara asks the player to carry a letter to her relative Mira in Elmford, a
+		// village 40 blocks east; the sealed letter goes there, Mira reads it and writes back, and the reply comes home.
+		SCREENS.put("letter", new Screen("Dara asked for a letter carried to Mira in Elmford; the sealed letter went there, Mira wrote back, and the reply came home",
+			new Vec3(1.5, -60, 5.5), new Vec3(1.5, -58.8, 2.5),
+			(level, player) -> {
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 12; // two small villages in one picture's walk
+				BlockPos elmford = new BlockPos(40, -60, 0);
+				for (BlockPos hall : List.of(STATION, elmford)) {
+					level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+						.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				}
+				if (level.getBlockEntity(elmford) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setCustomName(Component.literal("Elmford"));
+				}
+				io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level).setWants(elmford, Component.literal("Elmford"), List.of());
+				Villager dara = EntityType.VILLAGER.spawn(level, new BlockPos(1, -60, 2), MobSpawnType.COMMAND);
+				Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(41, -60, 2), MobSpawnType.COMMAND);
+				for (Villager v : List.of(dara, mira)) {
+					v.setNoAi(true);
+					v.setYRot(0);
+					v.setYHeadRot(0);
+					v.setYBodyRot(0);
+				}
+				dara.setVillagerData(dara.getVillagerData().setType(net.minecraft.world.entity.npc.VillagerType.PLAINS).setProfession(VillagerProfession.FARMER).setLevel(2));
+				dara.setCustomName(Component.literal("Dara"));
+				mira.setVillagerData(mira.getVillagerData().setType(net.minecraft.world.entity.npc.VillagerType.PLAINS).setProfession(VillagerProfession.LIBRARIAN).setLevel(3));
+				mira.setCustomName(Component.literal("Mira"));
+				subject = dara;
+				scholar = mira;
+			},
+			List.of(new Step("01_ask", -1, 0, (level, player) -> {
+					// The halls' POIs are only registered after the staging tick: look the villagers' halls up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					Villager dara = subject;
+					io.github.jcondedata.aliveworkplace.story.Friendship.told(dara, player, "aliveworkplace:before_hall");
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 300);
+					var file = io.github.jcondedata.aliveworkplace.story.QuestFiles.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("personal/letter_to_family")).orElse(null);
+					var quest = file == null || !(level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) ? null
+						: io.github.jcondedata.aliveworkplace.story.PersonalRequests.resolve(level, STATION, hall,
+							io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, STATION), file, dara, player, net.minecraft.util.RandomSource.create(1));
+					Showcase.check(quest != null, "at three hearts Dara has a letter for Mira in Elmford to ask the player to carry");
+					if (quest != null) {
+						io.github.jcondedata.aliveworkplace.story.PersonalRequests.propose(level, STATION, dara, player, quest,
+							io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
+					}
+				}, 60),
+				new Step("02_letter", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					var offer = io.github.jcondedata.aliveworkplace.story.PersonalRequests.offer(dara);
+					Showcase.check(offer != null && offer.asked, "Dara asked, with [I'll help] and [Not now] in the chat");
+					if (offer != null) {
+						level.getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "workplace quest accept " + offer.quest.id);
+					}
+					var quest = io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(dara);
+					ItemStack letter = quest == null ? ItemStack.EMPTY : player.getInventory().items.stream()
+						.filter(s -> s.is(Items.PAPER) && s.getHoverName().getString().equals("Sealed Letter to Mira")).findFirst().orElse(ItemStack.EMPTY);
+					Showcase.check(!letter.isEmpty(), "[I'll help]: the player holds the Sealed Letter to Mira");
+					if (!letter.isEmpty()) {
+						ItemStack held = letter.copy();
+						letter.setCount(0);
+						player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, held);
+					}
+				}, 50),
+				new Step("03_delivered", -1, 0, (level, player) -> {
+					// In Elmford, the letter given to Mira (the right-click).
+					player.teleportTo(level, 41.5, -60, 5.5, 180f, 10f);
+					Villager mira = scholar;
+					boolean given = io.github.jcondedata.aliveworkplace.story.RequestErrands.use(player, level, net.minecraft.world.InteractionHand.MAIN_HAND, mira);
+					ItemStack reply = player.getInventory().items.stream()
+						.filter(s -> s.is(Items.PAPER) && s.getHoverName().getString().equals("Reply from Mira")).findFirst().orElse(ItemStack.EMPTY);
+					Showcase.check(given && !reply.isEmpty(), "in Elmford Mira read the letter and wrote a reply for Dara");
+					if (!reply.isEmpty()) {
+						ItemStack held = reply.copy();
+						reply.setCount(0);
+						player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, held);
+					}
+				}, 60),
+				new Step("04_reply", -1, 0, (level, player) -> {
+					// Home again, the reply to Dara.
+					player.teleportTo(level, 1.5, -60, 5.5, 180f, 10f);
+					Villager dara = subject;
+					boolean taken = io.github.jcondedata.aliveworkplace.story.RequestErrands.use(player, level, net.minecraft.world.InteractionHand.MAIN_HAND, dara);
+					String me = player.getGameProfile().getName();
+					boolean done = taken && io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(dara) == null && player.getInventory().countItem(Items.EMERALD) == 4;
+					boolean chronicled = level.getBlockEntity(new BlockPos(40, -60, 0)) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity elmford
+						&& elmford.chronicle().stream().anyMatch(e -> e.text().getString().startsWith(me + " brought Mira a letter from Dara"))
+						&& level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity home
+						&& home.chronicle().stream().anyMatch(e -> e.text().getString().equals(me + " helped Dara: A letter to family"));
+					Showcase.check(done && chronicled, "the reply home: the request is done, 4 emeralds paid, a line in both villages' chronicles");
+				}, 60)),
+			(level, player) -> {
+				if (subject == null || scholar == null) {
+					return false;
+				}
+				boolean friends = io.github.jcondedata.aliveworkplace.story.Friendship.points(scholar, player.getUUID()) > 0;
+				Showcase.check(friends, "carrying the letter made a friend of Mira too");
+				return friends && io.github.jcondedata.aliveworkplace.story.PersonalRequests.of(subject) == null;
+			}));
 		// Reputation and titles (ROADMAP 31.11): the player becomes a Hero of Thornholm (told to the whole server), their
 		// next chat line carries the title, and the hall's name tag tooltip shows their standing and the best regarded.
 		SCREENS.put("titles", new Screen("the player became a Hero of Thornholm, told to the whole server; their chat line carries the title and the hall's tooltip shows their standing",

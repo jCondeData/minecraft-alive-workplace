@@ -263,6 +263,8 @@ public class PiglinGameTests implements FabricGameTest {
 		other.setItem(0, new ItemStack(Items.GOLD_BLOCK, 5));
 		Mob piglin = raider(helper, culture, EntityType.PIGLIN, new BlockPos(10, 2, 10));
 		piglin.setNoAi(true);
+		// finalizeSpawn gives a piglin a golden helmet now and then, and gold is shown only on a bare head
+		piglin.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, ItemStack.EMPTY);
 		Mob hoglin = raider(helper, culture, EntityType.HOGLIN, new BlockPos(6, 2, 8));
 		hoglin.setNoAi(true);
 		VillageRaids.track(level, hall, culture, List.of(piglin, hoglin));

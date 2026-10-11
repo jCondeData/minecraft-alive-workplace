@@ -5,6 +5,9 @@
 	"name": "Alive Workplace GameTests",
 	"environment": "*",
 	"entrypoints": {
+		"main": [
+			"io.github.jcondedata.aliveworkplace.test.MockPlayerSweep"
+		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReleaseGameTests",

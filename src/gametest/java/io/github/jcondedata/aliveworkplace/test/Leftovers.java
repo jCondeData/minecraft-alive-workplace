@@ -51,7 +51,10 @@ final class Leftovers {
 	static void halls(GameTestHelper helper) {
 		net.minecraft.server.level.ServerLevel level = helper.getLevel();
 		AABB box = helper.getBounds();
-		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(Math.max(box.getXsize(), box.getZsize()) / 2);
+		// from the middle of the box to its farthest corner, height included: with half the width only, a hall 61 blocks
+		// from a workstation near the corner (so in its village) was missed, and LuxuryWorkGameTests' maker used its store
+		double halfDiagonal = Math.sqrt(box.getXsize() * box.getXsize() + box.getYsize() * box.getYsize() + box.getZsize() * box.getZsize()) / 2;
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(halfDiagonal);
 		java.util.List<net.minecraft.core.BlockPos> halls = level.getPoiManager().findAll(
 			h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI), p -> true,
 			net.minecraft.core.BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList();

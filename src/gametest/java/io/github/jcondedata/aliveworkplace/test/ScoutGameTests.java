@@ -146,6 +146,18 @@ public class ScoutGameTests implements FabricGameTest {
 				e -> !(e instanceof ServerPlayer)).forEach(net.minecraft.world.entity.Entity::discard);
 			forced.forEach(c -> level.setChunkForced((int) c[0], (int) c[1], false));
 		});
+		// Loaded is not yet ticking: until the chunk system's queued work promotes them, their entity sections are hidden,
+		// so a scout added there isn't found by the hall ("No scout", B112) and doesn't walk. Run that work now, for at
+		// most 10 s (never block the server thread for good, as B108's wait in another dimension once did).
+		long deadline = System.nanoTime() + 10_000_000_000L;
+		while (!forced.stream().allMatch(c -> level.isPositionEntityTicking(new BlockPos(((int) c[0] << 4) + 8, here.getY(), ((int) c[1] << 4) + 8)))
+			&& System.nanoTime() < deadline) {
+			if (!level.getChunkSource().pollTask()) {
+				java.util.concurrent.locks.LockSupport.parkNanos(100_000L);
+			}
+		}
+		helper.assertTrue(forced.stream().allMatch(c -> level.isPositionEntityTicking(new BlockPos(((int) c[0] << 4) + 8, here.getY(), ((int) c[1] << 4) + 8))),
+			"the open ground 5000 blocks east isn't ticking after 10 s");
 		return new BlockPos(x0, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x0, z0), z0);
 	}
 

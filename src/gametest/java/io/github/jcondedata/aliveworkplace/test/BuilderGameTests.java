@@ -1039,6 +1039,27 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.TOWNHOUSE_3, new BlockPos(9, 2, 8));
 	}
 
+	/** The Noble's Manor (34.16) from bare ground, in the huge area (19 wide, the forecourt in front). */
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"starter_builds_manor"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "starter_builds_manor")
+	public void buildsManor(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.MANOR, new BlockPos(1, 2, 5));
+	}
+
+	/** The Manor II (34.16) from bare ground: the walled garden with its fountain makes it 24 deep. */
+	//$ gametest_ticks_batch HUGE_AREA '80000' '"starter_builds_manor_2"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 80000, batch = "starter_builds_manor_2")
+	public void buildsManorII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.MANOR_2, new BlockPos(1, 2, 5));
+	}
+
+	/** The Manor III (34.16) from bare ground: the gatehouse and the ballroom wing make it 26 x 24. */
+	//$ gametest_ticks_batch HUGE_AREA '100000' '"starter_builds_manor_3"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 100000, batch = "starter_builds_manor_3")
+	public void buildsManorIII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.MANOR_3, new BlockPos(1, 2, 5));
+	}
+
 	//$ gametest_ticks_batch TALL_AREA '60000' '"starter_builds_guildhall_2"'
 	@GameTest(template = TALL_AREA, timeoutTicks = 60000, batch = "starter_builds_guildhall_2")
 	public void buildsGuildhallII(GameTestHelper helper) {
@@ -1885,7 +1906,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 44, "expected 44 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 46, "expected 46 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

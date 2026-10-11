@@ -1,0 +1,5 @@
+{
+  "blueprint": "aliveworkplace:manor",
+  "grade": 3,
+  "garden": {"tier": 2, "beauty": 3}
+}

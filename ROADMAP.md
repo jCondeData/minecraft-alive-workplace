@@ -175,10 +175,11 @@ stay in the list, ticked, so their numbers stay unique.
   caused by us, and `SEASON=true tools/packtest/run.sh` fails on it. Expected: the first lookup spread out or prepared when
   recipes load, no tick over 50 ms. Test: `SEASON=true tools/packtest/run.sh` prints "ticks with over 50 ms of our code: 0"
   (a second, 98 ms tick on day 1 had its one profile sample in `FieldWork.take`: look at it with this).
-- [x] **B102** (review: pending 2026-10-11) **The settings screen cuts off 'Days to Become an Elder: 120'** (34.19, lang key aliveworkplace.config.villagerElderDays): full showcase run 38028628988 on a0abe99 (2026-10-10 05:46Z), scene config: 'every setting has a button whose label fits (86 settings: 'Days to Become an Elder: 120' is wider than its button)'. Players see the label clipped in Mod Menu's screen, as with B-fixed labels before it (Nurses Use Healing Machines, Stewards Renew Old Houses). Expected: a shorter label (for example 'Elder After Days'), so every setting fits its button at the default GUI scale and the config scene passes. Test: SCENE=config tools/screenshots/run.sh (lane d: 34.19's lang file; not run locally) (found by qa-1010-0634, 2026-10-10)
+- [x] **B102** (approved 2026-10-11) **The settings screen cuts off 'Days to Become an Elder: 120'** (34.19, lang key aliveworkplace.config.villagerElderDays): full showcase run 38028628988 on a0abe99 (2026-10-10 05:46Z), scene config: 'every setting has a button whose label fits (86 settings: 'Days to Become an Elder: 120' is wider than its button)'. Players see the label clipped in Mod Menu's screen, as with B-fixed labels before it (Nurses Use Healing Machines, Stewards Renew Old Houses). Expected: a shorter label (for example 'Elder After Days'), so every setting fits its button at the default GUI scale and the config scene passes. Test: SCENE=config tools/screenshots/run.sh (lane d: 34.19's lang file; not run locally) (found by qa-1010-0634, 2026-10-10)
 - [ ] **B103** Three day-1 ticks over 50 ms of our code remain on the pack after B101's fix (found by B101's season run, lane-a-1011-0032, 2026-10-11): `SEASON=true tools/packtest/run.sh` printed 'ticks with over 50 ms of our code: 3', all on day 1, with `Village.mates` 149 ms, `work.Gated` 108 ms and `Cradles.round` 91 ms among the frames (no crafting or recipe frame any more); the same run had our code at 16.2%/17.4% of the tick on its worst day, over 25.2's 15% (16.5% before B101). Expected: no tick over 50 ms caused by us. Test: the season run prints 'ticks with over 50 ms of our code: 0'. (found by lane-a-1011-0032, 2026-10-11)
 - [ ] **B104** BattleStationGameTests.knightsHoldTheGateAndMedicsStandBehind flakes (about 1 in 10 repeats; failed in lane-b-1011-0032's full build): siege tests that run beside it set the global Sieges.ENABLED = false at their tick 0 (BattleStationGameTests ~344, LadderGameTests ~489/557, SiegeGameTests ~459), and teardowns call the global BattleStations.forget() (~114, ~410), so the station watch drops every village's places mid-test; the knight ends 12 blocks from the hall with no post. Same rate with and without 2e3a55d7. Expected: the tests that switch sieges off or forget stations don't touch other tests' villages (own batch, or per-village forget). Test: BattleStationGameTests (QA lane: test-only) (found by lane-b-1011-0032, 2026-10-11)
 - [ ] **B105** main is red on CI run 788 (38104166456, 2871cc70, 2026-10-11 02:08Z): BattleStationGameTests.aSiegeBegunJustAfterAWatchGetsItsStationsAtOnce failed in the full suite with 'he shot at a foe 15.19 blocks off from the ground' (an arrow owned by that archer exists after the siege began, so he shot from the ground and not from a station; the foe starts 18 blocks off and he had closed 3 blocks). It passed on run 787 (31030b98, which has 32.6's fix c7b76352), passes locally in its own class (9 of 9) so it only fails in the full suite; 32.7's changes to VillageRaids.track/spawn are the only change in between and don't touch the stations. A player would see a guard walk to the ground and shoot at a siege instead of manning his tower. Expected: a siege begun any part of the second gives archers their stations before they shoot, in every suite order. Test: aSiegeBegunJustAfterAWatchGetsItsStationsAtOnce (red on main run 788; junit in artifact gametest-report-2871cc70) (found by qa-1011-0233, 2026-10-11)
+- [ ] **B106** In the dark_oak style the grand homes' chimneys render as floating tops (34.15's houses and 34.16's Manor, seen in lane-d-1011-0332's Manor renders docs/media/manor-*.png). Expected: chimneys rise unbroken from the roof in every style; the style's block swaps likely drop the chimney shaft. Test: a blueprint check that every chimney top has a solid column under it in each style. (found by lane-d-1011-0332, 2026-10-11)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -351,6 +352,8 @@ Before polishing, make sure nothing regresses unnoticed.
   no longer exists, or a ticked item with a player-visible change has no page; the first twelve pages are written
   (Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds, Legends, Pokemon partners, Classes,
   Elders, Config switches) and the digest links the wiki; the QA lane's step list in sessions.md says so.
+- [ ] **22.10** **The player guide: a wiki for players** (owner, 2026-10-10: "the wiki is good but I meant it more so for users of the mod ... a player facing wiki I can send friends when this goes live that doesn't show backend stuff"). `docs/wiki/` (22.9) stays as the builders' and QA's reference. Add a second, separate site for players: `docs/guide/`, published on the showcase's GitHub Pages site under `/guide/` (or its own Pages site; the lane decides and notes it), plain pages a friend can read with no GitHub knowledge. Rules: never mention roadmap ids, lanes, tests, scenes, config keys' internals, saved fields, file formats, "known limits" or version plans; write only what a player does and sees (getting started, the jobs and how to set each up, the Builder and blueprints, the Village Hall and its tabs, Pokémon partners, festivals and the Cup, quests, friendship and gifts, trade and caravans, classes and luxuries, threats and how to defend, legends; settings a server owner can change, in plain words). Include screenshots from the showcase scenes (they are already filmed nightly). Only features that are switched on in the release; expansion content that is still off is left out until its expansion ships. Done when: an index and a page for every player-visible system shipped in 1.0 exist; `tools/modtest/wikicheck.py`-style check (or a small script) fails the build if a guide page contains a roadmap id, "ROADMAP", "GameTest" or a path under `src/`; the same lane-and-QA rule as 22.9 keeps it true (the lane that changes a feature updates its guide page in the same commit); the digest links the guide and the owner can send the link to friends. Owner reviews the first pages from a screenshot sheet (`--review`).
+
 ## Milestone 23: Builders never need babysitting (priority 1)
 
 MineColonies players' most common complaints are builders that get stuck, don't say what they need, stop when
@@ -1316,7 +1319,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   Done when: GameTests: the bout is the same for the same seed; the chart is sane (Water on Fire 2×, Normal on Ghost
   0×); a bout between two trainers ends with a winner and every Pokémon entity gone; a themed team follows the theme; a
   delegate's banked XP reaches the real Leader on load; showcase scene `cup_bout` with its GIF.
-- [x] **28.19** (review: pending 2026-10-06) **Cup day.** The Cup is the host's festival, from morning to the final:
+- [x] **28.19** (approved 2026-10-11) **Cup day.** The Cup is the host's festival, from morning to the final:
   - Delegates: from 1000 the far villages' entrants arrive, each a visiting villager with its Leader's name, a Trainer
     Leader's outfit and "of <village>", walking in from the village edge on the side its home lies, to the Arena
     (attachment `CUP_DELEGATE`: home hall, the Leader's UUID, tier; never takes a job or a bed; leaves at dawn out of
@@ -1340,7 +1343,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   from their homes' side and are gone by dawn, villagers are in the stands for the final, the fair sells the theme's
   wares, every circuit hall's chronicle has the entry; with `festivalCup` off it's a plain festival; showcase scene
   `cup_day` (the whole day, sped up) with its GIF.
-- [x] **28.20** (review: pending 2026-10-06) **Players in the Cup.** A signed-up player's bout is called in chat with a clickable [I'm ready] and a
+- [x] **28.20** (approved 2026-10-11) **Players in the Cup.** A signed-up player's bout is called in chat with a clickable [I'm ready] and a
   bell; they have two minutes inside the Arena to click it, or lose by walkover (so does a player who's offline).
   - Against a villager: a real Cobblemon battle with the delegate or host trainer as `VillagerTrainerActor`, in the
     theme's format (singles or doubles), its level adjust and Showdown rules (the theme's level replaces RCT's level
@@ -1358,7 +1361,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   doubles theme, at the theme's level; a win moves them on and pays; an absent player loses by walkover after two
   minutes; fleeing counts as a loss; a bout between two players starts with both teams; showcase scene `cup_match`
   (the battle at the ring, the stands behind).
-- [x] **28.21** (review: pending 2026-10-06) **Champions.** When the final ends:
+- [x] **28.21** (approved 2026-10-11) **Champions.** When the final ends:
   - The champion's village holds the Cup until the host's next Cup: its name goes on the roll of champions (Cup page),
     in every circuit village's chronicle, on its hall's name tooltip, in other halls' trade-route lists and on the
     Village Map's legend ("holders of the Thornholm Cup").
@@ -1374,7 +1377,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   champion is crowned; the mood reason is there for holders and gone after; the chronicle line is in every circuit
   hall; a far champion gets its banner when it loads; the pattern passes `lint.py`; showcase scene `cup_champions`
   (the banner over the hall, the roll of champions).
-- [x] **28.22** (review: pending 2026-10-06) **The eight Cup themes.** Each a data file in `data/aliveworkplace/cups/` with its rules, wares,
+- [x] **28.22** (approved 2026-10-11) **The eight Cup themes.** Each a data file in `data/aliveworkplace/cups/` with its rules, wares,
   dish, fireworks and disc; delegates' and host trainers' teams follow it (28.18), and so does players' eligibility
   (28.20). Discs are vanilla's. In order:
   1. **Blossom Cup**: Grass, Bug and Fairy; singles; level 50; bring 3. Wares: Miracle Seed, Silver Powder, Fairy
@@ -1404,7 +1407,7 @@ here adds a new kind of speed bonus (the new jobs get the partners' existing one
   day of helping and never twice a day; `langcheck.py` is clean; showcase scene `cup_themes` (each theme's Cup page and
   fair).
 
-- [x] **28.23** (review: pending 2026-10-06) **A custom screen for Pokémon trades (owner, 2026-10-05).** The Pokémon Trader's offers use vanilla's
+- [x] **28.23** (approved 2026-10-11) **A custom screen for Pokémon trades (owner, 2026-10-05).** The Pokémon Trader's offers use vanilla's
   plain trading screen. Give them a screen of their own, like the Village Hall's (30.4a): the Trader's offers as cards
   showing the Pokémon (name, level, ball, shiny mark) next to what it costs, the player's party on the other side so
   a trade can be picked from it, and a plain "no offers today" state. Same look as the other workstation screens
@@ -2306,7 +2309,7 @@ write their own stories; nothing waits forever on a player.
     `reach` counts inside its radius and not outside; the map's marker sits on the found place; the lookup runs once
     per quest (a counter);
   - showcase scene `quest_journal`: the four tabs, a tracked bar on screen, a quest map in hand.
-- [x] **31.4** (review: pending 2026-10-06) **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
+- [x] **31.4** (approved 2026-10-11) **The story arc engine.** Arcs are data, `data/<namespace>/arcs/<id>.json`, one arc per file: a
   `trigger` (conditions, a chance a day), the `chapters` in order and an `ending`. A chapter has a name, intro lines
   for chat and the chronicle, `on_start` effects, its quests (ids or written inline), when it's done (all of them, any
   one, or the ones named), `delay_days` before the next, a `time_limit_days` with what happens on failure, and chatter
@@ -2337,7 +2340,7 @@ write their own stories; nothing waits forever on a player.
   - a far `place` waits until a player comes near, then places once;
   - no more than `arcsAtOnce` arcs run; with `storyArcs` off no arc starts and a running one ends at its next round;
   - showcase scene `story_arc`: the announcement, the Story tab, the chronicle.
-- [x] **31.5** (review: pending 2026-10-06) **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
+- [x] **31.5** (approved 2026-10-11) **Friendship.** Every named villager in a hall's village keeps a friendship with each player: 0 to 1000
   points, ten hearts of 100. It's saved on the villager, in a new attachment `friendship` (empty by default): player →
   points, the last gift's day, gifts this week, heart events told. Favours, each once a day per villager unless said:
   - trading with them: +5;
@@ -2359,7 +2362,7 @@ write their own stories; nothing waits forever on a player.
   - screenshots of the action bar and the hall tooltip; showcase scene `friendship` (a trade, a quest done, the hearts
     going up);
   - `friendship` off: no points, no hearts shown, nothing else changes.
-- [x] **31.6** (review: pending 2026-10-09) **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
+- [x] **31.6** (approved 2026-10-11) **Gifts.** Two new items, drawn with the pixel-art skill the way vanilla draws its kind: **Gift Wrap**
   (paper, string and any dye make 4) and the wrapped **Gift** (Gift Wrap and any one item in the crafting grid: a
   special recipe like vanilla's map cloning; the item is kept inside as a data component, and the tooltip says "From
   Jesse" and not what's inside). Right-click a named villager with a Gift: they unwrap it (the item's particles, a
@@ -2407,7 +2410,7 @@ write their own stories; nothing waits forever on a player.
     over ours;
   - both textures pass `lint.py`; the recipes are in the recipe book; a README section;
   - showcase scene `gifts` (GIF: wrapping, giving, the hearts).
-- [x] **31.7** (review: pending 2026-10-09) **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
+- [x] **31.7** (approved 2026-10-11) **Heart events and life stories.** At 2, 4, 6, 8 and 10 hearts a villager has something to tell you.
   The next time you're within 8 blocks while they're off work (`Chatter.offWork`), they walk up, face you and tell it
   in three to five lines over their head (`WorkerStatus`, one every 3 seconds), each also in your chat in grey so it
   can be read again; walk away halfway and they start again next time. Each event is told once per player, adds +20
@@ -2429,7 +2432,7 @@ write their own stories; nothing waits forever on a player.
     off and coming back starts it again; the chronicle line and the life-story page; a broken event file is skipped
     with a log line;
   - showcase scene `heart_event` (GIF: Dara walks up and tells her story).
-- [x] **31.8** (review: pending 2026-10-10) **Heart events: the full set.** The other four events, every variant written out in `en_us.json` (three
+- [x] **31.8** (approved 2026-10-11) **Heart events: the full set.** The other four events, every variant written out in `en_us.json` (three
   to five lines each, read in context):
   - **4 hearts, My work**, one per job family: building and crafting (the first wall they raised, and the one that
     fell); mining and smithing (the day their lamp went out underground); the land (the year the harvest failed);
@@ -2461,7 +2464,7 @@ write their own stories; nothing waits forever on a player.
   - one GameTest per variant (a loop over set-up facts) picks it, and each keepsake comes once per player;
   - `langcheck.py` clean; a review package with a still of each family's 4-heart event; the `heart_event` scene gains
     a still of a 10-heart keepsake.
-- [x] **31.9** (review: pending 2026-10-10) **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
+- [x] **31.9** (approved 2026-10-11) **Personal requests: the asking, and six requests.** A villager with 3 hearts or more with a player
   nearby, and no request open, may ask that player for help: each morning one such villager in the village is picked,
   a 25% chance. They walk up and ask over their head, and your chat gets the request with [I'll help] and [Not now]
   (clickable, through `/workplace quest accept|decline <id>`). It shows in the journal's Personal tab, on their
@@ -2492,7 +2495,7 @@ write their own stories; nothing waits forever on a player.
     objective and pays every helper; a missed deadline costs 30 and stops asking for 3 days; one open request per
     villager;
   - showcase scene `personal_request` (GIF: the ask, the accept, the hand-in, the thanks).
-- [x] **31.10** (review: pending 2026-10-11) **Personal requests: six more.** Each with its new objective:
+- [x] **31.10** (approved 2026-10-11) **Personal requests: six more.** Each with its new objective:
   1. **A letter to family** (`deliver`): offered when another village with a hall is within caravan range; the giver
      names a relative there (a villager of that village, picked and remembered). You get a sealed letter (paper with a
      name, lore and a quest mark, so no new art; lost, the giver writes you another). Right-click the relative with it
@@ -2518,7 +2521,7 @@ write their own stories; nothing waits forever on a player.
   - a GameTest per request: the letter there and back between two halls; the revive with a grave; the cat at dawn; the
     schooled child; the chapel wedding and its feast; the heirloom placed once when a player comes near, with the map;
   - showcase scene `letter` (the letter carried between two villages, and the reply).
-- [x] **31.11** (review: pending 2026-10-10) **Reputation and titles.** Each player has a standing in each village: points kept by hall in
+- [x] **31.11** (approved 2026-10-11) **Reputation and titles.** Each player has a standing in each village: points kept by hall in
   `aliveworkplace_stories` (player → points). Earned: a daily quest +10; a personal request +25; a story chapter +50
   to everyone who helped; an arc's ending what its file says (150 in ours); a bounty +40; breaking up a bandit camp
   or, once 32.3 lands, a lair (the killer of its chief) +40; fighting in a raid (3 raiders killed) +20; coming to a
@@ -2840,7 +2843,7 @@ let the player strike back at their camps. Fire, drought and plague each get a j
 has a switch and a peaceful setting. It builds on guard/VillageRaids, BanditCamps, Gates, GuardRally, Mercenaries, the
 Rally Banner and the defence blueprints (tools/blueprints/defence.py).
 
-- [x] **32.1** (review: pending 2026-10-06) **Design note.** `docs/design/M32.md`: what the player sees (the threat ladder: monsters from 8
+- [x] **32.1** (approved 2026-10-11) **Design note.** `docs/design/M32.md`: what the player sees (the threat ladder: monsters from 8
   villagers, bandits at Village rank, the enemy of the village's own land from Town, sieges led by the captain himself
   at City; a siege night minute by minute; the warning timeline; a march on a lair; each disaster and its job), the
   two data formats (a raider culture and a disaster, one full example file each), the new config keys and the hall's
@@ -2882,7 +2885,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   - a raid saved and loaded half-way (a saved-data round trip) is still on and ends at dawn as before;
   - the clock's attack starts at the next dusk, a day after the roll (a GameTest setting the day time);
   - a culture switched off in the config is never picked. Nothing new to see: lands with `--no-review`.
-- [x] **32.3** (review: pending 2026-10-09) **Lairs for every culture.** `threat/Lairs` takes over `BanditCamps`: any culture with a `lair` makes
+- [x] **32.3** (approved 2026-10-11) **Lairs for every culture.** `threat/Lairs` takes over `BanditCamps`: any culture with a `lair` makes
   camp 80–104 blocks from the hall (today's site rules; cultures that need water or a portal add theirs in their own
   item), at most one per village, with 5 days' rest after one is broken. The saved data keeps its old name and reads
   old camps as `bandits` lairs (each new field with a default from the culture's file). New for every lair, bandit
@@ -2902,7 +2905,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     day adds one;
   - the captain's name is on him, on the Defence page and in the chronicle;
   - scene `defence_page`: the Defence page with a bandit camp standing (screenshot).
-- [x] **32.4** (review: pending 2026-10-10) **Sieges I: rams and gates.** A raid by a culture with `ram_gates` on a village with at least one
+- [x] **32.4** (approved 2026-10-11) **Sieges I: rams and gates.** A raid by a culture with `ram_gates` on a village with at least one
   finished wall or gate build (`StarterBlueprints.DEFENCES` and their upgrades) is a siege, run by `threat/Sieges`:
   one director a siege, every 20 ticks, at most 4 path requests a tick. It picks the breach (the gate nearest the
   raiders' side: the fence gates, doors and iron bars of finished defence builds) and sends the rams (role `ram`;
@@ -2922,7 +2925,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     test places beside the build as a player's is never hit;
   - the portcullis is down while the siege lasts and up after it;
   - scene `siege_gate`: a GIF of a ravager breaking a Palisade Gate, the cracks showing.
-- [x] **32.5** (review: pending 2026-10-10) **Sieges II: ladders over the walls.** Raiders with role `climber`, in a culture with `ladders`, whose
+- [x] **32.5** (approved 2026-10-11) **Sieges II: ladders over the walls.** Raiders with role `climber`, in a culture with `ladders`, whose
   path ends at a wall set ladders up its outer face at the spot nearest them (a rung every 10 ticks, up to 10 high),
   climb over and drop inside; the rest follow up the same ladder. A guard on a walkway within 2 blocks of a ladder's
   top throws it down (the column goes, the climbers on it fall). Ladders go on any wall, a player's too, but only into
@@ -2935,7 +2938,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     changed (the area's blocks compared before and after);
   - in a village ringed by Stone Walls the gathering point is outside the ring;
   - scene `siege_ladders`: a GIF of pillagers laddering a Stone Wall and a guard throwing a ladder down.
-- [x] **32.6** (review: pending 2026-10-10) **Sieges III: battle stations and the morning after.** When a siege begins (or a warned one is near,
+- [x] **32.6** (approved 2026-10-11) **Sieges III: battle stations and the morning after.** When a siege begins (or a warned one is near,
   32.14), guards take stations instead of rallying at the bell: archers climb to the free station highest over the
   breach's side (the tops of finished Wall Towers and Lookout Towers, the Gatehouse's walkway, the Stone Wall's and
   Palisade's walkways; stations are walkway spots with two air above, read once per blueprint), knights hold the
@@ -2953,7 +2956,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   - the siege report names the hero; Ramparts doubles a gate's hit points;
   - after a siege with a broken gate, a builder with materials puts the gate back before mending a house nearby;
   - scene `battle_stations`: a GIF of archers on a Gatehouse and a Wall Tower shooting down at a siege.
-- [x] **32.7** (review: pending 2026-10-11) **Pillager warbands.** `pillager_warband.json`: plains, meadows, forests (birch, dark, flower, cherry),
+- [x] **32.7** (approved 2026-10-11) **Pillager warbands.** `pillager_warband.json`: plains, meadows, forests (birch, dark, flower, cherry),
   taiga and the snowy lands, savanna; Town and up; tactics `ram_gates` and `ladders`. Its lair is the **War Camp**
   (`camp/war_camp`, about 23 x 9 x 19, drawn with the minecraft-architect skill in `tools/blueprints/bandits.py`: a
   ring of sharpened logs with a gate, three canvas tents, the Warlord's tent with the loot chest, a ravager pen, a
@@ -3293,7 +3296,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     and a desert village short of timber and fish;
   - the three Cobblemon goods load only with Cobblemon (a compat GameTest) and the other 25 without it;
   - every good has its name in `en_us.json` and an icon (`langcheck.py` clean).
-- [x] **33.4** (review: pending 2026-10-09) **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
+- [x] **33.4** (approved 2026-10-11) **The price board.** The minecart in the hall's divider now opens a **Trade** page with a row of tabs:
   **Routes** (today's trade-routes page, unchanged), **Prices** (this item), and **Pacts**, **Realm** and
   **Colonies**, which later items fill and which stay hidden until then; the Village Ledger reaches it from afar as it
   does the rest of the hall. **Prices** lists every good with its icon, this village's price for a bundle (to sell to
@@ -3310,7 +3313,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     from afar;
   - showcase scene `price_board` (the page, a tooltip, the name icon), and the README section starts with "Specialties
     and prices".
-- [x] **33.5** (review: pending 2026-10-10) **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
+- [x] **33.5** (approved 2026-10-11) **Trading at the board.** On the Prices tab a player can **sell** the village what it's short of (click
   with the goods in your inventory: one bundle; shift-click: as many as it will take) and **buy** what it's known for
   (click with an empty hand), at the board's prices: the village pays from its treasury and keeps what it earns there
   (`Money`, so CobbleDollars with the pack), and the goods go into and come out of its Storehouses' chests, which keep
@@ -3327,7 +3330,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - a `ProtectionSpecGameTests` case: a stranger in a protected village trades at the board but can't collect the
     treasury, change a route or open any other page; in an open village a stranger can no longer collect;
   - showcase scene `board_trade` (buying a bundle, with the treasury before and after).
-- [x] **33.6** (review: pending 2026-10-10) **Caravans that trade.** A caravan first loads what the other village is waiting for, free, as now;
+- [x] **33.6** (approved 2026-10-11) **Caravans that trade.** A caravan first loads what the other village is waiting for, free, as now;
   then it fills up to 2 more stacks with goods its village is known for that the other is short of, or pays at least
   10% more for. On arrival the receiving village's treasury pays the sender's at the receiver's board price for those
   goods (what it can't afford goes back home in a caravan of its own), and both boards move as if the goods had been
@@ -3338,7 +3341,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - a GameTest where B can't pay: the unpaid goods come back to A's Storehouse;
   - `caravansCarryWhatAnotherVillageNeeds` still passes, and showcase scene `caravan_trade` shows the Routes tab with
     its earnings and the chronicle line.
-- [x] **33.7** (review: pending 2026-10-10) **Caravans you can see.** When a caravan leaves or arrives in a village a player is within 96 blocks
+- [x] **33.7** (approved 2026-10-11) **Caravans you can see.** When a caravan leaves or arrives in a village a player is within 96 blocks
   of, you see it: a carter (a villager in the porter's outfit, named "Thornholm's caravan") leading two llamas with
   chests and carpets in the village's colour (M30's Village Banner colour when it has one, otherwise one picked from
   the hall's position) walks from the Storehouse to the edge of the village toward the other village and goes out of
@@ -3349,7 +3352,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests: a departure spawns the carter and two llamas, which walk off and are removed; nothing spawns with no
     player near; a saved and reloaded carter is removed; the goods that arrive are the same with the switch on or off;
   - showcase scene `caravan` with a GIF of one leaving and one arriving.
-- [x] **33.8** (review: pending 2026-10-10) **The Colony Charter.** A City (`colonyRank`) can found a sister village. The Colonies tab gives the
+- [x] **33.8** (approved 2026-10-11) **The Colony Charter.** A City (`colonyRank`) can found a sister village. The Colonies tab gives the
   hall's owner a **Colony Charter** (a new item, drawn with the pixel-art skill on vanilla's map outline, bound to the
   hall like the Ledger) for 32 emeralds from the treasury (the player pays what the treasury lacks). Right-click the
   air with it for a map screen: the land round the village, 2,048 blocks across, drawn like a vanilla map where the
@@ -3364,7 +3367,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     the ring; a good spot is kept on the charter;
   - a test of the screen's map-to-world sum: a click lands within 16 blocks of the right place;
   - showcase scene `colony_charter` (the map screen with its ring and cross, the tooltip).
-- [x] **33.9** (review: pending 2026-10-10) **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
+- [x] **33.9** (approved 2026-10-11) **The settlers set out.** Right-click the hall with the charter, its spot chosen, and the village gets
   ready:
   - two settlers volunteer: the lowest-levelled builder if there are two or more, otherwise a jobless grown-up who
     becomes the colony's builder; and a jobless villager, otherwise the lowest-levelled worker of a job the village
@@ -3682,7 +3685,7 @@ on a real world.
   and stops at 8, keeps to its level, waits for an aged input (the day moved on in the test), asks for missing
   makings on the board, fills a stock order first, and a datapack recipe adds a new good with no code. Nothing to see
   yet: `--no-review`.
-- [x] **34.6** (review: pending 2026-10-06) **Classes at the Village Hall.** What the player sees:
+- [x] **34.6** (approved 2026-10-11) **Classes at the Village Hall.** What the player sees:
   - a **Classes** button on the hall's screen (its tooltip: how many households of each class); its page has a button
     per class listing each need and want with how many households have it ("Fine Clothes: 2 of 5"), what the class
     gives, and the households closest to rising with what they lack;
@@ -3701,7 +3704,7 @@ on a real world.
   Done when: `ClassHallGameTests` check the page's counts and the tips against a staged village; `langcheck.py` is
   clean; scene `classes` (a household rising at dawn, then the hall's Classes page) passes; the README gets a Classes
   section.
-- [x] **34.7** (review: pending 2026-10-06) **What each class gives.** From the `effects` in the class files:
+- [x] **34.7** (approved 2026-10-11) **What each class gives.** From the `effects` in the class files:
   - **taxes** (`Treasury.takings`): each worker pays `treasuryPerWorker` × their class's factor (Peasant 1, Artisan
     1.5, Burgher 2.5, Noble 4), 10% more for each want they have; a Noble without a job pays like a worker. A Peasant
     pays exactly today's rate, so no village takes in less than before; the name tag's tooltip shows the split by
@@ -3722,7 +3725,7 @@ on a real world.
   Done when: `ClassPerkGameTests` (the takings for a staged mix of classes and wants, never below the old formula for
   Peasants; the crafter pace staying within the cap; wellbeing capped at 9%; the ball replacing one festival in two)
   pass; scene `noble_ball` passes; README updated.
-- [x] **34.8** (review: pending 2026-10-06) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
+- [x] **34.8** (approved 2026-10-11) **Higher jobs need higher classes.** The `jobs` list in each class file names the jobs a villager must
   be that class or higher to take. To start: **Artisan**: Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper,
   Innkeeper, Printer and, with Cobblemon, Ball Smith, Move Tutor, Pokémon Trader, Fossil Scientist; **Burgher**:
   Scholar, Undertaker, Jeweller, Trainer Leader; **Noble**: none yet (kept for M29's Legends and M33's offices).
@@ -3736,7 +3739,7 @@ on a real world.
   `ClassJobGameTests` cover each way of taking a job, a grandfathered worker keeping their job across a reload, a
   hired Expert arriving as a Burgher, and no gate with `villageClasses` off; scene `class_jobs` (a Peasant refused
   the Scholar's paper, a Burgher taking it) passes; the README's job table gets a Class column.
-- [x] **34.9** (review: pending 2026-10-06) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
+- [x] **34.9** (approved 2026-10-11) **Vintner.** A new job: stand a villager by a **cauldron** and sneak-right-click them with **sweet
   berries, glow berries or an apple** (a new line in `Stations`; the cauldron's Leatherworker and Sifter stay). The
   cauldron is their vat (purple splashes and a squelch while pressing), and through 34.5 they make:
   - **Cider**: 3 apples and a glass bottle (Novice);
@@ -3751,7 +3754,7 @@ on a real world.
   band. Luxury files `cider`, `berry_wine`, `vintage_wine`. Done when: `VintnerGameTests` (picked by each item at a
   cauldron, each wine made from stocked chests, vintage waiting its 3 days) pass; both outfits pass `lint.py` and the
   `OutfitGameTests`; scene `vintner` passes; a README section and job-table row.
-- [x] **34.10** (review: pending 2026-10-09) **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
+- [x] **34.10** (approved 2026-10-11) **Tailor.** A new job: stand a villager by a **loom** and sneak-right-click them with **string** (the
   loom's Shepherd stays, back with shears). They take the shepherds' wool and the dyers' coloured wool from the
   village and make:
   - **Work Clothes**: 3 wool of any colour, 2 leather and a string (Novice);
@@ -3765,7 +3768,7 @@ on a real world.
   `work_clothes`, `fine_clothes`, `noble_robes`. Done when: `TailorGameTests` (picked with string at a loom, each
   garment made, the dyed-wool rules kept) pass; both outfits pass `lint.py`; scene `tailor` passes; a README section
   and job-table row.
-- [x] **34.11** (review: pending 2026-10-10) **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
+- [x] **34.11** (approved 2026-10-11) **Printer.** A new job: stand a villager by a **cartography table** and sneak-right-click them with
   an **ink sac** (the table's Cartographer and Netherworker stay). Through 34.5 they make:
   - **Books**: 3 paper and a leather make 2 books (Novice). Scholars' research and builders take the store's books
     first, and with a scholar in the village the printer keeps 8 in the store;
@@ -3783,7 +3786,7 @@ on a real world.
   pages built from a staged hall's chronicle and quests, a scholar using printed books, the quest paid on delivery)
   pass; both outfits pass `lint.py`; scene `printer` (the Gazette opened and read) passes; a README section and
   job-table row.
-- [x] **34.12** (review: pending 2026-10-09) **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
+- [x] **34.12** (approved 2026-10-11) **Jeweller.** A new job: stand a villager by a **stonecutter** and sneak-right-click them with an
   **amethyst shard** (the stonecutter's Mason stays, back with cobblestone). Through 34.5 they make:
   - **Amethyst Ring**: 2 amethyst shards and 2 copper ingots (Novice);
   - **Emerald Brooch**: an emerald and 3 gold nuggets (Apprentice);
@@ -3795,7 +3798,7 @@ on a real world.
   Luxury files `amethyst_ring`, `emerald_brooch`, `gold_circlet`. Done when: `JewellerGameTests` (picked with an
   amethyst shard at a stonecutter, each piece made, a Burgher-only job per 34.8) pass; both outfits pass `lint.py`;
   scene `jeweller` passes; a README section and job-table row.
-- [x] **34.13** (review: pending 2026-10-10) **The Winery and the Tailor's Shop.** Blueprints in the Blueprint Table, drawn with the architect
+- [x] **34.13** (approved 2026-10-11) **The Winery and the Tailor's Shop.** Blueprints in the Blueprint Table, drawn with the architect
   skill in `tools/blueprints/workshops.py` (STYLE.md, renders): the **Winery** (a stone press house over a half-sunk
   cellar, the cauldron vat by the door, racks of casks made of spruce log ends and a cellar of chests; no barrels,
   since a barrel is the fisherman's job block; **II** a terraced berry garden with a pergola of glow berries and a
@@ -3807,14 +3810,14 @@ on a real world.
   Tailor's Shop); before that, nothing. Done when: renders of each, front and back and its II, are in the review
   package; a builder builds each in a GameTest; both village pieces generate with their worker (`VillageGameTests`);
   scene `luxury_workshops` passes.
-- [x] **34.14** (review: pending 2026-10-10) **The Print Shop and the Jeweller's Workshop.** The **Print Shop** (brick and timber, the cartography
+- [x] **34.14** (approved 2026-10-11) **The Print Shop and the Jeweller's Workshop.** The **Print Shop** (brick and timber, the cartography
   table as the press under a skylight, paper and ink on shelves, a counter for buyers; no lectern, which would take a
   librarian; **II** a bindery and reading room lined with bookshelves) and the **Jeweller's Workshop** (a small stone
   shop, the stonecutter at a bench under a lantern, an amethyst cluster in a glass case, an iron door; **II** a
   strong room with a vault of chests behind iron bars). Same rules as 34.13: village pieces in five styles, sold by
   their Journeymen, and Steward rules once 27.11 has landed (Printer: Print Shop; Jeweller: Jeweller's Workshop).
   Done when: the same checks as 34.13 pass for both, and scene `luxury_workshops` films all four workshops.
-- [x] **34.15** (review: pending 2026-10-11) **Grander homes: the Artisan's House and the Burgher's Townhouse.** A home's grade is its blueprint's
+- [x] **34.15** (approved 2026-10-11) **Grander homes: the Artisan's House and the Burgher's Townhouse.** A home's grade is its blueprint's
   tier (`Homes`), unless `data/aliveworkplace/homes/<name>.json` gives it more (`{"blueprint":
   "aliveworkplace:townhouse", "grade": 2}`; each upgrade one more, up to III). New blueprints (architect skill,
   `houses.py`): the **Artisan's House** (grade I: a narrow timber house with a workroom below and two beds above;
@@ -3827,14 +3830,14 @@ on a real world.
   build a Townhouse or Manor like any other build; before that, the tip alone. Done when: `HomeGradeGameTests` (a bed
   in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
   five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
-- [ ] **34.16** **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
+- [x] **34.16** (review: pending 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
   hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
   garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's
   Noble's Ball is held). Builders sell it once the village has a Burgher household; its garden counts 3 beauty for
   the people who live there. Done when: renders of I-III from the front, the back and above, in all five styles, are
   in the review package; a builder builds each in a GameTest (`huge_area`); the ball gathers in the ballroom when
   there is one; scene `grand_houses` adds the Manor.
-- [ ] **34.17** **Dressed by class: the pick round.** A class layer worn over the job's outfit
+- [x] **34.17** (review: pending 2026-10-11) **Dressed by class: the pick round.** A class layer worn over the job's outfit
   (`textures/entity/villager/class/<class>.png`, recipes in `tools/textures/art/classes.py`, pixel-art skill): never
   on the head (the job's hat stays), nothing under the level badge, the back painted, the job still readable under
   it. Peasants keep their job's outfit as it is today (the owner-approved look). Three versions of each, every one a
@@ -3857,7 +3860,7 @@ on a real world.
   from 34.17 replace v1 as they come. Done when: a GameTest checks the packet goes out on tracking and on a change;
   scene `class_outfits` (the four classes side by side in three jobs each, plus an elder, in daylight) passes with
   every job still readable; the shots are in the review package.
-- [x] **34.19** (review: pending 2026-10-09) **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
+- [x] **34.19** (approved 2026-10-11) **Life stages: elders.** Grown villagers count their days: `adult_since` (saved: the day they grew
   up; set in `Families.round` when a child grows up, seeded for everyone else by 34.22). After `villagerElderDays`
   (120) grown days a villager is an **elder**: the hall says so ("Elder · grown 131 days"), they wear the elder look
   (34.18), walk 15% slower (`Walker`), and their mood gets "a quiet old age" (+5) when they're fed and housed. The
@@ -3866,7 +3869,7 @@ on a real world.
   (`elderPassing` on), unless made ageless by 34.19a. Done when:
   `LifeStageGameTests` (an elder after the configured days with the clock moved on, the slower walk, the mood reason,
   a reload keeping the day, a child growing up getting today) pass; scene `elders` passes.
-- [x] **34.19a** (review: pending 2026-10-09) **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
+- [x] **34.19a** (approved 2026-10-11) **The Evergreen Charm: ageless elders** (owner, 2026-10-06: "make an elder eternal if they have good
   traits by building a specific item and giving it to them, so you don't lose good villagers"). A new item, the
   **Evergreen Charm** (pixel-art: a small gold-and-green leaf pendant; a rare craft: a totem of undying, a golden
   apple, 2 emeralds and a heart of the sea, our decision, tune in play). Sneak-right-click an elder with it: they
@@ -4419,6 +4422,18 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (34.17, decisions and a hand-over to 34.18; lane d): the twelve layers are drawn in
+  `tools/textures/art/classes.py` (lint clean); v1 of each ships at `textures/entity/villager/class/<class>.png`, and the
+  elder's face at `class/elder.png` (the same folder, so all of 34.17 is in one place). The picker page is
+  `tools/textures/picks/classes_page.py` (21.1b's template; published as the Artifact "Class Outfit Picks", collection
+  `classes`, one document per row: artisan, burgher, noble, elder). Our choices: no render layer and no packet here,
+  because the roadmap gives both to 34.18 (a new tracking event, the `classOutfits` switch, its own test and scene);
+  34.17 adds `people/ClassOutfits` (the layers a villager wears, bottom to top: class, then the elder's face; nothing
+  for a Peasant or an unseeded villager; children their class's but never the elder's), which 34.18's layer should
+  draw (LegendLookLayer is the pattern). The class layers paint the body only (no head, nothing at jacket-front x 4..7
+  rows 10..13); the elder's layer paints only the head box, so job and biome hats cover it from outside. Colours were
+  picked for contrast over warm job outfits: a blue (not rust) neckerchief, a green Burgher cape, an emerald half-cape.
+  **For the owner**: pick one version per row on the page; 34.18 sets `PICKED` and redraws.
 - 2026-10-09 (34.19, decisions and a hand-over to 34.18; lane d): built on `people/LifeStages`: the slower walk, "a
   quiet old age", the chronicle's "is an elder now", the four chatter lines, `LifeStageGameTests`, scene `elders`.
   **The elder look is not built**: nothing of 34.17/34.18 exists (no render layer, no packet, no outfit art), so an
@@ -5278,6 +5293,16 @@ item waits.
   `steward_renewal` or `BUILDING_JOBS` entry. The village Print Shop's chest has a Book and Quill now and then, not a
   Gazette: a Gazette from a chest would be blank. (7) Renders (front, back, II) are in `build/blueprint-renders/34.14/`
   on the lane's machine, not committed; scene `luxury_workshops` now films all four (not filmed locally).
+- 2026-10-11 (34.16, decisions; lane d): the Noble's Manor. (1) **Every tier is grade III** (`homes/manor.json`); II
+  and III add the garden and the ballroom, not a grade. (2) **The garden's 3 beauty is for the Manor's own people**: a
+  home file may now name a `garden {tier, beauty}` (`HomeGrades.gardenBeauty`), added to `ClassNeeds.beauty` for
+  villagers whose bed is in the building; it isn't a village decoration. (3) **Sold, and in the Table**: like 34.15's
+  houses the Manor is in `StarterBlueprints.ALL` and builders add it (20 emeralds) once the nearest hall's village has a
+  household of Burghers or higher; rule `homes_class_manor` (a household wants grade III, a Town). (4) **The ball's
+  venue**: a finished Manor III's ballroom middle (`NobleBalls.BALLROOM`, turned and mirrored with the build), else a
+  Manor I or II's middle (its hall, as 34.7 did), else the hall. (5) The Manor is 18 tall so every tier fits
+  `huge_area` (30 x 20 x 30); the builder tests build it from (1, 2, 5). Renders of I-III front, back and above, as drawn
+  and in the five styles: `docs/media/manor-front.png`, `-back.png`, `-top.png`.
 - 2026-10-11 (34.15, decisions; lane d): the Artisan's House and the Burgher's Townhouse. (1) **Grades**: the shipped
   `homes/townhouse.json` gives the Townhouse grade II, so its II and III are both III (the spec's "up to III"); a file
   never lowers a grade and a blueprint's own tier above III stays (`HomeGrades`). (2) **Both houses are in the Blueprint

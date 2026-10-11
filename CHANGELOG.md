@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Class outfits, drawn** (34.17): what Artisans, Burghers and Nobles wear over their job's outfit, and an elder's
+  face, three versions of each for the owner to pick from (version 1 ships until he does: a neckerchief and belt
+  pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
+  The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
+  34.18's render layer.
+
 ### Fixed
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
@@ -53,6 +60,12 @@ asks for the steps, `latest.log` and any crash report).
   Apprentice and the Townhouse once the village has Artisans. "What next?" names the households that want a grander
   home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
   Artisan's House or a Townhouse for them.
+- **The Noble's Manor (1.8).** A grade III home in the Blueprint Table: a stone house of two storeys behind a
+  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlour, two
+  bedrooms, under a slate roof with dormers. Its II adds a walled formal garden (clipped hedges, a fountain, gravel
+  walks) that counts 3 beauty for the people who live there; its III a gatehouse on the street and a ballroom wing,
+  where the Noble's Ball is now held. Builders sell it once the village has a Burgher household, and the Steward
+  builds one for a household that wants a grade III home.
 
 ### Fixed
 

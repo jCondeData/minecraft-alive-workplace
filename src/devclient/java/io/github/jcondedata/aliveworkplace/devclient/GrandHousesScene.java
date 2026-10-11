@@ -21,10 +21,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * SCENE=grand_houses (ROADMAP 34.15): the Artisan's House (I, II) and the Burgher's Townhouse (I, II, III) as drawn,
- * then the Artisan's House and the Townhouse III in each of the five styles, placed in a row: a still of each from the
- * front (the street) and from behind, where the upgrades add their part. Checks each drawn tier's beds and grade (2
- * beds and grade I, 3 and II; the Townhouse 3 and II, 4 and III, 4 and III) and that every styled one is placed.
+ * SCENE=grand_houses (ROADMAP 34.15, 34.16): the Artisan's House (I, II), the Burgher's Townhouse (I, II, III) and the
+ * Noble's Manor (I, II, III) as drawn, then the Artisan's House, the Townhouse III and the Manor III in each of the five
+ * styles, placed in a row: a still of each from the front (the street) and from behind, where the upgrades add their
+ * part. Checks each drawn tier's beds and grade (2 beds and grade I, 3 and II; the Townhouse 3 and II, 4 and III, 4 and
+ * III; the Manor 3 and III in every tier), that every styled one is placed, and that the Ball's spot in each Manor III
+ * is on the ballroom's floor.
  */
 final class GrandHousesScene {
 	static final List<String> STYLES = List.of("stonework", "sandstone", "dark_oak", "cherry", "grand");
@@ -45,11 +47,16 @@ final class GrandHousesScene {
 		out.add(new Piece("townhouse", StarterBlueprints.TOWNHOUSE.id(), StarterBlueprints.TOWNHOUSE.size(), 3, 2));
 		out.add(new Piece("townhouse_2", StarterBlueprints.TOWNHOUSE_2.id(), StarterBlueprints.TOWNHOUSE_2.size(), 4, 3));
 		out.add(new Piece("townhouse_3", StarterBlueprints.TOWNHOUSE_3.id(), StarterBlueprints.TOWNHOUSE_3.size(), 4, 3));
+		out.add(new Piece("manor", StarterBlueprints.MANOR.id(), StarterBlueprints.MANOR.size(), 3, 3));
+		out.add(new Piece("manor_2", StarterBlueprints.MANOR_2.id(), StarterBlueprints.MANOR_2.size(), 3, 3));
+		out.add(new Piece("manor_3", StarterBlueprints.MANOR_3.id(), StarterBlueprints.MANOR_3.size(), 3, 3));
 		for (String style : STYLES) {
 			out.add(new Piece(style + "_artisans_house", BlueprintStyles.styled(StarterBlueprints.ARTISANS_HOUSE.id(), style),
 				StarterBlueprints.ARTISANS_HOUSE.size(), -1, 1));
 			out.add(new Piece(style + "_townhouse_3", BlueprintStyles.styled(StarterBlueprints.TOWNHOUSE_3.id(), style),
 				StarterBlueprints.TOWNHOUSE_3.size(), -1, 3));
+			out.add(new Piece(style + "_manor_3", BlueprintStyles.styled(StarterBlueprints.MANOR_3.id(), style),
+				StarterBlueprints.MANOR_3.size(), -1, 3));
 		}
 		return List.copyOf(out);
 	}
@@ -95,7 +102,7 @@ final class GrandHousesScene {
 		}
 		if (tick == FIRST + PIECES.size() * EACH + 10) {
 			Showcase.check(wrong.isEmpty(), wrong.isEmpty()
-				? "the Artisan's House (I, II) and the Townhouse (I, II, III) stand with their beds and grades, and both in all five styles"
+				? "the Artisan's House (I, II), the Townhouse (I, II, III) and the Manor (I, II, III) stand with their beds and grades, all three in the five styles, the Ball's spot on each ballroom floor"
 				: String.join("; ", wrong));
 			mc.stop();
 		}
@@ -119,6 +126,12 @@ final class GrandHousesScene {
 		}
 		if (HomeGrades.grade(piece.id()) != piece.grade()) {
 			wrong.add(piece.name() + " is grade " + HomeGrades.grade(piece.id()) + ", not " + piece.grade());
+		}
+		if (piece.name().endsWith("manor_3")) { // the Noble's Ball gathers here (34.16): air to stand in over the ballroom floor
+			BlockPos spot = origin.offset(io.github.jcondedata.aliveworkplace.hall.NobleBalls.BALLROOM);
+			if (!level.getBlockState(spot).isAir() || !level.getBlockState(spot.below()).isSolidRender(level, spot.below())) {
+				wrong.add(piece.name() + "'s ballroom spot is " + level.getBlockState(spot) + " over " + level.getBlockState(spot.below()));
+			}
 		}
 	}
 

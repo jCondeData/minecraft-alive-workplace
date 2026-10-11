@@ -883,6 +883,67 @@ final class JobScenes {
 				}
 			}
 		}, -1, 0)));
+		// Marching on the lair (ROADMAP 32.13): a City's hall, four guards and a pillager war camp 30 blocks south. The player
+		// musters a war party on the Defence page (three of the four under the Rally Banner) and hires the Siege-breakers,
+		// then leads them south into the camp; the band turns out six at a time, the Warlord fights at the front (a City)
+		// and falls, and the last shot looks at the camp's loot chest.
+		SCENES.put("war_party", new Job("the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 1600,
+			new Vec3(14.5, -52.0, 4.0), new Vec3(0.5, -59.0, 24.0), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.north(6);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.guard.WarParties.forget(level);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 30),
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pillager_warband"));
+			Showcase.check(lair != null, "the pillager warband made its war camp south of the City");
+			for (int i = 0; i < 4; i++) {
+				guard(level, STATION.offset(-6 + 4 * i, 0, -2), new ItemStack(Items.IRON_SWORD));
+			}
+			player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
+			player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.WarParties.muster(level, hall, player) == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED
+				&& io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size() == 3,
+				"three of the four guards mustered under the raised Rally Banner");
+			io.github.jcondedata.aliveworkplace.guard.WarParties.hire(level, hall, player);
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream()
+				.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
+				"the five Siege-breakers were hired");
+			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
+			int[] ticks = {0};
+			boolean[] turned = {false};
+			return l -> {
+				ticks[0]++;
+				var standing = io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall);
+				if (standing.isEmpty()) {
+					return ticks[0] > 40;
+				}
+				// The player walks south at the head of the war party, stopping short of the camp's fire.
+				if (player.getZ() < STATION.getZ() + 20) {
+					player.connection.teleport(player.getX(), player.getY(), player.getZ() + 0.12, 0f, 0f);
+				}
+				if (!turned[0] && io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() > 1
+						&& !io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).isEmpty()) {
+					turned[0] = true;
+					Showcase.check(true, "the band turned out to meet the war party");
+				}
+				// The Warlord falls at the front (a scene can't wait out a whole battle).
+				if (ticks[0] == 900 && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
+					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
+				}
+				return false;
+			};
+		}, new After("04_loot", (level, player) -> {
+			BlockPos camp = STATION.offset(0, -1, 30);
+			for (BlockPos p : BlockPos.betweenClosed(camp.offset(-14, -2, -14), camp.offset(14, 8, 14))) {
+				if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity) {
+					Showcase.check(true, "the war camp's loot chest was left standing");
+					player.connection.teleport(p.getX() + 0.5, p.getY() + 1, p.getZ() - 1.5, 0f, 40f);
+					break;
+				}
+			}
+		}, -1, 0)));
 		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
 		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
 		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.

@@ -683,6 +683,65 @@ public final class Lairs {
 		}
 	}
 
+	/**
+	 * A war party at the lair (32.13): the band turns out to meet it, {@code wave} at a time from the tents until all its
+	 * strength is spent (each one killed at the lair is one less of it), and goes for the nearest of {@code foes}. At a
+	 * City the captain leaves his fire and fights at the front. Returns how many turned out now.
+	 */
+	public static int turnOut(ServerLevel level, Lair lair, int wave, List<? extends LivingEntity> foes) {
+		List<Mob> men = new ArrayList<>(band(level, lair));
+		Mob captain = null;
+		for (Mob m : men) {
+			if (m.getUUID().equals(lair.captain())) {
+				captain = m;
+			}
+		}
+		if (captain != null) {
+			men.remove(captain);
+		}
+		int want = Math.min(wave, lair.home());
+		int spawned = 0;
+		for (int i = men.size(); i < want; i++) {
+			Mob mob = spawn(level, standNear(level, lair.pos(), i + 1), lair, false, i);
+			if (mob != null) {
+				men.add(mob);
+				spawned++;
+			}
+		}
+		for (Mob m : men) {
+			if ((m.getTarget() == null || !m.getTarget().isAlive()) && !foes.isEmpty()) {
+				m.setTarget(nearestOf(m, foes));
+			}
+		}
+		if (captain != null && !foes.isEmpty()
+				&& io.github.jcondedata.aliveworkplace.hall.VillageRanks.of(level, lair.hall()) == io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY) {
+			if (captain instanceof PathfinderMob pathfinder) {
+				pathfinder.clearRestriction();
+			}
+			if (captain.getTarget() == null || !captain.getTarget().isAlive()) {
+				captain.setTarget(nearestOf(captain, foes));
+			}
+		}
+		return spawned;
+	}
+
+	private static LivingEntity nearestOf(Mob mob, List<? extends LivingEntity> foes) {
+		LivingEntity best = null;
+		for (LivingEntity foe : foes) {
+			if (best == null || mob.distanceToSqr(foe) < mob.distanceToSqr(best)) {
+				best = foe;
+			}
+		}
+		return best;
+	}
+
+	/** Sets the days none comes to the village round {@code hall}, counted from today (a war party's 10, 32.13). */
+	public static void rest(ServerLevel level, BlockPos hall, int days) {
+		Data data = Data.get(level);
+		data.broken.put(hall.immutable(), new Rest(Chronicle.day(level), days));
+		data.setDirty();
+	}
+
 	/** The lair's band about now, its captain among them (not those out on a raid). */
 	public static List<Mob> band(ServerLevel level, Lair lair) {
 		boolean bandits = lair.culture().equals(Threats.BANDITS);

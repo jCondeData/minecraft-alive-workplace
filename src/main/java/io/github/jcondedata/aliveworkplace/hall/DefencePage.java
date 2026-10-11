@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
+import io.github.jcondedata.aliveworkplace.guard.WarParties;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
@@ -34,6 +35,8 @@ import net.minecraft.world.item.Items;
  * <li>{@link #SCOUT} (32.12): with a lair standing, "Scout the lair" (a click sends the village's scout, by day), the
  * scout out, or what was found: the lair's exact place, strength and captain. Once it is known, the {@link #WHERE} slot
  * gives the exact place too.</li>
+ * <li>{@link #MUSTER} and {@link #SIEGE_BREAKERS} (32.13): muster three in four guards under the player's Rally Banner
+ * (without one, the page says to craft one), and hire the Siege-breakers ({@link WarParties}).</li>
  * <li>Third row, {@link #GATES} (32.4): the village's gates — how many, open or shut, the portcullis up or down, whether
  * a siege holds them shut, and the gate blocks rams broke that wait for a builder.</li>
  * </ul>
@@ -53,6 +56,10 @@ public final class DefencePage {
 	public static final int SCOUT = 16;
 	/** The village's gates (32.4). */
 	public static final int GATES = 19;
+	/** Muster a war party under the player's Rally Banner (32.13). */
+	public static final int MUSTER = 21;
+	/** Hire the Siege-breakers (32.13). */
+	public static final int SIEGE_BREAKERS = 23;
 	/** The last three attacks, newest first. */
 	public static final int[] HISTORY = {46, 48, 50};
 
@@ -95,6 +102,18 @@ public final class DefencePage {
 			}
 		}
 		menu.button(GATES, gates(level, hall), null);
+		menu.button(MUSTER, muster(level, hall), p -> {
+			WarParties.Muster result = WarParties.muster(level, hall, p);
+			io.github.jcondedata.aliveworkplace.mc.Chat.chat(p, WarParties.said(level, hall, result,
+				result == WarParties.Muster.MUSTERED ? WarParties.marchers(level, hall).size() : 0));
+			render(menu, level, hall);
+			menu.broadcastChanges();
+		});
+		menu.button(SIEGE_BREAKERS, siegeBreakers(level, hall), p -> {
+			io.github.jcondedata.aliveworkplace.mc.Chat.chat(p, WarParties.hire(level, hall, p));
+			render(menu, level, hall);
+			menu.broadcastChanges();
+		});
 		List<ThreatData.Past> past = ThreatData.get(level).past(hall);
 		for (int i = 0; i < Math.min(HISTORY.length, past.size()); i++) {
 			menu.button(HISTORY[i], attack(past.get(i)), null);
@@ -176,6 +195,31 @@ public final class DefencePage {
 		return VillageHallScreen.icon(Items.SPYGLASS, Component.translatable("screen.aliveworkplace.defence.scout"), ChatFormatting.WHITE,
 			VillageHallScreen.line("screen.aliveworkplace.defence.scout_hint", ChatFormatting.GRAY), send,
 			VillageHallScreen.line("screen.aliveworkplace.defence.scout_click", ChatFormatting.YELLOW));
+	}
+
+	/** "Muster a war party": how many guards would march and how many keep the walls. */
+	private static ItemStack muster(ServerLevel level, BlockPos hall) {
+		int marching = WarParties.marchers(level, hall).size();
+		int guards = VillageHalls.census(level, hall).guards();
+		return VillageHallScreen.icon(Items.WHITE_BANNER, Component.translatable("screen.aliveworkplace.defence.muster"), ChatFormatting.GOLD,
+			VillageHallScreen.line("screen.aliveworkplace.defence.muster_hint", ChatFormatting.GRAY),
+			VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.muster_count", marching, marching, Math.max(0, guards - marching)),
+				marching > 0 ? ChatFormatting.AQUA : ChatFormatting.YELLOW),
+			VillageHallScreen.line("screen.aliveworkplace.defence.muster_banner", ChatFormatting.DARK_GRAY),
+			VillageHallScreen.line("screen.aliveworkplace.defence.muster_click", ChatFormatting.YELLOW));
+	}
+
+	/** The Siege-breakers: who they are, their price, how long they stay, or that they're here. */
+	private static ItemStack siegeBreakers(ServerLevel level, BlockPos hall) {
+		long here = io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream().filter(WarParties::isSiegeBreaker).count();
+		int price = WarParties.price(level, hall);
+		return VillageHallScreen.icon(Items.CROSSBOW, Component.translatable("screen.aliveworkplace.defence.siege_breakers"), ChatFormatting.GOLD,
+			VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_who", ChatFormatting.GRAY),
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.siege_breakers_price",
+				io.github.jcondedata.aliveworkplace.work.Money.describe((long) price * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD, price)), ChatFormatting.GREEN),
+			VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_stay", ChatFormatting.GRAY),
+			here > 0 ? VillageHallScreen.line(Words.counted("screen.aliveworkplace.defence.siege_breakers_here", here, here), ChatFormatting.AQUA)
+				: VillageHallScreen.line("screen.aliveworkplace.defence.siege_breakers_click", ChatFormatting.YELLOW));
 	}
 
 	/** The gates: open or shut, the portcullis up or down, a siege holding them, and what rams broke. */

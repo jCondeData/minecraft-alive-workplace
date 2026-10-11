@@ -48,6 +48,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Piglin incursions](piglins.md): the Blackstone Outpost and its portal, piglins that never zombify, plunder of the village's gold, the Warlord whose fall puts the portal out (32.10).
 - [Witch covens](covens.md): the Coven Hut on its stilts, the nightly hex no nurse can cure, witches who throw potions over the walls, the Coven Mother who blinks away (32.11).
 - [Scouts](scouts.md): a guard with a spyglass, sent from the Defence page to look the lair over and bring home a Scouting Report map; raiders trailed home at dawn (32.12).
+- [Marching on the lair](war-party.md): mustering a war party under the Rally Banner, the Siege-breakers, the band turning out and a broken lair's rewards (32.13).
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).

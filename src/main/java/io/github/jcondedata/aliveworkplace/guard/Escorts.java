@@ -83,6 +83,9 @@ public final class Escorts {
 	/** The player {@code guard} is following, if any (online, alive, in the same dimension). */
 	public static Optional<ServerPlayer> leader(Villager guard) {
 		UUID id = leaders.get(guard.getUUID());
+		if (id == null && WarParties.isSiegeBreaker(guard)) {
+			id = WarParties.hirer(guard).orElse(null); // siege-breakers follow who hired them (32.13)
+		}
 		if (id == null || !(guard.level() instanceof ServerLevel level) || !Guards.isGuard(guard)) {
 			return Optional.empty();
 		}

@@ -2,7 +2,6 @@ package io.github.jcondedata.aliveworkplace.blueprint;
 
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
-import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ public final class StylePicker {
 
 	public static void open(ServerPlayer player, InteractionHand hand) {
 		ChoiceMenu.open(player, Component.translatable("screen.aliveworkplace.styles.title"),
-			p -> p.isAlive() && p.getItemInHand(hand).is(ModItems.BLUEPRINT), menu -> render(menu, player, hand));
+			p -> p.isAlive() && p.getItemInHand(hand).getItem() instanceof BlueprintItem, menu -> render(menu, player, hand));
 	}
 
 	/** The same screen, not shown to anyone (tests). */
@@ -60,6 +59,12 @@ public final class StylePicker {
 		menu.button(MIRROR, choice(Items.GLASS_PANE, Component.translatable(data.mirrored() ? "screen.aliveworkplace.styles.mirrored"
 			: "screen.aliveworkplace.styles.mirror"), data.mirrored()), p -> mirror(menu, p, hand));
 		menu.divider(1);
+		if (stack.getItem() instanceof io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem) {
+			// A Wonder Plan (35.3): mirrored only; each Wonder keeps its own palette.
+			menu.button(slot(0), icon(Items.PAPER, Component.translatable("screen.aliveworkplace.styles.wonder"), ChatFormatting.GOLD,
+				List.of(line(Component.translatable("screen.aliveworkplace.styles.wonder_how"), ChatFormatting.GRAY))), null);
+			return;
+		}
 		List<BlueprintStyles.Style> styles = BlueprintStyles.all();
 		menu.button(slot(0), choice(Items.SPRUCE_LOG, Component.translatable("style.aliveworkplace.as_drawn"), current.isEmpty()),
 			p -> choose(menu, p, hand, ""));
@@ -86,6 +91,9 @@ public final class StylePicker {
 		BlueprintItem.data(stack).ifPresent(data -> {
 			boolean flip = !data.mirrored();
 			BlueprintData flipped = BlueprintItem.mirrored(data, flip);
+			if (stack.getItem() instanceof io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem && player.level() instanceof net.minecraft.server.level.ServerLevel sl) {
+				flipped = io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.afterMirror(sl, player, stack, flipped); // still where a Wonder may go?
+			}
 			if (flipped.placement().isPresent() && flipped.size().isPresent() && player.level() instanceof net.minecraft.server.level.ServerLevel level) {
 				BlueprintOutline.show(level, player, flipped.placement().get(), flipped.size().get());
 			}

@@ -739,6 +739,10 @@ SCENES = [
       "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
       [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
        ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
+    # The Wonders page and the Wonder Plan (ROADMAP 35.3): the folly's card, then the plan placed with its see-through tower
+    S("wonders_page", "Wonders", "The Wonders page and the Wonder Plan",
+      "the hall's Wonders page showed the Test Folly's card with every requirement ticked and the cap; Draw up the plans took 32 emeralds and gave a Wonder Plan, which placed north of the hall shows the whole tower as see-through blocks", 30,
+      [("01_wonders_page", "The Wonders page: the folly's card, every line ticked, the cap"), ("02_wonder_plan_preview", "The Wonder Plan in hand: the whole tower see-through")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
       "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,

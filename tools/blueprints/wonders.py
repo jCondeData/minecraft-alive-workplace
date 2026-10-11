@@ -1,11 +1,22 @@
+#!/usr/bin/env python3
 """
-The Wonders' designs (ROADMAP 35.9 onwards, docs/design/M35.md): each Wonder is one function drawing it whole on a
-StagedBuild, stage by stage, and one entry in WONDERS with its data file's other fields. generate.py saves every Wonder
-with save_wonder(): the stage parts (structure/wonder/<id>/stage_<n>_<k>.nbt, at most 48 a side, by kit.wonder_stages)
-and its data file (data/aliveworkplace/wonders/<id>.json) with those parts filled in, so the two always agree.
+The Wonders' designs (ROADMAP Milestone 35, docs/design/M35.md), each drawn stage by stage and saved with
+kit.wonder_stages() as its stage parts (structure/wonder/<id>/stage_<n>_<k>.nbt, at most 48 a side) and its data file.
 
-A new Wonder: draw it in a function here, add its entry to WONDERS, add it to WonderBlueprintGameTests.WONDERS (with its
-block count) and to the wonder_gallery scene's list.
+    python3 tools/blueprints/wonders.py      # the test folly and every Wonder (generate.py also saves the Wonders)
+
+The test folly (35.3) is the GameTests' and showcase's small Wonder, saved as `aliveworkplace_test:wonder/test_folly/...`
+with its whole tower as drawn beside it (`aliveworkplace_test:wonder_drawn/test_folly`), so a GameTest can check the
+merged parts against it. On paper: a 9 x 9 plinth of andesite (mossy at the foot of the corners); a 7 x 7 stone-brick
+tower on it in two storeys of 5 with chiseled corner posts, a centred arched door on the front (z = 0) with a lantern
+either side, one window per face and storey, a cornice of stone-brick stairs at each floor line; a deepslate-tile dome
+stepped in three rings on a drum, a lantern on a blackstone finial on top. Stage I: plinth, ground storey and its floor.
+Stage II: the upper storey and its cornice. Stage III: the dome and finial.
+
+The real Wonders are each one function drawing it whole on a StagedBuild, stage by stage, and one entry in WONDERS with
+its data file's other fields. save_wonder() saves the parts and writes data/aliveworkplace/wonders/<id>.json with those
+parts filled in, so the two always agree. A new Wonder: draw it in a function here, add its entry to WONDERS, add it to
+WonderBlueprintGameTests.WONDERS (with its block count) and to the wonder_gallery scene's list.
 
 The Great Cathedral (35.9), 39 x 53 x 55, front (the west front, with the towers) at z = 0. Design on paper:
 - Cross plan. The body is 27 wide (x 6-32 with its buttresses): a nave (x 15-23 inside, arcade walls x 14 and 24) of
@@ -39,9 +50,118 @@ import json
 import math
 import os
 import re
-from kit import *
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from kit import *  # noqa: E402,F401
 
 WONDER_DATA = os.path.join(ROOT, "src/main/resources/data/aliveworkplace/wonders")
+
+
+# --- the test folly (35.3) --------------------------------------------------------------------------------------
+FOLLY_W, FOLLY_H, FOLLY_D = 9, 19, 9
+FOLLY_BRICK = Family("stone_bricks", "stone_brick_stairs", "stone_brick_slab", wall="stone_brick_wall")
+FOLLY_TILE = Family("deepslate_tiles", "deepslate_tile_stairs", "deepslate_tile_slab", wall="deepslate_tile_wall")
+FOLLY_FACES = {"north": (0, -1), "south": (0, 1), "west": (-1, 0), "east": (1, 0)}
+
+
+def folly_storey(b, y0):
+    """A storey of the 7 x 7 tower (x, z 1 to 7) from y0, 5 tall: walls, corner posts, a window centred on each face."""
+    for y in range(y0, y0 + 5):
+        for x in range(1, 8):
+            for z in range(1, 8):
+                if x in (1, 7) or z in (1, 7):
+                    corner = x in (1, 7) and z in (1, 7)
+                    b.set(x, y, z, "chiseled_stone_bricks" if corner and y in (y0, y0 + 4) else
+                          "polished_andesite" if corner else
+                          ("mossy_stone_bricks" if y0 == 1 and y == 1 and (x + z) % 3 == 0 else "stone_bricks"))
+                else:
+                    b.set(x, y, z, "air")
+    # windows: two-tall glass panes in the middle of each face, a stair hood over them
+    for y in (y0 + 1, y0 + 2):
+        b.set(4, y, 7, "glass_pane")
+        b.set(1, y, 4, "glass_pane")
+        b.set(7, y, 4, "glass_pane")
+        if y0 != 1:
+            b.set(4, y, 1, "glass_pane")
+
+
+def folly_cornice(b, y):
+    """A ring of upside-down stone-brick stairs round the tower at y, one out from the wall (x, z 0 and 8), and a floor."""
+    for i in range(0, 9):
+        b.set(i, y, 0, "stone_brick_stairs", facing="south", half="top")
+        b.set(i, y, 8, "stone_brick_stairs", facing="north", half="top")
+        if 0 < i < 8:
+            b.set(0, y, i, "stone_brick_stairs", facing="east", half="top")
+            b.set(8, y, i, "stone_brick_stairs", facing="west", half="top")
+    for x in range(1, 8):
+        for z in range(1, 8):
+            b.set(x, y, z, "smooth_stone" if (x, z) != (4, 4) else "chiseled_stone_bricks")
+
+
+def folly_stage_1():
+    b = Build(FOLLY_W, FOLLY_H, FOLLY_D)
+    for x in range(FOLLY_W):
+        for z in range(FOLLY_D):
+            edge = x in (0, 8) or z in (0, 8)
+            b.set(x, 0, z, ("mossy_cobblestone" if edge and (x in (0, 8)) and (z in (0, 1, 7, 8)) else "andesite") if edge else "polished_andesite")
+    folly_storey(b, 1)
+    # the door: an arched opening, iron-bound oak, lanterns either side
+    b.door(4, 1, 1, "spruce_door", "north")
+    b.set(4, 3, 1, "stone_brick_stairs", facing="north", half="top")
+    b.set(3, 3, 0, "lantern", hanging=False)  # on the cornice-less face: a lantern on a wall post each side
+    b.set(5, 3, 0, "lantern", hanging=False)
+    b.set(3, 1, 0, "stone_brick_wall")
+    b.set(5, 1, 0, "stone_brick_wall")
+    b.set(3, 2, 0, "stone_brick_wall")
+    b.set(5, 2, 0, "stone_brick_wall")
+    b.set(4, 0, 0, "stone_brick_slab", type="double")
+    folly_cornice(b, 6)
+    return b
+
+
+def folly_stage_2():
+    b = folly_stage_1()
+    folly_storey(b, 7)
+    folly_cornice(b, 12)
+    return b
+
+
+def folly_stage_3():
+    b = folly_stage_2()
+    # the drum: a ring of stone bricks with chiseled posts, on the upper cornice's floor
+    for x in range(1, 8):
+        for z in range(1, 8):
+            if x in (1, 7) or z in (1, 7):
+                b.set(x, 13, z, "chiseled_stone_bricks" if x in (1, 4, 7) and z in (1, 4, 7) else "stone_bricks")
+    # the dome: stepped rings of deepslate-tile stairs, each filled behind, a tile cap
+    for y, lo, hi in ((14, 1, 7), (15, 2, 6), (16, 3, 5)):
+        for x in range(lo, hi + 1):
+            for z in range(lo, hi + 1):
+                if x == lo:
+                    b.set(x, y, z, "deepslate_tile_stairs", facing="east", half="bottom")
+                elif x == hi:
+                    b.set(x, y, z, "deepslate_tile_stairs", facing="west", half="bottom")
+                elif z == lo:
+                    b.set(x, y, z, "deepslate_tile_stairs", facing="south", half="bottom")
+                elif z == hi:
+                    b.set(x, y, z, "deepslate_tile_stairs", facing="north", half="bottom")
+                else:
+                    b.set(x, y, z, "deepslate_tiles")
+    # the finial: a polished blackstone post and a lantern standing on it
+    b.set(4, 17, 4, "polished_blackstone_wall")
+    b.set(4, 18, 4, "lantern", hanging=False)
+    return b
+
+
+def test_folly():
+    return folly_stage_3()
+
+
+FOLLY_FILES = [
+    os.path.join(ROOT, "src/gametest/resources/data/aliveworkplace_test/wonders/test_folly.json"),
+    os.path.join(ROOT, "src/devclient/resources/data/aliveworkplace_test/wonders/test_folly.json"),
+]
 
 
 class Weathered(Mix):
@@ -693,10 +813,21 @@ WONDERS = {
 
 
 def save_wonder(wonder_id, structures=MAIN_STRUCTURES, data=WONDER_DATA):
-    """Saves a Wonder's stage parts and writes its data file (docs/design/M35.md's format) with those parts."""
+    """Saves a Wonder's stage parts (kit.wonder_stages) and writes its data file (docs/design/M35.md's format) with those
+    parts. Each stage is checked as it will stand, on the stages before it (check.py's lines, as for any build)."""
+    from check import check
     w = WONDERS[wonder_id]
-    stages = wonder_stages(w["draw"](), wonder_id, structures)
-    assert len(stages) == len(w["goods"]), f"{wonder_id}: {len(stages)} stages drawn, {len(w['goods'])} with goods"
+    b = w["draw"]()
+    stages = b.stage_builds()
+    before = set()
+    for n, s in enumerate(stages, 1):
+        mine = {p for p, block in s.blocks.items() if block[0] != "minecraft:air"} - before
+        for problem in check(s, only=mine):
+            print(f"  CHECK wonder/{wonder_id} stage {n}: {problem}")
+        print(f"wonder/{wonder_id} stage {n}: {len(mine)} blocks")
+        before |= mine
+    parts = wonder_stages("aliveworkplace", wonder_id, stages, [structures])
+    assert len(parts) == len(w["goods"]), f"{wonder_id}: {len(parts)} stages drawn, {len(w['goods'])} with goods"
     key = f"wonder.aliveworkplace.{wonder_id}"
     out = {
         "name": key + ".name",
@@ -705,13 +836,38 @@ def save_wonder(wonder_id, structures=MAIN_STRUCTURES, data=WONDER_DATA):
         "enabled": True,
         "crew": w["crew"],
         "requirements": w["requirements"],
-        "stages": [{"name": f"{key}.stage.{n}",
-                    "parts": [{"part": part, "offset": offset} for part, offset in parts],
-                    "goods": w["goods"][n - 1]} for n, parts in enumerate(stages, 1)],
+        "stages": [{"name": f"{key}.stage.{n}", "parts": stage_parts, "goods": w["goods"][n - 1]}
+                   for n, stage_parts in enumerate(parts, 1)],
         "powers": w["powers"],
     }
-    os.makedirs(data, exist_ok=True)
     text = json.dumps(out, indent=2)
     text = re.sub(r"\[\s+(-?\d+),\s+(-?\d+),\s+(-?\d+)\s+\]", r"[\1, \2, \3]", text)  # offsets on one line
+    os.makedirs(data, exist_ok=True)
     with open(os.path.join(data, wonder_id + ".json"), "w") as f:
         f.write(text + "\n")
+
+
+def save_test_folly():
+    """The test folly (35.3): its parts in the gametest and screenshot-harness resources, the whole as drawn beside them,
+    and its stages' parts written into its file (the rest of the file is kept as written)."""
+    parts = wonder_stages("aliveworkplace_test", "test_folly", [folly_stage_1(), folly_stage_2(), folly_stage_3()],
+                          [TEST_STRUCTURES, DEVCLIENT_STRUCTURES])
+    whole = folly_stage_3()
+    whole.fill_air()
+    for folder in (TEST_STRUCTURES, DEVCLIENT_STRUCTURES):
+        whole.save(os.path.join(folder, "wonder_drawn"), "test_folly")
+    with open(FOLLY_FILES[0]) as f:
+        folly = json.load(f)
+    for stage, stage_parts in zip(folly["stages"], parts):
+        stage["parts"] = stage_parts
+    text = json.dumps(folly, indent=2) + "\n"
+    for path in FOLLY_FILES:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write(text)
+
+
+if __name__ == "__main__":
+    save_test_folly()
+    for wonder_id in WONDERS:
+        save_wonder(wonder_id)

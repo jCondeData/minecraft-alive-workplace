@@ -45,6 +45,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace quests [track &lt;id&gt;|untrack] — your quests in chat with [Track]/[Untrack] (the quest journal, 31.3)
  * /workplace story start &lt;arc&gt;|next|stop — starts a story arc in the village you stand in, moves it on a chapter, or ends it (ops)
  * /workplace threat start &lt;culture&gt;|lair &lt;culture&gt;|disaster &lt;id&gt;|end|clear — raids, lairs and disasters at the nearest hall (ops)
+ * /workplace wonders               — every Wonder on the server with its village, owner and stage (35.2)
  * /workplace steward explain       — the Steward's rules for the nearest Village Hall, each condition's number and whether it held
  */
 public final class WorkplaceCommand {
@@ -95,6 +96,12 @@ public final class WorkplaceCommand {
 				.then(Commands.literal("track")
 					.then(Commands.argument("quest", UuidArgument.uuid())
 						.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), UuidArgument.getUuid(ctx, "quest"), false)))))
+			.then(Commands.literal("wonders") // every Wonder on the server with its village, owner and stage (35.2)
+				.executes(ctx -> {
+					List<Component> lines = io.github.jcondedata.aliveworkplace.wonder.Wonders.listLines(ctx.getSource().getServer());
+					lines.forEach(line -> ctx.getSource().sendSuccess(() -> line, false));
+					return io.github.jcondedata.aliveworkplace.wonder.Wonders.ENABLED ? lines.size() : 0;
+				}))
 			.then(Commands.literal("standing") // your standing, title and honours in every village (31.11)
 				.executes(ctx -> {
 					ServerPlayer player = ctx.getSource().getPlayerOrException();
@@ -485,6 +492,12 @@ public final class WorkplaceCommand {
 			if (!allowed) {
 				source.sendFailure(Component.translatable("command.aliveworkplace.not_owner"));
 				return 0;
+			}
+			if (site.wonder() != null) {
+				// A Wonder's part (35.4): the whole Wonder ends, what's built stays and the plan comes back.
+				io.github.jcondedata.aliveworkplace.wonder.WonderStages.cancel(level, site.wonder());
+				source.sendSuccess(() -> Component.translatable("command.aliveworkplace.wonder_cancelled"), false);
+				return 1;
 			}
 			Builders.cancel(level, site);
 			source.sendSuccess(() -> Component.translatable("command.aliveworkplace.cancelled", Blueprints.displayName(site.structure())), false);

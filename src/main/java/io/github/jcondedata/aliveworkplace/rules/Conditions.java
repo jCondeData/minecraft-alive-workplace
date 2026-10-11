@@ -44,6 +44,8 @@ public final class Conditions {
 		register("bandit_camps_broken", BanditCampsBroken::read); // 31.16
 		register("villager_sickness", j -> new VillagerSickness()); // 31.18
 		register("thesis_patron", j -> new io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.PatronCondition()); // 31.21
+		register("coastal", j -> new Coastal()); // 35.2
+		register("mod_loaded", ModLoaded::read); // 35.2
 		GiverConditions.register();
 	}
 

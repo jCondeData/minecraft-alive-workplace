@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.wonder.Wonder;
+import io.github.jcondedata.aliveworkplace.wonder.Wonders;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * The checks every Wonder's design meets (ROADMAP 35.9 on, docs/design/M35.md), read from its data file
- * ({@code data/aliveworkplace/wonders/<id>.json}) and its stage parts as they ship: every part loads and is at most 48
+ * ({@code data/aliveworkplace/wonders/<id>.json}) and its stage parts as they ship: the file reads with the loader, every part loads and is at most 48
  * a side, the data file's names have their lines, the parts stay out of the Blueprint Table, no part sets air over an
  * earlier stage's block, the block count is within 10% of the roadmap's figure, and it uses no retired job block, no
  * calcite and nothing a player can't get. A new Wonder's design adds one line to {@link #WONDERS}.
@@ -60,6 +62,7 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 	public Collection<TestFunction> designs() {
 		List<TestFunction> out = new ArrayList<>();
 		for (Design d : WONDERS) {
+			add(out, "wonderFileLoads_" + d.id(), d, WonderBlueprintGameTests::fileLoads);
 			add(out, "wonderPartsLoad_" + d.id(), d, WonderBlueprintGameTests::partsLoad);
 			add(out, "wonderStagesOnlyAdd_" + d.id(), d, WonderBlueprintGameTests::stagesOnlyAdd);
 			add(out, "wonderBlockCount_" + d.id(), d, WonderBlueprintGameTests::blockCount);
@@ -112,6 +115,20 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 
 	// --- the checks -----------------------------------------------------------------------------------------------------
 
+	/** The file reads with the mod's own loader (35.2) without a mistake, its stages as many as its parts' stages. */
+	static void fileLoads(GameTestHelper helper, Design d) {
+		MinecraftServer server = helper.getLevel().getServer();
+		Wonder wonder;
+		try {
+			wonder = Wonders.read(AliveWorkplace.id(d.id()), file(server, d.id()));
+		} catch (IllegalArgumentException e) {
+			throw new GameTestAssertException(d.id() + "'s file doesn't load: " + e.getMessage());
+		}
+		helper.assertTrue(wonder != null, d.id() + "'s file is skipped by its load conditions");
+		helper.assertTrue(wonder.stages().size() == stages(server, d.id()).size(), d.id() + ": " + wonder.stages().size() + " stages read");
+		helper.assertTrue(wonder.stages().stream().allMatch(s -> !s.goods().isEmpty()), d.id() + ": a stage has no goods");
+	}
+
 	/** Every part loads, holds blocks and is at most 48 a side; its names have their lines; none is in the Blueprint Table. */
 	static void partsLoad(GameTestHelper helper, Design d) {
 		MinecraftServer server = helper.getLevel().getServer();
@@ -128,8 +145,8 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 				if (size.getX() > PART_LIMIT || size.getY() > PART_LIMIT || size.getZ() > PART_LIMIT) {
 					wrong.add(p.id() + " is " + size.getX() + " x " + size.getY() + " x " + size.getZ());
 				}
-				if (p.blueprint().solidBlockCount() == 0) {
-					wrong.add(p.id() + " is empty");
+				if (p.blueprint().solidBlockCount() == 0 && (n > 0 || p.blueprint().blocks().isEmpty())) {
+					wrong.add(p.id() + " is empty"); // only stage I may have a part of air alone (clearing the site)
 				}
 				if (!p.id().getPath().startsWith("wonder/" + d.id() + "/")) {
 					wrong.add(p.id() + " isn't in wonder/" + d.id());

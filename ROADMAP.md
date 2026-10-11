@@ -3827,7 +3827,7 @@ on a real world.
   build a Townhouse or Manor like any other build; before that, the tip alone. Done when: `HomeGradeGameTests` (a bed
   in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
   five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
-- [ ] **34.16** **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
+- [x] **34.16** (review: pending 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
   hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
   garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's
   Noble's Ball is held). Builders sell it once the village has a Burgher household; its garden counts 3 beauty for
@@ -5268,6 +5268,16 @@ item waits.
   `steward_renewal` or `BUILDING_JOBS` entry. The village Print Shop's chest has a Book and Quill now and then, not a
   Gazette: a Gazette from a chest would be blank. (7) Renders (front, back, II) are in `build/blueprint-renders/34.14/`
   on the lane's machine, not committed; scene `luxury_workshops` now films all four (not filmed locally).
+- 2026-10-11 (34.16, decisions; lane d): the Noble's Manor. (1) **Every tier is grade III** (`homes/manor.json`); II
+  and III add the garden and the ballroom, not a grade. (2) **The garden's 3 beauty is for the Manor's own people**: a
+  home file may now name a `garden {tier, beauty}` (`HomeGrades.gardenBeauty`), added to `ClassNeeds.beauty` for
+  villagers whose bed is in the building; it isn't a village decoration. (3) **Sold, and in the Table**: like 34.15's
+  houses the Manor is in `StarterBlueprints.ALL` and builders add it (20 emeralds) once the nearest hall's village has a
+  household of Burghers or higher; rule `homes_class_manor` (a household wants grade III, a Town). (4) **The ball's
+  venue**: a finished Manor III's ballroom middle (`NobleBalls.BALLROOM`, turned and mirrored with the build), else a
+  Manor I or II's middle (its hall, as 34.7 did), else the hall. (5) The Manor is 18 tall so every tier fits
+  `huge_area` (30 x 20 x 30); the builder tests build it from (1, 2, 5). Renders of I-III front, back and above, as drawn
+  and in the five styles: `docs/media/manor-front.png`, `-back.png`, `-top.png`.
 - 2026-10-11 (34.15, decisions; lane d): the Artisan's House and the Burgher's Townhouse. (1) **Grades**: the shipped
   `homes/townhouse.json` gives the Townhouse grade II, so its II and III are both III (the spec's "up to III"); a file
   never lowers a grade and a blueprint's own tier above III stays (`HomeGrades`). (2) **Both houses are in the Blueprint

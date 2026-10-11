@@ -24,7 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The Noble's Ball (ROADMAP 34.7): in a village with a Noble household (the noble class file's {@code festival} effect),
- * every other festival is a ball in its place. The guests gather at the Manor (34.16) or else the hall; each grown guest
+ * every other festival is a ball in its place. The guests gather in the Manor's ballroom (Manor III, 34.16), else in a
+ * Manor's hall, else at the Village Hall; each grown guest
  * is served a glass of wine from the store ({@code #aliveworkplace:ball_wine}) and the store's best food; the fireworks at
  * dusk are gold; everyone who came is {@link #MOOD} happier for {@link #MOOD_DAYS} days; and players there are Heroes of the
  * Village for the night. Saved on the hall: {@code ballTurn} (whether the next festival is a ball) and {@code ballDay}.
@@ -35,6 +36,10 @@ public final class NobleBalls {
 	public static final TagKey<Item> WINE = TagKey.create(Registries.ITEM, AliveWorkplace.id("ball_wine"));
 	/** The Manor (34.16) holds the ball when the village has one finished. */
 	public static final ResourceLocation MANOR = AliveWorkplace.id("manor");
+	/** The tier of the Manor that has the ballroom wing (Manor III). */
+	public static final int BALLROOM_TIER = 3;
+	/** The middle of the ballroom's floor in Manor III, from the blueprint's origin ({@code houses.py}, MANOR_BALLROOM). */
+	public static final BlockPos BALLROOM = new BlockPos(20, 1, 11);
 	/** Gold, pale gold and white: the ball's fireworks. */
 	public static final int[] GOLD = {0xF5C542, 0xFFD966, 0xE8B923, 0xFFFFFF};
 
@@ -64,16 +69,34 @@ public final class NobleBalls {
 		return level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && isBall(entity, Chronicle.day(level));
 	}
 
-	/** Where the guests gather: the middle of a finished Manor in the village (in any style), else the hall. */
+	/**
+	 * Where the guests gather: the ballroom of a finished Manor III in the village (in any style), else the middle of a
+	 * finished Manor I or II (its hall), else the Village Hall. With several Manors, one with a ballroom wins.
+	 */
 	public static BlockPos venue(ServerLevel level, BlockPos hall) {
+		BlockPos best = null;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
-			if (io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(f.structure()).equals(MANOR)) {
+			ResourceLocation base = io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(f.structure());
+			if (!io.github.jcondedata.aliveworkplace.city.StewardConditions.family(base).equals(MANOR)) {
+				continue;
+			}
+			if (io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.tier(base) >= BALLROOM_TIER) {
+				return ballroom(f.placement());
+			}
+			if (best == null) {
 				net.minecraft.core.Vec3i size = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, f.structure())
 					.map(b -> b.size()).orElse(net.minecraft.core.Vec3i.ZERO);
-				return f.placement().origin().offset(new BlockPos(size.getX() / 2, 1, size.getZ() / 2).rotate(f.placement().rotation()));
+				best = f.placement().origin().offset(new BlockPos(size.getX() / 2, 1, size.getZ() / 2).rotate(f.placement().rotation()));
 			}
 		}
-		return hall;
+		return best != null ? best : hall;
+	}
+
+	/** The middle of the ballroom of a Manor III built at {@code placement}. */
+	public static BlockPos ballroom(io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement) {
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings settings =
+			new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation()).setMirror(placement.mirror());
+		return placement.origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.calculateRelativePosition(settings, BALLROOM));
 	}
 
 	/** True if {@code villager}'s last festival was a ball (the day they came is the hall's ball day). */

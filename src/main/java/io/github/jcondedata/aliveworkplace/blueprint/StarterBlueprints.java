@@ -218,6 +218,12 @@ public final class StarterBlueprints {
 	public static final Entry TOWNHOUSE_2 = new Entry(AliveWorkplace.id("townhouse_2"), new Vec3i(11, 20, 18));
 	/** A corner tower with a study at the top (grade III). */
 	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(15, 26, 18));
+	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}): a stone house of two storeys round a hall with a grand stair. */
+	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(19, 18, 17));
+	/** A walled formal garden behind: clipped hedges, a fountain and gravel walks (3 beauty for the people who live there). */
+	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(19, 18, 24));
+	/** A gatehouse on the street and a ballroom wing, where the Noble's Ball is held. */
+	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(26, 18, 24));
 
 	/** A stone barracks with two Guard Posts, bunks and training dummies. */
 	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 10, 11));
@@ -380,7 +386,7 @@ public final class StarterBlueprints {
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
 		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3,
-		ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
+		ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, MANOR, MANOR_2, MANOR_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
 		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,

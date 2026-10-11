@@ -43,6 +43,12 @@ asks for the steps, `latest.log` and any crash report).
   Apprentice and the Townhouse once the village has Artisans. "What next?" names the households that want a grander
   home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
   Artisan's House or a Townhouse for them.
+- **The Noble's Manor (1.8).** A grade III home in the Blueprint Table: a stone house of two storeys behind a
+  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlour, two
+  bedrooms, under a slate roof with dormers. Its II adds a walled formal garden (clipped hedges, a fountain, gravel
+  walks) that counts 3 beauty for the people who live there; its III a gatehouse on the street and a ballroom wing,
+  where the Noble's Ball is now held. Builders sell it once the village has a Burgher household, and the Steward
+  builds one for a household that wants a grade III home.
 
 ### Fixed
 

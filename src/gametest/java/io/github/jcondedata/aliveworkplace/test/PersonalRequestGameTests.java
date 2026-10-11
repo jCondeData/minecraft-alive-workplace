@@ -807,10 +807,11 @@ public class PersonalRequestGameTests implements FabricGameTest {
 					// refused, naming the field
 				}
 			}
-			// The files as shipped: six requests, each with its text; one without text or with a bad deadline is refused.
+			// The files as shipped: twelve requests (31.9's six and 31.10's six), each with its text; one without text or with a bad deadline is refused.
 			List<String> personal = QuestFiles.all().stream().filter(f -> f.giver().equals("villager")).map(f -> f.id().getPath()).sorted().toList();
-			helper.assertTrue(personal.equals(List.of("personal/help_me_train", "personal/home", "personal/level_up", "personal/pokemon_friend", "personal/taste_of_home",
-				"personal/tools_of_my_trade")), "the request files: " + personal);
+			helper.assertTrue(personal.equals(List.of("personal/bring_back_my_love", "personal/cat_by_the_door", "personal/chapel_wedding", "personal/help_me_train",
+				"personal/home", "personal/letter_to_family", "personal/level_up", "personal/lost_heirloom", "personal/off_to_school", "personal/pokemon_friend",
+				"personal/taste_of_home", "personal/tools_of_my_trade")), "the request files: " + personal);
 			for (QuestFiles.QuestFile f : QuestFiles.all()) {
 				if (f.giver().equals("villager")) {
 					for (String part : List.of("title", "ask", "wants", "thanks")) {

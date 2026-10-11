@@ -2489,7 +2489,7 @@ write their own stories; nothing waits forever on a player.
     objective and pays every helper; a missed deadline costs 30 and stops asking for 3 days; one open request per
     villager;
   - showcase scene `personal_request` (GIF: the ask, the accept, the hand-in, the thanks).
-- [ ] **31.10** **Personal requests: six more.** Each with its new objective:
+- [x] **31.10** (review: pending 2026-10-11) **Personal requests: six more.** Each with its new objective:
   1. **A letter to family** (`deliver`): offered when another village with a hall is within caravan range; the giver
      names a relative there (a villager of that village, picked and remembered). You get a sealed letter (paper with a
      name, lore and a quest mark, so no new art; lost, the giver writes you another). Right-click the relative with it
@@ -5287,6 +5287,25 @@ item waits.
   (9) The glum mood is 10 points for one day; "3 days" of not asking means up to and including the third day after.
   (10) Items in quest files may now say what they carry: `item[enchantment=<id>]`, `item[effect=<id>]`. No review
   package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.
+- 2026-10-11 (31.10, decisions; lane c): the roadmap leaves these open, decided as follows (all on the wiki page
+  `personal-requests.md`, "Decisions"). (1) **The letter's relative is picked among the named grown-ups of a village
+  within caravan range that is loaded when the giver asks**; with none loaded, the letter isn't asked that day. The
+  relative is a cousin, a second cousin or the giver's "mother's sibling". (2) **A lost letter**: right-click the
+  giver empty-handed and they write another; a lost reply, the relative. Whoever carries the letter may hand it over.
+  The relative gets the request's 150 friendship and their village's chronicle a line. (3) **"Mourning" is widowed with
+  nobody new** (not only the 5 days of mourning), with the grave inside the village; they marry again the moment the
+  partner is back. (4) **Any cat counts** (a village's stray cats too) or a tamed wolf; not asked when one is already by
+  the bed. (5) "Off to school" goes by the parents' names on record and doesn't need a Teacher there when asked (the
+  objective line says one is needed). (6) **The chapel wedding**: asked by one of a courting couple with no finished
+  Chapel; the wedding waits up to 5 days from the courting's start; the Chapel finished, the request is done and they
+  marry there at once, with the hall's feast (`Festivals.feast`: everyone's festival mood, food from the store). With
+  no Chapel by day 5 they marry at the bell and the request is missed. (7) **The heirloom's placement is the request's
+  own, not the arc engine's `place`** (that effect builds an arc's templates): put once, when a helper comes within 64
+  blocks with its chunk loaded, in the nearest chest or barrel within 3 chunks (its loot rolled first), else a chest
+  minecart, else a suspicious gravel or sand block, else a new barrel on the ground. The map comes on accepting or
+  joining; the heirloom goes back by right-clicking the giver. (8) Deadlines and pay: letter 7 days and 4 emeralds,
+  revive 10 and 6, cat 4 and 3, school 10 and 4, chapel 5 and 6, heirloom 10 and 8. Nothing was filmed locally: the
+  digest makes the review package from the showcase (`letter`).
 - 2026-10-10 (31.11, owner question; lane c): **may players other than the hall's owner become Lord of his village
   on a shared server?** Built with the roadmap's default: yes, by deeds alone (1000 standing and the village at least a
   Town; a village can have several Lords). 31.12 gives a Lord a say in the village's edicts, so say if only the owner

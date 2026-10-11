@@ -48,6 +48,9 @@ public final class Quest {
 	public boolean festival;
 	/** The last day it moved on, for objectives that count different days ({@code beat_giver}); -1: never. */
 	public long mark = -1;
+	/** Where a {@code fetch} objective's heirloom was put (31.10), or null while it waits for a helper to come near. */
+	@Nullable
+	public net.minecraft.core.BlockPos placed;
 
 	public Quest(UUID id, ResourceLocation file, String giver, Optional<Component> name, String poster, long posted, long due,
 				 List<Objectives.Objective> objectives, int[] progress, List<Rewards.Reward> rewards) {
@@ -142,6 +145,9 @@ public final class Quest {
 		if (mark >= 0) {
 			tag.putLong("mark", mark);
 		}
+		if (placed != null) {
+			tag.putLong("placed", placed.asLong());
+		}
 		return tag;
 	}
 
@@ -184,6 +190,8 @@ public final class Quest {
 		}
 		quest.festival = tag.contains("festival") && Nbt.getBoolean(tag, "festival");
 		quest.mark = tag.contains("mark") ? Nbt.getLong(tag, "mark") : -1;
+		// (31.10; absent in older saves: no heirloom put anywhere yet)
+		quest.placed = tag.contains("placed") ? net.minecraft.core.BlockPos.of(Nbt.getLong(tag, "placed")) : null;
 		return quest;
 	}
 

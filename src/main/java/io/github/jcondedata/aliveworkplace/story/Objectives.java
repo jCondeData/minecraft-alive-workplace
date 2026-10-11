@@ -66,6 +66,14 @@ public final class Objectives {
 		int look(ServerLevel level, BlockPos hall, Villager giver, Quest quest, boolean dawn);
 	}
 
+	/**
+	 * An objective that hands its helper something when they take the request on (31.10): the sealed letter of
+	 * {@code deliver}, the map of {@code fetch}.
+	 */
+	public interface Started extends Objective {
+		void start(ServerLevel level, BlockPos hall, Quest quest, net.minecraft.server.level.ServerPlayer player);
+	}
+
 	/** What a quest is resolved against when it goes up: the village, its census and who posted it (set by objectives). */
 	public static final class Context {
 		public final ServerLevel level;
@@ -101,6 +109,13 @@ public final class Objectives {
 		register("home", j -> new Home(GsonHelper.getAsInt(j, "tier", 2)));
 		register("beat_giver", j -> new BeatGiver(positive(j, "days")));
 		register("partner_pokemon", PartnerPokemon::read);
+		// 31.10: six more personal requests
+		register("deliver", RequestErrands.Deliver::read);
+		register("revive", RequestErrands.Revive::read);
+		register("pet_near_home", RequestErrands.PetNearHome::read);
+		register("schooled", RequestErrands.Schooled::read);
+		register("build", RequestErrands.Build::read);
+		register("fetch", RequestErrands.Fetch::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Objective> reader) {

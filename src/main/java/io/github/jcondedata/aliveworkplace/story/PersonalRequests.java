@@ -122,7 +122,11 @@ public final class PersonalRequests {
 			if (AUTO && level.getGameTime() % CHECK_EVERY == 0) {
 				tick(level, level.getGameTime());
 			}
+			if (AUTO && level.getGameTime() % RequestErrands.CHECK_EVERY == 0) {
+				RequestErrands.placeHeirlooms(level); // a lost heirloom is put at its place when a helper comes near (31.10)
+			}
 		});
+		RequestErrands.init(); // the letter, the reply and the heirloom carried by hand (31.10)
 		LifeStory.section(PersonalRequests::lifeStorySection);
 	}
 
@@ -587,6 +591,7 @@ public final class PersonalRequests {
 			Quest quest = offer.quest;
 			quest.helpers.put(player.getUUID(), 0);
 			Stories.post(level, offer.hall, quest);
+			started(level, offer.hall, quest, player);
 			Component glad = Component.translatable("message.aliveworkplace.request.glad", player.getGameProfile().getName());
 			say(villager, glad);
 			Chat.chat(player, HeartEvents.said(villager.getDisplayName(), glad));
@@ -619,7 +624,21 @@ public final class PersonalRequests {
 		quest.helpers.put(player.getUUID(), 0);
 		Stories.Data.get(level).setDirty();
 		Chat.chat(player, Component.translatable("message.aliveworkplace.request.joined", quest.poster, quest.title()).withStyle(ChatFormatting.GREEN));
+		for (BlockPos hall : Stories.halls(level)) {
+			if (open(level, hall).contains(quest)) {
+				started(level, hall, quest, player);
+			}
+		}
 		return true;
+	}
+
+	/** {@code player} takes {@code quest} on: what its objectives hand a helper (31.10's letter and map). */
+	private static void started(ServerLevel level, BlockPos hall, Quest quest, ServerPlayer player) {
+		for (Objectives.Objective o : quest.objectives) {
+			if (o instanceof Objectives.Started s) {
+				s.start(level, hall, quest, player);
+			}
+		}
 	}
 
 	/** {@code /workplace quest decline <id>}, [Not now]: the offer is withdrawn, at no cost. Returns whether there was one to decline. */
@@ -676,6 +695,7 @@ public final class PersonalRequests {
 		Chronicle.atHall(level, hall, Chronicle.Kind.FRIEND, Component.translatable("chronicle.aliveworkplace.request_done",
 			names.isEmpty() ? Component.translatable("chronicle.aliveworkplace.someone") : Component.literal(String.join(", ", names)),
 			Component.literal(quest.poster), quest.title()));
+		RequestErrands.onDone(level, hall, quest, giver, names); // a second wedding, a chapel wedding's feast, a heirloom's story (31.10)
 	}
 
 	/**

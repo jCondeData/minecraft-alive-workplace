@@ -1,10 +1,11 @@
 # Personal requests
 
 A villager who is your friend may ask you for help with something of their own: a level before the festival, a home,
-a taste of home, the tools of their trade. ROADMAP 31.9; builds on friendship (31.5), the quest engine (31.2) and the
+a taste of home, the tools of their trade, a letter to family, a lost love back from the grave, a cat by the door, a
+child off to school, a chapel wedding, a lost heirloom. ROADMAP 31.9 and 31.10; builds on friendship (31.5), the quest engine (31.2) and the
 quest journal (31.3). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.9
+Roadmap items: 31.9, 31.10
 
 ## What a player sees
 
@@ -44,10 +45,40 @@ The six requests:
 | **The tools of my trade** | eight jobs | you bring it: Miner a diamond pickaxe, Lumberjack a diamond axe, Farmer a diamond hoe, Fisherman a fishing rod with Luck of the Sea, Guard a diamond sword, Cartographer a spyglass, Netherworker a potion of Fire Resistance, Sifter a diamond shovel | 5 days | 5 emeralds |
 | **Help me train** (Cobblemon) | a Trainer | you beat them in battle on three different days | 7 days | friendship |
 | **A Pokémon friend** (Cobblemon) | a worker whose job Pokémon help with, who has none yet | at dawn, a Pokémon of a type that helps their job is pastured within 16 blocks of their workstation | 5 days | friendship |
+| **A letter to family** | anyone, with a village within caravan range that has a named grown-up in it | you carry their sealed letter to that relative (a right-click) and the reply back to them | 7 days | 4 emeralds |
+| **Bring back my love** | a widow or widower with nobody new, whose late partner's grave is in the village | that grave is revived (an Undertaker, with a golden apple, a healing potion or a totem); they then marry again | 10 days | 6 emeralds |
+| **A cat by the door** | anyone with a bed and no pet by it | at dawn, a cat or a tamed wolf is within 10 blocks of their bed | 4 days | 3 emeralds |
+| **Off to school** | a parent of a child who hasn't been to school | the child is schooled (it needs a Teacher at a Teacher's Desk) | 10 days | 4 emeralds |
+| **A chapel wedding** | one of a courting couple, in a village with no Chapel | a Chapel is finished in the village; they marry there at once, with a feast | 5 days | 6 emeralds |
+| **The lost heirloom** | anyone, with a heirloom place within 1500 blocks | you find their heirloom where it was lost and right-click them with it | 10 days | 8 emeralds |
 
 Things to bring are handed in from the Personal tab, as on the Village tab (a click hands in what you carry). Tools
 go into the chest by the villager's workstation; with no chest there, and for a taste of home when they have no
 workstation, the villager takes it themselves.
+
+**A letter to family.** On [I'll help] you get a **Sealed Letter to Mira** (paper with a shine, its lore saying who
+it's from and for). Right-click Mira with it in her village: she reads it, writes back, and you get **Reply from
+Mira**; she counts it a favour (150 friendship) and her village's chronicle says "Jesse brought Mira a letter from Dara
+of Oakvale". Right-click Dara with the reply and it's done. Lost the letter? Right-click Dara empty-handed and she
+writes another ("Lost it? Never mind, I'll write it out again"); a lost reply, Mira writes again.
+
+**Bring back my love.** When the grave is revived the two marry again then and there: the wedding (fireworks, the
+village's festival mood) and a line, "Odo came back from the grave, and Dara married them again".
+
+**A chapel wedding.** While the request is open the couple's wedding waits: not after the usual 2 days of courting
+but until the Chapel is finished, up to 5 days from when they began courting. The Chapel finished, they marry in it at
+once and the village holds a feast (everyone eats from the store and gets a festival's mood), and the chronicle says
+"Dara and Odo were married in the new Chapel, and the whole village sat down to a feast". With no Chapel by then they
+marry at the bell as before, and the request is missed.
+
+**The lost heirloom.** One of Grandmother's Compass (a compass), Grandfather's Pocket Watch (a clock), Mother's
+Spyglass (a spyglass), Father's Horn (a goat horn), the Lucky Crystal (an amethyst shard) or Great-aunt's Diary (a
+written book with three pages of her story), lost at a ruined portal, a shipwreck, trail ruins or an abandoned
+mineshaft (the structure tag `aliveworkplace:heirloom_places`) within 1500 blocks. On [I'll help] you get a map to
+the place. When a helper comes within 64 blocks of it, the heirloom is put there, once: in the nearest chest or barrel
+(in trail ruins, which have none, in a suspicious gravel block to brush; in a mineshaft perhaps a chest minecart), or
+in a new barrel on the ground if the chests are gone. Right-click the villager with it and it's done; its story goes
+in the chronicle ("Grandmother's Compass is home with Dara's family again, found at the ruin by Jesse...").
 
 ## How it works
 
@@ -116,16 +147,23 @@ the villager and the player:
 
 In a quest file with another giver none of these ever holds, so a mistake never posts a quest on the hall's board.
 
-The objectives: `level_up`; `home` (`tier`, 2); `beat_giver` (`days`); `partner_pokemon` (`radius`, 16); and `bring`
+The objectives (31.10's in the second sentence): `level_up`; `home` (`tier`, 2); `beat_giver` (`days`);
+`partner_pokemon` (`radius`, 16); and `bring`
 with `"by": "villager_type"` or `"by": "job"` and `options`, a map from villager type or profession to an item and a
 count. An item may name what it must carry: `minecraft:fishing_rod[enchantment=minecraft:luck_of_the_sea]`,
-`minecraft:potion[effect=minecraft:fire_resistance]` (a plain, long or strong potion; not a splash potion).
+`minecraft:potion[effect=minecraft:fire_resistance]` (a plain, long or strong potion; not a splash potion). Then
+`deliver` (the relative and their village are picked when it's asked), `revive` (the late partner, likewise),
+`pet_near_home` (`radius`, 10), `schooled` (the child), `build` (`blueprint`, a blueprint id matched in any of its
+styles; `wedding`: only asked by one of a courting couple, and done, they marry there with a feast) and `fetch`
+(`place`, as a quest's `reach` names one; `max`, 1500 blocks; `heirloom`, one of `compass`, `pocket_watch`,
+`spyglass`, `horn`, `crystal`, `diary`, else picked at random). `deliver` and `fetch` hand whoever takes the request on
+the letter or the map; `revive`, `pet_near_home` (at dawn), `schooled` and `build` are looked at in the hall's round.
 
 ## Switches
 
 | Key | Default | What it does |
 |---|---|---|
-| `personalRequests` | on (with 1.5) | Villagers ask their friends for help. Off: nobody asks and unanswered offers lapse; requests already accepted stay and can be finished or missed. |
+| `personalRequests` | on (with 1.5) | Villagers ask their friends for help. Off: nobody asks and unanswered offers lapse; requests already accepted stay and can be finished or missed (letters can still be carried, heirlooms still turn up). |
 | `friendship` | on (with 1.5) | Requests go by hearts, so with friendship off nobody asks. |
 
 ## Saved data
@@ -139,6 +177,10 @@ count. An item may name what it must carry: `minecraft:fishing_rod[enchantment=m
 - On the villager, `request_let_down`: `quiet_day` (the last day they ask nobody) and `glum_until` (the game time
   their glum mood ends). Absent: nothing was ever missed.
 - An unanswered offer is not saved.
+- On an open quest, `placed` (31.10): where a lost heirloom was put (absent: not yet). The new objectives save what
+  they picked (the relative, the late partner, the child, the heirloom and its place) in the quest's objectives.
+- The letter, the reply and the heirloom carry the quest's id in their item data (`aliveworkplace_letter`,
+  `aliveworkplace_reply`, `aliveworkplace_heirloom`); one whose request is gone is plain paper (or a plain item).
 
 ## Items, blocks, jobs, commands
 
@@ -147,7 +189,11 @@ count. An item may name what it must carry: `minecraft:fishing_rod[enchantment=m
 - The request files `aliveworkplace:personal/level_up`, `aliveworkplace:personal/home`,
   `aliveworkplace:personal/taste_of_home`, `aliveworkplace:personal/tools_of_my_trade`,
   `aliveworkplace:personal/help_me_train` and `aliveworkplace:personal/pokemon_friend`.
-- No new items, blocks or jobs.
+- The request files `aliveworkplace:personal/letter_to_family`, `aliveworkplace:personal/bring_back_my_love`,
+  `aliveworkplace:personal/cat_by_the_door`, `aliveworkplace:personal/off_to_school`,
+  `aliveworkplace:personal/chapel_wedding` and `aliveworkplace:personal/lost_heirloom` (31.10), and the structure tag
+  `aliveworkplace:heirloom_places` (overworld ruined portals, shipwrecks, trail ruins, mineshafts).
+- No new items, blocks or jobs: the letter is paper and the heirlooms vanilla items, with a name, lore and a shine.
 
 ## Decisions
 
@@ -168,6 +214,22 @@ count. An item may name what it must carry: `minecraft:fishing_rod[enchantment=m
   without Cobblemon neither is offered.
 - **Offers aren't saved** (31.9, lane c), like a heart event half told: after a restart they may simply ask again.
 
+- **The letter goes to a village that is loaded when it's asked** (31.10, lane c): the relative is a real villager
+  there, picked and remembered, so the other village has to be in loaded chunks at that moment; otherwise the letter
+  isn't asked that day. The relative is a cousin, a second cousin or the giver's mother's sibling.
+- **A lost letter is written again on an empty-handed right-click** (31.10, lane c): the giver (or, for the reply, the
+  relative) writes another for a helper who carries none. Whoever holds the letter may hand it over.
+- **"Mourning" means widowed with nobody new** (31.10, lane c), not only the 5 days of mourning; the grave must be in
+  the village. They marry again the moment the partner is back.
+- **Any cat counts** (31.10, lane c), stray village cats too, and a tamed wolf; nobody asks for one with a pet already
+  by the bed.
+- **Off to school doesn't need a Teacher when it's asked** (31.10, lane c); the objective line says one is needed.
+- **The chapel wedding is held the moment the Chapel is finished** (31.10, lane c), not at the next midday, with the
+  hall's festival feast; with no Chapel after 5 days they marry at the bell and the request is missed.
+- **The heirloom's placement is the request's own** (31.10, lane c): the roadmap names the arc engine's `place`, which
+  builds an arc's templates; the heirloom uses the same rule (once, when someone comes near) on the structure's own
+  chests, as described above.
+
 ## Known limits
 
 - One request per villager at a time, and one villager per village asks per day at most.
@@ -179,7 +241,13 @@ count. An item may name what it must carry: `minecraft:fishing_rod[enchantment=m
 - A request by a villager who was let down can still be joined and finished; only their asking pauses.
 - "At dawn" is the hall's first round of the day, which is at dawn only when the village is loaded then.
 - The same request can be asked again on a later day.
-- The showcase scene has not been filmed locally; GitHub films it after the push.
+- The showcase scenes have not been filmed locally; GitHub films them after the push.
+- A heirloom place is found from the hall when the request is asked (the nearest such structure within 1500 blocks,
+  looked up at most once a day per village); in a world without structures the heirloom isn't asked.
+- The heirloom is looked for in chests within 3 chunks of where the structure was found; a big mineshaft's chests
+  further away aren't used (a chest minecart or a new barrel then).
+- A letter to a villager who later dies or leaves can't be delivered; the request runs out with no penalty to the
+  helper beyond a missed request's.
 - Not tested: a real battle played to the end for Help me train (the test server can't play one; the test calls the
   trainers' battle-over hook), and the asking on a server with players in several dimensions.
 
@@ -193,6 +261,9 @@ count. An item may name what it must carry: `minecraft:fishing_rod[enchantment=m
   `PersonalRequestGameTests.aMissedDeadlineCostsThirtyAndThreeQuietDays`,
   `PersonalRequestGameTests.beforeTheNextFestival`, `PersonalRequestGameTests.everyConditionReadsTheGiver`,
   `PersonalRequestGameTests.aSaveAndReloadKeepsARequest` and `PersonalRequestGameTests.theSwitchOff`.
+- 31.10: `PersonalErrandGameTests.aLetterThereAndBackBetweenTwoHalls`, `PersonalErrandGameTests.bringBackMyLoveWithAGrave`,
+  `PersonalErrandGameTests.aCatByTheDoorAtDawn`, `PersonalErrandGameTests.offToSchoolWithASchooledChild`,
+  `PersonalErrandGameTests.aChapelWeddingAndItsFeast` and `PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap`.
 - With Cobblemon: `PersonalRequestCompatTests.helpMeTrainTakesWinsOnThreeDays` and
   `PersonalRequestCompatTests.aPokemonFriendIsJudgedAtDawn`.
-- Showcase scenes: `personal_request`
+- Showcase scenes: `personal_request`, `letter`

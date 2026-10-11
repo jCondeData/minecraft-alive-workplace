@@ -215,6 +215,8 @@ public final class CobblemonCompat {
 		io.github.jcondedata.aliveworkplace.legend.WildPokemon.EXTENSION.register("cobblemon", new CobblemonRanger()); // 29.22
 		io.github.jcondedata.aliveworkplace.story.RoguePokemon.EXTENSION.register("cobblemon", new CobblemonRogues()); // 31.14
 		CobblemonRogues.init();
+		io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.Party.EXTENSION.register("cobblemon", new CobblemonThesis()); // 31.21
+		CobblemonThesis.init();
 	}
 
 	private CobblemonCompat() {

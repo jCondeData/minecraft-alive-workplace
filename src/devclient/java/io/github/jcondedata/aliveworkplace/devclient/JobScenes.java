@@ -3403,6 +3403,65 @@ final class JobScenes {
 						&& m.icon(io.github.jcondedata.aliveworkplace.research.ResearchScreen.TAB_SLOTS[1]).is(Items.SPYGLASS), "the Pokédex opened on its own tab");
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+		// The Professor's Thesis (ROADMAP 31.21, Cobblemon): an Expert Scholar, Professor Alder, by the hall asks for field
+		// notes on Life in the Cold; a Snorunt caught in the snow counts; Thessaly beaten, the thesis is published as a book.
+		SCREENS.put("professors_thesis", new Screen("the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author",
+			new Vec3(0.5, -58.0, 6.5), new Vec3(0.5, -59.5, 0.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				io.github.jcondedata.aliveworkplace.story.Arcs.stopAll(level, STATION);
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setYRot(0);
+				subject.setYHeadRot(0);
+				subject.setVillagerData(subject.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.SCHOLAR).setLevel(4));
+				subject.setCustomName(Component.literal("Alder"));
+				level.setDayTime(level.getDayTime() / 24000L * 24000L + 6000L);
+			},
+			List.of(new Step("01_request", -1, 0, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.FORCE_TOPIC = "cold";
+					var arc = io.github.jcondedata.aliveworkplace.story.Arcs.get(io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.ARC).orElse(null);
+					var s = arc == null ? null : io.github.jcondedata.aliveworkplace.story.Arcs.start(level, STATION, arc);
+					io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.FORCE_TOPIC = null;
+					Showcase.check(s != null && s.quests.size() == 3, "Professor Alder asks for three field notes");
+				}, 60),
+				new Step("02_catch", -1, 0, (level, player) -> {
+					party(player, "snorunt level=14");
+					var snorunt = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player).get(0);
+					var real = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonThesis.info(level, snorunt, STATION.south(4), false);
+					var info = new io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.CatchInfo(real.uuid(), real.species(), real.name(), real.types(), real.pos(),
+						level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME).getHolderOrThrow(net.minecraft.world.level.biome.Biomes.SNOWY_PLAINS),
+						real.dayTime(), real.moonPhase(), real.day(), false);
+					Showcase.check(io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.onCatch(level, player, info), "the Snorunt caught in the snow counts");
+				}, 50),
+				new Step("03_published", -1, 0, (level, player) -> {
+					var s = io.github.jcondedata.aliveworkplace.story.Arcs.running(level, STATION);
+					if (s != null) {
+						io.github.jcondedata.aliveworkplace.story.Arcs.next(level, STATION);
+						io.github.jcondedata.aliveworkplace.story.Arcs.next(level, STATION);
+						var thessaly = io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.thessaly(level, s);
+						if (thessaly != null) {
+							io.github.jcondedata.aliveworkplace.trainer.Trainers.battleOver(level.getServer(), thessaly.getUUID(), player.getUUID(), true);
+						}
+					}
+					ItemStack book = ItemStack.EMPTY;
+					for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+						if (player.getInventory().getItem(i).is(Items.WRITTEN_BOOK)) {
+							book = player.getInventory().getItem(i).copy();
+						}
+					}
+					player.setItemInHand(InteractionHand.MAIN_HAND, book);
+					if (!book.isEmpty()) {
+						player.openItemGui(book, InteractionHand.MAIN_HAND);
+					}
+					Showcase.check(!book.isEmpty() && io.github.jcondedata.aliveworkplace.story.Arcs.running(level, STATION) == null,
+						"the thesis is published as a book");
+				}, 60)),
+			(level, player) -> true));
 		SCREENS.put("legend_ranger", new Screen("the Pokémon Ranger in a red vest and capture styler by the hall, an Alpha calmed with sparkles, and a wild Pikachu befriended into the owner's pasture",
 			new Vec3(0.5, -57.5, 7.5), new Vec3(0.5, -59.5, -1.5),
 			(level, player) -> {

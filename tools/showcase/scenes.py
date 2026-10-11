@@ -447,6 +447,11 @@ SCENES = [
       "the Pokémon Professor in a white lab coat by the hall, hints about the player's party, and the Pokédex research tab", 50,
       [("01_professor", "The Professor by the hall"), ("02_professor_hints", "Hints: IVs in words, nature, hidden ability, EVs"),
        ("03_pokedex_tab", "The Pokédex tab")], cobblemon=True),
+    # The Professor's Thesis (ROADMAP 31.21, Cobblemon): the request, a catch counting, the published thesis
+    S("professors_thesis", "Village Hall", "The Professor's Thesis: the request, a catch, the published book",
+      "the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author", 50,
+      [("01_request", "The professor's request"), ("02_catch", "A catch counts in the field notes"),
+       ("03_published", "The published thesis")], cobblemon=True),
     # The Pokémon Ranger (ROADMAP 29.22, Cobblemon): settled by the hall in a red vest, an Alpha calmed, a wild Pikachu befriended
     S("legend_ranger", "Legends", "The Pokémon Ranger calms an Alpha and befriends a Pikachu",
       "the Pokémon Ranger in a red vest and capture styler by the hall, an Alpha calmed with sparkles, and a wild Pikachu befriended into the owner's pasture", 50,

@@ -115,6 +115,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 		io.github.jcondedata.aliveworkplace.guard.BanditFort.init(); // the Bandit King's fort: its men keep home, the King's bar and horn (31.15)
 		BanditKingStory.init(); // the Bandit King's story (31.16); before onTalk, so Pell asks for his bread first
 		LostCaravanStory.init(); // the Lost Caravan's story (31.20)
+		ProfessorsThesis.init(); // the Professor's Thesis (31.21); before onTalk, so the professor looks at the party first
 		Platform.get().onUseEntity((player, level, hand, entity, hit) -> ArcEffects.onTalk(player, level, hand, entity));
 	}
 

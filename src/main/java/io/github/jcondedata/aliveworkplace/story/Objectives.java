@@ -118,6 +118,9 @@ public final class Objectives {
 		register("fetch", RequestErrands.Fetch::read);
 		register("follow_trail", CaravanTrail.FollowTrail::read); // 31.19
 		register("deliver_goods", LostCaravanStory.DeliverGoods::read); // 31.20
+		register("catch", ProfessorsThesis.Catch::read); // 31.21
+		register("show", ProfessorsThesis.Show::read); // 31.21
+		register("battle_leader", ProfessorsThesis.BattleLeader::read); // 31.21
 	}
 
 	public static void register(String type, Function<JsonObject, Objective> reader) {

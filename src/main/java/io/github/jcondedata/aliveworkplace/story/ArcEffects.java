@@ -123,6 +123,7 @@ public final class ArcEffects {
 			case "bandit_king" -> BanditKingStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "sickness" -> SicknessStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "lost_caravan" -> LostCaravanStory.validate(GsonHelper.getAsString(json, "step", ""));
+			case "professors_thesis" -> ProfessorsThesis.validate(GsonHelper.getAsString(json, "step", ""));
 			case "herb_patch" -> {
 				String herb = GsonHelper.getAsString(json, "herb", "");
 				if (Herbs.byId(herb) == null) {
@@ -283,6 +284,7 @@ public final class ArcEffects {
 			case "bandit_king" -> BanditKingStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.16
 			case "sickness" -> SicknessStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.18
 			case "lost_caravan" -> LostCaravanStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.20
+			case "professors_thesis" -> ProfessorsThesis.effect(level, hall, e, s, arc, GsonHelper.getAsString(json, "step")); // 31.21
 			case "chatter" -> {
 				if (json.has("lines")) {
 					json.getAsJsonArray("lines").forEach(l -> s.chatter.add(l.getAsString()));

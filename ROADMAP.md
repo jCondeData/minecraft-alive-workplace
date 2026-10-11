@@ -2808,7 +2808,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: a shipment goes missing when forced; each chapter moves on by its objective; Tobin follows, waits and
     joins; the chest holds the shipment's own goods; the delivery quest pays; the failure path;
   - showcase scene `lost_caravan` (GIF: the wreck, the trail, freeing Tobin, walking him home).
-- [ ] **31.21** **The Professor's Thesis** (Cobblemon). `arcs/professors_thesis.json`, loaded only with Cobblemon. Its
+- [x] **31.21** (review: pending 2026-10-11) **The Professor's Thesis** (Cobblemon). `arcs/professors_thesis.json`, loaded only with Cobblemon. Its
   patron is the village's Pokémon Professor (29.21); until that lands, the village's best Scholar at Expert or above,
   called "Professor <name>" for the arc. It starts in a Town with a Scholar or the Professor, 6% a day. New objectives
   through `compat/cobblemon` (Cobblemon's capture and battle events; find their exact names with `api.py`): `catch` (a

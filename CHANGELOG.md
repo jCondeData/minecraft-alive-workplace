@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Professor's Thesis, for 1.5** (31.21, Cobblemon, off until 1.5 is finished): in a Town with the Pokémon
+  Professor or an Expert Scholar ("Professor Alder"), 6% a day, the professor writes a thesis on one of six topics
+  (Life in the Cold, Fire and Stone, Creatures of the Night, The Forest's Web, Sea and Shore, Living Fossils). Catch
+  three Pokémon by type, biome, time of day or height (or have a Fossil Scientist revive one), show the professor one
+  of them evolved or a Pokémon at friendship 200, then beat the Trainer Leader of a nearby village, or the rival
+  scholar Thessaly who comes to the hall. The thesis is published as a book listing your catches with you as
+  co-author: 3 Rare Candies, an Ability Capsule, +150 standing, the honour Co-author and a free research level.
 - **The Lost Caravan, for 1.5** (31.20, off until 1.5 is finished): one caravan in 20 on a road over 300 blocks goes
   missing (`lostCaravanChance`). Both halls hear it's overdue and the sending hall hands out a map: find the wreck,
   follow the five marks to the raiders' stockade, and open the cage. The carter (a villager with one of the village

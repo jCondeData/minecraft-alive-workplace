@@ -320,6 +320,8 @@ asks for the steps, `latest.log` and any crash report).
   from the ground first while his station is still being handed out, in any part of the tick the siege begins
   (32.6, B105).
 - The settings screen no longer cuts off the elder setting: it now reads "Days Until Elder" (B102).
+- Villagers getting up from the Arena's stands after a Festival Cup step off the bench into the aisle (or onto it),
+  instead of standing inside the stair (B94).
 
 ## 0.142.0 — 2026-10-10
 

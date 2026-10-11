@@ -376,6 +376,48 @@ public class CupDayGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B94: a villager getting up from a bench in the stands stands clear of the stair (in front of it, as a row of
+	 * benches has an aisle or a lower row there), not inside its back step; with walls all round, on top of it.
+	 */
+	//$ gametest_batch '"aliveworkplace_test:build_area"' '"cupSeatDismount"'
+	@GameTest(template = "aliveworkplace_test:build_area", batch = "cupSeatDismount")
+	public void gettingUpFromTheStandsLeavesTheStair(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos open = new BlockPos(2, 2, 2);
+		BlockPos walled = new BlockPos(6, 2, 2);
+		net.minecraft.world.level.block.state.BlockState stair = net.minecraft.world.level.block.Blocks.SPRUCE_STAIRS.defaultBlockState()
+			.setValue(net.minecraft.world.level.block.StairBlock.FACING, net.minecraft.core.Direction.NORTH);
+		helper.setBlock(open, stair);
+		helper.setBlock(walled, stair);
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			helper.setBlock(walled.relative(d), net.minecraft.world.level.block.Blocks.STONE);
+			helper.setBlock(walled.relative(d).above(), net.minecraft.world.level.block.Blocks.STONE);
+		}
+		List<Villager> sitters = new ArrayList<>();
+		for (BlockPos bench : List.of(open, walled)) {
+			io.github.jcondedata.aliveworkplace.cup.StandSeat seat = io.github.jcondedata.aliveworkplace.cup.StandSeat.at(level, helper.absolutePos(bench));
+			level.addFreshEntity(seat);
+			Villager v = helper.spawn(EntityType.VILLAGER, bench.above());
+			v.setNoAi(true);
+			helper.assertTrue(v.startRiding(seat, true), "didn't sit on the bench at " + bench);
+			sitters.add(v);
+		}
+		helper.runAfterDelay(2, () -> {
+			sitters.forEach(Villager::stopRiding);
+			for (Villager v : sitters) {
+				helper.assertFalse(v.isPassenger(), "still seated");
+				helper.assertTrue(level.noCollision(v, v.getBoundingBox().deflate(0.1)), "stood up inside a block at " + v.position());
+			}
+			BlockPos front = helper.absolutePos(open.south());
+			helper.assertTrue(sitters.get(0).blockPosition().equals(front), "the open bench's sitter isn't in front of it: " + sitters.get(0).blockPosition());
+			helper.assertTrue(sitters.get(1).blockPosition().equals(helper.absolutePos(walled.above())), "the walled bench's sitter isn't on top of it: "
+				+ sitters.get(1).blockPosition());
+			helper.succeed();
+		});
+	}
+
 	/** Every new sentence a player reads on a Cup's day. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

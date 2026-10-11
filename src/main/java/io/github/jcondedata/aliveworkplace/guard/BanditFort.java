@@ -156,7 +156,7 @@ public final class BanditFort {
 	}
 
 	/** Ground, a plant or a tree: something nobody built. */
-	static boolean natural(BlockState state) {
+	public static boolean natural(BlockState state) {
 		return state.isAir() || state.canBeReplaced() || state.is(BlockTags.LEAVES) || state.is(BlockTags.LOGS) || state.is(BlockTags.FLOWERS)
 			|| state.is(BlockTags.SAPLINGS) || state.is(BlockTags.REPLACEABLE_BY_TREES) || state.is(BlockTags.DIRT) || state.is(BlockTags.SAND)
 			|| state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(BlockTags.TERRACOTTA) || state.is(BlockTags.SNOW) || state.is(Blocks.GRAVEL)

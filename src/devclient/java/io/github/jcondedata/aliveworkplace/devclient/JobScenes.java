@@ -174,6 +174,28 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/** The caravan_trail scene's builds (31.19): where each one's middle goes. */
+	private static final BlockPos CARAVAN_WRECK = new BlockPos(-16, -61, -22);
+	private static final BlockPos CARAVAN_MARK = new BlockPos(2, -61, -22);
+	private static final BlockPos CARAVAN_STOCKADE = new BlockPos(24, -61, -24);
+
+	/** One of the trail's builds set down as its arc sets it down (fit ground round its spot). */
+	private static io.github.jcondedata.aliveworkplace.story.ArcState.ArcPlace caravanPiece(ServerLevel level, net.minecraft.resources.ResourceLocation template, BlockPos middle) {
+		var s = new io.github.jcondedata.aliveworkplace.story.ArcState("aliveworkplace:lost_caravan");
+		var p = new io.github.jcondedata.aliveworkplace.story.ArcState.ArcPlace("piece", middle, List.of(template.toString()), 0);
+		s.places.add(p);
+		io.github.jcondedata.aliveworkplace.story.ArcEffects.build(level, s, p);
+		return p;
+	}
+
+	/** Puts the camera at {@code camera} looking at {@code target}. */
+	private static void aim(ServerLevel level, ServerPlayer player, Vec3 camera, Vec3 target) {
+		Vec3 d = target.subtract(camera);
+		float yaw = (float) (Math.toDegrees(Math.atan2(-d.x, d.z)));
+		float pitch = (float) (-Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z))));
+		player.teleportTo(level, camera.x, camera.y, camera.z, yaw, pitch);
+	}
+
 	/** The bandit_fort scene's fort: its middle on the flat ground in front of the camera. */
 	private static final BlockPos BANDIT_FORT_GROUND = new BlockPos(0, -61, -20);
 
@@ -3603,6 +3625,43 @@ final class JobScenes {
 					Showcase.check(placed && kings == 1 && level.getBlockState(banditFort().at(new BlockPos(14, 4, 16))).is(net.minecraft.world.level.block.Blocks.BLACK_WALL_BANNER),
 						"the keep stands with the war banner over its door, the King inside");
 				}, 60)),
+			(level, player) -> true));
+		// The Lost Caravan, I: the wreck and the trail (ROADMAP 31.19): the three kinds of build the arc lays along the trail,
+		// each set down the arc's way (ArcEffects.build: fit ground, a hump cut and a hollow filled): the settlers' wagon on its
+		// side, a mark (the torn banner) with the action bar pointing on, and the raiders' stockade with its cage.
+		SCREENS.put("caravan_trail", new Screen("the Lost Caravan's trail: the settlers' covered wagon on its side, a wheel broken off, crates and barrels spilled, a lantern in the grass; a mark of the trail, a torn white banner on a fence post, with 'The tracks go on to the east' over the hotbar; the raiders' stockade, a palisade round a tent, a fire, a loot chest and an iron-barred cage",
+			new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5),
+			(level, player) -> {
+				for (BlockPos p : BlockPos.betweenClosed(-32, -61, -44, 38, -44, -4)) {
+					level.setBlock(p, p.getY() == -61 ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState()
+						: net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+				}
+				for (BlockPos p : BlockPos.betweenClosed(-13, -60, -19, -12, -60, -18)) { // a hump the wreck's ground is cut from
+					level.setBlock(p, net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState(), 2);
+				}
+				io.github.jcondedata.aliveworkplace.city.PlayerBuilt.get(level).forget(new net.minecraft.world.level.levelgen.structure.BoundingBox(-32, -64, -44, 38, -44, -4));
+				level.setDayTime(5000);
+			},
+			List.of(new Step("01_wreck", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.WRECK, CARAVAN_WRECK);
+					aim(level, player, new Vec3(-26.5, -54, -33.5), new Vec3(-16.5, -60, -22.5));
+					Showcase.check(p.placed == 1 && level.getBlockState(p.origin.offset(2, 1, 5)).is(net.minecraft.world.level.block.Blocks.WHITE_WOOL),
+						"the wagon lies on its side, its canvas torn");
+				}, 50),
+				new Step("02_mark", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.MARKS.get(2), CARAVAN_MARK);
+					aim(level, player, new Vec3(-2.5, -58, -27.5), new Vec3(1.5, -59.5, -21.5));
+					io.github.jcondedata.aliveworkplace.mc.Chat.actionBar(player, Component.translatable("message.aliveworkplace.trail.next",
+						io.github.jcondedata.aliveworkplace.story.CaravanTrail.direction(p.spot, CARAVAN_STOCKADE)).withStyle(net.minecraft.ChatFormatting.GOLD));
+					Showcase.check(p.placed == 1 && level.getBlockState(p.origin.offset(1, 3, 1)).is(net.minecraft.world.level.block.Blocks.WHITE_BANNER),
+						"the mark: a torn white banner on a fence post, the tracks pointing on");
+				}, 40),
+				new Step("03_stockade", -1, 0, (level, player) -> {
+					var p = caravanPiece(level, io.github.jcondedata.aliveworkplace.story.CaravanTrail.STOCKADE, CARAVAN_STOCKADE);
+					aim(level, player, new Vec3(24.5, -48, -46.5), new Vec3(24.5, -60, -24.5));
+					Showcase.check(p.placed == 1 && level.getBlockState(p.origin.offset(io.github.jcondedata.aliveworkplace.story.CaravanTrail.CAGE_DOOR))
+						.is(net.minecraft.world.level.block.Blocks.IRON_DOOR), "the stockade stands, its cage shut");
+				}, 50)),
 			(level, player) -> true));
 		// The Sickness, I: eight far herbs (ROADMAP 31.17): a 5 x 5 pad of each herb's ground in a field of coarse dirt (no
 		// herb's ground), a herb_patch planted on each, the Glowcap's under a leaf canopy; then the Three-Herb Tonic in hand.

@@ -327,6 +327,9 @@ public final class QuestJournal {
 		if (o instanceof Objectives.Reach) {
 			return Items.COMPASS;
 		}
+		if (o instanceof io.github.jcondedata.aliveworkplace.story.CaravanTrail.FollowTrail) {
+			return Items.LANTERN;
+		}
 		if (o instanceof Objectives.Talk) {
 			return Items.BELL;
 		}

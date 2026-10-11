@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.city.PlayerBuilt;
 import io.github.jcondedata.aliveworkplace.guard.BanditFort;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
@@ -77,7 +78,7 @@ public final class ArcEffects {
 	/** How far round a mob its boss bar shows. */
 	static final int BAR_RANGE = 48;
 	private static final Map<UUID, ServerBossEvent> BARS = new HashMap<>();
-	private static final Set<String> RULES = Set.of("ring", "road", "biome", "after", "offset", "fort");
+	private static final Set<String> RULES = Set.of("ring", "road", "biome", "after", "offset", "fort", "between");
 
 	/** Checks an effect when its arc is read; throws {@link IllegalArgumentException} naming the bad field. */
 	static void validate(JsonObject json) {
@@ -87,8 +88,8 @@ public final class ArcEffects {
 			case "chronicle" -> Rewards.text(json.get("line"));
 			case "place" -> {
 				key(json);
-				if (!json.has("template") && !json.has("stages")) {
-					throw new IllegalArgumentException("place: needs 'template' or 'stages'");
+				if (!json.has("template") && !json.has("stages") && !json.has("each")) {
+					throw new IllegalArgumentException("place: needs 'template', 'stages' or 'each'");
 				}
 				for (String t : templates(json)) {
 					if (ResourceLocation.tryParse(t) == null) {
@@ -101,6 +102,9 @@ public final class ArcEffects {
 				}
 				if (rule.has("after") && !rule.has("distance")) {
 					throw new IllegalArgumentException("place: 'after' needs 'distance'");
+				}
+				if (rule.has("between") && (!rule.get("between").isJsonArray() || rule.getAsJsonArray("between").size() != 2)) {
+					throw new IllegalArgumentException("place: 'between' needs two place keys");
 				}
 			}
 			case "spawn" -> {
@@ -193,7 +197,9 @@ public final class ArcEffects {
 
 	private static List<String> templates(JsonObject json) {
 		List<String> out = new ArrayList<>();
-		if (json.has("stages")) {
+		if (json.has("each")) {
+			json.getAsJsonArray("each").forEach(e -> out.add(e.getAsString())); // (checked here; each place gets one, 31.19)
+		} else if (json.has("stages")) {
 			json.getAsJsonArray("stages").forEach(e -> out.add(e.getAsString()));
 		} else {
 			out.add(GsonHelper.getAsString(json, "template"));
@@ -289,22 +295,27 @@ public final class ArcEffects {
 
 	// ---- place -----------------------------------------------------------------------------------------------------
 
-	/** {@code place}: the spot (or {@code count} spots) chosen now by the rule; each is built once a player comes near. */
+	/**
+	 * {@code place}: the spot (or {@code count} spots) chosen now by the rule; each is built once a player comes near.
+	 * With {@code each} (a list of templates, 31.19) there is one place per template, each with its own.
+	 */
 	static void place(ServerLevel level, BlockPos hall, ArcState s, JsonObject json) {
 		String key = key(json);
-		int count = Math.max(1, GsonHelper.getAsInt(json, "count", 1));
+		List<String> each = json.has("each") ? templates(json) : null;
+		int count = each != null ? each.size() : Math.max(1, GsonHelper.getAsInt(json, "count", 1));
 		JsonObject rule = GsonHelper.getAsJsonObject(json, "rule");
 		for (int i = 0; i < count; i++) {
 			String k = i == 0 ? key : key + "#" + (i + 1);
-			BlockPos spot = spot(level, hall, s, rule);
+			List<String> stages = each != null ? List.of(each.get(i)) : templates(json);
+			BlockPos spot = spot(level, hall, s, rule, i, count);
 			if (spot == null) {
 				AliveWorkplace.LOG.info("Story arc {}: no spot found for '{}' ({}); it isn't built", s.id, k, rule);
-				ArcState.ArcPlace p = new ArcState.ArcPlace(k, hall, templates(json), 0);
+				ArcState.ArcPlace p = new ArcState.ArcPlace(k, hall, stages, 0);
 				p.skipped = true;
 				s.places.add(p);
 				continue;
 			}
-			s.places.add(new ArcState.ArcPlace(k, spot, templates(json), level.random.nextInt(4)));
+			s.places.add(new ArcState.ArcPlace(k, spot, stages, level.random.nextInt(4)));
 		}
 		doneFlags(level, s);
 	}
@@ -360,7 +371,27 @@ public final class ArcEffects {
 	/** The column a rule picks: a ring round the hall, a share along a caravan road, a biome, past another place, an offset. */
 	@Nullable
 	public static BlockPos spot(ServerLevel level, BlockPos hall, ArcState s, JsonObject rule) {
+		return spot(level, hall, s, rule, 0, 1);
+	}
+
+	/**
+	 * As {@link #spot(ServerLevel, BlockPos, ArcState, JsonObject)} for the {@code index}-th of {@code count} places of
+	 * one {@code place} (the rule {@code between} spreads them evenly between two other places, 31.19).
+	 */
+	@Nullable
+	public static BlockPos spot(ServerLevel level, BlockPos hall, ArcState s, JsonObject rule, int index, int count) {
 		var random = level.random;
+		if (rule.has("between")) {
+			// The Lost Caravan's marks (31.19): evenly along the line from one place to the other, the ends left out.
+			JsonArray ends = rule.getAsJsonArray("between");
+			ArcState.ArcPlace a = s.place(ends.get(0).getAsString());
+			ArcState.ArcPlace b = s.place(ends.get(1).getAsString());
+			if (a == null || b == null || a.spot == null || b.spot == null || a.skipped && a.placed == 0 && a.spot.equals(hall)
+				|| b.skipped && b.placed == 0 && b.spot.equals(hall)) {
+				return null;
+			}
+			return CaravanTrail.between(a.spot, b.spot, index, count);
+		}
 		if (rule.has("ring")) {
 			JsonArray ring = rule.getAsJsonArray("ring");
 			int near = ring.get(0).getAsInt();
@@ -392,11 +423,13 @@ public final class ArcEffects {
 			Set<BlockPos> routes = Caravans.Data.get(level).routesFrom(hall);
 			BlockPos to = routes.stream().min(java.util.Comparator.comparingDouble(p -> p.distSqr(hall)))
 				.orElseGet(() -> Caravans.neighbours(level, hall).stream().map(Caravans.Village::hall).findFirst().orElse(null));
-			if (to == null) {
-				return null;
-			}
-			return new BlockPos((int) Math.round(hall.getX() + (to.getX() - hall.getX()) * share), hall.getY(),
+			BlockPos onRoad = to == null ? null : new BlockPos((int) Math.round(hall.getX() + (to.getX() - hall.getX()) * share), hall.getY(),
 				(int) Math.round(hall.getZ() + (to.getZ() - hall.getZ()) * share));
+			if (rule.has("or")) {
+				// The Lost Caravan's wreck (31.19): on the road when that's fit ground, else this far out (its way, or any way).
+				return CaravanTrail.road(level, hall, onRoad, to, rule.get("or").getAsInt(), random);
+			}
+			return onRoad;
 		}
 		if (rule.has("biome")) {
 			JsonObject b = new JsonObject();
@@ -412,6 +445,9 @@ public final class ArcEffects {
 			JsonArray d = rule.getAsJsonArray("distance");
 			int near = d.get(0).getAsInt();
 			int far = Math.max(near, d.get(d.size() - 1).getAsInt());
+			if (GsonHelper.getAsBoolean(rule, "away", false)) {
+				return CaravanTrail.away(level, hall, other.spot, near, far, random); // the raiders' stockade (31.19)
+			}
 			double angle = random.nextDouble() * Math.PI * 2;
 			int distance = near + random.nextInt(far - near + 1);
 			return other.spot.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
@@ -436,6 +472,7 @@ public final class ArcEffects {
 		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
 		BlockPos origin = p.origin;
 		boolean fort = BanditFort.isFort(p.stages);
+		boolean trail = CaravanTrail.isTrail(p.stages); // the Lost Caravan's builds lie on uneven ground (31.19)
 		if (origin == null) {
 			Vec3i size = template.getSize(rotation);
 			BoundingBox box = null;
@@ -449,7 +486,10 @@ public final class ArcEffects {
 				if (!level.isLoaded(new BlockPos(b.minX(), b.minY(), b.minZ())) || !level.isLoaded(new BlockPos(b.maxX(), b.minY(), b.maxZ()))) {
 					return false; // wait for the rest to load
 				}
-				if (fort ? BanditFort.fits(level, ground) : natural(level, b)) { // (the fort: the camps' test, widened; 31.15)
+				boolean fits = fort ? BanditFort.fits(level, ground) // (the fort: the camps' test, widened; 31.15)
+					: trail ? CaravanTrail.fits(level, ground, b)
+					: natural(level, b) && !PlayerBuilt.get(level).marked(new BoundingBox(b.minX(), b.minY() - 4, b.minZ(), b.maxX(), b.maxY(), b.maxZ()));
+				if (fits) {
 					origin = o;
 					box = b;
 					break;

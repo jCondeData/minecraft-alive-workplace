@@ -628,6 +628,12 @@ SCENES = [
        ("05_fort_day_3", "Day 3: the keep, its postern open"),
        ("06_storm", "The storm: 3 guards and 6 mercenaries"),
        ("07_king_falls", "The Bandit King falls")]),
+    # The Lost Caravan, I: the wreck and the trail (ROADMAP 31.19): the wreck, a mark of the trail and the stockade
+    S("caravan_trail", "Village Hall", "The Lost Caravan's trail: the wreck, a mark and the raiders' stockade",
+      "the builds the Lost Caravan's story lays along its trail, each set down the arc's way on fit ground: the settlers' covered wagon on its side with a wheel broken off, crates and barrels spilled and a lantern in the grass; a mark of the trail, a torn white banner on a fence post, with 'The tracks go on to the east' over the hotbar; then the raiders' stockade, a palisade round a tent, a fire, a loot chest and an iron-barred cage", 40,
+      [("01_wreck", "The wreck: the settlers' wagon on its side"),
+       ("02_mark", "A mark of the trail, the tracks pointing on"),
+       ("03_stockade", "The raiders' stockade and its cage")]),
     # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
     S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
       "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,

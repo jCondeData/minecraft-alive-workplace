@@ -2769,7 +2769,7 @@ write their own stories; nothing waits forever on a player.
     Physician, else Doctor Wren); the herb choice with a stubbed locator (forced biome answers); the brew and the cure
     round; the failure path;
   - showcase scene `sickness` (GIF: the coughing village, a herb patch, the cure going round).
-- [ ] **31.19** **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
+- [x] **31.19** (review: pending 2026-10-11) **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
   (`STYLE.md`, rendered): `story/caravan_wreck` (the settlers' covered wagon on its side, a broken wheel, spilled
   crates and barrels, a lantern in the grass); `story/raiders_stockade` (a small pillager stockade: a palisade, a
   tent, a campfire, a loot chest and a cage of iron bars with a gate for a captive); and five trail marks,

@@ -582,6 +582,9 @@ public final class Arcs implements ResourceManagerReloadListener {
 			ArcState.Role role = s.roles.get(talk.role());
 			return role == null ? talk : new Objectives.Talk(talk.role(), Optional.of(role.name()), talk.says());
 		}
+		if (o instanceof CaravanTrail.FollowTrail trail) {
+			return CaravanTrail.cast(s, trail);
+		}
 		if (o instanceof Objectives.Kill kill && kill.role() != null) {
 			ArcState.Role role = s.roles.get(kill.role());
 			return role == null ? kill : new Objectives.Kill(kill.entity(), kill.count(), true, Optional.of(role.name()));

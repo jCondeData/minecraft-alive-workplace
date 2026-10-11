@@ -362,7 +362,9 @@ public class BattleStationGameTests implements FabricGameTest {
 			BlockPos breach = village.siege(helper).breach;
 			Optional<BlockPos> k = BattleStations.post(knight);
 			Optional<BlockPos> m = BattleStations.post(medic);
-			helper.assertTrue(k.isPresent() && m.isPresent(), "the knight's place " + k + ", the medic's " + m);
+			helper.assertTrue(k.isPresent() && m.isPresent(), "the knight's place " + k + ", the medic's " + m + "; sieges on " + Sieges.ENABLED
+				+ ", game time " + level.getGameTime() + ", over " + village.siege(helper).over + ", guards alive " + knight.isAlive() + "/" + medic.isAlive()
+				+ ", knight at " + knight.blockPosition() + ", hall " + village.hall() + ", radius " + VillageHalls.RADIUS);
 			helper.assertTrue(k.get().getX() == breach.getX() && k.get().getZ() == breach.getZ() - BattleStations.KNIGHT_BACK, "the knight's place " + k + ", the breach " + breach);
 			helper.assertTrue(m.get().getX() == breach.getX() && m.get().getZ() == breach.getZ() - BattleStations.MEDIC_BACK, "the medic's place " + m + ", the breach " + breach);
 			helper.assertTrue(!BattleStations.stationed(plain) && !BattleStations.onStation(knight), "the plain guard has a place, or the knight's counts as a station");

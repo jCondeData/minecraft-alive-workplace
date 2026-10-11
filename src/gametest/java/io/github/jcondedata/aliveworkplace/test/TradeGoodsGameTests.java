@@ -479,4 +479,15 @@ public class TradeGoodsGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			helper.succeed();
 		});
 	}
+
+	/** An id with an empty namespace (":builder") is read as minecraft's, as the game reads it, not refused. */
+	//$ gametest 'net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = net.fabricmc.fabric.api.gametest.v1.FabricGameTest.EMPTY_STRUCTURE)
+	public void anIdWithAnEmptyNamespaceIsStillAnId(GameTestHelper helper) {
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "probe");
+		TradeGoods.Good good = TradeGoods.read(id, JsonParser.parseString("{\"items\": [\"minecraft:wheat\"], \"base_price\": 100, "
+			+ "\"made_by\": {\"jobs\": [\":farmer\"]}}"));
+		helper.assertTrue(good != null && good.makers().contains(ResourceLocation.parse("minecraft:farmer")), "':farmer' read as: " + (good == null ? null : good.makers()));
+		helper.succeed();
+	}
 }

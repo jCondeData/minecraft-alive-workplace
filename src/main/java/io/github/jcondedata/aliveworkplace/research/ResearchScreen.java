@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 public final class ResearchScreen {
 	static final int INFO = 4;
 	/** Where the topics go, in {@link Research.Topic} order (a Legend's tree: in its file's order). */
-	public static final int[] TOPIC_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
+	public static final int[] TOPIC_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43}; // (the third row since Ramparts, 32.6)
 	/** The tabs: the scholars' tree first, then each Legend's tree in the village (shown only with one at least). */
 	public static final int[] TAB_SLOTS = {45, 46, 47, 48, 49, 50, 51, 52, 53};
 

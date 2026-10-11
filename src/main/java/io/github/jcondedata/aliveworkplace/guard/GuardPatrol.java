@@ -82,7 +82,7 @@ public class GuardPatrol extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && Builders.benchPos(villager).isPresent();
+		return !villager.isSleeping() && !BattleStations.stationed(villager) && Builders.benchPos(villager).isPresent();
 	}
 
 	@Override

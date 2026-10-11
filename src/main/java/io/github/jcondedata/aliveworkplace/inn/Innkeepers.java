@@ -163,6 +163,9 @@ public final class Innkeepers {
 		ModAttachments.TRAVELLER.set(guest, new Traveller(level.getGameTime(), lvl));
 		guest.setCustomName(Component.translatable("entity.aliveworkplace.traveller", BuilderLevels.levelName(lvl)));
 		level.addFreshEntityWithPassengers(guest);
+		if (io.github.jcondedata.aliveworkplace.threat.Plague.fromFarAway(guest, innkeeper)) {
+			io.github.jcondedata.aliveworkplace.threat.Plague.carried(level, guest, level.random); // a traveller from far away may bring the plague (32.18)
+		}
 		if (io.github.jcondedata.aliveworkplace.legend.Gifted.ROLL) { // (gifts by chance are off in GameTests, as the UUID roll is)
 			giftTraveller(guest, level.random, oldTongues);
 		}

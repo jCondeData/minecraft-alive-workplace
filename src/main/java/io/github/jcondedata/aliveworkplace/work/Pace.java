@@ -128,6 +128,8 @@ public final class Pace {
 	/** The worker's class (34.7): Artisans and better craft 10% faster, Burgher scholars research 15% faster, under this cap. */
 	public static final Source CLASS = register(new Source("class", Kind.BONUS, io.github.jcondedata.aliveworkplace.people.ClassPerks::pace,
 		io.github.jcondedata.aliveworkplace.people.ClassPerks::paceLabel));
+	/** A disaster's {@code job_pace} for the worker's job in their village (32.15). */
+	public static final Source DISASTER = register(new Source("disaster", Kind.PENALTY, io.github.jcondedata.aliveworkplace.threat.Disasters::pace));
 	public static final Source ILL = register(new Source("ill", Kind.PENALTY, Sickness::pace));
 	public static final Source UNHAPPY = register(new Source("unhappy", Kind.PENALTY, Moods::pace));
 	public static final Source LAZY = register(new Source("lazy", Kind.PENALTY, Traits::pace));

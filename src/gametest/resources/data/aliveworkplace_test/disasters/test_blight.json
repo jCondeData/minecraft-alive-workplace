@@ -1,0 +1,18 @@
+{
+  "chance": 1.0,
+  "duration": { "min_days": 2, "max_days": 2, "ends_with_rain": true },
+  "effects": [
+    { "type": "crop_growth", "factor": 0 },
+    { "type": "farmland_dries" },
+    { "type": "cauldrons_drain", "levels_a_day": 1 },
+    { "type": "illness_chance", "times": 1000 },
+    { "type": "contagion", "chance": 1, "range": 3 },
+    { "type": "mood", "amount": -10 },
+    { "type": "fires_a_day", "count": 1 },
+    { "type": "job_pace", "job": "minecraft:farmer", "factor": 0.5 }
+  ],
+  "answered_by": "minecraft:cleric",
+  "foretold_by": ["minecraft:librarian"],
+  "foretell_days": 1,
+  "kind": "plague"
+}

@@ -92,7 +92,7 @@ public class NurseWork extends Behavior<Villager> {
 	public static Component cure(ServerLevel level, Villager nurse) {
 		long now = level.getGameTime();
 		List<Villager> ill = level.getEntitiesOfClass(Villager.class, nurse.getBoundingBox().inflate(cureRange(nurse), 8, cureRange(nurse)),
-				v -> v.isAlive() && Sickness.isIll(v) && !Sickness.isHexed(v) // (a hex is beyond her remedies, 32.11)
+				v -> v.isAlive() && Sickness.isIll(v) && !Sickness.isHexed(v) && !Sickness.isPlagueIll(v) // (a hex, 32.11, or the plague, 32.18, is beyond her remedies)
 					&& !(Sickness.isGrey(v) && Sickness.eased(v, now))).stream() // (an eased Grey Cough waits for the day to pass)
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(nurse))).toList();
 		if (ill.isEmpty()) {

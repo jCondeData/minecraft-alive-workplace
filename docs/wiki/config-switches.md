@@ -81,7 +81,11 @@ range is in brackets.
 | `villageRaids` | on |  | Monsters raid bigger villages with a Village Hall at night now and then. |
 | `banditCamps` | on |  | Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls. |
 | `raiderCultures` | every culture on |  | One on/off switch per raider culture, by its id (`monsters`, `bandits`, and any a data pack adds); a culture set to false never raids or makes camp. `villageRaids` and `banditCamps` still switch `monsters` and `bandits`. In the file only: a map isn't on the settings screen. |
+| `disasters` | every disaster on |  | One on/off switch per disaster, by its id (ours by their path, a data pack's by its whole id); one set to false never starts, and one under way ends at once (32.15). In the file only: a map isn't on the settings screen. |
 | `sieges` | on | 1.6 | A raid by raiders who ram gates on a village with a finished wall or gate build is a siege: the gates shut, the portcullis drops and the rams go for the gate; raiders with ladders set them against the walls (32.5). Off: every raid is a plain one, with no rams and no ladders. See [Sieges](sieges.md). |
+| `firewardens` | on | 1.6 | Villagers at a grindstone can be made Firewardens with a water bucket: they put out the village's fires. Off: no Firewarden job, and Firewardens already hired stand idle. |
+| `wellKeepers` | on | 1.6 | Villagers at a cauldron can be made Well Keepers with a shovel: they water the fields in a drought and keep the cauldrons full and the farmland wet between droughts. Off: no Well Keeper job, and Well Keepers already hired stand idle. |
+| `physicians` | on | 1.6 | Villagers at a brewing stand can be made Physicians with a glistering melon slice: they go house to house in a plague, send the ill home and cure them with Remedies. Off: no Physician job, and Physicians already hired stand idle. |
 | `siegeDamage` | on | 1.6 | In a siege, rams break the gate blocks of finished wall and gate builds (builders put them back). Off: gates hold however hard they are hit; the vanilla mobGriefing game rule off does the same. |
 | `festivals` | on |  | Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). |
 | `villagerChatter` | on |  | Villagers near a player now and then say something about their day, over their heads. |

@@ -1,0 +1,17 @@
+{
+  "when": { "wood_share": 0.3 },
+  "factors": [
+    { "if": { "wood_share": 0.5 }, "times": 1.25 },
+    { "if": { "wood_share": 0.7 }, "times": 1.25 }
+  ],
+  "ignition": {
+    "lightning": 0.334,
+    "chimney": 0.02,
+    "chimney_when": { "dry_days": 5 },
+    "burning_arrow": 0.25
+  },
+  "answered_by": "aliveworkplace:firewarden",
+  "messages": "disaster.aliveworkplace.village_fire",
+  "chronicle": "chronicle.aliveworkplace.village_fire",
+  "kind": "fire"
+}

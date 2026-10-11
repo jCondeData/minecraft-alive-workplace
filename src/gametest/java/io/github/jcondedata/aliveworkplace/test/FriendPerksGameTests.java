@@ -161,7 +161,7 @@ public class FriendPerksGameTests implements FabricGameTest {
 	// --- Festival gifts -------------------------------------------------------------------------------------------
 
 	/** Each family's gift, as the spec lists them. */
-	//$ gametest_batch "fabric-gametest-api-v1:empty"
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void eachFamilysGift(GameTestHelper helper) {
 		UUID who = UUID.randomUUID();
@@ -266,6 +266,8 @@ public class FriendPerksGameTests implements FabricGameTest {
 				"the librarian's gift: " + items.stream().map(ItemEntity::getItem).toList());
 			items.forEach(ItemEntity::discard);
 			Festivals.round(level, hall, entity, 6);
+			level.setDayTime(time); // the clock is shared with the batches running beside this one: put it back at once
+			entity.setFestivalDay(festivalDay);
 			helper.assertTrue(level.getEntitiesOfClass(ItemEntity.class, new AABB(hero.blockPosition()).inflate(2)).isEmpty(), "a second gift");
 			helper.assertTrue(new ItemStack(Items.BOOK, 2).getHoverName().getString().equals("Book")
 				&& net.minecraft.network.chat.Component.translatable("message.aliveworkplace.festival_gift", "Dara", 2, "Book").getString()
@@ -396,7 +398,6 @@ public class FriendPerksGameTests implements FabricGameTest {
 			helper.assertTrue(!friend.met(level, hall) && !hero.met(level, hall), "met with nobody known");
 			helper.assertTrue(friend.progress(level, hall).line().getString().equals("A player who is at least Friend of the village (the best now: Stranger)"),
 				"the line: " + friend.progress(level, hall).line().getString());
-			Legends.reload(level.getServer().getResourceManager()); // the shipped files (another test may have left its own)
 			Legend architect = Legends.get(AliveWorkplace.id("master_architect")).orElseThrow();
 			Legend chef = Legends.get(AliveWorkplace.id("grand_chef")).orElseThrow();
 			helper.assertTrue(!LegendGuests.wayMet(level, hall, architect.ways("visit").get(0)) && !LegendGuests.wayMet(level, hall, chef.ways("visit").get(0)),

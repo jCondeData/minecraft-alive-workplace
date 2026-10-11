@@ -95,8 +95,7 @@ The journey takes 3 minutes plus a tick for every block to the spot (612 blocks:
 
 ## Known limits
 
-- Until 33.10 lands nothing happens when the journey ends: the order stays "On the road to Newbrook, arriving" and
-  the village can't send another colony.
+- What happens when the journey ends is on [A colony is born](colony-born.md) (33.10).
 - A volunteer who dies or is taken away while the village gets ready isn't replaced: the others go without them.
 - Supplies with extra data (a renamed bed, say) aren't taken: only plain items count, as elsewhere in the
   Storehouse's stock.

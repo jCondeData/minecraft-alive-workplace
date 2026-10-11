@@ -64,8 +64,8 @@ import org.jetbrains.annotations.Nullable;
  * <li><b>leaving</b>: they walk out toward the spot, and once out of sight (nobody within {@link #SIGHT} blocks, or
  * {@link #OUT} blocks from the hall) or after {@link #LEAVE_TICKS} (30 seconds) they are saved into the order, the way
  * a grave keeps a villager, and taken out of the world;</li>
- * <li><b>on the road</b> for {@link #JOURNEY_TICKS} (3 minutes) plus a tick a block; 33.10 makes the camp when the
- * time is up.</li>
+ * <li><b>on the road</b> for {@link #JOURNEY_TICKS} (3 minutes) plus a tick a block; then {@link ColonyArrival} makes
+ * the camp (33.10).</li>
  * </ol>
  */
 public final class Settlers {
@@ -421,7 +421,7 @@ public final class Settlers {
 	}
 
 	/** Puts the order's supplies back in the Storehouses; what finds no room drops at the hall. */
-	private static void putBack(ServerLevel level, RealmData.Order order) {
+	static void putBack(ServerLevel level, RealmData.Order order) {
 		BlockPos hall = order.mother().pos();
 		List<BlockPos> chests = Caravans.storehouse(level, hall);
 		for (Map.Entry<Item, Integer> e : order.supplies().entrySet()) {
@@ -477,8 +477,9 @@ public final class Settlers {
 	public static void tick(MinecraftServer server) {
 		RealmData data = RealmData.get(server);
 		for (RealmData.Order order : data.orders()) {
-			if (order.state().equals(RealmData.ON_ROAD)) {
-				continue; // (33.10 makes the camp when the time is up)
+			if (order.state().equals(RealmData.ON_ROAD) || order.state().equals(RealmData.ARRIVING) || order.state().equals(RealmData.RETURNING)) {
+				ColonyArrival.tick(server, data, order); // 33.10: the camp when the time is up, or home again
+				continue;
 			}
 			ServerLevel level = server.getLevel(order.mother().dimension());
 			if (level == null || !level.isPositionEntityTicking(order.mother().pos())) {
@@ -626,6 +627,12 @@ public final class Settlers {
 		Component colony = order.name().orElse(Component.translatable("screen.aliveworkplace.colonies.unnamed"));
 		long now = level.getGameTime();
 		switch (order.state()) {
+			case RealmData.ARRIVING -> {
+				return Component.translatable("screen.aliveworkplace.colonies.arriving", colony);
+			}
+			case RealmData.RETURNING -> {
+				return Component.translatable("screen.aliveworkplace.colonies.returning", colony);
+			}
 			case RealmData.ON_ROAD -> {
 				long left = order.arrives() - now;
 				if (left <= 0) {

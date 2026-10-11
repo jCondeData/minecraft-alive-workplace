@@ -19,6 +19,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Caravans you can see](visible-caravans.md): the carter and two pack llamas that show a caravan leaving or arriving, and why they are only a sight (33.7).
 - [The Colony Charter](colony-charter.md): the hall's Colonies tab, the charter, its map and the rules for where a colony may go (33.8).
 - [The settlers set out](colony-settlers.md): sending the settlers with the charter, who volunteers, their supplies, the walk out and the order on the Colonies tab (33.9).
+- [A colony is born](colony-born.md): the settlers' camp, the new hall and Travel Post, the builder's first builds, the sister route and the letter; home again with no room (33.10).
 
 **The village**
 - [The Village Hall](village-hall.md): the village at a glance, its needs, ranks, calendar, treasury and pages.

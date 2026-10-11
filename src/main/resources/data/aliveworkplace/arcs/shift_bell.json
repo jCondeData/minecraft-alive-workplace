@@ -1,0 +1,119 @@
+{
+  "name": {
+    "translate": "arc.aliveworkplace.shift_bell"
+  },
+  "side": true,
+  "trigger": {
+    "event": "reform"
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:minecraft:toolsmith|job:minecraft:weaponsmith|job:minecraft:armorer",
+      "name": {
+        "translate": "arc.aliveworkplace.shift_bell.asker"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.shift_bell.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.shift_bell.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/shift_bell/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.shift_bell.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.shift_bell.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.shift_bell.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.shift_bell.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.shift_bell.2.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 0
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.shift_bell.2"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.shift_bell.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.shift_bell.3.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 1
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.shift_bell.3"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.shift_bell.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.shift_bell.4.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 2
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.shift_bell.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:long_shifts"
+    },
+    {
+      "type": "reform_ending",
+      "ending": "shift_bell"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.shift_bell.ending"
+      }
+    },
+    {
+      "type": "reputation",
+      "points": 60,
+      "who": "helpers"
+    }
+  ]
+}

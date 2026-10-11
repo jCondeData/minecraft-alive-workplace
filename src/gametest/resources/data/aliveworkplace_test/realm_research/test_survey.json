@@ -1,0 +1,15 @@
+{
+  "icon": "minecraft:spyglass",
+  "name": {
+    "text": "Test Survey"
+  },
+  "levels": 2,
+  "points": 40,
+  "paper": 2,
+  "books": 1,
+  "emeralds": 5,
+  "effect": {
+    "type": "xp",
+    "amount": 25
+  }
+}

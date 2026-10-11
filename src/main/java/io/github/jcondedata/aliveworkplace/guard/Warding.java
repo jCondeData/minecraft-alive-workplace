@@ -39,7 +39,7 @@ public final class Warding {
 			.forEach(hall -> {
 				AABB area = VillageHalls.area(hall);
 				if (area.intersects(reach) && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
-					&& entity.research().level(Research.Topic.WARDING) >= 1) {
+					&& Research.of(level, hall, entity).level(Research.Topic.WARDING) >= 1) {
 					areas.add(area);
 				}
 			});

@@ -11,6 +11,7 @@
   "cost": [{"type": "aliveworkplace:bandit_camps", "factor": 2}],
   "excludes": ["curfew"],
   "reform": {
+    "arc": "aliveworkplace:watchful_gate",
     "name": {"translate": "reform.aliveworkplace.watchful_gate"},
     "line": {"translate": "reform.aliveworkplace.watchful_gate.line"},
     "steps": [

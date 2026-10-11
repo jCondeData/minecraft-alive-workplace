@@ -1,0 +1,119 @@
+{
+  "name": {
+    "translate": "arc.aliveworkplace.militia_drill"
+  },
+  "side": true,
+  "trigger": {
+    "event": "reform"
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:aliveworkplace:guard",
+      "name": {
+        "translate": "arc.aliveworkplace.militia_drill.asker"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.militia_drill.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.militia_drill.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/militia_drill/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.militia_drill.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.militia_drill.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.militia_drill.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.militia_drill.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.militia_drill.2.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 0
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.militia_drill.2"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.militia_drill.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.militia_drill.3.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 1
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.militia_drill.3"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.militia_drill.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.militia_drill.4.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 2
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.militia_drill.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:conscription"
+    },
+    {
+      "type": "reform_ending",
+      "ending": "drill_day"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.militia_drill.ending"
+      }
+    },
+    {
+      "type": "reputation",
+      "points": 60,
+      "who": "helpers"
+    }
+  ]
+}

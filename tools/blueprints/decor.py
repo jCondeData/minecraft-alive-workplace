@@ -108,6 +108,28 @@ def street_lamp():
     return b
 
 
+# --- The Shift Bell (ROADMAP 31.22) -----------------------------------------------------------------------------------
+def shift_bell():
+    """3 x 6 x 3: the Shift Bell, a bell hung from a beam between two dark oak posts on stone brick feet, under a little
+    slab roof; it rings the work day in and out (The Shift Bell, 31.22)."""
+    b = Build(3, 6, 3)
+    for x in (0, 2):
+        b.set(x, 0, 1, "chiseled_stone_bricks")
+        for y in (1, 2, 3):
+            b.set(x, y, 1, "stripped_dark_oak_log", axis="y")
+    stairs(b, 0, 0, 0, STONE_BRICK, "south")
+    stairs(b, 2, 0, 0, STONE_BRICK, "south")
+    stairs(b, 0, 0, 2, STONE_BRICK, "north")
+    stairs(b, 2, 0, 2, STONE_BRICK, "north")
+    b.set(1, 0, 1, "stone_brick_slab", type="bottom", waterlogged=False)
+    for x in range(3):
+        b.set(x, 4, 1, "dark_oak_log", axis="x")
+        b.set(x, 5, 1, "dark_oak_slab", type="bottom", waterlogged=False)
+    b.set(1, 3, 1, "bell", attachment="ceiling", facing="north", powered=False)
+    b.fill_air()
+    return b
+
+
 # --- Bench --------------------------------------------------------------------------------------------------------
 def bench(b, x0, y, z, facing, wood=SPRUCE, lamp=True, bush_kind="oak_leaves"):
     """A three-seat bench of stairs with its back to {@code OPP[facing]}... drawn along x at row z: a bush at each end,

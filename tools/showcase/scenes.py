@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -393,6 +393,13 @@ SCENES = [
       "by day; a shift-click with twelve emeralds gave them all, and the levy's icon shows 10%", 60,
       [("01_treasury_tooltip", "The treasury: four mornings of the levy"), ("02_after_a_gift", "Twelve emeralds given with a shift-click"),
        ("03_the_levy", "The levy: 10% of each member's takings")]),
+    # Shared research (ROADMAP 33.15): the capital's Realm row, and a member's levels from the capital
+    S("realm_research", "Realm", "Shared research: the Realm row and levels from the capital",
+      "Thornholm founded a realm with Ashford and Farholt; the realm has Common Law II and the capital's scholars are on "
+      "Guild Exchange, paid from the realm treasury. The capital's research screen shows the Realm row: its label with the "
+      "treasury, and the realm topics with their effects and costs. Ashford's own screen shows Drill II from the capital", 60,
+      [("01_realm_row", "The capital's Realm row"), ("02_realm_topic", "A realm topic: Guild Exchange, being researched"),
+       ("03_from_the_capital", "Ashford: Drill II from the capital")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,
@@ -664,6 +671,13 @@ SCENES = [
        ("02_trail", "The trail, the tracks pointing on"),
        ("03_freed", "Tobin in the raiders' cage, the gate open"),
        ("04_home", "Tobin follows the player home")]),
+    # The eight reforms as stories (ROADMAP 31.22): The Shift Bell, from the Toolsmith's ask to the bell ringing
+    S("reform_story", "Village Hall", "The Shift Bell as a story: the Toolsmith's ask, the three steps, the bell ringing",
+      "the Shift Bell told as a story: Long Shifts in force, the Toolsmith by the hall asks for a bell to ring the long shifts in and out, his words in chat; the three steps (24 clocks, 128 gold, 300 bread) handed in a day apart; the ending sets the Shift Bell, a bell under a little slab roof between two dark oak posts on stone brick feet, on the grass beside the hall; at the start of the next work day it rings", 45,
+      [("01_ask", "The Toolsmith asks for the Shift Bell"),
+       ("02_steps", "The three steps handed in: Long Shifts reformed"),
+       ("03_bell", "The Shift Bell beside the hall"),
+       ("04_ringing", "The bell rings the work day in")]),
     # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
     S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
       "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,

@@ -144,6 +144,7 @@ public final class ResearchScreen {
 
 	private static void renderScholars(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, View view) {
 		Research.State state = entity.research();
+		Research.State shared = Research.of(level, hall, entity); // a realm's member: the capital's levels too (33.15)
 		Research.Topic current = state.currentTopic();
 		List<Component> about = new ArrayList<>();
 		if (current == null) {
@@ -163,7 +164,7 @@ public final class ResearchScreen {
 		Research.Topic[] topics = Research.Topic.values();
 		for (int i = 0; i < topics.length; i++) {
 			Research.Topic topic = topics[i];
-			menu.button(TOPIC_SLOTS[i], topicIcon(state, topic, topic.cost(state.level(topic) + 1, level, entity)), p -> {
+			menu.button(TOPIC_SLOTS[i], topicIcon(state, shared, topic, topic.cost(state.level(topic) + 1, level, entity)), p -> {
 				Research.State now = entity.research();
 				Research.Topic busy = now.currentTopic();
 				if (busy != null && now.paid()) {
@@ -179,6 +180,11 @@ public final class ResearchScreen {
 				menu.broadcastChanges();
 			});
 		}
+		// The capital's Realm row: the realm's own research (33.15).
+		RealmResearch.row(menu, level, hall, () -> {
+			render(menu, level, hall, view);
+			menu.broadcastChanges();
+		});
 	}
 
 	private static void renderTree(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, View view, ResearchTree tree) {
@@ -276,12 +282,19 @@ public final class ResearchScreen {
 		return icon;
 	}
 
-	/** {@code price}: what its next level costs in the village (a founded Scholars' Guild: a quarter less, 30.19). */
-	static ItemStack topicIcon(Research.State state, Research.Topic topic, Research.Cost price) {
+	/**
+	 * {@code price}: what its next level costs in the village (a founded Scholars' Guild: a quarter less, 30.19);
+	 * {@code shared}: the levels in force, the capital's included in a realm's member (33.15), shown "from the capital".
+	 */
+	static ItemStack topicIcon(Research.State state, Research.State shared, Research.Topic topic, Research.Cost price) {
 		int lvl = state.level(topic);
+		int inForce = Math.max(lvl, shared.level(topic));
 		List<Component> lore = new ArrayList<>();
 		lore.add(line(topic.effect(), ChatFormatting.GRAY));
 		lore.add(line(Component.translatable("screen.aliveworkplace.research.level", lvl, topic.maxLevel), ChatFormatting.GRAY));
+		if (inForce > lvl) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.from_capital", inForce), ChatFormatting.GOLD));
+		}
 		if (lvl >= topic.maxLevel) {
 			lore.add(line(Component.translatable("screen.aliveworkplace.research.complete"), ChatFormatting.GREEN));
 		} else {
@@ -299,8 +312,8 @@ public final class ResearchScreen {
 				lore.add(line(Component.translatable("screen.aliveworkplace.research.click"), ChatFormatting.YELLOW));
 			}
 		}
-		ItemStack icon = icon(topic.icon, topic.title().copy(), lvl >= topic.maxLevel ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore);
-		icon.setCount(Math.max(1, lvl));
+		ItemStack icon = icon(topic.icon, topic.title().copy(), lvl >= topic.maxLevel ? ChatFormatting.GREEN : inForce > lvl ? ChatFormatting.GOLD : ChatFormatting.WHITE, lore);
+		icon.setCount(Math.max(1, inForce));
 		if (topic == state.currentTopic()) {
 			icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 		}

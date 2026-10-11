@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.143.0 — 2026-10-11
+
 ### Added
 - **The Observatory's design, for 2.0** (35.17, nothing to start in game until Wonders is finished): the fourth
   Wonder's building, a round deepslate tower 15 across and 30 high under a copper dome on a raised terrace 31 by 31

@@ -254,6 +254,9 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 		AtomicLong supplied = new AtomicLong(-1);
 		helper.onEachTick(() -> {
 			if (v.level().getGameTime() % 20 == 0) {
+				// the Steward's own round asks for the wish's plot search (StewardWishes.plan); the test does it itself, so it
+				// doesn't depend on his walk to the hall (B116: with LuxuryWorkshopsGameTests' leftovers around he never asked)
+				StewardWishes.plotFor(v.level(), v.hall(), wish()).ifPresent(r -> Plots.request(v.level(), v.hall(), r));
 				StewardDesk.plan(v.level(), v.steward(), v.hall());
 			}
 		});
@@ -267,7 +270,7 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 			helper.assertTrue(supplied.get() >= 0, "not supplied yet");
 			helper.assertTrue(!StewardSafety.paused(v.level(), v.hall()), "still paused once supplied");
 			helper.assertTrue(!StewardDesk.of(v.level(), v.hall()).proposals().isEmpty(), "no proposal once supplied: wishes "
-				+ StewardWishes.of(v.level(), v.hall()).wishes().size() + ", plot " + Plots.result(v.level(), v.hall(), new Plots.Request(List.of(WELL), "homes"))
+				+ StewardWishes.of(v.level(), v.hall()).wishes().size() + ", plot " + StewardWishes.plotFor(v.level(), v.hall(), wish()).flatMap(r -> Plots.result(v.level(), v.hall(), r))
 				+ ", spot " + checkSpot(helper, v));
 		});
 	}

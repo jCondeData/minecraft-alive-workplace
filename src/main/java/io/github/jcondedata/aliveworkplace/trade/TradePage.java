@@ -311,8 +311,14 @@ public final class TradePage {
 			lore.add(VillageHallScreen.line(note, ChatFormatting.WHITE));
 		}
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.bundle", good.bundle()), ChatFormatting.GRAY));
-		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.sells", money(selling(level, hall, pays))), ChatFormatting.GREEN));
-		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.pays", money(pays)), ChatFormatting.YELLOW));
+		// A feud (33.20): a rival's people are charged 25% more and paid 25% less
+		int charged = Board.share(selling(level, hall, pays), io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, viewer, true));
+		int paid = Board.share(pays, io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, viewer, false));
+		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.sells", money(charged)), ChatFormatting.GREEN));
+		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.pays", money(paid)), ChatFormatting.YELLOW));
+		if (paid != pays) {
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.board_rival"), ChatFormatting.RED));
+		}
 		if (pays > yesterday) {
 			marks.add(UP);
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.up", money(yesterday)), ChatFormatting.GREEN));

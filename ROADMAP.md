@@ -3623,7 +3623,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests (with a clock the test sets): three halls with known numbers come out in the right order with the right
     lines; a village left off isn't listed; a tie goes to the bigger village; a missed week is announced once;
   - showcase scene `leaderboard` (the chat).
-- [ ] **33.20** **Feuds, and war where PvP is on.** On the Pacts tab an owner can declare a **feud** on another
+- [x] **33.20** (review: pending 2026-10-11) **Feuds, and war where PvP is on.** On the Pacts tab an owner can declare a **feud** on another
   owner's village or realm: a letter tells them, pacts and routes between the two end, each side's board pays 25% less
   for the rival's goods and charges the rival's players 25% more, villagers grumble about the rivals (a chatter topic
   with three lines), and the chronicles note it. Either side can offer peace by letter, which the other accepts; a

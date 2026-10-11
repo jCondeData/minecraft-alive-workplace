@@ -17,6 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Feuds, and war where PvP is on, for 1.7** (33.20, off until 1.7 is finished): on the Pacts tab an owner can declare
+  a feud on another player's village (or its whole realm). A letter tells them; pacts and caravans between the two end;
+  each side's price board pays the rival's people 25% less and charges them 25% more; villagers grumble about the
+  rivals and the chronicles note it. Either side offers peace by letter and the other accepts on its tab; a feud
+  without a war fades after 7 days. On a server with PvP on, the side that declared can raise a feud that has stood a
+  day to war, from the next dawn for 3 days or until peace: each side's guards fight the other side's owners and their
+  friends inside their own village, and those players may fight back against the guards, but blocks, chests, other
+  villagers, animals and treasuries stay protected, and relief riders never come to a war. Both chronicles record the
+  guards each side lost; no treasury changes hands. With PvP off the war button says why it can't be pressed. Settings
+  `feuds` and `feudWars`.
 - **The weekly leaderboard, for 1.7** (33.19, off until 1.7 is finished): every Sunday at 19:00 server time everyone
   online hears how the villages did: the Biggest, the Richest (emeralds earned that week), the Happiest (the week's
   wellbeing), Most Legends and the Greatest realm, the top three of each with owner and number. Winners get a chronicle

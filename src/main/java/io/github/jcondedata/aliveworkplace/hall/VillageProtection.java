@@ -69,10 +69,10 @@ public final class VillageProtection {
 		});
 		Platform.get().allowUseItem((player, level, hand) ->
 			!(player.getItemInHand(hand).getItem() instanceof BucketItem) || mayChange(level, player, player.blockPosition()));
-		Platform.get().allowAttackEntity((player, level, entity) -> !kept(entity) || mayChange(level, player, entity.blockPosition()));
+		Platform.get().allowAttackEntity((player, level, entity) -> mayHurt(level, player, entity));
 		// Arrows, tridents, thrown potions and the like: the player who threw or shot them (their hits in melee are above)
 		Platform.get().allowDamage((entity, source, amount) -> !(source.getEntity() instanceof Player player) || source.getDirectEntity() == player
-			|| !kept(entity) || mayChange(entity.level(), player, entity.blockPosition()));
+			|| mayHurt(entity.level(), player, entity));
 		Platform.get().onUseEntity((player, level, hand, entity, hit) ->
 			(entity instanceof HangingEntity || entity instanceof ArmorStand) && !mayChange(level, player, entity.blockPosition())
 				? InteractionResult.FAIL : InteractionResult.PASS);
@@ -83,6 +83,14 @@ public final class VillageProtection {
 		return state.getBlock() instanceof DoorBlock || state.getBlock() instanceof TrapDoorBlock || state.getBlock() instanceof FenceGateBlock
 			|| state.getBlock() instanceof ButtonBlock || state.getBlock() instanceof LeverBlock || state.getBlock() instanceof BellBlock
 			|| state.getBlock() instanceof CraftingTableBlock || state.getBlock() instanceof MailboxBlock;
+	}
+
+	/**
+	 * Whether {@code player} may hurt {@code entity}: anything the village doesn't keep, anything if they may change
+	 * things there, and in a war (33.20) the enemy village's guards, but nothing else of it.
+	 */
+	public static boolean mayHurt(Level level, Player player, Entity entity) {
+		return !kept(entity) || io.github.jcondedata.aliveworkplace.realm.Feuds.mayFight(player, entity) || mayChange(level, player, entity.blockPosition());
 	}
 
 	/** What a protected village keeps others from hurting. */

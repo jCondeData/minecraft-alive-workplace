@@ -200,9 +200,13 @@ public final class Guards {
 		return entity instanceof net.minecraft.world.entity.Mob && entity.getTags().contains(VillageRaids.TAG);
 	}
 
-	/** A foe for this guard: any monster, and creepers too once the guard carries a bow. */
+	/**
+	 * A foe for this guard: any monster, and creepers too once the guard carries a bow; in a war (33.20), the enemy side's
+	 * owners and their friends inside the guard's village ({@link io.github.jcondedata.aliveworkplace.realm.Feuds#warFoe}).
+	 */
 	public static boolean isFoe(LivingEntity entity, Villager guard) {
-		return isFoe(entity) || entity.isAlive() && entity instanceof Creeper && hasBow(guard);
+		return isFoe(entity) || entity.isAlive() && entity instanceof Creeper && hasBow(guard)
+			|| io.github.jcondedata.aliveworkplace.realm.Feuds.warFoe(entity, guard);
 	}
 
 	/** A bow a guard can shoot with (kept in their off hand). */

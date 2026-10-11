@@ -196,6 +196,8 @@ public final class Board {
 		boolean inDollars = Money.cobbleDollars();
 		int treasury = entity.treasury();
 		int start = price(level, hall, good);
+		// A feud (33.20): the board pays a rival's people 25% less
+		int percent = io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, player, false);
 		// What the treasury can pay for, before anything moves
 		int wanted = all ? carried / good.bundle() : 1;
 		int planned = 0;
@@ -203,11 +205,11 @@ public final class Board {
 		int price = start;
 		Stop stop = Stop.NONE;
 		while (planned < wanted) {
-			if (owed + price > treasury) {
+			if (owed + share(price, percent) > treasury) {
 				stop = Stop.TREASURY;
 				break;
 			}
-			owed += price;
+			owed += share(price, percent);
 			planned++;
 			price = Prices.sold(good.basePrice(), price);
 		}
@@ -227,7 +229,7 @@ public final class Board {
 				stop = Stop.ROOM;
 				break;
 			}
-			owed += price;
+			owed += share(price, percent);
 			done++;
 			price = Prices.sold(good.basePrice(), price);
 		}
@@ -274,7 +276,7 @@ public final class Board {
 				stop = Stop.PACK;
 				break;
 			}
-			int cost = TradePage.selling(level, hall, price);
+			int cost = share(TradePage.selling(level, hall, price), io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, player, true));
 			long dueDollars = dollars(total + cost) - dollars(total);
 			int dueEmeralds = wholeUp(total + cost) - wholeUp(total);
 			if (!Money.canAfford(player, dueDollars, dueEmeralds) || !Money.charge(player, dueDollars, dueEmeralds)) {
@@ -303,6 +305,11 @@ public final class Board {
 		move(level, hall, good, price, done);
 		level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_TRADE, SoundSource.PLAYERS, 0.8f, 1.1f);
 		return new Result(false, good, done, done * good.bundle(), paid, all && stop == Stop.STOCK ? Stop.NONE : stop);
+	}
+
+	/** {@code percent} of {@code cents}, rounded (a feud's 75% or 125%, 33.20). */
+	public static int share(int cents, int percent) {
+		return percent == 100 ? cents : (int) Math.round(cents * percent / 100.0);
 	}
 
 	/** {@code cents} in whole emeralds, rounded up (what a buyer is charged). */

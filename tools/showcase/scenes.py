@@ -393,6 +393,13 @@ SCENES = [
       "alliance, its gifts switch and its End button", 65,
       [("01_the_letter", "Rowan's letter: an alliance offered to Ashford"), ("02_the_offer", "Ashford's Pacts tab: Accept or Decline"),
        ("03_the_alliance", "The alliance with Thornholm, and its End button")]),
+    # Feuds and war (ROADMAP 33.20): the feud's letter, the Pacts tab with Offer peace, and with PvP on a guard fighting the rival owner
+    S("feud", "Realm", "A feud with another player's village, and war on a PvP server",
+      "Rowan, who owns Thornholm, declared a feud on Ashford, the player's Town: the letter came to the player, who read it; "
+      "Ashford's Pacts tab shows the feud with Thornholm and its Offer peace button. A day later Rowan raised it to war (PvP "
+      "is on): the player walks into Thornholm and its guards, sword and shield, come for them; nothing else may be harmed", 70,
+      [("01_the_letter", "Rowan's letter: a feud declared on Ashford"), ("02_the_feud", "Ashford's Pacts tab: the feud and Offer peace"),
+       ("08_war", "In the war, Thornholm's guards fight Ashford's owner")]),
     # The weekly leaderboard (ROADMAP 33.19): the chat at Sunday 19:00, the winner's ribbon, the Trade page's toggle
     S("leaderboard", "Realm", "The weekly leaderboard in chat",
       "A week of numbers is in for Ashford (the player's Town), and Rowan's Thornholm and Farholt (a realm); the clock "

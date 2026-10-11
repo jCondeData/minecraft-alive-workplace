@@ -129,6 +129,8 @@ range is in brackets.
 | `realmRelief` | on | 1.7 | When a realm village is raided, the capital and members within 1,024 blocks send riders, an emerald each from the realm treasury. |
 | `tradePacts` | on | 1.7 | A caravan route to another player's village needs a trade pact, offered and accepted on the hall's Pacts tab; pact caravans are paid for at board prices unless the sender gives. Off: routes need no pact. See [Trade pacts and alliances](pacts.md). |
 | `alliances` | on | 1.7 | Allied villages of different owners send relief riders to each other's raids within 1,024 blocks. Off: no alliances offered, no riders. |
+| `feuds` | on | 1.7 | An owner can declare a feud on another player's village or realm on the Pacts tab: pacts and caravans end, each board pays the rival's people 25% less and charges them 25% more; peace by letter, or it fades after 7 days. Off: no feuds; existing ones end quietly. See [Feuds and war](feuds.md). |
+| `feudWars` | on | 1.7 | With PvP on, a feud can become a war of up to 3 days in which guards fight the other side's owners inside their own village. Off: no wars, even with PvP on. |
 | `weeklyLeaderboard` | on | 1.7 | Once a week everyone online hears the Biggest, Richest, Happiest, Most Legends and Greatest realm; winners wear a ribbon for a week. Off: nothing counted or announced. See [The weekly leaderboard](leaderboard.md). |
 | `leaderboardDay` | `sunday` | 1.7 | The day the leaderboard is read out, `monday` to `sunday`, server time. In the file only. |
 | `leaderboardHour` | 19 (0 to 23) | 1.7 | The hour the leaderboard is read out, server time. |

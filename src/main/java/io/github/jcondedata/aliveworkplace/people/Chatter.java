@@ -62,7 +62,9 @@ public final class Chatter {
 		// An elder's own lines (34.19)
 		Map.entry("elder", 4),
 		// The village's trade (33.4): a good that sells well elsewhere, a glut at home, something dear
-		Map.entry("trade_sells_well", 3), Map.entry("trade_glut", 3), Map.entry("trade_dear", 3));
+		Map.entry("trade_sells_well", 3), Map.entry("trade_glut", 3), Map.entry("trade_dear", 3),
+		// A feud with another owner's village or realm (33.20)
+		Map.entry("feud", 3));
 	private static final Map<UUID, Long> LAST = new HashMap<>();
 
 	public static void init() {
@@ -137,6 +139,9 @@ public final class Chatter {
 		}
 		if (VillageRaids.active(hall).isPresent()) {
 			news.add("raid");
+		}
+		if (io.github.jcondedata.aliveworkplace.realm.Feuds.rivalName(level, hall) != null) {
+			news.add("feud"); // villagers grumble about the rivals (33.20)
 		}
 		if (villager.isBaby()) {
 			news.add("child");
@@ -296,6 +301,10 @@ public final class Chatter {
 			case "bandits" -> BanditCamps.near(level, hall).map(camp -> VillageHallScreen.where(hall, camp.pos())).orElse(Component.empty());
 			case "married", "courting" -> Couples.partner(villager) != null ? Couples.partner(villager).name() : Component.empty();
 			case "legend_here", "legend_guest", "legend_strike", "legend_self" -> legendArg(level, villager, hall, topic);
+			case "feud" -> {
+				Component rival = io.github.jcondedata.aliveworkplace.realm.Feuds.rivalName(level, hall);
+				yield rival != null ? rival : Component.empty();
+			}
 			case "tonic" -> Tonics.active(villager) != null ? Tonics.active(villager).item().getDescription() : Component.empty();
 			case "guild" -> level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && guildOf(level, villager, entity) != null
 				? guildOf(level, villager, entity).name() : Component.empty();

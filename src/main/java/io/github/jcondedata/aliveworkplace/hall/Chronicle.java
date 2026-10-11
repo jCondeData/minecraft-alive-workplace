@@ -44,7 +44,9 @@ public final class Chronicle {
 		/** A drought, begun, foretold and ended (32.15, 32.17). */
 		DROUGHT(Items.DEAD_BUSH),
 		/** A plague, begun, foretold and ended (32.15, 32.18). */
-		PLAGUE(Items.FERMENTED_SPIDER_EYE);
+		PLAGUE(Items.FERMENTED_SPIDER_EYE),
+		/** A feud declared, peace offered or made, a war raised and ended with the guards each side lost (33.20). */
+		FEUD(Items.IRON_SWORD);
 
 		public final Item icon;
 

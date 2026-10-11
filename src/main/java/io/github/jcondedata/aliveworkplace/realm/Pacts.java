@@ -194,7 +194,7 @@ public final class Pacts {
 
 	public static void init() {
 		Platform.get().onServerTick(Pacts::serverTick);
-		TradePage.register(TradePage.Tab.PACTS, PactsTab::icon, PactsTab::fill, () -> ENABLED);
+		TradePage.register(TradePage.Tab.PACTS, PactsTab::icon, PactsTab::fill, () -> ENABLED || Feuds.ENABLED);
 	}
 
 	static void serverTick(MinecraftServer server) {
@@ -264,12 +264,15 @@ public final class Pacts {
 
 	/** Whether the village at {@code from} may send caravans to the one at {@code to}: the same owner (or friends), or a pact, or pacts off. */
 	public static boolean mayRoute(ServerLevel level, BlockPos from, BlockPos to) {
-		if (!ENABLED) {
-			return true;
-		}
 		MinecraftServer server = level.getServer();
 		GlobalPos a = GlobalPos.of(level.dimension(), from);
 		GlobalPos b = GlobalPos.of(level.dimension(), to);
+		if (Feuds.feuding(server, a, b)) { // 33.20: no caravans between feuding sides
+			return false;
+		}
+		if (!ENABLED) {
+			return true;
+		}
 		return !strangers(server, a, b) || Data.get(server).pact(a, b) != null;
 	}
 
@@ -317,6 +320,7 @@ public final class Pacts {
 			: !Realms.mayRule(server, from, player) ? "not_yours"
 			: owner == null || !strangers(server, from, to) ? "not_stranger"
 			: hall.distSqr(target) > (double) Caravans.RANGE * Caravans.RANGE ? "too_far"
+			: Feuds.feuding(server, from, to) ? "feud"
 			: data.pact(from, to) != null && (!alliance || data.pact(from, to).alliance()) ? "already"
 			: data.offer(from, to) != null ? "offered" : null;
 		if (key != null) {
@@ -473,7 +477,8 @@ public final class Pacts {
 			int pacts = of(level.getServer(), at).size();
 			int offers = to(level.getServer(), at).size();
 			return VillageHallScreen.icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.pact.tab"), ChatFormatting.GOLD,
-				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.tab_count", pacts, offers), ChatFormatting.GRAY));
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.pact.tab_count", pacts, offers), ChatFormatting.GRAY),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.tab_count", Feuds.of(level.getServer(), at).size()), ChatFormatting.GRAY));
 		}
 
 		static void fill(ChoiceMenu menu, ServerLevel level, BlockPos hall, @Nullable ServerPlayer viewer, Runnable again) {
@@ -481,7 +486,9 @@ public final class Pacts {
 			GlobalPos at = GlobalPos.of(level.dimension(), hall);
 			int slot = VillageHallScreen.FIRST_ROW;
 			Set<GlobalPos> shown = new LinkedHashSet<>();
-			for (Offer offer : to(server, at)) { // Accept and Decline
+			Set<GlobalPos> feuding = new LinkedHashSet<>();
+			slot = Feuds.fillTab(menu, level, hall, again, slot, feuding); // feuds first: peace, war (33.20)
+			for (Offer offer : ENABLED ? to(server, at) : List.<Offer>of()) { // Accept and Decline
 				if (slot + 1 >= ChoiceMenu.SIZE) {
 					break;
 				}
@@ -501,7 +508,7 @@ public final class Pacts {
 				});
 				shown.add(offer.from());
 			}
-			for (Pact pact : of(server, at)) { // the pact (a click: gifts on or off) and End
+			for (Pact pact : ENABLED ? of(server, at) : List.<Pact>of()) { // the pact (a click: gifts on or off) and End
 				if (slot + 1 >= ChoiceMenu.SIZE) {
 					break;
 				}
@@ -529,7 +536,13 @@ public final class Pacts {
 			}
 			for (Caravans.Village v : Caravans.neighbours(level, hall)) { // offers to make
 				GlobalPos other = GlobalPos.of(level.dimension(), v.hall());
-				if (shown.contains(other) || !strangers(server, at, other) || Data.get(server).offer(at, other) != null || slot + 1 >= ChoiceMenu.SIZE) {
+				if (feuding.contains(other) || !strangers(server, at, other) || slot + 1 >= ChoiceMenu.SIZE) {
+					continue;
+				}
+				if (Feuds.ENABLED && !Feuds.feuding(server, at, other)) {
+					Feuds.declareButton(menu, slot++, level, hall, v, again);
+				}
+				if (!ENABLED || shown.contains(other) || Data.get(server).offer(at, other) != null || slot + 1 >= ChoiceMenu.SIZE) {
 					continue;
 				}
 				Component owner = Component.literal(Realms.ownerName(server, other));

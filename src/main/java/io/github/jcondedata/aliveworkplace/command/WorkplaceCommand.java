@@ -159,7 +159,34 @@ public final class WorkplaceCommand {
 					.executes(ctx -> story(ctx.getSource(), "next", "")))
 				.then(Commands.literal("stop")
 					.executes(ctx -> story(ctx.getSource(), "stop", ""))))
-			.then(io.github.jcondedata.aliveworkplace.legend.LegendCommand.node()));
+			.then(io.github.jcondedata.aliveworkplace.legend.LegendCommand.node())
+			.then(Commands.literal("classes") // classes switched on, per hall (34.22): operators only
+				.requires(s -> s.hasPermission(2))
+				.then(Commands.literal("status")
+					.executes(ctx -> classes(ctx.getSource(), false)))
+				.then(Commands.literal("reseed")
+					.executes(ctx -> classes(ctx.getSource(), true)))));
+	}
+
+	/** {@code /workplace classes status|reseed} for the nearest Village Hall (ROADMAP 34.22). */
+	public static int classes(CommandSourceStack source, boolean reseed) {
+		ServerLevel level = source.getLevel();
+		net.minecraft.core.BlockPos hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level,
+			net.minecraft.core.BlockPos.containing(source.getPosition())).orElse(null);
+		if (hall == null) {
+			source.sendFailure(Component.translatable("command.aliveworkplace.classes.no_hall"));
+			return 0;
+		}
+		if (!reseed) {
+			for (Component line : io.github.jcondedata.aliveworkplace.people.ClassMigration.status(level, hall)) {
+				source.sendSuccess(() -> line, false);
+			}
+			return 1;
+		}
+		int cleared = io.github.jcondedata.aliveworkplace.people.ClassMigration.reseed(level, hall);
+		Component village = io.github.jcondedata.aliveworkplace.hall.VillageHalls.name(level, hall);
+		source.sendSuccess(() -> Component.translatable("command.aliveworkplace.classes.reseeded", village, cleared), true);
+		return Math.max(1, cleared);
 	}
 
 	/** {@code /workplace story start <arc>|next|stop} in the village the command runs in (an operator's tool, 31.4). */

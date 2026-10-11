@@ -427,6 +427,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.wood.TreeFarms.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.orchard.Orchards.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.berry.BerryBreeders.onDeath(level, villager);
+				io.github.jcondedata.aliveworkplace.people.FamilyBook.onDeath(level, villager); // the Book of Families dates them (34.21)
 				io.github.jcondedata.aliveworkplace.people.Couples.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
 				io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager); // (before the grave keeps the villager)

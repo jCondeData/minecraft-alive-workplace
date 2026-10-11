@@ -60,6 +60,25 @@ asks for the steps, `latest.log` and any crash report).
   family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)
   is named after you; at 10 hearts a villager sends you a weekly parcel with a letter; Legends visit only villages
   where someone is a Friend (Rare) or a Hero (Legendary); a Lord may set edicts and a Hero may propose one to the owner.
+- **Classes switch on by themselves** (34.22, 1.8): every village with a hall from an older save finds its places, 16
+  villagers every 30 seconds: each household gets the highest class it already qualifies for (luxuries aside, at most
+  Burgher), children their parents', grown-ups an age spread over the last 100 days and a family name. The chronicle
+  and the players there hear it once ("The people of Thornholm found their places: 14 peasants, 6 artisans and 2
+  burghers"), then a week of settling in (`classGraceDays`, 7): nobody falls a class, luxuries aren't needed yet,
+  nobody retires, and the Classes page says "Settling in: 5 days left" with what each class will need. Nobody loses a
+  job, no rank or takings drop, and build sites, quarries, daycare Pokémon, fossils and parcels are untouched.
+  Operators: `/workplace classes status` and `/workplace classes reseed`.
+- **Family trees** (34.21, 1.8): every villager in a village with a hall has a family name, founded or taken from a
+  parent, shown on the hall as "Dara (Ashby)" (the name over their head never changes). Each hall keeps the Book of
+  Families: up to 400 people who lived there, the longest dead forgotten first. A villager's page has a Family button:
+  grandparents, parents, partner, brothers and sisters, children and grandchildren, the dead marked. Births in the
+  chronicle name the grandparents, and a family's third generation is noted; the Printer prints any family's tree as a
+  book for 2 emeralds. Babies now remember their parents by id too. Config `familyNames`.
+- **Retirement and apprentices** (34.20, 1.8): an elder with a job retires once a jobless villager can take over (their
+  own child first), at most one a village every 3 days and never while they hold a site, a quarry, Pokémon, fossils or
+  parcels. The successor spends 2 days "learning from Bram", then takes the workstation, the job one level below and its
+  fields, routes and orders. Retired elders keep their trades, never work again, and mentor Novices and Apprentices of
+  their old trade, who learn 50% faster ("taught by Bram"). Chronicle entries; config `elderRetirement`.
 - **Marching on the lair, for 1.6** (32.13). On the hall's Defence page, **Muster a war party** puts three in four of
   the village's guards (up to 12) on the Rally Banner in your inventory and raises it; they gather by the hall. **Hire
   the Siege-breakers**: two crossbows, two knights and a medic for 30 emeralds (3 less a level of Commerce), who stay
@@ -88,6 +107,9 @@ asks for the steps, `latest.log` and any crash report).
   pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
   The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
   34.18's render layer.
+- **Dressed by class, in game** (34.18): Artisans, Burghers and Nobles now wear their class over their job's outfit,
+  children too, and elders have grey brows and a beard; it changes as soon as a household rises or falls or a villager
+  becomes an elder. Zombie villagers never wear it. `classOutfits` in the settings turns it off.
 - The benchmark times our own code each tick (25.3, testers, benchmark servers only): with
   `-Daliveworkplace.benchmark=true` the log gets our code's p50, p99 and worst tick each minute and a line for each
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.

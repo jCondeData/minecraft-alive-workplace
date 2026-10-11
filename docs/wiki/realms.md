@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released).
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15
+Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16
 
 ## What a player sees
 
@@ -269,29 +269,36 @@ topic at half pace ("helping the capital with Swift Hands Novice"), or on the re
 
 The capital's research screen has a **Realm** tab (a gold helmet) at the right end of its bottom row. It shows the
 realm topics: the realm's title and treasury in the top icon, then each topic with its description, level, its price
-("Next level: 24× Paper, 4× Book, and 16 emeralds from the realm treasury") and what it needs first. The capital's
-owner, their friends and operators click one to choose it ("The realm's scholars will research Royal Charter next.");
+("Next level: 16× Paper, 2× Book, and 8 emeralds from the realm treasury") and what it needs first. The capital's
+owner, their friends and operators click one to choose it ("The realm's scholars will research Royal Roads next.");
 others are told "Only the capital's owner and their friends choose the realm's research." The capital's scholars take
 it up when they have nothing of their own: they pay the paper and books from their chests and the village store and
-the emeralds from the realm treasury (a movement "Realm research: Royal Charter"); while the treasury is short they
+the emeralds from the realm treasury (a movement "Realm research: Royal Roads"); while the treasury is short they
 wait ("waits for 16 emeralds from the realm treasury"). A finished level is told to every member's owner online
-("the Barony of Thornholm: the realm's scholars finished Royal Charter Novice. One more trader on market days in every
-member village a level") and written in the capital's chronicle.
+("the Barony of Thornholm: the realm's scholars finished Royal Roads Novice. Caravans between the realm's villages
+arrive 25% sooner a level") and written in the capital's chronicle.
 
-The mod's realm topics:
+The realm's eight topics (33.16; they replaced 33.15's six interim ones). Every level costs 16 paper, 8 emeralds from
+the realm treasury and 4,800 research points, and levels after the first 2 books as well:
 
-| Topic | Levels | A level costs | Each level | Needs |
-|---|---|---|---|---|
-| The King's Peace | 2 | 24 paper, 4 books, 16 emeralds, 4,800 points | night raids 15% less likely (`raid_chance` 0.85) | |
-| Royal Charter | 2 | 24 paper, 4 books, 24 emeralds, 4,800 points | one more market-day trader (`market_traders` 1) | |
-| Crown Granaries | 2 | 16 paper, 2 books, 16 emeralds, 4,800 points | villagers eat 5% less (`food_use` -5) | |
-| Royal Physicians | 2 | 24 paper, 6 books, 24 emeralds, 7,200 points | illness a fifth less likely (`sickness` -20) | The King's Peace I |
-| Court of Scholars | 3 | 32 paper, 6 books, 32 emeralds, 7,200 points | 10% more XP (`xp` 10) | Royal Charter I |
-| Realm Feasts | 2 | 24 paper, 4 books, 32 emeralds, 7,200 points | wellbeing 5 points higher (`wellbeing` 5) | Crown Granaries I |
+| Topic | Levels | Each level | Needs |
+|---|---|---|---|
+| Royal Roads (a dirt path) | 2 | caravans between the realm's villages arrive 25% sooner (`caravan_speed` 25) | |
+| Common Coin (a gold nugget) | 2 | the board's spread 3 points narrower: it sells at 107%, then 104% of what it pays (`board_spread` 3) | Royal Roads I |
+| Royal Post (a feather) | 1 | parcels between mailboxes in the realm's villages go out at noon as well as at dawn (`noon_post`) | Royal Roads I |
+| Ferry Charter (an oak boat) | 1 | Travel Tickets between posts in the realm's villages cost half, at least an emerald, for members' owners and their friends (`ticket_discount` 50) | Royal Post I |
+| Levies (iron horse armor) | 2 | relief bands one rider bigger per village (`relief_riders` 1; 33.17's bands read it) | |
+| Charters (a map) | 2 | a Colony Charter costs a quarter less (32, 24, 16 emeralds), and the settlers bring 16 more of each supply (`colony_charter`) | Royal Roads II |
+| Concord (a bell) | 2 | wellbeing 5% higher in every member village (`wellbeing` 5); the pace it makes still tops out at 25% faster | Levies I |
+| Granaries (a hay bale) | 1 | at dawn a member whose store holds under 16 meals is sent up to 32 by caravan from the member with the fullest store, which keeps 16; this caravan needs no route and isn't one of the three (`granary`) | Concord I, Royal Roads II |
+
+A save that had chosen one of the interim topics drops it quietly (paid or not) and the realm chooses again; levels of
+the interim topics stay in the file but count for nothing.
 
 **How it works.** `realm/RealmResearch` reads `data/<ns>/realm_research/<topic>.json` on every data load (`/reload`
 too): `icon` (an item, default a book), `name` and `description` (components), `levels` (1 to 10, default 1),
-`points`, `paper`, `books` and `emeralds` (a level each), `needs` (topic id to level) and `effect`, one effect of the
+`points`, `paper`, `books` and `emeralds` (a level each; `books_from_level`, default 1, is the first level that costs
+books), `needs` (topic id to level) and `effect`, one effect of the
 [edicts' toolbox](edicts.md) (`work_pace`, `market_traders`, `sickness`, `food_use`, `raid_chance`, `xp`, `wellbeing`,
 `loot_luck`, `flag`...) that counts once a level. A pack's topic is kept by its full id, ours by path. A broken file is
 logged and skipped; one that needs a topic that isn't there is skipped too.
@@ -305,10 +312,20 @@ logged and skipped; one that needs a topic that isn't there is skipped too.
   then a Legend's tree, then the capital. A member's help fills the capital's topic up to its last point, never
   past it: the capital's scholar finishes it at their desk (the chat line and Architecture's blueprint come from there).
 - The `realms` switch off: nothing is shared, no Realm tab, no realm effects; the realm research stays saved.
+- 33.16's own effect types (`realm/RealmEffects`) are read through `RealmResearch.effects(server, realm, type)`, which
+  needs no loaded hall: `caravan_speed` by `Caravans.trip` (both villages of one realm), `board_spread` by
+  `TradePage.sellPercent`, `noon_post` by `PostOffice.noon` (the overworld's noon; the mailbox's village and the
+  recipient's mailbox's village of one realm), `ticket_discount` by `TravelNetwork.fare(server, from, to, player)`,
+  `relief_riders` by `RealmResearch.reliefRiders` (and `RealmResearch.level(level, hall, "levies")`), `colony_charter`
+  by `Colonies.cost` and `Settlers.load`, and `granary` by `RealmResearch.granaries` at each overworld dawn. Concord
+  uses the toolbox's `wellbeing`, so it goes through the edicts' sum like 33.15's effects.
 
 ## Known limits
 
-- No relief riders or edicts yet (33.16, 33.17, 33.21, 33.22); the treasury and the arms are there for them.
+- No relief riders or edicts yet (33.17, 33.21, 33.22); the treasury and the arms are there for them. Levies are
+  counted (`RealmResearch.reliefRiders`) but change nothing a player sees until 33.17's relief bands read them.
+- Granaries only move meals between members whose halls are loaded at dawn and in one dimension; Concord, like the
+  33.15 effects, is off with the `edicts` switch off (the other seven topics aren't).
 - Realm research effects reach the edicts' toolbox, so with the `edicts` switch off they are off too (the scholars'
   levels are still shared). A `work_pace` realm topic would be named "the ... edict" in a worker's pace line; the mod's
   topics don't use it.
@@ -327,6 +344,13 @@ logged and skipped; one that needs a topic that isn't there is skipped too.
 - The invitation letter is written in the server's language (English), like the settlers' letter.
 
 ## Proof
+- `RealmTopicsGameTests` (9, 33.16): `theRealmRowShowsTheEight` (the eight, their prices at levels 1 and 2, icons,
+  tooltips and needs on the capital's Realm row, an old save's interim topic dropped), `royalRoadsSpeedCaravans` (I and
+  II, realms off), `commonCoinNarrowsTheSpread` (I and II), `royalPostDeliversAtNoon` (not without it, the apples in
+  the mailbox), `ferryCharterHalvesTickets` (owner, friend, at least an emerald, a stranger, realms off),
+  `leviesCountRiders` (I and II, realms off), `chartersCheapenColonies` (32, 24, 16; the treasury's share; the
+  settlers' load), `concordRaisesWellbeing` (I and II, the 25% pace top), `granariesFeedTheHungry` (not without it,
+  32 by caravan from the fullest store, no route taken, not to a member with enough).
 - `RealmBuildsGameTests` (33.14): `theColonyCampPlacesWhole`, `theCapitalDrawsTheRoyalHall` (the tab's button, refused
   without a Blank Blueprint, the drawn line, hidden from the table, a hall on the map, the II next, nothing after),
   `theRoyalHallRaisesTheCap` (40 blocks off: no; styled: twice, gifts up to 512; II: three times; realms off; taken

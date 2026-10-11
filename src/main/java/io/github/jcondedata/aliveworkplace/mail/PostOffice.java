@@ -40,6 +40,8 @@ public final class PostOffice extends SavedData {
 	/** Postal desk → last game time its postman worked. */
 	private final Map<GlobalPos, Long> desks = new HashMap<>();
 	private long lastDay = -1;
+	/** The last day the noon mail went out (in memory: a second noon round after a restart finds nothing new). */
+	private long lastNoon = -1;
 
 	public static PostOffice get(MinecraftServer server) {
 		return server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(PostOffice::new, PostOffice::load, null), NAME);
@@ -121,7 +123,15 @@ public final class PostOffice extends SavedData {
 
 	/** Called every tick: at each new dawn the parcels in transit reach their mailboxes. */
 	public void tick(MinecraftServer server) {
-		long day = server.overworld().getDayTime() / 24000L;
+		long time = server.overworld().getDayTime();
+		long day = time / 24000L;
+		if (time % 24000L >= 6000L && lastNoon != day) {
+			boolean first = lastNoon < 0;
+			lastNoon = day;
+			if (!first) {
+				noon(server);
+			}
+		}
 		if (day == lastDay) {
 			return;
 		}
@@ -131,6 +141,26 @@ public final class PostOffice extends SavedData {
 		if (!first) {
 			dawn(server);
 		}
+	}
+
+	/**
+	 * The noon mail (Royal Post, ROADMAP 33.16): parcels in transit between mailboxes in villages of one realm that
+	 * researched it are delivered at noon as well as at dawn. Returns how many arrived.
+	 */
+	public int noon(MinecraftServer server) {
+		List<Parcel> delivered = new ArrayList<>();
+		for (Parcel parcel : List.copyOf(parcels)) {
+			if (parcel.status() == Parcel.Status.IN_TRANSIT
+				&& io.github.jcondedata.aliveworkplace.realm.RealmResearch.noonPost(server, parcel.origin(), mailboxes.get(parcel.to()))
+				&& deliver(server, parcel)) {
+				delivered.add(parcel);
+			}
+		}
+		if (!delivered.isEmpty()) {
+			parcels.removeAll(delivered);
+			setDirty();
+		}
+		return delivered.size();
 	}
 
 	/** Delivers every parcel in transit whose recipient has a mailbox. */

@@ -36,7 +36,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 /**
  * SCENE=realm_research (ROADMAP 33.15): the Barony of Thornholm, with Ashford a member. Thornholm's scholars know Drill
- * II, Swift Hands III and Hearth I; the realm has The King's Peace I and is researching the Royal Charter, paid from the
+ * II, Swift Hands III and Hearth I; the realm has Royal Roads I and is researching Common Coin, paid from the
  * treasury and 40% done. The capital's research screen, then its Realm tab with the realm topics; a realm topic's
  * tooltip; last, Ashford's research screen, where Drill is "From the capital".
  */
@@ -87,7 +87,7 @@ final class RealmResearchScene {
 				}
 			});
 		}
-		// The Realm row: every realm topic, The King's Peace done, the Royal Charter being researched.
+		// The Realm row: the eight realm topics (33.16), Royal Roads I done, Common Coin being researched.
 		if (tick == 450) {
 			ScreenshotHarness.pointAt(mc, 4);
 		}
@@ -96,13 +96,15 @@ final class RealmResearchScene {
 			ScreenshotHarness.shot(mc, "02_the_realm_row");
 			server.execute(() -> {
 				boolean row = player(server).containerMenu instanceof ChoiceMenu menu
-					&& menu.icon(ResearchScreen.TOPIC_SLOTS[slotOf("royal_charter")]).is(Items.GOLD_INGOT)
-					&& menu.icon(ResearchScreen.TOPIC_SLOTS[slotOf("kings_peace")]).is(Items.BELL);
-				Showcase.check(row, "the Realm tab lists the realm topics");
+					&& RealmResearch.all().size() == 8
+					&& menu.icon(ResearchScreen.TOPIC_SLOTS[slotOf("common_coin")]).is(Items.GOLD_NUGGET)
+					&& menu.icon(ResearchScreen.TOPIC_SLOTS[slotOf("royal_roads")]).is(Items.DIRT_PATH)
+					&& menu.icon(ResearchScreen.TOPIC_SLOTS[slotOf("granaries")]).is(Items.HAY_BLOCK);
+				Showcase.check(row, "the Realm tab lists the eight realm topics");
 			});
 		}
 		if (tick == 490) {
-			ScreenshotHarness.pointAt(mc, ResearchScreen.TOPIC_SLOTS[slotOf("court_of_scholars")]);
+			ScreenshotHarness.pointAt(mc, ResearchScreen.TOPIC_SLOTS[slotOf("granaries")]);
 		}
 		if (tick == 510) {
 			mc.getToasts().clear();
@@ -183,8 +185,8 @@ final class RealmResearchScene {
 		RealmData.Realm realm = data.realmOf(GlobalPos.of(level.dimension(), hall));
 		if (realm != null) {
 			data.putRealm(realm.withTreasury(18_400, realm.ledger()));
-			Research.State realmState = new Research.State(Map.of("kings_peace", 1), Optional.of("royal_charter"),
-				RealmResearch.get("royal_charter").map(t -> t.points() * 2 / 5).orElse(0), true);
+			Research.State realmState = new Research.State(Map.of("royal_roads", 1), Optional.of("common_coin"),
+				RealmResearch.get("common_coin").map(t -> t.points() * 2 / 5).orElse(0), true);
 			data.putStudy(data.study(realm.id()).withResearch(realmState));
 		}
 		scholar = scholarAt(level, hall.offset(-2, 0, 2));

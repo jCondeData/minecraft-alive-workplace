@@ -130,6 +130,14 @@ public final class TravelNetwork extends SavedData {
 		return best;
 	}
 
+	/**
+	 * The fare {@code player} pays: {@link #fare(GlobalPos, GlobalPos)}, less the Ferry Charter's discount between posts
+	 * in villages of one realm for members' owners and their friends (ROADMAP 33.16).
+	 */
+	public static int fare(net.minecraft.server.MinecraftServer server, GlobalPos from, GlobalPos to, java.util.UUID player) {
+		return io.github.jcondedata.aliveworkplace.realm.RealmResearch.fare(server, from, to, player, fare(from, to));
+	}
+
 	/** Fare in emeralds: one per 256 blocks (at least 1, at most 16); 8 to another dimension. */
 	public static int fare(GlobalPos from, GlobalPos to) {
 		if (from.dimension() != to.dimension()) {

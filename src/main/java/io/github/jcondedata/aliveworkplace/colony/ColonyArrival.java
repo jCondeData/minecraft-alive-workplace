@@ -345,7 +345,7 @@ public final class ColonyArrival {
 		List<Build> builds = new ArrayList<>();
 		ChestBlockEntity chest = chest(level, box);
 		List<ItemStack> load = new ArrayList<>();
-		for (Map.Entry<Item, Integer> e : order.supplies().entrySet()) {
+		for (Map.Entry<Item, Integer> e : Settlers.load(server, order).entrySet()) {
 			int left = e.getValue();
 			while (left > 0) {
 				ItemStack stack = new ItemStack(e.getKey(), Math.min(left, e.getKey().getDefaultMaxStackSize()));

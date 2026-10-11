@@ -396,10 +396,10 @@ SCENES = [
     # Shared research (ROADMAP 33.15): the capital's Realm tab with the realm topics; a member's levels from the capital
     S("realm_research", "Realm", "Shared research: the Realm row and levels from the capital",
       "Thornholm, capital of the Barony with Ashford a member, knows Drill II, Swift Hands III and Hearth I; its research "
-      "screen has the Realm tab on the bottom row, which lists the realm topics: The King's Peace I done and the Royal Charter "
-      "40% along, paid from the realm treasury; the Court of Scholars' tooltip shows its price in paper, books and treasury "
-      "emeralds; Ashford's own research screen shows Drill II from the capital", 60,
-      [("01_the_realm_tab", "The capital's research screen: the Realm tab"), ("02_the_realm_row", "The Realm row: the realm topics"),
+      "screen has the Realm tab on the bottom row, which lists the eight realm topics: Royal Roads I done and Common Coin "
+      "40% along, paid from the realm treasury; the Granaries' tooltip shows its price in paper and treasury emeralds and "
+      "what it needs (Concord I, Royal Roads II); Ashford's own research screen shows Drill II from the capital", 60,
+      [("01_the_realm_tab", "The capital's research screen: the Realm tab"), ("02_the_realm_row", "The Realm row: the eight realm topics"),
        ("03_a_realm_topic", "A realm topic: its price and what it needs"), ("04_from_the_capital", "Ashford: Drill from the capital")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",

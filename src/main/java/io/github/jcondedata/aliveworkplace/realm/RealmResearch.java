@@ -76,23 +76,24 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 	 * @param points   research points a level
 	 * @param paper    paper a level, from the capital's scholars' chests
 	 * @param books    books a level, from the village store and the scholars' chests
+	 * @param booksFrom the first level that costs books (2: "books a level after the first", 33.16)
 	 * @param emeralds emeralds a level, from the realm treasury
 	 * @param effect   what each level does in every member village
 	 */
 	public record Topic(ResourceLocation id, Item icon, Component name, Component description, int levels, int points, int paper, int books,
-						int emeralds, Map<String, Integer> needs, CivicEffects.Effect effect) {
+						int booksFrom, int emeralds, Map<String, Integer> needs, CivicEffects.Effect effect) {
 		/** Its id as kept in the realm: ours by path, a pack's in full. */
 		public String key() {
 			return id.getNamespace().equals(AliveWorkplace.MOD_ID) ? id.getPath() : id.toString();
 		}
 
-		/** The paper and books a level (the emeralds come from the treasury). */
-		public Map<Item, Integer> items() {
-			return new Research.Cost(paper, books, 0).items();
+		/** The paper and books level {@code lvl} costs (the emeralds come from the treasury). */
+		public Map<Item, Integer> items(int lvl) {
+			return new Research.Cost(paper, lvl >= booksFrom ? books : 0, 0).items();
 		}
 	}
 
-	record Body(Item icon, Component name, Component description, int levels, int points, int paper, int books, int emeralds,
+	record Body(Item icon, Component name, Component description, int levels, int points, int paper, int books, int booksFrom, int emeralds,
 				Map<String, Integer> needs, CivicEffects.Effect effect) {
 		static final Codec<Body> CODEC = RecordCodecBuilder.create(i -> i.group(
 			ITEM.optionalFieldOf("icon", Items.BOOK).forGetter(Body::icon),
@@ -102,6 +103,7 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 			Codec.intRange(1, 1_000_000).fieldOf("points").forGetter(Body::points),
 			Codec.intRange(0, 4096).optionalFieldOf("paper", 0).forGetter(Body::paper),
 			Codec.intRange(0, 4096).optionalFieldOf("books", 0).forGetter(Body::books),
+			Codec.intRange(1, 10).optionalFieldOf("books_from_level", 1).forGetter(Body::booksFrom),
 			Codec.intRange(0, 4096).optionalFieldOf("emeralds", 0).forGetter(Body::emeralds),
 			Codec.unboundedMap(Codec.STRING, Codec.intRange(1, 10)).optionalFieldOf("needs", Map.of()).forGetter(Body::needs),
 			CivicEffects.CODEC.fieldOf("effect").forGetter(Body::effect)
@@ -113,6 +115,8 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 
 	public static void init() {
 		TreeEffects.init();
+		RealmEffects.init();
+		Platform.get().onServerTick(RealmResearch::tick);
 		Platform.get().onDataReload(AliveWorkplace.id(FOLDER), new RealmResearch());
 		Research.SHARING = RealmResearch::shared;
 		CivicEffects.EXTRA = RealmResearch::effects;
@@ -143,7 +147,7 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 	/** Reads one file; throws naming what's wrong. */
 	public static Topic read(ResourceLocation id, JsonElement json) {
 		Body b = Body.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(IllegalArgumentException::new);
-		return new Topic(id, b.icon(), b.name(), b.description(), b.levels(), b.points(), b.paper(), b.books(), b.emeralds(), Map.copyOf(b.needs()), b.effect());
+		return new Topic(id, b.icon(), b.name(), b.description(), b.levels(), b.points(), b.paper(), b.books(), b.booksFrom(), b.emeralds(), Map.copyOf(b.needs()), b.effect());
 	}
 
 	/** Puts the topics in place, in id order (a reload; tests). A topic that needs one that isn't there, or past its top, is left out. */
@@ -262,8 +266,17 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 
 	// ---- the realm topics ----
 
+	/**
+	 * The realm's progress on its topics. A topic chosen in a save whose file is gone (33.16 replaced 33.15's interim six)
+	 * is dropped quietly, paid or not, so the realm can choose again.
+	 */
 	public static Research.State state(MinecraftServer server, RealmData.Realm realm) {
-		return RealmData.get(server).study(realm.id()).research();
+		Research.State state = RealmData.get(server).study(realm.id()).research();
+		if (state.current().isPresent() && !topics.isEmpty() && !topics.containsKey(state.current().get())) {
+			state = new Research.State(state.levels(), Optional.empty(), 0, false);
+			setState(server, realm, state);
+		}
+		return state;
 	}
 
 	static void setState(MinecraftServer server, RealmData.Realm realm, Research.State state) {
@@ -348,12 +361,12 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 			List<BlockPos> own = SupplyContainers.find(level, desk, null);
 			List<BlockPos> books = new ArrayList<>(io.github.jcondedata.aliveworkplace.hall.VillageNeeds.store(level, hall));
 			own.stream().filter(c -> !books.contains(c)).forEach(books::add);
-			for (var e : topic.items().entrySet()) {
+			for (var e : topic.items(next).entrySet()) {
 				List<BlockPos> from = e.getKey() == Items.BOOK ? books : own;
 				int have = (int) SupplyContainers.count(level, from, e.getKey());
 				if (have < e.getValue()) {
 					Requests.post(scholar, new ItemStack(e.getKey()), e.getValue() - have, e.getKey().getDescription(), s -> s.is(e.getKey()));
-					return new Work("needs", Research.describe(topic.items()));
+					return new Work("needs", Research.describe(topic.items(next)));
 				}
 			}
 			long cents = topic.emeralds() * 100L;
@@ -363,7 +376,7 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 				return new Work("treasury", Component.translatable("message.aliveworkplace.research.realm_emeralds", topic.emeralds()));
 			}
 			Requests.clear(scholar);
-			for (var e : topic.items().entrySet()) {
+			for (var e : topic.items(next).entrySet()) {
 				SupplyContainers.extract(level, e.getKey() == Items.BOOK ? books : own, e.getKey(), e.getValue());
 			}
 			RealmTreasury.spend(server, now, cents, Component.translatable("screen.aliveworkplace.realm.treasury.research", topic.name()));
@@ -489,6 +502,232 @@ public final class RealmResearch implements ResourceManagerReloadListener {
 		synchronized (EFFECTS) {
 			EFFECTS.clear();
 		}
+	}
+
+	// ---- the realm topics' own effects (33.16) ----
+
+	/** The effects of type {@code type} {@code realm}'s research gives, once a level (none for no realm, or realms off). */
+	public static <E extends CivicEffects.Effect> List<E> effects(MinecraftServer server, @Nullable RealmData.Realm realm, Class<E> type) {
+		if (realm == null || !Realms.ENABLED) {
+			return List.of();
+		}
+		List<E> out = new ArrayList<>();
+		Research.State state = state(server, realm);
+		for (Topic topic : topics.values()) {
+			if (type.isInstance(topic.effect())) {
+				for (int i = 0; i < level(state, topic); i++) {
+					out.add(type.cast(topic.effect()));
+				}
+			}
+		}
+		return out;
+	}
+
+	/** The effects of type {@code type} the realm of the village at {@code hall} gives it. */
+	public static <E extends CivicEffects.Effect> List<E> effects(ServerLevel level, BlockPos hall, Class<E> type) {
+		return effects(level.getServer(), realm(level, hall), type);
+	}
+
+	/** The realm's level of its topic {@code key} for the village at {@code hall} ("levies"); 0 outside a realm, with realms off or no such topic. */
+	public static int level(ServerLevel level, BlockPos hall, String key) {
+		RealmData.Realm realm = realm(level, hall);
+		Topic topic = topics.get(key);
+		return realm == null || topic == null ? 0 : level(state(level.getServer(), realm), topic);
+	}
+
+	/**
+	 * How many riders bigger the relief bands of the village at {@code hall} are (Levies, one a level; 33.17's relief
+	 * bands read this). 0 outside a realm.
+	 */
+	public static int reliefRiders(ServerLevel level, BlockPos hall) {
+		return effects(level, hall, RealmEffects.ReliefRiders.class).stream().mapToInt(RealmEffects.ReliefRiders::riders).sum();
+	}
+
+	/** The realm both villages (their halls) are members of, or null (realms off, or not one realm). */
+	@Nullable
+	public static RealmData.Realm shared(MinecraftServer server, @Nullable GlobalPos a, @Nullable GlobalPos b) {
+		if (!Realms.ENABLED || a == null || b == null) {
+			return null;
+		}
+		RealmData data = RealmData.get(server);
+		RealmData.Realm realm = data.realmOf(a);
+		return realm != null && realm.has(b) ? realm : null;
+	}
+
+	/** The hall of the village {@code pos} is in, or null. */
+	@Nullable
+	public static GlobalPos villageOf(ServerLevel level, BlockPos pos) {
+		return VillageHalls.nearest(level, pos).map(h -> GlobalPos.of(level.dimension(), h)).orElse(null);
+	}
+
+	/** The realm whose villages hold both {@code a} and {@code b} (any blocks in them, such as mailboxes or posts), or null. */
+	@Nullable
+	public static RealmData.Realm sharedAt(MinecraftServer server, @Nullable GlobalPos a, @Nullable GlobalPos b) {
+		if (!Realms.ENABLED || a == null || b == null) {
+			return null;
+		}
+		ServerLevel la = server.getLevel(a.dimension());
+		ServerLevel lb = server.getLevel(b.dimension());
+		return la == null || lb == null ? null : shared(server, villageOf(la, a.pos()), villageOf(lb, b.pos()));
+	}
+
+	/** How much sooner (percent) a caravan between {@code from} and {@code to} arrives: Royal Roads, when both are of one realm. */
+	public static int caravanSpeed(ServerLevel level, BlockPos from, BlockPos to) {
+		RealmData.Realm realm = shared(level.getServer(), GlobalPos.of(level.dimension(), from), GlobalPos.of(level.dimension(), to));
+		return Math.min(90, effects(level.getServer(), realm, RealmEffects.CaravanSpeed.class).stream().mapToInt(RealmEffects.CaravanSpeed::percent).sum());
+	}
+
+	/** Points narrower the board's spread is in the village at {@code hall} (Common Coin). */
+	public static int boardSpread(ServerLevel level, BlockPos hall) {
+		return effects(level, hall, RealmEffects.BoardSpread.class).stream().mapToInt(RealmEffects.BoardSpread::points).sum();
+	}
+
+	/** Whether parcels between {@code from} and {@code to} (mailboxes) also go out at noon (Royal Post). */
+	public static boolean noonPost(MinecraftServer server, @Nullable GlobalPos from, @Nullable GlobalPos to) {
+		return !effects(server, sharedAt(server, from, to), RealmEffects.NoonPost.class).isEmpty();
+	}
+
+	/**
+	 * The fare from post {@code from} to post {@code to} for {@code player}: {@code fare} less the Ferry Charter's
+	 * discount (at least an emerald) when both posts are in villages of one realm and the player owns a member village or
+	 * is a friend of a member's owner; else {@code fare}.
+	 */
+	public static int fare(MinecraftServer server, GlobalPos from, GlobalPos to, java.util.UUID player, int fare) {
+		RealmData.Realm realm = sharedAt(server, from, to);
+		int percent = effects(server, realm, RealmEffects.TicketDiscount.class).stream().mapToInt(RealmEffects.TicketDiscount::percent).sum();
+		if (percent <= 0) {
+			return fare;
+		}
+		io.github.jcondedata.aliveworkplace.build.Friends friends = io.github.jcondedata.aliveworkplace.build.Friends.get(server);
+		for (GlobalPos member : Realms.members(realm)) {
+			java.util.UUID owner = Realms.ownerOf(server, member);
+			if (owner != null && (owner.equals(player) || friends.mayDirect(owner, player))) {
+				return Math.max(1, (int) Math.round(fare * (100 - Math.min(100, percent)) / 100.0));
+			}
+		}
+		return fare;
+	}
+
+	/** Percent off a Colony Charter in the village at {@code hall} (Charters). */
+	public static int charterDiscount(ServerLevel level, BlockPos hall) {
+		return Math.min(100, effects(level, hall, RealmEffects.ColonyCharter.class).stream().mapToInt(RealmEffects.ColonyCharter::costPercent).sum());
+	}
+
+	/** How many more of each supply the settlers of the village at {@code mother} bring (Charters: the most any level names, not a sum). */
+	public static int charterSupplies(MinecraftServer server, GlobalPos mother) {
+		return effects(server, RealmData.get(server).realmOf(mother), RealmEffects.ColonyCharter.class).stream().mapToInt(RealmEffects.ColonyCharter::supplies).max().orElse(0);
+	}
+
+	// ---- Granaries: the dawn transfer ----
+
+	private static long lastDawn = -1;
+
+	private static void tick(MinecraftServer server) {
+		if (!Realms.ENABLED || topics.isEmpty()) {
+			return;
+		}
+		long day = server.overworld().getDayTime() / 24000L;
+		if (lastDawn < 0) {
+			lastDawn = day;
+			return;
+		}
+		if (day != lastDawn) {
+			lastDawn = day;
+			granaries(server);
+		}
+	}
+
+	/** Meals in the store of the village at {@code hall}. */
+	public static long meals(ServerLevel level, BlockPos hall) {
+		long meals = 0;
+		for (BlockPos chest : io.github.jcondedata.aliveworkplace.hall.VillageNeeds.store(level, hall)) {
+			if (level.getBlockEntity(chest) instanceof net.minecraft.world.Container c) {
+				for (int i = 0; i < c.getContainerSize(); i++) {
+					ItemStack stack = c.getItem(i);
+					if (!stack.isEmpty() && io.github.jcondedata.aliveworkplace.hall.VillageNeeds.isMeal(stack)) {
+						meals += stack.getCount();
+					}
+				}
+			}
+		}
+		return meals;
+	}
+
+	/**
+	 * Granaries at dawn: in every realm with the {@code granary} effect, each loaded member whose store holds fewer than
+	 * {@code below} meals is sent up to {@code meals} from the loaded member (same dimension) with the fullest store, which
+	 * keeps {@code below} of its own. The meals go by caravan ({@code Caravans.sendGranary}), outside the route cap.
+	 * Returns the caravans sent.
+	 */
+	public static int granaries(MinecraftServer server) {
+		if (!Realms.ENABLED) {
+			return 0;
+		}
+		int sent = 0;
+		for (RealmData.Realm realm : RealmData.get(server).realms()) {
+			List<RealmEffects.Granary> granary = effects(server, realm, RealmEffects.Granary.class);
+			if (granary.isEmpty()) {
+				continue;
+			}
+			int below = granary.stream().mapToInt(RealmEffects.Granary::below).max().orElse(16);
+			int meals = granary.stream().mapToInt(RealmEffects.Granary::meals).max().orElse(32);
+			Map<GlobalPos, Long> stores = new LinkedHashMap<>();
+			for (GlobalPos member : Realms.members(realm)) {
+				if (loaded(server, member) != null) {
+					stores.put(member, meals(server.getLevel(member.dimension()), member.pos()));
+				}
+			}
+			for (Map.Entry<GlobalPos, Long> needy : stores.entrySet()) {
+				if (needy.getValue() >= below) {
+					continue;
+				}
+				GlobalPos donor = null;
+				long most = below;
+				for (Map.Entry<GlobalPos, Long> e : stores.entrySet()) {
+					if (!e.getKey().equals(needy.getKey()) && e.getKey().dimension() == needy.getKey().dimension() && e.getValue() > most) {
+						donor = e.getKey();
+						most = e.getValue();
+					}
+				}
+				if (donor == null) {
+					continue;
+				}
+				ServerLevel level = server.getLevel(donor.dimension());
+				int give = (int) Math.min(meals, most - below);
+				List<ItemStack> goods = takeMeals(level, donor.pos(), give);
+				int took = goods.stream().mapToInt(ItemStack::getCount).sum();
+				if (took > 0) {
+					io.github.jcondedata.aliveworkplace.hall.Caravans.sendGranary(level, donor.pos(), needy.getKey().pos(), goods);
+					stores.put(donor, most - took);
+					stores.put(needy.getKey(), needy.getValue() + took);
+					sent++;
+				}
+			}
+		}
+		return sent;
+	}
+
+	/** Takes up to {@code max} meals out of the store of the village at {@code hall}. */
+	private static List<ItemStack> takeMeals(ServerLevel level, BlockPos hall, int max) {
+		List<ItemStack> out = new ArrayList<>();
+		int left = max;
+		for (BlockPos chest : io.github.jcondedata.aliveworkplace.hall.VillageNeeds.store(level, hall)) {
+			if (left <= 0) {
+				break;
+			}
+			if (level.getBlockEntity(chest) instanceof net.minecraft.world.Container c) {
+				for (int i = 0; i < c.getContainerSize() && left > 0; i++) {
+					ItemStack stack = c.getItem(i);
+					if (!stack.isEmpty() && io.github.jcondedata.aliveworkplace.hall.VillageNeeds.isMeal(stack)) {
+						ItemStack taken = c.removeItem(i, Math.min(left, stack.getCount()));
+						left -= taken.getCount();
+						out.add(taken);
+					}
+				}
+				c.setChanged();
+			}
+		}
+		return out;
 	}
 
 	private RealmResearch() {

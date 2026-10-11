@@ -167,7 +167,7 @@ public class RealmResearchGameTests implements FabricGameTest {
 		RealmGameTests.Land land = realm(helper);
 		RealmResearch.Topic topic = RealmResearch.get(TEST_TOPIC).orElse(null);
 		helper.assertTrue(topic != null, "the test topic isn't loaded: " + RealmResearch.all().stream().map(RealmResearch.Topic::key).toList());
-		helper.assertTrue(RealmResearch.get("kings_peace").isPresent() && RealmResearch.get("court_of_scholars").isPresent(), "the mod's realm topics aren't loaded");
+		helper.assertTrue(RealmResearch.get("royal_roads").isPresent() && RealmResearch.get("granaries").isPresent(), "the mod's realm topics aren't loaded");
 		int slot = ResearchScreen.TOPIC_SLOTS[new ArrayList<>(RealmResearch.all()).indexOf(topic)];
 		// a member's screen has no Realm tab
 		helper.assertTrue(ResearchScreen.forTest(land.owner(), land.hall(1)).icon(ResearchScreen.REALM_TAB).isEmpty(), "a member has the Realm tab");

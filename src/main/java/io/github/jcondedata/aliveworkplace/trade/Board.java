@@ -274,7 +274,7 @@ public final class Board {
 				stop = Stop.PACK;
 				break;
 			}
-			int cost = TradePage.selling(price);
+			int cost = TradePage.selling(level, hall, price);
 			long dueDollars = dollars(total + cost) - dollars(total);
 			int dueEmeralds = wholeUp(total + cost) - wholeUp(total);
 			if (!Money.canAfford(player, dueDollars, dueEmeralds) || !Money.charge(player, dueDollars, dueEmeralds)) {
@@ -399,7 +399,7 @@ public final class Board {
 				case SMALL -> Component.translatable("message.aliveworkplace.board.small", good);
 				case ROOM -> Component.translatable("message.aliveworkplace.board.room", village, good);
 				case STOCK -> Component.translatable("message.aliveworkplace.board.stock", village, good, Caravans.KEEP);
-				case MONEY -> Component.translatable("message.aliveworkplace.board.money", TradePage.money(TradePage.selling(price(level, hall, result.good()))), good);
+				case MONEY -> Component.translatable("message.aliveworkplace.board.money", TradePage.money(TradePage.selling(level, hall, price(level, hall, result.good()))), good);
 				default -> Component.translatable("message.aliveworkplace.board.not_open");
 			}).withStyle(ChatFormatting.YELLOW);
 		}

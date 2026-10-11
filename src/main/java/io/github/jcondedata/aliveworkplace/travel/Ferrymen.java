@@ -49,7 +49,7 @@ public final class Ferrymen {
 		}
 		network.visit(player.getUUID(), here);
 		for (TravelNetwork.Post post : network.known(player.getUUID(), here)) {
-			offers.add(new MerchantOffer(new ItemCost(Items.EMERALD, TravelNetwork.fare(here.pos(), post.pos())), ticket(post), 99, 1, 0f));
+			offers.add(new MerchantOffer(new ItemCost(Items.EMERALD, TravelNetwork.fare(level.getServer(), here.pos(), post.pos(), player.getUUID())), ticket(post), 99, 1, 0f));
 		}
 		if (offers.isEmpty()) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.travel.nowhere").withStyle(ChatFormatting.YELLOW));
@@ -94,7 +94,7 @@ public final class Ferrymen {
 		java.util.List<TravelNetwork.Post> known = TravelNetwork.get(level.getServer()).known(player.getUUID(), here);
 		for (int i = 0; i < known.size() && FIRST_DESTINATION_SLOT + i < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; i++) {
 			TravelNetwork.Post post = known.get(i);
-			int emeralds = TravelNetwork.fare(here.pos(), post.pos());
+			int emeralds = TravelNetwork.fare(level.getServer(), here.pos(), post.pos(), player.getUUID());
 			long dollars = (long) emeralds * io.github.jcondedata.aliveworkplace.work.Money.DOLLARS_PER_EMERALD;
 			boolean chosen = post.id().equals(pending[0]);
 			ItemStack icon = ticket(post);

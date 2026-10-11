@@ -1,0 +1,19 @@
+{
+  "icon": "minecraft:dirt_path",
+  "name": {
+    "translate": "realm_research.aliveworkplace.royal_roads"
+  },
+  "description": {
+    "translate": "realm_research.aliveworkplace.royal_roads.desc"
+  },
+  "levels": 2,
+  "points": 4800,
+  "paper": 16,
+  "books": 2,
+  "books_from_level": 2,
+  "emeralds": 8,
+  "effect": {
+    "type": "aliveworkplace:caravan_speed",
+    "percent": 25
+  }
+}

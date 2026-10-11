@@ -1,0 +1,22 @@
+{
+  "icon": "minecraft:oak_boat",
+  "name": {
+    "translate": "realm_research.aliveworkplace.ferry_charter"
+  },
+  "description": {
+    "translate": "realm_research.aliveworkplace.ferry_charter.desc"
+  },
+  "levels": 1,
+  "points": 4800,
+  "paper": 16,
+  "books": 2,
+  "books_from_level": 2,
+  "emeralds": 8,
+  "needs": {
+    "royal_post": 1
+  },
+  "effect": {
+    "type": "aliveworkplace:ticket_discount",
+    "percent": 50
+  }
+}

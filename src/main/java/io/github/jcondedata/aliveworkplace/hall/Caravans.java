@@ -656,6 +656,28 @@ public final class Caravans {
 		return road ? ticks * 3 / 4 : ticks;
 	}
 
+	/**
+	 * How long a caravan from {@code from} to {@code to} takes: {@link #travelTicks(double, boolean)}, and (33.16) Royal
+	 * Roads' percent sooner when both villages are of one realm (never under {@link #MIN_TRAVEL} less that share).
+	 */
+	public static long trip(ServerLevel level, BlockPos from, BlockPos to, Data data) {
+		long ticks = travelTicks(Math.sqrt(from.distSqr(to)), data.roadFinished(from, to));
+		int sooner = io.github.jcondedata.aliveworkplace.realm.RealmResearch.caravanSpeed(level, from, to);
+		return sooner <= 0 ? ticks : Math.max(1, ticks * (100 - sooner) / 100);
+	}
+
+	/**
+	 * Granaries (33.16): a caravan of meals from {@code from} to the realm member {@code to}, sent at dawn outside the
+	 * route cap (it needs no route and doesn't count as the day's caravan). Returns it.
+	 */
+	public static Shipment sendGranary(ServerLevel level, BlockPos from, BlockPos to, List<ItemStack> meals) {
+		Data data = Data.get(level);
+		Shipment shipment = new Shipment(from.immutable(), to.immutable(), List.copyOf(meals), level.getGameTime() + trip(level, from, to, data));
+		data.ship(shipment);
+		level.playSound(null, from, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
+		return shipment;
+	}
+
 	/** The villages {@code hall} can trade with, nearest first. */
 	public static List<Village> neighbours(ServerLevel level, BlockPos hall) {
 		return Data.get(level).villages().stream()
@@ -749,7 +771,7 @@ public final class Caravans {
 			return null;
 		}
 		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods),
-			level.getGameTime() + travelTicks(Math.sqrt(hall.distSqr(to)), data.roadFinished(hall, to)), sale, false);
+			level.getGameTime() + trip(level, hall, to, data), sale, false);
 		List<ItemStack> all = new ArrayList<>(goods);
 		sale.forEach(lot -> all.addAll(lot.stacks()));
 		// 31.20: on a long road, one caravan in lostCaravanChance goes missing; the Lost Caravan's arc holds its goods
@@ -804,7 +826,7 @@ public final class Caravans {
 				List<ItemStack> home = new ArrayList<>();
 				sold.home().forEach(lot -> home.addAll(lot.stacks()));
 				data.ship(new Shipment(s.to(), s.from(), home,
-					level.getGameTime() + travelTicks(Math.sqrt(s.from().distSqr(s.to())), data.roadFinished(s.from(), s.to())), List.of(), true));
+					level.getGameTime() + trip(level, s.from(), s.to(), data), List.of(), true));
 			}
 			if (s.goods().isEmpty()) {
 				continue; // only goods to sell: the sale's own lines tell it

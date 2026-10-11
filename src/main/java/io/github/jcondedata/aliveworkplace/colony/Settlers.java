@@ -276,7 +276,7 @@ public final class Settlers {
 			return new Sent(false, no.copy().withStyle(ChatFormatting.RED), List.of());
 		}
 		Optional<Component> name = Optional.ofNullable(ColonyCharterItem.colonyName(stack));
-		RealmData.Order order = new RealmData.Order(charter.hall(), charter.spot().get(), name, RealmData.GATHERING, 0, 0, Colonies.COST * 100,
+		RealmData.Order order = new RealmData.Order(charter.hall(), charter.spot().get(), name, RealmData.GATHERING, 0, 0, Colonies.cost(level, hall) * 100,
 			level.getGameTime(), volunteers.all().stream().map(Villager::getUUID).toList(), Optional.of(volunteers.builder().getUUID()), Map.of(), List.of());
 		RealmData data = RealmData.get(level.getServer());
 		data.putOrder(order);
@@ -314,6 +314,23 @@ public final class Settlers {
 			}
 			first = false;
 			out.append(Component.translatable("message.aliveworkplace.colony.supply", e.getValue(), e.getKey().text(e.getValue())));
+		}
+		return out;
+	}
+
+	/**
+	 * What the settlers unload at the new colony: the order's supplies, and (Charters, 33.16) {@code n} more of each supply
+	 * where the mother village's realm researched it.
+	 */
+	public static Map<Item, Integer> load(MinecraftServer server, RealmData.Order order) {
+		int extra = io.github.jcondedata.aliveworkplace.realm.RealmResearch.charterSupplies(server, order.mother());
+		if (extra <= 0) {
+			return order.supplies();
+		}
+		Map<Item, Integer> out = new LinkedHashMap<>(order.supplies());
+		for (Supply supply : Supply.values()) {
+			Item item = out.keySet().stream().filter(i -> supply.matches(new ItemStack(i))).findFirst().orElse(supply.icon);
+			out.merge(item, extra, Integer::sum);
 		}
 		return out;
 	}

@@ -241,7 +241,7 @@ public final class TradePage {
 	/** The Prices tab's icon: an emerald, with what the page's marks mean. */
 	static ItemStack pricesTab(ServerLevel level, BlockPos hall) {
 		List<Component> lore = new ArrayList<>();
-		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.prices_about", SELL_PERCENT - 100), ChatFormatting.GRAY));
+		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.prices_about", sellPercent(level, hall) - 100), ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.prices_marks", ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.prices_trade", ChatFormatting.GRAY));
 		if (Caravans.Data.get(level).market(hall).priceDay() < 0) {
@@ -304,7 +304,7 @@ public final class TradePage {
 			lore.add(VillageHallScreen.line(note, ChatFormatting.WHITE));
 		}
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.bundle", good.bundle()), ChatFormatting.GRAY));
-		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.sells", money(selling(pays))), ChatFormatting.GREEN));
+		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.sells", money(selling(level, hall, pays))), ChatFormatting.GREEN));
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.pays", money(pays)), ChatFormatting.YELLOW));
 		if (pays > yesterday) {
 			marks.add(UP);
@@ -419,7 +419,21 @@ public final class TradePage {
 
 	/** What the village sells a bundle for when it pays {@code cents} for one: 10% over, to the cent. */
 	public static int selling(int cents) {
-		return (int) Math.round(cents * SELL_PERCENT / 100.0);
+		return selling(cents, SELL_PERCENT);
+	}
+
+	private static int selling(int cents, int percent) {
+		return (int) Math.round(cents * percent / 100.0);
+	}
+
+	/** What the board of the village at {@code hall} sells for, in percent of what it pays: 110, less Common Coin's points in a realm (33.16). */
+	public static int sellPercent(ServerLevel level, BlockPos hall) {
+		return Math.max(100, SELL_PERCENT - io.github.jcondedata.aliveworkplace.realm.RealmResearch.boardSpread(level, hall));
+	}
+
+	/** What the village at {@code hall} sells a bundle for when it pays {@code cents} for one. */
+	public static int selling(ServerLevel level, BlockPos hall, int cents) {
+		return selling(cents, sellPercent(level, hall));
 	}
 
 	/** A price as players read it: "0.88 emeralds", "1.4 emeralds", "1 emerald"; with the pack, "88 CobbleDollars". */

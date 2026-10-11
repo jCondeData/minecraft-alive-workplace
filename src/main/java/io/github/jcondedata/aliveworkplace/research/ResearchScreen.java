@@ -285,7 +285,7 @@ public final class ResearchScreen {
 				Component.translatable("research.aliveworkplace.level", current.name(), BuilderLevels.levelName(next)),
 				Math.round(100f * state.progress() / current.points())), ChatFormatting.GREEN));
 			if (!state.paid()) {
-				about.add(line(Component.translatable("screen.aliveworkplace.research.realm.unpaid", realmCost(current)), ChatFormatting.YELLOW));
+				about.add(line(Component.translatable("screen.aliveworkplace.research.realm.unpaid", realmCost(current, next)), ChatFormatting.YELLOW));
 			}
 		}
 		about.add(line(Component.translatable("screen.aliveworkplace.research.realm.treasury", RealmTreasury.emeralds(realm.treasury())), ChatFormatting.GRAY));
@@ -308,10 +308,10 @@ public final class ResearchScreen {
 	}
 
 	/** "4× Paper, 1× Book and 8 emeralds from the realm treasury". */
-	static Component realmCost(RealmResearch.Topic topic) {
-		return topic.items().isEmpty()
+	static Component realmCost(RealmResearch.Topic topic, int lvl) {
+		return topic.items(lvl).isEmpty()
 			? Component.translatable("screen.aliveworkplace.research.realm.emeralds", topic.emeralds())
-			: Component.translatable("screen.aliveworkplace.research.realm.price", Research.describe(topic.items()), topic.emeralds());
+			: Component.translatable("screen.aliveworkplace.research.realm.price", Research.describe(topic.items(lvl)), topic.emeralds());
 	}
 
 	static ItemStack realmTopicIcon(Research.State state, RealmResearch.Topic topic) {
@@ -325,7 +325,7 @@ public final class ResearchScreen {
 		if (lvl >= topic.levels()) {
 			lore.add(line(Component.translatable("screen.aliveworkplace.research.complete"), ChatFormatting.GREEN));
 		} else {
-			lore.add(line(Component.translatable("screen.aliveworkplace.research.cost", realmCost(topic)), ChatFormatting.GRAY));
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.cost", realmCost(topic, lvl + 1)), ChatFormatting.GRAY));
 			for (var need : topic.needs().entrySet()) {
 				RealmResearch.Topic other = RealmResearch.get(need.getKey()).orElse(null);
 				if (other != null && RealmResearch.level(state, other) < need.getValue()) {

@@ -206,9 +206,16 @@ public final class Colonies {
 		return cooldownLeft(level, hall) > 0 ? Refusal.COOLDOWN : null;
 	}
 
+	/** What a charter costs the village at {@code hall}: {@link #COST}, a quarter less a level of its realm's Charters (33.16). */
+	public static int cost(ServerLevel level, BlockPos hall) {
+		int off = io.github.jcondedata.aliveworkplace.realm.RealmResearch.charterDiscount(level, hall);
+		return off <= 0 ? COST : Math.max(1, COST * (100 - off) / 100);
+	}
+
 	/** Whole emeralds of a charter's price the treasury of {@code entity} pays: all it has, up to the price. */
 	public static int treasuryShare(VillageHallBlockEntity entity) {
-		return Math.max(0, Math.min(COST, entity.treasury() / 100));
+		int cost = entity.getLevel() instanceof ServerLevel level ? cost(level, entity.getBlockPos()) : COST;
+		return Math.max(0, Math.min(cost, entity.treasury() / 100));
 	}
 
 	/**
@@ -228,8 +235,9 @@ public final class Colonies {
 			}
 		}
 		int fromTreasury = entity == null ? 0 : treasuryShare(entity);
+		int cost = cost(level, hall);
 		boolean free = player.getAbilities().instabuild; // creative: the treasury still pays its share, the rest costs nothing
-		int fromPlayer = free ? 0 : COST - fromTreasury;
+		int fromPlayer = free ? 0 : cost - fromTreasury;
 		if (refusal == null && fromPlayer > 0 && !Money.canAfford(player, (long) fromPlayer * Money.DOLLARS_PER_EMERALD, fromPlayer)) {
 			refusal = Refusal.MONEY;
 		}
@@ -247,7 +255,7 @@ public final class Colonies {
 		}
 		level.playSound(null, player.blockPosition(), SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundSource.PLAYERS, 1f, 1f);
 		Component village = VillageHalls.name(level, hall);
-		Component message = free && fromTreasury < COST ? Component.translatable("message.aliveworkplace.colony.bought_creative", village, money(fromTreasury))
+		Component message = free && fromTreasury < cost ? Component.translatable("message.aliveworkplace.colony.bought_creative", village, money(fromTreasury))
 			: fromPlayer == 0 ? Component.translatable("message.aliveworkplace.colony.bought_treasury", village, money(fromTreasury))
 			: fromTreasury == 0 ? Component.translatable("message.aliveworkplace.colony.bought_player", village, money(fromPlayer))
 			: Component.translatable("message.aliveworkplace.colony.bought_both", village, money(fromTreasury), money(fromPlayer));
@@ -274,7 +282,8 @@ public final class Colonies {
 			case CAP -> Component.translatable("message.aliveworkplace.colony.cap", village, PER_VILLAGE);
 			case MONEY -> {
 				int fromTreasury = entity == null ? 0 : treasuryShare(entity);
-				yield Component.translatable("message.aliveworkplace.colony.money", money(COST), money(fromTreasury), money(COST - fromTreasury));
+				int cost = cost(level, hall);
+				yield Component.translatable("message.aliveworkplace.colony.money", money(cost), money(fromTreasury), money(cost - fromTreasury));
 			}
 		};
 	}
@@ -432,10 +441,11 @@ public final class Colonies {
 
 		List<Component> lore = new ArrayList<>();
 		int fromTreasury = entity == null ? 0 : treasuryShare(entity);
-		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.cost", money(COST)), ChatFormatting.GRAY));
-		lore.add(VillageHallScreen.line(fromTreasury >= COST ? Component.translatable("screen.aliveworkplace.colonies.cost_treasury")
+		int cost = cost(level, hall);
+		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.cost", money(cost)), ChatFormatting.GRAY));
+		lore.add(VillageHallScreen.line(fromTreasury >= cost ? Component.translatable("screen.aliveworkplace.colonies.cost_treasury")
 			: viewer != null && viewer.getAbilities().instabuild ? Component.translatable("screen.aliveworkplace.colonies.cost_creative", money(fromTreasury))
-			: Component.translatable("screen.aliveworkplace.colonies.cost_split", money(fromTreasury), money(COST - fromTreasury)), ChatFormatting.GRAY));
+			: Component.translatable("screen.aliveworkplace.colonies.cost_split", money(fromTreasury), money(cost - fromTreasury)), ChatFormatting.GRAY));
 		Refusal limit = limit(level, hall);
 		if (entity != null && limit == null && entity.owner() == null) {
 			limit = Refusal.NO_OWNER;

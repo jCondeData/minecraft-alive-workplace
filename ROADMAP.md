@@ -3560,7 +3560,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     scholar adds points to the capital's topic; a realm topic from a test datapack can be chosen, is paid from the
     realm treasury and finishes; `/reload` keeps it;
   - showcase scene `realm_research` (the capital's research screen with the Realm row).
-- [ ] **33.16** **The realm's research topics.** Eight data files, each with its effect wired in (costs to start with:
+- [x] **33.16** (review: pending 2026-10-11) **The realm's research topics.** Eight data files, each with its effect wired in (costs to start with:
   16 paper, 2 books a level after the first, and 8 emeralds a level from the realm treasury):
   - **Royal Roads** (2 levels): caravans between realm villages arrive 25% sooner a level.
   - **Common Coin** (2; after Royal Roads I): the board's spread 3 points narrower a level in realm villages.

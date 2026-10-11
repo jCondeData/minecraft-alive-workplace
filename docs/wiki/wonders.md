@@ -3,10 +3,10 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral and the Lighthouse) are built, behind the 2.0 switch (see
+Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse and the Great Library) are built, behind the 2.0 switch (see
 Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11
+Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13
 
 ## What a player sees
 
@@ -79,6 +79,24 @@ Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House
 wool (Shepherd); III 4 explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64
 glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Its powers come with 35.12.
 
+**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 14,500 blocks, on a
+square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
+diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
+the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of reading
+halls under deepslate-tile roofs: a drum of polished diorite with clerestory windows and a cornice, a shallow copper
+dome with eight ribs (it weathers green), coffered inside in smooth stone and diorite, and a glass lantern on top. Each
+wing has two storeys of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the walls under
+a dark oak gallery on both sides (two floors of bookshelf galleries, a ladder up to each), carrels under the windows,
+reading tables with lanterns and low bookcases down the middle, and a coffered dark oak ceiling. The rotunda has three
+rings of bookshelves with two galleries round them; at its centre an Enchanting Table ringed by fifteen bookshelves,
+open towards the door, with the librarian's lectern before it and four reading desks round it. A lectern for a scholar
+stands in each wing; the west wing's end is the map room, a carpet map of seas and islands round a cartography table.
+Its stages: I *The Stacks*, II *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*. Its goods: I 128
+sugar cane (Farmer), 64 leather (Butcher), 64 spruce logs (Lumberjack); II 64 books (Librarian), 64 black dye (Dyer),
+16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis lazuli (Sifter), 32 copper ingots (Armorer); IV
+64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves (Librarian). It needs a Town, 20 research levels and
+the Old Sage (or a Master Scholar while Legends are off). Its power, a second research tier, comes with 35.14.
+
 ## How it works
 
 **A Wonder is a data file** (35.2), `data/<namespace>/wonders/<id>.json`, read whenever data packs load, so a server
@@ -135,7 +153,7 @@ checks; stage parts are ordinary builds of the builder, using the Foundation Sto
 **Our Wonders' designs** (35.9 on) are drawn whole in `tools/blueprints/wonders.py`, one function each, stage by stage
 on a staged build that refuses to draw over an earlier stage's block; `wonder_stages()` cuts each stage into parts and
 `wonders.py` writes the Wonder's data file (`aliveworkplace:great_cathedral` is
-`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`) with those parts, so the two always agree. Each stage is checked
+`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`) with those parts, so the two always agree. Each stage is checked
 as it will stand, on the stages before it (nothing held up by nothing), and every stage leaves the site tidy, since the
 village lives beside it for days.
 
@@ -185,6 +203,11 @@ Planned: the Foundation Stone (a block).
   posts, so it gets no foundation, as the Fisher's Hut's; the mole's bottom course is filled down to the sea bed.
 - The Lighthouse's lamps are redstone lamps under redstone dust that an inverted daylight detector on the lantern's roof
   powers (35.11): lit at night, dark by day, with no clock. The lamps' lit state is not checked as damage.
+- The Great Library is about 14,500 blocks, not the 16,000 first planned (35.13): its wings reach only 8 from the
+  rotunda inside 41 by 41, and only solid filler would add the rest. Its walls are two leaves (diorite outside, smooth
+  stone inside) with deep windows, and it stands on a solid terrace three high.
+- The Great Library's sixteenth bookshelf place round the Enchanting Table is left open towards the door (35.13), so the
+  librarian can walk in; fifteen shelves still give the table its full power.
 - One Legend can serve two Wonders (the Seer for the Cathedral and the Observatory): a requirement only checks that the
   Legend lives in the village.
 - The Master Architect requirement is added to every Wonder by the mod, so a server owner's own Wonder needs it too.
@@ -193,8 +216,9 @@ Planned: the Foundation Stone (a block).
 ## Known limits
 
 - No Wonder can be started in game yet: the plan can be drawn and placed, but there's no Foundation Stone to hand it
-  over (35.4). The Great Cathedral's and the Lighthouse's files ship (35.9, 35.11), so they are on the Wonders page
-  behind the 2.0 switch; their powers come with 35.10 and 35.12, and the other six Wonders' files with 35.13 to 35.23. Everything is behind the 2.0 switch.
+  over (35.4). The Great Cathedral's, the Lighthouse's and the Great Library's files ship (35.9, 35.11, 35.13), so they
+  are on the Wonders page behind the 2.0 switch; their powers come with 35.10, 35.12 and 35.14, and the other five
+  Wonders' files with 35.15 to 35.23. Everything is behind the 2.0 switch.
 - A Wonder going up shows "how far along" by its stages done; the parts' own progress joins with 35.4.
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
@@ -218,8 +242,8 @@ the plan is refused outside the village and over a finished building and goes do
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse), and it uses no retired job block, no calcite and nothing a player can't get.
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 14,500 for the Great Library), and it uses no retired job block, no calcite and nothing a player can't get.
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
-in, so the mole and the jetty stand in the water).
+in, so the mole and the jetty stand in the water; its card shows four of the stills, the rest are in its gallery).

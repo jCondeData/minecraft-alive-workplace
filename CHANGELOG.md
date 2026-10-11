@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Great Library's design, for 2.0** (35.13, nothing to start in game until Wonders is finished): the third
+  Wonder's building, a domed library on a cross plan (41 by 41, 34 high, about 14,500 blocks) on a terrace with four
+  corner gardens: a portico of six quartz columns under a low pediment over a grand stair, a rotunda under a ribbed
+  copper dome with a glass lantern, three rings of bookshelves and two galleries round an Enchanting Table ringed by
+  fifteen bookshelves, and four wings of reading halls with two floors of bookshelf galleries, carrels, reading tables, a
+  lectern each and a map room with a cartography table. It rises in four tidy stages (the Stacks, the Galleries, the
+  Rotunda, the Dome and the Portico), each with its goods.
 - **The Lighthouse's design, for 2.0** (35.11, nothing to start in game until Wonders is finished): the second Wonder's
   building, a tower banded in white and red on a stepped stone mole at the water's edge (25 by 33, 46 high, about 5,000
   blocks), with a gallery on stone corbels, a lantern room of glass round sea lanterns, a ring of lamps an inverted

@@ -37,7 +37,8 @@ final class WonderGalleryScene {
 
 	private static final List<Wonder> WONDERS = List.of(
 		new Wonder("great_cathedral", new Vec3i(39, 53, 55), -1), // 35.9
-		new Wonder("lighthouse", new Vec3i(25, 46, 33), 11)); // 35.11: the mole, the jetty and the boathouse in the sea
+		new Wonder("lighthouse", new Vec3i(25, 46, 33), 11), // 35.11: the mole, the jetty and the boathouse in the sea
+		new Wonder("great_library", new Vec3i(41, 34, 41), -1)); // 35.13
 	/** How far the sea reaches past a coastal Wonder's sides and back. */
 	private static final int SEA_MARGIN = 10;
 	private static final int SPACING = 80;

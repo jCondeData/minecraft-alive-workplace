@@ -6015,5 +6015,11 @@
   "wonder.aliveworkplace.lighthouse.stage.1": "The Mole and the Quay",
   "wonder.aliveworkplace.lighthouse.stage.2": "The Tower",
   "wonder.aliveworkplace.lighthouse.stage.3": "The Gallery",
-  "wonder.aliveworkplace.lighthouse.stage.4": "The Lantern and the Keeper's House"
+  "wonder.aliveworkplace.lighthouse.stage.4": "The Lantern and the Keeper's House",
+  "wonder.aliveworkplace.great_library.name": "Great Library",
+  "wonder.aliveworkplace.great_library.description": "A domed library on a cross plan: a rotunda of bookshelf galleries under a copper dome, four wings of reading halls and a portico of six quartz columns. The village's scholars open a second tier of research.",
+  "wonder.aliveworkplace.great_library.stage.1": "The Stacks",
+  "wonder.aliveworkplace.great_library.stage.2": "The Galleries",
+  "wonder.aliveworkplace.great_library.stage.3": "The Rotunda",
+  "wonder.aliveworkplace.great_library.stage.4": "The Dome and the Portico"
 }

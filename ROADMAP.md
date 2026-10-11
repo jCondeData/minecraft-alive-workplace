@@ -4233,12 +4233,13 @@ Legends.
     warning gets its own test once M32's pirates exist); a damaged Lighthouse turns them all off;
   - scene `wonder_lighthouse`: the time-lapse beside a sea dug and filled by the harness, ending at night with the
     lamps lit; its GIF and powers are in the README.
-- [ ] **35.13** **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
+- [x] **35.13** (review: pending 2026-10-11) **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
   like 35.9: a rotunda 19 across under a copper dome with a glass lantern at its top; four wings of reading halls,
   each with two floors of bookshelf galleries; a portico of six columns under a pediment, over a grand stair. At the
   centre, an Enchanting Table ringed by fifteen bookshelves, with a lectern (a librarian); four lecterns in the wings
   (scholars) and a map room with a cartography table. Palette: polished diorite and smooth stone, quartz on the
-  portico, dark oak floors and shelves, a copper dome that weathers green. About 16,000 blocks: I *The Stacks*, II
+  portico, dark oak floors and shelves, a copper dome that weathers green. About 14,500 blocks (16,000 before it was
+  drawn: Notes, 35.13): I *The Stacks*, II
   *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*. Data: Town; 20 research levels; the Old Sage
   (stand-in: a Master Scholar). Goods: I 128 sugar cane (Farmer), 64 leather (Butcher), 64 spruce logs (Lumberjack);
   II 64 books (Librarian), 64 black dye (Dyer), 16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis
@@ -5607,3 +5608,10 @@ item waits.
   5,011 blocks, not about 7,500: only a solid tower or a bigger site would reach that. Decided: keep the size and the
   design, and the figure is now about 5,000 (the item's text and `WonderBlueprintGameTests`, within 10%). Owner: say
   if you'd rather have a bigger site (about 29 x 37) for the 7,500.
+- **35.13 the Great Library's block count** (lane-b-1011-2133, 2026-10-11): drawn at 41 x 34 x 41 with everything the
+  item lists (the rotunda 19 across with three rings of bookshelf galleries under a coffered copper dome and its glass
+  lantern, four two-storey wings with two-leaf walls, stacks, galleries, carrels, tables and a coffered ceiling, the
+  portico of six quartz columns, the grand stair, a square terrace with four corner gardens), it is 14,574 blocks, not
+  about 16,000: the rest would only come from solid filler (attics, a solid drum). Decided: keep the size and the
+  design, and the figure is now about 14,500 (the item's text and `WonderBlueprintGameTests`, within 10%). Owner: say if
+  you'd rather have longer wings (a site about 45 x 45) for the 16,000.

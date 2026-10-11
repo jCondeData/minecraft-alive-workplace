@@ -27,23 +27,7 @@ One row per run, newest first. Ticks are milliseconds.
 
 | Date | Commit | Workers | Idle p50 / p95 | Busy p50 / p95 | Heap after GC | Our share of the server thread | Run |
 |---|---|---|---|---|---|---|---|
-| 2026-10-11 | ec8cd08b + 25.3's path budget | 150 (69 of 78 sites working) | 3.7 / 7.8 (p99 10.2) | 31.0 / 53.9 (p99 88.5) at the start, then 12.6 / 23.8 (p99 31.2) | 1689 MB | 14.5% (326 of 2249; 47.7% villager brains, 21.8% pathfinding; path searches 18.1%) | local container run (slower than GitHub's runner: idle p50 3.7, not 2.3), same load |
-| 2026-10-11 | ec8cd08b (before 25.3) | 150 (68 of 77 sites working) | 4.8 / 8.9 (p99 12.4) | 19.3 / 40.8 (p99 67.3) at the start, then 10.6 / 19.8 (p99 30.9) | 1696 MB | 14.7% (327 of 2219; 49.4% villager brains, 22.6% pathfinding; path searches by vanilla's walking behaviour 18.8%) | local container run, same load |
 | 2026-10-05 | 5b489b7 | 150 (65 of 76 sites working when measured) | 2.3 / 3.5 (p99 7.3) | 18.3 / 32.8 (p99 66.1) at the start, then 8.8 / 16.5 (p99 21.1) once the builds settled | 1613 MB | 13.1% (204 of 1556 samples; 49.8% villager brains, 26.5% pathfinding, both ours included) | [nightly-tests 37297003813](https://github.com/jCondeData/minecraft-alive-workplace/actions/runs/37297003813) (the nightly's performance step, same load as the Sunday job) |
-
-**Reading the 2026-10-11 rows (25.3):** one run each, on a machine whose own speed moves between runs (the idle
-ticks moved 1 ms). The busy start was worse with the budget (p50 31.0 against 19.3), the settled ticks about the same
-(12.6 against 10.6), and the path searches' share barely moved (18.1% against 18.8%): no gain shows from the path
-budget, and a single local run can't tell a small loss from noise. Where the time goes, from the
-profile (`perf.py`, and every sample sorted by what's on its stack): the villagers' path searches, made by vanilla's
-walking behaviour (`MoveToTargetSink`) for the walk targets our jobs and vanilla's own set, are the biggest single
-part (18-19% of the server thread, not counted as ours); our own code is 14.5-14.7%, spread thin: the entry is our job
-behaviours (`work.Gated`), and no frame of ours inside them has over 1.4% (the builders' block placing and breaking,
-which is the game's own `setBlock`). No point-of-interest search, flood fill or area scan of ours shows (the hall
-lookup, `VillageHalls.nearest`, is 0.3% and already remembered a while per villager). The ticks over 50 ms in these
-runs are stretches of ticks run back to back while the server catches up at the start (chunk loading, C2ME's workers):
-`perf.py --spikes` finds no single frame of ours in them, and our share of their samples (12.5-13.9%) is our share
-of any tick.
 
 ## A season under the edicts (30.22)
 

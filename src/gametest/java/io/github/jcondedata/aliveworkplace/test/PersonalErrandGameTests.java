@@ -466,10 +466,15 @@ public class PersonalErrandGameTests implements FabricGameTest {
 					box.clearContent();
 					level.removeBlock(leftover, false);
 				}
+				// put() prefers a chest or barrel, then a brushable block, so a suspicious block left by another test in
+				// this chunk would take the heirloom too (B109).
+				if (level.getBlockEntity(leftover) instanceof net.minecraft.world.level.block.entity.BrushableBlockEntity) {
+					level.removeBlock(leftover, false);
+				}
 			}
 			Quest other = acceptedFile(helper, heirloomAt(helper, emptyRel, "diary"), finn, me);
 			helper.assertTrue(RequestErrands.placeHeirlooms(level) == 1 && other.placed != null
-				&& level.getBlockEntity(other.placed) instanceof BarrelBlockEntity barrel && !barrel.isEmpty(), "no barrel: " + other.placed);
+				&& level.getBlockEntity(other.placed) instanceof BarrelBlockEntity barrel && !barrel.isEmpty(), "no barrel: " + other.placed + " (" + (other.placed == null ? null : level.getBlockState(other.placed)) + ", " + (other.placed == null ? null : level.getBlockEntity(other.placed)) + ")");
 			ItemStack diary = ((BarrelBlockEntity) level.getBlockEntity(other.placed)).getItem(13);
 			helper.assertTrue(diary.is(Items.WRITTEN_BOOK) && diary.getHoverName().getString().equals("Great-aunt's Diary")
 				&& diary.get(DataComponents.WRITTEN_BOOK_CONTENT).pages().size() == 3, "the diary: " + diary);

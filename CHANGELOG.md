@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Peaceful settings and the threat level** (32.21): a new **Threat Level** setting, 0 to 3 (normally 2). At 0 no
+  raids, raiders' camps, sieges or disasters come at all; at 1 they come half as often, raiders walk in (no rams,
+  ladders or sand ramps), witches never hex and there is no plague; at 3 they come half again as often with a quarter
+  more raiders. On Peaceful nothing comes. For 1.6, the hall's owner can set a village **At peace** on its Defence
+  page: nothing comes to it, a camp already standing leaves at the next dawn, and the guards icon says so. Operators
+  get `/workplace threat start <culture> | lair <culture> | disaster <id> | end | clear` at the nearest hall, and the
+  README has a Threats section.
 - **The Colony Camp and the Royal Hall, for 1.7** (33.14, off until 1.7 is finished): a new colony now starts from
   the Colony Camp, two covered wagons round its Village Hall under a striped awning, with the Blueprint Table, supply
   crates, a campfire with a cooking pot, three bedrolls, the Travel Post and a flagpole. A realm's capital draws the

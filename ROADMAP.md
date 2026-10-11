@@ -3227,7 +3227,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   drop; the barbican's gate is the first breach) and battle stations know them. Done when: the four are in the
   Blueprint Table and pass `check.py`; a render package shows each front and back; a builder upgrades a finished
   Gatehouse to II in a test; 32.4's gate test takes longer on Gatehouse II than on I; the `defences` scene shows them.
-- [ ] **32.21** **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
+- [x] **32.21** (review: pending 2026-10-11) **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
   (`raiderCultures`, `sieges`, `siegeDamage`, `disasters`, `villageRaids`, `banditCamps`):
   - 0: no raids, lairs, sieges or disasters at all;
   - 1, gentle: half as often, no sieges (raiders walk in only), no hexes, no plague;

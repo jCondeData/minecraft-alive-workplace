@@ -1295,6 +1295,68 @@ the Pokémon, and the kill counts as the guard's.
 The armor a guard wears shows on them: helmet, chestplate (with shoulder pieces on the folded arms), leggings under
 the robe and boots — any armor, including dyed leather and enchanted pieces.
 
+## Threats
+A village worth having draws trouble. What comes depends on where the village stands and how big it has grown; walls,
+lookouts and guards are the answer, and every part of it can be turned down or off. Everything here beyond the monsters and
+the bandits (and the threat level) arrives with 1.6.
+
+**Who comes, by land and rank.** Each kind of raider (a *culture*) has its own land, the rank a village needs before
+it comes, and, for all but the monsters, a camp (a *lair*) it raids from:
+
+| Raiders | Where | From rank | Their lair | How they fight |
+|---|---|---|---|---|
+| Monsters | anywhere | 8 villagers | none: they gather at the village's edge | zombies, skeletons and spiders, at night |
+| Bandits | anywhere | Village | Bandit camp, 80 to 100 blocks out | pillagers and vindicators, at night, until their chief falls |
+| Witch coven | swamps and mangrove swamps | Village | Coven Hut | a nightly hex that makes villagers ill; potions over the walls |
+| Pillager warband | plains, forests, taiga, snowy lands, savanna | Town | War Camp | rams at the gate, ladders over the walls; ravagers, and an evoker at a City; the Warlord leads a City's siege |
+| Desert raiders | desert and badlands | Town | Tomb Camp | sand ramps over the walls, they stay until noon, and the Pharaoh raises fallen husks |
+| Drowned pirates | on the coast | Town | Pirate Ship at anchor | the crew wades ashore at night; the ship burns and sinks when the captain falls |
+| Piglin incursion | a village linked to the Nether by a portal | Town | Blackstone Outpost with its own portal | rams at the gate, and they carry off the village's gold |
+
+Raids come at night now and then (never more than one every three nights; twice as often while a lair stands), more
+of them the bigger the village, and in iron when it has guards. A lair grows stronger day by day and sends its band;
+break it by bringing its captain down.
+
+**Sieges.** A raid by raiders who ram or climb on a village with a finished wall or gatehouse is a siege: the gates
+shut, the portcullis drops, the rams go for the gate (builders put broken gate blocks back after), ladders and sand
+ramps go up against the walls, and guards throw ladders down. Archers take battle stations on towers and gatehouses.
+
+**Warnings.** Post a guard or a scout at a Guard Post within 24 blocks of a finished Lookout Tower or Wall Tower and the
+village hears of an attack the evening before: who, and from which side. From noon on the day the gates shut, and at
+dusk the guards take their stations and the villagers go in. Without a lookout the raid horn is the only warning.
+
+**Fighting back.** The hall's guards icon opens the **Defence page**: the lair by the village, its captain, its
+strength, the gates, the next attack and the last three. From it you can **scout the lair** (a guard with a spyglass
+brings back a Scouting Report map), **muster a war party** under your Rally Banner (up to 12 guards follow you to the
+lair) or **hire the Siege-breakers** (five hired swords). A broken lair's chest is yours, and the village gets a few
+days' peace.
+
+**Disasters and the jobs that answer them.** One at a time per village, sometimes foretold a day ahead:
+
+| Disaster | When | Who answers it |
+|---|---|---|
+| Drought | after dry days (sooner in deserts, savanna and badlands); crops stop, farmland dries, wells run low; rain ends it | the **Well Keeper**: a villager by a cauldron, given a shovel |
+| Plague | Towns and bigger, crowded ones twice as often; it spreads house to house | the **Physician**: a villager by a brewing stand, given a glistering melon slice, who cures with Remedies |
+| Village fire | lightning, a chimney spark on a dry day, a raider's burning arrow, in a village built mostly of wood; it burns only what builders built | the **Firewarden**: a villager by a grindstone, given a water bucket, and the bucket brigade |
+
+**Turning it down.** Every switch is in `config/aliveworkplace.json` and on the settings screen:
+
+| Setting | Normally | What it does |
+|---|---|---|
+| `threatLevel` | 2 | 0: nothing comes at all. 1, gentle: half as often, raiders walk in (no sieges), no hexes, no plague. 2: normal. 3, hard: half again as often, a quarter more raiders |
+| `villageRaids` | on | the monsters' raids |
+| `banditCamps` | on | the bandits' camps and raids |
+| `raiderCultures` | all on | one switch per culture, by id (in the file only) |
+| `sieges` | on | off: every raid is a plain one |
+| `siegeDamage` | on | off: gates hold however hard they're hit (so does the `mobGriefing` game rule off) |
+| `disasters` | all on | one switch per disaster, by id (in the file only); one switched off ends at once |
+| `firewardens`, `wellKeepers`, `physicians` | on | the three jobs that answer disasters |
+
+On **Peaceful** difficulty nothing comes, whatever the settings say. And village by village, the hall's owner can set
+a village **At peace** on its Defence page: no raids, camps or disasters come to it, and a camp already standing leaves
+at the next dawn (the guards icon says so). Operators can start and end things for an event with `/workplace threat
+start <culture>`, `lair <culture>`, `disaster <id>`, `end` and `clear`, at the nearest Village Hall.
+
 ## Nurses
 Stand a villager by a **brewing stand** and sneak-right-click them with a **honey bottle**: they become a **Nurse**.
 Right-click the nurse with an empty hand to get your health back and bad effects cleared; with **Cobblemon** installed
@@ -1658,6 +1720,7 @@ the Builder's workstation too: a villager without a job near it takes it and bec
 | `/workplace blueprints` (op) | list every blueprint the server knows |
 | `/workplace blueprint <id>` (op) | get a blueprint item |
 | `/workplace import` (op) | import files from `<world>/aliveworkplace/import/` |
+| `/workplace threat start <culture>` (op) | a raid by that culture on the nearest village now (`monsters`, `bandits`, `pillager_warband`...); also `lair <culture>`, `disaster <id>`, `end` and `clear` (see Threats) |
 | `/workplace steward explain` | every rule of the nearest hall's Steward, each condition's number and whether it held, and today's wishes |
 | `/gamerule workplaceAllowUploads false` | only operators can upload blueprint files |
 | `/gamerule workplaceFreeMaterials true` | builders need no materials (creative towns) |

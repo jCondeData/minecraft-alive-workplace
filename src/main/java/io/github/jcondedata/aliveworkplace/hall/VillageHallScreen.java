@@ -219,6 +219,7 @@ public final class VillageHallScreen {
 		if (defence) {
 			DefencePage.attackLine(level, hall).ifPresent(guardLore::add); // a day's warning (32.14)
 		}
+		guardLore.addAll(AtPeace.hallLines(level, hall)); // at peace, and the camp leaving at dawn (32.21)
 		// The Golem Smith's golems (29.15), a line each.
 		for (Component golem : io.github.jcondedata.aliveworkplace.legend.GolemSmith.hallLines(level, hall)) {
 			guardLore.add(line(golem, ChatFormatting.GOLD));

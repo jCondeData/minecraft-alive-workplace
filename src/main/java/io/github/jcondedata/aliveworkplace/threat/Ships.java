@@ -315,6 +315,21 @@ public final class Ships {
 	 * waterline between it and the village (when the chest is still there), and its blocks go, top down, over
 	 * {@link #SINK_TICKS} ticks. Nothing happens if the village has no ship.
 	 */
+	/**
+	 * The ship by the village round {@code hall} weighs anchor and sails off (its lair left the village in peace, 32.21):
+	 * its blocks go as a sinking ship's do, but nothing burns and no raft is left. Nothing happens if the village has no ship.
+	 */
+	public static void sailAway(ServerLevel level, BlockPos hall) {
+		Data data = Data.get(level);
+		Placed ship = data.ships.remove(hall);
+		if (ship == null) {
+			return;
+		}
+		data.sinking.add(new Sinking(ship, level.getGameTime()));
+		data.setDirty();
+		level.playSound(null, middle(level, ship), SoundEvents.BOAT_PADDLE_WATER, SoundSource.NEUTRAL, 2f, 0.8f);
+	}
+
 	public static void sink(ServerLevel level, BlockPos hall) {
 		Data data = Data.get(level);
 		Placed ship = data.ships.remove(hall);

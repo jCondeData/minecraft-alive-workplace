@@ -231,6 +231,10 @@ public final class Lairs {
 	public static void round(ServerLevel level, BlockPos hall, boolean bandits, RandomSource random) {
 		Data data = Data.get(level);
 		Lair lair = data.lairs.get(hall);
+		boolean quiet = Threats.quiet(level, hall);
+		if (!quiet) {
+			QUIET.remove(quietKey(level, hall));
+		}
 		if (lair != null) {
 			// (a captain who leads the raid under way is at the village, maybe out of loaded ground: his death is told by onDeath)
 			boolean leading = leads(level, lair) && ThreatData.get(level).raid(hall).map(r -> r.culture().equals(lair.culture())).orElse(false);
@@ -241,7 +245,13 @@ public final class Lairs {
 					return;
 				}
 			}
-			if (live()) {
+			if (quiet) {
+				// Nothing comes to a quiet village (32.21): a lair standing by it leaves at the next dawn.
+				if (Chronicle.day(level) > quietSince(level, hall)) {
+					leave(level, lair);
+					return;
+				}
+			} else if (live()) {
 				if (lair.out() > 0 && ThreatData.get(level).raid(hall).isEmpty()) {
 					data.put(lair.with(lair.strength(), lair.grown(), 0, lair.lost())); // a raid that was never ended: nobody is out any more
 				}
@@ -252,8 +262,8 @@ public final class Lairs {
 			}
 			return;
 		}
-		if (resting(level, hall) > 0) {
-			return;
+		if (resting(level, hall) > 0 || quiet) {
+			return; // (nothing makes camp by a quiet village, 32.21)
 		}
 		if (io.github.jcondedata.aliveworkplace.story.Stories.villageFlag(level, hall, "no_bandit_camps")) {
 			bandits = false; // the Bandit King's fall keeps the bandits off for a while (31.16)
@@ -264,16 +274,72 @@ public final class Lairs {
 		}
 		int rounds = (int) Math.max(1, VillageNeeds.DAY / VillageNeeds.CHECK_EVERY);
 		if (random.nextFloat() < dailyChance(level, hall) / rounds) {
-			// A lair on the sea anchors on deep water (32.8); any other makes camp on dry ground.
-			Optional<Culture.Lair> spec = Threats.get(comer.get()).flatMap(Culture::lair);
-			StructureTemplate ship = spec.flatMap(Culture.Lair::sea).isPresent() ? level.getStructureManager().get(spec.get().structure()).orElse(null) : null;
-			BlockPos site = spec.flatMap(Culture.Lair::sea).isEmpty()
-				? site(level, hall, spec.map(Culture.Lair::near).orElse(NEAR), spec.map(Culture.Lair::far).orElse(FAR), random, spec.map(Culture.Lair::wet).orElse(false))
-				: ship == null ? null : Ships.site(level, hall, spec.get().sea().get(), ship, random);
-			if (site != null) {
-				found(level, hall, site, comer.get());
-			}
+			settle(level, hall, comer.get(), random);
 		}
+	}
+
+	/**
+	 * The lair of {@code culture} makes camp by the village round {@code hall} now, where its culture's file says (a lair
+	 * on the sea anchors on deep water, 32.8; any other makes camp on dry ground); null when there was nowhere to put it.
+	 */
+	@Nullable
+	public static Lair settle(ServerLevel level, BlockPos hall, ResourceLocation culture, RandomSource random) {
+		Optional<Culture.Lair> spec = Threats.get(culture).flatMap(Culture::lair);
+		StructureTemplate ship = spec.flatMap(Culture.Lair::sea).isPresent() ? level.getStructureManager().get(spec.get().structure()).orElse(null) : null;
+		BlockPos site = spec.flatMap(Culture.Lair::sea).isEmpty()
+			? site(level, hall, spec.map(Culture.Lair::near).orElse(NEAR), spec.map(Culture.Lair::far).orElse(FAR), random, spec.map(Culture.Lair::wet).orElse(false))
+			: ship == null ? null : Ships.site(level, hall, spec.get().sea().get(), ship, random);
+		return site == null ? null : found(level, hall, site, culture);
+	}
+
+	/** The day each quiet village (by dimension and hall) was first seen quiet, when it isn't At peace (kept in memory). */
+	private static final Map<String, Long> QUIET = new java.util.concurrent.ConcurrentHashMap<>();
+
+	private static String quietKey(ServerLevel level, BlockPos hall) {
+		return level.dimension().location() + "|" + hall.asLong();
+	}
+
+	/**
+	 * The day the village round {@code hall} became quiet: the day its owner set it At peace, else the first day its
+	 * round found it quiet (the threat level 0, or Peaceful). A lair by it leaves at the dawn after.
+	 */
+	static long quietSince(ServerLevel level, BlockPos hall) {
+		if (level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity e && e.atPeace() && e.peaceSince() >= 0) {
+			return e.peaceSince();
+		}
+		return QUIET.computeIfAbsent(quietKey(level, hall), k -> Chronicle.day(level));
+	}
+
+	/**
+	 * The lair leaves the village in peace (32.21; an operator's {@code /workplace threat clear}): its band and captain go,
+	 * its portal goes out, its ship sails off, and the village is told. Unlike a lair broken up it leaves no rest, and
+	 * no one is credited with it.
+	 */
+	public static void leave(ServerLevel level, Lair lair) {
+		Data data = Data.get(level);
+		data.lairs.remove(lair.hall());
+		data.setDirty();
+		Piglins.putOut(level, lair);
+		List<Mob> going = new ArrayList<>(band(level, lair));
+		if (level.getEntity(lair.captain()) instanceof Mob captain && !going.contains(captain)) {
+			going.add(captain);
+		}
+		for (Mob mob : going) {
+			level.sendParticles(ParticleTypes.POOF, mob.getX(), mob.getY() + 0.5, mob.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+			mob.discard();
+		}
+		if (Threats.get(lair.culture()).flatMap(Culture::lair).flatMap(Culture.Lair::sea).isPresent()) {
+			Ships.sailAway(level, lair.hall());
+		}
+		if (Covens.hexes(lair.culture())) {
+			Covens.lift(level, lair.hall()); // the hex lifts with the coven gone
+		}
+		Component name = VillageHalls.name(level, lair.hall());
+		for (ServerPlayer player : players(level, lair.hall())) {
+			Chat.chat(player, Component.translatable("message.aliveworkplace.lair.left", lairName(lair.culture()), name).withStyle(ChatFormatting.GREEN));
+		}
+		Chronicle.record(level, lair.hall(), Chronicle.Kind.RAID, Component.translatable("chronicle.aliveworkplace.lair.left", lairName(lair.culture())));
+		AliveWorkplace.LOG.info("{} left the village hall at {} in peace", lair.culture(), lair.hall());
 	}
 
 	/**
@@ -304,7 +370,7 @@ public final class Lairs {
 	 */
 	public static float dailyChance(ServerLevel level, BlockPos hall) {
 		io.github.jcondedata.aliveworkplace.hall.CivicEffects.Sum effects = io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall);
-		return Math.min(1f, DAILY_CHANCE * effects.banditCamps() * effects.raids());
+		return Math.min(1f, DAILY_CHANCE * effects.banditCamps() * effects.raids() * Threats.scale(level, hall)); // the threat level and At peace (32.21)
 	}
 
 	/**
@@ -881,6 +947,7 @@ public final class Lairs {
 		data.lairs.clear();
 		data.broken.clear();
 		data.setDirty();
+		QUIET.clear();
 		Ships.forget(level);
 	}
 

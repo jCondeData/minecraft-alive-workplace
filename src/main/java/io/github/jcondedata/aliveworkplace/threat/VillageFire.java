@@ -523,8 +523,15 @@ public final class VillageFire {
 
 	// Ignition.
 
-	/** How much likelier fire is in the village round {@code hall} today: 0 where {@code village_fire}'s {@code when} fails. */
+	/**
+	 * How much likelier fire is in the village round {@code hall} today: 0 where {@code village_fire}'s {@code when} fails
+	 * or the village is quiet ({@link Threats#quiet}), half at a gentle threat level and half again at a hard one.
+	 */
 	public static double factor(ServerLevel level, BlockPos hall) {
+		return dailyFactor(level, hall) * Threats.scale(level, hall); // the threat level and At peace (32.21)
+	}
+
+	private static double dailyFactor(ServerLevel level, BlockPos hall) {
 		Optional<Disaster> fire = Disasters.on(ID);
 		if (fire.isEmpty() || !Disasters.live()) {
 			return 0;

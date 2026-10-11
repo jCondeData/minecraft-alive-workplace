@@ -8,6 +8,7 @@
   "excludes": [],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.common_granary"},
+    "arc": "aliveworkplace:common_granary",
     "line": {"translate": "reform.aliveworkplace.common_granary.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:wheat", "count": 512, "reward": 4},

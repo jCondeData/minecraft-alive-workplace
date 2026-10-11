@@ -11,6 +11,7 @@
   "excludes": [],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.midwives"},
+    "arc": "aliveworkplace:midwives",
     "line": {"translate": "reform.aliveworkplace.midwives.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:honey_bottle", "count": 48, "reward": 4},

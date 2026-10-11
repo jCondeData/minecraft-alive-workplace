@@ -1,0 +1,159 @@
+{
+  "name": {
+    "translate": "reform.aliveworkplace.common_granary"
+  },
+  "side": true,
+  "trigger": {
+    "chance": 0
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:minecraft:farmer",
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.role"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/common_granary/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.common_granary.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.common_granary.ask.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.2.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/common_granary/step_1",
+          "name": {
+            "translate": "arc.aliveworkplace.common_granary.step.1"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:wheat",
+              "count": 512
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 4
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.2"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.3.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/common_granary/step_2",
+          "name": {
+            "translate": "arc.aliveworkplace.common_granary.step.2"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:hay_block",
+              "count": 128
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 5
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.3"
+      ],
+      "delay_days": 1
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.4.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/common_granary/step_3",
+          "name": {
+            "translate": "arc.aliveworkplace.common_granary.step.3"
+          },
+          "objectives": [
+            {
+              "type": "bring",
+              "item": "minecraft:barrel",
+              "count": 48
+            }
+          ],
+          "rewards": [
+            {
+              "type": "money",
+              "emeralds": 3
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform",
+      "step": "harvest_supper"
+    },
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:free_bread"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.reform_story.common_granary"
+      }
+    }
+  ]
+}

@@ -8,6 +8,7 @@
   "excludes": [],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.fair_ledger"},
+    "arc": "aliveworkplace:fair_ledger",
     "line": {"translate": "reform.aliveworkplace.fair_ledger.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:writable_book", "count": 24, "reward": 4},

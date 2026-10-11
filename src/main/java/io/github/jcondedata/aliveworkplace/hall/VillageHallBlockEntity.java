@@ -30,6 +30,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** The village's rank at the last round (see {@link VillageRanks}). */
 	private VillageRanks.Rank rank = VillageRanks.Rank.HAMLET;
 	private long treasuryTotal;
+	/** The treasury's takings by day, the last {@link #TAKINGS_DAYS} days (31.22; empty in halls from before). */
+	private final java.util.TreeMap<Long, Long> takings = new java.util.TreeMap<>();
+	static final int TAKINGS_DAYS = 8;
 	private PlayerBank.State playerBank = new PlayerBank.State();
 	/** The day of the last trade fair (29.17), or -1 before the first is counted. */
 	private long fairDay = -1;
@@ -705,7 +708,19 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 
 	public void addTreasuryTotal(long cents) {
 		treasuryTotal = Math.max(0, treasuryTotal + Math.max(0, cents));
+		if (cents > 0 && level != null) {
+			long day = level.getDayTime() / VillageNeeds.DAY + 1;
+			takings.merge(day, cents, Long::sum);
+			while (takings.size() > TAKINGS_DAYS) {
+				takings.pollFirstEntry();
+			}
+		}
 		setChanged();
+	}
+
+	/** What the treasury took in (cents) on {@code day} ({@link Chronicle#day}), kept for the last {@link #TAKINGS_DAYS} days (31.22's Fair Ledger). */
+	public long takings(long day) {
+		return takings.getOrDefault(day, 0L);
 	}
 
 	/** How many villagers came to the last festival's fireworks. */
@@ -923,6 +938,13 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalMissed = tag.contains("festivalMissed") ? Nbt.getLong(tag, "festivalMissed") : -1;
 		treasury = Nbt.getInt(tag, "treasury");
 		treasuryTotal = Nbt.getLong(tag, "treasuryTotal");
+		takings.clear();
+		if (tag.contains("takings")) {
+			long[] t = Nbt.getLongArray(tag, "takings");
+			for (int i = 0; i + 1 < t.length; i += 2) {
+				takings.put(t[i], t[i + 1]);
+			}
+		}
 		playerBank = PlayerBank.State.load(tag);
 		fairDay = tag.contains("fairDay") ? Nbt.getLong(tag, "fairDay") : -1;
 		banquetDay = tag.contains("banquetDay") ? Nbt.getLong(tag, "banquetDay") : -1;
@@ -1048,6 +1070,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("festivalMissed", festivalMissed);
 		tag.putInt("treasury", treasury);
 		tag.putLong("treasuryTotal", treasuryTotal);
+		if (!takings.isEmpty()) {
+			long[] t = new long[takings.size() * 2];
+			int i = 0;
+			for (java.util.Map.Entry<Long, Long> e : takings.entrySet()) {
+				t[i++] = e.getKey();
+				t[i++] = e.getValue();
+			}
+			tag.putLongArray("takings", t);
+		}
 		playerBank.save(tag);
 		tag.putLong("fairDay", fairDay);
 		tag.putLong("banquetDay", banquetDay);

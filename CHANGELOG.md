@@ -24,6 +24,13 @@ asks for the steps, `latest.log` and any crash report).
   needs the Master Architect (stand-in: a Master builder). The caps: `wonderCaps` by rank (Town 1, City 2), one of each
   kind per village, one going up at a time, `wonderServerLimit`, `disabledWonders`, and the `wonders` and
   `wonderLegends` switches. `/workplace wonders` lists every Wonder on the server with its village, owner and stage.
+- **The eight reforms as stories, for 1.5** (31.22, off until 1.5 is finished): with story arcs on, each edict's reform
+  is a short story of its own: the Toolsmith asks for The Shift Bell, a Farmer for The Common Granary, the Nurse for
+  The Midwives and so on, then M30's three steps follow as its chapters, and the ending leaves something in the
+  village: a bell on a post by the hall that rings the work day in and out, a harvest supper, a midwife or an old
+  soldier who comes to stay, a grand festival, the Fair Ledger book of the treasury's takings, two Street Lamp
+  blueprints and a lamplit night, or a drill day at the Training Dummies. They run beside other stories and don't
+  count against their limits; with story arcs off the reform steps work as before.
 - **The Colony Camp and the Royal Hall, for 1.7** (33.14, off until 1.7 is finished): a new colony now starts from
   the Colony Camp, two covered wagons round its Village Hall under a striped awning, with the Blueprint Table, supply
   crates, a campfire with a cooking pot, three bedrolls, the Travel Post and a flagpole. A realm's capital draws the

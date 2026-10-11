@@ -33,6 +33,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Lairs and the Defence page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's
   Defence page (32.3).
 - [Sieges: rams, gates and ladders](sieges.md): shut gates, the portcullis, rams at the gate and gate hit points (32.4); ladders over the walls and guards who throw them down (32.5).
+- [Pillager warbands](warbands.md): the War Camp, the Warlord who leads a City's siege, ravager rams and the evoker (32.7).
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).

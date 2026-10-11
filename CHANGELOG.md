@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Pillager warbands, for 1.6** (32.7): by a Town or City in the plains, forests, taiga, snowy lands or savanna, a
+  pillager warband may raise a War Camp (a ring of sharpened logs, three tents, the Warlord's tent and its chest, a
+  ravager pen, a siege yard, the ominous banner on a pole), three times as likely as bandits. Its named Warlord wears
+  iron and the ominous banner; its raids are sieges with ladders and ravager rams (one at a Town, two and an evoker at
+  a City), and at a City the Warlord leads them himself: bring him down at the walls and his camp breaks.
+
 ## 0.142.0 — 2026-10-10
 
 ### Added

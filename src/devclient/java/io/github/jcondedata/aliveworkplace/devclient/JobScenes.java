@@ -603,6 +603,49 @@ final class JobScenes {
 			return l -> l.getBlockState(middle).isAir() && ram.isAlive()
 				&& io.github.jcondedata.aliveworkplace.threat.Sieges.hitPointsLeft(l, hall, next) < io.github.jcondedata.aliveworkplace.threat.Sieges.FENCE_GATE_HP;
 		}, null));
+		// Pillager warbands (ROADMAP 32.7): a Town behind a Palisade, the warband's war camp out to the south with its
+		// named Warlord and band; the warband's raid from it (its ravager ram with it) lays siege to the Palisade Gate.
+		SCENES.put("warband", new Job("a pillager warband made its war camp south of the Town and laid siege to its Palisade Gate: the ravager ram broke a gate block", 1500,
+			new Vec3(0.5, -49.0, -17.0), new Vec3(0.5, -59.0, 14.0), (level, player) -> {
+			BlockPos hall = STATION.north(12);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			BlockPos origin = STATION.offset(-3, 0, -4);
+			Map<BlockPos, StarterBlueprints.Entry> builds = new LinkedHashMap<>();
+			builds.put(origin.west(14), StarterBlueprints.PALISADE);
+			builds.put(origin.west(7), StarterBlueprints.PALISADE);
+			builds.put(origin, StarterBlueprints.PALISADE_GATE);
+			builds.put(origin.east(7), StarterBlueprints.PALISADE);
+			builds.put(origin.east(14), StarterBlueprints.PALISADE);
+			builds.forEach((at, entry) -> {
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(entry.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			});
+			Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(-1, 0, -8), MobSpawnType.COMMAND);
+			villager.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			// The hall of a Town, for as long as the camp is made and the raid sets out (its own round would end a raid by day).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pillager_warband");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 34), id);
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.named(lair)
+				&& io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Warlord "), "the warband made its war camp, with a named Warlord");
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 24, 0, Math.PI / 2,
+				culture, net.minecraft.util.RandomSource.create(7L));
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			List<net.minecraft.world.entity.Mob> raiders = io.github.jcondedata.aliveworkplace.guard.VillageRaids.raiders(level, hall);
+			Showcase.check(raid != null && raiders.stream().filter(m -> m.getType() == EntityType.RAVAGER).count() == 1,
+				"the warband's raid set out with one ravager ram, as at a Town");
+			BlockPos middle = origin.offset(3, 0, 1);
+			Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.siege(level, hall).map(s -> middle.equals(s.breach)).orElse(false),
+				"the raid on the palisaded Town is a siege, and its breach is the Palisade Gate");
+			return l -> l.getBlockState(middle).isAir();
+		}, null));
 		// Sieges II (ROADMAP 32.5): pillagers who set ladders lay siege to a village behind Stone Walls with no gate. They
 		// set a ladder up the wall's outer face, rung by rung; the first climbs over and drops inside; then the guard on the
 		// walkway comes along the wall and throws the ladder down. (The scene only times his walk: he stands still, as the

@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.guard;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.threat.Conditions;
 import io.github.jcondedata.aliveworkplace.threat.Culture;
@@ -168,11 +169,17 @@ public final class VillageRaids {
 			if (left.isEmpty()) {
 				end(level, hall, raid, false, 0);
 			} else if (over && level.getGameTime() - raid.began() > 1200) {
+				// Those of the lair's band who lived rejoin it; the extras and a captain who led them don't count (32.7).
+				int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
 				left.forEach(m -> {
 					level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, m.getX(), m.getY() + 0.5, m.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
-					m.discard();
+					if (Lairs.leading(m)) {
+						Lairs.comeHome(level, m); // the Warlord goes back to his camp
+					} else {
+						m.discard();
+					}
 				});
-				end(level, hall, raid, true, left.size());
+				end(level, hall, raid, true, band);
 			} else {
 				culture.ifPresent(c -> Threats.tactics(c).forEach(t -> t.round(level, hall, c, left)));
 			}
@@ -412,22 +419,58 @@ public final class VillageRaids {
 		if (spawned.isEmpty()) {
 			return null;
 		}
+		int band = spawned.size();
+		// The culture's extras by the village's rank (32.7: the warband's ravager rams, its evoker at a City), and its
+		// captain at the head of the raid where he leads it himself.
+		VillageRanks.Rank rank = VillageRanks.of(level, hall);
+		for (Culture.Extra extra : culture.extras()) {
+			for (int n = extra.count(rank); n > 0; n--) {
+				Mob mob = Threats.create(level, extra.entity());
+				if (mob == null) {
+					continue;
+				}
+				BlockPos at = atPortal ? beside(level, from, random)
+					: surface(level, from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter));
+				mob.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, random.nextFloat() * 360f, 0f);
+				mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
+				Threats.outfit(level, mob, culture, extra.member());
+				mob.addTag(Threats.EXTRA_TAG);
+				if (!targets.isEmpty()) {
+					mob.setTarget(targets.get(random.nextInt(targets.size())));
+				}
+				mob.getNavigation().moveTo(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5, 1.0);
+				level.addFreshEntityWithPassengers(mob);
+				spawned.add(mob);
+			}
+		}
+		Mob leader = camp.filter(c -> Lairs.leads(level, c)).map(c -> Lairs.lead(level, c, surface(level, from))).orElse(null);
+		if (leader != null) {
+			if (!targets.isEmpty()) {
+				leader.setTarget(targets.get(random.nextInt(targets.size())));
+			}
+			leader.getNavigation().moveTo(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5, 1.0);
+			spawned.add(leader);
+		}
 		Raid raid = begin(level, hall, culture.id(), spawned.size());
 		if (camp.isPresent()) {
-			Lairs.sent(level, hall, spawned.size());
+			Lairs.sent(level, hall, band);
 		}
 		ringTheBell(level, hall);
 		level.playSound(null, gather, SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE, 8f, 1f);
 		Component name = VillageHalls.name(level, hall);
 		// A lair's raid is its captain's: his name is in the horn's message and in the chronicle (32.3).
 		Optional<Lairs.Lair> named = camp.filter(Lairs::named);
-		Component said = named.isPresent()
+		Component said = named.isPresent() && leader != null
+			? Lairs.message(named.get(), "raid_led", false, spawned.size(), name, Lairs.captainName(named.get()))
+			: named.isPresent()
 			? Lairs.message(named.get(), "raid", true, spawned.size(), name, Lairs.captainName(named.get()))
 			: Component.translatable(culture.messages().key("raid", "message.aliveworkplace.raid.begins"), spawned.size(), name);
 		for (ServerPlayer player : players(level, hall)) {
 			Chat.chat(player, said.copy().withStyle(ChatFormatting.RED));
 		}
-		Chronicle.record(level, hall, Chronicle.Kind.RAID, named.isPresent()
+		Chronicle.record(level, hall, Chronicle.Kind.RAID, named.isPresent() && leader != null
+			? Lairs.chronicle(named.get(), "raid_led", false, spawned.size(), Lairs.captainName(named.get()))
+			: named.isPresent()
 			? Lairs.chronicle(named.get(), "raid", true, spawned.size(), Lairs.captainName(named.get()))
 			: Component.translatable(culture.chronicle().key("raid", "chronicle.aliveworkplace.raid"), spawned.size()));
 		Threats.tactics(culture).forEach(t -> t.begin(level, hall, culture, spawned));

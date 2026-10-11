@@ -1,0 +1,58 @@
+{
+  "where": {
+    "min_rank": "town",
+    "biomes": [
+      "minecraft:plains", "minecraft:sunflower_plains", "minecraft:meadow",
+      "minecraft:forest", "minecraft:birch_forest", "minecraft:old_growth_birch_forest", "minecraft:dark_forest",
+      "minecraft:flower_forest", "minecraft:cherry_grove",
+      "minecraft:taiga", "minecraft:old_growth_pine_taiga", "minecraft:old_growth_spruce_taiga",
+      "minecraft:snowy_plains", "minecraft:snowy_taiga", "minecraft:ice_spikes", "minecraft:grove", "minecraft:snowy_slopes",
+      "minecraft:savanna", "minecraft:savanna_plateau", "minecraft:windswept_savanna"
+    ]
+  },
+  "weight": 30,
+  "arrival": "lair",
+  "hours": "night",
+  "roster": [
+    { "entity": "minecraft:pillager", "share": 55, "role": "climber", "gear": { "mainhand": "minecraft:crossbow" } },
+    { "entity": "minecraft:vindicator", "share": 45, "role": "melee", "gear": { "mainhand": "minecraft:iron_axe" } }
+  ],
+  "extras": [
+    { "entity": "minecraft:ravager", "role": "ram", "count": { "town": 1, "city": 2 } },
+    { "entity": "minecraft:evoker", "role": "ranged", "count": { "city": 1 } }
+  ],
+  "captain": {
+    "entity": "minecraft:vindicator",
+    "gear": {
+      "head": "ominous_banner", "chest": "minecraft:iron_chestplate", "legs": "minecraft:iron_leggings",
+      "feet": "minecraft:iron_boots", "mainhand": "minecraft:iron_axe"
+    },
+    "health": 40,
+    "names": "threat.aliveworkplace.pillager_warband.names",
+    "title": "threat.aliveworkplace.pillager_warband.title",
+    "leads": "city"
+  },
+  "tactics": ["ram_gates", "ladders"],
+  "lair": { "structure": "aliveworkplace:camp/war_camp", "strength": 10, "growth": 2, "max": 18, "home_max": 10, "icon": "minecraft:crossbow" },
+  "loot": "aliveworkplace:chests/war_camp",
+  "messages": {
+    "raid": "message.aliveworkplace.warband.raid",
+    "raid_named": "message.aliveworkplace.warband.raid_named",
+    "raid_led": "message.aliveworkplace.warband.raid_led",
+    "camp": "message.aliveworkplace.warband.camp",
+    "camp_named": "message.aliveworkplace.warband.camp_named",
+    "broken": "message.aliveworkplace.warband.broken",
+    "broken_named": "message.aliveworkplace.warband.broken_named"
+  },
+  "chronicle": {
+    "raid": "chronicle.aliveworkplace.warband.raid",
+    "raid_named": "chronicle.aliveworkplace.warband.raid_named",
+    "raid_led": "chronicle.aliveworkplace.warband.raid_led",
+    "camp": "chronicle.aliveworkplace.warband.camp",
+    "camp_named": "chronicle.aliveworkplace.warband.camp_named",
+    "broken": "chronicle.aliveworkplace.warband.broken",
+    "broken_named": "chronicle.aliveworkplace.warband.broken_named",
+    "broken_by": "chronicle.aliveworkplace.warband.broken_by",
+    "broken_by_named": "chronicle.aliveworkplace.warband.broken_by_named"
+  }
+}

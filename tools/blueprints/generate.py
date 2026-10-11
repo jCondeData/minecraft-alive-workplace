@@ -118,6 +118,7 @@ if __name__ == "__main__":
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
+    war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
         draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)

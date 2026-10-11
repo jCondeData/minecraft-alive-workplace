@@ -626,6 +626,9 @@ SCENES = [
     # Sieges I (ROADMAP 32.4): a ravager ram breaks a Palisade Gate, the cracks showing
     job("siege_gate", "Threats", "A siege: the ram at the gate",
         "the ravager ram broke a gate block of the Palisade Gate, the cracks showing, and turned on the next", 120),
+    # Pillager warbands (ROADMAP 32.7): the war camp and its Warlord, and the warband's siege on a palisaded Town
+    job("warband", "Threats", "A pillager warband: the war camp and its siege",
+        "a pillager warband made its war camp south of the Town and laid siege to its Palisade Gate: the ravager ram broke a gate block", 150),
     # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
     job("siege_ladders", "Threats", "A siege: ladders over the wall",
         "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),

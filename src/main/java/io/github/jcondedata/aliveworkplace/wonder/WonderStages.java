@@ -155,7 +155,9 @@ public final class WonderStages {
 		WonderSite site = WonderManager.get(level).begin(plan.wonder(), hall, owner, ownerName, Chronicle.day(level));
 		level.setBlockAndUpdate(stone, ModBlocks.FOUNDATION_STONE.defaultBlockState());
 		level.playSound(null, stone, SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1f, 0.6f);
-		start(level, site.id(), at, stone, builder.getUUID());
+		// 35.5: the Master Architect leads the crew when there is one; else the builder it was handed to.
+		UUID lead = WonderCrews.lead(level, site, List.of(builder.getUUID()), builder.getUUID());
+		start(level, site.id(), at, stone, lead);
 		Component name = Wonders.name(plan.wonder());
 		Component village = VillageHalls.name(level, hall);
 		Component who = ownerName == null || ownerName.isEmpty() ? builder.getDisplayName() : Component.literal(ownerName);
@@ -212,6 +214,9 @@ public final class WonderStages {
 		int percent = Math.round(stageProgress(level, site) * 100);
 		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.stage", site.stage(), wonder.stages().size(),
 			wonder.stages().get(site.stage() - 1).nameText(), percent).withStyle(ChatFormatting.YELLOW));
+		// 35.5: the crew and its lead
+		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.crew", WonderCrews.leadName(level, site),
+			WonderCrews.crew(level, site).size(), WonderCrews.limit(site)).withStyle(ChatFormatting.AQUA));
 		List<Line> lines = materials(level, site, pos);
 		if (lines.isEmpty()) {
 			text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.nothing_left").withStyle(ChatFormatting.GREEN));
@@ -231,6 +236,12 @@ public final class WonderStages {
 				text.append("\n    ").append(Component.translatable("tooltip.aliveworkplace.blueprint.more", lines.size() - MAX_LINES).withStyle(ChatFormatting.DARK_GRAY));
 			}
 		}
+		text.append("\n  ").append(site.called()
+			? Component.translatable("message.aliveworkplace.wonder.status.called").withStyle(ChatFormatting.DARK_AQUA)
+			: Component.translatable("message.aliveworkplace.wonder.status.call").withStyle(s -> s.withColor(ChatFormatting.AQUA).withUnderlined(true)
+				.withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.RUN_COMMAND, "/workplace wonders call"))
+				.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT,
+					Component.translatable("message.aliveworkplace.wonder.status.call_hover")))));
 		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.abandon").withStyle(ChatFormatting.DARK_GRAY));
 		return text;
 	}
@@ -370,8 +381,10 @@ public final class WonderStages {
 		int next = site.stage() + 1;
 		if (wonder == null || next > wonder.stages().size()) {
 			manager.finish(site.id(), io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
-			return;
+			return; // (its crew is remembered while the server runs: a member's leftovers still go back to the stone)
 		}
+		// 35.5: the next stage's lead is the Master Architect, else the highest-level builder of the crew.
+		builder = WonderCrews.lead(level, site, WonderCrews.candidates(site, builder), builder);
 		manager.setStage(site.id(), next);
 		startStage(level, manager.site(site.id()).orElseThrow(), builder);
 		ServerPlayer owner = site.owner().map(o -> level.getServer().getPlayerList().getPlayer(o)).orElse(null);
@@ -402,6 +415,7 @@ public final class WonderStages {
 			}
 		}
 		manager.remove(id);
+		WonderCrews.forget(id);
 		Wonder wonder = Wonders.loaded().get(site.wonder());
 		if (wonder == null || site.done()) {
 			return ItemStack.EMPTY;

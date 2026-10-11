@@ -100,6 +100,12 @@ public final class Builders {
 				ModAttachments.BUILDER_JOB.remove(villager);
 			}
 		}
+		// 35.5: a builder with no build of its own (or, once every builder is called, between builds) joins its
+		// village's Wonder crew.
+		BuildSite crew = io.github.jcondedata.aliveworkplace.wonder.WonderCrews.join(level, villager);
+		if (crew != null) {
+			return crew;
+		}
 		return startNext(level, villager);
 	}
 
@@ -140,6 +146,7 @@ public final class Builders {
 				continue; // a hired builder only helps its employer and their friends
 			}
 			if (site.isQueued() || site.isDone() || site.bench() == null || villager.getUUID().equals(site.builder())
+				|| site.wonder() != null // a Wonder's crew joins through WonderCrews (35.5)
 				|| site.helpers(level.getGameTime()).size() >= io.github.jcondedata.aliveworkplace.hall.Guilds.helpers(level, site.bench())) {
 				continue;
 			}
@@ -164,7 +171,10 @@ public final class Builders {
 		if (site != null) {
 			site.release(villager.getUUID());
 		}
-		BlockPos bench = site != null && site.bench() != null ? site.bench() : benchPos(villager).orElse(villager.blockPosition());
+		// 35.5: a Wonder's crew member whose part is finished (its site gone) hands what it carries back to the stockpile
+		// round the Wonder's stone, where the next stage takes it from, not to its own bench.
+		BlockPos bench = site != null && site.bench() != null ? site.bench()
+			: io.github.jcondedata.aliveworkplace.wonder.WonderCrews.stockpile(level, villager).orElseGet(() -> benchPos(villager).orElse(villager.blockPosition()));
 		emptyBag(level, villager, bench, SupplyContainers.find(level, bench, null));
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 	}

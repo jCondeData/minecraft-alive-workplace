@@ -5,7 +5,7 @@ goods from every job, drawn up by the Master Architect and needing a second Lege
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
 Wonders page, the Wonder Plan and the Foundation Stone with its stages are built, behind the 2.0 switch (see Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5
 
 ## What a player sees
 
@@ -47,11 +47,28 @@ room for the stone.
   plain break says to sneak; anyone else is refused. Builders never clear it and pistons can't push it; a finished
   Wonder's stone breaks like any block (it drops nothing).
 
+**Crews** (35.5): every builder of the village (their bench within 64 blocks of the hall) with no build of their own
+joins the Wonder's crew, up to 12 (the `wonderCrew` switch, and no more than the Wonder's file allows). The stone's
+status says who leads and how many are on it ("Led by Odo, with a crew of 8 (at most 12)"), and so does the Wonder's
+card on the hall's Wonders page. Click **[Call every builder]** under the stone's status (the owner or an operator,
+within 8 blocks of the stone; `/workplace wonders call`) and the busy builders come too, each as they finish what
+they're on: "Every builder is called". The lead is the Master Architect when he's one of the village's builders,
+else the builder it was handed to; each next stage goes to the highest-level builder of the crew.
+
+- Each member takes a **column** of its own (the part split at least 8 × 8: a 64-wide part has 8-block columns, the
+  9-wide folly 1-block ones), the free one with work nearest to them, and works it in the stage's order: clearing from the top, the rest
+  from the bottom. Nobody works more than two layers above the part's lowest unfinished layer (a block the lead gave up
+  on, out of reach, doesn't hold the rest back; levelling the ground round it isn't layered), and no structure block
+  goes up before the block the drawing puts under it.
+- Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 3,500 ticks
+  against about 12,400 for one alone (at one block a second): a third of the time or less; the quarter the item asks
+  for isn't reached yet.
+- The crew fetches from the chests round the stone and the village's stores, and passes materials to each other.
+
 **What next?** names the Wonder closest to ready once the village is a Town with room for one: "The Great Cathedral can
 be begun", or the first line it lacks ("The Great Cathedral is nearly in reach: Finished Chapel: 2 of 3").
 
-Still to come (the design note): a crew of up to 12 builders on 8 × 8 columns,
-with scaffolding where they can't reach; goods from every job, dedicated at the stone stage by stage; and a finished
+Still to come (the design note): scaffolding where builders can't reach; goods from every job, dedicated at the stone stage by stage; and a finished
 Wonder announced to the server, celebrated with a festival, and its powers on while at least 90% of it stands.
 
 | Wonder | Rank | Legend (stand-in) | Other requirements | Powers |
@@ -138,19 +155,23 @@ All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatev
 | `wonderServerLimit` | 0 (0 to 64) | how many villages may each build the same kind; 0 is no limit |
 | `wonderCaps` | 0, 0, 1, 2 | file only: Wonders per village by rank (each 0 to 8; a short list is filled from the defaults) |
 | `disabledWonders` | empty | file only: Wonder ids that can't be started (`great_cathedral` or `pack:id`) |
+| `wonderCrew` | 12 (1 to 32) | the most builders on one Wonder's crew, its lead included |
 
-Later items add three more: the most builders on one Wonder, builders' scaffolding, and how much of a Wonder must stand
-for its powers.
+Later items add two more: builders' scaffolding, and how much of a Wonder must stand for its powers.
 
 ## Saved data
 
 A new saved file per dimension, `aliveworkplace_wonders`, with a list of `sites`: each with its `id`, `wonder`, `hall`,
 `owner` and `ownerName`, `stage` (default 1), `begun` and `finished` (absent until it is). A world saved before 35.2 has
 no such file and loads unchanged. 35.4 adds, all optional: `placement`, `stone`, `parts` (the current stage's build
-sites) and `builder` on a site; `wonder` and `no_foundation` on a build site (written only when set, so an ordinary
+sites) and `builder` on a site; 35.5 adds `called` (default false: every builder called to the crew). A crew member's
+job is the ordinary saved builder job (as a helper), so a crew comes back together after a restart; the columns are
+worked out again; `wonder` and `no_foundation` on a build site (written only when set, so an ordinary
 build saves exactly as before).
 
 ## Items, blocks, jobs, commands
+
+- `/workplace wonders call`: the stone's [Call every builder], for the owner or an operator within 8 blocks of it.
 
 - `/workplace wonders`: every Wonder on the server, one line each: its name, village, owner and stage ("stage 2 of 3,
   …" or "finished on day 12"). While `wonders` is off it says "Wonders are off."
@@ -202,3 +223,11 @@ mirrored (8 tests), no stage II block during stage I and stage I complete when s
 the finial lantern, 35.6); a save and reload mid-stage II of the Wonders, every build site and the builder, finished as
 drawn; old saves unchanged. Showcase scene `wonder_site`: the plan placed, the stone going down, stage I under way and
 the stone's status.
+
+GameTests in `WonderCrewGameTests` (35.5): eight builders raise the folly with no two on one column on any tick, no
+structure block up with the drawing's block under it missing, all eight on the crew at once, and done in at most a
+third of the time one builder alone takes on the same folly (measured in the same test, first; 35.5 asks a quarter); a save and reload mid-stage II with every
+member, the crew back together and the folly finished as drawn; `wonderCrew 3` holds the crew to 3, nobody joins with
+Wonders off, and a member lost mid-job is replaced; a builder with its own build queued joins only once every builder is
+called, a stranger can't call, the stone names the crew and offers the call, the highest-level builder leads.
+Showcase scene `wonder_crew` (group Wonders): ten builders on the folly.

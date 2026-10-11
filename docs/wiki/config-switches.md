@@ -148,6 +148,7 @@ range is in brackets.
 | `wonderLegends` | on | 2.0 | A Wonder needs its Legends in the village. Off: each Legend's stand-in is asked for instead. |
 | `wonderServerLimit` | 0 (0 to 64) | 2.0 | How many villages on the server may each build the same kind of Wonder; 0 is no limit. |
 | `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`); one already finished keeps its blocks and powers. In the file only. |
+| `wonderCrew` | 12 (1 to 32) | 2.0 | The most builders on one Wonder's crew, its lead included; a Wonder's own file may allow fewer. See [Wonders](wonders.md). |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |
 | `steward` | on | 1.1 | A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan. Off: no new Stewards, and those appointed stand idle. |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | 1.1 | The most builds a Steward may have open at once, whatever his level and the village's rank. |

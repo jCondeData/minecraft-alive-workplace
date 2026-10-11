@@ -174,6 +174,8 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/** The wonder_crew scene's ten builders (35.5). */
+	private static final List<Villager> crewBuilders = new java.util.ArrayList<>();
 	/** The wonder_site scene's builder (35.4). */
 	private static final Villager[] wonderBuilder = new Villager[1];
 	/** The test folly (35.3), the wonder scenes' Wonder. */
@@ -5481,6 +5483,83 @@ final class JobScenes {
 				}
 				var part = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).get(sites.get(0).parts().get(0));
 				return sites.get(0).stage() == 1 && part != null && part.placed() > 0; // stage I under way
+			}));
+		// Crews (ROADMAP 35.5): ten builders of the village on the folly, each on a column of its own, led by the highest-level.
+		SCREENS.put("wonder_crew", new Screen("ten builders of the village raised the folly together: the plan handed to one, every builder called from the stone, and each took a column of its own, never more than two layers above the lowest unfinished one; the stone named the lead and the crew of ten",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getName().getString());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				level.getGameRules().getRule(io.github.jcondedata.aliveworkplace.registry.ModGameRules.BUILD_DELAY).set(6, level.getServer());
+				String[] names = {"Odo", "Pia", "Bram", "Ilse", "Tam", "Wren", "Edda", "Hob", "Mags", "Rolf"};
+				crewBuilders.clear();
+				for (int i = 0; i < names.length; i++) {
+					BlockPos bench = STATION.offset(-9 + 2 * i, 0, 3);
+					level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+					Villager builder = EntityType.VILLAGER.create(level);
+					builder.moveTo(bench.getX() + 0.5, bench.getY(), bench.getZ() + 1.5, 180, 0);
+					builder.setCustomName(Component.literal(names[i]));
+					builder.setVillagerData(builder.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER).setLevel(2));
+					level.addFreshEntity(builder);
+					io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+					crewBuilders.add(builder);
+				}
+				var wonder = io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().get(WONDER_FOLLY);
+				Showcase.check(wonder != null, "the Test Folly is loaded");
+				ItemStack plan = io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.of(level, STATION, wonder, Component.literal("Testholm"));
+				var data = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(plan).orElseThrow();
+				var placement = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.placementAt(level.dimension().location(), data.size().orElseThrow(),
+					STATION.offset(0, 0, -6), net.minecraft.world.level.block.Rotation.CLOCKWISE_180);
+				plan.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data.withPlacement(java.util.Optional.of(placement)));
+				player.getInventory().clearContent();
+				player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, plan);
+				var result = io.github.jcondedata.aliveworkplace.wonder.WonderStages.handOver(player, crewBuilders.get(0), plan);
+				Showcase.check(result == net.minecraft.world.InteractionResult.SUCCESS, "the plan handed to Odo: " + result);
+				var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0);
+				BlockPos stone = site.stone().orElseThrow();
+				var list = io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.checklist(level,
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData(io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.idOf(WONDER_FOLLY),
+						java.util.Optional.empty(), java.util.Optional.empty())).orElseThrow();
+				BlockPos[] chests = {stone.east(2), stone.east(3), stone.east(2).south(), stone.east(3).south()};
+				int c = 0;
+				int slot = 0;
+				for (var line : list.lines()) {
+					for (int left = line.need() + 4; left > 0 && c < chests.length; left -= line.item().getDefaultMaxStackSize()) {
+						if (slot == 0) {
+							level.setBlockAndUpdate(chests[c], Blocks.CHEST.defaultBlockState());
+						}
+						((net.minecraft.world.Container) level.getBlockEntity(chests[c])).setItem(slot, new ItemStack(line.item(), Math.min(left, line.item().getDefaultMaxStackSize())));
+						if (++slot == 27) {
+							slot = 0;
+							c++;
+						}
+					}
+				}
+				Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderCrews.call(player) == 1, "every builder called from the stone");
+			},
+			List.of(new Step("01_wonder_crew_gathering", -1, 0, (level, player) ->
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(12.5, -52, 8.5), new Vec3(-1, -57, -8)), 200),
+				new Step("02_wonder_crew_columns", -1, 0, (level, player) -> {
+					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0);
+					int crew = io.github.jcondedata.aliveworkplace.wonder.WonderCrews.crew(level, site).size();
+					Showcase.check(crew == 10, "all ten builders on the crew: " + crew);
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(10.5, -50, 2.5), new Vec3(-1, -57, -8));
+				}, 400),
+				new Step("03_wonder_crew_status", -1, 0, (level, player) -> {
+					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0);
+					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, site.stone().orElseThrow()));
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(9.5, -54, 6.5), new Vec3(-1, -58, -8));
+				}, 200)),
+			(level, player) -> {
+				var sites = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);
+				if (sites.isEmpty()) {
+					return false;
+				}
+				var site = sites.get(0);
+				return io.github.jcondedata.aliveworkplace.wonder.WonderCrews.crew(level, site).size() >= 8 && site.called();
 			}));
 		// Switching classes on (ROADMAP 34.22): a village from before 1.8 (a couple in a builder's cottage, three more without
 		// a home), the hall's Classes tab before; then the hall's rounds seed them, the chronicle says so once, and the tab and

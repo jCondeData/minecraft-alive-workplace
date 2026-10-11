@@ -55,6 +55,12 @@ asks for the steps, `latest.log` and any crash report).
   page: nothing comes to it, a camp already standing leaves at the next dawn, and the guards icon says so. Operators
   get `/workplace threat start <culture> | lair <culture> | disaster <id> | end | clear` at the nearest hall, and the
   README has a Threats section.
+- **Crews: every builder on one Wonder** (35.5, 2.0, still switched off): every builder of the village with no build of
+  their own joins the Wonder's crew, up to 12 (the new `wonderCrew` setting). **[Call every builder]** under the
+  Foundation Stone's status brings the busy ones too, as they finish what they're on. Each takes a column of its own
+  and works it from the bottom (clearing, from the top), never more than two layers above the lowest unfinished one, so
+  nothing goes up with nothing under it; eight builders raise the test Wonder in under a third of one builder's time. The
+  stone and the hall's Wonders page name the lead (the Master Architect when there is one) and the crew.
 - **The Foundation Stone** (35.4, 2.0, still switched off): right-click a builder of the village with a placed Wonder
   Plan and a **Foundation Stone** (carved stone, brass plaque) goes down just outside the Wonder's front corner; the
   start is announced to the whole server and written in the chronicle. The chests within 8 blocks of the stone are the

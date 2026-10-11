@@ -47,7 +47,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
-		"coloniesPerVillage", "realmMaxMembers", "wonderServerLimit");
+		"coloniesPerVillage", "realmMaxMembers", "wonderServerLimit", "wonderCrew");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -176,8 +176,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 113 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (113 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 114 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (114 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -276,7 +276,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 113, "every option on the screen in GameTests (35.2 wonders, wonderLegends and wonderServerLimit, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 114, "every option on the screen in GameTests (35.5 wonderCrew, 35.2 wonders, wonderLegends and wonderServerLimit, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 }

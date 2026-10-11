@@ -97,6 +97,8 @@ public final class WorkplaceCommand {
 					.then(Commands.argument("quest", UuidArgument.uuid())
 						.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), UuidArgument.getUuid(ctx, "quest"), false)))))
 			.then(Commands.literal("wonders") // every Wonder on the server with its village, owner and stage (35.2)
+				.then(Commands.literal("call") // the stone's "Call every builder" (35.5)
+					.executes(ctx -> io.github.jcondedata.aliveworkplace.wonder.WonderCrews.call(ctx.getSource().getPlayerOrException())))
 				.executes(ctx -> {
 					List<Component> lines = io.github.jcondedata.aliveworkplace.wonder.Wonders.listLines(ctx.getSource().getServer());
 					lines.forEach(line -> ctx.getSource().sendSuccess(() -> line, false));

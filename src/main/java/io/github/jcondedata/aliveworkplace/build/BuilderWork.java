@@ -134,6 +134,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Stage helperWaitStage;
 	/** After this long the lead does the blocks helpers claimed itself (a helper that claims and never places). */
 	private static final int HELPER_WAIT = 200;
+	/** True while this builder works on a Wonder with a crew, in columns (35.5). */
+	private boolean crew;
 	/** True while the lead works on a block away from its cursor, this tick (23.1a). */
 	private boolean offCursor;
 	/** The villager this behaviour belongs to (each villager's brain has its own). */
@@ -272,13 +274,19 @@ public class BuilderWork extends Behavior<Villager> {
 		// 1. Find the next step that actually needs work.
 		BuildPlan.Step step = null;
 		Action action = Action.NONE;
+		// 35.5: a Wonder's crew works in columns, each member on one of its own (a lead alone works as ever).
+		crew = site.wonder() != null && (helping || !site.helpers(gameTime).isEmpty());
 		if (helping) {
-			step = helperStep(level, villager, site, plan, bench);
+			step = crew ? crewStep(level, villager, site, plan, bench) : helperStep(level, villager, site, plan, bench);
 			if (step == null) {
 				if (!bag.isEmpty() && handToLead(level, villager, site, plan, bag)) {
 					return; // B66: on its way to the lead with what the rest of the build needs
 				}
-				if (!bag.isEmpty()) {
+				if (crew && site.stage() != BuildPlan.Stage.DONE) {
+					// 35.5: a crew member waiting for a layer to fill keeps what it carries for its next column and
+					// stays at the Wonder rather than walking to and fro
+					villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+				} else if (!bag.isEmpty()) {
 					deposit(level, villager, site, plan, bag, bench); // hand back what it was carrying
 				} else {
 					idleNear(villager, site, plan);
@@ -295,7 +303,15 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!helping) {
 			site.helpers(gameTime); // lets go of the claims of helpers that have left, so the lead never waits on them
 		}
-		for (int budget = SKIP_BUDGET; !helping && budget > 0 && !site.isDone(); budget--) {
+		BuildPlan.Step crewPick = null;
+		if (!helping && crew && !site.isDone()) {
+			crewPick = crewStep(level, villager, site, plan, bench); // the lead of a crew takes a column too
+			if (crewPick != null) {
+				step = crewPick;
+				action = actionFor(level, site, crewPick, bench);
+			}
+		}
+		for (int budget = SKIP_BUDGET; !helping && step == null && budget > 0 && !site.isDone(); budget--) {
 			BuildPlan.Step candidate = site.current(plan);
 			if (candidate == null) {
 				site.finishList();
@@ -309,7 +325,8 @@ public class BuilderWork extends Behavior<Villager> {
 					site.playerBlockInTheWay(); // 27.19: counted once, as it is skipped for good
 				}
 				site.defer(); // (lead only: helpers pick their own steps)
-			} else if (helperWait < HELPER_WAIT && site.claimedByOther(villager.getUUID(), candidate.pos())) {
+			} else if (crew && crewBlocked(level, villager, site, plan, candidate, bench)
+				|| helperWait < HELPER_WAIT && site.claimedByOther(villager.getUUID(), candidate.pos())) {
 				// A helper is on this block (23.1a): leave it to them rather than both walking over to it. If they don't
 				// get to it, it comes round again at the end of the stage (or, while retrying, at the end of the list;
 				// if every step left is a helper's, the lead waits for them, but not for long).
@@ -324,6 +341,9 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 			} else {
 				step = candidate;
+				if (crew) {
+					site.takeColumn(villager.getUUID(), plan.column(candidate.pos()));
+				}
 				break;
 			}
 		}
@@ -336,8 +356,8 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		// 23.1a: with a crew, the lead doesn't walk off to its next block while there's work for the crew within reach
 		// (the helpers had taken everything near it, so it walked as much as a builder on its own).
-		offCursor = false;
-		if (!helping && !site.helpers(gameTime).isEmpty() && villager.getEyePosition().distanceTo(Vec3.atCenterOf(step.pos())) > REACH) {
+		offCursor = crewPick != null;
+		if (!helping && !crew && !site.helpers(gameTime).isEmpty() && villager.getEyePosition().distanceTo(Vec3.atCenterOf(step.pos())) > REACH) {
 			BuildPlan.Step near = workInReach(level, villager, site, plan, bench);
 			if (near != null) {
 				step = near;
@@ -460,6 +480,139 @@ public class BuilderWork extends Behavior<Villager> {
 			site.claim(villager.getUUID(), pick.pos(), level.getGameTime());
 		}
 		return pick;
+	}
+
+	// --- a Wonder's crew (35.5) -----------------------------------------------------------------
+
+	/** What a crew member takes for in one trip: the rest of its column, up to this many steps (35.5). */
+	static final int CREW_SHARE = 128;
+	/** How many layers above the part's lowest unfinished layer (clearing: below its highest) a crew may work. */
+	static final int CREW_LAYERS = 2;
+
+	/**
+	 * A crew member's next step (35.5): the first step with work, in the stage's order, of the column it is on, else of
+	 * the free column (nobody else on it) whose next step is nearest to it. Never more than {@link #CREW_LAYERS} layers
+	 * above the part's lowest unfinished layer (clearing: below its highest), and never a foundation or structure block
+	 * with the one the drawing puts under it not there yet. Null when no free column has work it may do now.
+	 */
+	@Nullable
+	private BuildPlan.Step crewStep(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
+		if (avoidStage != site.stage()) {
+			avoid.clear();
+			avoidStage = site.stage();
+		}
+		java.util.UUID me = villager.getUUID();
+		if (site.stage() == BuildPlan.Stage.DONE) {
+			site.dropColumn(me);
+			return null;
+		}
+		Map<Long, List<BuildPlan.Step>> columns = plan.columns(site.stage());
+		int layer = crewLayer(level, site, plan, bench);
+		Long mine = site.crewColumn(me);
+		BuildPlan.Step pick = null;
+		if (mine != null && !site.columnTakenByOther(me, mine)) {
+			pick = columnWork(level, site, plan, columns.getOrDefault(mine, List.of()), layer, bench);
+		}
+		if (pick == null) {
+			double best = Double.MAX_VALUE;
+			for (Map.Entry<Long, List<BuildPlan.Step>> e : columns.entrySet()) {
+				if (e.getKey().equals(mine) || site.columnTakenByOther(me, e.getKey())) {
+					continue;
+				}
+				BuildPlan.Step s = columnWork(level, site, plan, e.getValue(), layer, bench);
+				if (s != null) {
+					double d = villager.distanceToSqr(Vec3.atCenterOf(s.pos()));
+					if (d < best) {
+						pick = s;
+						best = d;
+					}
+				}
+			}
+		}
+		if (pick == null) {
+			site.dropColumn(me);
+			if (helping) {
+				site.release(me);
+				site.seen(me, level.getGameTime());
+			}
+			return null;
+		}
+		site.takeColumn(me, plan.column(pick.pos()));
+		if (helping) {
+			site.claim(me, pick.pos(), level.getGameTime());
+		}
+		return pick;
+	}
+
+	/** The first step of {@code column} with work, in the stage's order, if the crew may do it now; else null. */
+	@Nullable
+	private BuildPlan.Step columnWork(ServerLevel level, BuildSite site, BuildPlan plan, List<BuildPlan.Step> column, int layer, BlockPos bench) {
+		boolean topDown = site.stage() == BuildPlan.Stage.CLEAR;
+		for (BuildPlan.Step s : column) {
+			if (avoid.contains(s.pos()) || site.gaveUp(s.pos())) {
+				continue;
+			}
+			Action a = actionFor(level, site, s, bench);
+			if (a != Action.BREAK && a != Action.PLACE) {
+				continue;
+			}
+			int y = s.pos().getY();
+			if (layered(site) && (topDown ? y < layer - CREW_LAYERS : y > layer + CREW_LAYERS)) {
+				return null; // the rest of the column is further up (clearing: down) still
+			}
+			if (a == Action.PLACE && !supported(level, site, plan, s)) {
+				continue;
+			}
+			return s;
+		}
+		return null;
+	}
+
+	/**
+	 * Whether the lead may not take {@code step} at its cursor while it has a crew (35.5): another member is on its
+	 * column, it's too far above the lowest unfinished layer, or what it stands on isn't there yet.
+	 */
+	private boolean crewBlocked(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuildPlan.Step step, BlockPos bench) {
+		if (site.columnTakenByOther(villager.getUUID(), plan.column(step.pos()))) {
+			return true;
+		}
+		int layer = crewLayer(level, site, plan, bench);
+		int y = step.pos().getY();
+		if (layered(site) && (site.stage() == BuildPlan.Stage.CLEAR ? y < layer - CREW_LAYERS : y > layer + CREW_LAYERS)) {
+			return true;
+		}
+		return actionFor(level, site, step, bench) == Action.PLACE && !supported(level, site, plan, step);
+	}
+
+	/** Whether the crew keeps to layers in this stage: not while levelling the ground round the finished building. */
+	private static boolean layered(BuildSite site) {
+		return site.stage() != BuildPlan.Stage.LANDSCAPE;
+	}
+
+	/** A foundation or structure block goes up only once the block the drawing puts under it is there. */
+	private static boolean supported(ServerLevel level, BuildSite site, BuildPlan plan, BuildPlan.Step step) {
+		if (site.stage() != BuildPlan.Stage.STRUCTURE && site.stage() != BuildPlan.Stage.FOUNDATION) {
+			return true;
+		}
+		BlockPos below = step.pos().below();
+		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced();
+	}
+
+	/** The part's lowest layer with work left in this stage (clearing: the highest), once a tick. */
+	private static int crewLayer(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos bench) {
+		return site.crewLayer(level.getGameTime(), () -> {
+			// The stage's steps go bottom-up (clearing: top-down), so the first with work is on the layer.
+			for (BuildPlan.Step s : plan.steps(site.stage())) {
+				if (site.gaveUp(s.pos())) {
+					continue; // left for good (out of reach, say): nothing waits for it
+				}
+				Action a = actionFor(level, site, s, bench);
+				if (a == Action.BREAK || a == Action.PLACE) {
+					return s.pos().getY();
+				}
+			}
+			return site.stage() == BuildPlan.Stage.CLEAR ? Integer.MIN_VALUE + CREW_LAYERS : Integer.MAX_VALUE - CREW_LAYERS;
+		});
 	}
 
 	/** For the lead: the nearest block within reach that a helper could take (none claimed, not given up on). */
@@ -952,6 +1105,19 @@ public class BuilderWork extends Behavior<Villager> {
 	private List<BuildPlan.Step> helperShare(ServerLevel level, BuildSite site, BuildPlan plan) {
 		BuildPlan.Step leads = site.current(plan);
 		List<BuildPlan.Step> out = new java.util.ArrayList<>();
+		Long column = crew && self != null ? site.crewColumn(self) : null;
+		if (column != null) {
+			// 35.5: a crew member takes for the rest of its own column.
+			for (BuildPlan.Step s : plan.columns(site.stage()).getOrDefault(column, List.of())) {
+				if (out.size() >= CREW_SHARE) {
+					break;
+				}
+				if (!avoid.contains(s.pos()) && !MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+					out.add(s);
+				}
+			}
+			return out;
+		}
 		for (BuildPlan.Step s : site.ahead(plan, helpWindow(level, site))) {
 			if (out.size() >= HELP_WINDOW) {
 				break;

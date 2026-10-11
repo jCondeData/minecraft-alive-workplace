@@ -354,13 +354,74 @@ public final class BuildSite {
 
 	public void release(UUID who) {
 		claims.remove(who);
+		crewColumns.remove(who);
 	}
 
 	/** Helpers that worked on this site within the last few seconds. */
 	public List<UUID> helpers(long gameTime) {
 		helpersSeen.values().removeIf(t -> gameTime - t > 200);
 		claims.keySet().retainAll(helpersSeen.keySet());
+		crewColumns.keySet().removeIf(who -> !who.equals(builder) && !helpersSeen.containsKey(who));
 		return List.copyOf(helpersSeen.keySet());
+	}
+
+	// --- a Wonder's crew (35.5): each member on a column of its own. Not saved: worked out again after a load. ----------
+
+	/** The crew column (BuildPlan#column) each member of the crew is on. */
+	private final Map<UUID, Long> crewColumns = new java.util.HashMap<>();
+	/** The game tick {@link #crewLayer} was worked out for, the stage it was for, and the layer. */
+	private long crewLayerTick = Long.MIN_VALUE;
+	@Nullable
+	private BuildPlan.Stage crewLayerStage;
+	private int crewLayer;
+
+	/** Steps the lead gave up on this stage (deferred twice): a crew's lowest layer doesn't wait for them. */
+	private final java.util.Set<BlockPos> gaveUp = new java.util.HashSet<>();
+
+	/** Whether the lead gave up on the step at {@code pos} (35.5). */
+	public boolean gaveUp(BlockPos pos) {
+		return gaveUp.contains(pos);
+	}
+
+	/** The column {@code who} is on, or null. */
+	@Nullable
+	public Long crewColumn(UUID who) {
+		return crewColumns.get(who);
+	}
+
+	/** Whether someone other than {@code who} is on column {@code column}. */
+	public boolean columnTakenByOther(UUID who, long column) {
+		for (Map.Entry<UUID, Long> e : crewColumns.entrySet()) {
+			if (e.getValue() == column && !e.getKey().equals(who)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** {@code who} works column {@code column} (and no other). */
+	public void takeColumn(UUID who, long column) {
+		crewColumns.put(who, column);
+	}
+
+	/** {@code who} lets its column go. */
+	public void dropColumn(UUID who) {
+		crewColumns.remove(who);
+	}
+
+	/** Every member's column, for the crew tests and the debug log. */
+	public Map<UUID, Long> crewColumns() {
+		return java.util.Collections.unmodifiableMap(crewColumns);
+	}
+
+	/** The part's lowest (while clearing: highest) unfinished layer, cached for the tick {@code gameTime} of {@link #stage}. */
+	public int crewLayer(long gameTime, java.util.function.IntSupplier compute) {
+		if (crewLayerTick != gameTime || crewLayerStage != stage) {
+			crewLayer = compute.getAsInt();
+			crewLayerTick = gameTime;
+			crewLayerStage = stage;
+		}
+		return crewLayer;
 	}
 
 	public void seen(UUID helper, long gameTime) {
@@ -371,6 +432,9 @@ public final class BuildSite {
 	public void defer() {
 		if (retrying) {
 			skipped++;
+			if (plan != null && cursor < deferred.size() && deferred.get(cursor) < plan.steps(stage).size()) {
+				gaveUp.add(plan.steps(stage).get(deferred.get(cursor)).pos()); // 35.5: a crew's layers don't wait for it
+			}
 		} else {
 			deferred.add(cursor);
 		}
@@ -385,6 +449,7 @@ public final class BuildSite {
 			stage = stage.next();
 			retrying = false;
 			deferred.clear();
+			gaveUp.clear();
 		}
 		cursor = 0;
 		onChange.run();

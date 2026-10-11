@@ -28,6 +28,12 @@ column) is off whatever the file says, and isn't on the settings screen until th
 - **The expansion gate (B76).** Each expansion that has switches (1.1 to 1.5, 1.7 and 1.8 today) has one flag in the code
   that the release finishing it turns on. Until then its switches are forced off, even in a config file that says on. The release flips the flag
   and nothing else: the switches then default on and obey the file again.
+- **A file from before the release (34.23).** The file records which expansions were open when it was written
+  (a list in the file; files written by 0.139.0 to 0.142.0 have none, so none were). A switch of an expansion that was
+  still closed then holds `false` only because that was its default, so once the expansion is out it takes its new
+  default, on; a switch turned off after the release stays off. A file with neither the list nor a format number
+  (written by hand) is taken as it says.
+  Without this, a server that ran an earlier version kept 1.8's classes off (found by the update rehearsal).
 - **Every "needs" system has its own switch** (names, traits, moods, sickness, couples, chatter, markets,
   festivals, raids, bandit camps, the treasury, repairs, paths). Set it to false and the village simply goes without
   it; nothing else needs looking after.
@@ -183,6 +189,8 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 
 - B76 (owner, 2026-10-05): an expansion's switches stay off until every item of its milestone is done, so a
   half-built expansion never reaches a player. Version 0.139.0 had written them on; the gate overrides such files.
+- 34.23: files written while a gate was closed hold `false` for its switches; the release that opens it treats that as
+  the old default, not a choice, so updating switches the expansion on.
 - 25.5: caps like MineColonies' for server owners, and every "needs" system easy to switch off, because
   "babysitting" is the top complaint about big colony mods.
 - 23.6 (owner's call): villages keep working when no player is near; `keepVillagesWorking` is the way out.
@@ -201,8 +209,9 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 ## Proof
 
 GameTests: `ConfigGameTests` (4: the file is read, clamped and applied; every radius and village number; every
-setting has its words and range; saved settings are read back), `ExpansionGateGameTests` (3: an old config with the
-switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates),
+setting has its words and range; saved settings are read back), `ExpansionGateGameTests` (4: an old config with the
+switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates; a file from before
+the release takes the new defaults, a later choice holds),
 `HallSpecGameTests.theConfigsSwitchesOutsideTests`, `ProtectionSpecGameTests.theConfigSwitchesProtectionOff`,
 `RoadGameTests.withStewardRoadsOffNothingIsBuilt`, `WallGameTests.withStewardWallsOffNothingIsProposedOrBuilt`,
 `CaravanRoadGameTests.withCaravanRoadsOffNoRoadIsPlanned`, `GiftedGameTests.giftedChanceZeroMeansNobody`.

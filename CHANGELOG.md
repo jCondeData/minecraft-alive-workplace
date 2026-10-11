@@ -115,6 +115,11 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Updating no longer leaves a finished expansion switched off (34.23): a config file written by an earlier version held
+  `false` for the switches of expansions that weren't out yet, and the new version obeyed it, so a server updating to
+  1.8 would have kept classes, ages and family names off. Such switches now take their new default; a switch turned off
+  after the update stays off. Found by the update rehearsal (`tools/packtest/rehearsal.sh`, a 0.142.0 world opened with
+  1.8 on the Cobbleverse pack).
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the
   crafters' recipes are sorted and their ingredients worked out once when the server starts and after each `/reload`,
   and the crafters' planning has a limit per plan and per tick (a crafter past it looks again a few seconds later).

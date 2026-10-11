@@ -185,6 +185,59 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * ROADMAP 34.23 (the update rehearsal): a file written while an expansion's gate was closed holds its switches' closed
+	 * default, false. Once the expansion is finished (here: the gates open, as in GameTests) those switches take their new
+	 * default, on; a switch a player turned off in a file written with the gate open stays off; with the gate still
+	 * closed nothing changes; a saved file records which gates were open.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	public void aFileFromBeforeTheReleaseTakesTheNewDefaults(GameTestHelper helper) {
+		List<String> problems = new ArrayList<>();
+		// As 0.142.0 wrote it: every gated switch false, no expansionsOpen.
+		StringBuilder closed = new StringBuilder("{\"configVersion\": 2, \"villageProtection\": false");
+		for (String name : GATED_SWITCHES) {
+			closed.append(", \"").append(name).append("\": false");
+		}
+		String oldFile = closed.append('}').toString();
+		WorkplaceConfig opened = WorkplaceConfig.parse(oldFile);
+		for (String name : GATED_SWITCHES) {
+			if (!opened.getBoolean(name)) {
+				problems.add(name + " stayed off from a file written with its gate closed");
+			}
+		}
+		if (opened.getBoolean("villageProtection")) {
+			problems.add("a finished switch the player turned off (villageProtection) was turned on");
+		}
+		// Written after the release: the player's false is kept; one expansion still closed when written is reset.
+		WorkplaceConfig chosen = WorkplaceConfig.parse("{\"expansionsOpen\": [\"M34\"], \"villageClasses\": false, \"steward\": false}");
+		if (chosen.getBoolean("villageClasses")) {
+			problems.add("villageClasses turned off after 1.8 was turned back on");
+		}
+		if (!chosen.getBoolean("steward")) {
+			problems.add("steward, saved while M27 was closed, stayed off");
+		}
+		// What a save writes, read back: the open gates are recorded, so the choices hold.
+		WorkplaceConfig saved = new WorkplaceConfig();
+		saved.setBoolean("familyNames", false);
+		String json = new com.google.gson.GsonBuilder().create().toJson(saved);
+		if (!json.contains("\"expansionsOpen\":[\"M27\"") || WorkplaceConfig.parse(json).getBoolean("familyNames")) {
+			problems.add("a saved file doesn't keep the choice: " + json.substring(0, Math.min(80, json.length())));
+		}
+		// A player's game with the gates still closed: the same old file leaves everything off.
+		asPlayer(() -> {
+			WorkplaceConfig stillClosed = WorkplaceConfig.parse(oldFile);
+			for (String name : GATED_SWITCHES) {
+				if (stillClosed.getBoolean(name)) {
+					problems.add(name + " turned on with its gate closed");
+				}
+			}
+		});
+		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+		helper.succeed();
+	}
+
 	/** GameTests still turn the unfinished expansions on (they test them): defaults on, and the file's switches obeyed. */
 	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
@@ -199,7 +252,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 					off.add(name);
 				}
 			});
-			StringBuilder json = new StringBuilder("{\"giftedChance\": 0");
+			// Written with the gates open (34.23): the file's false is the player's choice, kept.
+			StringBuilder json = new StringBuilder("{\"giftedChance\": 0, \"expansionsOpen\": [\"M27\", \"M28\", \"M29\", \"M30\", \"M31\", \"M32\", \"M33\", \"M34\"]");
 			for (String name : GATED_SWITCHES) {
 				json.append(", \"").append(name).append("\": false");
 			}

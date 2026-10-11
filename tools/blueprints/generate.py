@@ -29,6 +29,7 @@ from guildhall import *
 from arena import *
 from answering import *
 from realm import *
+from wonders import WONDERS, save_wonder
 from styles import styled
 
 
@@ -190,6 +191,8 @@ if __name__ == "__main__":
             staffed_house(style, fit_out, "aliveworkplace:" + job if job else None).save(VILLAGE_STRUCTURES, f"{style}_{name}")
     for name in WORKPLACES + COBBLEMON_WORKPLACES:
         workplace(name).save(MAIN_STRUCTURES, name)
+    for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files
+        save_wonder(wonder_id)
     test_hut().save(TEST_STRUCTURES, "test_hut")
     test_hut_2().save(TEST_STRUCTURES, "test_hut_2")
     test_area("build_area", 17, 8, 17)

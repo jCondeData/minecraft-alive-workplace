@@ -4493,6 +4493,7 @@ item waits.
   with nobody dead the first written in. Not changed: the old birth line ("A baby was born to ...") is kept when no
   grandparent is known, and the grown-up line has no family name. The player guide is untouched (1.8 is still gated;
   docs/guide/README.md: content goes in with the release that turns it on). Details: `docs/wiki/elders.md`.
+- 2026-10-11 (lane d, lane-d-1011-0633): `wip/lane-d` holds 34.18, 34.20, 34.21 and 34.22, merged with main at 09:00Z. Full builds found and fixed 4 tests broken by them (family names on the hall's list; a duplicate `class.<id>.one` lang key). The last full build ran 1,218 batches and then the GameTest server ran out of heap (`OutOfMemoryError: Java heap space`, 09:16Z), so nothing was proven green. LuxuryWorkGameTests.makesWhatsShortAndStopsAtEight and VillageGameTests.thePrintShopsPrinterTakesItsPress each failed once in a full run and passed every time alone. Next lane d run: merge main, full build (check whether the heap runs out on main too, or only with FamilyBook/ClassMigration), push.
 - 2026-10-11 (34.18, decisions; lane d): `people/ClassLook` sends `aliveworkplace:class_look` (entity id, class, the
   class's layer, life stage) on tracking and from every change: `SocialClasses.seed`, a household's rise or fall (only
   when the class really changed), a child following their parents, and `LifeStages.becameElder`. **The tracking event

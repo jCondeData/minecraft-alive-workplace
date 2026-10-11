@@ -17,6 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Plague and the Physician** (32.18, behind the 1.6 expansion): a Town or bigger may suffer a plague (3% a day, twice
+  that with more villagers than beds; a coven's hexed or a traveller from far away can bring it too). While it lasts,
+  each hall round a villager within 3 blocks of an ill one catches it 1 in 5 (less with Medicine research); the ill
+  don't get well by themselves, the Nurse can't cure them, and after two days they stay in bed. It ends when no one has
+  been ill for a day. The new **Physician** (brewing stand + glistering melon slice) foretells the outbreak at its first
+  case, goes house to house, sends the ill home (then they pass it on only in their own house) and cures them with the
+  new **Remedy** (a glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye; they brew it from
+  those makings in their chest too): it cures any illness, hexes included, and keeps a villager well for 10 days.
+  Right-click a villager with one to give it; drink one to lose poison, wither, hunger and nausea. The hall's list marks
+  the plague's ill. Config `physicians`.
 - **Drought and the Well Keeper** (32.17, behind the 1.6 expansion): after five days without rain a village may fall
   into a drought (5% a day; desert, savanna and badlands villages 15%, twice that with a desert raiders' lair near),
   lasting 3 to 5 days until rain ends it. Crops, stems and berry bushes grow at a quarter pace, farmland dries, water

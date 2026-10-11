@@ -4,7 +4,7 @@ ROADMAP 32.15. Part of Milestone 32 (1.6), so it is **off for players until the 
 (`Expansions.M32`); GameTests run with it on. The engine that lets a fire, a drought or a plague strike a village,
 described as data the way the raider cultures are (see [Raids and threats](raids.md)). The village fire ships with
 32.16 ([Village fire and the Firewarden](village-fire.md)) and the drought with 32.17 ([Drought and the Well
-Keeper](drought.md)); the plague comes with 32.18, and a datapack can add its own today.
+Keeper](drought.md)) and the plague with 32.18 ([Plague and the Physician](plague.md)); a datapack can add its own.
 
 Roadmap items: 32.15
 
@@ -25,7 +25,7 @@ Roadmap items: 32.15
 
 - `threat/Disasters` reads `data/<namespace>/disasters/<id>.json` (`threat/Disaster` is one file). The shape is in
   `docs/design/M32.md`: `when` (the conditions), `chance` a day, `factors`, `requires`, `duration` (`min_days`,
-  `max_days`, `ends_with_rain`), `effects`, `answered_by`, `foretold_by`, `foretell_days`, `messages`, `chronicle`
+  `max_days`, `ends_with_rain`, and `ends_when_well` for the plague: it ends the day after the last day anyone was ill), `effects`, `answered_by`, `foretold_by`, `foretell_days`, `messages`, `chronicle`
   and `kind` (`fire`, `drought` or `plague`; by default from its effects).
 - **Conditions** (`threat/DisasterConditions`) are the raider cultures' toolbox (`biomes`, `coast`, `nether_link`,
   `min_rank`, `min_villagers`) plus `weather` (`thunder` or `rain` now), `dry_days` (days since it last rained),
@@ -74,7 +74,7 @@ none (the chronicle gains the kinds `FIRE`, `DROUGHT` and `PLAGUE`).
 
 ## Known limits
 
-- The village fire and the drought ship so far (32.18 adds the plague).
+- The village fire, the drought and the plague ship with the mod.
 - The days since rain count from the first round the server saw after a restart.
 - After a restart, the daily effects (a fire, a cauldron's level) may happen a second time that day.
 - `wood_share` samples round each finished build's corner, so a very large build is only partly seen.

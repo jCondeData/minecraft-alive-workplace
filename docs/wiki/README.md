@@ -53,6 +53,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Scouts](scouts.md): a guard with a spyglass, sent from the Defence page to look the lair over and bring home a Scouting Report map; raiders trailed home at dawn (32.12).
 - [Disasters](disasters.md): disasters as data, one at a time per village, foretold, their effects and how they end (32.15).
 - [Drought and the Well Keeper](drought.md): the drought's chance, its effects on crops, farmland, cauldrons and moods, the Well and the Fountain, and the Well Keeper who carries water to the fields (32.17).
+- [Plague and the Physician](plague.md): the plague's chance and carriers, how it passes on, beds and its end, the Physician who goes house to house and the Remedy (32.18).
 - [Village fire and the Firewarden](village-fire.md): lightning, chimney sparks and burning arrows, fire that only burns the builders' work, the Firewarden, the bucket brigade and Water-type partners (32.16).
 - [Marching on the lair](war-party.md): mustering a war party under the Rally Banner, the Siege-breakers, the band turning out and a broken lair's rewards (32.13).
 

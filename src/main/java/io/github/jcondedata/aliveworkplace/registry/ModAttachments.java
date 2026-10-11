@@ -188,6 +188,10 @@ public final class ModAttachments {
 
 	/** What kind of illness a villager has (ROADMAP 32.11): {@code hex}, a coven's curse; absent: an ordinary one. */
 	public static final Attachment<String> ILL_KIND = Attachment.saved("ill_kind", com.mojang.serialization.Codec.STRING);
+	/** Until when (game time) a Remedy keeps a villager well (ROADMAP 32.18); none saved: no Remedy. */
+	public static final Attachment<Long> WELL_UNTIL = Attachment.saved("well_until", com.mojang.serialization.Codec.LONG);
+	/** The plague's ill a Physician has seen (32.18): they keep to their house and pass it on only to those sharing it. */
+	public static final Attachment<Boolean> PLAGUE_SEEN = Attachment.saved("plague_seen", com.mojang.serialization.Codec.BOOL);
 
 	/** The day a Steward last finished his morning rounds (27.5); absent: not yet. */
 	public static final Attachment<Long> STEWARD_ROUND_DAY = Attachment.saved("steward_round_day", com.mojang.serialization.Codec.LONG);

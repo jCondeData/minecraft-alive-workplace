@@ -3171,7 +3171,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     called), watered wheat at the usual rate; the Well Keeper wets dry farmland within 600 ticks; rain ends the
     drought; a finished Well takes the mood reason away;
   - scene `drought`: dry fields and the keeper carrying water to them (GIF).
-- [ ] **32.18** **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
+- [x] **32.18** (review: pending 2026-10-11) **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
   villagers than beds; a coven's hexed (32.11) or a traveller from far away (`inn/`) can start one too. While it lasts
   illness passes on: each hall round, a well villager who spent it within 3 blocks of an ill one catches it 1 in 5
   (less with Medicine research); the ill don't get well by themselves, the nurse's remedies don't cure them, and after

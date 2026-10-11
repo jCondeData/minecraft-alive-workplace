@@ -19,7 +19,8 @@ import net.minecraft.resources.ResourceLocation;
  * days, the wood share and crowding); absent: always;</li>
  * <li>{@code chance} a day (default 0), {@code factors} ({@code if} conditions, then a {@code chance} that replaces the
  * base or a multiplier {@code times}) and {@code requires} ({@code unless} conditions, else {@code when} must hold);</li>
- * <li>{@code duration}: {@code min_days}, {@code max_days} (0: no end by time) and {@code ends_with_rain};</li>
+ * <li>{@code duration}: {@code min_days}, {@code max_days} (0: no end by time), {@code ends_with_rain} and
+ * {@code ends_when_well} (32.18, the plague's: it ends on the day after the last day anyone in the village was ill);</li>
  * <li>{@code effects}: a list, each with a {@code type} of {@link Effect.Type};</li>
  * <li>{@code answered_by} (a profession id), {@code foretold_by} (profession ids, or {@code seer}: 32.14's sources),
  * {@code foretell_days} (default 1), {@code messages} (the lang key prefix of its chat lines: {@code .name}, {@code .start},
@@ -34,7 +35,7 @@ import net.minecraft.resources.ResourceLocation;
  */
 public record Disaster(ResourceLocation id, DisasterConditions when, double chance, List<Factor> factors, List<Require> requires, int minDays,
 	int maxDays, boolean endsWithRain, List<Effect> effects, Optional<ResourceLocation> answeredBy, List<String> foretoldBy, int foretellDays,
-	String messages, String chronicle, Chronicle.Kind kind, Ignition ignition) {
+	String messages, String chronicle, Chronicle.Kind kind, Ignition ignition, boolean endsWhenWell) {
 	private static final Set<String> KEYS = Set.of("when", "chance", "factors", "requires", "duration", "effects", "answered_by", "foretold_by",
 		"foretell_days", "messages", "chronicle", "kind", "ignition");
 
@@ -155,17 +156,19 @@ public record Disaster(ResourceLocation id, DisasterConditions when, double chan
 		int min = 1;
 		int max = 1;
 		boolean rain = false;
+		boolean well = false;
 		if (json.has("duration")) {
 			JsonObject d = json.getAsJsonObject("duration");
 			min = d.has("min_days") ? d.get("min_days").getAsInt() : d.has("days") ? d.get("days").getAsInt() : 0;
 			max = d.has("max_days") ? d.get("max_days").getAsInt() : min;
 			rain = d.has("ends_with_rain") && d.get("ends_with_rain").getAsBoolean();
+			well = d.has("ends_when_well") && d.get("ends_when_well").getAsBoolean();
 		}
 		if (min < 0 || max < min) {
 			throw new IllegalArgumentException("duration: min_days " + min + ", max_days " + max);
 		}
-		if (max == 0 && !rain) {
-			throw new IllegalArgumentException("duration: a disaster must end after some days or with rain");
+		if (max == 0 && !rain && !well) {
+			throw new IllegalArgumentException("duration: a disaster must end after some days, with rain or when the village is well");
 		}
 		List<Effect> effects = new ArrayList<>();
 		if (json.has("effects")) {
@@ -200,7 +203,7 @@ public record Disaster(ResourceLocation id, DisasterConditions when, double chan
 		return new Disaster(id, when, chance, List.copyOf(factors), List.copyOf(requires), min, max, rain, List.copyOf(effects),
 			json.has("answered_by") ? Optional.of(ResourceLocation.parse(json.get("answered_by").getAsString())) : Optional.empty(),
 			List.copyOf(foretold), json.has("foretell_days") ? Math.max(0, json.get("foretell_days").getAsInt()) : 1, messages, chronicle, kind,
-			json.has("ignition") ? Ignition.read(json.getAsJsonObject("ignition"), file) : Ignition.NONE);
+			json.has("ignition") ? Ignition.read(json.getAsJsonObject("ignition"), file) : Ignition.NONE, well);
 	}
 
 	/** The {@code foretold_by} entry for 32.14's sources of warning (a guard or scout by a tower, the Seer's list). */

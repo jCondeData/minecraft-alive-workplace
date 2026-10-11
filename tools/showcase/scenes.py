@@ -704,6 +704,9 @@ SCENES = [
     # Drought (ROADMAP 32.17): dry fields in a drought, and the Well Keeper carrying water to them from the pond
     job("drought", "Threats", "Drought: the dry fields and the Well Keeper's buckets",
         "the fields were dry in the drought, and the Well Keeper carried water from the pond to them, bucket after bucket", 150),
+    # Plague (ROADMAP 32.18): the Physician going house to house with Remedies, then the hall's list of the ill
+    job("plague", "Threats", "Plague: the Physician goes house to house with the Remedy",
+        "a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed", 150),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),

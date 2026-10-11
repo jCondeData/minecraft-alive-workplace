@@ -37,6 +37,7 @@ This guide is everything you need to play. No code, no jargon: just what you do 
 - [Trade and caravans](trade-and-caravans.md): villages that supply each other, and selling from your own shop.
 - [Threats and defence](defence.md): guards, raids, bandit camps, walls, and how to fight back.
 - [Drought and the Well Keeper](drought.md): when the rain stays away, and the villager who carries water to your fields.
+- [Plague and the Physician](plague.md): when illness spreads through a town, the doctor who goes house to house, and the Remedy.
 - [Fire and the Firewarden](fire.md): how a wooden village catches fire, and the villager who puts it out.
 
 ## With Cobblemon

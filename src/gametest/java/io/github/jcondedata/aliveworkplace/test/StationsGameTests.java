@@ -64,6 +64,7 @@ public class StationsGameTests implements FabricGameTest {
 			new Row(Blocks.CARTOGRAPHY_TABLE, Items.COMPASS, VillagerProfession.CARTOGRAPHER),
 			new Row(Blocks.BREWING_STAND, Items.HONEY_BOTTLE, ModVillagers.NURSE),
 			new Row(Blocks.BREWING_STAND, Items.GOLDEN_APPLE, ModVillagers.UNDERTAKER),
+			new Row(Blocks.BREWING_STAND, Items.GLISTERING_MELON_SLICE, ModVillagers.PHYSICIAN),
 			new Row(Blocks.BREWING_STAND, Items.GLASS_BOTTLE, VillagerProfession.CLERIC),
 			new Row(Blocks.SMOKER, Items.BEEF, ModVillagers.CHEF),
 			new Row(Blocks.SMOKER, Items.SADDLE, ModVillagers.RANCHER),

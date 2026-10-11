@@ -56,6 +56,7 @@ sneak-right-clicking a worker with an empty hand shows their status.
 | Guard | Grindstone + a sword | any |
 | Firewarden | Grindstone + a water bucket | any |
 | Well Keeper | Cauldron + a shovel | any |
+| Physician | Brewing stand + a glistering melon slice | any |
 | Fletcher | Fletching Table (vanilla) | any |
 | Shepherd | Loom (vanilla) | any |
 | Fisherman | Barrel (vanilla) | any |
@@ -148,6 +149,7 @@ chunks, and the search never waits for a chunk.
 | `jewellers` | on from 1.8 | The Jeweller job |
 | `firewardens` | on from 1.6 | The Firewarden job |
 | `wellKeepers` | on from 1.6 | The Well Keeper job |
+| `physicians` | on from 1.6 | The Physician job |
 
 ## Saved data
 

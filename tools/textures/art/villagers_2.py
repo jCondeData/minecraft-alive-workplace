@@ -1640,12 +1640,54 @@ def well_keeper():
     return t.save_profession(ASSETS, "well_keeper", hat="full")
 
 
+def physician():
+    """The village's doctor (ROADMAP 32.18), who goes house to house in a plague: a long sober coat of deep
+    bottle-green wool over a white linen shirt with a high collar, a dark felt hat with a narrow brim, round
+    spectacles; a leather satchel on a strap across the chest (a brass clasp, a Remedy's amber neck showing), a
+    pouch of herbs at the belt and a sprig of lavender in the hatband; dark gloves. Full headwear: the hat replaces
+    the biome's hat."""
+    t = vg.VillagerTexture()
+    felt = vg.cloth("#2c2a2e", n=4)
+    coat = vg.cloth("#2f5a44", spread=0.24)
+    linen = vg.cloth("#e4e0d4", spread=0.12)
+    leather = vg.cloth("#6a4224", n=4)
+    vg.hat(t, felt, style="brim", band=leather[1])
+    f = t.face("hat", "front")                           # a lavender sprig tucked into the band
+    f.put(f.w - 2, 0, "#9a7cc8")
+    f.put(f.w - 2, 1, "#6a8a3a")
+    vg.glasses(t, frame="#8c7a3a")
+    vg.vest(t, linen, length=18, open_front=False, noise=0.02)
+    vg.vest(t, coat, length=18, open_front=True, noise=0.03)
+    vg.collar(t, linen, rows=2)
+    j = t.face("jacket", "front")
+    for i in range(0, 9):                                # the satchel strap from the right shoulder to the left hip
+        x = 7 - i * 6 // 8
+        j.put(x, i, leather[2] if i % 2 else leather[1])
+    for x, y, c in ((0, 9, leather[1]), (1, 9, leather[2]), (2, 9, leather[2]), (3, 9, leather[1]),   # the satchel
+                    (0, 10, leather[0]), (1, 10, "#c9a23a"), (2, 10, leather[1]), (3, 10, leather[0]),
+                    (0, 11, leather[0]), (1, 11, leather[1]), (2, 11, leather[1]), (3, 11, leather[0]),
+                    (2, 8, "#d48a2c")):                                                              # a Remedy's neck
+        j.put(x, y, c)
+    vg.belt(t, leather, row=12, buckle="#c9a23a")
+    west = t.face("jacket", "west")                      # the pouch of herbs at the belt
+    paint(west, ((1, 13), (2, 13), (1, 14), (2, 14)), leather[1])
+    west.put(2, 12, "#6a8a3a")
+    back = t.face("jacket", "back")                      # the strap across the back, the coat's vent
+    for i in range(0, 9):
+        back.put(i * 6 // 8, i, leather[1])
+    for y in range(13, 18):
+        back.put(4, y, coat[0])
+    vg.sleeves(t, coat, cuff=linen[2], gloves=vg.cloth("#2a2420", n=4))
+    return t.save_profession(ASSETS, "physician", hat="full")
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 DRAW += [jeweller]   # 34.12
 DRAW += [firewarden]   # 32.16
 DRAW += [well_keeper]   # 32.17
+DRAW += [physician]   # 32.18
 
 if __name__ == "__main__":
     run(DRAW)

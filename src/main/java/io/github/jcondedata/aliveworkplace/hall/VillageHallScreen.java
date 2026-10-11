@@ -833,7 +833,11 @@ public final class VillageHallScreen {
 		if (io.github.jcondedata.aliveworkplace.school.Schools.isSchooled(villager)) {
 			lore.add(line("screen.aliveworkplace.hall.schooled", ChatFormatting.GRAY));
 		}
-		if (io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager)) {
+		if (io.github.jcondedata.aliveworkplace.people.Sickness.isPlagueIll(villager)) { // the plague (32.18): seen, in bed
+			lore.add(line(io.github.jcondedata.aliveworkplace.threat.Plague.bedridden(level, villager) ? "screen.aliveworkplace.hall.plague_bed"
+				: io.github.jcondedata.aliveworkplace.threat.Plague.seen(villager) ? "screen.aliveworkplace.hall.plague_seen" : "screen.aliveworkplace.hall.plague",
+				ChatFormatting.DARK_RED));
+		} else if (io.github.jcondedata.aliveworkplace.people.Sickness.isIll(villager)) {
 			lore.add(line(io.github.jcondedata.aliveworkplace.people.Sickness.isHexed(villager) ? "screen.aliveworkplace.hall.hexed" : "screen.aliveworkplace.hall.ill",
 				ChatFormatting.RED)); // a coven's hex (32.11)
 		}

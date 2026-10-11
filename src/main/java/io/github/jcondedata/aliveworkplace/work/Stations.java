@@ -193,7 +193,9 @@ public final class Stations {
 		new Station(is(PoiTypes.CLERIC), Blocks.BREWING_STAND, List.of(
 			job(() -> VillagerProfession.CLERIC, any(Items.GLASS_BOTTLE)),
 			job(() -> ModVillagers.NURSE, any(Items.HONEY_BOTTLE)),
-			job(() -> ModVillagers.UNDERTAKER, any(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.TOTEM_OF_UNDYING)))),
+			job(() -> ModVillagers.UNDERTAKER, any(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.TOTEM_OF_UNDYING)),
+			// a glistering melon slice (32.18), with config physicians on: the plague's doctor shares the clerics' block
+			job(() -> ModVillagers.PHYSICIAN, PhysicianWork::isMelon))),
 		new Station(is(PoiTypes.BUTCHER), Blocks.SMOKER, List.of(
 			job(() -> VillagerProfession.BUTCHER, any(Items.LEAD)),
 			job(() -> ModVillagers.CHEF, any(Items.BEEF, Items.PORKCHOP, Items.CHICKEN, Items.MUTTON, Items.RABBIT, Items.COD, Items.SALMON,
@@ -482,6 +484,9 @@ public final class Stations {
 	 */
 	public static boolean available(Job job) {
 		VillagerProfession profession = job.profession().get();
+		if (profession == ModVillagers.PHYSICIAN && (!PhysicianWork.ENABLED || !io.github.jcondedata.aliveworkplace.threat.Disasters.live())) {
+			return false; // config physicians off (or disasters closed): the brewing stand's tooltip leaves the Physician out
+		}
 		if (profession == ModVillagers.WELL_KEEPER && (!WellKeeperWork.ENABLED || !io.github.jcondedata.aliveworkplace.threat.Disasters.live())) {
 			return false; // config wellKeepers off (or disasters closed): the cauldron's tooltip leaves the Well Keeper out
 		}

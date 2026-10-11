@@ -208,6 +208,9 @@ public final class Disasters implements ResourceManagerReloadListener {
 				unafflict(level, pos);
 				return; // foretold, not yet come
 			}
+			if (d.get().endsWhenWell() && villagers(census).stream().anyMatch(Sickness::isIll)) {
+				hall.setDisaster(id, hall.disasterSince(), day, hall.lastDisasterDay()); // someone ill today: not over before tomorrow (32.18)
+			}
 			boolean over = hall.disasterEnds() >= 0 && day > hall.disasterEnds() || d.get().endsWithRain() && raining(level);
 			if (over) {
 				end(level, pos, hall, d.get(), day);
@@ -281,10 +284,13 @@ public final class Disasters implements ResourceManagerReloadListener {
 		Optional<Component> seer = foreteller(level, pos, disaster, census);
 		long since = day + (seer.isPresent() ? disaster.foretellDays() : 0);
 		int days = disaster.minDays() + (disaster.maxDays() > disaster.minDays() ? random.nextInt(disaster.maxDays() - disaster.minDays() + 1) : 0);
-		long ends = disaster.maxDays() == 0 ? -1 : since + days - 1;
+		long ends = disaster.endsWhenWell() ? since : disaster.maxDays() == 0 ? -1 : since + days - 1;
 		hall.setDisaster(disaster.id(), since, ends, hall.lastDisasterDay());
 		Component name = name(disaster);
 		Component village = hall.getName();
+		if (Plague.is(disaster)) {
+			Plague.firstCase(level, villagers(census), random); // the first case comes at once; a Physician foretells the outbreak from it (32.18)
+		}
 		if (seer.isPresent() && since > day) {
 			tell(level, pos, hall, text(disaster.messages(), "disaster.aliveworkplace", "foretold", seer.get(), name, village, since - day));
 			Chronicle.atHall(level, pos, disaster.kind(), text(disaster.chronicle(), "chronicle.aliveworkplace.disaster", "foretold", seer.get(), name));
@@ -458,6 +464,10 @@ public final class Disasters implements ResourceManagerReloadListener {
 			return;
 		}
 		List<Villager> all = villagers(census);
+		if (Plague.is(disaster)) {
+			Plague.spread(level, effect.get(), all, random); // the plague's own rule (32.18): one roll a round, the Physician's seen kept home
+			return;
+		}
 		List<Villager> ill = all.stream().filter(Sickness::isIll).toList();
 		double range = effect.get().range() * effect.get().range();
 		for (Villager sick : ill) {
@@ -590,6 +600,9 @@ public final class Disasters implements ResourceManagerReloadListener {
 		Component name = name(d.get());
 		if (day < hall.disasterSince()) {
 			return Component.translatable("screen.aliveworkplace.hall.disaster_foretold", name, hall.disasterSince() - day);
+		}
+		if (d.get().endsWhenWell()) {
+			return Component.translatable("screen.aliveworkplace.hall.disaster_well", name); // the plague (32.18)
 		}
 		return hall.disasterEnds() < 0 ? Component.translatable("screen.aliveworkplace.hall.disaster_rain", name)
 			: Component.translatable("screen.aliveworkplace.hall.disaster", name, hall.disasterEnds() - day + 1);

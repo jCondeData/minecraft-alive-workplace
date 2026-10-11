@@ -14,6 +14,7 @@
 		"DroughtCropMixin",
 		"DroughtFarmlandMixin",
 		"DroughtPlantMixin",
+		"PlagueBedMixin",
 		"CaravanPartyMixin",
 		"EntityAccessor",
 		"ExplosionMixin",

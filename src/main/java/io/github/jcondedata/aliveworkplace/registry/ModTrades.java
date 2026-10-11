@@ -40,6 +40,7 @@ public final class ModTrades {
 		jewellerTrades();
 		firewardenTrades();
 		wellKeeperTrades();
+		physicianTrades();
 		gemGrowerTrades();
 		vintnerTrades();
 		tailorTrades();
@@ -231,6 +232,28 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.POINTED_DRIPSTONE, 2), 8, 15, 0.05f)));
 		Platform.get().addTrades(ModVillagers.WELL_KEEPER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.WET_SPONGE), 4, 30, 0.05f)));
+	}
+
+	/**
+	 * Physicians (32.18): they buy glass bottles, honey and spider eyes for their Remedies, and sell them: a Remedy, a
+	 * glistering melon slice, a potion of healing and, at Master, a golden apple.
+	 */
+	private static void physicianTrades() {
+		Platform.get().addTrades(ModVillagers.PHYSICIAN, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.GLASS_BOTTLE, 9), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(ModItems.REMEDY), 6, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.PHYSICIAN, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.HONEY_BOTTLE, 3), new ItemStack(Items.EMERALD), 12, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(Items.GLISTERING_MELON_SLICE), 8, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.PHYSICIAN, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SPIDER_EYE, 8), new ItemStack(Items.EMERALD), 12, 10, 0.05f)));
+		Platform.get().addTrades(ModVillagers.PHYSICIAN, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION,
+				net.minecraft.world.item.alchemy.Potions.HEALING), 6, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.PHYSICIAN, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(Items.GOLDEN_APPLE), 4, 30, 0.05f)));
 	}
 
 	private static void guardTrades() {

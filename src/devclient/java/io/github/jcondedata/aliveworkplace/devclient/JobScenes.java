@@ -793,6 +793,50 @@ final class JobScenes {
 				return watered >= 18 && keeper.getVillagerXp() > 1 && io.github.jcondedata.aliveworkplace.threat.Drought.in(l, STATION.offset(0, -1, -9));
 			};
 		}, null));
+		// Plague (ROADMAP 32.18): three villagers ill with the plague, each by the bed of their own house up the street; the
+		// Physician at the brewing stand (picked with a glistering melon slice) takes a Remedy from the chest and goes house
+		// to house: two Remedies cure two of them in a puff of hearts, the third is seen and sent home to bed. Then the
+		// hall's list of the village, where the one still ill shows "Ill with the plague: seen by the Physician, kept at home".
+		SCENES.put("plague", new Job("a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed",
+			1800, new Vec3(0.5, -55.0, 6.5), new Vec3(0.0, -60.0, -8.0), (level, player) -> {
+			level.setDayTime(2000);
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			Villager physician = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GLISTERING_MELON_SLICE);
+			chest(level, chestPos(), new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.REMEDY, 2), new ItemStack(Items.GLASS_BOTTLE, 3));
+			List<Villager> ill = new ArrayList<>();
+			int[][] houses = {{-7, -8}, {0, -13}, {7, -8}};
+			for (int[] h : houses) {
+				BlockPos foot = STATION.offset(h[0], 0, h[1]);
+				level.setBlockAndUpdate(foot, Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+					.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+				level.setBlockAndUpdate(foot.north(), Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+					.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				Villager v = EntityType.VILLAGER.spawn(level, foot.south(), MobSpawnType.COMMAND);
+				v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), foot.north()));
+				ill.add(v);
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			io.github.jcondedata.aliveworkplace.threat.Disaster plague = io.github.jcondedata.aliveworkplace.threat.Disasters.get(io.github.jcondedata.aliveworkplace.threat.Plague.ID).orElse(null);
+			Showcase.check(plague != null && entity != null, "the plague is loaded and the hall stands");
+			for (Villager v : ill) {
+				io.github.jcondedata.aliveworkplace.people.Sickness.catchPlague(level, v);
+			}
+			if (plague != null && entity != null) {
+				entity.setDisaster(null, -1, -1, -100);
+				io.github.jcondedata.aliveworkplace.threat.Disasters.start(level, hall, entity, plague,
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, hall), net.minecraft.util.RandomSource.create(1L));
+			}
+			Showcase.check(ill.stream().allMatch(io.github.jcondedata.aliveworkplace.people.Sickness::isPlagueIll), "three villagers are ill with the plague");
+			return l -> {
+				long cured = ill.stream().filter(v -> !io.github.jcondedata.aliveworkplace.people.Sickness.isIll(v)).count();
+				long seen = ill.stream().filter(io.github.jcondedata.aliveworkplace.threat.Plague::seen).count();
+				return cured >= 2 && seen >= 1 && physician.getVillagerXp() > 1;
+			};
+		}, new After("04_hall_list_of_the_ill", (level, player) -> {
+			ScreenshotHarness.hover(player, Vec3.atCenterOf(STATION.offset(0, 0, -24)), 180, 10);
+			io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION.offset(0, 0, -26));
+		}, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6)));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks

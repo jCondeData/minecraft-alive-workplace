@@ -729,6 +729,24 @@ public final class ModVillagers {
 	);
 
 	/**
+	 * Goes house to house in a plague (ROADMAP 32.18): at a brewing stand, only ever by a glistering melon slice, with
+	 * config {@code physicians}. A jobless villager by a brewing stand still becomes a Cleric, which vanilla registers
+	 * first; the brewing stand is shared with the Nurse and the Undertaker.
+	 */
+	public static final VillagerProfession PHYSICIAN = Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("physician"),
+		new VillagerProfession(
+			"physician",
+			holder -> holder.is(PoiTypes.CLERIC),
+			holder -> holder.is(PoiTypes.CLERIC),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CLERIC
+		)
+	);
+
+	/**
 	 * Carries water to the village's fields in a drought and keeps its cauldrons full (ROADMAP 32.17): at a cauldron, only
 	 * ever by a shovel, with config {@code wellKeepers}. A jobless villager by a cauldron still becomes a Leatherworker,
 	 * which vanilla registers first; the cauldron is shared with the Sifter and the Vintner.
@@ -903,7 +921,8 @@ public final class ModVillagers {
 			|| profession == BEEKEEPER || profession == FLORIST || profession == RANCHER || profession == TEACHER || profession == INNKEEPER || profession == UNDERTAKER || profession == SCHOLAR
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
-			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER;
+			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER
+			|| profession == PHYSICIAN;
 	}
 
 	/**

@@ -97,6 +97,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
 		io.github.jcondedata.aliveworkplace.threat.Threats.init(); // raider cultures as data (32.2)
 		io.github.jcondedata.aliveworkplace.threat.Disasters.init(); // disasters as data (32.15)
+		io.github.jcondedata.aliveworkplace.people.RemedyItem.init(); // the Physician's Remedy given to a villager (32.18)
 		io.github.jcondedata.aliveworkplace.threat.VillageFire.init(); // the village fire and the Firewarden (32.16)
 		io.github.jcondedata.aliveworkplace.threat.Sieges.init(); // rams and gates (32.4)
 		io.github.jcondedata.aliveworkplace.threat.Ladders.init(); // ladders over the walls (32.5)

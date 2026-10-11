@@ -86,6 +86,7 @@
 			"io.github.jcondedata.aliveworkplace.test.JewellerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DroughtGameTests",
+			"io.github.jcondedata.aliveworkplace.test.PlagueGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VintnerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TailorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PrinterGameTests",

@@ -103,6 +103,10 @@ public final class ModItems {
 	public static final net.minecraft.world.item.crafting.RecipeSerializer<io.github.jcondedata.aliveworkplace.story.GiftItem.Recipe> GIFT_RECIPE = Registry.register(
 		BuiltInRegistries.RECIPE_SERIALIZER, AliveWorkplace.id("gift"), io.github.jcondedata.aliveworkplace.story.GiftItem.RECIPE);
 
+	/** The Physician's Remedy (ROADMAP 32.18): cures any illness, hexes and the plague included; drinkable. */
+	public static final io.github.jcondedata.aliveworkplace.people.RemedyItem REMEDY = Reg.item("remedy", io.github.jcondedata.aliveworkplace.people.RemedyItem::new,
+		io.github.jcondedata.aliveworkplace.people.RemedyItem.properties());
+
 	public static final CreativeModeTab TAB = Registry.register(
 		BuiltInRegistries.CREATIVE_MODE_TAB,
 		AliveWorkplace.id("main"),
@@ -137,6 +141,7 @@ public final class ModItems {
 				output.accept(CIDER);
 				output.accept(BERRY_WINE);
 				output.accept(VINTAGE_WINE);
+				output.accept(REMEDY);
 				output.accept(AMETHYST_RING);
 				output.accept(EMERALD_BROOCH);
 				output.accept(GOLD_CIRCLET);

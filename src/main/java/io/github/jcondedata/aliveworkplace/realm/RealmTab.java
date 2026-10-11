@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  * The Trade page's Realm tab (ROADMAP 33.11): outside a realm, "Found a realm" (a Town or better); in one, its title
  * (click with a named Name Tag to rename it), its arms (click with a banner to set them), the way out, the members
  * (the capital with a crown; rank, villagers, wellbeing, distance and owner; a click lets one go) and, for those who
- * rule the capital, the villages within reach they may add with one click. Everyone who may open the hall may read it.
+ * rule the capital, the villages within reach they may add with one click; 33.21 the Realm Map's button, in the last slot. Everyone who may open the hall may read it.
  * 33.12: other players' villages to invite (a letter goes), the invitations waiting on a village's tab (accept or
  * decline), a member's "Put forward as capital", and a capital vote with its two buttons. 33.13: the realm treasury
  * (give with emeralds, take with a right-click) and the levy (the capital's owner clicks through 0, 5, 10 and 20%).
@@ -142,10 +142,16 @@ final class RealmTab {
 			vote(menu, level, hall, realm, vote, viewer, again);
 		}
 
+		// the Realm Map (33.21): an empty map from the viewer, drawn with the realm on it, in the last slot
+		int end = RealmMaps.ENABLED ? RealmMaps.BUTTON : ChoiceMenu.SIZE;
+		if (RealmMaps.ENABLED) {
+			menu.button(RealmMaps.BUTTON, RealmMaps.icon(), p -> said(level, p, RealmMaps.draw(level, hall, p)));
+		}
+
 		// the members, the capital first
 		int slot = Realms.MEMBERS;
 		for (RealmData.Member m : realm.members()) {
-			if (slot >= ChoiceMenu.SIZE) {
+			if (slot >= end) {
 				break;
 			}
 			boolean capital = m.hall().equals(realm.capital());
@@ -158,7 +164,7 @@ final class RealmTab {
 		// villages the capital's ruler may add
 		if (rules && atCapital && viewer != null && realm.members().size() < Realms.MAX_MEMBERS) {
 			for (GlobalPos other : candidates(server, realm, viewer)) {
-				if (slot >= ChoiceMenu.SIZE) {
+				if (slot >= end) {
 					break;
 				}
 				menu.button(slot++, candidate(server, hall, other), p -> {
@@ -168,7 +174,7 @@ final class RealmTab {
 			}
 			// other players' villages: invite them (33.12)
 			for (GlobalPos other : invitable(server, realm, viewer)) {
-				if (slot >= ChoiceMenu.SIZE) {
+				if (slot >= end) {
 					break;
 				}
 				RealmData.Invite sent = RealmData.get(server).invite(realm.id(), other);

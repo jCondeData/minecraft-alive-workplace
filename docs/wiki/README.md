@@ -38,6 +38,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Founding a realm](realms.md): the Realm tab, founding a Barony, adding villages, colonies joining, leaving and letting go, the ranks and their fireworks, the arms and the crown passing (33.11).
 - [Trade pacts and alliances](pacts.md): offers by letter and on the Pacts tab, routes to other players' villages, paid cargo and gifts, allies' relief riders, ending (33.18).
 - [Feuds and war](feuds.md): a feud declared on the Pacts tab, its board prices and grumbling, peace by letter, war on a PvP server and what guards may do in it (33.20).
+- [The Realm Map](realm-map.md): the Realm tab's map of the realm, its banners, allies and rivals, dotted caravan routes, the cross for a colony on the road, its scale and legend (33.21).
 - [The weekly leaderboard](leaderboard.md): Sunday's chat of the Biggest, Richest, Happiest, Most Legends and Greatest realm, the winners' ribbons, leaving a village off, `/workplace leaderboard` (33.19).
 
 **The village**

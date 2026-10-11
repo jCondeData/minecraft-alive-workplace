@@ -400,6 +400,14 @@ SCENES = [
       "is on): the player walks into Thornholm and its guards, sword and shield, come for them; nothing else may be harmed", 70,
       [("01_the_letter", "Rowan's letter: a feud declared on Ashford"), ("02_the_feud", "Ashford's Pacts tab: the feud and Offer peace"),
        ("08_war", "In the war, Thornholm's guards fight Ashford's owner")]),
+    # The Realm Map (ROADMAP 33.21): the Realm tab's map button, the map in hand and hung in an item frame
+    S("realm_map", "Realm", "The Realm Map: the realm drawn on a map",
+      "the County of Thornholm (Thornholm, Ashford, Farholt; blue arms), allied with Rowan's Brookmere and in a feud with "
+      "Grimfell, a colony's settlers on the road and caravan routes: the player clicked the Realm tab's Draw the Realm Map "
+      "with an empty map and got the realm on it, blue banners for the members (Thornholm named the capital), a light blue "
+      "ally, a red rival, dotted routes and a red cross for the colony on the road; then hung it in an item frame", 60,
+      [("01_map_button", "The Realm tab's Draw the Realm Map button"), ("02_map_in_hand", "The Realm Map in hand"),
+       ("03_map_in_frame", "The Realm Map in an item frame")]),
     # The weekly leaderboard (ROADMAP 33.19): the chat at Sunday 19:00, the winner's ribbon, the Trade page's toggle
     S("leaderboard", "Realm", "The weekly leaderboard in chat",
       "A week of numbers is in for Ashford (the player's Town), and Rowan's Thornholm and Farholt (a realm); the clock "

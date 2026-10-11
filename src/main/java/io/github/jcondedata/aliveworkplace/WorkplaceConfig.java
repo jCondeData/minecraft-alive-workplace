@@ -223,6 +223,8 @@ public final class WorkplaceConfig {
 	public boolean alliances = Expansions.on(Expansions.M33);
 	/** An owner can declare a feud on another owner's village or realm on the Pacts tab: pacts and routes end, each board pays the rival's people 25% less and charges them 25% more; peace by letter, or it fades after 7 days (ROADMAP 33.20). Off: no feuds; existing ones end quietly. */
 	public boolean feuds = Expansions.on(Expansions.M33);
+	/** A member's hall's Realm tab draws the realm on an empty map: every member's banner, colonies, allies and rivals, the caravan routes (ROADMAP 33.21). Off: no map button. */
+	public boolean realmMap = Expansions.on(Expansions.M33);
 	/** With PvP on, a feud can be raised to a war of up to 3 days, in which each side's guards fight the other side's owners inside their own village; nothing else changes (ROADMAP 33.20). Off: no wars, even with PvP on. */
 	public boolean feudWars = Expansions.on(Expansions.M33);
 	/** Once a week everyone online hears how the villages did: Biggest, Richest, Happiest, Most Legends and the Greatest realm (ROADMAP 33.19). Off: nothing counted or announced; what was counted stays saved. */
@@ -716,6 +718,7 @@ public final class WorkplaceConfig {
 		// Off in gametests (the Pacts tab's buttons would change other tests); the feud tests turn it on.
 		io.github.jcondedata.aliveworkplace.realm.Feuds.ENABLED = feuds && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.realm.Feuds.WARS = feudWars && Expansions.on(Expansions.M33);
+		io.github.jcondedata.aliveworkplace.realm.RealmMaps.ENABLED = realmMap && Expansions.on(Expansions.M33);
 		// Off in gametests (its Trade page toggle and its counting would change other tests); the leaderboard tests turn it on.
 		io.github.jcondedata.aliveworkplace.realm.Leaderboard.ENABLED = weeklyLeaderboard && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.realm.Leaderboard.DAY = leaderboardDay(leaderboardDay);

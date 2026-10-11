@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Realm Map, for 1.7** (33.21, off until 1.7 is finished): the Realm tab of any member's hall draws the realm on
+  an empty map, scaled so every member fits: a banner for each member in the realm's colour (the capital's named
+  "Thornholm (capital)"), colonies outside the realm, allies and rivals in their own colours, caravan routes as dotted
+  lines, a colony on the road as a red cross, unloaded land as plain parchment, and the legend on its tooltip. Setting
+  `realmMap`.
 - **Feuds, and war where PvP is on, for 1.7** (33.20, off until 1.7 is finished): on the Pacts tab an owner can declare
   a feud on another player's village (or its whole realm). A letter tells them; pacts and caravans between the two end;
   each side's price board pays the rival's people 25% less and charges them 25% more; villagers grumble about the

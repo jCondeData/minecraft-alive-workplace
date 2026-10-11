@@ -78,6 +78,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final FeudScene feud = new FeudScene();
 	private final LeaderboardScene leaderboard = new LeaderboardScene();
 	private final RealmTreasuryScene realmTreasury = new RealmTreasuryScene();
+	private final RealmMapScene realmMap = new RealmMapScene();
 	private final RealmResearchScene realmResearch = new RealmResearchScene();
 	private final ReliefScene relief = new ReliefScene();
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
@@ -276,6 +277,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("leaderboard".equals(System.getProperty("aliveworkplace.scene"))) {
 			leaderboard.tick(mc);
+			return;
+		}
+		if ("realm_map".equals(System.getProperty("aliveworkplace.scene"))) {
+			realmMap.tick(mc);
 			return;
 		}
 		if ("realm_treasury".equals(System.getProperty("aliveworkplace.scene"))) {

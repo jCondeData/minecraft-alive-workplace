@@ -3639,7 +3639,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     goes for the enemy owner but not a neutral player; the enemy owner can hurt a guard but not a villager, a block or
     a chest of a protected village; the war ends after 3 days;
   - showcase scene `feud` (the tab and the letter; with PvP on, a guard fighting the rival owner).
-- [ ] **33.21** **The Realm Map.** At any member's hall the Realm tab draws the realm on an empty map (the drawing of
+- [x] **33.21** (review: pending 2026-10-11) **The Realm Map.** At any member's hall the Realm tab draws the realm on an empty map (the drawing of
   33.8's charter map, on a vanilla map item): scaled so every member fits (vanilla scales 2 to 4), the land the server
   has loaded drawn as on a vanilla map and the rest as plain parchment, a banner for every member in the realm's
   colour (the capital's named "Thornholm (capital)"), colonies, allies and rivals in their own colours, caravan routes
@@ -4486,6 +4486,13 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-11 (33.21, decisions; lane a; details in `docs/wiki/realm-map.md`, Decisions): (1) every member's banner is in
+  the realm's colour (its arms' base, white without arms), colonies that are members too (they join by themselves),
+  so the colonies' own colour (lime) is for a member's colony outside the realm; allies light blue, rivals red; (2) the
+  colony on the road's cross (vanilla's red X) sits on the colony's spot, not a guessed point of the walk; (3) the map
+  button takes the Realm tab's last slot, the members and villages to add stop one short of it; (4) config
+  `realmMap` (on with 1.7).
 
 - 2026-10-11 (31.22, lane-b-1011-1833): **the eight reforms as stories** decisions: (1) a reform story starts from
   the hall's round (`Reforms.round`) when its edict is in force, not by a trigger chance, so the ask comes the morning

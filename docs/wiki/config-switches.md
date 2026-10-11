@@ -131,6 +131,7 @@ range is in brackets.
 | `alliances` | on | 1.7 | Allied villages of different owners send relief riders to each other's raids within 1,024 blocks. Off: no alliances offered, no riders. |
 | `feuds` | on | 1.7 | An owner can declare a feud on another player's village or realm on the Pacts tab: pacts and caravans end, each board pays the rival's people 25% less and charges them 25% more; peace by letter, or it fades after 7 days. Off: no feuds; existing ones end quietly. See [Feuds and war](feuds.md). |
 | `feudWars` | on | 1.7 | With PvP on, a feud can become a war of up to 3 days in which guards fight the other side's owners inside their own village. Off: no wars, even with PvP on. |
+| `realmMap` | on | 1.7 | A member's Realm tab draws the realm on an empty map: every member's banner in the realm's colour, colonies, allies and rivals in their own, the caravan routes dotted, a colony on the road as a cross. Off: no map button. See [The Realm Map](realm-map.md). |
 | `weeklyLeaderboard` | on | 1.7 | Once a week everyone online hears the Biggest, Richest, Happiest, Most Legends and Greatest realm; winners wear a ribbon for a week. Off: nothing counted or announced. See [The weekly leaderboard](leaderboard.md). |
 | `leaderboardDay` | `sunday` | 1.7 | The day the leaderboard is read out, `monday` to `sunday`, server time. In the file only. |
 | `leaderboardHour` | 19 (0 to 23) | 1.7 | The hour the leaderboard is read out, server time. |

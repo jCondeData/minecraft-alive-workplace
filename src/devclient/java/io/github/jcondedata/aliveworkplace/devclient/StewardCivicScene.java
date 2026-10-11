@@ -206,6 +206,7 @@ final class StewardCivicScene {
 		for (int i = 0; i < 3; i++) {
 			BlockPos table = HALL.offset(-6 + 3 * i, 0, -6);
 			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			ScreenshotHarness.fileRecords(level, table, 1); // the table's workstation record, which vanilla files only in its next task: without it nobody is employed
 			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
 			Builders.employ(level, builder, table);
 		}

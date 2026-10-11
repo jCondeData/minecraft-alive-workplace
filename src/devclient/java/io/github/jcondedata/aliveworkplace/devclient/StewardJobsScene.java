@@ -96,6 +96,7 @@ final class StewardJobsScene {
 					menu.press(StewardDeskPage.APPROVE, player);
 				}
 				player.closeContainer();
+				jobless.forEach(v -> v.setNoAi(false)); // now they may walk to the blocks he gave them
 				List<VillagerProfession> jobs = jobless.stream().map(v -> v.getVillagerData().getProfession()).toList();
 				Showcase.check(jobs.equals(List.of(VillagerProfession.FARMER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD,
 					VillagerProfession.FLETCHER)), "approving gave a farmer, a guard and a fletcher: " + jobs);
@@ -149,6 +150,9 @@ final class StewardJobsScene {
 		level.setBlockAndUpdate(HALL.offset(8, 0, 11), Blocks.TARGET.defaultBlockState());
 		for (int i = 0; i < 3; i++) {
 			Villager v = EntityType.VILLAGER.spawn(level, HALL.offset(-2 + 2 * i, 0, 3 + i), MobSpawnType.COMMAND);
+			// Held still until the approval: left to themselves, vanilla's jobless villagers take the nearest free block
+			// within seconds (the grindstone makes a weaponsmith), before the Steward's proposal is read
+			v.setNoAi(true);
 			jobless.add(v);
 		}
 		hall.setStewardWishes(new StewardWishes.State(StewardWishes.day(level), List.of(new StewardWishes.Wish(AliveWorkplace.id("jobs"),

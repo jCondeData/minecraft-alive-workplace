@@ -1452,8 +1452,12 @@ final class JobScenes {
 			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 			chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
 				new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.COBBLESTONE, 32),
-				new ItemStack(Items.STONE_BRICK_STAIRS, 16));
+				new ItemStack(Items.STONE_BRICK_STAIRS, 16),
+				// the street's lamp posts
+				new ItemStack(Items.STONE_BRICK_WALL, 16), new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 24),
+				new ItemStack(Items.DARK_OAK_TRAPDOOR, 8), new ItemStack(Items.LANTERN, 8));
 			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+			ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 			io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
 			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
@@ -1500,6 +1504,7 @@ final class JobScenes {
 				new ItemStack(Items.STONE_BRICK_STAIRS, 32), new ItemStack(Items.STONE_BRICK_WALL, 32), new ItemStack(Items.CHISELED_STONE_BRICKS, 8),
 				new ItemStack(Items.DARK_OAK_FENCE, 16), new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 8));
 			Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+			ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 			io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
 			io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
@@ -1548,6 +1553,7 @@ final class JobScenes {
 					new ItemStack(Items.STONE_BRICK_WALL, 16), new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 8),
 					new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 4));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 				ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);
 				io.github.jcondedata.aliveworkplace.city.CityPlanItem.bind(level, player, cityPlan, hallAt);
@@ -1608,6 +1614,7 @@ final class JobScenes {
 					new ItemStack(Items.LANTERN, 16), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE, 64),
 					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.east(), MobSpawnType.COMMAND);
+				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
 			}
 			ItemStack cityPlan = new ItemStack(ModItems.CITY_PLAN);

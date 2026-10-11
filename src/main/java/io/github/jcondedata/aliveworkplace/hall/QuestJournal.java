@@ -42,11 +42,11 @@ public final class QuestJournal {
 		VILLAGE(2, Items.MAP, true),
 		PERSONAL(3, Items.POPPY, true),
 		STORY(5, Items.WRITTEN_BOOK, true),
-		BOUNTIES(6, Items.CROSSBOW, false);
+		BOUNTIES(6, Items.CROSSBOW, true);
 
 		public final int slot;
 		final Item item;
-		/** Whether its part of the milestone has landed (Bounties 31.13 hasn't yet). */
+		/** Whether its part of the milestone has landed (all have, since Bounties, 31.13). */
 		public final boolean landed;
 
 		Tab(int slot, Item item, boolean landed) {
@@ -98,6 +98,10 @@ public final class QuestJournal {
 		}
 		if (tab == Tab.PERSONAL) {
 			renderPersonal(menu, level, hall, viewer);
+			return;
+		}
+		if (tab == Tab.BOUNTIES) {
+			io.github.jcondedata.aliveworkplace.bounty.BountyPage.render(menu, level, hall, viewer);
 			return;
 		}
 		List<Quest> quests = Stories.open(level, hall).stream().filter(q -> q.giver.equals("hall") && !q.done()).toList();

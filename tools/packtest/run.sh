@@ -161,11 +161,11 @@ if [ "${PERF:-false}" = "true" ] && [ "${CITY:-false}" != "true" ]; then
     # minutes in: the builds and the villagers' memories fill up first) to the last.
     python3 ../../../tools/packtest/soakheap.py soak-heap.txt "${SOAK_SETTLE:-10}" || SOAK_FAILED=true
     if ls soak-*.jfr > /dev/null 2>&1; then
-      python3 ../../../tools/packtest/perf.py --spikes $(ls soak-*.jfr | sort -t- -k2 -n) || true
+      python3 ../../../tools/packtest/perf.py --spikes $(ls soak-*.jfr | sort -t- -k2 -n) --ticks server.log || true
     fi
   else
     echo "Heap after GC: $(( HEAP / 1024 )) MB"
-    python3 ../../../tools/packtest/perf.py perf.jfr
+    python3 ../../../tools/packtest/perf.py perf.jfr --ticks server.log
   fi
   # The numbers only mean something if the workers were working: each site's status says "working" with its
   # villager's level under it. None working means the soak measured an idle server (B14), so it fails.

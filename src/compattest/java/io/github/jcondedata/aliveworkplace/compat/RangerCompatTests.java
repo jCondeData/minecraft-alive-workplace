@@ -22,6 +22,7 @@ import io.github.jcondedata.aliveworkplace.people.Moods;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.rules.AlphaNear;
 import io.github.jcondedata.aliveworkplace.rules.Condition;
+import io.github.jcondedata.aliveworkplace.story.Reputation;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -127,6 +128,9 @@ public class RangerCompatTests implements FabricGameTest {
 		helper.assertTrue(ways.size() == 1 && ways.get(0).get("place").getAsString().equals("hall"), "ways: " + ways);
 		float chance = LegendGuests.chance(level, hall, ways.get(0));
 		helper.assertTrue(Math.abs(chance - 1f / 3f) < 0.001f, "chance: " + chance);
+		// a Friend of the village: a Rare Legend's visit way asks for one (31.12)
+		UUID ally = UUID.nameUUIDFromBytes(("ally" + hall).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+		Reputation.add(level, hall, ally, "Ally", 50 - Reputation.points(level, hall, ally));
 		wild(helper, "pikachu level=10", new BlockPos(20, 2, 20));
 		helper.runAfterDelay(5, () -> {
 			long today = Chronicle.day(level);

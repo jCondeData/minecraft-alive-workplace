@@ -17,6 +17,8 @@ How everything in the mod works, in plain words: written for the owner first, th
   deadlines and request files (31.9).
 - [Reputation and titles](reputation.md): standing in each village, what earns and costs it, Friend, Hero and Lord,
   honours, the title in chat (31.11).
+- [The bounty board and bandit captains](bounties.md): bounties posted by villages, the Bounty Board, captains'
+  quirks and hideouts, the Wanted Poster and the Captain's Insignia (1.5).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 - [The player guide](player-guide.md): the separate, plain-language site for players, published with the showcase (22.10).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
@@ -25,6 +27,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [The Colony Charter](colony-charter.md): the hall's Colonies tab, the charter, its map and the rules for where a colony may go (33.8).
 - [The settlers set out](colony-settlers.md): sending the settlers with the charter, who volunteers, their supplies, the walk out and the order on the Colonies tab (33.9).
 - [A colony is born](colony-born.md): the settlers' camp, the new hall and Travel Post, the builder's first builds, the sister route and the letter; home again with no room (33.10).
+- [Founding a realm](realms.md): the Realm tab, founding a Barony, adding villages, colonies joining, leaving and letting go, the ranks and their fireworks, the arms and the crown passing (33.11).
 
 **The village**
 - [The Village Hall](village-hall.md): the village at a glance, its needs, ranks, calendar, treasury and pages.
@@ -47,6 +50,8 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Desert raiders](desert.md): the Tomb Camp, the Pharaoh whose husks rise again, sand ramps over the walls, sieges until noon (32.9).
 - [Piglin incursions](piglins.md): the Blackstone Outpost and its portal, piglins that never zombify, plunder of the village's gold, the Warlord whose fall puts the portal out (32.10).
 - [Witch covens](covens.md): the Coven Hut on its stilts, the nightly hex no nurse can cure, witches who throw potions over the walls, the Coven Mother who blinks away (32.11).
+- [Scouts](scouts.md): a guard with a spyglass, sent from the Defence page to look the lair over and bring home a Scouting Report map; raiders trailed home at dawn (32.12).
+- [Marching on the lair](war-party.md): mustering a war party under the Rally Banner, the Siege-breakers, the band turning out and a broken lair's rewards (32.13).
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).

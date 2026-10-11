@@ -41,7 +41,7 @@ public final class Expansions {
 	 * M32, "The expansion gate"). Its switches: {@code sieges}, {@code siegeDamage} (32.4).
 	 */
 	public static final boolean M32 = false;
-	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}, {@code visibleCaravans}, {@code colonies}, {@code colonyRank}, {@code colonyCooldownDays}, {@code coloniesPerVillage}. */
+	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}, {@code visibleCaravans}, {@code colonies}, {@code colonyRank}, {@code colonyCooldownDays}, {@code coloniesPerVillage}, {@code realms}, {@code realmMaxMembers}. */
 	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code classGraceDays}, {@code vintners}, {@code tailors}, {@code printers}, {@code villagerAges}, {@code villagerElderDays}, {@code elderPassing}, {@code agelessElders}, {@code classOutfits}, {@code elderRetirement}, {@code familyNames}. */
 	public static final boolean M34 = false;
@@ -71,10 +71,10 @@ public final class Expansions {
 			case "villageEdicts", "edictMinDays", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 				"guildsPerRank" -> M30;
 			case "jewellers" -> M34; // the Jeweller (34.12), with the rest of Classes and luxuries below
-			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage" -> M33;
+			case "villageEconomy", "visibleCaravans", "colonies", "colonyRank", "colonyCooldownDays", "coloniesPerVillage", "realms", "realmMaxMembers" -> M33;
 			case "sieges", "siegeDamage" -> M32;
 			case "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat" -> M31;
-			case "storyArcs", "arcCooldownDays", "arcsAtOnce" -> M31;
+			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "bountyBoard", "rogueBounties" -> M31;
 			case "villageClasses", "classRiseDays", "classFallDays", "classGraceDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",
 				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> M34;
 			default -> null;

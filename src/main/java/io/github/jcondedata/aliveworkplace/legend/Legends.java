@@ -126,6 +126,9 @@ public final class Legends implements ResourceManagerReloadListener {
 			if (!way.has("way") || !WAYS.contains(way.get("way").getAsString())) {
 				throw new IllegalArgumentException("unknown way " + way.get("way"));
 			}
+			if (way.has("conditions")) {
+				Conditions.parseAll(way.getAsJsonArray("conditions")); // a typo fails the file (31.12)
+			}
 			arrive.add(way);
 		}
 		Optional<String> luxury = Optional.empty();

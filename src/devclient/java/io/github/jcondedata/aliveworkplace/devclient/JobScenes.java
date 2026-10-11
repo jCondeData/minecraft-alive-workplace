@@ -828,6 +828,122 @@ final class JobScenes {
 				return took[0] >= 0 && l.getGameTime() - took[0] > 100 && !carrying.isEmpty();
 			};
 		}, null));
+		// Scouts (ROADMAP 32.12): a guard with a spyglass (a Scout) at their grindstone, a bandit camp 40 blocks north and a
+		// grassy rise between. Sent to scout it, the scout walks up the rise, raises the spyglass (in hand, where a villager
+		// shows what they hold) and comes home; the Scouting Report is in the chest by the grindstone, and the player holds
+		// it: a map with a red X on the camp.
+		SCENES.put("scouts", new Job("the scout walked up the rise, raised the spyglass at the bandit camp and came home with the Scouting Report; the player held its map, the camp marked with a red X", 2400,
+			new Vec3(15.5, -54.0, -10.5), new Vec3(-1.5, -58.5, -24.5), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.south(4);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.guard.Scouts.forget(level);
+			// The rise: a grassy mound, stepped so a villager walks up it.
+			BlockPos top = STATION.north(18);
+			for (int dx = -4; dx <= 4; dx++) {
+				for (int dz = -4; dz <= 4; dz++) {
+					int h = 4 - Math.max(Math.abs(dx), Math.abs(dz));
+					for (int y = 0; y < Math.min(3, h); y++) {
+						level.setBlockAndUpdate(top.offset(dx, y, dz), (y == Math.min(3, h) - 1 ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState());
+					}
+				}
+			}
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, -40),
+				io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
+			Showcase.check(lair != null, "the bandits made camp north of the village");
+			Villager scout = guard(level, STATION, new ItemStack(Items.IRON_SWORD));
+			scout.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SPYGLASS));
+			boolean[] sent = {false};
+			boolean[] raised = {false};
+			return l -> {
+				if (!sent[0]) {
+					if (io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(scout)) {
+						sent[0] = io.github.jcondedata.aliveworkplace.guard.Scouts.send(l, hall) == io.github.jcondedata.aliveworkplace.guard.Scouts.Sent.SENT;
+						Showcase.check(sent[0], "the scout was sent to the bandit camp");
+					}
+					return false;
+				}
+				if (scout.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.SPYGLASS) && !raised[0]) {
+					raised[0] = true;
+					Showcase.check(scout.getY() > STATION.getY() + 1.5, "the scout raised the spyglass on the rise");
+				}
+				return raised[0] && !io.github.jcondedata.aliveworkplace.guard.Scouts.out(scout)
+					&& io.github.jcondedata.aliveworkplace.guard.Scouts.known(l, hall).isPresent();
+			};
+		}, new After("04_report_in_hand", (level, player) -> {
+			Container chest = (Container) level.getBlockEntity(STATION.east(2));
+			for (int i = 0; chest != null && i < chest.getContainerSize(); i++) {
+				if (chest.getItem(i).is(Items.FILLED_MAP)) {
+					ItemStack report = chest.removeItem(i, 1);
+					Showcase.check(report.getHoverName().getString().startsWith("Scouting Report"), "the Scouting Report was in the chest by the grindstone");
+					player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, report);
+					player.setXRot(60f); // looking down at the map in both hands
+					player.connection.teleport(player.getX(), player.getY(), player.getZ(), player.getYRot(), 60f);
+					break;
+				}
+			}
+		}, -1, 0)));
+		// Marching on the lair (ROADMAP 32.13): a City's hall, four guards and a pillager war camp 30 blocks south. The player
+		// musters a war party on the Defence page (three of the four under the Rally Banner) and hires the Siege-breakers,
+		// then leads them south into the camp; the band turns out six at a time, the Warlord fights at the front (a City)
+		// and falls, and the last shot looks at the camp's loot chest.
+		SCENES.put("war_party", new Job("the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 1600,
+			new Vec3(14.5, -52.0, 4.0), new Vec3(0.5, -59.0, 24.0), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.north(6);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.guard.WarParties.forget(level);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 30),
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pillager_warband"));
+			Showcase.check(lair != null, "the pillager warband made its war camp south of the City");
+			for (int i = 0; i < 4; i++) {
+				guard(level, STATION.offset(-6 + 4 * i, 0, -2), new ItemStack(Items.IRON_SWORD));
+			}
+			player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
+			player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.WarParties.muster(level, hall, player) == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED
+				&& io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size() == 3,
+				"three of the four guards mustered under the raised Rally Banner");
+			io.github.jcondedata.aliveworkplace.guard.WarParties.hire(level, hall, player);
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream()
+				.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
+				"the five Siege-breakers were hired");
+			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
+			int[] ticks = {0};
+			boolean[] turned = {false};
+			return l -> {
+				ticks[0]++;
+				var standing = io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall);
+				if (standing.isEmpty()) {
+					return ticks[0] > 40;
+				}
+				// The player walks south at the head of the war party, stopping short of the camp's fire.
+				if (player.getZ() < STATION.getZ() + 20) {
+					player.connection.teleport(player.getX(), player.getY(), player.getZ() + 0.12, 0f, 0f);
+				}
+				if (!turned[0] && io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() > 1
+						&& !io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).isEmpty()) {
+					turned[0] = true;
+					Showcase.check(true, "the band turned out to meet the war party");
+				}
+				// The Warlord falls at the front (a scene can't wait out a whole battle).
+				if (ticks[0] == 900 && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
+					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
+				}
+				return false;
+			};
+		}, new After("04_loot", (level, player) -> {
+			BlockPos camp = STATION.offset(0, -1, 30);
+			for (BlockPos p : BlockPos.betweenClosed(camp.offset(-14, -2, -14), camp.offset(14, 8, 14))) {
+				if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity) {
+					Showcase.check(true, "the war camp's loot chest was left standing");
+					player.connection.teleport(p.getX() + 0.5, p.getY() + 1, p.getZ() - 1.5, 0f, 40f);
+					break;
+				}
+			}
+		}, -1, 0)));
 		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
 		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
 		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.
@@ -3234,6 +3350,155 @@ final class JobScenes {
 					Showcase.check(shown, "the hall's tooltip for Dara shows your hearts and her best friends");
 				}, 30)),
 			(level, player) -> subject != null && io.github.jcondedata.aliveworkplace.story.Friendship.points(subject, player.getUUID()) >= 310));
+		// What friendship and titles are worth (ROADMAP 31.12): at a festival Bo the mason (7 hearts) and Dara the farmer
+		// (6 hearts) each bring the player their family's gift, Ana (3 hearts) doesn't; then at ten hearts, and a Hero of the
+		// village, Dara's 20-emerald trade costs 12 (30% for the hearts and 10% for the title).
+		SCREENS.put("festival_gifts", new Screen("at the festival Bo and Dara brought their gifts (16 stone bricks, 6 apples) and Ana, with 3 hearts, didn't; then Dara's trade screen for a Hero with ten hearts: 20 emeralds cost 12",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				classPeople.clear();
+				String[] names = {"Bo", "Dara", "Ana"};
+				VillagerProfession[] jobs = {VillagerProfession.MASON, VillagerProfession.FARMER, VillagerProfession.LIBRARIAN};
+				for (int i = 0; i < 3; i++) {
+					Villager v = EntityType.VILLAGER.spawn(level, new BlockPos(-1 + 2 * i, -60, 1), MobSpawnType.COMMAND);
+					v.setNoAi(true);
+					v.setYRot(0);
+					v.setYHeadRot(0);
+					v.setYBodyRot(0);
+					v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(2));
+					v.setCustomName(Component.literal(names[i]));
+					classPeople.add(v);
+				}
+				Villager dara = classPeople.get(1);
+				var offers = new net.minecraft.world.item.trading.MerchantOffers();
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 20),
+					new ItemStack(Items.GOLDEN_CARROT, 3), 12, 5, 0.05f));
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 5),
+					new ItemStack(Items.PUMPKIN_PIE, 4), 12, 5, 0.05f));
+				offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(Items.EMERALD, 1),
+					new ItemStack(Items.BREAD, 6), 12, 1, 0.05f));
+				dara.setOffers(offers);
+				subject = dara;
+			},
+			List.of(new Step("01_festival_gifts", -1, 0, (level, player) -> {
+					// The hall's POI is only registered after the staging tick: look the villagers' hall up again now (B72).
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					int[] hearts = {7, 6, 3};
+					for (int i = 0; i < 3; i++) {
+						io.github.jcondedata.aliveworkplace.story.Friendship.add(classPeople.get(i), player, hearts[i] * 100);
+					}
+					int brought = io.github.jcondedata.aliveworkplace.story.FriendPerks.festivalGifts(level, STATION, player);
+					int again = io.github.jcondedata.aliveworkplace.story.FriendPerks.festivalGifts(level, STATION, player);
+					Showcase.check(brought == 2 && again == 0, "two friends with 6 hearts or more brought a gift, once: " + brought + ", then " + again);
+				}, 50),
+				new Step("02_discounted_trade", -1, 0, (level, player) -> {
+					Villager dara = subject;
+					io.github.jcondedata.aliveworkplace.story.Friendship.add(dara, player, 400); // ten hearts
+					io.github.jcondedata.aliveworkplace.story.Reputation.add(level, STATION, player, 300); // a Hero of the village
+					dara.mobInteract(player, InteractionHand.MAIN_HAND);
+					var offers = dara.getOffers();
+					Showcase.check(offers.get(0).getCostA().getCount() == 12 && offers.get(1).getCostA().getCount() == 3
+						&& offers.get(2).getCostA().getCount() == 1, "a Hero with ten hearts: 12, 3 and 1 emeralds, got " + offers.get(0).getCostA().getCount()
+						+ ", " + offers.get(1).getCostA().getCount() + ", " + offers.get(2).getCostA().getCount());
+				}, 40)),
+			(level, player) -> player.containerMenu instanceof net.minecraft.world.inventory.MerchantMenu));
+		// The bounty board and bandit captains (ROADMAP 31.13): the board with its posters, the Wanted Poster's tooltip
+		// in the journal's Bounties tab, the captain at his hideout, and the insignia handed in.
+		SCREENS.put("bounty", new Screen("a Bounty Board by the hall showing two posters; the Bounties tab with Grimwald the Red's poster (name, quirk, where he was seen, the reward); Ironhide himself in iron with his band; his insignia handed in for 15 emeralds",
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+					.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+				level.setBlockAndUpdate(new BlockPos(2, -60, 1), ModBlocks.BOUNTY_BOARD.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.forget(level);
+			},
+			List.of(new Step("01_board", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.post(level, STATION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("ironhide"), 0, 0,
+						STATION.offset(110, 0, -110));
+					level.setDayTime(level.getDayTime() + 3 * io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY);
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.post(level, STATION, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("hexer"), 8, 3,
+						STATION.offset(-150, 0, 40));
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.boardPlaced(level, new BlockPos(2, -60, 1));
+					Showcase.check(b != null && level.getBlockState(new BlockPos(2, -60, 1)).getValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.POSTERS) == 2,
+						"two bounties posted, two posters on the board");
+				}, 40),
+				new Step("02_poster", io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.bounty.BountyPage.openAtBoard(player, level, new BlockPos(2, -60, 1));
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW).is(ModItems.WANTED_POSTER), "the Bounties tab shows the poster");
+				}, 40),
+				new Step("03_captain", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					boolean up = io.github.jcondedata.aliveworkplace.bounty.Bounties.raise(level, b, new BlockPos(1, -60, -3), new BlockPos(1, -60, -5));
+					for (var mob : io.github.jcondedata.aliveworkplace.bounty.Bounties.band(level, b)) {
+						mob.setNoAi(true);
+					}
+					Showcase.check(up, "Grimwald the Red stands with his band");
+				}, 40),
+				new Step("04_claim", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					if (level.getEntity(b.captain) instanceof net.minecraft.world.entity.LivingEntity captain) {
+						captain.hurt(level.damageSources().playerAttack(player), 1000f);
+					}
+					player.getInventory().add(io.github.jcondedata.aliveworkplace.bounty.Bounties.insignia(level, b));
+					var claim = io.github.jcondedata.aliveworkplace.bounty.Bounties.claimAny(player, level, STATION);
+					Showcase.check(claim == io.github.jcondedata.aliveworkplace.bounty.Bounties.Claim.PAID, "the insignia paid: " + claim);
+				}, 40)),
+			(level, player) -> true));
+		// Rogue Pokémon bounties (ROADMAP 31.14, Cobblemon): the poster on the board, the huge Rogue Ursaring glowing for
+		// the player who took its bounty, and the bounty paid when it's beaten.
+		SCREENS.put("bounty_rogue", new Screen("a Town's Bounty Board with a poster on a Rogue Ursaring (level 50, where it was last seen, 24 emeralds); the rogue itself, half again as big and glowing for the player who took its bounty; beaten, and the bounty paid",
+			new Vec3(1.5, -59, 5.5), new Vec3(0.5, -58.5, -2.5),
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
+					.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				level.setBlockAndUpdate(new BlockPos(2, -60, 1), ModBlocks.BOUNTY_BOARD.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.forget(level);
+			},
+			List.of(new Step("01_poster", io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW, 6, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Rogues.post(level, STATION, net.minecraft.resources.ResourceLocation.parse("cobblemon:ursaring"),
+						new BlockPos(-1, -60, -4));
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.boardPlaced(level, new BlockPos(2, -60, 1));
+					io.github.jcondedata.aliveworkplace.bounty.BountyPage.openAtBoard(player, level, new BlockPos(2, -60, 1));
+					Showcase.check(b.name(level).getString().equals("Rogue Ursaring") && b.rogueLevel == 50 && b.reward == 24,
+						"a Town posts a level-50 Rogue Ursaring for 24 emeralds: " + b.name(level).getString() + ", " + b.rogueLevel + ", " + b.reward);
+					Showcase.check(player.containerMenu instanceof ChoiceMenu m
+						&& m.icon(io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW).is(ModItems.WANTED_POSTER), "the Bounties tab shows the rogue's poster");
+				}, 40),
+				new Step("02_rogue", -1, 0, (level, player) -> {
+					player.closeContainer();
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					io.github.jcondedata.aliveworkplace.bounty.Bounties.take(player, level, b);
+					var rogue = io.github.jcondedata.aliveworkplace.bounty.Rogues.spawn(level, b, player);
+					if (rogue instanceof net.minecraft.world.entity.Mob mob) {
+						mob.setNoAi(true);
+						mob.setYRot(0);
+						mob.setYHeadRot(0);
+					}
+					io.github.jcondedata.aliveworkplace.bounty.Rogues.glow(level);
+					Showcase.check(rogue != null && io.github.jcondedata.aliveworkplace.bounty.Rogues.glowingFor(b).contains(player.getUUID()),
+						"the Rogue Ursaring stands and glows for the player who took its bounty");
+				}, 60),
+				new Step("03_claim", -1, 0, (level, player) -> {
+					var b = io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).get(0);
+					var rogue = io.github.jcondedata.aliveworkplace.bounty.Rogues.rogue(level, b);
+					boolean paid = io.github.jcondedata.aliveworkplace.bounty.Rogues.beaten(level.getServer(), b.id, player, false);
+					if (rogue != null) {
+						level.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, rogue.getX(), rogue.getY() + 1, rogue.getZ(), 20, 0.6, 0.8, 0.6, 0.02);
+						rogue.discard();
+					}
+					Showcase.check(paid && io.github.jcondedata.aliveworkplace.bounty.Bounties.open(level, STATION).isEmpty(), "the win paid the bounty once");
+				}, 40)),
+			(level, player) -> true));
 		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
 		// hall's tooltip says when her name day is.
@@ -4740,12 +5005,15 @@ final class JobScenes {
 		if (doneAt > 0 && job.after() != null) {
 			if (tick == doneAt + 80) {
 				mc.getToasts().clear();
-				ScreenshotHarness.pointAt(mc, job.after().slot(), job.after().rows());
+				if (job.after().slot() >= 0) {
+					ScreenshotHarness.pointAt(mc, job.after().slot(), job.after().rows());
+				}
 			}
 			if (tick == doneAt + 90) {
 				ScreenshotHarness.shot(mc, job.after().shot());
 				Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>
-						|| mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen, // the printer's Gazette (34.11)
+						|| mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen // the printer's Gazette (34.11)
+						|| job.after().rows() == 0 && mc.player != null && !mc.player.getMainHandItem().isEmpty(), // no screen: an item in hand (the scout's report, 32.12)
 					"its screen opened (" + job.after().shot().substring(3).replace('_', ' ') + ")");
 				mc.stop();
 			}

@@ -121,7 +121,7 @@ public class SavedDataGameTests implements FabricGameTest {
 			new BlockPos(10, 64, 20), 72_000L));
 		samples.put("REQUEST_LET_DOWN", new io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown(44L, 123456L));
 		samples.put("FRIENDSHIP", new io.github.jcondedata.aliveworkplace.story.Friendship.Data(Map.of(A,
-			new io.github.jcondedata.aliveworkplace.story.Friendship.Bond("Jesse", 120, 40L, 5L, 2, Map.of("chat", 41L), 900L, List.of("heart_2"), true))));
+			new io.github.jcondedata.aliveworkplace.story.Friendship.Bond("Jesse", 120, 40L, 5L, 2, Map.of("chat", 41L), 900L, List.of("heart_2"), true, 7L, 3L))));
 		samples.put("HAPPY_STREAK", new io.github.jcondedata.aliveworkplace.people.LifeStages.Streak(19, 131L));
 		samples.put("LATE_PARTNER", new io.github.jcondedata.aliveworkplace.people.Couples.LatePartner(B, Component.literal("Odo")));
 		samples.put("RETIRED", new io.github.jcondedata.aliveworkplace.people.Retirement.Retired(140L, "minecraft:farmer", 4));

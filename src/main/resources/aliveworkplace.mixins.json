@@ -5,6 +5,7 @@
 	"mixins": [
 		"AbstractVillagerMixin",
 		"AxeItemAccessor",
+		"BehaviorMixin",
 		"BlockItemMixin",
 		"BlockStateBaseMixin",
 		"BrainMixin",
@@ -18,6 +19,7 @@
 		"MobAccessor",
 		"PlayerListMixin",
 		"PoiManagerMixin",
+		"ScoutUnseenMixin",
 		"ServerLevelMixin",
 		"StructureTemplateMixin",
 		"StructureTemplatePoolAccessor",

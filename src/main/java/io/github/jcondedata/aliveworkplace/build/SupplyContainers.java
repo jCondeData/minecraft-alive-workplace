@@ -44,10 +44,11 @@ public final class SupplyContainers {
 		List<BlockPos> found = new ArrayList<>();
 		for (int cx = SectionPos.blockToSectionCoord(box.minX()); cx <= SectionPos.blockToSectionCoord(box.maxX()); cx++) {
 			for (int cz = SectionPos.blockToSectionCoord(box.minZ()); cz <= SectionPos.blockToSectionCoord(box.maxZ()); cz++) {
-				if (!level.hasChunk(cx, cz)) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz); // loaded only, and without waiting (B103)
+				if (chunk == null) {
 					continue;
 				}
-				for (BlockEntity be : level.getChunk(cx, cz).getBlockEntities().values()) {
+				for (BlockEntity be : chunk.getBlockEntities().values()) {
 					if (box.isInside(be.getBlockPos()) && !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
 						&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity) && !isMachine(be)
 						&& !ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock()) && STORES.isStore(level, be.getBlockPos())
@@ -84,10 +85,10 @@ public final class SupplyContainers {
 		int minCz = SectionPos.blockToSectionCoord(bench.getZ() - RADIUS), maxCz = SectionPos.blockToSectionCoord(bench.getZ() + RADIUS);
 		for (int cx = minCx; cx <= maxCx; cx++) {
 			for (int cz = minCz; cz <= maxCz; cz++) {
-				if (!level.hasChunk(cx, cz)) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz); // loaded only, and without waiting (B103)
+				if (chunk == null) {
 					continue;
 				}
-				LevelChunk chunk = level.getChunk(cx, cz);
 				for (BlockEntity be : chunk.getBlockEntities().values()) {
 					BlockPos p = be.getBlockPos();
 					if (Math.abs(p.getX() - bench.getX()) > RADIUS || Math.abs(p.getZ() - bench.getZ()) > RADIUS || Math.abs(p.getY() - bench.getY()) > VERTICAL) {

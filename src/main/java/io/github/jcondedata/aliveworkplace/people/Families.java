@@ -66,6 +66,7 @@ public final class Families {
 		ModAttachments.PARENTS.set(baby, new Parents(mother.getDisplayName(), father.getDisplayName(), job(mother), job(father), false,
 			schooledMaster(mother), schooledMaster(father), mother.getUUID(), father.getUUID()));
 		FamilyBook.born(baby, mother, father);
+		io.github.jcondedata.aliveworkplace.story.FriendPerks.nameBaby(baby, mother, father); // named after a friend of theirs (31.12)
 	}
 
 	/** A schooled Master: schooled as a child and now at the top level of a trade (29.7's born Legends and gifts). */

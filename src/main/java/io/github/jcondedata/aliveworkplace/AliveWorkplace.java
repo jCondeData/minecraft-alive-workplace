@@ -55,10 +55,12 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.fish.Fishers.init();
 		io.github.jcondedata.aliveworkplace.travel.FerryRides.init();
 		io.github.jcondedata.aliveworkplace.guard.Cavalry.init();
+		io.github.jcondedata.aliveworkplace.guard.Scouts.init(); // scouts sent to the lair, and what they bring home (32.12)
 		io.github.jcondedata.aliveworkplace.mail.Mail.init();
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.init();
 		io.github.jcondedata.aliveworkplace.guard.GuardPartners.init();
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
+		io.github.jcondedata.aliveworkplace.guard.WarParties.init(); // marching on the lair (32.13)
 		io.github.jcondedata.aliveworkplace.hall.Festivals.init();
 		io.github.jcondedata.aliveworkplace.hall.Banquets.init();
 		io.github.jcondedata.aliveworkplace.hall.Curfew.init();
@@ -78,6 +80,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Edicts.init();
 		io.github.jcondedata.aliveworkplace.hall.Guilds.init();
 		io.github.jcondedata.aliveworkplace.colony.Colonies.init();
+		io.github.jcondedata.aliveworkplace.realm.Realms.init();
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
 		io.github.jcondedata.aliveworkplace.people.ClassLook.init(); // dressed by class, in game (34.18)
 		io.github.jcondedata.aliveworkplace.people.HomeGrades.init(); // 34.15: data files that grade homes
@@ -111,6 +114,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.story.HeartEvents.init(); // what villagers tell their friends, as data (31.7)
 		io.github.jcondedata.aliveworkplace.story.PersonalRequests.init(); // villagers ask their friends for help (31.9)
 		io.github.jcondedata.aliveworkplace.story.Reputation.init(); // standing and titles: losses, raids, lairs, the title in chat (31.11)
+		io.github.jcondedata.aliveworkplace.bounty.Bounties.init(); // the bounty board and bandit captains (31.13)
 		io.github.jcondedata.aliveworkplace.story.Arcs.init(); // story arcs: their files, placements and mobs, talk (31.4)
 		io.github.jcondedata.aliveworkplace.hall.Anthems.init(); // the anthem's player (29.19)
 		io.github.jcondedata.aliveworkplace.legend.Gifted.init();
@@ -132,6 +136,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.command.Soak.init();
 		io.github.jcondedata.aliveworkplace.command.CitySoak.init(); // 27.22
 		io.github.jcondedata.aliveworkplace.command.SeasonSoak.init(); // 30.22
+		Platform.get().onServerStarting(server -> ClassWarmup.start()); // B103: no class loading stalls on day 1
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}
 

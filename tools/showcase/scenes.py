@@ -372,6 +372,27 @@ SCENES = [
       "Storehouse queued on the other side, and the first walls went up; the owner got the settlers' letter", 85,
       [("01_the_spot", "The spot, before the settlers arrive"), ("02_camp_made", "The camp, Newbrook's hall and its Travel Post"),
        ("03_builder_at_work", "Tomas starts the Sandstone cottage"), ("04_first_walls", "The first walls go up")]),
+    # Founding a realm (ROADMAP 33.11): the Realm tab founds the Barony, adds the owner's villages, the rank-up fireworks
+    S("realm", "Realm", "Founding a realm: the Barony, then a County with fireworks",
+      "on Thornholm's Realm tab the owner, a Town's, founded the Barony of Thornholm and added Ashford with one click; adding "
+      "Farholt made three villages with a Town capital, the County of Thornholm, and fireworks went up over the hall; a blue "
+      "banner with a gold cross clicked on the arms set them, and the tab lists the members, the capital crowned", 75,
+      [("01_found_a_realm", "The Realm tab of a Town: Found a realm"), ("02_barony", "The Barony of Thornholm: Ashford added"),
+       ("03_fireworks", "Farholt joins: a County, fireworks over the capital"), ("04_county_tab", "The County of Thornholm, its arms and members")]),
+    # Other players' villages and choosing the capital (ROADMAP 33.12): the invitation letter, the answer, the capital vote
+    S("realm_invite", "Realm", "An invitation to another player's village, and a vote on the capital",
+      "Rowan, who rules the Barony of Thornholm, invited Ashford, the player's Town: the letter came to the player, who read it; "
+      "Ashford's Realm tab offered Join the Barony of Thornholm or Decline, and the player joined, then put Ashford forward as "
+      "capital: Rowan owns the other two villages, so the tab shows a vote for a day, its count and the two buttons", 70,
+      [("01_the_letter", "Rowan's letter: an invitation for Ashford"), ("02_the_invitation", "Ashford's Realm tab: Join or Decline"),
+       ("03_the_vote", "The vote: move the capital to Ashford?"), ("04_vote_for", "Vote for Ashford, with every village you own")]),
+    # The realm treasury (ROADMAP 33.13): the levy from every member, the icon's movements, a gift of emeralds
+    S("realm_treasury", "Realm", "The realm treasury: the levy and its movements",
+      "Thornholm founded a realm and added Ashford and Farholt, a County; four mornings each member paid the 10% levy on its "
+      "takings into the realm treasury, and the Realm tab's treasury icon lists what it holds of 512 emeralds and the movements "
+      "by day; a shift-click with twelve emeralds gave them all, and the levy's icon shows 10%", 60,
+      [("01_treasury_tooltip", "The treasury: four mornings of the levy"), ("02_after_a_gift", "Twelve emeralds given with a shift-click"),
+       ("03_the_levy", "The levy: 10% of each member's takings")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,
@@ -594,6 +615,24 @@ SCENES = [
       "Gift Wrap and a Golden Carrot on the crafting grid made a Gift; Dara the farmer unwrapped it and loved it, her hearts went up in the action bar, and the hall's tooltip says when her name day is", 55,
       [("01_wrapping", "Gift Wrap and a Golden Carrot make a Gift"), ("02_giving", "Dara unwraps it: her line, bits of carrot, hearts"),
        ("03_hearts", "Her hearts went up; a second gift the same day is handed back"), ("04_hall_name_day", "The hall: when her name day is")]),
+    # What friendship and titles are worth (ROADMAP 31.12): festival gifts from friends, and a Hero's discounted trade screen
+    S("festival_gifts", "Village Hall", "Festival gifts from friends, and cheaper trades for a Hero",
+      "at the festival Bo the mason and Dara the farmer, with 6 hearts or more, each brought their family's gift (16 stone bricks, 6 apples) and Ana with 3 hearts didn't; then Dara's trade screen for a Hero of the village with ten hearts: 20 emeralds cost 12, 5 cost 3", 45,
+      [("01_festival_gifts", "Two friends bring their festival gifts, one each"),
+       ("02_discounted_trade", "A Hero with ten hearts: 40% off Dara's trades")]),
+    # The bounty board and bandit captains (ROADMAP 31.13): the board's posters, the Wanted Poster, the captain, the claim
+    S("bounty", "Village Hall", "The bounty board: posters, a wanted captain and his insignia",
+      "a Bounty Board by the hall shows two posters; its Bounties tab shows Grimwald the Red's poster (his quirk, where he was seen, the reward); Ironhide stands in full iron with his band; his insignia is handed in for 15 emeralds", 45,
+      [("01_board", "The Bounty Board shows a poster for each open bounty"),
+       ("02_poster", "The Bounties tab: the Wanted Poster's tooltip"),
+       ("03_captain", "Grimwald the Red, Ironhide, and his band"),
+       ("04_claim", "The insignia handed in: paid once")]),
+    # Rogue Pokémon bounties (ROADMAP 31.14, Cobblemon): the poster, the huge glowing rogue, the bounty paid for the win
+    S("bounty_rogue", "Village Hall", "A rogue Pokémon bounty: the poster, the Rogue Ursaring, the reward",
+      "a Town's Bounty Board with a poster on a Rogue Ursaring (level 50, where it was last seen, 24 emeralds); the rogue, half again as big and glowing for the player who took its bounty; beaten, and the bounty paid once", 45,
+      [("01_poster", "The Bounties tab: the rogue's poster"),
+       ("02_rogue", "The Rogue Ursaring, huge and glowing for its bounty's taker"),
+       ("03_claim", "Beaten: the bounty paid")], cobblemon=True),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",
@@ -689,6 +728,14 @@ SCENES = [
     # Piglin incursions (ROADMAP 32.10): the Blackstone Outpost, piglins through its portal, one carrying off gold
     job("piglins", "Threats", "Piglin incursions: the outpost, the portal, the plunder",
         "the piglins' blackstone outpost stood west of the Town; a raid stepped out of its portal and a piglin passing the village's chests carried off a stack of gold", 150),
+    # Scouts (ROADMAP 32.12): the scout on a rise with the spyglass, then the Scouting Report map in hand
+    job("scouts", "Threats", "Scouts: a look at the lair, a map home",
+        "the scout walked up the rise, raised the spyglass at the bandit camp and came home with the Scouting Report; the player held its map, the camp marked with a red X", 150,
+        [("04_report_in_hand", "The Scouting Report in hand")]),
+    # Marching on the lair (ROADMAP 32.13): the war party and the Siege-breakers into the war camp, the Warlord falling, the loot
+    job("war_party", "Threats", "Marching on the lair: the war party, the Warlord, the loot",
+        "the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 150,
+        [("04_loot", "The war camp's loot chest")]),
     # Witch covens (ROADMAP 32.11): the Coven Hut in the swamp at night, a hex, witches throwing potions over a palisade
     job("coven", "Threats", "Witch covens: the hut, the hex, potions over the wall",
         "the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 150),

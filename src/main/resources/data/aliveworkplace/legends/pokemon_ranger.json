@@ -13,7 +13,7 @@
     {"type": "alpha_near", "radius": 96}
   ],
   "arrive": [
-    {"way": "visit", "place": "hall", "chance": 0.3333}
+    {"way": "visit", "place": "hall", "chance": 0.3333, "conditions": [{"type": "title_at_least", "title": "friend"}]}
   ],
   "needs": {"luxury": "clothes"},
   "powers": [

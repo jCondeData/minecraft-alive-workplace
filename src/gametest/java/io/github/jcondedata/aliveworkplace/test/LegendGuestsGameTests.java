@@ -465,6 +465,10 @@ public class LegendGuestsGameTests implements net.fabricmc.fabric.api.gametest.v
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "legendGuestsTerms")
 	public void theTermsMatchTheNeeds(GameTestHelper helper) {
 		List<BlueprintData.Placement> recorded = new ArrayList<>();
+		// Buildings and halls another batch left at this spot: a finished tier III home there with a free bed was the
+		// guest's "home of their own" before its own was built (the full suite, 2026-10-11, once new batches moved spots).
+		Leftovers.halls(helper);
+		Leftovers.finished(helper);
 		setUp(helper, recorded);
 		// "no home yet" has to mean none of ours: forget the finished buildings earlier batches left round this hall, whose
 		// beds would read as a home of their own (B107); this test runs alone in its batch

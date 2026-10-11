@@ -36,6 +36,41 @@ asks for the steps, `latest.log` and any crash report).
   parcels. The successor spends 2 days "learning from Bram", then takes the workstation, the job one level below and its
   fields, routes and orders. Retired elders keep their trades, never work again, and mentor Novices and Apprentices of
   their old trade, who learn 50% faster ("taught by Bram"). Chronicle entries; config `elderRetirement`.
+- **The realm treasury, for 1.7** (33.13, off until 1.7 is finished): every member of a realm pays a levy of its
+  daily takings into the realm treasury before the rest goes into its own (10% by default; the capital's owner picks
+  0, 5, 10 or 20% on the Realm tab). The treasury holds up to 256 emeralds for a Barony, 512 for a County, 1,024 for a
+  Duchy and 2,048 for a Kingdom. Anyone can give to it (click its icon with emeralds: one; shift-click: the stack; or
+  CobbleDollars with the pack); only the capital's owner, their friends and operators take from it (right-click). Its
+  tooltip lists the last 20 movements with the day and the reason. Realm research, relief riders and edicts will pay
+  from it.
+- **The bounty board and bandit captains** (31.13): from Village rank a village posts bounties on named bandit
+  captains (two open at most, one every 3 days, 7 days each), shown as posters on the new Bounty Board and in the
+  journal's Bounties tab. Taking one gives a Wanted Poster and a map to his hideout, a bandit camp with his banner built
+  when you come near; each captain has a quirk (Ironhide, Fleetfoot, Crossbow Ace, Beast Rider, Night Stalker, Warlord,
+  Hexer). His Captain's Insignia pays 12 emeralds times the rank factor, once; a lair's captain is paid to his killer.
+  Config `bountyBoard`.
+- **Rogue Pokémon bounties** (31.14, with Cobblemon): half the bounties are on a rogue, a wild Pokémon half again as
+  big (an Alpha on Cobblemon 1.8) roaming 150 to 250 blocks out, its species from the biome there (Ursaring in a
+  forest, Mamoswine in the snow, Kingler on a beach and 21 more) and its level 35, 50 or 65 by the village's rank (with
+  Radical Cobblemon Trainers, your level cap plus 5). Named "Rogue Ursaring", it glows for whoever took its bounty
+  within 32 blocks; beat it or catch it (and keep it) for 16 emeralds times the rank factor, once. Bounty rewards are
+  now paid in CobbleDollars where that mod keeps the money. Config `rogueBounties`.
+- **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
+  15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
+  family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)
+  is named after you; at 10 hearts a villager sends you a weekly parcel with a letter; Legends visit only villages
+  where someone is a Friend (Rare) or a Hero (Legendary); a Lord may set edicts and a Hero may propose one to the owner.
+- **Marching on the lair, for 1.6** (32.13). On the hall's Defence page, **Muster a war party** puts three in four of
+  the village's guards (up to 12) on the Rally Banner in your inventory and raises it; they gather by the hall. **Hire
+  the Siege-breakers**: two crossbows, two knights and a medic for 30 emeralds (3 less a level of Commerce), who stay
+  until the lair falls or two dawns pass. At the lair the band turns out six at a time; at a City the captain fights at
+  the front. Guards earn double experience for kills at a lair, and a lair broken by a war party gives 10 days' peace,
+  a chronicle line naming you and every guard who killed there, and +10 mood for two days ("the warband is broken").
+- **Scouts, for 1.6** (32.12). Sneak-right-click a guard with a **spyglass** and they're a **Scout** (you get back what
+  they held). From the hall's Defence page, **Scout the lair** sends one out by day: they walk to within 24 blocks of
+  the lair, raise the spyglass and come home; the band ignores a scout more than 8 blocks off. Back home the page shows
+  the lair's **exact place**, strength and captain, and a **Scouting Report** waits in the chest by their grindstone:
+  a map with a red X on the lair. A scout not back within a day is lost. Scouts also trail raiders who flee at dawn.
 - **Witch covens, for 1.6** (32.11). A swamp village of Village rank or more may get a **Coven Hut** beyond its
   edge: a hut on mangrove stilts over a pond, brewing stands, hanging lanterns, a herb garden, a black cat and the
   coven's cauldron over a fire. Every night it stands the coven **hexes** one to three villagers (a swirl of witch
@@ -56,6 +91,9 @@ asks for the steps, `latest.log` and any crash report).
 - **Dressed by class, in game** (34.18): Artisans, Burghers and Nobles now wear their class over their job's outfit,
   children too, and elders have grey brows and a beard; it changes as soon as a household rises or falls or a villager
   becomes an elder. Zombie villagers never wear it. `classOutfits` in the settings turns it off.
+- The benchmark times our own code each tick (25.3, testers, benchmark servers only): with
+  `-Daliveworkplace.benchmark=true` the log gets our code's p50, p99 and worst tick each minute and a line for each
+  tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the
@@ -69,6 +107,9 @@ asks for the steps, `latest.log` and any crash report).
   side of the camp. Mother and colony become sister villages, with a free caravan route both ways outside the route
   limit; both chronicles note the founding and the owner gets a letter. With no room near the spot (all water, a
   cliff) the settlers come home, the supplies go back and the charter's cost goes back into the treasury.
+- **Fewer stalls on a new world's first day on big packs** (B103): the mod's classes are now loaded in the background
+  while the server starts, instead of in the middle of a tick the first time a hall round, a worker's check of the
+  village's chests or a cradle at night needs them; a worker's chest search no longer waits for a chunk.
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
   lost the faster walk. A worker now always walks at their own pace.
@@ -186,6 +227,21 @@ asks for the steps, `latest.log` and any crash report).
   finer house, the village a City, a festival in their honour, or nothing more at all. After the 10-heart story they
   give you a **keepsake**, once: "Dara's Lucky Pick" (an iron pickaxe with Fortune), "Dara's Grandmother's Seeds",
   "Dara's Secret Recipe" (a book with her pumpkin pie, and two pies) and nine more, one per job family.
+- **Founding a realm, for 1.7** (33.11, off until 1.7 is finished): a Town's hall gets a **Realm** tab on its Trade
+  page. Found a realm and the village is the capital of "the Barony of Thornholm"; one click adds any of your own (or
+  a friend's) villages within 2,048 blocks, and colonies join their mother's realm by themselves. Three villages with
+  a Town capital make a County, five with a City a Duchy, eight with two Cities a Kingdom: each rank up sends
+  fireworks over the capital, a chat line to every member's owner and a new title. The tab lists the members (the
+  capital crowned; rank, villagers, wellbeing, distance, owner), takes a banner for the realm's arms and a named Name
+  Tag for its name; members can leave and the capital can let one go. A broken capital passes the crown to the
+  biggest Town left, or the realm ends. The hall's name icon names the realm and "What next?" suggests one. New
+  settings `realms` and `realmMaxMembers` (12).
+- **Other players' villages, and choosing the capital, for 1.7** (33.12, off until 1.7 is finished): the capital's
+  Realm tab invites another player's village: a letter goes to its owner (their mailbox, their hands, or the Postal
+  Desk), and its own Realm tab offers Join or Decline for 3 days. Any member that's a Town can be put forward as
+  capital: with one owner it moves at once, otherwise the members' owners vote on the tab for a day (not voting counts
+  for the current capital; a tie keeps it). The realm moves with all it has, with fireworks over the new capital and a
+  line in every member's chronicle.
 - **The settlers set out, for 1.7** (33.9, off until 1.7 is finished): right-click the hall with the Colony Charter,
   its spot chosen, and two settlers volunteer (a builder and one more; never a guard, the only worker of a job, a
   Legend or a child; a married volunteer brings their partner). 64 logs, 64 planks, 64 cobblestone, 32 bread, 16

@@ -129,6 +129,10 @@ public final class WorkplaceConfig {
 	public boolean titlesInChat = Expansions.on(Expansions.M31);
 	/** Story arcs (31.4) unfold in villages, chapter by chapter. Off: none starts, and a running one ends quietly at its next round. */
 	public boolean storyArcs = Expansions.on(Expansions.M31);
+	/** From Village rank, villages post bounties on named bandit captains (the Bounty Board, ROADMAP 31.13). Off: nothing new is posted; open bounties still pay. */
+	public boolean bountyBoard = Expansions.on(Expansions.M31);
+	/** With Cobblemon, half the bounties are on a rogue Pokémon roaming 150 to 250 blocks out (ROADMAP 31.14). Off: no rogue is posted; open ones still pay. Never without Cobblemon. */
+	public boolean rogueBounties = Expansions.on(Expansions.M31);
 	/** Days between two story arcs in one village (also before a village's first). */
 	public int arcCooldownDays = 8;
 	/** Story arcs running at once on the whole server (side arcs not counted); 0: none. */
@@ -176,6 +180,10 @@ public final class WorkplaceConfig {
 	public int colonyCooldownDays = 7;
 	/** Colonies a village may found. */
 	public int coloniesPerVillage = 3;
+	/** A Town can found a realm on its hall's Realm tab and add its owner's other villages (ROADMAP 33.11). Off: no Realm tab, nothing founded or joined; realms stay saved and come back. */
+	public boolean realms = Expansions.on(Expansions.M33);
+	/** Villages a realm may hold. */
+	public int realmMaxMembers = 12;
 	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
 	public boolean villageClasses = Expansions.on(Expansions.M34);
 	/** Dawns running the next class's needs must hold for a household to rise one class. */
@@ -334,6 +342,7 @@ public final class WorkplaceConfig {
 		"guildsPerRank", 1, 4,
 		"colonyCooldownDays", 0, 60,
 		"coloniesPerVillage", 0, 16,
+		"realmMaxMembers", 2, 32,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
 		"classGraceDays", 0, 30,
@@ -536,6 +545,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.colony.Colonies.RANK = colonyRank(colonyRank);
 		io.github.jcondedata.aliveworkplace.colony.Colonies.COOLDOWN_DAYS = colonyCooldownDays;
 		io.github.jcondedata.aliveworkplace.colony.Colonies.PER_VILLAGE = coloniesPerVillage;
+		// Off in gametests (the Trade page's tests count its tabs, the advice tests their tips); the realm tests turn it on.
+		io.github.jcondedata.aliveworkplace.realm.Realms.ENABLED = realms && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.realm.Realms.MAX_MEMBERS = realmMaxMembers;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.people.ClassMigration.GRACE_DAYS = classGraceDays;
 		// Off in gametests (a hall's round would seed a test's villagers mid-test); the migration tests turn it on.
@@ -599,6 +611,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.story.Reputation.ENABLED = reputation && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.Reputation.CHAT = titlesInChat && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = storyArcs && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.bounty.Bounties.ENABLED = bountyBoard && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.bounty.Rogues.ENABLED = rogueBounties && Expansions.on(Expansions.M31);
+		io.github.jcondedata.aliveworkplace.bounty.Bounties.AUTO = System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (an arc rolled by chance would start under a test's hall); the arc tests start theirs.
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.story.Arcs.COOLDOWN_DAYS = arcCooldownDays;

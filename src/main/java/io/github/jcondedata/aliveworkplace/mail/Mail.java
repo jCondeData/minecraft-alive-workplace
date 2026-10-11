@@ -96,6 +96,30 @@ public final class Mail {
 		return book;
 	}
 
+	/**
+	 * Sends a letter from {@code from} (shown as {@code fromName}; a made-up id for a village's letter) to {@code to}: into
+	 * their mailbox if they have one (now, or at dawn if it can't be reached), otherwise into their hands if they're
+	 * online, otherwise waiting for them at any Postal Desk. (33.10's settlers' letter, 33.12's realm invitations.)
+	 */
+	public static void sendLetter(net.minecraft.server.MinecraftServer server, java.util.UUID from, String fromName, java.util.UUID to, String toName, String text,
+								  net.minecraft.core.GlobalPos origin) {
+		ItemStack letter = letter(fromName, text);
+		PostOffice office = PostOffice.get(server);
+		ServerPlayer online = server.getPlayerList().getPlayer(to);
+		if (office.mailboxOf(to) == null && online != null) {
+			if (!online.getInventory().add(letter)) {
+				online.drop(letter, false);
+			}
+			return;
+		}
+		Parcel parcel = office.post(from, fromName, to, toName, origin, server.overworld().getGameTime(), List.of(letter));
+		parcel.setStatus(Parcel.Status.IN_TRANSIT);
+		office.changed();
+		if (office.mailboxOf(to) != null && office.deliver(server, parcel)) {
+			office.remove(parcel);
+		}
+	}
+
 	/** What's on its way to and from {@code player}, for {@code /workplace mail}. */
 	public static List<Component> tracking(net.minecraft.server.MinecraftServer server, java.util.UUID player) {
 		List<Component> out = new java.util.ArrayList<>();

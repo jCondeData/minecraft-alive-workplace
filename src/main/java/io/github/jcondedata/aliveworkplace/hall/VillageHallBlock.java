@@ -72,6 +72,7 @@ public class VillageHallBlock extends BaseEntityBlock {
 			CaravanSights.clear(server, pos); // a caravan out walking here goes with it (33.7)
 			io.github.jcondedata.aliveworkplace.story.Stories.Data.get(server).remove(pos); // its open quests go with it (31.2)
 			io.github.jcondedata.aliveworkplace.city.Stewards.hallGone(server, pos); // breaking the hall ends its Steward's job (27.5)
+			io.github.jcondedata.aliveworkplace.realm.Realms.hallGone(server, pos); // it leaves its realm; a capital passes the crown (33.11)
 		}
 		super.onRemove(state, level, pos, newState, movedByPiston);
 	}
@@ -109,6 +110,13 @@ public class VillageHallBlock extends BaseEntityBlock {
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
 											  BlockHitResult hit) {
+		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.CAPTAINS_INSIGNIA)) {
+			// 31.13: a captain's insignia handed in for his bounty
+			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.claim(serverPlayer, server, pos, stack);
+			}
+			return ItemInteractionResult.sidedSuccess(level.isClientSide());
+		}
 		if (stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.VILLAGE_LEDGER)) {
 			if (level instanceof net.minecraft.server.level.ServerLevel server && player instanceof ServerPlayer serverPlayer) {
 				VillageLedgerItem.bind(server, serverPlayer, stack, pos);

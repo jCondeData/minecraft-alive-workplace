@@ -170,6 +170,8 @@ public final class Reputation {
 		/** The raid they last fought in (its stamp) and the raiders they killed in it. */
 		long raid = Long.MIN_VALUE;
 		int raidKills;
+		/** A baby in this village was named after them (31.12, once; absent in older saves: not yet). */
+		boolean namedBaby;
 
 		CompoundTag save(UUID player) {
 			CompoundTag t = new CompoundTag();
@@ -193,6 +195,9 @@ public final class Reputation {
 			if (raid != Long.MIN_VALUE) {
 				t.putLong("raid", raid);
 				t.putInt("raid_kills", raidKills);
+			}
+			if (namedBaby) {
+				t.putBoolean("named_baby", true);
 			}
 			return t;
 		}
@@ -218,6 +223,7 @@ public final class Reputation {
 				s.raid = Nbt.getLong(t, "raid");
 				s.raidKills = Nbt.getInt(t, "raid_kills");
 			}
+			s.namedBaby = t.contains("named_baby") && t.getBoolean("named_baby");
 			return s;
 		}
 	}
@@ -297,6 +303,53 @@ public final class Reputation {
 	public static Title title(ServerLevel level, BlockPos hall, UUID player) {
 		Standing s = standing(level, hall, player);
 		return s == null || !ENABLED ? Title.STRANGER : s.title;
+	}
+
+	/** The best title any player holds in the village round {@code hall}; a Stranger with {@code reputation} off or nobody known there. */
+	public static Title best(ServerLevel level, BlockPos hall) {
+		Stories.Entry e = Stories.Data.get(level).halls.get(hall);
+		Title best = Title.STRANGER;
+		if (e == null || !ENABLED) {
+			return best;
+		}
+		for (Standing s : e.standings.values()) {
+			if (s.title.ordinal() > best.ordinal()) {
+				best = s.title;
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * Whether {@code player} may enact and repeal edicts in the Book of Edicts of the village round {@code hall} (31.12):
+	 * the hall's owner, their friends and operators as before, and a Lord of that village.
+	 */
+	public static boolean maySetEdicts(ServerLevel level, BlockPos hall, net.minecraft.world.entity.player.Player player) {
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
+			&& io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayBuild(level, entity, player)) {
+			return true;
+		}
+		return title(level, hall, player.getUUID()) == Title.LORD;
+	}
+
+	/** Whether {@code player} may propose an edict to the hall's owner (31.12): a Hero of the village who may not set one. */
+	public static boolean mayProposeEdicts(ServerLevel level, BlockPos hall, net.minecraft.world.entity.player.Player player) {
+		return !maySetEdicts(level, hall, player) && title(level, hall, player.getUUID()) == Title.HERO;
+	}
+
+	/** Whether a baby of the village round {@code hall} was already named after {@code player} (31.12). */
+	public static boolean namedBaby(ServerLevel level, BlockPos hall, UUID player) {
+		Standing s = standing(level, hall, player);
+		return s != null && s.namedBaby;
+	}
+
+	/** Notes that a baby of the village round {@code hall} was named after {@code player} (31.12). */
+	public static void babyNamed(ServerLevel level, BlockPos hall, UUID player, String name) {
+		Standing s = open(level, hall, player, name);
+		if (s != null) {
+			s.namedBaby = true;
+			Stories.Data.get(level).setDirty();
+		}
 	}
 
 	/** The honours {@code player} was given in the village round {@code hall}. */

@@ -92,11 +92,12 @@ public final class Friendship {
 	 * One player's friendship with a villager: their last known name, points, the last gift's day, the week of the gifts
 	 * counted and how many that week (31.6), each daily favour's last day, the game time of the last hit that cost points,
 	 * the heart events told (31.7), and whether they have given this player their keepsake (31.8; absent in older saves:
-	 * not given).
+	 * not given), and (31.12) the day of the last festival gift they brought this player and the week of the last parcel
+	 * they sent (both -1 in older saves: none yet).
 	 */
 	public record Bond(String name, int points, long giftDay, long giftWeek, int giftsWeek, Map<String, Long> favours, long hitTick,
-					   List<String> told, boolean keepsake) {
-		public static final Bond NONE = new Bond("", 0, -1, -1, 0, Map.of(), -1, List.of(), false);
+					   List<String> told, boolean keepsake, long festivalGift, long parcelWeek) {
+		public static final Bond NONE = new Bond("", 0, -1, -1, 0, Map.of(), -1, List.of(), false, -1, -1);
 		public static final Codec<Bond> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.STRING.optionalFieldOf("name", "").forGetter(Bond::name),
 			Codec.INT.optionalFieldOf("points", 0).forGetter(Bond::points),
@@ -106,7 +107,9 @@ public final class Friendship {
 			Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("favours", Map.of()).forGetter(Bond::favours),
 			Codec.LONG.optionalFieldOf("hit_tick", -1L).forGetter(Bond::hitTick),
 			Codec.STRING.listOf().optionalFieldOf("told", List.of()).forGetter(Bond::told),
-			Codec.BOOL.optionalFieldOf("keepsake", false).forGetter(Bond::keepsake)
+			Codec.BOOL.optionalFieldOf("keepsake", false).forGetter(Bond::keepsake),
+			Codec.LONG.optionalFieldOf("festival_gift", -1L).forGetter(Bond::festivalGift),
+			Codec.LONG.optionalFieldOf("parcel_week", -1L).forGetter(Bond::parcelWeek)
 		).apply(i, Bond::new));
 
 		public Bond {
@@ -119,17 +122,17 @@ public final class Friendship {
 		}
 
 		public Bond withPoints(String name, int points) {
-			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, keepsake);
+			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, keepsake, festivalGift, parcelWeek);
 		}
 
 		public Bond withFavour(String favour, long day) {
 			Map<String, Long> map = new HashMap<>(favours);
 			map.put(favour, day);
-			return new Bond(name, points, giftDay, giftWeek, giftsWeek, map, hitTick, told, keepsake);
+			return new Bond(name, points, giftDay, giftWeek, giftsWeek, map, hitTick, told, keepsake, festivalGift, parcelWeek);
 		}
 
 		public Bond withHit(long tick) {
-			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, tick, told, keepsake);
+			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, tick, told, keepsake, festivalGift, parcelWeek);
 		}
 
 		/** A heart event told to the end (31.7): its id, once. */
@@ -139,17 +142,27 @@ public final class Friendship {
 			}
 			List<String> list = new ArrayList<>(told);
 			list.add(event);
-			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, list, keepsake);
+			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, list, keepsake, festivalGift, parcelWeek);
 		}
 
 		/** Their keepsake given (31.8, {@link Keepsakes}): once. */
 		public Bond withKeepsake(String name) {
-			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, true);
+			return new Bond(name.isEmpty() ? this.name : name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, true, festivalGift, parcelWeek);
+		}
+
+		/** Their festival gift brought to this player on {@code day} (31.12): one a festival. */
+		public Bond withFestivalGift(long day) {
+			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, keepsake, day, parcelWeek);
+		}
+
+		/** Their weekly parcel sent to this player in {@code week} (31.12). */
+		public Bond withParcel(long week) {
+			return new Bond(name, points, giftDay, giftWeek, giftsWeek, favours, hitTick, told, keepsake, festivalGift, week);
 		}
 
 		/** A gift taken on {@code day}, the {@code count}th of {@code week} (31.6). */
 		public Bond withGift(String name, long day, long week, int count) {
-			return new Bond(name.isEmpty() ? this.name : name, points, day, week, count, favours, hitTick, told, keepsake);
+			return new Bond(name.isEmpty() ? this.name : name, points, day, week, count, favours, hitTick, told, keepsake, festivalGift, parcelWeek);
 		}
 	}
 

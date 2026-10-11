@@ -122,6 +122,10 @@ public class GuardPatrol extends Behavior<Villager> {
 			GuardEscort.status(villager, leader.get());
 			return;
 		}
+		if (Scouts.out(villager)) {
+			waypoint = null; // out scouting (32.12): Scouts walks them
+			return;
+		}
 		BlockPos post = Builders.benchPos(villager).orElse(null);
 		if (post == null) {
 			return;

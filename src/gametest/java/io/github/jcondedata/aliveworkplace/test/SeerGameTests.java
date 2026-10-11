@@ -110,6 +110,7 @@ public class SeerGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			map.put(seer.id(), seer);
 			more.forEach(l -> map.put(l.id(), l));
 			Legends.setForTest(map);
+			FriendPerksGameTests.titled(level, helper.absolutePos(HALL), 50); // a Friend of the village: the Legend's visit way asks for one (31.12)
 			body.accept(seer);
 		} finally {
 			VillageHalls.RADIUS = radius;

@@ -94,7 +94,7 @@ public final class BuilderEvents {
 				}
 				return InteractionResult.SUCCESS;
 			}
-			// A guard, sneak-right-clicked with a bow, crossbow, shield or healing potion: they hold it, and that makes their kind.
+			// A guard, sneak-right-clicked with a bow, crossbow, shield, healing potion or spyglass: they hold it, and that makes their kind.
 			if (player.isShiftKeyDown() && io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(villager)) {
 				ItemStack held = player.getItemInHand(hand);
 				if (held.is(ModItems.RALLY_BANNER)) {
@@ -105,20 +105,9 @@ public final class BuilderEvents {
 					return level.isClientSide() ? InteractionResult.SUCCESS
 						: io.github.jcondedata.aliveworkplace.guard.PatrolMapItem.giveTo((ServerPlayer) player, villager, held);
 				}
-				if (io.github.jcondedata.aliveworkplace.guard.Guards.isBow(held) || io.github.jcondedata.aliveworkplace.guard.Guards.isShield(held)
-					|| io.github.jcondedata.aliveworkplace.guard.Guards.isMedicine(held)) {
+				if (io.github.jcondedata.aliveworkplace.guard.Guards.makesKind(held)) {
 					if (!level.isClientSide()) {
-						ItemStack old = villager.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND);
-						villager.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, held.split(1));
-						villager.setDropChance(net.minecraft.world.entity.EquipmentSlot.OFFHAND, 0f);
-						if (!old.isEmpty() && !player.getInventory().add(old)) {
-							player.drop(old, false);
-						}
-						Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.guard.kind",
-							villager.getDisplayName(), io.github.jcondedata.aliveworkplace.guard.Guards.kind(villager).title())
-							.withStyle(net.minecraft.ChatFormatting.GREEN));
-						level.playSound(null, villager.blockPosition(), net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC.value(),
-							net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
+						io.github.jcondedata.aliveworkplace.guard.Guards.hand((ServerPlayer) player, villager, held);
 					}
 					return InteractionResult.SUCCESS;
 				}
@@ -451,6 +440,7 @@ public final class BuilderEvents {
 				io.github.jcondedata.aliveworkplace.guard.GuardCombat.onFoeKilled(level, entity, source);
 				io.github.jcondedata.aliveworkplace.threat.SiegeReport.onDeath(level, entity, source); // a siege counts its dead (32.6)
 				io.github.jcondedata.aliveworkplace.guard.BanditCamps.onDeath(level, entity, source);
+				io.github.jcondedata.aliveworkplace.bounty.Bounties.onDeath(level, entity, source); // a bounty captain drops his insignia (31.13)
 				io.github.jcondedata.aliveworkplace.story.Arcs.onDeath(level, entity); // an arc's mob isn't put back (31.4)
 				io.github.jcondedata.aliveworkplace.hall.VillageQuests.onKill(level, entity, source);
 			}

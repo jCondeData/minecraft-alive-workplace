@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>A village keeps one edict in force per rank (Hamlet 1 ... City 4), each at least {@link #MIN_DAYS} days; edicts
  * that exclude each other can't be in force together; a village that drops a rank loses its newest. Proclaiming and
- * lifting are told to the players in the village and go in the chronicle. Who may: {@link VillageProtection#mayBuild}.
+ * lifting are told to the players in the village and go in the chronicle. Who may: {@link VillageProtection#mayBuild}, and a Lord of the village (31.12, {@code Reputation.maySetEdicts}); a Hero proposes ({@link EdictProposals}).
  */
 public final class Edicts implements ResourceManagerReloadListener {
 	private static final ResourceLocation ID = AliveWorkplace.id("edicts");
@@ -237,7 +237,7 @@ public final class Edicts implements ResourceManagerReloadListener {
 			return Result.no(Component.translatable("message.aliveworkplace.edict.no_hall"));
 		}
 		Component village = VillageHalls.name(level, hall);
-		if (by != null && !VillageProtection.mayBuild(level, entity, by)) {
+		if (by != null && !io.github.jcondedata.aliveworkplace.story.Reputation.maySetEdicts(level, hall, by)) { // the owner's side, or a Lord (31.12)
 			return Result.no(Component.translatable("message.aliveworkplace.edict.not_allowed", entity.ownerName(), village));
 		}
 		List<InForce> inForce = entity.edicts();
@@ -280,7 +280,7 @@ public final class Edicts implements ResourceManagerReloadListener {
 		if (found == null) {
 			return Result.no(Component.translatable("message.aliveworkplace.edict.not_in_force", name, village));
 		}
-		if (by != null && !VillageProtection.mayBuild(level, entity, by)) {
+		if (by != null && !io.github.jcondedata.aliveworkplace.story.Reputation.maySetEdicts(level, hall, by)) { // the owner's side, or a Lord (31.12)
 			return Result.no(Component.translatable("message.aliveworkplace.edict.not_allowed_lift", entity.ownerName(), village));
 		}
 		long from = found.day() + MIN_DAYS;

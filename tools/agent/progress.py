@@ -3,7 +3,8 @@
 
 The digests (owner, 2026-10-05) put this at the top of every report, one line per stage, e.g. "1.4  [#####-----] 75%".
 Stage names come from each milestone's heading, "(1.4)"; milestones without one keep their number.
-The last line is the link to the wiki (docs/wiki, ROADMAP 22.9), so every report that pastes this output links it.
+The last two lines link the player guide (docs/guide, ROADMAP 22.10: the page the owner sends friends) and the wiki
+(docs/wiki, ROADMAP 22.9), so every report that pastes this output links both. The wiki stays last.
 """
 import re, sys, pathlib
 
@@ -19,4 +20,5 @@ for m in re.split(r"\n(?=## Milestone )", text)[1:]:
     label = name.group(1) if name else "M" + re.search(r"Milestone (\d+)", head).group(1)
     title = re.sub(r"^## Milestone \d+: ", "", re.sub(r"\s*\(.*\)\s*$", "", head))
     print(f"{label:>4}  [{'#' * (pct // 10)}{'-' * (10 - pct // 10)}] {pct:3d}%  {done}/{done + todo}  {title}")
+print("The player guide, for friends: https://jcondedata.github.io/minecraft-alive-workplace/player-guide/")
 print("How everything works (the wiki): https://github.com/jCondeData/minecraft-alive-workplace/tree/main/docs/wiki")

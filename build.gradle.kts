@@ -387,6 +387,19 @@ tasks {
     }
     named("check") { dependsOn(checkWiki) }
 
+    /**
+     * The player guide stays a guide for players (ROADMAP 22.10): tools/modtest/guidecheck.py fails when a page in
+     * docs/guide/ has a roadmap id, "ROADMAP", "GameTest" or a path under src/, a broken link, or a picture of a showcase
+     * scene or still that doesn't exist. Under a second, checked-in files only, so it always runs.
+     */
+    val checkGuide by registering(Exec::class) {
+        group = "verification"
+        description = "Fails if a docs/guide page has backend words (roadmap ids, ROADMAP, GameTest, src/) or a broken link or picture"
+        workingDir = rootProject.projectDir
+        commandLine("python3", "tools/modtest/guidecheck.py")
+    }
+    named("check") { dependsOn(checkGuide) }
+
     /** Writes the compile classpath for the minecraft-mod-engineer skill's api.py (per-node API lookups). */
     register("apiClasspath") {
         group = "help"

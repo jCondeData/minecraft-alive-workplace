@@ -18,7 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Added
 - **The Great Library's design, for 2.0** (35.13, nothing to start in game until Wonders is finished): the third
-  Wonder's building, a domed library on a cross plan (41 by 41, 34 high, about 14,500 blocks) on a terrace with four
+  Wonder's building, a domed library on a cross plan (41 by 41, 34 high, about 15,000 blocks) on a terrace with four
   corner gardens: a portico of six quartz columns under a low pediment over a grand stair, a rotunda under a ribbed
   copper dome with a glass lantern, three rings of bookshelves and two galleries round an Enchanting Table ringed by
   fifteen bookshelves, and four wings of reading halls with two floors of bookshelf galleries, carrels, reading tables, a

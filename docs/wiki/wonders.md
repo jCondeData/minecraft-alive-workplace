@@ -79,7 +79,7 @@ Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House
 wool (Shepherd); III 4 explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64
 glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Its powers come with 35.12.
 
-**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 14,500 blocks, on a
+**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 15,000 blocks, on a
 square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
 diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
 the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of reading
@@ -203,9 +203,8 @@ Planned: the Foundation Stone (a block).
   posts, so it gets no foundation, as the Fisher's Hut's; the mole's bottom course is filled down to the sea bed.
 - The Lighthouse's lamps are redstone lamps under redstone dust that an inverted daylight detector on the lantern's roof
   powers (35.11): lit at night, dark by day, with no clock. The lamps' lit state is not checked as damage.
-- The Great Library is about 14,500 blocks, not the 16,000 first planned (35.13): its wings reach only 8 from the
-  rotunda inside 41 by 41, and only solid filler would add the rest. Its walls are two leaves (diorite outside, smooth
-  stone inside) with deep windows, and it stands on a solid terrace three high.
+- The Great Library's walls are two leaves (35.13), diorite outside and smooth stone inside, with deep windows, and it
+  stands on a solid terrace three high.
 - The Great Library's sixteenth bookshelf place round the Enchanting Table is left open towards the door (35.13), so the
   librarian can walk in; fifteen shelves still give the table its full power.
 - One Legend can serve two Wonders (the Seer for the Cathedral and the Observatory): a requirement only checks that the
@@ -242,7 +241,7 @@ the plan is refused outside the village and over a finished building and goes do
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 14,500 for the Great Library), and it uses no retired job block, no calcite and nothing a player can't get.
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library), and it uses no retired job block, no calcite and nothing a player can't get.
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded

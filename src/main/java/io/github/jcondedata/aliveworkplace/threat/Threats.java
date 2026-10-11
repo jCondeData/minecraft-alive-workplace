@@ -85,6 +85,13 @@ public final class Threats implements ResourceManagerReloadListener {
 		default void round(ServerLevel level, BlockPos hall, Culture culture, List<Mob> raiders) {
 		}
 
+		/**
+		 * One of the raiders is leaving at the end of its hours (dawn), just before it goes: what it carries goes with it
+		 * (32.10, {@code plunder}).
+		 */
+		default void leave(ServerLevel level, BlockPos hall, Culture culture, Mob raider) {
+		}
+
 		/** The raid is over: fought off, or ({@code fled}) the last raiders left at the end of their hours. */
 		default void end(ServerLevel level, BlockPos hall, Culture culture, boolean fled) {
 		}
@@ -92,7 +99,10 @@ public final class Threats implements ResourceManagerReloadListener {
 
 	public static void init() {
 		Platform.get().onDataReload(ID, new Threats());
-		Platform.get().onServerStarting(server -> ThreatData.serverStarting());
+		Platform.get().onServerStarting(server -> {
+			ThreatData.serverStarting();
+			Conditions.forgetCoasts();
+		});
 		// What already changed the chance of a raid: Curfew and the other civic effects (30.9), and research (29.11).
 		addFactor(AliveWorkplace.id("civic"), (level, hall) -> io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(level, hall).raids());
 		addFactor(AliveWorkplace.id("research"), io.github.jcondedata.aliveworkplace.research.TreeEffects::raidChance);
@@ -289,17 +299,24 @@ public final class Threats implements ResourceManagerReloadListener {
 		}
 		mob.addTag(RAIDER_TAG);
 		mob.addTag(member.role().tag());
+		Piglins.keep(mob); // piglins never zombify while they raid (32.10)
 		culture.name().ifPresent(name -> mob.setCustomName(Component.translatable(name)));
 		equip(level, mob, member.gear());
 	}
 
-	/** Puts {@code gear} (slot → item id or {@link Culture#OMINOUS_BANNER}) on {@code mob}; it never drops. */
+	/**
+	 * Puts {@code gear} (slot → item id, maybe with components, or {@link Culture#OMINOUS_BANNER}) on {@code mob}; it
+	 * never drops. Gear whose components can't be read is left off (and logged).
+	 */
 	public static void equip(ServerLevel level, Mob mob, Map<EquipmentSlot, String> gear) {
 		gear.forEach((slot, item) -> {
 			ItemStack stack = item.equals(Culture.OMINOUS_BANNER)
 				? Raid.getLeaderBannerInstance(level.registryAccess().lookupOrThrow(Registries.BANNER_PATTERN))
+				: item.indexOf('[') >= 0 ? io.github.jcondedata.aliveworkplace.mc.Stacks.parse(level.registryAccess(), item)
 				: BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(item)).map(ItemStack::new).orElse(ItemStack.EMPTY);
-			if (!stack.isEmpty()) {
+			if (stack.isEmpty()) {
+				AliveWorkplace.LOG.warn("Raider gear '{}' can't be read and is left off", item);
+			} else {
 				mob.setItemSlot(slot, stack);
 				mob.setDropChance(slot, 0f);
 			}

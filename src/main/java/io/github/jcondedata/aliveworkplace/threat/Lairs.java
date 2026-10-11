@@ -180,9 +180,12 @@ public final class Lairs {
 		return rest == null ? 0 : (int) Math.max(0, rest.days() - (Chronicle.day(level) - rest.day()));
 	}
 
-	/** Whether the captain of {@code lair} has a name of his own (his culture lists names, and lairs are {@link #live}). */
+	/**
+	 * Whether the captain of {@code lair} has a name of his own (his culture lists names, or gives him the one he always
+	 * has, and lairs are {@link #live}).
+	 */
 	public static boolean named(Lair lair) {
-		return live() && Threats.get(lair.culture()).flatMap(Culture::captain).flatMap(Culture.Captain::names).isPresent();
+		return live() && Threats.get(lair.culture()).flatMap(Culture::captain).map(Culture.Captain::hasName).orElse(false);
 	}
 
 	/**
@@ -193,7 +196,8 @@ public final class Lairs {
 		Optional<Culture.Captain> captain = Threats.get(lair.culture()).flatMap(Culture::captain);
 		Optional<Component> title = captain.flatMap(Culture.Captain::title).map(key -> (Component) Component.translatable(key));
 		if (named(lair)) {
-			Component name = Component.translatable(captain.get().names().get() + "." + (Math.floorMod(lair.name(), NAMES) + 1));
+			Component name = captain.get().names().<Component>map(names -> Component.translatable(names + "." + (Math.floorMod(lair.name(), NAMES) + 1)))
+				.orElseGet(() -> Component.translatable(captain.get().name().get()));
 			return title.<Component>map(t -> Component.translatable("threat.aliveworkplace.captain", t, name)).orElse(name);
 		}
 		if (lair.culture().equals(Threats.BANDITS)) {
@@ -257,7 +261,12 @@ public final class Lairs {
 		}
 		int rounds = (int) Math.max(1, VillageNeeds.DAY / VillageNeeds.CHECK_EVERY);
 		if (random.nextFloat() < dailyChance(level, hall) / rounds) {
-			BlockPos site = site(level, hall, NEAR, FAR, random);
+			// A lair on the sea anchors on deep water (32.8); any other makes camp on dry ground.
+			Optional<Culture.Lair> spec = Threats.get(comer.get()).flatMap(Culture::lair);
+			StructureTemplate ship = spec.flatMap(Culture.Lair::sea).isPresent() ? level.getStructureManager().get(spec.get().structure()).orElse(null) : null;
+			BlockPos site = spec.flatMap(Culture.Lair::sea).isEmpty()
+				? site(level, hall, spec.map(Culture.Lair::near).orElse(NEAR), spec.map(Culture.Lair::far).orElse(FAR), random, spec.map(Culture.Lair::wet).orElse(false))
+				: ship == null ? null : Ships.site(level, hall, spec.get().sea().get(), ship, random);
 			if (site != null) {
 				found(level, hall, site, comer.get());
 			}
@@ -423,6 +432,12 @@ public final class Lairs {
 	/** Somewhere out beyond the village for a lair: loaded, dry, fairly flat and open; null if there's nowhere. */
 	@Nullable
 	public static BlockPos site(ServerLevel level, BlockPos hall, int near, int far, RandomSource random) {
+		return site(level, hall, near, far, random, false);
+	}
+
+	/** As {@link #site(ServerLevel, BlockPos, int, int, RandomSource)}; {@code wet}: water may lie there (32.11, a swamp's Coven Hut). */
+	@Nullable
+	public static BlockPos site(ServerLevel level, BlockPos hall, int near, int far, RandomSource random, boolean wet) {
 		for (int tries = 0; tries < 12; tries++) {
 			double angle = random.nextDouble() * Math.PI * 2;
 			int distance = near + random.nextInt(far - near + 1);
@@ -431,7 +446,7 @@ public final class Lairs {
 				continue;
 			}
 			BlockPos ground = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column).below();
-			if (Math.abs(ground.getY() - hall.getY()) > 32 || !fits(level, ground)) {
+			if (Math.abs(ground.getY() - hall.getY()) > 32 || !fits(level, ground, wet)) {
 				continue;
 			}
 			if (!VillageHalls.nearest(level, ground).map(other -> other.distSqr(ground) > (double) near * near / 2).orElse(true)) {
@@ -444,13 +459,18 @@ public final class Lairs {
 
 	/** The ground round {@code ground} is flat enough, dry and open for a camp. */
 	static boolean fits(ServerLevel level, BlockPos ground) {
+		return fits(level, ground, false);
+	}
+
+	/** As {@link #fits(ServerLevel, BlockPos)}; {@code wet}: shallow water is no bar (a swamp's pools). */
+	static boolean fits(ServerLevel level, BlockPos ground, boolean wet) {
 		int uneven = 0;
 		int blocked = 0;
 		for (int dx = -7; dx <= 7; dx++) {
 			for (int dz = -6; dz <= 6; dz++) {
 				BlockPos top = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, ground.offset(dx, 0, dz)).below();
-				if (!level.getFluidState(top).isEmpty() || !level.getFluidState(top.above()).isEmpty()) {
-					return false;
+				if (wet ? !level.getFluidState(top.below(2)).isEmpty() : !level.getFluidState(top).isEmpty() || !level.getFluidState(top.above()).isEmpty()) {
+					return false; // (wet: no deeper than two blocks)
 				}
 				if (Math.abs(top.getY() - ground.getY()) > 1) {
 					uneven++;
@@ -464,7 +484,7 @@ public final class Lairs {
 	}
 
 	/**
-	 * Sets the lair of {@code culture} down with its middle at {@code ground}, its captain and his band in it, for the
+	 * Sets the lair of {@code culture} down with its middle at {@code ground} (a ship: at anchor on the sea in that column), its captain and his band in it, for the
 	 * village round {@code hall} (in place of any lair it had); null if the lair's structure is missing or its captain
 	 * can't be made.
 	 */
@@ -478,29 +498,26 @@ public final class Lairs {
 			return null;
 		}
 		boolean camp = structure.equals(BANDIT_CAMP);
-		Rotation rotation = Rotation.getRandom(level.random);
+		Optional<Culture.Sea> sea = spec.flatMap(Culture.Lair::sea);
+		Rotation rotation;
+		BlockPos origin;
+		if (sea.isPresent()) {
+			// A ship (32.8): at anchor on the sea, its bow to the village; the sea round its hull stays.
+			Ships.Placed ship = Ships.place(level, hall, ground, structure, template, sea.get());
+			rotation = ship.rotation();
+			origin = ship.origin();
+		} else {
+			rotation = Rotation.getRandom(level.random);
+			var size = template.getSize(rotation);
+			origin = template.getZeroPositionWithTransform(ground.offset(-size.getX() / 2, 0, -size.getZ() / 2), Mirror.NONE, rotation);
+			// (getZeroPositionWithTransform turns the corner so the rotated lair covers the same box)
+		}
 		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
-		var size = template.getSize(rotation);
-		BlockPos origin = template.getZeroPositionWithTransform(ground.offset(-size.getX() / 2, 0, -size.getZ() / 2), Mirror.NONE, rotation);
-		// (getZeroPositionWithTransform turns the corner so the rotated lair covers the same box)
 		BoundingBox box = template.getBoundingBox(settings, origin);
-		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY() + 1, box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			if (!level.getBlockState(p).isAir()) {
-				level.removeBlock(p, false); // the grass, a bush, a sapling
-			}
+		if (sea.isEmpty()) {
+			clearAndPlace(level, template, origin, settings, box);
 		}
-		for (int x = box.minX(); x <= box.maxX(); x++) {
-			for (int z = box.minZ(); z <= box.maxZ(); z++) {
-				for (int y = box.minY(); y > box.minY() - 4; y--) { // no floating ground
-					BlockPos p = new BlockPos(x, y, z);
-					if (!level.getBlockState(p).canBeReplaced()) {
-						break;
-					}
-					level.setBlock(p, Blocks.DIRT.defaultBlockState(), 2);
-				}
-			}
-		}
-		template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2);
+		Optional<BlockPos> captainSpot = spec.flatMap(Culture.Lair::captainAt);
 		// Its chests hold the culture's own loot.
 		file.flatMap(Culture::loot).ifPresent(loot -> {
 			for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
@@ -509,13 +526,15 @@ public final class Lairs {
 				}
 			}
 		});
-		// The middle: the camp's fire; of any other lair, the middle of its floor.
+		// The middle: the camp's fire; of any other lair, the middle of its floor (one whose captain has his spot: of the
+		// floor he stands on, a ship's deck).
 		BlockPos middle = origin.offset(StructureTemplate.calculateRelativePosition(settings,
-			camp ? FIRE : new BlockPos(template.getSize().getX() / 2, 1, template.getSize().getZ() / 2)));
+			camp ? FIRE : new BlockPos(template.getSize().getX() / 2, captainSpot.map(BlockPos::getY).orElse(1), template.getSize().getZ() / 2)));
 		int strength = spec.map(Culture.Lair::strength).orElse(DEFAULT_STRENGTH);
 		Lair lair = new Lair(middle, hall.immutable(), new UUID(0, 0), Chronicle.day(level), culture, strength, Chronicle.day(level), 0, 0,
 			level.random.nextInt(NAMES));
-		BlockPos captainAt = camp ? standOn(level, origin.offset(StructureTemplate.calculateRelativePosition(settings, CHIEF_SPOT))) : standNear(level, middle, 0);
+		BlockPos captainAt = camp ? standOn(level, origin.offset(StructureTemplate.calculateRelativePosition(settings, CHIEF_SPOT)))
+			: captainSpot.map(spot -> origin.offset(StructureTemplate.calculateRelativePosition(settings, spot))).orElseGet(() -> standNear(level, middle, 0));
 		Mob captain = spawn(level, captainAt, lair, true, 0);
 		if (captain == null) {
 			return null;
@@ -540,6 +559,27 @@ public final class Lairs {
 		return lair;
 	}
 
+	/** Clears the ground of a lair on land (the grass, a bush), fills under it so nothing floats, and sets it down. */
+	private static void clearAndPlace(ServerLevel level, StructureTemplate template, BlockPos origin, StructurePlaceSettings settings, BoundingBox box) {
+		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY() + 1, box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			if (!level.getBlockState(p).isAir()) {
+				level.removeBlock(p, false); // the grass, a bush, a sapling
+			}
+		}
+		for (int x = box.minX(); x <= box.maxX(); x++) {
+			for (int z = box.minZ(); z <= box.maxZ(); z++) {
+				for (int y = box.minY(); y > box.minY() - 4; y--) { // no floating ground
+					BlockPos p = new BlockPos(x, y, z);
+					if (!level.getBlockState(p).canBeReplaced()) {
+						break;
+					}
+					level.setBlock(p, Blocks.DIRT.defaultBlockState(), 2);
+				}
+			}
+		}
+		template.placeInWorld(level, origin, origin, settings, level.getRandom(), 2);
+	}
+
 	/**
 	 * One of the lair's band (the {@code index}-th of its culture's roster, in turn), or its captain (his culture's mob,
 	 * gear and extra health; a vindicator in iron when the file is gone), staying round the lair.
@@ -559,6 +599,7 @@ public final class Lairs {
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 		mob.setPersistenceRequired();
 		mob.addTag(TAG);
+		Piglins.keep(mob); // a lair's piglins never zombify (32.10)
 		boolean bandits = lair.culture().equals(Threats.BANDITS);
 		if (bandits) {
 			mob.addTag(BANDIT_TAG);
@@ -575,6 +616,7 @@ public final class Lairs {
 			mob.setCustomNameVisible(named(lair));
 			if (chief.isPresent()) {
 				Threats.equip(level, mob, chief.get().gear());
+				Risings.mark(mob, chief.get()); // the Pharaoh raises the fallen (32.9)
 			} else {
 				mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
 				mob.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
@@ -682,9 +724,15 @@ public final class Lairs {
 		data.lairs.remove(lair.hall());
 		data.broken.put(lair.hall(), new Rest(Chronicle.day(level), REST_DAYS));
 		data.setDirty();
+		// A lair with a portal: it goes out; the Warlord's band left in the Overworld turns zombified (32.10).
+		Piglins.fallen(level, lair);
 		for (Mob mob : band(level, lair)) {
 			level.sendParticles(ParticleTypes.POOF, mob.getX(), mob.getY() + 0.5, mob.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
 			mob.discard();
+		}
+		// A ship burns and sinks, its chest left on a raft (32.8).
+		if (Threats.get(lair.culture()).flatMap(Culture::lair).flatMap(Culture.Lair::sea).map(Culture.Sea::sinks).orElse(false)) {
+			Ships.sink(level, lair.hall());
 		}
 		boolean named = named(lair);
 		Component captainName = captainName(lair);
@@ -756,6 +804,7 @@ public final class Lairs {
 		data.lairs.clear();
 		data.broken.clear();
 		data.setDirty();
+		Ships.forget(level);
 	}
 
 	/** A village's rest after a lair by it was broken up: the day it was, and how many days none comes. */

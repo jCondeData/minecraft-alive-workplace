@@ -38,7 +38,17 @@ Moved out of CLAUDE.md (2026-09-29) to keep that file short. Update this map whe
   siege's gathering point beyond the outermost wall on its side), `Ladders` (32.5: the tactic `ladders`; every 10 ticks,
   beside the director: climbers whose path to the hall ends at a wall set a ladder up its outer face, a goal climbs them
   over, the others follow; a guard at the top throws it down; the rungs are saved in `ThreatData.Siege.ladders` and
-  `takeAway` removes them when the raid is over), `guard/BattleStations` (32.6: one watch a siege, every 20 ticks in its own
+  `takeAway` removes them when the raid is over), `Ships` (32.8, `docs/wiki/pirates.md`: lairs on the sea, a culture's
+  `lair.waterline`; `site` on deep enough water with the bow to the village, `place`, `beach`/`wading` where the crew comes
+  ashore, `sink` puts the loot chest on a raft and takes the ship's own blocks down over 10 s; saved as
+  `aliveworkplace_ships`), `SandRamps` (32.9, `docs/wiki/desert.md`: the tactic `sand_ramps`; climbers pile a sand ramp
+  against the wall in stages, recorded with the siege and taken away like ladders), `Risings` (32.9: a captain's
+  `raises`; a husk falling near the living Pharaoh rises once after 3 s), `Piglins` (32.10, `docs/wiki/piglins.md`: raiding and
+  lair piglins never zombify and are steered at villagers through their brains; a lair's `portal` they step out of and
+  that goes out when it's broken; a captain's `zombifies_band`), `Plunder` (32.10: the tactic `plunder`, gold from the
+  village's chests carried on the raider, dropped on death, taken home at dawn and counted for the siege report), `Covens` (32.11,
+  `docs/wiki/covens.md`: the tactic `hex`, witches held 12 to 20 blocks off the walls throwing potions over them; the
+  nightly hex, a `Sickness` of kind `ill_kind` = hex that only breaking the coven cures; her cauldron; a captain's `blinks`), `guard/BattleStations` (32.6: one watch a siege, every 20 ticks in its own
   tick: reads the walkway spots of finished wall, gate and Lookout Tower blueprints once each, gives archers the
   stations, knights and medics their places inside the breach; `post`, `onStation`, `range`, `heightBonus` are what
   `GuardCombat`, `GuardRally` and `GuardPatrol` ask; nothing saved), `threat/SiegeReport` (32.6: `onDeath` counts a
@@ -209,7 +219,7 @@ you touch one, add a line for it to its package above, and remove it from this l
 - `hall/`: Festivals, Treasury, VillageAdvice, VillageLedgerItem, VillageMaps, VillageProtection
 - `inn/`: InnkeeperPackages
 - `mail/`: DeliveryNoteItem, PostmanPackages, Postmen, RouteData
-- `mc/`: Boats, Chat, Damage, Ids, Interact, Lookup, Nbt, Players, Recipes, Reg, Rules, package-info
+- `mc/`: Boats, Chat, Damage, Ids, Interact, Lookup, Nbt, Players, Recipes, Reg, Rules, Stacks, package-info
 - `mine/`: MinerPackages
 - `mixin/`: AbstractVillagerMixin, AxeItemAccessor, BrewingStandAccessor, EntityAccessor, ExplosionMixin, StructureTemplatePoolAccessor, VillagerAccessor, VillagerGoalPackagesMixin, VillagerSeatMixin
 - `nurse/`: NursePackages

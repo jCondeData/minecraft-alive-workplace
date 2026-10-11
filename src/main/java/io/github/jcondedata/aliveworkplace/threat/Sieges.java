@@ -238,6 +238,22 @@ public final class Sieges {
 		return !defences(level, hall).isEmpty();
 	}
 
+	/**
+	 * Where the walls of the village round {@code hall} stand (32.11, the witches keep their distance from them): the
+	 * world position of every solid block of its finished wall and gate builds, as their blueprints draw them.
+	 */
+	public static List<BlockPos> wallBlocks(ServerLevel level, BlockPos hall) {
+		List<BlockPos> out = new ArrayList<>();
+		for (Defence build : defences(level, hall)) {
+			for (Blueprint.Entry e : build.blueprint().blocks()) {
+				if (!e.state().isAir() && e.state().blocksMotion()) {
+					out.add(build.world(e.pos()));
+				}
+			}
+		}
+		return out;
+	}
+
 	/** Whether rams can break {@code state} at all: a fence gate, a door, iron bars. */
 	public static boolean isGate(BlockState state) {
 		return hitPoints(state) > 0;
@@ -449,6 +465,7 @@ public final class Sieges {
 				data.setDirty();
 			}
 			Ladders.takeAway(level, data, siege);
+			SandRamps.takeAway(level, data, siege); // (32.9)
 			release(DIRECTORS.get(new Key(level.dimension(), hall)));
 		});
 	}
@@ -467,6 +484,7 @@ public final class Sieges {
 	public static void lift(ServerLevel level, ThreatData.Siege siege) {
 		ThreatData data = ThreatData.get(level);
 		Ladders.takeAway(level, data, siege);
+		SandRamps.takeAway(level, data, siege); // (32.9)
 		boolean raised = false;
 		for (BlockPos pos : siege.portcullis) {
 			if (level.getBlockState(pos).is(Blocks.IRON_BARS)) {
@@ -536,6 +554,7 @@ public final class Sieges {
 		if (siege.over) {
 			release(director);
 			Ladders.takeAway(level, data, siege); // (also the ones a restart found standing)
+			SandRamps.takeAway(level, data, siege); // (32.9)
 			long time = level.getDayTime();
 			if (time >= siege.dawn || time < siege.dawn - 2 * VillageNeeds.DAY) { // (or the clock was set back: don't wait days)
 				SiegeReport.write(level, siege); // the morning after (32.6)
@@ -584,7 +603,7 @@ public final class Sieges {
 			for (int i = 0; i < n; i++) {
 				int index = (director.cursor + i) % n;
 				Mob mob = raiders.get(index);
-				if (ramming.contains(mob.getUUID()) || Ladders.claims(mob.getUUID())) {
+				if (ramming.contains(mob.getUUID()) || Ladders.claims(mob.getUUID()) || SandRamps.claims(mob.getUUID())) {
 					continue; // (at the gate, or at a ladder: Ladders walks those)
 				}
 				if (open && !director.through.contains(mob.getUUID()) && mob.position().distanceToSqr(within) < 16) {
@@ -797,7 +816,7 @@ public final class Sieges {
 
 	/** Whether {@code culture} lays sieges: its tactics name {@link #TACTIC} or {@link Ladders#TACTIC}. */
 	public static boolean lays(Culture culture) {
-		return culture.tactics().contains(TACTIC) || culture.tactics().contains(Ladders.TACTIC);
+		return culture.tactics().contains(TACTIC) || culture.tactics().contains(Ladders.TACTIC) || culture.tactics().contains(SandRamps.TACTIC);
 	}
 
 	/** How far beyond the outermost wall a siege gathers (the raiders scatter up to 3 blocks round the point). */

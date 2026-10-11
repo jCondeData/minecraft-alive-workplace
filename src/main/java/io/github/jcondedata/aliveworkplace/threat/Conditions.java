@@ -32,7 +32,8 @@ import net.minecraft.world.level.block.Blocks;
  * culture comes. Every key is optional and all given must hold:
  * <ul>
  * <li>{@code biomes}: the hall's biome is one of these ids, or in one of these tags ({@code #minecraft:is_forest});</li>
- * <li>{@code coast}: an ocean or beach biome within {@link #COAST} blocks of the hall;</li>
+ * <li>{@code coast}: an ocean or beach biome within {@link #COAST} blocks of the hall (looked at once a day per hall,
+ * 32.8: the land doesn't change);</li>
  * <li>{@code nether_link}: a lit Nether portal or a finished Nether Gate in the hall's area;</li>
  * <li>{@code min_rank}: the village's rank is at least this ({@code hamlet}, {@code village}, {@code town}, {@code city});</li>
  * <li>{@code min_villagers}: the village has at least this many villagers.</li>
@@ -94,7 +95,7 @@ public record Conditions(List<String> biomes, boolean coast, boolean netherLink,
 		if (!biomes.isEmpty() && !inBiome(level.getBiome(hall))) {
 			return false;
 		}
-		if (coast && !coast(level, hall)) {
+		if (coast && !coastToday(level, hall)) {
 			return false;
 		}
 		return !netherLink || netherLink(level, hall).isPresent();
@@ -108,6 +109,27 @@ public record Conditions(List<String> biomes, boolean coast, boolean netherLink,
 			}
 		}
 		return false;
+	}
+
+	/** What {@link #coastToday} found, by dimension and hall: the day it looked and what it saw. */
+	private static final java.util.Map<String, long[]> COASTS = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** Whether the village round {@code hall} is on the coast ({@link #coast}), looked at once a day. */
+	public static boolean coastToday(ServerLevel level, BlockPos hall) {
+		String key = level.dimension().location() + "|" + hall.asLong();
+		long day = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+		long[] known = COASTS.get(key);
+		if (known != null && known[0] == day) {
+			return known[1] != 0;
+		}
+		boolean coast = coast(level, hall);
+		COASTS.put(key, new long[] {day, coast ? 1 : 0});
+		return coast;
+	}
+
+	/** Forgets what {@link #coastToday} saw (tests that change a hall's biome, and a restart). */
+	public static void forgetCoasts() {
+		COASTS.clear();
 	}
 
 	/** An ocean or beach biome within {@link #COAST} blocks of {@code hall} (every 16 blocks; no chunk is loaded for it). */

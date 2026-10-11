@@ -466,6 +466,9 @@ public class LegendGuestsGameTests implements net.fabricmc.fabric.api.gametest.v
 	public void theTermsMatchTheNeeds(GameTestHelper helper) {
 		List<BlueprintData.Placement> recorded = new ArrayList<>();
 		setUp(helper, recorded);
+		// "no home yet" has to mean none of ours: forget the finished buildings earlier batches left round this hall, whose
+		// beds would read as a home of their own (B107); this test runs alone in its batch
+		Leftovers.finished(helper);
 		Legend books = legend("terms_mason", "hall", "", ", \"needs\": {\"luxury\": \"books\"}");
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		Leftovers.after(helper, () -> helper.getLevel().getServer().getPlayerList().remove(player));

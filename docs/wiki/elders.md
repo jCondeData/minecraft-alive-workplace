@@ -242,7 +242,7 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 ## Known limits
 
 - Planned, not built, so no player sees it (34.18): the elder look. Its art is drawn (34.17: `class/elder.png`, grey
-  brows and a short beard until the owner picks; see the Classes page), but the render layer and its packet don't
+  brows and a short beard, the owner's pick; see the Classes page), but the render layer and its packet don't
   exist yet, so an elder looks like any villager of their trade.
   34.18 should draw the look for whoever `LifeStages.stage` calls an elder, and send its packet where the chronicle's
   note is written (`LifeStages.becameElder`).

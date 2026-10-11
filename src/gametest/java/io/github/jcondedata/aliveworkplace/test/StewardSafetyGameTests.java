@@ -250,6 +250,8 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "safetyPause")
 	public void proposalsStopWhileTwoSitesWaitAndStartOnceSupplied(GameTestHelper helper) {
 		Village v = village(helper);
+		// a morning of the same day (alone in its batch): today's wishes, set below, aren't re-ranked away mid-test
+		v.level().setDayTime(StewardWishes.day(v.level()) * 24000L + 1000L);
 		List<BuildSite> sites = waitingSites(helper, v, Map.of(Items.GLASS, 4), Map.of(Items.GLASS, 4));
 		long day = StewardWishes.day(v.level());
 		v.entity().setStewardWishes(new StewardWishes.State(day, List.of(wish()), Map.of()));
@@ -259,7 +261,9 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 		AtomicLong supplied = new AtomicLong(-1);
 		helper.onEachTick(() -> {
 			if (v.level().getGameTime() % 20 == 0) {
-				StewardDesk.plan(v.level(), v.steward(), v.hall());
+				// B116: all his planning at the hall (wishes' plot searches and the desk), as he does once back from his
+				// round: what's tested is the pause, not his walk, whose stops in a test area lie on its barrier ceiling
+				io.github.jcondedata.aliveworkplace.city.StewardWork.PLANNER.plan(v.level(), v.steward(), v.hall());
 			}
 		});
 		helper.runAfterDelay(400, () -> {

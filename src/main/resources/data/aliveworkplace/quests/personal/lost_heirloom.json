@@ -1,0 +1,31 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.lost_heirloom.title"
+  },
+  "text": "request.aliveworkplace.lost_heirloom",
+  "days": 10,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    }
+  ],
+  "objectives": [
+    {
+      "type": "fetch",
+      "place": {
+        "structure": "#aliveworkplace:heirloom_places"
+      },
+      "max": 1500
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 8,
+      "rank_factor": false
+    }
+  ]
+}

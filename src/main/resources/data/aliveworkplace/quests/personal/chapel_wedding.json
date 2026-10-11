@@ -1,0 +1,29 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.chapel_wedding.title"
+  },
+  "text": "request.aliveworkplace.chapel_wedding",
+  "days": 5,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    }
+  ],
+  "objectives": [
+    {
+      "type": "build",
+      "blueprint": "aliveworkplace:chapel",
+      "wedding": true
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 6,
+      "rank_factor": false
+    }
+  ]
+}

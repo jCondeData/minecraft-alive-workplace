@@ -31,6 +31,8 @@ public final class Chronicle {
 		STORY(Items.BOOK),
 		/** A villager told a player something of their life (a heart event, 31.7). */
 		FRIEND(Items.PINK_TULIP),
+		/** A player's new title in the village, or an honour it gave them (31.11). */
+		TITLE(Items.GOLDEN_HELMET),
 		/** The morning's report of a siege (32.6): who came, how many fell and to whom, whether the gate held, the hero. */
 		SIEGE(Items.IRON_BARS);
 

@@ -1,0 +1,18 @@
+{
+  "hearts": 4,
+  "when": {
+    "jobs": [
+      "minecraft:shepherd",
+      "minecraft:butcher",
+      "aliveworkplace:rancher"
+    ]
+  },
+  "lines": [
+    "heart_event.aliveworkplace.work_animals.1",
+    "heart_event.aliveworkplace.work_animals.2",
+    "heart_event.aliveworkplace.work_animals.3",
+    "heart_event.aliveworkplace.work_animals.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.work_animals",
+  "story": "life_story.aliveworkplace.work_animals"
+}

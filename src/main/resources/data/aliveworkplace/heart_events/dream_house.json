@@ -1,0 +1,15 @@
+{
+  "hearts": 10,
+  "when": {
+    "home_tier_below": 3
+  },
+  "weight": 2,
+  "lines": [
+    "heart_event.aliveworkplace.dream_house.1",
+    "heart_event.aliveworkplace.dream_house.2",
+    "heart_event.aliveworkplace.dream_house.3",
+    "heart_event.aliveworkplace.dream_house.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.dream_house",
+  "story": "life_story.aliveworkplace.dream_house"
+}

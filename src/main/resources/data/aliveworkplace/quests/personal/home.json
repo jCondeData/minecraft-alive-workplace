@@ -1,0 +1,32 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.home.title"
+  },
+  "text": "request.aliveworkplace.home",
+  "days": 12,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    },
+    {
+      "type": "home_tier_below",
+      "tier": 2
+    }
+  ],
+  "objectives": [
+    {
+      "type": "home",
+      "tier": 2
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 8,
+      "rank_factor": false
+    }
+  ]
+}

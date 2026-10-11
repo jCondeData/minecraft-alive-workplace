@@ -1,0 +1,28 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.cat_by_the_door.title"
+  },
+  "text": "request.aliveworkplace.cat_by_the_door",
+  "days": 4,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    }
+  ],
+  "objectives": [
+    {
+      "type": "pet_near_home",
+      "radius": 10
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 3,
+      "rank_factor": false
+    }
+  ]
+}

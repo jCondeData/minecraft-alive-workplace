@@ -1,0 +1,27 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.bring_back_my_love.title"
+  },
+  "text": "request.aliveworkplace.bring_back_my_love",
+  "days": 10,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    }
+  ],
+  "objectives": [
+    {
+      "type": "revive"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 6,
+      "rank_factor": false
+    }
+  ]
+}

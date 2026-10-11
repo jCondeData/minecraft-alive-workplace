@@ -1,0 +1,16 @@
+{
+  "hearts": 4,
+  "when": {
+    "jobs": [
+      "minecraft:fisherman"
+    ]
+  },
+  "lines": [
+    "heart_event.aliveworkplace.work_water.1",
+    "heart_event.aliveworkplace.work_water.2",
+    "heart_event.aliveworkplace.work_water.3",
+    "heart_event.aliveworkplace.work_water.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.work_water",
+  "story": "life_story.aliveworkplace.work_water"
+}

@@ -1,0 +1,16 @@
+{
+  "hearts": 8,
+  "when": {
+    "married": true
+  },
+  "weight": 5,
+  "lines": [
+    "heart_event.aliveworkplace.love_married.1",
+    "heart_event.aliveworkplace.love_married.2",
+    "heart_event.aliveworkplace.love_married.3",
+    "heart_event.aliveworkplace.love_married.4",
+    "heart_event.aliveworkplace.love_married.5"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.love_married",
+  "story": "life_story.aliveworkplace.love_married"
+}

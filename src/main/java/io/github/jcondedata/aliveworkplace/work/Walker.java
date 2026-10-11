@@ -58,9 +58,10 @@ public final class Walker {
 		var set = brain.getMemory(MemoryModuleType.WALK_TARGET).filter(t -> t.getTarget().currentBlockPosition().equals(pos));
 		if (set.isPresent()) {
 			if (Math.abs(set.get().getSpeedModifier() - pace) > 1.0e-4f) {
-				// Vanilla's idle behaviour walks a villager to what he looks at, at its own 0.5, and we make him look at the
-				// goal: a target at our goal that isn't ours. It gets our pace (B95: an elder walked at full speed), with
-				// no new path search, since the goal is the same.
+				// Vanilla's idle behaviour (SetWalkTargetFromLookTarget) walks a villager to what he looks at, at its own 0.5,
+				// and we make him look at the goal: a target at our goal that isn't ours. It gets our pace (B95: an elder
+				// walked at full speed; B99), with no new path search, since the goal is the same, and a walk already under
+				// way changes speed now.
 				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
 				if (!villager.getNavigation().isDone()) {
 					villager.getNavigation().setSpeedModifier(pace);

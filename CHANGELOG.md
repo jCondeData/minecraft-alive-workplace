@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Shared research, for 1.7** (33.15, off until 1.7 is finished): a realm's villages share what their scholars know.
+  A member uses the capital's level of each research topic where it is higher (its screen says "From the capital"),
+  without it counting toward the member's rank, and its idle scholars help the capital at half pace. The capital's
+  research screen gets a Realm tab with six realm topics (The King's Peace, Royal Charter, Crown Granaries, Royal
+  Physicians, Court of Scholars, Realm Feasts) that the capital's scholars research, paid from the realm treasury, and
+  that help every member village. Packs add their own in `data/<ns>/realm_research/`.
 - **The Colony Camp and the Royal Hall, for 1.7** (33.14, off until 1.7 is finished): a new colony now starts from
   the Colony Camp, two covered wagons round its Village Hall under a striped awning, with the Blueprint Table, supply
   crates, a campfire with a cooking pot, three bedrolls, the Travel Post and a flagpole. A realm's capital draws the

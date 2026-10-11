@@ -8,6 +8,10 @@ import io.github.jcondedata.aliveworkplace.legend.LegendData;
 import io.github.jcondedata.aliveworkplace.legend.Legends;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Players;
+import io.github.jcondedata.aliveworkplace.realm.RealmData;
+import io.github.jcondedata.aliveworkplace.realm.RealmResearch;
+import io.github.jcondedata.aliveworkplace.realm.RealmTreasury;
+import io.github.jcondedata.aliveworkplace.realm.Realms;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -40,15 +45,23 @@ public final class ResearchScreen {
 	public static final int[] TOPIC_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43}; // (the third row since Ramparts, 32.6)
 	/** The tabs: the scholars' tree first, then each Legend's tree in the village (shown only with one at least). */
 	public static final int[] TAB_SLOTS = {45, 46, 47, 48, 49, 50, 51, 52, 53};
+	/** A realm capital's Realm tab, the last of the bottom row (33.15): the realm topics. */
+	public static final int REALM_TAB = TAB_SLOTS[TAB_SLOTS.length - 1];
 
 	/** Which tab a screen shows: null for the scholars' tree. */
 	public static final class View {
 		@Nullable
 		ResourceLocation tree;
+		boolean realm;
 
 		@Nullable
 		public ResourceLocation tree() {
 			return tree;
+		}
+
+		/** Whether the Realm tab is shown (33.15). */
+		public boolean realm() {
+			return realm;
 		}
 	}
 
@@ -97,27 +110,54 @@ public final class ResearchScreen {
 		}
 		List<ResearchTree> trees = ResearchTrees.inVillage(level, hall);
 		ResearchTree tree = trees.stream().filter(t -> t.id().equals(view.tree)).findFirst().orElse(null);
-		if (tree == null) {
+		boolean capital = RealmResearch.isCapital(level, hall) && !RealmResearch.all().isEmpty();
+		if (!capital) {
+			view.realm = false;
+		}
+		if (view.realm) {
+			view.tree = null;
+			tree = null;
+			renderRealm(menu, level, hall, view);
+		} else if (tree == null) {
 			view.tree = null;
 			renderScholars(menu, level, hall, entity, view);
 		} else {
 			renderTree(menu, level, hall, entity, view, tree);
 		}
-		if (trees.isEmpty()) {
+		if (trees.isEmpty() && !capital) {
 			return;
 		}
 		List<Component> mainLore = new ArrayList<>();
 		mainLore.add(line(Component.translatable("screen.aliveworkplace.research.tab.scholars.about"), ChatFormatting.GRAY));
-		if (tree != null) {
+		boolean onScholars = tree == null && !view.realm;
+		if (!onScholars) {
 			mainLore.add(line(Component.translatable("screen.aliveworkplace.research.tab.click"), ChatFormatting.YELLOW));
 		}
 		ItemStack main = icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.research.tab.scholars"),
-			tree == null ? ChatFormatting.GREEN : ChatFormatting.WHITE, mainLore);
-		if (tree == null) {
+			onScholars ? ChatFormatting.GREEN : ChatFormatting.WHITE, mainLore);
+		if (onScholars) {
 			main.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 		}
 		menu.button(TAB_SLOTS[0], main, p -> show(menu, level, hall, view, null));
-		for (int i = 0; i < trees.size() && i + 1 < TAB_SLOTS.length; i++) {
+		if (capital) {
+			List<Component> realmLore = new ArrayList<>();
+			realmLore.add(line(Component.translatable("screen.aliveworkplace.research.tab.realm.about"), ChatFormatting.GRAY));
+			if (!view.realm) {
+				realmLore.add(line(Component.translatable("screen.aliveworkplace.research.tab.click"), ChatFormatting.YELLOW));
+			}
+			ItemStack realmTab = icon(Items.GOLDEN_HELMET, Component.translatable("screen.aliveworkplace.research.tab.realm"),
+				view.realm ? ChatFormatting.GREEN : ChatFormatting.WHITE, realmLore);
+			if (view.realm) {
+				realmTab.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+			}
+			menu.button(REALM_TAB, realmTab, p -> {
+				view.realm = true;
+				view.tree = null;
+				render(menu, level, hall, view);
+				menu.broadcastChanges();
+			});
+		}
+		for (int i = 0; i < trees.size() && i + 2 < TAB_SLOTS.length; i++) {
 			ResearchTree t = trees.get(i);
 			List<Component> lore = new ArrayList<>();
 			lore.add(line(Component.translatable("screen.aliveworkplace.research.tab.legend", legendTitle(t)), ChatFormatting.GRAY));
@@ -134,6 +174,7 @@ public final class ResearchScreen {
 
 	private static void show(ChoiceMenu menu, ServerLevel level, BlockPos hall, View view, @Nullable ResourceLocation tree) {
 		view.tree = tree;
+		view.realm = false;
 		render(menu, level, hall, view);
 		menu.broadcastChanges();
 	}
@@ -163,10 +204,13 @@ public final class ResearchScreen {
 		Research.Topic[] topics = Research.Topic.values();
 		for (int i = 0; i < topics.length; i++) {
 			Research.Topic topic = topics[i];
-			menu.button(TOPIC_SLOTS[i], topicIcon(state, topic, topic.cost(state.level(topic) + 1, level, entity)), p -> {
+			int fromCapital = RealmResearch.fromCapital(level, hall, state, topic);
+			menu.button(TOPIC_SLOTS[i], topicIcon(state, topic, topic.cost(state.level(topic) + 1, level, entity), fromCapital), p -> {
 				Research.State now = entity.research();
 				Research.Topic busy = now.currentTopic();
-				if (busy != null && now.paid()) {
+				if (RealmResearch.fromCapital(level, hall, now, topic) >= topic.maxLevel) {
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.from_capital_done", topic.title()).withStyle(ChatFormatting.AQUA));
+				} else if (busy != null && now.paid()) {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.busy", busy.title()).withStyle(ChatFormatting.YELLOW));
 				} else if (!now.available(topic)) {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.locked", topic.title()).withStyle(ChatFormatting.YELLOW));
@@ -221,6 +265,86 @@ public final class ResearchScreen {
 				menu.broadcastChanges();
 			});
 		}
+	}
+
+	/** The Realm tab (33.15): the realm topics, worked by the capital's scholars and paid from the realm treasury. */
+	private static void renderRealm(ChoiceMenu menu, ServerLevel level, BlockPos hall, View view) {
+		RealmData.Realm realm = RealmResearch.realm(level, hall);
+		if (realm == null) {
+			return;
+		}
+		MinecraftServer server = level.getServer();
+		Research.State state = RealmResearch.state(server, realm);
+		RealmResearch.Topic current = RealmResearch.current(state);
+		List<Component> about = new ArrayList<>();
+		if (current == null) {
+			about.add(line(Component.translatable("screen.aliveworkplace.research.nothing"), ChatFormatting.YELLOW));
+		} else {
+			int next = RealmResearch.level(state, current) + 1;
+			about.add(line(Component.translatable("screen.aliveworkplace.research.now",
+				Component.translatable("research.aliveworkplace.level", current.name(), BuilderLevels.levelName(next)),
+				Math.round(100f * state.progress() / current.points())), ChatFormatting.GREEN));
+			if (!state.paid()) {
+				about.add(line(Component.translatable("screen.aliveworkplace.research.realm.unpaid", realmCost(current)), ChatFormatting.YELLOW));
+			}
+		}
+		about.add(line(Component.translatable("screen.aliveworkplace.research.realm.treasury", RealmTreasury.emeralds(realm.treasury())), ChatFormatting.GRAY));
+		about.add(line(Component.translatable("screen.aliveworkplace.research.realm.how"), ChatFormatting.DARK_GRAY));
+		menu.button(INFO, icon(Items.GOLDEN_HELMET, Realms.title(server, realm), ChatFormatting.GOLD, about), null);
+		menu.divider(1);
+		List<RealmResearch.Topic> topics = new ArrayList<>(RealmResearch.all());
+		for (int i = 0; i < topics.size() && i < TOPIC_SLOTS.length; i++) {
+			RealmResearch.Topic topic = topics.get(i);
+			menu.button(TOPIC_SLOTS[i], realmTopicIcon(state, topic), p -> {
+				Realms.Result result = RealmResearch.choose(level, hall, p, topic);
+				Chat.actionBar(p, result.message().copy().withStyle(result.ok() ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
+				if (result.ok()) {
+					level.playSound(null, p.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
+				}
+				render(menu, level, hall, view);
+				menu.broadcastChanges();
+			});
+		}
+	}
+
+	/** "4× Paper, 1× Book and 8 emeralds from the realm treasury". */
+	static Component realmCost(RealmResearch.Topic topic) {
+		return topic.items().isEmpty()
+			? Component.translatable("screen.aliveworkplace.research.realm.emeralds", topic.emeralds())
+			: Component.translatable("screen.aliveworkplace.research.realm.price", Research.describe(topic.items()), topic.emeralds());
+	}
+
+	static ItemStack realmTopicIcon(Research.State state, RealmResearch.Topic topic) {
+		int lvl = RealmResearch.level(state, topic);
+		boolean isCurrent = RealmResearch.current(state) == topic;
+		List<Component> lore = new ArrayList<>();
+		if (!topic.description().getString().isEmpty()) {
+			lore.add(line(topic.description(), ChatFormatting.GRAY));
+		}
+		lore.add(line(Component.translatable("screen.aliveworkplace.research.level", lvl, topic.levels()), ChatFormatting.GRAY));
+		if (lvl >= topic.levels()) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.complete"), ChatFormatting.GREEN));
+		} else {
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.cost", realmCost(topic)), ChatFormatting.GRAY));
+			for (var need : topic.needs().entrySet()) {
+				RealmResearch.Topic other = RealmResearch.get(need.getKey()).orElse(null);
+				if (other != null && RealmResearch.level(state, other) < need.getValue()) {
+					lore.add(line(Component.translatable("screen.aliveworkplace.research.needs",
+						Component.translatable("research.aliveworkplace.level", other.name(), BuilderLevels.levelName(need.getValue()))), ChatFormatting.RED));
+				}
+			}
+			if (isCurrent) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.research.current"), ChatFormatting.GREEN));
+			} else if (RealmResearch.whyNot(state, topic).isEmpty()) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.research.realm.click"), ChatFormatting.YELLOW));
+			}
+		}
+		ItemStack icon = icon(topic.icon(), topic.name(), lvl >= topic.levels() ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore);
+		icon.setCount(Math.max(1, lvl));
+		if (isCurrent) {
+			icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+		}
+		return icon;
 	}
 
 	static ItemStack treeTopicIcon(ServerLevel level, BlockPos hall, Research.State state, ResearchTree tree, ResearchTree.Topic topic) {
@@ -278,10 +402,19 @@ public final class ResearchScreen {
 
 	/** {@code price}: what its next level costs in the village (a founded Scholars' Guild: a quarter less, 30.19). */
 	static ItemStack topicIcon(Research.State state, Research.Topic topic, Research.Cost price) {
-		int lvl = state.level(topic);
+		return topicIcon(state, topic, price, 0);
+	}
+
+	/** {@code fromCapital}: the capital's level where a realm member gets a higher one from it (33.15), else 0. */
+	static ItemStack topicIcon(Research.State state, Research.Topic topic, Research.Cost price, int fromCapital) {
+		int lvl = Math.max(state.level(topic), fromCapital);
 		List<Component> lore = new ArrayList<>();
 		lore.add(line(topic.effect(), ChatFormatting.GRAY));
 		lore.add(line(Component.translatable("screen.aliveworkplace.research.level", lvl, topic.maxLevel), ChatFormatting.GRAY));
+		if (fromCapital > 0) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.from_capital",
+				Component.translatable("research.aliveworkplace.level", topic.title(), BuilderLevels.levelName(fromCapital))), ChatFormatting.AQUA));
+		}
 		if (lvl >= topic.maxLevel) {
 			lore.add(line(Component.translatable("screen.aliveworkplace.research.complete"), ChatFormatting.GREEN));
 		} else {

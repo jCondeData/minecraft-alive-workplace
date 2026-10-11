@@ -1,0 +1,21 @@
+{
+  "icon": "minecraft:lectern",
+  "name": {
+    "translate": "realm_research.aliveworkplace.court_of_scholars"
+  },
+  "description": {
+    "translate": "realm_research.aliveworkplace.court_of_scholars.desc"
+  },
+  "levels": 3,
+  "points": 7200,
+  "paper": 32,
+  "books": 6,
+  "emeralds": 32,
+  "needs": {
+    "royal_charter": 1
+  },
+  "effect": {
+    "type": "aliveworkplace:xp",
+    "percent": 10
+  }
+}

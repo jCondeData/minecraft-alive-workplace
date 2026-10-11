@@ -106,10 +106,11 @@ public class ScholarWork extends Behavior<Villager> {
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.scholar.title",
 				ModAttachments.RESEARCH_DONE.getOrElse(villager, 0)), -1f,
 			Component.translatable("message.aliveworkplace.scholar.state." + state, detail)
-				.withStyle(state.equals("needs") || state.equals("no_hall") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+				.withStyle(state.equals("needs") || state.equals("no_hall") || state.equals("treasury") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 
-	void work(ServerLevel level, Villager villager, BlockPos desk, boolean atDesk) {
+	/** One round at the desk (the behaviour calls it every {@link #EVERY} ticks; tests call it directly). */
+	public void work(ServerLevel level, Villager villager, BlockPos desk, boolean atDesk) {
 		BlockPos hall = VillageHalls.nearest(level, desk).orElse(null);
 		if (hall == null || !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 			state = "no_hall";
@@ -123,11 +124,36 @@ public class ScholarWork extends Behavior<Villager> {
 			topic = research.currentTopic();
 		}
 		if (topic == null) {
+			// A capital's scholars take up the realm's research next (33.15).
+			io.github.jcondedata.aliveworkplace.realm.RealmResearch.Work realm =
+				io.github.jcondedata.aliveworkplace.realm.RealmResearch.work(level, villager, desk, hall, progress(villager), atDesk);
+			if (realm != null) {
+				state = realm.state();
+				detail = realm.detail();
+				if (atDesk && state.equals("realm")) {
+					villager.swing(InteractionHand.MAIN_HAND);
+					level.sendParticles(ParticleTypes.ENCHANT, desk.getX() + 0.5, desk.getY() + 1.3, desk.getZ() + 0.5, 5, 0.3, 0.2, 0.3, 0.5);
+				}
+				return;
+			}
 			// Nothing of their own: they help a Legend's research tree at half speed (29.11).
 			ResearchTree helped = ResearchTrees.help(level, villager, hall, entity, progress(villager), atDesk);
 			if (helped != null) {
 				state = "helping";
 				detail = helped.name();
+				Requests.clear(villager);
+				if (atDesk) {
+					villager.swing(InteractionHand.MAIN_HAND);
+					level.sendParticles(ParticleTypes.ENCHANT, desk.getX() + 0.5, desk.getY() + 1.3, desk.getZ() + 0.5, 3, 0.3, 0.2, 0.3, 0.5);
+				}
+				return;
+			}
+			// A realm member's scholars help the capital at half pace (33.15).
+			Component capital = io.github.jcondedata.aliveworkplace.realm.RealmResearch.help(level, hall,
+				Math.max(1, progress(villager) / io.github.jcondedata.aliveworkplace.realm.RealmResearch.HELP_SHARE), atDesk);
+			if (capital != null) {
+				state = "capital";
+				detail = capital;
 				Requests.clear(villager);
 				if (atDesk) {
 					villager.swing(InteractionHand.MAIN_HAND);

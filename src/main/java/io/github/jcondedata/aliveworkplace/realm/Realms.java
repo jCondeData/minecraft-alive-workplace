@@ -685,6 +685,7 @@ public final class Realms {
 			RealmData.Realm realm = realmOf(level, hall);
 			if (realm != null) {
 				recount(level.getServer(), realm);
+				RealmResearch.round(level, hall, entity);
 			}
 		}
 	}

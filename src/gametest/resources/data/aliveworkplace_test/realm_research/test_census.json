@@ -1,0 +1,14 @@
+{
+  "icon": "minecraft:amethyst_shard",
+  "name": "Test Census",
+  "description": "Market days get 2 more traders a level",
+  "levels": 2,
+  "points": 40,
+  "paper": 2,
+  "books": 1,
+  "emeralds": 3,
+  "effect": {
+    "type": "aliveworkplace:market_traders",
+    "extra": 2
+  }
+}

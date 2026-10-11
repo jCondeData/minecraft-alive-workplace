@@ -221,10 +221,22 @@ public final class Research {
 		return state;
 	}
 
-	/** The research of the village round {@code pos}. */
+	/** How a village's research is shared (33.15: a realm member gets the capital's higher levels). */
+	@FunctionalInterface
+	public interface Sharing {
+		State share(ServerLevel level, BlockPos hall, State own);
+	}
+
+	/** Filled by {@code realm/RealmResearch}; by default a village knows only its own. */
+	public static Sharing SHARING = (level, hall, own) -> own;
+
+	/**
+	 * The research of the village round {@code pos}, as its bonuses use it: in a realm, each topic at the higher of the
+	 * village's own level and the capital's (33.15). The hall's own levels ({@code entity.research()}) count for its rank.
+	 */
 	public static State at(ServerLevel level, BlockPos pos) {
 		return VillageHalls.nearest(level, pos)
-			.map(hall -> level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.research() : State.EMPTY)
+			.map(hall -> level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? SHARING.share(level, hall, entity.research()) : State.EMPTY)
 			.orElse(State.EMPTY);
 	}
 

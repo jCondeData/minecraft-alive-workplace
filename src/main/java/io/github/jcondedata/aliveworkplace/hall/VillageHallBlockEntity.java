@@ -108,6 +108,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** Their effects summed (not saved: summed again after a load, a data pack reload or the switch). */
 	@Nullable
 	private CivicEffects.Sum civic;
+	private java.util.List<CivicEffects.Active> civicExtra = java.util.List.of();
 	private int civicGeneration;
 	/** Free Bread's running share of an extra meal (30.6), in hundredths (0 to 99); saved as {@code extraMeals}, 0 to 1. */
 	private int extraMeals;
@@ -366,12 +367,21 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	public CivicEffects.Sum civicEffects() {
 		CivicEffects.Sum sum = civic;
 		int generation = Edicts.generation();
-		if (sum == null || civicGeneration != generation) {
+		java.util.List<CivicEffects.Active> extra = level instanceof net.minecraft.server.level.ServerLevel server
+			? CivicEffects.EXTRA.at(server, worldPosition) : java.util.List.of();
+		if (sum == null || civicGeneration != generation || extra != civicExtra) {
 			java.util.Set<String> reformed = new java.util.HashSet<>();
 			reforms.stream().filter(Reforms.Progress::reformed).forEach(p -> reformed.add(p.id()));
 			sum = Edicts.sum(edicts, reformed);
+			if (!extra.isEmpty()) {
+				// the realm's research counts with the edicts (33.15)
+				java.util.List<CivicEffects.Active> all = new java.util.ArrayList<>(sum.all());
+				all.addAll(extra);
+				sum = new CivicEffects.Sum(all);
+			}
 			civic = sum;
 			civicGeneration = generation;
+			civicExtra = extra;
 		}
 		return sum;
 	}

@@ -301,7 +301,34 @@ public final class RealmData extends SavedData {
 		}
 	}
 
+	/**
+	 * A realm's shared research (33.15): its realm topics' levels, the one being researched and how far along (a
+	 * {@code Research.State} keyed by realm topic), and the capital's scholars' levels as its last round saw them, which
+	 * members use while the capital isn't loaded.
+	 */
+	public record Study(UUID realm, io.github.jcondedata.aliveworkplace.research.Research.State research, java.util.Map<String, Integer> capital) {
+		public static final Codec<Study> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("realm").forGetter(Study::realm),
+			io.github.jcondedata.aliveworkplace.research.Research.State.CODEC.optionalFieldOf("research",
+				io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY).forGetter(Study::research),
+			Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("capital", java.util.Map.of()).forGetter(Study::capital)
+		).apply(i, Study::new));
+
+		public Study {
+			capital = java.util.Map.copyOf(capital);
+		}
+
+		public Study withResearch(io.github.jcondedata.aliveworkplace.research.Research.State research) {
+			return new Study(realm, research, capital);
+		}
+
+		public Study withCapital(java.util.Map<String, Integer> capital) {
+			return new Study(realm, research, capital);
+		}
+	}
+
 	private final List<Realm> realms = new ArrayList<>();
+	private final List<Study> studies = new ArrayList<>();
 	private final List<Known> known = new ArrayList<>();
 	private final List<Invite> invites = new ArrayList<>();
 	private final List<Vote> votes = new ArrayList<>();
@@ -404,6 +431,23 @@ public final class RealmData extends SavedData {
 			}
 		}
 		return null;
+	}
+
+	/** {@code realm}'s shared research (33.15): an empty one until it has some. */
+	public Study study(UUID realm) {
+		for (Study s : studies) {
+			if (s.realm().equals(realm)) {
+				return s;
+			}
+		}
+		return new Study(realm, io.github.jcondedata.aliveworkplace.research.Research.State.EMPTY, java.util.Map.of());
+	}
+
+	/** Keeps {@code study} in the place of the realm's last one. */
+	public void putStudy(Study study) {
+		studies.removeIf(s -> s.realm().equals(study.realm()));
+		studies.add(study);
+		setDirty();
 	}
 
 	/** Adds {@code realm}, or puts it in the place of the one with its id. */
@@ -532,6 +576,7 @@ public final class RealmData extends SavedData {
 	/** Forgets every realm and village seen (tests). */
 	public void clearRealms() {
 		realms.clear();
+		studies.clear();
 		known.clear();
 		invites.clear();
 		votes.clear();
@@ -555,6 +600,7 @@ public final class RealmData extends SavedData {
 		tag.put("colonies", colonies);
 		Cooldown.CODEC.listOf().encodeStart(ops, cooldowns).result().ifPresent(t -> tag.put("cooldowns", t));
 		Realm.CODEC.listOf().encodeStart(ops, realms).result().ifPresent(t -> tag.put("realms", t));
+		Study.CODEC.listOf().encodeStart(ops, studies).result().ifPresent(t -> tag.put("studies", t));
 		Known.CODEC.listOf().encodeStart(ops, known).result().ifPresent(t -> tag.put("known", t));
 		Invite.CODEC.listOf().encodeStart(ops, invites).result().ifPresent(t -> tag.put("invites", t));
 		Vote.CODEC.listOf().encodeStart(ops, votes).result().ifPresent(t -> tag.put("votes", t));
@@ -569,6 +615,7 @@ public final class RealmData extends SavedData {
 		read(Founded.CODEC, colonies.get("founded"), ops, data.founded, "founded colonies");
 		read(Cooldown.CODEC, tag.get("cooldowns"), ops, data.cooldowns, "colony cooldowns");
 		read(Realm.CODEC, tag.get("realms"), ops, data.realms, "realms");
+		read(Study.CODEC, tag.get("studies"), ops, data.studies, "realm research");
 		read(Known.CODEC, tag.get("known"), ops, data.known, "villages seen");
 		read(Invite.CODEC, tag.get("invites"), ops, data.invites, "realm invitations");
 		read(Vote.CODEC, tag.get("votes"), ops, data.votes, "capital votes");

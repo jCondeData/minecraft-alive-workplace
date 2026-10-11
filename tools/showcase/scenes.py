@@ -393,6 +393,14 @@ SCENES = [
       "by day; a shift-click with twelve emeralds gave them all, and the levy's icon shows 10%", 60,
       [("01_treasury_tooltip", "The treasury: four mornings of the levy"), ("02_after_a_gift", "Twelve emeralds given with a shift-click"),
        ("03_the_levy", "The levy: 10% of each member's takings")]),
+    # Shared research (ROADMAP 33.15): the capital's Realm tab with the realm topics; a member's levels from the capital
+    S("realm_research", "Realm", "Shared research: the Realm row and levels from the capital",
+      "Thornholm, capital of the Barony with Ashford a member, knows Drill II, Swift Hands III and Hearth I; its research "
+      "screen has the Realm tab on the bottom row, which lists the realm topics: The King's Peace I done and the Royal Charter "
+      "40% along, paid from the realm treasury; the Court of Scholars' tooltip shows its price in paper, books and treasury "
+      "emeralds; Ashford's own research screen shows Drill II from the capital", 60,
+      [("01_the_realm_tab", "The capital's research screen: the Realm tab"), ("02_the_realm_row", "The Realm row: the realm topics"),
+       ("03_a_realm_topic", "A realm topic: its price and what it needs"), ("04_from_the_capital", "Ashford: Drill from the capital")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

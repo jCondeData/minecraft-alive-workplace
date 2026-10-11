@@ -367,6 +367,15 @@ public final class CivicEffects {
 		}
 	}
 
+	/** Effects a village has from outside its own edicts: its realm's research (33.15, {@code realm/RealmResearch}). */
+	@FunctionalInterface
+	public interface Extra {
+		List<Active> at(ServerLevel level, net.minecraft.core.BlockPos hall);
+	}
+
+	/** Filled by {@code realm/RealmResearch}; none by default. Must return the same list while nothing changed. */
+	public static Extra EXTRA = (level, hall) -> List.of();
+
 	/** An effect in force and where it comes from (an edict's name, for the status line). */
 	public record Active(Effect effect, Component source) {
 	}

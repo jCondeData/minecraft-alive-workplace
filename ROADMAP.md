@@ -3532,7 +3532,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   Done when: renders of both (front and back, five styles) are in a review package; GameTests place each with free
   materials and check that a colony uses the camp and that the Royal Hall raises the cap; showcase scene
   `realm_builds` shows both.
-- [ ] **33.15** **Shared research.** Realm villages share what their scholars know: for each topic of the research
+- [x] **33.15** (review: pending 2026-10-11) **Shared research.** Realm villages share what their scholars know: for each topic of the research
   tree a member uses the higher of its own level and the capital's (through `Research.at`), and its research screen
   says "from the capital"; shared levels don't count toward a village's rank. A member's scholars with nothing chosen
   at home work on the capital's current topic instead, at half pace. The capital's research screen gets a **Realm**

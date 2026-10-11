@@ -112,6 +112,8 @@ public final class VillageAdvice {
 		}
 		// Classes (34.6): up to three needs the households below a class lack to rise, most households first.
 		tips.addAll(ClassesPage.adviceTips(level, hall));
+		// Grander homes (34.15): households whose class wants a home of a higher grade than theirs
+		tips.addAll(io.github.jcondedata.aliveworkplace.people.HomeWants.tips(level, hall));
 		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 			tips.addAll(civic(level, hall, entity, census));
 		}

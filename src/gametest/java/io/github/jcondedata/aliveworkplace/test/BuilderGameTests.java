@@ -1004,6 +1004,41 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/** ROADMAP 30.17: the Guildhall II with its tower wing, meeting room and bell (20 tall: the tall area, 30 high). */
+	/** The Artisan's House (34.15) from bare ground. */
+	//$ gametest_ticks_batch HUGE_AREA '40000' '"starter_builds_artisans_house"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "starter_builds_artisans_house")
+	public void buildsArtisansHouse(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.ARTISANS_HOUSE, new BlockPos(9, 2, 8));
+	}
+
+	/** The Artisan's House II (34.15) from bare ground: the workshop wing makes it 18 deep. */
+	//$ gametest_ticks_batch HUGE_AREA '50000' '"starter_builds_artisans_house_2"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 50000, batch = "starter_builds_artisans_house_2")
+	public void buildsArtisansHouseII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.ARTISANS_HOUSE_2, new BlockPos(9, 2, 8));
+	}
+
+	/** The Burgher's Townhouse (34.15) from bare ground: 20 tall, so in the tall area. */
+	//$ gametest_ticks_batch TALL_AREA '60000' '"starter_builds_townhouse"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 60000, batch = "starter_builds_townhouse")
+	public void buildsTownhouse(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.TOWNHOUSE, new BlockPos(9, 2, 8));
+	}
+
+	/** The Townhouse II (34.15) from bare ground: the walled courtyard garden behind. */
+	//$ gametest_ticks_batch TALL_AREA '70000' '"starter_builds_townhouse_2"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 70000, batch = "starter_builds_townhouse_2")
+	public void buildsTownhouseII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.TOWNHOUSE_2, new BlockPos(9, 2, 8));
+	}
+
+	/** The Townhouse III (34.15) from bare ground: the corner tower is 26 tall. */
+	//$ gametest_ticks_batch TALL_AREA '90000' '"starter_builds_townhouse_3"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 90000, batch = "starter_builds_townhouse_3")
+	public void buildsTownhouseIII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.TOWNHOUSE_3, new BlockPos(9, 2, 8));
+	}
+
 	//$ gametest_ticks_batch TALL_AREA '60000' '"starter_builds_guildhall_2"'
 	@GameTest(template = TALL_AREA, timeoutTicks = 60000, batch = "starter_builds_guildhall_2")
 	public void buildsGuildhallII(GameTestHelper helper) {
@@ -1850,7 +1885,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 41, "expected 41 starter upgrades, found " + upgrades);
+		helper.assertTrue(upgrades == 44, "expected 44 starter upgrades, found " + upgrades);
 		helper.succeed();
 	}
 

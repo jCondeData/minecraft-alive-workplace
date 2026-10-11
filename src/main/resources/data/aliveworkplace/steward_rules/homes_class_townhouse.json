@@ -1,0 +1,10 @@
+{
+  "when": [
+    {"households_want_grade": {"grade": 2, "at_least": 2}}
+  ],
+  "do": {"build": {"blueprint": "aliveworkplace:townhouse", "zone": "homes"}},
+  "priority": 46,
+  "why": "steward.aliveworkplace.why.homes_class",
+  "cooldown_days": 3,
+  "min_rank": "village"
+}

@@ -33,7 +33,8 @@ import org.jetbrains.annotations.Nullable;
  * <li>Fortification (after Drill I): guards turn aside one blow in ten a level;</li>
  * <li>Commerce (after Hearth I): one more trader on market days and mercenaries 3 emeralds cheaper a level;</li>
  * <li>Expeditions (after Logistics I): explorers and netherworkers back 20% sooner a level;</li>
- * <li>Green Thumb (after Hearth I): a layer less compost a bone meal a level.</li>
+ * <li>Green Thumb (after Hearth I): a layer less compost a bone meal a level;</li>
+ * <li>Ramparts (after Fortification I): in a siege the gates have twice the hit points and archers on battle stations reach 28 blocks.</li>
  * </ul>
  */
 public final class Research {
@@ -51,7 +52,9 @@ public final class Research {
 		COMMERCE(2, Items.EMERALD),
 		EXPEDITIONS(2, Items.COMPASS),
 		GREEN_THUMB(2, Items.BONE_MEAL),
-		WARDING(1, Items.OBSIDIAN);
+		WARDING(1, Items.OBSIDIAN),
+		/** Gates with twice the hit points in a siege, and archers on battle stations reach 28 blocks (32.6). */
+		RAMPARTS(1, Items.STONE_BRICK_WALL);
 
 		public final int maxLevel;
 		public final Item icon;
@@ -100,7 +103,7 @@ public final class Research {
 				case LOGISTICS, CRAFTSMANSHIP -> Map.of(SWIFT_HANDS, 1);
 				case MEDICINE, COMMERCE, GREEN_THUMB -> Map.of(HEARTH, 1);
 				case FORTIFICATION -> Map.of(DRILL, 1);
-				case WARDING -> Map.of(FORTIFICATION, 1);
+				case WARDING, RAMPARTS -> Map.of(FORTIFICATION, 1);
 				case EXPEDITIONS -> Map.of(LOGISTICS, 1);
 				default -> Map.of();
 			};

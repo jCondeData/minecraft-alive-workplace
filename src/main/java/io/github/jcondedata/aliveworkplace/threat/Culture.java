@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -32,7 +33,11 @@ import org.jetbrains.annotations.Nullable;
  * of what its raiders are called;</li>
  * <li>{@code captain}: {@code entity}, {@code gear}, {@code health} (extra), {@code names} (the lang key of his list
  * of names: {@code <names>.1} to {@code <names>.20}) and {@code title} (the lang key of what goes before the name:
- * "Chief" of "Chief Harl Ashgrave");</li>
+ * "Chief" of "Chief Harl Ashgrave"), and {@code leads}: from this rank of village on ({@code town}, {@code city}) he leads
+ * the raids from his lair himself (32.7), and falls with his lair wherever he is brought down;</li>
+ * <li>{@code extras}: who comes with every raid besides the roster, by the village's rank, as many as {@code count}
+ * gives for the highest rank it names that the village has reached ({@code {"town": 1, "city": 2}}): the warband's
+ * ravager rams and its evoker (32.7). They are no part of a lair's strength: the band never loses them;</li>
  * <li>{@code tactics}: names the engine looks up ({@link Threats#registerTactic}); one it doesn't know is skipped;</li>
  * <li>{@code lair}: {@code structure}, {@code strength} (and {@code growth} a day, {@code max}, {@code home_max}) and
  * {@code icon} (the item that stands for it on the hall's Defence page; a campfire when it names none);</li>
@@ -45,11 +50,17 @@ import org.jetbrains.annotations.Nullable;
  * Ours may leave the namespace off an id. A key that isn't known is logged and ignored.
  */
 public record Culture(ResourceLocation id, Conditions where, int weight, Arrival arrival, Hours hours, List<Member> roster, Optional<String> name,
-	Optional<Captain> captain, List<String> tactics, Optional<Lair> lair, Optional<ResourceLocation> loot, Keys messages, Keys chronicle) {
+	Optional<Captain> captain, List<String> tactics, Optional<Lair> lair, Optional<ResourceLocation> loot, Keys messages, Keys chronicle, List<Extra> extras) {
 	/** Gear that isn't an item id: the banner a raid captain carries. */
 	public static final String OMINOUS_BANNER = "ominous_banner";
 	private static final Set<String> KEYS = Set.of("where", "weight", "arrival", "hours", "roster", "name", "captain", "tactics", "lair", "loot",
-		"messages", "chronicle");
+		"messages", "chronicle", "extras");
+
+	/** A culture without {@code extras} (as cultures were before 32.7). */
+	public Culture(ResourceLocation id, Conditions where, int weight, Arrival arrival, Hours hours, List<Member> roster, Optional<String> name,
+		Optional<Captain> captain, List<String> tactics, Optional<Lair> lair, Optional<ResourceLocation> loot, Keys messages, Keys chronicle) {
+		this(id, where, weight, arrival, hours, roster, name, captain, tactics, lair, loot, messages, chronicle, List.of());
+	}
 
 	/** How its raiders reach the village. */
 	public enum Arrival {
@@ -84,8 +95,42 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 	public record Member(ResourceLocation entity, int share, Role role, Map<EquipmentSlot, String> gear) {
 	}
 
-	/** The captain: his mob, gear, extra health, the lang key of his list of names and that of his title ("Chief"). */
-	public record Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title) {
+	/**
+	 * The captain: his mob, gear, extra health, the lang key of his list of names and that of his title ("Chief"), and
+	 * the rank of village from which he leads his lair's raids himself (none: he never leaves it).
+	 */
+	public record Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title,
+		Optional<VillageRanks.Rank> leads) {
+		public Captain(ResourceLocation entity, Map<EquipmentSlot, String> gear, double health, Optional<String> names, Optional<String> title) {
+			this(entity, gear, health, names, title, Optional.empty());
+		}
+
+		/** Whether he leads the raids on a village of {@code rank}. */
+		public boolean leadsAt(VillageRanks.Rank rank) {
+			return leads.isPresent() && rank.ordinal() >= leads.get().ordinal();
+		}
+	}
+
+	/**
+	 * One of the {@code extras}: the mob, its role and gear, and how many come by the village's rank (the highest rank
+	 * listed that the village has reached; none below the lowest).
+	 */
+	public record Extra(ResourceLocation entity, Role role, Map<EquipmentSlot, String> gear, Map<VillageRanks.Rank, Integer> count) {
+		/** How many come to a village of {@code rank}. */
+		public int count(VillageRanks.Rank rank) {
+			int n = 0;
+			for (Map.Entry<VillageRanks.Rank, Integer> e : count.entrySet()) {
+				if (e.getKey().ordinal() <= rank.ordinal()) {
+					n = e.getValue(); // (an EnumMap: in rank order, so the highest reached is the last)
+				}
+			}
+			return n;
+		}
+
+		/** As a line of the roster, for outfitting. */
+		public Member member() {
+			return new Member(entity, 0, role, gear);
+		}
 	}
 
 	/**
@@ -158,7 +203,7 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 				throw new IllegalArgumentException("the captain's extra health can't be " + health);
 			}
 			captain = Optional.of(new Captain(entity(c), gear(c), health, Optional.ofNullable(c.has("names") ? c.get("names").getAsString() : null),
-				Optional.ofNullable(c.has("title") ? c.get("title").getAsString() : null)));
+				Optional.ofNullable(c.has("title") ? c.get("title").getAsString() : null), c.has("leads") ? Optional.of(rank(c.get("leads").getAsString())) : Optional.empty()));
 		}
 		List<String> tactics = new ArrayList<>();
 		if (json.has("tactics")) {
@@ -185,9 +230,35 @@ public record Culture(ResourceLocation id, Conditions where, int weight, Arrival
 				loot = Optional.of(location(l.get("loot").getAsString(), "loot"));
 			}
 		}
+		List<Extra> extras = new ArrayList<>();
+		if (json.has("extras")) {
+			for (JsonElement e : json.getAsJsonArray("extras")) {
+				JsonObject x = e.getAsJsonObject();
+				if (!x.has("count")) {
+					throw new IllegalArgumentException("an extra without a count");
+				}
+				Map<VillageRanks.Rank, Integer> count = new EnumMap<>(VillageRanks.Rank.class);
+				for (Map.Entry<String, JsonElement> c : x.getAsJsonObject("count").entrySet()) {
+					int n = c.getValue().getAsInt();
+					if (n < 0 || n > 8) {
+						throw new IllegalArgumentException("an extra's count must be 0 to 8, not " + n);
+					}
+					count.put(rank(c.getKey()), n);
+				}
+				extras.add(new Extra(entity(x), constant(Role.class, x, "role", Role.MELEE), gear(x), Collections.unmodifiableMap(count)));
+			}
+		}
 		Optional<String> name = Optional.ofNullable(json.has("name") ? json.get("name").getAsString() : null);
 		return new Culture(id, where, weight, arrival, hours, List.copyOf(roster), name, captain, List.copyOf(tactics), lair, loot,
-			keys(json, "messages"), keys(json, "chronicle"));
+			keys(json, "messages"), keys(json, "chronicle"), List.copyOf(extras));
+	}
+
+	private static VillageRanks.Rank rank(String name) {
+		try {
+			return VillageRanks.Rank.valueOf(name.toUpperCase(Locale.ROOT));
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("a rank must be hamlet, village, town or city, not " + name);
+		}
 	}
 
 	private static Keys keys(JsonObject json, String key) {

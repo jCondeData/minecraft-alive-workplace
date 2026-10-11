@@ -53,22 +53,26 @@ public final class Walker {
 	 */
 	public static int requestWalk(Villager villager, BlockPos pos, float speed, int closeEnough, int retryWait) {
 		var brain = villager.getBrain();
-		float wanted = speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
+		float pace = speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
 			* io.github.jcondedata.aliveworkplace.people.LifeStages.walk(villager);
-		WalkTarget current = brain.getMemory(MemoryModuleType.WALK_TARGET).orElse(null);
-		if (current != null && current.getTarget().currentBlockPosition().equals(pos)) {
-			if (Math.abs(current.getSpeedModifier() - wanted) > 1.0E-4f) {
-				// Someone else (vanilla's SetWalkTargetFromLookTarget, at 0.5) set our block at its own pace (B99): take the
-				// walk back at ours. Same block, so no new path; the walk under way changes speed now.
-				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, wanted, closeEnough));
-				villager.getNavigation().setSpeedModifier(wanted);
+		var set = brain.getMemory(MemoryModuleType.WALK_TARGET).filter(t -> t.getTarget().currentBlockPosition().equals(pos));
+		if (set.isPresent()) {
+			if (Math.abs(set.get().getSpeedModifier() - pace) > 1.0e-4f) {
+				// Vanilla's idle behaviour (SetWalkTargetFromLookTarget) walks a villager to what he looks at, at its own 0.5,
+				// and we make him look at the goal: a target at our goal that isn't ours. It gets our pace (B95: an elder
+				// walked at full speed; B99), with no new path search, since the goal is the same, and a walk already under
+				// way changes speed now.
+				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
+				if (!villager.getNavigation().isDone()) {
+					villager.getNavigation().setSpeedModifier(pace);
+				}
 			}
 			return 0;
 		}
 		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) && retryWait + 1 < RETRY_TICKS) {
 			return retryWait + 1;
 		}
-		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, wanted, closeEnough));
+		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
 		return 0;
 	}
 

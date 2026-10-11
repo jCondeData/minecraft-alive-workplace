@@ -18,7 +18,7 @@ far it has got ("Kinds of meal in the store: 5 of 8"), the luxury it likes and i
 | Legend | Rarity | Comes | The village must have | Brings |
 |---|---|---|---|---|
 | Master Architect | Legendary | visits the inn | Town rank, buildings in 3 styles | builders nearby twice as fast; a grand rebuild of a house |
-| Pathfinder | Rare | found at a ruined portal; or born | a Cartographer of level 3 or higher | far expeditions; leads the player on one |
+| Pathfinder | Rare | found at a ruined portal; or born | a Cartographer who is an Expert (level 4) or higher | far expeditions; leads the player on one |
 | Old Sage | Rare | found in a hermit's hut; or born | 5 research levels | riddles, then a research tree of his own |
 | Golem Smith | Legendary | a strange mood (a Master Tinkerer) | 4 iron golems | a forge that makes golems which work |
 | Seer | Rare | the Chapel at midnight under a full moon; or born | a finished Chapel | foretells raids; blesses weddings |
@@ -118,8 +118,8 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - Legends never leave, even on strike, so a Legendary one stays in the first village that earned them.
 - The found way needs a player to walk into the right kind of structure; nothing is searched while nobody is online.
 - The Pokémon Professor and Ranger don't exist without Cobblemon; Alphas need Cobblemon 1.8.
-- The Pathfinder's file asks for a Cartographer of level 3 (Journeyman), while roadmap 29.13 and the test's name say
-  Expert. Reported as a possible bug when this page was written (2026-10-09); the page states what the file does.
+- The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
+  (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
 - The luxuries Legends take are stand-ins for now (honey bottles, amethyst shards and emeralds, books, leather
   armour), through item tags, until the luxury jobs of 1.8 make the real ones.
 

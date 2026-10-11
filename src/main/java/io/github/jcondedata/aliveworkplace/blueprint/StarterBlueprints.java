@@ -208,6 +208,17 @@ public final class StarterBlueprints {
 	/** A stone wing at the back with two more beds. */
 	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(11, 16, 14));
 
+	/** The Artisan's House (34.15, a grade I home): a narrow timber house, a stone workroom below and two beds above. */
+	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(9, 15, 12));
+	/** A stone workshop wing at the back with a third bed (grade II). */
+	public static final Entry ARTISANS_HOUSE_2 = new Entry(AliveWorkplace.id("artisans_house_2"), new Vec3i(9, 15, 18));
+	/** The Burgher's Townhouse (34.15, a grade II home: {@code homes/townhouse.json}): three storeys of brick and timber, a shop window, two bedrooms. */
+	public static final Entry TOWNHOUSE = new Entry(AliveWorkplace.id("townhouse"), new Vec3i(11, 20, 12));
+	/** A walled courtyard garden and a third bedroom in the loft (grade III). */
+	public static final Entry TOWNHOUSE_2 = new Entry(AliveWorkplace.id("townhouse_2"), new Vec3i(11, 20, 18));
+	/** A corner tower with a study at the top (grade III). */
+	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(15, 26, 18));
+
 	/** A stone barracks with two Guard Posts, bunks and training dummies. */
 	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 10, 11));
 	/** A wing with two more Guard Posts. */
@@ -368,7 +379,8 @@ public final class StarterBlueprints {
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
-		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
+		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3,
+		ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
 		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,

@@ -76,7 +76,12 @@ public final class Upkeep {
 			return null;
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);
-		for (BuildSiteManager.Finished f : manager.finishedNear(level, bench, Builders.MAX_SITE_DISTANCE)) {
+		java.util.List<BuildSiteManager.Finished> finished = new java.util.ArrayList<>(manager.finishedNear(level, bench, Builders.MAX_SITE_DISTANCE));
+		if (io.github.jcondedata.aliveworkplace.threat.SiegeReport.defencesFirst(level, bench)) {
+			// In a siege and for two days after it (32.6): the walls, gates and towers before anything else (the sort keeps the rest in order).
+			finished.sort(java.util.Comparator.comparingInt(f -> io.github.jcondedata.aliveworkplace.threat.Sieges.isDefence(f.structure()) ? 0 : 1));
+		}
+		for (BuildSiteManager.Finished f : finished) {
 			if (!looksAfter(level, builder, f.owner()) || manager.all().stream().anyMatch(s -> s.placement().equals(f.placement()))) {
 				continue;
 			}

@@ -237,7 +237,7 @@ public class HomesSpecGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 					for (BlockPos head : heads) {
 						BlockPos bed = origin.offset(StructureTemplate.transform(head, mirror, rotation, BlockPos.ZERO));
 						Optional<Homes.Home> home = Homes.at(level, bed);
-						helper.assertTrue(home.map(h -> h.structure().equals(id) && h.tier() == BlueprintUpgrades.tier(id)).orElse(false),
+						helper.assertTrue(home.map(h -> h.structure().equals(id) && h.tier() == io.github.jcondedata.aliveworkplace.people.HomeGrades.grade(id)).orElse(false), // its grade (34.15)
 							"the bed at " + head + " of " + id + " turned " + rotation + ", mirrored " + mirror + " isn't at home in it: " + home);
 						beds++;
 					}

@@ -1582,11 +1582,70 @@ def firewarden():
     return t.save_profession(ASSETS, "firewarden", hat="full")
 
 
+def well_keeper():
+    """The village's water carrier (ROADMAP 32.17): a wide straw sun hat with a river-blue band; a long linen smock
+    under a deep teal-blue wool tabard, darkened at the hem where the water splashes; a leather yoke over both
+    shoulders; a wooden bucket with an iron hoop at the right hip, a coil of rope on the left side, a tin dipper on
+    the right; and the shovel that is their tool slung down the back. Teal sleeves with the linen rolled over the cuff, wet
+    leather gloves. Full headwear: the sun hat replaces the biome's hat."""
+    t = vg.VillagerTexture()
+    straw = Ramp(["#8c6d2c", "#b8964a", "#d6b86a", "#e8d08c"], name="straw")
+    tabard = vg.cloth("#2f6b78", spread=0.24)
+    smock = vg.cloth("#d9d2bc", spread=0.14)
+    blue = vg.cloth("#3f86c4", n=4)
+    yoke = vg.cloth("#6a4224", n=4)
+    vg.hat(t, straw, style="brim", band=blue[1])
+    for side in SIDES:                                   # the straw's weave: a darker stitch every other pixel
+        f = t.face("hat", side)
+        for x in range(0, f.w, 2):
+            f.put(x, 0, straw[2])
+    vg.vest(t, smock, length=18, open_front=False, noise=0.02)
+    vg.vest(t, tabard, length=16, open_front=False, noise=0.03)
+    for side in SIDES:                                   # wet hem: the tabard's last row darker, the smock below it
+        f = t.face("jacket", side)
+        paint(f, ((x, 15) for x in range(f.w)), tabard[0])
+        paint(f, ((x, 16) for x in range(f.w)), smock[2])
+        paint(f, ((x, 17) for x in range(f.w)), smock[1])
+    j = t.face("jacket", "front")
+    for y in range(0, 6):                                # the yoke's straps over the shoulders, down the chest
+        j.put(1, y, yoke[2] if y % 2 else yoke[1])
+        j.put(6, y, yoke[2] if y % 2 else yoke[1])
+    vg.belt(t, yoke, row=10, buckle=STEEL[3])
+    for x, y, c in ((0, 11, "#6a4a2a"), (1, 11, "#8a6a3e"), (2, 11, "#8a6a3e"), (3, 11, "#6a4a2a"),   # the bucket at the hip
+                    (0, 12, STEEL[1]), (1, 12, STEEL[2]), (2, 12, STEEL[2]), (3, 12, STEEL[1]),
+                    (0, 13, "#6a4a2a"), (1, 13, "#a8844e"), (2, 13, "#8a6a3e"), (3, 13, "#5a3c22"),
+                    (1, 10, blue[3]), (2, 10, blue[2])):                                               # water at its rim
+        j.put(x, y, c)
+    east = t.face("jacket", "east")                      # the coil of rope on the left side
+    for x, y in ((1, 11), (2, 11), (3, 11), (1, 12), (3, 12), (1, 13), (2, 13), (3, 13)):
+        east.put(x, y, ROPE[2] if y == 11 else ROPE[1])
+    east.put(2, 12, ROPE[0])
+    west = t.face("jacket", "west")                      # a tin dipper on the right side
+    paint(west, ((2, 11), (2, 12)), STEEL[2])
+    west.put(2, 13, STEEL[1])
+    west.put(3, 13, STEEL[0])
+    back = t.face("jacket", "back")                      # the yoke crossing the back, the shovel slung under it
+    for x in range(back.w):
+        back.put(x, 1, yoke[1])
+    for y in range(2, 12):                               # the shovel's haft, the grip at the top
+        back.put(4, y, "#a8844e" if y % 2 else "#8a6a3e")
+    paint(back, ((3, 2), (5, 2)), "#6a4a2a")
+    for x, y, c in ((3, 12, STEEL[2]), (4, 12, STEEL[3]), (5, 12, STEEL[1]),      # the blade
+                    (3, 13, STEEL[2]), (4, 13, STEEL[2]), (5, 13, STEEL[1]), (4, 14, STEEL[0])):
+        back.put(x, y, c)
+    vg.sleeves(t, tabard, gloves=vg.cloth("#5e3a1e", n=4))
+    for side in ("front", "west", "east", "back"):       # the linen smock's sleeve rolled up over the cuff
+        f = t.face("arm", side)
+        paint(f, ((x, f.h - 2) for x in range(f.w)), smock[2])
+    return t.save_profession(ASSETS, "well_keeper", hat="full")
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 DRAW += [jeweller]   # 34.12
 DRAW += [firewarden]   # 32.16
+DRAW += [well_keeper]   # 32.17
 
 if __name__ == "__main__":
     run(DRAW)

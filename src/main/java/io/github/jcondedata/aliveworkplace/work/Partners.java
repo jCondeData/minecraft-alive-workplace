@@ -190,6 +190,9 @@ public final class Partners {
 		if (profession == VillagerProfession.CARTOGRAPHER) {
 			return Set.of("flying", "ground"); // scouting ahead, digging up finds: shorter searches and rests
 		}
+		if (profession == ModVillagers.WELL_KEEPER) {
+			return Set.of("water"); // Squirtle, Lotad, Wooper...: buckets filled and poured quicker (WellKeeperWork)
+		}
 		if (profession == ModVillagers.FIREWARDEN) {
 			return Set.of("water"); // Squirtle, Psyduck, Vaporeon...: they douse fires at range (threat/VillageFire)
 		}

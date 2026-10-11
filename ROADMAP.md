@@ -3158,7 +3158,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the job starts from the grindstone and a water bucket, and the station tooltip lists it;
   - a builder puts the burned blocks back;
   - scene `fire`: a roof catching and the firewarden putting it out (GIF).
-- [ ] **32.17** **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
+- [x] **32.17** (review: pending 2026-10-11) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
   others 5% a day after 5 days without rain, twice as likely while a desert raiders' lair stands; it lasts 3–5 days
   and rain ends it. In the hall's area: crops, stems and berry bushes grow at a quarter pace, farmland dries, water
   cauldrons lose a level a day, and villagers are 10 less happy ("the wells are low") unless the village has a

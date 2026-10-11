@@ -747,6 +747,52 @@ final class JobScenes {
 					&& warden.getVillagerXp() > 1;
 			};
 		}, null));
+		// Drought (ROADMAP 32.17): a wheat field gone dry (farmland at moisture 0, dead bushes round it) in a village under
+		// a drought; the Well Keeper at the cauldron (picked with a shovel) fills a bucket at the pond and carries it to the
+		// field, bucket after bucket, each wetting 9 farmland dark again in a splash.
+		SCENES.put("drought", new Job("the fields were dry in the drought, and the Well Keeper carried water from the pond to them, bucket after bucket", 1600,
+			new Vec3(11.5, -53.0, 5.5), new Vec3(0.0, -60.0, -7.0), (level, player) -> {
+			level.setDayTime(2000);
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			// The field: 9 x 5 farmland dried right out, wheat of all ages on it, dead bushes on coarse dirt round it.
+			net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(7L);
+			List<BlockPos> field = new ArrayList<>();
+			for (int x = -4; x <= 4; x++) {
+				for (int z = -11; z <= -7; z++) {
+					BlockPos soil = STATION.offset(x, -1, z);
+					level.setBlockAndUpdate(soil, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 0));
+					level.setBlockAndUpdate(soil.above(), ((net.minecraft.world.level.block.CropBlock) net.minecraft.world.level.block.Blocks.WHEAT)
+						.getStateForAge(random.nextInt(4)));
+					field.add(soil);
+				}
+			}
+			for (int[] d : new int[][] {{-6, -12}, {-6, -8}, {6, -10}, {6, -6}, {-2, -13}, {3, -13}}) {
+				BlockPos at = STATION.offset(d[0], -1, d[1]);
+				level.setBlockAndUpdate(at, net.minecraft.world.level.block.Blocks.COARSE_DIRT.defaultBlockState());
+				level.setBlockAndUpdate(at.above(), net.minecraft.world.level.block.Blocks.DEAD_BUSH.defaultBlockState());
+			}
+			// The pond the keeper fills the bucket at, beside the cauldron.
+			for (int x = 3; x <= 5; x++) {
+				for (int z = 1; z <= 3; z++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+				}
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			io.github.jcondedata.aliveworkplace.threat.Disaster drought = io.github.jcondedata.aliveworkplace.threat.Drought.get().orElse(null);
+			Showcase.check(drought != null && entity != null, "the drought is loaded and the hall stands");
+			if (drought != null && entity != null) {
+				entity.setDisaster(null, -1, -1, -100);
+				io.github.jcondedata.aliveworkplace.threat.Disasters.start(level, hall, entity, drought,
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, hall), net.minecraft.util.RandomSource.create(1L));
+			}
+			Villager keeper = picked(level, player, STATION, Blocks.CAULDRON, Items.IRON_SHOVEL);
+			return l -> {
+				long watered = field.stream().filter(p -> io.github.jcondedata.aliveworkplace.threat.Drought.watered(l, p)).count();
+				return watered >= 18 && keeper.getVillagerXp() > 1 && io.github.jcondedata.aliveworkplace.threat.Drought.in(l, STATION.offset(0, -1, -9));
+			};
+		}, null));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks

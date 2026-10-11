@@ -13,6 +13,7 @@
 		"BurningArrowMixin",
 		"DroughtCropMixin",
 		"DroughtFarmlandMixin",
+		"DroughtPlantMixin",
 		"CaravanPartyMixin",
 		"EntityAccessor",
 		"ExplosionMixin",

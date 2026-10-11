@@ -39,6 +39,7 @@ public final class ModTrades {
 		habitatKeeperTrades();
 		jewellerTrades();
 		firewardenTrades();
+		wellKeeperTrades();
 		gemGrowerTrades();
 		vintnerTrades();
 		tailorTrades();
@@ -209,6 +210,27 @@ public final class ModTrades {
 				net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.FIRE_RESISTANCE), 4, 15, 0.05f)));
 		Platform.get().addTrades(ModVillagers.FIREWARDEN, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(Items.LIGHTNING_ROD), 4, 30, 0.05f)));
+	}
+
+	/**
+	 * Well Keepers (32.17): they buy buckets, clay to seal a well and stone to line one, and sell water: a water bucket, a
+	 * cauldron, pointed dripstone that fills a cauldron under it and, at Master, a wet sponge.
+	 */
+	private static void wellKeeperTrades() {
+		Platform.get().addTrades(ModVillagers.WELL_KEEPER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.BUCKET, 1), new ItemStack(Items.EMERALD), 12, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.WATER_BUCKET), 8, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.WELL_KEEPER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.CLAY_BALL, 10), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.CAULDRON), 6, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.WELL_KEEPER, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COBBLESTONE, 24), new ItemStack(Items.EMERALD), 16, 10, 0.05f)));
+		Platform.get().addTrades(ModVillagers.WELL_KEEPER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.POINTED_DRIPSTONE, 2), 8, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.WELL_KEEPER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(Items.WET_SPONGE), 4, 30, 0.05f)));
 	}
 
 	private static void guardTrades() {

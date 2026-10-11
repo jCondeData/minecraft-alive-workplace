@@ -100,6 +100,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 		APPLIED.clear();
 		RAIN.clear();
 		WOOD.clear();
+		Drought.forget();
 	}
 
 	/** Whether disasters are open at all (the M32 expansion). */
@@ -375,10 +376,16 @@ public final class Disasters implements ResourceManagerReloadListener {
 		return Optional.empty();
 	}
 
-	/** {@code crop_growth}: whether the crop at {@code pos} may grow on this random tick (its hall's {@code factor} of the time). */
+	/**
+	 * {@code crop_growth}: whether the crop, stem or berry bush at {@code pos} may grow on this random tick (its hall's
+	 * {@code factor} of the time; always on farmland a Well Keeper watered today).
+	 */
 	public static boolean cropGrows(ServerLevel level, BlockPos pos, RandomSource random) {
 		Optional<Afflicted> a = afflicted(level, pos, Disaster.Effect.Type.CROP_GROWTH);
-		return a.isEmpty() || random.nextDouble() < a.get().disaster().effect(Disaster.Effect.Type.CROP_GROWTH).get().factor();
+		if (a.isEmpty() || Drought.watered(level, pos.below())) {
+			return true; // a Well Keeper's bucket (32.17): the crops on watered farmland grow at the full pace that day
+		}
+		return random.nextDouble() < a.get().disaster().effect(Disaster.Effect.Type.CROP_GROWTH).get().factor();
 	}
 
 	/** {@code farmland_dries}: whether the farmland at {@code pos} dries on this random tick, water or not. */

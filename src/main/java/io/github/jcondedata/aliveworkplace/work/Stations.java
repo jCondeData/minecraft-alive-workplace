@@ -173,7 +173,9 @@ public final class Stations {
 			job(() -> VillagerProfession.LEATHERWORKER, any(Items.LEATHER)),
 			job(() -> ModVillagers.SIFTER, any(Items.GRAVEL, Items.SAND, Items.RED_SAND, Items.SOUL_SAND)),
 			// sweet berries, glow berries or an apple (34.9), with config vintners on
-			job(() -> ModVillagers.VINTNER, io.github.jcondedata.aliveworkplace.vintner.Vintners::isFruit))),
+			job(() -> ModVillagers.VINTNER, io.github.jcondedata.aliveworkplace.vintner.Vintners::isFruit),
+			// a shovel (32.17), with config wellKeepers on: the village's water carrier shares the leatherworker's block
+			job(() -> ModVillagers.WELL_KEEPER, WellKeeperWork::isShovel))),
 		// The loom (34.10): a jobless villager still takes it as a Shepherd; string picks the Tailor (with config tailors
 		// on), shears bring the Shepherd back
 		new Station(is(PoiTypes.SHEPHERD), Blocks.LOOM, List.of(
@@ -480,6 +482,9 @@ public final class Stations {
 	 */
 	public static boolean available(Job job) {
 		VillagerProfession profession = job.profession().get();
+		if (profession == ModVillagers.WELL_KEEPER && (!WellKeeperWork.ENABLED || !io.github.jcondedata.aliveworkplace.threat.Disasters.live())) {
+			return false; // config wellKeepers off (or disasters closed): the cauldron's tooltip leaves the Well Keeper out
+		}
 		if (profession == ModVillagers.FIREWARDEN && (!FirewardenWork.ENABLED || !io.github.jcondedata.aliveworkplace.threat.VillageFire.live())) {
 			return false; // config firewardens off (or village fires off): the grindstone's tooltip names the Weaponsmith and the Guard only
 		}

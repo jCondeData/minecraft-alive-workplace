@@ -118,6 +118,12 @@ public final class WorkplaceConfig {
 	 * fires. Off: no Firewarden job, and Firewardens already hired stand idle.
 	 */
 	public boolean firewardens = Expansions.on(Expansions.M32);
+	/**
+	 * Villagers at a cauldron can be made Well Keepers with a shovel (ROADMAP 32.17): in a drought they carry water to
+	 * the fields, and between droughts they keep the cauldrons full and the farmland wet. Off: no Well Keeper job, and
+	 * Well Keepers already hired stand idle.
+	 */
+	public boolean wellKeepers = Expansions.on(Expansions.M32);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -622,6 +628,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED = sieges && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = firewardens && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = wellKeepers && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
 		io.github.jcondedata.aliveworkplace.threat.Disasters.DISABLED = disastersOff(); // 32.15

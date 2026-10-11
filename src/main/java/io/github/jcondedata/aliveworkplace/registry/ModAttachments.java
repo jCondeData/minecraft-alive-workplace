@@ -75,6 +75,9 @@ public final class ModAttachments {
 	/** How many of their two buckets a firewarden has full (ROADMAP 32.16); none saved: both full. */
 	public static final Attachment<Integer> FIREWARDEN_WATER = Attachment.saved("firewarden_water", com.mojang.serialization.Codec.INT);
 
+	/** Whether a Well Keeper carries a full bucket (ROADMAP 32.17): 1 full, none saved or 0 empty. */
+	public static final Attachment<Integer> WELL_KEEPER_WATER = Attachment.saved("well_keeper_water", com.mojang.serialization.Codec.INT);
+
 	/** How many trees a lumberjack has cut down (shown above its head). */
 	public static final Attachment<Integer> TREES_FELLED = Attachment.saved("trees_felled", com.mojang.serialization.Codec.INT);
 

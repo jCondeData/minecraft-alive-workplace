@@ -71,6 +71,7 @@ public class StationsGameTests implements FabricGameTest {
 			new Row(Blocks.STONECUTTER, Items.GOLD_NUGGET, ModVillagers.JEWELLER),
 			new Row(Blocks.GRINDSTONE, Items.IRON_SWORD, ModVillagers.GUARD),
 			new Row(Blocks.GRINDSTONE, Items.WATER_BUCKET, ModVillagers.FIREWARDEN),
+			new Row(Blocks.CAULDRON, Items.IRON_SHOVEL, ModVillagers.WELL_KEEPER),
 			new Row(Blocks.GRINDSTONE, Items.IRON_INGOT, VillagerProfession.WEAPONSMITH),
 			new Row(Blocks.CRAFTING_TABLE, Items.OAK_PLANKS, ModVillagers.CARPENTER),
 			new Row(Blocks.BEEHIVE, Items.GLASS_BOTTLE, ModVillagers.BEEKEEPER),
@@ -290,17 +291,27 @@ public class StationsGameTests implements FabricGameTest {
 	public void aSwitchedOffJobLeavesItsBlocksTooltip(GameTestHelper helper) {
 		boolean vintners = io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED;
 		boolean gemGrowers = io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED;
+		boolean wellKeepers = io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED;
 		// (set and put back within this one call: tests beside this one never see the switches off)
 		try {
 			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = true;
 			io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = true;
-			helper.assertTrue(offered(Blocks.CAULDRON).equals(List.of(VillagerProfession.LEATHERWORKER, ModVillagers.SIFTER, ModVillagers.VINTNER)),
+			io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = true;
+			helper.assertTrue(offered(Blocks.CAULDRON).equals(List.of(VillagerProfession.LEATHERWORKER, ModVillagers.SIFTER, ModVillagers.VINTNER,
+				ModVillagers.WELL_KEEPER)),
 				"vintners on: the cauldron's tooltip offers " + offered(Blocks.CAULDRON).stream().map(StationsGameTests::name).toList());
 			helper.assertTrue(offered(Blocks.STONECUTTER).equals(List.of(VillagerProfession.MASON, ModVillagers.GEM_GROWER, ModVillagers.JEWELLER)),
 				"gemGrowers on: the stonecutter's tooltip offers " + offered(Blocks.STONECUTTER).stream().map(StationsGameTests::name).toList());
 			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = false;
-			helper.assertTrue(offered(Blocks.CAULDRON).equals(List.of(VillagerProfession.LEATHERWORKER, ModVillagers.SIFTER)),
+			helper.assertTrue(offered(Blocks.CAULDRON).equals(List.of(VillagerProfession.LEATHERWORKER, ModVillagers.SIFTER, ModVillagers.WELL_KEEPER)),
 				"vintners off: the cauldron's tooltip offers " + offered(Blocks.CAULDRON).stream().map(StationsGameTests::name).toList());
+			// wellKeepers off (32.17): the Well Keeper leaves the cauldron's tooltip, the Vintner stays
+			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = false;
+			helper.assertTrue(offered(Blocks.CAULDRON).equals(List.of(VillagerProfession.LEATHERWORKER, ModVillagers.SIFTER, ModVillagers.VINTNER)),
+				"wellKeepers off: the cauldron's tooltip offers " + offered(Blocks.CAULDRON).stream().map(StationsGameTests::name).toList());
+			io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = true;
+			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = false;
 			helper.assertTrue(offered(Blocks.STONECUTTER).contains(ModVillagers.GEM_GROWER), "vintners off took the Gem Grower off the stonecutter");
 			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = true;
 			io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = false;
@@ -310,6 +321,7 @@ public class StationsGameTests implements FabricGameTest {
 		} finally {
 			io.github.jcondedata.aliveworkplace.vintner.Vintners.ENABLED = vintners;
 			io.github.jcondedata.aliveworkplace.gem.GemGrowers.ENABLED = gemGrowers;
+			io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = wellKeepers;
 		}
 		helper.succeed();
 	}

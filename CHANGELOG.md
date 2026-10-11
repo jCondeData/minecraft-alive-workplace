@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Drought and the Well Keeper** (32.17, behind the 1.6 expansion): after five days without rain a village may fall
+  into a drought (5% a day; desert, savanna and badlands villages 15%, twice that with a desert raiders' lair near),
+  lasting 3 to 5 days until rain ends it. Crops, stems and berry bushes grow at a quarter pace, farmland dries, water
+  cauldrons lose a level a day and villagers are unhappy ("The wells are low") unless the village has a finished Well
+  or Fountain. The new **Well Keeper** (cauldron + a shovel) carries water from the nearest well, river or pond to the
+  fields, each bucket wetting 9 farmland whose crops grow at full pace that day; between droughts they keep the
+  cauldrons full and dry farmland wet, and they foretell the next drought a day ahead. Water-type partners speed them.
+  Config `wellKeepers`.
 - **Fire and the Firewarden** (32.16, behind the 1.6 expansion): wooden villages can burn, from lightning in a
   thunderstorm (1 in 3), a chimney spark on a dry day (2%) or a raider's burning arrow (1 in 4, with `mobGriefing`).
   The fire spreads by the game's own rules but only through the builders' blocks, never a player's, and the builders

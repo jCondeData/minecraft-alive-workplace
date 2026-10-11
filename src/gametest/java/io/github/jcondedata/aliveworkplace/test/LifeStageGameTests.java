@@ -24,7 +24,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
+import net.minecraft.world.entity.ai.behavior.PositionTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.component.ItemLore;
@@ -183,6 +186,115 @@ public class LifeStageGameTests implements FabricGameTest {
 			helper.assertTrue(elder > young * 0.80, "the elder is more than 15% slower: " + went);
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * B95: vanilla takes a worker's walk over at its own pace. Walker also sets the look target, and when the walk target is
+	 * dropped for a tick (no path yet), vanilla's SetWalkTargetFromLookTarget walks the villager to that same block at 0.5.
+	 * Walker must ask again at the elder's pace (CI builds 763 and 766: "[tick 1: 0.461] [tick 2: -1.0] [tick 3: 0.5]", 100%).
+	 */
+	//$ gametest_ticks_batch AREA '100' '"lifeStageWalkAsked"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "lifeStageWalkAsked")
+	public void b95AnElderIsAskedAgainWhenVanillaTakesTheWalkOver(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		long today = Chronicle.day(level);
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		Leftovers.after(helper, () -> {
+			bram.discard();
+			tom.discard();
+		});
+		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(tom, today - 30);
+		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 20));
+		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 20));
+		Walker bramWalk = new Walker(0.5f);
+		Walker tomWalk = new Walker(0.5f);
+		bramWalk.walkTo(level, bram, bramGoal, 1.5);
+		tomWalk.walkTo(level, tom, tomGoal, 1.5);
+		helper.assertTrue(Math.abs(speed(bram) - 0.5f * LifeStages.ELDER_WALK) < 0.001f, "the elder's first walk target: " + speed(bram));
+		// What the CI failures show: the target is dropped, and vanilla walks to the worker's look target at its own 0.5.
+		for (Villager v : List.of(bram, tom)) {
+			v.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+			PositionTracker look = v.getBrain().getMemory(MemoryModuleType.LOOK_TARGET).orElseThrow(() -> new IllegalStateException("Walker set no look target"));
+			v.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(look, 0.5f, 2));
+		}
+		bramWalk.walkTo(level, bram, bramGoal, 1.5);
+		tomWalk.walkTo(level, tom, tomGoal, 1.5);
+		helper.assertTrue(Math.abs(speed(tom) - 0.5f) < 0.001f, "the younger villager's walk target after vanilla took it over: " + speed(tom));
+		helper.assertTrue(Math.abs(speed(bram) - 0.5f * LifeStages.ELDER_WALK) < 0.001f,
+			"the elder's walk target after vanilla took it over (0.461 is his pace, 0.5 is vanilla's): " + speed(bram));
+		helper.succeed();
+	}
+
+	/** B95 over real ground: a walk vanilla already started at its own pace (0.5) slows to the elder's once Walker asks for it. */
+	//$ gametest_ticks_batch AREA '200' '"lifeStageWalkStarted"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "lifeStageWalkStarted")
+	public void b95AnElderSlowsAWalkVanillaStarted(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		long today = Chronicle.day(level);
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		Leftovers.after(helper, () -> {
+			bram.discard();
+			tom.discard();
+		});
+		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(tom, today - 30);
+		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 20));
+		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 20));
+		Walker bramWalk = new Walker(0.5f);
+		Walker tomWalk = new Walker(0.5f);
+		int[] ticks = new int[1];
+		double[] from = new double[2];
+		// What the elder's walk was asked at, tick by tick (a failure says when it changed).
+		StringBuilder asked = new StringBuilder();
+		float[] last = {Float.NaN};
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			float now = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(-1f);
+			if (now != last[0] && asked.length() < 2000) {
+				last[0] = now;
+				asked.append(" [tick ").append(ticks[0]).append(": ").append(now).append(", nav ").append(bram.getNavigation().isDone() ? "idle" : "walking")
+					.append(", z ").append(Math.round(bram.getZ() * 100) / 100.0).append(']');
+			}
+			if (ticks[0] == 10) {
+				// Both stand on the ground by now. Vanilla's own walk to the look target a worker's Walker left
+				// (SetWalkTargetFromLookTarget: 0.5, close enough 2), as it does while Walker waits after a path that failed.
+				vanillaWalk(bram, bramGoal);
+				vanillaWalk(tom, tomGoal);
+			} else if (ticks[0] >= 20 && ticks[0] <= 100) {
+				if (ticks[0] == 20) {
+					helper.assertTrue(now == 0.5f && !bram.getNavigation().isDone() && !tom.getNavigation().isDone(),
+						"vanilla's walk hadn't started by tick 20: the elder's walk target:" + asked + ", the younger " + (tom.getNavigation().isDone() ? "idle" : "walking"));
+				}
+				bramWalk.walkTo(level, bram, bramGoal, 1.5);
+				tomWalk.walkTo(level, tom, tomGoal, 1.5);
+			}
+			if (ticks[0] == 40) {
+				from[0] = bram.getZ();
+				from[1] = tom.getZ();
+			}
+		});
+		helper.runAfterDelay(100, () -> {
+			double elder = bram.getZ() - from[0];
+			double young = tom.getZ() - from[1];
+			String went = "in 60 ticks the elder went " + elder + " blocks, the younger villager " + young + " (" + Math.round(100 * elder / young)
+				+ "%); the elder's walk target:" + asked;
+			org.slf4j.LoggerFactory.getLogger("LifeStageGameTests").info("[elder walk, vanilla started] {}", went);
+			helper.assertTrue(young > 3, "the younger villager hardly walked: " + went);
+			helper.assertTrue(elder < young * 0.90, "the elder is less than 15% slower on a walk vanilla started: " + went);
+			helper.assertTrue(elder > young * 0.80, "the elder is more than 15% slower: " + went);
+			helper.succeed();
+		});
+	}
+
+	private static void vanillaWalk(Villager villager, BlockPos goal) {
+		var brain = villager.getBrain();
+		brain.setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(goal));
+		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosTracker(goal), 0.5f, 2));
 	}
 
 	/** "A quiet old age" (+5) for an elder who is fed and has a bed, first on the hall's card; not hungry, not without a bed; and elders talk like elders. */

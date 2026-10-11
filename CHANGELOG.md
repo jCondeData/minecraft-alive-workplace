@@ -16,6 +16,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
+  own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager
+  lost the faster walk. A worker now always walks at their own pace.
+
 ## 0.142.0 — 2026-10-10
 
 ### Added

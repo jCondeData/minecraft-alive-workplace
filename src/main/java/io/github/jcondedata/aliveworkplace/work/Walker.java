@@ -53,15 +53,22 @@ public final class Walker {
 	 */
 	public static int requestWalk(Villager villager, BlockPos pos, float speed, int closeEnough, int retryWait) {
 		var brain = villager.getBrain();
-		boolean set = brain.getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getTarget().currentBlockPosition().equals(pos)).orElse(false);
-		if (set) {
+		float wanted = speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
+			* io.github.jcondedata.aliveworkplace.people.LifeStages.walk(villager);
+		WalkTarget current = brain.getMemory(MemoryModuleType.WALK_TARGET).orElse(null);
+		if (current != null && current.getTarget().currentBlockPosition().equals(pos)) {
+			if (Math.abs(current.getSpeedModifier() - wanted) > 1.0E-4f) {
+				// Someone else (vanilla's SetWalkTargetFromLookTarget, at 0.5) set our block at its own pace (B99): take the
+				// walk back at ours. Same block, so no new path; the walk under way changes speed now.
+				brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, wanted, closeEnough));
+				villager.getNavigation().setSpeedModifier(wanted);
+			}
 			return 0;
 		}
 		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) && retryWait + 1 < RETRY_TICKS) {
 			return retryWait + 1;
 		}
-		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, speed * io.github.jcondedata.aliveworkplace.people.Traits.speed(villager)
-			* io.github.jcondedata.aliveworkplace.people.LifeStages.walk(villager), closeEnough));
+		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, wanted, closeEnough));
 		return 0;
 	}
 

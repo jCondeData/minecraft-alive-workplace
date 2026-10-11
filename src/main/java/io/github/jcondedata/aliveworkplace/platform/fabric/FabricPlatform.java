@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.platform.fabric;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.serialization.Codec;
+import io.github.jcondedata.aliveworkplace.command.OurTickCost;
 import io.github.jcondedata.aliveworkplace.platform.Attachment;
 import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
@@ -126,11 +127,33 @@ public final class FabricPlatform implements Platform {
 
 	@Override
 	public void onServerTick(Consumer<MinecraftServer> action) {
+		if (OurTickCost.ENABLED) { // 25.3: timed in the benchmark only
+			ServerTickEvents.END_SERVER_TICK.register(server -> {
+				OurTickCost.enter(action);
+				try {
+					action.accept(server);
+				} finally {
+					OurTickCost.exit(action);
+				}
+			});
+			return;
+		}
 		ServerTickEvents.END_SERVER_TICK.register(action::accept);
 	}
 
 	@Override
 	public void onLevelTick(Consumer<ServerLevel> action) {
+		if (OurTickCost.ENABLED) { // 25.3: timed in the benchmark only
+			ServerTickEvents.END_WORLD_TICK.register(level -> {
+				OurTickCost.enter(action);
+				try {
+					action.accept(level);
+				} finally {
+					OurTickCost.exit(action);
+				}
+			});
+			return;
+		}
 		ServerTickEvents.END_WORLD_TICK.register(action::accept);
 	}
 

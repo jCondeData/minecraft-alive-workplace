@@ -6,6 +6,13 @@ time went into Alive Workplace code, and where.
     python3 tools/packtest/perf.py build/packtest/server/perf.jfr
     python3 tools/packtest/perf.py season.jfr --days server.log   # 30.22: also our share in each "Season day" of the log
     python3 tools/packtest/perf.py --spikes soak-1.jfr soak-2.jfr ...  # 25.4: all of them together, then the long ticks
+    python3 tools/packtest/perf.py perf.jfr --ticks server.log   # 25.3: also our code's own time a tick, as the mod timed it
+
+--ticks (25.3): in the benchmark the mod times its own code each tick (command/OurTickCost: our job behaviours and tick
+handlers, with System.nanoTime) and logs a "Benchmark: our code a tick" line a minute and a "Benchmark: a tick with"
+line for each tick with over 50 ms of ours. These are measured, not sampled: they tell a long tick of ours from ticks
+run back to back to catch up, which the profile alone can't. With --spikes, each long stretch also says whether a tick
+of ours over 50 ms was logged within a second of it.
 
 --spikes (25.4, the soak's p99 spikes): the benchmark load logs no tick times of its own, so the long ticks are found in
 the profile itself. Between ticks the server thread sleeps and isn't sampled; a run of its samples with no gap over
@@ -77,7 +84,8 @@ def stretches(times_frames, gap_ms=SPIKE_GAP):
         yield run
 
 
-def spikes(paths, top=10):
+def spikes(paths, top=10, log=None):
+    ours_long = [second for second, _, _ in our_ticks(log)[1]] if log else None
     long = []
     pauses = []
     for path in paths:
@@ -110,6 +118,10 @@ def spikes(paths, top=10):
         if where_ours:
             line += "; ours in " + ", ".join(f"{k} x{v}" for k, v in where_ours.most_common(2))
         line += "; innermost " + ", ".join(f"{k} x{v}" for k, v in where_all.most_common(3))
+        if ours_long is not None:
+            day = int(start) % 86400
+            timed = any(day - 1 <= s <= day + ms / 1000 + 1 for s in ours_long)
+            line += "; a tick of ours over 50 ms logged then: " + ("yes" if timed else "no")
         print(line)
     big = [p for p in pauses if p[1] >= 20]
     worst = max((p[1] for p in pauses), default=0)
@@ -117,6 +129,33 @@ def spikes(paths, top=10):
     for second, ms, name, cause, path in sorted(big, key=lambda p: -p[1])[:5]:
         clock = f"{int(second // 3600) % 24:02d}:{int(second // 60) % 60:02d}:{second % 60:06.3f}"
         print(f"  {ms:.0f} ms at {clock} ({path.rsplit('/', 1)[-1]}): {name}, {cause}")
+
+
+def our_ticks(log):
+    """25.3: the mod's own timer from the server log: (window lines [(p50, p99, max, biggest)], long ticks [(second, ms, biggest)])."""
+    windows, longs = [], []
+    for line in open(log, errors="replace"):
+        m = re.search(r"Benchmark: our code a tick over the last \d+ ticks: p50 ([\d.]+) ms, p99 ([\d.]+) ms, max ([\d.]+) ms \(biggest call: (.*?)\);", line)
+        if m:
+            windows.append((float(m.group(1)), float(m.group(2)), float(m.group(3)), m.group(4)))
+        m = re.search(r"\[(\d\d):(\d\d):(\d\d)\].*Benchmark: a tick with ([\d.]+) ms of our code \(biggest call: (.*)\)", line)
+        if m:
+            longs.append((int(m.group(1)) * 3600 + int(m.group(2)) * 60 + int(m.group(3)), float(m.group(4)), m.group(5)))
+    return windows, longs
+
+
+def print_our_ticks(log):
+    windows, longs = our_ticks(log)
+    print(f"--- our code a tick, timed by the mod (25.3; {len(windows)} one-minute windows in {log.rsplit('/', 1)[-1]})")
+    if not windows:
+        print("  no \"Benchmark: our code a tick\" lines (an older jar, or the load never started)")
+        return
+    worst = max(windows, key=lambda w: w[2])
+    print(f"  max {worst[2]:.1f} ms ({worst[3]}); worst minute's p99 {max(w[1] for w in windows):.1f} ms; "
+          f"median p50 {sorted(w[0] for w in windows)[len(windows) // 2]:.1f} ms")
+    print(f"  ticks with over {SPIKE_MS} ms of our code: {len(longs)}")
+    for second, ms, what in sorted(longs, key=lambda x: -x[1])[:5]:
+        print(f"    {ms:.1f} ms at {second // 3600:02d}:{second // 60 % 60:02d}:{second % 60:02d} (biggest call: {what})")
 
 
 def long_ticks(log):
@@ -211,10 +250,22 @@ def main(path, log=None):
 
 
 if __name__ == "__main__":
+    ticks_log = None
+    if "--ticks" in sys.argv:
+        at = sys.argv.index("--ticks")
+        ticks_log = sys.argv[at + 1]
+        del sys.argv[at:at + 2]
     if "--spikes" in sys.argv:
         files = [a for a in sys.argv[1:] if a != "--spikes"]
         main(files)
-        spikes(files)
+        spikes(files, log=ticks_log)
+        if ticks_log:
+            print_our_ticks(ticks_log)
+        sys.exit(0)
+    if ticks_log and len(sys.argv) == 1:
+        print_our_ticks(ticks_log)
         sys.exit(0)
     args = [a for a in sys.argv[1:] if a != "--days"]
     main(args[0] if args else "build/packtest/server/perf.jfr", args[1] if "--days" in sys.argv and len(args) > 1 else None)
+    if ticks_log:
+        print_our_ticks(ticks_log)

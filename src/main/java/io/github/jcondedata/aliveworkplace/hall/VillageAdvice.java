@@ -127,6 +127,8 @@ public final class VillageAdvice {
 		}
 		// A Legend who lacks only one condition (29.4)
 		tips.addAll(io.github.jcondedata.aliveworkplace.legend.LegendsPage.tips(level, hall));
+		// The Wonder closest to ready, once the village is a Town (35.3)
+		tips.addAll(io.github.jcondedata.aliveworkplace.wonder.WondersPage.tips(level, hall));
 		// A realm (33.11): a Town or better with an owner, in no realm yet
 		if (io.github.jcondedata.aliveworkplace.realm.Realms.suggest(level, hall)) {
 			tips.add(new Tip("realm", Items.GOLDEN_HELMET, io.github.jcondedata.aliveworkplace.realm.Realms.FOUNDING_RANK.title()));

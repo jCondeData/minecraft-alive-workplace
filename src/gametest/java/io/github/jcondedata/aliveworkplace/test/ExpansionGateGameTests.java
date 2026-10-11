@@ -43,11 +43,11 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "tradePacts", "alliances", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
-		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians");
+		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
-		"coloniesPerVillage", "realmMaxMembers");
+		"coloniesPerVillage", "realmMaxMembers", "wonderServerLimit");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -104,6 +104,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("FirewardenWork", () -> io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED);
 		map.put("WellKeeperWork", () -> io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED);
 		map.put("PhysicianWork", () -> io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED);
+		map.put("Wonders", () -> io.github.jcondedata.aliveworkplace.wonder.Wonders.ENABLED);
+		map.put("Wonders.LEGENDS", () -> io.github.jcondedata.aliveworkplace.wonder.Wonders.LEGENDS);
 		return map;
 	}
 
@@ -135,7 +137,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			});
 			protection[0] = VillageProtection.ENABLED;
 		});
-		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M31 && !Expansions.M33 && !Expansions.M34,
+		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M31 && !Expansions.M33 && !Expansions.M34 && !Expansions.M35,
 			"a milestone was marked complete: move its switches out of this test");
 		helper.assertTrue(on.isEmpty(), "a 0.139.0 config turned on unfinished expansions: " + on);
 		helper.assertTrue(protection[0], "a finished feature's switch (villageProtection) should still work");
@@ -174,8 +176,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 110 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (110 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 113 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (113 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -256,7 +258,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 				}
 			});
 			// Written with the gates open (34.23): the file's false is the player's choice, kept.
-			StringBuilder json = new StringBuilder("{\"giftedChance\": 0, \"expansionsOpen\": [\"M27\", \"M28\", \"M29\", \"M30\", \"M31\", \"M32\", \"M33\", \"M34\"]");
+			StringBuilder json = new StringBuilder("{\"giftedChance\": 0, \"expansionsOpen\": [\"M27\", \"M28\", \"M29\", \"M30\", \"M31\", \"M32\", \"M33\", \"M34\", \"M35\"]");
 			for (String name : GATED_SWITCHES) {
 				json.append(", \"").append(name).append("\": false");
 			}
@@ -274,7 +276,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 110, "every option on the screen in GameTests (33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 113, "every option on the screen in GameTests (35.2 wonders, wonderLegends and wonderServerLimit, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 }

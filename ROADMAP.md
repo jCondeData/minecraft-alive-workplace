@@ -3902,7 +3902,7 @@ on a real world.
   the people who live there. Done when: renders of I-III from the front, the back and above, in all five styles, are
   in the review package; a builder builds each in a GameTest (`huge_area`); the ball gathers in the ballroom when
   there is one; scene `grand_houses` adds the Manor.
-- [x] **34.17** (review: pending 2026-10-11) **Dressed by class: the pick round.** A class layer worn over the job's outfit
+- [x] **34.17** (approved 2026-10-11) **Dressed by class: the pick round.** A class layer worn over the job's outfit
   (`textures/entity/villager/class/<class>.png`, recipes in `tools/textures/art/classes.py`, pixel-art skill): never
   on the head (the job's hat stays), nothing under the level badge, the back painted, the job still readable under
   it. Peasants keep their job's outfit as it is today (the owner-approved look). Three versions of each, every one a

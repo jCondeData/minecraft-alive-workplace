@@ -3382,7 +3382,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     puts everyone and everything back;
   - the order survives save and reload mid-journey;
   - showcase scene `colony_departure` (the settlers gathered at the hall, a GIF of them walking out).
-- [ ] **33.10** **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
+- [x] **33.10** (review: pending 2026-10-11) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
   `KeepLoaded`'s) and the settlers make camp on the nearest open ground within 48 blocks (the Settler's Wagon's
   `makeCamp` checks; until 33.14's Colony Camp lands, the settlers' camp with a Village Hall and a Travel Post set
   beside it). Then:
@@ -4409,6 +4409,13 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (33.10, decisions; lane a): the arrival GameTest runs in a new `colony_area` (44 x 20 x 44), not
+  `huge_area` as the Done when says: the camp with a Starter Cottage and a Storehouse either side is 35 blocks across,
+  more than `huge_area`'s 30 (the no-room test does use `huge_area`). The tests take the area's barrier roof off, since
+  the settlers find the ground by the height map. Our choices: the camp faces the mother village; the whole cost
+  (3,200, treasury and player shares alike) goes back into the mother's treasury on a no-room return; sister routes
+  carry no goods for sale and can't be turned off; a colony with no Storehouse yet unloads caravans into the chests by
+  its hall.
 - 2026-10-09 (34.19, decisions and a hand-over to 34.18; lane d): built on `people/LifeStages`: the slower walk, "a
   quiet old age", the chronicle's "is an elder now", the four chatter lines, `LifeStageGameTests`, scene `elders`.
   **The elder look is not built**: nothing of 34.17/34.18 exists (no render layer, no packet, no outfit art), so an

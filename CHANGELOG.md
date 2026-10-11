@@ -16,6 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **A colony is born, for 1.7** (33.10): at the end of their journey the settlers make camp on open ground near the
+  spot, facing home, with the colony's Village Hall (named from the charter, owned by the mother village's owner) and
+  a Travel Post already known to the owner and their friends. They step out as they were; the builder takes the
+  camp's Blueprint Table and starts the Starter Cottage and Storehouse in the mother village's style, one on either
+  side of the camp. Mother and colony become sister villages, with a free caravan route both ways outside the route
+  limit; both chronicles note the founding and the owner gets a letter. With no room near the spot (all water, a
+  cliff) the settlers come home, the supplies go back and the charter's cost goes back into the treasury.
+
 ## 0.142.0 — 2026-10-10
 
 ### Added

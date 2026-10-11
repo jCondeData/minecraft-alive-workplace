@@ -365,6 +365,13 @@ SCENES = [
       "\"On the road to Newbrook\"", 95,
       [("01_colony_order", "The Colonies tab: the order getting ready, with its call-off"), ("02_settlers_gathered", "The settlers gathered at the hall"),
        ("03_walking_out", "The bell has rung: they walk out toward the spot"), ("04_on_the_road", "On the road to Newbrook")]),
+    # A colony is born (ROADMAP 33.10): the settlers arrive, make camp with a hall and a Travel Post, and the builder starts
+    S("colony", "Realm", "A colony is born",
+      "Thornholm's settlers reached the spot and made camp facing home, with Newbrook's Village Hall and a Travel Post in front of "
+      "the wagon; Tomas took the camp's Blueprint Table and started the Sandstone Starter Cottage beside the camp, the Sandstone "
+      "Storehouse queued on the other side, and the first walls went up; the owner got the settlers' letter", 85,
+      [("01_the_spot", "The spot, before the settlers arrive"), ("02_camp_made", "The camp, Newbrook's hall and its Travel Post"),
+       ("03_builder_at_work", "Tomas starts the Sandstone cottage"), ("04_first_walls", "The first walls go up")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

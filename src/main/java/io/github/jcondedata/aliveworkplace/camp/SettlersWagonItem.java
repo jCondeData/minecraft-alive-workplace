@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -30,6 +29,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -86,48 +86,18 @@ public class SettlersWagonItem extends Item {
 
 	/** As {@link #makeCamp(ServerLevel, ServerPlayer, BlockPos)}, telling {@code placed} where the camp stands. */
 	public static List<Villager> makeCamp(ServerLevel level, ServerPlayer player, BlockPos front, java.util.function.Consumer<BoundingBox> placed) {
-		StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
-		if (template == null) {
+		Rotation rotation = BlueprintItem.rotationFacing(player.getDirection().getOpposite());
+		BoundingBox box = campBox(level, front, rotation);
+		if (box == null) {
 			return List.of();
 		}
-		Vec3i size = template.getSize();
-		BlueprintData.Placement placement = BlueprintItem.placementAt(Ids.of(level.dimension()), size, front,
-			BlueprintItem.rotationFacing(player.getDirection().getOpposite()));
-		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(placement.rotation());
-		BoundingBox box = template.getBoundingBox(settings, placement.origin());
-		// Room for it: the space above the ground mostly open, and ground under most of it.
-		int inTheWay = 0;
-		int noGround = 0;
-		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			BlockState state = level.getBlockState(p);
-			if (!state.isAir() && !state.canBeReplaced()) {
-				inTheWay++;
-			}
-		}
-		for (int x = box.minX(); x <= box.maxX(); x++) {
-			for (int z = box.minZ(); z <= box.maxZ(); z++) {
-				if (level.getBlockState(new BlockPos(x, box.minY() - 1, z)).canBeReplaced()) {
-					noGround++;
-				}
-			}
-		}
-		if (inTheWay > MAX_IN_THE_WAY || noGround > box.getXSpan() * box.getZSpan() / 3) {
+		if (!roomFor(level, box)) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.camp.no_room").withStyle(ChatFormatting.YELLOW));
 			return List.of();
 		}
-		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			if (!level.getBlockState(p).isAir()) {
-				level.removeBlock(p, false); // the tall grass, a sapling, a stray rock
-			}
-		}
-		template.placeInWorld(level, placement.origin(), placement.origin(), settings, level.getRandom(), 2);
+		placeCamp(level, front, rotation);
 		placed.accept(box);
-		BlockPos bench = null;
-		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			if ((level.getBlockState(p).is(ModBlocks.BUILDERS_BENCH) || level.getBlockState(p).is(ModBlocks.BLUEPRINT_TABLE))) {
-				bench = p.immutable();
-			}
-		}
+		BlockPos bench = table(level, box);
 		List<Villager> settlers = new ArrayList<>();
 		for (int i = 0; i < 2; i++) {
 			BlockPos spot = standingSpot(level, box, i);
@@ -156,8 +126,71 @@ public class SettlersWagonItem extends Item {
 		return settlers;
 	}
 
+	/** Where the camp would stand with its front's middle at {@code front}, its front turned by {@code rotation}; null without its template. */
 	@Nullable
-	private static BlockPos standingSpot(ServerLevel level, BoundingBox box, int n) {
+	public static BoundingBox campBox(ServerLevel level, BlockPos front, Rotation rotation) {
+		StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
+		if (template == null) {
+			return null;
+		}
+		BlueprintData.Placement placement = BlueprintItem.placementAt(Ids.of(level.dimension()), template.getSize(), front, rotation);
+		return template.getBoundingBox(new StructurePlaceSettings().setRotation(rotation), placement.origin());
+	}
+
+	/** Whether there's room for the camp in {@code box}: the space above the ground mostly open, and ground under most of it. */
+	public static boolean roomFor(ServerLevel level, BoundingBox box) {
+		int inTheWay = 0;
+		int noGround = 0;
+		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			BlockState state = level.getBlockState(p);
+			if (!state.isAir() && !state.canBeReplaced()) {
+				inTheWay++;
+			}
+		}
+		for (int x = box.minX(); x <= box.maxX(); x++) {
+			for (int z = box.minZ(); z <= box.maxZ(); z++) {
+				if (level.getBlockState(new BlockPos(x, box.minY() - 1, z)).canBeReplaced()) {
+					noGround++;
+				}
+			}
+		}
+		return inTheWay <= MAX_IN_THE_WAY && noGround <= box.getXSpan() * box.getZSpan() / 3;
+	}
+
+	/** Clears the camp's space (the tall grass, a sapling, a stray rock) and places the camp there; its box, or null without its template. */
+	@Nullable
+	public static BoundingBox placeCamp(ServerLevel level, BlockPos front, Rotation rotation) {
+		StructureTemplate template = level.getStructureManager().get(CAMP).orElse(null);
+		if (template == null) {
+			return null;
+		}
+		BlueprintData.Placement placement = BlueprintItem.placementAt(Ids.of(level.dimension()), template.getSize(), front, rotation);
+		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
+		BoundingBox box = template.getBoundingBox(settings, placement.origin());
+		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			if (!level.getBlockState(p).isAir()) {
+				level.removeBlock(p, false);
+			}
+		}
+		template.placeInWorld(level, placement.origin(), placement.origin(), settings, level.getRandom(), 2);
+		return box;
+	}
+
+	/** The camp's Blueprint Table (or an old camp's Builder's Bench) in {@code box}, or null. */
+	@Nullable
+	public static BlockPos table(ServerLevel level, BoundingBox box) {
+		BlockPos bench = null;
+		for (BlockPos p : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			if ((level.getBlockState(p).is(ModBlocks.BUILDERS_BENCH) || level.getBlockState(p).is(ModBlocks.BLUEPRINT_TABLE))) {
+				bench = p.immutable();
+			}
+		}
+		return bench;
+	}
+
+	/** A spot to stand by the camp in {@code box} ({@code n}: the how-manyth, to spread the settlers out), or null. */
+	@Nullable
+	public static BlockPos standingSpot(ServerLevel level, BoundingBox box, int n) {
 		List<BlockPos> spots = new ArrayList<>();
 		for (BlockPos p : BlockPos.betweenClosed(box.minX() - 1, box.minY(), box.minZ() - 1, box.maxX() + 1, box.minY() + 1, box.maxZ() + 1)) {
 			if (Walker.canStand(level, p)) {

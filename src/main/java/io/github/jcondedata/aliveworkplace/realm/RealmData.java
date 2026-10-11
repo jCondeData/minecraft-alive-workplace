@@ -43,6 +43,13 @@ public final class RealmData extends SavedData {
 	public static final String LEAVING = "leaving";
 
 	/**
+	 * After the road (33.10): the spot's chunks are loading and the settlers look for open ground ({@code arrives} is then
+	 * when they got there); or, with no room, they are on their way home, back when the mother village is next awake.
+	 */
+	public static final String ARRIVING = "arriving";
+	public static final String RETURNING = "returning";
+
+	/**
 	 * A colony order: the mother village, the spot, the colony's name (none: one is made up on arrival), where it has got
 	 * to, when the settlers leave and arrive (game time; 0 until known) and what was paid, in hundredths of an emerald,
 	 * for a refund. 33.9 adds, each with an empty default: when it was given, who volunteered (while they still walk the
@@ -89,7 +96,7 @@ public final class RealmData extends SavedData {
 
 		/** Whether the settlers have left the village (the order can't be called off any more). */
 		public boolean gone() {
-			return state.equals(LEAVING) || state.equals(ON_ROAD);
+			return state.equals(LEAVING) || state.equals(ON_ROAD) || state.equals(ARRIVING) || state.equals(RETURNING);
 		}
 	}
 

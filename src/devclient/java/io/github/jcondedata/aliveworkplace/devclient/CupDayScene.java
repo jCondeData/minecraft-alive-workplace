@@ -208,8 +208,8 @@ final class CupDayScene {
 		Arenas.Arena arena = arena(level);
 		villager(level, arena.ring().offset(-6, 0, 3), "Mira", ModVillagers.TRAINER_LEADER, 4);
 		villager(level, arena.ring().offset(6, 0, 3), "Pip", ModVillagers.TRAINER, 2);
-		for (int i = 0; i < 8 && i < arena.seats().size(); i++) { // the crowd, by the benches
-			villager(level, arena.seats().get(i), null, null, 1);
+		for (int i = 0; i < 8 && i < arena.seats().size(); i++) { // the crowd, by the benches (on them: a bench is a stair, not a spot to stand in)
+			villager(level, arena.seats().get(i).above(), null, null, 1);
 		}
 		CupThemes.setForTest(Map.of(THEME, new CupThemes.Theme(THEME, "cup.aliveworkplace.grand_cup", 1, "singles", 50, 3, List.of(), "any", List.of(),
 			List.of(), 6000, 18000, List.of(new CupThemes.Ware(ResourceLocation.withDefaultNamespace("diamond"), 6),

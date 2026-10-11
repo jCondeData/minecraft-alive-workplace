@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The player guide** (22.10): a website for players, the link to send friends
+  (https://jcondedata.github.io/minecraft-alive-workplace/player-guide/): getting started, every job and how to set it
+  up, the Builder and blueprints, the Village Hall, village life, quests, festivals and markets, trade and caravans,
+  threats and defence, Pokémon and villagers, and the settings a server owner can change, each with the nightly
+  showcase's pictures. It is rebuilt every night with the showcase.
 - **Class outfits, drawn** (34.17): what Artisans, Burghers and Nobles wear over their job's outfit, and an elder's
   face, three versions of each for the owner to pick from (version 1 ships until he does: a neckerchief and belt
   pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).

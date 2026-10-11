@@ -828,6 +828,122 @@ final class JobScenes {
 				return took[0] >= 0 && l.getGameTime() - took[0] > 100 && !carrying.isEmpty();
 			};
 		}, null));
+		// Scouts (ROADMAP 32.12): a guard with a spyglass (a Scout) at their grindstone, a bandit camp 40 blocks north and a
+		// grassy rise between. Sent to scout it, the scout walks up the rise, raises the spyglass (in hand, where a villager
+		// shows what they hold) and comes home; the Scouting Report is in the chest by the grindstone, and the player holds
+		// it: a map with a red X on the camp.
+		SCENES.put("scouts", new Job("the scout walked up the rise, raised the spyglass at the bandit camp and came home with the Scouting Report; the player held its map, the camp marked with a red X", 2400,
+			new Vec3(15.5, -54.0, -10.5), new Vec3(-1.5, -58.5, -24.5), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.south(4);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.guard.Scouts.forget(level);
+			// The rise: a grassy mound, stepped so a villager walks up it.
+			BlockPos top = STATION.north(18);
+			for (int dx = -4; dx <= 4; dx++) {
+				for (int dz = -4; dz <= 4; dz++) {
+					int h = 4 - Math.max(Math.abs(dx), Math.abs(dz));
+					for (int y = 0; y < Math.min(3, h); y++) {
+						level.setBlockAndUpdate(top.offset(dx, y, dz), (y == Math.min(3, h) - 1 ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState());
+					}
+				}
+			}
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, -40),
+				io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
+			Showcase.check(lair != null, "the bandits made camp north of the village");
+			Villager scout = guard(level, STATION, new ItemStack(Items.IRON_SWORD));
+			scout.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SPYGLASS));
+			boolean[] sent = {false};
+			boolean[] raised = {false};
+			return l -> {
+				if (!sent[0]) {
+					if (io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(scout)) {
+						sent[0] = io.github.jcondedata.aliveworkplace.guard.Scouts.send(l, hall) == io.github.jcondedata.aliveworkplace.guard.Scouts.Sent.SENT;
+						Showcase.check(sent[0], "the scout was sent to the bandit camp");
+					}
+					return false;
+				}
+				if (scout.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.SPYGLASS) && !raised[0]) {
+					raised[0] = true;
+					Showcase.check(scout.getY() > STATION.getY() + 1.5, "the scout raised the spyglass on the rise");
+				}
+				return raised[0] && !io.github.jcondedata.aliveworkplace.guard.Scouts.out(scout)
+					&& io.github.jcondedata.aliveworkplace.guard.Scouts.known(l, hall).isPresent();
+			};
+		}, new After("04_report_in_hand", (level, player) -> {
+			Container chest = (Container) level.getBlockEntity(STATION.east(2));
+			for (int i = 0; chest != null && i < chest.getContainerSize(); i++) {
+				if (chest.getItem(i).is(Items.FILLED_MAP)) {
+					ItemStack report = chest.removeItem(i, 1);
+					Showcase.check(report.getHoverName().getString().startsWith("Scouting Report"), "the Scouting Report was in the chest by the grindstone");
+					player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, report);
+					player.setXRot(60f); // looking down at the map in both hands
+					player.connection.teleport(player.getX(), player.getY(), player.getZ(), player.getYRot(), 60f);
+					break;
+				}
+			}
+		}, -1, 0)));
+		// Marching on the lair (ROADMAP 32.13): a City's hall, four guards and a pillager war camp 30 blocks south. The player
+		// musters a war party on the Defence page (three of the four under the Rally Banner) and hires the Siege-breakers,
+		// then leads them south into the camp; the band turns out six at a time, the Warlord fights at the front (a City)
+		// and falls, and the last shot looks at the camp's loot chest.
+		SCENES.put("war_party", new Job("the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 1600,
+			new Vec3(14.5, -52.0, 4.0), new Vec3(0.5, -59.0, 24.0), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.north(6);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.guard.WarParties.forget(level);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 30),
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pillager_warband"));
+			Showcase.check(lair != null, "the pillager warband made its war camp south of the City");
+			for (int i = 0; i < 4; i++) {
+				guard(level, STATION.offset(-6 + 4 * i, 0, -2), new ItemStack(Items.IRON_SWORD));
+			}
+			player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
+			player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.WarParties.muster(level, hall, player) == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED
+				&& io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size() == 3,
+				"three of the four guards mustered under the raised Rally Banner");
+			io.github.jcondedata.aliveworkplace.guard.WarParties.hire(level, hall, player);
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream()
+				.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
+				"the five Siege-breakers were hired");
+			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
+			int[] ticks = {0};
+			boolean[] turned = {false};
+			return l -> {
+				ticks[0]++;
+				var standing = io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall);
+				if (standing.isEmpty()) {
+					return ticks[0] > 40;
+				}
+				// The player walks south at the head of the war party, stopping short of the camp's fire.
+				if (player.getZ() < STATION.getZ() + 20) {
+					player.connection.teleport(player.getX(), player.getY(), player.getZ() + 0.12, 0f, 0f);
+				}
+				if (!turned[0] && io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() > 1
+						&& !io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).isEmpty()) {
+					turned[0] = true;
+					Showcase.check(true, "the band turned out to meet the war party");
+				}
+				// The Warlord falls at the front (a scene can't wait out a whole battle).
+				if (ticks[0] == 900 && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
+					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
+				}
+				return false;
+			};
+		}, new After("04_loot", (level, player) -> {
+			BlockPos camp = STATION.offset(0, -1, 30);
+			for (BlockPos p : BlockPos.betweenClosed(camp.offset(-14, -2, -14), camp.offset(14, 8, 14))) {
+				if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity) {
+					Showcase.check(true, "the war camp's loot chest was left standing");
+					player.connection.teleport(p.getX() + 0.5, p.getY() + 1, p.getZ() - 1.5, 0f, 40f);
+					break;
+				}
+			}
+		}, -1, 0)));
 		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
 		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
 		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.
@@ -4813,12 +4929,15 @@ final class JobScenes {
 		if (doneAt > 0 && job.after() != null) {
 			if (tick == doneAt + 80) {
 				mc.getToasts().clear();
-				ScreenshotHarness.pointAt(mc, job.after().slot(), job.after().rows());
+				if (job.after().slot() >= 0) {
+					ScreenshotHarness.pointAt(mc, job.after().slot(), job.after().rows());
+				}
 			}
 			if (tick == doneAt + 90) {
 				ScreenshotHarness.shot(mc, job.after().shot());
 				Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>
-						|| mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen, // the printer's Gazette (34.11)
+						|| mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen // the printer's Gazette (34.11)
+						|| job.after().rows() == 0 && mc.player != null && !mc.player.getMainHandItem().isEmpty(), // no screen: an item in hand (the scout's report, 32.12)
 					"its screen opened (" + job.after().shot().substring(3).replace('_', ' ') + ")");
 				mc.stop();
 			}

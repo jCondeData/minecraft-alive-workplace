@@ -19,6 +19,7 @@
 		"MobAccessor",
 		"PlayerListMixin",
 		"PoiManagerMixin",
+		"ScoutUnseenMixin",
 		"ServerLevelMixin",
 		"StructureTemplateMixin",
 		"StructureTemplatePoolAccessor",

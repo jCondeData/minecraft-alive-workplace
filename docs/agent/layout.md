@@ -215,7 +215,7 @@ you touch one, add a line for it to its package above, and remove it from this l
 - `flower/`: FloristPackages
 - `fossil/`: FossilPackages
 - `grave/`: UndertakerPackages
-- `guard/`: BanditCamps, Cavalry, Escorts, GuardEscort, GuardPackages, GuardPartners, PatrolMapItem, RallyBannerItem, TrainingDummyBlock, Warding
+- `guard/`: BanditCamps, Cavalry, Escorts, GuardEscort, GuardPackages, GuardPartners, PatrolMapItem, RallyBannerItem, Scouts (32.12: missions to the lair, the Scouting Report, trailing raiders), WarParties (32.13: the muster, the Siege-breakers, the band turning out, a broken lair's rewards), TrainingDummyBlock, Warding
 - `hall/`: Festivals, Treasury, VillageAdvice, VillageLedgerItem, VillageMaps, VillageProtection
 - `inn/`: InnkeeperPackages
 - `mail/`: DeliveryNoteItem, PostmanPackages, Postmen, RouteData

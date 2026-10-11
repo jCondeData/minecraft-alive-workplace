@@ -184,6 +184,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B108** (approved auto 2026-10-11) FerryEdgeGameTests.aTicketToAnotherDimensionTakesYouThere hung a local full build (lane-a-1011-0332, 2026-10-11 ~05:54Z): the server thread sat 14 minutes in ServerChunkCache.getChunk (managedBlock) called from FerryEdgeGameTests.java:112, loading a chunk in the other dimension synchronously, and the suite never finished. Expected: the test never blocks the server thread on another dimension's chunk (load it with a ticket and wait ticks, or a timeout). Test: the full runGameTest finishes; the repeat generator on that test (test-only, QA lane) (found by lane-a-1011-0332, 2026-10-11) Fixed (qa-1011-0733): the test forces the Nether chunk with a ticket and waits for it with runAfterDelay instead of nether.getChunk; FerryEdgeGameTests passes 4 of 4.
 - [ ] **B109** PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap failed once in lane-a-1011-0633's local full build (07:50Z, main cee378e4 + 33.11/33.12, realms off in tests): 'no barrel: BlockPos{x=-12667502, y=-58, z=14421448}' - the diary heirloom was placed (other.placed set) 17 blocks past the test's z edge, at a spot that held no non-empty barrel, so with PLACE_CHUNKS = 0 it still chose a spot near another test's area or that spot was cleared by a neighbour. Passed on main CI 805. Test-only (QA lane). Expected: passes every run. Test: the repeat generator on that test in the full suite (found by lane-a-1011-0633, 2026-10-11)
 - [ ] **B110** PartnersAllCompatTests.aCombeeCirclesTheHive failed once in lane-c-1011-0633's local full build (main cee378e4 + 31.12/31.13/31.14, 2026-10-11 09:01Z): '(…) no hive show: [] (this worker had a show 0 ticks ago)', then passed in the next runCompatGameTest (202/202). Expected: passes in every run. Test: runCompatGameTest a few times (QA lane: test-only flake) (found by lane-c-1011-0633, 2026-10-11) (found by lane-c-1011-0633, 2026-10-11)
+- [ ] **B111** PiglinGameTests.aPiglinPassingAChestTakesItsGoldAndDropsItWhenKilled failed in the full suite on main CI build 812 (cfeebd5b, 2026-10-11 09:39Z): 'the gold isn't shown' (the piglin carried the gold but its HEAD slot was not the gold ingot at tick 45); it passes alone (8 of 8 with ExpansionGateGameTests, qa-1011-1034). Plunder.carry only shows the gold when HEAD is empty, so something filled the head first (roster gear, or state another test leaves). Expected: passes every run. Test: repeat the test 10x with the repeat generator inside the full piglin batch (QA lane, test-only until a cause in Plunder or Threats.outfit is seen) (found by qa-1011-1034, 2026-10-11) (found by qa-1011-1034, 2026-10-11)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -3074,7 +3075,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     least 10 blocks from a finished wall; the Coven Mother blinks after three hits;
   - the hut passes `check.py` and its render is in the package;
   - scene `coven`: the hut in the swamp at night, then witches throwing potions over a palisade (GIF).
-- [ ] **32.12** **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
+- [x] **32.12** (review: pending 2026-10-11) **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
   **Scout** (held in the off hand like the other kinds' items; you get back what they held; "Scout" over their head).
   From the Defence page, "Scout the lair" sends one out by day: they walk (or ride, `Cavalry`) to within 24 blocks of
   the lair, raise the spyglass (its sound) and come home; the band ignores a scout more than 8 blocks off. Back home,
@@ -3087,7 +3088,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     blocks away, the scout gets within 24 blocks of it and is home within 2400 ticks; the report map has its
     decoration at the lair; a bandit doesn't go for a scout 10 blocks away;
   - scene `scouts`: the scout on a rise with the spyglass, then the report map in hand (GIF).
-- [ ] **32.13** **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
+- [x] **32.13** (review: pending 2026-10-11) **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
   guards (up to 12; the rest keep the walls) are enlisted on the Rally Banner in the player's inventory, it's raised,
   and they gather by the hall (without a banner the page says to craft one). A new mercenary contract on the same
   page, **Siege-breakers**: five (two with crossbows, two knights, a medic) for 30 emeralds (3 less a level of

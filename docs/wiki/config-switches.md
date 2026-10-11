@@ -121,6 +121,7 @@ range is in brackets.
 | `elderPassing` | on | 1.8 | Elders pass in their sleep after 40 elder days and leave a grave. Off: nobody dies of old age, and an Evergreen Charm is refused as not needed. |
 | `agelessElders` | on | 1.8 | Evergreen Charms work: a good elder who takes one never passes. Off: charms are refused and kept; elders already ageless stay ageless. |
 | `classOutfits` | on | 1.8 | Villagers wear their class over their job's outfit, and elders grey brows and a beard. Off: only the job's outfit is drawn. |
+| `elderRetirement` | on | 1.8 | An elder with a job retires once a jobless villager can take over (one a village every 3 days) and mentors Novices and Apprentices of their old trade. Off: nobody starts retiring; those retired stay retired. |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |
 | `steward` | on | 1.1 | A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan. Off: no new Stewards, and those appointed stand idle. |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | 1.1 | The most builds a Steward may have open at once, whatever his level and the village's rank. |

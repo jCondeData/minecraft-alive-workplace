@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Retirement and apprentices** (34.20, 1.8): an elder with a job retires once a jobless villager can take over (their
+  own child first), at most one a village every 3 days and never while they hold a site, a quarry, Pokémon, fossils or
+  parcels. The successor spends 2 days "learning from Bram", then takes the workstation, the job one level below and its
+  fields, routes and orders. Retired elders keep their trades, never work again, and mentor Novices and Apprentices of
+  their old trade, who learn 50% faster ("taught by Bram"). Chronicle entries; config `elderRetirement`.
 - **The player guide** (22.10): a website for players, the link to send friends
   (https://jcondedata.github.io/minecraft-alive-workplace/player-guide/): getting started, every job and how to set it
   up, the Builder and blueprints, the Village Hall, village life, quests, festivals and markets, trade and caravans,

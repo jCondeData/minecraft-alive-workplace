@@ -45,6 +45,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace quests [track &lt;id&gt;|untrack] — your quests in chat with [Track]/[Untrack] (the quest journal, 31.3)
  * /workplace story start &lt;arc&gt;|next|stop — starts a story arc in the village you stand in, moves it on a chapter, or ends it (ops)
  * /workplace threat start &lt;culture&gt;|lair &lt;culture&gt;|disaster &lt;id&gt;|end|clear — raids, lairs and disasters at the nearest hall (ops)
+ * /workplace leaderboard          — the weekly leaderboard's standings so far this week (33.19)
  * /workplace steward explain       — the Steward's rules for the nearest Village Hall, each condition's number and whether it held
  */
 public final class WorkplaceCommand {
@@ -95,6 +96,18 @@ public final class WorkplaceCommand {
 				.then(Commands.literal("track")
 					.then(Commands.argument("quest", UuidArgument.uuid())
 						.executes(ctx -> quests(ctx.getSource().getPlayerOrException(), UuidArgument.getUuid(ctx, "quest"), false)))))
+			.then(Commands.literal("leaderboard") // the weekly leaderboard so far (33.19)
+				.executes(ctx -> {
+					ServerPlayer player = ctx.getSource().getPlayer();
+					for (Component line : io.github.jcondedata.aliveworkplace.realm.Leaderboard.soFar(ctx.getSource().getServer())) {
+						if (player != null) {
+							Chat.chat(player, line);
+						} else {
+							ctx.getSource().sendSystemMessage(line); // the console
+						}
+					}
+					return 1;
+				}))
 			.then(Commands.literal("standing") // your standing, title and honours in every village (31.11)
 				.executes(ctx -> {
 					ServerPlayer player = ctx.getSource().getPlayerOrException();

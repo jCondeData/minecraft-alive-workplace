@@ -37,6 +37,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [A colony is born](colony-born.md): the settlers' camp, the new hall and Travel Post, the builder's first builds, the sister route and the letter; home again with no room (33.10).
 - [Founding a realm](realms.md): the Realm tab, founding a Barony, adding villages, colonies joining, leaving and letting go, the ranks and their fireworks, the arms and the crown passing (33.11).
 - [Trade pacts and alliances](pacts.md): offers by letter and on the Pacts tab, routes to other players' villages, paid cargo and gifts, allies' relief riders, ending (33.18).
+- [The weekly leaderboard](leaderboard.md): Sunday's chat of the Biggest, Richest, Happiest, Most Legends and Greatest realm, the winners' ribbons, leaving a village off, `/workplace leaderboard` (33.19).
 
 **The village**
 - [The Village Hall](village-hall.md): the village at a glance, its needs, ranks, calendar, treasury and pages.

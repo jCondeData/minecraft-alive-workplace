@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The weekly leaderboard, for 1.7** (33.19, off until 1.7 is finished): every Sunday at 19:00 server time everyone
+  online hears how the villages did: the Biggest, the Richest (emeralds earned that week), the Happiest (the week's
+  wellbeing), Most Legends and the Greatest realm, the top three of each with owner and number. Winners get a chronicle
+  line and a ribbon on their hall's name icon for a week; owners can leave a village off on the Trade page;
+  `/workplace leaderboard` shows the standings so far; a week missed while the server was down is read out at the next
+  start. Settings `weeklyLeaderboard`, `leaderboardDay` and `leaderboardHour`.
 - **Trade pacts and alliances, for 1.7** (33.18, off until 1.7 is finished): the Trade page's new Pacts tab offers
   another player's village within caravan range a trade pact or an alliance, by letter; they accept or decline on
   their Pacts tab within 3 days. Caravan routes to another owner's village now need a pact (routes from before 1.7

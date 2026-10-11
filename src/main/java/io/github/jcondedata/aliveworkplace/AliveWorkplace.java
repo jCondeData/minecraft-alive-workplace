@@ -84,6 +84,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.colony.Colonies.init();
 		io.github.jcondedata.aliveworkplace.realm.Realms.init();
 		io.github.jcondedata.aliveworkplace.realm.Pacts.init();
+		io.github.jcondedata.aliveworkplace.realm.Leaderboard.init();
 		io.github.jcondedata.aliveworkplace.realm.RealmResearch.init();
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
 		io.github.jcondedata.aliveworkplace.people.ClassLook.init(); // dressed by class, in game (34.18)

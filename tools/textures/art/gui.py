@@ -190,8 +190,21 @@ def trade_marks_gui():
         a333333333333332
         ab1111111111111b
     """.strip(), {"a": em.outline_light, "b": em.outline_dark}, ramp=em)
+    # The weekly leaderboard's ribbon (40,0; ROADMAP 33.19): a prize rosette in lapis blue round a gold boss, two tails
+    # hanging under it, worn in the top-right corner of the hall's name icon for the week after a village wins.
+    lapis = P("lapis")
+    ribbon = Sprite.from_ascii("""
+        .aaaa...
+        a3443b..
+        a4gh2b..
+        a3hi1b..
+        .bbbb...
+        .a2a2b..
+        .ab.ab..
+        ........
+    """.strip(), {"a": lapis.outline_light, "b": lapis.outline_dark, "g": gold[3], "h": gold[1], "i": gold.outline_light}, ramp=lapis)
     img = Image.new("RGBA", (64, 16), (0, 0, 0, 0))
-    for i, mark in enumerate((star, short, up, down, steady)):
+    for i, mark in enumerate((star, short, up, down, steady, ribbon)):
         img.paste(Image.fromarray(mark.a.astype("uint8"), "RGBA"), (i * 8, 0))
     img.paste(Image.fromarray(bar.a.astype("uint8"), "RGBA"), (0, 8))
     path = ASSETS / "textures" / "gui" / "trade_marks.png"

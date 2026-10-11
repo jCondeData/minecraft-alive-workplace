@@ -299,6 +299,7 @@ public final class Board {
 		}
 		int paid = inDollars ? (int) total : wholeUp(total) * 100;
 		Tithe.put(entity, paid);
+		io.github.jcondedata.aliveworkplace.realm.Leaderboard.earned(level, hall, paid); // the week's board trades (33.19)
 		move(level, hall, good, price, done);
 		level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_TRADE, SoundSource.PLAYERS, 0.8f, 1.1f);
 		return new Result(false, good, done, done * good.bundle(), paid, all && stop == Stop.STOCK ? Stop.NONE : stop);

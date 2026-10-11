@@ -231,6 +231,7 @@ public final class CaravanTrade {
 		}
 		for (Caravans.Sale sale : data.takeSales(hall)) {
 			Tithe.put(entity, sale.cents());
+			io.github.jcondedata.aliveworkplace.realm.Leaderboard.earned(level, hall, sale.cents()); // the week's caravan sales (33.19)
 			TradeGoods.Good good = TradeGoods.get(sale.good());
 			Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_sold", sale.items(),
 				good == null ? Component.literal(sale.good().getPath()) : good.name(), sale.buyer(), TradePage.money(sale.cents())), sale.day());

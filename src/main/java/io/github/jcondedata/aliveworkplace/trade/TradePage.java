@@ -216,6 +216,13 @@ public final class TradePage {
 				again.run();
 			});
 		}
+		ItemStack board = pricesOnly ? null : io.github.jcondedata.aliveworkplace.realm.Leaderboard.toggleIcon(level, hall); // 33.19
+		if (board != null) {
+			menu.button(io.github.jcondedata.aliveworkplace.realm.Leaderboard.TOGGLE, board, p -> {
+				Chat.actionBar(p, io.github.jcondedata.aliveworkplace.realm.Leaderboard.toggle(level, hall, p));
+				again.run();
+			});
+		}
 		menu.divider(1);
 		Entry open;
 		synchronized (TradePage.class) {

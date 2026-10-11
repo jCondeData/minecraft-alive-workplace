@@ -34,6 +34,9 @@ import org.jetbrains.annotations.Nullable;
  * colony day. 33.11 adds the realms themselves ({@link Realm}) and what the halls' rounds last saw of every village
  * ({@link Known}: name, owner, rank, villagers, wellbeing), so a realm's tab reads its members without loading them.
  * 33.12 adds the invitations to other players' villages ({@link Invite}) and the capital votes ({@link Vote}).
+ * 33.19 adds the weekly leaderboard's part (under "leaderboard"): each village's numbers this week ({@link Tally}), the
+ * villages their owners left off, the winners' ribbons ({@link Ribbon}), lines held for want of anyone online, and when
+ * the week began.
  * Everything is empty by default, so an older world loads unchanged; a part that can't be read is left empty and logged,
  * never a crash.
  */
@@ -327,6 +330,50 @@ public final class RealmData extends SavedData {
 		}
 	}
 
+	/**
+	 * A village's numbers for the weekly leaderboard (33.19): the emeralds it earned this week, in hundredths (takings,
+	 * board trades, caravan sales), the sum of its hall's rounds' wellbeing in percent and how many rounds that was, and
+	 * its Legends and Masters as the last round counted them. Unloaded villages count at these last-known values.
+	 */
+	public record Tally(GlobalPos hall, long earned, long wellbeing, int rounds, int legends, int masters) {
+		public static final Codec<Tally> CODEC = RecordCodecBuilder.create(i -> i.group(
+			GlobalPos.CODEC.fieldOf("hall").forGetter(Tally::hall),
+			Codec.LONG.optionalFieldOf("earned", 0L).forGetter(Tally::earned),
+			Codec.LONG.optionalFieldOf("wellbeing", 0L).forGetter(Tally::wellbeing),
+			Codec.INT.optionalFieldOf("rounds", 0).forGetter(Tally::rounds),
+			Codec.INT.optionalFieldOf("legends", 0).forGetter(Tally::legends),
+			Codec.INT.optionalFieldOf("masters", 0).forGetter(Tally::masters)
+		).apply(i, Tally::new));
+	}
+
+	/**
+	 * A week's win (33.19): the village (a realm's capital for the Greatest realm), the board's id, its number, until when
+	 * (real time, ms) the hall's name icon wears the ribbon, the chronicle day it was won, and whether its chronicle has
+	 * noted it yet (an unloaded hall notes it at its next round).
+	 */
+	public record Ribbon(GlobalPos hall, String board, long value, long until, long day, boolean noted) {
+		public static final Codec<Ribbon> CODEC = RecordCodecBuilder.create(i -> i.group(
+			GlobalPos.CODEC.fieldOf("hall").forGetter(Ribbon::hall),
+			Codec.STRING.optionalFieldOf("board", "").forGetter(Ribbon::board),
+			Codec.LONG.optionalFieldOf("value", 0L).forGetter(Ribbon::value),
+			Codec.LONG.optionalFieldOf("until", 0L).forGetter(Ribbon::until),
+			Codec.LONG.optionalFieldOf("day", 0L).forGetter(Ribbon::day),
+			Codec.BOOL.optionalFieldOf("noted", false).forGetter(Ribbon::noted)
+		).apply(i, Ribbon::new));
+
+		public Ribbon asNoted() {
+			return new Ribbon(hall, board, value, until, day, true);
+		}
+	}
+
+	private final List<Tally> tallies = new ArrayList<>();
+	private final List<GlobalPos> leftOff = new ArrayList<>();
+	private final List<Ribbon> ribbons = new ArrayList<>();
+	/** The lines of an announcement nobody was online to hear yet (33.19). */
+	private final List<Component> heldLines = new ArrayList<>();
+	/** When this leaderboard week began (real time, ms); 0: never (an older file), the week starts at the next check. */
+	private long weekStarted;
+
 	private final List<Realm> realms = new ArrayList<>();
 	private final List<Study> studies = new ArrayList<>();
 	private final List<Known> known = new ArrayList<>();
@@ -573,6 +620,84 @@ public final class RealmData extends SavedData {
 		}
 	}
 
+	// ---- the weekly leaderboard (33.19) ---------------------------------------------------------------------------------
+
+	/** {@code hall}'s numbers this week (all naught if it has none yet). */
+	public Tally tally(GlobalPos hall) {
+		for (Tally t : tallies) {
+			if (t.hall().equals(hall)) {
+				return t;
+			}
+		}
+		return new Tally(hall, 0, 0, 0, 0, 0);
+	}
+
+	public List<Tally> tallies() {
+		return List.copyOf(tallies);
+	}
+
+	/** Keeps {@code tally} in the place of its village's last one. */
+	public void putTally(Tally tally) {
+		tallies.removeIf(t -> t.hall().equals(tally.hall()));
+		tallies.add(tally);
+		setDirty();
+	}
+
+	/** A new week: what was earned and the rounds' wellbeing go back to naught (Legends and Masters stay as last counted). */
+	public void newWeek(long started) {
+		tallies.replaceAll(t -> new Tally(t.hall(), 0, 0, 0, t.legends(), t.masters()));
+		weekStarted = started;
+		setDirty();
+	}
+
+	public long weekStarted() {
+		return weekStarted;
+	}
+
+	/** Whether {@code hall}'s owner left it off the leaderboard. */
+	public boolean leftOff(GlobalPos hall) {
+		return leftOff.contains(hall);
+	}
+
+	public void setLeftOff(GlobalPos hall, boolean off) {
+		leftOff.remove(hall);
+		if (off) {
+			leftOff.add(hall);
+		}
+		setDirty();
+	}
+
+	public List<Ribbon> ribbons() {
+		return List.copyOf(ribbons);
+	}
+
+	/** Replaces the ribbons. */
+	public void setRibbons(List<Ribbon> now) {
+		ribbons.clear();
+		ribbons.addAll(now);
+		setDirty();
+	}
+
+	public List<Component> heldLines() {
+		return List.copyOf(heldLines);
+	}
+
+	public void setHeldLines(List<Component> lines) {
+		heldLines.clear();
+		heldLines.addAll(lines);
+		setDirty();
+	}
+
+	/** Forgets everything about the leaderboard (tests). */
+	public void clearLeaderboard() {
+		tallies.clear();
+		leftOff.clear();
+		ribbons.clear();
+		heldLines.clear();
+		weekStarted = 0;
+		setDirty();
+	}
+
 	/** Forgets every realm and village seen (tests). */
 	public void clearRealms() {
 		realms.clear();
@@ -604,6 +729,13 @@ public final class RealmData extends SavedData {
 		Known.CODEC.listOf().encodeStart(ops, known).result().ifPresent(t -> tag.put("known", t));
 		Invite.CODEC.listOf().encodeStart(ops, invites).result().ifPresent(t -> tag.put("invites", t));
 		Vote.CODEC.listOf().encodeStart(ops, votes).result().ifPresent(t -> tag.put("votes", t));
+		CompoundTag board = new CompoundTag();
+		Tally.CODEC.listOf().encodeStart(ops, tallies).result().ifPresent(t -> board.put("tallies", t));
+		GlobalPos.CODEC.listOf().encodeStart(ops, leftOff).result().ifPresent(t -> board.put("leftOff", t));
+		Ribbon.CODEC.listOf().encodeStart(ops, ribbons).result().ifPresent(t -> board.put("ribbons", t));
+		ComponentSerialization.CODEC.listOf().encodeStart(ops, heldLines).result().ifPresent(t -> board.put("held", t));
+		board.putLong("weekStarted", weekStarted);
+		tag.put("leaderboard", board);
 		return tag;
 	}
 
@@ -619,6 +751,12 @@ public final class RealmData extends SavedData {
 		read(Known.CODEC, tag.get("known"), ops, data.known, "villages seen");
 		read(Invite.CODEC, tag.get("invites"), ops, data.invites, "realm invitations");
 		read(Vote.CODEC, tag.get("votes"), ops, data.votes, "capital votes");
+		CompoundTag board = Nbt.getCompound(tag, "leaderboard");
+		read(Tally.CODEC, board.get("tallies"), ops, data.tallies, "leaderboard numbers");
+		read(GlobalPos.CODEC, board.get("leftOff"), ops, data.leftOff, "villages left off the leaderboard");
+		read(Ribbon.CODEC, board.get("ribbons"), ops, data.ribbons, "leaderboard ribbons");
+		read(ComponentSerialization.CODEC, board.get("held"), ops, data.heldLines, "leaderboard lines held");
+		data.weekStarted = Nbt.getLong(board, "weekStarted");
 		return data;
 	}
 

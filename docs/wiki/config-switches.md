@@ -129,6 +129,9 @@ range is in brackets.
 | `realmRelief` | on | 1.7 | When a realm village is raided, the capital and members within 1,024 blocks send riders, an emerald each from the realm treasury. |
 | `tradePacts` | on | 1.7 | A caravan route to another player's village needs a trade pact, offered and accepted on the hall's Pacts tab; pact caravans are paid for at board prices unless the sender gives. Off: routes need no pact. See [Trade pacts and alliances](pacts.md). |
 | `alliances` | on | 1.7 | Allied villages of different owners send relief riders to each other's raids within 1,024 blocks. Off: no alliances offered, no riders. |
+| `weeklyLeaderboard` | on | 1.7 | Once a week everyone online hears the Biggest, Richest, Happiest, Most Legends and Greatest realm; winners wear a ribbon for a week. Off: nothing counted or announced. See [The weekly leaderboard](leaderboard.md). |
+| `leaderboardDay` | `sunday` | 1.7 | The day the leaderboard is read out, `monday` to `sunday`, server time. In the file only. |
+| `leaderboardHour` | 19 (0 to 23) | 1.7 | The hour the leaderboard is read out, server time. |
 | `villageClasses` | on | 1.8 | Households in villages with a hall climb the class ladder. Off: no classes; classes and progress stay saved. |
 | `classRiseDays` | 2 (1 to 30) | 1.8 | Dawns running the next class's needs must hold for a household to rise one class. |
 | `classFallDays` | 3 (1 to 30) | 1.8 | Dawns running a need of their own class must fail for a household to fall one class. |

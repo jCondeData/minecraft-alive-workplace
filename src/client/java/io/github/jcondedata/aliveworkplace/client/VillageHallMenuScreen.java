@@ -20,7 +20,8 @@ import net.minecraft.world.inventory.Slot;
  *
  * <p>On the Trade page (ROADMAP 33.4) an icon carries marks ({@link TradePage#marks}), drawn over it from
  * textures/gui/trade_marks.png: a gold star or a red mark in its top-left corner (known for, short of), the price's
- * arrow in its bottom-right corner (up, down, steady), and a green bar under the open tab.
+ * arrow in its bottom-right corner (up, down, steady), and a green bar under the open tab. The hall's name icon wears
+ * the weekly leaderboard's ribbon (33.19) in its top-right corner for the week after its village wins a board.
  */
 public class VillageHallMenuScreen extends AbstractContainerScreen<ChoiceView> {
 	public static final ResourceLocation TEXTURE = AliveWorkplace.id("textures/gui/village_hall.png");
@@ -28,7 +29,7 @@ public class VillageHallMenuScreen extends AbstractContainerScreen<ChoiceView> {
 	public static final int HEIGHT = 160;
 	private static final int BUTTON_V = 176;
 	private static final int TEXT = 0xFF404040;
-	/** The Trade page's marks: five 8x8 marks in a row (star, short of, up, down, steady), the open tab's 16x2 bar under them. */
+	/** The Trade page's marks: six 8x8 marks in a row (star, short of, up, down, steady, ribbon), the open tab's 16x2 bar under them. */
 	public static final ResourceLocation MARKS = AliveWorkplace.id("textures/gui/trade_marks.png");
 	private static final int MARKS_W = 64;
 	private static final int MARKS_H = 16;
@@ -87,6 +88,9 @@ public class VillageHallMenuScreen extends AbstractContainerScreen<ChoiceView> {
 			mark(g, x + 9, y + 9, 3);
 		} else if (marks.contains(TradePage.STEADY)) {
 			mark(g, x + 9, y + 9, 4);
+		}
+		if (marks.contains(io.github.jcondedata.aliveworkplace.realm.Leaderboard.RIBBON)) {
+			mark(g, x + 9, y - 1, 5);
 		}
 		if (marks.contains(TradePage.OPEN)) {
 			g.blit(MARKS, x, y + 15, 16, 2, 0f, 8f, 16, 2, MARKS_W, MARKS_H);

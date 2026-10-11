@@ -393,6 +393,14 @@ SCENES = [
       "alliance, its gifts switch and its End button", 65,
       [("01_the_letter", "Rowan's letter: an alliance offered to Ashford"), ("02_the_offer", "Ashford's Pacts tab: Accept or Decline"),
        ("03_the_alliance", "The alliance with Thornholm, and its End button")]),
+    # The weekly leaderboard (ROADMAP 33.19): the chat at Sunday 19:00, the winner's ribbon, the Trade page's toggle
+    S("leaderboard", "Realm", "The weekly leaderboard in chat",
+      "A week of numbers is in for Ashford (the player's Town), and Rowan's Thornholm and Farholt (a realm); the clock "
+      "reaches Sunday 19:00 and the chat reads out the Biggest, Richest, Happiest, Most Legends and Greatest realm, the "
+      "top three each with owner and number; Ashford won the Happiest, so its hall's name icon wears the ribbon, and the "
+      "Trade page has the toggle that leaves a village off", 65,
+      [("01_the_leaderboard", "The week's leaderboard, read out in chat"), ("02_the_ribbon", "Ashford's name icon wears the Happiest ribbon"),
+       ("03_the_toggle", "The Trade page's toggle: on the weekly leaderboard")]),
     # The realm treasury (ROADMAP 33.13): the levy from every member, the icon's movements, a gift of emeralds
     S("realm_treasury", "Realm", "The realm treasury: the levy and its movements",
       "Thornholm founded a realm and added Ashford and Farholt, a County; four mornings each member paid the 10% levy on its "

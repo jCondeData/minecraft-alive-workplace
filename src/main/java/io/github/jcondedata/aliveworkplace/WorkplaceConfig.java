@@ -221,6 +221,12 @@ public final class WorkplaceConfig {
 	public boolean tradePacts = Expansions.on(Expansions.M33);
 	/** Villages of different owners can ally: allies send relief riders to each other's raids within 1,024 blocks (ROADMAP 33.18). Off: no alliances offered, no riders; alliances stay saved. */
 	public boolean alliances = Expansions.on(Expansions.M33);
+	/** Once a week everyone online hears how the villages did: Biggest, Richest, Happiest, Most Legends and the Greatest realm (ROADMAP 33.19). Off: nothing counted or announced; what was counted stays saved. */
+	public boolean weeklyLeaderboard = Expansions.on(Expansions.M33);
+	/** The day the weekly leaderboard is read out, server time: "monday" to "sunday" (in the file only). */
+	public String leaderboardDay = "sunday";
+	/** The hour (0 to 23, server time) the weekly leaderboard is read out. */
+	public int leaderboardHour = 19;
 	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
 	public boolean villageClasses = Expansions.on(Expansions.M34);
 	/** Dawns running the next class's needs must hold for a household to rise one class. */
@@ -422,7 +428,8 @@ public final class WorkplaceConfig {
 		"stewardMaxOpenBuilds", 1, 8,
 		"caravanRoadReach", 32, 512,
 		"cupEveryFestivals", 1, 8,
-		"threatLevel", 0, 3);
+		"threatLevel", 0, 3,
+		"leaderboardHour", 0, 23);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -441,6 +448,7 @@ public final class WorkplaceConfig {
 		}
 		mythicLegendCap = caps;
 		colonyRank = colonyRank(colonyRank).name().toLowerCase(java.util.Locale.ROOT);
+		leaderboardDay = leaderboardDay(leaderboardDay).name().toLowerCase(java.util.Locale.ROOT);
 		if (disabledArcs == null) {
 			disabledArcs = new ArrayList<>();
 		}
@@ -468,6 +476,16 @@ public final class WorkplaceConfig {
 			}
 		}
 		return io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY;
+	}
+
+	/** The day {@code name} means for {@code leaderboardDay} ("friday", "Sunday"...); Sunday for anything else. */
+	static java.time.DayOfWeek leaderboardDay(String name) {
+		for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
+			if (name != null && day.name().equalsIgnoreCase(name.trim())) {
+				return day;
+			}
+		}
+		return java.time.DayOfWeek.SUNDAY;
 	}
 
 	/** The cultures the mod ships, all on. */
@@ -650,6 +668,10 @@ public final class WorkplaceConfig {
 		// Off in gametests like realms (its tab would turn the routes page into the trade page); the pact tests turn it on.
 		io.github.jcondedata.aliveworkplace.realm.Pacts.ENABLED = tradePacts && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.realm.Pacts.ALLIANCES = alliances && Expansions.on(Expansions.M33);
+		// Off in gametests (its Trade page toggle and its counting would change other tests); the leaderboard tests turn it on.
+		io.github.jcondedata.aliveworkplace.realm.Leaderboard.ENABLED = weeklyLeaderboard && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.realm.Leaderboard.DAY = leaderboardDay(leaderboardDay);
+		io.github.jcondedata.aliveworkplace.realm.Leaderboard.HOUR = leaderboardHour;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.people.ClassMigration.GRACE_DAYS = classGraceDays;
 		// Off in gametests (a hall's round would seed a test's villagers mid-test); the migration tests turn it on.

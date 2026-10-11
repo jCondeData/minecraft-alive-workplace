@@ -159,6 +159,10 @@ public final class VillageHallScreen {
 		for (Component held : io.github.jcondedata.aliveworkplace.cup.CupChampions.hallLines(level, hall)) { // the Cups it holds (28.21)
 			nameLore.add(line(held, ChatFormatting.GOLD));
 		}
+		List<Component> ribbons = io.github.jcondedata.aliveworkplace.realm.Leaderboard.hallLines(level, hall); // the week's ribbons (33.19)
+		for (Component ribbon : ribbons) {
+			nameLore.add(line(ribbon, ChatFormatting.BLUE));
+		}
 		if (VillageProtection.ENABLED && level.getBlockEntity(hall) instanceof VillageHallBlockEntity owned) {
 			nameLore.add(line(owned.isProtected()
 				? Component.translatable("screen.aliveworkplace.hall.protected", owned.ownerName())
@@ -178,7 +182,11 @@ public final class VillageHallScreen {
 			nameLore.add(line(standing, ChatFormatting.GRAY));
 		}
 		nameLore.add(line("screen.aliveworkplace.hall.rename", ChatFormatting.DARK_GRAY));
-		menu.button(NAME, icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new)), p -> {
+		ItemStack nameIcon = icon(Items.NAME_TAG, VillageHalls.name(level, hall).copy(), ChatFormatting.GOLD, nameLore.toArray(Component[]::new));
+		if (!ribbons.isEmpty()) {
+			io.github.jcondedata.aliveworkplace.trade.TradePage.mark(nameIcon, io.github.jcondedata.aliveworkplace.realm.Leaderboard.RIBBON);
+		}
+		menu.button(NAME, nameIcon, p -> {
 			Chat.chat(p, menu.shiftClicked() ? VillageProtection.toggle(level, hall, p) : Treasury.collect(level, hall, p));
 			refresh(menu, level, hall, shown);
 		});

@@ -74,6 +74,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final ColonyScene colony = new ColonyScene();
 	private final RealmScene realm = new RealmScene();
 	private final RealmInviteScene realmInvite = new RealmInviteScene();
+	private final RealmTreasuryScene realmTreasury = new RealmTreasuryScene();
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
 	private final CupPageScene cupPage = new CupPageScene();
 	private final CupBoutScene cupBout = new CupBoutScene();
@@ -248,6 +249,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("realm_invite".equals(System.getProperty("aliveworkplace.scene"))) {
 			realmInvite.tick(mc);
+			return;
+		}
+		if ("realm_treasury".equals(System.getProperty("aliveworkplace.scene"))) {
+			realmTreasury.tick(mc);
 			return;
 		}
 		if ("colony".equals(System.getProperty("aliveworkplace.scene"))) {

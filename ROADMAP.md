@@ -185,6 +185,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B109** PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap failed once in lane-a-1011-0633's local full build (07:50Z, main cee378e4 + 33.11/33.12, realms off in tests): 'no barrel: BlockPos{x=-12667502, y=-58, z=14421448}' - the diary heirloom was placed (other.placed set) 17 blocks past the test's z edge, at a spot that held no non-empty barrel, so with PLACE_CHUNKS = 0 it still chose a spot near another test's area or that spot was cleared by a neighbour. Passed on main CI 805. Test-only (QA lane). Expected: passes every run. Test: the repeat generator on that test in the full suite (found by lane-a-1011-0633, 2026-10-11)
 - [ ] **B110** PartnersAllCompatTests.aCombeeCirclesTheHive failed once in lane-c-1011-0633's local full build (main cee378e4 + 31.12/31.13/31.14, 2026-10-11 09:01Z): '(…) no hive show: [] (this worker had a show 0 ticks ago)', then passed in the next runCompatGameTest (202/202). Expected: passes in every run. Test: runCompatGameTest a few times (QA lane: test-only flake) (found by lane-c-1011-0633, 2026-10-11) (found by lane-c-1011-0633, 2026-10-11)
 - [x] **B111** (approved auto 2026-10-11) PiglinGameTests.aPiglinPassingAChestTakesItsGoldAndDropsItWhenKilled failed in the full suite on main CI build 812 (cfeebd5b, 2026-10-11 09:39Z): 'the gold isn't shown' (the piglin carried the gold but its HEAD slot was not the gold ingot at tick 45); it passes alone (8 of 8 with ExpansionGateGameTests, qa-1011-1034). Plunder.carry only shows the gold when HEAD is empty, so something filled the head first (roster gear, or state another test leaves). Expected: passes every run. Test: repeat the test 10x with the repeat generator inside the full piglin batch (QA lane, test-only until a cause in Plunder or Threats.outfit is seen) (found by qa-1011-1034, 2026-10-11) (found by qa-1011-1034, 2026-10-11)
+- [x] **B112** (fixed by lane-d-1011-0933: openGround waits until the forced chunks tick) ScoutGameTests.aScoutSentToALair60BlocksOffGetsWithin24AndIsHomeWithin2400Ticks fails whenever it runs in one GameTest run with CheckBugGameTests and StewardRoundsQaGameTests (origin/main d845255e, narrowed to those 3 classes, lane-a-1011-0933 at 12:00Z): 'the scout slot: [... No scout: sneak-right-click a guard with a spyglass ...]' at ScoutGameTests.java:232, so the hall counts no scout; passes alone and with other classes, and in main CI's full order. Also failed in lane-a's local full build (11:39Z) with CheckBugGameTests.aStrangersArrowsDontHurtTheVillage and StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts, which both pass in narrowed runs. Test-only (QA lane): likely a leftover guard post or village from another batch at the same spot; the scoutTrip test doesn't call Leftovers.clear. Expected: passes in any order. Test: those 3 classes narrowed, then the repeat generator (found by lane-a-1011-0933, 2026-10-11)
+- [ ] **B113** StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts failed in CI build 817 (42a90dbd, 2026-10-11 12:12Z) with 'stops: 3' right after appointing the Steward: two zones were painted, so a third stop came from an earlier batch's leftovers at the same spot, a Storehouse built outside its own test area (never cleared) or a saved build site whose stewardHall is this hall (StewardRoundsQa doesn't clear either). Passes in narrowed runs. Expected: exactly the two zone stops in any test order; the test clears leftover steward sites and storehouses near its area first. Test: StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts (found by lane-a-1011-1233, 2026-10-11)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -483,6 +485,24 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     `city/StewardCost` does) to tell a long tick of ours from a catch-up run, and the benchmark on GitHub's runner
     (nightly-tests, `part: benchmark`) for numbers comparable with the 2026-10-05 row. B103 (lane d) holds the
     day-1 frames of the season run.
+  - Status (lane-a-1011-0633): the per-tick timer of our code is in (`command/OurTickCost`, `mixin/BehaviorMixin`, the
+    platform's tick handlers wrapped only with `-Daliveworkplace.benchmark=true`): after `/workplace benchmark` the log
+    gets a `Benchmark: our code a tick` line a minute (p50, p99, max and its biggest call) and a line for each tick with
+    over 50 ms of ours; `perf.py ... --ticks server.log` sums them and marks each `--spikes` stretch (docs/performance.md).
+    Not compiled or run yet: the coordinator's full build held the machine past this run's time limit, so
+    `BenchmarkCostGameTests` (3 tests) and the benchmark are untested. Left: compileJava, checkLayers, runGameTest with
+    only `BenchmarkCostGameTests`, then `PERF=true VILLAGES=3 PLOTS=25 tools/packtest/run.sh` and read our max tick from
+    the `--ticks` summary; tick 25.3 if it is under 50 ms (share was 14.7%).
+  - Status (lane-a-1011-0933): the timer compiles, `checkLayers` passes and `BenchmarkCostGameTests` pass (3 of 3);
+    off on normal servers (handlers unwrapped, behaviours one field read). One local benchmark (`PERF=true VILLAGES=3
+    PLOTS=25`, the pack, a loaded 7 GB container: server ticks p50 54 / 34 ms in the two measures): our code a tick p50
+    2.3 / 4.2 ms and p99 37.5 / 28.9 ms over two minutes, but **13 of 2,400 ticks had over 50 ms of ours** (worst 118.7
+    ms), plus 6 during the setup between the villages' `/workplace benchmark` calls (worst 450.9 ms); our profile share
+    16.7% (1.0% of it the timer's own `OurTickCost.ours` check). The biggest single calls are `LumberjackWork` (up to
+    66.8 ms) and `BuilderWork` (up to 64.2 ms). Target unmet. Left: time inside `LumberjackWork` and `BuilderWork`
+    (tree scans, chunk loads, wall-clock GC pauses count too) to find what makes one call take 50 ms+, cap it, and
+    rerun on GitHub's runner (nightly-tests, `part: benchmark`); make `ours` cheaper (a per-class cache) so the
+    timer doesn't add to the share.
 - [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.
@@ -3460,7 +3480,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests with two owners: an accepted invitation joins; a declined or lapsed one doesn't; a vote with a majority
     moves the capital and its treasury; a tie keeps it;
   - showcase scene `realm_invite` (the letter, the tab with the vote).
-- [ ] **33.13** **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
+- [x] **33.13** (review: pending 2026-10-11) **The realm treasury.** Each member pays a share of its daily takings (`Treasury.round`) into the
   realm treasury before the rest goes into its own: the **levy**, 0, 5, 10 (the default) or 20%, set by the capital's
   owner on the Realm tab. It's kept in the realm's saved data, so it never needs the capital loaded, and holds up to
   256 emeralds for a Barony, 512 for a County, 1,024 for a Duchy and 2,048 for a Kingdom. It pays for realm research,
@@ -4453,6 +4473,12 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (33.13, decisions; lane a; details in `docs/wiki/realms.md`, Decisions (33.13)): the treasury, levy and
+  last 20 movements live on `RealmData.Realm` (`levy` default 10, `treasury` in hundredths, `ledger`), so they move
+  with the capital (now checked in `aVoteWithAMajorityMovesTheCapital`); a realm that ends loses what it held. Taking
+  is a right-click (shift: a stack of 64) so a left click stays giving; with CobbleDollars an empty-hand click gives an
+  emerald's (shift: a stack's) worth from the balance. A levy that doesn't fit under the cap stays with the village.
+  Spending for 33.14 on: `RealmTreasury.spend(server, realm, cents, reason)`.
 - 2026-10-11 (33.12, decisions and a hook for 33.13; lane a; details in `docs/wiki/realms.md`, Decisions (33.12)): a
   capital vote is one ballot per member village, cast by its owner (one click votes all their members; the proposer's
   start "for"); the invitation's line on the tab is two buttons, Join and Decline; invitations lapse and votes end by

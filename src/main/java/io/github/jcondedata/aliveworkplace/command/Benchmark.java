@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.command;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
@@ -52,6 +53,7 @@ public final class Benchmark {
 		if (!Boolean.getBoolean("aliveworkplace.benchmark")) {
 			return;
 		}
+		Platform.get().onServerTick(server -> OurTickCost.endTick()); // 25.3: our code's time a tick
 		Platform.get().onRegisterCommands(dispatcher -> dispatcher.register(
 			Commands.literal("workplace").then(Commands.literal("benchmark")
 				.requires(s -> s.hasPermission(4))
@@ -94,6 +96,7 @@ public final class Benchmark {
 		}
 		int made = workers;
 		source.sendSuccess(() -> Component.literal("Benchmark: " + made + " workers on " + plots + " plots"), true);
+		OurTickCost.begin(AliveWorkplace.LOG::info); // 25.3: from now on, once all of a run's workers are placed
 		return made;
 	}
 

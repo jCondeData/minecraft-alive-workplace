@@ -113,7 +113,7 @@ public final class Realms {
 	/** Why something wasn't done. */
 	public enum Refusal {
 		OFF, NO_HALL, NO_OWNER, NOT_YOURS, RANK, IN_REALM, NOT_CAPITAL, OTHER_WORLD, TOO_FAR, STRANGER, TAKEN, FULL, NOT_MEMBER, CAPITAL, NO_NAME,
-		NO_BANNER, INVITED, NO_INVITE, LAPSED, VOTING, NO_VOTE, NOT_VOTER
+		NO_BANNER, INVITED, NO_INVITE, LAPSED, VOTING, NO_VOTE, NOT_VOTER, NO_MONEY
 	}
 
 	/** What came of a click: the refusal (null: done) and what to tell the player. */

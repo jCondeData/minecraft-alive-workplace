@@ -177,6 +177,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
+			io.github.jcondedata.aliveworkplace.people.FamilyBook.round(server, pos, hall); // family names and the Book of Families (34.21)
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
 			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
 			if (Treasury.ENABLED) {
@@ -222,6 +223,13 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	/** The chronicle, oldest first. */
 	public java.util.List<Chronicle.Entry> chronicle() {
 		return java.util.List.copyOf(chronicle);
+	}
+
+	/** The Book of Families (34.21): everyone who has lived here, up to 400; empty in halls saved before. */
+	private final io.github.jcondedata.aliveworkplace.people.FamilyBook.Book families = new io.github.jcondedata.aliveworkplace.people.FamilyBook.Book();
+
+	public io.github.jcondedata.aliveworkplace.people.FamilyBook.Book families() {
+		return families;
 	}
 
 	void addToChronicle(Chronicle.Entry entry) {
@@ -841,6 +849,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		feastDay = tag.contains("feastDay") ? Nbt.getLong(tag, "feastDay") : -1;
 		festivalCalled = tag.contains("festivalCalled") ? Nbt.getLong(tag, "festivalCalled") : -100;
 		ballTurn = tag.contains("ballTurn") && Nbt.getBoolean(tag, "ballTurn");
+		families.load(tag, registries);
 		ballDay = tag.contains("ballDay") ? Nbt.getLong(tag, "ballDay") : -100;
 		habitat = tag.contains("habitat") ? net.minecraft.core.BlockPos.of(Nbt.getLong(tag, "habitat")) : null;
 		festivalMissed = tag.contains("festivalMissed") ? Nbt.getLong(tag, "festivalMissed") : -1;
@@ -951,6 +960,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("feastDay", feastDay);
 		tag.putLong("festivalCalled", festivalCalled);
 		tag.putBoolean("ballTurn", ballTurn);
+		families.save(tag, registries);
 		tag.putLong("ballDay", ballDay);
 		if (habitat != null) {
 			tag.putLong("habitat", habitat.asLong());

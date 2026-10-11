@@ -724,7 +724,7 @@ public final class VillageHallScreen {
 			&& villager.getVillagerData().getProfession() != net.minecraft.world.entity.npc.VillagerProfession.NONE;
 		Item station = working ? workstation(level, villager) : Items.PAPER;
 		ItemStack icon = new ItemStack(station, working ? BuilderLevels.level(villager) : 1);
-		Component name = villager.hasCustomName() ? villager.getDisplayName()
+		Component name = villager.hasCustomName() ? io.github.jcondedata.aliveworkplace.people.FamilyBook.hallName(villager) // "Dara (Ashby)" (34.21)
 			: working ? Component.translatable("entity.minecraft.villager." + villager.getVillagerData().getProfession().name())
 			: Component.translatable("screen.aliveworkplace.hall.no_job");
 		Component legendName = io.github.jcondedata.aliveworkplace.legend.LegendText.hallName(villager);

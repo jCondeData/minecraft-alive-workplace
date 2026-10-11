@@ -358,6 +358,8 @@ public final class ModAttachments {
 	public static final Attachment<Long> PASSED_DAY = Attachment.saved("passed_day", com.mojang.serialization.Codec.LONG);
 	/** The chronicle has noted that they became an elder (34.19: "Bram is an elder now", once). Absent: not yet. */
 	public static final Attachment<Boolean> ELDER_NOTED = Attachment.saved("elder_noted", com.mojang.serialization.Codec.BOOL);
+	/** The family a villager belongs to (34.21): the number of its name, 1 to 60 ({@code family_name.aliveworkplace.<n>}). Absent: not given yet (the hall's round or a birth gives it). */
+	public static final Attachment<Integer> FAMILY_NAME = Attachment.saved("family_name", com.mojang.serialization.Codec.INT);
 	/** Brought back from a grave (31.7), set by {@code Graves.revive}. Absent: never, or revived before 31.7. */
 	public static final Attachment<Boolean> REVIVED = Attachment.saved("revived", com.mojang.serialization.Codec.BOOL);
 	/** The partner a villager lost (31.7): their id and name, kept by {@code Couples.onDeath}. Absent: none, or widowed before 31.7. */

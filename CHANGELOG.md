@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Family trees** (34.21, 1.8): every villager in a village with a hall has a family name, founded or taken from a
+  parent, shown on the hall as "Dara (Ashby)" (the name over their head never changes). Each hall keeps the Book of
+  Families: up to 400 people who lived there, the longest dead forgotten first. A villager's page has a Family button:
+  grandparents, parents, partner, brothers and sisters, children and grandchildren, the dead marked. Births in the
+  chronicle name the grandparents, and a family's third generation is noted; the Printer prints any family's tree as a
+  book for 2 emeralds. Babies now remember their parents by id too. Config `familyNames`.
 - **Retirement and apprentices** (34.20, 1.8): an elder with a job retires once a jobless villager can take over (their
   own child first), at most one a village every 3 days and never while they hold a site, a quarry, Pokémon, fossils or
   parcels. The successor spends 2 days "learning from Bram", then takes the workstation, the job one level below and its

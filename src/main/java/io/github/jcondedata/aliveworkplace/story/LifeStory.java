@@ -60,6 +60,16 @@ public final class LifeStory {
 			p -> VillageHallScreen.showList(menu, level, hall, page));
 		menu.button(4, VillageHallScreen.icon(Items.WRITABLE_BOOK, Component.translatable("screen.aliveworkplace.life_story.title", villager.getDisplayName()),
 			ChatFormatting.GOLD, VillageHallScreen.line("screen.aliveworkplace.life_story.about", ChatFormatting.GRAY)), null);
+		if (io.github.jcondedata.aliveworkplace.people.FamilyBook.ENABLED) {
+			// The Family button (34.21): parents to grandchildren, from the Book of Families.
+			menu.button(io.github.jcondedata.aliveworkplace.hall.FamilyPage.BUTTON, io.github.jcondedata.aliveworkplace.hall.FamilyPage.button(villager), p -> {
+				io.github.jcondedata.aliveworkplace.hall.FamilyPage.render(menu, level, hall, villager.getUUID(), () -> {
+					render(menu, level, hall, villager, page, p);
+					menu.broadcastChanges();
+				});
+				menu.broadcastChanges();
+			});
+		}
 		menu.divider(1);
 		if (Friendship.ENABLED) {
 			menu.button(HEARTS, hearts(level, villager, viewer), null);

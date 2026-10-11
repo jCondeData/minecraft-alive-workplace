@@ -122,6 +122,7 @@ range is in brackets.
 | `agelessElders` | on | 1.8 | Evergreen Charms work: a good elder who takes one never passes. Off: charms are refused and kept; elders already ageless stay ageless. |
 | `classOutfits` | on | 1.8 | Villagers wear their class over their job's outfit, and elders grey brows and a beard. Off: only the job's outfit is drawn. |
 | `elderRetirement` | on | 1.8 | An elder with a job retires once a jobless villager can take over (one a village every 3 days) and mentors Novices and Apprentices of their old trade. Off: nobody starts retiring; those retired stay retired. |
+| `familyNames` | on | 1.8 | Every villager in a village with a hall has a family name, shown on the hall ("Dara (Ashby)") and in the chronicle; children take a parent's. Off: no family names are shown (they are still kept); the Book of Families, the Family page and printed trees go by first names. See [Elders](elders.md). |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |
 | `steward` | on | 1.1 | A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan. Off: no new Stewards, and those appointed stand idle. |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | 1.1 | The most builds a Steward may have open at once, whatever his level and the village's rank. |

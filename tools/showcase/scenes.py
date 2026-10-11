@@ -564,6 +564,13 @@ SCENES = [
       [("01_retirement_learning", "Tom shadows his father: \"learning from Bram\""),
        ("02_retirement_card", "Two days on: Bram's card, retired"),
        ("03_retirement_taught", "Bram mentors Ida, a Novice farmer: \"taught by Bram\"")]),
+    # Family trees (ROADMAP 34.21): three generations, the hall's family names, the Family page and the Printer's tree
+    S("family_tree", "Village Hall", "Family trees: three generations",
+      "Bram (who has died) and Ilse founded a family; their daughter Dara married Tomas and their baby Mira was the family's third generation, which the chronicle noted; the hall's list gave Dara her family name in brackets (as in \"Dara (Ashby)\") while her own name stayed Dara; Dara's page had a Family button and her Family page showed her parents, Tomas and Mira; Mira's showed her grandparents with Bram marked dead; and Odo the Printer printed the family's tree for 2 emeralds, which opened as a book", 30,
+      [("01_family_tree_hall", "The hall's list: Dara with her family name"),
+       ("02_family_tree_page", "Dara's Family page: parents, partner, child"),
+       ("03_family_tree_grandparents", "Mira's grandparents, Bram marked dead"),
+       ("04_family_tree_book", "The Printer's family tree, as a book")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"),

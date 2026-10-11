@@ -3915,7 +3915,7 @@ on a real world.
 
   Done when: `RetirementGameTests` (a full hand-over in order, each "never while" case, the level and assignments
   carried over, a retired elder never re-employed, the mentor's 50%) pass; scene `retirement` passes.
-- [ ] **34.21** **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
+- [x] **34.21** (review: pending 2026-10-11) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
   fields in `Families.Parents`; old records keep their names only). The hall keeps the village's **Book of
   Families**: everyone who has lived there (id, name, family name, the day they were born or grew up, the day they
   died, parents, partner, trade), up to 400, the longest dead forgotten first. **Family names**: a villager whose
@@ -4457,6 +4457,24 @@ item waits.
   (3,200, treasury and player shares alike) goes back into the mother's treasury on a no-room return; sister routes
   carry no goods for sale and can't be turned off; a colony with no Storehouse yet unloads caravans into the chests by
   its hall.
+- 2026-10-11 (34.21, decisions; lane d): `people/FamilyBook` keeps each hall's Book of Families (hall NBT `families`,
+  plus `familiesNoted` for the third generations already noted) and gives family names (villager attachment
+  `family_name`, 1 to 60, `family_name.aliveworkplace.<n>`, founded by UUID); `Families.Parents` got `mother_id` and
+  `father_id` (absent in older records). The book and Family page have no switch of their own: they come with 1.8
+  (`FamilyBook.ENABLED` = `Expansions.M34`); `familyNames` (M34-gated) only hides the names, which are still given, so
+  turning it on again loses nothing. Our choices: villagers have no gender, so the chronicle says "grandchild" ("Mira was
+  born to Dara and Tomas, grandchild of Bram Ashby and Ilse Corwen") and the page has one "Brothers and sisters" group;
+  a baby takes the first parent's family (the one the birth picks first), else the other's; babies born at the hall are
+  named at once (they were named at the next round) so the line can say who; a family's third generation is one more
+  than a parent of the same family, noted once per family as a `LIFE` entry. The Family button sits on the villager's
+  life story page (shift-click on the hall's list; slot 8), and a click on any relative opens theirs. The Printer prints
+  from that page (any family, by opening anyone's), taking 2 emeralds from the player (CobbleDollars at the usual rate)
+  and needing a Printer in the village: a fixed trade offer could not say which family. The tree is a plain written book
+  (as the design note says), two people a page. An old record without ids is matched to a living villager by the
+  parent's name for the family name only; the book keeps its parents unknown. Over 400 the longest dead go first, and
+  with nobody dead the first written in. Not changed: the old birth line ("A baby was born to ...") is kept when no
+  grandparent is known, and the grown-up line has no family name. The player guide is untouched (1.8 is still gated;
+  docs/guide/README.md: content goes in with the release that turns it on). Details: `docs/wiki/elders.md`.
 - 2026-10-11 (34.18, decisions; lane d): `people/ClassLook` sends `aliveworkplace:class_look` (entity id, class, the
   class's layer, life stage) on tracking and from every change: `SocialClasses.seed`, a household's rise or fall (only
   when the class really changed), a child following their parents, and `LifeStages.becameElder`. **The tracking event

@@ -194,6 +194,8 @@ public final class WorkplaceConfig {
 	public boolean classOutfits = Expansions.on(Expansions.M34);
 	/** An elder with a job retires once someone can take over, and mentors the village's Novices and Apprentices (ROADMAP 34.20). Off: nobody starts retiring; those retired stay retired. */
 	public boolean elderRetirement = Expansions.on(Expansions.M34);
+	/** Every villager in a village with a hall has a family name, shown on the hall ("Dara (Ashby)") and in the chronicle (ROADMAP 34.21). Off: no family names are shown; the Book of Families, the Family page and printed trees go by first names. */
+	public boolean familyNames = Expansions.on(Expansions.M34);
 	/** Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple (ROADMAP 34.9). Off: no Vintner job, and Vintners already hired stand idle. */
 	public boolean vintners = Expansions.on(Expansions.M34);
 	/** Villagers at a loom can be made Tailors with string (ROADMAP 34.10). Off: no Tailor job, and Tailors already hired stand idle. */
@@ -518,6 +520,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS = agelessElders && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.ClassLook.ENABLED = classOutfits && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.Retirement.ENABLED = elderRetirement && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.FamilyBook.ENABLED = Expansions.on(Expansions.M34); // the Book of Families (34.21) has no switch of its own
+		io.github.jcondedata.aliveworkplace.people.FamilyBook.NAMES = familyNames && Expansions.on(Expansions.M34);
 		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;

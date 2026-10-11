@@ -176,8 +176,19 @@ public final class VillageGrowth {
 		}
 		level.broadcastEntityEvent(baby, (byte) 12); // the villager's hearts
 		level.playSound(null, baby.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1.3f);
-		Chronicle.record(level, hall, Chronicle.Kind.BIRTH, Component.translatable("chronicle.aliveworkplace.birth",
-			mother.getDisplayName(), father.getDisplayName()), true);
+		if (io.github.jcondedata.aliveworkplace.people.FamilyBook.ENABLED) {
+			// Named at once, so the chronicle can say who was born and whose grandchild they are (34.21).
+			List<Villager> village = new java.util.ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive));
+			if (!village.contains(baby)) {
+				village.add(baby);
+			}
+			io.github.jcondedata.aliveworkplace.people.Names.nameEveryone(village);
+		}
+		Chronicle.record(level, hall, Chronicle.Kind.BIRTH, io.github.jcondedata.aliveworkplace.people.FamilyBook.birthLine(level, hall, baby, mother, father), true);
+		io.github.jcondedata.aliveworkplace.people.FamilyBook.Book book = io.github.jcondedata.aliveworkplace.people.FamilyBook.book(level, hall);
+		if (book != null) {
+			io.github.jcondedata.aliveworkplace.people.FamilyBook.noteGeneration(level, hall, book, baby); // a family's third generation (34.21)
+		}
 		return baby;
 	}
 

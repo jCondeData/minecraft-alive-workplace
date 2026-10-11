@@ -138,6 +138,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RealmBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColonySettlersGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColonyArrivalGameTests",
+			"io.github.jcondedata.aliveworkplace.test.RealmOrderStateQaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassPerkGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassJobGameTests",

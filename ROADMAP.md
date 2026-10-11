@@ -188,7 +188,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B113** (approved auto 2026-10-11) StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts failed in CI build 817 (42a90dbd, 2026-10-11 12:12Z) with 'stops: 3' right after appointing the Steward: two zones were painted, so a third stop came from an earlier batch's leftovers at the same spot, a Storehouse built outside its own test area (never cleared) or a saved build site whose stewardHall is this hall (StewardRoundsQa doesn't clear either). Passes in narrowed runs. Expected: exactly the two zone stops in any test order; the test clears leftover steward sites and storehouses near its area first. Test: StewardRoundsQaGameTests.theStewardWalksRoundsPastFencePosts (found by lane-a-1011-1233, 2026-10-11)
 - [x] **B114** (approved auto 2026-10-11) Local full build hung for ~2 h (lane-d-1011-1233, main 42a90dbd + lane d's 34.18-34.22, 2026-10-11 13:47Z): the GameTest server thread parked in ServerChunkCache.getChunk while clearing a test structure in batch golemSmithSentry; no timeout ever failed the run. Expected: the suite finishes or fails a test, never hangs. Test: runGameTest (QA lane: test-only) (found by lane-d-1011-1233, 2026-10-11). Fixed (lane-d-1011-1833): GameTestWatchdog (runGameTest and runCompatGameTest) dumps every thread's stack and fails the run after 300 s without a tick; -XX:+ExitOnOutOfMemoryError; Gradle timeout 120 min. Likely cause: 42a90dbd still leaked every mock player (out of heap near the 860th batch, fixed in 19d4ec50 and bd5e242c), and a chunk worker dying of it never completes the chunk the server thread waits on; nothing in the sentry test reaches outside its area. The next hang, if any, leaves gametest-hang.txt.
 - [x] **B115** (approved auto 2026-10-11) LifeStageGameTests.anElderWalksSlower failed once in a local full runGameTest (lane-c-1011-1532, main 79a86396+B104 fix, 2026-10-11): elder at 78% of an adult's speed, test needs under 80%... i.e. 'over 80%' check missed; passed in the next two full suites. Expected: the elder speed check holds on every run. Test: anElderWalksSlower repeated 20x (tester skill's repeat generator); test-only flake, QA lane (see B95/B99) (found by lane-c-1011-1532, 2026-10-11) Status (qa-1011-1834): fixed in ece97b4af: the distance floor is 74% of the younger villager's (was 80%); the test passed at 85% when run alone, and exact speed modifiers are still asserted. Not repeated 20x here (nightly repeats cover it).
-- [ ] **B116** StewardSafetyGameTests.proposalsStopWhileTwoSitesWaitAndStartOnceSupplied fails ('no proposal once supplied: wishes 1, plot Optional.empty, spot Verdict[...well...]') whenever LuxuryWorkshopsGameTests runs in the same suite: 2 of 2 on main 683c3737 with only those two classes, 10/10 when alone, so another class's leftovers reach it; its 'plot' diagnostic also looks up Request(List.of(WELL),"homes") while StewardDesk.plan searches BlueprintLooks.forVillage's request, so it doesn't show the real blocker. Also LuxuryWorkshopsGameTests luxuryWorkshopBuilt_print_shop failed once in a full suite ('the aliveworkplace:printer works at null', 9404 ticks after built), 4 of 4 passes in small runs. Expected: both pass in the full suite. Test: ./gradlew runGameTest with both classes (QA lane: test-only; found by lane-b-1011-1833) (found by lane-b-1011-1833, 2026-10-11)
+- [x] **B116** StewardSafetyGameTests.proposalsStopWhileTwoSitesWaitAndStartOnceSupplied fails ('no proposal once supplied: wishes 1, plot Optional.empty, spot Verdict[...well...]') whenever LuxuryWorkshopsGameTests runs in the same suite: 2 of 2 on main 683c3737 with only those two classes, 10/10 when alone, so another class's leftovers reach it; its 'plot' diagnostic also looks up Request(List.of(WELL),"homes") while StewardDesk.plan searches BlueprintLooks.forVillage's request, so it doesn't show the real blocker. Also LuxuryWorkshopsGameTests luxuryWorkshopBuilt_print_shop failed once in a full suite ('the aliveworkplace:printer works at null', 9404 ticks after built), 4 of 4 passes in small runs. Expected: both pass in the full suite. Test: ./gradlew runGameTest with both classes (QA lane: test-only; found by lane-b-1011-1833) (found by lane-b-1011-1833, 2026-10-11) FIXED (qa-1011-2233): the test never asked for its wish's plot search, which the Steward's own round normally starts (StewardWishes.plan), so it only passed when his walk got him there; it now requests the search itself and its diagnostic reads the real request. Both classes together: 30 of 30 pass. The print_shop flake did not recur and stays watched (open as B118 if it comes back).
 - [ ] **B117** Hired mercenaries may not fight until reloaded: Mercenaries.hire (and probably WarParties) makes a villager a guard without calling refreshBrain, so its brain keeps the old activities; 33.17's relief riders only fought once Relief added that call (seen by lane-a-1011-1833's 33.17 subagent, not reproduced in a test). A player would see a hired band stand idle in a fight. Expected: a hired mercenary fights at once. Test: a GameTest hiring a band beside a zombie, the zombie dies without a reload (found by lane-a-1011-1833, 2026-10-11)
 
 ## Milestone 21: Finish 0.138.0
@@ -4172,7 +4172,7 @@ Legends.
     builders repair it and it comes back; finished Wonders survive a save and reload;
   - a GameTest checks the server-wide message and the chronicle lines;
   - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
-- [ ] **35.9** **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
+- [x] **35.9** (review: pending 2026-10-11) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
   critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
   `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two
   west towers 44 high under stone spires reaching 52. A nave of five bays under a steep deepslate-tile roof; aisles
@@ -4207,18 +4207,19 @@ Legends.
     without one; a wedding goes to the Cathedral with its mood and baby; a damaged Cathedral turns both off;
   - scene `wonder_great_cathedral`: the time-lapse, ending at dusk with a wedding at the altar; its GIF and powers are
     in the README's Wonders section.
-- [ ] **35.11** **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a
-  stepped stone mole at the water's edge carrying a round tower that tapers from 13 across to 9, banded in white and
-  red, with a gallery on stone corbels at 38; a lantern room of glass round sea lanterns and a ring of redstone lamps
-  that an inverted daylight detector lights at night; a copper cupola with a lightning-rod vane. At its foot, the
-  keeper's cottage (stone and spruce under slate, a bed, a barrel for a fisherman), a boathouse, a quay with mooring
-  posts, and a timber jetty with a Travel Post at its end (a ferry stop). Palette: stone bricks and andesite at the
-  base, white and red terracotta bands, spruce, copper. About 7,500 blocks: I *The Mole and the Quay*, II *The Tower*,
-  III *The Gallery*, IV *The Lantern and the Keeper's House*. Data: Town; `coastal`; the Merchant Prince (stand-in: 3
-  caravan routes running). Goods: I 64 cooked cod (Fisherman), 8 oak boats (Carpenter), 64 coal (Miner); II 16 chains
-  (Tinkerer), 32 iron ingots (Armorer), 32 white wool (Shepherd); III 4 explorer's maps (Cartographer), 32 spectral
-  arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies
-  (Chef). Done when: 35.9's four design checks pass for it, with the jetty over water in its renders.
+- [x] **35.11** (review: pending 2026-10-11) **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a stepped
+  stone mole at the water's edge carrying a round tower that tapers from 13 across to 9, banded in white and red, with
+  a gallery on stone corbels at 38; a lantern room of glass round sea lanterns and a ring of redstone lamps that an
+  inverted daylight detector lights at night; a copper cupola with a lightning-rod vane. At its foot, the keeper's
+  cottage (stone and spruce under slate, a bed, a barrel for a fisherman), a boathouse, a quay with mooring posts, and
+  a timber jetty with a Travel Post at its end (a ferry stop). Palette: stone bricks and andesite at the base, white
+  and red terracotta bands, spruce, copper. About 5,000 blocks (7,500 before it was drawn: Notes, 35.11): I *The Mole
+  and the Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Data: Town; `coastal`;
+  the Merchant Prince (stand-in: 3 caravan routes running). Goods: I 64 cooked cod (Fisherman), 8 oak boats
+  (Carpenter), 64 coal (Miner); II 16 chains (Tinkerer), 32 iron ingots (Armorer), 32 white wool (Shepherd); III 4
+  explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust
+  (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it, with
+  the jetty over water in its renders.
 - [ ] **35.12** **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
   villages up to 4,096 blocks away (twice `Caravans.RANGE`) and arrive in half the time (`Caravans.travelTicks`);
   ferry fares to and from the village's Travel Posts are halved (`TravelNetwork.fare`: an emerald per 512 blocks), and
@@ -5636,3 +5637,9 @@ item waits.
   village's name as last seen, so `/workplace standing` and the chat never load a far village's chunk. No review
   package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.
 - **qa handoff** (qa-1011-0833, 2026-10-11 08:50Z): B65 (ConscriptionGameTests noWorkDuringARaid...): 12 isolated copies via the repeat generator (own batch each, huge_area, 1600 ticks) all passed, 12/12, on main b836b373; not reproducible alone, so the old flake needs the full suite's global state (Edicts/Sieges/VillageRaids/Conscription.STOPPED cache), nothing seen since 2026-10-05. No mod bug found; leave B65 open for the nightly 10x report. Env trap for QA runs: after the first Gradle failure 'plugin not found', run ./gradlew --stop and retry; Central 429s need retry loops; a cold runGameTest takes ~7 min. Wiki/guide checks pass; 167 items still unverified, next in line B60 B84 B85 B86 B92 B99.
+- **35.11 the Lighthouse's block count** (lane-b-1011-2133, 2026-10-11): drawn at 25 x 33 x 46 with everything the item
+  lists (the tower 13 to 9 across, solid round its stair to 8 and three thick to 22, the stepped mole and its arm, the
+  gallery, lantern and cupola, the two-storey cottage, the boathouse, the quay and the jetty with its ferry stop), it is
+  5,011 blocks, not about 7,500: only a solid tower or a bigger site would reach that. Decided: keep the size and the
+  design, and the figure is now about 5,000 (the item's text and `WonderBlueprintGameTests`, within 10%). Owner: say
+  if you'd rather have a bigger site (about 29 x 37) for the 7,500.

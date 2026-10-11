@@ -132,16 +132,65 @@ class Build:
             "entities": List[Compound](getattr(self, "entities", [])),
         })
 
-    def save(self, folder, name):
+    def save(self, folder, name, checked=True):
+        """Writes the build to folder/name.nbt; checked=False leaves the check to the caller (a Wonder's stage part is
+        checked standing on the stages before it, by wonder_stages)."""
         os.makedirs(folder, exist_ok=True)
         path = os.path.join(folder, name + ".nbt")
         nbtlib.File(self.to_nbt()).save(path, gzipped=True)
-        solid = sum(1 for n, _ in self.blocks.values() if n != "minecraft:air")
+        solid = sum(1 for n, _ in self.blocks.values() if n not in ("minecraft:air", "minecraft:structure_void"))
         print(f"{name}: {self.w}x{self.h}x{self.d}, {solid} blocks -> {os.path.relpath(path, ROOT)}")
-        from check import check
-        for problem in check(self):
-            print(f"  CHECK {name}: {problem}")
+        if checked:
+            from check import check
+            for problem in check(self):
+                print(f"  CHECK {name}: {problem}")
 
+
+class StagedBuild(Build):
+    """A Wonder (ROADMAP 35.9, docs/design/M35.md), drawn whole and stage by stage: call begin(n) before drawing stage n.
+    A stage only adds blocks: drawing over a block of an earlier stage is an error (the village lives beside a stage for
+    days, and a builder would have to break what the stage before left finished). stage_builds() gives the Wonder as it
+    stands after each stage, for wonder_stages()."""
+
+    def __init__(self, w, h, d):
+        super().__init__(w, h, d)
+        self.stage = 0
+        self.stage_of = {}
+        self._frozen = {}
+
+    def begin(self, n):
+        self._close()
+        self.stage = n
+
+    def _close(self):
+        changed = [p for p, block in self._frozen.items() if self.blocks.get(p) != block]
+        assert not changed, f"stage {self.stage} draws over earlier stages at {sorted(changed)[:5]}"
+        for p in self.blocks:
+            self.stage_of.setdefault(p, self.stage)
+        self._frozen = dict(self.blocks)
+
+    def stage_builds(self):
+        """The Wonder as it stands after each stage (each a Build of the whole size), its stair corners and connections
+        worked out once on the whole, so no later stage changes an earlier block."""
+        self._close()
+        finish(self)
+        out = []
+        for n in sorted(set(self.stage_of.values())):
+            s = _Finished(self.w, self.h, self.d)
+            s.blocks = {p: v for p, v in self.blocks.items() if self.stage_of[p] <= n}
+            s.nbt = {p: v for p, v in getattr(self, "nbt", {}).items() if p in s.blocks}
+            out.append(s)
+        return out
+
+
+class _Finished(Build):
+    """A stage of a StagedBuild: its connections are the whole Wonder's, so fill_air only adds the air."""
+
+    def fill_air(self):
+        for x in range(self.w):
+            for y in range(self.h):
+                for z in range(self.d):
+                    self.blocks.setdefault((x, y, z), ("minecraft:air", ()))
 
 
 # --- directions --------------------------------------------------------------------------------

@@ -16,7 +16,21 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.143.0 — 2026-10-11
+
 ### Added
+- **The Lighthouse's design, for 2.0** (35.11, nothing to start in game until Wonders is finished): the second Wonder's
+  building, a tower banded in white and red on a stepped stone mole at the water's edge (25 by 33, 46 high, about 5,000
+  blocks), with a gallery on stone corbels, a lantern room of glass round sea lanterns, a ring of lamps an inverted
+  daylight detector lights at night, a copper cupola with a lightning-rod vane, and at its foot the keeper's cottage, a
+  boathouse, a quay with mooring posts and a jetty over the sea to a ferry stop with a Travel Post. It rises in four
+  tidy stages (the Mole and the Quay, the Tower, the Gallery, the Lantern and the Keeper's House), each with its goods.
+- **The Great Cathedral's design, for 2.0** (35.9, nothing to start in game until Wonders is finished): the first
+  Wonder's building, a Gothic cathedral on a cross plan (39 across the transepts, 55 long, two west towers under stone
+  spires reaching 52, about 14,250 blocks) with a rose window over a deep west door, flying buttresses, a rounded apse,
+  open belfries with three bells, pews, an altar of gold and candles, three side chapels and a sacristy. It rises in
+  four tidy stages (the Foundations and the West Front, the Nave, the Transepts and the Choir, the Towers and the Rose
+  Window), each with its goods from the village's jobs, in its Wonder data file.
 - **Trade pacts and alliances, for 1.7** (33.18, off until 1.7 is finished): the Trade page's new Pacts tab offers
   another player's village within caravan range a trade pact or an alliance, by letter; they accept or decline on
   their Pacts tab within 3 days. Caravan routes to another owner's village now need a pact (routes from before 1.7

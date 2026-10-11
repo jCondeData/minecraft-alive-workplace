@@ -1,0 +1,149 @@
+{
+  "name": "wonder.aliveworkplace.lighthouse.name",
+  "description": "wonder.aliveworkplace.lighthouse.description",
+  "icon": "minecraft:sea_lantern",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:merchant_prince",
+      "stand_in": [
+        {
+          "type": "caravan_routes",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "type": "coastal"
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:cooked_cod",
+          "count": 64,
+          "job": "minecraft:fisherman"
+        },
+        {
+          "item": "minecraft:oak_boat",
+          "count": 8,
+          "job": "aliveworkplace:carpenter"
+        },
+        {
+          "item": "minecraft:coal",
+          "count": 64,
+          "job": "aliveworkplace:miner"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_2_0",
+          "offset": [5, 3, 14]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:chain",
+          "count": 16,
+          "job": "aliveworkplace:tinkerer"
+        },
+        {
+          "item": "minecraft:iron_ingot",
+          "count": 32,
+          "job": "minecraft:armorer"
+        },
+        {
+          "item": "minecraft:white_wool",
+          "count": 32,
+          "job": "minecraft:shepherd"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_3_0",
+          "offset": [6, 30, 15]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:filled_map",
+          "count": 4,
+          "job": "minecraft:cartographer"
+        },
+        {
+          "item": "minecraft:spectral_arrow",
+          "count": 32,
+          "job": "minecraft:fletcher"
+        },
+        {
+          "item": "minecraft:leather",
+          "count": 32,
+          "job": "minecraft:butcher"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_4_0",
+          "offset": [9, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:glowstone_dust",
+          "count": 64,
+          "job": "aliveworkplace:netherworker"
+        },
+        {
+          "item": "minecraft:redstone",
+          "count": 32,
+          "job": "aliveworkplace:miner"
+        },
+        {
+          "item": "minecraft:pumpkin_pie",
+          "count": 16,
+          "job": "aliveworkplace:chef"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "caravan_range",
+      "factor": 2
+    },
+    {
+      "type": "caravan_speed",
+      "factor": 0.5
+    },
+    {
+      "type": "ferry_fares",
+      "factor": 0.5
+    },
+    {
+      "type": "early_warning"
+    }
+  ]
+}

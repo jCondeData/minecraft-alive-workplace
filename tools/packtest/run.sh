@@ -7,6 +7,10 @@
 #   PERF=true PLOTS=20 tools/packtest/run.sh   # performance mode: /workplace benchmark fills an area with busy
 #                                              # workers; tick times before/after, heap after GC, a CPU profile of our code
 #   PERF=true VILLAGES=3 PLOTS=25 ...          # 25.1's benchmark: 150 workers over three villages (docs/performance.md)
+#   PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 ...   # 25.4's soak: that load for an hour, the benchmark's measurement
+#                                              # (profile, tick queries, heap after GC) every 10 min (HEAP_EVERY); prints
+#                                              # each heap reading, the "Soak verdict:" line (flat within 5% from minute
+#                                              # SOAK_SETTLE=10 on) and the long ticks in the profiles (perf.py --spikes)
 #   JAR=old.jar PERF=true PLOTS=10 ...; KEEP_WORLD=true SITES_ONLY=true ...   # 21.2: a world saved by an older jar,
 #                                              # opened with this one: its sites listed after a minute of work
 #   SOAK=true tools/packtest/run.sh            # the builder soak (23.1; SOAK_DAYS=n for longer): /workplace soak, then 2 in-game days at
@@ -114,24 +118,55 @@ if [ "${PERF:-false}" = "true" ] && [ "${CITY:-false}" != "true" ]; then
   for v in $(seq 0 $(( VILLAGES - 1 ))); do
     say "execute positioned $(( 1000 + v * 400 )) 100 1000 run workplace benchmark $PLOTS" 50
   done
-  # Starting the recording pauses the server for a moment: let that tick pass before measuring.
-  jcmd $PID JFR.start name=perf settings=profile duration=90s filename="$PWD/perf.jfr" > /dev/null
-  sleep 15
-  say "tick query" 40
-  say "tick query" 45
-  # Heap after a full GC, with everything still loaded and working (25.1).
-  jcmd $PID GC.run > /dev/null 2>&1 || true
-  sleep 5
-  jcmd $PID GC.heap_info > heap.txt 2>/dev/null || true
-  HEAP=$(grep -iE "heap +total" heap.txt | grep -oE "used [0-9]+K" | head -1 | grep -oE "[0-9]+" || echo 0)
+  # One measurement: a 90-second profile with two tick queries in it, then the heap after a full GC (25.1). The soak
+  # repeats it every HEAP_EVERY minutes; the GC comes after the profile and the queries, so its pause isn't measured.
+  measure() {   # $1: the profile's file name
+    # Starting the recording pauses the server for a moment: let that tick pass before measuring.
+    jcmd $PID JFR.start name="${1%.jfr}" settings=profile duration=90s filename="$PWD/$1" > /dev/null || true
+    sleep 15
+    say "tick query" 40
+    say "tick query" 45
+    # Heap after a full GC, with everything still loaded and working (25.1).
+    jcmd $PID GC.run > /dev/null 2>&1 || true
+    sleep 5
+    jcmd $PID GC.heap_info > heap.txt 2>/dev/null || true
+    HEAP=$(grep -iE "heap +total" heap.txt | grep -oE "used [0-9]+K" | head -1 | grep -oE "[0-9]+" || echo 0)
+  }
+  SOAK_MINUTES="${SOAK_MINUTES:-0}"   # 25.4: PERF=true SOAK_MINUTES=60 keeps the load running that long
+  HEAP_EVERY="${HEAP_EVERY:-10}"
+  if [ "$SOAK_MINUTES" -gt 0 ]; then
+    rm -f soak-*.jfr soak-heap.txt
+    START=$(date +%s)
+    for i in $(seq 0 $(( SOAK_MINUTES / HEAP_EVERY ))); do
+      # Each reading on the clock (minute 0, 10, 20, ...), however long the one before it took.
+      WAIT=$(( START + i * HEAP_EVERY * 60 - $(date +%s) ))
+      if [ "$WAIT" -gt 0 ]; then sleep "$WAIT"; fi
+      kill -0 $PID 2>/dev/null || { echo "The server stopped during the soak, before minute $(( i * HEAP_EVERY ))."; break; }
+      measure "soak-$i.jfr"
+      echo "$(( i * HEAP_EVERY )) $(( HEAP / 1024 ))" >> soak-heap.txt
+      echo "Soak heap after GC, minute $(( i * HEAP_EVERY )): $(( HEAP / 1024 )) MB"
+    done
+  else
+    measure perf.jfr
+  fi
   say "workplace sites" 5
   say "stop" 30
   kill $KEEP 2>/dev/null || true
   wait $PID 2>/dev/null || true
   echo "--- tick times: idle, then twice with the workers (full log: $SERVER/server.log)"
   grep -E "Benchmark:|Average time per tick|Percentiles|Crash|Exception" server.log | grep -v "No data fixer" || true
-  echo "Heap after GC: $(( HEAP / 1024 )) MB"
-  python3 ../../../tools/packtest/perf.py perf.jfr
+  if [ "$SOAK_MINUTES" -gt 0 ]; then
+    echo "--- soak: $SOAK_MINUTES minutes, the heap after a full GC every $HEAP_EVERY (the tick queries above: two a reading)"
+    # 25.2's target: the heap flat (within 5%) over the soak, judged from the first settled reading (SOAK_SETTLE
+    # minutes in: the builds and the villagers' memories fill up first) to the last.
+    python3 ../../../tools/packtest/soakheap.py soak-heap.txt "${SOAK_SETTLE:-10}" || SOAK_FAILED=true
+    if ls soak-*.jfr > /dev/null 2>&1; then
+      python3 ../../../tools/packtest/perf.py --spikes $(ls soak-*.jfr | sort -t- -k2 -n) || true
+    fi
+  else
+    echo "Heap after GC: $(( HEAP / 1024 )) MB"
+    python3 ../../../tools/packtest/perf.py perf.jfr
+  fi
   # The numbers only mean something if the workers were working: each site's status says "working" with its
   # villager's level under it. None working means the soak measured an idle server (B14), so it fails.
   WORKING=$(grep -c " · working" server.log || true)
@@ -142,6 +177,7 @@ if [ "${PERF:-false}" = "true" ] && [ "${CITY:-false}" != "true" ]; then
     grep -E -A1 "\] \[Server thread/INFO\]: Builder — " server.log | head -6
     exit 1
   fi
+  if [ "${SOAK_FAILED:-false}" = "true" ]; then echo "The soak did not pass: the heap wasn't flat, or wasn't read twice."; exit 1; fi
   exit 0
 fi
 

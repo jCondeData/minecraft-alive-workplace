@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       part:
-        description: "all: everything; mutation: only the mutants and repeats (ROADMAP 22.7); benchmark: only the weekly 150-worker benchmark (25.1); season: only the season under the edicts (30.22)"
+        description: "all: everything; mutation: only the mutants and repeats (ROADMAP 22.7); benchmark: only the weekly 150-worker benchmark (25.1); season: only the season under the edicts (30.22); soak: only the 60-minute soak of the benchmark load (25.4)"
         required: false
         default: all
 
@@ -145,6 +145,45 @@ jobs:
             build/packtest/server/perf.jfr
           if-no-files-found: ignore
 
+  # ROADMAP 25.4: the 60-minute soak, on demand (part: soak): the benchmark's load on the pack (with its performance
+  # mods) kept running for an hour, measured every 10 minutes like the benchmark (a 90-second profile, two tick queries,
+  # the heap after a full GC). Fails when the heap after GC drifts over 5% from the minute-10 reading. The readings and
+  # the long ticks found in the profiles go to the run's summary; the log and the profiles to the soak artifact.
+  soak:
+    if: github.event.inputs.part == 'soak'
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            25
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build the jar
+        run: ./gradlew ":$NODE:remapJar" --stacktrace
+      - name: Soak (150 workers, 3 villages, 60 minutes)
+        run: |
+          mkdir -p build/modtest
+          export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 tools/packtest/run.sh 2>&1 | tee build/modtest/soak.log; status=${PIPESTATUS[0]}
+          { echo "## Soak: 150 workers over 3 villages for 60 minutes ($(git rev-parse --short HEAD))"; echo '```'
+            grep -E "Soak heap:|Soak verdict:|server stopped|soak did not pass|sites working|Percentiles|server thread samples|long stretches|^  [0-9]+ ms at|GC pauses" build/modtest/soak.log | sed 's/^.*INFO\]: //' | cut -c1-400 | head -80
+            echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: soak-${{ github.run_id }}
+          path: |
+            build/modtest/soak.log
+            build/packtest/server/server.log
+            build/packtest/server/soak-heap.txt
+            build/packtest/server/soak-*.jfr
+          if-no-files-found: ignore
+
   # ROADMAP 30.22: a season under the edicts, weekly (the Sunday schedule, beside the benchmark) or on demand (part:
   # season): a City of 35 in the real Cobbleverse pack, 4 in-game days under four edicts and 4 reformed, about 8 minutes.
   # It is not in the nightly job yet: its tick check fails on day 1 until B101 is fixed (docs/design/M30.md). One half
@@ -227,7 +266,7 @@ jobs:
   # and unfinished jobs go to the nightly-tests issue; the report is always in the run's summary and the
   # nightly-mutation artifact (the QA lane reads it: docs/agent/sessions.md, "The QA lane").
   mutation-plan:
-    if: (github.event_name != 'workflow_dispatch' && github.event.schedule != '41 4 * * 0') || (github.event_name == 'workflow_dispatch' && github.event.inputs.part != 'benchmark')
+    if: (github.event_name != 'workflow_dispatch' && github.event.schedule != '41 4 * * 0') || (github.event_name == 'workflow_dispatch' && github.event.inputs.part != 'benchmark' && github.event.inputs.part != 'soak')
     runs-on: ubuntu-latest
     outputs:
       since: ${{ steps.plan.outputs.since }}

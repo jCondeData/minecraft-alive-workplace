@@ -477,6 +477,10 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     share 13.1% (<15% ok). Off: busy p99 66.1 ms in the first sample (not shown to be ours) and no 60-minute soak
     exists, so the heap-flat target is unmeasured (one reading, 1613 MB). Left: a 60-minute soak with heap readings
     (`PERF` heap sampled every 10 min) and the profile of the p99 spikes; then tick.
+  - Status (lane-a-1011-0332): soak part added (`PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 tools/packtest/run.sh`:
+    the benchmark's measurement every 10 min, heap after GC judged by `tools/packtest/soakheap.py` within 5% of minute
+    10; the long ticks in the profiles named by `perf.py --spikes`; nightly-tests job `soak`, input `part: soak`;
+    docs/performance.md, "The 60-minute soak"); left: run it and read the numbers.
 - [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README

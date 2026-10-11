@@ -87,9 +87,28 @@ modules left out as on a real Java 21 install.
 
 | Date | Check | Result |
 |---|---|---|
+| pending | 60-minute soak (heap flat ±5%, p99 spikes attributed) | pending: run nightly-tests with `part: soak` and add the readings here |
 | 2026-10-04 | Client (`SCENE=config PERF_STACK=true`) | 96 mods, all nine performance mods loaded; the scene's 2 checks pass and the world renders behind the screen; only warnings are other mods' optional mixins and the container's missing sound device |
 | 2026-10-05 | Benchmark load on the pack's stack (nightly-tests 37297003813, 5b489b7) | Runs clean with the six server mods: our share 13.1% (target under 15%); busy p99 66.1 ms at the start, 21.1 ms later (target: none over 50 ms from us, not yet attributed); heap 1613 MB after GC once, but no 60-minute soak yet, so the flat-heap target is unmeasured |
 | 2026-10-04 | Pack boot (`tools/packtest/run.sh`, 0.138.0 + 25.5) | 252 mods loaded, the six server mods among them; no error from Alive Workplace or the performance mods (the 37 error lines are the pack's own: empty registries, data fixers, Cobblemon dex files) |
+
+### The 60-minute soak
+
+- **What runs:** the benchmark's load (`PERF=true VILLAGES=3 PLOTS=25`) on the pack's server, with its performance
+  mods, kept running for an hour: `PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 tools/packtest/run.sh`.
+- **What is measured:** at minute 0, 10, 20 ... 60 (`HEAP_EVERY=10`), the benchmark's own measurement: a 90-second
+  profile (`soak-<n>.jfr`), two `tick query` lines (p50 / p95 / p99), then the heap after a full GC (after the profile
+  and the queries, so the collection's pause isn't counted). Each reading prints as `Soak heap after GC, minute N`.
+- **The verdict:** `tools/packtest/soakheap.py` judges the readings from minute 10 on (`SOAK_SETTLE`; the builds fill
+  up the first minutes) against the minute-10 one and prints the `Soak verdict:` line. The run fails when any is more
+  than 5% off, or fewer than two were taken.
+- **The p99 spikes:** `perf.py --spikes soak-*.jfr` reads all the profiles together: our share of the server thread,
+  then every busy stretch of 50 ms or more (the thread sleeps between ticks, so a run of samples with no gap over 25 ms
+  is one tick, or ticks back to back), with our share of its samples and the frames it spent them in, and the garbage
+  collector's pauses of 20 ms or more. An estimate: time the thread spends blocked or paused isn't sampled.
+- **Where:** run the nightly-tests workflow with `part: soak` (job `soak`, 110-minute limit, Java 21). The readings,
+  the verdict and the long ticks are in the run's summary; the log, `soak-heap.txt` and the profiles in its
+  `soak-<run>` artifact.
 
 ## Targets (25.2)
 

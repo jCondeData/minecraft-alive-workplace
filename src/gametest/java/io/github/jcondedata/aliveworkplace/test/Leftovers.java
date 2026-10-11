@@ -62,6 +62,32 @@ final class Leftovers {
 	}
 
 	/**
+	 * Forgets every build a Steward started from a hall in or near the test area, and removes every Storehouse whose
+	 * village reaches it. Both outlive their test: a site is saved world data, and a Storehouse built outside its own
+	 * area is never cleared. A Steward's rounds visit both, so a Steward test at the same spot as an earlier batch's
+	 * StewardJobs test (same hall, an approved build) counted a third stop (CI 817, 2026-10-11). Only for tests alone in
+	 * their batch.
+	 */
+	static void stewardSites(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB around = helper.getBounds().inflate(RADIUS);
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		for (io.github.jcondedata.aliveworkplace.build.BuildSite site : java.util.List.copyOf(sites.all())) {
+			if (site.stewardHall() != null && around.contains(net.minecraft.world.phys.Vec3.atCenterOf(site.stewardHall()))) {
+				sites.remove(site.id());
+			}
+		}
+		AABB box = helper.getBounds();
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(Math.max(box.getXsize(), box.getZsize()) / 2);
+		java.util.List<net.minecraft.core.BlockPos> storehouses = level.getPoiManager().findAll(
+			h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI), p -> true,
+			net.minecraft.core.BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList();
+		for (net.minecraft.core.BlockPos storehouse : storehouses) {
+			level.removeBlock(storehouse, false);
+		}
+	}
+
+	/**
 	 * Forgets every finished building recorded within a village's reach of the test area. The record is saved world data,
 	 * so buildings another batch's test recorded at this spot (Steward and upgrade tests record many, and not all forget
 	 * them) are still "finished" here: the Master Architect picked one of those for a rebuild when the test expected none

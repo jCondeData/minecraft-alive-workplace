@@ -39,6 +39,7 @@ public class StewardRoundsQaGameTests implements net.fabricmc.fabric.api.gametes
 
 	private static void rounds(GameTestHelper helper, boolean posts) {
 		Leftovers.clear(helper);
+		Leftovers.stewardSites(helper);
 		ServerLevel level = helper.getLevel();
 		level.setDayTime((level.getDayTime() / 24000L + 1) * 24000L + 2500L); // a working morning
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
@@ -59,7 +60,7 @@ public class StewardRoundsQaGameTests implements net.fabricmc.fabric.api.gametes
 		CityPlanItem.bind(level, player, cityPlan, hall);
 		Villager steward = StewardGameTests.seasoned(helper.spawn(EntityType.VILLAGER, HALL.south(2)));
 		helper.assertTrue(Stewards.appoint(player, steward, cityPlan) == InteractionResult.SUCCESS, "not appointed");
-		helper.assertTrue(StewardWork.stops(level, steward, hall).size() == 2, "stops: " + StewardWork.stops(level, steward, hall).size());
+		helper.assertTrue(StewardWork.stops(level, steward, hall).size() == 2, "stops: " + StewardWork.stops(level, steward, hall).stream().map(s -> s.pos().subtract(hall) + " " + s.what().getString()).toList());
 		boolean[] heldPlan = {false};
 		helper.onEachTick(() -> heldPlan[0] |= StewardWork.holdsPlan(steward));
 		helper.succeedWhen(() -> {

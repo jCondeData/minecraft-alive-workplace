@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.VillageAdvice;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.people.FamilyBook;
 import io.github.jcondedata.aliveworkplace.people.Homes;
 import io.github.jcondedata.aliveworkplace.people.Moods;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -363,8 +364,12 @@ public class HomesSpecGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 					icons.put(name.getString(), icon);
 				}
 			}
-			for (String name : names) {
-				helper.assertTrue(icons.containsKey(name), name + " isn't on the hall's list: " + icons.keySet());
+			for (int i = 0; i < names.length; i++) {
+				// The hall names them with their family name, "Ada (Ashby)" (34.21); later checks look them up by first name.
+				String shown = FamilyBook.hallName(villagers.get(i)).getString();
+				helper.assertTrue(shown.startsWith(names[i] + " ("), names[i] + " is shown without a family name: " + shown);
+				helper.assertTrue(icons.containsKey(shown), shown + " isn't on the hall's list: " + icons.keySet());
+				icons.put(names[i], icons.get(shown));
 			}
 			Optional<TranslatableContents> ada = line(icons.get("Ada"), "screen.aliveworkplace.hall.home");
 			helper.assertTrue(ada.isPresent() && ada.get().getArgs().length == 1 && ada.get().getArgs()[0].equals(Blueprints.displayName(StarterBlueprints.STONE_HOUSE_2.id())),

@@ -4668,67 +4668,6 @@ final class JobScenes {
 						"the chronicle keeps the story's chapters");
 				}, 30)),
 			(level, player) -> true));
-		// The Shift Bell as a story (ROADMAP 31.22): Long Shifts proclaimed with story arcs on, the Toolsmith asks for a
-		// bell, M30's three steps handed in a morning apart, the bell on its post beside the hall, ringing in the work day.
-		SCREENS.put("reform_story", new Screen("The Shift Bell as a story: the Toolsmith asks for a bell, the three steps are handed in, and the bell on its post beside the hall rings in the work day",
-			new Vec3(1.5, -57.2, 8.5), new Vec3(1.5, -58.5, 0),
-			(level, player) -> {
-				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
-					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				io.github.jcondedata.aliveworkplace.story.Arcs.ENABLED = true;
-				io.github.jcondedata.aliveworkplace.hall.Edicts.ENABLED = true;
-				io.github.jcondedata.aliveworkplace.story.Arcs.stopAll(level, STATION);
-				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
-				hall.setReforms(List.of());
-				hall.setEdicts(List.of());
-				Villager smith = EntityType.VILLAGER.create(level);
-				smith.moveTo(-1.5, -60, 2.5, 200f, 0f);
-				smith.setNoAi(true);
-				smith.setVillagerData(smith.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.TOOLSMITH).setLevel(2));
-				smith.setVillagerXp(10);
-				level.addFreshEntity(smith);
-				subject = smith;
-				var shifts = io.github.jcondedata.aliveworkplace.hall.Edicts.find("long_shifts").orElseThrow();
-				Showcase.check(io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION, player, shifts).done(), "Long Shifts was proclaimed");
-				io.github.jcondedata.aliveworkplace.hall.Reforms.round(level, STATION, hall);
-				Showcase.check(io.github.jcondedata.aliveworkplace.story.ReformStories.runs(level, STATION,
-					io.github.jcondedata.aliveworkplace.AliveWorkplace.id("shift_bell")), "The Shift Bell's story began");
-			},
-			List.of(new Step("01_toolsmith_asks", -1, 0, (level, player) -> {
-					var said = io.github.jcondedata.aliveworkplace.story.ArcEffects.onTalk(player, level, net.minecraft.world.InteractionHand.MAIN_HAND, subject);
-					Showcase.check(said == net.minecraft.world.InteractionResult.SUCCESS, "the Toolsmith asks for a bell");
-				}, 40),
-				new Step("02_steps_handed_in", -1, 0, (level, player) -> {
-					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
-					net.minecraft.world.item.Item[] items = {Items.CLOCK, Items.GOLD_INGOT, Items.BREAD};
-					for (int i = 0; i < 3; i++) {
-						var quests = io.github.jcondedata.aliveworkplace.story.Stories.open(level, STATION).stream().filter(q -> q.arc != null).toList();
-						if (quests.isEmpty()) {
-							break;
-						}
-						for (int n = 0; n < 6; n++) {
-							player.getInventory().add(new ItemStack(items[i], 64));
-						}
-						io.github.jcondedata.aliveworkplace.story.Stories.handIn(player, STATION, quests.get(0).id);
-						if (i < 2) {
-							level.setDayTime(level.getDayTime() + io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY);
-							io.github.jcondedata.aliveworkplace.story.Arcs.round(level, STATION, hall);
-						}
-					}
-					player.getInventory().clearContent();
-					Showcase.check(io.github.jcondedata.aliveworkplace.hall.Reforms.reformed(hall, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("long_shifts").toString()),
-						"Long Shifts was reformed by the story's ending");
-					Showcase.check(io.github.jcondedata.aliveworkplace.story.ReformStories.mark(level, STATION, io.github.jcondedata.aliveworkplace.story.ReformStories.BELL).isPresent(),
-						"the bell hangs on its post beside the hall");
-				}, 40),
-				new Step("03_bell_rings", -1, 0, (level, player) -> {
-					long day = level.getDayTime() / io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY;
-					level.setDayTime((day + 1) * io.github.jcondedata.aliveworkplace.hall.VillageNeeds.DAY + io.github.jcondedata.aliveworkplace.story.ReformStories.WORK_START);
-					int rung = io.github.jcondedata.aliveworkplace.story.ReformStories.RUNG.get();
-					io.github.jcondedata.aliveworkplace.story.ReformStories.run(level, STATION, io.github.jcondedata.aliveworkplace.story.ReformStories.WORK_START);
-					Showcase.check(io.github.jcondedata.aliveworkplace.story.ReformStories.RUNG.get() == rung + 1, "the Shift Bell rings in the work day");
-				}, 40)),
-			(level, player) -> true));
 		// Long Shifts proclaimed (ROADMAP 30.3): the builder's line in the hall's list says "long shifts" and 20% faster,
 		// and the chronicle keeps the proclamation.
 		SCREENS.put("long_shifts", new Screen("Long Shifts was proclaimed: the hall's list shows the \"long shifts\" mood and the chronicle keeps it",

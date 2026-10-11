@@ -8,7 +8,6 @@
   "excludes": ["open_gates"],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.lamplighters"},
-    "arc": "aliveworkplace:lamplighters",
     "line": {"translate": "reform.aliveworkplace.lamplighters.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:lantern", "count": 192, "reward": 5},

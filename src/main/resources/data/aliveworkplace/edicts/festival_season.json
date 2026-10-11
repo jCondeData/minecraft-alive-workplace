@@ -8,7 +8,6 @@
   "excludes": [],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.festival_fund"},
-    "arc": "aliveworkplace:festival_fund",
     "line": {"translate": "reform.aliveworkplace.festival_fund.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:cake", "count": 24, "reward": 5},

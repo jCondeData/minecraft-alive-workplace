@@ -21,7 +21,6 @@ from yards import *
 from bandits import *
 from bandit_fort import bandit_fort, bandit_fort_2, bandit_fort_3
 from caravan import caravan_wreck, raiders_stockade, trail_1, trail_2, trail_3, trail_4, trail_5, TRAIL
-from reforms import shift_bell
 from legend_sites import *
 from pokemon import *
 from pokemon_looks import *
@@ -133,7 +132,6 @@ if __name__ == "__main__":
         draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
     caravan_wreck().save(os.path.join(MAIN_STRUCTURES, "story"), "caravan_wreck")  # ROADMAP 31.19: the Lost Caravan's trail
     raiders_stockade().save(os.path.join(MAIN_STRUCTURES, "story"), "raiders_stockade")
-    shift_bell().save(os.path.join(MAIN_STRUCTURES, "story"), "shift_bell")  # ROADMAP 31.22: The Shift Bell's post
     for i, draw in enumerate(TRAIL, 1):
         draw().save(os.path.join(MAIN_STRUCTURES, "story"), f"trail_{i}")
     war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")

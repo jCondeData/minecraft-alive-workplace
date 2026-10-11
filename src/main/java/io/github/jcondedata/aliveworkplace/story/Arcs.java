@@ -85,10 +85,7 @@ public final class Arcs implements ResourceManagerReloadListener {
 					  Map<String, RoleSpec> roles, List<Chapter> chapters, List<JsonObject> ending) {
 	}
 
-	/**
-	 * A role played by a villager: {@code new} (one comes to the village), {@code any}, {@code job:<profession>},
-	 * {@code mother} or {@code trait:<trait>}; several split by {@code |} are tried in order (31.22).
-	 */
+	/** A role played by a villager: {@code new} (one comes to the village), {@code any} or {@code job:<profession>}. */
 	public record RoleSpec(String villager, Component name) {
 	}
 
@@ -119,7 +116,6 @@ public final class Arcs implements ResourceManagerReloadListener {
 		BanditKingStory.init(); // the Bandit King's story (31.16); before onTalk, so Pell asks for his bread first
 		LostCaravanStory.init(); // the Lost Caravan's story (31.20)
 		ProfessorsThesis.init(); // the Professor's Thesis (31.21); before onTalk, so the professor looks at the party first
-		ReformStories.init(); // the reforms as stories (31.22): bells, suppers, drills
 		Platform.get().onUseEntity((player, level, hand, entity, hit) -> ArcEffects.onTalk(player, level, hand, entity));
 	}
 
@@ -210,11 +206,8 @@ public final class Arcs implements ResourceManagerReloadListener {
 			for (Map.Entry<String, JsonElement> r : GsonHelper.getAsJsonObject(json, "roles").entrySet()) {
 				JsonObject o = r.getValue().getAsJsonObject();
 				String villager = GsonHelper.getAsString(o, "villager", "");
-				for (String alt : villager.split("\\|")) { // alternatives in order (31.22)
-					if (!alt.equals("new") && !alt.equals("any") && !alt.startsWith("job:") && !alt.equals("mother") && !alt.startsWith("trait:")
-						|| alt.equals("new") && !villager.equals("new")) {
-						throw new IllegalArgumentException("role '" + r.getKey() + "': 'villager' must be new, or any, job:<profession>, mother or trait:<trait>, split by |");
-					}
+				if (!villager.equals("new") && !villager.equals("any") && !villager.startsWith("job:")) {
+					throw new IllegalArgumentException("role '" + r.getKey() + "': 'villager' must be new, any or job:<profession>");
 				}
 				roles.put(r.getKey(), new RoleSpec(villager, o.has("name") ? Rewards.text(o.get("name")) : Component.literal(r.getKey())));
 			}

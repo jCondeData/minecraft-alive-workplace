@@ -12,7 +12,6 @@
   "excludes": ["curfew"],
   "reform": {
     "name": {"translate": "reform.aliveworkplace.watchful_gate"},
-    "arc": "aliveworkplace:watchful_gate",
     "line": {"translate": "reform.aliveworkplace.watchful_gate.line"},
     "steps": [
       {"kind": "bring", "item": "minecraft:iron_ingot", "count": 192, "reward": 5},

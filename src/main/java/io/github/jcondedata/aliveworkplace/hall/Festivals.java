@@ -250,7 +250,6 @@ public final class Festivals {
 
 	/** The feast: every grown villager eats from the store, everyone is remembered as having come. */
 	public static void feast(ServerLevel level, BlockPos hall) {
-		io.github.jcondedata.aliveworkplace.story.ReformStories.festivalHeld(level, hall); // The Festival Fund's grand festival (31.22)
 		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
 		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
 			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
@@ -294,12 +293,6 @@ public final class Festivals {
 		int days = (NobleBalls.cameToBall(villager) ? Math.max(NobleBalls.MOOD_DAYS, bannered(villager) ? BANNER_MOOD_DAYS : 0)
 			: bannered(villager) ? BANNER_MOOD_DAYS : MOOD_DAYS)
 			* (io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(villager, "golden_age") ? 2 : 1); // twice as long in a Golden Age (29.14)
-		if (day != null) {
-			VillageHallBlockEntity hall = CivicEffects.hallOf(villager);
-			if (hall != null && io.github.jcondedata.aliveworkplace.story.ReformStories.grandDay(level, hall.getBlockPos()) == day) {
-				days++; // a grand festival's good mood lasts a day longer (31.22)
-			}
-		}
 		return day != null && Chronicle.day(level) - day <= days;
 	}
 
@@ -352,7 +345,7 @@ public final class Festivals {
 				fireworks(level, hall, entity, square, level.random);
 			}
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity held && Curfew.fireworks(held)
-				&& level.random.nextFloat() < (io.github.jcondedata.aliveworkplace.story.ReformStories.grand(level, hall) ? 0.8f : 0.4f)) { // twice at a grand one (31.22)
+				&& level.random.nextFloat() < 0.4f) {
 				BlockPos column = square.offset(level.random.nextInt(13) - 6, 0, level.random.nextInt(13) - 6);
 				launch(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column),
 					NobleBalls.today(level, hall) ? NobleBalls.GOLD : COLORS); // gold at a ball (34.7)
@@ -381,7 +374,7 @@ public final class Festivals {
 	 * The gathering, shared with the Grand Chef's banquets (29.18): a villager off work walks to {@code square}; one there
 	 * dances now and then. Returns whether they are at the square.
 	 */
-	public static boolean gatherAt(ServerLevel level, Villager villager, BlockPos square) {
+	static boolean gatherAt(ServerLevel level, Villager villager, BlockPos square) {
 		if (villager.isPassenger()) {
 			return square.closerToCenterThan(villager.position(), 24); // seated (in a Cup's stands, 28.19): there
 		}

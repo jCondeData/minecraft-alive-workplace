@@ -168,7 +168,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B98** main red at 2a7c1b63 (CI build 38009456831, 2026-10-10 00:45Z, runCompatGameTest; the main suite passed 1362 of 1362 in 14 min): CupMatchCompatTests.aBoutBetweenTwoPlayersStartsWithBothTeams 'no PvP battle started' (CupMatchCompatTests.java:268, right after the second player's CupMatches.ready), its only failure of 193. The same code passed 193 of 193 in qa-1010-0033's local full build 20 minutes later, so it is a flake in the compat suite: test-only unless a second ready can really fail to start the bout for players. Expected: passes every run. Test: that test repeated with the repeat generator under runCompatGameTest (red duty: lane a's window) (found by qa-1010-0033, 2026-10-10)
 - [x] **B99** (approved auto 2026-10-11) B95 is a bug in the mod, not in the test, and it turned main red twice tonight (CI builds 763 and 766, LifeStageGameTests.anElderWalksSlower, the elder at 100% of the younger villager's ground; the elders showcase scene fails the same way, 'Bram walked 104% as far as Tom'): elders (34.19) often walk at full speed, and a trait's faster walk is lost the same way. Cause: Walker.requestWalk takes any walk target at the same block for its own, whatever its speed. Walker also sets the look target, so when the walk target is dropped (a path that failed; Walker then waits up to 20 ticks) vanilla's SetWalkTargetFromLookTarget walks the villager to that same block at 0.5 and Walker never asks again (CI trace: [tick 1: 0.461] [tick 2: -1.0] [tick 3: 0.5]). Expected: a worker's walk is at Walker's speed (elder 15% slower) even when vanilla set the target first or the walk already started. A trial fix that passed all 8 LifeStageGameTests (not committed): in requestWalk, a target at the same block but another speed is set again at the wanted speed and getNavigation().setSpeedModifier is called. Fixing it closes B95; Test: LifeStageGameTests.b95AnElderIsAskedAgainWhenVanillaTakesTheWalkOver and b95AnElderSlowsAWalkVanillaStarted on tests/b95-elder-walk-taken-over (both fail on main) (found by qa-1010-0433, 2026-10-10)
 - [x] **B100** (approved auto 2026-10-10) tools/showcase/test_showcase.py fails 2 of its checks on main (seen 2026-10-10 04:55Z, with and without the 32.5 change): 'every scene shows 2-4 stills' names pokemon_center, guilds and tonics, and 'no shard runs over half an hour plus its longest scene, or 45 minutes' reports 61.0 min. showcase.yml runs this script first, so the nightly showcase may stop there. A tool check only, nothing a player sees (QA lane). (found by lane-b-1010-0333, 2026-10-10)
-- [ ] **B101** A crafter's first look at the recipes stalls the server for a third of a second on the pack (found by 30.22's season
+- [x] **B101** (approved auto 2026-10-11) A crafter's first look at the recipes stalls the server for a third of a second on the pack (found by 30.22's season
   run, lane-d-1010-0333, 2026-10-10): on day 1 of the run one tick took 424 ms with 402 ms of it in our code (run 3; 333 ms
   with 307 ms in run 2), under a crafter's work behaviour in `mc/Recipes.options` (the chef's `ChefWork.choose` among the
   frames), the first time the pack's recipes are gone through; later days have no such tick. 25.2 allows no tick over 50 ms
@@ -3385,7 +3385,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     puts everyone and everything back;
   - the order survives save and reload mid-journey;
   - showcase scene `colony_departure` (the settlers gathered at the hall, a GIF of them walking out).
-- [ ] **33.10** **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
+- [x] **33.10** (review: pending 2026-10-11) **A colony is born.** When the journey ends, the spot's chunks are loaded for a minute (a ticket like
   `KeepLoaded`'s) and the settlers make camp on the nearest open ground within 48 blocks (the Settler's Wagon's
   `makeCamp` checks; until 33.14's Colony Camp lands, the settlers' camp with a Village Hall and a Travel Post set
   beside it). Then:
@@ -4419,6 +4419,13 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (33.10, decisions; lane a): the arrival GameTest runs in a new `colony_area` (44 x 20 x 44), not
+  `huge_area` as the Done when says: the camp with a Starter Cottage and a Storehouse either side is 35 blocks across,
+  more than `huge_area`'s 30 (the no-room test does use `huge_area`). The tests take the area's barrier roof off, since
+  the settlers find the ground by the height map. Our choices: the camp faces the mother village; the whole cost
+  (3,200, treasury and player shares alike) goes back into the mother's treasury on a no-room return; sister routes
+  carry no goods for sale and can't be turned off; a colony with no Storehouse yet unloads caravans into the chests by
+  its hall.
 - 2026-10-09 (34.19, decisions and a hand-over to 34.18; lane d): built on `people/LifeStages`: the slower walk, "a
   quiet old age", the chronicle's "is an elder now", the four chatter lines, `LifeStageGameTests`, scene `elders`.
   **The elder look is not built**: nothing of 34.17/34.18 exists (no render layer, no packet, no outfit art), so an

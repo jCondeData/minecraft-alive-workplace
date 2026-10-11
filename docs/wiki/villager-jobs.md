@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97, B101
 
 ## What a player sees
 
@@ -108,6 +108,13 @@ keep working when no player is near (`keepVillagesWorking`). Builds and quarries
 **Caps for server owners (25.5).** With `maxWorkersPerVillage` above 0, a jobless villager doesn't take a free
 workstation once that many are taken nearby; nobody who has a job loses it. `workerPathRange` limits how far a
 worker looks for a path in one go; farther walks are made in legs.
+
+**Recipes (B101).** Crafters (carpenters, masons, chefs, tinkerers, the luxury makers) plan with the game's own
+recipes, so modded ones count. The mod sorts them by what they make, and works out which items each ingredient takes,
+once when the server starts and again after every `/reload`, not on a worker's first look: on a big modpack that first
+look went through every recipe in one tick and stalled the server for a third of a second. A plan tries at most
+500 recipes (a fence from logs tries five), and all of a world's crafters together at most 1,500 in one tick;
+past that, a crafter looks again a few seconds later.
 
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 

@@ -1,13 +1,19 @@
 package io.github.jcondedata.aliveworkplace.craft;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mc.Recipes;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.Predicate;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -70,6 +76,22 @@ public final class Crafting {
 	public record Plan(Item target, int count, List<Step> steps, Map<Item, Integer> takes, Map<Item, Integer> makes) {
 	}
 
+	/**
+	 * The most recipes one plan tries (each with its ingredients, all the way down), so a search that can't work out
+	 * gives up rather than holding up the server's tick (B101). A carpenter's fence from logs tries a few dozen.
+	 */
+	public static final int PLAN_TRIALS = 500;
+	/**
+	 * The most recipes all of a level's crafters together try in one tick (about 10 ms); once it's used up, plans wait
+	 * for the next tick.
+	 */
+	public static final int TICK_TRIALS = 1500;
+
+	/** Recipes tried per level in the current tick: the tick it's for and how many. */
+	private static final Map<ServerLevel, long[]> TICK_USE = new WeakHashMap<>();
+	/** Recipes tried by every plan so far (for the tests). */
+	private static long trials;
+
 	/** A plan to make {@code count} of {@code target} out of {@code usable}, or null if it can't be made from it. */
 	@Nullable
 	public static Plan plan(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
@@ -79,9 +101,24 @@ public final class Crafting {
 	/** {@link #plan} with only the luxury recipes {@code allowed} lets a maker use (for {@link Kind#LUXURY}). */
 	@Nullable
 	public static Plan plan(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable, Predicate<LuxuryRecipes.Recipe> allowed) {
-		Pool pool = new Pool(usable);
+		long[] tick;
+		synchronized (TICK_USE) {
+			tick = TICK_USE.computeIfAbsent(level, l -> new long[2]);
+			if (tick[0] != level.getGameTime()) {
+				tick[0] = level.getGameTime();
+				tick[1] = 0;
+			}
+		}
+		int left = (int) Math.min(PLAN_TRIALS, TICK_TRIALS - tick[1]);
+		if (left <= 0) {
+			return null; // this tick's planning is used up: the crafter asks again later
+		}
+		Pool pool = new Pool(usable, left);
 		List<Step> steps = new ArrayList<>();
-		if (!make(level, kind, target, count, pool, steps, DEPTH, allowed)) {
+		boolean made = make(level, kind, target, count, pool, steps, DEPTH, allowed);
+		tick[1] += pool.budget.tried;
+		trials += pool.budget.tried;
+		if (!made) {
 			return null;
 		}
 		Map<Item, Integer> makes = new LinkedHashMap<>();
@@ -93,29 +130,79 @@ public final class Crafting {
 		return new Plan(target, makes.getOrDefault(target, 0), steps, new LinkedHashMap<>(pool.takes), makes);
 	}
 
-	/** What's to hand while planning: the chests' usable stock, what earlier steps made, and what's been taken so far. */
+	/** How many recipes every plan so far has tried (tests compare it before and after). */
+	public static long trials() {
+		return trials;
+	}
+
+	/** How many recipes one plan may still try. */
+	private static final class Budget {
+		final int max;
+		int tried;
+
+		Budget(int max) {
+			this.max = max;
+		}
+
+		/** Counts one more recipe tried; false once the plan has tried its most. */
+		boolean tryOne() {
+			if (tried >= max) {
+				return false;
+			}
+			tried++;
+			return true;
+		}
+	}
+
+	/**
+	 * What's to hand while planning: the chests' usable stock, what earlier steps made, and what's been taken so far. A
+	 * trial (a recipe tried out) is a pool on top of another that keeps only its own changes, so trying a recipe costs
+	 * nothing like a copy of the whole stock (B101); a trial that works is folded into the pool under it.
+	 */
 	private static final class Pool {
+		@Nullable
+		final Pool parent;
+		final Budget budget;
+		/** The chests' stock as the plan was asked for (read only: not copied for every plan). */
+		final Map<Item, Long> stock;
+		/** Changes to the parent's (or, in the root pool, to the stock). */
 		final Map<Item, Long> chest;
 		final Map<Item, Long> made;
 		final Map<Item, Integer> takes;
 
-		Pool(Map<Item, Long> chest) {
-			this(new HashMap<>(chest), new HashMap<>(), new LinkedHashMap<>());
+		Pool(Map<Item, Long> chest, int budget) {
+			this.parent = null;
+			this.budget = new Budget(budget);
+			this.stock = chest;
+			this.chest = new HashMap<>();
+			this.made = new HashMap<>();
+			this.takes = new LinkedHashMap<>();
 		}
 
-		private Pool(Map<Item, Long> chest, Map<Item, Long> made, Map<Item, Integer> takes) {
-			this.chest = chest;
-			this.made = made;
-			this.takes = takes;
+		private Pool(Pool parent) {
+			this.parent = parent;
+			this.budget = parent.budget;
+			this.stock = Map.of();
+			this.chest = new HashMap<>();
+			this.made = new HashMap<>();
+			this.takes = new LinkedHashMap<>();
+		}
+
+		long chest(Item item) {
+			return chest.getOrDefault(item, 0L) + (parent == null ? stock.getOrDefault(item, 0L) : parent.chest(item));
+		}
+
+		long made(Item item) {
+			return made.getOrDefault(item, 0L) + (parent == null ? 0 : parent.made(item));
 		}
 
 		long have(Item item) {
-			return chest.getOrDefault(item, 0L) + made.getOrDefault(item, 0L);
+			return chest(item) + made(item);
 		}
 
 		/** Uses {@code n}: what was made first, then from the chests. */
 		void use(Item item, long n) {
-			long fromMade = Math.min(made.getOrDefault(item, 0L), n);
+			long fromMade = Math.min(made(item), n);
 			made.merge(item, -fromMade, Long::sum);
 			long fromChest = n - fromMade;
 			if (fromChest > 0) {
@@ -124,17 +211,23 @@ public final class Crafting {
 			}
 		}
 
-		Pool copy() {
-			return new Pool(new HashMap<>(chest), new HashMap<>(made), new LinkedHashMap<>(takes));
+		void addMade(Item item, long n) {
+			made.merge(item, n, Long::sum);
 		}
 
-		void set(Pool other) {
-			chest.clear();
-			chest.putAll(other.chest);
-			made.clear();
-			made.putAll(other.made);
-			takes.clear();
-			takes.putAll(other.takes);
+		/** A trial on top of this pool. */
+		Pool copy() {
+			return new Pool(this);
+		}
+
+		/** Keeps a trial of this pool that worked out. */
+		void set(Pool trial) {
+			if (trial.parent != this) {
+				throw new IllegalArgumentException("not a trial of this pool");
+			}
+			trial.chest.forEach((item, n) -> chest.merge(item, n, Long::sum));
+			trial.made.forEach((item, n) -> made.merge(item, n, Long::sum));
+			trial.takes.forEach((item, n) -> takes.merge(item, n, Integer::sum));
 		}
 	}
 
@@ -148,6 +241,9 @@ public final class Crafting {
 			for (LuxuryRecipes.Recipe recipe : LuxuryRecipes.making(target)) {
 				if (!allowed.test(recipe)) {
 					continue;
+				}
+				if (!pool.budget.tryOne()) {
+					return false;
 				}
 				int times = Math.min(MAX_CRAFTS, (count + recipe.count() - 1) / recipe.count());
 				List<Slot> slots = new ArrayList<>();
@@ -163,7 +259,7 @@ public final class Crafting {
 				pool.set(trial);
 				steps.addAll(trialSteps);
 				steps.add(new Step(in, new ItemStack(target, recipe.count()), times));
-				pool.made.merge(target, (long) recipe.count() * times, Long::sum);
+				pool.addMade(target, (long) recipe.count() * times);
 				return true;
 			}
 		}
@@ -172,6 +268,9 @@ public final class Crafting {
 			ItemStack out = Recipes.result(recipe, level.registryAccess());
 			if (out.isEmpty() || !out.is(target) || !out.getComponentsPatch().isEmpty()) {
 				continue;
+			}
+			if (!pool.budget.tryOne()) {
+				return false; // tried enough for one plan (B101)
 			}
 			int times = Math.min(MAX_CRAFTS, (count + out.getCount() - 1) / out.getCount());
 			// Try it on a copy, so a recipe that doesn't work out leaves everything as it was.
@@ -184,7 +283,7 @@ public final class Crafting {
 			pool.set(trial);
 			steps.addAll(trialSteps);
 			steps.add(new Step(in, out.copy(), times));
-			pool.made.merge(target, (long) out.getCount() * times, Long::sum);
+			pool.addMade(target, (long) out.getCount() * times);
 			return true;
 		}
 		return false;
@@ -203,12 +302,7 @@ public final class Crafting {
 			if (ingredient.isEmpty()) {
 				continue;
 			}
-			List<Item> options = new ArrayList<>();
-			for (ItemStack option : Recipes.options(ingredient)) {
-				if (option.getComponentsPatch().isEmpty() && !options.contains(option.getItem())) {
-					options.add(option.getItem());
-				}
-			}
+			List<Item> options = options(level, ingredient);
 			if (options.isEmpty()) {
 				return null;
 			}
@@ -303,77 +397,169 @@ public final class Crafting {
 		return perCraft.isEmpty() ? null : perCraft;
 	}
 
-	private record Index(RecipeManager manager, Map<Kind, Map<Item, List<RecipeHolder<?>>>> byResult) {
+	/**
+	 * What one recipe manager (one load of the datapacks) looks like to the crafters: its recipes by what they make, per
+	 * kind, and each ingredient's plain items. Built in full when the server starts and after every {@code /reload}
+	 * ({@link #warm}), so no villager's first look at the recipes goes through them all in one tick (B101: 400 ms on the
+	 * pack); a recipe manager that wasn't warmed (another one in a test) is still indexed on first use.
+	 */
+	private record Index(Map<Kind, Map<Item, List<RecipeHolder<?>>>> byResult, Map<Ingredient, List<Item>> options) {
 	}
 
-	private static final Map<ServerLevel, Index> INDEX = new WeakHashMap<>();
+	/** One index per recipe manager (by identity: a reload makes a new manager, so an old index is never read again). */
+	private static final Map<RecipeManager, Index> INDEX = new WeakHashMap<>();
+	/** How many times a kind's recipes or an ingredient's items were gone through (for the tests: a warm lookup adds none). */
+	private static int scans;
 
-	/** The recipes of this kind that make {@code target} (indexed once per recipe reload). */
-	static List<RecipeHolder<?>> recipesFor(ServerLevel level, Kind kind, Item target) {
-		RecipeManager manager = Recipes.manager(level);
+	private static Index index(RecipeManager manager) {
+		synchronized (INDEX) {
+			return INDEX.computeIfAbsent(manager, m -> new Index(new HashMap<>(), new IdentityHashMap<>()));
+		}
+	}
+
+	/**
+	 * Prepares everything a crafter looks up in the server's recipes: every ingredient's items (the game works those out
+	 * the first time they're asked for, which is the slow part with a big modpack's tags), then each kind's recipes by
+	 * result. Run once the datapacks are loaded and after each {@code /reload}, outside the game's ticks.
+	 */
+	public static void warm(MinecraftServer server) {
+		long start = System.nanoTime();
+		RecipeManager manager = Recipes.manager(server);
+		int failed = 0;
+		for (RecipeHolder<?> holder : Recipes.all(manager)) {
+			try {
+				for (Ingredient ingredient : Recipes.ingredients(holder.value())) {
+					Recipes.options(ingredient); // the game keeps the answer: later looks (any job's) are quick
+				}
+			} catch (RuntimeException e) {
+				failed++; // a broken modded recipe: the job that meets it handles it as it always did
+			}
+		}
+		Index index = index(manager);
+		for (Kind kind : Kind.values()) {
+			for (List<RecipeHolder<?>> holders : byResult(manager, server.registryAccess(), kind).values()) {
+				for (RecipeHolder<?> holder : holders) {
+					for (Ingredient ingredient : Recipes.ingredients(holder.value())) {
+						options(index, ingredient);
+					}
+				}
+			}
+		}
+		AliveWorkplace.LOG.debug("Indexed the recipes for crafting villagers in {} ms ({} recipes could not be read)",
+			(System.nanoTime() - start) / 1_000_000, failed);
+	}
+
+	/** Whether this recipe manager's recipes of {@code kind} are indexed already (a lookup won't go through them). */
+	public static boolean indexed(RecipeManager manager, Kind kind) {
 		Index index;
 		synchronized (INDEX) {
-			index = INDEX.get(level);
-			if (index == null || index.manager() != manager) {
-				index = new Index(manager, new HashMap<>());
-				INDEX.put(level, index);
-			}
+			index = INDEX.get(manager);
 		}
-		Map<Item, List<RecipeHolder<?>>> byResult;
+		if (index == null) {
+			return false;
+		}
 		synchronized (index) {
-			byResult = index.byResult().get(kind);
-			if (byResult == null) {
-				byResult = new HashMap<>();
-				List<RecipeHolder<?>> all = new ArrayList<>();
-				switch (kind) {
-					case CRAFTING -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
-					case STONECUTTING -> all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
-					case LUXURY -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING)); // below the luxury recipes
-					case KITCHEN -> {
-						// Pot dishes first (a Poké Puff is made in the pot even if some mod adds a crafting recipe too).
-						for (RecipeHolder<?> holder : Recipes.all(manager)) {
-							if (isCookingPot(holder.value().getType())) {
-								all.add(holder);
-							}
-						}
-						all.addAll(Recipes.all(manager, RecipeType.SMOKING));
-						all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
-					}
-					case KILN -> {
-						for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.SMELTING)) {
-							ItemStack result = Recipes.result(holder.value(), level.registryAccess());
-							if (!meltsGear(holder.value()) && !result.has(net.minecraft.core.component.DataComponents.FOOD)
-									&& (result.getItem() instanceof net.minecraft.world.item.BlockItem || result.is(net.minecraft.world.item.Items.BRICK)
-									|| result.is(net.minecraft.world.item.Items.NETHER_BRICK))) {
-								all.add(holder);
-							}
-						}
-						all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
-						all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
-					}
-					case WORKSHOP -> {
-						for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.BLASTING)) {
-							if (!meltsGear(holder.value())) {
-								all.add(holder);
-							}
-						}
-						all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
-					}
-				}
-				for (RecipeHolder<?> holder : all) {
-					// Special recipes (fireworks, map copies) and ones that don't list their ingredients can't be planned.
-					if (holder.value().isSpecial() || Recipes.ingredients(holder.value()).stream().allMatch(Ingredient::isEmpty)) {
-						continue;
-					}
-					ItemStack out = Recipes.result(holder.value(), level.registryAccess());
-					if (!out.isEmpty()) {
-						byResult.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
-					}
-				}
-				index.byResult().put(kind, byResult);
-			}
+			return index.byResult().containsKey(kind);
 		}
-		return byResult.getOrDefault(target, List.of());
+	}
+
+	/** How many full passes over recipes or ingredients have been made so far (tests compare it before and after). */
+	public static int scans() {
+		return scans;
+	}
+
+	/** The plain (component-free) items an ingredient accepts, in its order, each once; worked out once per load. */
+	public static List<Item> options(ServerLevel level, Ingredient ingredient) {
+		return options(index(Recipes.manager(level)), ingredient);
+	}
+
+	private static List<Item> options(Index index, Ingredient ingredient) {
+		synchronized (index) {
+			List<Item> known = index.options().get(ingredient);
+			if (known != null) {
+				return known;
+			}
+			scans++;
+			Set<Item> options = new LinkedHashSet<>();
+			for (ItemStack option : Recipes.options(ingredient)) {
+				if (option.getComponentsPatch().isEmpty()) {
+					options.add(option.getItem());
+				}
+			}
+			List<Item> list = List.copyOf(options);
+			index.options().put(ingredient, list);
+			return list;
+		}
+	}
+
+	/** The recipes of this kind that make {@code target} (indexed once per recipe load). */
+	static List<RecipeHolder<?>> recipesFor(ServerLevel level, Kind kind, Item target) {
+		return byResult(Recipes.manager(level), level.registryAccess(), kind).getOrDefault(target, List.of());
+	}
+
+	/** The recipes of this kind in {@code manager} that make {@code target} (a test's own recipe manager, say). */
+	public static List<RecipeHolder<?>> recipesFor(RecipeManager manager, HolderLookup.Provider registries, Kind kind, Item target) {
+		return byResult(manager, registries, kind).getOrDefault(target, List.of());
+	}
+
+	private static Map<Item, List<RecipeHolder<?>>> byResult(RecipeManager manager, HolderLookup.Provider registries, Kind kind) {
+		Index index = index(manager);
+		synchronized (index) {
+			Map<Item, List<RecipeHolder<?>>> byResult = index.byResult().get(kind);
+			if (byResult != null) {
+				return byResult;
+			}
+			scans++;
+			byResult = new HashMap<>();
+			List<RecipeHolder<?>> all = new ArrayList<>();
+			switch (kind) {
+				case CRAFTING -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+				case STONECUTTING -> all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
+				case LUXURY -> all.addAll(Recipes.all(manager, RecipeType.CRAFTING)); // below the luxury recipes
+				case KITCHEN -> {
+					// Pot dishes first (a Poké Puff is made in the pot even if some mod adds a crafting recipe too).
+					for (RecipeHolder<?> holder : Recipes.all(manager)) {
+						if (isCookingPot(holder.value().getType())) {
+							all.add(holder);
+						}
+					}
+					all.addAll(Recipes.all(manager, RecipeType.SMOKING));
+					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+				}
+				case KILN -> {
+					for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.SMELTING)) {
+						ItemStack result = Recipes.result(holder.value(), registries);
+						if (!meltsGear(holder.value()) && !result.has(net.minecraft.core.component.DataComponents.FOOD)
+								&& (result.getItem() instanceof net.minecraft.world.item.BlockItem || result.is(net.minecraft.world.item.Items.BRICK)
+								|| result.is(net.minecraft.world.item.Items.NETHER_BRICK))) {
+							all.add(holder);
+						}
+					}
+					all.addAll(Recipes.all(manager, RecipeType.STONECUTTING));
+					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+				}
+				case WORKSHOP -> {
+					for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.BLASTING)) {
+						if (!meltsGear(holder.value())) {
+							all.add(holder);
+						}
+					}
+					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+				}
+			}
+			for (RecipeHolder<?> holder : all) {
+				// Special recipes (fireworks, map copies) and ones that don't list their ingredients can't be planned.
+				if (holder.value().isSpecial() || Recipes.ingredients(holder.value()).stream().allMatch(Ingredient::isEmpty)) {
+					continue;
+				}
+				ItemStack out = Recipes.result(holder.value(), registries);
+				if (!out.isEmpty()) {
+					byResult.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
+				}
+			}
+			index.byResult().put(kind, byResult);
+			return byResult;
+		}
 	}
 
 	/** Whether a recipe melts down something with durability (iron tools into nuggets): the tinkerer leaves those alone. */

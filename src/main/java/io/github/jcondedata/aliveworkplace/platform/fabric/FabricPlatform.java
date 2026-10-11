@@ -116,6 +116,15 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void onDataPacksReloaded(Consumer<MinecraftServer> action) {
+		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resources, success) -> {
+			if (success) {
+				action.accept(server);
+			}
+		});
+	}
+
+	@Override
 	public void onServerTick(Consumer<MinecraftServer> action) {
 		ServerTickEvents.END_SERVER_TICK.register(action::accept);
 	}

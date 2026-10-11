@@ -85,6 +85,8 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.people.Luxuries.init(); // luxuries from the village store (34.4)
 		io.github.jcondedata.aliveworkplace.trade.TradeGoods.init(); // trade goods (33.2)
 		io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes.init(); // the luxury workshops' recipes (34.5)
+		Platform.get().onServerStarting(io.github.jcondedata.aliveworkplace.craft.Crafting::warm); // crafters' recipe index, before any tick (B101)
+		Platform.get().onDataPacksReloaded(io.github.jcondedata.aliveworkplace.craft.Crafting::warm);
 		io.github.jcondedata.aliveworkplace.people.Tonics.init();
 		io.github.jcondedata.aliveworkplace.people.LifeStages.init(); // the Evergreen Charm (34.19a)
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();

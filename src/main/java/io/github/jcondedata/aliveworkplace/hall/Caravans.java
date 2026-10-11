@@ -132,6 +132,11 @@ public final class Caravans {
 		final Map<BlockPos, io.github.jcondedata.aliveworkplace.trade.Market> markets = new LinkedHashMap<>();
 		/** Each village's Village Banner base colour as its hall's last round saw it (33.7: its caravans' carpets); none without a banner. */
 		final Map<BlockPos, net.minecraft.world.item.DyeColor> colours = new LinkedHashMap<>();
+		/**
+		 * Sister routes (33.10): a mother village and the colony it founded, a route both ways that is always on, carries
+		 * only what the other waits for (free, nothing for sale) and doesn't count toward the cap on trade routes.
+		 */
+		final Map<BlockPos, Set<BlockPos>> sisters = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -146,8 +151,33 @@ public final class Caravans {
 			return villages.get(hall);
 		}
 
+		/** The villages {@code hall} sends caravans to: its trade routes and its sister villages (33.10). */
 		public Set<BlockPos> routesFrom(BlockPos hall) {
-			return Set.copyOf(routes.getOrDefault(hall, Set.of()));
+			Set<BlockPos> out = new LinkedHashSet<>(routes.getOrDefault(hall, Set.of()));
+			out.addAll(sisters.getOrDefault(hall, Set.of()));
+			return Set.copyOf(out);
+		}
+
+		/** Links a mother village and its colony (33.10): a sister route both ways, outside the cap. */
+		public void addSisters(BlockPos a, BlockPos b) {
+			sisters.computeIfAbsent(a.immutable(), k -> new LinkedHashSet<>()).add(b.immutable());
+			sisters.computeIfAbsent(b.immutable(), k -> new LinkedHashSet<>()).add(a.immutable());
+			setDirty();
+		}
+
+		/** Whether {@code a} and {@code b} are mother and colony, with a sister route between them. */
+		public boolean isSister(BlockPos a, BlockPos b) {
+			return sisters.getOrDefault(a, Set.of()).contains(b);
+		}
+
+		/** The villages {@code hall} has a sister route with. */
+		public Set<BlockPos> sistersOf(BlockPos hall) {
+			return Set.copyOf(sisters.getOrDefault(hall, Set.of()));
+		}
+
+		/** The trade routes out of {@code hall} that count toward its cap: not the sister routes. */
+		public int tradeRoutes(BlockPos hall) {
+			return routes.getOrDefault(hall, Set.of()).size();
 		}
 
 		public List<Shipment> onTheRoad() {
@@ -196,6 +226,8 @@ public final class Caravans {
 			onTheRoad.addAll(home);
 			halves.remove(hall);
 			halves.values().forEach(to -> to.remove(hall));
+			sisters.remove(hall);
+			sisters.values().forEach(to -> to.remove(hall));
 			leaders.remove(hall);
 			markets.remove(hall);
 			colours.remove(hall);
@@ -243,6 +275,7 @@ public final class Caravans {
 					out.add(from);
 				}
 			});
+			out.addAll(sisters.getOrDefault(hall, Set.of()));
 			out.remove(hall);
 			return out;
 		}
@@ -317,6 +350,9 @@ public final class Caravans {
 
 		/** Starts or stops the route from {@code from} to {@code to}, with at most {@code max} routes out; true if it's on now. */
 		public boolean toggleRoute(BlockPos from, BlockPos to, int max) {
+			if (isSister(from, to)) {
+				return true; // a sister route stays open
+			}
 			Set<BlockPos> out = routes.computeIfAbsent(from.immutable(), k -> new LinkedHashSet<>());
 			boolean on;
 			if (out.remove(to)) {
@@ -502,6 +538,16 @@ public final class Caravans {
 				bank.add(t);
 			}));
 			tag.put("bankedXp", bank);
+			if (!sisters.isEmpty()) { // 33.10
+				ListTag sister = new ListTag();
+				sisters.forEach((a, to) -> to.forEach(b -> {
+					CompoundTag t = new CompoundTag();
+					t.putLong("a", a.asLong());
+					t.putLong("b", b.asLong());
+					sister.add(t);
+				}));
+				tag.put("sisters", sister);
+			}
 			return tag;
 		}
 
@@ -586,6 +632,11 @@ public final class Caravans {
 				if (Nbt.hasUuid(t, "id")) {
 					data.banked.computeIfAbsent(BlockPos.of(Nbt.getLong(t, "hall")), k -> new LinkedHashMap<>()).merge(Nbt.getUuid(t, "id"), Nbt.getInt(t, "xp"), Integer::sum);
 				}
+			}
+			ListTag sister = Nbt.getList(tag, "sisters", Tag.TAG_COMPOUND); // 33.10; older saves have none
+			for (int i = 0; i < sister.size(); i++) {
+				CompoundTag t = Nbt.compoundAt(sister, i);
+				data.sisters.computeIfAbsent(BlockPos.of(Nbt.getLong(t, "a")), k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(t, "b")));
 			}
 			return data;
 		}
@@ -692,7 +743,8 @@ public final class Caravans {
 				goods.add(new ItemStack(want.item(), taken));
 			}
 		}
-		List<Lot> sale = io.github.jcondedata.aliveworkplace.trade.CaravanTrade.load(level, hall, to, data, ours);
+		// 33.10: a sister route carries what the other waits for, free, and nothing for sale
+		List<Lot> sale = data.isSister(hall, to) ? List.of() : io.github.jcondedata.aliveworkplace.trade.CaravanTrade.load(level, hall, to, data, ours);
 		if (goods.isEmpty() && sale.isEmpty()) {
 			return null;
 		}
@@ -714,6 +766,9 @@ public final class Caravans {
 			return;
 		}
 		List<BlockPos> chests = storehouse(level, hall);
+		if (chests.isEmpty() && !data.sistersOf(hall).isEmpty()) {
+			chests = SupplyContainers.find(level, hall, null); // 33.10: a colony before its Storehouse stands unloads by the hall (the camp's chest)
+		}
 		Village us = data.village(hall);
 		for (Shipment s : arrived) {
 			List<ItemStack> left = new ArrayList<>();

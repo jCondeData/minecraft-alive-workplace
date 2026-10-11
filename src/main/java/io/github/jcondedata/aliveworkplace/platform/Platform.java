@@ -73,6 +73,9 @@ public interface Platform {
 	/** Once the server is starting (datapacks loaded, levels not yet). */
 	void onServerStarting(Consumer<MinecraftServer> action);
 
+	/** After a {@code /reload} of the server's datapacks has finished and worked (the new recipes and tags are in place). */
+	void onDataPacksReloaded(Consumer<MinecraftServer> action);
+
 	/** At the end of every server tick. */
 	void onServerTick(Consumer<MinecraftServer> action);
 

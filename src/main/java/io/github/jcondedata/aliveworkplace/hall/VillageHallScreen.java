@@ -547,7 +547,10 @@ public final class VillageHallScreen {
 			for (Component held : io.github.jcondedata.aliveworkplace.cup.CupChampions.holderLines(level, other.hall())) { // 28.21
 				lore.add(line(held, ChatFormatting.GOLD));
 			}
-			if (receiving) {
+			boolean sister = data.isSister(hall, other.hall());
+			if (sister) { // 33.10: mother and colony
+				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_sister"), ChatFormatting.LIGHT_PURPLE));
+			} else if (receiving) {
 				lore.add(line(Component.translatable("screen.aliveworkplace.hall.route_receiving"), ChatFormatting.AQUA));
 			}
 			lore.add(line(Component.translatable(sending ? "screen.aliveworkplace.hall.route_on" : "screen.aliveworkplace.hall.route_off"),
@@ -557,6 +560,10 @@ public final class VillageHallScreen {
 			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), other.name().copy(),
 				sending ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore.toArray(Component[]::new));
 			menu.button(slot++, icon, p -> {
+				if (sister) {
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.route_sister", other.name()).withStyle(ChatFormatting.LIGHT_PURPLE));
+					return;
+				}
 				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall))
 					+ io.github.jcondedata.aliveworkplace.people.ClassPerks.caravanRoutes(level, hall); // 3 Burgher households: one more (34.7)
 				boolean on = data.toggleRoute(hall, other.hall(), max);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
@@ -25,6 +26,10 @@ import net.minecraft.world.level.Level;
 public final class Recipes {
 	public static RecipeManager manager(ServerLevel level) {
 		return level.getRecipeManager();
+	}
+
+	public static RecipeManager manager(MinecraftServer server) {
+		return server.getRecipeManager();
 	}
 
 	public static <I extends RecipeInput, T extends Recipe<I>> List<RecipeHolder<T>> all(RecipeManager manager, RecipeType<T> type) {

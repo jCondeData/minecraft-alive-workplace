@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Relief in a raid, for 1.7** (33.17, off until 1.7 is finished): when a realm village is raided (a night raid,
+  bandits, a siege or a pillager raid), the capital and every member within 1,024 blocks with 2 guards or more send
+  riders: one per 3 guards (1 to 3 a village, 6 at most). After a ride of at least 30 seconds they come on horseback to
+  the village's edge from their home's side (to the capital's Royal Hall when the capital is raided), named
+  "Ashford's guard", their shields in the realm's arms, fight as guards and ride off a minute after the raid (at dawn
+  at the latest). Each rider costs the realm treasury an emerald; with it empty only the capital's band comes. The
+  sender's hall says "2 guards away helping Ashford" and both chronicles note it. Setting `realmRelief`.
 - **Shared research, for 1.7** (33.15, off until 1.7 is finished): a realm's villages share what their scholars know.
   A member uses the capital's level of each research topic where it is higher (its screen says "From the capital"),
   without it counting toward the member's rank, and its idle scholars help the capital at half pace. The capital's

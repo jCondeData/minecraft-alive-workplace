@@ -3578,7 +3578,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each topic shows its effect at level 1 (and at level 2 where it has one); the Realm row
   shows all eight with what each needs; `langcheck.py` is clean.
-- [ ] **33.17** **Relief in a raid.** When a realm village is raided (our night raids, bandit raids, or a vanilla
+- [x] **33.17** (review: pending 2026-10-11) **Relief in a raid.** When a realm village is raided (our night raids, bandit raids, or a vanilla
   pillager raid at the village; M32's sieges call `Relief.call` too), the other members send help: the capital,
   wherever it is, and every other member within 1,024 blocks that has 2 guards or more. Each sends one rider for every
   3 guards it has (at least 1, at most 3; more with Levies), 6 riders at most in all, after a ride of a tick per 4

@@ -40,7 +40,7 @@ public final class Mercenaries {
 
 	/** The band at the hall now (hired and not gone yet). */
 	public static List<Villager> near(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && isMercenary(v));
+		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && isMercenary(v) && !Relief.isRider(v));
 	}
 
 	/** What a band costs at the hall at {@code hall} in emeralds: less with Commerce researched. */
@@ -99,6 +99,7 @@ public final class Mercenaries {
 
 	/** Every server tick of a villager: a mercenary whose time is up leaves. */
 	public static void tick(Villager villager) {
+		Relief.tick(villager); // a relief rider's stay ends with the raid (33.17)
 		Long until = ModAttachments.MERCENARY_UNTIL.get(villager);
 		if (until == null || !(villager.level() instanceof ServerLevel level) || level.getGameTime() < until) {
 			return;

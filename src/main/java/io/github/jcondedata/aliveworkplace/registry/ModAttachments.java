@@ -180,6 +180,9 @@ public final class ModAttachments {
 	/** When a hired mercenary leaves (see {@code guard/Mercenaries}); absent for everyone else. */
 	public static final Attachment<Long> MERCENARY_UNTIL = Attachment.saved("mercenary_until", com.mojang.serialization.Codec.LONG);
 
+	/** A relief rider's errand (see {@code guard/Relief}, 33.17): the village they help and their home; absent for everyone else. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.guard.Relief.Rider> RELIEF_RIDER = Attachment.saved("relief_rider", io.github.jcondedata.aliveworkplace.guard.Relief.Rider.CODEC);
+
 	/** A villager's parents (see {@code people/Families}). */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Families.Parents> PARENTS = Attachment.saved("parents", io.github.jcondedata.aliveworkplace.people.Families.Parents.CODEC);
 

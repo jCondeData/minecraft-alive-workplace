@@ -209,6 +209,8 @@ public final class WorkplaceConfig {
 	public boolean realms = Expansions.on(Expansions.M33);
 	/** Villages a realm may hold. */
 	public int realmMaxMembers = 12;
+	/** When a realm village is raided, the capital and members within 1,024 blocks send riders to help, paid from the realm treasury (ROADMAP 33.17). Off: nobody comes. */
+	public boolean realmRelief = Expansions.on(Expansions.M33);
 	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
 	public boolean villageClasses = Expansions.on(Expansions.M34);
 	/** Dawns running the next class's needs must hold for a household to rise one class. */
@@ -633,6 +635,7 @@ public final class WorkplaceConfig {
 		// Off in gametests (the Trade page's tests count its tabs, the advice tests their tips); the realm tests turn it on.
 		io.github.jcondedata.aliveworkplace.realm.Realms.ENABLED = realms && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.realm.Realms.MAX_MEMBERS = realmMaxMembers;
+		io.github.jcondedata.aliveworkplace.guard.Relief.ENABLED = realmRelief && Expansions.on(Expansions.M33);
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.people.ClassMigration.GRACE_DAYS = classGraceDays;
 		// Off in gametests (a hall's round would seed a test's villagers mid-test); the migration tests turn it on.

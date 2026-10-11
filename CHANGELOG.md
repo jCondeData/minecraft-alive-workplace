@@ -16,6 +16,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the
+  crafters' recipes are sorted and their ingredients worked out once when the server starts and after each `/reload`,
+  and the crafters' planning has a limit per plan and per tick (a crafter past it looks again a few seconds later).
+
 ## 0.142.0 — 2026-10-10
 
 ### Added

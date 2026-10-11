@@ -265,6 +265,10 @@ tasks {
     withType<JavaCompile>().configureEach {
         options.release = requiredJava.majorVersion.toInt()
         options.encoding = "UTF-8"
+        // String joins compiled as plain StringBuilder code, not invokedynamic: each indy join is linked the first time it
+        // runs, and on the pack that first link stalled a tick by 80 to 110 ms (B103: a day's report line, a farmer's
+        // first look at a field). Same strings, no runtime linking.
+        options.compilerArgs.add("-XDstringConcat=inline")
     }
 
     withType<ProcessResources>().configureEach {

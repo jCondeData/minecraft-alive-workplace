@@ -202,6 +202,8 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Fewer hitches the first time a job runs on a big pack: the mod's text joins are now built in as plain code instead of
+  being put together by Java the first time each one runs, which held up a tick by up to a tenth of a second (B103).
 - Villages with many lumberjacks and builders run smoother: a lumberjack in a wood full of log pillars or log cabins
   now looks a few trunks over at a time instead of all of them in one go (it may take a moment longer to pick its
   tree there), a tree farm's saplings are found without going over every block of the farm, and a builder waiting for

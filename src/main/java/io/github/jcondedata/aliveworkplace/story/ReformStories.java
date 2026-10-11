@@ -342,6 +342,7 @@ public final class ReformStories {
 		v.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, level.random.nextFloat() * 360f, 0f);
 		v.setVillagerData(v.getVillagerData().setProfession(job).setLevel(tier));
 		v.setVillagerXp(VillagerData.getMinXpPerLevel(tier));
+		v.refreshBrain(level); // the new trade's brain (a guard's fights in its CORE activity, B117)
 		v.setCustomName(Component.translatable(title));
 		v.setPersistenceRequired();
 		level.addFreshEntity(v);

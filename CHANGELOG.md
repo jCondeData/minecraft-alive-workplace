@@ -218,6 +218,9 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Hired swords fight at once (B117): mercenaries hired at the hall, the Siege-breakers, the Bandit King's allies and
+  the old soldier who settles after a reform could stand idle beside a monster until the world was reloaded. They now
+  take up a guard's ways the moment they arrive.
 - Big building villages run smoother: builders in one world place or break at most 12 blocks a tick between them (a
   builder whose turn falls past that waits one tick). The benchmark's timer now tells a long tick of ours from a
   garbage collection pause or a busy machine (the tick's GC pauses and time off the CPU in each long tick's line).

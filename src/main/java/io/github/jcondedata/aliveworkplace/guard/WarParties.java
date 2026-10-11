@@ -219,6 +219,7 @@ public final class WarParties {
 			merc.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 			merc.setVillagerData(merc.getVillagerData().setProfession(ModVillagers.GUARD).setLevel(3));
 			merc.setVillagerXp(70); // keeps the profession without a guard post
+			merc.refreshBrain(level); // a guard's brain: fighting in its CORE activity (B117)
 			ModAttachments.MERCENARY_UNTIL.set(merc, until);
 			merc.addTag(SIEGE_TAG);
 			merc.addTag(HIRED_BY + player.getUUID());

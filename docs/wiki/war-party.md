@@ -4,7 +4,7 @@ ROADMAP 32.13. Part of Milestone 32 (1.6), so it is **off for players until the 
 (`Expansions.M32`); GameTests and the showcase run with it on. How a player takes the fight to a lair (see
 [Lairs and the Defence page](lairs.md)) with the village's guards (see [Raids and threats](raids.md)) and hired swords.
 
-Roadmap items: 32.13
+Roadmap items: 32.13, B117
 
 ## What a player sees
 
@@ -38,6 +38,9 @@ those without a target on the nearest of them, and at a City frees the captain. 
 blocks of its lair pays the kill's XP again and puts the guard's name on the list for that village. `Lairs.onBroken`
 gives the rewards: `Lairs.rest(hall, 10)`, the mood until two days on, the chronicle line, and the siege-breakers'
 stay cut to the next dawn.
+Every villager made a guard on the spot (the hall's mercenaries, the Siege-breakers, `BanditKingStory.ally`, the reform's
+old soldier) gets a fresh brain as it is made, as `Relief` does, so its brain has the guard's CORE package with
+`GuardCombat` and it fights at once instead of after a reload (B117).
 
 ## Switches
 

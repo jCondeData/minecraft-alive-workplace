@@ -412,6 +412,7 @@ public final class BanditKingStory {
 		v.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 		v.setVillagerData(v.getVillagerData().setProfession(ModVillagers.GUARD).setLevel(3));
 		v.setVillagerXp(70); // keeps the profession without a guard post
+		v.refreshBrain(level); // a guard's brain: fighting in its CORE activity (B117)
 		ModAttachments.MERCENARY_UNTIL.set(v, level.getGameTime() + ALLY_STAY);
 		v.setCustomName(name);
 		v.addTag(ALLY_TAG);

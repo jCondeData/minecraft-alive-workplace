@@ -92,6 +92,7 @@ public class LegendGuestsGameTests implements net.fabricmc.fabric.api.gametest.v
 	/** The hall, and when the test ends the Legends and guests it made (with their record entries) and the buildings it recorded go. */
 	private static void setUp(GameTestHelper helper, List<BlueprintData.Placement> recorded) {
 		Leftovers.clear(helper);
+		Leftovers.finished(helper);
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		Leftovers.after(helper, () -> {
 			ServerLevel level = helper.getLevel();

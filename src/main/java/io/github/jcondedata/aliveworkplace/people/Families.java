@@ -6,7 +6,10 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -23,11 +26,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Families {
 	/**
-	 * Who a villager's parents are: names, their jobs when the child was born, whether the child has grown up, and whether
-	 * each parent was a schooled Master at the birth (29.7; false in older saves).
+	 * Who a villager's parents are: names, their jobs when the child was born, whether the child has grown up, whether
+	 * each parent was a schooled Master at the birth (29.7; false in older saves), and the parents' ids (34.21,
+	 * {@code mother_id} and {@code father_id}; null in records saved before, which keep the names only).
 	 */
 	public record Parents(Component mother, Component father, String motherJob, String fatherJob, boolean grownUp,
-						  boolean motherSchooledMaster, boolean fatherSchooledMaster) {
+						  boolean motherSchooledMaster, boolean fatherSchooledMaster, @Nullable UUID motherId, @Nullable UUID fatherId) {
 		public static final Codec<Parents> CODEC = RecordCodecBuilder.create(i -> i.group(
 			ComponentSerialization.CODEC.fieldOf("mother").forGetter(Parents::mother),
 			ComponentSerialization.CODEC.fieldOf("father").forGetter(Parents::father),
@@ -35,8 +39,17 @@ public final class Families {
 			Codec.STRING.optionalFieldOf("father_job", "").forGetter(Parents::fatherJob),
 			Codec.BOOL.optionalFieldOf("grown_up", false).forGetter(Parents::grownUp),
 			Codec.BOOL.optionalFieldOf("mother_schooled_master", false).forGetter(Parents::motherSchooledMaster),
-			Codec.BOOL.optionalFieldOf("father_schooled_master", false).forGetter(Parents::fatherSchooledMaster)
-		).apply(i, Parents::new));
+			Codec.BOOL.optionalFieldOf("father_schooled_master", false).forGetter(Parents::fatherSchooledMaster),
+			UUIDUtil.CODEC.optionalFieldOf("mother_id").forGetter(p -> Optional.ofNullable(p.motherId())),
+			UUIDUtil.CODEC.optionalFieldOf("father_id").forGetter(p -> Optional.ofNullable(p.fatherId()))
+		).apply(i, (mother, father, motherJob, fatherJob, grownUp, motherMaster, fatherMaster, motherId, fatherId) ->
+			new Parents(mother, father, motherJob, fatherJob, grownUp, motherMaster, fatherMaster, motherId.orElse(null), fatherId.orElse(null))));
+
+		/** Parents known by name only (no ids), as every record saved before 34.21. */
+		public Parents(Component mother, Component father, String motherJob, String fatherJob, boolean grownUp,
+					   boolean motherSchooledMaster, boolean fatherSchooledMaster) {
+			this(mother, father, motherJob, fatherJob, grownUp, motherSchooledMaster, fatherSchooledMaster, null, null);
+		}
 
 		/** Parents neither of whom is on record as a schooled Master. */
 		public Parents(Component mother, Component father, String motherJob, String fatherJob, boolean grownUp) {
@@ -44,15 +57,16 @@ public final class Families {
 		}
 
 		Parents grown() {
-			return new Parents(mother, father, motherJob, fatherJob, true, motherSchooledMaster, fatherSchooledMaster);
+			return new Parents(mother, father, motherJob, fatherJob, true, motherSchooledMaster, fatherSchooledMaster, motherId, fatherId);
 		}
 	}
 
-	/** Notes {@code mother} and {@code father} as {@code baby}'s parents. */
+	/** Notes {@code mother} and {@code father} as {@code baby}'s parents, by name and id; the baby takes a parent's family name (34.21). */
 	public static void born(Villager baby, Villager mother, Villager father) {
 		ModAttachments.PARENTS.set(baby, new Parents(mother.getDisplayName(), father.getDisplayName(), job(mother), job(father), false,
-			schooledMaster(mother), schooledMaster(father)));
-		io.github.jcondedata.aliveworkplace.story.FriendPerks.nameBaby(baby, mother, father); // named after a friend of theirs (31.12)
+			schooledMaster(mother), schooledMaster(father), mother.getUUID(), father.getUUID()));
+		FamilyBook.born(baby, mother, father); // the family name (34.21)
+		io.github.jcondedata.aliveworkplace.story.FriendPerks.nameBaby(baby, mother, father); // the first name, after a friend of theirs (31.12)
 	}
 
 	/** A schooled Master: schooled as a child and now at the top level of a trade (29.7's born Legends and gifts). */

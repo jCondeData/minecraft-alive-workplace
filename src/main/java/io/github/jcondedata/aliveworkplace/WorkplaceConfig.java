@@ -213,6 +213,8 @@ public final class WorkplaceConfig {
 	public int classRiseDays = 2;
 	/** Dawns running a need of their own class must fail for a household to fall one class. */
 	public int classFallDays = 3;
+	/** Days a village settles in after classes are switched on there (ROADMAP 34.22): nobody falls a class, luxuries aren't needed yet, nobody retires. */
+	public int classGraceDays = 7;
 	/** Grown villagers count their days and become elders (ROADMAP 34.19). Off: nobody is an elder, so nobody passes of old age; the day they grew up stays saved. */
 	public boolean villagerAges = Expansions.on(Expansions.M34);
 	/** Grown days before a villager is an elder. */
@@ -221,6 +223,12 @@ public final class WorkplaceConfig {
 	public boolean elderPassing = Expansions.on(Expansions.M34);
 	/** An Evergreen Charm makes an elder with good traits ageless (ROADMAP 34.19a). Off: charms are refused; elders already ageless stay so. */
 	public boolean agelessElders = Expansions.on(Expansions.M34);
+	/** Villagers wear their class over their job's outfit, and elders an elder's look (ROADMAP 34.18). Off: only the job's outfit is drawn. */
+	public boolean classOutfits = Expansions.on(Expansions.M34);
+	/** An elder with a job retires once someone can take over, and mentors the village's Novices and Apprentices (ROADMAP 34.20). Off: nobody starts retiring; those retired stay retired. */
+	public boolean elderRetirement = Expansions.on(Expansions.M34);
+	/** Every villager in a village with a hall has a family name, shown on the hall ("Dara (Ashby)") and in the chronicle (ROADMAP 34.21). Off: no family names are shown; the Book of Families, the Family page and printed trees go by first names. */
+	public boolean familyNames = Expansions.on(Expansions.M34);
 	/** Villagers at a cauldron can be made Vintners with sweet berries, glow berries or an apple (ROADMAP 34.9). Off: no Vintner job, and Vintners already hired stand idle. */
 	public boolean vintners = Expansions.on(Expansions.M34);
 	/** Villagers at a loom can be made Tailors with string (ROADMAP 34.10). Off: no Tailor job, and Tailors already hired stand idle. */
@@ -360,6 +368,7 @@ public final class WorkplaceConfig {
 		"realmMaxMembers", 2, 32,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
+		"classGraceDays", 0, 30,
 		"villagerElderDays", 20, 1000,
 		"giftedChance", 0, 1000,
 		"seasonDays", 1, 120,
@@ -573,6 +582,10 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.LifeStages.ELDER_DAYS = villagerElderDays;
 		io.github.jcondedata.aliveworkplace.people.LifeStages.PASSING = elderPassing && Expansions.on(Expansions.M34);
 		io.github.jcondedata.aliveworkplace.people.LifeStages.AGELESS = agelessElders && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.ClassLook.ENABLED = classOutfits && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.Retirement.ENABLED = elderRetirement && Expansions.on(Expansions.M34);
+		io.github.jcondedata.aliveworkplace.people.FamilyBook.ENABLED = Expansions.on(Expansions.M34); // the Book of Families (34.21) has no switch of its own
+		io.github.jcondedata.aliveworkplace.people.FamilyBook.NAMES = familyNames && Expansions.on(Expansions.M34);
 		// Off in gametests (a hall round could move a test's household a class); the class tests turn it on.
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = villageClasses && Expansions.on(Expansions.M34) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.RISE_DAYS = classRiseDays;
@@ -588,6 +601,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.realm.Realms.ENABLED = realms && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.realm.Realms.MAX_MEMBERS = realmMaxMembers;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
+		io.github.jcondedata.aliveworkplace.people.ClassMigration.GRACE_DAYS = classGraceDays;
+		// Off in gametests (a hall's round would seed a test's villagers mid-test); the migration tests turn it on.
+		io.github.jcondedata.aliveworkplace.people.ClassMigration.AUTO = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;
 		PostOffice.ROUND = postmanRange;

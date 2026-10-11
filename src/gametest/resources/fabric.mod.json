@@ -5,6 +5,9 @@
 	"name": "Alive Workplace GameTests",
 	"environment": "*",
 	"entrypoints": {
+		"main": [
+			"io.github.jcondedata.aliveworkplace.test.MockPlayerSweep"
+		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReleaseGameTests",
@@ -93,6 +96,9 @@
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkshopsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AgelessElderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LifeStageGameTests",
+			"io.github.jcondedata.aliveworkplace.test.RetirementGameTests",
+			"io.github.jcondedata.aliveworkplace.test.FamilyTreeGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ClassMigrationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DaycareKeeperGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B38GameTests",
@@ -114,6 +120,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GuildGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassOutfitGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ClassLookGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TradeGoodsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TradeGoodsDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PriceBoardGameTests",

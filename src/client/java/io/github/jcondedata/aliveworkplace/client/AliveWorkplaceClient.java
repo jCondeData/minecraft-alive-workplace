@@ -16,6 +16,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		TonicTooltip.init();
 		MadeDayTooltip.init();
 		LegendLookLayer.init();
+		ClassLookLayer.init();
 		GolemRoleLayer.init();
 		io.github.jcondedata.aliveworkplace.guide.GuideBookItem.open = () -> Minecraft.getInstance()
 			.setScreen(new io.github.jcondedata.aliveworkplace.client.guide.GuideScreen());
@@ -28,9 +29,12 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 			net.minecraft.client.renderer.entity.NoopRenderer::new);
 		net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(io.github.jcondedata.aliveworkplace.registry.ModEntities.STAND_SEAT,
 			net.minecraft.client.renderer.entity.NoopRenderer::new);
-		// A Legend's outfit over their trade's (29.4), then guards' armor, drawn on the villager model.
+		// A villager's class over their job's outfit and an elder's look (34.18), a Legend's outfit over their trade's
+		// (29.4), then guards' armor, drawn on the villager model (not the zombie villager's).
 		net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
 			if (renderer instanceof net.minecraft.client.renderer.entity.VillagerRenderer villagers) {
+				helper.register(new ClassLookLayer(villagers));
+				helper.register(new ClassLookLayer.Elder(villagers));
 				helper.register(new LegendLookLayer(villagers));
 				helper.register(new GuardArmorLayer(villagers, context.getModelSet()));
 			}

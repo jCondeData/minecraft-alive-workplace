@@ -574,6 +574,24 @@ SCENES = [
       [("01_elders_card", "Bram's card: an elder, grown 120 days, with a quiet old age"),
        ("02_elders_talk", "\"In my day this was all fields.\""),
        ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
+    # Dressed by class (ROADMAP 34.18): the four classes in three jobs each, and an elder, in daylight
+    S("class_outfits", "Village Hall", "Dressed by class: the four classes and an elder",
+      "twelve villagers stood in four columns, Peasant, Artisan, Burgher and Noble, each a farmer, a librarian and a toolsmith, every one wearing their class over a job outfit that still reads; the client was told each one's class and stage of life; Bram, an elder Noble, wore grey brows and a beard as well", 25,
+      [("01_class_outfits_rows", "Peasant, Artisan, Burgher, Noble (left to right), each a farmer, a librarian and a toolsmith"),
+       ("02_class_outfits_elder", "Bram, an elder Noble farmer, beside a grown Noble toolsmith")]),
+    # Retirement and apprentices (ROADMAP 34.20): Tom shadows his father Bram, takes over his composter, and Bram mentors Ida
+    S("retirement", "Village Hall", "Retirement and apprentices",
+      "the hall's round picked Tom, Bram's jobless son, and \"learning from Bram\" showed over his head; two days on Tom had Bram's composter and the farmer's job as a Journeyman (one level below Bram's Expert), Bram was retired and kept his trades, the chronicle noted the retirement and the hand-over, Bram's card on the hall's list said \"Retired Farmer · mentors the young\", and Ida, a Novice farmer, was \"taught by Bram\" and learned 50% faster", 30,
+      [("01_retirement_learning", "Tom shadows his father: \"learning from Bram\""),
+       ("02_retirement_card", "Two days on: Bram's card, retired"),
+       ("03_retirement_taught", "Bram mentors Ida, a Novice farmer: \"taught by Bram\"")]),
+    # Family trees (ROADMAP 34.21): three generations, the hall's family names, the Family page and the Printer's tree
+    S("family_tree", "Village Hall", "Family trees: three generations",
+      "Bram (who has died) and Ilse founded a family; their daughter Dara married Tomas and their baby Mira was the family's third generation, which the chronicle noted; the hall's list gave Dara her family name in brackets (as in \"Dara (Ashby)\") while her own name stayed Dara; Dara's page had a Family button and her Family page showed her parents, Tomas and Mira; Mira's showed her grandparents with Bram marked dead; and Odo the Printer printed the family's tree for 2 emeralds, which opened as a book", 30,
+      [("01_family_tree_hall", "The hall's list: Dara with her family name"),
+       ("02_family_tree_page", "Dara's Family page: parents, partner, child"),
+       ("03_family_tree_grandparents", "Mira's grandparents, Bram marked dead"),
+       ("04_family_tree_book", "The Printer's family tree, as a book")]),
     S("tonics", "Village Hall", "Tonics: all six",
       "the miner drank the Miner's Brew she was offered and her status line showed her 25% faster with 19 minutes left; a Toolsmith, a Scholar, an Orchard Keeper and a Lumberjack drank the four new tonics", 40,
       [("01_tonics_offer", "Dara the miner, and Miner's Brew in hand"),
@@ -649,6 +667,12 @@ SCENES = [
       "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
       [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
        ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
+    # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
+    S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
+      "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,
+      [("01_class_switch_on_before", "Before: the Classes tab with classes still off"),
+       ("02_class_switch_on_tab", "After: the tab counts each class, settling in for 7 days"),
+       ("03_class_switch_on_page", "The Classes page's clock: what each class will need")]),
     # Higher jobs need higher classes (ROADMAP 34.8): a Peasant refused the Scholar's paper, a Burgher taking it
     S("class_jobs", "Village Hall", "Higher jobs need higher classes",
       "a Peasant was refused the Scholar's paper (the job needs a Burgher), and a Burgher took it", 30,

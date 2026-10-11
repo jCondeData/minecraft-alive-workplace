@@ -161,6 +161,10 @@ public final class ClassesPage {
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.classes.count", e.getKey().name(), e.getValue()),
 					e.getValue() > 0 ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY));
 			}
+			List<Component> settling = io.github.jcondedata.aliveworkplace.people.ClassMigration.settlingLines(level, hall, Chronicle.day(level));
+			if (!settling.isEmpty()) {
+				lore.add(VillageHallScreen.line(settling.get(0), ChatFormatting.GOLD)); // 34.22: "Settling in: 5 days left"
+			}
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.classes.hint", ChatFormatting.DARK_GRAY));
 		}
 		return VillageHallScreen.icon(Items.GOLDEN_HELMET, Component.translatable("screen.aliveworkplace.classes"), ChatFormatting.GOLD,
@@ -168,8 +172,28 @@ public final class ClassesPage {
 	}
 
 	static ItemStack header(ServerLevel level, BlockPos hall) {
+		List<Component> settling = io.github.jcondedata.aliveworkplace.people.ClassMigration.settlingLines(level, hall, Chronicle.day(level));
+		Component about = VillageHallScreen.line("screen.aliveworkplace.classes.about", ChatFormatting.GRAY);
 		return VillageHallScreen.icon(Items.GOLDEN_HELMET, Component.translatable("screen.aliveworkplace.classes.title", VillageHalls.name(level, hall)),
-			ChatFormatting.GOLD, VillageHallScreen.line("screen.aliveworkplace.classes.about", ChatFormatting.GRAY));
+			ChatFormatting.GOLD, settling.isEmpty() ? new Component[] {about} : new Component[] {about, VillageHallScreen.line(settling.get(0), ChatFormatting.GOLD)});
+	}
+
+	/** Where the settling-in clock sits on the page (34.22): the middle of the row below the class buttons. */
+	public static final int SETTLING_SLOT = VillageHallScreen.FIRST_ROW + 9 + 4;
+
+	/** The settling-in clock (34.22): the days left, what they mean, and each class's luxuries it will need; null when not settling in. */
+	@Nullable
+	public static ItemStack settlingButton(ServerLevel level, BlockPos hall) {
+		List<Component> lines = io.github.jcondedata.aliveworkplace.people.ClassMigration.settlingLines(level, hall, Chronicle.day(level));
+		if (lines.isEmpty()) {
+			return null;
+		}
+		List<Component> lore = new ArrayList<>();
+		lore.add(VillageHallScreen.line(lines.get(1), ChatFormatting.GRAY));
+		for (Component line : lines.subList(2, lines.size())) {
+			lore.add(VillageHallScreen.line(line, ChatFormatting.WHITE));
+		}
+		return VillageHallScreen.icon(Items.CLOCK, lines.get(0).copy(), ChatFormatting.GOLD, lore.toArray(Component[]::new));
 	}
 
 	/** The page: a button per class, lowest first, in the first row below the divider. */
@@ -188,6 +212,10 @@ public final class ClassesPage {
 			}
 			menu.button(slot, classButton(row), null);
 			slot += gap;
+		}
+		ItemStack settling = settlingButton(level, hall);
+		if (settling != null) {
+			menu.button(SETTLING_SLOT, settling, null);
 		}
 	}
 

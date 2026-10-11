@@ -4767,6 +4767,82 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// Switching classes on (ROADMAP 34.22): a village from before 1.8 (a couple in a builder's cottage, three more without
+		// a home), the hall's Classes tab before; then the hall's rounds seed them, the chronicle says so once, and the tab and
+		// page show "Settling in: 7 days left" with what each class will need.
+		SCREENS.put("class_switch_on", new Screen("a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = false; // a server still on 1.7: the switch is thrown in step 2
+				classPeople.clear();
+				// The couple's cottage: a builder's house (grade I) recorded up in the sky, out of the picture.
+				net.minecraft.resources.ResourceLocation cottage = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_scene", "switch_on_cottage");
+				BlockPos sky = STATION.above(150);
+				level.getStructureManager().getOrCreate(cottage).fillFromWorld(level, sky.above(40), new net.minecraft.core.Vec3i(6, 5, 6), false, Blocks.AIR);
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(cottage,
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), sky,
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), java.util.UUID.randomUUID());
+				io.github.jcondedata.aliveworkplace.people.ClassNeeds.services = (l, hall, home) -> java.util.Set.of(
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.id("chapel")); // a chapel reaches every home
+				String[] names = {"Odo", "Pia", "Ann", "Bo", "Cy"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = bornSceneVillager(level, new BlockPos(-2 + i, -60, 3), names[i], false);
+					io.github.jcondedata.aliveworkplace.registry.ModAttachments.LAST_MEAL.set(v, level.getGameTime());
+					io.github.jcondedata.aliveworkplace.registry.ModAttachments.RECENT_MEALS.set(v, List.of(
+						net.minecraft.resources.ResourceLocation.withDefaultNamespace("bread"), net.minecraft.resources.ResourceLocation.withDefaultNamespace("baked_potato"),
+						net.minecraft.resources.ResourceLocation.withDefaultNamespace("cooked_cod")));
+					classPeople.add(v);
+				}
+				Villager odo = classPeople.get(0);
+				Villager pia = classPeople.get(1);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(odo,
+					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(pia.getUUID(), pia.getDisplayName(), 1, true));
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(pia,
+					new io.github.jcondedata.aliveworkplace.people.Couples.Partner(odo.getUUID(), odo.getDisplayName(), 1, true));
+				for (Villager v : List.of(odo, pia)) {
+					v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME,
+						net.minecraft.core.GlobalPos.of(level.dimension(), sky.offset(2, 1, 2)));
+				}
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+			},
+			List.of(new Step("01_class_switch_on_before", -2, 6, (level, player) -> {
+					// Before: classes still off (as before the update; the hall's own round must not seed them yet), nobody has one.
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.classesVersion() == 0 && classPeople.stream().noneMatch(io.github.jcondedata.aliveworkplace.registry.ModAttachments.SOCIAL_CLASS::has),
+						"the village starts unseeded");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE);
+				}, 30),
+				new Step("02_class_switch_on_tab", -2, 6, (level, player) -> {
+					player.closeContainer();
+					io.github.jcondedata.aliveworkplace.people.SocialClasses.ENABLED = true; // the update: classes on
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+					for (int round = 0; round < 5 && hall.classesVersion() == 0; round++) {
+						io.github.jcondedata.aliveworkplace.people.ClassMigration.round(level, STATION, hall, today);
+					}
+					Showcase.check(hall.classesVersion() == 1, "every villager was seeded");
+					var odoClass = io.github.jcondedata.aliveworkplace.registry.ModAttachments.SOCIAL_CLASS.get(classPeople.get(0));
+					Showcase.check(odoClass != null && odoClass.getPath().equals("artisan"), "the couple in the cottage are Artisans: " + odoClass);
+					long entries = hall.chronicle().stream().filter(e -> e.text().getString().contains("found their places")).count();
+					Showcase.check(entries == 1, "one chronicle entry: " + entries);
+					Showcase.check(io.github.jcondedata.aliveworkplace.people.ClassMigration.daysLeft(level, STATION, today) == 7, "settling in for 7 days");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE);
+				}, 30),
+				new Step("03_class_switch_on_page", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.ClassesPage.PAGE), player);
+						pickedSlot = io.github.jcondedata.aliveworkplace.hall.ClassesPage.SETTLING_SLOT;
+						Showcase.check(m.icon(pickedSlot).getHoverName().getString().equals("Settling in: 7 days left"),
+							"the Classes page's clock: " + m.icon(pickedSlot).getHoverName().getString());
+					}
+					io.github.jcondedata.aliveworkplace.people.ClassNeeds.services = io.github.jcondedata.aliveworkplace.hall.Services.HOOK;
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		// Higher jobs need higher classes (ROADMAP 34.8): by a lectern in a village with a hall, Dara, a Peasant, is handed
 		// the Scholar's paper and refused ("Dara is Peasant class; Scholar needs Burgher or better"); Bram, a Burgher, takes it.
 		SCREENS.put("class_jobs", new Screen("a Peasant was refused the Scholar's paper (the job needs a Burgher), and a Burgher took it",

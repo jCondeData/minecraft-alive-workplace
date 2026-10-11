@@ -115,6 +115,9 @@ public final class WorkerLimits {
 	 */
 	public static Stream<Pair<Holder<PoiType>, BlockPos>> hideFull(Stream<Pair<Holder<PoiType>, BlockPos>> found) {
 		Villager villager = thinking;
+		if (villager != null && io.github.jcondedata.aliveworkplace.people.Retirement.isRetired(villager)) {
+			return found.filter(p -> !JobSiteTickets.workstation(p.getFirst())); // a retired elder looks for no workstation (34.20)
+		}
 		if (MAX_PER_VILLAGE <= 0 || villager == null || !(villager.level() instanceof ServerLevel level)
 			|| villager.getVillagerData().getProfession() != VillagerProfession.NONE) {
 			return found;
@@ -150,6 +153,12 @@ public final class WorkerLimits {
 	 * gives the job when they reach the one they picked) in a full village. They let it go and stay jobless.
 	 */
 	public static boolean refuse(Villager villager, VillagerData data) {
+		if (io.github.jcondedata.aliveworkplace.people.Retirement.refuses(villager, data)) { // a retired elder never works again (34.20)
+			villager.releasePoi(MemoryModuleType.JOB_SITE);
+			villager.getBrain().eraseMemory(MemoryModuleType.JOB_SITE);
+			villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+			return true;
+		}
 		if (MAX_PER_VILLAGE <= 0 || villager == employing || !(villager.level() instanceof ServerLevel level)
 			|| villager.getVillagerData().getProfession() != VillagerProfession.NONE
 			|| data.getProfession() == VillagerProfession.NONE || data.getProfession() == VillagerProfession.NITWIT) {

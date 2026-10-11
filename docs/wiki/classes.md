@@ -4,7 +4,7 @@ Every household in a village with a hall lives as a class: Peasant, Artisan, Bur
 needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): off until that
 expansion is finished, and several of its pieces are not built yet (see Known limits).
 
-Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17
+Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.18, 34.22
 
 ## What a player sees
 
@@ -86,6 +86,35 @@ bonuses go through the one pace rule and its cap. A Legend lives among the top c
 grown child taking a parent's trade, the Steward's morning jobs. A hired traveller arrives with the class of their
 level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 
+## Switching it on (34.22)
+
+The day a server first runs 1.8, every village with a hall switches on by itself, a little at a time:
+
+- **Seeding.** A hall saved before 1.8 has never been seeded (its classes version is 0). Each of its rounds (every 30
+  seconds) gives a class to the next 16 villagers who have none, so a City of 36 takes about a minute and a half. A
+  household gets the highest class whose needs hold right now, not counting luxuries and at most Burgher (Nobles are
+  earned); "fed 3 days" counts as "fed now", since nobody counted fed days before. Children get their parents' class
+  (else that of the grown-ups in their building, else Peasant). Grown-ups who have no age yet get one spread over the
+  last 100 days by their UUID, so the first elders come about three weeks later and one at a time; everyone gets a family
+  name. Mercenaries, inn guests and caravan parties are skipped.
+- **Told once.** When the last one has a class the chronicle says "The people of Thornholm found their places: 14
+  peasants, 6 artisans and 2 burghers", and the players in the village get the same line in chat with the days they
+  have to settle in.
+- **Settling in.** For `classGraceDays` (7) days nobody falls a class, luxuries are taken when due but not yet needed
+  (rising still needs them, and the mood doesn't count them as lacking), and no elder starts retiring. The Classes tab
+  and page header say "Settling in: 5 days left", and a clock on the Classes page lists each class's luxuries it will
+  need ("Artisan households will need Work Clothes").
+- **What never changes.** Nobody loses a job (a Scholar who turns out a Peasant keeps working, marked below his job's
+  class), ranks keep their thresholds, a Peasant pays what everyone paid before so the treasury never takes in less,
+  and build sites, quarries, daycare Pokémon, fossils, parcels and chests are not touched.
+- **Later and odd cases.** A hall first loaded weeks later goes through the same with its own week. Nothing about how
+  far it got is kept: a villager with a class is seeded, so a crash part-way re-seeds only the rest and nobody twice. A
+  villager who arrives later is seeded at the next round, quietly (a hired traveller still gets the class of their
+  level). `villageClasses` off: nothing is seeded and nothing held back; what was seeded stays saved.
+- **Operators:** `/workplace classes status` (the nearest hall: seeding, settling in or settled, and the counts) and
+  `/workplace classes reseed` (the hall goes back to unseeded and its villagers lose their class and progress; ages
+  and family names are kept; the next rounds seed them again, with a new week).
+
 ## Switches
 
 | Key | Default | What it does |
@@ -93,10 +122,12 @@ level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 | `villageClasses` | on from 1.8 | Off: no classes, no job gate, no class taxes; what is saved stays |
 | `classRiseDays` | 2 (1 to 30) | Dawns running the next class's needs must hold to rise |
 | `classFallDays` | 3 (1 to 30) | Dawns running a need of their own class must fail to fall |
+| `classGraceDays` | 7 (0 to 30) | Days a village settles in after it is first seeded (34.22): nobody falls, luxuries aren't needed, nobody retires |
 | `jewellers` | on from 1.8 | Off: no Jeweller job, and Jewellers already hired stand idle |
 | `vintners` | on from 1.8 | Off: no Vintner job, and Vintners already hired stand idle |
 | `tailors` | on from 1.8 | Off: no Tailor job, and Tailors already hired stand idle |
 | `printers` | on from 1.8 | Off: no Printer job, Printers already hired stand idle, no Spread the news quest |
+| `classOutfits` | on from 1.8 | Off: villagers wear only their job's outfit (no class layer, no elder's face) and no class packet is sent |
 
 ## Saved data
 
@@ -105,7 +136,8 @@ On each villager (attachments): `social_class` (their class id; absent until the
 counted; all 0 at first), `class_standing` (where they stood at their last dawn: needs lacking, their last rise or
 fall, wants had; an older save reads the wants as none), `luxuries_had` (the day each luxury was last had; empty).
 On the hall: `services` and the day they were worked out, `ballTurn` (false) and `ballDay` (-100) for the Noble's
-Ball. Households and the village's sums by class are never saved: they are worked out from the villagers.
+Ball, `classesVersion` (0: never seeded; 1: seeded with 1.8's rules) and `classGraceUntil` (the day settling in ends;
+0). Seeding also writes `adult_since` and `family_name` (see [Elders](elders.md)) where they are missing. Households and the village's sums by class are never saved: they are worked out from the villagers.
 
 ## Items, blocks, jobs, commands
 
@@ -121,7 +153,7 @@ Ball. Households and the village's sums by class are never saved: they are worke
 - Item tag: `dyed_wool` in `data/aliveworkplace/tags/item/` (every wool but white: what Fine Clothes take).
 - Texts: `class.aliveworkplace.peasant`, `class.aliveworkplace.artisan`, `class.aliveworkplace.burgher`,
   `class.aliveworkplace.noble`.
-- No commands.
+- Commands: `/workplace classes status` and `/workplace classes reseed` (operators, the nearest hall; 34.22).
 
 ## Decisions
 
@@ -143,6 +175,11 @@ Ball. Households and the village's sums by class are never saved: they are worke
   wool from the village's chests and the store, and dyes white wool themselves when dye is to hand: the dyer still
   only dyes for builders.
 
+- 34.22: seeding caps at the ladder's third class (as a hired traveller's, 34.8), reads `fed_days` as "fed now", and
+  sorts children by their parents first (by id), then their building. The age spread is worked out from the UUID, so a
+  re-seed gives the same ages. The hall's `families` book entry written before seeding gets the seeded age. The
+  migration lives in `people/ClassMigration` (the design note's `hall/ClassMigration`: it works on villagers).
+
 ## Dressed by class (34.17)
 
 Each class but the Peasant has a layer worn over the job's outfit, and elders a face layer (34.19's look). The art is
@@ -162,8 +199,11 @@ drawn, three versions of each, and the owner picks on a picker page; until he do
 - What a villager wears, bottom to top: their class's layer, then the elder's face if they are an elder (children wear
   their class's too, never the elder's; with `villagerAges` off nobody wears the elder's face). `people/ClassOutfits`
   says this for 34.18's render layer.
-- Nothing draws these layers in game yet: the client render layer and the packet that tells the client a villager's
-  class and age are 34.18.
+- In game (34.18): two client render layers on the villager model (never the zombie villager's), the class's over the
+  job's outfit and then the elder's face, on grown villagers and children alike. The client learns each villager's
+  class and stage of life from a small packet (`aliveworkplace:class_look`: entity id, class, layer, stage) sent when a
+  player starts tracking the villager and again when either changes (a household rises or falls, a child takes their
+  parents' class, a villager becomes an elder). `classOutfits` off: nothing is sent or drawn. Scene `class_outfits`.
 - Recipes: `tools/textures/art/classes.py` (`PICKED` names the version shipped). The picker page:
   `python3 tools/textures/picks/classes_page.py` writes `build/texture-picks/classes/index.html` with every version on
   the villager model over six jobs in all seven biomes; picks and notes are saved in its `classes` collection.
@@ -173,8 +213,8 @@ drawn, three versions of each, and the owner picks on a picker page; until he do
 - **Nobody can rise past Artisan yet with the mod's own data.** The Burgher needs the Gazette, and the Printer who
   makes it (34.11) isn't built. The three wines, the three sets of clothes and the three pieces of jewellery have
   luxury files today, and a luxury without a file is a need that never holds.
-- Villagers have no class until their village is seeded, and seeding (34.22) isn't built: on a real world every
-  villager is still without a class, and the job gate doesn't apply to them.
+- Seeding counts villagers loaded round the hall: one standing in an unloaded chunk at the village's edge is seeded
+  when it next loads, without a second chronicle line.
 - The grander homes (34.15, 34.16), the class outfits in game (34.18) and family trees are not built: the outfits'
   art is (34.17), but no player sees it until 34.18's render layer.
 - In GameTests classes are switched off unless a class test turns them on, so other tests' numbers don't move.
@@ -183,8 +223,11 @@ drawn, three versions of each, and the owner picks on a picker page; until he do
 
 GameTests: `ClassGameTests` (16: the four files are the ladder, each kind of need, one step a day), `ClassHallGameTests`
 (6), `ClassPerkGameTests` (7), `ClassJobGameTests` (7), `ServiceGameTests` (8), `LuxuryGameTests` (7),
-`LuxuryWorkGameTests` (7), `ClassOutfitGameTests` (2: every class but the Peasant names a 64x64 layer that ships, and
+`LuxuryWorkGameTests` (7), `ClassMigrationGameTests` (7: an old village seeded 16 a round with a save part-way, nothing
+a player built or earned changed, the week of settling in, a hall loaded later, `villageClasses` off, the command, every
+new sentence), `ClassOutfitGameTests` (2: every class but the Peasant names a 64x64 layer that ships, and
 what a villager wears by class and age), `JewellerGameTests` (10), `VintnerGameTests` (10), `TailorGameTests` (10), `PrinterGameTests` (11).
 
-Showcase scenes: `classes` (a household rises, and the Classes page), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,
+Showcase scenes: `classes` (a household rises, and the Classes page), `class_switch_on` (the hall before and after the
+switch), `class_jobs`, `noble_ball`, `jeweller`, `vintner`, `tailor`,
 `printer`.

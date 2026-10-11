@@ -371,6 +371,8 @@ public final class ModAttachments {
 	public static final Attachment<Long> PASSED_DAY = Attachment.saved("passed_day", com.mojang.serialization.Codec.LONG);
 	/** The chronicle has noted that they became an elder (34.19: "Bram is an elder now", once). Absent: not yet. */
 	public static final Attachment<Boolean> ELDER_NOTED = Attachment.saved("elder_noted", com.mojang.serialization.Codec.BOOL);
+	/** The family a villager belongs to (34.21): the number of its name, 1 to 60 ({@code family_name.aliveworkplace.<n>}). Absent: not given yet (the hall's round or a birth gives it). */
+	public static final Attachment<Integer> FAMILY_NAME = Attachment.saved("family_name", com.mojang.serialization.Codec.INT);
 	/** Brought back from a grave (31.7), set by {@code Graves.revive}. Absent: never, or revived before 31.7. */
 	public static final Attachment<Boolean> REVIVED = Attachment.saved("revived", com.mojang.serialization.Codec.BOOL);
 	/** The partner a villager lost (31.7): their id and name, kept by {@code Couples.onDeath}. Absent: none, or widowed before 31.7. */
@@ -385,6 +387,16 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown> REQUEST_LET_DOWN =
 		Attachment.saved("request_let_down", io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown.CODEC);
 
+	/** A retired elder (ROADMAP 34.20): the day they retired and the trade they left; they never take a job again. Absent: not retired. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Retired> RETIRED = Attachment.saved("retired", io.github.jcondedata.aliveworkplace.people.Retirement.Retired.CODEC);
+	/** A successor shadowing the elder they take over from (34.20): who, and since which day. Absent: not shadowing. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Shadow> RETIRE_SHADOW = Attachment.saved("retire_shadow", io.github.jcondedata.aliveworkplace.people.Retirement.Shadow.CODEC);
+	/** An elder who would like to retire but has nobody to take over (34.20, shown on the hall's list). Absent: false. */
+	public static final Attachment<Boolean> RETIRE_WAITING = Attachment.saved("retire_waiting", com.mojang.serialization.Codec.BOOL);
+	/** The pupil a retired elder teaches (34.20). Absent: none. */
+	public static final Attachment<java.util.UUID> MENTORING = Attachment.saved("mentoring", net.minecraft.core.UUIDUtil.CODEC);
+	/** A Novice or Apprentice taught by a retired elder (34.20: they learn 50% faster) until a game time. Absent: nobody teaches them. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Teacher> TAUGHT_BY = Attachment.saved("taught_by", io.github.jcondedata.aliveworkplace.people.Retirement.Teacher.CODEC);
 	/** The gold a raider carries off from a village's chest (ROADMAP 32.10, threat/Plunder): dropped if it's killed, taken home at dawn. */
 	public static final Attachment<net.minecraft.world.item.ItemStack> PLUNDER = Attachment.saved("plunder", net.minecraft.world.item.ItemStack.CODEC);
 

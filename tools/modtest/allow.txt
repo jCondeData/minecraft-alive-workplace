@@ -15,6 +15,8 @@ Skipping Cup theme aliveworkplace_test:cups/bad_
 # ClassGameTests feeds the class loader a broken pack file and a need of an unknown type to prove each is logged and skipped.
 Skipping class somepack:broken
 Unknown class need type no_such_need
+# HomeGradeGameTests feeds the home grade loader a file with grade 5 to prove it is skipped with a line naming it (34.15).
+Skipping home grade aliveworkplace:homes/broken.json
 # ServiceGameTests feeds the service loader a file with neither jobs nor blueprints to prove it is skipped.
 Skipping service aliveworkplace_test:broken
 # QuestEngineGameTests feeds the quest file loader a broken file to prove it is skipped with one line naming it.

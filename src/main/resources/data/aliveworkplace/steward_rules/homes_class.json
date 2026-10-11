@@ -1,0 +1,9 @@
+{
+  "when": [
+    {"households_want_grade": {"grade": 2, "at_least": 1}}
+  ],
+  "do": {"upgrade": {"for_class": true}},
+  "priority": 50,
+  "why": "steward.aliveworkplace.why.homes_class",
+  "cooldown_days": 2
+}

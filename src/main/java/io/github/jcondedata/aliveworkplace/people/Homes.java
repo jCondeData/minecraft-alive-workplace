@@ -2,7 +2,6 @@ package io.github.jcondedata.aliveworkplace.people;
 
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
-import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
@@ -18,8 +17,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Homes: a villager's home is the finished building (one a builder put up) that their bed is in. Its tier goes by the
- * blueprint's name ({@code <name>_2} is tier II, see {@link BlueprintUpgrades}): a tier II home lifts its people's mood by
+ * Homes: a villager's home is the finished building (one a builder put up) that their bed is in. Its tier (its grade,
+ * 34.15) goes by the blueprint's name ({@code <name>_2} is tier II, see {@link io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades}), or what a
+ * {@code homes/} data file gives it ({@link HomeGrades}: the Townhouse is grade II): a tier II home lifts its people's mood by
  * {@link #TIER_2_MOOD}, tier III and up by {@link #TIER_3_MOOD} (in {@link Moods}). The Village Hall's list says where
  * each villager lives, and its "What next?" page suggests upgrading when most of the village sleeps in tier I buildings
  * or in none a builder put up.
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public final class Homes {
 	public static final int TIER_2_MOOD = 5;
 	public static final int TIER_3_MOOD = 10;
-	/** A home: the building's blueprint and its tier. */
+	/** A home: the building's blueprint and its tier, which is its grade ({@link HomeGrades#grade}). */
 	public record Home(ResourceLocation structure, int tier) {
 		public Component name() {
 			return Blueprints.displayName(structure);
@@ -65,7 +65,7 @@ public final class Homes {
 			}
 			BoundingBox box = BlueprintOutline.bounds(f.placement(), size);
 			if (box.isInside(bed)) {
-				Home home = new Home(f.structure(), BlueprintUpgrades.tier(f.structure()));
+				Home home = new Home(f.structure(), HomeGrades.grade(f.structure()));
 				if (best == null || home.tier() > best.home().tier()) {
 					best = new Building(home, box);
 				}
@@ -83,7 +83,7 @@ public final class Homes {
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
 			Vec3i size = size(level, f.structure());
 			if (size != null) {
-				out.add(new Building(new Home(f.structure(), BlueprintUpgrades.tier(f.structure())), BlueprintOutline.bounds(f.placement(), size)));
+				out.add(new Building(new Home(f.structure(), HomeGrades.grade(f.structure())), BlueprintOutline.bounds(f.placement(), size)));
 			}
 		}
 		return out;

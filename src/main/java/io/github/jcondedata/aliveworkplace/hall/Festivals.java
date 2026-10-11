@@ -251,6 +251,7 @@ public final class Festivals {
 	/** The feast: every grown villager eats from the store, everyone is remembered as having come. */
 	public static void feast(ServerLevel level, BlockPos hall) {
 		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
+		io.github.jcondedata.aliveworkplace.story.ReformStories.onFeast(level, hall); // a grand festival's day (31.22)
 		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
 			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		long today = Chronicle.day(level);
@@ -293,6 +294,9 @@ public final class Festivals {
 		int days = (NobleBalls.cameToBall(villager) ? Math.max(NobleBalls.MOOD_DAYS, bannered(villager) ? BANNER_MOOD_DAYS : 0)
 			: bannered(villager) ? BANNER_MOOD_DAYS : MOOD_DAYS)
 			* (io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(villager, "golden_age") ? 2 : 1); // twice as long in a Golden Age (29.14)
+		if (day != null && io.github.jcondedata.aliveworkplace.story.ReformStories.grandFestival(level, villager, day)) {
+			days++; // a grand festival's good mood lasts a day longer (31.22)
+		}
 		return day != null && Chronicle.day(level) - day <= days;
 	}
 
@@ -345,7 +349,8 @@ public final class Festivals {
 				fireworks(level, hall, entity, square, level.random);
 			}
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity held && Curfew.fireworks(held)
-				&& level.random.nextFloat() < 0.4f) {
+				&& !io.github.jcondedata.aliveworkplace.story.ReformStories.supper(level, hall) // a harvest supper has none (31.22)
+				&& level.random.nextFloat() < (io.github.jcondedata.aliveworkplace.story.ReformStories.grand(level, hall) ? 0.8f : 0.4f)) { // twice at a grand one
 				BlockPos column = square.offset(level.random.nextInt(13) - 6, 0, level.random.nextInt(13) - 6);
 				launch(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column),
 					NobleBalls.today(level, hall) ? NobleBalls.GOLD : COLORS); // gold at a ball (34.7)

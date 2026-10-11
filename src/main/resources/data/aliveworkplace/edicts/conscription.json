@@ -7,6 +7,7 @@
   "cost": [{"type": "aliveworkplace:work_stops_in_raids", "until_noon": true}],
   "excludes": [],
   "reform": {
+    "arc": "aliveworkplace:militia_drill",
     "name": {"translate": "reform.aliveworkplace.militia_drill"},
     "line": {"translate": "reform.aliveworkplace.militia_drill.line"},
     "steps": [

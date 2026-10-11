@@ -7,6 +7,7 @@
   "cost": [{"type": "aliveworkplace:trade_prices", "percent": 10}],
   "excludes": [],
   "reform": {
+    "arc": "aliveworkplace:fair_ledger",
     "name": {"translate": "reform.aliveworkplace.fair_ledger"},
     "line": {"translate": "reform.aliveworkplace.fair_ledger.line"},
     "steps": [

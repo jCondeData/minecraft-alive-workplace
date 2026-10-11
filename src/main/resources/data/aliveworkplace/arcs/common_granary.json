@@ -1,0 +1,119 @@
+{
+  "name": {
+    "translate": "arc.aliveworkplace.common_granary"
+  },
+  "side": true,
+  "trigger": {
+    "event": "reform"
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:minecraft:farmer",
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.asker"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/common_granary/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.common_granary.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.common_granary.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.2.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 0
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.2"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.3.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 1
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.3"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.common_granary.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.common_granary.4.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 2
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.common_granary.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:free_bread"
+    },
+    {
+      "type": "reform_ending",
+      "ending": "harvest_supper"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.common_granary.ending"
+      }
+    },
+    {
+      "type": "reputation",
+      "points": 60,
+      "who": "helpers"
+    }
+  ]
+}

@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The eight reforms as stories** (31.22, part of 1.5): with story arcs on, each edict's reform is told as a short
+  story. A villager of the fitting trade asks for it, the three steps follow as its quests, and the ending leaves
+  something lasting: the Shift Bell beside the hall ringing the work day in and out, a harvest supper, a midwife, an old
+  soldier in iron, a grand festival, the Fair Ledger, two Street Lamp blueprints and a lamplit night, or a drill day at
+  the Training Dummies. The edict is reformed for that village as before.
 - **Shared research** (33.15, part of 1.7): a realm's villages use the capital's research where it is ahead ("Level 2
   from the capital", not counted toward their rank), and their idle scholars help the capital's research at half speed.
   The capital's research screen gets a **Realm** row: realm topics (Common Law, Royal Physicians, Guild Exchange, The

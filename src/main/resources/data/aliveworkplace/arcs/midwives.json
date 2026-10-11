@@ -1,0 +1,119 @@
+{
+  "name": {
+    "translate": "arc.aliveworkplace.midwives"
+  },
+  "side": true,
+  "trigger": {
+    "event": "reform"
+  },
+  "roles": {
+    "asker": {
+      "villager": "job:aliveworkplace:nurse|any",
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.asker"
+      }
+    }
+  },
+  "chapters": [
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.1"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.1.intro.1"
+      ],
+      "quests": [
+        {
+          "id": "aliveworkplace:arc/midwives/ask",
+          "name": {
+            "translate": "arc.aliveworkplace.midwives.ask"
+          },
+          "objectives": [
+            {
+              "type": "talk",
+              "villager": "asker",
+              "says": "arc.aliveworkplace.midwives.says"
+            }
+          ]
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.midwives.1"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.2"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.2.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 0
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.midwives.2"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.3"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.3.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 1
+        }
+      ],
+      "delay_days": 1,
+      "chatter": [
+        "chatter.aliveworkplace.midwives.3"
+      ]
+    },
+    {
+      "name": {
+        "translate": "arc.aliveworkplace.midwives.4"
+      },
+      "intro": [
+        "arc.aliveworkplace.midwives.4.intro.1"
+      ],
+      "on_start": [
+        {
+          "type": "reform_step",
+          "step": 2
+        }
+      ],
+      "chatter": [
+        "chatter.aliveworkplace.midwives.4"
+      ]
+    }
+  ],
+  "ending": [
+    {
+      "type": "reform_edict",
+      "edict": "aliveworkplace:large_families"
+    },
+    {
+      "type": "reform_ending",
+      "ending": "midwife"
+    },
+    {
+      "type": "chronicle",
+      "line": {
+        "translate": "chronicle.aliveworkplace.midwives.ending"
+      }
+    },
+    {
+      "type": "reputation",
+      "points": 60,
+      "who": "helpers"
+    }
+  ]
+}

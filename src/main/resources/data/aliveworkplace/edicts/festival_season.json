@@ -7,6 +7,7 @@
   "cost": [{"type": "aliveworkplace:festival_cost", "emeralds": 3, "per_villagers": 4}],
   "excludes": [],
   "reform": {
+    "arc": "aliveworkplace:festival_fund",
     "name": {"translate": "reform.aliveworkplace.festival_fund"},
     "line": {"translate": "reform.aliveworkplace.festival_fund.line"},
     "steps": [

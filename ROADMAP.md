@@ -2862,7 +2862,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests: catches count by type, biome, time and height; `show`; `battle_leader`; Thessaly comes when
     there's no leader nearby; the book lists the catches; plain GameTest: without Cobblemon the arc never starts;
   - showcase scene `professors_thesis` (Cobblemon: the professor's request, a catch counting, the published thesis).
-- [ ] **31.22** **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
+- [x] **31.22** (review: pending 2026-10-11) **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
   waits (`sessions.py pause --blocked "needs M30's reforms"`). Through the reform's `arc` field (30.5), each reform
   becomes a short arc of the same name: an opening chapter where a villager of the fitting trade asks you for it
   (`talk`), then M30's three steps as its quests with M30's numbers, then an ending scene that leaves something
@@ -4465,6 +4465,17 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-11 (31.22, lane-b-1011-1833): **the eight reforms as stories** decisions: (1) a reform story starts from
+  the hall's round (`Reforms.round`) when its edict is in force, not by a trigger chance, so the ask comes the morning
+  the edict is proclaimed; it only starts when arcs start by themselves (`Arcs.AUTO`, off in GameTests like every arc);
+  (2) the asker's fallbacks are written as role alternatives (`"villager": "job:a|job:b|any"`, new in the arc
+  format); "else a mother" (the Midwives) and "else a Cheerful villager" (the Festival Fund) fall back to any grown
+  villager, since roles are cast by trade only; (3) with nobody of the trade to ask (a village without a Guard for The
+  Watchful Gate or The Militia Drill), M30's steps go up on the quest page as before, and progress carries over either
+  way; (4) the steps are posted by a `reform_step` effect straight from the edict's reform, so the story's numbers can
+  never drift from M30's; (5) the Shift Bell needs a level 3 by 3 of natural ground 3 to 12 blocks out; with none the
+  edict is still reformed, without the bell.
 
 - 2026-10-11 (34.23, lane-d-1011-1532): **the update rehearsal passed**: report [docs/owner/rehearsal-1.8.md](docs/owner/rehearsal-1.8.md),
   owner's steps [docs/owner/updating-to-1.8.md](docs/owner/updating-to-1.8.md), tool `tools/packtest/rehearsal.sh`. A

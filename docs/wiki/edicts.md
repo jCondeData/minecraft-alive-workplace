@@ -3,7 +3,7 @@
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
 that takes the cost away for good. Part of 1.4 (Edicts and civic items): off until that expansion is finished.
 
-Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22
+Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22
 
 ## What a player sees
 
@@ -47,6 +47,27 @@ nothing is worked out every tick. Guilds, tonics and classes use the same toolbo
 Progress is kept per edict, also while the edict is lifted, and a step handed in halfway stays half done. A battle
 step falls back to slaying monsters when Cobblemon or a trainer is missing.
 
+**Reforms as stories (31.22).** With `storyArcs` on, each reform is told as a short side story of the same name
+(`data/aliveworkplace/arcs/<name>.json`, named by the reform's `arc`). When the edict is in force a villager of the
+fitting trade asks you for it: talk to them and the reform's three steps follow as the story's quests, the same items,
+counts and pay, one a day; the villagers talk about it and the chronicle tells each chapter. The ending pays the new
+`reform_edict` reward (the edict reformed for that village, as the last step would) and leaves something lasting:
+
+| Story | Asked by | Ending |
+|---|---|---|
+| The Shift Bell | the Toolsmith (else any smith) | a bell on two posts beside the hall, on natural ground, ringing at the start (tick 2000) and end (tick 9000) of the work day |
+| The Common Granary | a Farmer | a harvest supper at the hall the next evening: a festival's feast, no fireworks |
+| The Midwives | the Nurse (else anyone) | a midwife comes to stay, a Nurse at Journeyman |
+| The Watchful Gate | a Guard | an old soldier comes to stay, a Guard at Expert in iron armour with an iron sword |
+| The Festival Fund | the Bard (else anyone) | the next festival is grand: twice the fireworks, its good mood a day longer |
+| The Fair Ledger | a Librarian or Scholar | "The Fair Ledger of <village>", a written book of the treasury's takings day by day for the last 7 days, for the hall's owner |
+| The Lamplighters | a Porter (else anyone) | two Street Lamp blueprints for whoever finished it, and a chronicle line on the first lamplit night |
+| The Militia Drill | a Guard | drill day: at noon the next day every grown villager spars at the village's Training Dummies (the guards alone with none), then a chronicle line |
+
+Reform stories are `side` arcs: they run beside another story and don't count against `arcsAtOnce` or the cooldown.
+While one runs, its M30 step stays off the quest page. With `storyArcs` off, or when nobody of the trade lives there to
+ask, the steps go up on the quest page as before, and progress made either way carries over.
+
 **Curfew** overrules the villagers' schedule from dusk (tick 12000) to dawn for everyone but guards and
 mercenaries, and a monster can't hurt a villager asleep in bed. **Conscription** gives each conscript a stone sword
 made for the raid (never taken from a chest), which is gone when the raid ends and again whenever the villager
@@ -64,7 +85,10 @@ loads, so a save in the middle of a raid can't leave a free sword.
 
 On the hall: `edicts` (each edict in force and the day it was proclaimed; empty by default), `reforms` (each
 edict's progress and whether it is reformed; empty), `raidWorkUntil` (Conscription: when work may start again),
-`extraMeals` (Free Bread's part-meals carried over). The summed effects are not saved; they are added up again when
+`extraMeals` (Free Bread's part-meals carried over). The reform stories (31.22) keep `aliveworkplace_reform_stories`
+in the world's data: each village's Shift Bell, the days of a harvest supper, grand festival and drill, whether the
+first lamplit night is still to come, and the last 7 days of treasury takings for the Fair Ledger (all empty by
+default). The summed effects are not saved; they are added up again when
 the hall loads.
 
 ## Items, blocks, jobs, commands
@@ -97,7 +121,10 @@ the hall loads.
 ## Known limits
 
 - Reforms are per village: a second village reforms the same edict again.
-- A reform's story-arc id loads and is kept, but nothing reads it yet.
+- 31.22: "else a mother" (the Midwives) and "else a Cheerful villager" (the Festival Fund) fall back to any grown
+  villager; the arc system casts roles by trade only.
+- 31.22: the Shift Bell needs a level 3 by 3 of natural ground 3 to 12 blocks from the hall; with none, the story
+  still ends and the edict is reformed, without the bell.
 - The Tithe's price rise is rounded to whole emeralds, so trades under 5 emeralds don't change.
 - With `villageEdicts` off the book can't be used; edicts already in force come back when it is switched on again.
 
@@ -106,7 +133,9 @@ the hall loads.
 GameTests: `EdictGameTests` (10: loading, slots by rank, the three-day rule, rank drops, save and reload),
 `EdictBookGameTests` (6), `ReformGameTests` (7), `FamilyEdictGameTests` (5), `OpenGatesGameTests` (6),
 `TreasuryEdictGameTests` (8), `CurfewGameTests` (6), `ConscriptionGameTests` (6), `CivicTalkGameTests` (7),
-`PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`.
+`PaceGameTests.bonusesStopAtTheCapAndPenaltiesComeAfter`, `ReformStoryGameTests` (10: each of the eight stories from
+the ask through M30's three steps to its ending and the edict reformed in that village only; `storyArcs` off; side
+arcs and `arcsAtOnce`). Showcase scene `reform_story`.
 
 A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen
 and a store on the real pack server and runs it 4 days under Long Shifts, Free Bread, Large Families and Festival

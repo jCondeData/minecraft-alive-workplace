@@ -671,6 +671,13 @@ SCENES = [
        ("02_trail", "The trail, the tracks pointing on"),
        ("03_freed", "Tobin in the raiders' cage, the gate open"),
        ("04_home", "Tobin follows the player home")]),
+    # The eight reforms as stories (ROADMAP 31.22): The Shift Bell, from the Toolsmith's ask to the bell ringing
+    S("reform_story", "Village Hall", "The Shift Bell as a story: the Toolsmith's ask, the three steps, the bell ringing",
+      "the Shift Bell told as a story: Long Shifts in force, the Toolsmith by the hall asks for a bell to ring the long shifts in and out, his words in chat; the three steps (24 clocks, 128 gold, 300 bread) handed in a day apart; the ending sets the Shift Bell, a bell under a little slab roof between two dark oak posts on stone brick feet, on the grass beside the hall; at the start of the next work day it rings", 45,
+      [("01_ask", "The Toolsmith asks for the Shift Bell"),
+       ("02_steps", "The three steps handed in: Long Shifts reformed"),
+       ("03_bell", "The Shift Bell beside the hall"),
+       ("04_ringing", "The bell rings the work day in")]),
     # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
     S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
       "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,

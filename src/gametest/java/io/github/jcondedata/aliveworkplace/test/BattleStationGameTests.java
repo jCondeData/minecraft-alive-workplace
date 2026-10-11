@@ -226,7 +226,8 @@ public class BattleStationGameTests implements FabricGameTest {
 	/**
 	 * A siege begun just after a watch (the watches run once a second) still gives the archer his station at once:
 	 * otherwise he spends most of a second with no place and closes on the raider 18 blocks off to shoot from the
-	 * ground, as he did in a full suite run where the siege began in that part of the second.
+	 * ground, as he did in a full suite run where the siege began in that part of the second. The raider comes with the
+	 * siege, as in a real raid: a husk standing there before it is just a monster, which he would rightly shoot at.
 	 */
 	//$ gametest_ticks_batch AREA '300' '"stationFirstWatch"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "stationFirstWatch")
@@ -234,23 +235,35 @@ public class BattleStationGameTests implements FabricGameTest {
 		Village village = village(helper, false);
 		ServerLevel level = village.level();
 		Villager archer = guard(helper, new ItemStack(Items.BOW), 12, 21);
-		Mob foe = raider(helper, 29.5, 16.5);
-		long[] began = {-1};
+		Mob[] raider = {null};
+		long[] began = {-1, -1}; // the siege's start, whether he has had his station
 		helper.onEachTick(() -> {
 			if (began[0] < 0) {
 				// The tick after a watch: 19 ticks before the next one.
 				if (level.getGameTime() % BattleStations.EVERY == 8) {
+					raider[0] = raider(helper, 29.5, 16.5);
+					Mob foe = raider[0];
+					helper.assertTrue(arrows(helper, archer) == 0, "he shot before there was anything to shoot at");
 					VillageRaids.track(level, village.hall(), village.culture(), List.of(foe));
 					village.siege(helper);
 					began[0] = level.getGameTime();
 				}
 				return;
 			}
+			Mob foe = raider[0];
+			long since = level.getGameTime() - began[0];
+			if (BattleStations.onStation(archer)) {
+				helper.succeed();
+				return;
+			}
 			helper.assertTrue(arrows(helper, archer) == 0, "he shot at a foe " + archer.distanceTo(foe) + " blocks off from the ground");
 			if (BattleStations.post(archer).isPresent()) {
-				helper.assertTrue(level.getGameTime() - began[0] <= 2, "his station came " + (level.getGameTime() - began[0]) + " ticks after the siege began");
-				helper.succeed();
-			} else if (level.getGameTime() - began[0] > 2) {
+				helper.assertTrue(since <= 2 || began[1] >= 0, "his station came " + since + " ticks after the siege began");
+				began[1] = 0;
+				if (since >= 60) {
+					helper.succeed(); // three seconds on his way with no shot from the ground
+				}
+			} else if (since > 2) {
 				helper.fail("no station " + (level.getGameTime() - began[0]) + " ticks after the siege began; he is " + archer.distanceTo(foe) + " blocks from the foe");
 			}
 		});

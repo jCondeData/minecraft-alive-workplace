@@ -157,7 +157,7 @@ public class GuardCombat extends Behavior<Villager> {
 		if (Guards.hasBow(villager) && (creeper || foe instanceof net.minecraft.world.entity.FlyingMob || distance > MELEE_FROM)) {
 			// In a siege an archer with a battle station (32.6) goes there first unless the foe is close, shoots farther
 			// from it, and never leaves it to close in.
-			java.util.Optional<BlockPos> station = BattleStations.post(villager);
+			java.util.Optional<BlockPos> station = BattleStations.postNow(level, villager); // a siege begun this tick: stations at once
 			boolean posted = station.isPresent() && BattleStations.onStation(villager);
 			if (station.isPresent() && !posted && distance > STATION_FIRST) {
 				return;

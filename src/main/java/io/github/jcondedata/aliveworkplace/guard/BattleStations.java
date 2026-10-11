@@ -61,7 +61,7 @@ import net.minecraft.world.phys.AABB;
  * more blocks below.
  *
  * <p>One watch per siege, every {@link #EVERY} ticks and on the first tick after it begins (never in the siege
- * director's tick), sending at most
+ * director's tick), or sooner when an archer of the village fights before that ({@link #postNow}), sending at most
  * {@link #MAX_PATHS} guards on their way a tick. Villagers cannot path up a ladder, so a guard who has come within
  * {@link #CLIMB_REACH} blocks of the foot of his station and stands below it climbs: he is set on the station with a
  * ladder's sound. Nothing here is saved: stations and who holds which are found again after a restart. (In
@@ -236,6 +236,19 @@ public final class BattleStations {
 	public static Optional<BlockPos> post(Villager guard) {
 		Place place = PLACES.get(guard.getUUID());
 		return place == null ? Optional.empty() : Optional.of(place.pos());
+	}
+
+	/**
+	 * Where {@code guard} is to stand in the siege, as {@link #post}; a siege of their level that has no watch yet gets its
+	 * first one now. A raid, and so a siege, can begin in any part of a tick, and the guards' own tick comes before the
+	 * end of the level's tick where the watches run: without this an archer would spend that tick with no station and
+	 * close in on, or shoot from the ground at, the nearest raider as on any other day (GuardCombat asks this).
+	 */
+	public static Optional<BlockPos> postNow(ServerLevel level, Villager guard) {
+		if (!PLACES.containsKey(guard.getUUID())) {
+			tick(level, true);
+		}
+		return post(guard);
 	}
 
 	/** The spot on the ground {@code guard} holds in the siege (a knight's inside the breach gate, a medic's behind), while they have one. */

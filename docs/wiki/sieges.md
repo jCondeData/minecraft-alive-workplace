@@ -95,7 +95,9 @@ Roadmap items: 32.4, 32.5, 32.6
     `Ladders.takeAway` runs when the raid ends and again when the siege lifts, and works from the saved list alone, so
     ladders standing when the server stopped go too.
 - **Battle stations** (`guard/BattleStations`, 32.6) run beside the director: one watch a siege, every 20 ticks in
-  a tick of its own, sending at most 4 guards on their way a tick.
+  a tick of its own, sending at most 4 guards on their way a tick. A new siege gets its first watch at once: on the
+  next tick, or within the tick it began if an archer of the village would fight before then (`BattleStations.postNow`), so no
+  archer closes in on a raider or shoots from the ground for want of a station.
   - A station is a block of a finished wall, gate or Lookout Tower blueprint, at least 2 above its floor row, with a
     whole top face and nothing in the two blocks above it, that is not a merlon (a spot one higher than a spot beside
     it). Each blueprint is read once and kept in memory. A Wall Tower has 7: its top floor's planks without the

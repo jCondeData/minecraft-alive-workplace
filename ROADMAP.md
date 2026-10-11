@@ -3996,7 +3996,7 @@ builds on the builder (`BuildSite`, `BuildSiteManager`, `BuilderWork`'s helpers,
 (`tools/blueprints/`, STYLE.md), the Village Hall (ranks, research, festivals, caravans, the chronicle) and M29's
 Legends.
 
-- [ ] **35.1** **Design note.** `docs/design/M35.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **35.1** (review: pending 2026-10-11) **Design note.** `docs/design/M35.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees, from the hall's Wonders page through the plan, the Foundation Stone, the crew, the
   goods and the dedications to the finished Wonder's celebration and its powers; one Wonder's data file in full
   (`data/aliveworkplace/wonders/<id>.json`); the condition types and the power types; the config switches (`wonders`,

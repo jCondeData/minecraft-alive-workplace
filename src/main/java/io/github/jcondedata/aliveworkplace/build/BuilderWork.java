@@ -320,6 +320,15 @@ public class BuilderWork extends Behavior<Villager> {
 			action = actionFor(level, site, candidate, bench);
 			if (action == Action.NONE) {
 				site.advance();
+			} else if (crew && action == Action.SKIP && site.isRetrying() && crewHasWork(level, site, plan, bench)) {
+				// 35.5: the lead of a crew reaches its retries while the crew is still building below: a block with nothing
+				// to hang on yet may get it from them. Not given up while they have work; tried again after it.
+				if (postponed++ < site.retryLeft()) {
+					site.postpone();
+				} else {
+					action = Action.NONE;
+					break;
+				}
 			} else if (action == Action.SKIP || action == Action.PLAYER_BLOCK) {
 				if (action == Action.PLAYER_BLOCK && site.isRetrying()) {
 					site.playerBlockInTheWay(); // 27.19: counted once, as it is skipped for good
@@ -596,6 +605,12 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		BlockPos below = step.pos().below();
 		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced();
+	}
+
+	/** Whether any step of the stage still has work a builder can do (one the lead gave up on doesn't count). */
+	private static boolean crewHasWork(ServerLevel level, BuildSite site, BuildPlan plan, BlockPos bench) {
+		int layer = crewLayer(level, site, plan, bench);
+		return layer != Integer.MIN_VALUE + CREW_LAYERS && layer != Integer.MAX_VALUE - CREW_LAYERS;
 	}
 
 	/** The part's lowest layer with work left in this stage (clearing: the highest), once a tick. */

@@ -4509,7 +4509,9 @@ item waits.
   for layers (tried here without effect: 1-block or 2-block columns, taking for a whole column per trip, a crew member
   keeping its bag while it waits, its pause running on while it walks). Stage I's walls take 1,500 to 1,650 ticks,
   levelling the ground round stage III about 360. The test holds the crew to a third until this is solved; make it
-  a quarter then. Everything else of the Done when is met and tested (columns, layers, nothing hung in the air, the
+  a quarter then. Fixed after the first full build (15 dome blocks missing): the lead of a crew reached its retries
+  while the crew was still building below and gave up for good on blocks with nothing to hang on yet; now, while the
+  crew has work, the lead puts those to the back of its retries instead. Everything else of the Done when is met and tested (columns, layers, nothing hung in the air, the
   reload, scene `wonder_crew`).
 
 - 2026-10-11 (35.4, lane-c-1011-2132): **the Foundation Stone** decisions: (1) a lone builder can't reach the test

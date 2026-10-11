@@ -372,6 +372,20 @@ SCENES = [
       "Storehouse queued on the other side, and the first walls went up; the owner got the settlers' letter", 85,
       [("01_the_spot", "The spot, before the settlers arrive"), ("02_camp_made", "The camp, Newbrook's hall and its Travel Post"),
        ("03_builder_at_work", "Tomas starts the Sandstone cottage"), ("04_first_walls", "The first walls go up")]),
+    # Founding a realm (ROADMAP 33.11): the Realm tab founds the Barony, adds the owner's villages, the rank-up fireworks
+    S("realm", "Realm", "Founding a realm: the Barony, then a County with fireworks",
+      "on Thornholm's Realm tab the owner, a Town's, founded the Barony of Thornholm and added Ashford with one click; adding "
+      "Farholt made three villages with a Town capital, the County of Thornholm, and fireworks went up over the hall; a blue "
+      "banner with a gold cross clicked on the arms set them, and the tab lists the members, the capital crowned", 75,
+      [("01_found_a_realm", "The Realm tab of a Town: Found a realm"), ("02_barony", "The Barony of Thornholm: Ashford added"),
+       ("03_fireworks", "Farholt joins: a County, fireworks over the capital"), ("04_county_tab", "The County of Thornholm, its arms and members")]),
+    # Other players' villages and choosing the capital (ROADMAP 33.12): the invitation letter, the answer, the capital vote
+    S("realm_invite", "Realm", "An invitation to another player's village, and a vote on the capital",
+      "Rowan, who rules the Barony of Thornholm, invited Ashford, the player's Town: the letter came to the player, who read it; "
+      "Ashford's Realm tab offered Join the Barony of Thornholm or Decline, and the player joined, then put Ashford forward as "
+      "capital: Rowan owns the other two villages, so the tab shows a vote for a day, its count and the two buttons", 70,
+      [("01_the_letter", "Rowan's letter: an invitation for Ashford"), ("02_the_invitation", "Ashford's Realm tab: Join or Decline"),
+       ("03_the_vote", "The vote: move the capital to Ashford?"), ("04_vote_for", "Vote for Ashford, with every village you own")]),
     # House looks (ROADMAP 23.10a): the leader picks another style's outside for a village house; the builder rebuilds it
     S("piece_look", "Village Hall", "House looks: a new outside for a village house",
       "the hall's Builds button opened House looks, the Guard House's view showed the five outsides, and choosing the desert one had the builder rebuild its outside", 140,

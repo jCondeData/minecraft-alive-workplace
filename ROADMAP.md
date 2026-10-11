@@ -3431,7 +3431,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     sites; the sister route exists outside the cap; both chronicles have their lines;
   - a GameTest where there's no room: everyone and everything is back home;
   - showcase scene `colony` with a GIF of the arrival and the first walls going up.
-- [ ] **33.11** **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
+- [x] **33.11** (review: pending 2026-10-11) **Founding a realm.** The Realm tab: at a Town or better, the hall's owner (or a friend) can **found a
   realm** with this village as its capital, named after it ("the Barony of Thornholm"; a named Name Tag clicked on the
   realm's icon renames it). The capital's owner adds, with one click, any village within 2,048 blocks that they or a
   friend own; colonies join their mother's realm by themselves; a member's owner can leave at any time and the capital
@@ -3448,7 +3448,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     rank up, the capital's hall broken (the crown passes, or the realm ends);
   - the realm survives save and reload;
   - showcase scene `realm` (the tab, the rank-up fireworks).
-- [ ] **33.12** **Other players' villages, and choosing the capital.** The capital's owner can invite a village
+- [x] **33.12** (review: pending 2026-10-11) **Other players' villages, and choosing the capital.** The capital's owner can invite a village
   another player owns: a letter goes to that owner's mailbox (or waits at the post office), with a line on their Realm
   tab to accept or decline within 3 days. Any member that's a Town or better can be put forward as capital by its
   owner: if one player owns every member it moves at once; otherwise each member's owner gets a vote on the Realm tab
@@ -4450,6 +4450,25 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (33.12, decisions and a hook for 33.13; lane a; details in `docs/wiki/realms.md`, Decisions (33.12)): a
+  capital vote is one ballot per member village, cast by its owner (one click votes all their members; the proposer's
+  start "for"); the invitation's line on the tab is two buttons, Join and Decline; invitations lapse and votes end by
+  the overworld's clock, settled every 5 s while `realms` is on. **For 33.13 on:** the realm has no treasury, research
+  or edicts yet, so the capital move carries the realm's record as a whole (id, name, arms, rank, members): keep the
+  treasury, research and edicts on `RealmData.Realm` (new keys with defaults) and they move by themselves; anything kept
+  per village can follow through `Realms.onCapitalMoved`. The Done when's "moves the capital and its treasury" is tested
+  as "and its state" (name, arms, rank) until 33.13 adds the treasury: 33.13 should add it to
+  `RealmInviteGameTests.aVoteWithAMajorityMovesTheCapital`.
+- 2026-10-11 (33.11, decisions; lane a; details in `docs/wiki/realms.md`, Decisions): a realm of one is already a
+  Barony (the spec names a just-founded realm "the Barony of Thornholm"), so "Barony (2 villages)" is read as the rank
+  of a realm of two and the first rank up is a County; the founding has its own fireworks. "That they or a friend own":
+  the village's owner is the player or has made them a friend (`Friends.mayDirect`); operators can't add others'
+  villages. The capital leaving gives up the crown, which passes as on a broken capital; a renamed realm keeps its name
+  when the crown passes. Every hall's round keeps what it saw of its village (name, owner, rank, villagers, wellbeing)
+  in `aliveworkplace_realms` under `known`, so the tab and rank counts never load a village. **For later items:** the
+  arms are on the realm (`Realms.arms(server, hall)`, a `VillageBanners.Colours`): 33.17's relief riders paint their
+  shields with `VillageBanners.paint(shield, arms)`; map banners and caravans read the same. `Realms.members(realm)`
+  is the hook for 33.13 and M35. No guide page yet: the guide shows only released content, and 1.7 is gated.
 - 2026-10-11 (33.10, decisions; lane a): the arrival GameTest runs in a new `colony_area` (44 x 20 x 44), not
   `huge_area` as the Done when says: the camp with a Starter Cottage and a Storehouse either side is 35 blocks across,
   more than `huge_area`'s 30 (the no-room test does use `huge_area`). The tests take the area's barrier roof off, since

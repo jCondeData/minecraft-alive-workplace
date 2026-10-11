@@ -72,6 +72,7 @@ public class VillageHallBlock extends BaseEntityBlock {
 			CaravanSights.clear(server, pos); // a caravan out walking here goes with it (33.7)
 			io.github.jcondedata.aliveworkplace.story.Stories.Data.get(server).remove(pos); // its open quests go with it (31.2)
 			io.github.jcondedata.aliveworkplace.city.Stewards.hallGone(server, pos); // breaking the hall ends its Steward's job (27.5)
+			io.github.jcondedata.aliveworkplace.realm.Realms.hallGone(server, pos); // it leaves its realm; a capital passes the crown (33.11)
 		}
 		super.onRemove(state, level, pos, newState, movedByPiston);
 	}

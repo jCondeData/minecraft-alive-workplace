@@ -180,6 +180,10 @@ public final class WorkplaceConfig {
 	public int colonyCooldownDays = 7;
 	/** Colonies a village may found. */
 	public int coloniesPerVillage = 3;
+	/** A Town can found a realm on its hall's Realm tab and add its owner's other villages (ROADMAP 33.11). Off: no Realm tab, nothing founded or joined; realms stay saved and come back. */
+	public boolean realms = Expansions.on(Expansions.M33);
+	/** Villages a realm may hold. */
+	public int realmMaxMembers = 12;
 	/** Households in villages with a hall climb the class ladder (ROADMAP 34.2). Off: no classes; classes and progress stay saved. */
 	public boolean villageClasses = Expansions.on(Expansions.M34);
 	/** Dawns running the next class's needs must hold for a household to rise one class. */
@@ -330,6 +334,7 @@ public final class WorkplaceConfig {
 		"guildsPerRank", 1, 4,
 		"colonyCooldownDays", 0, 60,
 		"coloniesPerVillage", 0, 16,
+		"realmMaxMembers", 2, 32,
 		"classRiseDays", 1, 30,
 		"classFallDays", 1, 30,
 		"villagerElderDays", 20, 1000,
@@ -527,6 +532,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.colony.Colonies.RANK = colonyRank(colonyRank);
 		io.github.jcondedata.aliveworkplace.colony.Colonies.COOLDOWN_DAYS = colonyCooldownDays;
 		io.github.jcondedata.aliveworkplace.colony.Colonies.PER_VILLAGE = coloniesPerVillage;
+		// Off in gametests (the Trade page's tests count its tabs, the advice tests their tips); the realm tests turn it on.
+		io.github.jcondedata.aliveworkplace.realm.Realms.ENABLED = realms && Expansions.on(Expansions.M33) && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.realm.Realms.MAX_MEMBERS = realmMaxMembers;
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.FALL_DAYS = classFallDays;
 		io.github.jcondedata.aliveworkplace.hall.HarvestIdols.ENABLED = harvestIdols && Expansions.on(Expansions.M30);
 		io.github.jcondedata.aliveworkplace.explore.ExplorerWork.RANGE = explorerRange;

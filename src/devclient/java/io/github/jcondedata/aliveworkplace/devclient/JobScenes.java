@@ -828,6 +828,61 @@ final class JobScenes {
 				return took[0] >= 0 && l.getGameTime() - took[0] > 100 && !carrying.isEmpty();
 			};
 		}, null));
+		// Scouts (ROADMAP 32.12): a guard with a spyglass (a Scout) at their grindstone, a bandit camp 40 blocks north and a
+		// grassy rise between. Sent to scout it, the scout walks up the rise, raises the spyglass (in hand, where a villager
+		// shows what they hold) and comes home; the Scouting Report is in the chest by the grindstone, and the player holds
+		// it: a map with a red X on the camp.
+		SCENES.put("scouts", new Job("the scout walked up the rise, raised the spyglass at the bandit camp and came home with the Scouting Report; the player held its map, the camp marked with a red X", 2400,
+			new Vec3(15.5, -54.0, -10.5), new Vec3(-1.5, -58.5, -24.5), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.south(4);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.guard.Scouts.forget(level);
+			// The rise: a grassy mound, stepped so a villager walks up it.
+			BlockPos top = STATION.north(18);
+			for (int dx = -4; dx <= 4; dx++) {
+				for (int dz = -4; dz <= 4; dz++) {
+					int h = 4 - Math.max(Math.abs(dx), Math.abs(dz));
+					for (int y = 0; y < Math.min(3, h); y++) {
+						level.setBlockAndUpdate(top.offset(dx, y, dz), (y == Math.min(3, h) - 1 ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState());
+					}
+				}
+			}
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, -40),
+				io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
+			Showcase.check(lair != null, "the bandits made camp north of the village");
+			Villager scout = guard(level, STATION, new ItemStack(Items.IRON_SWORD));
+			scout.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(Items.SPYGLASS));
+			boolean[] sent = {false};
+			boolean[] raised = {false};
+			return l -> {
+				if (!sent[0]) {
+					if (io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(scout)) {
+						sent[0] = io.github.jcondedata.aliveworkplace.guard.Scouts.send(l, hall) == io.github.jcondedata.aliveworkplace.guard.Scouts.Sent.SENT;
+						Showcase.check(sent[0], "the scout was sent to the bandit camp");
+					}
+					return false;
+				}
+				if (scout.getItemBySlot(EquipmentSlot.MAINHAND).is(Items.SPYGLASS) && !raised[0]) {
+					raised[0] = true;
+					Showcase.check(scout.getY() > STATION.getY() + 1.5, "the scout raised the spyglass on the rise");
+				}
+				return raised[0] && !io.github.jcondedata.aliveworkplace.guard.Scouts.out(scout)
+					&& io.github.jcondedata.aliveworkplace.guard.Scouts.known(l, hall).isPresent();
+			};
+		}, new After("04_report_in_hand", (level, player) -> {
+			Container chest = (Container) level.getBlockEntity(STATION.east(2));
+			for (int i = 0; chest != null && i < chest.getContainerSize(); i++) {
+				if (chest.getItem(i).is(Items.FILLED_MAP)) {
+					ItemStack report = chest.removeItem(i, 1);
+					Showcase.check(report.getHoverName().getString().startsWith("Scouting Report"), "the Scouting Report was in the chest by the grindstone");
+					player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, report);
+					player.setXRot(60f); // looking down at the map in both hands
+					player.connection.teleport(player.getX(), player.getY(), player.getZ(), player.getYRot(), 60f);
+					break;
+				}
+			}
+		}, -1, 0)));
 		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
 		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
 		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.
@@ -4664,12 +4719,15 @@ final class JobScenes {
 		if (doneAt > 0 && job.after() != null) {
 			if (tick == doneAt + 80) {
 				mc.getToasts().clear();
-				ScreenshotHarness.pointAt(mc, job.after().slot(), job.after().rows());
+				if (job.after().slot() >= 0) {
+					ScreenshotHarness.pointAt(mc, job.after().slot(), job.after().rows());
+				}
 			}
 			if (tick == doneAt + 90) {
 				ScreenshotHarness.shot(mc, job.after().shot());
 				Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>
-						|| mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen, // the printer's Gazette (34.11)
+						|| mc.screen instanceof net.minecraft.client.gui.screens.inventory.BookViewScreen // the printer's Gazette (34.11)
+						|| job.after().rows() == 0 && mc.player != null && !mc.player.getMainHandItem().isEmpty(), // no screen: an item in hand (the scout's report, 32.12)
 					"its screen opened (" + job.after().shot().substring(3).replace('_', ' ') + ")");
 				mc.stop();
 			}

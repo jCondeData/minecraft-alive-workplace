@@ -798,6 +798,11 @@ public final class Lairs {
 		return standOn(level, middle.above());
 	}
 
+	/** Puts {@code lair} in the dimension's list as it is, with no camp built (tests: a lair far off). */
+	public static void putForTest(ServerLevel level, Lair lair) {
+		Data.get(level).put(lair);
+	}
+
 	/** Forgets every lair and every rest (tests). */
 	public static void forget(ServerLevel level) {
 		Data data = Data.get(level);

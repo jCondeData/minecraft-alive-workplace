@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Scouts, for 1.6** (32.12). Sneak-right-click a guard with a **spyglass** and they're a **Scout** (you get back what
+  they held). From the hall's Defence page, **Scout the lair** sends one out by day: they walk to within 24 blocks of
+  the lair, raise the spyglass and come home; the band ignores a scout more than 8 blocks off. Back home the page shows
+  the lair's **exact place**, strength and captain, and a **Scouting Report** waits in the chest by their grindstone:
+  a map with a red X on the lair. A scout not back within a day is lost. Scouts also trail raiders who flee at dawn.
 - **Witch covens, for 1.6** (32.11). A swamp village of Village rank or more may get a **Coven Hut** beyond its
   edge: a hut on mangrove stilts over a pond, brewing stands, hanging lanterns, a herb garden, a black cat and the
   coven's cauldron over a fire. Every night it stands the coven **hexes** one to three villagers (a swirl of witch

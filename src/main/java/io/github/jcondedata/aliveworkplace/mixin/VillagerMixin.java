@@ -201,11 +201,13 @@ abstract class VillagerMixin {
 	@Inject(method = "increaseMerchantCareer", at = @At("TAIL"))
 	private void aliveworkplace$journeymanBlueprint(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.registry.ModTrades.journeymanBlueprint((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.registry.ModTrades.builderHomes((Villager) (Object) this); // 34.15
 	}
 
 	/** Silver Tongue (29.6): every trade with a player is cheaper, on top of vanilla's special prices. */
 	@Inject(method = "updateSpecialPrices", at = @At("TAIL"))
 	private void aliveworkplace$silverTongue(net.minecraft.world.entity.player.Player player, CallbackInfo ci) {
+		io.github.jcondedata.aliveworkplace.registry.ModTrades.builderHomes((Villager) (Object) this); // the grander homes a builder sells (34.15), before the discounts
 		io.github.jcondedata.aliveworkplace.legend.Gifted.discount((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.hall.TradeFairs.discount((Villager) (Object) this); // a trade fair's day (29.17)
 	}

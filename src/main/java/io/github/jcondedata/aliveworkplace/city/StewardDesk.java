@@ -775,7 +775,7 @@ public final class StewardDesk {
 			} else if (effect.kind() == StewardRules.Kind.ASSIGN_JOBS) {
 				offerJobs(level, hall, wish, day);
 			} else if (effect.kind() == StewardRules.Kind.UPGRADE && !paused) {
-				upgradeFor(level, hall, effect.blueprint(), effect.addsBeds()).ifPresent(f -> {
+				upgradeFor(level, hall, effect.blueprint(), effect.addsBeds(), effect.forClass()).ifPresent(f -> {
 					if (upgrading.putIfAbsent(f.structure(), true) == null) {
 						offer(level, hall, wish, BlueprintUpgrades.upgradeOf(f.structure()), f.placement(), "", true);
 					}
@@ -903,12 +903,26 @@ public final class StewardDesk {
 
 	/** A finished building by the hall (of {@code blueprint}'s family, if given) with a next tier, nobody building there yet. */
 	static Optional<BuildSiteManager.Finished> upgradeFor(ServerLevel level, BlockPos hall, Optional<ResourceLocation> blueprint, boolean addsBeds) {
+		return upgradeFor(level, hall, blueprint, addsBeds, false);
+	}
+
+	/**
+	 * {@link #upgradeFor}; with {@code forClass} (34.15, {@code homes_class}) only the home of a household that wants a
+	 * grander one, and only when its next tier is of a higher grade than they have.
+	 */
+	public static Optional<BuildSiteManager.Finished> upgradeFor(ServerLevel level, BlockPos hall, Optional<ResourceLocation> blueprint, boolean addsBeds,
+														  boolean forClass) {
+		List<io.github.jcondedata.aliveworkplace.people.HomeWants.Want> wants = forClass
+			? io.github.jcondedata.aliveworkplace.people.HomeWants.of(level, hall) : List.of();
 		List<BuildSite> sites = new ArrayList<>(BuildSiteManager.get(level).all());
 		List<Proposal> proposed = of(level, hall).proposals();
 		return VillageAdvice.upgradable(level, hall).stream()
 			.filter(f -> blueprint.isEmpty() || StewardConditions.family(f.structure()).equals(StewardConditions.family(blueprint.get())))
 			.filter(f -> sites.stream().noneMatch(s -> s.placement().equals(f.placement())))
 			.filter(f -> proposed.stream().noneMatch(p -> p.placement().equals(f.placement())))
+			.filter(f -> !forClass || wants.stream().anyMatch(w -> w.home().filter(b -> b.home().structure().equals(f.structure())
+				&& b.box().isInside(f.placement().origin())).isPresent()
+				&& io.github.jcondedata.aliveworkplace.people.HomeGrades.grade(BlueprintUpgrades.upgradeOf(f.structure())) > w.has()))
 			.filter(f -> !addsBeds || StewardConditions.addsBeds(level, f.structure())) // B85: the costly check last
 			.findFirst();
 	}

@@ -69,7 +69,7 @@ public final class VillageMaps {
 		}
 		String name = path.substring(path.lastIndexOf('/') + 1).replaceAll("_\\d+$", "");
 		return Optional.ofNullable(switch (name) {
-			case "starter_cottage", "stone_house", "terrace", "inn" -> Kind.HOMES;
+			case "starter_cottage", "stone_house", "terrace", "inn", "artisans_house", "townhouse" -> Kind.HOMES;
 			case "schoolhouse", "library", "research_lab", "map_room" -> Kind.LEARNING;
 			case "healing_center", "pokemon_center", "graveyard", "daycare" -> Kind.CARE;
 			case "storehouse", "supply_shop", "market_stall", "market_square" -> Kind.TRADE;

@@ -23,6 +23,19 @@ asks for the steps, `latest.log` and any crash report).
   iron and the ominous banner; its raids are sieges with ladders and ravager rams (one at a Town, two and an evoker at
   a City), and at a City the Warlord leads them himself: bring him down at the walls and his camp breaks.
 
+- **Grander homes (1.8).** Two new houses in the Blueprint Table: the **Artisan's House** (a narrow timber house with a
+  stone workroom below and two beds above; its II adds a workshop wing and a third bed) and the **Burgher's
+  Townhouse** (three storeys of brick and timber with a shop window and two bedrooms; its II a walled courtyard garden
+  and a third bedroom; its III a corner tower with a study). Every home now has a grade: its tier, or more if a
+  `homes/` data file says so (the Townhouse is grade II, its upgrades III). Builders sell the Artisan's House from
+  Apprentice and the Townhouse once the village has Artisans. "What next?" names the households that want a grander
+  home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
+  Artisan's House or a Townhouse for them.
+
+### Fixed
+
+- The settings screen no longer cuts off the elder setting: it now reads "Days Until Elder" (B102).
+
 ## 0.142.0 — 2026-10-10
 
 ### Added

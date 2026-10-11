@@ -52,6 +52,7 @@ public final class StewardConditions {
 		private List<BuildSiteManager.Finished> upgradable;
 		private int[] store;
 		private List<VillagerProfession> wanted;
+		private List<io.github.jcondedata.aliveworkplace.people.HomeWants.Want> homeWants;
 
 		private Facts(ServerLevel level, BlockPos hall) {
 			this.level = level;
@@ -101,6 +102,14 @@ public final class StewardConditions {
 			return wanted;
 		}
 
+		/** The households that want a grander home (34.15), as the "What next?" tips list them. */
+		public List<io.github.jcondedata.aliveworkplace.people.HomeWants.Want> homeWants() {
+			if (homeWants == null) {
+				homeWants = io.github.jcondedata.aliveworkplace.people.HomeWants.of(level, hall);
+			}
+			return homeWants;
+		}
+
 		public VillageRanks.Rank rank() {
 			return VillageRanks.of(level, hall);
 		}
@@ -110,11 +119,11 @@ public final class StewardConditions {
 		}
 
 		/** How many pieces {@link #warm} counts the village in. */
-		public static final int PIECES = 6;
+		public static final int PIECES = 7;
 
 		/**
 		 * B85: counts one piece of the village ahead of the rules ({@code piece} 0 to {@link #PIECES} - 1: the census,
-		 * the homes, the finished buildings, the upgradable ones, the store and the jobs wanted), so the Steward's
+		 * the homes, the finished buildings, the upgradable ones, the store, the jobs wanted and the households wanting a grander home), so the Steward's
 		 * morning can spread the counting over several ticks; the rules then read what was counted.
 		 */
 		public void warm(int piece) {
@@ -125,6 +134,7 @@ public final class StewardConditions {
 				case 3 -> upgradable();
 				case 4 -> store();
 				case 5 -> wanted();
+				case 6 -> homeWants(); // 34.15
 				default -> {
 				}
 			}
@@ -445,6 +455,24 @@ public final class StewardConditions {
 		}
 	}
 
+	/**
+	 * {@code households_want_grade {grade, at_least}} (34.15): at least that many households want a home of that grade or
+	 * higher and sleep in a lower one (their class needs it, or they have all the next class needs but the home); the
+	 * number is how many.
+	 */
+	public record HouseholdsWantGrade(int grade, int atLeast) implements Condition {
+		@Override
+		public String type() {
+			return "households_want_grade";
+		}
+
+		@Override
+		public Check test(Facts facts) {
+			long count = facts.homeWants().stream().filter(w -> w.grade() >= grade && w.has() < grade).count();
+			return new Check(count >= atLeast, count, key(type(), count, Component.translatable("enchantment.level." + grade), atLeast));
+		}
+	}
+
 	/** {@code store_full {share}}: the Storehouses' chests have at least that share of their slots taken; the number is the percent. */
 	public record StoreFull(double share) implements Condition {
 		@Override
@@ -708,6 +736,8 @@ public final class StewardConditions {
 		register("upgrade_available", f -> new UpgradeAvailable(f.has("blueprint") ? Optional.of(f.id("blueprint")) : Optional.empty()));
 		register("upgrade_adds_beds", f -> new UpgradeAddsBeds());
 		register("homes_tier_low", f -> new HomesTierLow(f.share("share", 0.5)));
+		register("households_want_grade", f -> new HouseholdsWantGrade(f.integer("grade", 2, 1, io.github.jcondedata.aliveworkplace.people.HomeGrades.MAX),
+			f.integer("at_least", 1, 1, 10000)));
 		register("store_full", f -> new StoreFull(f.share("share", 0.9)));
 		register("research_idle", f -> new ResearchIdle());
 		register("research_at_least", f -> {

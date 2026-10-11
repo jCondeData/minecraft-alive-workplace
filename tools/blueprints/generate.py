@@ -25,6 +25,7 @@ from pokemon_looks import *
 from pokemon_jobs import *
 from guildhall import *
 from arena import *
+from styles import styled
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -116,6 +117,9 @@ if __name__ == "__main__":
     stone_house().save(MAIN_STRUCTURES, "stone_house")
     stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
+    for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2), ("townhouse", townhouse),
+                       ("townhouse_2", townhouse_2), ("townhouse_3", townhouse_3)):
+        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.15
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")

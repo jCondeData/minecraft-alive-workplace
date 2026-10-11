@@ -653,6 +653,13 @@ SCENES = [
            ("16_tailors_shop_2", "Tailor's Shop II: the cutting room and the drying loft"),
            ("18_print_shop", "The Print Shop: brick and timber, the skylight over the press"),
            ("25_jewellers_workshop_2_back", "Jeweller's Workshop II: the strong room behind")]),
+    # Grander homes (ROADMAP 34.15): the Artisan's House and the Burgher's Townhouse, every tier, then in the five styles
+    S("grand_houses", "Build families", "The Artisan's House (I, II) and the Burgher's Townhouse (I, II, III), and both in the five styles",
+      "the Artisan's House (I, II) and the Townhouse (I, II, III) stand with their beds and grades, and both in all five styles",
+      150, [("14_townhouse", "The Burgher's Townhouse: a brick shop below, two jettied timber storeys, a slate gable"),
+           ("17_townhouse_2_back", "Townhouse II: the walled courtyard garden behind"),
+           ("18_townhouse_3", "Townhouse III: the corner tower with the study at the top"),
+           ("13_artisans_house_2_back", "Artisan's House II: the workshop wing at the back")]),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
       "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
       [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),

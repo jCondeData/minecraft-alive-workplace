@@ -614,6 +614,16 @@ SCENES = [
       [("01_palisade", "Stage 1: the palisade, the gate, the fire and the tents"),
        ("02_towers", "Stage 2: two watchtowers and a stable"),
        ("03_keep", "Stage 3: the King's keep, his banner over the door")]),
+    # The Bandit King, II: the story (ROADMAP 31.16): the banners taken, the fort rising a stage a day, the storm, the King's fall
+    S("bandit_king", "Village Hall", "The Bandit King's story: the banners, the fort, the storm, the King's fall",
+      "the Bandit King's story arc: three war banners, black with a red skull, flown over his camps and taken; the next dawn his fort rises, a stage a day; at the storm the allies won stand before the gate (3 guards of a neighbouring village, 6 mercenaries) and the keep's postern is open, as Pell the deserter told; then the King falls", 60,
+      [("01_banners", "Three war banners of the Bandit King"),
+       ("02_banners_taken", "The banners taken"),
+       ("03_fort_day_1", "Day 1: the fort's palisade"),
+       ("04_fort_day_2", "Day 2: the watchtowers"),
+       ("05_fort_day_3", "Day 3: the keep, its postern open"),
+       ("06_storm", "The storm: 3 guards and 6 mercenaries"),
+       ("07_king_falls", "The Bandit King falls")]),
     # Heart events (ROADMAP 31.7): at two hearts Dara walks up and tells where she comes from; her life story page.
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",

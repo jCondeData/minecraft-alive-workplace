@@ -181,6 +181,9 @@ final class JobScenes {
 		return io.github.jcondedata.aliveworkplace.guard.BanditFort.at(BANDIT_FORT_GROUND, net.minecraft.world.level.block.Rotation.NONE);
 	}
 
+	/** The bandit_king scene's front: the ground before the fort's gate, where the banners fly and the allies stand. */
+	private static final BlockPos BANDIT_KING_FRONT = new BlockPos(0, -60, -2);
+
 	/** The fort's men hold still for the camera. */
 	private static void stillFortMen(ServerLevel level) {
 		for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
@@ -3426,6 +3429,77 @@ final class JobScenes {
 					Showcase.check(placed && kings == 1 && level.getBlockState(banditFort().at(new BlockPos(14, 4, 16))).is(net.minecraft.world.level.block.Blocks.BLACK_WALL_BANNER),
 						"the keep stands with the war banner over its door, the King inside");
 				}, 60)),
+			(level, player) -> true));
+		// The Bandit King, II: the story (ROADMAP 31.16): the three camps' war banners (black, a red skull), taken; the
+		// fort rising a stage a day; the storm with the allies won (3 guards of a neighbour, 6 mercenaries) and the postern
+		// Pell told of left open; the King falling.
+		SCREENS.put("bandit_king", new Screen("the Bandit King's story: three war banners, black with a red skull, flown over his camps and taken; his fort rising a stage a day; the storm with the allies won (3 guards of the neighbours, 6 mercenaries) and the keep's postern open; the King falling",
+			new Vec3(24.5, -46, 10.5), new Vec3(0.5, -57, -20.5),
+			(level, player) -> {
+				for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
+					mob.discard();
+				}
+				for (var v : io.github.jcondedata.aliveworkplace.story.BanditKingStory.allies(level, BANDIT_KING_FRONT)) {
+					v.discard();
+				}
+			},
+			List.of(new Step("01_banners", -1, 0, (level, player) -> {
+					int raised = 0;
+					for (int x : new int[] {-8, 0, 8}) {
+						BlockPos at = io.github.jcondedata.aliveworkplace.story.BanditKingStory.raiseBanner(level, BANDIT_KING_FRONT.offset(x, 0, 2));
+						if (at != null && io.github.jcondedata.aliveworkplace.story.BanditKingStory.isWarBanner(level, at)) {
+							raised++;
+						}
+					}
+					Showcase.check(raised == 3, "three war banners, black with a red skull, fly over the camps");
+				}, 50),
+				new Step("02_banners_taken", -1, 0, (level, player) -> {
+					int taken = 0;
+					for (BlockPos p : BlockPos.betweenClosed(BANDIT_KING_FRONT.offset(-12, -2, -4), BANDIT_KING_FRONT.offset(12, 3, 8))) {
+						if (io.github.jcondedata.aliveworkplace.story.BanditKingStory.isWarBanner(level, p)) {
+							level.destroyBlock(p.immutable(), true, player);
+							taken++;
+						}
+					}
+					Showcase.check(taken == 3, "the three war banners are taken");
+				}, 40),
+				new Step("03_fort_day_1", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 0, false);
+					stillFortMen(level);
+					Showcase.check(placed, "the next dawn: the fort's palisade, fire and tents");
+				}, 40),
+				new Step("04_fort_day_2", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 1, false);
+					stillFortMen(level);
+					Showcase.check(placed, "a day on: the watchtowers and the stable");
+				}, 40),
+				new Step("05_fort_day_3", -1, 0, (level, player) -> {
+					boolean placed = io.github.jcondedata.aliveworkplace.guard.BanditFort.place(level, banditFort(), 2, true);
+					stillFortMen(level);
+					Showcase.check(placed && level.getBlockState(banditFort().at(io.github.jcondedata.aliveworkplace.guard.BanditFort.POSTERN))
+						.getValue(net.minecraft.world.level.block.DoorBlock.OPEN), "a day on: the King's keep, its postern left open as Pell told");
+				}, 40),
+				new Step("06_storm", -1, 0, (level, player) -> {
+					for (int i = 0; i < 3; i++) {
+						io.github.jcondedata.aliveworkplace.story.BanditKingStory.ally(level, BANDIT_KING_FRONT,
+							Component.translatable("entity.aliveworkplace.king_ally.neighbour", "Thornholm"), i);
+					}
+					for (int i = 3; i < 9; i++) {
+						io.github.jcondedata.aliveworkplace.story.BanditKingStory.ally(level, BANDIT_KING_FRONT, Component.translatable("entity.aliveworkplace.mercenary"), i);
+					}
+					var allies = io.github.jcondedata.aliveworkplace.story.BanditKingStory.allies(level, BANDIT_KING_FRONT);
+					allies.forEach(v -> v.setNoAi(true));
+					Showcase.check(allies.size() == 9, "the storm: 3 guards of the neighbours and 6 mercenaries before the gate");
+				}, 50),
+				new Step("07_king_falls", -1, 0, (level, player) -> {
+					var king = io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40).stream()
+						.filter(m -> m.getTags().contains(io.github.jcondedata.aliveworkplace.guard.BanditKing.TAG)).findFirst().orElse(null);
+					if (king != null) {
+						king.setNoAi(false);
+						king.hurt(level.damageSources().playerAttack(player), 10000f);
+					}
+					Showcase.check(king != null && !king.isAlive(), "the Bandit King falls");
+				}, 40)),
 			(level, player) -> true));
 		// Gifts (ROADMAP 31.6): Gift Wrap and a Golden Carrot on the crafting grid make a Gift; Dara the farmer unwraps
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the

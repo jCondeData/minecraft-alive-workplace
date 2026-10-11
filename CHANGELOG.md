@@ -36,6 +36,15 @@ asks for the steps, `latest.log` and any crash report).
   bar, and at half health blows a goat horn that calls four bandits out of the keep, once; his men keep to the fort.
   His chest always holds the King's Crown (Protection III, Unbreaking III) with emeralds, gold, diamonds and an
   enchanted sword or crossbow. The story that brings him comes with 31.16.
+- **The Bandit King's story** (31.16): a Town or bigger that has broken up two bandit camps may face him (8% a day,
+  with `banditCamps` on). Three camps go up at once 80 to 104 blocks out, their chiefs "Captain of the Bandit King",
+  each flying his war banner (black, a red skull): take all three. The next dawn his fort rises a stage a day; win
+  allies before the keep stands: a quest done at a neighbouring village brings 3 of its guards, 24 emeralds at the hall
+  6 mercenaries, and 16 bread for Pell the deserter (by the first camp's ashes) opens the keep's postern and wins him
+  for the village. At the storm, raise a Rally Banner near the fort and your guards and allies follow; his raiders come
+  every second night until he falls. Kill him for his treasure, a festival, +150 reputation to everyone who fought,
+  the honour Kingslayer and 10 days without bandit camps; if he still stands after 10 days he takes a third of the
+  treasury, leaves his fort a ruin, and moods drop 10 for 3 days. The village now counts the bandit camps it broke up.
 - **What friendship and titles are worth** (31.12): friends sell for less (5% at 4 hearts up to 30%, plus 5, 10 or
   15% for a Friend, Hero or Lord, 40% at most); at a festival every villager with 6 hearts or more brings you their
   family's gift, and Heroes and Lords are Heroes of the Village II; the first baby of a couple who love you (8 hearts)

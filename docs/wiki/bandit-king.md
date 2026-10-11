@@ -1,10 +1,10 @@
-# The Bandit King: his fort and the King
+# The Bandit King: his fort, the King and his story
 
 The Bandit King's fort rises a stage a dawn out beyond a village, and the King waits in his keep with his treasure.
 ROADMAP 31.15; the story that brings him, `arcs/bandit_king.json`, is 31.16. Builds on the arc engine's `place`
 (31.4), bandit camps (`BanditCamps`, 32.3's lairs) and the bounty captains' names (31.13). Part of the 1.5 expansion.
 
-Roadmap items: 31.15
+Roadmap items: 31.15, 31.16
 
 ## What a player sees
 
@@ -24,6 +24,24 @@ Roadmap items: 31.15
 - **The treasure chest** (`aliveworkplace:chests/bandit_king`): 16 to 32 emeralds, 4 to 8 gold ingots, 1 to 3
   diamonds, an enchanted iron sword or crossbow, and always **the King's Crown** (the golden helmet, Protection III and
   Unbreaking III, named). The King wears his crown but never drops it, nor the rest of his gear: it's in the chest.
+
+- **The story** (31.16, `arcs/bandit_king.json`, a `threat` arc) starts in a Town or bigger that has broken up at least
+  2 bandit camps, 8% a day, with `banditCamps` on. Its chapters:
+  1. **Smoke on three hills**: three bandit camps (the `camp/bandit_camp` blueprint) 80 to 104 blocks out, each with a
+     "Captain of the Bandit King" in iron (36 extra health) and 3 or 4 bandits, and his war banner by the fire. Break
+     the three banners (each drops "The Bandit King's War Banner", and counts). Villagers say "All the camps fly the
+     same banner now."
+  2. **The King's fort**, the next dawn: the fort rises a stage a dawn (above). Allies, each optional: **the neighbours'
+     pledge** (finish any quest at another village with a hall within caravan range: 3 of its guards come for the
+     storm), **swords for hire** (24 emeralds at the hall: 6 mercenaries), **the deserter** (Pell waits by the first
+     camp; bring him 16 bread and he tells of the postern, which the keep leaves open, and joins the village after).
+  3. **The storm**, once the keep stands: the allies come to the hall; raise a Rally Banner within 48 blocks of the fort
+     and they follow it with your guards. His raiders (the village's bandit raid, half again as big) come every second
+     night until he falls. If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
+     rides off with his band, the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
+  - **Ending**: his band leaves the fort (the treasure chest is yours), a festival the next evening, +150 reputation
+    and the honour **Kingslayer** to everyone who fought in the storm, Pell joins the village (no job), the allies go
+    home, and no bandit camps come for 10 days. Every chapter, banner, ally, raid and ending has its chronicle line.
 
 ## How it works
 
@@ -46,6 +64,18 @@ Roadmap items: 31.15
   once: the tag `aliveworkplace_bandit_king_horn`; the four called bandits come out at the keep's door and go for whoever
   last hurt him).
 
+- **The story** (31.16): `story/BanditKingStory` does what the arc's effects can't say: the count of bandit camps broken
+  up (a `Lairs.onBroken` listener for the bandit culture, saved per village as `bandit_camps_broken` in
+  `aliveworkplace_stories`, 0 in older saves) read by the condition `bandit_camps_broken` (`rules/BanditCampsBroken`,
+  false with `banditCamps` off); the war banner set beside each camp when the arc builds it and counted when a player
+  breaks it near the camp (flags `banner_<camp>`, then `banners_taken`); the allies (flags `ally_neighbours`,
+  `ally_mercenaries`, `ally_pell`; Pell's quest sets `postern_open` and opens the postern of a keep already standing);
+  the `bandit_king` effect with `step` `storm` (the allies come: guards with `MERCENARY_UNTIL` set 11 days on, so they
+  leave as mercenaries do), `tribute` and `ending`; every 40 ticks the raids (at dusk of the storm's even days, flag
+  `raid_night`) and the allies enlisted on a raised Rally Banner within 48 blocks of the fort; the King's death (flag
+  `king_dead`, the killer and the players within 48 blocks credited as the chapter's helpers). The ending's flag
+  `no_bandit_camps` (10 days) keeps bandits out of `Lairs.round`.
+
 ## Items, blocks, jobs, commands
 
 - Blueprints `aliveworkplace:story/bandit_fort`, `aliveworkplace:story/bandit_fort_2`, `aliveworkplace:story/bandit_fort_3`
@@ -56,12 +86,14 @@ Roadmap items: 31.15
 
 ## Switches
 
-None of its own: the fort comes only with the Bandit King's arc (31.16), under `storyArcs`.
+None of its own: the story runs under `storyArcs` (and `disabledArcs` with `bandit_king`), and starts only with
+`banditCamps` on. Its raids need `villageRaids`.
 
 ## Saved data
 
-Nothing new in saved files: a fort placed by an arc is an arc place in `aliveworkplace_stories` (its `stages`,
-`placed`, `origin`, `rotation`). The men carry their tags (`aliveworkplace_fort`, their home, the King's door and
+A fort placed by an arc is an arc place in `aliveworkplace_stories` (its `stages`, `placed`, `origin`, `rotation`).
+31.16 adds `bandit_camps_broken` to each village's entry there (missing in older saves: 0); everything else of the
+story is in the arc's flags and roles. The men carry their tags (`aliveworkplace_fort`, their home, the King's door and
 horn) in their own entity data.
 
 ## Decisions
@@ -75,9 +107,16 @@ horn) in their own entity data.
 - 31.15: the fort waits for a player within 96 blocks before a stage is built, as every arc place does; a stage a
   player didn't come near for is built when one does (each next stage at the next dawn after).
 
+- 31.16: the allies are guards with a mercenary's leave time (11 days), so they leave the way hired mercenaries do
+  when the storm ends; the neighbours' guards don't walk home, they leave in a puff like mercenaries.
+- 31.16: Pell's quest is a `talk` the arc counts only once he has his 16 bread (without it he asks for it).
+- 31.16: "half again as big" raids are sized as a raid on a village of 6 + 1.5 times its villagers (the plain raid is
+  3 + villagers / 4), still capped as every raid.
+- 31.16: a camp never built (no clear ground) counts as its banner taken.
+
 ## Known limits
 
-- Until 31.16's arc lands nothing places the fort in a survival world: it is built and tested, ready for the arc.
+- The camps, Pell and the fort are built or come only once a player is within 96 blocks, as every arc place.
 - With no fit ground within 16 blocks of the arc's column the fort isn't built (the arc logs it and its place is
   skipped).
 
@@ -86,4 +125,6 @@ horn) in their own entity data.
 - GameTests: `BanditFortGameTests`: the three stages on uneven ground (`threeStagesPlaceInOrderOnUnevenGround`), the
   arc's way (`theArcPlacesAStageADawn`), the King (`theKingsGearHealthAndBossBar`), the horn
   (`theHornCallsFourBanditsOnce`), the chest (`theTreasureChestAlwaysHasTheCrown`).
-- Showcase scene `bandit_fort`.
+- GameTests: `BanditKingStoryGameTests`: the arc walked from the banners to the King's fall with all three allies
+  (`banditKingStoryWalk`), the tribute (`banditKingTribute`), the trigger and the saved count (`banditKingTrigger`).
+- Showcase scenes `bandit_fort` and `bandit_king`.

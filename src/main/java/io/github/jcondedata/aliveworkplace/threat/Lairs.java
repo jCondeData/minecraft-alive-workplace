@@ -255,6 +255,9 @@ public final class Lairs {
 		if (resting(level, hall) > 0) {
 			return;
 		}
+		if (io.github.jcondedata.aliveworkplace.story.Stories.villageFlag(level, hall, "no_bandit_camps")) {
+			bandits = false; // the Bandit King's fall keeps the bandits off for a while (31.16)
+		}
 		Optional<ResourceLocation> comer = comer(level, hall, bandits, random);
 		if (comer.isEmpty()) {
 			return;

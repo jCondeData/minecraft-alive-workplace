@@ -45,7 +45,9 @@ The village then has a few days' peace.
 
 ## The Bandit King
 
-A bigger story can bring a **Bandit King**. His fort goes up 110 to 150 blocks from the village, a stage each dawn: first
+A bigger story can bring a **Bandit King** to a Town that has broken up two bandit camps. First three camps go up
+round the village at once, their chiefs his captains, each flying his war banner (black, a red skull): break all
+three banners. The next dawn his fort goes up 110 to 150 blocks from the village, a stage each dawn: first
 a palisade of sharpened logs round a yard with a fire and tents, then two watchtowers and a stable, then his **keep**
 with his black war banner (a red skull) over the door.
 
@@ -56,6 +58,13 @@ bandits rush out of the keep, but only once. His men stay inside the palisade, a
 His **treasure chest** sits beside his throne: emeralds, gold, diamonds, an enchanted sword or crossbow, and always
 **the King's Crown**, a golden helmet with Protection III and Unbreaking III. Look for a small door in the palisade behind
 the keep: sometimes it's left open.
+
+While the fort rises, win allies (any of them helps): finish a quest at a neighbouring village and 3 of its guards come;
+pay 24 emeralds at the hall for 6 mercenaries; or bring **Pell**, a deserter waiting by the first camp, 16 bread: he
+tells of the postern and it's left open. When the keep stands, raise your **Rally Banner** near the fort and your guards
+and allies follow you in. His raiders come every second night until he falls. Kill him within 10 days for his treasure,
+a festival, +150 reputation, the honour **Kingslayer** and 10 days without bandit camps; Pell stays on in the village.
+Wait too long and he takes a third of your treasury and rides off, leaving his fort a ruin.
 
 ## Leading your guards
 

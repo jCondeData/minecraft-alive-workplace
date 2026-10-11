@@ -113,6 +113,7 @@ public final class ArcEffects {
 			case "give_map" -> GsonHelper.getAsString(json, "at");
 			case "festival", "chatter" -> {
 			}
+			case "bandit_king" -> BanditKingStory.validate(GsonHelper.getAsString(json, "step", ""));
 			case "flag" -> GsonHelper.getAsString(json, "flag");
 			case "start_quest" -> {
 				if (!json.has("quest")) {
@@ -254,6 +255,7 @@ public final class ArcEffects {
 			}
 			case "end_arc" -> s.endWith = GsonHelper.getAsString(json, "ending", "failed");
 			case "reputation", "honour" -> Reputation.arcEffect(level, hall, s, json); // to the arc's helpers (31.11)
+			case "bandit_king" -> BanditKingStory.effect(level, hall, s, GsonHelper.getAsString(json, "step")); // 31.16
 			case "chatter" -> {
 				if (json.has("lines")) {
 					json.getAsJsonArray("lines").forEach(l -> s.chatter.add(l.getAsString()));
@@ -415,6 +417,7 @@ public final class ArcEffects {
 		}
 		p.placed++;
 		p.nextDay = Chronicle.day(level) + 1;
+		BanditKingStory.built(level, s, p); // a camp's war banner (31.16)
 		PLACED.incrementAndGet();
 		AliveWorkplace.LOG.info("Story arc {} built {} ({} of {}) at {}", s.id, p.stages.get(p.placed - 1), p.placed, p.stages.size(), p.spot);
 		doneFlags(level, s);

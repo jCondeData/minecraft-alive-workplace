@@ -545,6 +545,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     10; the long ticks in the profiles named by `perf.py --spikes`; nightly-tests job `soak`, input `part: soak`;
     docs/performance.md, "The 60-minute soak"); left: run it and read the numbers. Sessions can't dispatch workflows (403 from the GitHub tools), so the soak
     waits for the owner's chat to run nightly-tests with part `soak`, or for a schedule to be added for it.
+  - Status (digest-1011-1253, 2026-10-11 19:05Z): the owner started both runs by hand: soak 38166107551 (part soak) and benchmark 38166303120 (part benchmark), on main as of that minute. Lanes: read their results (soak-<run> artifact, perf.log) with `perf.py` and `soakheap.py`, add the rows to docs/performance.md, and tick 25.4 if heap is flat within 5% and no error of ours; use the benchmark's numbers for 25.3's 50 ms target. Don't ask him to run them again.
 - [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README

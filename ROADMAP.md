@@ -3918,6 +3918,7 @@ on a real world.
   Each previewed on the villager model in every biome, over six different jobs. Until the owner picks, v1 of each is
   the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
   wired in as the textures.
+  - [ ] **34.17a** Change from the owner (2026-10-11): owner picked Artisan version 1, Burgher version 2, Noble version 1, Elder version 1; ship only these four and drop the other versions
 - [x] **34.18** (review: pending 2026-10-11) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
   and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
   villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new

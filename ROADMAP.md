@@ -3069,7 +3069,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     blocks away, the scout gets within 24 blocks of it and is home within 2400 ticks; the report map has its
     decoration at the lair; a bandit doesn't go for a scout 10 blocks away;
   - scene `scouts`: the scout on a rise with the spyglass, then the report map in hand (GIF).
-- [ ] **32.13** **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
+- [x] **32.13** (review: pending 2026-10-11) **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
   guards (up to 12; the rest keep the walls) are enlisted on the Rally Banner in the player's inventory, it's raised,
   and they gather by the hall (without a banner the page says to craft one). A new mercenary contract on the same
   page, **Siege-breakers**: five (two with crossbows, two knights, a medic) for 30 emeralds (3 less a level of

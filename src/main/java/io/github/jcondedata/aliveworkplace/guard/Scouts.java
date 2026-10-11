@@ -339,7 +339,12 @@ public final class Scouts {
 		} else if (distance <= 2) {
 			return to;
 		}
-		level.getChunk(x >> 4, z >> 4);
+		// Never loads ground for the walk: on ground not loaded, the stop keeps the scout's height (they can't path
+		// there anyway, and the next leg looks again once it is).
+		BlockPos flat = new BlockPos(x, from.getY(), z);
+		if (!level.isLoaded(flat)) {
+			return flat;
+		}
 		return new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
 	}
 

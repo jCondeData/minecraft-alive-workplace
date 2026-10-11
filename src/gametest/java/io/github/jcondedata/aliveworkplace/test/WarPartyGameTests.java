@@ -236,6 +236,9 @@ public class WarPartyGameTests implements FabricGameTest {
 		Villager second = guard(helper, new BlockPos(12, 2, 11));
 		Villager stay = guard(helper, new BlockPos(3, 2, 3));
 		Villager home = guard(helper, new BlockPos(3, 2, 6));
+		// Each with a name of their own, as a village names everyone (off in tests by default); the chronicle names them.
+		first.setCustomName(io.github.jcondedata.aliveworkplace.people.Names.name(0));
+		second.setCustomName(io.github.jcondedata.aliveworkplace.people.Names.name(1));
 		player.getInventory().add(new ItemStack(ModItems.RALLY_BANNER));
 		helper.assertTrue(WarParties.muster(level, hall, player) == WarParties.Muster.MUSTERED, "not mustered");
 		// The muster takes the nearest three of four; make sure the two by the lair are on it.

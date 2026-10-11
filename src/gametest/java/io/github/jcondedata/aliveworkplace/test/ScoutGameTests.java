@@ -124,8 +124,9 @@ public class ScoutGameTests implements FabricGameTest {
 
 	/**
 	 * Open ground for a long walk, away from every test area (the framework walls each one in with barriers, and they
-	 * stand in rows): 5000 blocks east of this one, its chunks along {@code length} blocks east kept loaded till the test
-	 * ends. Returns the spot on the ground there.
+	 * stand in rows): 5000 blocks east of this one. Only the chunks the walk crosses are kept loaded, a strip {@code length}
+	 * blocks east and a chunk to either side, and every one is let go when the test ends (with whatever stood on them):
+	 * a wider block of forced ground once ran the full suite out of memory. Returns the spot on the ground there.
 	 */
 	private static BlockPos openGround(GameTestHelper helper, int length) {
 		ServerLevel level = helper.getLevel();
@@ -133,9 +134,10 @@ public class ScoutGameTests implements FabricGameTest {
 		int x0 = here.getX() + 5000;
 		int z0 = here.getZ();
 		List<long[]> forced = new ArrayList<>();
-		for (int cx = (x0 - 32) >> 4; cx <= (x0 + length + 32) >> 4; cx++) {
-			for (int cz = (z0 - 32) >> 4; cz <= (z0 + 32) >> 4; cz++) {
+		for (int cx = (x0 - 16) >> 4; cx <= (x0 + length) >> 4; cx++) {
+			for (int cz = (z0 - 16) >> 4; cz <= (z0 + 16) >> 4; cz++) {
 				level.setChunkForced(cx, cz, true);
+				level.getChunk(cx, cz); // loaded now, not some ticks later: the village goes on it straight away
 				forced.add(new long[] {cx, cz});
 			}
 		}
@@ -209,7 +211,8 @@ public class ScoutGameTests implements FabricGameTest {
 		village(helper);
 		ServerLevel level = helper.getLevel();
 		// The village out on open ground: its hall, the scout's post and chest, the scout.
-		BlockPos hall = openGround(helper, 80);
+		// The walk reaches no further than the lookout, 24 blocks short of the lair, and a leg (16) past it.
+		BlockPos hall = openGround(helper, 60 - Scouts.SIGHT + 16);
 		BlockPos post = hall.offset(3, 0, 3);
 		BlockPos chestAt = hall.offset(3, 0, 5);
 		level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());

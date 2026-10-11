@@ -6009,5 +6009,11 @@
   "wonder.aliveworkplace.great_cathedral.stage.1": "The Foundations and the West Front",
   "wonder.aliveworkplace.great_cathedral.stage.2": "The Nave",
   "wonder.aliveworkplace.great_cathedral.stage.3": "The Transepts and the Choir",
-  "wonder.aliveworkplace.great_cathedral.stage.4": "The Towers and the Rose Window"
+  "wonder.aliveworkplace.great_cathedral.stage.4": "The Towers and the Rose Window",
+  "wonder.aliveworkplace.lighthouse.name": "Lighthouse",
+  "wonder.aliveworkplace.lighthouse.description": "A tower banded in white and red on a stepped stone mole, its lantern lit by night, with the keeper's cottage, a boathouse, a quay and a jetty to the ferry at its foot. Caravans go twice as far in half the time, ferry fares are halved, and the village is warned before a raid.",
+  "wonder.aliveworkplace.lighthouse.stage.1": "The Mole and the Quay",
+  "wonder.aliveworkplace.lighthouse.stage.2": "The Tower",
+  "wonder.aliveworkplace.lighthouse.stage.3": "The Gallery",
+  "wonder.aliveworkplace.lighthouse.stage.4": "The Lantern and the Keeper's House"
 }

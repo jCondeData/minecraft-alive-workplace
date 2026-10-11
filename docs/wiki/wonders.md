@@ -3,10 +3,10 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan and the first Wonder's design (the Great Cathedral) are built, behind the 2.0 switch (see
+Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral and the Lighthouse) are built, behind the 2.0 switch (see
 Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.9
+Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11
 
 ## What a player sees
 
@@ -65,6 +65,20 @@ III *The Transepts and the Choir*, IV *The Towers and the Rose Window*. Its good
 III 16 books (Librarian), 12 potions of healing (Cleric), 64 small flowers (Florist); IV 32 chiseled stone bricks
 (Mason), 16 cakes (Chef), 64 bone meal (Composter). It can't be built in game until the rest of Wonders is.
 
+**The Lighthouse** (35.11) is drawn: a coastal landmark 25 by 33 and 46 high, about 5,000 blocks, its back half in the
+sea. A round tower banded in white and red terracotta tapers from 13 across to 9 on a stepped stone mole (mossy at the
+waterline, steps up to the door, mooring posts round its foot, an arm along the back sheltering a little harbour). Its
+gallery at 38 stands on stone corbels behind an iron railing; above it a lantern room of glass round sea lanterns, a
+ring of redstone lamps that an inverted daylight detector lights at night, and a copper cupola with a lightning-rod
+vane. Inside, a spiral stair of spruce climbs past five rooms from the door to the lantern. At its foot: the keeper's
+cottage (a stone ground floor, an upper storey of white terracotta in a spruce frame, a slate roof; a bed upstairs, the
+fisherman's barrel by the stove), a spruce boathouse half over the water, a stone quay with mooring posts, and a
+timber jetty out over the sea to a ferry stop, the Travel Post under a little roof. Its stages: I *The Mole and the
+Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Its goods: I 64 cooked cod
+(Fisherman), 8 oak boats (Carpenter), 64 coal (Miner); II 16 chains (Tinkerer), 32 iron ingots (Armorer), 32 white
+wool (Shepherd); III 4 explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64
+glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Its powers come with 35.12.
+
 ## How it works
 
 **A Wonder is a data file** (35.2), `data/<namespace>/wonders/<id>.json`, read whenever data packs load, so a server
@@ -121,7 +135,7 @@ checks; stage parts are ordinary builds of the builder, using the Foundation Sto
 **Our Wonders' designs** (35.9 on) are drawn whole in `tools/blueprints/wonders.py`, one function each, stage by stage
 on a staged build that refuses to draw over an earlier stage's block; `wonder_stages()` cuts each stage into parts and
 `wonders.py` writes the Wonder's data file (`aliveworkplace:great_cathedral` is
-`data/aliveworkplace/wonders/great_cathedral.json`) with those parts, so the two always agree. Each stage is checked
+`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`) with those parts, so the two always agree. Each stage is checked
 as it will stand, on the stages before it (nothing held up by nothing), and every stage leaves the site tidy, since the
 village lives beside it for days.
 
@@ -163,6 +177,14 @@ Planned: the Foundation Stone (a block).
 - A stage's round rose opening and the nave's open east end wait for the next stage (35.9): the rose's ring is built
   with the nave (II) and its glass with the towers (IV), as the roadmap splits them; nothing hangs in the air between
   stages.
+- The Lighthouse is about 5,000 blocks, not the 7,500 first planned (35.11): a tower 13 to 9 across with the cottage,
+  boathouse, quay and jetty fills 25 by 33 by 46 that way, and only solid masonry would reach 7,500. Its base is solid
+  round the stair and its wall three thick low down, as a sea tower's is.
+- The Lighthouse's sea is the land behind its quay (35.11): the front (z 0) is the land side, where the village is; the
+  mole, the boathouse's open end and the jetty stand in the water from 11 back. The jetty's deck is top slabs on log
+  posts, so it gets no foundation, as the Fisher's Hut's; the mole's bottom course is filled down to the sea bed.
+- The Lighthouse's lamps are redstone lamps under redstone dust that an inverted daylight detector on the lantern's roof
+  powers (35.11): lit at night, dark by day, with no clock. The lamps' lit state is not checked as damage.
 - One Legend can serve two Wonders (the Seer for the Cathedral and the Observatory): a requirement only checks that the
   Legend lives in the village.
 - The Master Architect requirement is added to every Wonder by the mod, so a server owner's own Wonder needs it too.
@@ -171,8 +193,8 @@ Planned: the Foundation Stone (a block).
 ## Known limits
 
 - No Wonder can be started in game yet: the plan can be drawn and placed, but there's no Foundation Stone to hand it
-  over (35.4). The Great Cathedral's file ships (35.9), so it is on the Wonders page behind the 2.0 switch; its powers
-  come with 35.10, and the other seven Wonders' files with 35.11 to 35.23. Everything is behind the 2.0 switch.
+  over (35.4). The Great Cathedral's and the Lighthouse's files ship (35.9, 35.11), so they are on the Wonders page
+  behind the 2.0 switch; their powers come with 35.10 and 35.12, and the other six Wonders' files with 35.13 to 35.23. Everything is behind the 2.0 switch.
 - A Wonder going up shows "how far along" by its stages done; the parts' own progress joins with 35.4.
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
@@ -196,7 +218,8 @@ the plan is refused outside the village and over a finished building and goes do
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral), and it uses no retired job block, no calcite and nothing a player can't get.
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse), and it uses no retired job block, no calcite and nothing a player can't get.
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
-wonder_gallery (each of our Wonders placed whole, from the front and from behind).
+wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
+in, so the mole and the jetty stand in the water).

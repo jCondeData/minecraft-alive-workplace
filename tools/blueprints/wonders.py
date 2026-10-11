@@ -766,6 +766,555 @@ def great_cathedral():
     return b
 
 
+# --- the Lighthouse ------------------------------------------------------------------------------------------------------
+# On paper (35.11), 25 x 46 x 33, the front (the land side, where the village is) at z = 0 and the sea from z = 11 back:
+# - The tower: round, centred on (12, 21), tapering from 13 across at its foot (y 3) to 9 across under the gallery (y 37):
+#   solid masonry round its stair to 8, the wall three thick to 22 and two above; a stone base (y 3-6) with the door on
+#   the land side, then bands of white and red terracotta (white 7-11, red 12-15, white 16-20, red 21-24, white 25-29,
+#   red 30-33, white 34-37), two-tall windows on the four sides in the lower three white bands. Inside: a spiral stair
+#   of spruce round a spruce log newel from the door to the lantern room, and rooms round it floored at 13, 18, 23, 28
+#   and 33, lit by lanterns.
+# - The gallery at 38: a stone floor 13 across on a ring of stone with stair corbels under it (36-37), iron railings.
+# - The lantern room (39-41): an octagon of glass panes 7 across with copper corner posts and a door onto the gallery,
+#   sea lanterns up its middle on the newel; over it a ring of 24 redstone lamps (42) with redstone dust on them that an
+#   inverted daylight detector (on the north lamp, open to the sky) lights at night; a stepped cut copper cupola (43-44)
+#   and a lightning rod for a vane (45).
+# - The mole: a round stepped stone platform in the water (y 0 to 2, 19, 17 and 15 across) the tower stands on, mossy
+#   at the waterline, with steps up to the door on the land side and from the jetty, mooring posts round its foot,
+#   joined to the quay by a causeway; its arm reaches west along the back (a parapet, mooring posts, a harbour light),
+#   sheltering the harbour the boathouse opens on.
+# - The quay (z 8-10): stone along the shore with mooring posts; the timber jetty (x 22-24) runs from it 22 out to sea on
+#   spruce log posts, a deck of top slabs (no foundation under it, as the Fisher's Hut's), a railing on the sea side
+#   with lanterns, and at its end a ferry stop: the Travel Post under a little gabled shelter on four posts.
+# - The boathouse (x 0-8, z 2-13): spruce boards in a spruce log frame on a stone footing under a slate roof, half on
+#   the shore, its open sea end over the water with walkways either side of the channel.
+# - The keeper's cottage (x 14-24, z 0-8): a stone ground storey with spruce corner posts, an upper storey of white
+#   terracotta in a spruce frame, spruce gables under a slate roof, a chimney; below the fisherman's barrel, a furnace,
+#   a table and stools, a ladder up to the keeper's bed; flower beds and lanterns at its front, beds by the path.
+# - Palette: stone bricks and andesite at the base (mossy low down), white and red terracotta, spruce, copper. Glass
+#   panes only. Stages: I the mole, the quay, the jetty and the boathouse; II the tower to 29; III the tower's top, the
+#   corbels, the gallery and its railing; IV the lantern room, the lamps, the cupola and vane, and the keeper's cottage.
+LW, LH, LD = 25, 46, 33
+LC = (12, 21)  # the tower's centre
+L_SHORE = 11  # the first row of sea (the renders and the gallery put water from here back)
+L_MOLE = Mix((5, "stone_bricks"), (3, "andesite"), (2, "mossy_stone_bricks"), (1, "cracked_stone_bricks"), seed=31)
+L_STONE = Mix((7, "stone_bricks"), (2, "andesite"), (1, "cracked_stone_bricks"), seed=32)
+L_QUAY = Mix((6, "stone_bricks"), (3, "andesite"), (1, "mossy_stone_bricks"), seed=33)
+L_COTTAGE = Mix((6, "cobblestone"), (3, "stone_bricks"), (2, "andesite"), (1, "mossy_cobblestone"), seed=34)
+L_BANDS = ((7, 11, "white"), (12, 15, "red"), (16, 20, "white"), (21, 24, "red"), (25, 29, "white"), (30, 33, "red"),
+           (34, 37, "white"))
+L_WINDOWS = (9, 16, 26)  # the lower row of each two-tall window
+L_FLOORS = (13, 18, 23, 28, 33)
+L_TOP = 37  # the tower's last layer under the gallery
+L_GALLERY = 38
+SPIRAL = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]  # clockwise from the east
+SPIRAL_FACING = ["south", "west", "west", "north", "north", "east", "east", "south"]  # towards the next step
+
+
+def disc(r, c=LC):
+    """The cells within {@code r} of the centre {@code c}."""
+    n = int(r) + 1
+    return {(c[0] + dx, c[1] + dz) for dx in range(-n, n + 1) for dz in range(-n, n + 1) if math.hypot(dx, dz) <= r}
+
+
+def outline(cells, corners=False):
+    """The cells of {@code cells} on its edge: with a face neighbour outside (or any neighbour, with corners, so the
+    ring is joined face to face all round, for a railing or redstone)."""
+    near = [(1, 0), (-1, 0), (0, 1), (0, -1)] + ([(1, 1), (1, -1), (-1, 1), (-1, -1)] if corners else [])
+    return {(x, z) for x, z in cells if any((x + dx, z + dz) not in cells for dx, dz in near)}
+
+
+def tower_radius(y):
+    """The tower's outer radius at y: 6.4 (13 across) at its foot, 4.4 (9 across) under the gallery."""
+    return 6.4 - 2.0 * (min(max(y, 3), L_TOP) - 3) / (L_TOP - 3)
+
+
+L_SOLID = 8  # the tower is solid masonry up to here, round its stair
+L_THICK = 22  # its wall is three thick up to here, then two
+
+
+def core():
+    """The spiral stair's 3 x 3 well round the newel."""
+    return {(LC[0] + dx, LC[1] + dz) for dx in (-1, 0, 1) for dz in (-1, 0, 1)}
+
+
+def tower_wall(y):
+    r = tower_radius(y)
+    if y <= L_SOLID:
+        return disc(r) - core()
+    return disc(r) - disc(r - (3 if y <= L_THICK else 2))
+
+
+def tower_inside(y):
+    return disc(tower_radius(y)) - tower_wall(y)
+
+
+def toward(dx, dz):
+    """The facing from a cell towards the tower's middle along its larger offset."""
+    if abs(dx) >= abs(dz):
+        return "west" if dx > 0 else "east"
+    return "north" if dz > 0 else "south"
+
+
+def ray(y, d):
+    """The tower wall's cells at y straight out from the middle in direction d (dx, dz), outermost first."""
+    wall = tower_wall(y)
+    out = []
+    for k in range(1, 9):
+        c = (LC[0] + d[0] * k, LC[1] + d[1] * k)
+        if c in wall:
+            out.append(c)
+    return list(reversed(out))
+
+
+def band(y):
+    for lo, hi, colour in L_BANDS:
+        if lo <= y <= hi:
+            return colour
+    return None
+
+
+# --- stage I: the mole and the quay --------------------------------------------------------------------------------------
+def mole(b):
+    tiers = [disc(9.4), disc(8.4), disc(7.4)]
+    for y, cells in enumerate(tiers):
+        rim = outline(cells)
+        for x, z in cells:
+            if y == 0:
+                b.set(x, 0, z, L_MOLE.at(x, 0, z) if (x, z) in rim else L_STONE.at(x, 0, z))
+            elif y == 1:
+                b.set(x, 1, z, L_MOLE.at(x, 1, z) if (x, z) in rim else L_STONE.at(x, 1, z))
+            else:
+                b.set(x, 2, z, "polished_andesite" if (x, z) in rim else "stone_bricks")
+    # steps up from the causeway to the door (the land side), and from the jetty
+    for x in (11, 12, 13):
+        for y, cells in ((1, tiers[1]), (2, tiers[2])):
+            z = min(z for cx, z in cells if cx == x)
+            stairs(b, x, y, z, STONE_BRICK, "south")
+    for z in (20, 21, 22):
+        for y, cells in ((1, tiers[1]), (2, tiers[2])):
+            x = max(x for x, cz in cells if cz == z)
+            stairs(b, x, y, z, STONE_BRICK, "west")
+    # mooring posts round the mole's foot, on the sea side
+    ring = sorted(outline(tiers[0]) - tiers[1])
+    for angle in (30, 70, 110, 150, 205):
+        a = math.radians(angle)
+        x, z = min(ring, key=lambda c: math.hypot(c[0] - LC[0] - 9 * math.cos(a), c[1] - LC[1] - 9 * math.sin(a)))
+        log(b, x, 1, z, "spruce_log")
+    # the causeway to the quay
+    for x in range(10, 15):
+        b.set(x, 0, L_SHORE, "polished_andesite" if x in (10, 14) else L_STONE.at(x, 0, L_SHORE))
+
+
+def quay(b):
+    """The quay along the shore (x 9-24, z 8-10), its edge of polished andesite with mooring posts, and the path from
+    the front (x 11-13) with a lamp post either side of its foot."""
+    for x in range(9, LW):
+        for z in range(8, 11):
+            b.set(x, 0, z, "polished_andesite" if z == 10 else L_QUAY.at(x, 0, z))
+    for x in (9, 16, 19):
+        wall_block(b, x, 1, 10, "andesite_wall")
+    for z in range(0, 8):
+        for x in (11, 12, 13):
+            b.set(x, 0, z, "polished_andesite" if x != 12 else L_QUAY.at(x, 0, z))
+    for x in (11, 12, 13):
+        stairs(b, x, 0, 0, STONE_BRICK, "south")
+    for x in (10, 14):
+        b.set(x, 0, 1, "polished_andesite")
+        lamp_post(b, x, 1, 1, post="spruce_fence", height=2)
+
+
+def jetty_l(b):
+    """The jetty (x 22-24, z 11-32): top-slab deck on spruce log posts, a railing on the sea side, a ferry stop at the
+    end (the Travel Post between two lantern posts)."""
+    for x in (22, 23, 24):
+        for z in range(L_SHORE, LD):
+            slab(b, x, 0, z, SPRUCE, top=True)
+    for z in (13, 17, 21, 25, 29):
+        for x in (22, 24):
+            log(b, x, 0, z, "spruce_log")
+    for z in range(L_SHORE, LD - 1):
+        fence(b, 24, 1, z, "spruce_fence")
+        if z >= 28:
+            fence(b, 22, 1, z, "spruce_fence")
+    for z in (14, 20, 26):
+        lantern(b, 24, 2, z)
+    # the ferry stop: four posts under a little gabled roof of spruce, the Travel Post under it, a lantern hanging
+    for x in (22, 24):
+        for z in (LD - 3, LD - 1):
+            for y in (0, 1, 2):
+                log(b, x, y, z, "spruce_log")
+    for z in range(LD - 4, LD):
+        stairs(b, 22, 3, z, SPRUCE, "east")
+        stairs(b, 24, 3, z, SPRUCE, "west")
+        slab(b, 23, 4, z, SPRUCE)
+        b.set(23, 3, z, "spruce_planks")
+    fence(b, 23, 1, LD - 1, "spruce_fence")
+    b.set(23, 1, LD - 2, "aliveworkplace:travel_post", facing="north")
+    lantern(b, 23, 2, LD - 3, hanging=True)
+
+
+def boathouse(b):
+    """x 0-8 under its roof, walls x 1 and 7, z 2-13; the land half floored, the sea half (z 11-13) a channel between two
+    walkways, open to the sea at the back."""
+    frame = (2, 6, 9, 13)
+    for x in range(1, 8):
+        for z in range(2, L_SHORE):
+            b.set(x, 0, z, (L_QUAY.at(x, 0, z) if x in (1, 7) or z == 2 else "spruce_planks"))
+        b.set(x, 0, 1, L_QUAY.at(x, 0, 1))
+    for z in range(L_SHORE, 14):
+        for x in (2, 6):
+            slab(b, x, 0, z, SPRUCE, top=True)
+        for x in (1, 7):
+            if z in frame:
+                log(b, x, 0, z, "spruce_log")
+            else:
+                slab(b, x, 0, z, SPRUCE, top=True)
+    for y in range(1, 5):
+        for z in range(2, 14):
+            for x in (1, 7):
+                if z in frame:
+                    log(b, x, y, z, "spruce_log")
+                else:
+                    b.set(x, y, z, "spruce_planks")
+        for x in range(2, 7):
+            b.set(x, y, 2, "spruce_planks")
+            if x in (2, 6):
+                b.set(x, y, 13, "spruce_planks")
+    for x in range(1, 8):
+        log(b, x, 5, 2, "spruce_log", axis="x")
+        log(b, x, 5, 13, "spruce_log", axis="x")
+    for z in range(3, 13):
+        log(b, 1, 5, z, "spruce_log", axis="z")
+        log(b, 7, 5, z, "spruce_log", axis="z")
+    log(b, 3, 4, 13, "spruce_log", axis="x")
+    log(b, 4, 4, 13, "spruce_log", axis="x")
+    log(b, 5, 4, 13, "spruce_log", axis="x")
+    gable_roof(b, 0, 8, 1, 14, 5, DEEPSLATE_TILE, axis="z", gable="spruce_planks", gable_at=(2, 13), eave_trim=SPRUCE)
+    pane(b, 4, 7, 2)
+    pane(b, 4, 7, 13)
+    # the door on the land end, lanterns on posts either side; windows in the side bays
+    door(b, 4, 1, 2, "spruce_door", "north")
+    stairs(b, 4, 0, 1, STONE_BRICK, "south")
+    for x in (2, 6):
+        fence(b, x, 1, 1, "spruce_fence")
+        lantern(b, x, 2, 1)
+    for x in (1, 7):
+        for z in (4, 11):
+            pane(b, x, 2, z)
+            pane(b, x, 3, z)
+    for z in (6, 9):
+        for x in range(2, 7):
+            log(b, x, 5, z, "spruce_log", axis="x")
+    lantern(b, 4, 4, 6, hanging=True)
+    lantern(b, 4, 4, 9, hanging=True)
+    # a workbench, a stack of timber and planks for mending boats
+    b.set(6, 1, 3, "crafting_table")
+    for z in (4, 5, 6):
+        log(b, 2, 1, z, "spruce_log", axis="z")
+    for z in (7, 8):
+        slab(b, 6, 1, z, SPRUCE)
+
+
+def breakwater(b):
+    """The mole's arm reaching west along the back (x 0-8, z 28-31), sheltering the harbour the boathouse opens on: a
+    parapet on the sea side, mooring posts on the harbour side, a harbour light at its end."""
+    for x in range(0, 9):
+        for z in range(28, 32):
+            if b.get(x, 0, z) is None:
+                b.set(x, 0, z, L_MOLE.at(x, 0, z))
+        if b.get(x, 1, 31) is None:
+            b.set(x, 1, 31, "stone_bricks")
+            wall_block(b, x, 2, 31, "stone_brick_wall")
+    for x in (2, 6):
+        log(b, x, 1, 28, "spruce_log")
+    for z in (28, 29, 30):
+        b.set(0, 1, z, "stone_bricks")
+    for y in (2, 3):
+        b.set(0, y, 30, "polished_andesite")
+    lantern(b, 0, 4, 30)
+
+
+def yard(b):
+    """Beds of flowers and herbs either side of the path to the quay, edged with stone."""
+    flower_bed(b, 9, 2, 10, 7, 0, ["poppy", "fern", None, "oxeye_daisy", "cornflower", "fern"])
+    flower_bed(b, 14, 2, 14, 7, 0, ["fern", "azure_bluet", None])
+
+
+def stage_l1(b):
+    mole(b)
+    breakwater(b)
+    yard(b)
+    quay(b)
+    jetty_l(b)
+    boathouse(b)
+
+
+# --- stage II: the tower -------------------------------------------------------------------------------------------------
+def tower_layer(b, y):
+    colour = band(y)
+    for x, z in tower_wall(y):
+        if colour:
+            b.set(x, y, z, f"{colour}_terracotta")
+        elif y == 6:
+            b.set(x, y, z, "polished_andesite")
+        else:
+            b.set(x, y, z, L_STONE.at(x, y, z))
+
+
+def spiral(b, y0, y1):
+    """The spiral stair's steps from y0 to y1 and the newel under them."""
+    for y in range(y0, y1 + 1):
+        n = y - 3
+        dx, dz = SPIRAL[n % 8]
+        stairs(b, LC[0] + dx, y, LC[1] + dz, SPRUCE, SPIRAL_FACING[n % 8])
+        log(b, LC[0], y, LC[1], "spruce_log")
+
+
+def tower_floor(b, y):
+    for x, z in tower_inside(y):
+        if abs(x - LC[0]) > 1 or abs(z - LC[1]) > 1:
+            b.set(x, y, z, "spruce_planks")
+
+
+def windows(b, y):
+    for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        for yy in (y, y + 1):
+            cells = ray(yy, d)
+            pane(b, cells[0][0], yy, cells[0][1])
+            for c in cells[1:]:
+                b.clear(c[0], yy, c[1], c[0], yy, c[1])
+        x, z = ray(y - 1, d)[0]
+        ox, oz = x + d[0], z + d[1]
+        stairs(b, ox, y - 1, oz, STONE_BRICK, toward(d[0], d[1]), top=True)
+
+
+def tower_door(b):
+    cells = ray(3, (0, -1))
+    x, z = cells[0]
+    door(b, x, 3, z, "spruce_door", "north")
+    for c in cells[1:]:
+        b.clear(c[0], 3, c[1], c[0], 4, c[1])
+    stairs(b, x, 5, z - 1, STONE_BRICK, "south", top=True)
+    for xx in (x - 2, x + 2):
+        wall_block(b, xx, 3, z - 1, "stone_brick_wall")
+        lantern(b, xx, 4, z - 1)
+
+
+def tower_lights(b, y):
+    """Lanterns standing on a floor, in two corners."""
+    inside = tower_inside(y)
+    for d in ((2, 1), (-2, -1)):
+        c = (LC[0] + d[0], LC[1] + d[1])
+        if c in inside:
+            lantern(b, c[0], y + 1, c[1])
+
+
+def stage_l2(b):
+    for y in range(3, 30):
+        tower_layer(b, y)
+    tower_door(b)
+    for y in L_WINDOWS:
+        windows(b, y)
+    spiral(b, 3, 29)
+    tower_lights(b, L_SOLID)
+    for y in L_FLOORS:
+        if y < 30:
+            tower_floor(b, y)
+            tower_lights(b, y)
+
+
+# --- stage III: the gallery ----------------------------------------------------------------------------------------------
+def stage_l3(b):
+    for y in range(30, L_TOP + 1):
+        tower_layer(b, y)
+    spiral(b, 30, L_TOP)
+    for y in L_FLOORS:
+        if y >= 30:
+            tower_floor(b, y)
+            tower_lights(b, y)
+    # the corbels: every other cell round the tower at 36 an upside-down stair, a ring of stone over them at 37
+    ring36 = sorted(disc(5.4) - disc(tower_radius(36)), key=lambda c: math.atan2(c[1] - LC[1], c[0] - LC[0]))
+    for i, (x, z) in enumerate(ring36):
+        if i % 2 == 0 and (x, z) not in tower_wall(36):
+            stairs(b, x, 36, z, STONE_BRICK, toward(x - LC[0], z - LC[1]), top=True)
+    for x, z in disc(5.4) - disc(tower_radius(L_TOP)):
+        b.set(x, L_TOP, z, "stone_bricks")
+    # the gallery's floor, the stairwell up into the lantern room left open, and its railing
+    gallery = disc(6.4)
+    well = {(LC[0] + 0, LC[1] + 1), (LC[0] + 1, LC[1] + 1)}
+    for x, z in gallery:
+        if (x, z) in well or (x, z) == LC:
+            continue
+        b.set(x, L_GALLERY, z, "polished_andesite" if (x, z) in outline(gallery) else "stone_bricks")
+    n = L_GALLERY - 3
+    dx, dz = SPIRAL[n % 8]
+    stairs(b, LC[0] + dx, L_GALLERY, LC[1] + dz, SPRUCE, SPIRAL_FACING[n % 8])
+    log(b, LC[0], L_GALLERY, LC[1], "spruce_log")
+    for x, z in outline(gallery, corners=True):
+        pane(b, x, L_GALLERY + 1, z, "iron_bars")
+
+
+# --- stage IV: the lantern and the keeper's house -------------------------------------------------------------------------
+def octagon():
+    return {(LC[0] + dx, LC[1] + dz) for dx in range(-3, 4) for dz in range(-3, 4) if abs(dx) + abs(dz) <= 5}
+
+
+def lantern_room(b):
+    room = octagon()
+    ring = outline(room, corners=True)
+    posts_ = {(LC[0] + dx, LC[1] + dz) for dx in (-2, 2) for dz in (-2, 2)}
+    door_at = (LC[0], LC[1] - 3)
+    for y in range(39, 42):
+        for x, z in ring:
+            if (x, z) in posts_:
+                b.set(x, y, z, "cut_copper")
+            elif (x, z) != door_at or y == 41:
+                pane(b, x, y, z)
+        b.set(LC[0], y, LC[1], "sea_lantern")
+    door(b, door_at[0], 39, door_at[1], "spruce_door", "north")
+    # the lamps over the glass, the ceiling inside them, the dust on the lamps and the detector that drives them
+    for x, z in ring:
+        b.set(x, 42, z, "redstone_lamp", lit=False)
+    for x, z in room - ring:
+        b.set(x, 42, z, "cut_copper")
+    detector = (LC[0], LC[1] - 3)
+    b.set(detector[0], 43, detector[1], "daylight_detector", inverted=True, power=0)
+    for x, z in ring:
+        if (x, z) == detector:
+            continue
+        sides = {}
+        for face, (dx, dz) in DIRS.items():
+            sides[face] = "side" if (x + dx, z + dz) in ring else "none"
+        b.set(x, 43, z, "redstone_wire", power=0, **sides)
+    # the copper cupola, stepped in twice, and the vane
+    inner = room - ring
+    for x, z in inner:
+        dx, dz = x - LC[0], z - LC[1]
+        if max(abs(dx), abs(dz)) == 2:
+            stairs(b, x, 43, z, CUT_COPPER, toward(dx, dz))
+        else:
+            b.set(x, 43, z, "cut_copper")
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            if (dx, dz) == (0, 0):
+                b.set(LC[0], 44, LC[1], "cut_copper")
+            else:
+                stairs(b, LC[0] + dx, 44, LC[1] + dz, CUT_COPPER, toward(dx, dz) if abs(dx) != abs(dz) else
+                       ("west" if dx > 0 else "east"))
+    b.set(LC[0], 45, LC[1], "lightning_rod", facing="up", powered=False, waterlogged=False)
+
+
+def cottage(b):
+    """The keeper's cottage: walls x 15-23, z 1-7. A stone ground storey (y 1-4) with spruce corner posts on a stone plinth,
+    a spruce-framed upper storey of white terracotta (y 6-8) on a spruce floor, a slate roof over x 14-24, z 0-8 with
+    spruce gables, a chimney up the east gable. Below: the kitchen (the fisherman's barrel, a furnace, a table and
+    stools); a ladder up to the bedroom."""
+    x0, x1, z0, z1 = 15, 23, 1, 7
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            b.set(x, 0, z, L_COTTAGE.at(x, 0, z) if x in (x0, x1) or z in (z0, z1) else "spruce_planks")
+    for y in range(1, 9):
+        for x in range(x0, x1 + 1):
+            for z in range(z0, z1 + 1):
+                if not (x in (x0, x1) or z in (z0, z1)):
+                    continue
+                corner = x in (x0, x1) and z in (z0, z1)
+                post = (z in (z0, z1) and x in (17, 19, 21)) or (x in (x0, x1) and z == 4)
+                if y == 5:
+                    continue
+                if corner or (y > 5 and post):
+                    log(b, x, y, z, "spruce_log")
+                else:
+                    b.set(x, y, z, L_COTTAGE.at(x, y, z) if y < 5 else "white_terracotta")
+    beam_ring(b, x0, z0, x1, z1, 5, "spruce_log")
+    box(b, x0 + 1, 5, z0 + 1, x1 - 1, 5, z1 - 1, "spruce_planks")
+    beam_ring(b, x0, z0, x1, z1, 9, "spruce_log")
+    # the upper storey's floor beams show as a course of stair brackets under it, front and back
+    for x in range(x0, x1 + 1):
+        stairs(b, x, 4, z0 - 1, SPRUCE, "south", top=True)
+        stairs(b, x, 4, z1 + 1, SPRUCE, "north", top=True)
+    gable_roof(b, 14, 24, 0, 8, 9, DEEPSLATE_TILE, axis="x", gable="spruce_planks", gable_at=(x0, x1), eave_trim=SPRUCE)
+    # the door, windows in the bays of both storeys, one in each gable
+    door(b, 18, 1, z0, "spruce_door", "north")
+    stairs(b, 18, 0, 0, STONE_BRICK, "south")
+    window(b, 22, 2, z0, "north", height=2)
+    window(b, 16, 2, z0, "north", height=2)
+    for x in (16, 22):
+        window(b, x, 2, z1, "south", height=2, sill=STONE_BRICK)
+    for x in (18, 20):
+        window(b, x, 6, z0, "north", height=2, sill=SPRUCE)
+        window(b, x, 6, z1, "south", height=2, sill=SPRUCE)
+    for xx in (x0, x1):
+        pane(b, xx, 2, 3)
+        pane(b, xx, 3, 3)
+        pane(b, xx, 11, 4)
+    # the chimney up the east gable's outside
+    for y in range(0, 14):
+        b.set(24, y, 5, L_COTTAGE.at(24, y, 5))
+    b.set(24, 14, 5, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+    # below: the fisherman's barrel, the stove, a table and stools; a ladder up through the floor
+    b.set(16, 1, 6, "barrel", facing="up", open=False)
+    b.set(22, 1, 6, "furnace", facing="west", lit=False)
+    b.set(22, 1, 2, "crafting_table")
+    fence(b, 19, 1, 4, "spruce_fence")
+    b.set(19, 2, 4, "spruce_pressure_plate", powered=False)
+    stairs(b, 18, 1, 4, SPRUCE, "west")
+    stairs(b, 20, 1, 4, SPRUCE, "east")
+    for y in range(1, 6):
+        b.set(16, y, 2, "ladder", facing="east", waterlogged=False)
+    lantern(b, 19, 4, 4, hanging=True)
+    # above: the keeper's bed, a chest-free shelf of books, a lantern from the ridge beam
+    b.bed(21, 6, 3, "red", "north")
+    stairs(b, 18, 6, 6, SPRUCE, "north")
+    b.set(17, 6, 6, "bookshelf")
+    b.set(22, 6, 6, "bookshelf")
+    for x in range(x0 + 1, x1):
+        log(b, x, 9, 4, "spruce_log", axis="x")
+    lantern(b, 19, 8, 4, hanging=True)
+    # lanterns on posts either side of the door, a flower bed under each front window
+    for x in (17, 19):
+        b.set(x, 0, 0, L_COTTAGE.at(x, 0, 0))
+        fence(b, x, 1, 0, "spruce_fence")
+        lantern(b, x, 2, 0)
+    flower_bed(b, 15, 0, 16, 0, 0, ["poppy", "cornflower"])
+    flower_bed(b, 21, 0, 23, 0, 0, ["oxeye_daisy", "azure_bluet", "poppy"])
+
+
+def stage_l4(b):
+    lantern_room(b)
+    cottage(b)
+
+
+def lighthouse():
+    b = StagedBuild(LW, LH, LD)
+    b.begin(1)
+    stage_l1(b)
+    b.begin(2)
+    stage_l2(b)
+    b.begin(3)
+    stage_l3(b)
+    b.begin(4)
+    stage_l4(b)
+    return b
+
+
+def lighthouse_at_sea(stage=None):
+    """For the renders only: the Lighthouse (whole, or as it stands after a stage) one block up on a strip of land and
+    the sea (water from z 11 back, and round the back and sides), so the jetty and the mole stand in the water."""
+    stages = lighthouse().stage_builds()
+    s = stages[(stage or len(stages)) - 1]
+    pad = 6
+    out = Build(LW + 2 * pad, LH + 1, LD + pad)
+    for (x, y, z), block in s.blocks.items():
+        out.blocks[(x + pad, y + 1, z)] = block
+    for x in range(out.w):
+        for z in range(out.d):
+            if z >= L_SHORE and (x, 1, z) not in out.blocks:
+                out.set(x, 0, z, "water", level=0)
+    return out
+
+
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
 def goods(*lines):
     out = []
@@ -807,6 +1356,37 @@ WONDERS = {
             {"type": "undertakers", "search": "village", "revive_by": "morning"},
             {"type": "weddings", "mood": 15, "days": 3, "gifted_factor": 2.0},
             {"type": "beauty", "points": 8},
+        ],
+    },
+    "lighthouse": {
+        "draw": lighthouse,
+        "icon": "minecraft:sea_lantern",
+        "crew": 12,
+        "requirements": [
+            {"type": "rank_at_least", "rank": "town"},
+            {"type": "legend", "id": "aliveworkplace:merchant_prince",
+             "stand_in": [{"type": "caravan_routes", "count": 3}]},
+            {"type": "coastal"},
+        ],
+        "goods": [
+            goods(("item", "minecraft:cooked_cod", 64, "minecraft:fisherman"),
+                  ("item", "minecraft:oak_boat", 8, "aliveworkplace:carpenter"),
+                  ("item", "minecraft:coal", 64, "aliveworkplace:miner")),
+            goods(("item", "minecraft:chain", 16, "aliveworkplace:tinkerer"),
+                  ("item", "minecraft:iron_ingot", 32, "minecraft:armorer"),
+                  ("item", "minecraft:white_wool", 32, "minecraft:shepherd")),
+            goods(("item", "minecraft:filled_map", 4, "minecraft:cartographer"),
+                  ("item", "minecraft:spectral_arrow", 32, "minecraft:fletcher"),
+                  ("item", "minecraft:leather", 32, "minecraft:butcher")),
+            goods(("item", "minecraft:glowstone_dust", 64, "aliveworkplace:netherworker"),
+                  ("item", "minecraft:redstone", 32, "aliveworkplace:miner"),
+                  ("item", "minecraft:pumpkin_pie", 16, "aliveworkplace:chef")),
+        ],
+        "powers": [
+            {"type": "caravan_range", "factor": 2},
+            {"type": "caravan_speed", "factor": 0.5},
+            {"type": "ferry_fares", "factor": 0.5},
+            {"type": "early_warning"},
         ],
     },
 }

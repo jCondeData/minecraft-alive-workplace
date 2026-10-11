@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Lighthouse's design, for 2.0** (35.11, nothing to start in game until Wonders is finished): the second Wonder's
+  building, a tower banded in white and red on a stepped stone mole at the water's edge (25 by 33, 46 high, about 5,000
+  blocks), with a gallery on stone corbels, a lantern room of glass round sea lanterns, a ring of lamps an inverted
+  daylight detector lights at night, a copper cupola with a lightning-rod vane, and at its foot the keeper's cottage, a
+  boathouse, a quay with mooring posts and a jetty over the sea to a ferry stop with a Travel Post. It rises in four
+  tidy stages (the Mole and the Quay, the Tower, the Gallery, the Lantern and the Keeper's House), each with its goods.
 - **The Great Cathedral's design, for 2.0** (35.9, nothing to start in game until Wonders is finished): the first
   Wonder's building, a Gothic cathedral on a cross plan (39 across the transepts, 55 long, two west towers under stone
   spires reaching 52, about 14,250 blocks) with a rose window over a deep west door, flying buttresses, a rounded apse,

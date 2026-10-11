@@ -873,7 +873,9 @@ SCENES = [
     # Wonders (M35): every Wonder's design placed whole (ROADMAP 35.9; each design adds its stills)
     S("wonder_gallery", "Wonders", "The Wonders, each placed whole", "every Wonder stands whole, every part of every stage placed", 90,
       [("10_great_cathedral", "The Great Cathedral: the west front, its two towers and spires, the rose window over the deep door"),
-       ("11_great_cathedral_back", "The Great Cathedral from behind: the apse, the transepts with their annexes, the flying buttresses")]),
+       ("11_great_cathedral_back", "The Great Cathedral from behind: the apse, the transepts with their annexes, the flying buttresses"),
+       ("12_lighthouse", "The Lighthouse from the land: the keeper's cottage and the boathouse at the foot of the banded tower"),
+       ("13_lighthouse_back", "The Lighthouse from the sea: the stepped mole, the gallery and lantern, the jetty over the water to the ferry stop")]),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
       "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
       [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),

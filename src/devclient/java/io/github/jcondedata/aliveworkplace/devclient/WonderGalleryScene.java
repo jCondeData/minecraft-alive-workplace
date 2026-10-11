@@ -23,16 +23,23 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * SCENE=wonder_gallery (ROADMAP 35.9; each Wonder's design adds itself to {@link #WONDERS}): every Wonder placed whole,
- * stage after stage from its data file's parts and offsets, in a row: a still of each from the front and from behind.
+ * stage after stage from its data file's parts and offsets, in a row (a coastal one, the Lighthouse, with its sea
+ * flooded in first): a still of each from the front and from behind.
  * Checks every part of every stage loaded and placed blocks.
  */
 final class WonderGalleryScene {
-	/** The Wonders, by id, with their size (x, y, z) for the camera. */
-	private record Wonder(String id, Vec3i size) {
+	/**
+	 * The Wonders, by id, with their size (x, y, z) for the camera, and for a Wonder by the water the first row (z) of
+	 * its sea (-1: none), which the scene floods three deep, sides and back, before placing it.
+	 */
+	private record Wonder(String id, Vec3i size, int sea) {
 	}
 
 	private static final List<Wonder> WONDERS = List.of(
-		new Wonder("great_cathedral", new Vec3i(39, 53, 55))); // 35.9
+		new Wonder("great_cathedral", new Vec3i(39, 53, 55), -1), // 35.9
+		new Wonder("lighthouse", new Vec3i(25, 46, 33), 11)); // 35.11: the mole, the jetty and the boathouse in the sea
+	/** How far the sea reaches past a coastal Wonder's sides and back. */
+	private static final int SEA_MARGIN = 10;
 	private static final int SPACING = 80;
 	private static final int FIRST = 80;
 	private static final int EACH = 80;
@@ -54,6 +61,9 @@ final class WonderGalleryScene {
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(3000);
 				for (int i = 0; i < WONDERS.size(); i++) {
+					if (WONDERS.get(i).sea() >= 0) {
+						flood(level, WONDERS.get(i), origin(i));
+					}
 					place(level, WONDERS.get(i).id(), origin(i));
 				}
 			});
@@ -112,6 +122,18 @@ final class WonderGalleryScene {
 							be.loadWithComponents(e.nbt(), level.registryAccess());
 						}
 					}
+				}
+			}
+		}
+	}
+
+	/** The sea of a Wonder by the water: the ground under it and round its sides and back dug out three deep and filled. */
+	private static void flood(ServerLevel level, Wonder w, BlockPos origin) {
+		net.minecraft.world.level.block.state.BlockState water = net.minecraft.world.level.block.Blocks.WATER.defaultBlockState();
+		for (int x = -SEA_MARGIN; x < w.size().getX() + SEA_MARGIN; x++) {
+			for (int z = w.sea(); z < w.size().getZ() + SEA_MARGIN; z++) {
+				for (int dy = 1; dy <= 3; dy++) {
+					level.setBlock(origin.offset(x, -dy, z), water, 2 | 16);
 				}
 			}
 		}

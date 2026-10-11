@@ -4207,18 +4207,19 @@ Legends.
     without one; a wedding goes to the Cathedral with its mood and baby; a damaged Cathedral turns both off;
   - scene `wonder_great_cathedral`: the time-lapse, ending at dusk with a wedding at the altar; its GIF and powers are
     in the README's Wonders section.
-- [ ] **35.11** **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a
-  stepped stone mole at the water's edge carrying a round tower that tapers from 13 across to 9, banded in white and
-  red, with a gallery on stone corbels at 38; a lantern room of glass round sea lanterns and a ring of redstone lamps
-  that an inverted daylight detector lights at night; a copper cupola with a lightning-rod vane. At its foot, the
-  keeper's cottage (stone and spruce under slate, a bed, a barrel for a fisherman), a boathouse, a quay with mooring
-  posts, and a timber jetty with a Travel Post at its end (a ferry stop). Palette: stone bricks and andesite at the
-  base, white and red terracotta bands, spruce, copper. About 7,500 blocks: I *The Mole and the Quay*, II *The Tower*,
-  III *The Gallery*, IV *The Lantern and the Keeper's House*. Data: Town; `coastal`; the Merchant Prince (stand-in: 3
-  caravan routes running). Goods: I 64 cooked cod (Fisherman), 8 oak boats (Carpenter), 64 coal (Miner); II 16 chains
-  (Tinkerer), 32 iron ingots (Armorer), 32 white wool (Shepherd); III 4 explorer's maps (Cartographer), 32 spectral
-  arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies
-  (Chef). Done when: 35.9's four design checks pass for it, with the jetty over water in its renders.
+- [x] **35.11** (review: pending 2026-10-11) **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a stepped
+  stone mole at the water's edge carrying a round tower that tapers from 13 across to 9, banded in white and red, with
+  a gallery on stone corbels at 38; a lantern room of glass round sea lanterns and a ring of redstone lamps that an
+  inverted daylight detector lights at night; a copper cupola with a lightning-rod vane. At its foot, the keeper's
+  cottage (stone and spruce under slate, a bed, a barrel for a fisherman), a boathouse, a quay with mooring posts, and
+  a timber jetty with a Travel Post at its end (a ferry stop). Palette: stone bricks and andesite at the base, white
+  and red terracotta bands, spruce, copper. About 5,000 blocks (7,500 before it was drawn: Notes, 35.11): I *The Mole
+  and the Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Data: Town; `coastal`;
+  the Merchant Prince (stand-in: 3 caravan routes running). Goods: I 64 cooked cod (Fisherman), 8 oak boats
+  (Carpenter), 64 coal (Miner); II 16 chains (Tinkerer), 32 iron ingots (Armorer), 32 white wool (Shepherd); III 4
+  explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust
+  (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it, with
+  the jetty over water in its renders.
 - [ ] **35.12** **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
   villages up to 4,096 blocks away (twice `Caravans.RANGE`) and arrive in half the time (`Caravans.travelTicks`);
   ferry fares to and from the village's Travel Posts are halved (`TravelNetwork.fare`: an emerald per 512 blocks), and
@@ -5600,3 +5601,9 @@ item waits.
   village's name as last seen, so `/workplace standing` and the chat never load a far village's chunk. No review
   package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.
 - **qa handoff** (qa-1011-0833, 2026-10-11 08:50Z): B65 (ConscriptionGameTests noWorkDuringARaid...): 12 isolated copies via the repeat generator (own batch each, huge_area, 1600 ticks) all passed, 12/12, on main b836b373; not reproducible alone, so the old flake needs the full suite's global state (Edicts/Sieges/VillageRaids/Conscription.STOPPED cache), nothing seen since 2026-10-05. No mod bug found; leave B65 open for the nightly 10x report. Env trap for QA runs: after the first Gradle failure 'plugin not found', run ./gradlew --stop and retry; Central 429s need retry loops; a cold runGameTest takes ~7 min. Wiki/guide checks pass; 167 items still unverified, next in line B60 B84 B85 B86 B92 B99.
+- **35.11 the Lighthouse's block count** (lane-b-1011-2133, 2026-10-11): drawn at 25 x 33 x 46 with everything the item
+  lists (the tower 13 to 9 across, solid round its stair to 8 and three thick to 22, the stepped mole and its arm, the
+  gallery, lantern and cupola, the two-storey cottage, the boathouse, the quay and the jetty with its ferry stop), it is
+  5,011 blocks, not about 7,500: only a solid tower or a bigger site would reach that. Decided: keep the size and the
+  design, and the figure is now about 5,000 (the item's text and `WonderBlueprintGameTests`, within 10%). Owner: say
+  if you'd rather have a bigger site (about 29 x 37) for the 7,500.

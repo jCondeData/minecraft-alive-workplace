@@ -195,7 +195,26 @@ public final class Settlers {
 				}
 			}
 		}
-		return second == null ? null : new Volunteers(builder, second, List.copyOf(all));
+		if (second == null) {
+			return null;
+		}
+		// 33.23: a village the Founder lives in sends more (four): more jobless first, then workers it has three or more of
+		int wanted = io.github.jcondedata.aliveworkplace.legend.LeadColoniesPower.of(level, hall).map(p -> p.settlers()).orElse(2);
+		for (Villager v : census.jobless()) {
+			if (all.size() >= wanted) {
+				break;
+			}
+			take(level, census, v, left, 0, all);
+		}
+		for (Villager v : census.workers().stream().sorted(lowest).toList()) {
+			if (all.size() >= wanted) {
+				break;
+			}
+			if (had.getOrDefault(v.getVillagerData().getProfession(), 0) >= 3) {
+				take(level, census, v, left, 2, all);
+			}
+		}
+		return new Volunteers(builder, second, List.copyOf(all));
 	}
 
 	/** Whether {@code v} may go at all: never a guard, a Legend or a child, and nobody twice. */
@@ -277,7 +296,8 @@ public final class Settlers {
 		}
 		Optional<Component> name = Optional.ofNullable(ColonyCharterItem.colonyName(stack));
 		RealmData.Order order = new RealmData.Order(charter.hall(), charter.spot().get(), name, RealmData.GATHERING, 0, 0, Colonies.cost(level, hall) * 100,
-			level.getGameTime(), volunteers.all().stream().map(Villager::getUUID).toList(), Optional.of(volunteers.builder().getUUID()), Map.of(), List.of());
+			level.getGameTime(), volunteers.all().stream().map(Villager::getUUID).toList(), Optional.of(volunteers.builder().getUUID()), Map.of(), List.of(),
+			io.github.jcondedata.aliveworkplace.legend.LeadColoniesPower.of(level, hall).isPresent()); // 33.23: the Founder's blessing
 		RealmData data = RealmData.get(level.getServer());
 		data.putOrder(order);
 		stack.shrink(1);

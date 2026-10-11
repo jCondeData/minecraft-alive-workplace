@@ -66,7 +66,8 @@ public final class RealmData extends SavedData {
 	 * themselves once on the road, saved the way a grave keeps a villager.
 	 */
 	public record Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost,
-						long ordered, List<UUID> volunteers, Optional<UUID> builder, Map<Item, Integer> supplies, List<CompoundTag> settlers) {
+						long ordered, List<UUID> volunteers, Optional<UUID> builder, Map<Item, Integer> supplies, List<CompoundTag> settlers,
+						boolean blessed) {
 		public static final Codec<Order> CODEC = RecordCodecBuilder.create(i -> i.group(
 			GlobalPos.CODEC.fieldOf("mother").forGetter(Order::mother),
 			BlockPos.CODEC.fieldOf("spot").forGetter(Order::spot),
@@ -79,28 +80,35 @@ public final class RealmData extends SavedData {
 			UUIDUtil.CODEC.listOf().optionalFieldOf("volunteers", List.of()).forGetter(Order::volunteers),
 			UUIDUtil.CODEC.optionalFieldOf("builder").forGetter(Order::builder),
 			Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), Codec.INT).optionalFieldOf("supplies", Map.of()).forGetter(Order::supplies),
-			CompoundTag.CODEC.listOf().optionalFieldOf("settlers", List.of()).forGetter(Order::settlers)
+			CompoundTag.CODEC.listOf().optionalFieldOf("settlers", List.of()).forGetter(Order::settlers),
+			Codec.BOOL.optionalFieldOf("blessed", false).forGetter(Order::blessed)
 		).apply(i, Order::new));
+
+		/** An order without the Founder's blessing (33.23: {@code blessed}, the Founder lived in the mother village when it was given). */
+		public Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost,
+					 long ordered, List<UUID> volunteers, Optional<UUID> builder, Map<Item, Integer> supplies, List<CompoundTag> settlers) {
+			this(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers, false);
+		}
 
 		/** An order as 33.8 knew it: nobody chosen, nothing taken. */
 		public Order(GlobalPos mother, BlockPos spot, Optional<Component> name, String state, long leaves, long arrives, int cost) {
-			this(mother, spot, name, state, leaves, arrives, cost, 0L, List.of(), Optional.empty(), Map.of(), List.of());
+			this(mother, spot, name, state, leaves, arrives, cost, 0L, List.of(), Optional.empty(), Map.of(), List.of(), false);
 		}
 
 		public Order withState(String state, long leaves, long arrives) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers);
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, settlers, blessed);
 		}
 
 		public Order withVolunteers(List<UUID> volunteers) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, List.copyOf(volunteers), builder, supplies, settlers);
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, List.copyOf(volunteers), builder, supplies, settlers, blessed);
 		}
 
 		public Order withSupplies(Map<Item, Integer> supplies) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, Map.copyOf(supplies), settlers);
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, Map.copyOf(supplies), settlers, blessed);
 		}
 
 		public Order withSettlers(List<CompoundTag> settlers) {
-			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, List.copyOf(settlers));
+			return new Order(mother, spot, name, state, leaves, arrives, cost, ordered, volunteers, builder, supplies, List.copyOf(settlers), blessed);
 		}
 
 		/** Whether the settlers have left the village (the order can't be called off any more). */

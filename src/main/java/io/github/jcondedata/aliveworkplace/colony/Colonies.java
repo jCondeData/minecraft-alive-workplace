@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageMaps;
 import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
+import io.github.jcondedata.aliveworkplace.legend.LeadColoniesPower;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Players;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
@@ -168,7 +169,15 @@ public final class Colonies {
 
 	/** The rank the village at {@code hall} needs to found a colony (M29's Founder lowers it there). */
 	public static VillageRanks.Rank rankNeeded(ServerLevel level, BlockPos hall) {
-		return RANK;
+		// 33.23: a village the Founder lives in may found colonies from his rank (Town) on
+		java.util.Optional<LeadColoniesPower> lead = LeadColoniesPower.of(level, hall);
+		return lead.isPresent() && lead.get().rank().ordinal() < RANK.ordinal() ? lead.get().rank() : RANK;
+	}
+
+	/** Days the village at {@code hall} waits between colonies: {@link #COOLDOWN_DAYS}, half as long with the Founder (33.23). */
+	public static int cooldownDays(ServerLevel level, BlockPos hall) {
+		java.util.Optional<LeadColoniesPower> lead = LeadColoniesPower.of(level, hall);
+		return lead.isEmpty() ? COOLDOWN_DAYS : Math.max(lead.get().cooldown() > 0 ? 1 : 0, (COOLDOWN_DAYS * lead.get().cooldown() + 50) / 100); // 7 days: 4
 	}
 
 	/** Days until the village at {@code hall} may send its next colony (0: now). */
@@ -177,7 +186,7 @@ public final class Colonies {
 		if (count.founded() <= 0) {
 			return 0;
 		}
-		return Math.max(0, COOLDOWN_DAYS - (Chronicle.day(level) - count.lastDay()));
+		return Math.max(0, cooldownDays(level, hall) - (Chronicle.day(level) - count.lastDay()));
 	}
 
 	/**
@@ -474,7 +483,7 @@ public final class Colonies {
 			ChatFormatting.WHITE,
 			VillageHallScreen.line(wait > 0 ? Component.translatable("screen.aliveworkplace.colonies.wait", wait)
 				: Component.translatable("screen.aliveworkplace.colonies.no_wait"), wait > 0 ? ChatFormatting.YELLOW : ChatFormatting.GRAY),
-			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.wait_about", COOLDOWN_DAYS), ChatFormatting.DARK_GRAY)), null);
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.colonies.wait_about", cooldownDays(level, hall)), ChatFormatting.DARK_GRAY)), null);
 
 		RealmData.Order order = data.orderOf(mother);
 		if (order != null) {

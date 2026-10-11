@@ -4,7 +4,7 @@ Rare named villagers with powers, who come to a village that has earned them. Al
 thirty with a rare gift. Part of 1.3 (Legends): off until that expansion is finished.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
-29.19, 29.20, 29.21, 29.22, 29.23
+29.19, 29.20, 29.21, 29.22, 29.23, 33.23
 
 ## What a player sees
 
@@ -22,13 +22,13 @@ far it has got ("Kinds of meal in the store: 5 of 8"), the luxury it likes and i
 | Old Sage | Rare | found in a hermit's hut; or born | 5 research levels | riddles, then a research tree of his own |
 | Golem Smith | Legendary | a strange mood (a Master Tinkerer) | 4 iron golems | a forge that makes golems which work |
 | Seer | Rare | the Chapel at midnight under a full moon; or born | a finished Chapel | foretells raids; blesses weddings |
-| Merchant Prince | Legendary | found by a shipwreck | 500 emeralds through the treasury, 3 caravan routes | a bank in the hall, trade fairs, better caravan pay |
+| Merchant Prince | Legendary | found by a shipwreck | 500 emeralds through the treasury, 3 caravan routes | a bank in the hall, trade fairs, better caravan pay; with 1.7, every price in caravan range on the board, goods sold where they pay most, half the spread |
 | Grand Chef | Rare | a strange mood (a Master Chef); the inn; or born | 8 kinds of meal in the store | banquets; a faster kitchen |
 | Bard Laureate | Rare | a festival 30 villagers come to; or born | (the crowd) | the village's anthem; work songs |
 | Beastmaster | Rare | found caged at a pillager outpost; or born | 10 animals by the herders | war dogs for the guards; bred horses |
 | Pokémon Professor (Cobblemon) | Legendary | visits the inn | 25 pastured Pokémon of 10 types | hints about your Pokémon; a village Pokédex |
 | Pokémon Ranger (Cobblemon) | Rare | visits the hall | an Alpha Pokémon within 96 blocks | calms Alphas; befriends wild Pokémon |
-| Founder | Mythic | a strange mood, at the first rise to City | City rank for the first time | a statue; a Founder's Wagon every week |
+| Founder | Mythic | a strange mood, at the first rise to City | City rank for the first time | a statue; a Founder's Wagon every week; with 1.7, colonies from Town rank, four settlers, half the wait, his blessing and statue in each colony |
 
 ## How it works
 
@@ -83,6 +83,8 @@ Beloved (neighbours are happier), Born Leader (workers of their trade nearby 10%
 - On a Gifted villager: the attachment `gifted` only when it overrides the roll (the born, the inn's travellers).
 - On a Master in a strange mood: the attachment `strange_mood`.
 - On the hall: the guest in the village, `treasuryTotal` (starts at 0 in an old hall), the Founder's fields.
+- On a colony's order (33.23): `blessed`, whether the Founder lived in the mother village when it was given (false in
+  an order saved before).
 
 ## Items, blocks, jobs, commands
 
@@ -123,6 +125,22 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - The luxuries Legends take are stand-ins for now (honey bottles, amethyst shards and emeralds, books, leather
   armour), through item tags, until the luxury jobs of 1.8 make the real ones.
 
+## Legends of the realm (33.23)
+
+Two Legends gain a power each with 1.7's colonies and trade:
+
+- **The Founder** (`lead_colonies`: `rank` town, `settlers` 4, `cooldown` 50): the village he lives in may found
+  colonies from Town rank instead of City, sends four settlers instead of two (more jobless first, then workers it has
+  three or more of; never a guard, a Legend or a child) and waits half as long between colonies (4 days of 7, rounded).
+  An order given while he lives there carries his blessing: the colony's chronicle reads "Founded on day 12 with the
+  Founder's blessing, by settlers from Thornholm", the mother's "…, with the Founder's blessing", and his statue (M29's
+  build) goes up beside the colony's camp when the settlers arrive.
+- **The Merchant Prince** (`trade_reach`: `spread` 50): his village's Prices tab compares every village within caravan
+  range, not only its partners; its caravans take goods for sale only to whichever partner pays most for
+  them; and its board sells at 105% of what it pays instead of 110% (after Common Coin's points). His prices are 33.2's.
+
+Without the Legend settled (or on strike), nothing changes.
+
 ## Proof
 
 GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHallGameTests` (3),
@@ -130,9 +148,10 @@ GameTests: `LegendEngineGameTests` (6), `LegendSlotsGameTests` (6), `LegendsHall
 `GiftedGameTests` (6), `GiftedBornGameTests` (9), and one class per Legend: `MasterArchitectGameTests`,
 `PathfinderGameTests`, `OldSageGameTests`, `GolemSmithGameTests`, `SeerGameTests`, `MerchantPrinceGameTests`,
 `GrandChefGameTests`, `BardLaureateGameTests`, `BeastmasterGameTests`, `FounderGameTests`,
-`PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`.
+`PokemonProfessorGameTests`, `PokemonRangerGameTests`, `ProfessorCompatTests`, `RangerCompatTests`,
+`RealmLegendsGameTests` (5, 33.23).
 
 Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `legend_sites`, `legend_strike`,
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,
 `legend_golem_smith`, `legend_seer`, `legend_merchant_prince`, `legend_grand_chef`, `legend_bard`,
-`legend_beastmaster`, `legend_professor`, `legend_ranger`, `legend_founder`.
+`legend_beastmaster`, `legend_professor`, `legend_ranger`, `legend_founder`, `founder_colony`, `merchant_prince_board`.

@@ -3671,7 +3671,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each edict (boost on, cost on; the reform turns the cost off and keeps the boost); the
   capital's book shows the realm slots; showcase scene `realm_edicts`.
-- [ ] **33.23** **Legends of the realm** (needs M29's The Founder and Merchant Prince):
+- [x] **33.23** (review: pending 2026-10-11) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
   - **The Founder**: a village he lives in can found colonies from Town rank, sends four settlers instead of two and
     waits half as long between colonies; its colonies are "founded with the Founder's blessing" in both chronicles,
     and his statue (M29's build) goes up beside the colony's camp.

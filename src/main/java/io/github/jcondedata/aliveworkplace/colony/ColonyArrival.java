@@ -366,6 +366,10 @@ public final class ColonyArrival {
 			}
 			load.add(BlueprintItem.create(id, size));
 		}
+		// 33.23: with the Founder's blessing, his statue goes up beside the camp (past the starter builds)
+		if (order.blessed()) {
+			raiseStatue(level, box, camp, rotation, left, taken);
+		}
 		fill(level, box, chest, load);
 
 		// The builder at the camp's Blueprint Table, and at work at once (the table is a workstation from the next tick).
@@ -386,9 +390,11 @@ public final class ColonyArrival {
 		Caravans.Data caravans = Caravans.Data.get(level);
 		caravans.setWants(hall, colony, List.of());
 		caravans.addSisters(motherHall, hall);
-		Chronicle.atHall(level, hall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.founded", day, motherName, names));
+		// 33.23: "founded with the Founder's blessing" in both chronicles
+		String blessed = order.blessed() ? "_blessed" : "";
+		Chronicle.atHall(level, hall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.founded" + blessed, day, motherName, names));
 		Component where = VillageHallScreen.where(motherHall, hall);
-		Chronicle.atHall(level, motherHall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.mother", names, colony, where));
+		Chronicle.atHall(level, motherHall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.mother" + blessed, names, colony, where));
 
 		// The owner hears of it.
 		if (owner != null) {
@@ -408,6 +414,36 @@ public final class ColonyArrival {
 		level.playSound(null, hall, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
 		level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2f, 1f);
 		return hall;
+	}
+
+	/**
+	 * The Founder's statue ({@link Founder#STATUE}, M29's build) raised beside the camp, on the {@code left} first, clear of
+	 * {@code taken}; where it stands, or null when there's no template or no room.
+	 */
+	@Nullable
+	static BoundingBox raiseStatue(ServerLevel level, BoundingBox box, Camp camp, Rotation rotation, boolean left, List<BoundingBox> taken) {
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = level.getStructureManager().get(Founder.STATUE).orElse(null);
+		if (template == null) {
+			return null;
+		}
+		Build spot = beside(level, box, camp, rotation, Founder.STATUE, template.getSize(), left, taken);
+		if (spot == null) {
+			spot = near(level, box, rotation, Founder.STATUE, template.getSize(), taken); // no room either side: the nearest open ground round the camp
+		}
+		if (spot == null) {
+			return null;
+		}
+		net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings settings =
+			new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(rotation);
+		BoundingBox at = template.getBoundingBox(settings, spot.placement().origin());
+		for (BlockPos p : BlockPos.betweenClosed(at.minX(), at.minY(), at.minZ(), at.maxX(), at.maxY(), at.maxZ())) {
+			if (!level.getBlockState(p).isAir()) {
+				level.removeBlock(p, false);
+			}
+		}
+		template.placeInWorld(level, spot.placement().origin(), spot.placement().origin(), settings, level.getRandom(), 2);
+		taken.add(at.inflatedBy(1));
+		return at;
 	}
 
 	/** Places {@code state} at {@code pos}, clearing the way and putting dirt under it if there's no ground; where it went. */
@@ -499,6 +535,39 @@ public final class ColonyArrival {
 				if (even(level, footprint, ground.getY())) {
 					return build;
 				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * The nearest spot round the camp {@code box} (out to 16 blocks past its middle's reach) where {@code structure}
+	 * stands on dry, even, loaded ground clear of everything in {@code taken}, facing the camp's way; null: none.
+	 */
+	@Nullable
+	static Build near(ServerLevel level, BoundingBox box, Rotation rotation, ResourceLocation structure, Vec3i size, List<BoundingBox> taken) {
+		BlockPos centre = box.getCenter();
+		int reach = Math.max(box.getXSpan(), box.getZSpan()) / 2 + 16;
+		List<int[]> tries = new ArrayList<>();
+		for (int dx = -reach; dx <= reach; dx += 2) {
+			for (int dz = -reach; dz <= reach; dz += 2) {
+				tries.add(new int[] {dx, dz});
+			}
+		}
+		tries.sort(Comparator.comparingInt((int[] t) -> t[0] * t[0] + t[1] * t[1]).thenComparingInt(t -> t[0]).thenComparingInt(t -> t[1]));
+		for (int[] t : tries) {
+			BlockPos ground = ground(level, centre.getX() + t[0], centre.getZ() + t[1]);
+			if (ground == null || !level.hasChunkAt(ground)) {
+				continue;
+			}
+			Build build = new Build(structure, size, BlueprintItem.placementAt(Ids.of(level.dimension()), size, ground, rotation));
+			BoundingBox footprint = build.box();
+			if (footprint.intersects(box.inflatedBy(1)) || taken.stream().anyMatch(b -> b.intersects(footprint))
+				|| !level.hasChunksAt(footprint.minX(), footprint.minZ(), footprint.maxX(), footprint.maxZ())) {
+				continue;
+			}
+			if (even(level, footprint, ground.getY())) {
+				return build;
 			}
 		}
 		return null;

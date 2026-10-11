@@ -70,6 +70,7 @@ public final class CaravanTrade {
 		}
 		List<Candidate> candidates = new ArrayList<>();
 		List<ResourceLocation> known = data.market(from).knownFor();
+		boolean prince = io.github.jcondedata.aliveworkplace.legend.TradeReachPower.of(level, from).isPresent();
 		for (int i = 0; i < known.size(); i++) {
 			TradeGoods.Good good = TradeGoods.get(known.get(i));
 			if (good == null) {
@@ -80,6 +81,9 @@ public final class CaravanTrade {
 			boolean shortThere = theirs.shortOf().contains(good.id());
 			if (!shortThere && (long) there * 100 < (long) here * DEARER_PERCENT) {
 				continue;
+			}
+			if (prince && !bestPaying(level, from, to, data, good, there).equals(to)) {
+				continue; // 33.23: the Merchant Prince's goods go only to the partner that pays most
 			}
 			for (Map.Entry<Item, Integer> spare : Board.spare(good, stock).entrySet()) {
 				Item item = spare.getKey();
@@ -93,6 +97,26 @@ public final class CaravanTrade {
 		}
 		candidates.sort(Comparator.<Candidate>comparingInt(c -> c.shortThere() ? 0 : 1).thenComparingDouble(c -> -c.ratio()).thenComparingInt(Candidate::order));
 		return candidates.stream().limit(Caravans.TRADE_STACKS).map(Candidate::offer).toList();
+	}
+
+	/**
+	 * Of the villages {@code from} sends caravans to (its routes, not its sister colonies, which buy nothing), the one
+	 * whose board pays most for {@code good}: {@code to} (paying {@code there}) unless another pays more (33.23).
+	 */
+	static BlockPos bestPaying(ServerLevel level, BlockPos from, BlockPos to, Caravans.Data data, TradeGoods.Good good, int there) {
+		BlockPos best = to;
+		int most = there;
+		for (BlockPos other : data.routesFrom(from)) {
+			if (other.equals(to) || data.isSister(from, other) || data.village(other) == null) {
+				continue;
+			}
+			int price = Board.price(level, other, good);
+			if (price > most) {
+				best = other;
+				most = price;
+			}
+		}
+		return best;
 	}
 
 	/** What {@code bundles} of {@code good} earn at a board paying {@code price} for the first: each bundle moves the price 2% down. */

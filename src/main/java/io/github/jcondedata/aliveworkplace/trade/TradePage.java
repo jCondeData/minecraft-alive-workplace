@@ -338,7 +338,7 @@ public final class TradePage {
 		}
 		Partner dearest = null;
 		Partner cheapest = null;
-		Set<BlockPos> partners = data.partners(hall);
+		Set<BlockPos> partners = boardVillages(level, hall, data);
 		for (BlockPos other : partners) {
 			Partner p = partner(data, other, good.id());
 			if (p == null) {
@@ -418,6 +418,19 @@ public final class TradePage {
 		return out;
 	}
 
+	/**
+	 * The villages whose prices the board of the village at {@code hall} compares with: its partners, or with the
+	 * Merchant Prince (33.23) every village within caravan range ({@link Caravans#neighbours}).
+	 */
+	public static Set<BlockPos> boardVillages(ServerLevel level, BlockPos hall, Caravans.Data data) {
+		if (io.github.jcondedata.aliveworkplace.legend.TradeReachPower.of(level, hall).isEmpty()) {
+			return data.partners(hall);
+		}
+		Set<BlockPos> out = new LinkedHashSet<>(data.partners(hall));
+		Caravans.neighbours(level, hall).forEach(v -> out.add(v.hall()));
+		return out;
+	}
+
 	/** A village on one of ours' routes and what it pays for a bundle of a good. */
 	public record Partner(BlockPos hall, Component name, int cents) {
 	}
@@ -441,7 +454,13 @@ public final class TradePage {
 
 	/** What the board of the village at {@code hall} sells for, in percent of what it pays: 110, less Common Coin's points in a realm (33.16). */
 	public static int sellPercent(ServerLevel level, BlockPos hall) {
-		return Math.max(100, SELL_PERCENT - io.github.jcondedata.aliveworkplace.realm.RealmResearch.boardSpread(level, hall));
+		int spread = Math.max(0, SELL_PERCENT - 100 - io.github.jcondedata.aliveworkplace.realm.RealmResearch.boardSpread(level, hall));
+		// 33.23: the Merchant Prince halves it (110 becomes 105)
+		java.util.Optional<io.github.jcondedata.aliveworkplace.legend.TradeReachPower> prince = io.github.jcondedata.aliveworkplace.legend.TradeReachPower.of(level, hall);
+		if (prince.isPresent()) {
+			spread = spread * prince.get().spread() / 100;
+		}
+		return 100 + spread;
 	}
 
 	/** What the village at {@code hall} sells a bundle for when it pays {@code cents} for one. */

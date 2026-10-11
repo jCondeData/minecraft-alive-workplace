@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Legends of the realm, for 1.7** (33.23): the Founder now leads colonies. The village he lives in may found them from
+  Town rank, sends four settlers instead of two and waits half as long between them; its colonies are "founded with the
+  Founder's blessing" in both chronicles and his statue stands beside each colony's camp. The Merchant Prince's board
+  shows the prices of every village within caravan range, his village's caravans sell where they are paid most, and
+  its board's spread is halved (105% instead of 110%).
+
 ## 0.143.0 — 2026-10-11
 
 ### Added

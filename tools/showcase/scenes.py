@@ -335,6 +335,12 @@ SCENES = [
       "Timber's tooltip with the dearer and the cheaper village, and the name icon's Known for line", 60,
       [("01_price_board", "The Trade page, Prices tab"), ("02_price_tooltip", "Timber: both prices, and where it's dearer and cheaper"),
        ("03_hall_known_for", "The hall's name icon: Known for, Short of")]),
+    # The Merchant Prince's board (ROADMAP 33.23): half the spread, and prices from every village in caravan range
+    S("merchant_prince_board", "Legends", "The Merchant Prince's board",
+      "the Merchant Prince settled by Thornholm's hall; its Prices tab sells at only 5% over, and Timber's tooltip "
+      "names Dunmore, in caravan range but no partner, as where it's dearest", 50,
+      [("01_prince_prices", "The Prices tab with the Prince: 5% over, half the usual spread"),
+       ("02_prince_dunmore", "Timber: dearest in Dunmore, a village that isn't a partner")]),
     # Trading at the board (ROADMAP 33.5): buying a bundle of Timber on the Prices tab, the treasury before and after
     S("board_trade", "Realm", "Trading at the board: buying a bundle",
       "a click on Timber on the hall's Prices tab bought a bundle of 16 logs out of the Storehouse's chest for 1 emerald, "
@@ -372,6 +378,12 @@ SCENES = [
       "Storehouse queued on the other side, and the first walls went up; the owner got the settlers' letter", 85,
       [("01_the_spot", "The spot, before the settlers arrive"), ("02_camp_made", "The camp, Newbrook's hall and its Travel Post"),
        ("03_builder_at_work", "Tomas starts the Sandstone cottage"), ("04_first_walls", "The first walls go up")]),
+    # Legends of the realm (ROADMAP 33.23): a colony founded with the Founder's blessing gets his statue beside its camp
+    S("founder_colony", "Legends", "A colony founded with the Founder's blessing",
+      "Thornholm's settlers, sent with the Founder's blessing, reached the spot and made camp; both chronicles say the colony "
+      "was founded with the Founder's blessing, and the Founder's statue stands beside the camp", 50,
+      [("01_the_spot", "The spot, before the settlers arrive"), ("02_camp_made", "The camp, Newbrook's hall and its Travel Post"),
+       ("03_founder_statue", "The Founder's statue beside the colony's camp")]),
     # Founding a realm (ROADMAP 33.11): the Realm tab founds the Barony, adds the owner's villages, the rank-up fireworks
     S("realm", "Realm", "Founding a realm: the Barony, then a County with fireworks",
       "on Thornholm's Realm tab the owner, a Town's, founded the Barony of Thornholm and added Ashford with one click; adding "

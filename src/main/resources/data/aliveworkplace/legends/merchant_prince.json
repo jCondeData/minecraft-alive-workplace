@@ -20,6 +20,7 @@
     {"type": "bank", "interest": 2, "cap": 2},
     {"type": "trade_fair", "days": 10, "traders": 6, "discount": 10},
     {"type": "caravan_pay", "emeralds": 1},
-    {"type": "keeps_to", "radius": 10}
+    {"type": "keeps_to", "radius": 10},
+    {"type": "trade_reach", "spread": 50}
   ]
 }

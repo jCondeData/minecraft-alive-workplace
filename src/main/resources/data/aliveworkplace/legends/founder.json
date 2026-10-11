@@ -22,6 +22,7 @@
   "needs": {"luxury": "books"},
   "powers": [
     {"type": "statue", "beauty": 5, "mood": 5},
-    {"type": "found_villages", "days": 7}
+    {"type": "found_villages", "days": 7},
+    {"type": "lead_colonies", "rank": "town", "settlers": 4, "cooldown": 50}
   ]
 }

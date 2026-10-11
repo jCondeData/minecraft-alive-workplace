@@ -61,6 +61,16 @@ final class ColonyScene {
 	private int tick;
 	private volatile BlockPos hall;
 	private volatile BlockPos spot;
+	/** 33.23's {@code founder_colony}: the order carries the Founder's blessing, and the scene ends at his statue. */
+	private final boolean blessed;
+
+	ColonyScene() {
+		this(false);
+	}
+
+	ColonyScene(boolean blessed) {
+		this.blessed = blessed;
+	}
 
 	void tick(Minecraft mc) {
 		MinecraftServer server = mc.getSingleplayerServer();
@@ -118,6 +128,41 @@ final class ColonyScene {
 				}
 				Showcase.check(letter, "the owner has the settlers' letter");
 			});
+		}
+		// 33.23: the Founder's blessing in both chronicles, and his statue beside the camp, looked at from in front
+		if (blessed && tick == 610) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				List<RealmData.Founded> founded = RealmData.get(server).foundedBy(GlobalPos.of(level.dimension(), hall));
+				if (founded.isEmpty()) {
+					return;
+				}
+				BlockPos colony = founded.get(0).hall().pos();
+				boolean theirs = level.getBlockEntity(colony) instanceof VillageHallBlockEntity e
+					&& e.chronicle().stream().anyMatch(x -> x.text().getString().contains("with the Founder's blessing"));
+				boolean ours = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e
+					&& e.chronicle().stream().anyMatch(x -> x.text().getString().contains("with the Founder's blessing"));
+				Showcase.check(theirs && ours, "both chronicles say the colony was founded with the Founder's blessing");
+				BlockPos copper = null;
+				for (BlockPos p : BlockPos.betweenClosed(colony.offset(-40, -6, -40), colony.offset(40, 12, 40))) {
+					if (level.getBlockState(p).is(Blocks.WAXED_CUT_COPPER)) {
+						copper = p.immutable();
+						break;
+					}
+				}
+				Showcase.check(copper != null, "the Founder's statue stands beside the camp");
+				if (copper != null) {
+					ServerPlayer player = player(server);
+					player.teleportTo(level, copper.getX() - 7.5, copper.getY() - 1, copper.getZ() + 0.5, -90, 10);
+				}
+			});
+		}
+		if (blessed && tick == 680) {
+			ScreenshotHarness.shot(mc, "03_founder_statue");
+		}
+		if (blessed && tick == 700) {
+			mc.stop();
+			return;
 		}
 		// The builder at work on the Sandstone cottage, the Storehouse next.
 		if (tick == 760) {
@@ -206,7 +251,7 @@ final class ColonyScene {
 		supplies.put(Items.WHITE_BED, 3);
 		long now = level.getGameTime();
 		RealmData.get(server).putOrder(new RealmData.Order(GlobalPos.of(level.dimension(), hall), spot, Optional.of(Component.literal("Newbrook")),
-			RealmData.ON_ROAD, now - 2000, now + 120, 3200, now - 3000, List.of(), Optional.of(tomas.getUUID("UUID")), supplies, new ArrayList<>(List.of(tomas, dara))));
+			RealmData.ON_ROAD, now - 2000, now + 120, 3200, now - 3000, List.of(), Optional.of(tomas.getUUID("UUID")), supplies, new ArrayList<>(List.of(tomas, dara)), blessed));
 		// west of the spot, looking east over it: the camp will face us, the builds either side
 		BlockPos stand = ground(level, DX - 21, 0);
 		player.teleportTo(level, stand.getX() + 0.5, stand.getY() + 8, stand.getZ() + 0.5, -90, 20);

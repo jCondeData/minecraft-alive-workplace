@@ -142,6 +142,21 @@ final class JobScenes {
 		data.setMarket(ridgeway, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(id.apply("timber")), List.of(), cheap, today, List.of()));
 	}
 
+	/** 33.23: Dunmore, in caravan range of Thornholm but on none of its routes, pays twice the base for everything. */
+	private static void merchantPrinceBoard(ServerLevel level) {
+		io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+		BlockPos dunmore = STATION.west(260);
+		if (data.village(dunmore) == null) {
+			data.setWants(dunmore, Component.literal("Dunmore"), List.of());
+		}
+		java.util.Map<net.minecraft.resources.ResourceLocation, io.github.jcondedata.aliveworkplace.trade.Market.Price> dear = new java.util.LinkedHashMap<>();
+		for (io.github.jcondedata.aliveworkplace.trade.TradeGoods.Good good : io.github.jcondedata.aliveworkplace.trade.TradeGoods.all()) {
+			dear.put(good.id(), new io.github.jcondedata.aliveworkplace.trade.Market.Price(good.basePrice() * 2, good.basePrice() * 2, 0));
+		}
+		data.setMarket(dunmore, new io.github.jcondedata.aliveworkplace.trade.Market(List.of(), List.of(), dear,
+			io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level), List.of()));
+	}
+
 	/**
 	 * The {@code caravan_trade} scene's start (33.6), whatever the halls' own rounds did meanwhile: {@link #priceBoard}'s
 	 * markets (Thornholm known for Timber at 0.8 emeralds, Ashford short of it at 1.4), both villages on the list by
@@ -2976,6 +2991,50 @@ final class JobScenes {
 					Component line = io.github.jcondedata.aliveworkplace.trade.TradePage.knownAndShort(level, STATION);
 					Showcase.check(line != null && line.getString().equals("Known for: Timber, Wool. Short of: Bread"),
 						"the name icon says what Thornholm is known for and short of: " + (line == null ? null : line.getString()));
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// The Merchant Prince's board (ROADMAP 33.23): Thornholm with the Prince settled by its hall; its Prices tab
+		// (sells at 105%, half the usual spread) and Timber's tooltip naming Dunmore, a village in caravan range that isn't
+		// one of its partners, as the dearest.
+		SCREENS.put("merchant_prince_board", new Screen("the Merchant Prince settled by Thornholm's hall; its Prices tab sells at only 5% over, and Timber's tooltip "
+			+ "names Dunmore, in caravan range but no partner, as where it's dearest", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION)).setCustomName(Component.literal("Thornholm"));
+				priceBoard(level);
+				merchantPrinceBoard(level);
+				var legend = io.github.jcondedata.aliveworkplace.legend.Legends.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("merchant_prince")).orElseThrow();
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(2).east(2), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase", java.util.Optional.of(STATION));
+				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
+			},
+			List.of(new Step("01_prince_prices", 0, 6, (level, player) -> {
+					priceBoard(level);
+					merchantPrinceBoard(level);
+					Showcase.check(io.github.jcondedata.aliveworkplace.trade.TradePage.sellPercent(level, STATION) == 105, "the Prince halves the spread: "
+						+ io.github.jcondedata.aliveworkplace.trade.TradePage.sellPercent(level, STATION));
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					pickedSlot = -1;
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
+						m.press(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.PRICES.slot(), player);
+						for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+							if (m.icon(slot).getHoverName().getString().equals("Timber")) {
+								pickedSlot = slot;
+							}
+						}
+						Showcase.check(pickedSlot >= 0, "Timber is on the Prices tab");
+					}
+				}, 30),
+				new Step("02_prince_dunmore", -2, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m && pickedSlot >= 0) {
+						List<String> lore = new ArrayList<>();
+						m.icon(pickedSlot).getOrDefault(net.minecraft.core.component.DataComponents.LORE, net.minecraft.world.item.component.ItemLore.EMPTY)
+							.lines().forEach(l -> lore.add(l.getString()));
+						Showcase.check(lore.stream().anyMatch(l -> l.startsWith("Dearer in Dunmore: ")), "Timber's tooltip names Dunmore, no partner, as the dearest: " + lore);
+					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		// Trading at the board (ROADMAP 33.5): Thornholm's Prices tab with its treasury (12.4 emeralds), a click on Timber

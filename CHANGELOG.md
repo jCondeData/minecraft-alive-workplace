@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Class outfits, drawn** (34.17): what Artisans, Burghers and Nobles wear over their job's outfit, and an elder's
+  face, three versions of each for the owner to pick from (version 1 ships until he does: a neckerchief and belt
+  pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
+  The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
+  34.18's render layer.
+
 ### Fixed
 - **Elders walk slower again, and nimble villagers faster** (B99, B95): when the game took a job's walk over at its
   own pace (for a moment after a path failed), an elder walked the rest of the way at full speed and a nimble villager

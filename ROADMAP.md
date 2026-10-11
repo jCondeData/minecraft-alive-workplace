@@ -3834,7 +3834,7 @@ on a real world.
   the people who live there. Done when: renders of I-III from the front, the back and above, in all five styles, are
   in the review package; a builder builds each in a GameTest (`huge_area`); the ball gathers in the ballroom when
   there is one; scene `grand_houses` adds the Manor.
-- [ ] **34.17** **Dressed by class: the pick round.** A class layer worn over the job's outfit
+- [x] **34.17** (review: pending 2026-10-11) **Dressed by class: the pick round.** A class layer worn over the job's outfit
   (`textures/entity/villager/class/<class>.png`, recipes in `tools/textures/art/classes.py`, pixel-art skill): never
   on the head (the job's hat stays), nothing under the level badge, the back painted, the job still readable under
   it. Peasants keep their job's outfit as it is today (the owner-approved look). Three versions of each, every one a
@@ -4419,6 +4419,18 @@ item waits.
 - (Sessions: anything that needs the owner, and the link to the latest Full test report. Handoffs go here through
   `sessions.py handoff "<in progress, next, traps>" --as <you>`, which keeps one per kind of session (chat, night):
   carry over anything still true from the previous one.)
+- 2026-10-11 (34.17, decisions and a hand-over to 34.18; lane d): the twelve layers are drawn in
+  `tools/textures/art/classes.py` (lint clean); v1 of each ships at `textures/entity/villager/class/<class>.png`, and the
+  elder's face at `class/elder.png` (the same folder, so all of 34.17 is in one place). The picker page is
+  `tools/textures/picks/classes_page.py` (21.1b's template; published as the Artifact "Class Outfit Picks", collection
+  `classes`, one document per row: artisan, burgher, noble, elder). Our choices: no render layer and no packet here,
+  because the roadmap gives both to 34.18 (a new tracking event, the `classOutfits` switch, its own test and scene);
+  34.17 adds `people/ClassOutfits` (the layers a villager wears, bottom to top: class, then the elder's face; nothing
+  for a Peasant or an unseeded villager; children their class's but never the elder's), which 34.18's layer should
+  draw (LegendLookLayer is the pattern). The class layers paint the body only (no head, nothing at jacket-front x 4..7
+  rows 10..13); the elder's layer paints only the head box, so job and biome hats cover it from outside. Colours were
+  picked for contrast over warm job outfits: a blue (not rust) neckerchief, a green Burgher cape, an emerald half-cape.
+  **For the owner**: pick one version per row on the page; 34.18 sets `PICKED` and redraws.
 - 2026-10-09 (34.19, decisions and a hand-over to 34.18; lane d): built on `people/LifeStages`: the slower walk, "a
   quiet old age", the chronicle's "is an elder now", the four chatter lines, `LifeStageGameTests`, scene `elders`.
   **The elder look is not built**: nothing of 34.17/34.18 exists (no render layer, no packet, no outfit art), so an

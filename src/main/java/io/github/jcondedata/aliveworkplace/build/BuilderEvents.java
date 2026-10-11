@@ -400,6 +400,10 @@ public final class BuilderEvents {
 				return InteractionResult.PASS;
 			}
 			ItemStack held = player.getItemInHand(hand);
+			if (held.is(ModItems.WONDER_PLAN)) { // a placed Wonder Plan: the Foundation Stone goes down, stage I begins (35.4)
+				return level.isClientSide() ? InteractionResult.SUCCESS
+					: io.github.jcondedata.aliveworkplace.wonder.WonderStages.handOver((ServerPlayer) player, villager, held);
+			}
 			if (held.is(ModItems.BLUEPRINT)) {
 				if (level.isClientSide()) {
 					return InteractionResult.SUCCESS;

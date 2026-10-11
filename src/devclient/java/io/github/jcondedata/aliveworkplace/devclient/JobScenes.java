@@ -174,6 +174,11 @@ final class JobScenes {
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
+	/** The wonder_site scene's builder (35.4). */
+	private static final Villager[] wonderBuilder = new Villager[1];
+	/** The test folly (35.3), the wonder scenes' Wonder. */
+	private static final net.minecraft.resources.ResourceLocation WONDER_FOLLY = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
+
 	/** The lost_caravan scene's carter (31.20). */
 	private static final String LOST_CARAVAN_TOBIN = "aliveworkplace_scene_tobin";
 	/** The reform_story scene's hall and Toolsmith (31.22). */
@@ -5402,6 +5407,81 @@ final class JobScenes {
 				}, 80)),
 			(level, player) -> player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.WONDER_PLAN)
 				&& io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(player.getMainHandItem()).flatMap(d -> d.placement()).isPresent()));
+		// The Foundation Stone (ROADMAP 35.4): a Town's builder at his bench, the folly's plan placed north of the hall; the
+		// plan handed to him lays the Foundation Stone at the folly's front corner and stage I begins from the chests by the
+		// stone; right-clicking the stone tells the stage, how far along it is and what the chests hold.
+		SCREENS.put("wonder_site", new Screen("a Wonder Plan placed north of the hall was handed to the village's builder: the Foundation Stone (carved stone, brass plaque) went down at the folly's front corner, the start was announced in chat, and stage I, the Ground Storey, began from the chests by the stone; right-clicking the stone told the stage, its progress and its material list",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getName().getString());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				level.getGameRules().getRule(io.github.jcondedata.aliveworkplace.registry.ModGameRules.BUILD_DELAY).set(2, level.getServer());
+				BlockPos bench = STATION.offset(-4, 0, -2);
+				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(bench.getX() + 1.5, bench.getY(), bench.getZ() + 0.5, 180, 0);
+				builder.setCustomName(Component.literal("Odo"));
+				builder.setVillagerData(builder.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER).setLevel(3));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				wonderBuilder[0] = builder;
+				var folly = WONDER_FOLLY;
+				var wonder = io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().get(folly);
+				Showcase.check(wonder != null, "the Test Folly is loaded");
+				ItemStack plan = io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.of(level, STATION, wonder, Component.literal("Testholm"));
+				var data = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(plan).orElseThrow();
+				var placement = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.placementAt(level.dimension().location(), data.size().orElseThrow(),
+					STATION.offset(0, 0, -6), net.minecraft.world.level.block.Rotation.CLOCKWISE_180);
+				plan.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data.withPlacement(java.util.Optional.of(placement)));
+				player.getInventory().clearContent();
+				player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, plan);
+			},
+			List.of(new Step("01_wonder_site_plan", -1, 0, (level, player) ->
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(9.5, -54, 6.5), new Vec3(-1, -57, -8)), 40),
+				new Step("02_wonder_site_stone", -1, 0, (level, player) -> {
+					var result = io.github.jcondedata.aliveworkplace.wonder.WonderStages.handOver(player, wonderBuilder[0], player.getMainHandItem());
+					Showcase.check(result == net.minecraft.world.InteractionResult.SUCCESS, "the plan handed to Odo: " + result);
+					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);
+					Showcase.check(site.size() == 1 && site.get(0).stone().isPresent(), "the folly begun with its stone: " + site);
+					BlockPos stone = site.get(0).stone().orElseThrow();
+					Showcase.check(level.getBlockState(stone).is(ModBlocks.FOUNDATION_STONE), "the Foundation Stone went down at " + stone);
+					// the stockpile: two chests beside the stone, with everything the folly takes
+					var list = io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.checklist(level,
+						new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData(io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.idOf(WONDER_FOLLY),
+							java.util.Optional.empty(), java.util.Optional.empty())).orElseThrow();
+					BlockPos[] chests = {stone.east(2), stone.east(3)};
+					int c = 0;
+					int slot = 0;
+					for (var line : list.lines()) {
+						for (int left = line.need(); left > 0 && c < chests.length; left -= line.item().getDefaultMaxStackSize()) {
+							if (slot == 0) {
+								level.setBlockAndUpdate(chests[c], Blocks.CHEST.defaultBlockState());
+							}
+							((net.minecraft.world.Container) level.getBlockEntity(chests[c])).setItem(slot, new ItemStack(line.item(), Math.min(left, line.item().getDefaultMaxStackSize())));
+							if (++slot == 27) {
+								slot = 0;
+								c++;
+							}
+						}
+					}
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(3.5, 2.5, 4.5), Vec3.atCenterOf(stone));
+				}, 120),
+				new Step("03_wonder_site_status", -1, 0, (level, player) -> {
+					BlockPos stone = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0).stone().orElseThrow();
+					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(9.5, -54, 6.5), new Vec3(-1, -58, -8));
+				}, 300)),
+			(level, player) -> {
+				var sites = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);
+				if (sites.isEmpty() || sites.get(0).parts().isEmpty()) {
+					return false;
+				}
+				var part = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).get(sites.get(0).parts().get(0));
+				return sites.get(0).stage() == 1 && part != null && part.placed() > 0; // stage I under way
+			}));
 		// Switching classes on (ROADMAP 34.22): a village from before 1.8 (a couple in a builder's cottage, three more without
 		// a home), the hall's Classes tab before; then the hall's rounds seed them, the chronicle says so once, and the tab and
 		// page show "Settling in: 7 days left" with what each class will need.

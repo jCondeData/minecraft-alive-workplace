@@ -73,8 +73,9 @@ public final class Builders {
 		if (bench != null && !level.isLoaded(bench)) {
 			return benchPos(villager); // can't tell whether it still stands: leave the site's record alone
 		}
-		if (bench != null && level.getBlockState(bench).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)) {
-			return Optional.of(bench);
+		if (bench != null && (level.getBlockState(bench).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)
+			|| level.getBlockState(bench).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.FOUNDATION_STONE))) {
+			return Optional.of(bench); // (a Wonder's part, 35.4: the Foundation Stone's chests are its stockpile)
 		}
 		Optional<BlockPos> own = benchPos(villager);
 		own.ifPresent(site::setBench); // the bench was moved: its new place is where the chests are now
@@ -371,8 +372,9 @@ public final class Builders {
 			text.append(Component.literal("\n  "));
 			text.append(site.detail().copy().withStyle(ChatFormatting.YELLOW));
 		}
-		if (villager != null && benchPos(villager).isPresent() && !site.isDeconstruction()) {
-			List<BlockPos> supplies = SupplyContainers.find(level, benchPos(villager).get(), plan.bounds());
+		Optional<BlockPos> supplyBench = villager == null ? Optional.empty() : site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager);
+		if (villager != null && supplyBench.isPresent() && !site.isDeconstruction()) {
+			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.bounds());
 			BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 			site.setMissing(computeMissing(level, site, plan, bag, supplies));
 		}
@@ -648,7 +650,7 @@ public final class Builders {
 
 	/** A site's last step done: hands back what's left, tells the owner, records it. Also used by tests (27.21). */
 	public static void finish(ServerLevel level, Villager villager, BuildSite site) {
-		BlockPos bench = benchPos(villager).orElse(villager.blockPosition());
+		BlockPos bench = (site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager)).orElse(villager.blockPosition());
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		emptyBag(level, villager, bench, supplies);
 		// Item frames, paintings and armor stands go up last, from the chests.
@@ -869,6 +871,9 @@ public final class Builders {
 	}
 
 	private static void returnBlueprint(ServerLevel level, BuildSite site, BlockPos bench, List<BlockPos> supplies) {
+		if (site.wonder() != null) {
+			return; // a Wonder's part (35.4): nobody handed its blueprint over, the Wonder Plan was
+		}
 		ItemStack blueprint = blueprintFor(level, site);
 		MaterialLedger.gained(blueprint);
 		ItemStack rest = SupplyContainers.insert(level, supplies, blueprint);

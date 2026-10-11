@@ -674,6 +674,25 @@ met they go back to work. Legends never leave, strike or not. `legendNeeds` in t
 `legends` in the config switches them off: none come, and those already settled stay as ordinary Masters of their
 trade. Each Legend that ships adds its paragraph below.
 
+## Wonders
+
+*Coming with 2.0, switched off until then.* A **Wonder** is a village's life's work: a huge build raised stage by
+stage. A Town may hold one Wonder, a City two, one of each kind and one going up at a time.
+
+How to start one:
+
+1. Open the Village Hall's **Wonders** page. Each Wonder's card ticks or crosses what the village needs; with every
+   line ticked, a click draws up the plans (32 emeralds, from the treasury or your own) and gives a **Wonder Plan**.
+2. Right-click the ground where it goes (its front faces you; sneak-right-click to turn it, mirror it on the style
+   screen). It must stand in the village and over no finished building.
+3. Right-click one of the village's builders with the placed plan. A **Foundation Stone** goes down just outside the
+   Wonder's front corner, the whole server hears the Wonder has begun, and the builder starts stage I.
+4. Fill chests within 8 blocks of the stone: that's the Wonder's stockpile. Each stage starts when the one before is
+   done. Right-click the stone to see the stage, how far along it is and what the chests are short of.
+
+Sneak-breaking the stone (its owner or an operator) or `/workplace cancel` abandons the Wonder: what's built stays and
+the plan comes back. `wonders` in the config switches Wonders off; every one stays saved.
+
 ## From village to realm
 
 *Part of 1.7, which isn't released yet: `villageEconomy` stays off until then.*

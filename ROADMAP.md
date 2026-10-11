@@ -4091,7 +4091,7 @@ Legends.
     the emeralds and gives the plan, and refuses over the cap; placing is refused outside the village and over a
     finished building, and works elsewhere in all four turns;
   - scene `wonders_page`: the page with the folly's card, then the plan in hand and its see-through preview.
-- [ ] **35.4** **The Foundation Stone and stages that survive restarts.** Hand the placed Wonder Plan to any builder
+- [x] **35.4** (review: pending 2026-10-11) **The Foundation Stone and stages that survive restarts.** Hand the placed Wonder Plan to any builder
   of the village: a **Foundation Stone** (a new block, art through the pixel-art skill: a carved stone with a brass
   plaque) goes down just outside the Wonder's front corner, and the Wonder becomes a `WonderSite` in a new saved
   `WonderManager` (one per dimension): which Wonder, its hall, its placement, the current stage, the goods delivered,
@@ -4484,6 +4484,15 @@ item waits.
 
 ## Notes / blocked
 
+- 2026-10-11 (35.4, lane-c-1011-2132): **the Foundation Stone** decisions: (1) a lone builder can't reach the test
+  folly's finial lantern (template 4, 18, 4): it is five blocks over the highest spot inside the closed dome, so it is
+  the one step skipped; the real-builder GameTests check the folly matches its drawing in every block but that one
+  (`WonderSiteGameTests.unlikeButTheFinial`) and must be tightened to every block when **35.6 Scaffolding** lands;
+  (2) handing over re-checks the switch, the caps, the placement and the village (the builder's bench within the hall's
+  64 blocks), not the requirements, which were met when the plans were drawn up; (3) a Wonder remembers the builder it
+  was handed to (`builder`, optional), because a finished part's build site is removed and with it who built it, so
+  the next stage still has its builder; (4) the stone drops nothing and a finished Wonder's stone breaks like any block
+  without forgetting the Wonder; (5) the chronicle has a new kind, `wonder` (a beacon).
 - 2026-10-11 (31.22, lane-b-1011-1833): **the eight reforms as stories** decisions: (1) a reform story starts from
   the hall's round (`Reforms.round`) when its edict is in force, not by a trigger chance, so the ask comes the morning
   the edict is proclaimed; it only starts when arcs start by themselves (`Arcs.AUTO`, off in GameTests like every arc);

@@ -55,6 +55,13 @@ asks for the steps, `latest.log` and any crash report).
   page: nothing comes to it, a camp already standing leaves at the next dawn, and the guards icon says so. Operators
   get `/workplace threat start <culture> | lair <culture> | disaster <id> | end | clear` at the nearest hall, and the
   README has a Threats section.
+- **The Foundation Stone** (35.4, 2.0, still switched off): right-click a builder of the village with a placed Wonder
+  Plan and a **Foundation Stone** (carved stone, brass plaque) goes down just outside the Wonder's front corner; the
+  start is announced to the whole server and written in the chronicle. The chests within 8 blocks of the stone are the
+  Wonder's stockpile, and its stages go up one after another as ordinary builds (only stage I fills a foundation, only
+  the last levels the ground), stage II never before stage I is done, through any restart. Right-click the stone for the
+  stage, how far along it is and what the chests are short of. Sneak-breaking it (the owner or an operator) or
+  `/workplace cancel` abandons the Wonder: what's built stays and the plan comes back. The README has a Wonders section.
 - **The Wonders page and the Wonder Plan** (35.3, 2.0, still switched off): a Wonders tab on the Village Hall lists every
   Wonder as a card (its icon, name and power), each requirement ticked or crossed with what's missing, the cap
   ("Wonders: 0 of 1 for a Town"), and a Wonder going up with its stage. With every line ticked, a click draws up the

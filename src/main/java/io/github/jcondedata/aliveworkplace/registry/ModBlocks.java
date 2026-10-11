@@ -206,6 +206,19 @@ public final class ModBlocks {
 			.pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
 	public static final io.github.jcondedata.aliveworkplace.herb.HerbBlock PETAL_BALM = Reg.block("petal_balm", io.github.jcondedata.aliveworkplace.herb.HerbBlock::new, herb(net.minecraft.world.level.material.MapColor.COLOR_PINK));
 
+	/**
+	 * A Wonder's Foundation Stone (35.4): laid by the Wonder when its plan is handed to a builder, its chests the Wonder's
+	 * stockpile. Drops nothing (sneak-breaking it ends the Wonder, which gives the plan back); pistons can't move it.
+	 */
+	public static final io.github.jcondedata.aliveworkplace.wonder.FoundationStoneBlock FOUNDATION_STONE = Reg.block("foundation_stone",
+		io.github.jcondedata.aliveworkplace.wonder.FoundationStoneBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(net.minecraft.world.level.material.MapColor.STONE)
+			.instrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.BASEDRUM)
+			.requiresCorrectToolForDrops()
+			.strength(3.0f, 1200.0f)
+			.sound(net.minecraft.world.level.block.SoundType.STONE)
+			.pushReaction(net.minecraft.world.level.material.PushReaction.BLOCK));
+
 	/** A herb's properties: a flower's (no collision, broken at a touch, offset a little in its block). */
 	private static BlockBehaviour.Properties herb(net.minecraft.world.level.material.MapColor color) {
 		return BlockBehaviour.Properties.of()

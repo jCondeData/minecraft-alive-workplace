@@ -44,7 +44,9 @@ public final class Chronicle {
 		/** A drought, begun, foretold and ended (32.15, 32.17). */
 		DROUGHT(Items.DEAD_BUSH),
 		/** A plague, begun, foretold and ended (32.15, 32.18). */
-		PLAGUE(Items.FERMENTED_SPIDER_EYE);
+		PLAGUE(Items.FERMENTED_SPIDER_EYE),
+		/** A Wonder begun, a stage of it done, finished or abandoned (M35). */
+		WONDER(Items.BEACON);
 
 		public final Item icon;
 

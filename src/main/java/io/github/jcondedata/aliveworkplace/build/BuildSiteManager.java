@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 /** All build sites in one dimension, saved with the world. */
 public final class BuildSiteManager extends SavedData {
-	private static final String NAME = "aliveworkplace_build_sites";
+	public static final String NAME = "aliveworkplace_build_sites";
 
 	private final Map<UUID, BuildSite> sites = new LinkedHashMap<>();
 
@@ -154,7 +154,7 @@ public final class BuildSiteManager extends SavedData {
 		return tag;
 	}
 
-	private static BuildSiteManager load(CompoundTag tag, HolderLookup.Provider registries) {
+	public static BuildSiteManager load(CompoundTag tag, HolderLookup.Provider registries) {
 		BuildSiteManager manager = new BuildSiteManager();
 		ListTag list = Nbt.getList(tag, "sites", Tag.TAG_COMPOUND);
 		for (int i = 0; i < list.size(); i++) {

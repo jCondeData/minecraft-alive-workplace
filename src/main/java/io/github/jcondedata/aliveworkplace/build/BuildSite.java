@@ -108,6 +108,19 @@ public final class BuildSite {
 	/** The Wonder this build is a part of (35.4, {@code WonderSite.id}), or null for an ordinary build. */
 	@Nullable
 	private UUID wonder;
+	/** Whether a foundation is filled under it (35.4: a Wonder's later stages stand on the stage below, so only stage I does). */
+	private boolean foundation = true;
+
+	/** Whether a foundation is filled under the build. */
+	public boolean foundation() {
+		return foundation;
+	}
+
+	public void setFoundation(boolean foundation) {
+		this.foundation = foundation;
+		plan = null; // worked out again with (or without) its foundation
+		onChange.run();
+	}
 
 	/** The Wonder this build is a part of, or null for an ordinary build. */
 	@Nullable
@@ -181,7 +194,7 @@ public final class BuildSite {
 				status = Status.BLUEPRINT_MISSING;
 				return null;
 			}
-			int depth = Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH);
+			int depth = foundation ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
 			int margin = levelGround ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level)
@@ -649,6 +662,9 @@ public final class BuildSite {
 		if (wonder != null) {
 			Nbt.putUuid(tag, "wonder", wonder);
 		}
+		if (!foundation) {
+			tag.putBoolean("no_foundation", true);
+		}
 		return tag;
 	}
 
@@ -687,6 +703,7 @@ public final class BuildSite {
 		site.waitingSince = Nbt.has(tag, "waiting_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "waiting_since") : NOT_WAITING;
 		site.playerBlocks = Nbt.getInt(tag, "player_blocks");
 		site.wonder = Nbt.hasUuid(tag, "wonder") ? Nbt.getUuid(tag, "wonder") : null;
+		site.foundation = !Nbt.getBoolean(tag, "no_foundation");
 		return site;
 	}
 

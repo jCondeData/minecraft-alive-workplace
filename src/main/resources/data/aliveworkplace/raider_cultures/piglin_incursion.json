@@ -1,0 +1,49 @@
+{
+  "where": { "min_rank": "town", "nether_link": true },
+  "weight": 30,
+  "arrival": "portal",
+  "hours": "night",
+  "name": "entity.aliveworkplace.piglin_raider",
+  "roster": [
+    { "entity": "minecraft:piglin", "share": 35, "role": "melee", "gear": { "mainhand": "minecraft:golden_sword" } },
+    { "entity": "minecraft:piglin", "share": 25, "role": "ranged", "gear": { "mainhand": "minecraft:crossbow" } },
+    { "entity": "minecraft:piglin_brute", "share": 25, "role": "melee", "gear": { "mainhand": "minecraft:golden_axe" } },
+    { "entity": "minecraft:hoglin", "share": 15, "role": "ram" }
+  ],
+  "captain": {
+    "entity": "minecraft:piglin_brute",
+    "gear": {
+      "head": "minecraft:golden_helmet", "chest": "minecraft:golden_chestplate", "legs": "minecraft:golden_leggings",
+      "feet": "minecraft:golden_boots", "mainhand": "minecraft:golden_axe"
+    },
+    "health": 50,
+    "names": "threat.aliveworkplace.piglin_incursion.names",
+    "title": "threat.aliveworkplace.piglin_incursion.title",
+    "zombifies_band": true
+  },
+  "tactics": ["ram_gates", "plunder"],
+  "lair": {
+    "structure": "aliveworkplace:camp/blackstone_outpost", "strength": 10, "growth": 2, "max": 16, "home_max": 8, "icon": "minecraft:gold_ingot",
+    "captain_at": [10, 2, 13], "portal": true, "near": 56, "far": 80
+  },
+  "loot": "aliveworkplace:chests/piglin_hoard",
+  "messages": {
+    "raid": "message.aliveworkplace.piglins.raid",
+    "raid_named": "message.aliveworkplace.piglins.raid_named",
+    "camp": "message.aliveworkplace.piglins.camp",
+    "camp_named": "message.aliveworkplace.piglins.camp_named",
+    "broken": "message.aliveworkplace.piglins.broken",
+    "broken_named": "message.aliveworkplace.piglins.broken_named"
+  },
+  "chronicle": {
+    "raid": "chronicle.aliveworkplace.piglins.raid",
+    "raid_named": "chronicle.aliveworkplace.piglins.raid_named",
+    "camp": "chronicle.aliveworkplace.piglins.camp",
+    "camp_named": "chronicle.aliveworkplace.piglins.camp_named",
+    "broken": "chronicle.aliveworkplace.piglins.broken",
+    "broken_named": "chronicle.aliveworkplace.piglins.broken_named",
+    "broken_by": "chronicle.aliveworkplace.piglins.broken_by",
+    "broken_by_named": "chronicle.aliveworkplace.piglins.broken_by_named",
+    "plunder": "chronicle.aliveworkplace.piglins.plunder"
+  }
+}

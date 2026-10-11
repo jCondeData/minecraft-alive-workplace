@@ -1,0 +1,55 @@
+{
+  "where": {
+    "min_rank": "town",
+    "biomes": ["minecraft:desert", "minecraft:badlands", "minecraft:eroded_badlands", "minecraft:wooded_badlands"]
+  },
+  "weight": 30,
+  "arrival": "lair",
+  "hours": "until_noon",
+  "name": "entity.aliveworkplace.desert_raider",
+  "roster": [
+    { "entity": "minecraft:husk", "share": 55, "role": "climber" },
+    { "entity": "minecraft:husk", "share": 25, "role": "melee",
+      "gear": {
+        "head": "minecraft:golden_helmet", "chest": "minecraft:golden_chestplate", "legs": "minecraft:golden_leggings",
+        "feet": "minecraft:golden_boots", "mainhand": "minecraft:iron_sword"
+      } },
+    { "entity": "minecraft:skeleton", "share": 20, "role": "ranged",
+      "gear": { "head": "minecraft:golden_helmet", "mainhand": "minecraft:bow" } }
+  ],
+  "captain": {
+    "entity": "minecraft:husk",
+    "gear": { "head": "minecraft:golden_helmet", "chest": "minecraft:golden_chestplate", "mainhand": "minecraft:golden_sword" },
+    "health": 50,
+    "names": "threat.aliveworkplace.desert_raiders.names",
+    "title": "threat.aliveworkplace.desert_raiders.title",
+    "leads": "city",
+    "raises": { "entity": "minecraft:husk", "radius": 24, "delay": 60, "health": 0.5 }
+  },
+  "tactics": ["sand_ramps"],
+  "lair": {
+    "structure": "aliveworkplace:camp/tomb_camp", "strength": 10, "growth": 2, "max": 16, "home_max": 8, "icon": "minecraft:golden_sword",
+    "captain_at": [9, 1, 12]
+  },
+  "loot": "aliveworkplace:chests/pharaohs_tomb",
+  "messages": {
+    "raid": "message.aliveworkplace.desert.raid",
+    "raid_named": "message.aliveworkplace.desert.raid_named",
+    "raid_led": "message.aliveworkplace.desert.raid_led",
+    "camp": "message.aliveworkplace.desert.camp",
+    "camp_named": "message.aliveworkplace.desert.camp_named",
+    "broken": "message.aliveworkplace.desert.broken",
+    "broken_named": "message.aliveworkplace.desert.broken_named"
+  },
+  "chronicle": {
+    "raid": "chronicle.aliveworkplace.desert.raid",
+    "raid_named": "chronicle.aliveworkplace.desert.raid_named",
+    "raid_led": "chronicle.aliveworkplace.desert.raid_led",
+    "camp": "chronicle.aliveworkplace.desert.camp",
+    "camp_named": "chronicle.aliveworkplace.desert.camp_named",
+    "broken": "chronicle.aliveworkplace.desert.broken",
+    "broken_named": "chronicle.aliveworkplace.desert.broken_named",
+    "broken_by": "chronicle.aliveworkplace.desert.broken_by",
+    "broken_by_named": "chronicle.aliveworkplace.desert.broken_by_named"
+  }
+}

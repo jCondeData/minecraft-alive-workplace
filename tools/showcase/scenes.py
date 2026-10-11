@@ -674,6 +674,18 @@ SCENES = [
     # Pillager warbands (ROADMAP 32.7): the war camp and its Warlord, and the warband's siege on a palisaded Town
     job("warband", "Threats", "A pillager warband: the war camp and its siege",
         "a pillager warband made its war camp south of the Town and laid siege to its Palisade Gate: the ravager ram broke a gate block", 150),
+    # Drowned pirates (ROADMAP 32.8): the Pirate Ship at anchor at dusk, the crew wading ashore, the ship sinking
+    job("pirates", "Threats", "Drowned pirates: the ship, the landing, the sinking",
+        "the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 150),
+    # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
+    job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
+        "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),
+    # Piglin incursions (ROADMAP 32.10): the Blackstone Outpost, piglins through its portal, one carrying off gold
+    job("piglins", "Threats", "Piglin incursions: the outpost, the portal, the plunder",
+        "the piglins' blackstone outpost stood west of the Town; a raid stepped out of its portal and a piglin passing the village's chests carried off a stack of gold", 150),
+    # Witch covens (ROADMAP 32.11): the Coven Hut in the swamp at night, a hex, witches throwing potions over a palisade
+    job("coven", "Threats", "Witch covens: the hut, the hex, potions over the wall",
+        "the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 150),
     # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
     job("siege_ladders", "Threats", "A siege: ladders over the wall",
         "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),

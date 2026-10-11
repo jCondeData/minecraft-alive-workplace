@@ -646,6 +646,251 @@ final class JobScenes {
 				"the raid on the palisaded Town is a siege, and its breach is the Palisade Gate");
 			return l -> l.getBlockState(middle).isAir();
 		}, null));
+		// Drowned pirates (ROADMAP 32.8): a Town on the beach at dusk, the Pirate Ship at anchor out on the sea with its bow to
+		// the village; its drowned crew wades ashore at the beach nearest it; then Captain Silas Brine falls in his cabin and
+		// the ship burns and sinks, top down, its loot chest left on a log raft.
+		SCENES.put("pirates", new Job("the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 520,
+			new Vec3(25.5, -50.0, 0.5), new Vec3(0.5, -58.0, 20.0), (level, player) -> {
+			BlockPos hall = STATION.north(6);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			level.setDayTime(13000);
+			// The sea: three deep down to the bedrock, from the beach (z 3) out past the ship.
+			for (int x = -30; x <= 30; x++) {
+				for (int z = 4; z <= 62; z++) {
+					for (int y = -63; y <= -61; y++) {
+						level.setBlock(new BlockPos(x, y, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			for (int x = -30; x <= 30; x++) {
+				for (int z = 0; z <= 3; z++) {
+					level.setBlock(new BlockPos(x, -61, z), net.minecraft.world.level.block.Blocks.SAND.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+			}
+			for (int i = 0; i < 3; i++) {
+				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(-3 + 3 * i, 0, -3), MobSpawnType.COMMAND);
+				villager.setNoAi(true);
+			}
+			// The hall of a Town, for as long as the ship anchors and the crew comes ashore (its own round would end the raid by dusk).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("drowned_pirates");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, new BlockPos(0, -61, 30), id);
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().equals("Captain Silas Brine")
+				&& io.github.jcondedata.aliveworkplace.threat.Ships.of(level, hall).map(s -> s.rotation() == net.minecraft.world.level.block.Rotation.NONE).orElse(false),
+				"the Pirate Ship anchored with its bow to the Town, under Captain Silas Brine");
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 24, 0, Double.NaN,
+				culture, net.minecraft.util.RandomSource.create(7L));
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			List<net.minecraft.world.entity.Mob> raiders = io.github.jcondedata.aliveworkplace.guard.VillageRaids.raiders(level, hall);
+			BlockPos beach = new BlockPos(0, -60, 3);
+			Showcase.check(raid != null && !raiders.isEmpty() && raiders.stream().allMatch(m -> m.blockPosition().distManhattan(beach) <= 8),
+				"the crew came ashore at the beach nearest the ship");
+			java.util.UUID captain = lair.captain();
+			long began = level.getGameTime();
+			BlockPos masthead = new BlockPos(0, -63 + 19, 30 + 2);
+			return l -> {
+				if (l.getGameTime() - began == 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
+					brine.hurt(l.damageSources().fellOutOfWorld(), 1000f); // the captain falls: the ship burns and sinks
+				}
+				return l.getGameTime() - began > 160 && io.github.jcondedata.aliveworkplace.threat.Ships.sinking(l).isEmpty()
+					&& io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall).isEmpty() && l.getBlockState(masthead).isAir()
+					&& l.getBlockState(new BlockPos(0, -60, 14)).is(net.minecraft.world.level.block.Blocks.CHEST);
+			};
+		}, null));
+		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
+		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
+		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks
+		// falls by his tomb and gets up again three seconds later in a burst of sand.
+		SCENES.put("desert_raiders", new Job("the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 1500,
+			new Vec3(20.5, -48.0, 22.5), new Vec3(-4.5, -58.0, -2.0), (level, player) -> {
+			BlockPos hall = STATION.north(12);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			BlockPos origin = STATION.offset(-3, 0, -4);
+			for (BlockPos at : List.of(origin.west(7), origin, origin.east(7))) {
+				level.getStructureManager().get(StarterBlueprints.STONE_WALL.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(StarterBlueprints.STONE_WALL.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			}
+			for (int y = 0; y < 4; y++) {
+				for (int z = -18; z <= -3; z++) {
+					level.setBlock(STATION.offset(-10, y, z), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+					level.setBlock(STATION.offset(10, y, z), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+				for (int x = -10; x <= 10; x++) {
+					level.setBlock(STATION.offset(x, y, -18), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+			}
+			// The desert outside the walls.
+			for (int x = -40; x <= 24; x++) {
+				for (int z = -2; z <= 30; z++) {
+					level.setBlock(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.SAND.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+			}
+			Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(0, 0, -10), MobSpawnType.COMMAND);
+			villager.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.threat.Risings.forget();
+			level.setDayTime(1000);
+			// The Tomb Camp, west of the walls (the hall of a Town for as long as the camp is made).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("desert_raiders");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(-26, -1, 14), id);
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Pharaoh "),
+				"the desert raiders opened their Tomb Camp, under a named Pharaoh");
+			java.util.UUID pharaoh = lair.captain();
+			Showcase.check(level.getEntity(pharaoh) instanceof net.minecraft.world.entity.Mob p && p.getTags().contains(io.github.jcondedata.aliveworkplace.threat.Risings.RAISER_TAG),
+				"the Pharaoh raises the fallen");
+			// The siege: two husk climbers outside the middle wall.
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.threat.Culture.Member member = culture.roster().stream()
+				.filter(m -> m.role() == io.github.jcondedata.aliveworkplace.threat.Culture.Role.CLIMBER).findFirst().orElseThrow();
+			List<net.minecraft.world.entity.Mob> husks = new java.util.ArrayList<>();
+			for (double[] at : new double[][] {{0.5, 8.5}, {2.5, 11.5}}) {
+				net.minecraft.world.entity.Mob husk = io.github.jcondedata.aliveworkplace.threat.Threats.create(level, member);
+				husk.moveTo(at[0], STATION.getY(), at[1], 180f, 0f);
+				husk.finalizeSpawn(level, level.getCurrentDifficultyAt(husk.blockPosition()), MobSpawnType.EVENT, null);
+				io.github.jcondedata.aliveworkplace.threat.Threats.outfit(level, husk, culture, member);
+				husk.setTarget(villager);
+				level.addFreshEntityWithPassengers(husk);
+				husks.add(husk);
+			}
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.track(level, hall, culture, husks);
+			Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.siege(level, hall).isPresent(), "the desert raid on the walled Town is a siege");
+			long[] fell = {-1};
+			return l -> {
+				boolean over = husks.stream().anyMatch(h -> io.github.jcondedata.aliveworkplace.threat.SandRamps.over(l, hall, h.getUUID()));
+				if (over && fell[0] < 0 && l.getEntity(pharaoh) instanceof net.minecraft.world.entity.Mob p) {
+					// One of his husks falls by the tomb.
+					List<net.minecraft.world.entity.Mob> band = io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, lair).stream()
+						.filter(m -> m != p && m.getType() == EntityType.HUSK && m.distanceTo(p) < 20).toList();
+					if (!band.isEmpty()) {
+						band.get(0).hurt(l.damageSources().fellOutOfWorld(), 1000f);
+						fell[0] = l.getGameTime();
+					}
+				}
+				return over && fell[0] >= 0 && l.getGameTime() - fell[0] > 80 && !l.getEntitiesOfClass(net.minecraft.world.entity.monster.Husk.class,
+					new net.minecraft.world.phys.AABB(STATION).inflate(60), h -> h.isAlive() && h.getTags().contains(io.github.jcondedata.aliveworkplace.threat.Risings.RISEN_TAG)).isEmpty();
+			};
+		}, null));
+		// Piglin incursions (ROADMAP 32.10): the piglins' Blackstone Outpost west of a Town, its portal lit. At dusk a raid
+		// steps out of that portal and makes for the villagers; on the way a piglin passes the village's chests of gold and
+		// carries a stack off on its head.
+		SCENES.put("piglins", new Job("the piglins' blackstone outpost stood west of the Town; a raid stepped out of its portal and a piglin passing the village's chests carried off a stack of gold", 1500,
+			new Vec3(-6.5, -50.0, 19.5), new Vec3(-20.5, -58.0, 0.5), (level, player) -> {
+			BlockPos hall = STATION.north(12);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetPlunder(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			level.setDayTime(12800);
+			// The village's chests of gold, on the piglins' way in, and its villagers further east.
+			for (int z : new int[] {-2, 2}) {
+				BlockPos at = STATION.offset(-11, 0, z);
+				level.setBlockAndUpdate(at, net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
+				if (level.getBlockEntity(at) instanceof net.minecraft.world.Container chest) {
+					chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GOLD_INGOT, 64));
+					chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GOLD_BLOCK, 8));
+					chest.setItem(2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BREAD, 12));
+				}
+			}
+			for (int i = 0; i < 3; i++) {
+				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(2 + i * 2, 0, -1 + i), MobSpawnType.COMMAND);
+				villager.setNoAi(true);
+			}
+			// The Blackstone Outpost (the hall of a Town for as long as it is made).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("piglin_incursion");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(-32, -1, 0), id);
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Warlord "),
+				"the piglins raised their Blackstone Outpost, under a named Warlord");
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Piglins.portal(level, lair) != null, "the outpost's portal is lit");
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 12, 0,
+				Double.NaN, culture, net.minecraft.util.RandomSource.create(3L));
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			Showcase.check(raid != null && raid.raiders() > 0, "a raid stepped out of the outpost's portal");
+			long[] took = {-1};
+			return l -> {
+				List<net.minecraft.world.entity.Mob> carrying = l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(STATION).inflate(60),
+					m -> m.isAlive() && !io.github.jcondedata.aliveworkplace.threat.Plunder.carried(m).isEmpty());
+				if (took[0] < 0 && !carrying.isEmpty()) {
+					took[0] = l.getGameTime();
+				}
+				return took[0] >= 0 && l.getGameTime() - took[0] > 100 && !carrying.isEmpty();
+			};
+		}, null));
+		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
+		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
+		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.
+		SCENES.put("coven", new Job("the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 1400,
+			new Vec3(15.5, -51.0, 6.5), new Vec3(-1.5, -59.0, -15.5), (level, player) -> {
+			BlockPos hall = STATION.south(9);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			io.github.jcondedata.aliveworkplace.threat.Covens.Data.get(level).forget(hall);
+			level.setDayTime(13600);
+			// The village's palisade, finished, and three villagers behind it.
+			BlockPos wall = STATION.offset(-3, 0, 0);
+			level.getStructureManager().get(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.PALISADE.id()).orElseThrow()
+				.placeInWorld(level, wall, wall, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.PALISADE.id(),
+				new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), wall,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), java.util.UUID.randomUUID());
+			List<Villager> people = new java.util.ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(-2 + i * 2, 0, 4), MobSpawnType.COMMAND);
+				villager.setNoAi(true);
+				people.add(villager);
+			}
+			// The Coven Hut (the hall of a Village for as long as the raid is made).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("witch_coven");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, -36), id);
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Coven Mother "),
+				"the witches raised their Coven Hut, under a named Coven Mother");
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Covens.cauldron(level, lair) != null, "the hut has the coven's cauldron");
+			List<Villager> hexed = lair == null ? List.of() : io.github.jcondedata.aliveworkplace.threat.Covens.hexNight(level, lair, net.minecraft.util.RandomSource.create(2L));
+			Showcase.check(!hexed.isEmpty() && hexed.stream().allMatch(io.github.jcondedata.aliveworkplace.people.Sickness::isHexed), "the coven hexed " + hexed.size() + " villagers");
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 12, 0,
+				Double.NaN, culture, net.minecraft.util.RandomSource.create(4L));
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			Showcase.check(raid != null && raid.raiders() > 0, "the coven's witches came out to raid");
+			List<BlockPos> walls = io.github.jcondedata.aliveworkplace.threat.Sieges.wallBlocks(level, hall);
+			int[] potions = {0};
+			java.util.Set<java.util.UUID> seen = new java.util.HashSet<>();
+			long[] began = {-1};
+			return l -> {
+				if (began[0] < 0) {
+					began[0] = l.getGameTime();
+				}
+				for (net.minecraft.world.entity.projectile.ThrownPotion p : l.getEntitiesOfClass(net.minecraft.world.entity.projectile.ThrownPotion.class,
+					new net.minecraft.world.phys.AABB(STATION).inflate(40), p -> p.getOwner() instanceof net.minecraft.world.entity.monster.Witch)) {
+					if (seen.add(p.getUUID())) {
+						potions[0]++;
+					}
+				}
+				List<net.minecraft.world.entity.Mob> witches = l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(STATION).inflate(60),
+					m -> m.isAlive() && m instanceof net.minecraft.world.entity.monster.Witch && m.getTags().contains(io.github.jcondedata.aliveworkplace.threat.Threats.RAIDER_TAG));
+				boolean off = !witches.isEmpty() && witches.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.threat.Covens.wallDistance(m.getX(), m.getZ(), walls) >= 10);
+				if (potions[0] >= 4 && off && l.getGameTime() - began[0] > 300) {
+					Showcase.check(true, "the witches stood off the palisade and threw " + potions[0] + " potions over it");
+					return true;
+				}
+				return false;
+			};
+		}, null));
 		// Sieges II (ROADMAP 32.5): pillagers who set ladders lay siege to a village behind Stone Walls with no gate. They
 		// set a ladder up the wall's outer face, rung by rung; the first climbs over and drops inside; then the guard on the
 		// walkway comes along the wall and throws the ladder down. (The scene only times his walk: he stands still, as the

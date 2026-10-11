@@ -237,6 +237,12 @@ public final class Moods {
 			score += held.points();
 			good.add(held.reason());
 		}
+		// Their village broke a warband with a war party in the last two days (32.13).
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason warband = io.github.jcondedata.aliveworkplace.guard.WarParties.mood(level, villager);
+		if (warband != null) {
+			score += warband.points();
+			good.add(warband.reason());
+		}
 		// The Festival Cup their village holds (28.21).
 		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason cup = io.github.jcondedata.aliveworkplace.cup.CupChampions.mood(level, villager);
 		if (cup != null) {

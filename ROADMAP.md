@@ -3056,7 +3056,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     least 10 blocks from a finished wall; the Coven Mother blinks after three hits;
   - the hut passes `check.py` and its render is in the package;
   - scene `coven`: the hut in the swamp at night, then witches throwing potions over a palisade (GIF).
-- [ ] **32.12** **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
+- [x] **32.12** (review: pending 2026-10-11) **Scouts.** A new guard kind: sneak-right-click a guard with a **spyglass** and they become a
   **Scout** (held in the off hand like the other kinds' items; you get back what they held; "Scout" over their head).
   From the Defence page, "Scout the lair" sends one out by day: they walk (or ride, `Cavalry`) to within 24 blocks of
   the lair, raise the spyglass (its sound) and come home; the band ignores a scout more than 8 blocks off. Back home,
@@ -3069,7 +3069,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     blocks away, the scout gets within 24 blocks of it and is home within 2400 ticks; the report map has its
     decoration at the lair; a bandit doesn't go for a scout 10 blocks away;
   - scene `scouts`: the scout on a rise with the spyglass, then the report map in hand (GIF).
-- [ ] **32.13** **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
+- [x] **32.13** (review: pending 2026-10-11) **Marching on the lair.** "Muster a war party" on the Defence page: three in four of the village's
   guards (up to 12; the rest keep the walls) are enlisted on the Rally Banner in the player's inventory, it's raised,
   and they gather by the hall (without a banner the page says to craft one). A new mercenary contract on the same
   page, **Siege-breakers**: five (two with crossbows, two knights, a medic) for 30 emeralds (3 less a level of

@@ -646,6 +646,60 @@ final class JobScenes {
 				"the raid on the palisaded Town is a siege, and its breach is the Palisade Gate");
 			return l -> l.getBlockState(middle).isAir();
 		}, null));
+		// Drowned pirates (ROADMAP 32.8): a Town on the beach at dusk, the Pirate Ship at anchor out on the sea with its bow to
+		// the village; its drowned crew wades ashore at the beach nearest it; then Captain Silas Brine falls in his cabin and
+		// the ship burns and sinks, top down, its loot chest left on a log raft.
+		SCENES.put("pirates", new Job("the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 520,
+			new Vec3(25.5, -50.0, 0.5), new Vec3(0.5, -58.0, 20.0), (level, player) -> {
+			BlockPos hall = STATION.north(6);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			level.setDayTime(13000);
+			// The sea: three deep down to the bedrock, from the beach (z 3) out past the ship.
+			for (int x = -30; x <= 30; x++) {
+				for (int z = 4; z <= 62; z++) {
+					for (int y = -63; y <= -61; y++) {
+						level.setBlock(new BlockPos(x, y, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState(), Block.UPDATE_CLIENTS);
+					}
+				}
+			}
+			for (int x = -30; x <= 30; x++) {
+				for (int z = 0; z <= 3; z++) {
+					level.setBlock(new BlockPos(x, -61, z), net.minecraft.world.level.block.Blocks.SAND.defaultBlockState(), Block.UPDATE_CLIENTS);
+				}
+			}
+			for (int i = 0; i < 3; i++) {
+				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(-3 + 3 * i, 0, -3), MobSpawnType.COMMAND);
+				villager.setNoAi(true);
+			}
+			// The hall of a Town, for as long as the ship anchors and the crew comes ashore (its own round would end the raid by dusk).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("drowned_pirates");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, new BlockPos(0, -61, 30), id);
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().equals("Captain Silas Brine")
+				&& io.github.jcondedata.aliveworkplace.threat.Ships.of(level, hall).map(s -> s.rotation() == net.minecraft.world.level.block.Rotation.NONE).orElse(false),
+				"the Pirate Ship anchored with its bow to the Town, under Captain Silas Brine");
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 24, 0, Double.NaN,
+				culture, net.minecraft.util.RandomSource.create(7L));
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			List<net.minecraft.world.entity.Mob> raiders = io.github.jcondedata.aliveworkplace.guard.VillageRaids.raiders(level, hall);
+			BlockPos beach = new BlockPos(0, -60, 3);
+			Showcase.check(raid != null && !raiders.isEmpty() && raiders.stream().allMatch(m -> m.blockPosition().distManhattan(beach) <= 8),
+				"the crew came ashore at the beach nearest the ship");
+			java.util.UUID captain = lair.captain();
+			long began = level.getGameTime();
+			BlockPos masthead = new BlockPos(0, -63 + 19, 30 + 2);
+			return l -> {
+				if (l.getGameTime() - began == 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
+					brine.hurt(l.damageSources().fellOutOfWorld(), 1000f); // the captain falls: the ship burns and sinks
+				}
+				return l.getGameTime() - began > 160 && io.github.jcondedata.aliveworkplace.threat.Ships.sinking(l).isEmpty()
+					&& io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall).isEmpty() && l.getBlockState(masthead).isAir()
+					&& l.getBlockState(new BlockPos(0, -60, 14)).is(net.minecraft.world.level.block.Blocks.CHEST);
+			};
+		}, null));
 		// Sieges II (ROADMAP 32.5): pillagers who set ladders lay siege to a village behind Stone Walls with no gate. They
 		// set a ladder up the wall's outer face, rung by rung; the first climbs over and drops inside; then the guard on the
 		// walkway comes along the wall and throws the ladder down. (The scene only times his walk: he stands still, as the

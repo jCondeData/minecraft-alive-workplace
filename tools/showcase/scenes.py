@@ -649,6 +649,9 @@ SCENES = [
     # Pillager warbands (ROADMAP 32.7): the war camp and its Warlord, and the warband's siege on a palisaded Town
     job("warband", "Threats", "A pillager warband: the war camp and its siege",
         "a pillager warband made its war camp south of the Town and laid siege to its Palisade Gate: the ravager ram broke a gate block", 150),
+    # Drowned pirates (ROADMAP 32.8): the Pirate Ship at anchor at dusk, the crew wading ashore, the ship sinking
+    job("pirates", "Threats", "Drowned pirates: the ship, the landing, the sinking",
+        "the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 150),
     # Sieges II (ROADMAP 32.5): pillagers ladder a Stone Wall, a guard throws the ladder down
     job("siege_ladders", "Threats", "A siege: ladders over the wall",
         "pillagers set a ladder against the Stone Wall and one climbed over; the guard on the walkway threw the ladder down", 120),

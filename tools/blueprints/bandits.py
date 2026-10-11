@@ -284,3 +284,202 @@ def war_camp():
             if b.blocks.get((x, 0, z), ("",))[0] == "minecraft:air":
                 del b.blocks[(x, 0, z)]
     return b
+
+
+# The Jolly Roger: a black banner with the white skull (ROADMAP 32.8).
+JOLLY_ROGER = (("white", "skull"),)
+
+# The Pirate Ship's waterline: the sea's top block is at this y of the template (the hull below it sits in the water).
+PIRATE_SHIP_WATERLINE = 2
+
+
+def pirate_ship():
+    """
+    The drowned pirates' Pirate Ship (ROADMAP 32.8), 9 x 20 x 27, set down at anchor on the sea with its bow (z = 0)
+    to the village. Design:
+    - a dark oak hull, 9 wide amidships, tapering to a stem at the bow and a little at the stern transom; it draws three
+      blocks (y 0 to 2 sit in the water, PIRATE_SHIP_WATERLINE), with a pale stripped spruce wale along each side at y 3
+      and a spruce deck at y 4 inside a dark oak rail; a raised forecastle over the bow; a dry hold below the deck;
+    - two masts of dark oak: the foremast (z 8) with one square black sail, the taller mainmast (z 15) with a bigger
+      one and the crow's nest at its top; the sails belly forward in the wind; a black jib from the bowsprit;
+    - the captain's cabin at the stern (z 20 to 25): dark oak walls on stripped log posts, glazed windows on three
+      sides, a door under a quarterdeck that reaches one block forward over it with two lanterns hanging there; the loot
+      chest inside at the back, a red carpet, a lantern;
+    - the quarterdeck on the cabin's roof with its own rail, the Jolly Roger (a black banner with the white skull) on a
+      staff at the stern, a lantern at each back corner;
+    - gunports (dispensers) three a side, barrels lashed on deck, the anchor chain down from a cathead at the bow.
+    Everything outside the hull is left out (structure void), so the sea stays where it is; only the hold is dry.
+    """
+    W, H, D = 9, 20, 27
+    C = 4  # the keel's x
+    b = Build(W, H, D)
+
+    def hw_z(z):  # the hull's half-width along its length: the stem at the bow, a narrower transom at the stern
+        return {0: 0, 1: 1, 2: 2, 3: 3}.get(z, 3 if z == D - 1 else 4)
+
+    def hw_y(y):  # and up its height: the keel, the bilge, full width from y 3
+        return {0: 0, 1: 2, 2: 3}.get(y, 4)
+
+    def in_hull(x, y, z):
+        if y < 0 or y > 4 or not 0 <= z < D:
+            return False
+        if y == 0 and not 2 <= z <= D - 2:
+            return False
+        return abs(x - C) <= min(hw_z(z), hw_y(y))
+
+    hold = set()
+    for y in range(0, 5):
+        for z in range(D):
+            for x in range(W):
+                if not in_hull(x, y, z):
+                    continue
+                shell = y == 4 and abs(x - C) == hw_z(z) or any(not in_hull(x + dx, y + dy, z + dz)
+                                                               for dx, dy, dz in ((1, 0, 0), (-1, 0, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)))
+                if y == 4:
+                    if shell:
+                        b.set(x, y, z, "dark_oak_planks")
+                    else:
+                        b.set(x, y, z, "spruce_planks")  # the deck
+                elif shell:
+                    if y == 3 and abs(x - C) == 4:
+                        log(b, x, y, z, "stripped_spruce_log", axis="z")  # the wale
+                    else:
+                        b.set(x, y, z, "dark_oak_planks")
+                else:
+                    hold.add((x, y, z))
+    # the stem and bowsprit, rising at the bow
+    log(b, C, 5, 0, "dark_oak_log")
+    log(b, C, 6, 0, "dark_oak_log")
+    log(b, C, 5, 1, "dark_oak_log")
+    fence(b, C, 7, 0, "dark_oak_fence")
+    lantern(b, C, 8, 0)
+    # the forecastle: a raised deck over the bow, three stairs up to it
+    for z in range(1, 6):
+        for x in range(C - hw_z(z), C + hw_z(z) + 1):
+            if (x, z) != (C, 1):
+                b.set(x, 5, z, "dark_oak_planks" if abs(x - C) == hw_z(z) else "spruce_planks")
+            fence(b, x, 6, z, "dark_oak_fence") if abs(x - C) == hw_z(z) else None
+    for x in range(C - 1, C + 2):
+        stairs(b, x, 5, 6, "spruce_stairs", "north")
+    # the rail round the deck as far as the cabin
+    for z in range(6, 19):
+        for x in (C - hw_z(z), C + hw_z(z)):
+            if (x, 5, z) not in b.blocks:
+                fence(b, x, 5, z, "dark_oak_fence")
+    # the cathead and the anchor chain going down into the sea
+    log(b, 0, 5, 3, "dark_oak_log", axis="x")
+    for y in range(1, 5):
+        b.set(0, y, 3, "chain", axis="y", waterlogged=False)
+    # gunports: dispensers looking out of the hull, three a side
+    for z in (10, 12, 17):
+        b.set(0, 4, z, "dispenser", facing="west", triggered=False)
+        b.set(W - 1, 4, z, "dispenser", facing="east", triggered=False)
+    # the hatch to the hold, barrels lashed on deck
+    trapdoor(b, C, 4, 11, "spruce_trapdoor", "north", half="top")
+    for x, y, z in ((1, 5, 7), (1, 5, 8), (1, 6, 7), (7, 5, 18), (6, 5, 18), (7, 6, 18), (2, 5, 13)):
+        b.set(x, y, z, "barrel", facing="up", open=False)
+
+    # the foremast and its sail, bellied forward
+    for y in range(1, 16):
+        log(b, C, y, 8, "dark_oak_log")
+    for x in range(1, 8):
+        if x != C:
+            log(b, x, 14, 8, "dark_oak_log", axis="x")
+    for x in range(2, 7):
+        if x != C:
+            log(b, x, 8, 8, "dark_oak_log", axis="x")
+    for y in range(9, 14):
+        for x in range(1, 8):
+            belly = 10 <= y <= 12 and 2 <= x <= 6
+            b.set(x, y, 6 if belly else 7, "black_wool")
+    lantern(b, 2, 7, 8, hanging=True)
+    lantern(b, 6, 7, 8, hanging=True)
+    # the jib, from the bowsprit up towards the foremast
+    for z in range(2, 6):
+        for y in range(7, 7 + z):
+            b.set(C, y, z, "black_wool")
+
+    # the mainmast, its sail and the crow's nest
+    for y in range(1, 20):
+        log(b, C, y, 15, "dark_oak_log")
+    for x in range(0, 9):
+        if x != C:
+            log(b, x, 16, 15, "dark_oak_log", axis="x")
+    for x in range(1, 8):
+        if x != C:
+            log(b, x, 9, 15, "dark_oak_log", axis="x")
+    for y in range(10, 16):
+        for x in range(1, 8):
+            belly = 11 <= y <= 14 and 2 <= x <= 6
+            b.set(x, y, 13 if belly else 14, "black_wool")
+    for x in range(3, 6):
+        for z in range(14, 17):
+            if (x, z) != (C, 15):
+                slab(b, x, 17, z, "dark_oak_slab")
+                fence(b, x, 18, z, "dark_oak_fence")
+    lantern(b, 3, 19, 16)
+    b.set(C, 18, 14, "air")  # (the lookout's way in, beside the mast)
+
+    # the captain's cabin at the stern
+    for y in range(5, 9):
+        for z in range(20, 26):
+            for x in range(W):
+                edge_x, edge_z = x in (0, W - 1), z in (20, 25)
+                if not (edge_x or edge_z):
+                    continue
+                if edge_x and edge_z:
+                    log(b, x, y, z, "stripped_dark_oak_log")
+                else:
+                    b.set(x, y, z, "dark_oak_planks")
+    for z in (22, 23):
+        pane(b, 0, 6, z)
+        pane(b, W - 1, 6, z)
+    for x in (2, 3, 5, 6):
+        pane(b, x, 6, 25)
+    pane(b, 2, 6, 20)
+    pane(b, 6, 6, 20)
+    b.door(C, 5, 20, "dark_oak_door", facing="north")
+    # the quarterdeck: the cabin's roof, one block out over the door on posts, a rail, the Jolly Roger
+    for x in range(W):
+        for z in range(19, 26):
+            b.set(x, 9, z, "dark_oak_planks")
+    for y in range(5, 9):
+        fence(b, 0, y, 19, "dark_oak_fence")
+        fence(b, W - 1, y, 19, "dark_oak_fence")
+    lantern(b, 3, 8, 19, hanging=True)
+    lantern(b, 5, 8, 19, hanging=True)
+    for x in range(W):
+        for z in range(19, 26):
+            if x in (0, W - 1) or z in (19, 25):
+                fence(b, x, 10, z, "dark_oak_fence")
+    b.set(1, 10, 19, "air")  # the way up from the main deck: a ladder on the cabin's front, a hatch in the quarterdeck
+    b.set(1, 9, 19, "dark_oak_trapdoor", facing="north", half="top", open=True, powered=False, waterlogged=False)
+    for y in range(5, 9):
+        b.set(1, y, 19, "ladder", facing="north", waterlogged=False)
+    for y in range(10, 14):
+        fence(b, C, y, 25, "dark_oak_fence")
+    b.set_nbt(C, 14, 25, Compound({"id": String("minecraft:banner"), "patterns": List[Compound]([
+        Compound({"color": String(c), "pattern": String("minecraft:" + p)}) for c, p in JOLLY_ROGER])}))
+    b.set(C, 14, 25, "black_banner", rotation="8")
+    lantern(b, 0, 11, 25)
+    lantern(b, W - 1, 11, 25)
+    # inside: red carpet, the loot chest at the back, a chart table, a lantern
+    for x in range(1, W - 1):
+        for z in range(21, 25):
+            b.set(x, 5, z, "red_carpet")
+    b.set_nbt(C, 5, 24, Compound({"LootTable": String("aliveworkplace:chests/pirate_ship"), "id": String("minecraft:chest")}))
+    b.set(C, 5, 24, "chest", facing="north", type="single", waterlogged=False)
+    b.set(2, 5, 24, "cartography_table")
+    b.set(6, 5, 24, "barrel", facing="up", open=False)
+    b.set(7, 5, 21, "dark_oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    lantern(b, C, 8, 22, hanging=True)
+    # the stern rail behind the cabin
+    for x in range(C - hw_z(D - 1), C + hw_z(D - 1) + 1):
+        fence(b, x, 5, D - 1, "dark_oak_fence")
+
+    b.fill_air()
+    # Everything but the hold is left out where nothing is drawn: the sea (and the air over it) stays as it is.
+    for pos, block in list(b.blocks.items()):
+        if block[0] == "minecraft:air" and pos not in hold:
+            del b.blocks[pos]
+    return b

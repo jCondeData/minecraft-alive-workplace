@@ -93,6 +93,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.threat.Threats.init(); // raider cultures as data (32.2)
 		io.github.jcondedata.aliveworkplace.threat.Sieges.init(); // rams and gates (32.4)
 		io.github.jcondedata.aliveworkplace.threat.Ladders.init(); // ladders over the walls (32.5)
+		io.github.jcondedata.aliveworkplace.threat.Ships.init(); // the pirate ship: lairs on the sea, sinking (32.8)
 		io.github.jcondedata.aliveworkplace.guard.BattleStations.init(); // battle stations (32.6)
 		io.github.jcondedata.aliveworkplace.story.QuestFiles.init(); // the quest engine's files (31.2)
 		io.github.jcondedata.aliveworkplace.story.QuestTracker.init(); // tracked quests as boss bars, reach objectives (31.3)

@@ -2968,7 +2968,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     camp;
   - the camp passes `check.py` and its render is in the package;
   - scene `warband`: the war camp, then a GIF of the warband's siege on a walled village.
-- [ ] **32.8** **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
+- [x] **32.8** (review: pending 2026-10-11) **Drowned pirates.** `drowned_pirates.json`: coastal villages (`coast`, checked once a day); Town and
   up; arrival `shore`. Their lair is the **Pirate Ship** (`camp/pirate_ship`, about 27 x 20 x 9, minecraft-architect
   skill: a two-masted dark oak sloop with black sails, a crow's nest, the captain's cabin with the loot chest, the
   Jolly Roger (a black banner with the skull) at the stern), anchored on water at least 5 deep, 40–70 blocks out, its
@@ -5154,6 +5154,16 @@ item waits.
   name. (8) **More than 36 goods** (a data pack adding nine or more): the tab shows the first 36 by `order`; paging can
   come with 33.19's slot 54 toggle if anyone needs it. (9) `tools/modtest/wikicheck.py` doesn't exist yet (22.9), so
   the wiki page (`docs/wiki/price-board.md`) was written to the page format but not machine-checked.
+- 2026-10-11 (32.8, decisions; lane b): drowned pirates (`threat/Ships`, wiki `pirates.md`). (1) **"40–70 blocks out"
+  is from the hall**, as other lairs' distances are. (2) **The captain is always "Captain Silas Brine"**: a captain may
+  have one `name` instead of a list of `names`. (3) **Numbers the item leaves open**: weight 30 (three to one against the
+  bandits on a coastal Town), strength 8, +1 a day, at most 14, 8 at the ship. (4) **The gunners' and the captain's
+  black caps are unbreakable** (gear may now carry components as `/give` takes them), so the sun can't kill the lair;
+  the drowned head for the water by day as the game makes them. (5) **The GameTests use `tall_area`**: `huge_area` is
+  30 x 20 x 30 today and the ship (20 tall) floating on a 6-deep sea needs 25. (6) **The crew lands at the nearest
+  beach within the village**, from 8 blocks above the hall to 24 below, and appears up to 3 blocks out in the water.
+  (7) **The raft** floats 3 blocks past the bow, or off a side when the bow's water is taken; a chest a player took
+  first leaves no raft.
 - 2026-10-10 (33.5, decisions; lane a): trading at the board. (1) **Every good trades both ways**, not only what the
   village is short of (sell) or known for (buy): the item's sentence reads as where it pays, and the design note's
   table says "every good ... click to trade". (2) **A click sells if you carry at least a bundle, else buys; a right

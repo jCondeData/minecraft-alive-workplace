@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""guidecheck.py's own tests: each kind of slip in a guide page fails, and a clean guide passes.
+
+    python3 tools/modtest/test_guidecheck.py
+"""
+import sys
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import guidecheck  # noqa: E402
+
+SCENES = '''SCENES = [
+    {"name": "builders", "stills": [("02_a", "A"), ("03_b", "B")]},
+    {"name": "decor", "stills": [("30_*@spread", "")]},
+]
+'''
+SITE = guidecheck.SITE
+INDEX = "# Guide\n\n- [Builder](builder.md)\n"
+GOOD = (f"# Builder\n\nHand them a blueprint. Minecraft 1.21.1 and Cobblemon 1.7.3 are fine, and so is 28 blocks.\n\n"
+        f"![A builder]({SITE}builders/still-2.jpg)\n\n![Decor]({SITE}decor/still-1.jpg)\n\n![GIF]({SITE}builders/anim.gif)\n")
+
+
+def run(builder, index=INDEX, extra=None):
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d)
+        (root / "tools/showcase").mkdir(parents=True)
+        (root / "tools/showcase/scenes.py").write_text(SCENES)
+        guide = root / "docs/guide"
+        guide.mkdir(parents=True)
+        (guide / "index.md").write_text(index)
+        (guide / "builder.md").write_text(builder)
+        (guide / "README.md").write_text("Rules: ROADMAP 22.10, GameTest, src/ (the README isn't a page)\n")
+        for name, text in (extra or {}).items():
+            (guide / name).write_text(text)
+        return guidecheck.check(root)
+
+
+def expect(name, problems, fragment):
+    ok = any(fragment in p for p in problems) if fragment else not problems
+    print(("ok   " if ok else "FAIL ") + name + ("" if ok else f": {problems}"))
+    return ok
+
+
+def main():
+    results = [
+        expect("a clean guide passes", run(GOOD), None),
+        expect("a roadmap id fails", run(GOOD + "\nSee 22.10 for more.\n"), "roadmap id"),
+        expect("a roadmap id with a letter fails", run(GOOD + "\nAs 21.1a said.\n"), "roadmap id"),
+        expect("a roadmap id at a sentence's end fails", run(GOOD + "\nItem 28.3.\n"), "roadmap id"),
+        expect("a bug id fails", run(GOOD + "\nFixed in B76.\n"), "bug id"),
+        expect("ROADMAP fails", run(GOOD + "\nOn the roadmap.\n"), "ROADMAP"),
+        expect("GameTest fails", run(GOOD + "\nA GameTest proves it.\n"), "GameTest"),
+        expect("a path under src/ fails", run(GOOD + "\nIn src/main/resources/x.json.\n"), "src/"),
+        expect("a picture of no scene fails", run(GOOD + f"\n![x]({SITE}nothing/still-1.jpg)\n"), "no showcase scene"),
+        expect("a still past the scene's stills fails", run(GOOD + f"\n![x]({SITE}builders/still-3.jpg)\n"), "no still-3"),
+        expect("a spread scene's still-2 fails", run(GOOD + f"\n![x]({SITE}decor/still-2.jpg)\n"), "no still-2"),
+        expect("a link to a missing page fails", run(GOOD + "\nSee [x](missing.md).\n"), "doesn't exist"),
+        expect("a page the index doesn't link fails", run(GOOD, extra={"orphan.md": "# Orphan\n"}), "doesn't link orphan.md"),
+        expect("a page without a title fails", run("Builder\n"), "title"),
+    ]
+    failed = results.count(False)
+    print(f"{len(results) - failed} of {len(results)} passed")
+    return 1 if failed else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

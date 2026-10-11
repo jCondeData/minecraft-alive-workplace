@@ -157,6 +157,9 @@ public final class Covens {
 	 * village whose ground they are in or near. Once there is none their hex lifts ({@link Sickness}).
 	 */
 	public static boolean cursed(ServerLevel level, Villager villager) {
+		if (Threats.gentle()) {
+			return false; // a gentle threat level has no hexes (32.21)
+		}
 		double reach = VillageHalls.RADIUS + 16.0;
 		for (Lairs.Lair lair : Lairs.all(level)) {
 			if (hexes(lair.culture()) && Threats.enabled(lair.culture())) {
@@ -228,7 +231,7 @@ public final class Covens {
 				Lairs.breakUp(level, lair, null); // her cauldron is gone: by a creeper, by fire, by a player we didn't see
 				continue;
 			}
-			if (Threats.enabled(lair.culture()) && night(level) && level.isLoaded(lair.hall())
+			if (Threats.enabled(lair.culture()) && night(level) && level.isLoaded(lair.hall()) && !Threats.gentle() && !Threats.quiet(level, lair.hall()) // (no hexes at a gentle threat level or in a quiet village, 32.21)
 				&& Data.get(level).lastHexed(lair.hall()) < Chronicle.day(level)) {
 				hexNight(level, lair, level.random);
 			}

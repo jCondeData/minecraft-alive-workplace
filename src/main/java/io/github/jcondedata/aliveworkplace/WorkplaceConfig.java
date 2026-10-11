@@ -91,6 +91,12 @@ public final class WorkplaceConfig {
 	/** Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls. */
 	public boolean banditCamps = true;
 	/**
+	 * How hard the village's threats are (ROADMAP 32.21), beside each system's own switch: 0, none at all (no raids, lairs,
+	 * sieges or disasters); 1, gentle (half as often, no sieges, no hexes, no plague); 2, normal; 3, hard (half again as
+	 * often, a quarter more raiders). On Peaceful difficulty nothing comes whatever this says.
+	 */
+	public int threatLevel = 2;
+	/**
 	 * Every raider culture (ROADMAP 32.2) and whether it's on: ours by name ({@code monsters}), a datapack's by its id
 	 * ({@code pack:id}). One set to false is never picked. In the file only (a map isn't on the settings screen); a
 	 * culture the file doesn't list is added, on, when the world's data loads. {@code villageRaids} and
@@ -409,7 +415,8 @@ public final class WorkplaceConfig {
 		"dollarsPerEmerald", 1, 10_000,
 		"stewardMaxOpenBuilds", 1, 8,
 		"caravanRoadReach", 32, 512,
-		"cupEveryFestivals", 1, 8);
+		"cupEveryFestivals", 1, 8,
+		"threatLevel", 0, 3);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -688,6 +695,7 @@ public final class WorkplaceConfig {
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
 		io.github.jcondedata.aliveworkplace.threat.Disasters.DISABLED = disastersOff(); // 32.15
+		io.github.jcondedata.aliveworkplace.threat.Threats.LEVEL = threatLevel; // 32.21
 		io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED = festivals && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Chatter.ENABLED = villagerChatter && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Couples.ENABLED = villagerCouples && System.getProperty("fabric-api.gametest") == null;

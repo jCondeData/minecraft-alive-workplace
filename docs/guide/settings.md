@@ -55,6 +55,7 @@ looking after. On the settings screen they are:
 | Daily Takings | a fifth of an emerald | what each worker brings the treasury a day |
 | Fastest Work Pace | twice the usual | the most all bonuses together can speed a worker up |
 | CobbleDollar Rate | 100 | CobbleDollars per emerald for shops, lessons and fares |
+| Threat Level | 2 | how much trouble comes to villages: 0 none at all, 1 gentle (half as often), 2 normal, 3 hard (half again as often, and a quarter more raiders). On Peaceful nothing comes. |
 
 ## For a big server
 
@@ -88,4 +89,6 @@ Change these in game with `/gamerule <name> <value>`:
 | `/workplace mail` | where your parcels are |
 | `/workplace strip <height>` | with a Quarry Marker in hand: a strip mine at that height |
 
-Operators also have `/workplace blueprint <name>` to get any blueprint.
+Operators also have `/workplace blueprint <name>` to get any blueprint, and `/workplace threat` for events at the
+nearest Village Hall: `start monsters` (or `bandits`) sends a raid now, `lair bandits` sets a bandit camp down by the
+village, `end` sends the raiders away, and `clear` clears the village of raiders, camps and the raids it was due.

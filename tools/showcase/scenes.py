@@ -731,6 +731,10 @@ SCENES = [
       "the hall's guards icon opened the Defence page: the bandit camp, its named chief, its strength and the last attacks", 45,
       [("01_defence_page", "The camp's chief, by name"), ("02_defence_strength", "The camp's strength"),
        ("03_defence_attacks", "The last attacks")]),
+    # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defence page; the camp leaves at the next dawn
+    S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
+      "the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,
+      [("01_at_peace", "The Defence page: At peace"), ("02_at_peace_guards", "The guards icon says so")]),
     S("hall_treasury", "Village Hall", "The treasury, protection and the Village Ledger",
       "the treasury was collected, the village protected and the hall opened from a Village Ledger", 60,
       [("01_hall_treasury", "Treasury and protection"), ("02_hall_collected", "Collected"), ("03_ledger_held", "Village Ledger"),

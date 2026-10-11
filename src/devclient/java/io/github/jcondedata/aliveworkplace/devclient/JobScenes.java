@@ -5489,6 +5489,42 @@ final class JobScenes {
 				new Step("03_defence_attacks", io.github.jcondedata.aliveworkplace.hall.DefencePage.HISTORY[0], 6, null, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.LAIR).is(Items.CAMPFIRE)));
+		// At peace (32.21): the owner set the village at peace on the Defence page; the bandit camp by it leaves at the next dawn.
+		SCREENS.put("at_peace", new Screen("the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				worker(level, new BlockPos(-4, -60, -3), ModBlocks.BLUEPRINT_TABLE, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+				guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD));
+				io.github.jcondedata.aliveworkplace.hall.VillageNeeds.check(level, STATION);
+				var camp = io.github.jcondedata.aliveworkplace.guard.BanditCamps.found(level, STATION, new BlockPos(STATION.getX() + 26, -61, STATION.getZ() - 30));
+				Showcase.check(camp != null, "a bandit camp stands by the village");
+				// The player owns the hall and sets the village at peace, as a click on the page does.
+				String said = io.github.jcondedata.aliveworkplace.hall.AtPeace.toggle(level, STATION, player).getString();
+				Showcase.check(level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity e && e.atPeace(),
+					"the village is at peace: " + said);
+				Showcase.check(said.contains("is at peace") && said.contains("leaves at the next dawn"), "the chat says the camp leaves at dawn: " + said);
+			},
+			// The At peace slot hovered on the Defence page; then the hall's guards icon, which says so too.
+			List.of(new Step("01_at_peace", io.github.jcondedata.aliveworkplace.hall.DefencePage.AT_PEACE, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
+						ItemStack peace = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.AT_PEACE);
+						Showcase.check(peace.is(Items.WHITE_TULIP) && peace.getHoverName().getString().equals("At peace"),
+							"the Defence page shows At peace: " + peace.getHoverName().getString());
+					}
+				}, 30),
+				new Step("02_at_peace_guards", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						var lore = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS).get(net.minecraft.core.component.DataComponents.LORE);
+						Showcase.check(lore != null && lore.lines().stream().anyMatch(l -> l.getString().startsWith("At peace")),
+							"the guards icon says the village is at peace");
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		SCREENS.put("research_trees", new Screen("a Legend's research tree has its own tab on the research screen: levels done, one in progress, an exclusive pick taken",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

@@ -44,6 +44,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace edict proclaim|lift &lt;id&gt; — proclaims or lifts an edict in the village you stand in (ops)
  * /workplace quests [track &lt;id&gt;|untrack] — your quests in chat with [Track]/[Untrack] (the quest journal, 31.3)
  * /workplace story start &lt;arc&gt;|next|stop — starts a story arc in the village you stand in, moves it on a chapter, or ends it (ops)
+ * /workplace threat start &lt;culture&gt;|lair &lt;culture&gt;|disaster &lt;id&gt;|end|clear — raids, lairs and disasters at the nearest hall (ops)
  * /workplace steward explain       — the Steward's rules for the nearest Village Hall, each condition's number and whether it held
  */
 public final class WorkplaceCommand {
@@ -160,6 +161,7 @@ public final class WorkplaceCommand {
 				.then(Commands.literal("stop")
 					.executes(ctx -> story(ctx.getSource(), "stop", ""))))
 			.then(io.github.jcondedata.aliveworkplace.legend.LegendCommand.node())
+			.then(io.github.jcondedata.aliveworkplace.threat.ThreatCommand.node()) // raids, lairs and disasters on demand (32.21): operators only
 			.then(Commands.literal("classes") // classes switched on, per hall (34.22): operators only
 				.requires(s -> s.hasPermission(2))
 				.then(Commands.literal("status")

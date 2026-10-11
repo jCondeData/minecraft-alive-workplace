@@ -196,11 +196,14 @@ public final class Disasters implements ResourceManagerReloadListener {
 		if (raining(level)) {
 			RAIN.put(level.dimension().location().toString(), day);
 		}
-		VillageFire.chimney(level, pos, hall, census, level.random); // a chimney spark on a dry day (32.16), once a day
+		boolean quiet = Threats.quiet(level, pos); // the threat level 0, Peaceful or At peace (32.21): no disaster comes
+		if (!quiet) {
+			VillageFire.chimney(level, pos, hall, census, level.random); // a chimney spark on a dry day (32.16), once a day
+		}
 		ResourceLocation id = hall.disaster();
 		if (id != null) {
 			Optional<Disaster> d = on(id);
-			if (d.isEmpty() || !live()) {
+			if (d.isEmpty() || !live() || quiet || Threats.gentle() && Plague.is(d.get())) {
 				end(level, pos, hall, d.orElse(null), day); // switched off (or gone from the datapacks): over at once
 				return;
 			}
@@ -225,7 +228,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 			return;
 		}
 		unafflict(level, pos);
-		if (!ROLLING || !live()) {
+		if (!ROLLING || !live() || quiet) {
 			return;
 		}
 		Long rolled = ROLLED.put(key(level, pos), day);
@@ -244,7 +247,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 			return Optional.empty();
 		}
 		for (Disaster d : disasters.values()) {
-			if (!enabled(d.id())) {
+			if (!enabled(d.id()) || Threats.gentle() && Plague.is(d)) { // (a gentle threat level brings no plague, 32.21)
 				continue;
 			}
 			double chance = chance(level, pos, d, census);
@@ -275,7 +278,7 @@ public final class Disasters implements ResourceManagerReloadListener {
 				chance = f.chance().orElse(chance) * f.times();
 			}
 		}
-		return Math.max(0, Math.min(1, chance));
+		return Math.max(0, Math.min(1, chance * Threats.scale(level, hall))); // the threat level and At peace (32.21)
 	}
 
 	/** Starts {@code disaster} at the hall: at once, or foretold {@code foretell_days} ahead when the village has a foreteller. */

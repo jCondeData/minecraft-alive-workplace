@@ -28,6 +28,13 @@ eye left in it.
 With **Cobblemon**, keep Fairy- or Psychic-type Pokémon in a Pasture Block near the brewing stand: the Physician gets
 round the village faster.
 
+## The Physician's House
+
+The **Blueprint Table** has a **Physician's House** for your builder to put up: a white ward with the brewing stand on
+a counter of herbs, four beds each between white screens (the quarantine ward) and a herb garden out front. Stand a
+villager by its brewing stand and hand them a glistering melon slice, and the village has its Physician. When a Town
+has no Physician, **What next?** at the hall suggests it.
+
 ## The Remedy
 
 Craft a **Remedy** from a glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye (any

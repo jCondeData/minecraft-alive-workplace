@@ -208,6 +208,63 @@ public class BuilderGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * Gatehouse II (ROADMAP 32.20): clicked onto a finished Gatehouse it lines up with it, and a builder stocked with
+	 * only what the upgrade still needs builds the barbican out in front — its walls, its gate and the portcullis drawn
+	 * up behind it — and leaves the gatehouse's own gate and portcullis as they stand.
+	 */
+	//$ gametest_ticks_batch BIG_AREA '9000' '"gatehouse_upgrade"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "gatehouse_upgrade")
+	public void builderUpgradesAFinishedGatehouse(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos originRel = new BlockPos(5, 2, 5);
+		BlueprintData.Placement placement = placement(helper, originRel, Rotation.NONE);
+		level.getStructureManager().get(StarterBlueprints.GATEHOUSE.id()).orElseThrow()
+			.placeInWorld(level, helper.absolutePos(originRel), helper.absolutePos(originRel), new StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+		BuildSiteManager.get(level).recordFinished(StarterBlueprints.GATEHOUSE.id(), placement, java.util.UUID.randomUUID());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.upgradeOf(StarterBlueprints.GATEHOUSE.id())
+			.equals(StarterBlueprints.GATEHOUSE_2.id()), "gatehouse_2 should upgrade gatehouse");
+
+		// Clicking the upgrade onto a tower of the gatehouse lines it up exactly.
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ItemStack upgrade = BlueprintItem.create(StarterBlueprints.GATEHOUSE_2.id(), StarterBlueprints.GATEHOUSE_2.size());
+		player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, upgrade);
+		BlockPos wall = helper.absolutePos(originRel.offset(0, 3, 2));
+		upgrade.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
+			new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(wall), net.minecraft.core.Direction.WEST, wall, false)));
+		helper.assertTrue(BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement).equals(Optional.of(placement)),
+			"the upgrade didn't line up: " + BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement));
+
+		// Stock only what the upgrade still needs, then build it.
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		var report = io.github.jcondedata.aliveworkplace.build.BlueprintSupplies.check(level,
+			new BlueprintData(StarterBlueprints.GATEHOUSE_2.id(), Optional.of(StarterBlueprints.GATEHOUSE_2.size()), Optional.of(placement)))
+			.orElseThrow(() -> new GameTestAssertException("no supply report"));
+		List<ItemStack> stacks = new java.util.ArrayList<>();
+		for (var m : report.missing()) {
+			for (int left = m.count(); left > 0; left -= m.item().getDefaultMaxStackSize()) {
+				stacks.add(new ItemStack(m.item(), Math.min(left, m.item().getDefaultMaxStackSize())));
+			}
+		}
+		helper.assertTrue(!stacks.isEmpty() && stacks.size() <= 27, "the upgrade needs " + stacks.size() + " stacks");
+		helper.assertTrue(report.missing().stream().anyMatch(m -> m.item() == net.minecraft.world.item.Items.IRON_BARS)
+			&& report.missing().stream().anyMatch(m -> m.item() == net.minecraft.world.item.Items.SPRUCE_FENCE_GATE), "the barbican's portcullis and gate aren't wanted: " + report.missing());
+		ItemStack[] needed = stacks.toArray(ItemStack[]::new);
+		Setup s = setup(helper, StarterBlueprints.GATEHOUSE_2.id(), originRel, Rotation.NONE, needed);
+		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			for (int x = 4; x <= 6; x++) {
+				helper.assertBlockPresent(Blocks.SPRUCE_FENCE_GATE, originRel.offset(x, 1, 8)); // the barbican's gate
+				helper.assertBlockPresent(Blocks.IRON_BARS, originRel.offset(x, 3, 7)); // its portcullis, drawn up
+				helper.assertBlockPresent(Blocks.SPRUCE_FENCE_GATE, originRel.offset(x, 1, 2)); // the gatehouse's own
+				helper.assertBlockPresent(Blocks.IRON_BARS, originRel.offset(x, 3, 3));
+			}
+			helper.assertTrue(s.site().placed() < total * 0.8, "placed " + s.site().placed() + " of " + total + " blocks: the gatehouse should have been kept");
+		});
+	}
+
+	/**
 	 * An upgrade that grows sideways: Starter Cottage III clicked onto a finished Cottage II lines up with it, and a
 	 * builder clears the mound where the new wing goes, builds the wing and its roof terrace, and knocks the doorway
 	 * through — the two storeys already there stay.

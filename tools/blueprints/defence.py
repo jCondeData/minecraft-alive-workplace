@@ -215,6 +215,153 @@ def gatehouse():
     return b
 
 
+
+# --- Defence upgrades (ROADMAP 32.20): each <name>_2 shares its base's origin and front, so a builder lines it up over
+# the finished build and builds only what's new. ---------------------------------------------------------------------
+def dripstone_stake(b, x, z):
+    """A pointed dripstone stake standing in the ditch, tip up, on its earthen bed."""
+    b.set(x, 1, z, "pointed_dripstone", thickness="tip", vertical_direction="up", waterlogged=False)
+
+
+def palisade_2():
+    """Upgrade of the Palisade (same origin and front): a fighting step — the walkway made solid planks on log legs at
+    the ends, with a step of slabs along it high enough to shoot over the low stakes' points — and in front, outside,
+    a ditch of pointed dripstone stakes in an earthen bed, two rows staggered. 7 x 6 x 4."""
+    b = palisade().grow(7, 6, 4)
+    for x in range(7):
+        if x == 3:
+            continue
+        b.set(x, 2, 0, "spruce_planks")
+        slab(b, x, 3, 0, SPRUCE)  # the fighting step: stand at 3.5, eyes over the low points
+    for x in (0, 6):
+        for y in (0, 1):
+            log(b, x, y, 0, "stripped_spruce_log")
+    for y in range(0, 4):
+        b.set(3, y, 0, "ladder", facing="north", waterlogged=False)
+    # the ditch: a bed of coarse earth, stakes of pointed dripstone staggered so there's no straight way through
+    for x in range(7):
+        for z in (2, 3):
+            b.set(x, 0, z, "coarse_dirt")
+            if (x + z) % 2 == 0:
+                dripstone_stake(b, x, z)
+    b.fill_air()
+    return b
+
+
+def stone_wall_2():
+    """Upgrade of the Stone Wall (same origin and front): timber hoardings over the battlements — spruce posts on the
+    merlons carry a lean-to dark oak roof over the walkway, and a timber gallery hangs out over the wall's foot on
+    stair brackets, its floor open between the brackets: murder holes to drop things through, a plank breastwork with
+    loopholes in front. 7 x 9 x 4."""
+    b = stone_wall().grow(7, 9, 4)
+    for x in range(7):
+        if x % 2 == 0:
+            b.set(x, 5, 2, "spruce_log", axis="y")  # the merlon's slab gives way to a post
+            log(b, x, 6, 2, "spruce_log")
+            stairs(b, x, 3, 3, SPRUCE, "north", top=True)  # a bracket under the gallery
+            b.set(x, 4, 3, "spruce_planks")  # the gallery's floor; between the brackets, the murder holes
+            log(b, x, 5, 3, "stripped_spruce_log")
+            log(b, x, 6, 3, "stripped_spruce_log")
+        else:
+            fence(b, x, 5, 3, "spruce_fence")  # a loophole in the breastwork
+            b.set(x, 6, 3, "spruce_planks")
+            b.set(x, 6, 2, "spruce_planks")  # the plate the rafters rest on
+        # the lean-to roof: over the gallery and the walkway
+        stairs(b, x, 7, 3, DARK_OAK, "north")
+        stairs(b, x, 7, 2, DARK_OAK, "north")
+        b.set(x, 7, 1, "dark_oak_planks")
+        slab(b, x, 8, 1, DARK_OAK)
+    lantern(b, 3, 6, 1, hanging=True)
+    b.fill_air()
+    return b
+
+
+def wall_tower_2():
+    """Upgrade of the Wall Tower (same origin and front): a roofed top with an archers' gallery — the battlements make
+    way for a timber platform level with their top, a post at each corner and in the middle of each side, an open bay
+    either side of every middle post (two stations a side) and a pyramid roof of dark oak with a lantern under it; the
+    ladder goes on up through the old top floor. 5 x 12 x 5."""
+    b = wall_tower().grow(5, 12, 5)
+    b.clear(0, 7, 0, 4, 8, 4)
+    for x in range(5):
+        for z in range(5):
+            edge = x in (0, 4) or z in (0, 4)
+            corner = x in (0, 4) and z in (0, 4)
+            if corner:
+                b.set(x, 7, z, "stone_bricks")
+            elif edge:
+                b.set(x, 7, z, BRICK_WALL_MIX.at(x, 7, z))
+            else:
+                b.set(x, 7, z, "spruce_planks")
+    for y in range(1, 8):
+        b.set(3, y, 3, "ladder", facing="north", waterlogged=False)
+    # posts: the corners and the middle of each side; the bays either side are the stations
+    for x, z in ((0, 0), (4, 0), (0, 4), (4, 4), (2, 0), (2, 4), (0, 2), (4, 2)):
+        log(b, x, 8, z, "spruce_log")
+        log(b, x, 9, z, "spruce_log")
+    # the roof: eaves round the posts, a second step, a slab cap with a lantern under it
+    for i in range(5):
+        stairs(b, i, 10, 0, DARK_OAK, "south")
+        stairs(b, i, 10, 4, DARK_OAK, "north")
+    for i in (1, 2, 3):
+        stairs(b, 0, 10, i, DARK_OAK, "east")
+        stairs(b, 4, 10, i, DARK_OAK, "west")
+    for i in (1, 2, 3):
+        stairs(b, i, 11, 1, DARK_OAK, "south")
+        stairs(b, i, 11, 3, DARK_OAK, "north")
+    stairs(b, 1, 11, 2, DARK_OAK, "east")
+    stairs(b, 3, 11, 2, DARK_OAK, "west")
+    slab(b, 2, 11, 2, DARK_OAK)
+    lantern(b, 2, 10, 2, hanging=True)
+    lantern(b, 1, 5, 1, hanging=True)  # the old top floor, now a room under the gallery
+    b.fill_air()
+    return b
+
+
+def gatehouse_2():
+    """Upgrade of the Gatehouse (same origin and front): a barbican out in front — two stone walls running out from the
+    towers, a second gate (fence gates under a keystone) with its own portcullis drawn up behind it, a vaulted passage
+    roofed in stone with murder holes over the gateway, battlements round its top level with the gatehouse's walkway
+    (the parapet between them opened), and lanterns either side of the new way in. In a siege both portcullises drop,
+    and the rams meet the barbican's gate first. 11 x 9 x 10."""
+    b = gatehouse().grow(11, 9, 10)
+    b.clear(3, 1, 4, 7, 1, 4)  # the old lanterns by the way in
+    b.clear(4, 6, 3, 6, 7, 3)  # the parapet over the gateway opens onto the barbican
+    for x in range(2, 9):
+        for z in range(4, 9):
+            passage = 4 <= x <= 6
+            b.set(x, 0, z, "cobblestone" if passage else STONE_MIX.at(x, 0, z))
+            for y in range(1, 6):
+                if passage and y <= 3:
+                    continue
+                corner = x in (2, 8) and z == 8
+                b.set(x, y, z, "stone_bricks" if corner else (MOSSY_BRICK_MIX if y <= 2 else BRICK_WALL_MIX).at(x, y, z))
+    # murder holes in the passage's roof, over the gateway
+    for z in (5, 6):
+        b.clear(5, 4, z, 5, 5, z)
+    # the outer gateway (three high and three wide, so a ram that broke the gate can walk in under it), a keystone
+    # over it, the barbican's gate and, behind it, its portcullis drawn up
+    b.set(5, 4, 8, "chiseled_stone_bricks")
+    for x in range(4, 7):
+        b.set(x, 1, 8, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+        b.set(x, 3, 7, "iron_bars")
+    # battlements round the barbican's outer edges
+    for x in range(2, 9):
+        for z in range(4, 9):
+            if z == 8 or x in (2, 8):
+                if (x + z) % 2 == 0:
+                    b.set(x, 6, z, "stone_bricks")
+                    slab(b, x, 7, z, STONE_BRICK)
+                else:
+                    slab(b, x, 6, z, STONE_BRICK)
+    # the doorstep and the lanterns either side of the new way in
+    for x in range(3, 8):
+        b.set(x, 0, 9, "stone_bricks")
+    for x in (3, 7):
+        lantern(b, x, 1, 9)
+    b.fill_air()
+    return b
+
 # --- Barracks: a stone hall for guards --------------------------------------------------------------------------------
 BARRACKS_FRAME = "dark_oak_log"
 

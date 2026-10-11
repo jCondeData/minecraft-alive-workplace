@@ -31,6 +31,16 @@ asks for the steps, `latest.log` and any crash report).
   reaches at Journeyman: +150 standing in both villages, +100 friendship with him and the honour Wayfinder. The
   stockade's chest holds the lost goods; bring them to the receiving hall for 8 emeralds and +50 standing there. After 7
   days without a rescue he finds his own way home with nothing, and the goods are lost.
+- **Defence upgrades** (32.20): **Palisade II** (a fighting step, and a ditch of pointed dripstone stakes in front),
+  **Stone Wall II** (timber hoardings: a roofed walkway with murder holes), **Wall Tower II** (a roofed top with an
+  archers' gallery, two stations a side) and **Gatehouse II** (a barbican: a second gate and portcullis, murder holes
+  over the gateway). In a siege both portcullises drop and the barbican's gate is broken first; the guards shut both
+  gates at night.
+- **Houses for the answering jobs** (32.19): the Blueprint Table has a **Fire Station** (a stone ground floor with the
+  Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), a **Well House** (a roofed
+  well down to water with the Well Keeper's cauldron, a trough and benches) and a **Physician's House** (the brewing
+  stand, a herb garden and four ward beds behind screens). Each has its job's block and no other. What next? suggests
+  each when the village lacks its job and its disaster can come there ("Drought can come here: build a Well House").
 - **Plague and the Physician** (32.18, behind the 1.6 expansion): a Town or bigger may suffer a plague (3% a day, twice
   that with more villagers than beds; a coven's hexed or a traveller from far away can bring it too). While it lasts,
   each hall round a villager within 3 blocks of an ill one catches it 1 in 5 (less with Medicine research); the ill
@@ -164,6 +174,11 @@ asks for the steps, `latest.log` and any crash report).
   tick with over 50 ms of ours, and `perf.py --ticks server.log` sums them up. Normal servers are unchanged.
 
 ### Fixed
+- Updating no longer leaves a finished expansion switched off (34.23): a config file written by an earlier version held
+  `false` for the switches of expansions that weren't out yet, and the new version obeyed it, so a server updating to
+  1.8 would have kept classes, ages and family names off. Such switches now take their new default; a switch turned off
+  after the update stays off. Found by the update rehearsal (`tools/packtest/rehearsal.sh`, a 0.142.0 world opened with
+  1.8 on the Cobbleverse pack).
 - A crafter's first look at the recipes no longer stalls a big modpack's server for a third of a second (B101): the
   crafters' recipes are sorted and their ingredients worked out once when the server starts and after each `/reload`,
   and the crafters' planning has a limit per plan and per tick (a crafter past it looks again a few seconds later).

@@ -287,7 +287,15 @@ public final class WorkplaceConfig {
 	 */
 	@SuppressWarnings("unused")
 	private int configVersion = VERSION;
-	static final int VERSION = 2;
+	static final int VERSION = 3;
+	/**
+	 * The expansions whose gates were open when the file was written ({@link Expansions#open()}; not an option). A gated
+	 * switch saved while its gate was closed holds its closed default, {@code false}, which is no player's choice: when
+	 * that expansion is finished, {@link #parse} gives such a switch its new default (34.23's rehearsal: a 0.142.0 file
+	 * kept classes off under 1.8).
+	 */
+	@SuppressWarnings("unused")
+	private java.util.List<String> expansionsOpen = Expansions.open();
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	public static final String FILE = "aliveworkplace.json";
@@ -337,6 +345,28 @@ public final class WorkplaceConfig {
 			config.seasonDays = 16;
 		}
 		config.configVersion = VERSION;
+		// Which gates were open when the file was written: its list, or none in a file a jar of format 2 wrote (0.139.0 to
+		// the last release before this); a file with neither (written by hand, or older) is taken as it says.
+		java.util.List<String> written = new java.util.ArrayList<>();
+		com.google.gson.JsonObject object = tree.isJsonObject() ? tree.getAsJsonObject() : new com.google.gson.JsonObject();
+		boolean recorded = object.get("expansionsOpen") instanceof com.google.gson.JsonArray;
+		if (recorded) {
+			object.getAsJsonArray("expansionsOpen").forEach(e -> written.add(e.getAsString()));
+		}
+		boolean closedWhenWritten = recorded || (object.has("configVersion") && object.get("configVersion").getAsInt() < 3);
+		WorkplaceConfig defaults = new WorkplaceConfig();
+		for (java.lang.reflect.Field field : WorkplaceConfig.class.getFields()) {
+			String milestone = Expansions.milestone(field.getName());
+			if (field.getType() == boolean.class && !java.lang.reflect.Modifier.isStatic(field.getModifiers()) && milestone != null && closedWhenWritten
+				&& Expansions.on(Expansions.flag(milestone)) && !written.contains(milestone)) {
+				try {
+					field.setBoolean(config, field.getBoolean(defaults)); // saved while its gate was closed: not a choice
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException(e);
+				}
+			}
+		}
+		config.expansionsOpen = Expansions.open();
 		config.clamp();
 		return config;
 	}

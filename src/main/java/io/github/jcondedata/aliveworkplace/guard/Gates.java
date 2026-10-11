@@ -2,7 +2,6 @@ package io.github.jcondedata.aliveworkplace.guard;
 
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
-import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
@@ -52,10 +51,9 @@ public final class Gates {
 
 	/** Shuts ({@code shut}) or opens the gates of the village round {@code hall} now. Returns how many gates moved. */
 	public static int shut(ServerLevel level, BlockPos hall, boolean shut) {
-		Set<ResourceLocation> gated = gated();
 		int moved = 0;
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS)) {
-			if (!gated.contains(BlueprintStyles.base(f.structure()))) {
+			if (!io.github.jcondedata.aliveworkplace.threat.Sieges.isGated(f.structure())) { // in any style or tier: Gatehouse II's two gates (32.20)
 				continue;
 			}
 			Blueprint blueprint = BlueprintLibrary.get(level, f.structure()).orElse(null);

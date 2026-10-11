@@ -6,7 +6,7 @@ described as data the way the raider cultures are (see [Raids and threats](raids
 32.16 ([Village fire and the Firewarden](village-fire.md)) and the drought with 32.17 ([Drought and the Well
 Keeper](drought.md)) and the plague with 32.18 ([Plague and the Physician](plague.md)); a datapack can add its own.
 
-Roadmap items: 32.15
+Roadmap items: 32.15, 32.19
 
 ## What a player sees
 
@@ -16,6 +16,19 @@ Roadmap items: 32.15
   Drought will come to Oakvale. Days until it strikes: 1." When it ends: "Drought is over in Oakvale."
 - **The hall.** The wellbeing icon has a red first line ("Drought (days left: 2)", "Drought, until it rains" or
   "Drought foretold (days until it strikes: 1)"). What next? lists it, and names the job that answers it when the village has none.
+- **Houses for the answering jobs** (32.19). The Blueprint Table has three one-tier builds, each with its job's block
+  and no other job block: the **Fire Station** (a stone ground floor with the Firewarden's grindstone, a water basin
+  and buckets on racks, a ladder up to a timber watch loft with windows all round), the **Well House** (a roofed well
+  on a stone platform, its shaft three deep down to water, the Well Keeper's cauldron, a water trough and benches) and
+  the **Physician's House** (a white ward with the brewing stand on a counter of herbs, four beds each between white
+  screens, the quarantine ward, and a herb garden out front). A builder builds them from the chests like any blueprint;
+  hand a jobless villager there the job's item (a water bucket, a shovel, a glistering melon slice) and they take the
+  job at that block. On the Village Map the Fire Station is a defence, the other two care.
+- **What next? suggests them** (32.19): "Drought can come here: build a Well House", with "No Well Keeper answers it
+  yet. Build the Well House and hand a villager by its Cauldron the job's item (A shovel)". One tip for each disaster
+  that's switched on and can come to this village (its `when` holds: wood enough for a fire, a Town for the plague; a
+  drought can come anywhere), whose answering job is switched on and missing from the village. It goes once the
+  village has that job, or with the disaster or the job switched off.
 - **The chronicle** has it begin, foretold and end, under the new kinds **Fire**, **Drought** and **Plague**.
 - **What it does** depends on the disaster's effects: crops grow slower, farmland dries even by water, water cauldrons
   lose a level a day, villagers fall ill and pass it on, are unhappy (a mood reason, "Drought in the village"), fires
@@ -62,7 +75,9 @@ wood share are kept in memory and rebuilt by the halls' rounds after a restart.
 
 ## Items, blocks, jobs, commands
 
-none (the chronicle gains the kinds `FIRE`, `DROUGHT` and `PLAGUE`).
+No new item or block; the chronicle gains the kinds `FIRE`, `DROUGHT` and `PLAGUE`. Blueprints (32.19):
+`aliveworkplace:fire_station`, `aliveworkplace:well_house`, `aliveworkplace:physicians_house`, drawn by
+`tools/blueprints/answering.py`.
 
 ## Decisions
 
@@ -70,6 +85,12 @@ none (the chronicle gains the kinds `FIRE`, `DROUGHT` and `PLAGUE`).
   them gets the engine's own lines, naming it by its id (32.15: no disaster ships yet, so a datapack's works without
   a resource pack).
 - `answered_by` is shown in What next? only; what the answering job does is its own item (32.16 to 32.18).
+- A house tip (32.19) asks only the disaster's `when`, not its `requires`: those wait for the weather (days without
+  rain), and a village should build before the drought, not during it. A house tip and the `disaster_answer` tip can
+  show together while that disaster is on.
+- The buckets on the Fire Station's racks are empty flower pots (a bucket has no block); the basin is real water, a
+  water bucket from the chests.
+- The three houses have no upgrade (one tier, like the Map Room and the Bandstand).
 - Rain is the weather as set, not the sky's slow fade, so a disaster ends the round the rain begins.
 
 ## Known limits
@@ -86,3 +107,11 @@ after, farmland dries by water, cauldrons lose one level a day, villagers fall i
 villagers are unhappy, a fire starts, farmers work at half pace, it ends after its two days and with rain (and none
 starts in the days of rest), it survives a save and load of the hall (and an old hall loads with none), a librarian
 foretells it a day ahead, switched off it never starts, and every new sentence has its text. No scene (nothing ships).
+
+`AnsweringHousesGameTests` (32.19): the three houses are in the Blueprint Table, named and on the Village Map; each
+has its job's block once and no other job block, and what the item asks (the basin, the pails on racks, the loft and
+its windows; the shaft open down to water, the kerb, the trough, the benches, the roof; four beds between screens,
+the herb garden); a builder builds each from chests and a jobless villager there handed the job's item takes the job
+at the house's block; What next? suggests the Well House to a hamlet without a Well Keeper (with its title and how),
+the Physician's House only to a town, neither once the village has those jobs, and none with drought switched off;
+every new sentence has its text. Showcase scene `defences` films the three after the walls and gates.

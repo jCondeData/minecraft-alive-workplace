@@ -28,7 +28,7 @@ FAMILIES = {
     "shops": ("Shops, farms and services", ["supply_shop*", "market_stall*", "berry_farm*", "apiary_garden*", "ranch*",
                                             "flower_shop*", "healing_center*", "library*", "schoolhouse*"]),
     "defences": ("Defences", ["palisade", "palisade_gate", "palisade_tower", "stone_wall", "wall_tower", "gatehouse", "barracks*",
-                              "lookout_tower*", "camp/bandit_camp"]),
+                              "lookout_tower*", "camp/bandit_camp", "fire_station", "well_house", "physicians_house"]),
     "decorations": ("Decorations", ["well*", "street_lamp", "park_bench", "fountain", "gazebo", "market_square", "chapel"]),
 }
 for style in STYLES:

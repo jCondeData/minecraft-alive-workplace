@@ -3188,7 +3188,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     physician has seen passes it on less; the Remedy cures a hexed and a plague-ill villager, where a honey bottle
     cures neither; the plague ends a day after the last cure; the recipe crafts;
   - scene `plague`: the physician going house to house with the Remedy (GIF), and the hall's list of the ill.
-- [ ] **32.19** **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
+- [x] **32.19** (review: pending 2026-10-11) **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
   renders), in the Blueprint Table, each with its job's block and no other job block: the **Fire Station** (a stone
   ground floor with the Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), the
   **Well House** (a roofed well shaft down to water with the Well Keeper's cauldron, a trough and a bench) and the
@@ -3196,7 +3196,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   next? suggests each when the village lacks its job and its disaster can come there. Done when: the three pass
   `check.py`; a render package shows each front and back; a builder builds each in a test and a jobless villager there
   takes the job with its item; the `defences` scene films them too.
-- [ ] **32.20** **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
+- [x] **32.20** (review: pending 2026-10-11) **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
   `BlueprintUpgrades`), with the minecraft-architect skill: **Palisade II** (a fighting step, and a ditch of pointed
   dripstone stakes in front), **Stone Wall II** (timber hoardings over the battlements: a roofed walkway with murder
   holes), **Wall Tower II** (a roofed top with an archers' gallery, two stations a side) and **Gatehouse II** (a
@@ -3972,7 +3972,7 @@ on a real world.
   Scholar in a plain house, a married couple, a child, a builder mid-build, a rancher with daycare boarders, a hall
   of City rank), prove each bullet, including a save and reload part-way through seeding and a second round that
   changes nothing; scene `class_switch_on` (the hall's pages before and after) passes.
-- [ ] **34.23** **A rehearsal on a real world.** With `tools/packtest` on the Cobbleverse pack: a world made with the
+- [x] **34.23** (approved auto 2026-10-11) **A rehearsal on a real world.** With `tools/packtest` on the Cobbleverse pack: a world made with the
   last release before 1.8, with three villages with halls (a Hamlet of 6; a Town of 22 with research and couples; a
   City of 36 with every class-gated job, children, a build in progress, daycare boarders, fossils reviving, mail on
   the way), saved, then opened with the 1.8 jar and run for 2 in-game days. Done when: the log audit is clean; the
@@ -4440,6 +4440,24 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-11 (34.23, lane-d-1011-1532): **the update rehearsal passed**: report [docs/owner/rehearsal-1.8.md](docs/owner/rehearsal-1.8.md),
+  owner's steps [docs/owner/updating-to-1.8.md](docs/owner/updating-to-1.8.md), tool `tools/packtest/rehearsal.sh`. A
+  0.142.0 world (Cobbleverse 1.7.42; Hamlet 6, Town 22, City 36 seeded by `/workplace rehearsal seed`) opened with main
+  (dd04c190 + this change) and every gate open: classes seeded in 420 ticks (tick p95 42.7 ms, worst 1047 ms,
+  unattributed), 44 of 44 jobs kept, ranks hamlet/town/city kept, takings equal to the same days on the old jar
+  (0.78 / 4.62 / 9.10 emeralds a day), 37 containers and 2,037 items equal on loading, daycare boarders, the fossil
+  revival, the parcel in transit and the build in STRUCTURE all kept; log audit exit 0 (pack registry errors only).
+  **Found and fixed:** a config file written while a gate was closed holds `false` for its switches, so the first
+  rehearsal opened with classes off (as the owner's server would have): `WorkplaceConfig.parse` now gives such switches
+  their new default (the file records `expansionsOpen`; a format-2 file, 0.139.0 to 0.142.0, counts as all closed; config
+  format 3), `ExpansionGateGameTests.aFileFromBeforeTheReleaseTakesTheNewDefaults`.
+  Decisions: (1) the old jar is the v0.142.0 tag built with `command/Rehearsal.java` copied in (the published jar
+  can't seed); (2) "1.8" is run as main with `-Daliveworkplace.shots=true` (every gate open; M34 is still false);
+  (3) takings are compared with a control (the saved world on the old jar for the same 2 days), since they drift by
+  themselves (an earlier run without it showed 9.90 on day 1 vs 9.10 on days 2-3 for both jars); (4) the staged homes are
+  beds in the open, so everyone seeds as a Peasant. Open: the 1 s worst tick in the seeding window needs a JFR profile
+  to say whose it is.
 
 - **Fire and the Firewarden (32.16, lane-b-1011-1233, 2026-10-11): decisions.** `village_fire.json` is a disaster
   file (so `disasters` switches it) whose daily roll never starts it (`chance` 0, no `fires_a_day`): its fires are

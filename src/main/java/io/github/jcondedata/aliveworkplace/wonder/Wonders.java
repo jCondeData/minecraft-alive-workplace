@@ -130,6 +130,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 			problems = java.util.Collections.unmodifiableMap(all);
 		}
 		wonders = out;
+		WonderBlueprints.forget(); // the whole blueprints are merged again from the new files (35.3)
 		AliveWorkplace.LOG.info("Wonders: {}", wonders.keySet());
 	}
 

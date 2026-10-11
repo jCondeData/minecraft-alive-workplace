@@ -4051,7 +4051,7 @@ Legends.
   - every condition type has a true and a false GameTest, and a `legend` falls back to its stand-in;
   - the caps hold: a Town with one Wonder can't start a second and a City can, the same kind twice in one village is
     refused, and `wonderServerLimit 1` refuses a second village.
-- [ ] **35.3** **The Wonders page and the Wonder Plan.** A new button on the Village Hall's screen opens the
+- [x] **35.3** (review: pending 2026-10-11) **The Wonders page and the Wonder Plan.** A new button on the Village Hall's screen opens the
   **Wonders** page (a `ChoiceMenu`): every enabled Wonder as its icon, name and power in a line, each requirement
   ticked or crossed with what's missing ("2 of 3 Chapels", "the Seer: not in the village"), and the cap ("Wonders: 1
   of 1 for a Town"); a Wonder going up shows its stage and how far along it is. With everything ticked, **Draw up the

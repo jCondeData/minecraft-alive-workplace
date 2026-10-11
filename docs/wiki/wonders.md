@@ -2,18 +2,42 @@
 
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
-what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps are
-built, behind the 2.0 switch (see Known limits); the full plan is the design note, docs/design/M35.md.
+what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
+Wonders page and the Wonder Plan are built, behind the 2.0 switch (see Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2
+Roadmap items: 35.1, 35.2, 35.3
 
 ## What a player sees
 
-Nothing yet: no Wonder can be started in game. The design note describes what is coming: a Wonders tab on the Village
-Hall listing each Wonder with its requirements ticked or crossed; Draw up the plans (32 emeralds) for a Wonder Plan
-with a see-through preview; a Foundation Stone handed to a builder; a crew of up to 12 builders on 8 × 8 columns, with
-scaffolding where they can't reach; goods from every job, dedicated at the stone stage by stage; and a finished Wonder
-announced to the server, celebrated with a festival, and its powers on while at least 90% of it stands.
+**The Wonders page** (35.3): a Wonders tab on the Village Hall (a spare tab, so the tabs kept for add-ons stay free).
+Each Wonder on the server's list is a card: its icon, name and power, then "Needs:" with each requirement ticked (✔) or
+crossed (✘) with the village's progress ("Finished Chapel: 2 of 3", "Standing in for the Master Architect: …"), the cap
+("Wonders: 0 of 1 for a Town") and what a click does. A Wonder going up here shows its stage and how far along it is
+("Going up: stage 2 of 3, The Upper Storey (33% along)"), a finished one its day.
+
+**Draw up the plans**: with every line ticked and the caps clear, a click on the card pays 32 emeralds (the realm's
+treasury if the village is in a realm and realms are on, else the hall's treasury, else the player's own emeralds; free
+in creative when neither treasury has them) and gives a **Wonder Plan**, a rolled blueprint with a gold seal. Only the
+hall's owner, their friends and operators may. Before that, a click says what's missing and takes nothing.
+
+**The Wonder Plan** holds the whole Wonder's blueprint:
+
+- held and placed, it shows the whole Wonder as see-through blocks, like any blueprint;
+- right-click the ground to place it (its front faces you), sneak-right-click the ground to turn it, sneak-right-click
+  the air to pick it up again or, not placed, open the style screen, where it can only be mirrored (each Wonder keeps
+  its own blocks);
+- it goes down only with its centre within the hall's reach (64 blocks), every corner within 96 blocks of the hall, and
+  not over a finished building or another Wonder; otherwise it says why ("It would stand over the finished Chapel");
+- a Book and Quill in the other hand writes the whole Wonder's material list.
+
+Handing the placed plan to a builder (the Foundation Stone) comes with 35.4.
+
+**What next?** names the Wonder closest to ready once the village is a Town with room for one: "The Great Cathedral can
+be begun", or the first line it lacks ("The Great Cathedral is nearly in reach: Finished Chapel: 2 of 3").
+
+Still to come (the design note): the Foundation Stone handed to a builder; a crew of up to 12 builders on 8 × 8 columns,
+with scaffolding where they can't reach; goods from every job, dedicated at the stone stage by stage; and a finished
+Wonder announced to the server, celebrated with a festival, and its powers on while at least 90% of it stands.
 
 | Wonder | Rank | Legend (stand-in) | Other requirements | Powers |
 |---|---|---|---|---|
@@ -69,6 +93,14 @@ Master builder as the stand-in), so no file can leave it out.
 
 Each refusal says why ("Wonders: 1 of 1 for a Town.", "This village already has the Great Cathedral.").
 
+**A Wonder's blueprints** (35.3): each stage's parts are structure files, `structure/wonder/<id>/stage_<n>_<part>.nbt`,
+each at most 48 a side and only what that stage adds to the ones before (stage I also clears the site). The whole
+Wonder, `<namespace>:wonder/<id>`, is those parts laid at their offsets, merged once and kept until data packs load
+again; it is what the plan shows. Nothing under `wonder/` is ever on the Blueprint Table. A Wonder whose part is
+missing can't have its plans drawn up (the log names the part). For pack makers drawing their own: the blueprint kit's
+`wonder_stages()` (`tools/blueprints/kit.py`) takes the Wonder drawn one stage at a time and writes the parts and their
+offsets; `tools/blueprints/wonders.py` draws the test folly with it.
+
 Each Wonder in progress or finished is recorded per dimension, with its village's hall, the player who started it, its
 stage and the days it was begun and finished. The Wonders page (35.3) and the Foundation Stone (35.4) will use these
 checks; stage parts are ordinary builds of the builder, using the Foundation Stone as their bench.
@@ -100,7 +132,9 @@ optional fields on a build site.
 - `/workplace wonders`: every Wonder on the server, one line each: its name, village, owner and stage ("stage 2 of 3,
   …" or "finished on day 12"). While `wonders` is off it says "Wonders are off."
 
-Planned: the Wonder Plan (an item) and the Foundation Stone (a block).
+- **Wonder Plan** (`aliveworkplace:wonder_plan`): drawn up on the Wonders page; not crafted, not in the creative tab.
+
+Planned: the Foundation Stone (a block).
 
 ## Decisions
 
@@ -111,10 +145,11 @@ Planned: the Wonder Plan (an item) and the Foundation Stone (a block).
 
 ## Known limits
 
-- No Wonder can be started in game yet: there's no page, plan or stone (35.3, 35.4), and none of our eight Wonders'
-  files ships yet (35.9 to 35.23). Everything is behind the 2.0 switch.
-- A stage's `parts` are only checked to be valid ids; that the structures exist is checked once the plans are drawn
-  (35.3).
+- No Wonder can be started in game yet: the plan can be drawn and placed, but there's no Foundation Stone to hand it
+  over (35.4), and none of our eight Wonders' files ships yet (35.9 to 35.23). Everything is behind the 2.0 switch.
+- A Wonder going up shows "how far along" by its stages done; the parts' own progress joins with 35.4.
+- Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
+- A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
 - Powers are read and checked for their type only; what each does comes with its Wonder.
 
 ## Proof
@@ -124,3 +159,11 @@ resources only), broken files are skipped with their reasons, a Wonder from a da
 every requirement type holds and fails, `legend` falls back to its stand-in, the caps (a Town with one can't start a
 second and a City can, the same kind twice, one going up, `wonderServerLimit 1`, disabled, off), `/workplace wonders`,
 the switches and the gate, and the saved sites. No showcase scene (nothing to see yet).
+
+GameTests in `WonderPlanGameTests` (35.3): the folly's three parts merge into the tower as drawn (compared block by
+block with the drawing), no part sets air over an earlier stage's block, parts are at most 48 a side, the whole
+blueprint is cached and never on the Blueprint Table; the page's card ticks every line and offers the plans, one unmet
+line (no Master builder) shows crossed, the cap line, and "What next?" names the folly; Draw up the plans takes the
+player's 32 emeralds or the treasury's, refuses without the money, over the cap and for a stranger, taking nothing;
+the plan is refused outside the village and over a finished building and goes down elsewhere in all four turns.
+Showcase scene `wonders_page` (group Wonders): the folly's card, then the placed plan's see-through tower.

@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Wonders page and the Wonder Plan** (35.3, 2.0, still switched off): a Wonders tab on the Village Hall lists every
+  Wonder as a card (its icon, name and power), each requirement ticked or crossed with what's missing, the cap
+  ("Wonders: 0 of 1 for a Town"), and a Wonder going up with its stage. With every line ticked, a click draws up the
+  plans for 32 emeralds (from the realm's treasury, else the hall's, else the player's; owner and friends only) and
+  gives a **Wonder Plan**: the whole Wonder as see-through blocks, turned with sneak-right-click and mirrored on the
+  style screen, placed only with its centre in the village, all of it within 96 blocks of the hall and over no finished
+  building or other Wonder (it says why otherwise). "What next?" names the Wonder closest to ready once the village is
+  a Town. Builders draw Wonders stage by stage with the kit's new `wonder_stages()`.
 - **Wonders as data** (35.2, 2.0, still switched off): a Wonder is one file, `data/<namespace>/wonders/<id>.json` (its
   name, icon, requirements, stages with their parts and goods, powers and crew), so a server owner's own Wonder works
   like ours; a file with a mistake is logged with its path and the reason and skipped. Requirements use the Legends'

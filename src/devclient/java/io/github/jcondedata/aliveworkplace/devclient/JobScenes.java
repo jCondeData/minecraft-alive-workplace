@@ -5309,6 +5309,63 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// The Wonders page and the Wonder Plan (ROADMAP 35.3): a Town with a Master builder; the hall's Wonders tab shows the
+		// test folly's card with every line ticked; its plans are drawn up (32 emeralds) and the plan, placed north of the hall,
+		// shows the whole tower as see-through blocks.
+		SCREENS.put("wonders_page", new Screen("the hall's Wonders page showed the Test Folly's card with every requirement ticked and the cap; Draw up the plans took 32 emeralds and gave a Wonder Plan, which placed north of the hall shows the whole tower as see-through blocks",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getName().getString());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				hall.setTreasury(0);
+				io.github.jcondedata.aliveworkplace.wonder.Wonders.LEGENDS = false; // the Master Architect's stand-in: a Master builder
+				String[] names = {"Odo", "Pia"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = EntityType.VILLAGER.create(level);
+					v.moveTo(-2.5 + i * 4, -60, 3.5, 180, 0);
+					v.setNoAi(true);
+					v.setCustomName(Component.literal(names[i]));
+					v.setVillagerData(v.getVillagerData().setProfession(i == 0 ? io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER
+						: net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(i == 0 ? 5 : 2));
+					level.addFreshEntity(v);
+				}
+				player.getInventory().clearContent();
+				player.getInventory().add(new ItemStack(Items.EMERALD, 32));
+			},
+			List.of(new Step("01_wonders_page", -2, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					var folly = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
+					int index = new java.util.ArrayList<>(io.github.jcondedata.aliveworkplace.wonder.Wonders.all()).stream().map(w -> w.id()).toList().indexOf(folly);
+					Showcase.check(index >= 0, "the Test Folly is on the list: " + io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().keySet());
+					pickedSlot = -1;
+					if (player.containerMenu instanceof ChoiceMenu m && index >= 0) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.wonder.WondersPage.PAGE), player);
+						pickedSlot = io.github.jcondedata.aliveworkplace.wonder.WondersPage.slot(index);
+						Showcase.check(m.icon(pickedSlot).getHoverName().getString().equals("Test Folly"), "the folly's card: " + m.icon(pickedSlot).getHoverName().getString());
+						Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WondersPage.cards(level, STATION).get(index).ready(), "every line of the folly's card ticked");
+					}
+				}, 40),
+				new Step("02_wonder_plan_preview", -1, 0, (level, player) -> {
+					var folly = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
+					var drawn = io.github.jcondedata.aliveworkplace.wonder.WonderPlans.draw(level, STATION, player, folly);
+					Showcase.check(drawn.drawn() && player.getInventory().countItem(Items.EMERALD) == 0, "the plans drawn up for 32 emeralds: " + drawn.message().getString());
+					player.closeContainer();
+					player.getInventory().clearContent();
+					ItemStack plan = drawn.plan().copy();
+					var data = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(plan).orElseThrow();
+					var placement = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.placementAt(level.dimension().location(), data.size().orElseThrow(),
+						STATION.offset(0, 0, -6), net.minecraft.world.level.block.Rotation.CLOCKWISE_180);
+					var plans = io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.plan(plan).orElseThrow();
+					Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderPlans.placeRefusal(level, plans, placement, data.size().get()).isEmpty(), "the folly may go north of the hall");
+					plan.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.BLUEPRINT, data.withPlacement(java.util.Optional.of(placement)));
+					player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, plan);
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(13.5, -52, 12.5), new Vec3(0, -53, -10));
+				}, 80)),
+			(level, player) -> player.getMainHandItem().is(io.github.jcondedata.aliveworkplace.registry.ModItems.WONDER_PLAN)
+				&& io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(player.getMainHandItem()).flatMap(d -> d.placement()).isPresent()));
 		// Switching classes on (ROADMAP 34.22): a village from before 1.8 (a couple in a builder's cottage, three more without
 		// a home), the hall's Classes tab before; then the hall's rounds seed them, the chronicle says so once, and the tab and
 		// page show "Settling in: 7 days left" with what each class will need.

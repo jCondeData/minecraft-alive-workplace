@@ -1155,6 +1155,33 @@ def guild_charter():
     return [s.save(item("guild_charter"))]
 
 
+def wonder_plan():
+    """The Wonder Plan (35.3): the Guild Charter's roll, drawn in the blueprint's blues (its rolled ends curling at both
+    tips, two white sketch dashes along the sheet) and sealed in the middle with a round gold seal whose ribbon tails hang
+    below, lit from the top-left and darker towards the bottom-right as vanilla lights gold."""
+    s = grid("""
+        ................
+        ............aa..
+        ...........a33d.
+        ..........a3k2d.
+        .........a3x2d..
+        ........a3x2d...
+        .......a332d....
+        ......a33rrr....
+        .....a3xrRwRr...
+        ....ax32rRRRq...
+        ...a332d.rRq....
+        ..aa22d..r.q....
+        .a3k2d...q.q....
+        .a32d....r.q....
+        ..dd............
+        ................
+    """, {"a": BLUE.outline_light, "d": BLUE.outline_dark, "k": BLUE[0], "x": INK,
+          "r": GOLD.outline_light, "R": GOLD[1], "w": GOLD[3], "q": GOLD.outline_dark},
+        ramp=BLUE)
+    return [s.save(item("wonder_plan"))]
+
+
 def evergreen_charm():
     """The Evergreen Charm (34.19a): a leaf pendant, hung the way vanilla hangs a lead or a name tag from its loop: a
     gold chain loop at the top-right, and from its bail a leaf of emerald green (the emeralds of its recipe) pointing
@@ -1291,6 +1318,7 @@ DRAW = [blank_blueprint, blueprint, shape_planner, patrol_map, delivery_note, tr
         evergreen_charm, gift_wrap, gift]
 DRAW += [amethyst_ring, emerald_brooch, gold_circlet]   # the Jeweller's pieces (34.12)
 DRAW += [remedy]   # the Physician's Remedy (32.18)
+DRAW += [wonder_plan]   # the Wonder Plan (35.3)
 
 if __name__ == "__main__":
     run(DRAW)

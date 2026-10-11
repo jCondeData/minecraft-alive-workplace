@@ -92,6 +92,15 @@ public final class ModComponents {
 			.networkSynchronized(io.github.jcondedata.aliveworkplace.colony.ColonyCharterItem.Charter.STREAM_CODEC).build()
 	);
 
+	/** A Wonder Plan's Wonder and the hall that drew it up (35.3). */
+	public static final DataComponentType<io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.Plan> WONDER_PLAN = Registry.register(
+		BuiltInRegistries.DATA_COMPONENT_TYPE,
+		AliveWorkplace.id("wonder_plan"),
+		DataComponentType.<io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.Plan>builder()
+			.persistent(io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.Plan.CODEC)
+			.networkSynchronized(io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.Plan.STREAM_CODEC).build()
+	);
+
 	/** A village's plan, on the Village Hall item when the hall is broken (27.2). */
 	public static final DataComponentType<io.github.jcondedata.aliveworkplace.city.CityPlan> CITY_PLAN = Registry.register(
 		BuiltInRegistries.DATA_COMPONENT_TYPE,

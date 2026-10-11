@@ -173,6 +173,7 @@ public final class VillageRaids {
 				// Those of the lair's band who lived rejoin it; the extras and a captain who led them don't count (32.7).
 				int band = (int) left.stream().filter(m -> !m.getTags().contains(Threats.EXTRA_TAG) && !Lairs.leading(m)).count();
 				left.forEach(m -> {
+					culture.ifPresent(c -> Threats.tactics(c).forEach(t -> t.leave(level, hall, c, m))); // (what they carry goes with them, 32.10)
 					// (those who came from the sea go back into it, 32.8)
 					level.sendParticles(sea ? net.minecraft.core.particles.ParticleTypes.SPLASH : net.minecraft.core.particles.ParticleTypes.POOF,
 						m.getX(), m.getY() + 0.5, m.getZ(), sea ? 30 : 10, 0.3, 0.5, 0.3, 0.02);
@@ -370,8 +371,15 @@ public final class VillageRaids {
 				gather = shorePoint(level, hall);
 			}
 		} else if (culture.arrival() == Culture.Arrival.PORTAL) {
-			gather = Conditions.netherLink(level, hall).filter(level::isLoaded).orElse(null);
+			// Out of their lair's own portal (32.10: the Blackstone Outpost's), else out of the village's.
+			gather = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Piglins.portal(level, c)).orElse(null);
+			if (gather == null) {
+				gather = Conditions.netherLink(level, hall).filter(level::isLoaded).orElse(null);
+			}
 			portal = gather != null;
+			if (portal) {
+				io.github.jcondedata.aliveworkplace.threat.Piglins.stepOut(level, gather);
+			}
 		}
 		if (gather == null) {
 			gather = gatheringPoint(level, hall);

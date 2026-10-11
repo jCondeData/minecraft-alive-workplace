@@ -48,6 +48,12 @@ asks for the steps, `latest.log` and any crash report).
   nothing, so only the smoking tops showed. Styled renders now give such blocks the game's default (upright); in game
   the chimneys were always whole, and a new test checks every chimney stays solid in all five styles.
 ### Added
+- **Piglin incursions, for 1.6** (32.10). A Town with a lit Nether portal may get a **Blackstone Outpost** beyond its
+  edge: a lit portal on a blackstone dais, a basalt pillar flying the piglin banner, a hoglin pen and a hoard of gold.
+  By night piglins, crossbowmen, brutes and hoglin rams **step out of its portal**; they never zombify while raiding
+  and go for villagers and guards. A piglin passing a village chest **takes its gold** (a stack at most), drops it if
+  killed and carries it home at dawn; the siege report counts what was lost. When their gold-armoured **Warlord** falls
+  the portal goes out and the band left behind turns zombified.
 - **Desert raiders, for 1.6** (32.9). By a desert or badlands Town, husks open a half-buried **Tomb Camp** with an
   obelisk under their **Pharaoh**: while he lives, a husk that falls near him gets up again once, in a burst of sand.
   They pile **sand ramps** against the walls where pillagers set ladders (gone after the siege), stay until noon, and

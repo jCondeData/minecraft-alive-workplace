@@ -264,7 +264,8 @@ public final class Lairs {
 			// A lair on the sea anchors on deep water (32.8); any other makes camp on dry ground.
 			Optional<Culture.Lair> spec = Threats.get(comer.get()).flatMap(Culture::lair);
 			StructureTemplate ship = spec.flatMap(Culture.Lair::sea).isPresent() ? level.getStructureManager().get(spec.get().structure()).orElse(null) : null;
-			BlockPos site = spec.flatMap(Culture.Lair::sea).isEmpty() ? site(level, hall, NEAR, FAR, random)
+			BlockPos site = spec.flatMap(Culture.Lair::sea).isEmpty()
+				? site(level, hall, spec.map(Culture.Lair::near).orElse(NEAR), spec.map(Culture.Lair::far).orElse(FAR), random)
 				: ship == null ? null : Ships.site(level, hall, spec.get().sea().get(), ship, random);
 			if (site != null) {
 				found(level, hall, site, comer.get());
@@ -587,6 +588,7 @@ public final class Lairs {
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 		mob.setPersistenceRequired();
 		mob.addTag(TAG);
+		Piglins.keep(mob); // a lair's piglins never zombify (32.10)
 		boolean bandits = lair.culture().equals(Threats.BANDITS);
 		if (bandits) {
 			mob.addTag(BANDIT_TAG);
@@ -711,6 +713,8 @@ public final class Lairs {
 		data.lairs.remove(lair.hall());
 		data.broken.put(lair.hall(), new Rest(Chronicle.day(level), REST_DAYS));
 		data.setDirty();
+		// A lair with a portal: it goes out; the Warlord's band left in the Overworld turns zombified (32.10).
+		Piglins.fallen(level, lair);
 		for (Mob mob : band(level, lair)) {
 			level.sendParticles(ParticleTypes.POOF, mob.getX(), mob.getY() + 0.5, mob.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
 			mob.discard();

@@ -620,3 +620,147 @@ def tomb_camp():
         b.set(x, 1, z, "dead_bush")
     b.fill_air()
     return b
+
+
+# The piglin banner: black, with the snout (the pattern a piglin banner pattern item gives) in gold over a dark border.
+PIGLIN_BANNER = (("gray", "gradient_up"), ("yellow", "piglin"), ("orange", "border"))
+
+
+def piglin_banner(b, x, y, z, **props):
+    """The piglins' black banner with the gold snout at (x, y, z): standing ({@code rotation}) or, with {@code facing}, on a wall."""
+    b.set_nbt(x, y, z, Compound({"id": String("minecraft:banner"), "patterns": List[Compound]([
+        Compound({"color": String(c), "pattern": String("minecraft:" + p)}) for c, p in PIGLIN_BANNER])}))
+    b.set(x, y, z, "black_wall_banner" if "facing" in props else "black_banner", **props)
+
+
+def blackstone_outpost():
+    """
+    The piglins' Blackstone Outpost (ROADMAP 32.10), 21 x 12 x 19, set down at once like the other camps. Design:
+    - the ground is a broken platform of blackstone and its bricks with netherrack worn through it and gilded blackstone
+      here and there, ragged at the edges where the Overworld's own ground shows (the bottom layer is left out there);
+    - at the back, on a dais of polished blackstone bricks reached by stairs, the lit portal: a frame of obsidian with
+      crying obsidian at its corners and heaped beside it (only obsidian holds a portal, so the sides stay plain);
+      the raiders step out of it (its portal blocks are what VillageRaids looks for, 32.10);
+    - front left, the basalt pillar, the highest thing in the camp: polished basalt on a blackstone base, its top
+      flying the piglins' black banner with the gold snout;
+    - front right, the hoglin pen: crimson fences and a gate on crimson nylium, crimson fungus to root at, a shroomlight;
+    - back right, the hoard: gold blocks heaped against a broken wall of polished blackstone bricks, a raw gold block,
+      and the loot chest (chests/piglin_hoard);
+    - back left, a broken bastion wall with blackstone walls on top and lanterns;
+    - in the middle, a campfire ringed with blackstone slabs; lanterns on blackstone posts at the way in (no soul fire:
+      piglins shun it).
+    """
+    W, H, D = 21, 12, 19
+    b = Build(W, H, D)
+    ground = Mix((8, "blackstone"), (4, "polished_blackstone_bricks"), (2, "cracked_polished_blackstone_bricks"), (3, "netherrack"),
+                 (1, "gilded_blackstone"), seed=131)
+    cx, cz = 10, 9
+    for x in range(W):
+        for z in range(D):
+            # an oval, ragged at the rim (the world's ground shows through where it's broken off)
+            r = ((x - cx) / 10.6) ** 2 + ((z - cz) / 9.6) ** 2
+            if r <= 0.78 or r <= 1.0 and (x * 7 + z * 13) % 5 != 0:
+                b.set(x, 0, z, ground.at(x, 0, z))
+
+    # the dais and the portal at the back: dais x 6..14, z 13..17, the frame at z = 15
+    for x in range(6, 15):
+        for z in range(13, 18):
+            b.set(x, 0, z, "polished_blackstone")
+            b.set(x, 1, z, "polished_blackstone_bricks" if (x + z) % 5 else "cracked_polished_blackstone_bricks")
+    for x in range(7, 14):
+        stairs(b, x, 1, 12, "polished_blackstone_brick_stairs", "south")
+    for z in (13, 17):
+        stairs(b, 5, 1, z, "polished_blackstone_brick_stairs", "west")
+        stairs(b, 15, 1, z, "polished_blackstone_brick_stairs", "east")
+    PX0, PX1, PY0, PY1, PZ = 8, 12, 2, 7, 15
+    for x in range(PX0, PX1 + 1):
+        for y in range(PY0, PY1 + 1):
+            corner = x in (PX0, PX1) and y in (PY0, PY1)
+            if x in (PX0, PX1) or y in (PY0, PY1):
+                b.set(x, y, PZ, "crying_obsidian" if corner else "obsidian")
+            else:
+                b.set(x, y, PZ, "nether_portal", axis="x")
+    # crying obsidian heaped by the frame, and a chiseled step at its foot
+    for x, y, z in ((7, 2, 15), (7, 2, 16), (13, 2, 15), (13, 3, 15), (13, 2, 14), (7, 2, 14)):
+        b.set(x, y, z, "crying_obsidian" if (x + y + z) % 2 else "obsidian")
+    b.set(10, 1, 14, "chiseled_polished_blackstone")
+    # two broken pillars of the old bastion flank the dais, one taller than the other
+    for x, top in ((6, 6), (14, 4)):
+        for y in range(2, top + 1):
+            b.set(x, y, 16, "polished_blackstone_bricks" if y % 3 else "chiseled_polished_blackstone")
+        b.set(x, top + 1, 16, "blackstone_slab", type="bottom", waterlogged=False)
+    b.set(7, 6, 16, "polished_blackstone_brick_wall")
+    b.set(7, 5, 16, "chain", axis="y", waterlogged=False)
+    lantern(b, 7, 4, 16, hanging=True, soul=False)
+    for x in (6, 14):
+        b.set(x, 2, 13, "blackstone_wall")
+        lantern(b, x, 3, 13, soul=False)
+
+    # the basalt pillar, front left, flying the banner
+    BX, BZ = 4, 5
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            b.set(BX + dx, 1, BZ + dz, "polished_blackstone" if dx == 0 or dz == 0 else "blackstone")
+    for dx, dz, f in ((0, -2, "south"), (0, 2, "north"), (-2, 0, "east"), (2, 0, "west")):
+        stairs(b, BX + dx, 1, BZ + dz, "blackstone_stairs", f)
+    for y in range(2, 9):
+        b.set(BX, y, BZ, "polished_basalt" if y in (2, 8) else "basalt", axis="y")
+    b.set(BX, 9, BZ, "chiseled_polished_blackstone")
+    piglin_banner(b, BX, 10, BZ, rotation="0")
+    piglin_banner(b, BX, 7, BZ + 1, facing="south")
+
+    # the hoglin pen, front right: x 14..19, z 2..8
+    QX0, QX1, QZ0, QZ1 = 14, 19, 2, 8
+    for x in range(QX0, QX1 + 1):
+        for z in range(QZ0, QZ1 + 1):
+            b.set(x, 0, z, "crimson_nylium" if (x + 2 * z) % 4 else "netherrack")
+            if x in (QX0, QX1) or z in (QZ0, QZ1):
+                fence(b, x, 1, z, "crimson_fence")
+    b.set(QX0, 1, 5, "crimson_fence_gate", facing="east", open=False, in_wall=False, powered=False)
+    for x, z in ((16, 4), (18, 6), (17, 7)):
+        b.set(x, 1, z, "crimson_fungus")
+    b.set(15, 1, 7, "crimson_roots")
+    b.set(QX1, 2, QZ0, "shroomlight")
+    b.set(QX1, 2, QZ1, "shroomlight")
+
+    # the hoard, back right: gold heaped against a broken wall, the chest
+    for z in range(13, 18):
+        b.set(18, 1, z, "polished_blackstone_bricks")
+        if z in (13, 14, 15):
+            b.set(18, 2, z, "cracked_polished_blackstone_bricks" if z == 14 else "polished_blackstone_bricks")
+        if z == 14:
+            b.set(18, 3, z, "blackstone_wall")
+    for x in range(16, 18):
+        for z in range(14, 18):
+            b.set(x, 0, z, "gilded_blackstone" if (x + z) % 2 else "polished_blackstone")
+    for x, y, z in ((17, 1, 14), (17, 1, 15), (17, 2, 15), (16, 1, 16), (17, 1, 16)):
+        b.set(x, y, z, "gold_block")
+    b.set(17, 1, 17, "raw_gold_block")
+    b.set_nbt(16, 1, 14, Compound({"LootTable": String("aliveworkplace:chests/piglin_hoard"), "id": String("minecraft:chest")}))
+    b.set(16, 1, 14, "chest", facing="west", type="single", waterlogged=False)
+    lantern(b, 18, 4, 14, soul=False)
+
+    # the broken bastion wall, back left
+    for x in range(1, 6):
+        for y in range(1, 5 - (x == 1) - (x == 5) * 2):
+            b.set(x, y, 17, "polished_blackstone_bricks" if (x + y) % 3 else "cracked_polished_blackstone_bricks")
+    for x in (2, 3, 4):
+        b.set(x, 4, 17, "blackstone_wall")
+    b.set(3, 3, 16, "chiseled_polished_blackstone")
+    lantern(b, 3, 5, 17, soul=False)
+    b.set(2, 1, 16, "blackstone_slab", type="bottom", waterlogged=False)
+
+    # the fire, ringed with slabs, and the way in lit by lanterns hung from blackstone posts
+    b.set(cx, 1, 8, "campfire", facing="south", lit=True, signal_fire=False, waterlogged=False)
+    for dx, dz in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        slab(b, cx + dx, 1, 8 + dz, "blackstone_slab")
+    for x in (8, 12):
+        for y in (1, 2, 3):
+            b.set(x, y, 1, "blackstone_wall")
+        lantern(b, x, 4, 1, soul=False)
+    b.fill_air()
+    for x in range(W):  # where the platform is broken off, the world's own ground stays
+        for z in range(D):
+            if b.blocks.get((x, 0, z), ("",))[0] == "minecraft:air":
+                del b.blocks[(x, 0, z)]
+    return b

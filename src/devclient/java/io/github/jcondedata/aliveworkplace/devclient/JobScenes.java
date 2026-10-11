@@ -780,6 +780,54 @@ final class JobScenes {
 					new net.minecraft.world.phys.AABB(STATION).inflate(60), h -> h.isAlive() && h.getTags().contains(io.github.jcondedata.aliveworkplace.threat.Risings.RISEN_TAG)).isEmpty();
 			};
 		}, null));
+		// Piglin incursions (ROADMAP 32.10): the piglins' Blackstone Outpost west of a Town, its portal lit. At dusk a raid
+		// steps out of that portal and makes for the villagers; on the way a piglin passes the village's chests of gold and
+		// carries a stack off on its head.
+		SCENES.put("piglins", new Job("the piglins' blackstone outpost stood west of the Town; a raid stepped out of its portal and a piglin passing the village's chests carried off a stack of gold", 1500,
+			new Vec3(-6.5, -50.0, 19.5), new Vec3(-20.5, -58.0, 0.5), (level, player) -> {
+			BlockPos hall = STATION.north(12);
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetPlunder(hall);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			level.setDayTime(12800);
+			// The village's chests of gold, on the piglins' way in, and its villagers further east.
+			for (int z : new int[] {-2, 2}) {
+				BlockPos at = STATION.offset(-11, 0, z);
+				level.setBlockAndUpdate(at, net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
+				if (level.getBlockEntity(at) instanceof net.minecraft.world.Container chest) {
+					chest.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GOLD_INGOT, 64));
+					chest.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GOLD_BLOCK, 8));
+					chest.setItem(2, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BREAD, 12));
+				}
+			}
+			for (int i = 0; i < 3; i++) {
+				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(2 + i * 2, 0, -1 + i), MobSpawnType.COMMAND);
+				villager.setNoAi(true);
+			}
+			// The Blackstone Outpost (the hall of a Town for as long as it is made).
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("piglin_incursion");
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(-32, -1, 0), id);
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Warlord "),
+				"the piglins raised their Blackstone Outpost, under a named Warlord");
+			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Piglins.portal(level, lair) != null, "the outpost's portal is lit");
+			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 12, 0,
+				Double.NaN, culture, net.minecraft.util.RandomSource.create(3L));
+			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+			Showcase.check(raid != null && raid.raiders() > 0, "a raid stepped out of the outpost's portal");
+			long[] took = {-1};
+			return l -> {
+				List<net.minecraft.world.entity.Mob> carrying = l.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(STATION).inflate(60),
+					m -> m.isAlive() && !io.github.jcondedata.aliveworkplace.threat.Plunder.carried(m).isEmpty());
+				if (took[0] < 0 && !carrying.isEmpty()) {
+					took[0] = l.getGameTime();
+				}
+				return took[0] >= 0 && l.getGameTime() - took[0] > 100 && !carrying.isEmpty();
+			};
+		}, null));
 		// Sieges II (ROADMAP 32.5): pillagers who set ladders lay siege to a village behind Stone Walls with no gate. They
 		// set a ladder up the wall's outer face, rung by rung; the first climbs over and drops inside; then the guard on the
 		// walkway comes along the wall and throws the ladder down. (The scene only times his walk: he stands still, as the

@@ -3020,7 +3020,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     at mid-morning and over at noon;
   - the camp passes `check.py` and its render is in the package;
   - scene `desert_raiders`: the tomb camp, a sand ramp rising against a wall and a husk getting up again (GIF).
-- [ ] **32.10** **Piglin incursions.** `piglin_incursion.json`: any land, for villages with a `nether_link` (the
+- [x] **32.10** (review: pending 2026-10-11) **Piglin incursions.** `piglin_incursion.json`: any land, for villages with a `nether_link` (the
   netherworkers' trips draw them); Town and up; arrival `portal`; tactics `ram_gates` and `plunder`. Their lair is the
   **Blackstone Outpost** (`camp/blackstone_outpost`, minecraft-architect skill: a lit portal of obsidian and crying
   obsidian on a blackstone and netherrack platform, gold blocks, a basalt pillar with a piglin banner, a hoglin pen),

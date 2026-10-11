@@ -85,6 +85,13 @@ public final class Threats implements ResourceManagerReloadListener {
 		default void round(ServerLevel level, BlockPos hall, Culture culture, List<Mob> raiders) {
 		}
 
+		/**
+		 * One of the raiders is leaving at the end of its hours (dawn), just before it goes: what it carries goes with it
+		 * (32.10, {@code plunder}).
+		 */
+		default void leave(ServerLevel level, BlockPos hall, Culture culture, Mob raider) {
+		}
+
 		/** The raid is over: fought off, or ({@code fled}) the last raiders left at the end of their hours. */
 		default void end(ServerLevel level, BlockPos hall, Culture culture, boolean fled) {
 		}
@@ -292,6 +299,7 @@ public final class Threats implements ResourceManagerReloadListener {
 		}
 		mob.addTag(RAIDER_TAG);
 		mob.addTag(member.role().tag());
+		Piglins.keep(mob); // piglins never zombify while they raid (32.10)
 		culture.name().ifPresent(name -> mob.setCustomName(Component.translatable(name)));
 		equip(level, mob, member.gear());
 	}

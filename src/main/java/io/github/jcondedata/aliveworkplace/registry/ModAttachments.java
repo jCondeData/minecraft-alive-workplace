@@ -372,6 +372,9 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown> REQUEST_LET_DOWN =
 		Attachment.saved("request_let_down", io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown.CODEC);
 
+	/** The gold a raider carries off from a village's chest (ROADMAP 32.10, threat/Plunder): dropped if it's killed, taken home at dawn. */
+	public static final Attachment<net.minecraft.world.item.ItemStack> PLUNDER = Attachment.saved("plunder", net.minecraft.world.item.ItemStack.CODEC);
+
 	public static void init() {
 	}
 

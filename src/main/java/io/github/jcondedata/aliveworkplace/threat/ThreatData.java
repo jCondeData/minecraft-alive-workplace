@@ -48,6 +48,8 @@ import net.minecraft.world.level.saveddata.SavedData;
  * <li>{@code broken} (32.4): per {@code hall}, the gate blocks rams broke that wait for a builder.</li>
  * <li>{@code after} (32.6): per {@code hall}, the game time until which its villagers are glad they held
  * ({@code held}) and its builders mend defence builds first ({@code mending}); default none.</li>
+ * <li>{@code plunder} (32.10): per {@code hall}, how many items of gold raiders carried off from its chests (counted at
+ * dawn, told by the next siege report or the chronicle, then forgotten); default none.</li>
  * </ul>
  */
 public final class ThreatData extends SavedData {
@@ -172,6 +174,8 @@ public final class ThreatData extends SavedData {
 	private final Map<BlockPos, Long> held = new LinkedHashMap<>();
 	/** Per hall, the game time until which its builders mend defence builds first (32.6). */
 	private final Map<BlockPos, Long> mending = new LinkedHashMap<>();
+	/** Per hall, the gold raiders carried off and nobody has been told of yet (32.10). */
+	private final Map<BlockPos, Integer> plundered = new LinkedHashMap<>();
 
 	public static ThreatData get(ServerLevel level) {
 		ThreatData data = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(ThreatData::new, ThreatData::load, null), NAME);
@@ -240,6 +244,28 @@ public final class ThreatData extends SavedData {
 
 	public void end(BlockPos hall) {
 		if (raids.remove(hall) != null) {
+			setDirty();
+		}
+	}
+
+	// Plunder (32.10).
+
+	/** How many items of gold raiders carried off from the village round {@code hall} (not yet told). */
+	public int plundered(BlockPos hall) {
+		return plundered.getOrDefault(hall, 0);
+	}
+
+	/** Raiders carried off {@code count} more items of gold from the village round {@code hall}. */
+	public void plunder(BlockPos hall, int count) {
+		if (count > 0) {
+			plundered.merge(hall.immutable(), count, Integer::sum);
+			setDirty();
+		}
+	}
+
+	/** The village round {@code hall} was told what it lost (or the hall is gone; tests). */
+	public void forgetPlunder(BlockPos hall) {
+		if (plundered.remove(hall) != null) {
 			setDirty();
 		}
 	}
@@ -526,6 +552,14 @@ public final class ThreatData extends SavedData {
 			holes.add(h);
 		}
 		tag.put("broken", holes);
+		ListTag lost = new ListTag();
+		for (Map.Entry<BlockPos, Integer> e : plundered.entrySet()) {
+			CompoundTag h = new CompoundTag();
+			h.putLong("hall", e.getKey().asLong());
+			h.putInt("count", e.getValue());
+			lost.add(h);
+		}
+		tag.put("plunder", lost);
 		return tag;
 	}
 
@@ -544,6 +578,14 @@ public final class ThreatData extends SavedData {
 		broken.clear();
 		held.clear();
 		mending.clear();
+		plundered.clear();
+		ListTag lost = Nbt.getList(tag, "plunder", Tag.TAG_COMPOUND);
+		for (int i = 0; i < lost.size(); i++) {
+			CompoundTag h = Nbt.compoundAt(lost, i);
+			if (Nbt.has(h, "hall", Tag.TAG_LONG) && Nbt.getInt(h, "count") > 0) {
+				plundered.put(BlockPos.of(Nbt.getLong(h, "hall")), Nbt.getInt(h, "count"));
+			}
+		}
 		ListTag mornings = Nbt.getList(tag, "after", Tag.TAG_COMPOUND);
 		for (int i = 0; i < mornings.size(); i++) {
 			CompoundTag a = Nbt.compoundAt(mornings, i);

@@ -1,0 +1,15 @@
+{
+  "hearts": 10,
+  "when": {
+    "trade": true,
+    "level_below": 5
+  },
+  "lines": [
+    "heart_event.aliveworkplace.dream_master.1",
+    "heart_event.aliveworkplace.dream_master.2",
+    "heart_event.aliveworkplace.dream_master.3",
+    "heart_event.aliveworkplace.dream_master.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.dream_master",
+  "story": "life_story.aliveworkplace.dream_master"
+}

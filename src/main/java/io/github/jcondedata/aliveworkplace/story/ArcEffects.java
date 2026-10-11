@@ -252,6 +252,7 @@ public final class ArcEffects {
 				Arcs.quest(level, hall, s, ref);
 			}
 			case "end_arc" -> s.endWith = GsonHelper.getAsString(json, "ending", "failed");
+			case "reputation", "honour" -> Reputation.arcEffect(level, hall, s, json); // to the arc's helpers (31.11)
 			case "chatter" -> {
 				if (json.has("lines")) {
 					json.getAsJsonArray("lines").forEach(l -> s.chatter.add(l.getAsString()));

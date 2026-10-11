@@ -1,0 +1,15 @@
+{
+  "hearts": 10,
+  "when": {
+    "rank_below": "city"
+  },
+  "weight": 1,
+  "lines": [
+    "heart_event.aliveworkplace.dream_city.1",
+    "heart_event.aliveworkplace.dream_city.2",
+    "heart_event.aliveworkplace.dream_city.3",
+    "heart_event.aliveworkplace.dream_city.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.dream_city",
+  "story": "life_story.aliveworkplace.dream_city"
+}

@@ -56,9 +56,9 @@ import net.minecraft.world.phys.Vec3;
  * clock of their own for the three seconds between lines.
  */
 public class HeartEventGameTests implements FabricGameTest {
-	private static final String AREA = "aliveworkplace_test:big_area";
-	private static final BlockPos HALL = new BlockPos(9, 2, 9);
-	private static final String ME = "test-mock-player";
+	static final String AREA = "aliveworkplace_test:big_area";
+	static final BlockPos HALL = new BlockPos(9, 2, 9);
+	static final String ME = "test-mock-player";
 
 	private static final ResourceLocation BORN = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "born_here");
 	private static final ResourceLocation TRAVELLER = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "traveller");
@@ -68,7 +68,7 @@ public class HeartEventGameTests implements FabricGameTest {
 	// --- Setting up -----------------------------------------------------------------------------------------------
 
 	/** A hall, alone in the batch, with the events as shipped; {@code then} runs once its POI is in. Everything is put back afterwards. */
-	private static void village(GameTestHelper helper, Runnable then) {
+	static void village(GameTestHelper helper, Runnable then) {
 		Leftovers.clear(helper);
 		Leftovers.players(helper);
 		Leftovers.halls(helper);
@@ -97,7 +97,7 @@ public class HeartEventGameTests implements FabricGameTest {
 		});
 	}
 
-	private static Villager villager(GameTestHelper helper, BlockPos at, String name) {
+	static Villager villager(GameTestHelper helper, BlockPos at, String name) {
 		ServerLevel level = helper.getLevel();
 		Villager v = EntityType.VILLAGER.create(level);
 		Vec3 pos = helper.absoluteVec(Vec3.atBottomCenterOf(at));
@@ -110,7 +110,7 @@ public class HeartEventGameTests implements FabricGameTest {
 		return v;
 	}
 
-	private static ServerPlayer player(GameTestHelper helper, BlockPos at) {
+	static ServerPlayer player(GameTestHelper helper, BlockPos at) {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
 		Vec3 pos = helper.absoluteVec(Vec3.atBottomCenterOf(at));
@@ -129,19 +129,19 @@ public class HeartEventGameTests implements FabricGameTest {
 		return entry == null || entry.line() == null ? "" : entry.line().getString();
 	}
 
-	private static List<String> friendLines(ServerLevel level, BlockPos hall) {
+	static List<String> friendLines(ServerLevel level, BlockPos hall) {
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
 		return entity.chronicle().stream().filter(e -> e.kind() == Chronicle.Kind.FRIEND).map(e -> e.text().getString()).toList();
 	}
 
-	private static List<String> told(Villager villager, ServerPlayer player) {
+	static List<String> told(Villager villager, ServerPlayer player) {
 		return Friendship.of(villager).bond(player.getUUID()).told();
 	}
 
 	/** The tests' clock: far enough on from the last use that no line set before is still fresh. */
 	private static long clock;
 
-	private static long later(ServerLevel level) {
+	static long later(ServerLevel level) {
 		clock = Math.max(clock, level.getGameTime()) + 1000;
 		return clock;
 	}
@@ -150,7 +150,7 @@ public class HeartEventGameTests implements FabricGameTest {
 	 * Ticks the engine through a whole telling from {@code start}: a line every three seconds, each over the villager's
 	 * head, and nothing before its time. Returns the lines said.
 	 */
-	private static List<String> listen(GameTestHelper helper, Villager villager, ServerPlayer player, long start, int lines) {
+	static List<String> listen(GameTestHelper helper, Villager villager, ServerPlayer player, long start, int lines) {
 		ServerLevel level = helper.getLevel();
 		List<String> out = new ArrayList<>();
 		for (int i = 0; i < lines; i++) {
@@ -517,7 +517,9 @@ public class HeartEventGameTests implements FabricGameTest {
 				&& lore(menu.icon(story)).equals(List.of("A story for 2 hearts", "Told to " + ME)),
 				"her story: " + menu.icon(story).getHoverName().getString() + " " + lore(menu.icon(story)));
 			helper.assertTrue(menu.icon(story + 1).isEmpty() && menu.icon(story + 4).isEmpty(), "more than one line of story");
-			helper.assertTrue(lore(menu.icon(LifeStory.HEARTS)).isEmpty(), "nothing more to tell, yet: " + lore(menu.icon(LifeStory.HEARTS)));
+			// Nothing more to tell yet: the next is the 4-heart event (31.8).
+			helper.assertTrue(lore(menu.icon(LifeStory.HEARTS)).equals(List.of("They'll have something to tell you at 4 hearts")),
+				"nothing more to tell, yet: " + lore(menu.icon(LifeStory.HEARTS)));
 			// A widow's page names who they lost; a couple's who they're with.
 			ModAttachments.LATE_PARTNER.set(dara, new Couples.LatePartner(UUID.randomUUID(), Component.literal("Odo")));
 			LifeStory.render(menu, level, hall, dara, 0, me);
@@ -662,10 +664,14 @@ public class HeartEventGameTests implements FabricGameTest {
 			helper.assertTrue(!Component.translatable(key).getString().equals(key), "no text for " + key);
 		}
 		helper.assertTrue(Component.translatable("aliveworkplace.config.heartEvents").getString().equals("Heart events"), "the switch's name");
+		// The four 2-heart events (the events of 4 to 10 hearts, 31.8, are HeartEventSetGameTests').
 		Map<ResourceLocation, Integer> lines = Map.of(BORN, 4, TRAVELLER, 5, BEFORE, 4, GRAVE, 5);
-		helper.assertTrue(HeartEvents.all().keySet().equals(lines.keySet()), "shipped: " + HeartEvents.all().keySet());
-		for (HeartEvents.Event event : HeartEvents.all().values()) {
-			helper.assertTrue(event.hearts() == 2 && event.lines().size() == lines.get(event.id()), event.id() + ": " + event.hearts() + " hearts, " + event.lines().size() + " lines");
+		List<HeartEvents.Event> atTwo = HeartEvents.all().values().stream().filter(e -> e.hearts() == 2).toList();
+		helper.assertTrue(atTwo.stream().map(HeartEvents.Event::id).collect(java.util.stream.Collectors.toSet()).equals(lines.keySet()),
+			"shipped at 2 hearts: " + atTwo.stream().map(HeartEvents.Event::id).toList());
+		int ours = HeartEvents.all().size();
+		for (HeartEvents.Event event : atTwo) {
+			helper.assertTrue(event.lines().size() == lines.get(event.id()), event.id() + ": " + event.lines().size() + " lines");
 			List<String> keys = new ArrayList<>(event.lines());
 			keys.add(event.chronicle());
 			keys.add(event.story());
@@ -696,7 +702,7 @@ public class HeartEventGameTests implements FabricGameTest {
 		expected.add("broken"); // the test pack's
 		expected.sort(java.util.Comparator.naturalOrder());
 		helper.assertTrue(skipped.equals(expected), "skipped as broken: " + skipped);
-		helper.assertTrue(HeartEvents.all().size() == 5 && HeartEvents.all().keySet().containsAll(lines.keySet()), "loaded: " + HeartEvents.all().keySet());
+		helper.assertTrue(HeartEvents.all().size() == ours + 1 && HeartEvents.all().keySet().containsAll(lines.keySet()), "loaded: " + HeartEvents.all().keySet());
 		HeartEvents.Event fine = HeartEvents.all().get(ResourceLocation.fromNamespaceAndPath("mypack", "fine"));
 		HeartEvents.When w = fine.when();
 		helper.assertTrue(fine.hearts() == 4 && Boolean.TRUE.equals(w.born()) && Boolean.FALSE.equals(w.hired()) && Boolean.FALSE.equals(w.revived())

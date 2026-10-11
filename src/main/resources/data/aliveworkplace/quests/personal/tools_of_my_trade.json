@@ -1,0 +1,76 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.tools_of_my_trade.title"
+  },
+  "text": "request.aliveworkplace.tools_of_my_trade",
+  "days": 5,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    },
+    {
+      "type": "job",
+      "jobs": [
+        "aliveworkplace:miner",
+        "aliveworkplace:lumberjack",
+        "minecraft:farmer",
+        "minecraft:fisherman",
+        "aliveworkplace:guard",
+        "minecraft:cartographer",
+        "aliveworkplace:netherworker",
+        "aliveworkplace:sifter"
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "type": "bring",
+      "by": "job",
+      "to": "giver",
+      "options": {
+        "aliveworkplace:miner": {
+          "item": "minecraft:diamond_pickaxe",
+          "count": 1
+        },
+        "aliveworkplace:lumberjack": {
+          "item": "minecraft:diamond_axe",
+          "count": 1
+        },
+        "minecraft:farmer": {
+          "item": "minecraft:diamond_hoe",
+          "count": 1
+        },
+        "minecraft:fisherman": {
+          "item": "minecraft:fishing_rod[enchantment=minecraft:luck_of_the_sea]",
+          "count": 1
+        },
+        "aliveworkplace:guard": {
+          "item": "minecraft:diamond_sword",
+          "count": 1
+        },
+        "minecraft:cartographer": {
+          "item": "minecraft:spyglass",
+          "count": 1
+        },
+        "aliveworkplace:netherworker": {
+          "item": "minecraft:potion[effect=minecraft:fire_resistance]",
+          "count": 1
+        },
+        "aliveworkplace:sifter": {
+          "item": "minecraft:diamond_shovel",
+          "count": 1
+        }
+      }
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 5,
+      "rank_factor": false
+    }
+  ]
+}

@@ -584,6 +584,38 @@ travellers tell of the inn and the day they were hired, those who were here befo
 without a name, and anyone brought back from a grave tells what they remember of it. `heartEvents` in the config
 turns the telling off.
 
+### Reputation and titles
+
+Every village keeps a **standing** for every player. You earn it by what you do for the village and lose it by
+harming its people:
+
+| Earned | | Lost | |
+|---|---|---|---|
+| A daily quest | +10 | Hitting a villager | -10 |
+| A bounty | +40 | Killing a villager | -150 |
+| A villager's own request (every helper) | +25 | Killing an iron golem | -100 |
+| A story chapter (everyone who helped) | +50 | Killing a guard | -200 |
+| A story's ending | what its file says | | |
+| Breaking up a bandit camp or a lair (whoever killed its chief) | +40 | | |
+| Fighting in a raid (your third raider) | +20 | | |
+| Coming to a festival | +5 | | |
+| A gift (at most +10 a day per village) | +2 | | |
+
+With 50 you are a **Friend** of the village, with 300 a **Hero**, and with 1000 a **Lord**, once the village is a
+Town or bigger. A new title is told to the whole server in gold, with a fanfare ("Jesse is now a Hero of
+Thornholm!"), and written in the village's chronicle. Losing one is told only to you.
+
+Your title goes before what you say in chat (`[Hero of Thornholm]`): the one you hold in the village you stand in,
+else your best anywhere. The name tag at the top of the Village Hall's screen shows your standing there, your
+honours and the three players the village thinks most of; `/workplace standing` lists yours in every village.
+
+Stories can also give **honours**, names kept for good and listed with your standing: Kingslayer, Healer of the
+village, Wayfinder, Co-author.
+
+`reputation` in the config turns standing and titles off (saved standings stay); `titlesInChat` turns off only the
+title in chat. Quest and arc files can pay standing and honours with the rewards `reputation` and `honour`. Details:
+[docs/wiki/reputation.md](docs/wiki/reputation.md).
+
 Events are data, `data/<namespace>/heart_events/<id>.json`: the `hearts`, a `when` with conditions on the villager
 (`born`, `hired`, `revived`, `jobs`, `married`, `courting`, `widowed`, `parent`, `trait`, `mood`, `rank`), three to five
 `lines` as lang keys, and the `chronicle` and `story` lines' keys. The lines get the villager, you, the village, their
@@ -1595,6 +1627,7 @@ the Builder's workstation too: a villager without a job near it takes it and bec
 | `/workplace sites` | your builds in progress, with a cancel button |
 | `/workplace mail` | parcels on their way to and from you, and where they are |
 | `/workplace quests` | the quests of the village nearest you, each with a clickable [Track] or [Untrack] (1.5) |
+| `/workplace standing` | your standing, title and honours in every village (1.5) |
 | `/workplace strip <height>` | the Quarry Marker in your hand digs a strip mine at that height, down a ladder shaft |
 | `/workplace cancel <id>` | stop a build (placed blocks stay; you get the blueprint back) |
 | `/workplace friend add <player>` | let a friend give orders to your builders (`remove`, `list` too) |

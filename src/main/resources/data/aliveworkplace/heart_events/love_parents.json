@@ -1,0 +1,18 @@
+{
+  "hearts": 8,
+  "when": {
+    "born": true,
+    "married": false,
+    "courting": false,
+    "widowed": false,
+    "parent": false
+  },
+  "lines": [
+    "heart_event.aliveworkplace.love_parents.1",
+    "heart_event.aliveworkplace.love_parents.2",
+    "heart_event.aliveworkplace.love_parents.3",
+    "heart_event.aliveworkplace.love_parents.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.love_parents",
+  "story": "life_story.aliveworkplace.love_parents"
+}

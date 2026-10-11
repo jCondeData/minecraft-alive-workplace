@@ -188,6 +188,12 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void onChatDecorate(java.util.function.BiFunction<ServerPlayer, Component, Component> decorator) {
+		net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent.EVENT.register(
+			net.fabricmc.fabric.api.message.v1.ServerMessageDecoratorEvent.CONTENT_PHASE, decorator::apply);
+	}
+
+	@Override
 	public void onMobConversion(BiConsumer<net.minecraft.world.entity.Mob, net.minecraft.world.entity.Mob> action) {
 		ServerLivingEntityEvents.MOB_CONVERSION.register((previous, converted, keepEquipment) -> action.accept(previous, converted));
 	}

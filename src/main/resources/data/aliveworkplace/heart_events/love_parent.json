@@ -1,0 +1,15 @@
+{
+  "hearts": 8,
+  "when": {
+    "parent": true
+  },
+  "weight": 3,
+  "lines": [
+    "heart_event.aliveworkplace.love_parent.1",
+    "heart_event.aliveworkplace.love_parent.2",
+    "heart_event.aliveworkplace.love_parent.3",
+    "heart_event.aliveworkplace.love_parent.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.love_parent",
+  "story": "life_story.aliveworkplace.love_parent"
+}

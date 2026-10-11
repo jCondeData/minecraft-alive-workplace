@@ -48,6 +48,22 @@ public final class Objectives {
 		default Objective resolve(Context context) {
 			return this;
 		}
+
+		/** What it asks for, as a few words inside a sentence ("Journeyman", "16 Sweet Berries"): a personal request's {@code %3$s} (31.9). */
+		default Component what() {
+			return line();
+		}
+	}
+
+	/**
+	 * An objective that moves by being looked at (personal requests, 31.9): the hall's round asks it how far it has got,
+	 * for the villager who gave the quest. {@code dawn} is true on the first look of each day, for the ones that are only
+	 * judged at dawn. A later objective of this kind (a pet by the door, a schooled child, a revived grave) needs only
+	 * this method.
+	 */
+	public interface Looked extends Objective {
+		/** How far it has got now (0 to {@link #need()}); -1 when this look doesn't tell. */
+		int look(ServerLevel level, BlockPos hall, Villager giver, Quest quest, boolean dawn);
 	}
 
 	/** What a quest is resolved against when it goes up: the village, its census and who posted it (set by objectives). */
@@ -57,6 +73,9 @@ public final class Objectives {
 		public final VillageHalls.Census census;
 		public final RandomSource random;
 		public String poster;
+		/** The villager who asks (a personal request, 31.9); null for the hall's board and for arcs. */
+		@Nullable
+		public Villager giver;
 
 		public Context(ServerLevel level, BlockPos hall, VillageHalls.Census census, RandomSource random, String poster) {
 			this.level = level;
@@ -70,7 +89,7 @@ public final class Objectives {
 	private static final Map<String, Function<JsonObject, Objective>> KINDS = new LinkedHashMap<>();
 
 	static {
-		register("bring", Bring::read);
+		register("bring", j -> j.has("by") ? BringBy.read(j) : Bring.read(j));
 		register("bring_request", j -> new BringRequest());
 		register("kill", Kill::read);
 		register("battle", j -> new Battle(GsonHelper.getAsInt(j, "count", 1)));
@@ -78,6 +97,10 @@ public final class Objectives {
 		register("reach", Reach::read);
 		register("talk", Talk::read);
 		register("spread_news", SpreadNews::read);
+		register("level_up", j -> new LevelUp(GsonHelper.getAsInt(j, "level", 0)));
+		register("home", j -> new Home(GsonHelper.getAsInt(j, "tier", 2)));
+		register("beat_giver", j -> new BeatGiver(positive(j, "days")));
+		register("partner_pokemon", PartnerPokemon::read);
 	}
 
 	public static void register(String type, Function<JsonObject, Objective> reader) {
@@ -109,28 +132,96 @@ public final class Objectives {
 		return n;
 	}
 
-	/** An item id or a {@code #tag}; throws when it names nothing. */
+	/**
+	 * An item id or a {@code #tag}, optionally with what it must carry (31.9): {@code [enchantment=<id>]} (a fishing rod
+	 * with Luck of the Sea) or {@code [effect=<id>]} (a potion of Fire Resistance, plain, long or strong); throws when it
+	 * names nothing.
+	 */
 	static String itemOrTag(JsonObject json, String field) {
 		String s = GsonHelper.getAsString(json, field, "");
-		ResourceLocation id = ResourceLocation.tryParse(s.startsWith("#") ? s.substring(1) : s);
-		if (id == null || !s.startsWith("#") && !BuiltInRegistries.ITEM.containsKey(id)) {
+		String base = base(s);
+		ResourceLocation id = ResourceLocation.tryParse(base.startsWith("#") ? base.substring(1) : base);
+		if (id == null || !base.startsWith("#") && !BuiltInRegistries.ITEM.containsKey(id)) {
 			throw new IllegalArgumentException("unknown item '" + s + "'");
+		}
+		if (!base.equals(s) && carries(s) == null) {
+			throw new IllegalArgumentException("'" + s + "': after the item, [enchantment=<id>] or [effect=<id>]");
 		}
 		return s;
 	}
 
-	/** Whether {@code stack} is the item or in the tag {@code item}. */
-	public static boolean matches(String item, ItemStack stack) {
-		if (item.startsWith("#")) {
-			ResourceLocation tag = ResourceLocation.tryParse(item.substring(1));
-			return tag != null && stack.is(TagKey.create(Registries.ITEM, tag));
+	/** {@code item} without what it must carry. */
+	private static String base(String item) {
+		int at = item.indexOf('[');
+		return at < 0 ? item : item.substring(0, at);
+	}
+
+	/** What {@code item} must carry: {@code {"enchantment" or "effect", id}}; null when nothing (or it can't be read). */
+	@Nullable
+	private static String[] carries(String item) {
+		int at = item.indexOf('[');
+		if (at < 0 || !item.endsWith("]")) {
+			return null;
 		}
-		ResourceLocation id = ResourceLocation.tryParse(item);
-		return id != null && !stack.isEmpty() && BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(id);
+		String[] parts = item.substring(at + 1, item.length() - 1).split("=", 2);
+		if (parts.length != 2 || !parts[0].equals("enchantment") && !parts[0].equals("effect") || ResourceLocation.tryParse(parts[1]) == null) {
+			return null;
+		}
+		return parts;
+	}
+
+	/** Whether {@code stack} is the item or in the tag {@code item}, carrying what it asks for. */
+	public static boolean matches(String item, ItemStack stack) {
+		String base = base(item);
+		if (base.startsWith("#")) {
+			ResourceLocation tag = ResourceLocation.tryParse(base.substring(1));
+			if (tag == null || !stack.is(TagKey.create(Registries.ITEM, tag))) {
+				return false;
+			}
+		} else {
+			ResourceLocation id = ResourceLocation.tryParse(base);
+			if (id == null || stack.isEmpty() || !BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(id)) {
+				return false;
+			}
+		}
+		if (base.equals(item)) {
+			return true;
+		}
+		String[] carries = carries(item);
+		if (carries == null) {
+			return false;
+		}
+		ResourceLocation what = ResourceLocation.parse(carries[1]);
+		if (carries[0].equals("enchantment")) {
+			return stack.getEnchantments().keySet().stream().anyMatch(h -> h.is(what));
+		}
+		net.minecraft.world.item.alchemy.PotionContents potion = stack.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
+		if (potion != null) {
+			for (net.minecraft.world.effect.MobEffectInstance effect : potion.getAllEffects()) {
+				if (effect.getEffect().is(what)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** What {@code item} is called: its name, "Fishing Rod with Luck of the Sea" or "Potion of Fire Resistance". */
+	public static Component name(String item) {
+		Component base = icon(item).getDescription();
+		String[] carries = carries(item);
+		if (carries == null) {
+			return base;
+		}
+		ResourceLocation what = ResourceLocation.parse(carries[1]);
+		return carries[0].equals("enchantment")
+			? Component.translatable("quest.aliveworkplace.item_with", base, Component.translatable(net.minecraft.Util.makeDescriptionId("enchantment", what)))
+			: Component.translatable("quest.aliveworkplace.item_of", base, Component.translatable(net.minecraft.Util.makeDescriptionId("effect", what)));
 	}
 
 	/** The item that stands for {@code item} (a tag's first member). */
 	public static Item icon(String item) {
+		item = base(item);
 		if (item.startsWith("#")) {
 			ResourceLocation tag = ResourceLocation.tryParse(item.substring(1));
 			return tag == null ? Items.PAPER : Lookup.tag(BuiltInRegistries.ITEM, TagKey.create(Registries.ITEM, tag))
@@ -163,7 +254,25 @@ public final class Objectives {
 
 		@Override
 		public Component line() {
-			return Component.translatable("quest.aliveworkplace.bring", count, icon(item).getDescription());
+			return Component.translatable("quest.aliveworkplace.bring", count, name(item));
+		}
+
+		@Override
+		public Component what() {
+			return Component.translatable("quest.aliveworkplace.count_of", count, name(item));
+		}
+
+		/** {@code to: giver} with someone asking (31.9): into the chests by their workstation (the hall's store when they have none). */
+		@Override
+		public Objective resolve(Context context) {
+			if (to.equals("giver") && station.isEmpty() && context.giver != null) {
+				Optional<BlockPos> site = context.giver.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.filter(p -> p.dimension() == context.level.dimension()).map(net.minecraft.core.GlobalPos::pos);
+				if (site.isPresent()) {
+					return new Bring(item, count, to, site);
+				}
+			}
+			return this;
 		}
 
 		@Override
@@ -175,6 +284,311 @@ public final class Objectives {
 			o.addProperty("to", to);
 			station.ifPresent(s -> o.addProperty("station", s.asLong()));
 			return o;
+		}
+	}
+
+	/**
+	 * {@code bring} with {@code "by"} (31.9): what is asked for goes by the giver's {@code villager_type} or {@code job}.
+	 * {@code options} maps a villager type or profession id to its item and count; a giver whose key isn't listed isn't
+	 * asked for anything (the request isn't theirs to make). It becomes a plain {@link Bring} when the quest opens.
+	 */
+	public record BringBy(String by, String to, Map<String, Bring> options) implements Objective {
+		static BringBy read(JsonObject json) {
+			String by = GsonHelper.getAsString(json, "by");
+			if (!by.equals("villager_type") && !by.equals("job")) {
+				throw new IllegalArgumentException("unknown 'by' '" + by + "'");
+			}
+			String to = GsonHelper.getAsString(json, "to", "giver");
+			Map<String, Bring> options = new LinkedHashMap<>();
+			for (Map.Entry<String, com.google.gson.JsonElement> e : GsonHelper.getAsJsonObject(json, "options").entrySet()) {
+				if (ResourceLocation.tryParse(e.getKey()) == null) {
+					throw new IllegalArgumentException("'" + e.getKey() + "' in 'options' isn't an id");
+				}
+				JsonObject option = e.getValue().getAsJsonObject().deepCopy();
+				option.addProperty("to", to);
+				options.put(ResourceLocation.parse(e.getKey()).toString(), Bring.read(option));
+			}
+			if (options.isEmpty()) {
+				throw new IllegalArgumentException("no 'options'");
+			}
+			return new BringBy(by, to, java.util.Collections.unmodifiableMap(options));
+		}
+
+		@Override
+		public String type() {
+			return "bring";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.bring_by");
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("by", by);
+			o.addProperty("to", to);
+			JsonObject all = new JsonObject();
+			options.forEach((key, bring) -> {
+				JsonObject option = new JsonObject();
+				option.addProperty("item", bring.item());
+				option.addProperty("count", bring.count());
+				all.add(key, option);
+			});
+			o.add("options", all);
+			return o;
+		}
+
+		/** The key of {@code giver}: their villager type or their profession. */
+		public String key(Villager giver) {
+			return (by.equals("job") ? BuiltInRegistries.VILLAGER_PROFESSION.getKey(giver.getVillagerData().getProfession())
+				: BuiltInRegistries.VILLAGER_TYPE.getKey(giver.getVillagerData().getType())).toString();
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			Bring option = context.giver == null ? null : options.get(key(context.giver));
+			return option == null ? null : option.resolve(context);
+		}
+	}
+
+	/**
+	 * {@code level_up} (31.9): the giver, a worker below Master, reaches their next job level (trading gives XP as in
+	 * vanilla, and so does a Bottle o' Enchanting as a gift). {@code level} is the level to reach, set when the quest opens.
+	 */
+	public record LevelUp(int level) implements Looked {
+		@Override
+		public String type() {
+			return "level_up";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.level_up", what());
+		}
+
+		@Override
+		public Component what() {
+			return Component.translatable("merchant.level." + Math.max(1, Math.min(5, level)));
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("level", level);
+			return o;
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			if (level > 0) {
+				return this;
+			}
+			Villager giver = context.giver;
+			if (giver == null) {
+				return null;
+			}
+			net.minecraft.world.entity.npc.VillagerProfession job = giver.getVillagerData().getProfession();
+			int now = giver.getVillagerData().getLevel();
+			boolean worker = job != net.minecraft.world.entity.npc.VillagerProfession.NONE && job != net.minecraft.world.entity.npc.VillagerProfession.NITWIT;
+			return worker && now < 5 ? new LevelUp(now + 1) : null;
+		}
+
+		@Override
+		public int look(ServerLevel level, BlockPos hall, Villager giver, Quest quest, boolean dawn) {
+			return giver.getVillagerData().getLevel() >= this.level ? 1 : 0;
+		}
+	}
+
+	/**
+	 * {@code home} (31.9): the giver sleeps in a bed of their own in a finished home of tier {@code tier} or better
+	 * ({@link io.github.jcondedata.aliveworkplace.people.Homes}).
+	 */
+	public record Home(int tier) implements Looked {
+		@Override
+		public String type() {
+			return "home";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.home", Component.translatable("enchantment.level." + Math.max(1, Math.min(10, tier))));
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("tier", tier);
+			return o;
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			return context.giver == null ? null : this;
+		}
+
+		@Override
+		public int look(ServerLevel level, BlockPos hall, Villager giver, Quest quest, boolean dawn) {
+			return giver.isSleeping() && io.github.jcondedata.aliveworkplace.people.Homes.of(level, giver)
+				.map(io.github.jcondedata.aliveworkplace.people.Homes.Home::tier).orElse(0) >= tier ? 1 : 0;
+		}
+	}
+
+	/**
+	 * {@code beat_giver} (31.9, Cobblemon): beat the giver, a Trainer, in battle on {@code days} different days (each win
+	 * of a day's first counts, whoever of the helpers wins it). Not asked for without Cobblemon or by anyone but a Trainer.
+	 */
+	public record BeatGiver(int days) implements Objective {
+		@Override
+		public String type() {
+			return "beat_giver";
+		}
+
+		@Override
+		public int need() {
+			return days;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.beat_giver", days);
+		}
+
+		@Override
+		public Component what() {
+			return Component.literal(Integer.toString(days));
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("days", days);
+			return o;
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			return Trainers.COBBLEMON && context.giver != null && Trainers.isTrainer(context.giver) ? this : null;
+		}
+	}
+
+	/**
+	 * {@code partner_pokemon} (31.9, Cobblemon): at dawn, a Pokémon of a type that helps the giver's job (the
+	 * {@link io.github.jcondedata.aliveworkplace.work.Partners} table) is pastured within {@code radius} blocks of their
+	 * workstation. {@code types} are set when the quest opens. Not asked for without Cobblemon, by someone whose job no
+	 * Pokémon helps with, by someone with no workstation, or by someone who already has such a partner.
+	 */
+	public record PartnerPokemon(int radius, java.util.List<String> types) implements Looked {
+		static PartnerPokemon read(JsonObject json) {
+			java.util.List<String> types = new java.util.ArrayList<>();
+			if (json.has("types")) {
+				json.getAsJsonArray("types").forEach(t -> types.add(t.getAsString()));
+			}
+			int radius = GsonHelper.getAsInt(json, "radius", 16);
+			if (radius < 1) {
+				throw new IllegalArgumentException("'radius' below 1");
+			}
+			return new PartnerPokemon(radius, java.util.List.copyOf(types));
+		}
+
+		@Override
+		public String type() {
+			return "partner_pokemon";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.partner_pokemon", what());
+		}
+
+		/** "Grass, Ground or Water". */
+		@Override
+		public Component what() {
+			net.minecraft.network.chat.MutableComponent out = Component.empty();
+			for (int i = 0; i < types.size(); i++) {
+				String t = types.get(i);
+				Component name = Component.translatableWithFallback("cobblemon.type." + t, Character.toUpperCase(t.charAt(0)) + t.substring(1));
+				if (i == 0) {
+					out.append(name);
+				} else if (i < types.size() - 1) {
+					out.append(Component.literal(", ")).append(name);
+				} else {
+					out = Component.translatable("quest.aliveworkplace.or", out, name);
+				}
+			}
+			return out;
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			o.addProperty("radius", radius);
+			com.google.gson.JsonArray array = new com.google.gson.JsonArray();
+			types.forEach(array::add);
+			o.add("types", array);
+			return o;
+		}
+
+		/** How many Pokémon of {@code types} are pastured within the radius of {@code giver}'s workstation (0 without Cobblemon or a workstation). */
+		public static int partners(ServerLevel level, Villager giver, int radius, java.util.Collection<String> types) {
+			BlockPos site = giver.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+				.filter(p -> p.dimension() == level.dimension()).map(net.minecraft.core.GlobalPos::pos).orElse(null);
+			if (site == null || types.isEmpty()) {
+				return 0;
+			}
+			java.util.Set<String> set = java.util.Set.copyOf(types);
+			return io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.call(p -> p.helpers(level, site, radius, set, 1).size(), 0);
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			Villager giver = context.giver;
+			if (giver == null || !io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.present()) {
+				return null;
+			}
+			java.util.List<String> helps = new java.util.ArrayList<>(io.github.jcondedata.aliveworkplace.work.Partners.types(giver.getVillagerData().getProfession()));
+			java.util.Collections.sort(helps);
+			if (helps.isEmpty() || giver.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).isEmpty()
+				|| partners(context.level, giver, radius, helps) > 0) {
+				return null;
+			}
+			return new PartnerPokemon(radius, java.util.List.copyOf(helps));
+		}
+
+		@Override
+		public int look(ServerLevel level, BlockPos hall, Villager giver, Quest quest, boolean dawn) {
+			return !dawn ? -1 : partners(level, giver, radius, types) > 0 ? 1 : 0;
 		}
 	}
 

@@ -1,0 +1,71 @@
+{
+  "giver": "villager",
+  "name": {
+    "translate": "request.aliveworkplace.taste_of_home.title"
+  },
+  "text": "request.aliveworkplace.taste_of_home",
+  "days": 3,
+  "weight": 10,
+  "conditions": [
+    {
+      "type": "hearts_at_least",
+      "hearts": 3
+    },
+    {
+      "type": "villager_type",
+      "types": [
+        "minecraft:plains",
+        "minecraft:desert",
+        "minecraft:savanna",
+        "minecraft:taiga",
+        "minecraft:snow",
+        "minecraft:swamp",
+        "minecraft:jungle"
+      ]
+    }
+  ],
+  "objectives": [
+    {
+      "type": "bring",
+      "by": "villager_type",
+      "to": "giver",
+      "options": {
+        "minecraft:plains": {
+          "item": "minecraft:pumpkin_pie",
+          "count": 1
+        },
+        "minecraft:desert": {
+          "item": "minecraft:rabbit_stew",
+          "count": 1
+        },
+        "minecraft:savanna": {
+          "item": "minecraft:cooked_mutton",
+          "count": 4
+        },
+        "minecraft:taiga": {
+          "item": "minecraft:sweet_berries",
+          "count": 16
+        },
+        "minecraft:snow": {
+          "item": "minecraft:baked_potato",
+          "count": 4
+        },
+        "minecraft:swamp": {
+          "item": "minecraft:mushroom_stew",
+          "count": 1
+        },
+        "minecraft:jungle": {
+          "item": "minecraft:cookie",
+          "count": 8
+        }
+      }
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 4,
+      "rank_factor": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "hearts": 4,
+  "when": {
+    "jobs": [
+      "aliveworkplace:trainer",
+      "aliveworkplace:trainer_leader",
+      "aliveworkplace:tutor",
+      "aliveworkplace:ball_smith",
+      "aliveworkplace:pokemon_trader",
+      "aliveworkplace:fossil_scientist"
+    ]
+  },
+  "lines": [
+    "heart_event.aliveworkplace.work_pokemon.1",
+    "heart_event.aliveworkplace.work_pokemon.2",
+    "heart_event.aliveworkplace.work_pokemon.3",
+    "heart_event.aliveworkplace.work_pokemon.4"
+  ],
+  "chronicle": "chronicle.aliveworkplace.heart_event.work_pokemon",
+  "story": "life_story.aliveworkplace.work_pokemon"
+}

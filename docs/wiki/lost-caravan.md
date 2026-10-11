@@ -1,14 +1,36 @@
-# The Lost Caravan: the wreck and the trail
+# The Lost Caravan
 
-The builds the Lost Caravan's story lays out beyond a village, and the objective that walks a player along them: the
-settlers' wrecked wagon, five marks of a trail, and the raiders' stockade where it ends. ROADMAP 31.19; the story that
-uses them, `arcs/lost_caravan.json`, is 31.20. Builds on the arc engine's `place` (31.4) and quests (31.2). Part of
-the 1.5 expansion.
+A story arc that starts when a caravan on a long road goes missing: the settlers' wrecked wagon, five marks of a trail,
+the raiders' stockade where it ends, the carter caged there and walked home, and the lost goods. ROADMAP 31.19 (the
+builds and `follow_trail`) and 31.20 (the story, `arcs/lost_caravan.json`). Builds on the arc engine's `place` (31.4),
+quests (31.2), reputation (31.11) and caravans (27.x). Part of the 1.5 expansion.
 
-Roadmap items: 31.19
+Roadmap items: 31.19, 31.20
 
 ## What a player sees
 
+- **Overdue**: when a caravan sets off on a road longer than 300 blocks, 1 in 20 goes missing (config
+  `lostCaravanChance`), if neither village has a story arc running. Its goods never arrive: the arc holds them. Players
+  near either hall read "The caravan from Thornholm to Ashford is a day overdue", both chronicles note it with the
+  goods it carried, and the sending hall hands out a map marked with the wreck. Chapter 1 ends when a player comes
+  within 12 blocks of the wreck ("The caravan's wreck: tracks lead away from the road").
+- **The tracks**: the quest "Follow the tracks" (`follow_trail`, below) leads mark by mark to the stockade. The raiders,
+  a Captain, two bandits with axes and two with crossbows, wait there.
+- **The captive**: the carter, a villager of the sending village with one of the village names (Tobin, say), is locked
+  in the stockade's cage. Flip the lever and the iron gate opens: he thanks whoever stands nearest and follows them,
+  as a rallied guard does: he walks after them, catches up at once from more than 32 blocks, and waits where he is
+  when they're more than 64 away. The chapter is done when he comes within 24 blocks of either village's hall.
+- **The lost goods** (a second quest, not needed to go on): the stockade's chest holds the lost shipment's own goods
+  (the bandits' loot isn't rolled there). Carry every stack of them to within 24 blocks of the receiving village's
+  hall: they go into its store (or are set down on its hall without one) and the quest pays 8 emeralds and +50
+  standing there.
+- **The ending**: the carter joins the village he reached, with no job yet: he takes a free workstation like any
+  villager and starts at Journeyman, as a hired traveller does. Everyone who helped (found the wreck, followed the
+  marks, opened the cage, walked him home) gets +150 standing in both villages and the honour Wayfinder, and +100
+  friendship with him; both chronicles tell it.
+- **No rescue**: after 7 days from the loss without the carter home, he finds his own way back to the sending
+  village with nothing (a plain villager by its hall, no head start), the goods are gone from the chest, and the arc
+  fails; both villages are told.
 - **The wreck** (`story/caravan_wreck`, 13 x 12): the settlers' covered wagon lies on its side a third of the way along
   the caravan's road (or 150 blocks out from the village when the road there is water or rough ground). Its floor
   stands up like a wall, its white canvas arches out torn at the back with a hoop showing, one upper wheel lies flat in
@@ -64,19 +86,42 @@ Renders: [the wreck](../media/caravan-wreck.png), [the stockade](../media/raider
   `aliveworkplace:story/trail_1` to `aliveworkplace:story/trail_5` (drawn in `tools/blueprints/caravan.py`; not in the
   blueprint library).
 - The stockade's chest uses the bandit camps' loot table `aliveworkplace:chests/bandit_camp`.
-- No new items, blocks, jobs or commands.
+- Arc `aliveworkplace:lost_caravan` (`arcs/lost_caravan.json`), its effect `lost_caravan` (steps `overdue`, `ending`)
+  and the objective `deliver_goods` (`{"type": "deliver_goods"}`; the village's name is filled in when it's posted).
+- No new items, blocks, jobs or commands; `/workplace story start lost_caravan` starts it without a lost caravan (no
+  goods, and the wreck on the village's nearest road).
 
 ## Switches
 
-None of its own: the builds come only from story arcs, under `storyArcs` (and `disabledArcs`).
+- `lostCaravanChance` (20, 0 to 1000): one caravan in this many on a road over 300 blocks goes missing; 0: none.
+- The arc runs under `storyArcs`, `arcsAtOnce` and `disabledArcs` (`lost_caravan`) like every arc.
 
 ## Saved data
 
+- The arc is saved with every arc (`aliveworkplace_stories`). Its own data is in the arc's new `extra` tag (empty, and
+  not written, for every other arc and for saves from before 31.20): `to` (the receiving hall), `goods` (each stack's
+  item id and count), `carter_set`, `leader` (who opened the cage), `home` (the hall he reached) and `delivered`.
+  The carter is the arc's role `carter` (his UUID and name); flags `wreck_found` and `tobin_home`.
 Each piece is an arc place in `aliveworkplace_stories` (its key, spot, `stages`, `placed`, `origin`). A
 `follow_trail` objective saves its `trail`, `then` and `count` with its quest, and its progress (marks reached) as
 every objective's.
 
 ## Decisions
+
+- 31.20: a lost caravan still leaves (the chronicle notes it setting out, its goods taken from the store); it's never
+  put on the road. Its goods are kept as item and count: what a caravan carries has no data of its own.
+- 31.20: the arc is an event arc (`"trigger": {"event": "caravan_lost"}`) started by `LostCaravanStory.lose` from
+  `Caravans.send`; it skips the cooldown but not one arc per village nor `arcsAtOnce`. It runs in the sending village;
+  its first effect (`lost_caravan` step `overdue`) records the destination and goods, so the wreck's `road` rule lies
+  on the lost caravan's own road.
+- 31.20: the raiders spawn when chapter 2 begins (at the stockade, once it's built), so they're there when the
+  trail is followed to them.
+- 31.20: the carter is caged when the stockade is built, whatever the chapter, and he counts as home only after his
+  cage was opened. The "7 days" run from the day the caravan went missing.
+- 31.20: the delivery takes every stack at once, when the player comes within 24 blocks of the receiving hall
+  carrying them all; a part load counts nothing.
+- 31.20: the carter joins with no job and the Journeyman head start (`HEAD_START` 3), so he takes whatever free
+  workstation the village has, as a hired traveller does.
 
 - 31.19: the stockade's cage gate is an iron door with a lever outside, so the captive (31.20) can't let himself out
   and the raiders don't open it; a player opens it with the lever.
@@ -90,6 +135,9 @@ every objective's.
 
 ## Known limits
 
+- 31.20: a carter left in his cage where nobody is when the 7 days run out is taken away when his chunk next loads
+  (an arc's carter no running arc knows leaves as he loads); his stand-in is home at once.
+
 - With no fit ground within 32 blocks of its column a piece isn't built (the arc logs it and the place is skipped);
   a skipped mark still counts when the player reaches its column.
 - The banner's torn look is drawn with banner patterns (a ragged grey hem), as no banner can be cut.
@@ -100,4 +148,11 @@ every objective's.
   (`theStockadeLiesOnUnevenGround`) and the five marks (`theFiveMarksLieOnUnevenGround`) on a hump and a hole; a
   player's block or ledger section refuses the ground (`neverOverAPlayersBlocks`); the road, away and between rules
   (`theRulesPlaceTheTrail`); `follow_trail` through a real arc, in order only (`followTrailCountsTheMarksInOrderOnly`).
-- Showcase scenes: `caravan_trail`.
+- GameTests: `LostCaravanGameTests`: a caravan from a Storehouse on a 320-block road stays on the road with the
+  chance 0 and goes missing when forced, the arc holding its goods, the wreck on its road, both chronicles told; not on
+  a short road nor with an arc running (`aShipmentGoesMissingWhenForced`); every chapter by its objective, the carter
+  caged with the shipment's own goods in the chest, following once the gate opens, waiting at 100 blocks, catching up
+  from 49, joining at Journeyman with standing, Wayfinder and friendship in both villages, the arc's data saved and read
+  back (`eachChapterMovesOnAndTobinComesHome`); the delivery (`theDeliveryQuestPays`); the failure path
+  (`afterSevenDaysHeFindsHisOwnWay`).
+- Showcase scenes: `caravan_trail`, `lost_caravan`.

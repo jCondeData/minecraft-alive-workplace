@@ -447,6 +447,11 @@ SCENES = [
       "the Pokémon Professor in a white lab coat by the hall, hints about the player's party, and the Pokédex research tab", 50,
       [("01_professor", "The Professor by the hall"), ("02_professor_hints", "Hints: IVs in words, nature, hidden ability, EVs"),
        ("03_pokedex_tab", "The Pokédex tab")], cobblemon=True),
+    # The Professor's Thesis (ROADMAP 31.21, Cobblemon): the request, a catch counting, the published thesis
+    S("professors_thesis", "Village Hall", "The Professor's Thesis: the request, a catch, the published book",
+      "the Professor's Thesis: Professor Alder by the hall asking for help with a thesis on Life in the Cold, the chapter's intro in chat; a Snorunt caught in a snowy biome going in the field notes; then the published thesis, the book 'Professor Alder: Life in the Cold' open on its cover page with the player as co-author", 50,
+      [("01_request", "The professor's request"), ("02_catch", "A catch counts in the field notes"),
+       ("03_published", "The published thesis")], cobblemon=True),
     # The Pokémon Ranger (ROADMAP 29.22, Cobblemon): settled by the hall in a red vest, an Alpha calmed, a wild Pikachu befriended
     S("legend_ranger", "Legends", "The Pokémon Ranger calms an Alpha and befriends a Pikachu",
       "the Pokémon Ranger in a red vest and capture styler by the hall, an Alpha calmed with sparkles, and a wild Pikachu befriended into the owner's pasture", 50,
@@ -652,6 +657,13 @@ SCENES = [
       [("01_wreck", "The wreck: the settlers' wagon on its side"),
        ("02_mark", "A mark of the trail, the tracks pointing on"),
        ("03_stockade", "The raiders' stockade and its cage")]),
+    # The Lost Caravan, II: the story (ROADMAP 31.20): the wreck found, the trail, the carter freed and walked home
+    S("lost_caravan", "Village Hall", "The Lost Caravan: the wreck, the trail, freeing Tobin and walking him home",
+      "the Lost Caravan's story: the settlers' wagon on its side with 'The caravan's wreck: tracks lead away from the road' over the hotbar; a torn banner on the trail with the tracks pointing on; Tobin the carter in the raiders' cage, its iron gate open and his 'You came for me! Take me home, I'll keep up.' in chat; then Tobin walking after the player out of the stockade", 45,
+      [("01_wreck", "The wreck found by the road"),
+       ("02_trail", "The trail, the tracks pointing on"),
+       ("03_freed", "Tobin in the raiders' cage, the gate open"),
+       ("04_home", "Tobin follows the player home")]),
     # The Sickness, I: eight far herbs (ROADMAP 31.17): a herb_patch of each on its own ground, and the Three-Herb Tonic
     S("herbs", "Village Hall", "The eight far herbs, each on its ground, and the Three-Herb Tonic",
       "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,
@@ -787,7 +799,10 @@ SCENES = [
         "the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 150),
     job("battle_stations", "Threats", "A siege: battle stations",
         "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
-    S("defences", "Build families", "Walls and gates", "every wall and gate was placed", 90, [("30_*@spread", "")]),
+    # With the answering jobs' houses since 32.19 (the Fire Station, the Well House and the Physician's House) and the
+    # defence upgrades since 32.20 (Palisade II, Stone Wall II, Wall Tower II, Gatehouse II, each beside its base)
+    S("defences", "Build families", "Walls and gates with their upgrades, and the answering jobs' houses",
+      "every wall and gate was placed beside its upgrade (Palisade II's stake ditch, Stone Wall II's hoardings, Wall Tower II's roofed gallery, Gatehouse II's barbican), then the Fire Station, the Well House and the Physician's House", 120, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
       [("30_*@spread", "")]),
     # With Cobblemon since 28.15: the Pokémon jobs' houses grow too (POKEMON_HOUSE_WEIGHT makes them likely)

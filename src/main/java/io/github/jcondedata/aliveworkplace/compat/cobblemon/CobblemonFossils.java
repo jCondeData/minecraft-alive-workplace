@@ -48,6 +48,7 @@ public final class CobblemonFossils {
 		}
 		com.cobblemon.mod.common.api.events.CobblemonEvents.FOSSIL_REVIVED.post(
 			new com.cobblemon.mod.common.api.events.pokemon.FossilRevivedEvent(pokemon, player));
+		CobblemonThesis.caught(player, pokemon, player.blockPosition(), true); // 31.21: a fossil for the Professor's Thesis
 		return pokemon.getDisplayName(false);
 	}
 

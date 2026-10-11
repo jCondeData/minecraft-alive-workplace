@@ -1,0 +1,49 @@
+{
+  "fabric:load_conditions": [{"condition": "fabric:all_mods_loaded", "values": ["cobblemon"]}],
+  "name": {"translate": "arc.aliveworkplace.professors_thesis"},
+  "trigger": {
+    "chance": 0.06,
+    "conditions": [
+      {"type": "cobblemon"},
+      {"type": "rank_at_least", "rank": "town"},
+      {"type": "thesis_patron"}
+    ]
+  },
+  "chapters": [
+    {
+      "name": {"translate": "arc.aliveworkplace.professors_thesis.1"},
+      "intro": ["arc.aliveworkplace.professors_thesis.1.intro.1", "arc.aliveworkplace.professors_thesis.1.intro.2"],
+      "on_start": [
+        {"type": "professors_thesis", "step": "begin"},
+        {"type": "professors_thesis", "step": "field_notes"}
+      ],
+      "chatter": ["chatter.aliveworkplace.professors_thesis.field_notes"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.professors_thesis.2"},
+      "intro": ["arc.aliveworkplace.professors_thesis.2.intro.1"],
+      "quests": [
+        {"id": "aliveworkplace:arc/professors_thesis/a_closer_look", "name": {"translate": "arc.aliveworkplace.professors_thesis.closer_look"},
+          "objectives": [{"type": "show", "friendship": 200}]}
+      ],
+      "chatter": ["chatter.aliveworkplace.professors_thesis.closer_look"]
+    },
+    {
+      "name": {"translate": "arc.aliveworkplace.professors_thesis.3"},
+      "intro": ["arc.aliveworkplace.professors_thesis.3.intro.1"],
+      "on_start": [
+        {"type": "professors_thesis", "step": "peer_review"}
+      ],
+      "quests": [
+        {"id": "aliveworkplace:arc/professors_thesis/peer_review", "name": {"translate": "arc.aliveworkplace.professors_thesis.peer_review"},
+          "objectives": [{"type": "battle_leader"}]}
+      ],
+      "chatter": ["chatter.aliveworkplace.professors_thesis.peer_review"]
+    }
+  ],
+  "ending": [
+    {"type": "professors_thesis", "step": "ending"},
+    {"type": "reputation", "points": 150, "who": "helpers"},
+    {"type": "honour", "id": "co_author", "who": "helpers"}
+  ]
+}

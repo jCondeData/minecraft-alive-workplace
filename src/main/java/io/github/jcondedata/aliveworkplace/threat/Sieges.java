@@ -207,7 +207,7 @@ public final class Sieges {
 	}
 
 	/** Whether {@code structure} is a gate build (its gates shut, its portcullis drops): one of {@link #gateBuilds}, in any style or tier. */
-	private static boolean isGated(ResourceLocation structure) {
+	public static boolean isGated(ResourceLocation structure) {
 		Set<ResourceLocation> gated = gateBuilds();
 		ResourceLocation base = BlueprintStyles.base(structure);
 		for (int i = 0; i < 4; i++) {
@@ -415,7 +415,35 @@ public final class Sieges {
 		List<Integer> ways = new ArrayList<>(new TreeSet<>(its.stream().filter(p -> p.local().getY() - floor < 2).map(p -> p.local().getX()).toList()));
 		int middle = ways.get(ways.size() / 2);
 		ways.sort(Comparator.<Integer>comparingInt(x -> Math.abs(x - middle)).thenComparingInt(x -> x));
-		Comparator<Piece> order = Comparator.<Piece>comparingInt(p -> p.local().getY() - floor < 2 ? 0 : 1)
+		// Gate lines (32.20): the build's gate blocks grouped by depth (blueprint z), blocks a step apart in one line. A
+		// build with a gate in front of its gate (Gatehouse II's barbican) has two lines: the outer one goes all of it,
+		// the drawn-up bars too, so the ram can walk in to the next; a build with one line (every other) is unchanged.
+		List<Integer> depths = new ArrayList<>(new TreeSet<>(its.stream().map(p -> p.local().getZ()).toList()));
+		Map<Integer, Integer> line = new HashMap<>();
+		int lines = 0;
+		for (int i = 0; i < depths.size(); i++) {
+			if (i > 0 && depths.get(i) - depths.get(i - 1) > 1) {
+				lines++;
+			}
+			line.put(depths.get(i), lines);
+		}
+		if (lines > 0) {
+			// Outermost first: the line with the gate block nearest the raiders.
+			Map<Integer, Double> near = new HashMap<>();
+			for (Piece p : its) {
+				near.merge(line.get(p.local().getZ()), Vec3.atCenterOf(p.pos()).distanceToSqr(from), Math::min);
+			}
+			List<Integer> outward = new ArrayList<>(near.keySet());
+			outward.sort(Comparator.comparingDouble(near::get));
+			Map<Integer, Integer> rank = new HashMap<>();
+			for (int i = 0; i < outward.size(); i++) {
+				rank.put(outward.get(i), i);
+			}
+			line.replaceAll((z, l) -> rank.get(l));
+		}
+		int last = lines;
+		Comparator<Piece> order = Comparator.<Piece>comparingInt(p -> line.get(p.local().getZ()) < last ? line.get(p.local().getZ()) : last)
+			.thenComparingInt(p -> p.local().getY() - floor < 2 ? 0 : 1)
 			.thenComparingInt(p -> lane(ways, middle, p.local().getX()))
 			.thenComparingDouble(p -> Vec3.atCenterOf(p.pos()).distanceToSqr(from));
 		List<Piece> sorted = new ArrayList<>(its);
@@ -653,7 +681,16 @@ public final class Sieges {
 		if (siege.breach != null && !raiders.isEmpty()) {
 			boolean open = open(siege);
 			Vec3 gate = Vec3.atBottomCenterOf(siege.breach);
-			Vec3 within = gate.add(siege.out.getStepX() * -6, 0, siege.out.getStepZ() * -6);
+			// Through is six blocks inside the innermost gate line: a barbican's breach is its outer gate (32.20), the
+			// way in goes on through the inner gate. (A gate a step behind the breach, as the Gatehouse's, changes nothing.)
+			int deeper = 0;
+			for (ThreatData.Gate g : siege.gates) {
+				if (g.lane == 0 && !g.high) {
+					deeper = Math.max(deeper, -((g.pos.getX() - siege.breach.getX()) * siege.out.getStepX() + (g.pos.getZ() - siege.breach.getZ()) * siege.out.getStepZ()));
+				}
+			}
+			int in = 6 + (deeper > 1 ? deeper : 0);
+			Vec3 within = gate.add(siege.out.getStepX() * -in, 0, siege.out.getStepZ() * -in);
 			int n = raiders.size();
 			for (int i = 0; i < n; i++) {
 				int index = (director.cursor + i) % n;

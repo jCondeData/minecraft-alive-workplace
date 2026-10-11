@@ -30,6 +30,15 @@ they stand, a splash every two seconds.
 When the last flame is out, the hall's chronicle remembers it: "Fire in the Starter Cottage: 18 blocks burned; Rowan
 the Firewarden put it out."
 
+## The Fire Station
+
+The **Blueprint Table** has a **Fire Station** for your builder to put up: a stone ground floor with the Firewarden's
+grindstone, a water basin to fill buckets at and buckets on racks, under a timber watch loft with windows on every
+side. Stand a villager by its grindstone and hand them a water bucket, and the village has its Firewarden. When a
+wooden village has no Firewarden, **What next?** at the hall suggests it.
+
+![The Fire Station among the walls and gates](https://jcondedata.github.io/minecraft-alive-workplace/defences/anim.gif)
+
 ## Settings
 
 **Firewardens** in the settings screen turns the job off (Firewardens already hired stand idle). Turn the

@@ -248,9 +248,14 @@ public final class CaravanTrail {
 
 	/** Whether {@code player} stands within {@link #RADIUS} blocks of {@code mark}, across the ground (and not far above or below it). */
 	static boolean within(ServerPlayer player, BlockPos mark) {
+		return within(player, mark, RADIUS);
+	}
+
+	/** Whether {@code player} stands within {@code radius} blocks of {@code mark}, across the ground. */
+	static boolean within(ServerPlayer player, BlockPos mark, int radius) {
 		double dx = player.getX() - (mark.getX() + 0.5);
 		double dz = player.getZ() - (mark.getZ() + 0.5);
-		return dx * dx + dz * dz <= (double) RADIUS * RADIUS && Math.abs(player.getY() - mark.getY()) <= 24;
+		return dx * dx + dz * dz <= (double) radius * radius && Math.abs(player.getY() - mark.getY()) <= 24;
 	}
 
 	/** The way from {@code from} to {@code to}, of the eight: "north-east". */

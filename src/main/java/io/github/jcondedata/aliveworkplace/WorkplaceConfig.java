@@ -160,6 +160,8 @@ public final class WorkplaceConfig {
 	public int arcCooldownDays = 8;
 	/** Story arcs running at once on the whole server (side arcs not counted); 0: none. */
 	public int arcsAtOnce = 3;
+	/** One caravan in this many on a road over 300 blocks goes missing, starting the Lost Caravan (ROADMAP 31.20); 0: none. */
+	public int lostCaravanChance = 20;
 	/** Story arc ids that never start ({@code bandit_king} or {@code pack:id}); a running one ends at its next round. File only. */
 	public List<String> disabledArcs = new ArrayList<>();
 	/** A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). */
@@ -392,6 +394,7 @@ public final class WorkplaceConfig {
 		"edictMinDays", 0, 30,
 		"arcCooldownDays", 0, 60,
 		"arcsAtOnce", 0, 20,
+		"lostCaravanChance", 0, 1000,
 		"guildsPerRank", 1, 4,
 		"colonyCooldownDays", 0, 60,
 		"coloniesPerVillage", 0, 16,
@@ -704,6 +707,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.story.Arcs.AUTO = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.story.Arcs.COOLDOWN_DAYS = arcCooldownDays;
 		io.github.jcondedata.aliveworkplace.story.Arcs.AT_ONCE = arcsAtOnce;
+		io.github.jcondedata.aliveworkplace.story.LostCaravanStory.CHANCE = lostCaravanChance;
 		io.github.jcondedata.aliveworkplace.story.Arcs.DISABLED = disabledArcs.stream().filter(java.util.Objects::nonNull).collect(java.util.stream.Collectors.toUnmodifiableSet());
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends && Expansions.on(Expansions.M29);
 		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites && Expansions.on(Expansions.M29);

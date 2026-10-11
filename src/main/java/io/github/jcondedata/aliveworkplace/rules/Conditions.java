@@ -43,6 +43,7 @@ public final class Conditions {
 		register("title_at_least", TitleAtLeast::read); // 31.12
 		register("bandit_camps_broken", BanditCampsBroken::read); // 31.16
 		register("villager_sickness", j -> new VillagerSickness()); // 31.18
+		register("thesis_patron", j -> new io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.PatronCondition()); // 31.21
 		GiverConditions.register();
 	}
 

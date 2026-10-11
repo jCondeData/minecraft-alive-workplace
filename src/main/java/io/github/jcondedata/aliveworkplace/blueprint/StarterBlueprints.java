@@ -303,6 +303,20 @@ public final class StarterBlueprints {
 	/** An open eight-sided bandstand with a jukebox (Bard), in the Gardens; it adds 3 to a village's beauty, no upgrade. */
 	public static final Entry BANDSTAND = new Entry(AliveWorkplace.id("bandstand"), new Vec3i(11, 10, 11));
 
+	/**
+	 * The houses of the jobs that answer a disaster (ROADMAP 32.19, tools/blueprints/answering.py), each with its job's
+	 * block and no other. The Fire Station: a stone ground floor with the Firewarden's grindstone, a water basin and
+	 * buckets on racks, under a timber watch loft.
+	 */
+	public static final Entry FIRE_STATION = new Entry(AliveWorkplace.id("fire_station"), new Vec3i(11, 14, 11));
+	/** A roofed well on a stone platform, its shaft down to water, the Well Keeper's cauldron, a trough and benches. */
+	public static final Entry WELL_HOUSE = new Entry(AliveWorkplace.id("well_house"), new Vec3i(11, 13, 12));
+	/** A white ward with the Physician's brewing stand, four beds behind screens (the quarantine ward) and a herb garden. */
+	public static final Entry PHYSICIANS_HOUSE = new Entry(AliveWorkplace.id("physicians_house"), new Vec3i(13, 12, 13));
+
+	/** The three houses of 32.19, in the order What next? and the scene show them. */
+	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
+
 	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done. */
 	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(11, 9, 7));
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
@@ -351,6 +365,14 @@ public final class StarterBlueprints {
 	public static final Entry WALL_TOWER = new Entry(AliveWorkplace.id("wall_tower"), new Vec3i(5, 10, 5));
 	/** A stone gatehouse (its gates shut at night). */
 	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
+	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes. */
+	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 6, 4));
+	/** Timber hoardings over the battlements: a roofed walkway with murder holes. */
+	public static final Entry STONE_WALL_2 = new Entry(AliveWorkplace.id("stone_wall_2"), new Vec3i(7, 9, 4));
+	/** A roofed top with an archers' gallery, two stations a side. */
+	public static final Entry WALL_TOWER_2 = new Entry(AliveWorkplace.id("wall_tower_2"), new Vec3i(5, 12, 5));
+	/** A barbican in front: a second gate and portcullis, murder holes over the gateway. */
+	public static final Entry GATEHOUSE_2 = new Entry(AliveWorkplace.id("gatehouse_2"), new Vec3i(11, 9, 10));
 
 	/**
 	 * Buildable copies of our plains village houses (ROADMAP 27.11), one workplace per job the Steward asks for: the
@@ -399,13 +421,14 @@ public final class StarterBlueprints {
 		GUILDHALL, GUILDHALL_2);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);
 
 	/** Walls and gates. */
-	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, WALL_TOWER, GATEHOUSE);
+	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_2, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, STONE_WALL_2, WALL_TOWER, WALL_TOWER_2,
+		GATEHOUSE, GATEHOUSE_2);
 
 	private StarterBlueprints() {
 	}

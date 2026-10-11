@@ -4,7 +4,7 @@ ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the 
 finished** (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defence page on [Lairs and the Defence page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6
+Roadmap items: 32.4, 32.5, 32.6, 32.20
 
 ## What a player sees
 
@@ -19,6 +19,14 @@ Roadmap items: 32.4, 32.5, 32.6
   through the gap.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
+- **The defence upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
+  adds only what's new. **Palisade II** gets a fighting step (stand high enough to shoot over the low points) and a
+  ditch of pointed dripstone stakes in front; **Stone Wall II** timber hoardings over the battlements (a roofed walkway,
+  a gallery out over the wall's foot with murder holes); **Wall Tower II** a roofed top with an archers' gallery, two
+  stations a side; **Gatehouse II** a barbican in front with a second gate and portcullis and murder holes over the
+  gateway. In a siege **both portcullises drop** and the rams meet the **barbican's gate first**: they break all of
+  it, gate and portcullis, to walk in to the inner one, so a Gatehouse II holds several times as long as a Gatehouse;
+  at night the guards shut both gates.
 - **Only gates the builders made break**: the fence gates, doors and iron bars of finished wall and gate builds. A
   gate you placed yourself is never hit, even right beside one.
 - **Ladders go up the walls** (32.5). Raiders who carry ladders (the pillagers of the warband, 32.7) walk to the wall
@@ -161,6 +169,11 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 
 ## Decisions
 
+- 32.20: Palisade II's ditch is a bed of coarse earth level with the ground, its dripstone stakes on top: a blueprint
+  starts on top of the clicked block and can't dig below it. Gatehouse II's murder holes are open holes in the
+  barbican's roof (no iron bars there: every iron bar of a gate build is a portcullis that drops in a siege). A build's
+  gate blocks fall into gate lines by depth; with more than one line (the barbican) the outer line goes whole, its
+  drawn-up bars too, before the next, because a ravager ram is two blocks wide and couldn't follow its one-wide gap.
 - 32.4: the siege is saved beside the raid, not inside it as the design note drew it, because it outlives the raid:
   the gates stay shut until dawn after the last raider is gone.
 - 32.4: every block has its own hit points, so "about a minute through a Gatehouse" is two bars (26 seconds each) and
@@ -229,6 +242,13 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   still shut after the raid, open at dawn, with the Defence page's lines; the gate standing after 2400 ticks with
   the game rule off; the two switches; a save and load half-way through a gate; a gate the player breaks first; the
   director's four paths a tick; a village without a finished wall or gate, and a culture that does not ram.
+- GameTests (32.20): `SiegeGameTests.aGatehouseIITakesLongerThanAGatehouse` (the same yard with a Gatehouse, then a
+  Gatehouse II: twelve bars drop, both gates shut, the breach is the barbican's middle gate, and the pillager takes
+  longer to get through), `theDefenceUpgradesAreKnown` (all four are defences with stations and keep most of their
+  base; the hall's round opens and shuts Gatehouse II's six fence gates; Wall Tower II has two stations a side, Stone
+  Wall II's roofed walkway seven) and `BuilderGameTests.builderUpgradesAFinishedGatehouse` (clicked onto a finished
+  Gatehouse, stocked with only what it lacks, a builder builds the barbican). The `defences` scene places each beside
+  its base.
 - GameTests: `LadderGameTests` (32.5): a pillager climber is over a Stone Wall within 600 ticks by a ladder of 5
   rungs set one at a time on its outer face, and a vindicator follows up the same ladder; a guard on the walkway
   throws the ladder down with the climber on it, no raider ladder is left within 3 blocks of him and the climber is

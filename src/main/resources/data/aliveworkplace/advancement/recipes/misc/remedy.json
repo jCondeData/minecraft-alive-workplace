@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "aliveworkplace:remedy"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_glass_bottle": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:glass_bottle"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_glistering_melon_slice": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:glistering_melon_slice"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_honey_bottle": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:honey_bottle"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_fermented_spider_eye": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:fermented_spider_eye"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_glass_bottle",
+      "has_glistering_melon_slice",
+      "has_honey_bottle",
+      "has_fermented_spider_eye"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "aliveworkplace:remedy"
+    ]
+  }
+}

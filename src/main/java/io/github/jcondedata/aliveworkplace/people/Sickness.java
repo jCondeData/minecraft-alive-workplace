@@ -30,6 +30,10 @@ import net.minecraft.world.item.alchemy.PotionContents;
  * it doesn't pass by itself, a nurse's remedy only takes its slowness away for a day ({@link #ease}), and it passes from
  * villager to villager at night. It ends when the healer's Three-Herb Tonic comes round, when it runs its course, or when
  * no Sickness story runs in the village any more.
+ *
+ * <p>The <b>plague</b> (ROADMAP 32.18, {@link #PLAGUE}) is another kind: caught from the ill while a plague is under
+ * way ({@code threat/Plague}), not passing by itself, beyond the nurse; only the Physician's Remedy cures it (and any
+ * other illness, hexes included), and keeps the villager well for ten days ({@code ModAttachments.WELL_UNTIL}).
  */
 public final class Sickness {
 	/** Whether villagers fall ill at all. */
@@ -49,6 +53,32 @@ public final class Sickness {
 
 	/** The kind of illness a hex is. */
 	public static final String HEX = "hex";
+
+	/** The kind of illness the plague is (32.18). */
+	public static final String PLAGUE = "plague";
+
+	/** Whether {@code villager} is ill with the plague (32.18): no nurse's remedy touches it, only a Physician's Remedy. */
+	public static boolean isPlagueIll(Villager villager) {
+		return isIll(villager) && PLAGUE.equals(ModAttachments.ILL_KIND.get(villager));
+	}
+
+	/** Whether a Remedy (32.18) still keeps {@code villager} well: they don't fall ill, nor are hexed, nor catch the plague. */
+	public static boolean isImmune(Villager villager, long now) {
+		Long until = ModAttachments.WELL_UNTIL.get(villager);
+		return until != null && now < until;
+	}
+
+	/** {@code villager} catches the plague (32.18), unless they're Hardy, kept well by a Remedy, or ill already. */
+	public static boolean catchPlague(ServerLevel level, Villager villager) {
+		if (isIll(villager) || io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager) || isImmune(villager, level.getGameTime())) {
+			return false;
+		}
+		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());
+		ModAttachments.ILL_KIND.set(villager, PLAGUE);
+		villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
+		sneeze(level, villager);
+		return true;
+	}
 
 	/** Whether {@code villager} is ill with a coven's hex (32.11). */
 	public static boolean isHexed(Villager villager) {
@@ -97,6 +127,9 @@ public final class Sickness {
 
 	/** {@code villager} is hexed (32.11): ill with a curse no remedy touches, in a swirl of witch particles. */
 	public static void hex(ServerLevel level, Villager villager) {
+		if (isImmune(villager, level.getGameTime())) {
+			return; // a Remedy keeps them well (32.18)
+		}
 		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());
 		ModAttachments.ILL_KIND.set(villager, HEX);
 		villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
@@ -150,6 +183,14 @@ public final class Sickness {
 				}
 				return;
 			}
+			if (PLAGUE.equals(ModAttachments.ILL_KIND.get(villager))
+					&& io.github.jcondedata.aliveworkplace.threat.Plague.underway(level, villager.blockPosition())) {
+				// The plague's ill don't get well by themselves, and after two days they keep to their bed (32.18).
+				villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
+				sneeze(level, villager);
+				io.github.jcondedata.aliveworkplace.threat.Plague.toBed(level, villager);
+				return;
+			}
 			if (now - since >= recovery(villager) ||io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager)) {
 				recover(level, villager);
 			} else {
@@ -184,8 +225,9 @@ public final class Sickness {
 
 	/** {@code villager} falls ill, unless they're Hardy (29.7), who never do. */
 	public static void fallIll(ServerLevel level, Villager villager) {
-		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager) || isHexed(villager) || isGrey(villager)) {
-			return; // (nor does an ordinary illness take the place of a hex or the Grey Cough)
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager) || isHexed(villager) || isGrey(villager) || isPlagueIll(villager)
+				|| isImmune(villager, level.getGameTime())) {
+			return; // (nor does an ordinary illness take the place of a hex, the Grey Cough or the plague; a Remedy keeps them well, 32.18)
 		}
 		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());
 		villager.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 40, 0, false, false));
@@ -195,6 +237,7 @@ public final class Sickness {
 	/** Well again: the slowness goes, and a little happy puff. */
 	public static void recover(ServerLevel level, Villager villager) {
 		ModAttachments.ILL_SINCE.remove(villager);
+		ModAttachments.PLAGUE_SEEN.remove(villager);
 		ModAttachments.ILL_KIND.remove(villager);
 		ModAttachments.ILL_EASED_UNTIL.remove(villager);
 		villager.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);

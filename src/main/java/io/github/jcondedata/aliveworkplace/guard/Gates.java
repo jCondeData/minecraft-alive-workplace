@@ -22,7 +22,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * minute). Players can still open them by hand.
  *
  * <p>In a siege (ROADMAP 32.4, {@code threat/Sieges}) they shut at once, whatever the hour and with or without guards,
- * and the portcullis of every gate build drops; they stay shut until the first dawn after.
+ * and the portcullis of every gate build drops; they stay shut until the first dawn after. On the day of an attack the
+ * village was warned of ({@link Warnings}, 32.14) they shut from noon.
  */
 public final class Gates {
 	/** The blueprints whose fence gates are the village's gates: the two we ship, and every wall kit's gate (27.18). */
@@ -41,7 +42,8 @@ public final class Gates {
 	 * none. Returns how many gates moved.
 	 */
 	public static int round(ServerLevel level, BlockPos hall, int guards) {
-		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall);
+		// A siege keeps them shut; so does a warned attack's day, from noon (32.14).
+		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall) || Warnings.ready(level, hall);
 		if (guards <= 0 && !siege) {
 			return 0;
 		}

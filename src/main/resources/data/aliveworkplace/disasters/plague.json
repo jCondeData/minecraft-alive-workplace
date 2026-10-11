@@ -1,0 +1,17 @@
+{
+  "when": { "min_rank": "town" },
+  "chance": 0.03,
+  "factors": [
+    { "if": { "crowded": true }, "times": 2 }
+  ],
+  "duration": { "min_days": 0, "max_days": 0, "ends_when_well": true },
+  "effects": [
+    { "type": "contagion", "chance": 0.2, "range": 3 }
+  ],
+  "answered_by": "aliveworkplace:physician",
+  "foretold_by": ["aliveworkplace:physician"],
+  "foretell_days": 1,
+  "messages": "disaster.aliveworkplace.plague",
+  "chronicle": "chronicle.aliveworkplace.plague",
+  "kind": "plague"
+}

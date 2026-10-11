@@ -800,6 +800,143 @@ final class JobScenes {
 					&& l.getBlockState(new BlockPos(0, -60, 14)).is(net.minecraft.world.level.block.Blocks.CHEST);
 			};
 		}, null));
+		// Village fire (ROADMAP 32.16): a Starter Cottage the builders finished, its roof struck by lightning and catching; the
+		// Firewarden at the grindstone (picked with a water bucket) runs over and throws bucket after bucket on it, steam
+		// rising, refilling at the pond by the grindstone, until it's out and the chronicle says so.
+		SCENES.put("fire", new Job("the Starter Cottage's roof caught fire and the Firewarden ran over from the grindstone and put it out with buckets of water", 1600,
+			new Vec3(10.5, -52.0, 9.5), new Vec3(-1.0, -56.0, -9.0), (level, player) -> {
+			io.github.jcondedata.aliveworkplace.threat.VillageFire.forget();
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos origin = STATION.offset(-5, 0, -15);
+			level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(),
+				origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			// The pond the firewarden fills the buckets at, beside the grindstone.
+			for (int x = 3; x <= 5; x++) {
+				for (int z = 1; z <= 3; z++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+				}
+			}
+			Villager warden = picked(level, player, STATION, Blocks.GRINDSTONE.defaultBlockState()
+				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)
+				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH), Items.WATER_BUCKET);
+			io.github.jcondedata.aliveworkplace.work.FirewardenWork.setWater(warden, 1);
+			long began = level.getGameTime();
+			boolean[] lit = {false};
+			return l -> {
+				if (!lit[0] && l.getGameTime() - began >= 60) {
+					lit[0] = true;
+					l.getServer().execute(() -> {
+						// The strike that sets it off (only the flash: the roof is lit here, as the strike would, so the scene
+						// doesn't wait on the 1 in 3).
+						net.minecraft.world.entity.LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(l);
+						bolt.moveTo(Vec3.atBottomCenterOf(origin.offset(5, 9, 5)));
+						bolt.setVisualOnly(true);
+						l.addFreshEntity(bolt);
+						Showcase.check(io.github.jcondedata.aliveworkplace.threat.VillageFire.igniteNear(l, hall, origin.offset(5, 8, 5),
+							net.minecraft.util.RandomSource.create(3L)).isPresent(), "the cottage's roof caught fire");
+						for (int i = 0; i < 2; i++) {
+							io.github.jcondedata.aliveworkplace.threat.VillageFire.igniteNear(l, hall, origin.offset(2 + 6 * i, 8, 4),
+								net.minecraft.util.RandomSource.create(5L + i));
+						}
+					});
+				}
+				return lit[0] && l.getGameTime() - began > 200 && io.github.jcondedata.aliveworkplace.threat.VillageFire.incident(l, hall).isEmpty()
+					&& warden.getVillagerXp() > 1;
+			};
+		}, null));
+		// Drought (ROADMAP 32.17): a wheat field gone dry (farmland at moisture 0, dead bushes round it) in a village under
+		// a drought; the Well Keeper at the cauldron (picked with a shovel) fills a bucket at the pond and carries it to the
+		// field, bucket after bucket, each wetting 9 farmland dark again in a splash.
+		SCENES.put("drought", new Job("the fields were dry in the drought, and the Well Keeper carried water from the pond to them, bucket after bucket", 1600,
+			new Vec3(11.5, -53.0, 5.5), new Vec3(0.0, -60.0, -7.0), (level, player) -> {
+			level.setDayTime(2000);
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			// The field: 9 x 5 farmland dried right out, wheat of all ages on it, dead bushes on coarse dirt round it.
+			net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(7L);
+			List<BlockPos> field = new ArrayList<>();
+			for (int x = -4; x <= 4; x++) {
+				for (int z = -11; z <= -7; z++) {
+					BlockPos soil = STATION.offset(x, -1, z);
+					level.setBlockAndUpdate(soil, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState()
+						.setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 0));
+					level.setBlockAndUpdate(soil.above(), ((net.minecraft.world.level.block.CropBlock) net.minecraft.world.level.block.Blocks.WHEAT)
+						.getStateForAge(random.nextInt(4)));
+					field.add(soil);
+				}
+			}
+			for (int[] d : new int[][] {{-6, -12}, {-6, -8}, {6, -10}, {6, -6}, {-2, -13}, {3, -13}}) {
+				BlockPos at = STATION.offset(d[0], -1, d[1]);
+				level.setBlockAndUpdate(at, net.minecraft.world.level.block.Blocks.COARSE_DIRT.defaultBlockState());
+				level.setBlockAndUpdate(at.above(), net.minecraft.world.level.block.Blocks.DEAD_BUSH.defaultBlockState());
+			}
+			// The pond the keeper fills the bucket at, beside the cauldron.
+			for (int x = 3; x <= 5; x++) {
+				for (int z = 1; z <= 3; z++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+				}
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			io.github.jcondedata.aliveworkplace.threat.Disaster drought = io.github.jcondedata.aliveworkplace.threat.Drought.get().orElse(null);
+			Showcase.check(drought != null && entity != null, "the drought is loaded and the hall stands");
+			if (drought != null && entity != null) {
+				entity.setDisaster(null, -1, -1, -100);
+				io.github.jcondedata.aliveworkplace.threat.Disasters.start(level, hall, entity, drought,
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, hall), net.minecraft.util.RandomSource.create(1L));
+			}
+			Villager keeper = picked(level, player, STATION, Blocks.CAULDRON, Items.IRON_SHOVEL);
+			return l -> {
+				long watered = field.stream().filter(p -> io.github.jcondedata.aliveworkplace.threat.Drought.watered(l, p)).count();
+				return watered >= 18 && keeper.getVillagerXp() > 1 && io.github.jcondedata.aliveworkplace.threat.Drought.in(l, STATION.offset(0, -1, -9));
+			};
+		}, null));
+		// Plague (ROADMAP 32.18): three villagers ill with the plague, each by the bed of their own house up the street; the
+		// Physician at the brewing stand (picked with a glistering melon slice) takes a Remedy from the chest and goes house
+		// to house: two Remedies cure two of them in a puff of hearts, the third is seen and sent home to bed. Then the
+		// hall's list of the village, where the one still ill shows "Ill with the plague: seen by the Physician, kept at home".
+		SCENES.put("plague", new Job("a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed",
+			1800, new Vec3(0.5, -55.0, 6.5), new Vec3(0.0, -60.0, -8.0), (level, player) -> {
+			level.setDayTime(2000);
+			BlockPos hall = STATION.offset(0, 0, -26);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			Villager physician = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GLISTERING_MELON_SLICE);
+			chest(level, chestPos(), new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.REMEDY, 2), new ItemStack(Items.GLASS_BOTTLE, 3));
+			List<Villager> ill = new ArrayList<>();
+			int[][] houses = {{-7, -8}, {0, -13}, {7, -8}};
+			for (int[] h : houses) {
+				BlockPos foot = STATION.offset(h[0], 0, h[1]);
+				level.setBlockAndUpdate(foot, Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+					.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.FOOT));
+				level.setBlockAndUpdate(foot.north(), Blocks.RED_BED.defaultBlockState().setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.NORTH)
+					.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+				Villager v = EntityType.VILLAGER.spawn(level, foot.south(), MobSpawnType.COMMAND);
+				v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), foot.north()));
+				ill.add(v);
+			}
+			io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+			io.github.jcondedata.aliveworkplace.threat.Disaster plague = io.github.jcondedata.aliveworkplace.threat.Disasters.get(io.github.jcondedata.aliveworkplace.threat.Plague.ID).orElse(null);
+			Showcase.check(plague != null && entity != null, "the plague is loaded and the hall stands");
+			for (Villager v : ill) {
+				io.github.jcondedata.aliveworkplace.people.Sickness.catchPlague(level, v);
+			}
+			if (plague != null && entity != null) {
+				entity.setDisaster(null, -1, -1, -100);
+				io.github.jcondedata.aliveworkplace.threat.Disasters.start(level, hall, entity, plague,
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.census(level, hall), net.minecraft.util.RandomSource.create(1L));
+			}
+			Showcase.check(ill.stream().allMatch(io.github.jcondedata.aliveworkplace.people.Sickness::isPlagueIll), "three villagers are ill with the plague");
+			return l -> {
+				long cured = ill.stream().filter(v -> !io.github.jcondedata.aliveworkplace.people.Sickness.isIll(v)).count();
+				long seen = ill.stream().filter(io.github.jcondedata.aliveworkplace.threat.Plague::seen).count();
+				return cured >= 2 && seen >= 1 && physician.getVillagerXp() > 1;
+			};
+		}, new After("04_hall_list_of_the_ill", (level, player) -> {
+			ScreenshotHarness.hover(player, Vec3.atCenterOf(STATION.offset(0, 0, -24)), 180, 10);
+			io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION.offset(0, 0, -26));
+		}, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6)));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks
@@ -1230,6 +1367,62 @@ final class JobScenes {
 				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
 				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
 				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
+			};
+		}, null));
+		// A day's warning (ROADMAP 32.14): a Gatehouse with a Wall Tower beside it and a Village Hall behind, an archer
+		// posted by the tower. The clock has set tonight's attack from the south (the camera's side); the archer saw it
+		// coming, so the chat says so. At noon the gates shut and the portcullis drops; at dusk the archer climbs the tower.
+		SCENES.put("warning", new Job("the archer posted by the Wall Tower saw the raid coming and the chat said so; at noon the gates shut and the portcullis dropped, and at dusk the archer was on the tower before any raider came", 1500,
+			new Vec3(14.5, -51.0, 12.5), new Vec3(1.5, -56.5, -3.0), (level, player) -> {
+			long base = (level.getDayTime() / 24000) * 24000;
+			level.setDayTime(base + 5800);
+			BlockPos hall = STATION.north(14);
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			Map<BlockPos, StarterBlueprints.Entry> builds = new LinkedHashMap<>();
+			builds.put(STATION.offset(-5, 0, -6), StarterBlueprints.GATEHOUSE);
+			builds.put(STATION.offset(6, 0, -6), StarterBlueprints.WALL_TOWER);
+			builds.forEach((at, entry) -> {
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				sites.recordFinished(entry.id(), new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			});
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			if (level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity) {
+				entity.setOwner(player.getUUID(), player.getGameProfile().getName());
+			}
+			BlockPos post = STATION.offset(4, 0, -13);
+			level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+			Villager archer = EntityType.VILLAGER.spawn(level, STATION.offset(4, 0, -11), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, archer, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
+			archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
+			archer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, new ItemStack(net.minecraft.world.item.Items.BOW));
+			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
+			io.github.jcondedata.aliveworkplace.threat.ThreatData data = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
+			data.forgetClock(hall);
+			data.forgetSiege(hall);
+			io.github.jcondedata.aliveworkplace.guard.BattleStations.forget();
+			long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			data.rolled(hall, today, new io.github.jcondedata.aliveworkplace.threat.ThreatData.Attack(today, io.github.jcondedata.aliveworkplace.threat.Threats.MONSTERS,
+				Math.PI / 2, 17000)); // from the south, late in the night
+			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Warnings.warn(level, hall, 10, 1), "the archer by the Wall Tower warned the village");
+			Showcase.check(!io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(level, hall), "the portcullis is up in the morning");
+			int[] phase = {0};
+			return l -> {
+				io.github.jcondedata.aliveworkplace.guard.Gates.round(l, hall, 1);
+				io.github.jcondedata.aliveworkplace.guard.Warnings.round(l, hall, 10, 1);
+				if (phase[0] == 0 && io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(l, hall)) {
+					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.status(l, hall).open() == 0, "the gates shut at noon");
+					phase[0] = 1;
+				} else if (phase[0] >= 1 && phase[0] < 100) {
+					phase[0]++; // a few seconds with the gates shut in the sun
+				} else if (phase[0] == 100) {
+					l.setDayTime(base + io.github.jcondedata.aliveworkplace.guard.VillageRaids.DUSK + 20);
+					phase[0] = 101;
+				}
+				return phase[0] == 101 && io.github.jcondedata.aliveworkplace.guard.BattleStations.onStation(archer)
+					&& io.github.jcondedata.aliveworkplace.threat.ThreatData.get(l).raid(hall).isEmpty();
 			};
 		}, null));
 		SCENES.put("roads", new Job("the builder laid the approved Stonework street between the two houses, 3 wide, segment by segment", 9000,

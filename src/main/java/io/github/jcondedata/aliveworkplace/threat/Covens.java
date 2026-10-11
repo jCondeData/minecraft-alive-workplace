@@ -194,6 +194,11 @@ public final class Covens {
 		int count = Math.min(open.size(), 1 + random.nextInt(3));
 		List<Villager> hexed = new ArrayList<>(open.subList(0, count));
 		hexed.forEach(v -> Sickness.hex(level, v));
+		for (Villager v : hexed) {
+			if (Sickness.isHexed(v) && Plague.carried(level, v, random)) {
+				break; // a hexed villager may bring the plague (32.18)
+			}
+		}
 		if (!hexed.isEmpty()) {
 			Culture culture = Threats.get(lair.culture()).orElse(null);
 			Component name = VillageHalls.name(level, lair.hall());

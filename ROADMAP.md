@@ -4030,7 +4030,7 @@ Legends.
   table of the eight Wonders with their Legend, its stand-in, their other requirements and powers; and how every link
   to another milestone falls back until that milestone lands. Done when: the note is on `main` with all of these, and
   its review package is sent.
-- [ ] **35.2** **Wonder data, requirements and caps.** A Wonder is one data file,
+- [x] **35.2** (approved auto 2026-10-11) **Wonder data, requirements and caps.** A Wonder is one data file,
   `data/<namespace>/wonders/<id>.json`, loaded by a reload listener (through `Platform`) into a new `wonder/Wonders`:
   its name and description (lang keys), an icon item, its requirements, its stages (each a name, its blueprint parts
   with their offsets, and its goods as `{"item" or "tag", "count", "job"}`), its powers (`[{"type": ..., numbers}]`),

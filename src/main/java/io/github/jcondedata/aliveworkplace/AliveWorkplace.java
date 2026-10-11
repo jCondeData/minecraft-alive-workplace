@@ -97,6 +97,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
+		io.github.jcondedata.aliveworkplace.wonder.Wonders.init(); // Wonders as data (35.2)
 		io.github.jcondedata.aliveworkplace.threat.Threats.init(); // raider cultures as data (32.2)
 		io.github.jcondedata.aliveworkplace.threat.Disasters.init(); // disasters as data (32.15)
 		io.github.jcondedata.aliveworkplace.people.RemedyItem.init(); // the Physician's Remedy given to a villager (32.18)

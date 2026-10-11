@@ -272,7 +272,7 @@ public class LegendEngineGameTests implements net.fabricmc.fabric.api.gametest.v
 			Villager sage = villager(helper, new BlockPos(20, 2, 20), VillagerProfession.NONE, 1);
 			Legends.make(level, sage, Legends.get(TEST).orElseThrow(), "test");
 			check(helper, settled, hall, true, 1, 1);
-			helper.assertTrue(Conditions.types().size() == 32 && Conditions.types().contains("thesis_patron") && Conditions.types().contains("villager_sickness") && Conditions.types().contains("title_at_least") && Conditions.types().contains("bandit_camps_broken") && Conditions.types().contains("pastured_pokemon") && Conditions.types().contains("alpha_near")
+			helper.assertTrue(Conditions.types().size() == 34 && Conditions.types().contains("coastal") && Conditions.types().contains("mod_loaded") && Conditions.types().contains("thesis_patron") && Conditions.types().contains("villager_sickness") && Conditions.types().contains("title_at_least") && Conditions.types().contains("bandit_camps_broken") && Conditions.types().contains("pastured_pokemon") && Conditions.types().contains("alpha_near")
 					&& Conditions.types().containsAll(java.util.List.of("hearts_at_least", "job", "job_family", "level_below", "villager_type", "home_tier_below", "no_bed")), "condition types: " + Conditions.types());
 			helper.succeed();
 		});

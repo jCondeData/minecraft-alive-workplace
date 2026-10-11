@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Wonders as data** (35.2, 2.0, still switched off): a Wonder is one file, `data/<namespace>/wonders/<id>.json` (its
+  name, icon, requirements, stages with their parts and goods, powers and crew), so a server owner's own Wonder works
+  like ours; a file with a mistake is logged with its path and the reason and skipped. Requirements use the Legends'
+  condition toolbox, with two new types, `coastal` and `mod_loaded`, and a `stand_in` for `legend`; every Wonder also
+  needs the Master Architect (stand-in: a Master builder). The caps: `wonderCaps` by rank (Town 1, City 2), one of each
+  kind per village, one going up at a time, `wonderServerLimit`, `disabledWonders`, and the `wonders` and
+  `wonderLegends` switches. `/workplace wonders` lists every Wonder on the server with its village, owner and stage.
 - **The Colony Camp and the Royal Hall, for 1.7** (33.14, off until 1.7 is finished): a new colony now starts from
   the Colony Camp, two covered wagons round its Village Hall under a striped awning, with the Blueprint Table, supply
   crates, a campfire with a cooking pot, three bedrolls, the Travel Post and a flagpole. A realm's capital draws the

@@ -1,0 +1,112 @@
+package io.github.jcondedata.aliveworkplace.wonder;
+
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.saveddata.SavedData;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * The Wonders of one dimension (M35), saved with it as {@code aliveworkplace_wonders}: every {@link WonderSite}, going
+ * up or finished, in the order they were begun. A world saved before M35 has no such file and reads as empty.
+ */
+public final class WonderManager extends SavedData {
+	public static final String NAME = "aliveworkplace_wonders";
+
+	private final Map<UUID, WonderSite> sites = new LinkedHashMap<>();
+
+	public static WonderManager get(ServerLevel level) {
+		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(WonderManager::new, WonderManager::load, null), NAME);
+	}
+
+	/** Every Wonder site on the server, dimension by dimension. */
+	public static List<Located> everywhere(MinecraftServer server) {
+		List<Located> out = new ArrayList<>();
+		for (ServerLevel level : server.getAllLevels()) {
+			for (WonderSite site : get(level).sites()) {
+				out.add(new Located(level, site));
+			}
+		}
+		return out;
+	}
+
+	/** A site and the dimension it's in. */
+	public record Located(ServerLevel level, WonderSite site) {
+	}
+
+	public List<WonderSite> sites() {
+		return List.copyOf(sites.values());
+	}
+
+	/** The Wonders of the village round {@code hall}, going up or finished. */
+	public List<WonderSite> in(BlockPos hall) {
+		return sites.values().stream().filter(s -> s.hall().equals(hall)).toList();
+	}
+
+	public Optional<WonderSite> site(UUID id) {
+		return Optional.ofNullable(sites.get(id));
+	}
+
+	/** Records a Wonder begun in the village round {@code hall} on {@code day}, at its first stage. */
+	public WonderSite begin(ResourceLocation wonder, BlockPos hall, @Nullable UUID owner, String ownerName, long day) {
+		WonderSite site = new WonderSite(UUID.randomUUID(), wonder, hall.immutable(), Optional.ofNullable(owner), ownerName == null ? "" : ownerName,
+			1, day, Optional.empty());
+		sites.put(site.id(), site);
+		setDirty();
+		return site;
+	}
+
+	/** Moves a site to stage {@code stage}. */
+	public void setStage(UUID id, int stage) {
+		WonderSite site = sites.get(id);
+		if (site != null) {
+			sites.put(id, site.atStage(stage));
+			setDirty();
+		}
+	}
+
+	/** Marks a site finished on {@code day}. */
+	public void finish(UUID id, long day) {
+		WonderSite site = sites.get(id);
+		if (site != null) {
+			sites.put(id, site.finishedOn(day));
+			setDirty();
+		}
+	}
+
+	/** Forgets a site (a cancelled Wonder, or a test's). */
+	public void remove(UUID id) {
+		if (sites.remove(id) != null) {
+			setDirty();
+		}
+	}
+
+	@Override
+	public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+		WonderSite.CODEC.listOf().encodeStart(NbtOps.INSTANCE, List.copyOf(sites.values())).result().ifPresent(t -> tag.put("sites", t));
+		return tag;
+	}
+
+	public static WonderManager load(CompoundTag tag, HolderLookup.Provider registries) {
+		WonderManager manager = new WonderManager();
+		Tag list = tag.get("sites");
+		if (list != null) {
+			WonderSite.CODEC.listOf().parse(NbtOps.INSTANCE, list)
+				.resultOrPartial(err -> AliveWorkplace.LOG.warn("Wonders: {}", err))
+				.ifPresent(all -> all.forEach(s -> manager.sites.put(s.id(), s)));
+		}
+		return manager;
+	}
+}

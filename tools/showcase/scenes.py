@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -754,6 +754,10 @@ SCENES = [
       "a Peasant couple rose to Artisan at dawn with golden sparkles and a chat line, and the hall's Classes page counts each class's needs", 45,
       [("01_classes_rise", "Odo and Pia rise to Artisan at dawn"), ("02_classes_tab", "The Classes tab: households of each class"),
        ("03_classes_page", "The Burgher button: needs counted, what it gives, who's closest")]),
+    # The Wonders page and the Wonder Plan (ROADMAP 35.3): the folly's card, then the plan placed with its see-through tower
+    S("wonders_page", "Wonders", "The Wonders page and the Wonder Plan",
+      "the hall's Wonders page showed the Test Folly's card with every requirement ticked and the cap; Draw up the plans took 32 emeralds and gave a Wonder Plan, which placed north of the hall shows the whole tower as see-through blocks", 30,
+      [("01_wonders_page", "The Wonders page: the folly's card, every line ticked, the cap"), ("02_wonder_plan_preview", "The Wonder Plan in hand: the whole tower see-through")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
       "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,
@@ -881,6 +885,12 @@ SCENES = [
       200, [("10_colony_camp", "The Colony Camp: two wagons, the Village Hall under a striped awning, the campfire and the Travel Post"),
            ("12_royal_hall", "The Royal Hall: a stone great hall with a gabled porch and a rose window"),
            ("15_royal_hall_2_back", "Royal Hall II from behind: the keep tower, the treasury wing and the vault")]),
+    # Wonders (M35): every Wonder's design placed whole (ROADMAP 35.9; each design adds its stills)
+    S("wonder_gallery", "Wonders", "The Wonders, each placed whole", "every Wonder stands whole, every part of every stage placed", 90,
+      [("10_great_cathedral", "The Great Cathedral: the west front, its two towers and spires, the rose window over the deep door"),
+       ("11_great_cathedral_back", "The Great Cathedral from behind: the apse, the transepts with their annexes, the flying buttresses"),
+       ("12_lighthouse", "The Lighthouse from the land: the keeper's cottage and the boathouse at the foot of the banded tower"),
+       ("13_lighthouse_back", "The Lighthouse from the sea: the stepped mole, the gallery and lantern, the jetty over the water to the ferry stop")]),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
       "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
       [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),

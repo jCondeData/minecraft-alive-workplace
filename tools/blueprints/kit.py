@@ -132,16 +132,65 @@ class Build:
             "entities": List[Compound](getattr(self, "entities", [])),
         })
 
-    def save(self, folder, name):
+    def save(self, folder, name, checked=True):
+        """Writes the build to folder/name.nbt; checked=False leaves the check to the caller (a Wonder's stage part is
+        checked standing on the stages before it, by wonder_stages)."""
         os.makedirs(folder, exist_ok=True)
         path = os.path.join(folder, name + ".nbt")
         nbtlib.File(self.to_nbt()).save(path, gzipped=True)
-        solid = sum(1 for n, _ in self.blocks.values() if n != "minecraft:air")
+        solid = sum(1 for n, _ in self.blocks.values() if n not in ("minecraft:air", "minecraft:structure_void"))
         print(f"{name}: {self.w}x{self.h}x{self.d}, {solid} blocks -> {os.path.relpath(path, ROOT)}")
-        from check import check
-        for problem in check(self):
-            print(f"  CHECK {name}: {problem}")
+        if checked:
+            from check import check
+            for problem in check(self):
+                print(f"  CHECK {name}: {problem}")
 
+
+class StagedBuild(Build):
+    """A Wonder (ROADMAP 35.9, docs/design/M35.md), drawn whole and stage by stage: call begin(n) before drawing stage n.
+    A stage only adds blocks: drawing over a block of an earlier stage is an error (the village lives beside a stage for
+    days, and a builder would have to break what the stage before left finished). stage_builds() gives the Wonder as it
+    stands after each stage, for wonder_stages()."""
+
+    def __init__(self, w, h, d):
+        super().__init__(w, h, d)
+        self.stage = 0
+        self.stage_of = {}
+        self._frozen = {}
+
+    def begin(self, n):
+        self._close()
+        self.stage = n
+
+    def _close(self):
+        changed = [p for p, block in self._frozen.items() if self.blocks.get(p) != block]
+        assert not changed, f"stage {self.stage} draws over earlier stages at {sorted(changed)[:5]}"
+        for p in self.blocks:
+            self.stage_of.setdefault(p, self.stage)
+        self._frozen = dict(self.blocks)
+
+    def stage_builds(self):
+        """The Wonder as it stands after each stage (each a Build of the whole size), its stair corners and connections
+        worked out once on the whole, so no later stage changes an earlier block."""
+        self._close()
+        finish(self)
+        out = []
+        for n in sorted(set(self.stage_of.values())):
+            s = _Finished(self.w, self.h, self.d)
+            s.blocks = {p: v for p, v in self.blocks.items() if self.stage_of[p] <= n}
+            s.nbt = {p: v for p, v in getattr(self, "nbt", {}).items() if p in s.blocks}
+            out.append(s)
+        return out
+
+
+class _Finished(Build):
+    """A stage of a StagedBuild: its connections are the whole Wonder's, so fill_air only adds the air."""
+
+    def fill_air(self):
+        for x in range(self.w):
+            for y in range(self.h):
+                for z in range(self.d):
+                    self.blocks.setdefault((x, y, z), ("minecraft:air", ()))
 
 
 # --- directions --------------------------------------------------------------------------------
@@ -609,3 +658,61 @@ def finish(b):
             continue
         updates[(x, y, z)] = (block[0], tuple(sorted((k, str(v).lower()) for k, v in p.items())))
     b.blocks.update(updates)
+
+
+# --- Wonders (ROADMAP 35.3) ----------------------------------------------------------------------------------------
+WONDER_PART = 48  # a Wonder's part is at most this many blocks a side
+DEVCLIENT_STRUCTURES = os.path.join(ROOT, "src/devclient/resources/data/aliveworkplace_test/structure")
+
+
+def wonder_stages(namespace, wonder, stages, folders, part=WONDER_PART):
+    """Saves a Wonder drawn one stage at a time. `stages` holds one Build per stage, each the whole Wonder as it stands
+    once that stage is done (stage 2 is stage 1 with more drawn on it), all the same size. Stage 1 is saved whole, air
+    included, so the builders clear the site; every later stage only as what it adds to the stages before it (a block
+    where there was air, or a different block), never air where an earlier stage put a block (that's an error). Each
+    stage is cut into parts of at most `part` a side, trimmed to their blocks, saved as
+    `<folder>/wonder/<wonder>/stage_<n>_<i>.nbt` in every folder of `folders`. Returns the Wonder file's "stages" parts:
+    [[{"part": "<namespace>:wonder/<wonder>/stage_<n>_<i>", "offset": [x, y, z]}, ...], ...]."""
+    sizes = {(s.w, s.h, s.d) for s in stages}
+    assert len(sizes) == 1, f"{wonder}: every stage must be drawn at the same size, got {sizes}"
+    before = {}
+    out = []
+    for n, stage in enumerate(stages, start=1):
+        stage.fill_air()
+        added = {}
+        for pos, block in stage.blocks.items():
+            had = before.get(pos)
+            if block[0] == "minecraft:air":
+                if had is not None and had[0] != "minecraft:air":
+                    raise ValueError(f"{wonder}: stage {n} takes away the block stage {n - 1} put at {pos}")
+                if n == 1:
+                    added[pos] = block
+            elif had != block:
+                added[pos] = block
+        for pos, block in before.items():
+            if block[0] != "minecraft:air" and stage.blocks.get(pos, ("minecraft:air", ()))[0] == "minecraft:air":
+                raise ValueError(f"{wonder}: stage {n} takes away the block an earlier stage put at {pos}")
+        cells = {}
+        for (x, y, z), block in added.items():
+            cells.setdefault((x // part, y // part, z // part), {})[(x, y, z)] = block
+        parts = []
+        for i, cell in enumerate(sorted(cells, key=lambda c: (c[1], c[2], c[0]))):
+            blocks = cells[cell]
+            lo = [min(p[k] for p in blocks) for k in range(3)]
+            hi = [max(p[k] for p in blocks) for k in range(3)]
+            b = Build(hi[0] - lo[0] + 1, hi[1] - lo[1] + 1, hi[2] - lo[2] + 1)
+            for (x, y, z), block in blocks.items():
+                b.blocks[(x - lo[0], y - lo[1], z - lo[2])] = block
+            nbt = getattr(stage, "nbt", {})
+            b.nbt = {(x - lo[0], y - lo[1], z - lo[2]): v for (x, y, z), v in nbt.items() if (x, y, z) in blocks}
+            name = f"stage_{n}_{i}"
+            for folder in folders:
+                path = os.path.join(folder, "wonder", wonder)
+                os.makedirs(path, exist_ok=True)
+                nbtlib.File(b.to_nbt()).save(os.path.join(path, name + ".nbt"), gzipped=True)
+            solid = sum(1 for nm, _ in blocks.values() if nm != "minecraft:air")
+            print(f"{wonder} {name}: {b.w}x{b.h}x{b.d} at {lo}, {solid} blocks")
+            parts.append({"part": f"{namespace}:wonder/{wonder}/{name}", "offset": lo})
+        out.append(parts)
+        before = dict(stage.blocks)
+    return out

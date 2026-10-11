@@ -33,6 +33,18 @@ asks for the steps, `latest.log` and any crash report).
   line and a ribbon on their hall's name icon for a week; owners can leave a village off on the Trade page;
   `/workplace leaderboard` shows the standings so far; a week missed while the server was down is read out at the next
   start. Settings `weeklyLeaderboard`, `leaderboardDay` and `leaderboardHour`.
+- **The Lighthouse's design, for 2.0** (35.11, nothing to start in game until Wonders is finished): the second Wonder's
+  building, a tower banded in white and red on a stepped stone mole at the water's edge (25 by 33, 46 high, about 5,000
+  blocks), with a gallery on stone corbels, a lantern room of glass round sea lanterns, a ring of lamps an inverted
+  daylight detector lights at night, a copper cupola with a lightning-rod vane, and at its foot the keeper's cottage, a
+  boathouse, a quay with mooring posts and a jetty over the sea to a ferry stop with a Travel Post. It rises in four
+  tidy stages (the Mole and the Quay, the Tower, the Gallery, the Lantern and the Keeper's House), each with its goods.
+- **The Great Cathedral's design, for 2.0** (35.9, nothing to start in game until Wonders is finished): the first
+  Wonder's building, a Gothic cathedral on a cross plan (39 across the transepts, 55 long, two west towers under stone
+  spires reaching 52, about 14,250 blocks) with a rose window over a deep west door, flying buttresses, a rounded apse,
+  open belfries with three bells, pews, an altar of gold and candles, three side chapels and a sacristy. It rises in
+  four tidy stages (the Foundations and the West Front, the Nave, the Transepts and the Choir, the Towers and the Rose
+  Window), each with its goods from the village's jobs, in its Wonder data file.
 - **Trade pacts and alliances, for 1.7** (33.18, off until 1.7 is finished): the Trade page's new Pacts tab offers
   another player's village within caravan range a trade pact or an alliance, by letter; they accept or decline on
   their Pacts tab within 3 days. Caravan routes to another owner's village now need a pact (routes from before 1.7
@@ -71,6 +83,21 @@ asks for the steps, `latest.log` and any crash report).
   page: nothing comes to it, a camp already standing leaves at the next dawn, and the guards icon says so. Operators
   get `/workplace threat start <culture> | lair <culture> | disaster <id> | end | clear` at the nearest hall, and the
   README has a Threats section.
+- **The Wonders page and the Wonder Plan** (35.3, 2.0, still switched off): a Wonders tab on the Village Hall lists every
+  Wonder as a card (its icon, name and power), each requirement ticked or crossed with what's missing, the cap
+  ("Wonders: 0 of 1 for a Town"), and a Wonder going up with its stage. With every line ticked, a click draws up the
+  plans for 32 emeralds (from the realm's treasury, else the hall's, else the player's; owner and friends only) and
+  gives a **Wonder Plan**: the whole Wonder as see-through blocks, turned with sneak-right-click and mirrored on the
+  style screen, placed only with its centre in the village, all of it within 96 blocks of the hall and over no finished
+  building or other Wonder (it says why otherwise). "What next?" names the Wonder closest to ready once the village is
+  a Town. Builders draw Wonders stage by stage with the kit's new `wonder_stages()`.
+- **Wonders as data** (35.2, 2.0, still switched off): a Wonder is one file, `data/<namespace>/wonders/<id>.json` (its
+  name, icon, requirements, stages with their parts and goods, powers and crew), so a server owner's own Wonder works
+  like ours; a file with a mistake is logged with its path and the reason and skipped. Requirements use the Legends'
+  condition toolbox, with two new types, `coastal` and `mod_loaded`, and a `stand_in` for `legend`; every Wonder also
+  needs the Master Architect (stand-in: a Master builder). The caps: `wonderCaps` by rank (Town 1, City 2), one of each
+  kind per village, one going up at a time, `wonderServerLimit`, `disabledWonders`, and the `wonders` and
+  `wonderLegends` switches. `/workplace wonders` lists every Wonder on the server with its village, owner and stage.
 - **The Colony Camp and the Royal Hall, for 1.7** (33.14, off until 1.7 is finished): a new colony now starts from
   the Colony Camp, two covered wagons round its Village Hall under a striped awning, with the Blueprint Table, supply
   crates, a campfire with a cooking pot, three bedrolls, the Travel Post and a flagpole. A realm's capital draws the
@@ -243,6 +270,8 @@ asks for the steps, `latest.log` and any crash report).
 - Big building villages run smoother: builders in one world place or break at most 12 blocks a tick between them (a
   builder whose turn falls past that waits one tick). The benchmark's timer now tells a long tick of ours from a
   garbage collection pause or a busy machine (the tick's GC pauses and time off the CPU in each long tick's line).
+- Fewer hitches the first time a job runs on a big pack: the mod's text joins are now built in as plain code instead of
+  being put together by Java the first time each one runs, which held up a tick by up to a tenth of a second (B103).
 - Villages with many lumberjacks and builders run smoother: a lumberjack in a wood full of log pillars or log cabins
   now looks a few trunks over at a time instead of all of them in one go (it may take a moment longer to pick its
   tree there), a tree farm's saplings are found without going over every block of the farm, and a builder waiting for

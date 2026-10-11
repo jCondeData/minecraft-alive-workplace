@@ -110,6 +110,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
 	private final RealmBuildsScene realmBuilds = new RealmBuildsScene();
+	private final WonderGalleryScene wonderGallery = new WonderGalleryScene();
 	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
@@ -215,6 +216,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("realm_builds".equals(System.getProperty("aliveworkplace.scene"))) {
 			realmBuilds.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("wonder_gallery".equals(System.getProperty("aliveworkplace.scene"))) {
+			wonderGallery.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {

@@ -22,8 +22,9 @@ def holds_centre(block):
                 or short.endswith("_sign") or short.endswith("_banner") or "torch" in short)
 
 
-def check(b):
-    """What's wrong with build {@code b}, as lines of text (empty if nothing)."""
+def check(b, only=None):
+    """What's wrong with build {@code b}, as lines of text (empty if nothing). {@code only}: the positions to report on
+    (a Wonder's stage, checked standing on the stages before it); None for all of them."""
     blocks = {p: (n, dict(props)) for p, (n, props) in b.blocks.items() if n not in AIR}
     problems = []
     # Floating: flood from the bottom layer through face and edge neighbours (stair roofs meet row to row at an edge).
@@ -37,11 +38,13 @@ def check(b):
             if q in blocks and q not in seen:
                 seen.add(q)
                 todo.append(q)
-    floating = sorted(p for p in blocks if p not in seen)
+    floating = sorted(p for p in blocks if p not in seen and (only is None or p in only))
     if floating:
         problems.append(f"{len(floating)} block(s) held up by nothing, e.g. " + "; ".join(
             f"{blocks[p][0].split(':')[1]}@{p[0]},{p[1]},{p[2]}" for p in floating[:5]))
     for (x, y, z), (name, props) in sorted(blocks.items()):
+        if only is not None and (x, y, z) not in only:
+            continue
         short = name.split(":")[1]
         below = blocks.get((x, y - 1, z))
         above = blocks.get((x, y + 1, z))

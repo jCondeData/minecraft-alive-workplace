@@ -25,7 +25,7 @@ column) is off whatever the file says, and isn't on the settings screen until th
 
 - The file is read once at start-up (`WorkplaceConfig`), clamped, written back and applied: each value is handed to
   the system that uses it.
-- **The expansion gate (B76).** Each expansion that has switches (1.1 to 1.5, 1.7 and 1.8 today) has one flag in the code
+- **The expansion gate (B76).** Each expansion that has switches (1.1 to 1.5, 1.7, 1.8 and 2.0 today) has one flag in the code
   that the release finishing it turns on. Until then its switches are forced off, even in a config file that says on. The release flips the flag
   and nothing else: the switches then default on and obey the file again.
 - **A file from before the release (34.23).** The file records which expansions were open when it was written
@@ -148,6 +148,11 @@ range is in brackets.
 | `classOutfits` | on | 1.8 | Villagers wear their class over their job's outfit, and elders grey brows and a beard. Off: only the job's outfit is drawn. |
 | `elderRetirement` | on | 1.8 | An elder with a job retires once a jobless villager can take over (one a village every 3 days) and mentors Novices and Apprentices of their old trade. Off: nobody starts retiring; those retired stay retired. |
 | `familyNames` | on | 1.8 | Every villager in a village with a hall has a family name, shown on the hall ("Dara (Ashby)") and in the chronicle; children take a parent's. Off: no family names are shown (they are still kept); the Book of Families, the Family page and printed trees go by first names. See [Elders](elders.md). |
+| `wonders` | on | 2.0 | Towns and Cities can raise Wonders. Off: no new Wonders; finished ones keep their blocks, their powers stop, and everything stays saved. See [Wonders](wonders.md). |
+| `wonderCaps` | 0, 0, 1, 2 (each 0 to 8) | 2.0 | Wonders a village may hold by rank: Hamlet, Village, Town, City. In the file only; a short list is filled from the defaults. |
+| `wonderLegends` | on | 2.0 | A Wonder needs its Legends in the village. Off: each Legend's stand-in is asked for instead. |
+| `wonderServerLimit` | 0 (0 to 64) | 2.0 | How many villages on the server may each build the same kind of Wonder; 0 is no limit. |
+| `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`); one already finished keeps its blocks and powers. In the file only. |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |
 | `steward` | on | 1.1 | A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan. Off: no new Stewards, and those appointed stand idle. |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | 1.1 | The most builds a Steward may have open at once, whatever his level and the village's rank. |
@@ -216,7 +221,7 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 ## Known limits
 
 - The file is read at start-up: a change needs a restart (or the settings screen, in your own worlds).
-- Lists (`mythicLegendCap`, `disabledArcs`) can only be edited in the file.
+- Lists (`mythicLegendCap`, `disabledArcs`, `wonderCaps`, `disabledWonders`) can only be edited in the file.
 - A dedicated server's settings don't follow a player's own file.
 - The build delay and the foundation depth have no upper limit; a build delay of 1 is the fastest.
 

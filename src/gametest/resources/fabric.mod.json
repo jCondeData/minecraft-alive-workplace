@@ -211,6 +211,9 @@
 			"io.github.jcondedata.aliveworkplace.test.OldSageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SeerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendEngineGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WonderDataGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WonderStageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendSlotsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendsHallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CupGameTests",
@@ -301,7 +304,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStuckJobsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLegendCampGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonProfessorGameTests",
-			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests"
+			"io.github.jcondedata.aliveworkplace.test.PokemonRangerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WonderBlueprintGameTests"
 		]
 	},
 	"depends": {

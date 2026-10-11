@@ -45,6 +45,11 @@ public final class Expansions {
 	public static final boolean M33 = false;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code classGraceDays}, {@code vintners}, {@code tailors}, {@code printers}, {@code villagerAges}, {@code villagerElderDays}, {@code elderPassing}, {@code agelessElders}, {@code classOutfits}, {@code elderRetirement}, {@code familyNames}. */
 	public static final boolean M34 = false;
+	/**
+	 * Milestone 35, Wonders (2.0): {@code wonders}, {@code wonderCaps}, {@code wonderLegends}, {@code wonderServerLimit},
+	 * {@code disabledWonders} (35.2); later items add {@code wonderCrew}, {@code builderScaffolding}, {@code wonderStanding}.
+	 */
+	public static final boolean M35 = false;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films
@@ -77,12 +82,13 @@ public final class Expansions {
 			case "M32" -> M32;
 			case "M33" -> M33;
 			case "M34" -> M34;
+			case "M35" -> M35;
 			default -> false;
 		};
 	}
 
 	/** Every milestone with a gate, by name. */
-	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34");
+	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35");
 
 	/** The milestones whose gates are open now ({@link #on}): what a config file written now records (34.23). */
 	static java.util.List<String> open() {
@@ -106,6 +112,8 @@ public final class Expansions {
 			case "storyArcs", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "bountyBoard", "rogueBounties" -> "M31";
 			case "villageClasses", "classRiseDays", "classFallDays", "classGraceDays", "vintners", "tailors", "printers", "villagerAges", "villagerElderDays",
 				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> "M34";
+			case "wonders", "wonderCaps", "wonderLegends", "wonderServerLimit", "disabledWonders", "wonderCrew", "builderScaffolding",
+				"wonderStanding" -> "M35";
 			default -> null;
 		};
 	}

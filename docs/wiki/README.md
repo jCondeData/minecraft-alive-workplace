@@ -43,6 +43,8 @@ How everything in the mod works, in plain words: written for the owner first, th
   Defence page (32.3).
 - [Sieges: rams, gates and ladders](sieges.md): shut gates, the portcullis, rams at the gate and gate hit points (32.4); ladders over the walls and guards who throw them down (32.5).
 - [Pillager warbands](warbands.md): the War Camp, the Warlord who leads a City's siege, ravager rams and the evoker (32.7).
+- [Drowned pirates](pirates.md): the Pirate Ship at anchor, the crew that wades ashore, Captain Silas Brine, and the ship that burns and sinks (32.8).
+- [Desert raiders](desert.md): the Tomb Camp, the Pharaoh whose husks rise again, sand ramps over the walls, sieges until noon (32.9).
 
 **Villages that build themselves**
 - [Steward](steward.md): the City Plan, the Steward, his rules and his desk (1.1).

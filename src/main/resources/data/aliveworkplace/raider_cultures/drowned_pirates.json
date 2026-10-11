@@ -1,0 +1,51 @@
+{
+  "where": { "min_rank": "town", "coast": true },
+  "weight": 30,
+  "arrival": "shore",
+  "hours": "night",
+  "name": "entity.aliveworkplace.drowned_pirate",
+  "roster": [
+    { "entity": "minecraft:drowned", "share": 40, "role": "melee", "gear": { "mainhand": "minecraft:trident" } },
+    { "entity": "minecraft:drowned", "share": 30, "role": "melee" },
+    { "entity": "minecraft:skeleton", "share": 30, "role": "ranged",
+      "gear": {
+        "head": "minecraft:leather_helmet[dyed_color={rgb:1908001},unbreakable={}]",
+        "mainhand": "minecraft:bow[enchantments={levels:{'minecraft:flame':1}}]"
+      } }
+  ],
+  "captain": {
+    "entity": "minecraft:drowned",
+    "gear": {
+      "head": "minecraft:leather_helmet[dyed_color={rgb:1908001},unbreakable={}]",
+      "chest": "minecraft:leather_chestplate[dyed_color={rgb:8394268},unbreakable={}]",
+      "mainhand": "minecraft:trident"
+    },
+    "health": 40,
+    "name": "threat.aliveworkplace.drowned_pirates.captain_name",
+    "title": "threat.aliveworkplace.drowned_pirates.title"
+  },
+  "tactics": [],
+  "lair": {
+    "structure": "aliveworkplace:camp/pirate_ship", "strength": 8, "growth": 1, "max": 14, "home_max": 8, "icon": "minecraft:trident",
+    "waterline": 2, "near": 40, "far": 70, "depth": 5, "sinks": true, "captain_at": [4, 5, 22]
+  },
+  "loot": "aliveworkplace:chests/pirate_ship",
+  "messages": {
+    "raid": "message.aliveworkplace.pirates.raid",
+    "raid_named": "message.aliveworkplace.pirates.raid_named",
+    "camp": "message.aliveworkplace.pirates.camp",
+    "camp_named": "message.aliveworkplace.pirates.camp_named",
+    "broken": "message.aliveworkplace.pirates.broken",
+    "broken_named": "message.aliveworkplace.pirates.broken_named"
+  },
+  "chronicle": {
+    "raid": "chronicle.aliveworkplace.pirates.raid",
+    "raid_named": "chronicle.aliveworkplace.pirates.raid_named",
+    "camp": "chronicle.aliveworkplace.pirates.camp",
+    "camp_named": "chronicle.aliveworkplace.pirates.camp_named",
+    "broken": "chronicle.aliveworkplace.pirates.broken",
+    "broken_named": "chronicle.aliveworkplace.pirates.broken_named",
+    "broken_by": "chronicle.aliveworkplace.pirates.broken_by",
+    "broken_by_named": "chronicle.aliveworkplace.pirates.broken_by_named"
+  }
+}

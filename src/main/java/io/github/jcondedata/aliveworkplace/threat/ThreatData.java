@@ -39,7 +39,9 @@ import net.minecraft.world.level.saveddata.SavedData;
  * (above head height) and {@code dropped} (a bar of the dropped portcullis, not of the blueprint); and
  * {@code portcullis}: every bar the siege dropped, to draw up again. Since 32.5 also {@code ladders} (every rung the
  * raiders set against a wall, to take away again; default none) and {@code laddered} (the players were told of the
- * ladders; default false). Since 32.6 also the morning report's numbers: {@code hp_factor} (what the gates' hit
+ * ladders; default false). Since 32.9 also {@code sand_ramps} (every block of sand the raiders piled against a wall,
+ * to take away again), {@code ramp_sites} and {@code ramp_dirs} (each ramp's foot and the side its wall is on) and
+ * {@code ramped} (the players were told; all default to none and false). Since 32.6 also the morning report's numbers: {@code hp_factor} (what the gates' hit
  * points were multiplied by; default 1), {@code came}, {@code fled}, {@code to_guards}, {@code to_players},
  * {@code to_others} (default 0 and false), {@code kills} (per guard: {@code guard}, {@code count}, {@code name};
  * default none) and {@code players} (who killed a raider; default none).</li>
@@ -118,6 +120,13 @@ public final class ThreatData extends SavedData {
 		public final List<BlockPos> ladders = new ArrayList<>();
 		/** Whether the players were told that ladders are at the walls. */
 		public boolean laddered;
+		/** Every block of sand the raiders piled against a wall (32.9), to take away when the raid is over. */
+		public final List<BlockPos> sand = new ArrayList<>();
+		/** Each sand ramp's foot (the block by the wall it starts from) and the side its wall is on (a direction's number). */
+		public final List<BlockPos> rampFeet = new ArrayList<>();
+		public final List<Integer> rampDirs = new ArrayList<>();
+		/** Whether the players were told that sand is piled at the walls. */
+		public boolean ramped;
 		/** The morning-after report's numbers (32.6); every one defaults to nothing in a save from before it. */
 		/** What the gates' hit points were multiplied by when the siege began (2 with the Ramparts research; a save from before it: 1). */
 		public int hpFactor = 1;
@@ -469,6 +478,10 @@ public final class ThreatData extends SavedData {
 			g.putLongArray("portcullis", siege.portcullis.stream().mapToLong(BlockPos::asLong).toArray());
 			g.putLongArray("ladders", siege.ladders.stream().mapToLong(BlockPos::asLong).toArray());
 			g.putBoolean("laddered", siege.laddered);
+			g.putLongArray("sand_ramps", siege.sand.stream().mapToLong(BlockPos::asLong).toArray());
+			g.putLongArray("ramp_sites", siege.rampFeet.stream().mapToLong(BlockPos::asLong).toArray());
+			g.putIntArray("ramp_dirs", siege.rampDirs.stream().mapToInt(Integer::intValue).toArray());
+			g.putBoolean("ramped", siege.ramped);
 			g.putInt("hp_factor", siege.hpFactor);
 			g.putInt("came", siege.came);
 			g.putBoolean("fled", siege.fled);
@@ -572,6 +585,16 @@ public final class ThreatData extends SavedData {
 				siege.ladders.add(BlockPos.of(pos));
 			}
 			siege.laddered = Nbt.getBoolean(g, "laddered");
+			for (long pos : Nbt.getLongArray(g, "sand_ramps")) {
+				siege.sand.add(BlockPos.of(pos));
+			}
+			long[] feet = Nbt.getLongArray(g, "ramp_sites");
+			int[] dirs = Nbt.getIntArray(g, "ramp_dirs");
+			for (int r = 0; r < feet.length && r < dirs.length; r++) {
+				siege.rampFeet.add(BlockPos.of(feet[r]));
+				siege.rampDirs.add(dirs[r]);
+			}
+			siege.ramped = Nbt.getBoolean(g, "ramped");
 			siege.hpFactor = Math.max(1, Nbt.getInt(g, "hp_factor"));
 			siege.came = Nbt.getInt(g, "came");
 			siege.fled = Nbt.getBoolean(g, "fled");

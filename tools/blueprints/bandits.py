@@ -284,3 +284,339 @@ def war_camp():
             if b.blocks.get((x, 0, z), ("",))[0] == "minecraft:air":
                 del b.blocks[(x, 0, z)]
     return b
+
+
+# The Jolly Roger: a black banner with the white skull (ROADMAP 32.8).
+JOLLY_ROGER = (("white", "skull"),)
+
+# The Pirate Ship's waterline: the sea's top block is at this y of the template (the hull below it sits in the water).
+PIRATE_SHIP_WATERLINE = 2
+
+
+def pirate_ship():
+    """
+    The drowned pirates' Pirate Ship (ROADMAP 32.8), 9 x 20 x 27, set down at anchor on the sea with its bow (z = 0)
+    to the village. Design:
+    - a dark oak hull, 9 wide amidships, tapering to a stem at the bow and a little at the stern transom; it draws three
+      blocks (y 0 to 2 sit in the water, PIRATE_SHIP_WATERLINE), with a pale stripped spruce wale along each side at y 3
+      and a spruce deck at y 4 inside a dark oak rail; a raised forecastle over the bow; a dry hold below the deck;
+    - two masts of dark oak: the foremast (z 8) with one square black sail, the taller mainmast (z 15) with a bigger
+      one and the crow's nest at its top; the sails belly forward in the wind; a black jib from the bowsprit;
+    - the captain's cabin at the stern (z 20 to 25): dark oak walls on stripped log posts, glazed windows on three
+      sides, a door under a quarterdeck that reaches one block forward over it with two lanterns hanging there; the loot
+      chest inside at the back, a red carpet, a lantern;
+    - the quarterdeck on the cabin's roof with its own rail, the Jolly Roger (a black banner with the white skull) on a
+      staff at the stern, a lantern at each back corner;
+    - gunports (dispensers) three a side, barrels lashed on deck, the anchor chain down from a cathead at the bow.
+    Everything outside the hull is left out (structure void), so the sea stays where it is; only the hold is dry.
+    """
+    W, H, D = 9, 20, 27
+    C = 4  # the keel's x
+    b = Build(W, H, D)
+
+    def hw_z(z):  # the hull's half-width along its length: the stem at the bow, a narrower transom at the stern
+        return {0: 0, 1: 1, 2: 2, 3: 3}.get(z, 3 if z == D - 1 else 4)
+
+    def hw_y(y):  # and up its height: the keel, the bilge, full width from y 3
+        return {0: 0, 1: 2, 2: 3}.get(y, 4)
+
+    def in_hull(x, y, z):
+        if y < 0 or y > 4 or not 0 <= z < D:
+            return False
+        if y == 0 and not 2 <= z <= D - 2:
+            return False
+        return abs(x - C) <= min(hw_z(z), hw_y(y))
+
+    hold = set()
+    for y in range(0, 5):
+        for z in range(D):
+            for x in range(W):
+                if not in_hull(x, y, z):
+                    continue
+                shell = y == 4 and abs(x - C) == hw_z(z) or any(not in_hull(x + dx, y + dy, z + dz)
+                                                               for dx, dy, dz in ((1, 0, 0), (-1, 0, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)))
+                if y == 4:
+                    if shell:
+                        b.set(x, y, z, "dark_oak_planks")
+                    else:
+                        b.set(x, y, z, "spruce_planks")  # the deck
+                elif shell:
+                    if y == 3 and abs(x - C) == 4:
+                        log(b, x, y, z, "stripped_spruce_log", axis="z")  # the wale
+                    else:
+                        b.set(x, y, z, "dark_oak_planks")
+                else:
+                    hold.add((x, y, z))
+    # the stem and bowsprit, rising at the bow
+    log(b, C, 5, 0, "dark_oak_log")
+    log(b, C, 6, 0, "dark_oak_log")
+    log(b, C, 5, 1, "dark_oak_log")
+    fence(b, C, 7, 0, "dark_oak_fence")
+    lantern(b, C, 8, 0)
+    # the forecastle: a raised deck over the bow, three stairs up to it
+    for z in range(1, 6):
+        for x in range(C - hw_z(z), C + hw_z(z) + 1):
+            if (x, z) != (C, 1):
+                b.set(x, 5, z, "dark_oak_planks" if abs(x - C) == hw_z(z) else "spruce_planks")
+            fence(b, x, 6, z, "dark_oak_fence") if abs(x - C) == hw_z(z) else None
+    for x in range(C - 1, C + 2):
+        stairs(b, x, 5, 6, "spruce_stairs", "north")
+    # the rail round the deck as far as the cabin
+    for z in range(6, 19):
+        for x in (C - hw_z(z), C + hw_z(z)):
+            if (x, 5, z) not in b.blocks:
+                fence(b, x, 5, z, "dark_oak_fence")
+    # the cathead and the anchor chain going down into the sea
+    log(b, 0, 5, 3, "dark_oak_log", axis="x")
+    for y in range(1, 5):
+        b.set(0, y, 3, "chain", axis="y", waterlogged=False)
+    # gunports: dispensers looking out of the hull, three a side
+    for z in (10, 12, 17):
+        b.set(0, 4, z, "dispenser", facing="west", triggered=False)
+        b.set(W - 1, 4, z, "dispenser", facing="east", triggered=False)
+    # the hatch to the hold, barrels lashed on deck
+    trapdoor(b, C, 4, 11, "spruce_trapdoor", "north", half="top")
+    for x, y, z in ((1, 5, 7), (1, 5, 8), (1, 6, 7), (7, 5, 18), (6, 5, 18), (7, 6, 18), (2, 5, 13)):
+        b.set(x, y, z, "barrel", facing="up", open=False)
+
+    # the foremast and its sail, bellied forward
+    for y in range(1, 16):
+        log(b, C, y, 8, "dark_oak_log")
+    for x in range(1, 8):
+        if x != C:
+            log(b, x, 14, 8, "dark_oak_log", axis="x")
+    for x in range(2, 7):
+        if x != C:
+            log(b, x, 8, 8, "dark_oak_log", axis="x")
+    for y in range(9, 14):
+        for x in range(1, 8):
+            belly = 10 <= y <= 12 and 2 <= x <= 6
+            b.set(x, y, 6 if belly else 7, "black_wool")
+    lantern(b, 2, 7, 8, hanging=True)
+    lantern(b, 6, 7, 8, hanging=True)
+    # the jib, from the bowsprit up towards the foremast
+    for z in range(2, 6):
+        for y in range(7, 7 + z):
+            b.set(C, y, z, "black_wool")
+
+    # the mainmast, its sail and the crow's nest
+    for y in range(1, 20):
+        log(b, C, y, 15, "dark_oak_log")
+    for x in range(0, 9):
+        if x != C:
+            log(b, x, 16, 15, "dark_oak_log", axis="x")
+    for x in range(1, 8):
+        if x != C:
+            log(b, x, 9, 15, "dark_oak_log", axis="x")
+    for y in range(10, 16):
+        for x in range(1, 8):
+            belly = 11 <= y <= 14 and 2 <= x <= 6
+            b.set(x, y, 13 if belly else 14, "black_wool")
+    for x in range(3, 6):
+        for z in range(14, 17):
+            if (x, z) != (C, 15):
+                slab(b, x, 17, z, "dark_oak_slab")
+                fence(b, x, 18, z, "dark_oak_fence")
+    lantern(b, 3, 19, 16)
+    b.set(C, 18, 14, "air")  # (the lookout's way in, beside the mast)
+
+    # the captain's cabin at the stern
+    for y in range(5, 9):
+        for z in range(20, 26):
+            for x in range(W):
+                edge_x, edge_z = x in (0, W - 1), z in (20, 25)
+                if not (edge_x or edge_z):
+                    continue
+                if edge_x and edge_z:
+                    log(b, x, y, z, "stripped_dark_oak_log")
+                else:
+                    b.set(x, y, z, "dark_oak_planks")
+    for z in (22, 23):
+        pane(b, 0, 6, z)
+        pane(b, W - 1, 6, z)
+    for x in (2, 3, 5, 6):
+        pane(b, x, 6, 25)
+    pane(b, 2, 6, 20)
+    pane(b, 6, 6, 20)
+    b.door(C, 5, 20, "dark_oak_door", facing="north")
+    # the quarterdeck: the cabin's roof, one block out over the door on posts, a rail, the Jolly Roger
+    for x in range(W):
+        for z in range(19, 26):
+            b.set(x, 9, z, "dark_oak_planks")
+    for y in range(5, 9):
+        fence(b, 0, y, 19, "dark_oak_fence")
+        fence(b, W - 1, y, 19, "dark_oak_fence")
+    lantern(b, 3, 8, 19, hanging=True)
+    lantern(b, 5, 8, 19, hanging=True)
+    for x in range(W):
+        for z in range(19, 26):
+            if x in (0, W - 1) or z in (19, 25):
+                fence(b, x, 10, z, "dark_oak_fence")
+    b.set(1, 10, 19, "air")  # the way up from the main deck: a ladder on the cabin's front, a hatch in the quarterdeck
+    b.set(1, 9, 19, "dark_oak_trapdoor", facing="north", half="top", open=True, powered=False, waterlogged=False)
+    for y in range(5, 9):
+        b.set(1, y, 19, "ladder", facing="north", waterlogged=False)
+    for y in range(10, 14):
+        fence(b, C, y, 25, "dark_oak_fence")
+    b.set_nbt(C, 14, 25, Compound({"id": String("minecraft:banner"), "patterns": List[Compound]([
+        Compound({"color": String(c), "pattern": String("minecraft:" + p)}) for c, p in JOLLY_ROGER])}))
+    b.set(C, 14, 25, "black_banner", rotation="8")
+    lantern(b, 0, 11, 25)
+    lantern(b, W - 1, 11, 25)
+    # inside: red carpet, the loot chest at the back, a chart table, a lantern
+    for x in range(1, W - 1):
+        for z in range(21, 25):
+            b.set(x, 5, z, "red_carpet")
+    b.set_nbt(C, 5, 24, Compound({"LootTable": String("aliveworkplace:chests/pirate_ship"), "id": String("minecraft:chest")}))
+    b.set(C, 5, 24, "chest", facing="north", type="single", waterlogged=False)
+    b.set(2, 5, 24, "cartography_table")
+    b.set(6, 5, 24, "barrel", facing="up", open=False)
+    b.set(7, 5, 21, "dark_oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    lantern(b, C, 8, 22, hanging=True)
+    # the stern rail behind the cabin
+    for x in range(C - hw_z(D - 1), C + hw_z(D - 1) + 1):
+        fence(b, x, 5, D - 1, "dark_oak_fence")
+
+    b.fill_air()
+    # Everything but the hold is left out where nothing is drawn: the sea (and the air over it) stays as it is.
+    for pos, block in list(b.blocks.items()):
+        if block[0] == "minecraft:air" and pos not in hold:
+            del b.blocks[pos]
+    return b
+
+
+def tomb_camp():
+    """
+    The desert raiders' Tomb Camp (ROADMAP 32.9), 19 x 11 x 19, set down at once like the other camps. Design:
+    - the ground is the desert's own: sand with a little smooth sandstone and red sand worn into it;
+    - a half-buried sandstone tomb at the back (9 x 9): cut sandstone walls with a chiseled band and an orange
+      terracotta stripe, a stepped roof of three shrinking courses, a doorway between two chiseled pillars; dunes of sand
+      heaped against its sides and back up to two blocks, so it seems to rise out of the desert;
+    - inside, a smooth sandstone floor with a terracotta inlay, torches in the corners, urns (decorated-looking flower
+      pots) and the Pharaoh's sarcophagus at the back: the loot chest boxed in smooth sandstone with a chiseled head;
+    - in front of it the obelisk, the highest thing in the camp: a cut sandstone needle on a stepped base, a chiseled
+      band near the top and a gold cap;
+    - two sun-bleached awnings (white and pale grey cloth on stripped birch posts) over the camp's seats and a fire pit;
+    - bone blocks half sunk in the sand, a skull, dead bushes scattered about.
+    """
+    W, H, D = 19, 11, 19
+    b = Build(W, H, D)
+    ground = Mix((14, "sand"), (2, "smooth_sandstone"), (1, "red_sand"), (1, "sandstone"), seed=97)
+    for x in range(W):
+        for z in range(D):
+            b.set(x, 0, z, ground.at(x, 0, z))
+
+    # the tomb: x 5..13, z 9..17, the doorway in its front (z = 9)
+    X0, X1, Z0, Z1 = 5, 13, 9, 17
+    wall = Mix((7, "cut_sandstone"), (2, "sandstone"), (1, "smooth_sandstone"), seed=98)
+    for x in range(X0, X1 + 1):
+        for z in range(Z0, Z1 + 1):
+            edge = x in (X0, X1) or z in (Z0, Z1)
+            b.set(x, 0, z, "smooth_sandstone" if edge else ("orange_terracotta" if (x + z) % 4 == 0 and 7 <= x <= 11 and 11 <= z <= 15 else "smooth_sandstone"))
+            if edge:
+                for y in range(1, 6):
+                    if y == 3:
+                        b.set(x, y, z, "orange_terracotta")
+                    elif y == 5:
+                        b.set(x, y, z, "chiseled_sandstone" if (x + z) % 2 == 0 else "cut_sandstone")
+                    else:
+                        b.set(x, y, z, wall.at(x, y, z))
+    # the blue inlay in the middle of the floor, as the desert temples have
+    b.set(9, 0, 13, "blue_terracotta")
+    # the stepped roof: three courses, each one in from the last
+    for i, y in enumerate((6, 7, 8)):
+        for x in range(X0 + i, X1 + 1 - i):
+            for z in range(Z0 + i, Z1 + 1 - i):
+                edge = x in (X0 + i, X1 - i) or z in (Z0 + i, Z1 - i)
+                if edge or y == 8:
+                    b.set(x, y, z, "smooth_sandstone" if i < 2 else "cut_sandstone")
+    for x in range(X0 + 1, X1):
+        for z in range(Z0 + 1, Z1):
+            b.set(x, 6, z, "smooth_sandstone")
+    b.set(9, 9, 13, "chiseled_sandstone")
+    # the doorway: 3 wide, 3 high, between chiseled pillars that stand a block proud
+    for x in (8, 9, 10):
+        for y in (1, 2, 3):
+            b.set(x, y, Z0, "air")
+    for x in (7, 11):
+        for y in range(1, 5):
+            b.set(x, y, Z0 - 1, "chiseled_sandstone" if y in (1, 4) else "cut_sandstone")
+    for x in range(7, 12):
+        b.set(x, 4, Z0, "chiseled_sandstone")
+        if 7 < x < 11:
+            b.set(x, 4, Z0 - 1, "cut_sandstone")  # the lintel over the doorway
+        stairs(b, x, 5, Z0 - 1, "sandstone_stairs", "north")
+    b.set(8, 0, Z0 - 1, "smooth_sandstone")
+    b.set(9, 0, Z0 - 1, "smooth_sandstone")
+    b.set(10, 0, Z0 - 1, "smooth_sandstone")
+    # inside: torches, urns, the sarcophagus
+    for x, z in ((X0 + 1, Z0 + 1), (X1 - 1, Z0 + 1), (X0 + 1, Z1 - 1), (X1 - 1, Z1 - 1)):
+        b.set(x, 1, z, "torch")
+    for x, z in ((X0 + 1, 13), (X1 - 1, 13)):
+        b.set(x, 1, z, "flower_pot")
+        b.set(x, 1, z + 1, "decorated_pot", facing="north", cracked=False, waterlogged=False)
+    for z in (14, 15, 16):
+        b.set(8, 1, z, "smooth_sandstone")
+        b.set(10, 1, z, "smooth_sandstone")
+    b.set(9, 1, 16, "chiseled_sandstone")
+    b.set(9, 2, 16, "skeleton_skull", rotation="0")
+    b.set_nbt(9, 1, 15, Compound({"LootTable": String("aliveworkplace:chests/pharaohs_tomb"), "id": String("minecraft:chest")}))
+    b.set(9, 1, 15, "chest", facing="north", type="single", waterlogged=False)
+    slab(b, 9, 1, 14, "smooth_sandstone_slab")
+    b.set(8, 2, 14, "candle", candles=3, lit=True, waterlogged=False)
+    b.set(10, 2, 14, "candle", candles=2, lit=True, waterlogged=False)
+    # the dunes heaped against the sides and back: two high next to the wall, one high a block further out
+    for x in range(X0 - 2, X1 + 3):
+        for z in range(Z0 + 1, D):
+            if X0 <= x <= X1 and z <= Z1:
+                continue
+            dist = max(X0 - x, x - X1, z - Z1, 0)
+            if dist == 1:
+                for y in (1, 2):
+                    b.set(x, y, z, "sand")
+            elif dist == 2 and (x + z) % 3 != 0:
+                b.set(x, 1, z, "sand")
+    for x in range(X0 - 1, X1 + 2):
+        if x in (X0 - 1, X1 + 1):
+            b.set(x, 1, Z0, "sand")
+
+    # the obelisk, front left: a stepped base, a needle, a gold cap
+    OX, OZ = 3, 4
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            b.set(OX + dx, 1, OZ + dz, "smooth_sandstone")
+    for dx, dz, f in ((0, -2, "north"), (0, 2, "south"), (-2, 0, "west"), (2, 0, "east")):
+        stairs(b, OX + dx, 1, OZ + dz, "smooth_sandstone_stairs", "south" if f == "north" else "north" if f == "south" else "east" if f == "west" else "west")
+    for y in range(2, 9):
+        b.set(OX, y, OZ, "chiseled_sandstone" if y in (2, 7) else "cut_sandstone")
+    b.set(OX, 9, OZ, "gold_block")
+    b.set(OX, 10, OZ, "end_rod", facing="up")
+
+    # two sun-bleached awnings over the seats and the fire pit, front right
+    def awning(x0, z0, w, d, cloth):
+        for x, z in ((x0, z0), (x0 + w - 1, z0), (x0, z0 + d - 1), (x0 + w - 1, z0 + d - 1)):
+            for y in (1, 2):
+                fence(b, x, y, z, "birch_fence")
+        for x in range(x0, x0 + w):
+            for z in range(z0, z0 + d):
+                b.set(x, 3, z, cloth if (x + z) % 2 == 0 else "white_wool")
+    awning(10, 2, 4, 3, "light_gray_wool")
+    awning(15, 5, 3, 4, "white_wool")
+    b.set(11, 1, 3, "barrel", facing="up", open=False)
+    log(b, 12, 1, 4, "stripped_birch_log", axis="x")
+    log(b, 16, 1, 7, "stripped_birch_log", axis="z")
+    # the fire pit between them, ringed with sandstone
+    b.set(13, 0, 7, "sandstone")
+    b.set(13, 1, 7, "campfire", facing="south", lit=True, signal_fire=False, waterlogged=False)
+    for dx, dz in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        slab(b, 13 + dx, 1, 7 + dz, "sandstone_slab")
+
+    # bones half sunk in the sand, a skull, dead bushes
+    for x, z, axis in ((1, 9, "x"), (2, 15, "z"), (16, 1, "y"), (17, 13, "x"), (7, 2, "z")):
+        b.set(x, 0, z, "bone_block", axis=axis)
+    b.set(6, 1, 5, "bone_block", axis="z")
+    b.set(15, 1, 16, "skeleton_skull", rotation="6")
+    for x, z in ((0, 1), (6, 0), (9, 5), (17, 3), (1, 12), (18, 10), (0, 17), (14, 12), (4, 8), (12, 0)):
+        b.set(x, 1, z, "dead_bush")
+    b.fill_air()
+    return b

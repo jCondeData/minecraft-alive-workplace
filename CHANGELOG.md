@@ -48,6 +48,10 @@ asks for the steps, `latest.log` and any crash report).
   nothing, so only the smoking tops showed. Styled renders now give such blocks the game's default (upright); in game
   the chimneys were always whole, and a new test checks every chimney stays solid in all five styles.
 ### Added
+- **Desert raiders, for 1.6** (32.9). By a desert or badlands Town, husks open a half-buried **Tomb Camp** with an
+  obelisk under their **Pharaoh**: while he lives, a husk that falls near him gets up again once, in a burst of sand.
+  They pile **sand ramps** against the walls where pillagers set ladders (gone after the siege), stay until noon, and
+  the Pharaoh's sarcophagus holds gold, emeralds, a golden apple and now and then the dune armour trim.
 - **Six more personal requests, for 1.5** (31.10). A friend with 3 hearts may now also ask you to carry **a letter to
   family** in another village (a sealed letter; bring their relative's reply back, and if you lose it they write
   another), to **bring back their love** from the grave (an Undertaker revives them, and the two marry again), for **a
@@ -61,6 +65,12 @@ asks for the steps, `latest.log` and any crash report).
   ravager pen, a siege yard, the ominous banner on a pole), three times as likely as bandits. Its named Warlord wears
   iron and the ominous banner; its raids are sieges with ladders and ravager rams (one at a Town, two and an evoker at
   a City), and at a City the Warlord leads them himself: bring him down at the walls and his camp breaks.
+- **Drowned pirates, for 1.6** (32.8): by a Town or City on the coast, Captain Silas Brine may anchor his Pirate Ship
+  (a two-masted dark oak sloop with black sails, a crow's nest, his cabin and chest at the stern, the Jolly Roger) 40 to
+  70 blocks out, bow to the village. On raid nights his drowned crew and skeleton gunners with Flame bows wade ashore
+  at the beach nearest the ship, so a sea wall holds them; at dawn they go back into the sea. Bring the captain down
+  and the ship burns and sinks in ten seconds (only its own blocks), leaving its chest of gold, emeralds, a trident and
+  now and then a heart of the sea on a log raft.
 
 - **Grander homes (1.8).** Two new houses in the Blueprint Table: the **Artisan's House** (a narrow timber house with a
   stone workroom below and two beds above; its II adds a workshop wing and a third bed) and the **Burgher's

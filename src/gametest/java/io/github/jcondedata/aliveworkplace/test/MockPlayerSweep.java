@@ -10,6 +10,7 @@ import net.minecraft.gametest.framework.GameTestBatchListener;
 import net.minecraft.gametest.framework.GameTestRunner;
 import net.minecraft.gametest.framework.GameTestServer;
 import net.minecraft.gametest.framework.GameTestTicker;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -19,6 +20,10 @@ import net.minecraft.server.level.ServerPlayer;
  * its connection's channel keeps every packet sent to it and its advancements keep listening, and every later broadcast
  * goes to all of them. By the 860th batch there were 347 of them, and the suite ran out of its 1.5 GB heap on a 7 GB
  * machine. Batches run one after another, so when one starts no earlier test's player is in use.
+ *
+ * <p>They are logged out the way a real player is, through their connection: taking them off the player list alone left
+ * each one in Fabric's networking (its play addon stays tracked until the connection closes), and with it its 0.7 MB of
+ * advancement progress. By the end of the suite 521 of them held about 390 MB, and the full build ran out of heap again.
  *
  * <p>Only on the headless GameTest server: a player running {@code /test} in a client keeps their own player.
  */
@@ -57,7 +62,11 @@ public final class MockPlayerSweep implements ModInitializer {
 	static int sweep(MinecraftServer server) {
 		List<ServerPlayer> players = List.copyOf(server.getPlayerList().getPlayers());
 		for (ServerPlayer player : players) {
-			server.getPlayerList().remove(player);
+			// closes the mock connection: Fabric's networking lets go of the player, and the server logs it out
+			player.connection.disconnect(Component.literal("GameTest batch over"));
+			if (server.getPlayerList().getPlayers().contains(player)) {
+				server.getPlayerList().remove(player);
+			}
 		}
 		return players.size();
 	}

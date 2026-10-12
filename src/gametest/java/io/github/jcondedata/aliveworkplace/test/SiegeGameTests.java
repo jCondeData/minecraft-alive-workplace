@@ -84,6 +84,9 @@ public class SiegeGameTests implements FabricGameTest {
 	 */
 	private static Yard yard(GameTestHelper helper, StarterBlueprints.Entry build) {
 		Leftovers.clear(helper);
+		// Walls and gates an earlier batch's test recorded finished at this spot would join the siege (their gates, bars and
+		// breach), so the ram's work and the pillager's time hung on which batch ran here before (B121, B122).
+		Leftovers.finished(helper);
 		ServerLevel level = helper.getLevel();
 		int radius = VillageHalls.RADIUS;
 		long time = level.getDayTime();

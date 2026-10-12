@@ -311,6 +311,9 @@ public class ScoutGameTests implements FabricGameTest {
 		Vindicator bandit = helper.spawn(EntityType.VINDICATOR, new BlockPos(15, 2, 14));
 		bandit.addTag(Lairs.TAG);
 		bandit.addTag(Lairs.BANDIT_TAG);
+		// Held where it stands, 10 blocks from each: a random stroll before its target goal fires could take it within 8 of
+		// the scout, who may then be picked by right (B122). Its target goals still choose as ever.
+		bandit.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED).setBaseValue(0);
 		helper.assertTrue(Scouts.unseen(bandit, scout) && !Scouts.unseen(bandit, plain), "who is unseen");
 		helper.onEachTick(() -> {
 			if (bandit.getTarget() == scout) {

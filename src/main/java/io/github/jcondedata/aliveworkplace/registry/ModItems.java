@@ -173,17 +173,23 @@ public final class ModItems {
 				output.accept(SETTLERS_WAGON);
 				output.accept(FOUNDERS_WAGON);
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ALL) {
-					output.accept(BlueprintItem.create(entry.id(), entry.size()));
+					if (StarterBlueprints.offered(entry.id())) { // an expansion's build only once it's open (B119)
+						output.accept(BlueprintItem.create(entry.id(), entry.size()));
+					}
 				}
 				for (StarterBlueprints.Entry entry : StarterBlueprints.ONE_TIER) {
-					output.accept(BlueprintItem.create(entry.id(), entry.size()));
+					if (StarterBlueprints.offered(entry.id())) { // an expansion's build only once it's open (B119)
+						output.accept(BlueprintItem.create(entry.id(), entry.size()));
+					}
 				}
 				for (StarterBlueprints.Entry entry : StarterBlueprints.WORKPLACES) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}
 				if (io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")) {
 					for (StarterBlueprints.Entry entry : StarterBlueprints.COBBLEMON_ONLY) {
-						output.accept(BlueprintItem.create(entry.id(), entry.size()));
+						if (StarterBlueprints.offered(entry.id())) { // an expansion's build only once it's open (B119)
+							output.accept(BlueprintItem.create(entry.id(), entry.size()));
+						}
 					}
 					for (StarterBlueprints.Entry entry : StarterBlueprints.COBBLEMON_WORKPLACES) {
 						output.accept(BlueprintItem.create(entry.id(), entry.size()));

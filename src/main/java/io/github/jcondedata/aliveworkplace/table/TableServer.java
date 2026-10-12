@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
+import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFormatException;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
@@ -117,6 +118,11 @@ public final class TableServer {
 		if (BlueprintLibrary.soldOnly(id)) {
 			// Not listed (34.15a): only a builder sells it, so the Table won't hand it out to a request for it either.
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.sold_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
+			return false;
+		}
+		if (!StarterBlueprints.offered(id)) {
+			// Not listed (B119): its expansion isn't open, so a request for it by id is refused as an unknown blueprint.
+			player.sendSystemMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()).withStyle(ChatFormatting.RED));
 			return false;
 		}
 		if (!player.getAbilities().instabuild) {

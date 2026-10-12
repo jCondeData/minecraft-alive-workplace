@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the nine game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76
+Roadmap items: 25.5, B76, B119
 
 ## What a player sees
 
@@ -34,6 +34,11 @@ column) is off whatever the file says, and isn't on the settings screen until th
   default, on; a switch turned off after the release stays off. A file with neither the list nor a format number
   (written by hand) is taken as it says.
   Without this, a server that ran an earlier version kept 1.8's classes off (found by the update rehearsal).
+- **Builds wait too (B119).** A build that belongs to an expansion (the Arena and the Pokémon job builds, the Guildhall,
+  the Fire Station, Well House and Physician's House, the luxury workshops) is tied to its job's switch
+  (`StarterBlueprints.expansionSwitch`). While that switch's expansion is closed the Blueprint Table, its creative tab
+  and `/workplace blueprints` leave it out and the Table refuses it by id; it still loads by id, so a blueprint already
+  taken and a build site keep working.
 - **Every "needs" system has its own switch** (names, traits, moods, sickness, couples, chatter, markets,
   festivals, raids, bandit camps, the treasury, repairs, paths). Set it to false and the village simply goes without
   it; nothing else needs looking after.
@@ -233,6 +238,8 @@ GameTests: `ConfigGameTests` (4: the file is read, clamped and applied; every ra
 setting has its words and range; saved settings are read back), `ExpansionGateGameTests` (4: an old config with the
 switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates; a file from before
 the release takes the new defaults, a later choice holds),
+`ExpansionBuildsGameTests` (3: the Table holds no 1.2 build while 1.2 is off and holds them when on; the other
+expansions' builds wait the same way; the Table refuses a closed expansion's build by id),
 `HallSpecGameTests.theConfigsSwitchesOutsideTests`, `ProtectionSpecGameTests.theConfigSwitchesProtectionOff`,
 `RoadGameTests.withStewardRoadsOffNothingIsBuilt`, `WallGameTests.withStewardWallsOffNothingIsProposedOrBuilt`,
 `CaravanRoadGameTests.withCaravanRoadsOffNoRoadIsPlanned`, `GiftedGameTests.giftedChanceZeroMeansNobody`.

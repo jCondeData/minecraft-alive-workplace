@@ -438,6 +438,50 @@ public final class StarterBlueprints {
 	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_2, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, STONE_WALL_2, WALL_TOWER, WALL_TOWER_2,
 		GATEHOUSE, GATEHOUSE_2);
 
+	/**
+	 * ROADMAP B119: the builds that belong to an expansion, each by the config switch of the job or feature it's for. While
+	 * that switch's expansion is closed ({@link io.github.jcondedata.aliveworkplace.Expansions#optionLive}) the build isn't
+	 * offered (the Blueprint Table, the commands' list, the creative tab), so nobody builds a workplace whose job can't
+	 * start; it still loads by id, so a blueprint already bought and a build site keep working. A new expansion build: a
+	 * line here.
+	 */
+	private static final java.util.Map<ResourceLocation, String> EXPANSION_SWITCH = expansionSwitches();
+
+	private static java.util.Map<ResourceLocation, String> expansionSwitches() {
+		java.util.Map<ResourceLocation, String> map = new java.util.HashMap<>();
+		java.util.function.BiConsumer<String, List<Entry>> put = (option, entries) -> entries.forEach(e -> map.put(e.id(), option));
+		// M28, Pokémon and villagers, together
+		put.accept("festivalCup", ARENAS);
+		put.accept("campCooks", List.of(CAMP_KITCHEN, CAMP_KITCHEN_2));
+		put.accept("berryBreeders", List.of(BERRY_NURSERY, BERRY_NURSERY_2));
+		put.accept("daycareKeepers", List.of(DAYCARE, DAYCARE_2));
+		put.accept("habitatKeepers", List.of(HABITAT_GARDEN, HABITAT_GARDEN_2));
+		put.accept("gemGrowers", List.of(GEM_GROTTO, GEM_GROTTO_2));
+		// M30, Edicts and civic items
+		put.accept("guilds", List.of(GUILDHALL, GUILDHALL_2));
+		// M32, Threats worth building walls for
+		put.accept("firewardens", List.of(FIRE_STATION));
+		put.accept("wellKeepers", List.of(WELL_HOUSE));
+		put.accept("physicians", List.of(PHYSICIANS_HOUSE));
+		// M34, Classes and luxuries
+		put.accept("vintners", List.of(WINERY, WINERY_2));
+		put.accept("tailors", List.of(TAILORS_SHOP, TAILORS_SHOP_2));
+		put.accept("printers", List.of(PRINT_SHOP, PRINT_SHOP_2));
+		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2));
+		return java.util.Map.copyOf(map);
+	}
+
+	/** The config switch whose expansion {@code id} (or the build it's a style of) belongs to, or null for a build of no expansion. */
+	public static String expansionSwitch(ResourceLocation id) {
+		return EXPANSION_SWITCH.get(BlueprintStyles.base(id));
+	}
+
+	/** Whether {@code id} may be offered now: it belongs to no expansion, or its expansion is open (B119). */
+	public static boolean offered(ResourceLocation id) {
+		String option = expansionSwitch(id);
+		return option == null || io.github.jcondedata.aliveworkplace.Expansions.optionLive(option);
+	}
+
 	private StarterBlueprints() {
 	}
 }

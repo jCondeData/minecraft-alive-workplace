@@ -84,6 +84,10 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - Village walls: a finished Palisade Tower no longer looks unbuilt to the Steward (its roof counted as the ground), so
   builders no longer stack a second tower on top of the first (B94).
+- The Blueprint Table no longer offers the builds of expansions that aren't out yet (B119): the Arena and the Pokémon
+  job builds (Camp Kitchen, Berry Nursery, Habitat Garden, Gem Grotto, Daycare), the Guildhall, the Fire Station, Well
+  House and Physician's House, and the luxury workshops wait for their expansion, so you can't build a workplace whose
+  job can't start yet. A blueprint already taken and a build already started keep working.
 
 ## 0.143.0 — 2026-10-11
 

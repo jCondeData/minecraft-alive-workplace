@@ -12,7 +12,7 @@ Siege: a raid on a village with a finished wall or gate build
 Palisade Gate: holds about 10 seconds
 Gatehouse: holds about a minute
 categories: Defense
-related: defence.md, village-hall.md, the-bandit-king.md
+related: sieges.md, defense-page.md, scout.md, war-party.md, defence.md, village-hall.md, the-bandit-king.md
 ```
 
 Raiders don't just turn up any more: they make camp, they have a leader with a name, and a walled village gets a

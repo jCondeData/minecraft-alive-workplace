@@ -284,14 +284,26 @@ def render(md):
         if not first:
             first = plain(text)
         out.append(f"<p>{inline(text)}</p>")
-    # A section left empty by gated pages (only links to them) goes too.
-    kept = []
-    for n, chunk in enumerate(out):
-        if chunk.startswith("<h2") and (n + 1 == len(out) or out[n + 1].startswith("<h2")):
-            hid = re.match(r'<h2 id="([^"]*)"', chunk).group(1)
-            heads = [h for h in heads if h[0] != hid]
-            continue
-        kept.append(chunk)
+    # A section left empty by gated pages (only links to them) goes too: an h3 with nothing before the next h2 or h3,
+    # then an h2 left with nothing before the next h2.
+    def depth(chunk):
+        return 2 if chunk.startswith("<h2") else 3 if chunk.startswith("<h3") else 0
+
+    kept = out
+    while True:
+        dropped = []
+        for n, chunk in enumerate(kept):
+            lv = depth(chunk)
+            nxt = depth(kept[n + 1]) if n + 1 < len(kept) else 1
+            if lv and nxt and nxt <= lv:
+                if lv == 2:
+                    hid = re.match(r'<h2 id="([^"]*)"', chunk).group(1)
+                    heads = [h for h in heads if h[0] != hid]
+                continue
+            dropped.append(chunk)
+        if len(dropped) == len(kept):
+            break
+        kept = dropped
     return title, "\n".join(kept), heads, first
 
 

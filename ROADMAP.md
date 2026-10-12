@@ -4389,7 +4389,7 @@ Legends.
   banners (Carpenter), 64 cooked beef (Chef), 32 berries (Orchard Keeper); IV 8 daylight detectors (Tinkerer), 16
   Ultra Balls (Ball Smith), 32 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it (the compat
   GameTests for the parts with Cobblemon's blocks).
-- [ ] **35.24** **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
+- [ ] **35.24** (blocked: needs 35.4-35.8, see Notes) **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
   - **Stadium Days**, every second day in the afternoon: two to four visiting trainers (from the villages of its realm
     or its caravan partners; travelling trainers from Journeyman to Master when those have none) stand in the trainer
     boxes until dusk. Players challenge them as they do the village's own (`trainer/Trainers`: CobbleDollars, once a
@@ -5672,3 +5672,10 @@ item waits.
   water bucket), as the builder does. The cocoa beans are goods only: cocoa needs jungle logs, which the palette doesn't
   have. Glow berries hang one block long, under solid blocks (a longer strand needs cave vine stems, which have no item
   and a builder skips).
+- **35.24 the Stadium's powers wait for 35.8** (lane-a-1012-0033, 2026-10-12): its Done when needs what 35.4 to 35.8
+  make and none of them is done yet: a Wonder that is ever finished in play (the Foundation Stone and stages, 35.4),
+  the power registry `wonder/powers/` and `Wonders.power(level, hall, type)` (35.8), the upkeep count that makes a
+  Wonder "damaged" (35.8; "a damaged Stadium holds no Stadium Days" tests it) and the harness's Wonder time-lapse that
+  scene `wonder_stadium` films (35.8). Decided: 35.24 is blocked until 35.8 lands, rather than building a second power
+  lookup and damage rule that 35.8 would replace. The same holds for every Wonder's powers item (35.10, 35.12, 35.14,
+  35.16, 35.18, 35.20, 35.22): take 35.4 to 35.8 first, in order.

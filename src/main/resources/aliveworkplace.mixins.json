@@ -31,6 +31,8 @@
 		"ServerLevelMixin",
 		"StructureTemplateMixin",
 		"StructureTemplatePoolAccessor",
+		"ThreatDoorMixin",
+		"ThreatGriefMixin",
 		"VillagerAccessor",
 		"VillagerGoalPackagesMixin",
 		"VillagerMixin",

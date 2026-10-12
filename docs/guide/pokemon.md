@@ -49,6 +49,8 @@ too: the same Pokémon can work the pasture and help the villager.
 
 ## Trainers
 
+*Full article: [Trainer](trainer.md), [Trainer Leader](trainer-leader.md).*
+
 Craft a **Training Post** (a target block on planks) and place it near a villager without a job: they become a
 **Trainer**. Right-click them to battle. Every trainer starts as a Novice with two young Pokémon and ranks up as people
 battle them, until a Master fields six fully evolved Pokémon and plays smart. Beating one pays CobbleDollars (emeralds
@@ -62,6 +64,8 @@ at Expert strength from the start, pays three times the prize, and takes one cha
 
 ## Move Tutor
 
+*Full article: [Move Tutor](move-tutor.md).*
+
 A **Training Post** and a **book**. Right-click the tutor, pick one of your Pokémon and a move it could learn but won't get
 from leveling (tutor moves, TM moves, egg moves). Click once to choose, again to pay and teach. A new tutor teaches
 weaker moves; a Master teaches everything.
@@ -69,6 +73,8 @@ weaker moves; a Master teaches everything.
 ![The Move Tutor's lessons](https://jcondedata.github.io/minecraft-alive-workplace/tutor/still-1.jpg)
 
 ## Ball Smith
+
+*Full article: [Ball Smith](ball-smith.md).*
 
 A **smithing table** and an **apricorn**. Put apricorns and metal in the chest (copper for Poké Balls, iron for Great
 Balls, gold for Ultra Balls, diamonds for the rarest) and the smith makes balls, four at a time, learning harder ones as
@@ -78,6 +84,8 @@ they level up. Sneak-right-click them to pick which balls to make.
 
 ## Pokémon Trader
 
+*Full article: [Pokémon Trader](pokemon-trader.md).*
+
 A **Shop Counter** and a **Poké Ball**. Right-click the trader to see today's offers ("my Tinkaton, level 62, for any
 Fighting type, level 55 or higher"). Pick an offer, then one of your Pokémon that fits, and click twice to swap. A held
 item comes back to you. Offers change every day and are the same for everyone; each player gets one trade per trader a
@@ -86,6 +94,8 @@ day. Better traders offer more, sometimes a shiny.
 ![The Pokémon Trader's offers](https://jcondedata.github.io/minecraft-alive-workplace/trader/still-1.jpg)
 
 ## Fossil Scientist
+
+*Full article: [Fossil Scientist](fossil-scientist.md).*
 
 Cobblemon's **Fossil Analyzer** and a **fossil**. Right-click the scientist holding a fossil and pay 8 emeralds: they
 revive it while they work, and the Pokémon joins your party (or your PC) when it's done.

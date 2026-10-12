@@ -22,6 +22,47 @@ GOOD = (f"# Builder\n\n{BOX}Hand them a blueprint. Minecraft 1.21.1 and Cobblemo
         f"![A builder]({SITE}builders/still-2.jpg)\n\n![Decor]({SITE}decor/still-1.jpg)\n\n![GIF]({SITE}builders/anim.gif)\n")
 
 
+GATED = "# Drought\n\n```infobox\ntype: Disaster\nexpansion: M32\ncategories: Disasters\n```\n\nNo rain.\n"
+
+
+def site_gating():
+    """site.py leaves a gated page out (no page, not in the index, the lists or All pages) and links to it go plain."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("guide_site", Path(__file__).resolve().parents[1] / "playerguide/site.py")
+    site = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(site)
+    problems = []
+    with tempfile.TemporaryDirectory() as d:
+        guide = Path(d, "guide")
+        guide.mkdir()
+        (guide / "index.md").write_text("# Guide\n\nHello.\n\n## Village\n\n- [Builder](builder.md): builds\n\n"
+                                        "## Threats\n\n### Weather\n\n- [Drought](drought.md): no rain\n")
+        (guide / "builder.md").write_text(GOOD + "\nIn a [drought](drought.md) too.\n")
+        (guide / "drought.md").write_text(GATED + "\nSee the [builder](builder.md).\n")
+        site.GUIDE, site.CHANGELOG = str(guide), str(Path(d, "none.md"))
+        for off, gated in (({"32"}, True), (set(), False)):
+            out = Path(d, "site" + str(gated))
+            s = site.Site(off=off)
+            s.write(str(out))
+            folder = out / site.FOLDER
+            every = " ".join(f.read_text() for f in folder.glob("*.html"))
+            index = (folder / "index.html").read_text()
+            builder = (folder / "builder.html").read_text()
+            if (folder / "drought.html").exists() == gated:
+                problems.append(f"drought.html published: {not gated}, with its switch {'off' if gated else 'on'}")
+            if gated and ("drought.html" in every or "Threats" in index or "Weather" in index):
+                problems.append("a link to the gated page, or its empty index section or subsection, is still published")
+            if not gated and "Weather" not in index:
+                problems.append("the index's subsection is missing once the switch is on")
+            if gated and "In a drought too." not in builder:
+                problems.append("the link's words are gone from the published page")
+            if gated and "<b>1</b> articles" not in index:
+                problems.append("the gated page is in the article counter")
+            if not gated and 'href="drought.html"' not in builder:
+                problems.append("the link is missing once the switch is on")
+    return problems
+
+
 def run(builder, index=INDEX, extra=None):
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
@@ -63,8 +104,16 @@ def main():
         expect("a page without an infobox fails", run(GOOD.replace(BOX, "")), "categories"),
         expect("a related page that doesn't exist fails", run(GOOD.replace("index.md\n```", "gone.md\n```")),
                "related page gone.md"),
+        expect("a gated page and links to it pass",
+               run(GOOD + "\nSee [the drought](drought.md).\n", index=INDEX + "- [Drought](drought.md)\n",
+                   extra={"drought.md": GATED}), None),
+        expect("a gated page is still checked", run(GOOD, index=INDEX + "- [Drought](drought.md)\n",
+                                                    extra={"drought.md": GATED + "\nSee 32.4.\n"}), "roadmap id"),
+        expect("an unknown expansion fails", run(GOOD, index=INDEX + "- [Drought](drought.md)\n",
+                                                 extra={"drought.md": GATED.replace("M32", "M99")}), "expansion 'M99'"),
         expect("a portal no page is in fails", run(GOOD, index=INDEX.replace("Builder |", "Nowhere |")),
                "portal 'Nowhere'"),
+        expect("site.py leaves a gated page out until its switch flips", site_gating(), None),
     ]
     failed = results.count(False)
     print(f"{len(results) - failed} of {len(results)} passed")

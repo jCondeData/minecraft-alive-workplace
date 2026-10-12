@@ -865,6 +865,53 @@ final class JobScenes {
 					&& warden.getVillagerXp() > 1;
 			};
 		}, null));
+		// Threats spare the builders' work (ROADMAP 32.16a): a raider's creeper hisses beside a Starter Cottage the builders
+		// finished and blows up; the player's dirt mound beside it is blown away, every block of the cottage still stands.
+		SCENES.put("threat_spared", new Job("a raider's creeper blew up right beside the Starter Cottage: the dirt mound a player had left there went, every block the builders placed still stood",
+			900, new Vec3(10.5, -52.0, 9.5), new Vec3(-1.0, -56.0, -9.0), (level, player) -> {
+			BlockPos origin = STATION.offset(-5, 0, -15);
+			net.minecraft.core.Vec3i size = StarterBlueprints.STARTER_COTTAGE.size();
+			level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(),
+				origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			io.github.jcondedata.aliveworkplace.threat.VillageFire.forgetBuilds();
+			List<BlockPos> cottage = new ArrayList<>();
+			for (BlockPos p : BlockPos.betweenClosed(origin, origin.offset(size).offset(-1, -1, -1))) {
+				if (!level.getBlockState(p).isAir()) {
+					cottage.add(p.immutable());
+				}
+			}
+			// The player's dirt mound, two blocks out from the cottage's east wall.
+			int mid = size.getZ() / 2;
+			List<BlockPos> mound = new ArrayList<>();
+			for (int dz = -1; dz <= 1; dz++) {
+				for (int dy = 0; dy <= 1; dy++) {
+					BlockPos at = origin.offset(size.getX() + 2, dy, mid + dz);
+					level.setBlockAndUpdate(at, net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState());
+					mound.add(at);
+				}
+			}
+			net.minecraft.world.entity.monster.Creeper creeper = EntityType.CREEPER.create(level);
+			BlockPos stand = origin.offset(size.getX(), 0, mid);
+			creeper.moveTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, 90f, 0f);
+			creeper.addTag(io.github.jcondedata.aliveworkplace.threat.Threats.RAIDER_TAG);
+			creeper.setNoAi(true);
+			level.addFreshEntity(creeper);
+			long began = level.getGameTime();
+			return l -> {
+				if (l.getGameTime() - began == 60 && creeper.isAlive()) {
+					creeper.ignite();
+				}
+				if (l.getGameTime() - began < 160 || creeper.isAlive()) {
+					return false;
+				}
+				long standing = cottage.stream().filter(p -> !l.getBlockState(p).isAir()).count();
+				Showcase.check(standing == cottage.size(), "every block of the cottage still stands (" + standing + " of " + cottage.size() + ")");
+				Showcase.check(mound.stream().anyMatch(p -> l.getBlockState(p).isAir()), "the player's dirt mound was blown away");
+				return true;
+			};
+		}, null));
 		// Drought (ROADMAP 32.17): a wheat field gone dry (farmland at moisture 0, dead bushes round it) in a village under
 		// a drought; the Well Keeper at the cauldron (picked with a shovel) fills a bucket at the pond and carries it to the
 		// field, bucket after bucket, each wetting 9 farmland dark again in a splash.

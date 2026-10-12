@@ -12,7 +12,7 @@ A scene is one run of the screenshot client (tools/screenshots/run.sh, SCENE=<na
 (src/devclient/.../ScreenshotHarness.java) stages it, films it and records a pass/fail check in showcase.json.
 
 Stills: 2-4 per scene, as (picture, label). A picture is a screenshot's file name without ".png", or a glob with a
-pick: "frame_*@first", "frame_*@middle", "frame_*@last", "30_*@spread" (4 spread over the matches, labelled from
+pick: "frame_*@first", "frame_*@middle", "frame_*@last", "30_*@spread" (4 spread over the matches, labeled from
 their names). A new scene goes here in the same commit as its harness code (ROADMAP 22.3, 22.4).
 """
 import argparse
@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweller", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -69,7 +69,7 @@ SCENES = [
       [("20_preview_start", "Ghost preview"), ("21_preview_half_built", "Half built"), ("22_status_closeup", "Over the builder: progress, what it is short of, where it takes from")]),
     S("placing", "Builder", "Placing a build: turn, mirror, cancel, move onto a slope", "on the slope the builder filled a foundation", 240,
       [("10_placed", "Placed: the ghost"), ("12_mirrored", "Turned and mirrored where it stands"),
-       ("14_cancelled", "Cancelled: the blueprint is back, still placed"), ("16_slope_building", "Moved onto a slope: foundation filled")]),
+       ("14_cancelled", "Canceled: the blueprint is back, still placed"), ("16_slope_building", "Moved onto a slope: foundation filled")]),
     S("missing", "Builder", "What a build is still missing, and its material list", "the blueprint's tooltip lists what the chests are short of, and a Book and Quill becomes the list", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip"),
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
@@ -166,8 +166,8 @@ SCENES = [
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
     job("legend", "Legends", "A villager becomes a Legend",
         "a villager became a Legend, a Master who speeds up the builder beside them"),
-    job("innkeeper", "Innkeeper", "A traveller checks in", "a traveller came to stay at the inn", 120,
-        [("04_hire_screen", "Hire a traveller")]),
+    job("innkeeper", "Innkeeper", "A traveler checks in", "a traveler came to stay at the inn", 120,
+        [("04_hire_screen", "Hire a traveler")]),
     job("teacher", "Teacher", "Lessons for the village children", "the teacher schooled the children", 180),
     job("rancher", "Rancher", "Breaking in a horse", "the rancher tamed and saddled the horse"),
     S("daycare", "Rancher", "Pokémon daycare", "the daycare screen opened with a boarder", 75,
@@ -192,7 +192,7 @@ SCENES = [
     S("carpenter", "Carpenter", "Making a builder's woodwork", "the carpenter made woodwork for the builder", 150,
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
-    job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made coloured wool the builder needed", 240),
+    job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
     job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
     # Scaffolding (ROADMAP 35.6): a 14-high pillar with an overhanging cap, built from scaffolding taken down after
@@ -259,7 +259,7 @@ SCENES = [
       [("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
       cobblemon=True, mega=True),
     S("arena", "Trainer Leader", "The Arena, three tiers",
-      "every tier's ring centre, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
+      "every tier's ring center, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
       [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),
        ("05_arena_3_front", "Arena III: the covered grandstand"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
     # The Festival Cup (ROADMAP 28.17): the hall's Cup page for a Town host with an Arena, two trade partners on its
@@ -315,7 +315,7 @@ SCENES = [
         cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
-    job("jeweller", "Jeweller", "Making amethyst rings at the stonecutter", "the jeweller made amethyst rings at the stonecutter"),
+    job("jeweller", "Jeweler", "Making amethyst rings at the stonecutter", "the jeweler made amethyst rings at the stonecutter"),
     job("habitat_keeper", "Habitat Keeper", "A snack set out, a log slathered, a shiny spotted",
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide
@@ -496,10 +496,10 @@ SCENES = [
     S("legend_guest", "Legends", "A Legend visits the inn, and settles", "a Legend came to the inn as a guest, showed their terms, and settled once a home was ready", 50,
       [("01_guest_arrives", "A Legend walks into the inn"), ("02_terms", "Her terms: what she brings, what she wants"),
        ("03_settled", "A home is ready: she settles"), ("04_settled_chronicle", "The chronicle: settled in the village")]),
-    # Legends found in the world (ROADMAP 29.9): a traveller's camp, a prisoner's cage and a castaway's camp; a bar broken frees the prisoner
+    # Legends found in the world (ROADMAP 29.9): a traveler's camp, a prisoner's cage and a castaway's camp; a bar broken frees the prisoner
     S("legend_sites", "Legends", "Legends found at ruins, outposts and wrecks",
       "the three camps of Legends found in the world, and a prisoner freed from the outpost cage", 40,
-      [("01_three_camps", "A traveller's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
+      [("01_three_camps", "A traveler's camp, a prisoner's cage, a castaway's camp"), ("02_cage_opened", "A bar broken: the prisoner is free")]),
     # The Old Sage (ROADMAP 29.14): the hermit's hut, a riddle with a wrong answer refused and a hint, the Ancient Lore tab
     S("legend_sage", "Legends", "The Old Sage's hut, riddles and Ancient Lore",
       "the Old Sage's hut, a riddle asked and a wrong answer refused with a hint, and the Ancient Lore tab", 50,
@@ -545,7 +545,7 @@ SCENES = [
         "the Bard Laureate settled and composed the village's anthem, which rang out over the hall in note-block notes; then they sang a work song among the busiest workers, notes rising round them", 90),
     # The Beastmaster (ROADMAP 29.20): a war dog tamed for a guard, then the guard and the dog against zombies
     job("legend_beastmaster", "Legends", "The Beastmaster's war dog",
-        "the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armour from the scutes; the dog followed its guard and fought the zombies beside them", 90),
+        "the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armor from the scutes; the dog followed its guard and fought the zombies beside them", 90),
     # The Founder (ROADMAP 29.23): the village's builder raises the Founder's statue by the hall from the barrels
     job("legend_founder", "Legends", "The Founder's statue going up",
         "the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised", 360),
@@ -571,8 +571,8 @@ SCENES = [
       [("01_large_families_babies", "Two babies born half a day apart"), ("02_large_families_chronicle", "The chronicle: both births")]),
     # Open Gates (ROADMAP 30.7): an inn with four guests, two a morning
     S("open_gates", "Village Hall", "Edicts: Open Gates",
-      "Open Gates was proclaimed: the inn took in two travellers a morning and is full with four guests", 45,
-      [("01_open_gates_inn", "Four travellers at the inn after two mornings"), ("02_open_gates_book", "Open Gates in the Book of Edicts")]),
+      "Open Gates was proclaimed: the inn took in two travelers a morning and is full with four guests", 45,
+      [("01_open_gates_inn", "Four travelers at the inn after two mornings"), ("02_open_gates_book", "Open Gates in the Book of Edicts")]),
     S("festival_season", "Village Hall", "Edicts: Festival Season",
       "Festival Season was proclaimed: the festival morning took its 5 emeralds from the treasury", 45,
       [("01_festival_season_before", "The festival icon: every 4 days, 5 emeralds, the treasury holds 10"),
@@ -607,12 +607,12 @@ SCENES = [
       "in autumn (harvest season) the wheat field within the idol's 32 blocks grew more stages half-way than the field out of its reach", 50,
       [("01_harvest_idol", "The Harvest Idol, sparkling in harvest season"), ("02_harvest_idol_fields", "Two fields sown: the idol's (right) and one out of its reach"),
        ("03_harvest_idol_growing", "Half-way: the idol's field is ahead"), ("04_harvest_idol_ripe", "The idol's field ripens first")]),
-    # The Village Banner (ROADMAP 30.13): a street of stone houses under the village's colours, a knight's painted
-    # shield, a neighbour by its banner on the routes page, the village by its own in the Book of Edicts
-    S("village_banner", "Village Hall", "The Village Banner: the village's colours",
-      "three builders hung the colours over their houses' doors, the knight's plain shield came out painted in them, and the routes page and the Book of Edicts showed the villages by their banners", 240,
+    # The Village Banner (ROADMAP 30.13): a street of stone houses under the village's colors, a knight's painted
+    # shield, a neighbor by its banner on the routes page, the village by its own in the Book of Edicts
+    S("village_banner", "Village Hall", "The Village Banner: the village's colors",
+      "three builders hung the colors over their houses' doors, the knight's plain shield came out painted in them, and the routes page and the Book of Edicts showed the villages by their banners", 240,
       [("01_village_banner_street", "A street of finished houses under the village's banners"),
-       ("02_village_banner_knight", "A knight with his shield painted in the colours"),
+       ("02_village_banner_knight", "A knight with his shield painted in the colors"),
        ("03_village_banner_routes", "The trade routes page: Redfield by its banner"),
        ("04_village_banner_book", "The Book of Edicts under the village's own banner")]),
     # Guilds (ROADMAP 30.17): the Guildhall II with its Guild Master inside, the Builders' Guild on the Book's last row
@@ -623,7 +623,7 @@ SCENES = [
        ("03_guildhall_book", "The Builders' Guild on the Book of Edicts' last row: founded")]),
     # The Miners', Smiths', Woodsmen's (ROADMAP 30.18), Harvest, Herders' and Scholars' Guilds (30.19): each Guild Master's card, then the Book's guild row
     S("guilds", "Village Hall", "Nine guilds: Miners', Smiths', Woodsmen's, Harvest, Herders', Scholars', Healers', Merchants' and Wardens'",
-      "the player chartered a Master miner, weaponsmith, lumberjack, farmer, shepherd, scholar, nurse, innkeeper and guard, the nine guilds were founded in nine finished Guildhalls, each master's card on the hall's list named their guild (and its pace where it has one), the farmer's farm reached 24 blocks, the shepherd bred up to 12, research cost a quarter less, the ill got well in 2 days, the nurse looked 48 blocks out, a 16-emerald traveller cost 12, guards trained up to Master and hit 10% harder, and the Book of Edicts' guild row showed every guild, five a page with a More guilds button", 40,
+      "the player chartered a Master miner, weaponsmith, lumberjack, farmer, shepherd, scholar, nurse, innkeeper and guard, the nine guilds were founded in nine finished Guildhalls, each master's card on the hall's list named their guild (and its pace where it has one), the farmer's farm reached 24 blocks, the shepherd bred up to 12, research cost a quarter less, the ill got well in 2 days, the nurse looked 48 blocks out, a 16-emerald traveler cost 12, guards trained up to Master and hit 10% harder, and the Book of Edicts' guild row showed every guild, five a page with a More guilds button", 40,
       [("01_guilds_miner", "Brokk, Guild Master of the Miners' Guild, working faster through it"),
        ("10_guilds_guard", "Wulf, Guild Master of the Wardens' Guild"),
        ("07_guilds_book", "The Book of Edicts' guild row, page one: five guilds, founded, each with its perk, and the More guilds button"),
@@ -649,7 +649,7 @@ SCENES = [
        ("03_elders_walk", "The same walk, side by side: Bram, the elder, falls behind Tom")]),
     # Dressed by class (ROADMAP 34.18): the four classes in three jobs each, and an elder, in daylight
     S("class_outfits", "Village Hall", "Dressed by class: the four classes and an elder",
-      "twelve villagers stood in four columns, Peasant, Artisan, Burgher and Noble, each a farmer, a librarian and a toolsmith, every one wearing their class over a job outfit that still reads; the client was told each one's class and stage of life; Bram, an elder Noble, wore grey brows and a beard as well", 25,
+      "twelve villagers stood in four columns, Peasant, Artisan, Burgher and Noble, each a farmer, a librarian and a toolsmith, every one wearing their class over a job outfit that still reads; the client was told each one's class and stage of life; Bram, an elder Noble, wore gray brows and a beard as well", 25,
       [("01_class_outfits_rows", "Peasant, Artisan, Burgher, Noble (left to right), each a farmer, a librarian and a toolsmith"),
        ("02_class_outfits_elder", "Bram, an elder Noble farmer, beside a grown Noble toolsmith")]),
     # Retirement and apprentices (ROADMAP 34.20): Tom shadows his father Bram, takes over his composter, and Bram mentors Ida
@@ -714,7 +714,7 @@ SCENES = [
        ("03_keep", "Stage 3: the King's keep, his banner over the door")]),
     # The Bandit King, II: the story (ROADMAP 31.16): the banners taken, the fort rising a stage a day, the storm, the King's fall
     S("bandit_king", "Village Hall", "The Bandit King's story: the banners, the fort, the storm, the King's fall",
-      "the Bandit King's story arc: three war banners, black with a red skull, flown over his camps and taken; the next dawn his fort rises, a stage a day; at the storm the allies won stand before the gate (3 guards of a neighbouring village, 6 mercenaries) and the keep's postern is open, as Pell the deserter told; then the King falls", 60,
+      "the Bandit King's story arc: three war banners, black with a red skull, flown over his camps and taken; the next dawn his fort rises, a stage a day; at the storm the allies won stand before the gate (3 guards of a neighboring village, 6 mercenaries) and the keep's postern is open, as Pell the deserter told; then the King falls", 60,
       [("01_banners", "Three war banners of the Bandit King"),
        ("05_fort_day_3", "Day 3: the keep, its postern open"),
        ("06_storm", "The storm: 3 guards and 6 mercenaries"),
@@ -744,10 +744,10 @@ SCENES = [
       "eight herb patches planted the way a story arc plants them, 5 to 9 each on its own ground: Sunthistle on red sand, Frostbloom on snow, Peakmoss on stone and the pale Glowcap on podzol under leaves in front; Sea Lavender on gravel, Mirewort on mud, Jungle Orchid and Petal Balm on grass behind; then the Three-Herb Tonic, a bottle of green tonic, in hand", 40,
       [("01_patches", "The eight far herbs, a patch of each on its own ground"),
        ("02_tonic", "The Three-Herb Tonic in hand")]),
-    # The Sickness, II: the Grey Cough (ROADMAP 31.18): the coughing village, a far herb's patch, the brew, the cure round
-    S("sickness", "Village Hall", "The Grey Cough: the coughing village, a far herb, the brew and the cure going round",
-      "four of eight villagers coughing grey smoke with the Grey Cough; a patch of Sea Lavender, one of the far herbs, on its gravel; Nurse Ada at her brewing stand with 'Brewing the cure' and 40% over her head; then she takes the Three-Herb Tonic round, villager by villager, hearts over each, until everyone is well", 45,
-      [("01_coughing", "Four villagers coughing the Grey Cough, and a patch of Sea Lavender, a far herb"),
+    # The Sickness, II: the Gray Cough (ROADMAP 31.18): the coughing village, a far herb's patch, the brew, the cure round
+    S("sickness", "Village Hall", "The Gray Cough: the coughing village, a far herb, the brew and the cure going round",
+      "four of eight villagers coughing gray smoke with the Gray Cough; a patch of Sea Lavender, one of the far herbs, on its gravel; Nurse Ada at her brewing stand with 'Brewing the cure' and 40% over her head; then she takes the Three-Herb Tonic round, villager by villager, hearts over each, until everyone is well", 45,
+      [("01_coughing", "Four villagers coughing the Gray Cough, and a patch of Sea Lavender, a far herb"),
        ("02_brewing", "Brewing the cure: the nurse at her stand"),
        ("03_cure_round", "The cure goes round"),
        ("04_all_well", "Everyone well again")]),
@@ -755,7 +755,7 @@ SCENES = [
     # At ten hearts (31.8) she tells what she dreams of and gives her keepsake.
     S("heart_event", "Village Hall", "A heart event: Dara tells where she comes from, and her keepsake",
       "at two hearts Dara walked up to the player, faced them and told where she comes from, line by line over her head and in the chat; it went into the chronicle and onto her life story page; at ten hearts she told what she dreams of and gave her keepsake", 75,
-      [("02_telling", "Two hearts: she walks up and tells it, a line every three seconds"), ("03_told", "The last line, each also in the chat in grey"),
+      [("02_telling", "Two hearts: she walks up and tells it, a line every three seconds"), ("03_told", "The last line, each also in the chat in gray"),
        ("04_life_story", "Shift-click her in the hall: her life story"), ("05_keepsake", "Ten hearts: her dream told, and her keepsake in your hand")]),
     # A personal request (ROADMAP 31.9): the ask, the accept, the hand-in, the thanks
     S("personal_request", "Village Hall", "A personal request: Dara asks for a taste of home",
@@ -769,9 +769,9 @@ SCENES = [
        ("03_delivered", "In Elmford: Mira reads it and writes back"), ("04_reply", "Home again: the reply to Dara, and her thanks")]),
     # Reputation and titles (ROADMAP 31.11): a new title told to the server, the title in chat, the hall's tooltip
     S("titles", "Village Hall", "Reputation and titles: a Hero of Thornholm",
-      "the player's deeds made them a Hero of Thornholm, told to the whole server in gold; their next chat line carries [Hero of Thornholm], and the hall's name tag tooltip shows their standing, their honour and the three best regarded", 45,
+      "the player's deeds made them a Hero of Thornholm, told to the whole server in gold; their next chat line carries [Hero of Thornholm], and the hall's name tag tooltip shows their standing, their honor and the three best regarded", 45,
       [("01_hero", "300 standing: a Hero of Thornholm, told to the whole server"), ("02_chat", "A chat line with the title before it"),
-       ("03_tooltip", "The hall's name tag: your standing, your honours and the best regarded")]),
+       ("03_tooltip", "The hall's name tag: your standing, your honors and the best regarded")]),
     # My work (ROADMAP 31.8): the 4-heart event of each job family, a villager of each beginning theirs
     S("heart_events_work", "Village Hall", "Heart events: the work story of every job family",
       "at four hearts a villager of each job family (and one without a trade) began the story of their work, over their head and in the chat", 45,
@@ -805,15 +805,15 @@ SCENES = [
       "the village's Noble household turned the festival into a Noble's Ball: guests at the hall, gold fireworks at dusk, the player a Hero for the night, and the takings split by class", 45,
       [("01_noble_ball_guests", "The ball: the guests gather at the hall"), ("02_noble_ball_fireworks", "Gold fireworks at dusk"),
        ("03_noble_ball_takings", "The name tag: the day's takings by class")]),
-    # The Defence page (ROADMAP 32.3): the guards icon opens it; the lair, its named captain, its strength, the last attacks
-    S("defence_page", "Village Hall", "The Defence page: the bandit camp and its chief",
-      "the hall's guards icon opened the Defence page: the bandit camp, its named chief, its strength and the last attacks", 45,
+    # The Defense page (ROADMAP 32.3): the guards icon opens it; the lair, its named captain, its strength, the last attacks
+    S("defence_page", "Village Hall", "The Defense page: the bandit camp and its chief",
+      "the hall's guards icon opened the Defense page: the bandit camp, its named chief, its strength and the last attacks", 45,
       [("01_defence_page", "The camp's chief, by name"), ("02_defence_strength", "The camp's strength"),
        ("03_defence_attacks", "The last attacks")]),
-    # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defence page; the camp leaves at the next dawn
+    # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
-      "the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,
-      [("01_at_peace", "The Defence page: At peace"), ("02_at_peace_guards", "The guards icon says so")]),
+      "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,
+      [("01_at_peace", "The Defense page: At peace"), ("02_at_peace_guards", "The guards icon says so")]),
     S("hall_treasury", "Village Hall", "The treasury, protection and the Village Ledger",
       "the treasury was collected, the village protected and the hall opened from a Village Ledger", 60,
       [("01_hall_treasury", "Treasury and protection"), ("02_hall_collected", "Collected"), ("03_ledger_held", "Village Ledger"),
@@ -851,6 +851,9 @@ SCENES = [
     # Village fire (ROADMAP 32.16): a roof catching, and the Firewarden putting it out with buckets of water
     job("fire", "Threats", "Village fire: the roof catches, the Firewarden puts it out",
         "the Starter Cottage's roof caught fire and the Firewarden ran over from the grindstone and put it out with buckets of water", 150),
+    # Threats spare the builders' work (ROADMAP 32.16a): a raider's creeper blows up beside a finished cottage
+    job("threat_spared", "Threats", "A raider's blast leaves the builders' work standing",
+        "a raider's creeper blew up right beside the Starter Cottage: the dirt mound a player had left there went, every block the builders placed still stood", 120),
     # Drought (ROADMAP 32.17): dry fields in a drought, and the Well Keeper carrying water to them from the pond
     job("drought", "Threats", "Drought: the dry fields and the Well Keeper's buckets",
         "the fields were dry in the drought, and the Well Keeper carried water from the pond to them, bucket after bucket", 150),
@@ -883,7 +886,7 @@ SCENES = [
     job("battle_stations", "Threats", "A siege: battle stations",
         "the two archers took battle stations on the Gatehouse and the Wall Tower and shot down at the raiders hacking at the portcullis", 150),
     # With the answering jobs' houses since 32.19 (the Fire Station, the Well House and the Physician's House) and the
-    # defence upgrades since 32.20 (Palisade II, Stone Wall II, Wall Tower II, Gatehouse II, each beside its base)
+    # defense upgrades since 32.20 (Palisade II, Stone Wall II, Wall Tower II, Gatehouse II, each beside its base)
     S("defences", "Build families", "Walls and gates with their upgrades, and the answering jobs' houses",
       "every wall and gate was placed beside its upgrade (Palisade II's stake ditch, Stone Wall II's hoardings, Wall Tower II's roofed gallery, Gatehouse II's barbican), then the Fire Station, the Well House and the Physician's House", 120, [("30_*@spread", "")]),
     S("styles", "Build families", "Cottage II and Stone House II in every style", "every style was placed", 120,
@@ -897,17 +900,17 @@ SCENES = [
     S("pokemon_builds", "Build families", "Builds for the Pokémon jobs, both tiers",
       "all ten builds stand with their job blocks", 120, [("[12][0-9]_*@spread", "")], cobblemon=True),
     # The four luxury workshops (ROADMAP 34.13, 34.14): both tiers of each, then the four as villages grow them
-    S("luxury_workshops", "Build families", "The Winery, the Tailor's Shop, the Print Shop and the Jeweller's Workshop, both tiers, and in a village",
-      "the Winery, the Tailor's Shop, the Print Shop and the Jeweller's Workshop stand in both tiers with their job blocks, and the village's four came with their workers",
+    S("luxury_workshops", "Build families", "The Winery, the Tailor's Shop, the Print Shop and the Jeweler's Workshop, both tiers, and in a village",
+      "the Winery, the Tailor's Shop, the Print Shop and the Jeweler's Workshop stand in both tiers with their job blocks, and the village's four came with their workers",
       150, [("10_winery", "The Winery: the stair up to the press room, the cellar door under it"),
            ("16_tailors_shop_2", "Tailor's Shop II: the cutting room and the drying loft"),
            ("18_print_shop", "The Print Shop: brick and timber, the skylight over the press"),
-           ("25_jewellers_workshop_2_back", "Jeweller's Workshop II: the strong room behind")]),
+           ("25_jewellers_workshop_2_back", "Jeweler's Workshop II: the strong room behind")]),
     # Grander homes (ROADMAP 34.15): the Artisan's House and the Burgher's Townhouse, every tier, then in the five styles
     # 34.16 adds the Noble's Manor (I, II, III), and the Manor III in the five styles
     S("grand_houses", "Build families", "The Artisan's House (I, II), the Burgher's Townhouse (I, II, III) and the Noble's Manor (I, II, III), and all three in the five styles",
       "the Artisan's House (I, II), the Townhouse (I, II, III) and the Manor (I, II, III) stand with their beds and grades, all three in the five styles, the Ball's spot on each ballroom floor",
-      200, [("14_townhouse", "The Burgher's Townhouse: a brick shop below, two jettied timber storeys, a slate gable"),
+      200, [("14_townhouse", "The Burgher's Townhouse: a brick shop below, two jettied timber stories, a slate gable"),
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
@@ -923,8 +926,8 @@ SCENES = [
       # so the scene is filmed with it); four spread over them on the card, the rest in its gallery
       [("[12][0-9]_*@spread", "")], cobblemon=True),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
-      "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
-      [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),
+      "the Expert keeper put a natural Habitat Block under the garden's center stone and the hall lists today's Pokémon", 120,
+      [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its center stone is now a Habitat Block"),
        ("03_hall_line", "Close up: it still looks like moss")], cobblemon18=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),

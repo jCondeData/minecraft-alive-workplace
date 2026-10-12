@@ -71,7 +71,8 @@ import org.jetbrains.annotations.Nullable;
  * village with fire has an {@link Incident} listing its fire blocks. Firewardens ({@code work/FirewardenWork}) run to the
  * nearest, a bucket brigade of villagers off work joins them from Journeyman, and with Cobblemon their pastured Water
  * types douse fires at range. When the last fire is out the chronicle says what burned and who put it out, and the
- * builders put back what burned ({@code build/Upkeep}).
+ * builders put back what burned ({@code build/Upkeep}), even with {@code builderRepairs} off: every burned block is
+ * saved on {@link ThreatData#damaged} (32.16a), so a fire never destroys a build for good.
  *
  * <p>All in memory: after a restart the fires still burning are noticed again as they spread.
  */
@@ -338,8 +339,9 @@ public final class VillageFire {
 		return false;
 	}
 
-	/** The fire has burned the builder's block at {@code pos}. */
+	/** The fire has burned the builder's block at {@code pos}: counted, and on the list the builders repair from (32.16a). */
 	public static void burned(ServerLevel level, BlockPos pos) {
+		ThreatDamage.took(level, pos);
 		hall(level, pos).ifPresent(hall -> {
 			Incident incident = incidents(level).get(hall);
 			if (incident != null) {

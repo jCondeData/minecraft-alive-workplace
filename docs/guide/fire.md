@@ -2,6 +2,7 @@
 
 ```infobox
 type: Disaster
+expansion: M32
 image: https://jcondedata.github.io/minecraft-alive-workplace/fire/still-2.jpg
 caption: A roof catches and the Firewarden puts it out
 Causes: lightning, chimney sparks, burning arrows
@@ -12,7 +13,7 @@ Bucket brigade: from Journeyman
 Building: the Fire Station
 Pokémon: Water types help
 categories: Disasters, Defense, Jobs
-related: drought.md, plague.md, defence.md
+related: firewarden.md, fire-station-build.md, disasters.md, drought.md, plague.md, defence.md
 ```
 
 A village built of wood can burn. Lightning in a thunderstorm can set a roof alight, a chimney spark can do it on a
@@ -25,7 +26,7 @@ the likelier it is. When a fire starts, everyone in the village (and the hall's 
 The fire spreads the way fire always does, but only through what your builders built. A wall, a roof or a fence you
 placed yourself never catches, even nailed right onto a burning house, and a fire with nothing of the builders' left
 to burn goes out on its own. Whatever burned, your builders put back on their next round of the village, once the
-fire is out.
+fire is out, even with Builder Repairs switched off: a fire never destroys a build for good.
 
 ![A roof catches and the Firewarden puts it out](https://jcondedata.github.io/minecraft-alive-workplace/fire/still-2.jpg)
 

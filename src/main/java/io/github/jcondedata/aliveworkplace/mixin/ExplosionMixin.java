@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Blocks in a warded village are spared by explosions (see {@link Warding}). */
+/** Blocks in a warded village are spared by explosions (see {@link Warding}); builders' blocks by a threat's (32.16a). */
 @Mixin(Explosion.class)
 public abstract class ExplosionMixin {
 	@Shadow
@@ -28,6 +28,7 @@ public abstract class ExplosionMixin {
 	private void aliveworkplace$spareWardedVillages(boolean spawnParticles, CallbackInfo ci) {
 		if (level instanceof ServerLevel server) {
 			Warding.spare(server, ((Explosion) (Object) this).center(), toBlow);
+			io.github.jcondedata.aliveworkplace.threat.ThreatDamage.spare(server, (Explosion) (Object) this, toBlow); // (32.16a)
 		}
 	}
 }

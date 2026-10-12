@@ -148,7 +148,10 @@ public class StyleGameTests implements FabricGameTest {
 		var server = helper.getLevel().getServer();
 		var level = helper.getLevel();
 		Map<String, Integer> chimneys = new HashMap<>();
-		for (ResourceLocation id : BlueprintLibrary.list(server, false)) {
+		// The Table's blueprints and the ones only villagers sell (34.15a: the Artisan's House and the Townhouse)
+		List<ResourceLocation> ids = new java.util.ArrayList<>(BlueprintLibrary.list(server, false));
+		StarterBlueprints.SOLD_ONLY.forEach(e -> ids.add(e.id()));
+		for (ResourceLocation id : ids) {
 			if (!id.getNamespace().equals("aliveworkplace") || BlueprintStyles.styleOf(id).isPresent()) {
 				continue;
 			}

@@ -58,7 +58,7 @@ need. During the week:
 
 This is the week to give your Artisans and Burghers what they'll need: a Vintner, a Tailor, a Jeweller or a Printer
 (villagers take these jobs at a cauldron, loom, stonecutter or cartography table), and better homes (the new
-Artisan's House, Burgher's Townhouse and Noble's Manor are in the Blueprint Table).
+Noble's Manor is in the Blueprint Table, and builders sell the new Artisan's House and Burgher's Townhouse).
 
 **After day 7.** The normal rules apply: a household that goes 3 days without what its class needs drops one class,
 luxuries count, and higher classes pay more tax. Villagers wear their class over their work clothes, so you can see

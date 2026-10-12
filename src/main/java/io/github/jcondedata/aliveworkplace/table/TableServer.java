@@ -114,6 +114,11 @@ public final class TableServer {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()).withStyle(ChatFormatting.RED));
 			return false;
 		}
+		if (BlueprintLibrary.soldOnly(id)) {
+			// Not listed (34.15a): only a builder sells it, so the Table won't hand it out to a request for it either.
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.sold_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
+			return false;
+		}
 		if (!player.getAbilities().instabuild) {
 			Inventory inventory = player.getInventory();
 			int slot = -1;

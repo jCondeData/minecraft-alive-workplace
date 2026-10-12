@@ -46,12 +46,15 @@ take it down and put the blocks back in the chests.
 
 ## Blueprints to build
 
-The **Blueprint Table** lists every blueprint on the server with its size and exactly what it needs. **Get Blueprint**
+The **Blueprint Table** lists the server's blueprints with its size and exactly what it needs. **Get Blueprint**
 gives you a copy for a Blank Blueprint.
 
 - **Starter builds:** the Starter Cottage, Market Stall, Lookout Tower, Healing Center, Supply Shop, Storehouse, Berry
   Farm and Research Lab. Build a Healing Center or a Supply Shop and a nurse or shopkeeper moves in.
 - **Homes:** the Terrace, the Inn and the Stone House, for a village that wants to grow.
+- **Sold by builders only:** the Artisan's House and the Burgher's Townhouse aren't in the Table. A builder sells the
+  Artisan's House from Apprentice on, and the Townhouse once the village has a household of Artisans or higher; their
+  upgrades come from the builder who finishes them.
 - **Workplaces:** a Schoolhouse, Library, Ranch, Apiary Garden, Flower Shop, Graveyard, Tinker's Workshop, Nether
   Gate, Barracks and more, each with a spot for its worker.
 - **Decorations:** a Well, Street Lamp, Park Bench, Fountain, Gazebo, Market Square and Chapel. Near a Village Hall

@@ -31,8 +31,10 @@ public class TableGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void listingShowsStarterBlueprintsFirst(GameTestHelper helper) {
 		List<TablePayloads.Entry> entries = TableServer.listing(helper.getLevel().getServer());
-		helper.assertTrue(entries.size() >= StarterBlueprints.ALL.size(), "library too small: " + entries.size());
-		for (int i = 0; i < StarterBlueprints.ALL.size(); i++) {
+		// every starter blueprint but those only villagers sell (34.15a)
+		int listed = (int) StarterBlueprints.ALL.stream().filter(e -> !StarterBlueprints.SOLD_ONLY.contains(e)).count();
+		helper.assertTrue(entries.size() >= listed, "library too small: " + entries.size());
+		for (int i = 0; i < listed; i++) {
 			helper.assertTrue(entries.get(i).id().getNamespace().equals(AliveWorkplace.MOD_ID) && !entries.get(i).id().getPath().contains("/"),
 				"entry " + i + " should be a starter blueprint, was " + entries.get(i).id());
 		}

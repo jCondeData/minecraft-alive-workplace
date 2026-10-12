@@ -265,6 +265,7 @@
   "gamerule.workplaceAllowUploads": "Alive Workplace: players can upload blueprint files",
   "message.aliveworkplace.table.need_blank": "You need a Blank Blueprint (craft paper + blue dye)",
   "message.aliveworkplace.table.took": "Got a blueprint for %s",
+  "message.aliveworkplace.table.sold_only": "The %s isn't in the Blueprint Table: a builder sells it",
   "message.aliveworkplace.table.upload_denied": "Uploading is turned off on this server (gamerule workplaceAllowUploads)",
   "message.aliveworkplace.table.upload_broken": "The upload was interrupted. Try again.",
   "screen.aliveworkplace.table.take": "Get Blueprint",

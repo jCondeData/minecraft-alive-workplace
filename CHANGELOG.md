@@ -37,6 +37,9 @@ asks for the steps, `latest.log` and any crash report).
   its board's spread is halved (105% instead of 110%).
 
 ### Changed
+- **The Artisan's House and the Burgher's Townhouse are sold by builders only** (34.15a): they're no longer in the
+  Blueprint Table. A builder sells the Artisan's House from Apprentice on and the Townhouse once the village has
+  Artisans; blueprints already bought and houses already built keep working.
 - **American spelling** (22.10a, part 1): the player guide, the wiki and every in-game text now say defense, color,
   armor, gray, honor, favor, neighbor, center, traveler, Jeweler and the like; ids, config keys and saves are unchanged.
 

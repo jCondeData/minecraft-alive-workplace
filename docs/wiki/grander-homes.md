@@ -4,11 +4,14 @@ What a home is worth to the [classes](classes.md): every home has a grade, and t
 Burghers and the Nobles the homes their class asks for: the Artisan's House, the Burgher's Townhouse and the Noble's
 Manor. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.15, 34.16, B106
+Roadmap items: 34.15, 34.15a, 34.16, B106
 
 ## What a player sees
 
-Three new houses in the Blueprint Table, sold by builders too:
+Three new houses. The Artisan's House and the Burgher's Townhouse are **sold by builders only** (not in the Blueprint
+Table): a builder sells the Artisan's House from Apprentice on and the Townhouse once the village round the nearest hall
+has a household of Artisans or higher, and each upgrade comes from the builder who finishes the tier below. The Noble's
+Manor is in the Blueprint Table and sold by builders too:
 
 - **Artisan's House** (a grade I home). A narrow house with its gable to the street: a stone workroom below (a
   workbench, an anvil, a chest of stock, a ladder up) and an upper floor in a spruce frame with birch infill, jettied a
@@ -117,14 +120,17 @@ worked out from the finished buildings already saved.
 
 - 34.15: the Townhouse's II and III are both grade III (the roadmap's "each upgrade one more, up to III"); III adds
   the study tower, not a grade.
-- 34.15: both houses are in the Blueprint Table for everyone, like the luxury workshops (34.13), as well as sold by
-  builders; the trades are a second way to get them, not a lock (lane-d, 2026-10-11).
+- 34.15a (the owner, 2026-10-12): the Artisan's House and the Townhouse, every tier, are sold by villagers only
+  (`StarterBlueprints.SOLD_ONLY`): the Table neither lists them nor hands one out when asked; operators' commands with
+  everything still see them. A blueprint already bought, a build site and a finished house in a save keep working,
+  since the blueprints still load by id; the Steward still builds them for his village by his rules. A wandering
+  trader's market-day blueprint may still be one (lane d, 2026-10-12).
 - 34.15: the tip names a household whose own class wants more than its home, and also one a step below that lacks
   only the home, since a household can't rise into a class whose home need fails (lane-d, 2026-10-11).
 - 34.15: a couple's home grade is the lower of their two beds' buildings, as a class need holds for a household only
   when it holds for both.
 - 34.16: every tier of the Manor is grade III (the Noble's need); II and III add the garden's beauty and the ballroom.
-- 34.16: the Manor is in the Blueprint Table for everyone like the other grand homes, and sold by builders once the
+- 34.16: the Manor is in the Blueprint Table for everyone (34.15a took only the other two out), and sold by builders once the
   village has Burghers (or higher); its Steward rule needs a Town, the Noble's own rank need.
 - 34.16: the garden's beauty counts only for the people whose bed is in the Manor (a home file's `garden`), not for the
   whole village like a decoration, as the roadmap says.

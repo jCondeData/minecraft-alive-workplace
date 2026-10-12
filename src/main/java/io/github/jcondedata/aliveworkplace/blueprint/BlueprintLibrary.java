@@ -69,6 +69,7 @@ public final class BlueprintLibrary {
 		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
 		return server.getStructureManager().listTemplates()
 			.filter(id -> everything || cobblemonOk(id))
+			.filter(id -> everything || !soldOnly(id)) // sold by villagers only (34.15a)
 			.filter(id -> everything || !io.github.jcondedata.aliveworkplace.city.Roads.isSegment(id)) // a Steward's road segments (27.15)
 			.filter(id -> everything || id.getNamespace().equals(AliveWorkplace.MOD_ID) && !isWorldgenPiece(id)
 				|| Files.isRegularFile(generated.resolve(id.getNamespace()).resolve("structures").resolve(id.getPath() + ".nbt")))
@@ -81,6 +82,12 @@ public final class BlueprintLibrary {
 		return io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")
 			|| StarterBlueprints.COBBLEMON_ONLY.stream().noneMatch(e -> e.id().equals(id))
 			&& StarterBlueprints.COBBLEMON_WORKPLACES.stream().noneMatch(e -> e.id().equals(id));
+	}
+
+	/** Blueprints villagers sell and the Blueprint Table doesn't list ({@link StarterBlueprints#SOLD_ONLY}); they still load by id. */
+	public static boolean soldOnly(ResourceLocation id) {
+		ResourceLocation base = BlueprintStyles.base(id);
+		return StarterBlueprints.SOLD_ONLY.stream().anyMatch(e -> e.id().equals(base));
 	}
 
 	/** Our village pieces ({@code aliveworkplace:village/...}) are for world generation, not the library; research blueprints come from scholars. */

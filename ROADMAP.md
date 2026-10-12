@@ -3918,7 +3918,7 @@ on a real world.
   build a Townhouse or Manor like any other build; before that, the tip alone. Done when: `HomeGradeGameTests` (a bed
   in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
   five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
-  - [ ] **34.15a** Change from the owner (2026-10-12): Artisan's House and Townhouse are sold by villagers only, not in everyone's Blueprint Table. Also: other players may become Lord (31.11 as built); chat title after the name; first day counts against the 15% tick target; 25.2 targets confirmed; builders keep their usual Gazette order.
+  - [x] **34.15a** (review: pending 2026-10-12) Change from the owner (2026-10-12): Artisan's House and Townhouse are sold by villagers only, not in everyone's Blueprint Table. Also: other players may become Lord (31.11 as built); chat title after the name; first day counts against the 15% tick target; 25.2 targets confirmed; builders keep their usual Gazette order.
 - [x] **34.16** (approved 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
   hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
   garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's
@@ -5555,6 +5555,19 @@ item waits.
   the five styles (stonework, sandstone, dark oak, cherry, grand) are committed as `docs/media/grand-houses-front.png`
   and `-back.png`, made with the new `tools/blueprints/styles.py` (style swaps for renders); scene `grand_houses` places
   both houses in every style too (not filmed locally).
+- 2026-10-12 (34.15a, decisions; lane d): the owner's change, the Artisan's House and the Townhouse sold by villagers
+  only. (1) **Out of the Table**: every tier of both (`StarterBlueprints.SOLD_ONLY`) is left out of the Blueprint
+  Table's list (`BlueprintLibrary.list` without `everything`, the way Cobblemon-only builds are), and `TableServer.take`
+  refuses one if asked anyway ("The Burgher's Townhouse isn't in the Blueprint Table: a builder sells it"). Builders
+  sell them as 34.15 built (the Artisan's House from Apprentice, the Townhouse once there are Artisans) and each upgrade
+  after a builder finishes the tier below; they stay in `StarterBlueprints.ALL` (creative tab, benchmark). (2) **Saves**:
+  the Table never kept per-player unlocks, so nothing is migrated: a blueprint already bought, a build site in progress
+  and a finished house keep working, since the blueprints still load by id. (3) **Steward**: `homes_class_artisans_house`
+  and `homes_class_townhouse` stay as they are: the Steward's builders are the ones who sell these houses, so his
+  village needs no bought copy. (4) The Manor (34.16) stays in the Table, as the owner named only these two; a wandering
+  trader's market-day blueprint may still be one of them (a trader is a villager-like seller). **For the owner**: say if
+  the Manor should be sold-only too. (5) The item's "Also" sentence confirms work as built (31.11's Lord, the chat title, the
+  tick target, 25.2's targets, the builders' Gazette order): nothing changed for it.
 - **lane-d handoff** (lane-d-1009-2231, 2026-10-10 01:09Z): lane-d-1009-2231 pushed at 01:08Z, 48 min after the 00:20Z limit of the digest's extra-run note (the note reached this session only after the push; the run followed its 170-minute plan). On main now: 34.19a, 34.19, 34.10, 34.11, 34.12, 22.9, and bugs B95-B97. A lane d run that started at 00:32Z and took any of these from 'next' before 01:08Z should drop its copy, pull, and go on with 34.13. The last merge (lane c's 31.6/31.7) was checked with compile, checkLayers, checkWiki and 17 test classes (117 passed), not a full local build: watch CI build 757-759. Traps: sessions.py bug/handoff push straight to main, so push your own work first; new pages and ticked --review items must pass tools/modtest/wikicheck.py (Roadmap items line, a config-switches row for every new setting); every new setting raises the count in ConfigGameTests and ExpansionGateGameTests (85 now).
 - **lane-b handoff** (lane-b-1009-2231, 2026-10-10 01:11Z): lane-b-1009-2231: nothing on main this run; 32.2 threat engine, 32.3 lairs + Defence page and B92 (builders step out of a door/block placed on them) are finished on wip/lane-b (tip 'Correct the WIP note'). Full build was green on lane b's work alone (1346 + 192 compat); lane a's landing 2a7c1b63 then brought src/ code at minute 150, and the merge got only compile, checkLayers and 259 targeted GameTests (all pass), no full build. NEXT lane b run, first thing: merge newest main into wip/lane-b, full build, merge to main, push; no CI build of the branch exists (dispatch refused, 403). Then 32.4. TRAPS: a full build is 30-45 min locally even with B93 fixed and only one Minecraft process fits, so a lane gets one build per run and a push refused for src/ changes can't be rebuilt in time: with four lanes landing code this will keep happening (owner/digest: decide whether a clean merge of two separately green trees may push after targeted tests). B93 was fixed twice (lane a's fix kept). PeopleGameTests.illVillagersWorkSlowlyAndGetWell failed once ('ill pace: 205 vs 103', a rounding edge of delay == 2 * well), passed 3 times after: QA flake. B92's fix was not checked with SCENE=soak.
 - 2026-10-10 (31.8, decisions; lane c): the roadmap leaves these open, decided as follows (all on the wiki page

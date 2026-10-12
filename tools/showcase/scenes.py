@@ -908,8 +908,9 @@ SCENES = [
     # Wonders (M35): every Wonder's design placed whole (ROADMAP 35.9; each design adds its stills)
     S("wonder_gallery", "Wonders", "The Wonders, each placed whole", "every Wonder stands whole, every part of every stage placed", 90,
       # each Wonder from the front (even) and from behind (odd): 10 the Great Cathedral, 12 the Lighthouse, 14 the Great
-      # Library, 16 the Observatory; four spread over them on the card, the rest in its gallery
-      [("1[0-9]_*@spread", "")]),
+      # Library, 16 the Observatory, 18 the Great Wall, 20 the Hanging Gardens; four spread over them on the card, the
+      # rest in its gallery
+      [("[12][0-9]_*@spread", "")]),
     S("village_habitat", "Habitat Keeper", "The village's own Habitat Block (Cobblemon 1.8)",
       "the Expert keeper put a natural Habitat Block under the garden's centre stone and the hall lists today's Pokémon", 120,
       [("01_garden", "The finished Habitat Garden"), ("02_habitat", "Its centre stone is now a Habitat Block"),

@@ -363,6 +363,7 @@ Before polishing, make sure nothing regresses unnoticed.
   (Builder, Villager jobs, Village Hall, Steward, Roads and walls, Edicts, Guilds, Legends, Pokemon partners, Classes,
   Elders, Config switches) and the digest links the wiki; the QA lane's step list in sessions.md says so.
 - [x] **22.10** (approved 2026-10-11) **The player guide: a wiki for players** (owner, 2026-10-10: "the wiki is good but I meant it more so for users of the mod ... a player facing wiki I can send friends when this goes live that doesn't show backend stuff"). `docs/wiki/` (22.9) stays as the builders' and QA's reference. Add a second, separate site for players: `docs/guide/`, published on the showcase's GitHub Pages site under `/guide/` (or its own Pages site; the lane decides and notes it), plain pages a friend can read with no GitHub knowledge. Rules: never mention roadmap ids, lanes, tests, scenes, config keys' internals, saved fields, file formats, "known limits" or version plans; write only what a player does and sees (getting started, the jobs and how to set each up, the Builder and blueprints, the Village Hall and its tabs, Pokémon partners, festivals and the Cup, quests, friendship and gifts, trade and caravans, classes and luxuries, threats and how to defend, legends; settings a server owner can change, in plain words). Include screenshots from the showcase scenes (they are already filmed nightly). Only features that are switched on in the release; expansion content that is still off is left out until its expansion ships. Done when: an index and a page for every player-visible system shipped in 1.0 exist; `tools/modtest/wikicheck.py`-style check (or a small script) fails the build if a guide page contains a roadmap id, "ROADMAP", "GameTest" or a path under `src/`; the same lane-and-QA rule as 22.9 keeps it true (the lane that changes a feature updates its guide page in the same commit); the digest links the guide and the owner can send the link to friends. Owner reviews the first pages from a screenshot sheet (`--review`).
+  - [ ] **22.10a** Change from the owner (2026-10-12): [1] American spelling everywhere in the wiki and player guide (defense not defence, color, armor, favor, honor, neighbor, center, gray), including page titles, nav and lang text players read. (2) Reformat the player guide/wiki like a Fandom wiki, e.g. https://create.fandom.com/wiki/Create_Mod_Wiki: a main page with article counter, About, portal boxes, News (what's new), per-subject articles with an infobox (item/block/job/mob: image, recipe, stats), categories, a sidebar/nav, and links between articles; not the plain row of links. (3) Make it comprehensive: an article for every job, block, item, build, threat, arc, edict, class, Wonder, config switch and command, each showing how it interacts with the others (what feeds it, what it affects, what breaks it); gaps listed and filled.
 
 ## Milestone 23: Builders never need babysitting (priority 1)
 
@@ -2715,7 +2716,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests (`runCompatGameTest`): the species, level and name for its biome and rank; a win and a capture
     each pay once; plain GameTest: never posted without Cobblemon;
   - showcase scene `bounty_rogue` (Cobblemon: the poster, the rogue, the claim).
-- [x] **31.15** (review: pending 2026-10-11) **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
+- [x] **31.15** (approved 2026-10-12) **The Bandit King, I: the fort and the King.** Three builds with the minecraft-architect skill
   (`STYLE.md`, rendered), each standing on the one before like a blueprint upgrade: `story/bandit_fort` (a palisade of
   sharpened logs round a yard, a gate, a fire and tents), `story/bandit_fort_2` (two corner watchtowers with ladders,
   and a stable) and `story/bandit_fort_3` (the King's keep: a timber-and-cobblestone hall with a throne, his banner
@@ -2733,7 +2734,7 @@ write their own stories; nothing waits forever on a player.
     touched; the King's gear, health and boss bar; the horn calls 4 bandits once; the chest always has the crown;
   - renders of the three stages, front and back, in the review package; showcase scene `bandit_fort` (the three stages
     placed one after another).
-- [x] **31.16** (review: pending 2026-10-11) **The Bandit King, II: the story.** `arcs/bandit_king.json`, an arc marked `threat`. It starts in a
+- [x] **31.16** (approved 2026-10-12) **The Bandit King, II: the story.** `arcs/bandit_king.json`, an arc marked `threat`. It starts in a
   Town or bigger that has broken up at least 2 bandit camps (a count kept in `aliveworkplace_stories` from this item
   on; `BanditCamps.breakUp`, or 32.3's lair breaking once that has landed, adds to it), 8% a day, with `banditCamps`
   on. Its camps are the arc's own (`place` and `spawn`), not `BanditCamps`' camp or 32.3's one lair a village, so they
@@ -2765,7 +2766,7 @@ write their own stories; nothing waits forever on a player.
     the open postern, and Pell joining after); the tribute takes a third of the treasury; the ending pays;
   - showcase scene `bandit_king` (GIF: the three banners, the fort rising a stage a day, the storm with allies, the
     King falling).
-- [x] **31.17** (review: pending 2026-10-11) **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
+- [x] **31.17** (approved 2026-10-12) **The Sickness, I: eight far herbs.** Eight new plant blocks with their items, drawn with the
   pixel-art skill like vanilla's flowers. They never generate in the world: only an arc plants them, so no world
   changes. Each grows in its biomes (a biome tag of ours, `aliveworkplace:herb_biomes/<herb>`, so datapacks and biome
   mods can add to it):
@@ -2787,7 +2788,7 @@ write their own stories; nothing waits forever on a player.
     spreads; `herb_patch` plants only on fit ground;
   - all textures pass `lint.py`; a preview sheet in the review package; showcase scene `herbs` (all eight patches, and
     the tonic in hand).
-- [x] **31.18** (review: pending 2026-10-11) **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
+- [x] **31.18** (approved 2026-10-12) **The Sickness, II: the Grey Cough.** `arcs/the_sickness.json`, an arc marked `threat`. It starts in a
   village of Village rank or more with 12 villagers or more, `villagerSickness` on, 6% a day. A new illness, the
   **Grey Cough**, a kind in the illness-kind attachment beside `ILL_SINCE` (32.11 adds the same attachment for hexes;
   whichever item lands first adds it, ordinary when absent, so old saves are unchanged): it doesn't pass by itself, a
@@ -2815,7 +2816,7 @@ write their own stories; nothing waits forever on a player.
     Physician, else Doctor Wren); the herb choice with a stubbed locator (forced biome answers); the brew and the cure
     round; the failure path;
   - showcase scene `sickness` (GIF: the coughing village, a herb patch, the cure going round).
-- [x] **31.19** (review: pending 2026-10-11) **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
+- [x] **31.19** (approved 2026-10-12) **The Lost Caravan, I: the wreck and the trail.** Builds with the minecraft-architect skill
   (`STYLE.md`, rendered): `story/caravan_wreck` (the settlers' covered wagon on its side, a broken wheel, spilled
   crates and barrels, a lantern in the grass); `story/raiders_stockade` (a small pillager stockade: a palisade, a
   tent, a campfire, a loot chest and a cage of iron bars with a gate for a captive); and five trail marks,
@@ -2831,7 +2832,7 @@ write their own stories; nothing waits forever on a player.
     marks in order only (reaching mark 3 first counts nothing);
   - renders of the wreck, the stockade and the five marks in the review package; showcase scene `caravan_trail` (the
     wreck, a mark, the stockade).
-- [x] **31.20** (review: pending 2026-10-11) **The Lost Caravan, II: the story.** `arcs/lost_caravan.json`. When a caravan sets off on a road
+- [x] **31.20** (approved 2026-10-12) **The Lost Caravan, II: the story.** `arcs/lost_caravan.json`. When a caravan sets off on a road
   longer than 300 blocks (`hall/Caravans`), 1 in 20 goes missing (config `lostCaravanChance`, 20), if neither village
   has an arc running; its goods are held by the arc. Chapters:
   1. **Overdue**: the caravan doesn't arrive; both halls are told ("The caravan from Thornholm to Ashford is a day
@@ -2852,7 +2853,7 @@ write their own stories; nothing waits forever on a player.
   - GameTests: a shipment goes missing when forced; each chapter moves on by its objective; Tobin follows, waits and
     joins; the chest holds the shipment's own goods; the delivery quest pays; the failure path;
   - showcase scene `lost_caravan` (GIF: the wreck, the trail, freeing Tobin, walking him home).
-- [x] **31.21** (review: pending 2026-10-11) **The Professor's Thesis** (Cobblemon). `arcs/professors_thesis.json`, loaded only with Cobblemon. Its
+- [x] **31.21** (approved 2026-10-12) **The Professor's Thesis** (Cobblemon). `arcs/professors_thesis.json`, loaded only with Cobblemon. Its
   patron is the village's Pokémon Professor (29.21); until that lands, the village's best Scholar at Expert or above,
   called "Professor <name>" for the arc. It starts in a Town with a Scholar or the Professor, 6% a day. New objectives
   through `compat/cobblemon` (Cobblemon's capture and battle events; find their exact names with `api.py`): `catch` (a
@@ -2882,7 +2883,7 @@ write their own stories; nothing waits forever on a player.
   - compat GameTests: catches count by type, biome, time and height; `show`; `battle_leader`; Thessaly comes when
     there's no leader nearby; the book lists the catches; plain GameTest: without Cobblemon the arc never starts;
   - showcase scene `professors_thesis` (Cobblemon: the professor's request, a catch counting, the published thesis).
-- [x] **31.22** (review: pending 2026-10-11) **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
+- [x] **31.22** (approved 2026-10-12) **The eight reforms as stories.** Needs M30's reforms (30.5 to 30.10) on `main`; until then the item
   waits (`sessions.py pause --blocked "needs M30's reforms"`). Through the reform's `arc` field (30.5), each reform
   becomes a short arc of the same name: an opening chapter where a villager of the fitting trade asks you for it
   (`talk`), then M30's three steps as its quests with M30's numbers, then an ending scene that leaves something
@@ -3152,7 +3153,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     10 days' rest, double XP and a chronicle line with their names;
   - scene `war_party`: the player leading guards and siege-breakers into a war camp, the Warlord falling, the loot
     (GIF).
-- [x] **32.14** (review: pending 2026-10-11) **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
+- [x] **32.14** (approved 2026-10-12) **A day's warning.** Sources: a guard on the night watch whose post is within 24 blocks of a finished
   Lookout Tower or Wall Tower (a day's warning); a Scout there (the same, with the raiders' number and side); the Seer
   (needs M29's Seer item: two days' warning; until it lands this source is skipped); and a list other systems add to
   (M35's Lighthouse). When the clock (32.2) sets an attack and the village has a source:
@@ -3185,7 +3186,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   disaster id, each on by default. Done when: a test datapack disaster applies each effect (a GameTest each), ends
   after its time or with rain, and survives a save and load of the hall; switched off, it never starts. No disaster
   ships yet: lands with `--no-review`.
-- [x] **32.16** (review: pending 2026-10-11) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
+- [x] **32.16** (approved 2026-10-12) **Fire and the Firewarden.** `village_fire.json`: villages with wooden builds, likelier the more wood:
   a lightning strike in the hall's area in a thunderstorm sets a finished wooden build's roof alight (1 in 3), a
   chimney spark 2% a day in a drought, and the pirate gunners' burning arrows (32.8) light the wooden block they hit
   (1 in 4, with `mobGriefing`). A village fire spreads by the game's own fire (`doFireTick`), but never to a block the
@@ -3204,7 +3205,8 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the job starts from the grindstone and a water bucket, and the station tooltip lists it;
   - a builder puts the burned blocks back;
   - scene `fire`: a roof catching and the firewarden putting it out (GIF).
-- [x] **32.17** (review: pending 2026-10-11) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
+  - [ ] **32.16a** Change from the owner (2026-10-12): only gate blocks of walls and gates may break (rams); anything threats damage must be repairable by builders; no progress is ever lost. Village fire must not destroy builds (builders repair anything it does). siegeDamage stays true.
+- [x] **32.17** (approved 2026-10-12) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
   others 5% a day after 5 days without rain, twice as likely while a desert raiders' lair stands; it lasts 3–5 days
   and rain ends it. In the hall's area: crops, stems and berry bushes grow at a quarter pace, farmland dries, water
   cauldrons lose a level a day, and villagers are 10 less happy ("the wells are low") unless the village has a
@@ -3217,7 +3219,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     called), watered wheat at the usual rate; the Well Keeper wets dry farmland within 600 ticks; rain ends the
     drought; a finished Well takes the mood reason away;
   - scene `drought`: dry fields and the keeper carrying water to them (GIF).
-- [x] **32.18** (review: pending 2026-10-11) **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
+- [x] **32.18** (approved 2026-10-12) **Plague and the Physician.** `plague.json`: Town and up, 3% a day, twice as likely with more
   villagers than beds; a coven's hexed (32.11) or a traveller from far away (`inn/`) can start one too. While it lasts
   illness passes on: each hall round, a well villager who spent it within 3 blocks of an ill one catches it 1 in 5
   (less with Medicine research); the ill don't get well by themselves, the nurse's remedies don't cure them, and after
@@ -3232,7 +3234,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     physician has seen passes it on less; the Remedy cures a hexed and a plague-ill villager, where a honey bottle
     cures neither; the plague ends a day after the last cure; the recipe crafts;
   - scene `plague`: the physician going house to house with the Remedy (GIF), and the hall's list of the ill.
-- [x] **32.19** (review: pending 2026-10-11) **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
+- [x] **32.19** (approved 2026-10-12) **Houses for the answering jobs.** Three builds with the minecraft-architect skill (STYLE.md,
   renders), in the Blueprint Table, each with its job's block and no other job block: the **Fire Station** (a stone
   ground floor with the Firewarden's grindstone, a water basin and buckets on racks, under a timber watch loft), the
   **Well House** (a roofed well shaft down to water with the Well Keeper's cauldron, a trough and a bench) and the
@@ -3240,7 +3242,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   next? suggests each when the village lacks its job and its disaster can come there. Done when: the three pass
   `check.py`; a render package shows each front and back; a builder builds each in a test and a jobless villager there
   takes the job with its item; the `defences` scene films them too.
-- [x] **32.20** (review: pending 2026-10-11) **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
+- [x] **32.20** (approved 2026-10-12) **Defence upgrades.** Four upgrades (`<name>_2`, lined up over the finished build,
   `BlueprintUpgrades`), with the minecraft-architect skill: **Palisade II** (a fighting step, and a ditch of pointed
   dripstone stakes in front), **Stone Wall II** (timber hoardings over the battlements: a roofed walkway with murder
   holes), **Wall Tower II** (a roofed top with an archers' gallery, two stations a side) and **Gatehouse II** (a
@@ -3248,7 +3250,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
   drop; the barbican's gate is the first breach) and battle stations know them. Done when: the four are in the
   Blueprint Table and pass `check.py`; a render package shows each front and back; a builder upgrades a finished
   Gatehouse to II in a test; 32.4's gate test takes longer on Gatehouse II than on I; the `defences` scene shows them.
-- [x] **32.21** (review: pending 2026-10-11) **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
+- [x] **32.21** (approved 2026-10-12) **Peaceful settings and the threat level.** Config `threatLevel`, 0–3, beside each system's own switch
   (`raiderCultures`, `sieges`, `siegeDamage`, `disasters`, `villageRaids`, `banditCamps`):
   - 0: no raids, lairs, sieges or disasters at all;
   - 1, gentle: half as often, no sieges (raiders walk in only), no hexes, no plague;
@@ -3537,7 +3539,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     can give but not take; the movements are listed right;
   - it survives save and reload;
   - showcase scene `realm_treasury` (the icon and its tooltip).
-- [x] **33.14** (review: pending 2026-10-11) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
+- [x] **33.14** (approved 2026-10-12) **Two builds: the Colony Camp and the Royal Hall.** Drawn with the architect skill and the blueprint
   generator, checked against `STYLE.md` in renders, in all five styles:
   - **Colony Camp** (`camp/colony_camp`, about 15 x 6 x 13, placed at once like the settlers' camp): two covered
     wagons, a Village Hall under a canvas awning on a timber platform, a Blueprint Table with a lamp, a stack of
@@ -3553,7 +3555,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   Done when: renders of both (front and back, five styles) are in a review package; GameTests place each with free
   materials and check that a colony uses the camp and that the Royal Hall raises the cap; showcase scene
   `realm_builds` shows both.
-- [x] **33.15** (review: pending 2026-10-11) **Shared research.** Realm villages share what their scholars know: for each topic of the research
+- [x] **33.15** (approved 2026-10-12) **Shared research.** Realm villages share what their scholars know: for each topic of the research
   tree a member uses the higher of its own level and the capital's (through `Research.at`), and its research screen
   says "from the capital"; shared levels don't count toward a village's rank. A member's scholars with nothing chosen
   at home work on the capital's current topic instead, at half pace. The capital's research screen gets a **Realm**
@@ -3565,7 +3567,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     scholar adds points to the capital's topic; a realm topic from a test datapack can be chosen, is paid from the
     realm treasury and finishes; `/reload` keeps it;
   - showcase scene `realm_research` (the capital's research screen with the Realm row).
-- [x] **33.16** (review: pending 2026-10-11) **The realm's research topics.** Eight data files, each with its effect wired in (costs to start with:
+- [x] **33.16** (approved 2026-10-12) **The realm's research topics.** Eight data files, each with its effect wired in (costs to start with:
   16 paper, 2 books a level after the first, and 8 emeralds a level from the realm treasury):
   - **Royal Roads** (2 levels): caravans between realm villages arrive 25% sooner a level.
   - **Common Coin** (2; after Royal Roads I): the board's spread 3 points narrower a level in realm villages.
@@ -3583,7 +3585,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each topic shows its effect at level 1 (and at level 2 where it has one); the Realm row
   shows all eight with what each needs; `langcheck.py` is clean.
-- [x] **33.17** (review: pending 2026-10-11) **Relief in a raid.** When a realm village is raided (our night raids, bandit raids, or a vanilla
+- [x] **33.17** (approved 2026-10-12) **Relief in a raid.** When a realm village is raided (our night raids, bandit raids, or a vanilla
   pillager raid at the village; M32's sieges call `Relief.call` too), the other members send help: the capital,
   wherever it is, and every other member within 1,024 blocks that has 2 guards or more. Each sends one rider for every
   3 guards it has (at least 1, at most 3; more with Levies), 6 riders at most in all, after a ride of a tick per 4
@@ -3597,7 +3599,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     fight (a zombie dies to them) and leave after the raid; the treasury pays; a village outside any realm gets no
     one; a vanilla raid calls them too;
   - showcase scene `relief` with a GIF of the riders arriving and fighting.
-- [x] **33.18** (review: pending 2026-10-11) **Trade pacts and alliances.** Villages of different owners deal through offers. On the Pacts tab an
+- [x] **33.18** (approved 2026-10-12) **Trade pacts and alliances.** Villages of different owners deal through offers. On the Pacts tab an
   owner picks another player's village within caravan range and offers a **trade pact** or an **alliance**; the offer
   reaches that owner as a letter in their mailbox (or at the post office) and as a line on their hall's Pacts tab with
   Accept and Decline, and lapses after 3 days. From now on a caravan route to another owner's village needs a pact;
@@ -3610,7 +3612,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     cargo is paid for; a declined or lapsed offer changes nothing; a route saved before this item loads as a pact; an
     ally's raid brings relief; ending an alliance takes a day;
   - showcase scene `pacts` (the letter, the tab with an offer).
-- [x] **33.19** (review: pending 2026-10-11) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
+- [x] **33.19** (approved 2026-10-12) **The weekly leaderboard.** Once a week (owner's call: a real week, or every 7 in-game days; meanwhile
   Sunday 19:00 server time, `leaderboardDay`, `leaderboardHour`) everyone online is told in chat how the villages did:
   **Biggest** (villagers), **Richest** (emeralds earned that week: takings, board trades and caravan sales),
   **Happiest** (average wellbeing over the week, from the hall's rounds), **Most Legends** (M29's Legends; Masters
@@ -3623,7 +3625,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   - GameTests (with a clock the test sets): three halls with known numbers come out in the right order with the right
     lines; a village left off isn't listed; a tie goes to the bigger village; a missed week is announced once;
   - showcase scene `leaderboard` (the chat).
-- [x] **33.20** (review: pending 2026-10-11) **Feuds, and war where PvP is on.** On the Pacts tab an owner can declare a **feud** on another
+- [x] **33.20** (approved 2026-10-12) **Feuds, and war where PvP is on.** On the Pacts tab an owner can declare a **feud** on another
   owner's village or realm: a letter tells them, pacts and routes between the two end, each side's board pays 25% less
   for the rival's goods and charges the rival's players 25% more, villagers grumble about the rivals (a chatter topic
   with three lines), and the chronicles note it. Either side can offer peace by letter, which the other accepts; a
@@ -3639,7 +3641,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
     goes for the enemy owner but not a neutral player; the enemy owner can hurt a guard but not a villager, a block or
     a chest of a protected village; the war ends after 3 days;
   - showcase scene `feud` (the tab and the letter; with PvP on, a guard fighting the rival owner).
-- [x] **33.21** (review: pending 2026-10-11) **The Realm Map.** At any member's hall the Realm tab draws the realm on an empty map (the drawing of
+- [x] **33.21** (approved 2026-10-12) **The Realm Map.** At any member's hall the Realm tab draws the realm on an empty map (the drawing of
   33.8's charter map, on a vanilla map item): scaled so every member fits (vanilla scales 2 to 4), the land the server
   has loaded drawn as on a vanilla map and the rest as plain parchment, a banner for every member in the realm's
   colour (the capital's named "Thornholm (capital)"), colonies, allies and rivals in their own colours, caravan routes
@@ -3671,7 +3673,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each edict (boost on, cost on; the reform turns the cost off and keeps the boost); the
   capital's book shows the realm slots; showcase scene `realm_edicts`.
-- [x] **33.23** (review: pending 2026-10-11) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
+- [x] **33.23** (approved 2026-10-12) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
   - **The Founder**: a village he lives in can found colonies from Town rank, sends four settlers instead of two and
     waits half as long between colonies; its colonies are "founded with the Founder's blessing" in both chronicles,
     and his statue (M29's build) goes up beside the colony's camp.
@@ -3916,6 +3918,7 @@ on a real world.
   build a Townhouse or Manor like any other build; before that, the tip alone. Done when: `HomeGradeGameTests` (a bed
   in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
   five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
+  - [ ] **34.15a** Change from the owner (2026-10-12): Artisan's House and Townhouse are sold by villagers only, not in everyone's Blueprint Table. Also: other players may become Lord (31.11 as built); chat title after the name; first day counts against the 15% tick target; 25.2 targets confirmed; builders keep their usual Gazette order.
 - [x] **34.16** (approved 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
   hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
   garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's
@@ -3939,8 +3942,8 @@ on a real world.
   Each previewed on the villager model in every biome, over six different jobs. Until the owner picks, v1 of each is
   the default. Done when: all twelve pass `lint.py`; the page is up with a pick and a note per row; v1 of each is
   wired in as the textures.
-  - [x] **34.17a** (review: pending 2026-10-11) Change from the owner (2026-10-11): owner picked Artisan version 1, Burgher version 2, Noble version 1, Elder version 1; ship only these four and drop the other versions
-- [x] **34.18** (review: pending 2026-10-11) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
+  - [x] **34.17a** (approved 2026-10-12) Change from the owner (2026-10-11): owner picked Artisan version 1, Burgher version 2, Noble version 1, Elder version 1; ship only these four and drop the other versions
+- [x] **34.18** (approved 2026-10-12) **Dressed by class, in game.** A client render layer draws the wearer's class over their job outfit,
   and one draws the elder look, on grown villagers and children alike, never on zombie villagers. The client learns a
   villager's class and life stage from a small packet, sent when a player starts tracking the villager (a new
   `Platform` event) and whenever either changes; `classOutfits` in the config turns the layers off. The owner's picks
@@ -3967,7 +3970,7 @@ on a real world.
   it is used up. Config `agelessElders` (true). With `elderPassing` off nobody needs one. Done when: GameTests
   (accepted for each good trait, refused for a plain elder and for a non-elder, the charm used up, ageless surviving
   40+ elder days and a reload, the passing of a non-ageless elder with a grave) pass; scene `ageless_elder` passes.
-- [x] **34.20** (review: pending 2026-10-11) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
+- [x] **34.20** (approved 2026-10-12) **Retirement and apprentices.** An elder with a job retires once someone can take over, at most one
   villager a village every 3 days:
   - the successor is their own grown child without a job, else any jobless grown villager of a class the job allows
     (34.8); with nobody, the elder keeps working and the hall says "Bram would like to retire: the village needs a
@@ -3984,7 +3987,7 @@ on a real world.
 
   Done when: `RetirementGameTests` (a full hand-over in order, each "never while" case, the level and assignments
   carried over, a retired elder never re-employed, the mentor's 50%) pass; scene `retirement` passes.
-- [x] **34.21** (review: pending 2026-10-11) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
+- [x] **34.21** (approved 2026-10-12) **Family trees.** Babies remember their parents by id too (`mother_id` and `father_id`, new optional
   fields in `Families.Parents`; old records keep their names only). The hall keeps the village's **Book of
   Families**: everyone who has lived there (id, name, family name, the day they were born or grew up, the day they
   died, parents, partner, trade), up to 400, the longest dead forgotten first. **Family names**: a villager whose
@@ -3995,7 +3998,7 @@ on a real world.
   Ashby"), and a family's third generation is noted. The Printer (34.11) prints any family's tree as a written book
   for 2 emeralds. `familyNames` in the config. Done when: `FamilyTreeGameTests` (three generations, a death, the 400
   cap, a reload, an old Parents record without ids) pass; scene `family_tree` passes.
-- [x] **34.22** (review: pending 2026-10-11) **Switching it on for every village at once.** The owner's live server gets classes the moment it
+- [x] **34.22** (approved 2026-10-12) **Switching it on for every village at once.** The owner's live server gets classes the moment it
   runs 1.8, in every village with a hall, so the first rounds after the update must be safe. When a hall's round
   finds it has never been seeded (`classesVersion` 0, a new saved field on the hall):
   - it seeds 16 villagers a round, so a big City takes a few minutes: each household gets the highest class whose
@@ -4042,7 +4045,7 @@ builds on the builder (`BuildSite`, `BuildSiteManager`, `BuilderWork`'s helpers,
 (`tools/blueprints/`, STYLE.md), the Village Hall (ranks, research, festivals, caravans, the chronicle) and M29's
 Legends.
 
-- [x] **35.1** (review: pending 2026-10-11) **Design note.** `docs/design/M35.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **35.1** (approved 2026-10-12) **Design note.** `docs/design/M35.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees, from the hall's Wonders page through the plan, the Foundation Stone, the crew, the
   goods and the dedications to the finished Wonder's celebration and its powers; one Wonder's data file in full
   (`data/aliveworkplace/wonders/<id>.json`); the condition types and the power types; the config switches (`wonders`,
@@ -4072,7 +4075,7 @@ Legends.
   - every condition type has a true and a false GameTest, and a `legend` falls back to its stand-in;
   - the caps hold: a Town with one Wonder can't start a second and a City can, the same kind twice in one village is
     refused, and `wonderServerLimit 1` refuses a second village.
-- [x] **35.3** (review: pending 2026-10-11) **The Wonders page and the Wonder Plan.** A new button on the Village Hall's screen opens the
+- [x] **35.3** (approved 2026-10-12) **The Wonders page and the Wonder Plan.** A new button on the Village Hall's screen opens the
   **Wonders** page (a `ChoiceMenu`): every enabled Wonder as its icon, name and power in a line, each requirement
   ticked or crossed with what's missing ("2 of 3 Chapels", "the Seer: not in the village"), and the cap ("Wonders: 1
   of 1 for a Town"); a Wonder going up shows its stage and how far along it is. With everything ticked, **Draw up the
@@ -4174,7 +4177,7 @@ Legends.
     builders repair it and it comes back; finished Wonders survive a save and reload;
   - a GameTest checks the server-wide message and the chronicle lines;
   - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
-- [x] **35.9** (review: pending 2026-10-11) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
+- [x] **35.9** (approved 2026-10-12) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
   critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
   `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two
   west towers 44 high under stone spires reaching 52. A nave of five bays under a steep deepslate-tile roof; aisles
@@ -4209,7 +4212,7 @@ Legends.
     without one; a wedding goes to the Cathedral with its mood and baby; a damaged Cathedral turns both off;
   - scene `wonder_great_cathedral`: the time-lapse, ending at dusk with a wedding at the altar; its GIF and powers are
     in the README's Wonders section.
-- [x] **35.11** (review: pending 2026-10-11) **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a stepped
+- [x] **35.11** (approved 2026-10-12) **The Lighthouse: its design.** A coastal landmark about 25 × 33 and 46 high, drawn like 35.9: a stepped
   stone mole at the water's edge carrying a round tower that tapers from 13 across to 9, banded in white and red, with
   a gallery on stone corbels at 38; a lantern room of glass round sea lanterns and a ring of redstone lamps that an
   inverted daylight detector lights at night; a copper cupola with a lightning-rod vane. At its foot, the keeper's
@@ -4235,7 +4238,7 @@ Legends.
     warning gets its own test once M32's pirates exist); a damaged Lighthouse turns them all off;
   - scene `wonder_lighthouse`: the time-lapse beside a sea dug and filled by the harness, ending at night with the
     lamps lit; its GIF and powers are in the README.
-- [x] **35.13** (review: pending 2026-10-11) **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
+- [x] **35.13** (approved 2026-10-12) **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
   like 35.9: a rotunda 19 across under a copper dome with a glass lantern at its top; four wings of reading halls,
   each with two floors of bookshelf galleries; a portico of six columns under a pediment, over a grand stair. At the
   centre, an Enchanting Table ringed by fifteen bookshelves, with a lectern (a librarian); four lecterns in the wings
@@ -4269,13 +4272,13 @@ Legends.
     research loads unchanged; Swift Hands V on top of every other bonus stays at or under twice the pace;
   - scene `wonder_great_library`: the time-lapse, ending in the rotunda on the scholar's screen with the second tier;
     its GIF and powers are in the README.
-- [ ] **35.15** **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
+- [x] **35.15** (review: pending 2026-10-12) **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
   place it facing out: its stairs are on your side), drawn like 35.9: 97 long, 7 thick and 12 high on a battered
   plinth, a walk along the top behind crenellations, and five towers (9 × 9, 18 high, hipped roofs; one at each end
   and two at the quarters), each with stairs inside, a grindstone for a guard and an alcove where a sentry golem
   stands. At the centre the **Great Gate**: a 17-wide gatehouse between two towers, a portcullis of iron bars over a
   gateway of fence gates. Braziers (campfires) along the walk, banners on the towers. Palette: cobblestone and stone
-  bricks with mossy and cracked ones low down, a deepslate-brick plinth, spruce roofs. About 18,000 blocks in parts of
+  bricks with mossy and cracked ones low down, a deepslate-brick plinth, spruce roofs. About 11,000 blocks (18,000 before it was drawn: Notes, 35.15) in parts of
   at most 48: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the Towers' Crowns*. Data:
   Town; the Golem Smith (stand-in: 4 iron golems and a Master Tinkerer); a finished Gatehouse. Goods: I 8 iron swords
   (Weaponsmith), 128 arrows (Fletcher), 128 bread (Chef); II 8 iron shovels (Toolsmith), 12 potions of strength
@@ -4295,7 +4298,7 @@ Legends.
     iron; a damaged Wall turns both off;
   - scene `wonder_great_wall`: the time-lapse, then a night raid gathering on the open side while the sentries watch;
     its GIF and powers are in the README.
-- [x] **35.17** (review: pending 2026-10-11) **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
+- [x] **35.17** (approved 2026-10-12) **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
   across and 30 high under a copper dome with a slit of tinted glass, a great telescope of cut copper 12 long leaning
   out of the slit, a star-chart room in a low wing with a cartography table and a lectern, a courtyard with a sundial
   (a stone face and its gnomon) and an orrery (a gold sun with planets hung on chains), and a spiral stair up to a
@@ -4324,7 +4327,8 @@ Legends.
     in-game hour; the Coming days page lists a staged festival, wedding and caravan with their days;
   - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
     powers are in the README.
-- [ ] **35.19** **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
+  - [ ] **35.18a** Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
+- [x] **35.19** (review: pending 2026-10-12) **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
   31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
   soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four
   village farms), sweet and glow berry beds, flowering azaleas and oaks, vines and glow berries hanging over the
@@ -5622,3 +5626,26 @@ item waits.
   5,011 blocks, not about 7,500: only a solid tower or a bigger site would reach that. Decided: keep the size and the
   design, and the figure is now about 5,000 (the item's text and `WonderBlueprintGameTests`, within 10%). Owner: say
   if you'd rather have a bigger site (about 29 x 37) for the 7,500.
+- **35.15 the Great Wall's block count and towers** (lane-b-1012-0033, 2026-10-12): drawn at 97 x 25 x 15 with
+  everything the item lists, it is 10,802 blocks, not about 18,000: the curtain is solid (7 thick, 12 high), but the
+  towers and the gatehouse are rooms with stairs inside, as the item asks; only solid towers would reach 18,000.
+  Decided: keep the design, and the figure is now about 11,000 (the item's text and `WonderBlueprintGameTests`, within
+  10%). "Five towers ... one at each end and two at the quarters" names four: the fifth is the Great Gate's gatehouse
+  (17 wide, as high as the towers, under its own hipped roof), standing between the quarter towers. Its front (z = 0)
+  is the village side, as the Stone Wall's is, so a player places it from inside facing out and its two stairs (ten
+  steps up the inner runs to landings by the gatehouse) are on his side. The four towers' alcoves face the gate, one
+  sentry each (35.16's four). Found on the way: `generate.py` had stopped at the Great Cathedral since 35.11 (the
+  Lighthouse's `band(y)` shadowed the Cathedral's `band`); the Lighthouse's is now `l_band`, and both Wonders' parts
+  come out the same as before. The `wonder_gallery` scene now accepts a first-stage part that is only air (it clears
+  the site, as `WonderBlueprintGameTests` already allowed; the Cathedral has two). Owner: say if you'd rather have
+  solid tower bases for the 18,000.
+- **35.19 the Hanging Gardens' site, water and count** (lane-b-1012-0033, 2026-10-12): drawn with everything the item
+  lists, the terraces stand on the 39 x 39 foot (24 high, 31 to the crown's treetops), but the whole site is 47 x 44:
+  the falls' pool lies outside the foot on the east and the ramp's first flight runs along the front from the ground.
+  It is 16,245 blocks, within 10% of the 15,000, so the figure stays. The water (the cistern, the channel, a basin on each
+  ledge, the pool) is still water a builder pours from a bucket, all in stage IV, so the falls start when the crown is
+  finished; the arcade behind the falls and behind each ramp is blind. `WonderBlueprintGameTests` refused still water as
+  "nothing a player can't get" (it has no item of its own); it now accepts a block whose cost `MaterialRules` knows (a
+  water bucket), as the builder does. The cocoa beans are goods only: cocoa needs jungle logs, which the palette doesn't
+  have. Glow berries hang one block long, under solid blocks (a longer strand needs cave vine stems, which have no item
+  and a builder skips).

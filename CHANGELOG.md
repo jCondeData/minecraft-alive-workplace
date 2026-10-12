@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Hanging Gardens' design, for 2.0** (35.19, nothing to start in game until Wonders is finished): the sixth
+  Wonder's build, a garden mountain of four sandstone terraces (39 across at the foot, about 16,200 blocks), each faced
+  with arcades hung with vines and glow berries over a gallery, its ledges planted with fields between water channels,
+  berry beds, glow berry arbors, flowers, beehives, oaks and flowering azaleas, and a composter and a chest on each level.
+  The Cistern Vaults fill the first terrace; a ramp spirals to the crown, where a cistern pours a waterfall down the east
+  side from basin to basin into a pool. It rises in four stages (the First Terrace and the Cistern Vaults, the Second
+  Terrace, the Third Terrace, the Crown Garden and the Falls), each with its goods.
 - **The Great Wall's design, for 2.0** (35.15, nothing to start in game until Wonders is finished): the fifth Wonder's
   build, a stone wall 97 long, 7 thick and 12 high on a battered deepslate plinth (about 10,800 blocks), placed like the
   other walls with its stairs on the village side: a crenellated walk with braziers, four towers under hipped spruce roofs

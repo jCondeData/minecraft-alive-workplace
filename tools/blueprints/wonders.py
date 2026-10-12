@@ -3026,6 +3026,750 @@ def great_wall_eye(x_eye):
     return out
 
 
+# --- the Hanging Gardens (35.19) -----------------------------------------------------------------------------------------
+# The Hanging Gardens, 47 x 33 x 44: a stepped garden mountain of four terraces on a 39 x 39 foot (x 1-39, z 4-42), the
+# falls' pool beside it on the east (x 40-46) and the first ramp along its front (z 1-3). Design on paper:
+# - Four terraces, each 6 high and 4 in from the one below: I 39 across (y 0-6), II 31 (6-12), III 23 (12-18), IV, the
+#   crown, 15 (18-24). Each is faced all round with an arcade: 3-wide arches between cut sandstone columns (chiseled
+#   capitals, upside-down stairs for the arch heads), 3-wide piers at the corners, a terracotta band with a chiseled
+#   keystone over each arch, a cut sandstone coping. Behind the arcade a gallery 3 deep runs all round under the ledge's
+#   soil (the walk of each level, lit by glow berries hanging in the arch heads and lanterns at its corners); its back
+#   wall is the next terrace's face. Inside the first terrace the Cistern Vaults: a hall 29 x 29 of columns with vault
+#   springers round a pool and its chain pump, lanterns between the columns, a doorway from the gallery on every side.
+#   The upper terraces' cores are earth.
+# - Each ledge (4 wide) is a garden on the gallery's roof: a hedge of azalea and oak leaves on the coping, two rows of
+#   beds, a path along the arcade above. The beds: fields of wheat, carrots and beetroots between water channels, sweet
+#   berry beds, glow berry arbors (oak posts and slabs, the berries hanging under them), flower beds with azalea bushes,
+#   beehives. On each level's corners an oak, a flowering azalea tree, a farm corner (a composter and a chest: four
+#   village farms) or a lamp-lit landing. Vines hang down the columns and over the arches; a lantern on the coping at
+#   every corner and over the middle column of each side.
+# - A ramp spirals up: along the first terrace's front from the ground, then up the second terrace's east face, the
+#   third's back and the crown's west face, each a stair 2 wide on a solid body with a balustrade and a landing.
+# - The crown: a cistern 7 x 7 in the middle (two courses high, water two deep, a fountain on a pillar in it, lanterns on
+#   its corners), a walk round it, an oak and two flowering azalea trees, beehives, a glow berry arbor, a farm corner,
+#   flowers and berries. The cistern pours east down a channel to the crown's edge: the falls drop down the east side
+#   from basin to basin (one on each ledge, its lip notched in the coping) into a pool at the foot, with lily pads. The
+#   arcade behind the falls is blind (mossy niches).
+# - Palette (60/30/10): smooth and cut sandstone; terracotta trim; oak; moss, grass and leaves. Lanterns.
+# - Stages, each ending tidy: I the first terrace, the Cistern Vaults, the first ramp and the second terrace's floor; II
+#   the second terrace, its ramp and the third's floor; III the third the same; IV the crown, its garden and cistern,
+#   the last ramp and the falls (the basins' and the pool's water).
+HW, HH, HD = 47, 33, 44
+H_OX, H_OZ = 1, 4  # the first terrace's north-west corner
+H_C = (20, 23)  # the middle (x, z)
+H_FALLS = (22, 24)  # the falls' z (they run down the east side)
+H_FALLS_PIER = (20, 26)  # the arcade's blind bays behind the falls (z)
+H_POOL = (40, 46, 18, 28)  # the pool with its rim: x from, x to, z from, z to
+H_WALL = "smooth_sandstone"
+H_COL = "cut_sandstone"
+H_CAP = "chiseled_sandstone"
+H_BAND = "terracotta"
+H_SIDES = ("N", "E", "S", "W")
+H_OUT = {"N": "north", "E": "east", "S": "south", "W": "west"}
+H_CROPS = (("wheat", 7), ("carrots", 7), ("beetroots", 3))
+H_FLOWERS = ["poppy", "allium", "azure_bluet", "oxeye_daisy", "cornflower", "red_tulip", "white_tulip", "pink_tulip",
+             "lily_of_the_valley", "dandelion", "flowering_azalea", "azalea", "fern", "short_grass", None]
+H_HEDGE = Mix((4, "azalea_leaves"), (3, "flowering_azalea_leaves"), (1, "oak_leaves"), (2, "moss_carpet"), seed=61)
+H_CANOPY = {"oak": Mix((1, "oak_leaves"),), "azalea": Mix((3, "azalea_leaves"), (2, "flowering_azalea_leaves"), seed=62)}
+# What each ledge's sides hold between its corners (t from, t to, kind), and its corners. A ramp's footing is paved; a
+# "cross" is where a ramp's landing steps onto the ledge (no hedge there).
+H_LEDGES = {
+    0: {"N": [(5, 33, "field"), (34, 35, "cross")],
+        "E": [(8, 10, "path"), (11, 20, "ramp"), (21, 25, "basin"), (26, 38, "berries")],
+        "S": [(5, 35, "field")],
+        "W": [(8, 22, "flowers"), (23, 38, "berries")]},
+    1: {"N": [(9, 31, "arbor")],
+        "E": [(12, 16, "flowers"), (17, 19, "cross"), (20, 20, "flowers"), (21, 25, "basin"), (26, 34, "berries")],
+        "S": [(9, 18, "field"), (19, 28, "ramp"), (29, 31, "path")],
+        "W": [(12, 34, "field")]},
+    2: {"N": [(13, 27, "field")],
+        "E": [(16, 20, "hives"), (21, 25, "basin"), (26, 30, "flowers")],
+        "S": [(13, 19, "field"), (20, 22, "cross"), (23, 27, "berries")],
+        "W": [(16, 19, "flowers"), (20, 29, "ramp"), (30, 30, "path")]},
+}
+H_CORNERS = {
+    0: {("N", "W"): "station", ("N", "E"): "hub", ("S", "E"): "oak", ("S", "W"): "azalea"},
+    1: {("N", "W"): "azalea", ("N", "E"): "oak", ("S", "E"): "hub", ("S", "W"): "station"},
+    2: {("N", "W"): "oak", ("N", "E"): "azalea", ("S", "E"): "station", ("S", "W"): "hub"},
+}
+# The ramps: (the terrace whose face it climbs, the side, the first stair's t, the way it climbs along t, its stairs,
+# its landing's length). The stairs and the landing are against the face (e -1 and -2), the balustrade at e -3.
+H_RAMPS = {0: (0, "N", 27, 1, 7, 3), 1: (1, "E", 11, 1, 6, 3), 2: (2, "S", 28, -1, 6, 3), 3: (3, "W", 29, -1, 6, 3)}
+# Where a terrace's arcade is blind (t ranges): behind a ramp and behind the falls.
+H_BLIND = {(0, "N"): [(25, 37)], (1, "E"): [(11, 19)], (2, "S"): [(20, 28)], (3, "W"): [(21, 29)]}
+
+
+def h_box(k):
+    """Terrace k's (0-3) footprint: x from, x to, z from, z to."""
+    return H_OX + 4 * k, H_OX + 38 - 4 * k, H_OZ + 4 * k, H_OZ + 38 - 4 * k
+
+
+def h_cell(k, side, e, t):
+    """The cell e in from terrace k's face on {@code side} (e 0 is the face, -1 just outside it), at t along it (x on
+    the north and south faces, z on the west and east)."""
+    x0, x1, z0, z1 = h_box(k)
+    return {"N": (t, z0 + e), "S": (t, z1 - e), "W": (x0 + e, t), "E": (x1 - e, t)}[side]
+
+
+def h_run(k, side):
+    x0, x1, z0, z1 = h_box(k)
+    return (x0, x1) if side in ("N", "S") else (z0, z1)
+
+
+def h_along(side, dt):
+    """The way along a face that t grows (dt 1) or shrinks (dt -1)."""
+    return ({"N": "east", "S": "east", "W": "south", "E": "south"} if dt > 0 else
+            {"N": "west", "S": "west", "W": "north", "E": "north"})[side]
+
+
+def h_inward(side):
+    return OPP[H_OUT[side]]
+
+
+def h_part(k, side, t):
+    """What the arcade is at t: ("pier",), ("col",) or ("bay", its number, 0-2 across it)."""
+    a0, a1 = h_run(k, side)
+    u, n = t - a0, a1 - a0 + 1
+    if u < 3 or u > n - 4:
+        return ("pier",)
+    if (u - 3) % 4 == 0:
+        return ("col",)
+    return ("bay", (u - 4) // 4, (u - 4) % 4)
+
+
+def h_blind(k, side, t):
+    """Whether the bay at t is blind: behind a ramp, or behind the falls."""
+    part = h_part(k, side, t)
+    if part[0] != "bay":
+        return False
+    a0 = h_run(k, side)[0]
+    lo = a0 + 4 + 4 * part[1]
+    spans = list(H_BLIND.get((k, side), [])) + ([H_FALLS_PIER] if side == "E" else [])
+    return any(lo <= s1 and lo + 2 >= s0 for s0, s1 in spans)
+
+
+def h_hash(*key):
+    return zlib.crc32(",".join(map(str, key)).encode())
+
+
+def h_leaf(b, x, y, z, name):
+    if 0 <= x < HW and 0 <= y < HH and 0 <= z < HD and b.get(x, y, z) is None:
+        if name.endswith("_leaves"):
+            b.set(x, y, z, name, distance=1, persistent=True, waterlogged=False)
+        else:
+            b.set(x, y, z, name)
+
+
+def h_hedge(b, x, y, z):
+    h_leaf(b, x, y, z, H_HEDGE.at(x, y, z))
+
+
+def h_tree(b, x, y, z, kind):
+    """An oak (a trunk of 4) or a flowering azalea tree (a trunk of 3, a wide flat crown) standing on the soil at y - 1.
+    Leaves only go where nothing is drawn yet."""
+    trunk = 4 if kind == "oak" else 3
+    for dy in range(trunk):
+        log(b, x, y + dy, z, "oak_log")
+    leaves = H_CANOPY[kind]
+    top = y + trunk - 1
+    layers = ([(top - 1, 2), (top, 2), (top + 1, 1), (top + 2, 0)] if kind == "oak" else
+              [(top - 1, 2), (top, 2), (top + 1, 1)])
+    for ly, r in layers:
+        for dx in range(-r, r + 1):
+            for dz in range(-r, r + 1):
+                if r and abs(dx) == r and abs(dz) == r and (r == 1 or h_hash(x, z, dx, dz, ly) % 3):
+                    continue  # rounded corners, ragged on the wide layers
+                if (dx, dz) != (0, 0) or ly > top:
+                    h_leaf(b, x + dx, ly, z + dz, leaves.at(x + dx, ly, z + dz))
+
+
+def h_vine(b, x, y, z, side):
+    """A vine just outside a face on {@code side}, clinging to it."""
+    if 0 <= x < HW and 0 <= z < HD and b.get(x, y, z) is None:
+        face = h_inward(side)
+        b.set(x, y, z, "vine", **{d: d == face for d in ("north", "south", "east", "west")}, up=False)
+
+
+def h_glow(b, x, y, z):
+    b.set(x, y, z, "cave_vines", age=25, berries=True)
+
+
+def h_arch_head(b, k, side, t, y, part):
+    """The arch's head at y over bay cell {@code part}: upside-down stairs leaning on the columns, open in the middle."""
+    x, z = h_cell(k, side, 0, t)
+    if part[2] == 1:
+        return
+    stairs(b, x, y, z, "smooth_sandstone_stairs", h_along(side, -1 if part[2] == 0 else 1), top=True)
+
+
+# --- the terraces' arcades, galleries and cores ----------------------------------------------------------------------------
+def h_face(b, k, side):
+    """Terrace k's arcade on {@code side}, its gallery's ceiling and back wall (the next terrace's foot), the coping."""
+    fy = 6 * k
+    a0, a1 = h_run(k, side)
+    for t in range(a0, a1 + 1):
+        part = h_part(k, side, t)
+        x, z = h_cell(k, side, 0, t)
+        if k == 0:
+            b.set(x, 0, z, H_COL if part[0] != "bay" else "smooth_sandstone")
+        if part[0] == "pier":
+            for y in range(fy + 1, fy + 5):
+                b.set(x, y, z, H_COL if t in (a0, a1) else H_WALL)
+        elif part[0] == "col":
+            for y in range(fy + 1, fy + 4):
+                b.set(x, y, z, H_COL)
+            b.set(x, fy + 4, z, H_CAP)
+        else:
+            h_arch_head(b, k, side, t, fy + 4, part)
+            if h_blind(k, side, t):
+                nx, nz = h_cell(k, side, 1, t)  # a niche one deep: mossy behind the falls
+                wet = side == "E" and H_FALLS_PIER[0] <= t <= H_FALLS_PIER[1]
+                for y in range(fy + 1, fy + 5):
+                    b.set(nx, y, nz, "moss_block" if wet and y < fy + 3 else H_WALL)
+        b.set(x, fy + 5, z, H_BAND)
+        if not (k < 3 and side == "E" and H_FALLS[0] <= t <= H_FALLS[1]):
+            b.set(x, fy + 6, z, H_COL)  # the coping (notched where a basin's lip spills, filled by the falls)
+        # the gallery's ceiling (its floor is the terrace's floor) and its back wall
+        for e in (1, 2, 3):
+            gx, gz = h_cell(k, side, e, t)
+            b.set(gx, fy + 5, gz, H_WALL)
+        if a0 + 4 <= t <= a1 - 4:
+            wx, wz = h_cell(k, side, 4, t)
+            for y in range(fy + 1, fy + 6):
+                b.set(wx, y, wz, H_WALL)
+    # the corners' gallery ceiling
+    for ea in (1, 2, 3):
+        for eb in (1, 2, 3):
+            for sa in ("N", "S"):
+                for sb in ("W", "E"):
+                    x, z = h_corner_cell(k, (sa, sb), ea, eb)
+                    b.set(x, fy + 5, z, H_WALL)
+
+
+def h_corner_cell(k, corner, ea, eb):
+    """The cell ea in from the north or south face and eb in from the west or east face, in that corner."""
+    x0, x1, z0, z1 = h_box(k)
+    sa, sb = corner
+    return (x0 + eb if sb == "W" else x1 - eb), (z0 + ea if sa == "N" else z1 - ea)
+
+
+def h_glow_and_lights(b, k):
+    """Glow berries in the open arches' heads (two in three) and lanterns hung in the gallery's corners and halfway along
+    each side."""
+    fy = 6 * k
+    for side in H_SIDES:
+        a0, a1 = h_run(k, side)
+        for t in range(a0, a1 + 1):
+            part = h_part(k, side, t)
+            if part[0] == "bay" and part[2] == 1 and not h_blind(k, side, t) and h_hash(k, side, t) % 3:
+                x, z = h_cell(k, side, 0, t)
+                h_glow(b, x, fy + 4, z)
+        x, z = h_cell(k, side, 2, (a0 + a1) // 2)
+        lantern(b, x, fy + 4, z, hanging=True)
+    for corner in (("N", "W"), ("N", "E"), ("S", "W"), ("S", "E")):
+        x, z = h_corner_cell(k, corner, 2, 2)
+        lantern(b, x, fy + 4, z, hanging=True)
+
+
+def h_vines(b, k):
+    """Vines down terrace k's face: long strands on the columns and piers, short ones over the arches, none behind the
+    falls; each clings to the coping, the band and the column under it."""
+    fy = 6 * k
+    for side in H_SIDES:
+        a0, a1 = h_run(k, side)
+        for t in range(a0, a1 + 1):
+            if side == "E" and H_FALLS_PIER[0] - 1 <= t <= H_FALLS_PIER[1] + 1:
+                continue
+            part = h_part(k, side, t)
+            r = h_hash("vine", k, side, t) % 10
+            if part[0] == "bay":
+                n = (0, 0, 0, 0, 0, 1, 1, 2, 2, 2)[r]
+            else:
+                n = (0, 0, 0, 2, 3, 3, 4, 4, 5, 5)[r]
+            x, z = h_cell(k, side, -1, t)
+            for y in range(fy + 6, fy + 6 - n, -1):
+                if b.get(x, y, z) is not None:
+                    break
+                h_vine(b, x, y, z, side)
+
+
+def h_floor(b, k):
+    """Terrace k's floor (y 6k): smooth sandstone over its whole foot, the paving of its gallery and, until the terrace
+    goes up, a tidy plaza on the one below, its setting-out inlaid: cut sandstone where the arcade will stand, terracotta
+    where the gallery's back wall will."""
+    x0, x1, z0, z1 = h_box(k)
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            edge = min(x - x0, x1 - x, z - z0, z1 - z)
+            if b.get(x, 6 * k, z) is None:
+                b.set(x, 6 * k, z, H_COL if edge == 0 else "terracotta" if edge == 4 else "smooth_sandstone")
+
+
+def h_core(b, k):
+    """An upper terrace's core inside its gallery's back wall: earth."""
+    x0, x1, z0, z1 = h_box(k)
+    for x in range(x0 + 5, x1 - 4):
+        for z in range(z0 + 5, z1 - 4):
+            for y in range(6 * k + 1, 6 * k + 6):
+                b.set(x, y, z, "dirt")
+
+
+def h_terrace(b, k):
+    for side in H_SIDES:
+        h_face(b, k, side)
+    h_glow_and_lights(b, k)
+    if k > 0:
+        h_core(b, k)
+
+
+# --- the Cistern Vaults ----------------------------------------------------------------------------------------------------
+H_VAULT_COLS = (-12, -8, -4, 4, 8, 12)  # the columns' x and z from the middle
+
+
+def h_vaults(b):
+    """The hall inside the first terrace (x 6-34, z 9-37): a floor ruled in terracotta on the columns' lines, 36 columns
+    with chiseled capitals and springers under a flat vault, a pool in the middle (7 x 7, a cut sandstone kerb) with a
+    chain pump hanging into it, lanterns hung between the columns and a doorway from the gallery on every side."""
+    cx, cz = H_C
+    cols = [(cx + dx, cz + dz) for dx in H_VAULT_COLS for dz in H_VAULT_COLS]
+    for x in range(6, 35):
+        for z in range(9, 38):
+            line = (x - cx) in H_VAULT_COLS or (z - cz) in H_VAULT_COLS
+            b.set(x, 0, z, "terracotta" if line and not (abs(x - cx) <= 3 and abs(z - cz) <= 3) else "smooth_sandstone")
+            b.set(x, 5, z, H_WALL)
+    for x, z in cols:
+        for y in range(1, 4):
+            b.set(x, y, z, H_COL)
+        b.set(x, 4, z, H_CAP)
+        for d, (dx, dz) in DIRS.items():
+            stairs(b, x + dx, 4, z + dz, "smooth_sandstone_stairs", OPP[d], top=True)
+    for dx in range(-3, 4):
+        for dz in range(-3, 4):
+            x, z = cx + dx, cz + dz
+            if max(abs(dx), abs(dz)) == 3:
+                b.set(x, 1, z, H_COL)
+            else:
+                b.set(x, 1, z, "water", level=0)
+    for y in (2, 3, 4):
+        chain(b, cx, y, cz)
+    for dx in (-2, 2):
+        for dz in (-2, 2):
+            lantern(b, cx + dx, 4, cz + dz, hanging=True)
+    for dx in (-10, -6, 6, 10):
+        for dz in (-10, -6, 6, 10):
+            lantern(b, cx + dx, 4, cz + dz, hanging=True)
+    for dx in (-14, 0, 14):
+        for dz in (-14, 0, 14):
+            if (dx, dz) != (0, 0) and b.get(cx + dx, 4, cz + dz) is None:
+                lantern(b, cx + dx, 4, cz + dz, hanging=True)
+    # the doorways through the gallery's back wall, arched like the arcade
+    for side in H_SIDES:
+        mid = H_C[0] if side in ("N", "S") else H_C[1]
+        for t in (mid - 1, mid, mid + 1):
+            x, z = h_cell(0, side, 4, t)
+            for y in (1, 2, 3):
+                b.clear(x, y, z, x, y, z)
+            if t != mid:
+                stairs(b, x, 4, z, "smooth_sandstone_stairs", h_along(side, -1 if t < mid else 1), top=True)
+            else:
+                b.clear(x, 4, z, x, 4, z)
+                h_glow(b, x, 4, z)
+
+
+# --- the ledges' gardens ------------------------------------------------------------------------------------------------
+def h_channels(n):
+    """Where a field n long crosses its water channels: every 8, so no farmland is more than 4 from water."""
+    out = list(range(3, n, 8)) or [n // 2]
+    if n - 1 - out[-1] > 4:
+        out.append(n - 1)
+    return out
+
+
+def h_strip(b, k, side, t0, t1, kind):
+    """One stretch of ledge k's beds between its corners: e 1 and 2 the beds, e 3 a path along the arcade, e 0 the
+    coping with its hedge on it."""
+    s = 6 * k + 6  # the soil's layer; plants stand at s + 1
+    cells = lambda e, t: h_cell(k, side, e, t)  # noqa: E731
+    water = {t0 + i for i in h_channels(t1 - t0 + 1)} if kind == "field" else set()
+    seg = 0
+    for i, t in enumerate(range(t0, t1 + 1)):
+        x, z = cells(0, t)
+        if kind != "cross" and not (kind == "basin" and H_FALLS[0] <= t <= H_FALLS[1]):
+            h_hedge(b, x, s + 1, z)
+        px, pz = cells(3, t)
+        if kind in ("field", "berries", "flowers", "arbor", "hives", "path", "cross"):
+            b.set(px, s, pz, "dirt_path")
+        if kind in ("path", "cross"):
+            for e in (1, 2):
+                ex, ez = cells(e, t)
+                b.set(ex, s, ez, "dirt_path")
+        elif kind == "ramp":
+            for e in (1, 2, 3):
+                ex, ez = cells(e, t)
+                b.set(ex, s, ez, "smooth_sandstone")
+        elif kind == "basin":
+            if t in (t0, t1):  # its rims: a cut sandstone kerb and a slab on it
+                for e in (1, 2, 3):
+                    ex, ez = cells(e, t)
+                    b.set(ex, s, ez, H_COL)
+                    slab(b, ex, s + 1, ez, "cut_sandstone_slab")
+            # its water, and the notch in the coping its lip spills over, come with the falls (stage IV)
+        elif kind == "field":
+            if t in water:
+                seg += 1
+            crop, age = H_CROPS[(seg + k + H_SIDES.index(side)) % 3]
+            for e in (1, 2):
+                ex, ez = cells(e, t)
+                if t in water:
+                    b.set(ex, s, ez, "water", level=0)
+                else:
+                    b.set(ex, s, ez, "farmland", moisture=7)
+                    b.set(ex, s + 1, ez, crop, age=age)
+        else:
+            for e in (1, 2):
+                ex, ez = cells(e, t)
+                b.set(ex, s, ez, "grass_block", snowy=False)
+                r = h_hash(kind, k, side, t, e)
+                if kind == "berries":
+                    if r % 5:
+                        b.set(ex, s + 1, ez, "sweet_berry_bush", age=3)
+                    else:
+                        b.set(ex, s + 1, ez, "fern")
+                elif kind == "flowers":
+                    p = H_FLOWERS[r % len(H_FLOWERS)]
+                    if p:
+                        b.set(ex, s + 1, ez, p)
+                elif kind == "hives":
+                    if e == 1 and i % 2 == 0:
+                        b.set(ex, s + 1, ez, "beehive", facing=h_inward(side), honey_level=0)
+                    else:
+                        b.set(ex, s + 1, ez, H_FLOWERS[r % 10])
+                elif kind == "arbor":
+                    h_arbor_cell(b, ex, s, ez, (t - t0) % 4 == 0, r, i % 8 == 4 and e == 1, beam=e == 1 or (t - t0) % 2 == 0)
+
+
+def h_arbor_cell(b, x, s, z, post, r, light, beam=True):
+    """A cell of a glow berry arbor: an oak post at every fourth, a beam of oak slabs along one side and slats across from
+    it at every other cell, the berries hanging under them (a lantern now and then), ferns, moss and flowers under."""
+    if post:
+        fence(b, x, s + 1, z, "oak_fence")
+        fence(b, x, s + 2, z, "oak_fence")
+    else:
+        if not beam:
+            pass
+        elif light:
+            lantern(b, x, s + 2, z, hanging=True)
+        elif r % 10 < 7:
+            h_glow(b, x, s + 2, z)
+        b.set(x, s + 1, z, ("fern", "moss_carpet", "short_grass", "lily_of_the_valley", "fern")[r % 5])
+    if beam:
+        slab(b, x, s + 3, z, "oak_slab")
+
+
+def h_corner(b, k, corner, kind):
+    """A ledge's corner square: the coping and its hedge (a lantern on the very corner), the path round the inside, and
+    in the 2 x 2 left: a tree, a farm corner (a composter and a chest), or a landing lit by a lamp."""
+    s = 6 * k + 6
+    for ea in range(4):
+        for eb in range(4):
+            x, z = h_corner_cell(k, corner, ea, eb)
+            if ea == 0 or eb == 0:
+                if ea == 0 and eb == 0:
+                    lantern(b, x, s + 1, z)
+                elif not (k == 0 and corner == ("N", "E") and ea == 0 and eb == 3):  # the first ramp's landing
+                    h_hedge(b, x, s + 1, z)
+                continue
+            if kind == "hub" or ea == 3 or eb == 3:
+                b.set(x, s, z, "dirt_path")
+            else:
+                b.set(x, s, z, "grass_block", snowy=False)
+    sa, sb = corner
+    toward_a = OPP[H_OUT[sa]]  # into the terrace from the north or south face
+    toward_b = OPP[H_OUT[sb]]
+    x11, z11 = h_corner_cell(k, corner, 1, 1)
+    x12, z12 = h_corner_cell(k, corner, 1, 2)
+    x21, z21 = h_corner_cell(k, corner, 2, 1)
+    x22, z22 = h_corner_cell(k, corner, 2, 2)
+    if kind in ("oak", "azalea"):
+        h_tree(b, x11, s + 1, z11, kind)
+        b.set(x12, s + 1, z12, "fern")
+        b.set(x21, s + 1, z21, "moss_carpet")
+        b.set(x22, s + 1, z22, H_FLOWERS[h_hash(k, corner) % 10])
+    elif kind == "station":
+        b.set(x11, s + 1, z11, "flowering_azalea")
+        b.set(x12, s + 1, z12, "composter", level=0)
+        b.set(x21, s + 1, z21, "chest", facing=toward_a, type="single", waterlogged=False)
+        if k == 2:
+            b.set(x22, s + 1, z22, "beehive", facing=toward_b, honey_level=0)
+        else:
+            lamp_post(b, x22, s + 1, z22, post="oak_fence", height=1)
+    else:
+        lamp_post(b, x11, s + 1, z11, post="oak_fence", height=2)
+
+
+def h_ledge(b, k):
+    for side, strips in H_LEDGES[k].items():
+        for t0, t1, kind in strips:
+            h_strip(b, k, side, t0, t1, kind)
+    for corner, kind in H_CORNERS[k].items():
+        h_corner(b, k, corner, kind)
+    # a lantern on the coping over each side's middle column (not over the falls)
+    for side in ("N", "S", "W"):
+        a0, a1 = h_run(k, side)
+        x, z = h_cell(k, side, 0, (a0 + a1) // 2)
+        if b.get(x, 6 * k + 7, z) is not None and name_of(b.get(x, 6 * k + 7, z)).endswith(("leaves", "carpet")):
+            b.blocks.pop((x, 6 * k + 7, z))
+            lantern(b, x, 6 * k + 7, z)
+
+
+# --- the ramps --------------------------------------------------------------------------------------------------------------
+def h_ramp(b, n):
+    """Ramp n: up terrace k's face from the ground or the ledge below to its top, a stair two wide on a solid body
+    against the face, a balustrade of sandstone wall on the outer side, a landing, and a lamp at its foot."""
+    k, side, t, dt, steps, land = H_RAMPS[n]
+    base = 6 * k if k else -1  # the soil it stands on (the ground under the first)
+    top = 6 * k + 6
+    climb_dir = h_along(side, dt)
+    seq = [(t + i * dt, base + 1 + i, "stair") for i in range(steps)]
+    seq += [(t + (steps + j) * dt, top, "landing") for j in range(land)]
+    end = t + (steps + land) * dt
+    for tt, y, what in seq:
+        for e in (-1, -2):
+            x, z = h_cell(k, side, e, tt)
+            for yy in range(base + 1, y):
+                b.set(x, yy, z, H_WALL)
+            if what == "stair":
+                stairs(b, x, y, z, "smooth_sandstone_stairs", climb_dir)
+            else:
+                b.set(x, y, z, H_COL)
+        # the outer face: cut sandstone pilasters every fourth, recesses between them under the balustrade's
+        # terracotta base, vines hanging in them
+        x, z = h_cell(k, side, -3, tt)
+        i = (tt - t) * dt
+        if i % 4 == 0:
+            for yy in range(base + 1, y):
+                b.set(x, yy, z, H_COL)
+        elif y - base > 2 and h_hash("ramp vine", n, tt) % 3:
+            inner = h_inward(side)
+            for yy in range(y - 1, max(base, y - 4), -1):
+                b.set(x, yy, z, "vine", **{d: d == inner for d in ("north", "south", "east", "west")}, up=False)
+        b.set(x, y, z, H_BAND)
+        wall_block(b, x, y + 1, z, "sandstone_wall")
+    for e in (-1, -2, -3):  # the landing's end
+        x, z = h_cell(k, side, e, end)
+        for yy in range(base + 1, top):
+            b.set(x, yy, z, H_COL if e == -3 else H_WALL)
+        b.set(x, top, z, H_BAND)
+        wall_block(b, x, top + 1, z, "sandstone_wall")
+    x, z = h_cell(k, side, -3, end)
+    lantern(b, x, top + 2, z)
+    x, z = h_cell(k, side, -3, t - dt)  # the foot: a post with a lantern
+    if b.get(x, base + 1, z) is None or k == 0:
+        wall_block(b, x, base + 1, z, "sandstone_wall")
+        lantern(b, x, base + 2, z)
+
+
+# --- the first terrace's foot ---------------------------------------------------------------------------------------------
+def h_foot(b):
+    """A step of smooth sandstone stairs round the first terrace (not where the pool comes), its corners full blocks;
+    beds of flowers and azaleas in front of the front's columns west of the ramp."""
+    x0, x1, z0, z1 = h_box(0)
+    for side in H_SIDES:
+        a0, a1 = h_run(0, side)
+        for t in range(a0, a1 + 1):
+            x, z = h_cell(0, side, -1, t)
+            if side == "E" and H_POOL[2] <= t <= H_POOL[3]:
+                continue
+            if b.get(x, 0, z) is None:
+                stairs(b, x, 0, z, "smooth_sandstone_stairs", h_inward(side))
+    for x, z in ((x0 - 1, z0 - 1), (x1 + 1, z0 - 1), (x0 - 1, z1 + 1), (x1 + 1, z1 + 1)):
+        b.set(x, 0, z, H_COL)
+    for t in range(x0 + 1, 26):
+        part = h_part(0, "N", t)
+        if part[0] == "bay" and part[2] == 1:
+            continue  # a way in to each arch
+        for z in (1, 2):
+            r = h_hash("bed", t, z)
+            b.set(t, 0, z, "grass_block", snowy=False)
+            plant = "flowering_azalea" if part[0] == "col" and z == 2 else H_FLOWERS[r % len(H_FLOWERS)]
+            if plant:
+                b.set(t, 1, z, plant)
+
+
+# --- the crown ------------------------------------------------------------------------------------------------------------
+def h_crown(b):
+    """The crown's garden on the fourth terrace (x 13-27, z 16-30, its soil at y 24): the cistern, its walk, its
+    channel east to the edge, trees, hives, an arbor of glow berries, a farm corner, flowers and berries."""
+    x0, x1, z0, z1 = h_box(3)
+    s = 24
+    cx, cz = H_C
+    for x in range(x0 + 1, x1):
+        for z in range(z0 + 1, z1):
+            dx, dz = x - cx, z - cz
+            if max(abs(dx), abs(dz)) <= 4:
+                b.set(x, s, z, "smooth_sandstone")  # the walk, the cistern's rim and floor
+            elif x <= x0 + 3 and abs(dz) <= 1:
+                b.set(x, s, z, "dirt_path")  # from the last ramp's landing
+            elif x >= cx + 4 and abs(dz) <= 2:
+                b.set(x, s, z, "smooth_sandstone")  # the channel's bed
+            else:
+                b.set(x, s, z, "grass_block", snowy=False)
+    # the hedge on the coping, open at the landing and the channel; lanterns on the corners
+    for x, z in outline({(x, z) for x in range(x0, x1 + 1) for z in range(z0, z1 + 1)}):
+        if (x, z) in ((x0, z0), (x1, z0), (x0, z1), (x1, z1)):
+            lantern(b, x, s + 1, z)
+        elif not (x == x0 and abs(z - cz) <= 1) and not (x == x1 and abs(z - cz) <= 2):
+            h_hedge(b, x, s + 1, z)
+    # the cistern: two courses, chiseled corners with lanterns, a slab cap; its mouth east into the channel
+    for dx in range(-3, 4):
+        for dz in range(-3, 4):
+            x, z = cx + dx, cz + dz
+            if max(abs(dx), abs(dz)) != 3:
+                continue
+            corner = abs(dx) == 3 and abs(dz) == 3
+            if not (dx == 3 and abs(dz) <= 1):
+                b.set(x, s + 1, z, H_COL)
+            b.set(x, s + 2, z, H_CAP if corner else H_WALL)
+            if corner:
+                b.set(x, s + 3, z, H_CAP)
+                lantern(b, x, s + 4, z)
+            else:
+                slab(b, x, s + 3, z, "smooth_sandstone_slab")
+    # the fountain's pillar in the middle
+    for y in (s + 1, s + 2):
+        b.set(cx, y, cz, H_WALL)
+    b.set(cx, s + 3, cz, H_CAP)
+    # the channel's kerbs
+    for x in range(cx + 4, x1 + 1):
+        for dz in (-2, 2):
+            slab(b, x, s + 1, cz + dz, "cut_sandstone_slab")
+    # trees, hives and the farm corner
+    h_tree(b, x0 + 1, s + 1, z0 + 1, "azalea")
+    h_tree(b, x1 - 1, s + 1, z0 + 1, "oak")
+    h_tree(b, x1 - 1, s + 1, z1 - 1, "azalea")
+    b.set(x0 + 1, s + 1, z1 - 1, "beehive", facing="east", honey_level=0)
+    b.set(x0 + 2, s + 1, z1 - 1, "beehive", facing="north", honey_level=0)
+    b.set(x0 + 1, s + 1, z1 - 2, "flowering_azalea")
+    b.set(cx - 2, s + 1, z0 + 1, "composter", level=0)
+    b.set(cx - 1, s + 1, z0 + 1, "chest", facing="south", type="single", waterlogged=False)
+    lamp_post(b, cx, s + 1, z0 + 1, post="oak_fence", height=1)
+    # the arbor over the south bed, the berries and flowers in the rest
+    for x in range(cx - 4, cx + 5):
+        for z in (z1 - 2, z1 - 1):
+            r = h_hash("crown arbor", x, z)
+            h_arbor_cell(b, x, s, z, (x - cx) % 4 == 0, r, x == cx and z == z1 - 1, beam=z == z1 - 2 or (x - cx) % 2 == 0)
+    for x in range(x0 + 1, x1):
+        for z in range(z0 + 1, z1):
+            if b.get(x, s, z) == ("minecraft:grass_block", (("snowy", "false"),)) and b.get(x, s + 1, z) is None:
+                r = h_hash("crown", x, z)
+                if z <= z0 + 2 and x >= cx + 1:
+                    b.set(x, s + 1, z, "sweet_berry_bush", age=3)
+                else:
+                    p = H_FLOWERS[r % len(H_FLOWERS)]
+                    if p:
+                        b.set(x, s + 1, z, p)
+
+
+def h_falls(b):
+    """The water: the cistern two deep, its fountain, the channel, the basins on the three ledges with the notches in
+    the coping their lips spill over, and the pool at the foot (cut sandstone kerb, lily pads)."""
+    cx, cz = H_C
+    for dx in range(-2, 3):
+        for dz in range(-2, 3):
+            if (dx, dz) != (0, 0):
+                for y in (25, 26):
+                    b.set(cx + dx, y, cz + dz, "water", level=0)
+    b.set(cx, 28, cz, "water", level=0)  # the fountain: it spills off the pillar's top into the cistern
+    x1 = h_box(3)[1]
+    for x in range(cx + 3, x1 + 1):
+        for z in range(H_FALLS[0], H_FALLS[1] + 1):
+            b.set(x, 25, z, "water", level=0)
+    for k in range(3):
+        for e in range(4):
+            for t in range(H_FALLS[0], H_FALLS[1] + 1):
+                x, z = h_cell(k, "E", e, t)
+                b.set(x, 6 * k + 6, z, "water", level=0)
+    px0, px1, pz0, pz1 = H_POOL
+    for x in range(px0, px1 + 1):
+        for z in range(pz0, pz1 + 1):
+            if x == px1 or z in (pz0, pz1):
+                b.set(x, 0, z, H_COL)
+            else:
+                b.set(x, 0, z, "water", level=0)
+                if h_hash("lily", x, z) % 5 == 0 and not (x == px0 and H_FALLS[0] <= z <= H_FALLS[1]):
+                    b.set(x, 1, z, "lily_pad")
+    for x, z in ((px1, pz0), (px1, pz1)):
+        lantern(b, x, 1, z)
+
+
+def hanging_gardens():
+    b = StagedBuild(HW, HH, HD)
+    b.begin(1)
+    b.fill(H_OX, 0, H_OZ, H_OX + 38, 0, H_OZ + 38, "smooth_sandstone")
+    h_terrace(b, 0)
+    h_vaults(b)
+    h_ramp(b, 0)
+    h_ledge(b, 0)
+    h_floor(b, 1)
+    h_vines(b, 0)
+    h_foot(b)
+    for k in (1, 2):
+        b.begin(k + 1)
+        h_ramp(b, k)
+        h_terrace(b, k)
+        h_ledge(b, k)
+        h_floor(b, k + 1)
+        h_vines(b, k)
+    b.begin(4)
+    h_ramp(b, 3)
+    h_terrace(b, 3)
+    h_crown(b)
+    h_vines(b, 3)
+    h_falls(b)
+    return b
+
+
+def hanging_gardens_stage(stage=None):
+    """For the renders only: the Hanging Gardens as they stand after a stage (whole by default)."""
+    stages = hanging_gardens().stage_builds()
+    return stages[(stage or len(stages)) - 1]
+
+
+def h_flow(b):
+    """For the renders only: the water run as the game runs it, from each still block: into air beside it where it can
+    fall (a level-1 block at the lip), straight down through air (falling water), stopping on water. Says so if any
+    would run out flat (a lip with ground under it: the game would flood the garden) or land on anything but water."""
+    still = [p for p, v in b.blocks.items() if v[0] == "minecraft:water"]
+    problems = []
+    for x, y, z in still:
+        for dx, dz in DIRS.values():
+            nx, nz = x + dx, z + dz
+            if not (0 <= nx < b.w and 0 <= nz < b.d) or b.get(nx, y, nz) not in (None, ("minecraft:air", ())):
+                continue
+            if y > 0 and b.get(nx, y - 1, nz) in (None, ("minecraft:air", ())):
+                b.set(nx, y, nz, "water", level=1)
+                yy = y - 1
+                while yy >= 0 and b.get(nx, yy, nz) in (None, ("minecraft:air", ())):
+                    b.set(nx, yy, nz, "water", level=8)
+                    yy -= 1
+                if yy >= 0 and b.get(nx, yy, nz)[0] != "minecraft:water":
+                    problems.append(f"falls from {x},{y},{z} land on {b.get(nx, yy, nz)[0]} at {nx},{yy},{nz}")
+            elif y > 0:
+                problems.append(f"water at {x},{y},{z} runs out flat to {nx},{y},{nz}")
+    for p in problems:
+        print("  FLOW", p)
+    return b
+
+
+def hanging_gardens_running(stage=None):
+    """For the renders only: a stage with its water running (the falls)."""
+    s = hanging_gardens_stage(stage)
+    out = Build(HW, HH, HD)
+    out.blocks = {p: v for p, v in s.blocks.items() if v[0] != "minecraft:air"}
+    out.nbt = dict(getattr(s, "nbt", {}))
+    return h_flow(out)
+
+
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
 def goods(*lines):
     out = []
@@ -3184,6 +3928,37 @@ WONDERS = {
         "powers": [
             {"type": "raid_barrier", "margin_degrees": 10},
             {"type": "sentries", "count": 4, "range": 16},
+        ],
+    },
+    "hanging_gardens": {
+        "draw": hanging_gardens,
+        "icon": "minecraft:flowering_azalea",
+        "crew": 12,
+        "requirements": [
+            {"type": "rank_at_least", "rank": "town"},
+            {"type": "legend", "id": "aliveworkplace:grand_chef",
+             "stand_in": [{"type": "job_level", "job": "aliveworkplace:chef", "level": 5, "count": 1},
+                          {"type": "meal_kinds", "count": 8}]},
+        ],
+        "goods": [
+            goods(("item", "minecraft:bone_meal", 128, "aliveworkplace:composter"),
+                  ("item", "minecraft:wheat_seeds", 128, "minecraft:farmer"),
+                  ("item", "minecraft:clay_ball", 64, "aliveworkplace:sifter")),
+            goods(("item", "minecraft:sweet_berries", 64, "aliveworkplace:orchard_keeper"),
+                  ("item", "minecraft:glow_berries", 32, "aliveworkplace:orchard_keeper"),
+                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
+                  ("tag", "minecraft:saplings", 16, "aliveworkplace:lumberjack")),
+            goods(("item", "minecraft:honey_bottle", 32, "aliveworkplace:beekeeper"),
+                  ("item", "minecraft:carrot", 64, "minecraft:farmer"),
+                  ("item", "minecraft:potato", 64, "minecraft:farmer"),
+                  ("item", "minecraft:cocoa_beans", 32, "aliveworkplace:orchard_keeper")),
+            goods(("item", "minecraft:cake", 16, "aliveworkplace:chef"),
+                  ("item", "minecraft:egg", 32, "minecraft:butcher"),
+                  ("item", "minecraft:cod", 32, "minecraft:fisherman")),
+        ],
+        "powers": [
+            {"type": "harvest", "scope": "realm", "extra_every": 4},
+            {"type": "births", "meals": 12, "per_day": 2},
         ],
     },
 }

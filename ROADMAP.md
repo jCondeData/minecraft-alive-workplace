@@ -4324,7 +4324,7 @@ Legends.
     in-game hour; the Coming days page lists a staged festival, wedding and caravan with their days;
   - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
     powers are in the README.
-- [ ] **35.19** **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
+- [x] **35.19** (review: pending 2026-10-12) **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
   31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
   soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four
   village farms), sweet and glow berry beds, flowering azaleas and oaks, vines and glow berries hanging over the
@@ -5635,3 +5635,13 @@ item waits.
   come out the same as before. The `wonder_gallery` scene now accepts a first-stage part that is only air (it clears
   the site, as `WonderBlueprintGameTests` already allowed; the Cathedral has two). Owner: say if you'd rather have
   solid tower bases for the 18,000.
+- **35.19 the Hanging Gardens' site, water and count** (lane-b-1012-0033, 2026-10-12): drawn with everything the item
+  lists, the terraces stand on the 39 x 39 foot (24 high, 31 to the crown's treetops), but the whole site is 47 x 44:
+  the falls' pool lies outside the foot on the east and the ramp's first flight runs along the front from the ground.
+  It is 16,245 blocks, within 10% of the 15,000, so the figure stays. The water (the cistern, the channel, a basin on each
+  ledge, the pool) is still water a builder pours from a bucket, all in stage IV, so the falls start when the crown is
+  finished; the arcade behind the falls and behind each ramp is blind. `WonderBlueprintGameTests` refused still water as
+  "nothing a player can't get" (it has no item of its own); it now accepts a block whose cost `MaterialRules` knows (a
+  water bucket), as the builder does. The cocoa beans are goods only: cocoa needs jungle logs, which the palette doesn't
+  have. Glow berries hang one block long, under solid blocks (a longer strand needs cave vine stems, which have no item
+  and a builder skips).

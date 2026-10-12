@@ -3,10 +3,10 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory and the Great Wall) are built, behind the 2.0 switch (see
+Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall and the Hanging Gardens) are built, behind the 2.0 switch (see
 Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17
+Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19
 
 ## What a player sees
 
@@ -138,6 +138,26 @@ blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter). It needs a Town
 Smith (or 4 iron golems and a Master Tinkerer while Legends are off). Its powers, the raid barrier and the sentries,
 come with 35.16.
 
+**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops, about
+16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all round with an
+arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a cut sandstone
+coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries hanging in the arch
+heads and lanterns. Inside the first terrace are the Cistern Vaults: a hall 29 by 29 of 36 columns round a pool with a
+chain pump, a doorway from the gallery on each side. Each ledge is a garden on the gallery's roof: a hedge of azalea and
+oak leaves on the coping, fields of wheat, carrots and beetroots between water channels, sweet berry beds, glow berry
+arbors, flower beds with azaleas, beehives, and on the corners oaks, flowering azalea trees and a farm corner with a
+composter and a chest on each level (four village farms). Vines hang down the columns and over the arches. A ramp
+spirals up, a stair with a balustrade on each side in turn: along the front from the ground, up the second terrace's east
+face, the third's back and the crown's west face. On the crown a cistern with a fountain pours down a channel to the east
+edge: the falls drop from a basin on each ledge to the next and into a pool with lily pads at the foot, past a blind,
+mossy stretch of arcade. Its stages: I *The First Terrace and the Cistern Vaults*, II *The Second Terrace*, III *The
+Third Terrace*, IV *The Crown Garden and the Falls* (the crown, its garden and cistern, the last ramp and the water,
+poured from buckets). Its goods: I 128 bone meal (Composter), 128 wheat seeds (Farmer), 64 clay balls (Sifter); II 64
+sweet berries and 32 glow berries (Orchard Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey
+bottles (Beekeeper), 64 carrots and 64 potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs
+(Butcher), 32 raw cod (Fisherman). It needs a Town and the Grand Chef (or a Master Chef and 8 kinds of meal in the store
+while Legends are off). Its powers, the bigger harvests and the faster births, come with 35.20.
+
 ## How it works
 
 **A Wonder is a data file** (35.2), `data/<namespace>/wonders/<id>.json`, read whenever data packs load, so a server
@@ -194,7 +214,7 @@ checks; stage parts are ordinary builds of the builder, using the Foundation Sto
 **Our Wonders' designs** (35.9 on) are drawn whole in `tools/blueprints/wonders.py`, one function each, stage by stage
 on a staged build that refuses to draw over an earlier stage's block; `wonder_stages()` cuts each stage into parts and
 `wonders.py` writes the Wonder's data file (`aliveworkplace:great_cathedral` is
-`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`, `aliveworkplace:observatory` is `.../observatory.json`, `aliveworkplace:great_wall` is `.../great_wall.json`) with those parts, so the two always agree. Each stage is checked
+`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`, `aliveworkplace:observatory` is `.../observatory.json`, `aliveworkplace:great_wall` is `.../great_wall.json`, `aliveworkplace:hanging_gardens` is `.../hanging_gardens.json`) with those parts, so the two always agree. Each stage is checked
 as it will stand, on the stages before it (nothing held up by nothing), and every stage leaves the site tidy, since the
 village lives beside it for days.
 
@@ -256,10 +276,10 @@ Planned: the Foundation Stone (a block).
 ## Known limits
 
 - No Wonder can be started in game yet: the plan can be drawn and placed, but there's no Foundation Stone to hand it
-  over (35.4). The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's and the Great Wall's
-  files ship (35.9, 35.11, 35.13, 35.17, 35.15), so they are on the Wonders page behind the 2.0 switch; their powers come
-  with 35.10, 35.12, 35.14, 35.18 and 35.16, and the other three Wonders' files with 35.19 to 35.23. Everything is behind
-  the 2.0 switch.
+  over (35.4). The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's and the
+  Hanging Gardens' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19), so they are on the Wonders page behind the 2.0
+  switch; their powers come with 35.10, 35.12, 35.14, 35.18, 35.16 and 35.20, and the other two Wonders' files with 35.21
+  and 35.23. Everything is behind the 2.0 switch.
 - A Wonder going up shows "how far along" by its stages done; the parts' own progress joins with 35.4.
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
@@ -283,8 +303,8 @@ the plan is refused outside the village and over a finished building and goes do
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall), and it uses no retired job block, no calcite and nothing a player can't get.
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
-in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; its card shows four of the stills, the rest are in its gallery).
+in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; its card shows four of the stills, the rest are in its gallery).

@@ -315,6 +315,26 @@ public class WonderCrewGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A builder on its job takes no fall damage (35.5: a crew's lead fell off the folly's dome, and its part ended
+	 * unbuilt); a villager with no build still does.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aBuilderOnItsJobTakesNoFallDamage(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(1, 2, 1));
+		Villager idle = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 1));
+		builder.setNoAi(true);
+		idle.setNoAi(true);
+		ModAttachments.BUILDER_JOB.set(builder, new io.github.jcondedata.aliveworkplace.build.BuilderJob(UUID.randomUUID(), false));
+		builder.hurt(level.damageSources().fall(), 6f);
+		idle.hurt(level.damageSources().fall(), 6f);
+		helper.assertTrue(builder.getHealth() == builder.getMaxHealth(), "a builder on its job was hurt by a fall: " + builder.getHealth());
+		helper.assertTrue(idle.getHealth() < idle.getMaxHealth(), "a villager with no build took no fall damage");
+		helper.succeed();
+	}
+
 	/** Saved and loaded mid-stage II with every member, the crew comes back together and finishes the folly as drawn. */
 	//$ gametest_ticks_batch TALL '24000' '"crewReload"'
 	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewReload")

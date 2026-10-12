@@ -838,6 +838,12 @@ public final class Builders {
 	/** The builder died: drop its bag and the blueprint where it fell, keep what was built. */
 	public static void onBuilderDeath(ServerLevel level, Villager villager) {
 		for (BuildSite queued : queue(level, villager)) {
+			if (queued.wonder() != null) {
+				// 35.5: a Wonder's part waiting for this builder goes to another; its site stays (a part whose site is
+				// gone counts as built, so removing it finished the Wonder with the part never put up)
+				io.github.jcondedata.aliveworkplace.wonder.WonderCrews.handOn(level, queued, villager);
+				continue;
+			}
 			if (!queued.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(queued.structure())) {
 				dropNear(level, villager.blockPosition(), blueprintFor(level, queued));
 			}
@@ -851,7 +857,17 @@ public final class Builders {
 				dropNear(level, villager.blockPosition(), stack);
 			}
 		}
-		if (site != null) {
+		if (site != null && site.wonder() != null) {
+			// 35.5: a crew member's death leaves its part to the rest of the crew; the lead's hands the part on (its site
+			// stays: a part whose site is gone counts as built, and a lead that fell off the dome finished the Wonder
+			// with the dome's top never put up).
+			ModAttachments.BUILDER_JOB.remove(villager);
+			if (!job.helper() && villager.getUUID().equals(site.builder()) && !site.isDone()) {
+				io.github.jcondedata.aliveworkplace.wonder.WonderCrews.handOn(level, site, villager);
+			} else {
+				site.release(villager.getUUID());
+			}
+		} else if (site != null) {
 			if (!site.isSteward() && !io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
 				dropNear(level, villager.blockPosition(), blueprintFor(level, site));
 			}

@@ -4520,7 +4520,17 @@ item waits.
   levelling the ground round stage III about 360. The test holds the crew to a third until this is solved; make it
   a quarter then. Fixed after the first full build (15 dome blocks missing): the lead of a crew reached its retries
   while the crew was still building below and gave up for good on blocks with nothing to hang on yet; now, while the
-  crew has work, the lead puts those to the back of its retries instead. Everything else of the Done when is met and tested (columns, layers, nothing hung in the air, the
+  crew has work, the lead puts those to the back of its retries instead. That wasn't the cause (lane-c-1012-0033,
+  2 to 3 failures in 8 runs of the test alone, with logging): the lead fell off the dome ("hit the ground too hard")
+  during stage III, `Builders.onBuilderDeath` removed its part's site, and a Wonder counts a part whose site is gone
+  as built, so the Wonder finished with the dome's top never put up. Now a Wonder part outlives its lead
+  (`WonderCrews.handOn`): it goes to the highest-level member of its crew, else the lead a next stage would get (in
+  their queue), else the first builder to join; a member's death just leaves its column. Decision (lane-c-1012-0033):
+  **a builder on its job takes no fall damage** (`BuilderEvents`, any build, not only Wonders): builders work on walls,
+  roofs and domes like professionals on scaffolds, and a crew jostling at the dome's edge lost 1 to 2 of 8 builders a
+  run to falls. Why they go over the edge (crewmates bumping, `hop`) isn't fixed; with the rule it costs a little
+  time, not a builder. `handOn` itself is now a safety net for other deaths (mobs, lava) and is not tested by a
+  GameTest of its own: with handOn but still with fall deaths, 2 of 10 runs stuck at stage 3, 0%, cause not found. Everything else of the Done when is met and tested (columns, layers, nothing hung in the air, the
   reload, scene `wonder_crew`).
 
 - 2026-10-11 (35.4, lane-c-1011-2132): **the Foundation Stone** decisions: (1) a lone builder can't reach the test

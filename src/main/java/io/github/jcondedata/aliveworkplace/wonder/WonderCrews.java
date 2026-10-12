@@ -104,6 +104,12 @@ public final class WonderCrews {
 			}
 			if (best != null) {
 				MEMBERS.computeIfAbsent(wonder.id(), k -> java.util.concurrent.ConcurrentHashMap.newKeySet()).add(villager.getUUID());
+				if (best.builder() == null) {
+					// a part whose lead died with nobody on its crew (handOn): the first builder to come leads it
+					best.setBuilder(villager.getUUID());
+					ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(best.id(), false));
+					return best;
+				}
 				ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(best.id(), true));
 				best.seen(villager.getUUID(), level.getGameTime());
 				return best;
@@ -138,6 +144,42 @@ public final class WonderCrews {
 
 	/** Who has joined each Wonder's crew since the server started (by Wonder id): who a next stage's lead is chosen from. */
 	private static final java.util.Map<UUID, java.util.Set<UUID>> MEMBERS = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/**
+	 * {@code dead}, the lead of (or next in line for) the Wonder's part {@code part}, died (35.5): the part goes to the
+	 * highest-level member of its crew still on it, else to the lead the Wonder would choose for a next stage (in their
+	 * queue), else it waits, unled, for the next builder to join. The part's site stays either way: a part whose site is
+	 * gone counts as built.
+	 */
+	public static void handOn(ServerLevel level, BuildSite part, Villager dead) {
+		UUID best = null;
+		int bestLevel = -1;
+		for (UUID id : part.helpers(level.getGameTime())) {
+			if (!id.equals(dead.getUUID()) && level.getEntity(id) instanceof Villager v && v.isAlive() && Builders.isBuilder(v)) {
+				int l = BuilderLevels.level(v);
+				if (l > bestLevel) {
+					best = id;
+					bestLevel = l;
+				}
+			}
+		}
+		if (best != null && level.getEntity(best) instanceof Villager v) {
+			part.release(best);
+			part.setBuilder(best);
+			part.setQueued(false);
+			ModAttachments.BUILDER_JOB.set(v, new BuilderJob(part.id(), false));
+			return;
+		}
+		UUID next = part.wonder() == null ? null : WonderManager.get(level).site(part.wonder())
+			.map(w -> lead(level, w, candidates(w, null), null)).orElse(null);
+		if (next != null && !next.equals(dead.getUUID())) {
+			part.setBuilder(next);
+			part.setQueued(true); // in their queue: picked up when they finish what they're on
+		} else {
+			part.setBuilder(null);
+			part.setQueued(false);
+		}
+	}
 
 	/**
 	 * Who {@code site}'s next stage's lead is chosen from: {@code lead} (the lead so far) first, then the builders who

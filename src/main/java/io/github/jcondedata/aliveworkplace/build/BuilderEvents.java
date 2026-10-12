@@ -423,6 +423,10 @@ public final class BuilderEvents {
 		Platform.get().allowDamage((entity, source, amount) ->
 			!(entity instanceof Villager villager && !entity.level().isClientSide() && (io.github.jcondedata.aliveworkplace.nether.Netherworkers.shields(villager, source)
 				|| io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount))));
+		// 35.5: a builder on its job takes no fall damage. Builders work up on walls, roofs and a Wonder's dome, and a crew
+		// jostles at the edges: eight on the test folly lost one or two to falls, and a lead's death ended its part.
+		Platform.get().allowDamage((entity, source, amount) -> !(entity instanceof Villager villager && !entity.level().isClientSide()
+			&& source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(villager)));
 		Platform.get().afterDeath((entity, source) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level) {
 				Builders.onBuilderDeath(level, villager);

@@ -160,6 +160,11 @@ public class PartnersAllCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '1600' '"partners_harvest"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_harvest")
 	public void aCombeeCirclesTheHive(GameTestHelper helper) {
+		// Alone in its batch: an earlier batch's worker left standing here (outside its own area, so never cleared) can
+		// take the Combee for its own show or the hive for its own harvest, and the beekeeper's one cue finds no free
+		// partner (B110: "had a show 0 ticks ago" was that other worker's refusal)
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		PartnerShowsCompatTests.clearHalls(helper);
 		PartnerShowsCompatTests.showsOn(helper);
 		Villager keeper = employ(helper, new BlockPos(2, 2, 2), ModBlocks.APIARY, ModVillagers.APIARY_POI, ModVillagers.BEEKEEPER,
 			new BlockPos(2, 2, 4), new ItemStack(Items.GLASS_BOTTLE, 2));

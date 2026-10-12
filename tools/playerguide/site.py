@@ -284,14 +284,19 @@ def render(md):
         if not first:
             first = plain(text)
         out.append(f"<p>{inline(text)}</p>")
-    # A section left empty by gated pages (only links to them) goes too.
+    # A section left empty by gated pages (only links to them) goes too: a ### with nothing under it before the next
+    # heading, then a ## left with nothing (or only such ###) under it. From the end, so an emptied ### empties its ##.
     kept = []
-    for n, chunk in enumerate(out):
-        if chunk.startswith("<h2") and (n + 1 == len(out) or out[n + 1].startswith("<h2")):
+    for chunk in reversed(out):
+        nxt = kept[-1] if kept else None
+        if chunk.startswith("<h3") and (nxt is None or nxt.startswith(("<h2", "<h3"))):
+            continue
+        if chunk.startswith("<h2") and (nxt is None or nxt.startswith("<h2")):
             hid = re.match(r'<h2 id="([^"]*)"', chunk).group(1)
             heads = [h for h in heads if h[0] != hid]
             continue
         kept.append(chunk)
+    kept.reverse()
     return title, "\n".join(kept), heads, first
 
 

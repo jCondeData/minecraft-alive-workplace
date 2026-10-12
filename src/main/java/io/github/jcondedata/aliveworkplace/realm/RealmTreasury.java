@@ -75,12 +75,17 @@ public final class RealmTreasury {
 		if (realm == null) {
 			return 0;
 		}
-		long cut = Math.min(levyOn(takings, realm.levy()), Math.max(0, capCents(server, realm) - realm.treasury()));
+		long cut = Math.min(levyOn(takings, levy(server, realm)), Math.max(0, capCents(server, realm) - realm.treasury()));
 		if (cut <= 0) {
 			return 0;
 		}
 		move(server, realm, cut, Component.translatable("screen.aliveworkplace.realm.treasury.levy_from", VillageHalls.name(level, hall).getString()));
 		return cut;
+	}
+
+	/** The levy {@code realm}'s members pay now, in percent: the capital's choice, plus the Common Market's points (33.22), 0 to 100. */
+	public static int levy(MinecraftServer server, RealmData.Realm realm) {
+		return Math.max(0, Math.min(100, realm.levy() + RealmEdicts.levyExtra(server, realm)));
 	}
 
 	/**
@@ -233,6 +238,10 @@ public final class RealmTreasury {
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.treasury.royal_hall", times), ChatFormatting.GOLD));
 		}
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.treasury.levy_line", realm.levy()), ChatFormatting.GRAY));
+		int extra = RealmEdicts.levyExtra(server, realm);
+		if (extra != 0) { // the Common Market (33.22)
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.realm.treasury.levy_edict", extra, levy(server, realm)), ChatFormatting.RED));
+		}
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.realm.treasury.pays_for", ChatFormatting.GRAY));
 		if (realm.ledger().isEmpty()) {
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.realm.treasury.no_movements", ChatFormatting.DARK_GRAY));

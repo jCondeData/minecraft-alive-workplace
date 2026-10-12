@@ -1,0 +1,49 @@
+{
+  "scope": "realm",
+  "icon": "minecraft:firework_rocket",
+  "name": {
+    "translate": "edict.aliveworkplace.realm_festival"
+  },
+  "description": {
+    "translate": "edict.aliveworkplace.realm_festival.desc"
+  },
+  "order": 23,
+  "boost": [
+    {
+      "type": "aliveworkplace:festival_together"
+    },
+    {
+      "type": "aliveworkplace:festival_mood_days",
+      "days": 3
+    }
+  ],
+  "cost": [
+    {
+      "type": "aliveworkplace:realm_festival_cost",
+      "emeralds": 10
+    }
+  ],
+  "excludes": [],
+  "reform": {
+    "name": {
+      "translate": "reform.aliveworkplace.square_lanterns"
+    },
+    "line": {
+      "translate": "reform.aliveworkplace.square_lanterns.line"
+    },
+    "steps": [
+      {
+        "kind": "bring",
+        "item": "minecraft:lantern",
+        "count": 32,
+        "reward": 5
+      }
+    ],
+    "count": {
+      "what": "aliveworkplace:realm_festivals",
+      "times": 3
+    },
+    "effects": []
+  },
+  "enabled": true
+}

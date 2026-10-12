@@ -3,10 +3,10 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, the Hanging Gardens and the Colossus) are built, behind the 2.0 switch (see
+Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, the Hanging Gardens, the Colossus and, with Cobblemon, the Stadium) are built, behind the 2.0 switch (see
 Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19, 35.21
+Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19, 35.21, 35.23
 
 ## What a player sees
 
@@ -176,6 +176,30 @@ coal (Miner), 8 iron pickaxes (Toolsmith); II 64 copper ingots (Armorer), 64 whi
 glowstone dust (Netherworker), 64 small flowers (Florist), 16 cakes (Chef). It needs a City and the Founder (or City rank
 while Legends are off). Its powers, the realm's mood, the travellers and its beauty, come with 35.22.
 
+**The Stadium** (35.23, only with Cobblemon) is drawn: an oval arena 47 by 37, its bowl 16 high (20 to the gate's
+banners and the floodlights, about 7,300 blocks), round a grass battle field 31 by 21 ruled in white (its edge, the
+half-way line, a centre circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
+time, five tiers along the long sides and three at the ends, with red and white carpet seats in wedges round the bowl;
+in a village with a Village Banner the red and the white are built in its banner's two colours instead (the base and
+the first other colour of its pattern; the field's white lines stay white). A trainer's box is cut into each end, a
+stone room under a spruce roof with a Training Post facing the field, and the professor's box stands raised in the
+middle of the south stand, a lectern behind its rail. The west end is the covered stand, under a lean-to canopy of
+spruce slabs on four spruce columns; over the east end stands the scoreboard, black terracotta in a stone frame under
+a red header, showing 2 - 1. Outside, the back wall is an arcade into a concourse that runs round under the top tier,
+with pilasters, two bands of red and white terracotta and a parapet with lanterns. The gateway on the north side is a
+tunnel through the stand under two piers and a lintel banded red and white, with standing banners on the piers and
+banners hung over the stand. Four floodlight towers stand at the corners, each an iron head with eight redstone lamps
+wired round a daylight detector that lights them at night. In the corners outside are the nurse's booth (a striped
+stall with a Healing Machine and a brewing stand) and seven market pitches, three with stalls on them. Its stages: I
+*The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The Gate and the Floodlights*.
+Its goods: I 128 bone meal (Composter), 64 small flowers (Florist), 32 Poké Balls (Ball Smith); II 64 red wool (Dyer)
+and 64 white wool (Shepherd), 16 Poké Snacks (Chef), 16 Great Balls (Ball Smith); III 16 banners (Carpenter), 64
+cooked beef (Chef), 32 berries (Orchard Keeper); IV 8 daylight detectors (Tinkerer), 16 Ultra Balls (Ball Smith), 32
+pumpkin pies (Chef). It needs a Town and the Pokémon Professor (or 25 pastured Pokémon of 10 types while Legends are
+off). Without Cobblemon its file isn't loaded, so it isn't on the Wonders page. M28's Arena is a smaller ring of its
+own, not a Stadium, so this one keeps the name Stadium. Its powers, Stadium Days and hosting the Festival Cup, come with
+35.24.
+
 ## How it works
 
 **A Wonder is a data file** (35.2), `data/<namespace>/wonders/<id>.json`, read whenever data packs load, so a server
@@ -322,7 +346,12 @@ the plan is refused outside the village and over a finished building and goes do
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
 roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
+The Stadium's file and its Healing Machine need Cobblemon, so its same checks run in the compat tests
+(`StadiumCompatTests`, 7,300 blocks), with its requirements and goods as listed, its nurse's booth, Training Posts and
+floodlights, and its stages built in a village's banner colours (blue and red for a blue banner with a red stripe, the
+field's lines still white; red and white for a village without one). `StadiumGameTests`, without Cobblemon: its file
+is skipped quietly (not on the page, no mistake logged), and the colours style and how a banner picks it.
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
-in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; the Colossus faces its front, down the road through its arch; its card shows four of the stills, the rest are in its gallery).
+in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; the Colossus faces its front, down the road through its arch; the Stadium needs Cobblemon, so the scene is filmed with it; its card shows four of the stills, the rest are in its gallery).

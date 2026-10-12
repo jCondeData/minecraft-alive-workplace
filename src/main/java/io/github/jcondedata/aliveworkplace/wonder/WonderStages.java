@@ -1,9 +1,11 @@
 package io.github.jcondedata.aliveworkplace.wonder;
 
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.hall.VillageBanners;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayList;
@@ -58,9 +60,10 @@ public final class WonderStages {
 		BuildSiteManager sites = BuildSiteManager.get(level);
 		List<BuildSite> made = new ArrayList<>();
 		UUID owner = site.owner().orElse(new UUID(0L, 0L));
+		String colours = wonder.get().villageColours() ? VillageBanners.wonderStyle(VillageBanners.of(level, site.hall())) : null;
 		for (Wonder.Part part : wonder.get().stages().get(site.stage() - 1).parts()) {
 			BlockPos origin = at.origin().offset(StructureTemplate.transform(part.offset(), at.mirror(), at.rotation(), BlockPos.ZERO));
-			BuildSite build = sites.create(owner, site.ownerName(), part.part(),
+			BuildSite build = sites.create(owner, site.ownerName(), BlueprintStyles.styled(part.part(), colours),
 				new BlueprintData.Placement(at.dimension(), origin, at.rotation(), at.mirror()));
 			build.setWonder(site.id());
 			site.stone().ifPresent(build::setBench);

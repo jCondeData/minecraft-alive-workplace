@@ -1,0 +1,55 @@
+{
+  "scope": "realm",
+  "icon": "minecraft:barrel",
+  "name": {
+    "translate": "edict.aliveworkplace.common_market"
+  },
+  "description": {
+    "translate": "edict.aliveworkplace.common_market.desc"
+  },
+  "order": 21,
+  "boost": [
+    {
+      "type": "aliveworkplace:common_board"
+    },
+    {
+      "type": "aliveworkplace:member_spread",
+      "points": 0
+    }
+  ],
+  "cost": [
+    {
+      "type": "aliveworkplace:levy",
+      "points": 5
+    }
+  ],
+  "excludes": [],
+  "reform": {
+    "name": {
+      "translate": "reform.aliveworkplace.weights_and_measures"
+    },
+    "line": {
+      "translate": "reform.aliveworkplace.weights_and_measures.line"
+    },
+    "steps": [
+      {
+        "kind": "bring",
+        "item": "minecraft:gold_ingot",
+        "count": 8,
+        "reward": 5
+      },
+      {
+        "kind": "bring",
+        "item": "minecraft:paper",
+        "count": 16,
+        "reward": 3
+      }
+    ],
+    "count": {
+      "what": "aliveworkplace:board_trades",
+      "times": 20
+    },
+    "effects": []
+  },
+  "enabled": true
+}

@@ -89,6 +89,7 @@ public final class Treasury {
 		float wellbeing = entity.needs() == null ? 0.5f : entity.needs().wellbeing();
 		long days = Math.min(MAX_DAYS, day - last);
 		long add = (long) takings(workers, wellbeing, rank) * days;
+		add = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.takings(level, hall, add); // the Crown's Peace (33.22)
 		add -= io.github.jcondedata.aliveworkplace.realm.RealmTreasury.levy(level, hall, add); // the realm's levy first (33.13)
 		int before = entity.treasury();
 		long cap = cap(entity) * 100L;
@@ -101,6 +102,7 @@ public final class Treasury {
 		entity.addTreasuryTotal(entity.treasury() - before);
 		io.github.jcondedata.aliveworkplace.realm.Leaderboard.earned(level, hall, entity.treasury() - before); // the week's takings, as they went in (33.19)
 		io.github.jcondedata.aliveworkplace.story.ReformStories.takings(level, hall, day, entity.treasury() - before); // the Fair Ledger (31.22)
+		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.dues(level, hall, entity, days); // the Levy of Arms' dues into the realm treasury (33.22)
 	}
 
 	/**

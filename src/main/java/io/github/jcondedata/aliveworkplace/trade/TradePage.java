@@ -302,8 +302,9 @@ public final class TradePage {
 		Caravans.Data data = Caravans.Data.get(level);
 		Market market = data.market(hall);
 		Market.Price price = market.prices().get(good.id());
-		int pays = price == null ? good.basePrice() : price.cents();
-		int yesterday = price == null ? pays : price.yesterday();
+		int own = price == null ? good.basePrice() : price.cents();
+		int pays = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.commonPrice(level, hall, good.id(), own); // the Common Market (33.22)
+		int yesterday = (price == null ? own : price.yesterday()) + (pays - own);
 		Component village = VillageHalls.name(level, hall);
 		Set<String> marks = new LinkedHashSet<>();
 		List<Component> lore = new ArrayList<>();
@@ -312,10 +313,13 @@ public final class TradePage {
 		}
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.bundle", good.bundle()), ChatFormatting.GRAY));
 		// A feud (33.20): a rival's people are charged 25% more and paid 25% less
-		int charged = Board.share(selling(level, hall, pays), io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, viewer, true));
+		int charged = Board.share(selling(level, hall, pays, viewer), io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, viewer, true));
 		int paid = Board.share(pays, io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, viewer, false));
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.sells", money(charged)), ChatFormatting.GREEN));
 		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.pays", money(paid)), ChatFormatting.YELLOW));
+		if (pays != own) {
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.common_board"), ChatFormatting.AQUA));
+		}
 		if (paid != pays) {
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.feud.board_rival"), ChatFormatting.RED));
 		}
@@ -466,6 +470,11 @@ public final class TradePage {
 	/** What the village at {@code hall} sells a bundle for when it pays {@code cents} for one. */
 	public static int selling(ServerLevel level, BlockPos hall, int cents) {
 		return selling(cents, sellPercent(level, hall));
+	}
+
+	/** What the village at {@code hall} sells a bundle to {@code buyer} for: the Common Market (33.22) drops the spread for the realm's people. */
+	public static int selling(ServerLevel level, BlockPos hall, int cents, @Nullable net.minecraft.world.entity.player.Player buyer) {
+		return selling(cents, io.github.jcondedata.aliveworkplace.realm.RealmEdicts.sellPercent(level, hall, buyer, sellPercent(level, hall)));
 	}
 
 	/** A price as players read it: "0.88 emeralds", "1.4 emeralds", "1 emerald"; with the pack, "88 CobbleDollars". */

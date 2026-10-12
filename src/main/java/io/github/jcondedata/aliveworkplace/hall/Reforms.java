@@ -95,16 +95,37 @@ public final class Reforms {
 		return DataResult.success(s);
 	}
 
-	/** A reform as an edict file writes it: its name, its line, its steps, what replaces the cost, and an arc id for M31. */
-	public record Reform(Component name, Component line, List<Step> steps, List<CivicEffects.Effect> effects, Optional<String> arc) {
+	/**
+	 * A realm reform's count (33.22): {@code times} of {@code what} across the realm's villages while the edict is in
+	 * force ({@code realm/RealmEdicts} counts them: {@code caravans_between_members}, {@code board_trades},
+	 * {@code raids_beaten_with_relief}, {@code realm_festivals}, {@code days_without_raid}, {@code colonies_at_village_rank}).
+	 */
+	public record Count(ResourceLocation what, int times) {
+		public static final Codec<Count> CODEC = RecordCodecBuilder.create(i -> i.group(
+			ResourceLocation.CODEC.fieldOf("what").forGetter(Count::what),
+			Codec.intRange(1, 100000).fieldOf("times").forGetter(Count::times)
+		).apply(i, Count::new));
+	}
+
+	/**
+	 * A reform as an edict file writes it: its name, its line, its steps, what replaces the cost, an arc id for M31, and
+	 * (a realm edict's, 33.22) a count across the realm that must be reached too.
+	 */
+	public record Reform(Component name, Component line, List<Step> steps, List<CivicEffects.Effect> effects, Optional<String> arc, Optional<Count> count) {
 		public static final Codec<Reform> CODEC = RecordCodecBuilder.create(i -> i.group(
 			ComponentSerialization.CODEC.fieldOf("name").forGetter(Reform::name),
 			ComponentSerialization.CODEC.optionalFieldOf("line", Component.empty()).forGetter(Reform::line),
 			STEP.listOf().validate(l -> l.isEmpty() ? DataResult.error(() -> "a reform needs steps") : DataResult.success(l))
 				.fieldOf("steps").forGetter(Reform::steps),
 			CivicEffects.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(Reform::effects),
-			Codec.STRING.optionalFieldOf("arc").forGetter(Reform::arc)
+			Codec.STRING.optionalFieldOf("arc").forGetter(Reform::arc),
+			Count.CODEC.optionalFieldOf("count").forGetter(Reform::count)
 		).apply(i, Reform::new));
+
+		/** A reform without a count (M30's). */
+		public Reform(Component name, Component line, List<Step> steps, List<CivicEffects.Effect> effects, Optional<String> arc) {
+			this(name, line, steps, effects, arc, Optional.empty());
+		}
 	}
 
 	/**
@@ -148,7 +169,8 @@ public final class Reforms {
 
 	/**
 	 * The reform steps the quest page shows, in the order of the edicts in force: one per edict in force that has a
-	 * reform and isn't reformed, once its step is up. None while edicts are switched off.
+	 * reform and isn't reformed, once its step is up; then (at a realm's capital, 33.22) the realm edicts' steps, which
+	 * {@code realm/RealmEdicts} puts up and takes down. None while edicts are switched off.
 	 */
 	public static List<VillageQuests.Quest> shown(VillageHallBlockEntity entity) {
 		List<VillageQuests.Quest> out = new ArrayList<>();
@@ -161,7 +183,16 @@ public final class Reforms {
 			}
 			entity.quests().stream().filter(q -> q.reform().map(r -> r.edict().equals(f.id())).orElse(false)).findFirst().ifPresent(out::add);
 		}
+		if (io.github.jcondedata.aliveworkplace.realm.RealmEdicts.on()) {
+			entity.quests().stream().filter(q -> q.reform().map(r -> realm(r.edict())).orElse(false)).forEach(out::add);
+		}
 		return out;
+	}
+
+	/** Whether the edict {@code id} is a realm edict (33.22). */
+	public static boolean realm(String id) {
+		ResourceLocation rl = ResourceLocation.tryParse(id);
+		return rl != null && Edicts.get(rl).map(Edicts.Edict::realm).orElse(false);
 	}
 
 	/** Whether the village round {@code hall} can fight a battle step: Cobblemon is there and so is a trainer. */
@@ -175,6 +206,7 @@ public final class Reforms {
 	 * and when an edict is proclaimed.
 	 */
 	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.round(level, hall, entity); // 33.22: the realm's steps at its capital
 		if (!Edicts.ENABLED) {
 			return;
 		}
@@ -229,6 +261,10 @@ public final class Reforms {
 	 * the edict is reformed for good.
 	 */
 	static void stepDone(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, VillageQuests.ReformStep done, @Nullable ServerPlayer player) {
+		if (realm(done.edict())) { // 33.22: the realm keeps a realm edict's reform
+			io.github.jcondedata.aliveworkplace.realm.RealmEdicts.stepDone(level, hall, done, player);
+			return;
+		}
 		Progress progress = progress(entity, done.edict());
 		if (progress.reformed() || done.step() != progress.step()) {
 			return;

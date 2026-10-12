@@ -100,7 +100,9 @@ final class CupChampionsScene {
 				player(server).closeContainer();
 				VillageHallScreen.open(player(server), ASHFORD);
 				if (player(server).containerMenu instanceof ChoiceMenu m) {
-					named = String.valueOf(m.icon(VillageHallScreen.NAME).get(net.minecraft.core.component.DataComponents.LORE)).contains("Holders of the Thornholm Cup");
+					var lore = m.icon(VillageHallScreen.NAME).get(net.minecraft.core.component.DataComponents.LORE);
+					// the lines as the tooltip reads them (the lore's own toString prints translation keys, not text)
+					named = lore != null && lore.lines().stream().anyMatch(l -> l.getString().contains("Holders of the Thornholm Cup"));
 				}
 			});
 		}
@@ -148,6 +150,8 @@ final class CupChampionsScene {
 		CupData.Cup cup = CupData.get(level).cup(HALL);
 		cup.champions.add(new CupData.Champion(9, GRAND, "Mira", HALL, UUID.nameUUIDFromBytes("mira".getBytes())));
 		CupData.get(level).setDirty();
+		// the halls' records are filed only in vanilla's next task; the pole goes to the Arena whose nearest hall is the host's
+		ScreenshotHarness.fileRecords(level, HALL, 40);
 		CupChampions.fly(level, HALL);
 		BlockPos pole = pole();
 		Showcase.check(CupChampions.isCupBanner(level, pole.north()) || CupChampions.isCupBanner(level, pole.south()),

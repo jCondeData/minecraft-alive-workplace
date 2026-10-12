@@ -3438,6 +3438,8 @@ final class JobScenes {
 				subject.setNoAi(true);
 				subject.setYRot(0);
 				subject.setYHeadRot(0);
+				// the hall's record is filed only in vanilla's next task: filed now, the Legend is recorded as this village's
+				ScreenshotHarness.fileRecords(level, STATION, 8);
 				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, subject, legend, "showcase");
 				io.github.jcondedata.aliveworkplace.legend.LegendPowers.forget();
 				List<String> species = new java.util.ArrayList<>();
@@ -5588,6 +5590,13 @@ final class JobScenes {
 					Villager v = bornSceneVillager(level, new BlockPos(-3 + i, -60, 3), names[i], false);
 					v.setVillagerData(v.getVillagerData().setProfession(i == 0 ? net.minecraft.world.entity.npc.VillagerProfession.NONE
 						: i == 1 ? net.minecraft.world.entity.npc.VillagerProfession.LIBRARIAN : i < 4 ? ModVillagers.CARPENTER : net.minecraft.world.entity.npc.VillagerProfession.FARMER));
+					if (i > 0) { // the five who work have their workstations: the census counts only those as workers, who pay the takings
+						BlockPos station = new BlockPos(-3 + i, -60, 7);
+						level.setBlockAndUpdate(station, (i == 1 ? net.minecraft.world.level.block.Blocks.LECTERN
+							: i < 4 ? ModBlocks.CARPENTERS_BENCH : net.minecraft.world.level.block.Blocks.COMPOSTER).defaultBlockState());
+						io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, v, station, i == 1 ? net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN
+							: i < 4 ? ModVillagers.CARPENTERS_BENCH_POI : net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER, v.getVillagerData().getProfession());
+					}
 					io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(
 						io.github.jcondedata.aliveworkplace.AliveWorkplace.id(classes[i])));
 				}
@@ -5597,15 +5606,15 @@ final class JobScenes {
 			},
 			List.of(new Step("01_noble_ball_guests", -1, 0, (level, player) -> {
 					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
-					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) + 1;
-					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START - 500);
+					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) + 1; // tomorrow (days count from 1: day d starts at (d - 1) * 24000)
+					level.setDayTime((today - 1) * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START - 500);
 					hall.setBallTurn(false);
 					io.github.jcondedata.aliveworkplace.hall.Festivals.plan(level, STATION, hall, today, 0); // the first festival: a plain one
 					boolean first = io.github.jcondedata.aliveworkplace.hall.NobleBalls.isBall(hall, today);
 					hall.setFestivalDay(-1);
 					io.github.jcondedata.aliveworkplace.hall.Festivals.plan(level, STATION, hall, today, 0); // the next: the ball
 					Showcase.check(!first && io.github.jcondedata.aliveworkplace.hall.NobleBalls.isBall(hall, today), "every other festival is a Noble's Ball");
-					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START + 200);
+					level.setDayTime((today - 1) * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.START + 200);
 					io.github.jcondedata.aliveworkplace.hall.Festivals.round(level, STATION, hall, 6);
 					var square = io.github.jcondedata.aliveworkplace.hall.Festivals.square(level, STATION);
 					Showcase.check(square.equals(STATION), "the guests gather at the hall (no Manor): " + square);
@@ -5615,7 +5624,7 @@ final class JobScenes {
 				}, 40),
 				new Step("02_noble_ball_fireworks", -1, 0, (level, player) -> {
 					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
-					level.setDayTime(today * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.FIREWORKS + 100);
+					level.setDayTime((today - 1) * 24000 + io.github.jcondedata.aliveworkplace.hall.Festivals.FIREWORKS + 100);
 					for (int i = 0; i < 6; i++) {
 						io.github.jcondedata.aliveworkplace.hall.Festivals.launch(level, STATION.offset(-4 + i * 2, 1, 4 + (i % 2) * 2),
 							io.github.jcondedata.aliveworkplace.hall.NobleBalls.GOLD);

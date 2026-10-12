@@ -54,6 +54,44 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Plague and the Physician](plague.md): when illness spreads through a town, the doctor who goes house to house, and the Remedy.
 - [Fire and the Firewarden](fire.md): how a wooden village catches fire, and the villager who puts it out.
 
+### Village life A to Z
+
+- [Babies and growth](babies-and-growth.md): what a village needs to have babies, and how big it can get.
+- [Bandstand](bandstand-build.md): an eight-sided stage with the Bard's jukebox.
+- [Chatter](chatter.md): what villagers say to you, and what it tells you.
+- [Couples and weddings](couples-and-weddings.md): courting, weddings at the Chapel or the bell, and mourning.
+- [Decorations](decorations.md): beauty, and why a pretty village works faster.
+- [Food and diet](food-and-diet.md): the village store, meals and a varied diet.
+- [Fountain](fountain-build.md): a stone fountain for the square.
+- [Gazebo](gazebo-build.md): an open timber gazebo with benches.
+- [Graves](graves.md): what a villager leaves behind, and bringing them back.
+- [Market days](market-days.md): traveling traders once a week.
+- [Market Square](market-square-build.md): the paved square, its bell and its markets.
+- [Moods](moods.md): what makes a villager happy or unhappy, point by point.
+- [Names](names.md): every villager's own name.
+- [Park Bench](park-bench-build.md): a bench between hedges.
+- [Ranks](ranks.md): Hamlet, Village, Town and City, and what each brings.
+- [Research](research.md): every topic in the scholars' tree.
+- [Seasons](seasons.md): the village calendar.
+- [Sickness](sickness.md): who falls ill, and the cures.
+- [Street Lamp](street-lamp-build.md): a lamp post with two lanterns.
+- [The village map](village-map.md): a map of the village from the hall.
+- [Traits](traits.md): the eight traits and what they do.
+- [Treasury](treasury.md): the village's daily takings.
+- [Village needs](village-needs.md): food, beds, safety and wellbeing.
+- [Well](well-build.md): the village well, and Well II.
+- [Work pace](work-pace.md): what speeds a worker up and slows them down.
+
+### Defense
+
+- [Bandit camps](bandit-camps.md): the bandits' camp and its chief.
+- [Palisade](palisade-build.md): a wooden wall, and Palisade II.
+- [Palisade Gate](palisade-gate-build.md): the gate that shuts at night.
+- [Palisade Tower](palisade-tower-build.md): a log tower for the corners.
+- [Raids](raids.md): monsters at night, and a day's warning.
+- [Threat Level](threat-level.md): one dial for how much trouble comes.
+- [Village protection](village-protection.md): keeping other players from griefing your village.
+
 ## With Cobblemon
 
 - [Pokémon and villagers](pokemon.md): Pokémon partners that speed up the work, trainers to battle, move tutors, ball
@@ -62,6 +100,26 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 ## For server owners
 
 - [Settings](settings.md): what a server owner can switch on and off or tune, in plain words.
+
+### Settings and commands
+
+- [Reach and range settings](settings-reach-and-range.md): how far workers, builders and villages reach.
+- [Worker limits and performance](settings-worker-limits-and-performance.md): keeping a big server light.
+- [Village life switches](settings-village-life-switches.md): names, traits, moods, sickness, weddings, chatter and
+  more.
+- [Threat settings](settings-threats.md): raids, bandit camps, the Threat Level and protection.
+- [Festival and market settings](settings-festivals-and-market-days.md): festivals and market days.
+- [Quest and treasury settings](settings-quests-and-treasury.md): quests, the treasury and the daily takings.
+- [Seasons and pace settings](settings-seasons-and-pace.md): the calendar and the fastest work pace.
+- [CobbleDollar Rate](settings-cobbledollar-rate.md): emeralds in CobbleDollars.
+- [Game rules](game-rules.md): the nine `/gamerule` settings.
+- [/workplace blueprints](command-blueprints.md), [/workplace blueprint](command-blueprint.md) and
+  [/workplace import](command-import.md): the server's blueprints.
+- [/workplace sites](command-sites.md) and [/workplace cancel](command-cancel.md): your work in progress.
+- [/workplace mail](command-mail.md): your parcels.
+- [/workplace strip](command-strip.md): a strip mine at a chosen height.
+- [/workplace friend](command-friend.md): your crew list.
+- [/workplace threat](command-threat.md): raids and camps on demand.
 
 ## Installing
 

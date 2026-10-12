@@ -10,7 +10,7 @@ Builder game rules: 9
 Threat Level: 0 to 3, normally 2
 Commands: start with /workplace
 categories: Settings
-related: defence.md, builder.md, village-hall.md
+related: defence.md, builder.md, village-hall.md, game-rules.md
 ```
 
 Everything here starts on with sensible numbers, so most servers never need to touch it. This page is for whoever runs
@@ -33,52 +33,52 @@ looking after. On the settings screen they are:
 
 | Setting | When it's on |
 |---|---|
-| Villager Names | villagers in a village with a hall get names |
-| Villager Traits | villagers have traits (diligent, lazy, nimble...) |
-| Moods | villagers' moods change how fast they work |
-| Sickness | villagers fall ill now and then (a Nurse cures them) |
-| Weddings | villagers court, marry and mourn |
-| Villager Chatter | villagers now and then say something to players nearby |
-| Festivals | villages hold a festival every eight days (a cake still calls one when it's off) |
-| Market Days | a village with a Market Square holds a weekly market |
-| Village Quests | halls post quests for players |
-| Village Treasury | villages put by takings every morning |
-| Village Protection | a hall's owner may protect their village from other players |
-| Monster Raids | monsters raid bigger villages at night |
-| Bandit Camps | bandits make camp near villages and raid them until their chief falls |
-| Builder Repairs | idle builders repair what they built |
-| Builder Paths | builders lay a dirt path from each new building to the village center |
-| Villages Work Unseen | villages keep working while no player is near (as long as someone is online) |
+| [Villager Names](names.md) | villagers in a village with a hall get names |
+| [Villager Traits](traits.md) | villagers have traits (diligent, lazy, nimble...) |
+| [Moods](moods.md) | villagers' moods change how fast they work |
+| [Sickness](sickness.md) | villagers fall ill now and then (a Nurse cures them) |
+| [Weddings](couples-and-weddings.md) | villagers court, marry and mourn |
+| [Villager Chatter](chatter.md) | villagers now and then say something to players nearby |
+| [Festivals](settings-festivals-and-market-days.md) | villages hold a festival every eight days (a cake still calls one when it's off) |
+| [Market Days](market-days.md) | a village with a Market Square holds a weekly market |
+| [Village Quests](settings-quests-and-treasury.md) | halls post quests for players |
+| [Village Treasury](treasury.md) | villages put by takings every morning |
+| [Village Protection](village-protection.md) | a hall's owner may protect their village from other players |
+| [Monster Raids](raids.md) | monsters raid bigger villages at night |
+| [Bandit Camps](bandit-camps.md) | bandits make camp near villages and raid them until their chief falls |
+| [Builder Repairs](settings-village-life-switches.md) | idle builders repair what they built |
+| [Builder Paths](settings-village-life-switches.md) | builders lay a dirt path from each new building to the village center |
+| [Villages Work Unseen](settings-worker-limits-and-performance.md) | villages keep working while no player is near (as long as someone is online) |
 
 ## Tune the numbers
 
 | Setting | Normally | What it changes |
 |---|---|---|
-| Chest Reach | 8 blocks | how close chests must be to a workstation to be its supply chests |
+| [Chest Reach](settings-reach-and-range.md) | 8 blocks | how close chests must be to a workstation to be its supply chests |
 | Build Distance | 48 blocks | how far from their table a builder takes a build |
 | Guard Patrol Range | 24 blocks | how far from their post guards fight |
-| Lumberjack Range, Orchard Range, Fisherman Range | 16 blocks | how far those workers look for trees, fruit and water |
+| [Lumberjack Range, Orchard Range, Fisherman Range](settings-reach-and-range.md) | 16 blocks | how far those workers look for trees, fruit and water |
 | Explorer Range | 48 blocks | how far explorers go on an expedition |
 | Partner Reach | 16 blocks | how close pastured Pokémon must be to help a worker |
 | Postman Round | 64 blocks | how far a postman walks (farther mail arrives at dawn) |
 | Village Size | 48 blocks | workers this close together share their chests |
 | Village Hall Reach | 64 blocks | how far from its hall a village reaches |
-| Population Cap | 40 | a village stops having babies at this many villagers |
-| Days per Season | 16 | how long each of the four seasons lasts |
-| Daily Takings | a fifth of an emerald | what each worker brings the treasury a day |
-| Fastest Work Pace | twice the usual | the most all bonuses together can speed a worker up |
-| CobbleDollar Rate | 100 | CobbleDollars per emerald for shops, lessons and fares |
-| Threat Level | 2 | how much trouble comes to villages: 0 none at all, 1 gentle (half as often), 2 normal, 3 hard (half again as often, and a quarter more raiders). On Peaceful nothing comes. |
+| [Population Cap](babies-and-growth.md) | 40 | a village stops having babies at this many villagers |
+| [Days per Season](seasons.md) | 16 | how long each of the four seasons lasts |
+| [Daily Takings](settings-quests-and-treasury.md) | a fifth of an emerald | what each worker brings the treasury a day |
+| [Fastest Work Pace](work-pace.md) | twice the usual | the most all bonuses together can speed a worker up |
+| [CobbleDollar Rate](settings-cobbledollar-rate.md) | 100 | CobbleDollars per emerald for shops, lessons and fares |
+| [Threat Level](threat-level.md) | 2 | how much trouble comes to villages: 0 none at all, 1 gentle (half as often), 2 normal, 3 hard (half again as often, and a quarter more raiders). On Peaceful nothing comes. |
 
 ## For a big server
 
-Three settings keep many villages light on the server: **Workers per Village** (a limit on workers in one village; nobody
+Three settings keep many villages light on the server ([Worker limits and performance](settings-worker-limits-and-performance.md)): **Workers per Village** (a limit on workers in one village; nobody
 loses a job they have), **Worker Path Range** (how far workers plan a walk at once) and **Villages Work Unseen** (off:
 villages nobody is near take a break).
 
 ## Builder game rules
 
-Change these in game with `/gamerule <name> <value>`:
+Change these in game with `/gamerule <name> <value>` (more in [Game rules](game-rules.md)):
 
 | Game rule | What it does |
 |---|---|
@@ -96,12 +96,12 @@ Change these in game with `/gamerule <name> <value>`:
 
 | Command | What it does |
 |---|---|
-| `/workplace friend add <name>` | lets a friend give orders to your builders and open your things (`remove` and `list` too) |
-| `/workplace sites` | your builds in progress, with a cancel button |
-| `/workplace cancel <build>` | stops a build; what's built stays and you get the blueprint back |
-| `/workplace mail` | where your parcels are |
-| `/workplace strip <height>` | with a Quarry Marker in hand: a strip mine at that height |
+| [`/workplace friend add <name>`](command-friend.md) | lets a friend give orders to your builders and open your things (`remove` and `list` too) |
+| [`/workplace sites`](command-sites.md) | your builds in progress, with a cancel button |
+| [`/workplace cancel <build>`](command-cancel.md) | stops a build; what's built stays and you get the blueprint back |
+| [`/workplace mail`](command-mail.md) | where your parcels are |
+| [`/workplace strip <height>`](command-strip.md) | with a Quarry Marker in hand: a strip mine at that height |
 
-Operators also have `/workplace blueprint <name>` to get any blueprint, and `/workplace threat` for events at the
+Operators also have [`/workplace blueprint <name>`](command-blueprint.md) to get any blueprint, [`/workplace blueprints`](command-blueprints.md) to list them, [`/workplace import`](command-import.md) to bring in build files, and [`/workplace threat`](command-threat.md) for events at the
 nearest Village Hall: `start monsters` (or `bandits`) sends a raid now, `lair bandits` sets a bandit camp down by the
 village, `end` sends the raiders away, and `clear` clears the village of raiders, camps and the raids it was due.

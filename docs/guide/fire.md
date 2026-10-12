@@ -13,7 +13,7 @@ Bucket brigade: from Journeyman
 Building: the Fire Station
 Pokémon: Water types help
 categories: Disasters, Defense, Jobs
-related: drought.md, plague.md, defence.md
+related: firewarden.md, fire-station-build.md, disasters.md, drought.md, plague.md, defence.md
 ```
 
 A village built of wood can burn. Lightning in a thunderstorm can set a roof alight, a chimney spark can do it on a

@@ -12,7 +12,7 @@ Answered by: the Well Keeper (a shovel at a cauldron)
 Building: the Well House
 Pokémon: Water types help
 categories: Disasters, Jobs
-related: plague.md, fire.md, jobs-land.md
+related: well-keeper.md, well-house-build.md, disasters.md, plague.md, fire.md, jobs-land.md
 ```
 
 When the rain stays away for five days, a village can fall into a **drought**. Villages in the desert, the savanna and

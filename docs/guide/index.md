@@ -231,6 +231,50 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   [Scholar's Infusion](scholars-infusion.md), [Builder's Tea](builders-tea.md), [Harvest Cordial](harvest-cordial.md)
   and [Woodsman's Broth](woodsmans-broth.md).
 
+### Disasters and realms
+
+- [Disasters](disasters.md): fire, drought and plague, and the jobs that answer them.
+- [Firewarden](firewarden.md): the villager who runs toward the smoke.
+- [Well Keeper](well-keeper.md): water for the cauldrons and the dry fields.
+- [Physician](physician.md): house to house in a plague.
+- [Remedy](remedy.md): the cure for illness, hexes and the plague.
+- [Fire Station](fire-station-build.md): the Firewarden's house.
+- [Well House](well-house-build.md): the Well Keeper's roofed well.
+- [Physician's House](physicians-house-build.md): the quarantine ward.
+- [Far herbs](far-herbs.md): eight rare plants from far-off lands, and the Three-Herb Tonic.
+- [Sieges](sieges.md): rams, ladders, battle stations and the morning after.
+- [Defense page](defense-page.md): the hall's war room.
+- [Scout](scout.md): the guard with a spyglass.
+- [Scouting Report](scouting-report.md): the map to the lair.
+- [War party](war-party.md): taking the fight to the lair, and the Siege-breakers.
+- [Pillager warband](pillager-warband.md): the War Camp and its Warlord.
+- [Desert raiders](desert-raiders.md): the Tomb Camp and the Pharaoh who won't stay dead.
+- [Drowned pirates](drowned-pirates.md): the ship off the beach.
+- [Piglin incursion](piglin-incursion.md): the Blackstone Outpost and its plunder.
+- [Witch coven](witch-coven.md): the hut in the swamp and its nightly hex.
+- [Siege and disaster settings](settings-sieges-and-disasters.md): sieges, siege damage and the answering jobs.
+- [/workplace threat for every raider and disaster](command-threat-disaster.md): raids, lairs and disasters on demand.
+- [Economy](economy.md): what villages are known for, short of, and what everything costs.
+- [Price board](price-board.md): buying and selling at the hall.
+- [Caravan sales](caravan-sales.md): caravans that go to market.
+- [Caravan carters](caravan-carters.md): the caravans you can watch come and go.
+- [Realms](realms.md): from a Barony to a Kingdom.
+- [Capital](capital.md): the village that leads, and how to move it.
+- [Realm treasury](realm-treasury.md): the levy, gifts and the cap.
+- [Realm research](realm-research.md): shared learning and the eight realm topics.
+- [Relief riders](relief-riders.md): help on horseback when a member is raided.
+- [Royal Hall](royal-hall-build.md): the realm's great hall, and the Royal Hall II.
+- [Colonies](colonies.md): sending settlers out to found a sister village.
+- [Colony Charter](colony-charter.md): where the colony goes and what it's called.
+- [Colony Camp](colony-camp-build.md): where a colony begins.
+- [Trade pacts](trade-pacts.md): trading with other players' villages.
+- [Alliances](alliances.md): guards who ride to your aid.
+- [Feuds](feuds.md): falling out, and war on a PvP server.
+- [Realm Map](realm-map.md): the whole realm on one sheet.
+- [Weekly leaderboard](weekly-leaderboard.md): the server's best villages, every Sunday.
+- [/workplace leaderboard](command-leaderboard.md): this week's standings so far.
+- [Realm and economy settings](settings-realms-and-economy.md): trade, colonies, realms and feuds.
+
 ## Installing
 
 Alive Workplace is a Fabric mod for Minecraft 1.21.1. It goes on the **server and on every player's game**: download the

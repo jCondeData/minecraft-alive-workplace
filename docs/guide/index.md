@@ -105,6 +105,88 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Plague and the Physician](plague.md): when illness spreads through a town, the doctor who goes house to house, and the Remedy.
 - [Fire and the Firewarden](fire.md): how a wooden village catches fire, and the villager who puts it out.
 
+### Builds A to Z
+
+The buildings, homes, workplaces and walls in the Blueprint Table, each with its upgrades:
+[Apiary Garden](apiary-garden-build.md) · [Artisan's House](artisans-house-build.md) · [Ball Workshop](ball-workshop-build.md) · [Barracks](barracks-build.md) · [Berry Farm](berry-farm-build.md) · [Builder's Workshop](builders-workshop-build.md) · [Carpenter's Workshop](carpenters-workshop-build.md) · [Chapel](chapel-build.md) · [Clinic](clinic-build.md) · [Compost Yard](compost-yard-build.md) · [Farmstead](farmstead-build.md) · [Ferry House](ferry-house-build.md) · [Fisher's Hut](fishers-hut-build.md) · [Fletcher's Lodge](fletchers-lodge-build.md) · [Flower Shop](flower-shop-build.md) · [Gatehouse](gatehouse-build.md) · [Graveyard](graveyard-build.md) · [Guard House](guard-house-build.md) · [Healing Center](healing-center-build.md) · [Inn](inn-build.md) · [Kitchen](kitchen-build.md) · [Leader's Hall](leaders-hall-build.md) · [Library](library-build.md) · [Lookout Tower](lookout-tower-build.md) · [Map Room](map-room-build.md) · [Market Stall](market-stall-build.md) · [Mason's Yard](masons-yard-build.md) · [Nether Gate](nether-gate-build.md) · [Noble's Manor](manor-build.md) · [Pokémon Center](pokemon-center-build.md) · [Post Office](post-office-build.md) · [Ranch](ranch-build.md) · [Research Lab](research-lab-build.md) · [School](school-build.md) · [Schoolhouse](schoolhouse-build.md) · [Sifting Shed](sifting-shed-build.md) · [Smithy](smithy-build.md) · [Starter Cottage](starter-cottage-build.md) · [Stone House](stone-house-build.md) · [Stone Wall](stone-wall-build.md) · [Storehouse Shed](storehouse-build.md) · [Supply Shop](supply-shop-build.md) · [Terrace](terrace-build.md) · [Tinker's Workshop](tinkers-workshop-build.md) · [Trade Hall](trade-hall-build.md) · [Trainer's House](trainers-house-build.md) · [Wall Tower](wall-tower-build.md) · [Weaver's Cottage](weavers-cottage-build.md)
+
+### Village life A to Z
+
+- [Babies and growth](babies-and-growth.md): what a village needs to have babies, and how big it can get.
+- [Bandstand](bandstand-build.md): an eight-sided stage with the Bard's jukebox.
+- [Chatter](chatter.md): what villagers say to you, and what it tells you.
+- [Couples and weddings](couples-and-weddings.md): courting, weddings at the Chapel or the bell, and mourning.
+- [Decorations](decorations.md): beauty, and why a pretty village works faster.
+- [Food and diet](food-and-diet.md): the village store, meals and a varied diet.
+- [Fountain](fountain-build.md): a stone fountain for the square.
+- [Gazebo](gazebo-build.md): an open timber gazebo with benches.
+- [Graves](graves.md): what a villager leaves behind, and bringing them back.
+- [Market days](market-days.md): traveling traders once a week.
+- [Market Square](market-square-build.md): the paved square, its bell and its markets.
+- [Moods](moods.md): what makes a villager happy or unhappy, point by point.
+- [Names](names.md): every villager's own name.
+- [Park Bench](park-bench-build.md): a bench between hedges.
+- [Ranks](ranks.md): Hamlet, Village, Town and City, and what each brings.
+- [Research](research.md): every topic in the scholars' tree.
+- [Seasons](seasons.md): the village calendar.
+- [Sickness](sickness.md): who falls ill, and the cures.
+- [Street Lamp](street-lamp-build.md): a lamp post with two lanterns.
+- [The village map](village-map.md): a map of the village from the hall.
+- [Traits](traits.md): the eight traits and what they do.
+- [Treasury](treasury.md): the village's daily takings.
+- [Village needs](village-needs.md): food, beds, safety and wellbeing.
+- [Well](well-build.md): the village well, and Well II.
+- [Work pace](work-pace.md): what speeds a worker up and slows them down.
+
+### Defense
+
+- [Bandit camps](bandit-camps.md): the bandits' camp and its chief.
+- [Palisade](palisade-build.md): a wooden wall, and Palisade II.
+- [Palisade Gate](palisade-gate-build.md): the gate that shuts at night.
+- [Palisade Tower](palisade-tower-build.md): a log tower for the corners.
+- [Raids](raids.md): monsters at night, and a day's warning.
+- [Threat Level](threat-level.md): one dial for how much trouble comes.
+- [Village protection](village-protection.md): keeping other players from griefing your village.
+
+## With Cobblemon
+
+- [Pokémon and villagers](pokemon.md): Pokémon partners that speed up the work, trainers to battle, move tutors, ball
+  smiths, traders and fossils.
+
+## For server owners
+
+- [Settings](settings.md): what a server owner can switch on and off or tune, in plain words.
+
+### Settings and commands
+
+- [Reach and range settings](settings-reach-and-range.md): how far workers, builders and villages reach.
+- [Worker limits and performance](settings-worker-limits-and-performance.md): keeping a big server light.
+- [Village life switches](settings-village-life-switches.md): names, traits, moods, sickness, weddings, chatter and
+  more.
+- [Threat settings](settings-threats.md): raids, bandit camps, the Threat Level and protection.
+- [Festival and market settings](settings-festivals-and-market-days.md): festivals and market days.
+- [Quest and treasury settings](settings-quests-and-treasury.md): quests, the treasury and the daily takings.
+- [Seasons and pace settings](settings-seasons-and-pace.md): the calendar and the fastest work pace.
+- [CobbleDollar Rate](settings-cobbledollar-rate.md): emeralds in CobbleDollars.
+- [Game rules](game-rules.md): the nine `/gamerule` settings.
+- [/workplace blueprints](command-blueprints.md), [/workplace blueprint](command-blueprint.md) and
+  [/workplace import](command-import.md): the server's blueprints.
+- [/workplace sites](command-sites.md) and [/workplace cancel](command-cancel.md): your work in progress.
+- [/workplace mail](command-mail.md): your parcels.
+- [/workplace strip](command-strip.md): a strip mine at a chosen height.
+- [/workplace friend](command-friend.md): your crew list.
+- [/workplace threat](command-threat.md): raids and camps on demand.
+
+## Blocks and items
+
+### Blocks A to Z
+
+[Apiary](apiary.md) · [Ball Workbench](ball-workbench.md) · [Blueprint Table](blueprint-table.md) · [Builder's Bench](builder-s-bench.md) · [Carpenter's Bench](carpenter-s-bench.md) · [Chopping Block](chopping-block.md) · [Compost Bin](compost-bin.md) · [Drop Box](drop-box.md) · [Feed Trough](feed-trough.md) · [Flower Stand](flower-stand.md) · [Fossil Lab](fossil-lab.md) · [Fruit Basket](fruit-basket.md) · [Grave](grave.md) · [Guard Post](guard-post.md) · [Inn Counter](inn-counter.md) · [Kitchen Stove](kitchen-stove.md) · [Leader's Podium](leader-s-podium.md) · [Mailbox](mailbox.md) · [Miner's Bench](miner-s-bench.md) · [Music Stand](music-stand.md) · [Nether Brazier](nether-brazier.md) · [Nurse Station](nurse-station.md) · [Postal Desk](postal-desk.md) · [Scholar's Desk](scholar-s-desk.md) · [Shop Counter](shop-counter.md) · [Sieve](sieve.md) · [Storehouse](storehouse.md) · [Teacher's Desk](teacher-s-desk.md) · [Tinker's Bench](tinker-s-bench.md) · [Trade Board](trade-board.md) · [Training Dummy](training-dummy.md) · [Training Post](training-post.md) · [Travel Post](travel-post.md) · [Tutor's Desk](tutor-s-desk.md) · [Undertaker's Table](undertaker-s-table.md) · [Village Hall](village-hall.md)
+
+### Items A to Z
+
+[Blank Blueprint](blank-blueprint.md) · [Blueprint](blueprint.md) · [Delivery Note](delivery-note.md) · [Explorer's Map](explorer-s-map.md) · [Field Marker](field-marker.md) · [Guide Book](guide-book.md) · [Map of the village](map-of.md) · [Patrol Map](patrol-map.md) · [Price Tag](price-tag.md) · [Quarry Marker](quarry-marker.md) · [Rally Banner](rally-banner.md) · [Scan Tool](scan-tool.md) · [Shape Planner](shape-planner.md) · [Travel Ticket](travel-ticket.md) · [Village Ledger](village-ledger.md)
+
 ## Stories, laws, classes and Wonders
 
 - [Story arcs](story-arcs.md): the tales a village lives through, chapter by chapter.
@@ -126,30 +208,6 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
   [Lighthouse](lighthouse.md), [Great Library](great-library.md), [Great Wall](great-wall.md),
   [Observatory](observatory.md), [Hanging Gardens](hanging-gardens.md), [Colossus](colossus.md) and
   [Stadium](stadium.md).
-
-### Builds A to Z
-
-The buildings, homes, workplaces and walls in the Blueprint Table, each with its upgrades:
-[Apiary Garden](apiary-garden-build.md) · [Artisan's House](artisans-house-build.md) · [Ball Workshop](ball-workshop-build.md) · [Barracks](barracks-build.md) · [Berry Farm](berry-farm-build.md) · [Builder's Workshop](builders-workshop-build.md) · [Carpenter's Workshop](carpenters-workshop-build.md) · [Chapel](chapel-build.md) · [Clinic](clinic-build.md) · [Compost Yard](compost-yard-build.md) · [Farmstead](farmstead-build.md) · [Ferry House](ferry-house-build.md) · [Fisher's Hut](fishers-hut-build.md) · [Fletcher's Lodge](fletchers-lodge-build.md) · [Flower Shop](flower-shop-build.md) · [Gatehouse](gatehouse-build.md) · [Graveyard](graveyard-build.md) · [Guard House](guard-house-build.md) · [Healing Center](healing-center-build.md) · [Inn](inn-build.md) · [Kitchen](kitchen-build.md) · [Leader's Hall](leaders-hall-build.md) · [Library](library-build.md) · [Lookout Tower](lookout-tower-build.md) · [Map Room](map-room-build.md) · [Market Stall](market-stall-build.md) · [Mason's Yard](masons-yard-build.md) · [Nether Gate](nether-gate-build.md) · [Noble's Manor](manor-build.md) · [Pokémon Center](pokemon-center-build.md) · [Post Office](post-office-build.md) · [Ranch](ranch-build.md) · [Research Lab](research-lab-build.md) · [School](school-build.md) · [Schoolhouse](schoolhouse-build.md) · [Sifting Shed](sifting-shed-build.md) · [Smithy](smithy-build.md) · [Starter Cottage](starter-cottage-build.md) · [Stone House](stone-house-build.md) · [Stone Wall](stone-wall-build.md) · [Storehouse Shed](storehouse-build.md) · [Supply Shop](supply-shop-build.md) · [Terrace](terrace-build.md) · [Tinker's Workshop](tinkers-workshop-build.md) · [Trade Hall](trade-hall-build.md) · [Trainer's House](trainers-house-build.md) · [Wall Tower](wall-tower-build.md) · [Weaver's Cottage](weavers-cottage-build.md)
-
-## With Cobblemon
-
-- [Pokémon and villagers](pokemon.md): Pokémon partners that speed up the work, trainers to battle, move tutors, ball
-  smiths, traders and fossils.
-
-## For server owners
-
-- [Settings](settings.md): what a server owner can switch on and off or tune, in plain words.
-
-## Blocks and items
-
-### Blocks A to Z
-
-[Apiary](apiary.md) · [Ball Workbench](ball-workbench.md) · [Blueprint Table](blueprint-table.md) · [Builder's Bench](builder-s-bench.md) · [Carpenter's Bench](carpenter-s-bench.md) · [Chopping Block](chopping-block.md) · [Compost Bin](compost-bin.md) · [Drop Box](drop-box.md) · [Feed Trough](feed-trough.md) · [Flower Stand](flower-stand.md) · [Fossil Lab](fossil-lab.md) · [Fruit Basket](fruit-basket.md) · [Grave](grave.md) · [Guard Post](guard-post.md) · [Inn Counter](inn-counter.md) · [Kitchen Stove](kitchen-stove.md) · [Leader's Podium](leader-s-podium.md) · [Mailbox](mailbox.md) · [Miner's Bench](miner-s-bench.md) · [Music Stand](music-stand.md) · [Nether Brazier](nether-brazier.md) · [Nurse Station](nurse-station.md) · [Postal Desk](postal-desk.md) · [Scholar's Desk](scholar-s-desk.md) · [Shop Counter](shop-counter.md) · [Sieve](sieve.md) · [Storehouse](storehouse.md) · [Teacher's Desk](teacher-s-desk.md) · [Tinker's Bench](tinker-s-bench.md) · [Trade Board](trade-board.md) · [Training Dummy](training-dummy.md) · [Training Post](training-post.md) · [Travel Post](travel-post.md) · [Tutor's Desk](tutor-s-desk.md) · [Undertaker's Table](undertaker-s-table.md) · [Village Hall](village-hall.md)
-
-### Items A to Z
-
-[Blank Blueprint](blank-blueprint.md) · [Blueprint](blueprint.md) · [Delivery Note](delivery-note.md) · [Explorer's Map](explorer-s-map.md) · [Field Marker](field-marker.md) · [Guide Book](guide-book.md) · [Map of the village](map-of.md) · [Patrol Map](patrol-map.md) · [Price Tag](price-tag.md) · [Quarry Marker](quarry-marker.md) · [Rally Banner](rally-banner.md) · [Scan Tool](scan-tool.md) · [Shape Planner](shape-planner.md) · [Travel Ticket](travel-ticket.md) · [Village Ledger](village-ledger.md)
 
 ## Installing
 

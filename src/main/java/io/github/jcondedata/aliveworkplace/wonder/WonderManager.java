@@ -104,6 +104,24 @@ public final class WonderManager extends SavedData {
 		}
 	}
 
+	/** Records the builder a site's stages go to (35.4). */
+	public void setBuilder(UUID id, UUID builder) {
+		WonderSite site = sites.get(id);
+		if (site != null && !site.builder().equals(Optional.of(builder))) {
+			sites.put(id, site.withBuilder(builder));
+			setDirty();
+		}
+	}
+
+	/** Records whether every builder of the village was called to the Wonder's crew (35.5). */
+	public void setCalled(UUID id, boolean called) {
+		WonderSite site = sites.get(id);
+		if (site != null && site.called() != called) {
+			sites.put(id, site.withCalled(called));
+			setDirty();
+		}
+	}
+
 	/** Forgets a site (a cancelled Wonder, or a test's). */
 	public void remove(UUID id) {
 		if (sites.remove(id) != null) {

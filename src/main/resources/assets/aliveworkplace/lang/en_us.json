@@ -947,6 +947,7 @@
   "message.aliveworkplace.explorer.state.resting": "Resting after an expedition",
   "message.aliveworkplace.explorer.state.curfew": "Staying home: the curfew starts at dusk",
   "item.aliveworkplace.explorer_map": "Explorer's Map: %s",
+  "item.aliveworkplace.sky_chart": "Sky Chart",
   "structure.minecraft.village_plains": "Plains Village",
   "structure.minecraft.village_desert": "Desert Village",
   "structure.minecraft.village_savanna": "Savanna Village",

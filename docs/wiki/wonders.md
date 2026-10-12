@@ -8,7 +8,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19, 35.21, 35.23
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
 
 ## What a player sees
 
@@ -153,7 +153,11 @@ the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the 
 (Sifter), 64 cooked chicken (Chef), 8 explorer's maps (Cartographer); II 64 copper ingots (Armorer), 4 spyglasses
 (Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers (Butcher);
 IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). It needs a Town and the Seer (or a Master
-Cleric while Legends are off). Its powers, the Sky Chart and the Coming days page, come with 35.18.
+Cleric while Legends are off). Its powers, the Sky Chart and the Coming days page, come with 35.18. The Sky Chart
+covers about 6,144 blocks across (384 chunks, 12 regions; 35.18a): one locked map at 48 blocks a pixel, since a vanilla
+map shows at most 2,048. Its search and the chart itself are built (`wonder/SkyChart`): one region of one structure kind
+every 5 ticks while the server's tick has room, at most one kind an in-game hour, saved as it goes; the hall's map
+button that hands it over comes with 35.18.
 
 **The Great Wall** (35.15) is drawn: a defense 97 long, placed like the other walls (stand in the village and place it
 facing out: its stairs are on your side), about 10,800 blocks. A curtain 7 thick and 12 high on a battered plinth of

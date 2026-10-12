@@ -91,6 +91,11 @@ asks for the steps, `latest.log` and any crash report).
   standing there a tick for each one (about 20 seconds round a Wonder's last stage).
 
 ### Changed
+- **The Observatory's Sky Chart covers about 6,144 blocks** (35.18a, part of Wonders, for 2.0; the owner's change from
+  1,024): 384 chunks and 12 regions across, every village, temple, monument, mansion and the rest on one locked map at
+  48 blocks a pixel (a vanilla map stops at 2,048). The Observatory searches that far without slowing the server: one
+  patch of land at a time, only when the tick has room, at most one kind of place an hour, and it carries on where it
+  was after a restart. The hall's button that hands the chart over comes with 35.18.
 - **Threats never destroy your builders' work** (32.16a, part of 1.6): only the gate blocks of walls and gates break
   under the rams, and nothing else a raider does (a creeper's blast, a ravager, a vindicator at a house door) breaks a
   block the builders placed or a build still under way. Whatever rams and village fires take, the builders always put

@@ -133,7 +133,11 @@ public final class Explorers {
 
 	/** The map marker for a place: the village or temple icons vanilla maps use, a red X for the rest. */
 	public static Holder<MapDecorationType> marker(Holder<Structure> structure) {
-		String path = structure.unwrapKey().map(k -> Ids.of(k).getPath()).orElse("");
+		return marker(structure.unwrapKey().map(k -> Ids.of(k).getPath()).orElse(""));
+	}
+
+	/** The map marker for a place by its id's path ("village_plains"), as {@link #marker(Holder)}. */
+	public static Holder<MapDecorationType> marker(String path) {
 		if (path.contains("village")) {
 			return path.contains("desert") ? MapDecorationTypes.DESERT_VILLAGE : path.contains("savanna") ? MapDecorationTypes.SAVANNA_VILLAGE
 				: path.contains("snowy") ? MapDecorationTypes.SNOWY_VILLAGE : path.contains("taiga") ? MapDecorationTypes.TAIGA_VILLAGE

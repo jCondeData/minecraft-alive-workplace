@@ -4316,8 +4316,8 @@ Legends.
   (Butcher); IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). Done when: 35.9's four design
   checks pass for it.
 - [ ] **35.18** **The Observatory: its powers and time-lapse.** While it stands:
-  - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart 1,024 blocks across (map scale 3)
-    centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
+  - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart about 6,144 blocks across (384 chunks,
+    12 regions; 35.18a) centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
     huts, igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial
     chambers and strongholds (vanilla's own markers for villages, mansions, monuments, jungle temples, witch huts and
     trial chambers; a red X for the rest), each named in the map's tooltip. The Observatory searches one kind an
@@ -4333,7 +4333,7 @@ Legends.
     in-game hour; the Coming days page lists a staged festival, wedding and caravan with their days;
   - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
     powers are in the README.
-  - [ ] **35.18a** Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
+  - [x] **35.18a** (approved auto 2026-10-12) Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
 - [x] **35.19** (review: pending 2026-10-12) **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
   31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
   soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four
@@ -5763,6 +5763,15 @@ item waits.
   arms, half of them: the left forearm across the chest, the hand on it. The cut copper is about 370 blocks, not 250: the
   cloak needs three pleats to stop its back being one flat sheet, and the lantern's plate and cap are copper too. The robe
   and the head are shells (nothing a player sees is left out). The face has two emerald blocks for pupils.
+- **35.18a the Sky Chart at 6,144 blocks** (2026-10-12): a vanilla map shows at most 2,048 blocks (scale 4), so
+  decided: the chart is one locked scale-4 map whose 128 pixels stand for 48 blocks each; `wonder/SkyChart` sketches
+  the land itself (one biome sample a pixel, as an explorer map takes, whatever the size) and places each marker at a
+  third of its distance so vanilla draws it at the right pixel; a structure in the last 48 blocks before the edge sits
+  on the edge pixel. The area is 144 regions (the 1,024 chart had 4), so the search walks one region of one kind (a
+  structure set, found by the world's own placement grid and structure check, no chunk loaded) every 5 ticks while the
+  average tick is under 40 ms, and starts at most one kind an in-game hour (a kind takes 720 ticks); cursor, hour and
+  finds are saved (`SkyChart.Search`, the hall's `skyChart`). Built ahead of 35.18 (which wires it to the hall's map
+  button, names the markers in the tooltip and calls `restart` weekly), tested in `SkyChartGameTests`.
 - **35.24 the Stadium's powers wait for 35.8** (lane-a-1012-0033, 2026-10-12): its Done when needs what 35.4 to 35.8
   make and none of them is done yet: a Wonder that is ever finished in play (the Foundation Stone and stages, 35.4),
   the power registry `wonder/powers/` and `Wonders.power(level, hall, type)` (35.8), the upkeep count that makes a

@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:village",
+    "minecraft:pillager_outpost",
+    "minecraft:desert_pyramid",
+    "minecraft:jungle_pyramid",
+    "minecraft:swamp_hut",
+    "minecraft:igloo",
+    "minecraft:monument",
+    "minecraft:mansion",
+    "#minecraft:shipwreck",
+    "#minecraft:ruined_portal",
+    "minecraft:trail_ruins",
+    "minecraft:ancient_city",
+    "minecraft:trial_chambers",
+    "minecraft:stronghold"
+  ]
+}

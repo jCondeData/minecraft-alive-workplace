@@ -47,6 +47,20 @@ asks for the steps, `latest.log` and any crash report).
   line and a ribbon on their hall's name icon for a week; owners can leave a village off on the Trade page;
   `/workplace leaderboard` shows the standings so far; a week missed while the server was down is read out at the next
   start. Settings `weeklyLeaderboard`, `leaderboardDay` and `leaderboardHour`.
+- **The Observatory's design, for 2.0** (35.17, nothing to start in game until Wonders is finished): the fourth
+  Wonder's building, a round deepslate tower 15 across and 30 high under a copper dome on a raised terrace 31 by 31
+  (about 8,400 blocks): a slit of tinted glass in the dome with a great copper telescope leaning out of it, a viewing
+  walk round the dome reached by a spiral stair, a star-chart room and the Seer's lodging in two low wings, and a
+  courtyard paved with amethyst round a sundial and an orrery of a gold sun and five planets on chains. It rises in
+  four tidy stages (the Terrace and the Courtyard, the Tower, the Dome, the Great Telescope and the Orrery), each with
+  its goods.
+- **The Great Library's design, for 2.0** (35.13, nothing to start in game until Wonders is finished): the third
+  Wonder's building, a domed library on a cross plan (41 by 41, 34 high, about 15,000 blocks) on a terrace with four
+  corner gardens: a portico of six quartz columns under a low pediment over a grand stair, a rotunda under a ribbed
+  copper dome with a glass lantern, three rings of bookshelves and two galleries round an Enchanting Table ringed by
+  fifteen bookshelves, and four wings of reading halls with two floors of bookshelf galleries, carrels, reading tables, a
+  lectern each and a map room with a cartography table. It rises in four tidy stages (the Stacks, the Galleries, the
+  Rotunda, the Dome and the Portico), each with its goods.
 - **The Lighthouse's design, for 2.0** (35.11, nothing to start in game until Wonders is finished): the second Wonder's
   building, a tower banded in white and red on a stepped stone mole at the water's edge (25 by 33, 46 high, about 5,000
   blocks), with a gallery on stone corbels, a lantern room of glass round sea lanterns, a ring of lamps an inverted

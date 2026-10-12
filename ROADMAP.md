@@ -4235,7 +4235,7 @@ Legends.
     warning gets its own test once M32's pirates exist); a damaged Lighthouse turns them all off;
   - scene `wonder_lighthouse`: the time-lapse beside a sea dug and filled by the harness, ending at night with the
     lamps lit; its GIF and powers are in the README.
-- [ ] **35.13** **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
+- [x] **35.13** (review: pending 2026-10-11) **The Great Library: its design.** A domed library on a cross plan, about 41 × 41 and 34 high, drawn
   like 35.9: a rotunda 19 across under a copper dome with a glass lantern at its top; four wings of reading halls,
   each with two floors of bookshelf galleries; a portico of six columns under a pediment, over a grand stair. At the
   centre, an Enchanting Table ringed by fifteen bookshelves, with a lectern (a librarian); four lecterns in the wings
@@ -4295,7 +4295,7 @@ Legends.
     iron; a damaged Wall turns both off;
   - scene `wonder_great_wall`: the time-lapse, then a night raid gathering on the open side while the sentries watch;
     its GIF and powers are in the README.
-- [ ] **35.17** **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
+- [x] **35.17** (review: pending 2026-10-11) **The Observatory: its design.** On a raised terrace about 31 × 31, drawn like 35.9: a round tower 15
   across and 30 high under a copper dome with a slit of tinted glass, a great telescope of cut copper 12 long leaning
   out of the slit, a star-chart room in a low wing with a cartography table and a lectern, a courtyard with a sundial
   (a stone face and its gnomon) and an orrery (a gold sun with planets hung on chains), and a spiral stair up to a

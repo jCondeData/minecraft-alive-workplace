@@ -1,0 +1,140 @@
+{
+  "name": "wonder.aliveworkplace.observatory.name",
+  "description": "wonder.aliveworkplace.observatory.description",
+  "icon": "minecraft:spyglass",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:seer",
+      "stand_in": [
+        {
+          "type": "job_level",
+          "job": "minecraft:cleric",
+          "level": 5,
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.observatory.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/observatory/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:lapis_lazuli",
+          "count": 32,
+          "job": "aliveworkplace:sifter"
+        },
+        {
+          "item": "minecraft:cooked_chicken",
+          "count": 64,
+          "job": "aliveworkplace:chef"
+        },
+        {
+          "item": "minecraft:filled_map",
+          "count": 8,
+          "job": "minecraft:cartographer"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.observatory.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/observatory/stage_2_0",
+          "offset": [7, 4, 12]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:copper_ingot",
+          "count": 64,
+          "job": "minecraft:armorer"
+        },
+        {
+          "item": "minecraft:spyglass",
+          "count": 4,
+          "job": "minecraft:toolsmith"
+        },
+        {
+          "item": "minecraft:amethyst_shard",
+          "count": 32,
+          "job": "aliveworkplace:miner"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.observatory.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/observatory/stage_3_0",
+          "offset": [10, 34, 15]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:book",
+          "count": 16,
+          "job": "minecraft:librarian"
+        },
+        {
+          "item": "minecraft:tinted_glass",
+          "count": 8,
+          "job": "aliveworkplace:carpenter"
+        },
+        {
+          "item": "minecraft:feather",
+          "count": 32,
+          "job": "minecraft:butcher"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.observatory.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/observatory/stage_4_0",
+          "offset": [14, 4, 4]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:chain",
+          "count": 32,
+          "job": "aliveworkplace:tinkerer"
+        },
+        {
+          "item": "minecraft:gold_ingot",
+          "count": 9,
+          "job": "minecraft:armorer"
+        },
+        {
+          "item": "minecraft:pumpkin_pie",
+          "count": 32,
+          "job": "aliveworkplace:chef"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "sky_chart",
+      "size": 1024
+    },
+    {
+      "type": "forecast"
+    }
+  ]
+}

@@ -51,6 +51,7 @@ import math
 import os
 import re
 import sys
+import zlib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from kit import *  # noqa: E402,F401
@@ -1315,6 +1316,1163 @@ def lighthouse_at_sea(stage=None):
     return out
 
 
+# --- the Great Library ---------------------------------------------------------------------------------------------------
+# On paper (35.13), 41 x 34 x 41, the front (the portico and its grand stair) at z = 0:
+# - A cross plan round a rotunda. The rotunda, centred on (20, 22), is 19 across (a drum two thick, r 7.4-9.4) rising to
+#   24 under a shallow copper dome (25-30) with ribs, an oculus and a glass lantern (31-32) under a copper cap (33).
+# - Four wings of reading halls, 13 wide (walls 6 either side of their middle line) and 17 with their pilasters, run out
+#   from the drum: the front one (the vestibule, door at z 8), the back one to z 38, the west one to x 2, the east one
+#   to x 38. Each has two storeys: the ground storey (3-7) of bookshelf stacks between the pilasters, a band at 8, the
+#   upper storey (9-13) and a cornice at 14 under a deepslate-tile roof (ridge 22) with a gable window at its end.
+#   Bays every 4 (pilasters of smooth stone a block proud, a tall window in each bay, stone sills and lintels).
+# - Inside a wing: stacks out from the walls every 4 under a gallery of dark oak on both sides at 8 (two floors of
+#   bookshelf galleries), carrels under the windows, reading tables with lanterns down the double-height middle, a
+#   ladder up to each gallery, a dark oak ceiling with lanterns. A lectern in each wing (a scholar's); in the west wing
+#   the map room, a carpet map round a cartography table.
+# - The rotunda: bookshelves round the drum on both storeys, a gallery ring at 8 joined to the wings' galleries; at the
+#   centre an Enchanting Table ringed by fifteen bookshelves (the sixteenth place left open towards the door) and the
+#   librarian's lectern; clerestory windows in the drum above the roofs.
+# - The portico: six quartz columns (a wider middle bay before the door) under a quartz entablature and a pediment,
+#   over a grand stair of three steps, on a podium of smooth stone (three high, darker at its foot) under the whole.
+# - Palette (60/30/10): polished diorite walls, smooth stone pilasters, bands and podium; dark oak floors, shelves'
+#   galleries and furniture; deepslate-tile roofs; quartz on the portico, a copper dome that weathers green. Panes only.
+# - Stages, each ending tidy: I the Stacks (the podium and floors, the ground storeys and their stacks, the map room);
+#   II the Galleries (the upper storeys, galleries, ceilings and roofs, the drum to 14 and its gallery); III the
+#   Rotunda (the drum's clerestory and cornice, the enchanting table and its ring, the librarian's lectern); IV the
+#   Dome and the Portico.
+GW, GH, GD = 41, 34, 41
+GC = (20, 22)  # the rotunda's centre
+G_DRUM = 9.4  # the drum's outer radius (19 across)
+G_HALL = 7.4  # the rotunda's inside
+G_GALLERY = 3.9  # the rotunda gallery's inner edge
+G_WALL = "polished_diorite"
+G_TRIM = "smooth_stone"
+G_BASE = "polished_andesite"
+G_FLOOR = "dark_oak_planks"
+G_SHELF = "bookshelf"
+G_QUARTZ = "smooth_quartz"
+
+
+def g_r(x, z):
+    return math.hypot(x - GC[0], z - GC[1])
+
+
+def in_drum(x, z):
+    return g_r(x, z) <= G_DRUM
+
+
+class Wing:
+    """One wing of the cross: k counts in from its end wall (k = 0), v across it (-6 and 6 its side walls)."""
+
+    def __init__(self, name, axis, outer, sign):
+        self.name, self.axis, self.outer, self.sign = name, axis, outer, sign
+        centre = GC[1] if axis == "z" else GC[0]
+        self.length = abs(centre - outer)  # k from the end wall to the rotunda's centre
+
+    def at(self, k, v):
+        u = self.outer - self.sign * k
+        return (GC[0] + v, u) if self.axis == "z" else (u, GC[1] + v)
+
+    def set(self, b, k, y, v, name, **props):
+        x, z = self.at(k, v)
+        b.set(x, y, z, resolve(name, x, y, z), **props)
+
+    def has(self, k, v):
+        """Whether the wing has a cell here (the drum owns its own)."""
+        x, z = self.at(k, v)
+        return 0 <= x < GW and 0 <= z < GD and not in_drum(x, z)
+
+    def ks(self):
+        return range(-2, self.length + 1)
+
+    @property
+    def out(self):
+        """The facing outward along the wing (towards its end)."""
+        if self.axis == "z":
+            return "south" if self.sign > 0 else "north"
+        return "east" if self.sign > 0 else "west"
+
+    def side(self, v):
+        """The facing towards the side wall at v's sign."""
+        if self.axis == "z":
+            return "east" if v > 0 else "west"
+        return "south" if v > 0 else "north"
+
+
+G_WINGS = (Wing("front", "z", 8, -1), Wing("back", "z", 38, 1), Wing("west", "x", 2, -1), Wing("east", "x", 38, 1))
+G_FRONT, G_BACK, G_WEST, G_EAST = G_WINGS
+
+
+def wing_inside(w, k, v):
+    return w.has(k, v) and 1 <= k and abs(v) <= 5
+
+
+def g_building_cells():
+    """The cells the building stands on: the wings with their pilasters and a block of ledge, the drum's, the portico."""
+    cells = set()
+    for w in G_WINGS:
+        for k in w.ks():
+            for v in range(-9, 10):
+                x, z = w.at(k, v)
+                if 0 <= x < GW and 0 <= z < GD and (w is not G_FRONT or k >= 0):
+                    cells.add((x, z))
+    cells |= disc(10.4, GC)
+    cells |= {(x, z) for x in range(10, 31) for z in range(3, 9)}  # the portico's platform
+    return cells
+
+
+def g_terrace():
+    """The podium: a square terrace (z 3 back to the end), the grand stair before it."""
+    return {(x, z) for x in range(GW) for z in range(3, GD)}
+
+
+def g_gardens():
+    """The beds in the terrace's four corners: two clear of the building and one in from the balustrade."""
+    building = g_building_cells()
+    near = {(x + dx, z + dz) for x, z in building for dx in (-1, 0, 1) for dz in (-1, 0, 1)}
+    return {(x, z) for x, z in g_terrace() if (x, z) not in near and 1 <= x < GW - 1 and 4 <= z < GD - 1}
+
+
+# --- stage I: the stacks -------------------------------------------------------------------------------------------------
+def g_podium(b):
+    cells = g_terrace()
+    rim = outline(cells, corners=True)
+    beds = g_gardens()
+    for x, z in cells:
+        edge = (x, z) in rim
+        b.set(x, 0, z, G_BASE if edge else "stone_bricks")
+        b.set(x, 1, z, G_TRIM if edge else "stone_bricks")
+        if (x, z) in beds:
+            b.set(x, 2, z, "grass_block", snowy=False)
+        else:
+            b.set(x, 2, z, G_TRIM)
+    # the floors: dark oak in the wings, the rotunda's rings of diorite and andesite round the table
+    for w in G_WINGS:
+        for k in w.ks():
+            for v in range(-5, 6):
+                if wing_inside(w, k, v):
+                    w.set(b, k, 2, v, G_FLOOR)
+    for x, z in disc(G_HALL, GC):
+        r = g_r(x, z)
+        b.set(x, 2, z, "polished_diorite" if r <= 3.4 else G_BASE if r <= 4.4 else G_FLOOR)
+    for x in range(11, 30):
+        for z in range(3, 8):
+            b.set(x, 2, z, "polished_diorite" if 12 <= x <= 28 and 4 <= z <= 7 else G_QUARTZ)
+
+
+PANE = dict(north=False, south=False, east=False, west=False, waterlogged=False)
+
+
+def wing_storey(b, w, y0, y1):
+    """A wing's walls from y0 to y1: two leaves along its sides (diorite outside at 7, smooth stone inside at 6) with a
+    deep window in every bay (y0+1 to y1-1), pilasters a block proud at 8 with sills and lintels between them; the end
+    wall with a three-wide window in the middle (the vestibule's door below), pilasters before it."""
+    for k in w.ks():
+        if k < 0:
+            continue
+        for s in (-1, 1):
+            if not w.has(k, 7 * s):
+                continue
+            for y in range(y0, y1 + 1):
+                window = k % 4 == 2 and y0 < y < y1
+                if window:
+                    w.set(b, k, y, 7 * s, "glass_pane", **PANE)
+                else:
+                    w.set(b, k, y, 7 * s, G_WALL)
+                if w.has(k, 6 * s) and not window and k > 0:
+                    w.set(b, k, y, 6 * s, G_TRIM)
+            if not w.has(k, 8 * s):
+                continue
+            inward = OPP[w.side(s)]
+            if k % 4 == 2:
+                stairs(b, *_kyv(w, k, y0, 8 * s), DIORITE, inward, top=True)
+                stairs(b, *_kyv(w, k, y1, 8 * s), DIORITE, inward, top=True)
+            if k % 4 == 0:
+                for y in range(y0, y1 + 1):
+                    w.set(b, k, y, 8 * s, G_TRIM)
+    for v in range(-6, 7):
+        for y in range(y0, y1 + 1):
+            front_door = w is G_FRONT and y0 == 3
+            if abs(v) <= 1 and y0 < y < y1 and not front_door:
+                w.set(b, 0, y, v, "glass_pane", **PANE)
+            elif front_door and abs(v) <= 1 and y <= 5:
+                continue
+            else:
+                w.set(b, 0, y, v, G_QUARTZ if front_door and abs(v) <= 1 else G_WALL)
+    for v in range(-5, 6):  # the end wall's inner leaf
+        for y in range(y0, y1 + 1):
+            if abs(v) <= 1 and (y0 < y < y1 or (w is G_FRONT and y0 == 3 and y <= 5)):
+                continue
+            if wing_inside(w, 1, v):
+                w.set(b, 1, y, v, G_TRIM)
+    for v in (-7, -2, 2, 7):
+        for y in range(y0, y1 + 1):
+            if w is G_FRONT and y > 11:
+                continue  # under the portico's entablature
+            w.set(b, -1, y, v, G_TRIM)
+    if w is not G_FRONT:
+        for v in (-1, 0, 1):
+            stairs(b, *_kyv(w, -1, y0, v), DIORITE, OPP[w.out], top=True)
+
+
+def _kyv(w, k, y, v):
+    x, z = w.at(k, v)
+    return x, y, z
+
+
+def wing_band(b, w, y):
+    """The course of smooth stone round a wing's walls and pilasters at y."""
+    for k in w.ks():
+        for v in range(-8, 9):
+            if not w.has(k, v):
+                continue
+            side = abs(v) == 7 and k >= 0 or abs(v) == 6 and k > 0
+            pil = abs(v) == 8 and k >= 0 and k % 4 == 0
+            end = k == 0 and abs(v) <= 7
+            endpil = k == -1 and abs(v) in (2, 7) and not (w is G_FRONT and y > 11)
+            if side or pil or end or endpil:
+                w.set(b, k, y, v, G_TRIM)
+
+
+def stacks(b, w, y0, y1, depth):
+    """Bookshelf stacks out from the side walls every 4 (k = 4, 8, ...), {@code depth} deep."""
+    for k in range(4, w.length + 1, 4):
+        for s in (-1, 1):
+            for d in range(depth):
+                v = s * (5 - d)
+                if wing_inside(w, k, v):
+                    for y in range(y0, y1 + 1):
+                        w.set(b, k, y, v, G_SHELF)
+
+
+def reading_room(b, w):
+    """Carrels under the windows, reading tables with lanterns down the middle, the wing's lectern."""
+    for k in range(2, w.length + 1, 4):
+        for s in (-1, 1):
+            if wing_inside(w, k, 5 * s) and wing_inside(w, k, 4 * s) and w.has(k, 6 * s):
+                slab(b, *_kyv(w, k, 3, 5 * s), DARK_OAK, top=True)
+                stairs(b, *_kyv(w, k, 3, 4 * s), DARK_OAK, w.side(-s))
+        if k >= 6 and all(wing_inside(w, k, v) for v in range(-2, 3)) and all(
+                wing_inside(w, kk, 0) for kk in (k - 1, k + 1)):
+            for v in (-1, 0, 1):
+                slab(b, *_kyv(w, k, 3, v), DARK_OAK, top=True)
+            for s in (-1, 1):
+                stairs(b, *_kyv(w, k, 3, 2 * s), DARK_OAK, w.side(s))
+            lantern(b, *_kyv(w, k, 4, 0))
+    for k in range(4, w.length + 1, 4):  # low double-sided bookcases down the middle between the tables
+        if all(wing_inside(w, kk, v) for kk in (k - 1, k, k + 1) for v in (-2, 0, 2)):
+            for v in (-1, 0, 1):
+                for y in (3, 4):
+                    w.set(b, k, y, v, G_SHELF)
+                slab(b, *_kyv(w, k, 5, v), DARK_OAK)
+    if w is G_FRONT:
+        lectern(b, *_kyv(w, 2, 3, 3), w.side(-1))
+        lantern(b, *_kyv(w, 2, 3, -3))
+    elif w is G_WEST:
+        map_room(b, w)
+    else:
+        lectern(b, *_kyv(w, 2, 3, 0), OPP[w.out])
+
+
+def lectern(b, x, y, z, facing):
+    b.set(x, y, z, "lectern", facing=facing, has_book=False, powered=False)
+
+
+G_MAP = {".": "blue_carpet", "g": "lime_carpet", "s": "yellow_carpet", "f": "green_carpet"}
+G_MAP_ROWS = [".gfg..", "gffsg."]
+
+
+def map_room(b, w):
+    """The west wing's end bay: a carpet map of seas and islands round the cartography table, the scholar's lectern."""
+    for i, row in enumerate(G_MAP_ROWS):
+        for j, c in enumerate(row):
+            k, v = 2 + i, j - 3
+            if i >= 2:
+                continue
+            if wing_inside(w, k, v) and abs(v) <= 3:
+                b.set(*_kyv(w, k, 3, v), G_MAP[c])
+    b.set(*_kyv(w, 2, 3, 0), "cartography_table")
+    lectern(b, *_kyv(w, 6, 3, 0), OPP[w.out])
+    for s in (-1, 1):
+        stairs(b, *_kyv(w, 6, 3, 2 * s), DARK_OAK, w.side(s))
+
+
+def drum_cut(x, z, half):
+    """Whether (x, z) lies on one of the four axes through the drum, within {@code half} of it."""
+    return abs(x - GC[0]) <= half or abs(z - GC[1]) <= half
+
+
+def drum_ring(r_in=G_HALL, r_out=G_DRUM):
+    return {(x, z) for x, z in disc(r_out, GC) if g_r(x, z) > r_in}
+
+
+G_DIAGONALS = (45, 135, 225, 315)
+
+
+def rays(cells, angles, perp):
+    """The cells of {@code cells} within {@code perp} of a ray out from the rotunda's centre at any of {@code angles}."""
+    out = set()
+    for a in angles:
+        c, s = math.cos(math.radians(a)), math.sin(math.radians(a))
+        for x, z in cells:
+            dx, dz = x - GC[0], z - GC[1]
+            if abs(dx * s - dz * c) <= perp and dx * c + dz * s > 0:
+                out.add((x, z))
+    return out
+
+
+def drum_storey(b, y0, y1, arch_half, arch_top, window_rows):
+    """The drum from y0 to y1: open on the four axes (arch_half either side, up to arch_top), a window on each
+    diagonal in {@code window_rows} (panes in its outer cells, the inner ones open)."""
+    ring = drum_ring()
+    windows = rays(ring, G_DIAGONALS, 0.75)
+    for y in range(y0, y1 + 1):
+        for x, z in ring:
+            if y <= arch_top and drum_cut(x, z, arch_half if y < arch_top else arch_half - 1):
+                continue
+            if y in window_rows and (x, z) in windows:
+                if g_r(x, z) > G_DRUM - 0.8:
+                    pane(b, x, y, z)
+                continue
+            b.set(x, y, z, G_TRIM if y == y0 == 3 else G_WALL)
+
+
+def rotunda_shelves(b, y0, y1, cut_half, cut_top):
+    ring = drum_ring(G_HALL - 1, G_HALL)
+    windows = rays(ring, G_DIAGONALS, 0.75)
+    for x, z in ring - windows:
+        for y in range(y0, y1 + 1):
+            if y <= cut_top and drum_cut(x, z, cut_half):
+                continue
+            b.set(x, y, z, G_SHELF)
+
+
+def stage_g1(b):
+    g_podium(b)
+    for w in G_WINGS:
+        wing_storey(b, w, 3, 7)
+        wing_band(b, w, 8)
+        stacks(b, w, 3, 7, 3)
+        reading_room(b, w)
+    drum_storey(b, 3, 8, 2, 7, (4, 5, 6))
+    rotunda_shelves(b, 3, 7, 2, 7)
+    # the vestibule's door (triple, dark oak) under its quartz lintel, lanterns either side
+    for v, hinge in ((-1, "left"), (0, "left"), (1, "right")):
+        door(b, *_kyv(G_FRONT, 0, 3, v), "dark_oak_door", "north", hinge=hinge)
+    for v in (-3, 3):
+        lantern(b, *_kyv(G_FRONT, -1, 3, v))
+
+
+# --- stage II: the galleries ---------------------------------------------------------------------------------------------
+def galleries(b, w):
+    """The wing's galleries at 8 over its stacks (and across its inner end, to the rotunda's gallery), the railing, the
+    ladders up, lanterns under them, the upper stacks and the ceiling with its lanterns."""
+    walk = set()
+    for k in w.ks():
+        for v in range(-5, 6):
+            if not wing_inside(w, k, v):
+                continue
+            x, z = w.at(k, v)
+            if abs(v) >= 3 or g_r(x, z) <= G_DRUM + 2.1:
+                walk.add((k, v))
+    for k, v in walk:
+        w.set(b, k, 8, v, G_FLOOR)
+    for k, v in walk:
+        open_side = any((k + dk, v + dv) not in walk and wing_inside(w, k + dk, v + dv)
+                        for dk, dv in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        if open_side and abs(v) <= 3:
+            fence(b, *_kyv(w, k, 9, v), "dark_oak_fence")
+    for s in (-1, 1):
+        for y in range(3, 10):
+            w.set(b, 3, y, 4 * s, "ladder", facing=w.out, waterlogged=False)
+        for k in range(2, w.length + 1, 4):
+            if wing_inside(w, k, 3 * s) and (k, 3 * s) in walk:
+                lantern(b, *_kyv(w, k, 7, 3 * s), hanging=True)
+    # the upper stacks: along the walls between the windows, and out from them at the pilasters
+    for k in w.ks():
+        for s in (-1, 1):
+            if wing_inside(w, k, 5 * s) and k % 4 != 2 and k > 1:
+                for y in range(9, 14):
+                    w.set(b, k, y, 5 * s, G_SHELF)
+            if wing_inside(w, k, 4 * s) and k % 4 == 0 and k > 0:
+                for y in range(9, 14):
+                    w.set(b, k, y, 4 * s, G_SHELF)
+    for k in w.ks():
+        for v in range(-5, 6):
+            if wing_inside(w, k, v):
+                w.set(b, k, 14, v, G_FLOOR)
+        if k % 4 == 2 and wing_inside(w, k, 0):
+            lantern(b, *_kyv(w, k, 13, 0), hanging=True)
+        if k % 4 == 0 and k > 0:  # a dark oak beam across the ceiling at each pilaster
+            for v in range(-3, 4):
+                if wing_inside(w, k, v) and b.get(*_kyv(w, k, 13, v)) is None:
+                    log(b, *_kyv(w, k, 13, v), "dark_oak_log", axis="z" if w.axis == "x" else "x")
+    for k in w.ks():  # and two along it over the galleries' railings: a coffered ceiling
+        for v in (-3, 3):
+            if k > 1 and wing_inside(w, k, v) and b.get(*_kyv(w, k, 13, v)) is None:
+                log(b, *_kyv(w, k, 13, v), "dark_oak_log", axis=w.axis)
+
+
+def wing_roofs(b):
+    """The four wings' roofs, drawn together (where two meet, the higher wins), clipped round the drum, each with a
+    diorite gable over its end wall and a window in it."""
+    draws = []
+    for w in G_WINGS:
+        x0, z0 = w.at(0 if w is G_FRONT else -1, -8)
+        x1, z1 = w.at(w.length, 8)
+        gx = w.at(0, 0)
+
+        def draw(t, w=w, x0=x0, x1=x1, z0=z0, z1=z1, gx=gx):
+            gable_at = (gx[1],) if w.axis == "z" else (gx[0],)
+            gable_roof(t, min(x0, x1), max(x0, x1), min(z0, z1), max(z0, z1), 15, DEEPSLATE_TILE, axis=w.axis,
+                       gable=G_WALL, gable_at=gable_at, eave_trim=DIORITE)
+        draws.append(draw)
+    t = Build(GW, GH, GD)
+    roofs(t, *draws)
+    for (x, y, z), block in t.blocks.items():
+        if not in_drum(x, z) and b.get(x, y, z) is None:
+            b.blocks[(x, y, z)] = block
+    for w in G_WINGS:
+        for v in range(-6, 7):  # a string course across each gable, as a pediment's
+            if b.get(*_kyv(w, 0, 15, v)) == ("minecraft:" + G_WALL, ()):
+                w.set(b, 0, 15, v, G_TRIM)
+        for y, vs in ((17, (0,)), (18, (-1, 0, 1)), (19, (0,))):
+            for v in vs:
+                pane(b, *_kyv(w, 0, y, v))
+
+
+def rotunda_gallery(b):
+    ring = {(x, z) for x, z in disc(G_HALL, GC) if g_r(x, z) > G_GALLERY}
+    for x, z in ring:
+        b.set(x, 8, z, G_FLOOR)
+    for x, z in ring:
+        if any((x + dx, z + dz) not in ring and g_r(x + dx, z + dz) <= G_GALLERY for dx, dz in DIRS.values()):
+            fence(b, x, 9, z, "dark_oak_fence")
+    for a in range(8):
+        ang = math.radians(22.5 + 45 * a)
+        x, z = round(GC[0] + 4.6 * math.cos(ang)), round(GC[1] + 4.6 * math.sin(ang))
+        if (x, z) in ring:
+            lantern(b, x, 7, z, hanging=True)
+
+
+def stage_g2(b):
+    for w in G_WINGS:
+        wing_storey(b, w, 9, 13)
+        wing_band(b, w, 14)
+        galleries(b, w)
+    drum_storey(b, 9, 14, 1, 11, (10, 11, 12))
+    rotunda_shelves(b, 9, 13, 1, 11)
+    rotunda_gallery(b)
+    wing_roofs(b)
+
+
+# --- stage III: the rotunda ----------------------------------------------------------------------------------------------
+def stage_g3(b):
+    ring = drum_ring()
+    outer = {(x, z) for x, z in ring if g_r(x, z) > G_DRUM - 0.8}
+    windows = rays(ring, [22.5 + 45 * a for a in range(8)], 0.6)
+    pilasters = rays(outer, [45 * a for a in range(8)], 0.5)
+    for y in range(15, 25):
+        for x, z in ring:
+            if b.get(x, y, z) is not None:
+                continue
+            if (x, z) in windows and 17 <= y <= 22:
+                if (x, z) in outer:
+                    pane(b, x, y, z)
+                continue
+            b.set(x, y, z, G_TRIM if (x, z) in pilasters or y in (16, 24) else G_WALL)
+    # the cornice round the drum's top, under the dome
+    for x, z in drum_ring(G_DRUM, G_DRUM + 1):
+        if b.get(x, 24, z) is None:
+            stairs(b, x, 24, z, DIORITE, toward(x - GC[0], z - GC[1]), top=True)
+    # the enchanting table at the centre, fifteen bookshelves two out round it (open towards the door), the librarian's
+    # lectern before the gap
+    b.set(GC[0], 3, GC[1], "enchanting_table")
+    for dx in range(-2, 3):
+        for dz in range(-2, 3):
+            if max(abs(dx), abs(dz)) == 2 and (dx, dz) != (0, -2):
+                b.set(GC[0] + dx, 3, GC[1] + dz, G_SHELF)
+    lectern(b, GC[0], 3, GC[1] - 4, "north")
+    for a in (45, 135, 225, 315):  # reading desks round the ring, between the arches, a chair at each
+        c, s_ = math.cos(math.radians(a)), math.sin(math.radians(a))
+        x, z = round(GC[0] + 5 * c), round(GC[1] + 5 * s_)
+        slab(b, x, 3, z, DARK_OAK, top=True)
+        lantern(b, x, 4, z)
+        cx, cz = round(GC[0] + 4 * c), round(GC[1] + 4 * s_)
+        stairs(b, cx, 3, cz, DARK_OAK, toward(x - GC[0], z - GC[1]))
+    upper_gallery(b)
+    for dx in (-2, 2):
+        lantern(b, GC[0] + dx, 3, GC[1] - 4)
+
+
+def upper_gallery(b):
+    """The rotunda's second gallery at 14, under the clerestory: a ring of dark oak with a railing, bookshelves round
+    the drum between the windows (15-19), lanterns hanging under it, a ladder up from the first gallery."""
+    ring = {(x, z) for x, z in disc(G_HALL, GC) if g_r(x, z) > 4.9}
+    for x, z in ring:
+        b.set(x, 14, z, G_FLOOR)
+    for x, z in ring:
+        if any((x + dx, z + dz) not in ring and g_r(x + dx, z + dz) <= 4.9 for dx, dz in DIRS.values()):
+            fence(b, x, 15, z, "dark_oak_fence")
+    shelves = drum_ring(G_HALL - 1, G_HALL)
+    for x, z in shelves - rays(shelves, [22.5 + 45 * a for a in range(8)], 0.9):
+        for y in range(15, 20):
+            b.set(x, y, z, G_SHELF)
+    for a in range(8):
+        ang = math.radians(22.5 + 45 * a)
+        x, z = round(GC[0] + 5.6 * math.cos(ang)), round(GC[1] + 5.6 * math.sin(ang))
+        if (x, z) in ring and b.get(x, 13, z) is None:
+            lantern(b, x, 13, z, hanging=True)
+    for y in range(9, 15):
+        b.set(GC[0] - 3, y, GC[1] + 5, "ladder", facing="north", waterlogged=False)
+
+
+# --- stage IV: the dome and the portico ----------------------------------------------------------------------------------
+def dome(b):
+    """A shallow dome of cut copper (25-30) on the drum, eight ribs of copper, coffered inside in smooth stone and
+    diorite, an oculus under the glass lantern."""
+    ribs = set()
+    for a in range(8):
+        ang = math.radians(45 * a)
+        for r10 in range(0, 100):
+            r = r10 / 10
+            ribs.add((round(GC[0] + r * math.cos(ang)), round(GC[1] + r * math.sin(ang))))
+    for y in range(25, 31):
+        for x, z in disc(G_DRUM, GC):
+            r = g_r(x, z)
+            outside = (r / G_DRUM) ** 2 + ((y - 24.5) / 6.5) ** 2 <= 1
+            inside = (r / (G_DRUM - 1.5)) ** 2 + ((y - 24.5) / 5) ** 2 <= 1
+            lining = (r / (G_DRUM - 2.5)) ** 2 + ((y - 24.5) / 4) ** 2 <= 1
+            if outside and not inside and not (y == 30 and r <= 1.4):
+                b.set(x, y, z, "copper_block" if (x, z) in ribs else "cut_copper")
+            elif inside and not lining and r > 1.4:
+                # the coffers inside: a frame of smooth stone on the ribs and every other course, diorite between
+                b.set(x, y, z, G_TRIM if (x, z) in ribs or y % 2 == 0 else "polished_diorite")
+    # the lantern: glass round the oculus, a copper cap, a lantern hanging inside
+    room = disc(2.4, GC)
+    for y in (31, 32):
+        for x, z in outline(room):
+            pane(b, x, y, z)
+    for x, z in room:
+        dx, dz = x - GC[0], z - GC[1]
+        if (x, z) in outline(room):
+            stairs(b, x, 33, z, CUT_COPPER, toward(dx, dz))
+        else:
+            b.set(x, 33, z, "cut_copper")
+    for dx, dz in ((2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)):
+        for y in (31, 32):  # copper posts either side of each face's window
+            b.set(GC[0] + dx, y, GC[1] + dz, "cut_copper")
+    lantern(b, GC[0], 32, GC[1], hanging=True)
+
+
+G_COLUMNS = (12, 15, 18, 22, 25, 28)
+
+
+def portico(b):
+    """Six quartz columns on the platform's front edge (z 3), a solid entablature over the platform (12-13), a pediment
+    of quartz under a deepslate-tile roof, the grand stair of three steps before it with lanterns on its cheeks."""
+    for x in G_COLUMNS:
+        b.set(x, 3, 3, "chiseled_quartz_block")
+        for y in range(4, 11):
+            b.set(x, y, 3, "quartz_pillar", axis="y")
+        b.set(x, 11, 3, "chiseled_quartz_block")
+    for y in (12, 13):
+        for x in range(11, 30):
+            for z in range(2, 8):
+                b.set(x, y, z, "quartz_block" if z == 2 else G_QUARTZ)
+    for x in range(11, 30):
+        stairs(b, x, 11, 2, QUARTZ, "south", top=True)
+    for z in range(2, 8):
+        for x, f in ((10, "east"), (30, "west")):
+            stairs(b, x, 13, z, QUARTZ, f, top=True)
+    # the portico's side walls (antae) of diorite, from the front wall to the last column but one, a window in each
+    for x in (11, 29):
+        for z in range(5, 8):
+            for y in range(3, 12):
+                if z == 6 and 5 <= y <= 8:
+                    pane(b, x, y, z)
+                else:
+                    b.set(x, y, z, G_TRIM if z == 5 or y in (3, 11) else G_WALL)
+    # the pediment: a low roof of deepslate-tile slabs (half a block up for each block in, as a temple's), its two
+    # gables of smooth quartz with a round window in the front one
+    for x in range(10, 31):
+        i = min(x - 10, 30 - x)
+        y = 14 + i // 2
+        for z in range(1, 8):
+            slab(b, x, y, z, DEEPSLATE_TILE, top=i % 2 == 1)
+        for z in (2, 7):
+            for yy in range(14, y):
+                b.set(x, yy, z, G_QUARTZ)
+    for y, xs in ((15, (20,)), (16, (19, 20, 21)), (17, (20,))):
+        for x in xs:
+            pane(b, x, y, 2)
+    # the grand stair
+    for x in range(12, 29):
+        stairs(b, x, 0, 0, QUARTZ, "south")
+        b.set(x, 0, 1, G_TRIM)
+        stairs(b, x, 1, 1, QUARTZ, "south")
+        b.set(x, 0, 2, G_TRIM)
+        b.set(x, 1, 2, G_TRIM)
+        stairs(b, x, 2, 2, QUARTZ, "south")
+    for x in (11, 29):
+        for z in range(0, 3):
+            b.set(x, 0, z, G_BASE)
+            b.set(x, 1, z, G_TRIM)
+            b.set(x, 2, z, G_TRIM)
+        lantern(b, x, 3, 0)
+        wall_block(b, x, 3, 2, "diorite_wall")
+        lantern(b, x, 4, 2)
+
+
+def terrace_gardens(b):
+    """The four corner gardens: azalea bushes and flowers on their beds, a balustrade of diorite round the terrace's
+    edge (open at the grand stair), lamps on its corners."""
+    plants = ["azalea", None, "poppy", "allium", None, "azure_bluet", "flowering_azalea", "oxeye_daisy", None, "cornflower"]
+    beds = g_gardens()
+    hedge = outline(beds, corners=True)
+    for x, z in beds:
+        if (x, z) in hedge:
+            b.set(x, 3, z, "azalea_leaves", distance=1, persistent=True, waterlogged=False)
+            continue
+        p = plants[zlib.crc32(f"{x},{z},lib".encode()) % len(plants)]
+        if p:
+            b.set(x, 3, z, p)
+    terrace = g_terrace()
+    for x, z in outline(terrace, corners=True):
+        if z == 3 and 10 <= x <= 30:
+            continue
+        wall_block(b, x, 3, z, "diorite_wall")
+    for x, z in ((0, 3), (GW - 1, 3), (0, GD - 1), (GW - 1, GD - 1), (9, 3), (31, 3)):
+        lantern(b, x, 4, z)
+    # in each garden a bench of dark oak facing the building, with a lamp post at its end
+    for gx, gz, facing in ((5, 9, "north"), (35, 9, "north"), (5, 36, "south"), (35, 36, "south")):
+        for dx in (-1, 0, 1):
+            stairs(b, gx + dx, 3, gz, DARK_OAK, facing)
+        lamp_post(b, gx + 2, 3, gz, post="dark_oak_fence", height=2)
+
+
+def stage_g4(b):
+    dome(b)
+    portico(b)
+    terrace_gardens(b)
+
+
+def great_library():
+    b = StagedBuild(GW, GH, GD)
+    b.begin(1)
+    stage_g1(b)
+    b.begin(2)
+    stage_g2(b)
+    b.begin(3)
+    stage_g3(b)
+    b.begin(4)
+    stage_g4(b)
+    return b
+
+
+def great_library_stage(stage=None):
+    """For the renders only: the Great Library as it stands after a stage (whole by default)."""
+    stages = great_library().stage_builds()
+    return stages[(stage or len(stages)) - 1]
+
+
+def great_library_section(cut_x=GC[0]):
+    """For the renders only: the whole Library cut open along x = cut_x (the east half taken away), so a view from the
+    east looks into the rotunda, the wings' galleries and under the dome."""
+    s = great_library_stage()
+    out = Build(GW, GH, GD)
+    out.blocks = {p: v for p, v in s.blocks.items() if p[0] <= cut_x}
+    return out
+
+
+# --- the Observatory -----------------------------------------------------------------------------------------------------
+# On paper (35.17), 31 x 43 x 31, the front (the grand stair and the courtyard) at z = 0:
+# - A raised terrace, 31 x 28 and four high (y 0-3), of deepslate bricks under a polished blackstone rim and balustrade,
+#   a stair of five wide steps up its front (z 0-2) between two lamp posts.
+# - The courtyard (z 4-12) paved in deepslate tiles ruled by polished blackstone lines, with amethyst set in it: a
+#   compass star round the sundial, studs along the path, a ring round the tower's foot. On the west the sundial: a round
+#   stone face (smooth stone slabs ringed by polished blackstone stairs, chiseled hour stones at the quarters) round its
+#   gnomon (a polished blackstone wall rising to a lightning rod). On the east the orrery: four blackstone posts and a
+#   ring beam carrying a gold sun on a chain at the middle and five planets on chains round it (iron, copper, lapis,
+#   redstone and raw gold, each on its own orbit and height).
+# - The tower, round, centred on (15, 20): 15 across and 30 high (y 4-33), deepslate bricks with tiles and cracked ones
+#   in them, three thick to the second floor, two above; eight polished blackstone pilasters up its height, blackstone
+#   bands at the floors (13, 23), a plinth at its foot; tall windows on the four sides of each storey; its door on the
+#   courtyard under a blackstone hood. Inside: a spiral stair of dark oak round a newel to the top, floors at 13 and 23
+#   (the Seer's study below with bookshelves and a lectern, a store of barrels and chests above), lanterns.
+# - The top (y 33): a floor right across, a walk round the dome behind a blackstone parapet: the viewing platform.
+# - The dome (34-39), 12 across, of cut copper, with a slit of tinted glass three wide from its foot to its crown on the
+#   courtyard side and a door onto the walk at the back.
+# - The great telescope: a barrel of cut copper 12 long and two thick on a blackstone mount inside the dome, leaning up
+#   and out of the slit over the courtyard, a ring of copper at its mouth and an eyepiece at its foot.
+# - The low wings either side of the tower (x 1-7 and 23-29, z 15-25), deepslate brick walls under hipped deepslate-tile
+#   roofs: the star-chart room on the west (a cartography table on a carpet chart of the night sky, a lectern, chart
+#   shelves) and the Seer's lodging on the east (a bed, a brewing stand, a barrel, a table), each with a door onto the
+#   courtyard and one into the tower.
+# - Palette (60/30/10): deepslate bricks and tiles; polished blackstone trim; cut copper; amethyst in the paving. Panes.
+# - Stages, each ending tidy: I the Terrace and the Courtyard (the terrace, the stair, the paving, the sundial and the
+#   two wings); II the Tower (its walls, floors, stair and rooms, the top floor and the parapet); III the Dome (its shell
+#   and slit, the door, its lamps); IV the Great Telescope and the Orrery.
+OW, OH, OD = 31, 43, 31
+OC = (15, 20)  # the tower's centre
+O_TOP = 33  # the tower's top floor
+O_FLOORS = (13, 23)
+O_WALL = Mix((7, "deepslate_bricks"), (2, "deepslate_tiles"), (1, "cracked_deepslate_bricks"), seed=41)
+O_TERRACE = Mix((6, "deepslate_bricks"), (3, "cobbled_deepslate"), (1, "cracked_deepslate_bricks"), seed=42)
+BLACKSTONE = Family("polished_blackstone", "polished_blackstone_stairs", "polished_blackstone_slab",
+                    wall="polished_blackstone_wall")
+BLACKSTONE_BRICK = Family("polished_blackstone_bricks", "polished_blackstone_brick_stairs",
+                          "polished_blackstone_brick_slab", wall="polished_blackstone_brick_wall")
+O_DOME_R = 5.9
+O_SUNDIAL = (7, 8)
+O_ORRERY = (23, 8)
+
+
+def o_r(x, z):
+    return math.hypot(x - OC[0], z - OC[1])
+
+
+def o_wall(y):
+    outer = disc(7.4, OC)
+    return outer - disc(4.4 if y < O_FLOORS[1] else 5.4, OC)
+
+
+def o_inside(y):
+    return disc(7.4, OC) - o_wall(y)
+
+
+def o_core():
+    return {(OC[0] + dx, OC[1] + dz) for dx in (-1, 0, 1) for dz in (-1, 0, 1)}
+
+
+O_DIRS = ((0, -1), (0, 1), (-1, 0), (1, 0))
+
+
+def o_ray(y, d):
+    wall = o_wall(y)
+    out = [(OC[0] + d[0] * k, OC[1] + d[1] * k) for k in range(1, 9)]
+    return list(reversed([c for c in out if c in wall]))
+
+
+def o_pilasters():
+    """Eight cells a block proud of the tower, on its diagonals and between the windows."""
+    ring = outline(disc(8.4, OC)) - disc(7.4, OC)
+    out = []
+    for angle in range(22, 360, 45):
+        a = math.radians(angle + 0.5)
+        out.append(min(ring, key=lambda c: math.hypot(c[0] - OC[0] - 8 * math.cos(a), c[1] - OC[1] - 8 * math.sin(a))))
+    return out
+
+
+O_WINGS = ((1, 7, "west"), (23, 29, "east"))  # x from, x to, the side; z 15-25
+
+
+# --- stage I: the terrace and the courtyard -----------------------------------------------------------------------------
+def o_terrace(b):
+    cells = {(x, z) for x in range(OW) for z in range(3, OD)}
+    rim = outline(cells, corners=True)
+    tower = disc(8.4, OC)
+    for x, z in cells:
+        for y in range(0, 3):
+            b.set(x, y, z, "polished_blackstone_bricks" if (x, z) in rim and y == 2 else O_TERRACE.at(x, y, z))
+        b.set(x, 3, z, o_paving(x, z, rim, tower))
+    # the stair up the front: five steps wide, four high (z 0-2 and into the rim), lamp posts either side
+    for x in range(13, 18):
+        for i, z in enumerate((0, 1, 2)):
+            for y in range(0, i):
+                b.set(x, y, z, O_TERRACE.at(x, y, z))
+            stairs(b, x, i, z, DEEPSLATE_BRICK, "south")
+        b.clear(x, 3, 3, x, 3, 3)
+        stairs(b, x, 3, 3, DEEPSLATE_BRICK, "south")
+        for y in range(0, 3):
+            b.set(x, y, 3, O_TERRACE.at(x, y, 3))
+    for x in (12, 18):
+        for z in (0, 1, 2):
+            for y in range(0, 4 if z == 2 else 1 + z):
+                b.set(x, y, z, "polished_blackstone_bricks")
+    for x in (12, 18):
+        for y in range(4, 6):
+            wall_block(b, x, y, 3, "polished_blackstone_wall")
+        lantern(b, x, 6, 3)
+    # the balustrade round the rim, open at the stair
+    for x, z in rim:
+        if z == 3 and 12 <= x <= 18:
+            continue
+        wall_block(b, x, 4, z, "polished_blackstone_wall")
+    for x, z in ((0, 3), (30, 3), (0, 30), (30, 30), (0, 14), (30, 14)):
+        b.set(x, 4, z, "polished_blackstone_bricks")
+        lamp_post(b, x, 5, z, post="polished_blackstone_wall", height=1)
+
+
+def o_paving(x, z, rim, tower):
+    if (x, z) in rim:
+        return "polished_blackstone"
+    sx, sz = O_SUNDIAL
+    d = math.hypot(x - sx, z - sz)
+    if 4 <= z <= 13 and (x - sx == 0 or z - sz == 0 or abs(x - sx) == abs(z - sz)) and 3 <= d <= 4.3:
+        return "amethyst_block"  # the compass star's points
+    if 13 <= x <= 17 and 4 <= z <= 12:  # the path to the door
+        if x in (13, 17):
+            return "polished_blackstone"
+        return "amethyst_block" if x == 15 and z % 3 == 0 else "deepslate_tiles"
+    if (x, z) in outline(tower) and (x + z) % 4 == 0:
+        return "amethyst_block"
+    if x % 6 == 3 or z % 6 == 3:
+        return "polished_blackstone"
+    return "deepslate_tiles"
+
+
+def o_sundial(b):
+    """The sundial: a round face of smooth stone ringed by blackstone stairs, chiseled stones at the four quarters, the
+    gnomon a blackstone wall leaning to a lightning rod."""
+    sx, sz = O_SUNDIAL
+    face = disc(2.4, O_SUNDIAL)
+    ring = outline(disc(3.4, O_SUNDIAL)) - face
+    for x, z in face:
+        if (x, z) == O_SUNDIAL:
+            continue
+        if abs(x - sx) + abs(z - sz) == 2 and (x == sx or z == sz):
+            b.set(x, 4, z, "chiseled_polished_blackstone")
+        else:
+            slab(b, x, 4, z, "smooth_stone_slab")
+    for x, z in disc(3.4, O_SUNDIAL) - face:
+        dx, dz = x - sx, z - sz
+        facing = ("west" if dx > 0 else "east") if abs(dx) >= abs(dz) else ("north" if dz > 0 else "south")
+        stairs(b, x, 4, z, BLACKSTONE, facing)
+    b.set(sx, 4, sz, "polished_blackstone")
+    wall_block(b, sx, 5, sz, "polished_blackstone_wall")
+    wall_block(b, sx, 6, sz, "polished_blackstone_wall")
+    b.set(sx, 7, sz, "lightning_rod", facing="up", powered=False, waterlogged=False)
+
+
+def o_wing(b, x0, x1, side):
+    z0, z1 = 15, 25
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            edge = x in (x0, x1) or z in (z0, z1)
+            corner = x in (x0, x1) and z in (z0, z1)
+            for y in range(4, 8):
+                if corner:
+                    b.set(x, y, z, "polished_blackstone_bricks")
+                elif edge:
+                    b.set(x, y, z, "polished_blackstone" if y == 4 else O_WALL.at(x, y, z))
+    # windows: two each side, one in the end
+    outer = x0 if side == "west" else x1
+    inner = x1 if side == "west" else x0
+    for z in (17, 23):
+        for y in (5, 6):
+            pane(b, outer, y, z)
+    mid = (x0 + x1) // 2
+    for x in (mid - 2, mid + 2):
+        for y in (5, 6):
+            pane(b, x, y, z1)
+    # the doors: onto the courtyard, and into the tower
+    door(b, mid, 4, z0, "dark_oak_door", "north")
+    stairs(b, mid, 7, z0 - 1, BLACKSTONE, "south", top=True)
+    lantern(b, mid - 1, 4, z0 - 1)
+    b.clear(inner, 4, 20, inner, 5, 20)
+    hip_roof(b, x0 - 1 if side == "west" else x0, x1 if side == "west" else x1 + 1, z0 - 1, z1 + 1, 8, DEEPSLATE_TILE)
+    # the ceiling and lamps
+    for x in range(x0 + 1, x1):
+        for z in range(z0 + 1, z1):
+            if b.get(x, 8, z) is None:
+                b.set(x, 8, z, "dark_oak_planks")
+    for z in (18, 22):
+        lantern(b, mid, 7, z, hanging=True)
+    if side == "west":
+        o_chart_room(b, x0, x1)
+    else:
+        o_lodging(b, x0, x1)
+
+
+O_SKY = ["bbbbbybbb", "bybbbbbyb", "bbbpbbbbb", "bbbbbbyb.", "ybbbybbbb", "bbbbbbbpb", "bybbbbbbb", "bbbbybbyb",
+         "bbbbbbbbb"]
+
+
+def o_chart_room(b, x0, x1):
+    """The star-chart room: a carpet chart of the night sky (black, with yellow stars and a purple planet) round a
+    cartography table, a lectern with the star book, shelves of charts and a map on the wall."""
+    colours = {"b": "black_carpet", "y": "yellow_carpet", "p": "purple_carpet", ".": "white_carpet"}
+    for i, x in enumerate(range(x0 + 1, x1)):
+        for j, z in enumerate(range(16, 25)):
+            b.set(x, 4, z, colours[O_SKY[j % len(O_SKY)][i % 9]])
+    mid = (x0 + x1) // 2
+    b.set(mid, 4, 20, "cartography_table")
+    b.set(mid, 4, 22, "lectern", facing="north", has_book=False, powered=False)
+    for z in (16, 17, 23, 24):
+        b.set(x0 + 1, 4, z, "chiseled_bookshelf", facing="east", slot_0_occupied=False, slot_1_occupied=False,
+              slot_2_occupied=False, slot_3_occupied=False, slot_4_occupied=False, slot_5_occupied=False)
+        b.set(x0 + 1, 5, z, "bookshelf")
+    b.set(x0 + 1, 4, 20, "barrel", facing="up", open=False)
+
+
+def o_lodging(b, x0, x1):
+    """The Seer's lodging: a bed, a brewing stand on a table, a barrel, a chair and rugs."""
+    mid = (x0 + x1) // 2
+    for x in range(x0 + 1, x1):
+        for z in range(16, 25):
+            if (x + z) % 2 == 0 and 2 <= x - x0 <= 4 and 18 <= z <= 22:
+                b.set(x, 4, z, "purple_carpet")
+    b.set(x1 - 1, 4, 23, "purple_bed", facing="north", part="foot", occupied=False)
+    b.set(x1 - 1, 4, 24, "purple_bed", facing="north", part="head", occupied=False)
+    b.set(x1 - 1, 4, 16, "polished_blackstone")
+    b.set(x1 - 1, 5, 16, "brewing_stand", has_bottle_0=False, has_bottle_1=False, has_bottle_2=False)
+    b.set(x1 - 1, 4, 17, "barrel", facing="up", open=False)
+    b.set(x1 - 1, 4, 18, "dark_oak_stairs", facing="east", half="bottom", shape="straight", waterlogged=False)
+    b.set(x1 - 1, 4, 22, "bookshelf")
+
+
+def stage_o1(b):
+    o_terrace(b)
+    o_sundial(b)
+    for x0, x1, side in O_WINGS:
+        o_wing(b, x0, x1, side)
+
+
+# --- stage II: the tower -------------------------------------------------------------------------------------------------
+def o_spiral(b, y0, y1):
+    for y in range(y0, y1 + 1):
+        n = y - 4
+        dx, dz = SPIRAL[n % 8]
+        stairs(b, OC[0] + dx, y, OC[1] + dz, DARK_OAK, SPIRAL_FACING[n % 8])
+        log(b, OC[0], y, OC[1], "dark_oak_log")
+
+
+def o_tower(b):
+    for y in range(4, O_TOP):
+        band = y == 4 or y in O_FLOORS or y == O_TOP - 1
+        for x, z in o_wall(y):
+            b.set(x, y, z, "polished_blackstone" if band else O_WALL.at(x, y, z))
+    # the plinth round its foot and the pilasters up its height, ending in a cap under the parapet
+    for x, z in outline(disc(8.4, OC)) - disc(7.4, OC):
+        if b.get(x, 4, z) is None:
+            stairs(b, x, 4, z, BLACKSTONE, o_toward(x, z))
+    for x, z in o_pilasters():
+        for y in range(4, O_TOP - 1):
+            if b.get(x, y, z) is None or y == 4 and b.stage_of.get((x, y, z)) is None:
+                b.set(x, y, z, "polished_blackstone_bricks")
+        stairs(b, x, O_TOP - 1, z, BLACKSTONE, o_toward(x, z), top=True)
+    # windows on the four sides of each storey, two tall, with a blackstone sill
+    for y in (8, 17, 27):
+        for d in O_DIRS:
+            if y == 8 and d != (0, 1):  # the ground storey: the door on the front, the wings either side
+                continue
+            for yy in (y, y + 1, y + 2):
+                cells = o_ray(yy, d)
+                pane(b, cells[0][0], yy, cells[0][1])
+                for c in cells[1:]:
+                    b.clear(c[0], yy, c[1], c[0], yy, c[1])
+            x, z = o_ray(y - 1, d)[0]
+            stairs(b, x + d[0], y - 1, z + d[1], BLACKSTONE, o_toward(x + d[0], z + d[1]), top=True)
+    # the door onto the courtyard under a hood, and the openings into the wings
+    cells = o_ray(4, (0, -1))
+    x, z = cells[0]
+    for c in cells[1:]:
+        b.clear(c[0], 4, c[1], c[0], 5, c[1])
+    door(b, x, 4, z, "dark_oak_door", "north")
+    for xx in (x - 1, x, x + 1):
+        stairs(b, xx, 7, z - 1, BLACKSTONE, "south", top=True)
+    for d in ((-1, 0), (1, 0)):
+        for c in o_ray(4, d):
+            b.clear(c[0], 4, c[1], c[0], 5, c[1])
+    o_spiral(b, 4, O_TOP)
+    # floors (the stair well left open) and the top: right across, a parapet round its edge
+    for y in O_FLOORS:
+        for x, z in o_inside(y + 1):
+            if (x, z) not in o_core() and b.get(x, y, z) is None:
+                b.set(x, y, z, "dark_oak_planks")
+    top = disc(7.4, OC)
+    for x, z in top:
+        if (x, z) in o_core():
+            continue
+        b.set(x, O_TOP, z, "polished_blackstone" if (x, z) in outline(top) else "deepslate_tiles")
+    for x, z in outline(top, corners=True):
+        wall_block(b, x, O_TOP + 1, z, "polished_blackstone_wall")
+    for x, z in ((OC[0] - 7, OC[1]), (OC[0] + 7, OC[1]), (OC[0], OC[1] + 7)):
+        b.set(x, O_TOP + 1, z, "polished_blackstone_bricks")
+        lantern(b, x, O_TOP + 2, z)
+    o_rooms(b)
+
+
+def o_toward(x, z):
+    return toward(x - OC[0], z - OC[1])
+
+
+def o_rooms(b):
+    """The Seer's study on the ground floor, the store above, the instrument room under the top, lanterns in each."""
+    y = 4
+    inside = o_inside(y)
+    for x, z in inside:
+        r = o_r(x, z)
+        if r >= 3.6 and (x, z) not in o_core() and b.get(x, y, z) is None:
+            if abs(x - OC[0]) >= 2 and abs(z - OC[1]) >= 2:
+                b.set(x, y, z, "bookshelf")
+                if b.get(x, y + 1, z) is None:
+                    b.set(x, y + 1, z, "bookshelf")
+    b.set(OC[0] + 2, 4, OC[1] + 3, "lectern", facing="north", has_book=False, powered=False)
+    for y in (4, O_FLOORS[0] + 1, O_FLOORS[1] + 1):
+        for dx, dz in ((2, -2), (-2, 2)):
+            if b.get(OC[0] + dx, y, OC[1] + dz) is None:
+                lantern(b, OC[0] + dx, y, OC[1] + dz)
+    y = O_FLOORS[0] + 1
+    for x, z in sorted(o_inside(y)):
+        if o_r(x, z) >= 4.4 and abs(x - OC[0]) >= 2 and abs(z - OC[1]) >= 2 and b.get(x, y, z) is None:
+            b.set(x, y, z, "barrel" if (x + z) % 2 else "chest", **({"facing": "up", "open": False} if (x + z) % 2 else
+                  {"facing": o_toward(x, z), "type": "single", "waterlogged": False}))
+    y = O_FLOORS[1] + 1
+    b.set(OC[0] - 3, y, OC[1] - 2, "cartography_table")
+    b.set(OC[0] + 3, y, OC[1] + 2, "lectern", facing="west", has_book=False, powered=False)
+    b.set(OC[0] + 3, y, OC[1] - 2, "chiseled_bookshelf", facing="west", slot_0_occupied=False, slot_1_occupied=False,
+          slot_2_occupied=False, slot_3_occupied=False, slot_4_occupied=False, slot_5_occupied=False)
+
+
+def stage_o2(b):
+    o_tower(b)
+
+
+# --- stage III: the dome ------------------------------------------------------------------------------------------------
+def o_telescope():
+    """The telescope's barrel, lower end first: 12 long and two high, from the mount up and out of the slit."""
+    cells = []
+    for i in range(12):
+        z = OC[1] + 2 - i
+        y = O_TOP + 2 + int(i * 0.45)
+        cells += [(OC[0], y, z), (OC[0], y + 1, z)]
+    return cells
+
+
+O_DRUM = 2  # the dome's drum: two courses of blackstone under the copper
+
+
+def o_dome_cells():
+    """The drum (O_TOP + 1 to O_TOP + O_DRUM) and the copper hemisphere on it, as {cell: distance from its centre}."""
+    out = {}
+    base = O_TOP + O_DRUM
+    for y in range(O_TOP + 1, base + 7):
+        for x in range(OC[0] - 7, OC[0] + 8):
+            for z in range(OC[1] - 7, OC[1] + 8):
+                d = math.sqrt((x - OC[0]) ** 2 + (max(y - base, 0)) ** 2 + (z - OC[1]) ** 2)
+                if O_DOME_R - 1.3 < d <= O_DOME_R or (d <= O_DOME_R and y == base + 6):
+                    out[(x, y, z)] = d
+    return out
+
+
+def stage_o3(b):
+    scope = set(o_telescope())
+    cells = o_dome_cells()
+    doorway = {(x, y, z) for (x, y, z) in cells if x == OC[0] and z > OC[1] and y in (O_TOP + 1, O_TOP + 2)}
+    for (x, y, z) in sorted(cells):
+        if (x, y, z) in scope or (x, y, z) in doorway:
+            continue
+        if abs(x - OC[0]) <= 1 and z < OC[1] and y >= O_TOP + 3:
+            b.set(x, y, z, "tinted_glass")
+        elif y <= O_TOP + O_DRUM:
+            b.set(x, y, z, "polished_blackstone_bricks" if y == O_TOP + 1 else "polished_blackstone")
+        else:
+            b.set(x, y, z, "cut_copper")
+    b.set(OC[0], O_TOP + O_DRUM + 6, OC[1], "lightning_rod", facing="up", powered=False, waterlogged=False)
+    zd = max(z for (x, y, z) in doorway)
+    door(b, OC[0], O_TOP + 1, zd, "dark_oak_door", "south")
+    for x, z in ((OC[0] - 3, OC[1] + 2), (OC[0] + 3, OC[1] - 1), (OC[0] - 3, OC[1] - 2)):
+        lantern(b, x, O_TOP + 1, z)
+    b.set(OC[0] + 3, O_TOP + 1, OC[1] + 2, "lectern", facing="west", has_book=False, powered=False)
+
+
+# --- stage IV: the great telescope and the orrery ------------------------------------------------------------------------
+def o_great_telescope(b):
+    cells = o_telescope()
+    x0, y0, z0 = cells[0]
+    for y in range(O_TOP + 1, y0):
+        if y < y0 - 1:
+            wall_block(b, x0, y, z0, "polished_blackstone_wall")
+        else:
+            b.set(x0, y, z0, "chiseled_polished_blackstone")
+    for x, y, z in cells:
+        b.set(x, y, z, "cut_copper")
+    # the eyepiece at its foot, a collar of copper round its mouth
+    xe, ye, ze = cells[0]
+    stairs(b, xe, ye, ze + 1, CUT_COPPER, "north")
+    xm, ym, zm = cells[-1]
+    for dx in (-1, 1):
+        slab(b, xm + dx, ym, zm, CUT_COPPER, top=True)
+        slab(b, xm + dx, ym + 1, zm, CUT_COPPER)
+
+
+O_PLANETS = ((2, 0, 7, "iron_block"), (0, 3, 6, "copper_block"), (-3, -1, 7, "lapis_block"),
+             (1, -3, 6, "redstone_block"), (-2, 2, 6, "raw_gold_block"))
+
+
+def o_orrery(b):
+    """Four blackstone posts and a ring beam (y 4-9) over a blackstone dais; the gold sun on a chain at the middle, five
+    planets on chains round it, each at its own height."""
+    ox, oz = O_ORRERY
+    for x, z in disc(4.4, O_ORRERY):
+        if b.get(x, 4, z) is None:
+            slab(b, x, 4, z, BLACKSTONE)
+    posts_at = [(ox - 3, oz - 3), (ox + 3, oz - 3), (ox - 3, oz + 3), (ox + 3, oz + 3)]
+    for x, z in posts_at:
+        b.set(x, 4, z, "polished_blackstone_bricks")
+        for y in range(5, 10):
+            wall_block(b, x, y, z, "polished_blackstone_wall")
+    for x in range(ox - 3, ox + 4):
+        for z in range(oz - 3, oz + 4):
+            if x in (ox - 3, ox + 3) or z in (oz - 3, oz + 3) or x == ox or z == oz:
+                if (x, z) in posts_at:
+                    b.set(x, 10, z, "polished_blackstone_bricks")
+                else:
+                    slab(b, x, 10, z, BLACKSTONE, top=True)
+    b.set(ox, 10, oz, "chiseled_polished_blackstone")
+    chain(b, ox, 9, oz)
+    chain(b, ox, 8, oz)
+    b.set(ox, 7, oz, "gold_block")
+    for dx, dz, y, name in O_PLANETS:
+        x, z = ox + dx, oz + dz
+        if not (x in (ox - 3, ox + 3) or z in (oz - 3, oz + 3) or x == ox or z == oz):
+            # hang from a beam of its own across the ring
+            for xx in range(ox - 3, ox + 4):
+                if b.get(xx, 10, z) is None:
+                    slab(b, xx, 10, z, BLACKSTONE, top=True)
+        for yy in range(y + 1, 10):
+            chain(b, x, yy, z)
+        b.set(x, y, z, name)
+
+
+def chain(b, x, y, z):
+    b.set(x, y, z, "chain", axis="y", waterlogged=False)
+
+
+def stage_o4(b):
+    o_great_telescope(b)
+    o_orrery(b)
+
+
+def observatory():
+    b = StagedBuild(OW, OH, OD)
+    b.begin(1)
+    stage_o1(b)
+    b.begin(2)
+    stage_o2(b)
+    b.begin(3)
+    stage_o3(b)
+    b.begin(4)
+    stage_o4(b)
+    return b
+
+
+def observatory_stage(stage=None):
+    """For the renders only: the Observatory as it stands after a stage (whole by default)."""
+    stages = observatory().stage_builds()
+    return stages[(stage or len(stages)) - 1]
+
+
+def observatory_section(cut_x=OC[0]):
+    """For the renders only: the whole Observatory cut open along x = cut_x (the east half taken away)."""
+    s = observatory_stage()
+    out = Build(OW, OH, OD)
+    out.blocks = {p: v for p, v in s.blocks.items() if p[0] <= cut_x}
+    return out
+
+
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
 def goods(*lines):
     out = []
@@ -1387,6 +2545,62 @@ WONDERS = {
             {"type": "caravan_speed", "factor": 0.5},
             {"type": "ferry_fares", "factor": 0.5},
             {"type": "early_warning"},
+        ],
+    },
+    "great_library": {
+        "draw": great_library,
+        "icon": "minecraft:enchanting_table",
+        "crew": 12,
+        "requirements": [
+            {"type": "rank_at_least", "rank": "town"},
+            {"type": "legend", "id": "aliveworkplace:old_sage",
+             "stand_in": [{"type": "job_level", "job": "aliveworkplace:scholar", "level": 5, "count": 1}]},
+            {"type": "research_levels", "count": 20},
+        ],
+        "goods": [
+            goods(("item", "minecraft:sugar_cane", 128, "minecraft:farmer"),
+                  ("item", "minecraft:leather", 64, "minecraft:butcher"),
+                  ("item", "minecraft:spruce_log", 64, "aliveworkplace:lumberjack")),
+            goods(("item", "minecraft:book", 64, "minecraft:librarian"),
+                  ("item", "minecraft:black_dye", 64, "minecraft:leatherworker"),
+                  ("item", "minecraft:lantern", 16, "aliveworkplace:tinkerer")),
+            goods(("item", "minecraft:filled_map", 8, "minecraft:cartographer"),
+                  ("item", "minecraft:lapis_lazuli", 32, "aliveworkplace:sifter"),
+                  ("item", "minecraft:copper_ingot", 32, "minecraft:armorer")),
+            goods(("item", "minecraft:quartz", 64, "aliveworkplace:netherworker"),
+                  ("item", "minecraft:cookie", 32, "aliveworkplace:chef"),
+                  ("item", "minecraft:bookshelf", 16, "minecraft:librarian")),
+        ],
+        "powers": [
+            {"type": "research_tier", "tier": 2},
+        ],
+    },
+    "observatory": {
+        "draw": observatory,
+        "icon": "minecraft:spyglass",
+        "crew": 12,
+        "requirements": [
+            {"type": "rank_at_least", "rank": "town"},
+            {"type": "legend", "id": "aliveworkplace:seer",
+             "stand_in": [{"type": "job_level", "job": "minecraft:cleric", "level": 5, "count": 1}]},
+        ],
+        "goods": [
+            goods(("item", "minecraft:lapis_lazuli", 32, "aliveworkplace:sifter"),
+                  ("item", "minecraft:cooked_chicken", 64, "aliveworkplace:chef"),
+                  ("item", "minecraft:filled_map", 8, "minecraft:cartographer")),
+            goods(("item", "minecraft:copper_ingot", 64, "minecraft:armorer"),
+                  ("item", "minecraft:spyglass", 4, "minecraft:toolsmith"),
+                  ("item", "minecraft:amethyst_shard", 32, "aliveworkplace:miner")),
+            goods(("item", "minecraft:book", 16, "minecraft:librarian"),
+                  ("item", "minecraft:tinted_glass", 8, "aliveworkplace:carpenter"),
+                  ("item", "minecraft:feather", 32, "minecraft:butcher")),
+            goods(("item", "minecraft:chain", 32, "aliveworkplace:tinkerer"),
+                  ("item", "minecraft:gold_ingot", 9, "minecraft:armorer"),
+                  ("item", "minecraft:pumpkin_pie", 32, "aliveworkplace:chef")),
+        ],
+        "powers": [
+            {"type": "sky_chart", "size": 1024},
+            {"type": "forecast"},
         ],
     },
 }

@@ -46,7 +46,9 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 
 	static final List<Design> WONDERS = List.of(
 		new Design("great_cathedral", 14_000), // 35.9
-		new Design("lighthouse", 5_000)); // 35.11 (the roadmap's 7,500 doesn't fit its 25 x 33 x 46: ROADMAP Notes)
+		new Design("lighthouse", 5_000), // 35.11 (the roadmap's 7,500 doesn't fit its 25 x 33 x 46: ROADMAP Notes)
+		new Design("great_library", 16_000), // 35.13
+		new Design("observatory", 9_000)); // 35.17
 
 	/** The largest a part may be on any side (a structure file a Structure Block could load). */
 	static final int PART_LIMIT = 48;

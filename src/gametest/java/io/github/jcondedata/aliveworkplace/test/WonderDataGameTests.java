@@ -460,8 +460,17 @@ public class WonderDataGameTests implements FabricGameTest {
 			helper.assertTrue(key(Wonders.capRefusal(level, other, FOLLY).orElse(Component.empty())).equals("wonder.aliveworkplace.refused.server_limit"),
 				"wonderServerLimit 1 let a second village build it");
 			helper.assertTrue(Wonders.capRefusal(level, other, FOLLY_TWO).isEmpty(), "the limit is per kind");
-			Wonders.SERVER_LIMIT = 2;
-			helper.assertTrue(Wonders.capRefusal(level, other, FOLLY).isEmpty(), "a limit of 2 refused the second village");
+			// Wonder tests running alongside (crews, the stone) hold follies of their own in this world since 35.4,
+			// so the limit that admits one more village is one over the villages holding a folly right now
+			long holding = WonderManager.everywhere(level.getServer()).stream()
+				.filter(l -> l.site().wonder().equals(FOLLY))
+				.map(l -> l.level().dimension().location() + "|" + l.site().hall().asLong())
+				.distinct().count();
+			Wonders.SERVER_LIMIT = (int) holding + 1;
+			helper.assertTrue(Wonders.capRefusal(level, other, FOLLY).isEmpty(), "a limit of " + (holding + 1) + " refused village " + (holding + 1));
+			Wonders.SERVER_LIMIT = (int) holding;
+			helper.assertTrue(key(Wonders.capRefusal(level, other, FOLLY).orElse(Component.empty())).equals("wonder.aliveworkplace.refused.server_limit"),
+				"a limit of " + holding + " let village " + (holding + 1) + " build it");
 
 			// disabledWonders, and the switch
 			Wonders.DISABLED = Set.of(FOLLY_TWO);

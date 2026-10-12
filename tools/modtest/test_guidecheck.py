@@ -36,7 +36,7 @@ def site_gating():
         guide = Path(d, "guide")
         guide.mkdir()
         (guide / "index.md").write_text("# Guide\n\nHello.\n\n## Village\n\n- [Builder](builder.md): builds\n\n"
-                                        "## Threats\n\n- [Drought](drought.md): no rain\n")
+                                        "## Threats\n\n- [Drought](drought.md): no rain\n\n### Dry spells\n\n- [Drought](drought.md): again\n")
         (guide / "builder.md").write_text(GOOD + "\nIn a [drought](drought.md) too.\n")
         (guide / "drought.md").write_text(GATED + "\nSee the [builder](builder.md).\n")
         site.GUIDE, site.CHANGELOG = str(guide), str(Path(d, "none.md"))
@@ -50,8 +50,10 @@ def site_gating():
             builder = (folder / "builder.html").read_text()
             if (folder / "drought.html").exists() == gated:
                 problems.append(f"drought.html published: {not gated}, with its switch {'off' if gated else 'on'}")
-            if gated and ("drought.html" in every or "Threats" in index):
-                problems.append("a link to the gated page, or its empty index section, is still published")
+            if gated and ("drought.html" in every or "Threats" in index or "Dry spells" in index):
+                problems.append("a link to the gated page, or its empty index section or subsection, is still published")
+            if not gated and "Dry spells" not in index:
+                problems.append("the index's subsection is missing once the switch is on")
             if gated and "In a drought too." not in builder:
                 problems.append("the link's words are gone from the published page")
             if gated and "<b>1</b> articles" not in index:

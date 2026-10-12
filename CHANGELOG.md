@@ -82,6 +82,8 @@ asks for the steps, `latest.log` and any crash report).
   armor, gray, honor, favor, neighbor, center, traveler, Jeweler and the like; ids, config keys and saves are unchanged.
 
 ### Fixed
+- Wall Sentries hold their leash when crowded (B123): zombies pressing on a sentry walking back to its post could
+  shove it half a block past the 3 blocks it may step off, off the wall's edge. It now can't be pushed farther out.
 - Builders no longer get hurt falling off their own build (B120): a Builder at work stands on the build's upper rows
   (a palisade's stake tops, a tower's platform) and could walk or be shoved off them, and one died building a
   Palisade Tower. A Builder with a build now takes no fall damage; everything else still hurts him.

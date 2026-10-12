@@ -129,8 +129,30 @@ public final class WallSentries {
 			if (post != null && (golem.getNavigation().isDone() || !post.equals(golem.getNavigation().getTargetPos()))) {
 				golem.getNavigation().moveTo(post.getX() + 0.5, post.getY(), post.getZ() + 0.5, SPEED);
 			}
+			if (post != null) {
+				holdAgainstShoves(golem, post);
+			}
 			if (golem.getTarget() != null && !inRange(post, golem.getTarget())) {
 				golem.setTarget(null); // a foe beyond the wall: let it go
+			}
+		}
+
+		/**
+		 * Near the end of its leash, what moves the sentry farther off is taken out of its motion: foes crowding it pushed
+		 * it out past the leash while it walked back, half a block a fight in one of 40 (B123).
+		 */
+		private static void holdAgainstShoves(IronGolem golem, BlockPos post) {
+			net.minecraft.world.phys.Vec3 at = net.minecraft.world.phys.Vec3.atBottomCenterOf(post);
+			double ox = golem.getX() - at.x;
+			double oz = golem.getZ() - at.z;
+			double off = Math.sqrt(ox * ox + oz * oz);
+			if (off <= LEASH - 1) {
+				return;
+			}
+			net.minecraft.world.phys.Vec3 v = golem.getDeltaMovement();
+			double outward = (v.x * ox + v.z * oz) / off;
+			if (outward > 0) {
+				golem.setDeltaMovement(v.x - ox / off * outward, v.y, v.z - oz / off * outward);
 			}
 		}
 

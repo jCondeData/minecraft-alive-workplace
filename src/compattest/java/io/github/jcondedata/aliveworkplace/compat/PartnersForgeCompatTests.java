@@ -96,6 +96,7 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '1600' '"partners_air_mail"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_air_mail")
 	public void aPidgeyTakesTheAirMailUpAndLandsBackEmptyHanded(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
 		PartnerShowsCompatTests.showsOn(helper);
 		int round = PostOffice.ROUND;
 		PostOffice.ROUND = 8;
@@ -106,6 +107,8 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		Set<ResourceLocation> started = PartnersAtWorkCompatTests.watch(helper, p.postman(), "pidgey", carried);
 		double[] highest = {0};
 		double[] takeOffY = {Double.NaN};
+		double[] landedY = {Double.NaN};
+		double[] lastUp = {0};
 		helper.onEachTick(() -> {
 			if (helper.getTick() > 5) {
 				PokemonEntity pidgey = PartnersAtWorkCompatTests.pokemon(helper, "pidgey");
@@ -113,6 +116,12 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 				if (up > 0 && Double.isNaN(takeOffY[0])) {
 					takeOffY[0] = pidgey.getY() - up;
 				}
+				if (up == 0 && lastUp[0] > 0 && Double.isNaN(landedY[0])) {
+					// B90: where the show set it down, the tick it landed. Checked at the end instead, the Pidgey had
+					// taken off again on a flight of its own (Cobblemon's flight wander) while the postman walked on.
+					landedY[0] = pidgey.getY();
+				}
+				lastUp[0] = up;
 				highest[0] = Math.max(highest[0], up);
 			}
 		});
@@ -122,9 +131,8 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 			helper.assertTrue(highest[0] >= 6, "the Pidgey only climbed " + highest[0] + " blocks");
 			helper.assertTrue(p.bobs().countItem(Items.DIAMOND) == 2, "Bob's mailbox is still empty");
 			noDisplaysLeft(helper);
-			PokemonEntity pidgey = PartnersAtWorkCompatTests.pokemon(helper, "pidgey");
-			helper.assertTrue(PartnerShows.flying(pidgey) == 0 && Math.abs(pidgey.getY() - takeOffY[0]) < 1.5,
-				"the Pidgey didn't land back: y " + pidgey.getY() + ", took off at " + takeOffY[0]);
+			helper.assertTrue(!Double.isNaN(landedY[0]) && Math.abs(landedY[0] - takeOffY[0]) < 1.5,
+				"the Pidgey didn't land back: landed at y " + landedY[0] + ", took off at " + takeOffY[0]);
 		});
 	}
 
@@ -154,6 +162,8 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		Set<ResourceLocation> started = PartnersAtWorkCompatTests.watch(helper, p.postman(), "pidgey", carried);
 		double[] highest = {0};
 		double[] takeOffY = {Double.NaN};
+		double[] landedY = {Double.NaN};
+		double[] lastUp = {0};
 		helper.onEachTick(() -> {
 			if (helper.getTick() > 5) {
 				PokemonEntity pidgey = PartnersAtWorkCompatTests.pokemon(helper, "pidgey");
@@ -162,6 +172,12 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 				if (up > 0 && Double.isNaN(takeOffY[0])) {
 					takeOffY[0] = pidgey.getY() - up;
 				}
+				if (up == 0 && lastUp[0] > 0 && Double.isNaN(landedY[0])) {
+					// B90: where the show set it down, the tick it landed. Checked at the end instead, the Pidgey had
+					// taken off again on a flight of its own (Cobblemon's flight wander) while the postman walked on.
+					landedY[0] = pidgey.getY();
+				}
+				lastUp[0] = up;
 				highest[0] = Math.max(highest[0], up);
 			}
 		});
@@ -171,9 +187,8 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 			helper.assertTrue(takeOffY[0] + highest[0] < top, "the Pidgey climbed to " + (takeOffY[0] + highest[0]) + ", its pasture's top is " + top);
 			helper.assertTrue(p.bobs().countItem(Items.DIAMOND) == 2, "Bob's mailbox is still empty");
 			noDisplaysLeft(helper);
-			PokemonEntity pidgey = PartnersAtWorkCompatTests.pokemon(helper, "pidgey");
-			helper.assertTrue(PartnerShows.flying(pidgey) == 0 && Math.abs(pidgey.getY() - takeOffY[0]) < 1.5,
-				"the Pidgey didn't land back: y " + pidgey.getY() + ", took off at " + takeOffY[0]);
+			helper.assertTrue(!Double.isNaN(landedY[0]) && Math.abs(landedY[0] - takeOffY[0]) < 1.5,
+				"the Pidgey didn't land back: landed at y " + landedY[0] + ", took off at " + takeOffY[0]);
 		});
 	}
 

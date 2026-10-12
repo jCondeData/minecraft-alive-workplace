@@ -55,8 +55,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 /**
  * Crews (ROADMAP 35.5): every builder of the village on one Wonder. Eight builders raise the folly with no two in one
- * column on any tick, no structure block put up with the block the drawing puts under it missing, in at most a third
- * of the time one builder alone takes (the item asks a quarter, not met yet); a save and reload mid-stage keeps the crew together and they finish; the
+ * column on any tick, no structure block put up with the block the drawing puts under it missing, in at most a quarter
+ * of the time one builder alone takes; a save and reload mid-stage keeps the crew together and they finish; the
  * crew holds to {@code wonderCrew}, forms only with Wonders switched on, and closes up when a member is lost; calling
  * every builder brings in the busy ones; the stone names the lead and the crew.
  */
@@ -251,7 +251,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 
 	/**
 	 * One builder raises the folly alone, and its time is taken; then, the site cleared, eight raise it again: one
-	 * column each, nothing hung in the air, and in a third of the lone builder's time at most (35.5 asks a quarter).
+	 * column each, nothing hung in the air, and in a quarter of the lone builder's time at most.
 	 */
 	//$ gametest_ticks_batch TALL '48000' '"eightBuildersRaiseTheFolly"'
 	@GameTest(template = TALL, timeoutTicks = 48000, batch = "eightBuildersRaiseTheFolly")
@@ -304,9 +304,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 			helper.assertTrue(now.done() && crewTicks[0] >= 0, "the crew is still at stage " + now.stage() + ", "
 				+ Math.round(WonderStages.stageProgress(level, now) * 100) + "%, crew " + WonderCrews.crew(level, now).size());
 			helper.assertTrue(watch.most == 8, "all eight builders on the crew at once: at most " + watch.most);
-			// ROADMAP 35.5 asks for a quarter; the crew does about a third today (ROADMAP Notes, 35.5): this holds that
-			// bar until the item is finished, when it becomes "* 4".
-			helper.assertTrue(crewTicks[0] * 3 <= soloTicks[0], "the crew of eight took " + crewTicks[0] + " ticks, the lone builder " + soloTicks[0]
+			helper.assertTrue(crewTicks[0] * 4 <= soloTicks[0], "the crew of eight took " + crewTicks[0] + " ticks, the lone builder " + soloTicks[0]
 				+ " (a quarter: " + soloTicks[0] / 4 + "; " + watch.placeable + " blocks, the least one builder could take " + watch.placeable * 20L
 				+ "); members busy " + watch.busyTicks + " of " + watch.memberTicks + " ticks; stages " + watch.stages);
 			List<BlockPos> left = unlikeButTheFinial(level, at);
@@ -464,6 +462,85 @@ public class WonderCrewGameTests implements FabricGameTest {
 			WonderSite now = WonderManager.get(level).site(id).orElseThrow();
 			helper.assertTrue(now.done(), "still at stage " + now.stage() + ", " + Math.round(WonderStages.stageProgress(level, now) * 100) + "%" + parts(level, now));
 			helper.assertTrue(watch.most == 3 && after.get() == 3, "the crew filled to 3 (" + watch.most + ") and closed up after the loss (" + after.get() + ")");
+			List<BlockPos> left = unlikeButTheFinial(level, at);
+			helper.assertTrue(left.isEmpty(), left.size() + " blocks unlike the drawing, e.g. " + left.stream().limit(3).toList());
+		});
+	}
+
+	/**
+	 * The lead of stage I's part is killed mid-part: the part isn't lost (a part whose site is gone counts as built), it
+	 * goes to a member of its crew, who leads it from then on, and the crew finishes the folly as drawn, its later stages
+	 * led by a living builder.
+	 */
+	//$ gametest_ticks_batch TALL '24000' '"crewLeadDies"'
+	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewLeadDies")
+	public void aLeadKilledMidPartHandsItOn(GameTestHelper helper) {
+		Village v = village(helper, 4, 4);
+		ServerLevel level = v.level();
+		WonderSite begun = begin(helper, v);
+		stock(helper, level, begun.stone().orElseThrow());
+		BlueprintData.Placement at = begun.placement().orElseThrow();
+		UUID id = begun.id();
+		UUID[] dead = {null};
+		UUID[] part = {null};
+		UUID[] heir = {null};
+		List<String> later = new ArrayList<>();
+		helper.onEachTick(() -> {
+			if (level.getGameTime() % 200 == 0) {
+				helper.setDayTime(2000);
+			}
+			WonderSite now = WonderManager.get(level).site(id).orElse(null);
+			if (now == null || now.done()) {
+				return;
+			}
+			BuildSiteManager sites = BuildSiteManager.get(level);
+			if (dead[0] == null) {
+				BuildSite first = now.stage() == 1 ? sites.get(now.parts().get(0)) : null;
+				if (first != null && first.placed() >= 30 && first.helpers(level.getGameTime()).size() >= 2
+					&& level.getEntity(first.builder()) instanceof Villager lead) {
+					dead[0] = lead.getUUID();
+					part[0] = first.id();
+					lead.kill(); // not a fall: builders on a job take none
+				}
+				return;
+			}
+			if (heir[0] == null) {
+				// the owner gathers up the bag the lead dropped as it died and puts it in a chest by the stone
+				BlockPos stone = now.stone().orElseThrow();
+				BlockPos chest = stone.offset(0, 0, 3 * Integer.signum(stone.getZ() - helper.absolutePos(MIDDLE).getZ()));
+				level.setBlockAndUpdate(chest, Blocks.CHEST.defaultBlockState());
+				Container box = (Container) level.getBlockEntity(chest);
+				int slot = 0;
+				for (net.minecraft.world.entity.item.ItemEntity drop : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+						net.minecraft.world.phys.AABB.encapsulatingFullBlocks(helper.absolutePos(new BlockPos(0, 0, 0)), helper.absolutePos(new BlockPos(30, 30, 30))))) {
+					if (slot < box.getContainerSize()) {
+						box.setItem(slot++, drop.getItem().copy());
+					}
+					drop.discard();
+				}
+				BuildSite first = sites.get(part[0]);
+				helper.assertTrue(first != null, "the part went with its lead");
+				if (!first.isDone()) {
+					helper.assertTrue(!dead[0].equals(first.builder()), "the part is still the dead lead's");
+					helper.assertTrue(first.builder() != null && level.getEntity(first.builder()) instanceof Villager v2 && v2.isAlive()
+						&& ModAttachments.BUILDER_JOB.get(v2) != null && !ModAttachments.BUILDER_JOB.get(v2).helper(),
+						"the part wasn't handed to a living member as its lead: " + first.builder());
+				}
+				heir[0] = first.builder();
+			}
+			for (UUID p : now.parts()) {
+				BuildSite s = sites.get(p);
+				if (now.stage() > 1 && s != null && s.builder() != null && !later.contains(now.stage() + ":" + s.builder())) {
+					later.add(now.stage() + ":" + s.builder());
+					helper.assertTrue(!dead[0].equals(s.builder()), "stage " + now.stage() + " went to the dead lead");
+				}
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(dead[0] != null, "the lead was never killed mid-part");
+			helper.assertTrue(heir[0] != null, "nobody took the part on");
+			WonderSite now = WonderManager.get(level).site(id).orElseThrow();
+			helper.assertTrue(now.done(), "still at stage " + now.stage() + ", " + Math.round(WonderStages.stageProgress(level, now) * 100) + "%" + parts(level, now));
 			List<BlockPos> left = unlikeButTheFinial(level, at);
 			helper.assertTrue(left.isEmpty(), left.size() + " blocks unlike the drawing, e.g. " + left.stream().limit(3).toList());
 		});

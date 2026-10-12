@@ -63,7 +63,8 @@ asks for the steps, `latest.log` and any crash report).
   their own joins the Wonder's crew, up to 12 (the new `wonderCrew` setting). **[Call every builder]** under the
   Foundation Stone's status brings the busy ones too, as they finish what they're on. Each takes a column of its own
   and works it from the bottom (clearing, from the top), never more than two layers above the lowest unfinished one, so
-  nothing goes up with nothing under it; eight builders raise the test Wonder in under a third of one builder's time. The
+  nothing goes up with nothing under it. Each fetches its share of a stage's materials in one trip, so eight builders
+  raise the test Wonder in under a quarter of one builder's time. The
   stone and the hall's Wonders page name the lead (the Master Architect when there is one) and the crew.
 - **The Foundation Stone** (35.4, 2.0, still switched off): right-click a builder of the village with a placed Wonder
   Plan and a **Foundation Stone** (carved stone, brass plaque) goes down just outside the Wonder's front corner; the
@@ -76,6 +77,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - Builders no longer die from falls while on a job (on a roof, a tower or a Wonder's dome), and a Wonder's part whose
   builder is lost goes on to another builder of its crew instead of counting as built with blocks missing (35.5).
+- A builder levelling the ground round a finished build with no dirt in its chests leaves the holes at once instead of
+  standing there a tick for each one (about 20 seconds round a Wonder's last stage).
 
 ### Changed
 - **The Artisan's House and the Burgher's Townhouse are sold by builders only** (34.15a): they're no longer in the

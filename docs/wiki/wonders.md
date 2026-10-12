@@ -63,10 +63,14 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   from the bottom. Nobody works more than two layers above the part's lowest unfinished layer (a block the lead gave up
   on, out of reach, doesn't hold the rest back; levelling the ground round it isn't layered), and no structure block
   goes up before the block the drawing puts under it.
-- Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 3,500 ticks
-  against about 12,400 for one alone (at one block a second): a third of the time or less; the quarter the item asks
-  for isn't reached yet.
-- The crew fetches from the chests round the stone and the village's stores, and passes materials to each other.
+- Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 2,500 to
+  2,900 ticks against about 12,150 for one alone (at one block a second): under a quarter of the time.
+- The crew fetches from the chests round the stone and the village's stores, and passes materials to each other. In
+  one trip each member takes for the rest of its column and a share of the stage, dealt round the crew like cards (each
+  block's materials to half of the crew), plus a little of the stages after it (the decoration's lanterns and doors), so
+  nobody walks down from a dome to the chests for every block.
+- If the lead dies, its part goes to the highest-level member of its crew (else to the builder the next stage would get,
+  else to the first to join); what it carried drops where it fell, as for any builder.
 
 **What next?** names the Wonder closest to ready once the village is a Town with room for one: "The Great Cathedral can
 be begun", or the first line it lacks ("The Great Cathedral is nearly in reach: Finished Chapel: 2 of 3").
@@ -402,10 +406,11 @@ the stone's status.
 
 GameTests in `WonderCrewGameTests` (35.5): eight builders raise the folly with no two on one column on any tick, no
 structure block up with the drawing's block under it missing, all eight on the crew at once, and done in at most a
-third of the time one builder alone takes on the same folly (measured in the same test, first; 35.5 asks a quarter); a save and reload mid-stage II with every
+quarter of the time one builder alone takes on the same folly (measured in the same test, first); a save and reload mid-stage II with every
 member, the crew back together and the folly finished as drawn; `wonderCrew 3` holds the crew to 3, nobody joins with
 Wonders off, and a member lost mid-job is replaced; a builder with its own build queued joins only once every builder is
-called, a stranger can't call, the stone names the crew and offers the call, the highest-level builder leads.
+called, a stranger can't call, the stone names the crew and offers the call, the highest-level builder leads; the
+lead killed mid-part hands the part to a living member, who leads it, and the crew finishes the folly as drawn.
 Showcase scene `wonder_crew` (group Wonders): ten builders on the folly.
 
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own

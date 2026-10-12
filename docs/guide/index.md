@@ -209,6 +209,28 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   [Observatory](observatory.md), [Hanging Gardens](hanging-gardens.md), [Colossus](colossus.md) and
   [Stadium](stadium.md).
 
+### Legends and guilds
+
+- [Legends](legends.md): rare named villagers with powers, and how a village earns them.
+- [Master Architect](master-architect.md), [Pathfinder](pathfinder.md), [Old Sage](old-sage.md),
+  [Golem Smith](golem-smith.md), [Seer](seer.md), [Merchant Prince](merchant-prince.md), [Grand Chef](grand-chef.md),
+  [Bard Laureate](bard-laureate.md), [Beastmaster](beastmaster.md), [Pokémon Professor](pokemon-professor.md),
+  [Pokémon Ranger](pokemon-ranger.md) and [Founder](founder.md): every Legend.
+- [Gifted](gifted.md): the rare gifts about one villager in thirty is born with.
+- [Strange moods](strange-moods.md): a Master seized, a Masterwork made, a Legend born.
+- [Founder's Wagon](founders-wagon.md): the Founder's weekly gift, a new village in a wagon.
+- [Guilds](guilds.md): a Master leads their trade, and a Guildhall makes every member better.
+- [Builders' Guild](builders-guild.md), [Miners' Guild](miners-guild.md), [Smiths' Guild](smiths-guild.md),
+  [Woodsmen's Guild](woodsmens-guild.md), [Harvest Guild](harvest-guild.md), [Herders' Guild](herders-guild.md),
+  [Scholars' Guild](scholars-guild.md), [Healers' Guild](healers-guild.md), [Merchants' Guild](merchants-guild.md),
+  [Wardens' Guild](wardens-guild.md) and [Trainers' Guild](trainers-guild.md): every guild.
+- [Guild Charter](guild-charter.md) and the [Guildhall](guildhall-build.md): how a guild starts and where it meets.
+- [Work Horn](work-horn.md), [Village Banner](village-banner.md), [Cradle](cradle.md) and
+  [Harvest Idol](harvest-idol.md): the village's civic things.
+- [Tonics](tonics.md): [Miner's Brew](miners-brew.md), [Smith's Draught](smiths-draught.md),
+  [Scholar's Infusion](scholars-infusion.md), [Builder's Tea](builders-tea.md), [Harvest Cordial](harvest-cordial.md)
+  and [Woodsman's Broth](woodsmans-broth.md).
+
 ## Installing
 
 Alive Workplace is a Fabric mod for Minecraft 1.21.1. It goes on the **server and on every player's game**: download the

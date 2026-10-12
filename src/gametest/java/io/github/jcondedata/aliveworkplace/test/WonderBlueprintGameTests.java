@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.build.MaterialRules;
 import io.github.jcondedata.aliveworkplace.wonder.Wonder;
 import io.github.jcondedata.aliveworkplace.wonder.Wonders;
 import java.io.Reader;
@@ -48,7 +49,9 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 		new Design("great_cathedral", 14_000), // 35.9
 		new Design("lighthouse", 5_000), // 35.11 (the roadmap's 7,500 doesn't fit its 25 x 33 x 46: ROADMAP Notes)
 		new Design("great_library", 16_000), // 35.13
-		new Design("observatory", 9_000)); // 35.17
+		new Design("observatory", 9_000), // 35.17
+		new Design("great_wall", 11_000), // 35.15 (the roadmap's 18,000 needs solid towers: ROADMAP Notes)
+		new Design("hanging_gardens", 15_000)); // 35.19
 	// The Stadium (35.23) needs Cobblemon for its file and its Healing Machine: the same checks are compat StadiumCompatTests.
 
 	/** The largest a part may be on any side (a structure file a Structure Block could load). */
@@ -206,7 +209,10 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 			d.id() + " has " + blocks + " blocks, not within 10% of " + d.blocks());
 	}
 
-	/** No retired job block, no calcite, nothing a player can't get. */
+	/**
+	 * No retired job block, no calcite, nothing a player can't get (still water counts: a builder pours it from a bucket,
+	 * as {@link MaterialRules#requirement} says).
+	 */
 	static void materials(GameTestHelper helper, Design d) {
 		List<Block> retired = StationsSpecGameTests.gone();
 		Set<String> wrong = new java.util.TreeSet<>();
@@ -223,7 +229,7 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 						wrong.add(name + " (a retired job block)");
 					} else if (block == Blocks.CALCITE) {
 						wrong.add(name);
-					} else if (UNOBTAINABLE.contains(block) || block.asItem() == Items.AIR) {
+					} else if (UNOBTAINABLE.contains(block) || block.asItem() == Items.AIR && MaterialRules.requirement(state).isEmpty()) {
 						wrong.add(name + " (no player can get it)");
 					}
 				}

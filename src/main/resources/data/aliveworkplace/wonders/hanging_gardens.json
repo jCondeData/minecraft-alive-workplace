@@ -1,0 +1,157 @@
+{
+  "name": "wonder.aliveworkplace.hanging_gardens.name",
+  "description": "wonder.aliveworkplace.hanging_gardens.description",
+  "icon": "minecraft:flowering_azalea",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:grand_chef",
+      "stand_in": [
+        {
+          "type": "job_level",
+          "job": "aliveworkplace:chef",
+          "level": 5,
+          "count": 1
+        },
+        {
+          "type": "meal_kinds",
+          "count": 8
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:bone_meal",
+          "count": 128,
+          "job": "aliveworkplace:composter"
+        },
+        {
+          "item": "minecraft:wheat_seeds",
+          "count": 128,
+          "job": "minecraft:farmer"
+        },
+        {
+          "item": "minecraft:clay_ball",
+          "count": 64,
+          "job": "aliveworkplace:sifter"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_2_0",
+          "offset": [4, 7, 7]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:sweet_berries",
+          "count": 64,
+          "job": "aliveworkplace:orchard_keeper"
+        },
+        {
+          "item": "minecraft:glow_berries",
+          "count": 32,
+          "job": "aliveworkplace:orchard_keeper"
+        },
+        {
+          "tag": "minecraft:small_flowers",
+          "count": 64,
+          "job": "aliveworkplace:florist"
+        },
+        {
+          "tag": "minecraft:saplings",
+          "count": 16,
+          "job": "aliveworkplace:lumberjack"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_3_0",
+          "offset": [8, 13, 11]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:honey_bottle",
+          "count": 32,
+          "job": "aliveworkplace:beekeeper"
+        },
+        {
+          "item": "minecraft:carrot",
+          "count": 64,
+          "job": "minecraft:farmer"
+        },
+        {
+          "item": "minecraft:potato",
+          "count": 64,
+          "job": "minecraft:farmer"
+        },
+        {
+          "item": "minecraft:cocoa_beans",
+          "count": 32,
+          "job": "aliveworkplace:orchard_keeper"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_4_0",
+          "offset": [10, 0, 15]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:cake",
+          "count": 16,
+          "job": "aliveworkplace:chef"
+        },
+        {
+          "item": "minecraft:egg",
+          "count": 32,
+          "job": "minecraft:butcher"
+        },
+        {
+          "item": "minecraft:cod",
+          "count": 32,
+          "job": "minecraft:fisherman"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "harvest",
+      "scope": "realm",
+      "extra_every": 4
+    },
+    {
+      "type": "births",
+      "meals": 12,
+      "per_day": 2
+    }
+  ]
+}

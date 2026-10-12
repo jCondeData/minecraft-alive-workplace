@@ -1,0 +1,168 @@
+{
+  "name": "wonder.aliveworkplace.great_wall.name",
+  "description": "wonder.aliveworkplace.great_wall.description",
+  "icon": "minecraft:stone_brick_wall",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:golem_smith",
+      "stand_in": [
+        {
+          "type": "iron_golems",
+          "count": 4
+        },
+        {
+          "type": "job_level",
+          "job": "aliveworkplace:tinkerer",
+          "level": 5,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "type": "finished",
+      "blueprint": "aliveworkplace:gatehouse",
+      "count": 1
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_1_0",
+          "offset": [0, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_1_1",
+          "offset": [48, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_1_2",
+          "offset": [96, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:iron_sword",
+          "count": 8,
+          "job": "minecraft:weaponsmith"
+        },
+        {
+          "item": "minecraft:arrow",
+          "count": 128,
+          "job": "minecraft:fletcher"
+        },
+        {
+          "item": "minecraft:bread",
+          "count": 128,
+          "job": "aliveworkplace:chef"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_2_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:iron_shovel",
+          "count": 8,
+          "job": "minecraft:toolsmith"
+        },
+        {
+          "item": "minecraft:potion",
+          "count": 12,
+          "potion": "minecraft:strength",
+          "job": "minecraft:cleric"
+        },
+        {
+          "item": "minecraft:baked_potato",
+          "count": 64,
+          "job": "aliveworkplace:chef"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_3_0",
+          "offset": [57, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_3_1",
+          "offset": [96, 0, 3]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:crossbow",
+          "count": 8,
+          "job": "minecraft:fletcher"
+        },
+        {
+          "item": "minecraft:iron_chestplate",
+          "count": 8,
+          "job": "minecraft:armorer"
+        },
+        {
+          "item": "minecraft:shield",
+          "count": 8,
+          "job": "aliveworkplace:carpenter"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_4_0",
+          "offset": [1, 9, 2]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_4_1",
+          "offset": [57, 9, 2]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:iron_block",
+          "count": 16,
+          "job": "minecraft:armorer"
+        },
+        {
+          "item": "minecraft:pumpkin",
+          "count": 4,
+          "job": "minecraft:farmer"
+        },
+        {
+          "item": "minecraft:campfire",
+          "count": 16,
+          "job": "aliveworkplace:carpenter"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "raid_barrier",
+      "margin_degrees": 10
+    },
+    {
+      "type": "sentries",
+      "count": 4,
+      "range": 16
+    }
+  ]
+}

@@ -40,6 +40,8 @@ final class WonderGalleryScene {
 		new Wonder("lighthouse", new Vec3i(25, 46, 33), 11), // 35.11: the mole, the jetty and the boathouse in the sea
 		new Wonder("great_library", new Vec3i(41, 34, 41), -1), // 35.13
 		new Wonder("observatory", new Vec3i(31, 43, 31), -1), // 35.17
+		new Wonder("great_wall", new Vec3i(97, 25, 15), -1), // 35.15: front (z = 0) is the village side
+		new Wonder("hanging_gardens", new Vec3i(47, 33, 44), -1), // 35.19
 		new Wonder("stadium", new Vec3i(47, 20, 37), -1)); // 35.23: its file and its Healing Machine need Cobblemon, so the scene is filmed with it
 	/** How far the sea reaches past a coastal Wonder's sides and back. */
 	private static final int SEA_MARGIN = 10;
@@ -74,7 +76,7 @@ final class WonderGalleryScene {
 		if (tick % 20 == 0) {
 			// Slimes from the superflat world's slime chunks hop into the shots.
 			server.execute(() -> server.overworld().getEntitiesOfClass(net.minecraft.world.entity.monster.Slime.class,
-				new AABB(origin(0)).inflate(SPACING * WONDERS.size() + 64)).forEach(net.minecraft.world.entity.Entity::discard));
+				new AABB(origin(0)).inflate(origin(WONDERS.size()).getX() + 64)).forEach(net.minecraft.world.entity.Entity::discard));
 		}
 		int front = tick - FIRST;
 		if (front >= 0 && front % EACH == 0 && front / EACH < WONDERS.size()) {
@@ -107,13 +109,17 @@ final class WonderGalleryScene {
 			wrong.add(id + ": no data file (" + e + ")");
 			return;
 		}
+		boolean first = true;
 		for (JsonElement stage : file.getAsJsonArray("stages")) {
+			boolean clearing = first;
+			first = false;
 			for (JsonElement p : stage.getAsJsonObject().getAsJsonArray("parts")) {
 				ResourceLocation part = ResourceLocation.parse(p.getAsJsonObject().get("part").getAsString());
 				JsonArray o = p.getAsJsonObject().getAsJsonArray("offset");
 				BlockPos at = origin.offset(o.get(0).getAsInt(), o.get(1).getAsInt(), o.get(2).getAsInt());
 				Blueprint blueprint = BlueprintLibrary.get(level, part).orElse(null);
-				if (blueprint == null || blueprint.solidBlockCount() == 0) {
+				// The first stage is saved whole, air included, so a part of it may be only air: it clears the site.
+				if (blueprint == null || blueprint.solidBlockCount() == 0 && !(clearing && !blueprint.blocks().isEmpty())) {
 					wrong.add(part + " is missing or empty");
 					continue;
 				}
@@ -142,8 +148,13 @@ final class WonderGalleryScene {
 		}
 	}
 
+	/** Wonder {@code i}'s corner: SPACING apart, or the one before it and 30 blocks clear where it's longer (the Wall). */
 	private static BlockPos origin(int i) {
-		return new BlockPos(i * SPACING, -60, 0);
+		int x = 0;
+		for (int j = 0; j < i; j++) {
+			x += Math.max(SPACING, WONDERS.get(j).size().getX() + 30);
+		}
+		return new BlockPos(x, -60, 0);
 	}
 
 	/** The camera on Wonder {@code i}, from the front (north) or from behind. */

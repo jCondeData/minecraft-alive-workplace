@@ -4272,13 +4272,13 @@ Legends.
     research loads unchanged; Swift Hands V on top of every other bonus stays at or under twice the pace;
   - scene `wonder_great_library`: the time-lapse, ending in the rotunda on the scholar's screen with the second tier;
     its GIF and powers are in the README.
-- [ ] **35.15** **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
+- [x] **35.15** (review: pending 2026-10-12) **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
   place it facing out: its stairs are on your side), drawn like 35.9: 97 long, 7 thick and 12 high on a battered
   plinth, a walk along the top behind crenellations, and five towers (9 × 9, 18 high, hipped roofs; one at each end
   and two at the quarters), each with stairs inside, a grindstone for a guard and an alcove where a sentry golem
   stands. At the centre the **Great Gate**: a 17-wide gatehouse between two towers, a portcullis of iron bars over a
   gateway of fence gates. Braziers (campfires) along the walk, banners on the towers. Palette: cobblestone and stone
-  bricks with mossy and cracked ones low down, a deepslate-brick plinth, spruce roofs. About 18,000 blocks in parts of
+  bricks with mossy and cracked ones low down, a deepslate-brick plinth, spruce roofs. About 11,000 blocks (18,000 before it was drawn: Notes, 35.15) in parts of
   at most 48: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the Towers' Crowns*. Data:
   Town; the Golem Smith (stand-in: 4 iron golems and a Master Tinkerer); a finished Gatehouse. Goods: I 8 iron swords
   (Weaponsmith), 128 arrows (Fletcher), 128 bread (Chef); II 8 iron shovels (Toolsmith), 12 potions of strength
@@ -4328,7 +4328,7 @@ Legends.
   - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
     powers are in the README.
   - [ ] **35.18a** Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
-- [ ] **35.19** **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
+- [x] **35.19** (review: pending 2026-10-12) **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
   31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
   soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four
   village farms), sweet and glow berry beds, flowering azaleas and oaks, vines and glow berries hanging over the
@@ -5649,3 +5649,26 @@ item waits.
   5,011 blocks, not about 7,500: only a solid tower or a bigger site would reach that. Decided: keep the size and the
   design, and the figure is now about 5,000 (the item's text and `WonderBlueprintGameTests`, within 10%). Owner: say
   if you'd rather have a bigger site (about 29 x 37) for the 7,500.
+- **35.15 the Great Wall's block count and towers** (lane-b-1012-0033, 2026-10-12): drawn at 97 x 25 x 15 with
+  everything the item lists, it is 10,802 blocks, not about 18,000: the curtain is solid (7 thick, 12 high), but the
+  towers and the gatehouse are rooms with stairs inside, as the item asks; only solid towers would reach 18,000.
+  Decided: keep the design, and the figure is now about 11,000 (the item's text and `WonderBlueprintGameTests`, within
+  10%). "Five towers ... one at each end and two at the quarters" names four: the fifth is the Great Gate's gatehouse
+  (17 wide, as high as the towers, under its own hipped roof), standing between the quarter towers. Its front (z = 0)
+  is the village side, as the Stone Wall's is, so a player places it from inside facing out and its two stairs (ten
+  steps up the inner runs to landings by the gatehouse) are on his side. The four towers' alcoves face the gate, one
+  sentry each (35.16's four). Found on the way: `generate.py` had stopped at the Great Cathedral since 35.11 (the
+  Lighthouse's `band(y)` shadowed the Cathedral's `band`); the Lighthouse's is now `l_band`, and both Wonders' parts
+  come out the same as before. The `wonder_gallery` scene now accepts a first-stage part that is only air (it clears
+  the site, as `WonderBlueprintGameTests` already allowed; the Cathedral has two). Owner: say if you'd rather have
+  solid tower bases for the 18,000.
+- **35.19 the Hanging Gardens' site, water and count** (lane-b-1012-0033, 2026-10-12): drawn with everything the item
+  lists, the terraces stand on the 39 x 39 foot (24 high, 31 to the crown's treetops), but the whole site is 47 x 44:
+  the falls' pool lies outside the foot on the east and the ramp's first flight runs along the front from the ground.
+  It is 16,245 blocks, within 10% of the 15,000, so the figure stays. The water (the cistern, the channel, a basin on each
+  ledge, the pool) is still water a builder pours from a bucket, all in stage IV, so the falls start when the crown is
+  finished; the arcade behind the falls and behind each ramp is blind. `WonderBlueprintGameTests` refused still water as
+  "nothing a player can't get" (it has no item of its own); it now accepts a block whose cost `MaterialRules` knows (a
+  water bucket), as the builder does. The cocoa beans are goods only: cocoa needs jungle logs, which the palette doesn't
+  have. Glow berries hang one block long, under solid blocks (a longer strand needs cave vine stems, which have no item
+  and a builder skips).

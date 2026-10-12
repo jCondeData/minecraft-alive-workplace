@@ -3,10 +3,10 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory and, with Cobblemon, the Stadium) are built, behind the 2.0 switch (see
+Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, the Hanging Gardens and, with Cobblemon, the Stadium) are built, behind the 2.0 switch (see
 Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.17, 35.23
+Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19, 35.23
 
 ## What a player sees
 
@@ -117,6 +117,47 @@ the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the 
 IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). It needs a Town and the Seer (or a Master
 Cleric while Legends are off). Its powers, the Sky Chart and the Coming days page, come with 35.18.
 
+**The Great Wall** (35.15) is drawn: a defence 97 long, placed like the other walls (stand in the village and place it
+facing out: its stairs are on your side), about 10,800 blocks. A curtain 7 thick and 12 high on a battered plinth of
+deepslate bricks, faced with stone bricks to the field (mossy and cracked on the low courses, a buttress every four or
+five blocks) and cobblestone to the village; on top a walk paved six wide behind a breastwork corbelled out over the
+field, crenellated, with a low parapet on the village side carrying braziers (campfires on chiseled stone). Four towers
+9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters, each with a door from the village,
+a stair round its inside to a room at the walk (doors onto the walk, a guard's grindstone, and on the side facing the gate
+an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a top room with windows on
+three sides, arrow slits low down and a banner to the field. At the centre the Great Gate, a gatehouse 17 wide and as high
+as the towers under a long hipped roof: a vaulted gateway 5 wide with spruce fence gates two high across it under a
+portcullis of iron bars, which runs up a slot into the hall and hangs from a windlass; a guardroom either side with its
+own stair, a hall at the walk, a top room opening onto a crenellated bretèche over the gate, buttresses either side of
+the gateway, braziers at both its mouths and banners beside them. Two stairs of ten steps climb the village side to
+landings by the gatehouse. Its stages: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the
+Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs). Its goods: I 8 iron swords
+(Weaponsmith), 128 arrows (Fletcher), 128 bread (Chef); II 8 iron shovels (Toolsmith), 12 potions of strength (Cleric),
+64 baked potatoes (Chef); III 8 crossbows (Fletcher), 8 iron chestplates (Armorer), 8 shields (Carpenter); IV 16 iron
+blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter). It needs a Town, a finished Gatehouse and the Golem
+Smith (or 4 iron golems and a Master Tinkerer while Legends are off). Its powers, the raid barrier and the sentries,
+come with 35.16.
+
+**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops, about
+16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all round with an
+arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a cut sandstone
+coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries hanging in the arch
+heads and lanterns. Inside the first terrace are the Cistern Vaults: a hall 29 by 29 of 36 columns round a pool with a
+chain pump, a doorway from the gallery on each side. Each ledge is a garden on the gallery's roof: a hedge of azalea and
+oak leaves on the coping, fields of wheat, carrots and beetroots between water channels, sweet berry beds, glow berry
+arbors, flower beds with azaleas, beehives, and on the corners oaks, flowering azalea trees and a farm corner with a
+composter and a chest on each level (four village farms). Vines hang down the columns and over the arches. A ramp
+spirals up, a stair with a balustrade on each side in turn: along the front from the ground, up the second terrace's east
+face, the third's back and the crown's west face. On the crown a cistern with a fountain pours down a channel to the east
+edge: the falls drop from a basin on each ledge to the next and into a pool with lily pads at the foot, past a blind,
+mossy stretch of arcade. Its stages: I *The First Terrace and the Cistern Vaults*, II *The Second Terrace*, III *The
+Third Terrace*, IV *The Crown Garden and the Falls* (the crown, its garden and cistern, the last ramp and the water,
+poured from buckets). Its goods: I 128 bone meal (Composter), 128 wheat seeds (Farmer), 64 clay balls (Sifter); II 64
+sweet berries and 32 glow berries (Orchard Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey
+bottles (Beekeeper), 64 carrots and 64 potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs
+(Butcher), 32 raw cod (Fisherman). It needs a Town and the Grand Chef (or a Master Chef and 8 kinds of meal in the store
+while Legends are off). Its powers, the bigger harvests and the faster births, come with 35.20.
+
 **The Stadium** (35.23, only with Cobblemon) is drawn: an oval arena 47 by 37, its bowl 16 high (20 to the gate's
 banners and the floodlights, about 7,300 blocks), round a grass battle field 31 by 21 ruled in white (its edge, the
 half-way line, a centre circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
@@ -197,7 +238,7 @@ checks; stage parts are ordinary builds of the builder, using the Foundation Sto
 **Our Wonders' designs** (35.9 on) are drawn whole in `tools/blueprints/wonders.py`, one function each, stage by stage
 on a staged build that refuses to draw over an earlier stage's block; `wonder_stages()` cuts each stage into parts and
 `wonders.py` writes the Wonder's data file (`aliveworkplace:great_cathedral` is
-`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`, `aliveworkplace:observatory` is `.../observatory.json`, `aliveworkplace:stadium` is `.../stadium.json`) with those parts, so the two always agree. Each stage is checked
+`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`, `aliveworkplace:observatory` is `.../observatory.json`, `aliveworkplace:great_wall` is `.../great_wall.json`, `aliveworkplace:hanging_gardens` is `.../hanging_gardens.json`, `aliveworkplace:stadium` is `.../stadium.json`) with those parts, so the two always agree. Each stage is checked
 as it will stand, on the stages before it (nothing held up by nothing), and every stage leaves the site tidy, since the
 village lives beside it for days.
 
@@ -259,9 +300,10 @@ Planned: the Foundation Stone (a block).
 ## Known limits
 
 - No Wonder can be started in game yet: the plan can be drawn and placed, but there's no Foundation Stone to hand it
-  over (35.4). The Great Cathedral's, the Lighthouse's, the Great Library's and the Observatory's files ship (35.9,
-  35.11, 35.13, 35.17), so they are on the Wonders page behind the 2.0 switch; their powers come with 35.10, 35.12,
-  35.14 and 35.18, and the other four Wonders' files with 35.15 to 35.23. Everything is behind the 2.0 switch.
+  over (35.4). The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's and the
+  Hanging Gardens' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19), so they are on the Wonders page behind the 2.0
+  switch; their powers come with 35.10, 35.12, 35.14, 35.18, 35.16 and 35.20, and the other two Wonders' files with 35.21
+  and 35.23. Everything is behind the 2.0 switch.
 - A Wonder going up shows "how far along" by its stages done; the parts' own progress joins with 35.4.
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
@@ -285,7 +327,7 @@ the plan is refused outside the village and over a finished building and goes do
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory), and it uses no retired job block, no calcite and nothing a player can't get.
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
 The Stadium's file and its Healing Machine need Cobblemon, so its same checks run in the compat tests
 (`StadiumCompatTests`, 7,300 blocks), with its requirements and goods as listed, its nurse's booth, Training Posts and
 floodlights, and its stages built in a village's banner colours (blue and red for a blue banner with a red stripe, the
@@ -294,4 +336,4 @@ is skipped quietly (not on the page, no mistake logged), and the colours style a
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
-in, so the mole and the jetty stand in the water; the Stadium too, so the scene is filmed with Cobblemon; its card shows four of the stills, the rest are in its gallery).
+in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; the Stadium needs Cobblemon, so the scene is filmed with it; its card shows four of the stills, the rest are in its gallery).

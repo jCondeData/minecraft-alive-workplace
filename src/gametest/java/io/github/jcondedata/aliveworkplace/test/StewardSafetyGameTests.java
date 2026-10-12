@@ -312,6 +312,8 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 	/** Starts the Well at {@link #SPOT} by Run the village, with free materials and a quick builder. */
 	private static BuildSite runningSite(GameTestHelper helper, Village v) {
 		ServerLevel level = v.level();
+		// a morning (alone in its batch): the builder works from 2000, so a run that starts at night never builds
+		level.setDayTime(StewardWishes.day(level) * 24000L + 1000L);
 		GameRules rules = level.getGameRules();
 		boolean free = rules.getBoolean(ModGameRules.FREE_MATERIALS);
 		int delay = rules.getInt(ModGameRules.BUILD_DELAY);

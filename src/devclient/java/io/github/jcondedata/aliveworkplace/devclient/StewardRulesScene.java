@@ -38,6 +38,8 @@ final class StewardRulesScene {
 	private static final BlockPos HALL = new BlockPos(0, -60, 0);
 	private int tick;
 	private volatile Villager steward;
+	private volatile boolean ranked;
+	private int waited;
 
 	void tick(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -51,6 +53,15 @@ final class StewardRulesScene {
 		}
 		if (tick == 20) {
 			server.execute(() -> stage(server));
+		}
+		if (tick == 139 && !ranked && waited < 600) {
+			// B85: back at the hall he counts the village a piece a planning second (8 seconds) before he ranks: held here
+			// till today's wishes are ranked, 30 seconds at most
+			if (waited++ % 10 == 0) {
+				server.execute(() -> ranked = StewardWishes.of(server.overworld(), HALL).day() == StewardWishes.day(server.overworld()));
+			}
+			tick--;
+			return;
 		}
 		if (tick == 140) {
 			server.execute(() -> {
@@ -110,6 +121,7 @@ final class StewardRulesScene {
 		BlockPos table = HALL.offset(6, 0, -3);
 		level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 		Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
+		ScreenshotHarness.fileRecords(level, table, 4); // the table's record now, not in vanilla's next task: the census sees its Builder
 		Builders.employ(level, builder, table);
 		for (int i = 0; i < 3; i++) {
 			EntityType.VILLAGER.spawn(level, HALL.offset(-4 + 2 * i, 0, -5), MobSpawnType.COMMAND);

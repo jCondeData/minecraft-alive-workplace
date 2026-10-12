@@ -83,6 +83,11 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 
 	private static Village village(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B116: a Storehouse or hall another batch left just outside the area (so never cleared) is in this village. A
+		// Storehouse is a stop on the Steward's round: with LuxuryWorkshopsGameTests' batches before it, one 18 blocks
+		// north sent him the long way round and the pause test's proposal never came.
+		Leftovers.stewardSites(helper);
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos a = helper.absolutePos(BlockPos.ZERO);
 		BoundingBox near = new BoundingBox(a.getX() - 40, level.getMinBuildHeight(), a.getZ() - 40, a.getX() + 70, level.getMaxBuildHeight(), a.getZ() + 70);
@@ -245,6 +250,8 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "safetyPause")
 	public void proposalsStopWhileTwoSitesWaitAndStartOnceSupplied(GameTestHelper helper) {
 		Village v = village(helper);
+		// a morning of the same day (alone in its batch): today's wishes, set below, aren't re-ranked away mid-test
+		v.level().setDayTime(StewardWishes.day(v.level()) * 24000L + 1000L);
 		List<BuildSite> sites = waitingSites(helper, v, Map.of(Items.GLASS, 4), Map.of(Items.GLASS, 4));
 		long day = StewardWishes.day(v.level());
 		v.entity().setStewardWishes(new StewardWishes.State(day, List.of(wish()), Map.of()));
@@ -254,10 +261,9 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 		AtomicLong supplied = new AtomicLong(-1);
 		helper.onEachTick(() -> {
 			if (v.level().getGameTime() % 20 == 0) {
-				// the Steward's own round asks for the wish's plot search (StewardWishes.plan); the test does it itself, so it
-				// doesn't depend on his walk to the hall (B116: with LuxuryWorkshopsGameTests' leftovers around he never asked)
-				StewardWishes.plotFor(v.level(), v.hall(), wish()).ifPresent(r -> Plots.request(v.level(), v.hall(), r));
-				StewardDesk.plan(v.level(), v.steward(), v.hall());
+				// B116: all his planning at the hall (wishes' plot searches and the desk), as he does once back from his
+				// round: what's tested is the pause, not his walk, whose stops in a test area lie on its barrier ceiling
+				io.github.jcondedata.aliveworkplace.city.StewardWork.PLANNER.plan(v.level(), v.steward(), v.hall());
 			}
 		});
 		helper.runAfterDelay(400, () -> {
@@ -270,8 +276,9 @@ public class StewardSafetyGameTests implements net.fabricmc.fabric.api.gametest.
 			helper.assertTrue(supplied.get() >= 0, "not supplied yet");
 			helper.assertTrue(!StewardSafety.paused(v.level(), v.hall()), "still paused once supplied");
 			helper.assertTrue(!StewardDesk.of(v.level(), v.hall()).proposals().isEmpty(), "no proposal once supplied: wishes "
-				+ StewardWishes.of(v.level(), v.hall()).wishes().size() + ", plot " + StewardWishes.plotFor(v.level(), v.hall(), wish()).flatMap(r -> Plots.result(v.level(), v.hall(), r))
-				+ ", spot " + checkSpot(helper, v));
+				+ StewardWishes.of(v.level(), v.hall()).wishes().size() + ", plot " // the request StewardDesk.plan looks up
+				+ StewardWishes.plotFor(v.level(), v.hall(), wish()).flatMap(r -> Plots.result(v.level(), v.hall(), r))
+				+ ", spot " + checkSpot(helper, v) + ", round done " + io.github.jcondedata.aliveworkplace.city.StewardWork.roundDone(v.level(), v.steward()));
 		});
 	}
 

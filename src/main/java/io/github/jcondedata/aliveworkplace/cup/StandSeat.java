@@ -2,12 +2,18 @@ package io.github.jcondedata.aliveworkplace.cup;
 
 import io.github.jcondedata.aliveworkplace.registry.ModEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * What a villager sits on in the stands of a Cup's Arena (ROADMAP 28.19), as villagers sit in saddles and boats: an
@@ -42,6 +48,32 @@ public class StandSeat extends Entity {
 			ejectPassengers();
 			discard();
 		}
+	}
+
+	/**
+	 * Where a villager stands up to: a free spot in front of the bench (the aisle, or the row below), else on top of it,
+	 * else beside it. Not on the bench itself: the seat sits on a stair, whose back step would hold the villager inside
+	 * it (B94: Cup spectators flagged stuck in the stands after the final).
+	 */
+	@Override
+	public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+		BlockPos bench = blockPosition();
+		BlockState state = level().getBlockState(bench);
+		Direction front = state.hasProperty(StairBlock.FACING) ? state.getValue(StairBlock.FACING).getOpposite() : passenger.getDirection();
+		java.util.List<BlockPos> spots = new java.util.ArrayList<>();
+		spots.add(bench.relative(front));
+		spots.add(bench.relative(front).below());
+		spots.add(bench.above());
+		spots.add(bench.relative(front.getClockWise()));
+		spots.add(bench.relative(front.getCounterClockWise()));
+		spots.add(bench.relative(front.getOpposite()).above());
+		for (BlockPos spot : spots) {
+			Vec3 at = DismountHelper.findSafeDismountLocation(passenger.getType(), level(), spot, true);
+			if (at != null) {
+				return at;
+			}
+		}
+		return super.getDismountLocationForPassenger(passenger);
 	}
 
 	@Override

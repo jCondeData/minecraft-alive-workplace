@@ -11,8 +11,10 @@ import org.jetbrains.annotations.Nullable;
  * Dressed by class (34.17): what a villager wears over their job's outfit, bottom to top. Their class's layer (the
  * {@code outfit} of its file in {@code data/<ns>/classes/}, {@code textures/entity/villager/class/<class>.png}; a
  * class with none, the Peasant, keeps the job's outfit as it is), then the elder's face for an elder (34.19), on
- * grown villagers and children alike. The textures are drawn by {@code tools/textures/art/classes.py}; until the owner
- * picks on the picker page, version 1 of each is the one shipped. 34.18's render layer draws what this lists.
+ * grown villagers and children alike. The textures are drawn by {@code tools/textures/art/classes.py}: the owner's picks
+ * of 2026-10-11 (34.17a), the Artisan's neckerchief and belt pouch, the Burgher's frock coat and pocket square, the
+ * Noble's ermine mantle and chain of office, and the elder's grey brows and short beard. Nothing saves which look a
+ * villager wears: it follows their saved class and age. 34.18's render layer draws what this lists.
  */
 public final class ClassOutfits {
 	/** The elder's look: a face layer (brows, beard), drawn under any hat. */

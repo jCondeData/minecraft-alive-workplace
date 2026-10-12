@@ -247,11 +247,11 @@ asks for the steps, `latest.log` and any crash report).
   up, the Builder and blueprints, the Village Hall, village life, quests, festivals and markets, trade and caravans,
   threats and defence, Pokémon and villagers, and the settings a server owner can change, each with the nightly
   showcase's pictures. It is rebuilt every night with the showcase.
-- **Class outfits, drawn** (34.17): what Artisans, Burghers and Nobles wear over their job's outfit, and an elder's
-  face, three versions of each for the owner to pick from (version 1 ships until he does: a neckerchief and belt
-  pouch, a white collar with a watch chain, an ermine-trimmed mantle with a chain of office, grey brows and a beard).
-  The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear in game with
-  34.18's render layer.
+- **Class outfits, drawn** (34.17, the owner's picks in 34.17a): what Artisans, Burghers and Nobles wear over their
+  job's outfit, and an elder's face: Artisans a blue neckerchief and a belt pouch, Burghers the buttoned edge of a dark
+  frock coat with a pocket square, Nobles an ermine-trimmed mantle with a chain of office, elders grey brows and a
+  short beard. The job's hat, apron and level badge always stay in view, and Peasants keep their outfits. They appear
+  in game with 34.18's render layer.
 - **Dressed by class, in game** (34.18): Artisans, Burghers and Nobles now wear their class over their job's outfit,
   children too, and elders have grey brows and a beard; it changes as soon as a household rises or falls or a villager
   becomes an elder. Zombie villagers never wear it. `classOutfits` in the settings turns it off.
@@ -347,6 +347,8 @@ asks for the steps, `latest.log` and any crash report).
   from the ground first while his station is still being handed out, in any part of the tick the siege begins
   (32.6, B105).
 - The settings screen no longer cuts off the elder setting: it now reads "Days Until Elder" (B102).
+- Villagers getting up from the Arena's stands after a Festival Cup step off the bench into the aisle (or onto it),
+  instead of standing inside the stair (B94).
 
 ## 0.142.0 — 2026-10-10
 

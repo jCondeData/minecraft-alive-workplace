@@ -57,5 +57,5 @@ need. From now on villagers get names, moods and a home they care about. See [Th
 
 - Give more villagers jobs: [Giving villagers jobs](jobs.md).
 - Put up houses so the village can grow: [Village life](village-life.md).
-- Get a guard or two before the first raid: [Threats and defence](defence.md).
+- Get a guard or two before the first raid: [Threats and defense](defence.md).
 - The hall's **What next?** button (the compass) always lists what your village lacks most, and how to fix it.

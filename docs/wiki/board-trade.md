@@ -52,7 +52,7 @@ nugget, and nothing else: no way back to the hall's screen, no Routes tab. So an
   come to one emerald isn't made ("... comes to less than a whole emerald here: shift-click to sell several at
   once"), so nobody gives goods away for nothing. A shift-click is settled once for all its bundles: two bundles at
   0.8 and 0.78 pay 1 emerald.
-- **What counts as the good.** Its items, but no worn tools or armour, and potions only if they heal (Instant Health
+- **What counts as the good.** Its items, but no worn tools or armor, and potions only if they heal (Instant Health
   or Regeneration), so a water bottle isn't a remedy. Stacks keep what they are: a healing potion sold reaches the
   chest as a healing potion. The Remedies icon is a healing potion.
 - **Who collects the treasury.** Strangers' trades draw on it, so with the village economy on it's for the hall's

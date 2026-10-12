@@ -30,10 +30,10 @@ At the Village Hall:
 
 **Higher jobs need higher classes (34.8).** The Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper
 and, with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
-Undertaker, Jeweller and Trainer Leader a Burgher. Vanilla jobs are open to everyone. Nobody is ever fired: a worker below
+Undertaker, Jeweler and Trainer Leader a Burgher. Vanilla jobs are open to everyone. Nobody is ever fired: a worker below
 their job's class keeps it, and the hall's list marks them.
 
-**The Jeweller (34.12).** Stand a villager by a stonecutter and sneak-right-click them with a gold nugget (a clay
+**The Jeweler (34.12).** Stand a villager by a stonecutter and sneak-right-click them with a gold nugget (a clay
 ball brings the Mason back; an amethyst shard picks the Gem Grower). A Burgher's job. A Novice makes the Amethyst Ring
 from 2 amethyst shards and 2 copper ingots; an Apprentice the Emerald Brooch from an emerald and 3 gold nuggets; a
 Journeyman the Gold Circlet from 2 gold ingots, an emerald and an amethyst shard. The ring is a Burgher's want and
@@ -44,9 +44,9 @@ or an apple. A Novice presses Cider, an Apprentice Berry Wine, and Vintage Wine 
 are luxuries the households take from the store, and players can drink them (the bottle comes back).
 
 **The Tailor (34.10).** Stand a villager by a loom and sneak-right-click them with string (shears bring the Shepherd
-back). A Novice sews Work Clothes from 3 wool of any colours, 2 leather and a string; an Apprentice Fine Clothes from
-4 dyed wool (any colours but white), a string and 2 gold nuggets; a Journeyman Noble Robes from 5 wool of one rich
-colour (purple, blue, red or black), a rabbit hide and a gold ingot. The clothes are the luxuries the Artisans,
+back). A Novice sews Work Clothes from 3 wool of any colors, 2 leather and a string; an Apprentice Fine Clothes from
+4 dyed wool (any colors but white), a string and 2 gold nuggets; a Journeyman Noble Robes from 5 wool of one rich
+color (purple, blue, red or black), a rabbit hide and a gold ingot. The clothes are the luxuries the Artisans,
 Burghers and Nobles need, every 8 days.
 
 **The Printer (34.11).** Stand a villager by a cartography table and sneak-right-click them with an ink sac (a compass
@@ -83,7 +83,7 @@ want the household has; a Peasant pays exactly what every worker paid before, so
 bonuses go through the one pace rule and its cap. A Legend lives among the top class.
 
 **The job gate** applies only when a job is taken: picking it with its item, the hall's free-workstation list, a
-grown child taking a parent's trade, the Steward's morning jobs. A hired traveller arrives with the class of their
+grown child taking a parent's trade, the Steward's morning jobs. A hired traveler arrives with the class of their
 level (Apprentice: Peasant, Journeyman: Artisan, Expert: Burgher).
 
 ## Switching it on (34.22)
@@ -109,7 +109,7 @@ The day a server first runs 1.8, every village with a hall switches on by itself
   and build sites, quarries, daycare Pokémon, fossils, parcels and chests are not touched.
 - **Later and odd cases.** A hall first loaded weeks later goes through the same with its own week. Nothing about how
   far it got is kept: a villager with a class is seeded, so a crash part-way re-seeds only the rest and nobody twice. A
-  villager who arrives later is seeded at the next round, quietly (a hired traveller still gets the class of their
+  villager who arrives later is seeded at the next round, quietly (a hired traveler still gets the class of their
   level). `villageClasses` off: nothing is seeded and nothing held back; what was seeded stays saved.
 - **Operators:** `/workplace classes status` (the nearest hall: seeding, settling in or settled, and the counts) and
   `/workplace classes reseed` (the hall goes back to unseeded and its villagers lose their class and progress; ages
@@ -123,7 +123,7 @@ The day a server first runs 1.8, every village with a hall switches on by itself
 | `classRiseDays` | 2 (1 to 30) | Dawns running the next class's needs must hold to rise |
 | `classFallDays` | 3 (1 to 30) | Dawns running a need of their own class must fail to fall |
 | `classGraceDays` | 7 (0 to 30) | Days a village settles in after it is first seeded (34.22): nobody falls, luxuries aren't needed, nobody retires |
-| `jewellers` | on from 1.8 | Off: no Jeweller job, and Jewellers already hired stand idle |
+| `jewellers` | on from 1.8 | Off: no Jeweler job, and Jewelers already hired stand idle |
 | `vintners` | on from 1.8 | Off: no Vintner job, and Vintners already hired stand idle |
 | `tailors` | on from 1.8 | Off: no Tailor job, and Tailors already hired stand idle |
 | `printers` | on from 1.8 | Off: no Printer job, Printers already hired stand idle, no Spread the news quest |
@@ -147,7 +147,7 @@ Ball, `classesVersion` (0: never seeded; 1: seeded with 1.8's rules) and `classG
 - Items: Cider (`aliveworkplace:cider`), Berry Wine (`aliveworkplace:berry_wine`), Vintage Wine
   (`aliveworkplace:vintage_wine`), Work Clothes (`aliveworkplace:work_clothes`), Fine Clothes
   (`aliveworkplace:fine_clothes`), Noble Robes (`aliveworkplace:noble_robes`).
-- The Jeweller (`aliveworkplace:jeweller`), at a stonecutter, and their pieces: the Amethyst Ring
+- The Jeweler (`aliveworkplace:jeweller`), at a stonecutter, and their pieces: the Amethyst Ring
   (`aliveworkplace:amethyst_ring`), the Emerald Brooch (`aliveworkplace:emerald_brooch`) and the Gold Circlet
   (`aliveworkplace:gold_circlet`).
 - Item tag: `dyed_wool` in `data/aliveworkplace/tags/item/` (every wool but white: what Fine Clothes take).
@@ -164,18 +164,18 @@ Ball, `classesVersion` (0: never seeded; 1: seeded with 1.8's rules) and `classG
 - Design note: the Burgher's "a school and one more service" is two needs, and the Market Square is a building
   need, so the market doesn't double as the "one more".
 - Design note: a luxury is taken at dawn before the needs are checked, so one taken that dawn counts that day.
-- 34.12: the Jeweller is picked with a gold nugget, not the roadmap's amethyst shard: the shard at a stonecutter has
+- 34.12: the Jeweler is picked with a gold nugget, not the roadmap's amethyst shard: the shard at a stonecutter has
   picked the Gem Grower since 28.11 (design note `docs/design/M34.md`; the owner can still change it).
 - 34.11: the Gazette and the Illuminated Book are our own items (`aliveworkplace:gazette`, `aliveworkplace:illuminated_book`)
   carrying vanilla's written-book content, so the luxury files name them and any other written book doesn't count. A
   Gazette notes its hall and day; "this week's" is 7 days, the day it was printed included. A blank one (bought, or
   from the creative tab) is printed where its holder stands when bought or first read. Quest objective type
   `spread_news` (`quests/daily/spread_news.json`).
-- 34.10: Work Clothes and Fine Clothes may mix wool colours; Noble Robes need all five of one colour. The Tailor takes
+- 34.10: Work Clothes and Fine Clothes may mix wool colors; Noble Robes need all five of one color. The Tailor takes
   wool from the village's chests and the store, and dyes white wool themselves when dye is to hand: the dyer still
   only dyes for builders.
 
-- 34.22: seeding caps at the ladder's third class (as a hired traveller's, 34.8), reads `fed_days` as "fed now", and
+- 34.22: seeding caps at the ladder's third class (as a hired traveler's, 34.8), reads `fed_days` as "fed now", and
   sorts children by their parents first (by id), then their building. The age spread is worked out from the UUID, so a
   re-seed gives the same ages. The hall's `families` book entry written before seeding gets the seeded age. The
   migration lives in `people/ClassMigration` (the design note's `hall/ClassMigration`: it works on villagers).
@@ -190,7 +190,7 @@ versions of each were drawn for a pick round; the owner picked one per row on 20
 | Artisan (version 1) | a blue neckerchief knotted behind, and a leather belt pouch with a brass stud |
 | Burgher (version 2) | the buttoned edge of a dark frock coat with brass buttons, its tails behind, a pocket square at the breast |
 | Noble (version 1) | a crimson mantle with an ermine collar and hem, and a gold chain of office |
-| Elder (version 1) | grey brows and a short grey beard |
+| Elder (version 1) | gray brows and a short gray beard |
 
 - Textures: `textures/entity/villager/class/<class>.png` (`artisan`, `burgher`, `noble`; the class file's `outfit`
   names it) and `class/elder.png`. A Peasant has no `outfit`, so the job's outfit stays as the owner approved it.
@@ -211,7 +211,7 @@ versions of each were drawn for a pick round; the owner picked one per row on 20
 ## Known limits
 
 - **Nobody can rise past Artisan yet with the mod's own data.** The Burgher needs the Gazette, and the Printer who
-  makes it (34.11) isn't built. The three wines, the three sets of clothes and the three pieces of jewellery have
+  makes it (34.11) isn't built. The three wines, the three sets of clothes and the three pieces of jewelry have
   luxury files today, and a luxury without a file is a need that never holds.
 - Seeding counts villagers loaded round the hall: one standing in an unloaded chunk at the village's edge is seeded
   when it next loads, without a second chronicle line.

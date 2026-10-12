@@ -192,7 +192,7 @@ public class BeastmasterGameTests implements net.fabricmc.fabric.api.gametest.v1
 			helper.assertTrue(legend.powers(Beastmaster.HorseBreedingPower.class).equals(List.of(Beastmaster.HorseBreedingPower.DEFAULT)),
 				"horse breeding " + legend.powers(Beastmaster.HorseBreedingPower.class));
 			String dogs = Beastmaster.WarDogsPower.DEFAULT.describe().getString();
-			helper.assertTrue(dogs.equals("Tames a war dog for every guard with 3 bones from their chest, in wolf armour from 6 armadillo scutes; it follows its guard and fights what they fight, and a lost dog is replaced after 2 days"), dogs);
+			helper.assertTrue(dogs.equals("Tames a war dog for every guard with 3 bones from their chest, in wolf armor from 6 armadillo scutes; it follows its guard and fights what they fight, and a lost dog is replaced after 2 days"), dogs);
 			String horses = Beastmaster.HorseBreedingPower.DEFAULT.describe().getString();
 			helper.assertTrue(horses.equals("Breeds the ranch's best horses with golden carrots, up to 8: each foal gets the best speed, jump and health of its parents and a little more, and guards ride them first"), horses);
 			String name = Component.translatable("entity.aliveworkplace.war_dog", "Tobin").getString();

@@ -257,7 +257,7 @@ public class LairGameTests implements FabricGameTest {
 			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
 			helper.assertTrue(lines(menu.icon(VillageHallScreen.GUARDS)).stream().anyMatch(l -> l.contains(name)), "the guards icon: " + lines(menu.icon(VillageHallScreen.GUARDS)));
 			menu.press(VillageHallScreen.GUARDS, player);
-			helper.assertTrue(lines(menu.icon(DefencePage.HEADER)).get(0).contains("Defence"), "the page's header: " + lines(menu.icon(DefencePage.HEADER)));
+			helper.assertTrue(lines(menu.icon(DefencePage.HEADER)).get(0).contains("Defense"), "the page's header: " + lines(menu.icon(DefencePage.HEADER)));
 			helper.assertTrue(menu.icon(DefencePage.LAIR).is(Items.CAMPFIRE) && lines(menu.icon(DefencePage.LAIR)).get(0).equals("Bandit camp")
 				&& lines(menu.icon(DefencePage.LAIR)).contains("Raiders: Bandits"), "the lair: " + lines(menu.icon(DefencePage.LAIR)));
 			helper.assertTrue(lines(menu.icon(DefencePage.CAPTAIN)).get(0).equals(name), "the captain on the page: " + lines(menu.icon(DefencePage.CAPTAIN)));

@@ -23,7 +23,7 @@ Roadmap items: 32.15, 32.19
   the **Physician's House** (a white ward with the brewing stand on a counter of herbs, four beds each between white
   screens, the quarantine ward, and a herb garden out front). A builder builds them from the chests like any blueprint;
   hand a jobless villager there the job's item (a water bucket, a shovel, a glistering melon slice) and they take the
-  job at that block. On the Village Map the Fire Station is a defence, the other two care.
+  job at that block. On the Village Map the Fire Station is a defense, the other two care.
 - **What next? suggests them** (32.19): "Drought can come here: build a Well House", with "No Well Keeper answers it
   yet. Build the Well House and hand a villager by its Cauldron the job's item (A shovel)". One tip for each disaster
   that's switched on and can come to this village (its `when` holds: wood enough for a fire, a Town for the plague; a
@@ -110,7 +110,7 @@ foretells it a day ahead, switched off it never starts, and every new sentence h
 
 `AnsweringHousesGameTests` (32.19): the three houses are in the Blueprint Table, named and on the Village Map; each
 has its job's block once and no other job block, and what the item asks (the basin, the pails on racks, the loft and
-its windows; the shaft open down to water, the kerb, the trough, the benches, the roof; four beds between screens,
+its windows; the shaft open down to water, the curb, the trough, the benches, the roof; four beds between screens,
 the herb garden); a builder builds each from chests and a jobless villager there handed the job's item takes the job
 at the house's block; What next? suggests the Well House to a hamlet without a Well Keeper (with its title and how),
 the Physician's House only to a town, neither once the village has those jobs, and none with drought switched off;

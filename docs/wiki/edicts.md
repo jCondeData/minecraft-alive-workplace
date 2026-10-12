@@ -23,7 +23,7 @@ says when a slot is free or a reform step waits.
 | Long Shifts | Everyone works 20% faster | Every grown villager is 10 less happy | The Shift Bell: 24 clocks, 128 gold ingots, 300 bread |
 | Free Bread | Everyone fed in the last day is 10 happier | The village eats 30% more | The Common Granary: 512 wheat, 128 hay bales, 48 barrels |
 | Large Families | Up to two babies a day | A baby needs 24 meals in store and the family eats 12; illness 50% more often | The Midwives: 48 honey bottles, 192 white wool, 64 golden carrots |
-| Open Gates | Inns take 4 guests, two travellers a morning, one more market trader, Legends visit twice as often | Bandits camp nearby twice as often | The Watchful Gate: 192 iron ingots, 256 arrows, 40 monsters |
+| Open Gates | Inns take 4 guests, two travelers a morning, one more market trader, Legends visit twice as often | Bandits camp nearby twice as often | The Watchful Gate: 192 iron ingots, 256 arrows, 40 monsters |
 | Festival Season | A festival every 4 days instead of 8 | Each costs the treasury 3 emeralds and 1 more per 4 villagers; no money, no festival | The Festival Fund: 24 cakes, 256 firework rockets, 48 note blocks |
 | Tithe | A tenth of what players pay in trades goes to the treasury | Emerald prices are 10% higher | The Fair Ledger: 24 books and quills, 192 gold ingots, a Pokémon battle (or 32 monsters) |
 | Curfew | Safe nights in bed, raids half as likely | No night trading; festivals and markets end at dusk; nobody sets out after midday | The Lamplighters: 192 lanterns, 96 glowstone, 32 monsters |
@@ -58,7 +58,7 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 | The Shift Bell | the Toolsmith (else any smith) | a bell on two posts beside the hall, on natural ground, ringing at the start (tick 2000) and end (tick 9000) of the work day |
 | The Common Granary | a Farmer | a harvest supper at the hall the next evening: a festival's feast, no fireworks |
 | The Midwives | the Nurse (else anyone) | a midwife comes to stay, a Nurse at Journeyman |
-| The Watchful Gate | a Guard | an old soldier comes to stay, a Guard at Expert in iron armour with an iron sword |
+| The Watchful Gate | a Guard | an old soldier comes to stay, a Guard at Expert in iron armor with an iron sword |
 | The Festival Fund | the Bard (else anyone) | the next festival is grand: twice the fireworks, its good mood a day longer |
 | The Fair Ledger | a Librarian or Scholar | "The Fair Ledger of <village>", a written book of the treasury's takings day by day for the last 7 days, for the hall's owner |
 | The Lamplighters | a Porter (else anyone) | two Street Lamp blueprints for whoever finished it, and a chronicle line on the first lamplit night |

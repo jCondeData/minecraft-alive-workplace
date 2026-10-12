@@ -57,7 +57,7 @@ public class TradeGoodsDataGameTests implements net.fabricmc.fabric.api.gametest
 		{"timber", "Timber", 16, 100}, {"stone", "Stone", 64, 100}, {"glass", "Glass", 8, 100}, {"bricks_and_clay", "Bricks and Clay", 10, 100},
 		{"coal", "Coal", 15, 100}, {"iron", "Iron", 4, 100}, {"gold", "Gold", 3, 100},
 		{"wool", "Wool", 18, 100}, {"leather", "Leather", 6, 100}, {"dyes_and_flowers", "Dyes and Flowers", 12, 100}, {"paper", "Paper", 24, 100},
-		{"tools", "Tools", 1, 200}, {"arms_and_armour", "Arms and Armour", 1, 300}, {"arrows", "Arrows", 16, 100}, {"remedies", "Remedies", 1, 200},
+		{"tools", "Tools", 1, 200}, {"arms_and_armour", "Arms and Armor", 1, 300}, {"arrows", "Arrows", 16, 100}, {"remedies", "Remedies", 1, 200},
 		{"nether_goods", "Nether Goods", 8, 100}};
 	static final List<String> COBBLEMON_GOODS = List.of("apricorns", "berries", "poke_balls");
 

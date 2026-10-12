@@ -107,8 +107,8 @@ member.
   (name, owner, rank, villagers, wellbeing) in the realms file, and the tab, the rank count and the candidates read
   that. A village that hasn't had a round yet is "Not counted yet" and counts as a Hamlet.
 - **The arms** are kept on the realm for the realm's other parts: 33.17's relief riders paint their shields with them
-  (`Realms.arms`, the same painting as guards' shields in the village's colours), and the realm's map banners and
-  caravans use them in later items. A realm founded by a village with a Village Banner's colours starts with them.
+  (`Realms.arms`, the same painting as guards' shields in the village's colors), and the realm's map banners and
+  caravans use them in later items. A realm founded by a village with a Village Banner's colors starts with them.
 
 - **Invitations and votes** are settled every five seconds while realms are on: an invitation lapses after 3 days
   (72,000 ticks) and a vote ends after a day (24,000 ticks), both by the overworld's clock. A vote whose village has
@@ -143,7 +143,7 @@ In the server-wide file `aliveworkplace_realms` (kept with the overworld's data)
 empty in a world that never had them:
 
 - `realms`: a list of `id` (UUID), `name` (a component, absent: the capital's name), `capital` (dimension and
-  position), `members` (a list of `hall` and `joined` day, the capital first), `arms` (absent, or `base` colour and
+  position), `members` (a list of `hall` and `joined` day, the capital first), `arms` (absent, or `base` color and
   `patterns`), `rank` (`barony`, `county`, `duchy`, `kingdom`: the rank last counted, so a rank up is celebrated once)
   and `founded` (day). 33.13 adds `levy` (percent, default 10), `treasury` (hundredths of an emerald, default 0) and
   `ledger` (the last 20 movements, oldest first: `day`, `cents`, negative going out, and `reason`, a component),
@@ -403,7 +403,7 @@ Riders are guards on a stay like mercenaries (`MERCENARY_UNTIL`, until dawn) wit
   `nameArmsAndSaveAndReload`, `coloniesJoinTheirMothersRealm`, `theSwitchOff`.
 - `ConfigGameTests` and `ExpansionGateGameTests` count the two new settings.
 - `RealmInviteGameTests` (7, 33.12, two owners): `anAcceptedInvitationJoins` (the Invite button, the letter in hand,
-  the chat line, Join on the neighbour's tab, decisions stay with the capital, leaving), `aDeclinedOrLapsedInvitationDoesnt`
+  the chat line, Join on the neighbor's tab, decisions stay with the capital, leaving), `aDeclinedOrLapsedInvitationDoesnt`
   (Decline from the tab, the letter waiting at the post office, the lapse at 3 days, a late answer refused),
   `aVoteWithAMajorityMovesTheCapital` (Put forward on the tab, the vote's line and buttons, 2 against 1, the realm's
   name, arms and rank moving, fireworks, the chronicle in every member, the new capital's owner ruling),

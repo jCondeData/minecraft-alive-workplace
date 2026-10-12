@@ -2,7 +2,7 @@
 
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), so it is **off for players until the milestone is
 finished** (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
-[Raids and threats](raids.md), camps and the Defence page on [Lairs and the Defence page](lairs.md).
+[Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
 Roadmap items: 32.4, 32.5, 32.6, 32.20
 
@@ -19,7 +19,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.20
   through the gap.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
-- **The defence upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
+- **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
   adds only what's new. **Palisade II** gets a fighting step (stand high enough to shoot over the low points) and a
   ditch of pointed dripstone stakes in front; **Stone Wall II** timber hoardings over the battlements (a roofed walkway,
   a gallery out over the wall's foot with murder holes); **Wall Tower II** a roofed top with an archers' gallery, two
@@ -55,7 +55,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.20
 - **For 2 days after a siege (and during it) builders mend walls, gates and towers first**, before any house.
 - **New research, Ramparts** (one level, after Fortification I, the stone brick wall icon): in a siege the gates have
   twice the hit points, and archers on stations shoot 28 blocks.
-- **The Defence page shows the gates** (the guards icon on the Village Hall, third row): open or shut, how many stand,
+- **The Defense page shows the gates** (the guards icon on the Village Hall, third row): open or shut, how many stand,
   the portcullis up or down, "Under siege", and how many gate blocks rams broke that wait for a builder.
 
 ## How it works
@@ -129,7 +129,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.20
   plus 64 blocks of a hall under siege is counted in the siege's saved data: to a guard and which, to a player, or to
   anything else (golems, mercenaries, falls). The hero is the guard with the most kills, the first to get there on a
   tie. The report is written when the siege lifts. `Tactic.end`'s `fled` decides "won".
-- **Defences first**: `build/Upkeep` sorts a builder's finished builds so the walls and gates family comes first
+- **Defenses first**: `build/Upkeep` sorts a builder's finished builds so the walls and gates family comes first
   while his bench is in a village under siege or within 48000 ticks after one.
 - **Ramparts**: the siege notes the factor (2 or 1) when it begins, so research finished in mid-siege changes the
   next siege, not this one. The archers' reach follows the research at once.
@@ -138,7 +138,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.20
   or gate build (3 blocks wider each way, so corners and joints count); if the point is not at least 7 blocks beyond
   the farthest of them it is moved out to there. Raiders who come through a Nether portal are not moved.
 - **Repair**: a broken gate block is a hole in a finished build, which a builder's upkeep fills like any other; the
-  list on the Defence page drops a block once something stands there again.
+  list on the Defense page drops a block once something stands there again.
 
 ## Switches
 
@@ -160,11 +160,11 @@ In `aliveworkplace_threats` (per dimension), all new and empty by default, so an
 | `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told) | none; `ladders` empty and `laddered` false in a siege saved before 32.5 |
 | `broken` | per hall, the gate blocks rams broke that wait for a builder | none |
 | in each of `sieges` (32.6) | `hp_factor` (what gate hit points were multiplied by), `came`, `fled`, `to_guards`, `to_players`, `to_others`, `kills` (guard, count, name), `players` (who killed a raider) | 1, 0, false, 0, 0, 0, none, none |
-| `after` (32.6) | per hall, the game time until which villagers are glad they held (`held`) and builders mend defences first (`mending`) | none |
+| `after` (32.6) | per hall, the game time until which villagers are glad they held (`held`) and builders mend defenses first (`mending`) | none |
 
 ## Items, blocks, jobs, commands
 
-None. One new slot on the hall's Defence page (the gates). The ladders are vanilla ladder blocks. 32.6 adds the
+None. One new slot on the hall's Defense page (the gates). The ladders are vanilla ladder blocks. 32.6 adds the
 research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icons, so no new art.
 
 ## Decisions
@@ -239,12 +239,12 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 - GameTests: `SiegeGameTests`: a ravager ram breaks a Palisade Gate's block within 400 ticks and a pillager is through
   within 600, nothing dropped, and a player's fence gate beside it untouched; a Gatehouse with its portcullis down takes
   at least three times as long; the portcullis and the gates through a raid's own start, shut at noon without a guard,
-  still shut after the raid, open at dawn, with the Defence page's lines; the gate standing after 2400 ticks with
+  still shut after the raid, open at dawn, with the Defense page's lines; the gate standing after 2400 ticks with
   the game rule off; the two switches; a save and load half-way through a gate; a gate the player breaks first; the
   director's four paths a tick; a village without a finished wall or gate, and a culture that does not ram.
 - GameTests (32.20): `SiegeGameTests.aGatehouseIITakesLongerThanAGatehouse` (the same yard with a Gatehouse, then a
   Gatehouse II: twelve bars drop, both gates shut, the breach is the barbican's middle gate, and the pillager takes
-  longer to get through), `theDefenceUpgradesAreKnown` (all four are defences with stations and keep most of their
+  longer to get through), `theDefenceUpgradesAreKnown` (all four are defenses with stations and keep most of their
   base; the hall's round opens and shuts Gatehouse II's six fence gates; Wall Tower II has two stations a side, Stone
   Wall II's roofed walkway seven) and `BuilderGameTests.builderUpgradesAFinishedGatehouse` (clicked onto a finished
   Gatehouse, stocked with only what it lacks, a builder builds the barbican). The `defences` scene places each beside
@@ -267,7 +267,7 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   Palisade Gate and a medic's 6, both walked to, none for a plain guard, and none at all with the sieges switch off. The
   morning after: two guards and a player kill raiders, a save and load in mid-siege, the raid ends, dawn: the
   chronicle's one SIEGE entry word for word with the hero's name, the player a Hero of the Village, a villager's mood
-  10 higher with "we held", defences first for 2 days, all kept through another load. Ramparts: fence gates of 60 hit
+  10 higher with "we held", defenses first for 2 days, all kept through another load. Ramparts: fence gates of 60 hit
   points become 120, the topic needs Fortification I and has its slot on the research screen; a save without the 32.6
   fields loads with defaults. A builder with planks and fence gates in his chest puts the broken gate block back
   before the missing plank of a house recorded first. Every new sentence has its text. All 8 passed twice here

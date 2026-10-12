@@ -1,20 +1,20 @@
-# The Sickness: the Grey Cough
+# The Sickness: the Gray Cough
 
-A story arc in which a new illness, the Grey Cough, goes round a village, and the village's healer needs three far
+A story arc in which a new illness, the Gray Cough, goes round a village, and the village's healer needs three far
 herbs to brew the cure. Part of the 1.5 expansion; the herbs and the Three-Herb Tonic are on [their own page](far-herbs.md).
 
 Roadmap items: 31.18
 
 ## What a player sees
 
-- **The Grey Cough comes.** Three villagers fall ill at once: they puff grey smoke, cough with a low, rough sneeze and
+- **The Gray Cough comes.** Three villagers fall ill at once: they puff gray smoke, cough with a low, rough sneeze and
   walk slowly. The chat, the hall's chronicle and the villagers' chatter say so, and the hall's villager list shows
-  "The Grey Cough" under each who has it.
+  "The Gray Cough" under each who has it.
 - **It doesn't pass by itself.** The nurse's honey, milk or healing potion only takes the slowness away for a day
-  ("eased ... grey cough for a day" over her head); the cough stays. Each night every coughing villager may pass it to
+  ("eased ... gray cough for a day" over her head); the cough stays. Each night every coughing villager may pass it to
   someone who works or sleeps near them, but never past half the village.
 - **Talk to the healer** (right-click them): the village's Nurse. A village without one gets **Doctor Wren**, a
-  travelling physician in a cleric's robe, who comes to the hall the next morning and stays until the story is over.
+  traveling physician in a cleric's robe, who comes to the hall the next morning and stays until the story is over.
 - **Three far cures.** The healer names the three far herbs whose biomes are nearest the village and gives you a map
   to a patch of each. Bring back 3 of each and right-click the healer; you can hand them in a herb at a time, and
   friends can share the gathering.
@@ -22,7 +22,7 @@ Roadmap items: 31.18
   hall), with "Brewing the cure · 40%" over their head, then walks round with the tonic in hand and gives it to every
   coughing villager, with hearts over each.
 - **The ending**: everyone is well, a thanksgiving festival the next evening, +150 standing in the village and the
-  honour **Healer of** the village for every gatherer, and +100 friendship with each villager who was ill.
+  honor **Healer of** the village for every gatherer, and +100 friendship with each villager who was ill.
 - **Without the cure**: after 15 days the cough runs its course. Everyone is well within 3 days, but the village's
   mood drops 15 for 5 days and the chronicle says it was a hard time. Nobody dies of it.
 
@@ -70,7 +70,7 @@ Roadmap items: 31.18
 
 ## Saved data
 
-- On a villager: the illness kind `ill_kind` is `grey_cough` for the Grey Cough (absent: an ordinary illness, as in
+- On a villager: the illness kind `ill_kind` is `grey_cough` for the Gray Cough (absent: an ordinary illness, as in
   older saves), and `ill_eased_until`, the game time a remedy eases it until (absent: not eased).
 - In the arc's saved state (`ArcState`): the flags `healer_told`, `herbs_given`, `brewed`, `cured`, `spread_night`;
   `ill.<villager>` for each who caught it, `given.<herb>` for each herb handed in, `maps.<player>` for each player given
@@ -86,7 +86,7 @@ Roadmap items: 31.18
 
 ## Decisions
 
-- The Grey Cough is a kind of illness beside the day it began, the same saved field as 32.11's hex, so old saves are
+- The Gray Cough is a kind of illness beside the day it began, the same saved field as 32.11's hex, so old saves are
   unchanged and only one field holds what kind of illness it is (31.18).
 - "Coughing villagers pass it on" counts a villager whose bed or workstation is within 8 blocks of the cougher's bed,
   workstation or place; villagers with neither count where they stand (31.18, lane c).

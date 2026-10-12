@@ -270,7 +270,7 @@ public class GiftGameTests implements FabricGameTest {
 			}
 			String me = "test-mock-player";
 			List<Case> cases = List.of(
-				new Case(Items.CAKE, Tastes.Band.LOVED, 0, 80, List.of("Cake! You remembered.", "Cake? For me? It's my favourite, " + me + "!")),
+				new Case(Items.CAKE, Tastes.Band.LOVED, 0, 80, List.of("Cake! You remembered.", "Cake? For me? It's my favorite, " + me + "!")),
 				new Case(Items.COOKIE, Tastes.Band.LIKED, 0, 45, List.of("Cookie! How kind of you, " + me + ".", "Oh, Cookie. I do like that. Thank you!")),
 				new Case(Items.STICK, Tastes.Band.NEUTRAL, 0, 20, List.of("Stick. Thank you, " + me + ".", "A present! Stick... that's thoughtful.")),
 				new Case(Items.DIRT, Tastes.Band.DISLIKED, 100, 80, List.of("Dirt? Oh. You shouldn't have.", "Hm. Dirt. I'll find somewhere to put it.")),

@@ -111,7 +111,7 @@ range is in brackets.
 | `maxWorkPace` | 200 (100 to 400) |  | How fast every bonus together can make a worker, in percent of the usual pace. Sickness and bad moods still slow them after that; their level doesn't count. |
 | `villageEdicts` | on | 1.4 | Villages' owners proclaim edicts at the hall (off: none can be, and those in force do nothing but stay saved). |
 | `workHorns` | on | 1.4 | The Work Horn calls a rush when blown in a village. Off: it only sounds. |
-| `villageBanners` | on | 1.4 | Village Banners can be crafted and set a village's colours at its hall. Off: neither; colours stay saved. |
+| `villageBanners` | on | 1.4 | Village Banners can be crafted and set a village's colors at its hall. Off: neither; colors stay saved. |
 | `cradles` | on | 1.4 | A Cradle near a bed makes a nursery village: children grow up twice as fast, one more baby a day. Off: cradles are furniture. |
 | `harvestIdols` | on | 1.4 | Harvest Idols: in harvest season the crops within 32 blocks of one grow 25% faster. Off: idols are ornaments. |
 | `tonics` | on | 1.4 | Tonics: the alchemist and the chef make them and villagers drink them. Off: neither; a tonic drunk does nothing. |
@@ -131,7 +131,7 @@ range is in brackets.
 | `alliances` | on | 1.7 | Allied villages of different owners send relief riders to each other's raids within 1,024 blocks. Off: no alliances offered, no riders. |
 | `feuds` | on | 1.7 | An owner can declare a feud on another player's village or realm on the Pacts tab: pacts and caravans end, each board pays the rival's people 25% less and charges them 25% more; peace by letter, or it fades after 7 days. Off: no feuds; existing ones end quietly. See [Feuds and war](feuds.md). |
 | `feudWars` | on | 1.7 | With PvP on, a feud can become a war of up to 3 days in which guards fight the other side's owners inside their own village. Off: no wars, even with PvP on. |
-| `realmMap` | on | 1.7 | A member's Realm tab draws the realm on an empty map: every member's banner in the realm's colour, colonies, allies and rivals in their own, the caravan routes dotted, a colony on the road as a cross. Off: no map button. See [The Realm Map](realm-map.md). |
+| `realmMap` | on | 1.7 | A member's Realm tab draws the realm on an empty map: every member's banner in the realm's color, colonies, allies and rivals in their own, the caravan routes dotted, a colony on the road as a cross. Off: no map button. See [The Realm Map](realm-map.md). |
 | `weeklyLeaderboard` | on | 1.7 | Once a week everyone online hears the Biggest, Richest, Happiest, Most Legends and Greatest realm; winners wear a ribbon for a week. Off: nothing counted or announced. See [The weekly leaderboard](leaderboard.md). |
 | `leaderboardDay` | `sunday` | 1.7 | The day the leaderboard is read out, `monday` to `sunday`, server time. In the file only. |
 | `leaderboardHour` | 19 (0 to 23) | 1.7 | The hour the leaderboard is read out, server time. |
@@ -146,7 +146,7 @@ range is in brackets.
 | `villagerElderDays` | 120 (20 to 1000) | 1.8 | Grown days before a villager is an elder. |
 | `elderPassing` | on | 1.8 | Elders pass in their sleep after 40 elder days and leave a grave. Off: nobody dies of old age, and an Evergreen Charm is refused as not needed. |
 | `agelessElders` | on | 1.8 | Evergreen Charms work: a good elder who takes one never passes. Off: charms are refused and kept; elders already ageless stay ageless. |
-| `classOutfits` | on | 1.8 | Villagers wear their class over their job's outfit, and elders grey brows and a beard. Off: only the job's outfit is drawn. |
+| `classOutfits` | on | 1.8 | Villagers wear their class over their job's outfit, and elders gray brows and a beard. Off: only the job's outfit is drawn. |
 | `elderRetirement` | on | 1.8 | An elder with a job retires once a jobless villager can take over (one a village every 3 days) and mentors Novices and Apprentices of their old trade. Off: nobody starts retiring; those retired stay retired. |
 | `familyNames` | on | 1.8 | Every villager in a village with a hall has a family name, shown on the hall ("Dara (Ashby)") and in the chronicle; children take a parent's. Off: no family names are shown (they are still kept); the Book of Families, the Family page and printed trees go by first names. See [Elders](elders.md). |
 | `wonders` | on | 2.0 | Towns and Cities can raise Wonders. Off: no new Wonders; finished ones keep their blocks, their powers stop, and everything stays saved. See [Wonders](wonders.md). |
@@ -166,7 +166,7 @@ range is in brackets.
 | `campCooks` | on | 1.2 | Villagers at a Campfire Pot can be made Camp Cooks with Hearty Grains. Off: no Camp Cook job. |
 | `habitatKeepers` | on | 1.2 | Villagers at a Pasture Block can be made Habitat Keepers with a honey bottle. Off: no Habitat Keeper job. |
 | `daycareKeepers` | on | 1.2 | Villagers at a Pasture Block can be made Daycare Keepers with an egg. Off: no Daycare Keeper job, and no eggs. |
-| `jewellers` | on | 1.8 | Villagers at a stonecutter can be made Jewellers with a gold nugget. Off: no Jeweller job, and Jewellers already hired stand idle. |
+| `jewellers` | on | 1.8 | Villagers at a stonecutter can be made Jewelers with a gold nugget. Off: no Jeweler job, and Jewelers already hired stand idle. |
 | `gemGrowers` | on | 1.2 | Villagers at a stonecutter can be made Gem Growers with an amethyst shard. Off: no Gem Grower job. |
 | `habitatSightings` | on | 1.2 | Habitat Keepers tell the village of shiny, rare and Alpha wild Pokémon near their pasture. |
 | `villageHabitats` | on | 1.2 | An Expert Habitat Keeper puts one Habitat Block in a finished Habitat Garden, with Cobblemon 1.8. Off: none founded. |
@@ -188,7 +188,7 @@ Game rules (per world, `/gamerule`):
 | `workplaceBuildersHelp` | true | Idle builders help with builds near their bench |
 | `workplaceBuilderOwnership` | true | A builder takes orders only from who hired it, their friends and operators |
 | `workplaceKeepWorkLoaded` | true | Builds and quarries keep running while the player who ordered them is online but far away |
-| `workplaceLevelGround` | 2 (0 to 8) | Blocks around a finished build that get levelled; 0: leave the ground alone |
+| `workplaceLevelGround` | 2 (0 to 8) | Blocks around a finished build that get leveled; 0: leave the ground alone |
 | `workplaceVillageFarms` | true | A village farmer with no field takes on the farm by their composter, once a chest is near it |
 
 ## Saved data
@@ -196,7 +196,7 @@ Game rules (per world, `/gamerule`):
 - The config file itself, plus one private field, the file's format number (2). A file without it was written
   before seasons grew to 16 days: its season length of 8 is read as "the old default" and becomes 16.
 - Game rules are saved by vanilla with each world.
-- Switching a system off never erases what it saved: edicts, guilds, classes, Legends, friendship and colours all
+- Switching a system off never erases what it saved: edicts, guilds, classes, Legends, friendship and colors all
   stay in the save and come back when the switch is on again.
 
 ## Items, blocks, jobs, commands

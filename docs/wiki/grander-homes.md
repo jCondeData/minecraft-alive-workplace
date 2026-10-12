@@ -15,18 +15,18 @@ Three new houses in the Blueprint Table, sold by builders too:
   block out over the street on stair brackets, with two beds under a dark oak roof. A stone chimney runs up the side.
 - **Artisan's House II** (grade II). A stone workshop wing at the back, through a doorway in the back wall: a long
   bench, a loom, a barrel and a third bed in the corner, under its own lower roof.
-- **Burgher's Townhouse** (grade II). Three storeys with a slate gable to the street: a brick shop below with a shop
-  window either side of the door and a stall board under each, a counter and shelves inside; two storeys of dark oak
+- **Burgher's Townhouse** (grade II). Three stories with a slate gable to the street: a brick shop below with a shop
+  window either side of the door and a stall board under each, a counter and shelves inside; two stories of dark oak
   and white plaster above, the first jettied over the street, with the main bedroom (two beds) and a second bedroom
   (one bed); a loft under the roof; a brick chimney up the side.
 - **Townhouse II** (grade III). A walled courtyard garden behind, through a back door: brick walls with stone caps, a
   gate, flower beds in their own soil, an azalea, a bench and a lamp; and the loft fitted out as a third bedroom.
-- **Townhouse III** (grade III). A stone corner tower, a block proud of the street front, four storeys up to a study
+- **Townhouse III** (grade III). A stone corner tower, a block proud of the street front, four stories up to a study
   under a slate cap: shelves of books, a desk, a reading chair and windows every way, reached from the main bedroom
   and up ladders.
-- **Noble's Manor** (a grade III home). A stone house of two storeys standing back behind a gravelled forecourt with
+- **Noble's Manor** (a grade III home). A stone house of two stories standing back behind a graveled forecourt with
   clipped hedges and two lamps. Inside, a double-height hall with a chequered floor, a three-wide grand stair up to a
-  gallery and a chandelier; the dining room (a long table, chairs down both sides) to the west and a parlour to the
+  gallery and a chandelier; the dining room (a long table, chairs down both sides) to the west and a parlor to the
   east; upstairs the main bedroom (two beds) and a second bedroom. Andesite quoins, dark oak string courses, a slate
   roof with two dormers front and back and a chimney up each gable.
 - **Manor II** (grade III). A walled formal garden behind, through the back door: gravel walks round a fountain and
@@ -36,7 +36,7 @@ Three new houses in the Blueprint Table, sold by builders too:
 - **Manor III** (grade III). A gatehouse on the street (an arched passage with a porter's room over it, under a slate
   hip roof), the forecourt walled in, and a **ballroom wing** on the east: one tall room with a chequered floor, tall
   windows between pilasters, three chandeliers, a musicians' dais with a jukebox and note blocks, through a doorway from
-  the parlour. **The Noble's Ball is held in the ballroom.**
+  the parlor. **The Noble's Ball is held in the ballroom.**
 
 The hall's "What next?" page names the households that want a grander home: "Dara and Tomas are Burghers and want a
 grade II home", or "Bo could be an Artisan and wants a grade I home" when the home is all they lack to rise. With a

@@ -2,7 +2,7 @@
 
 ROADMAP 32.12. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. A new kind of guard (see [Raids and threats](raids.md)) who finds
-where a lair (see [Lairs and the Defence page](lairs.md)) really is, and brings home a map to it.
+where a lair (see [Lairs and the Defense page](lairs.md)) really is, and brings home a map to it.
 
 Roadmap items: 32.12
 
@@ -12,7 +12,7 @@ Roadmap items: 32.12
   bow makes an archer and a shield a knight, and whatever they held there comes back to you (or drops at your feet).
   The action bar says "... is a Scout now", and **"Scout"** is over their head with their kills. Hand them a bow,
   shield or healing potion and they are that kind again; the spyglass comes back to you.
-- **"Scout the lair"** on the hall's **Defence page** (the spyglass in the second row, right of the lair's slots, only
+- **"Scout the lair"** on the hall's **Defense page** (the spyglass in the second row, right of the lair's slots, only
   while a lair stands). It says how many scouts the village has, or how to make one. A click sends the nearest free
   scout. Nobody goes **by night** ("Scouts go out by day"), with **no lair** or with **no scout**; one out already is
   named.
@@ -20,15 +20,15 @@ Roadmap items: 32.12
   time over the ground, until they are **within 24 blocks** of it. There they stop, **raise the spyglass** (it moves
   into their hand, where a villager shows what they hold), look the camp over for 3 seconds with the spyglass's sound,
   lower it and **come home** to their grindstone. Over their head while out: "scouting the lair: Bandit camp", then
-  "watching the lair through the spyglass", then "coming home with a scouting report". The Defence page shows the
+  "watching the lair through the spyglass", then "coming home with a scouting report". The Defense page shows the
   scout out and for how long.
 - **Unseen.** A lair's band **never goes for a scout more than 8 blocks off**: they let them watch. Closer than that,
   a scout is fair game like anyone.
-- **Home.** The chronicle and chat say the scout is back. The **Defence page** now gives the lair's **exact place**
+- **Home.** The chronicle and chat say the scout is back. The **Defense page** now gives the lair's **exact place**
   ("At 120, 64, -340", on the where slot and the scouting slot) with who found it and when, and on the scouting slot
   the **captain** and the **strength**. In the **chest by their grindstone** is a **Scouting Report**: a filled map
   like an explorer map, drawn between the village and the lair at the smallest scale that shows both, with the
-  village's mark and a **red X** on the lair, a dark red border colour, called "Scouting Report: Bandit camp", its
+  village's mark and a **red X** on the lair, a dark red border color, called "Scouting Report: Bandit camp", its
   tooltip listing the **raiders**, the **captain**, the **strength** and who scouted it on which day. No room in the
   chest: it drops at the scout's feet.
 - **Lost.** A scout **not home within a day** (24,000 ticks) is lost: gone, with a line in the chronicle and chat ("...
@@ -57,7 +57,7 @@ Roadmap items: 32.12
 ## Switches
 
 The whole of it is behind Milestone 32's gate (`Lairs.live()`): before it opens a spyglass makes no kind and raiders
-aren't trailed. The Defence page itself only opens then.
+aren't trailed. The Defense page itself only opens then.
 
 ## Saved data
 
@@ -67,11 +67,11 @@ missions and knows nothing. A mission resumes after a restart where it stood.
 
 ## Items, blocks, jobs, commands
 
-No new item: the Scouting Report is a vanilla filled map with a name, lore, a map colour and two decorations.
+No new item: the Scouting Report is a vanilla filled map with a name, lore, a map color and two decorations.
 
 ## Decisions
 
-- The Defence page already showed the captain and strength before scouting (32.3); scouting adds the exact place and
+- The Defense page already showed the captain and strength before scouting (32.3); scouting adds the exact place and
   a slot with all three rather than hiding what 32.3 shows.
 - A lost scout is removed from the world even if still alive somewhere: lost means lost.
 

@@ -14,7 +14,7 @@ Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19
 Each Wonder on the server's list is a card: its icon, name and power, then "Needs:" with each requirement ticked (✔) or
 crossed (✘) with the village's progress ("Finished Chapel: 2 of 3", "Standing in for the Master Architect: …"), the cap
 ("Wonders: 0 of 1 for a Town") and what a click does. A Wonder going up here shows its stage and how far along it is
-("Going up: stage 2 of 3, The Upper Storey (33% along)"), a finished one its day.
+("Going up: stage 2 of 3, The Upper Story (33% along)"), a finished one its day.
 
 **Draw up the plans**: with every line ticked and the caps clear, a click on the card pays 32 emeralds (the realm's
 treasury if the village is in a realm and realms are on, else the hall's treasury, else the player's own emeralds; free
@@ -27,7 +27,7 @@ hall's owner, their friends and operators may. Before that, a click says what's 
 - right-click the ground to place it (its front faces you), sneak-right-click the ground to turn it, sneak-right-click
   the air to pick it up again or, not placed, open the style screen, where it can only be mirrored (each Wonder keeps
   its own blocks);
-- it goes down only with its centre within the hall's reach (64 blocks), every corner within 96 blocks of the hall, and
+- it goes down only with its center within the hall's reach (64 blocks), every corner within 96 blocks of the hall, and
   not over a finished building or another Wonder; otherwise it says why ("It would stand over the finished Chapel");
 - a Book and Quill in the other hand writes the whole Wonder's material list.
 
@@ -48,7 +48,7 @@ Wonder announced to the server, celebrated with a festival, and its powers on wh
 | Great Wall | Town | the Golem Smith (4 iron golems and a Master Tinkerer) | a finished Gatehouse | raids gather outside it; golem sentries on the walk |
 | Observatory | Town | the Seer (a Master Cleric) | none | the Sky Chart; the Coming days page |
 | Hanging Gardens | Town | the Grand Chef (a Master Chef, 8 kinds of meal) | none | a quarter more harvest across the realm; faster births |
-| Colossus | City | the Founder (City rank) | none | more mood across the realm; more and better travellers; beauty |
+| Colossus | City | the Founder (City rank) | none | more mood across the realm; more and better travelers; beauty |
 | Stadium (with Cobblemon) | Town | the Pokémon Professor (25 pastured Pokémon of 10 types) | Cobblemon | Stadium Days with visiting trainers; hosts the Festival Cup |
 
 Every Wonder also needs the Master Architect (stand-in: a Master builder).
@@ -67,11 +67,11 @@ III 16 books (Librarian), 12 potions of healing (Cleric), 64 small flowers (Flor
 
 **The Lighthouse** (35.11) is drawn: a coastal landmark 25 by 33 and 46 high, about 5,000 blocks, its back half in the
 sea. A round tower banded in white and red terracotta tapers from 13 across to 9 on a stepped stone mole (mossy at the
-waterline, steps up to the door, mooring posts round its foot, an arm along the back sheltering a little harbour). Its
+waterline, steps up to the door, mooring posts round its foot, an arm along the back sheltering a little harbor). Its
 gallery at 38 stands on stone corbels behind an iron railing; above it a lantern room of glass round sea lanterns, a
 ring of redstone lamps that an inverted daylight detector lights at night, and a copper cupola with a lightning-rod
 vane. Inside, a spiral stair of spruce climbs past five rooms from the door to the lantern. At its foot: the keeper's
-cottage (a stone ground floor, an upper storey of white terracotta in a spruce frame, a slate roof; a bed upstairs, the
+cottage (a stone ground floor, an upper story of white terracotta in a spruce frame, a slate roof; a bed upstairs, the
 fisherman's barrel by the stove), a spruce boathouse half over the water, a stone quay with mooring posts, and a
 timber jetty out over the sea to a ferry stop, the Travel Post under a little roof. Its stages: I *The Mole and the
 Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Its goods: I 64 cooked cod
@@ -85,10 +85,10 @@ diorite balustrade. A grand stair of three quartz steps climbs to a portico of s
 the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of reading
 halls under deepslate-tile roofs: a drum of polished diorite with clerestory windows and a cornice, a shallow copper
 dome with eight ribs (it weathers green), coffered inside in smooth stone and diorite, and a glass lantern on top. Each
-wing has two storeys of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the walls under
+wing has two stories of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the walls under
 a dark oak gallery on both sides (two floors of bookshelf galleries, a ladder up to each), carrels under the windows,
 reading tables with lanterns and low bookcases down the middle, and a coffered dark oak ceiling. The rotunda has three
-rings of bookshelves with two galleries round them; at its centre an Enchanting Table ringed by fifteen bookshelves,
+rings of bookshelves with two galleries round them; at its center an Enchanting Table ringed by fifteen bookshelves,
 open towards the door, with the librarian's lectern before it and four reading desks round it. A lectern for a scholar
 stands in each wing; the west wing's end is the map room, a carpet map of seas and islands round a cartography table.
 Its stages: I *The Stacks*, II *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*. Its goods: I 128
@@ -117,15 +117,15 @@ the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the 
 IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). It needs a Town and the Seer (or a Master
 Cleric while Legends are off). Its powers, the Sky Chart and the Coming days page, come with 35.18.
 
-**The Great Wall** (35.15) is drawn: a defence 97 long, placed like the other walls (stand in the village and place it
+**The Great Wall** (35.15) is drawn: a defense 97 long, placed like the other walls (stand in the village and place it
 facing out: its stairs are on your side), about 10,800 blocks. A curtain 7 thick and 12 high on a battered plinth of
 deepslate bricks, faced with stone bricks to the field (mossy and cracked on the low courses, a buttress every four or
-five blocks) and cobblestone to the village; on top a walk paved six wide behind a breastwork corbelled out over the
+five blocks) and cobblestone to the village; on top a walk paved six wide behind a breastwork corbeled out over the
 field, crenellated, with a low parapet on the village side carrying braziers (campfires on chiseled stone). Four towers
 9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters, each with a door from the village,
 a stair round its inside to a room at the walk (doors onto the walk, a guard's grindstone, and on the side facing the gate
 an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a top room with windows on
-three sides, arrow slits low down and a banner to the field. At the centre the Great Gate, a gatehouse 17 wide and as high
+three sides, arrow slits low down and a banner to the field. At the center the Great Gate, a gatehouse 17 wide and as high
 as the towers under a long hipped roof: a vaulted gateway 5 wide with spruce fence gates two high across it under a
 portcullis of iron bars, which runs up a slot into the hall and hangs from a windlass; a guardroom either side with its
 own stair, a hall at the walk, a top room opening onto a crenellated bretèche over the gate, buttresses either side of
@@ -168,7 +168,7 @@ owner can add their own Wonder with a data pack and it works like ours. The file
 - `stages`: each a `name`, its blueprint `parts` (a structure id and its `offset` from the Wonder's corner), and its
   `goods`, each `{"item"` or `"tag", "count", "job"}`, with an optional `potion` to name a kind of potion.
 - `powers`: `[{"type": ..., numbers}]`. The types are listed in the design note; each Wonder's item makes its own work.
-- `crew` (default 12, at most 32) and `enabled` (false: the file is skipped). `fabric:load_conditions` are honoured,
+- `crew` (default 12, at most 32) and `enabled` (false: the file is skipped). `fabric:load_conditions` are honored,
   so a Wonder can need a mod (the Stadium will need Cobblemon).
 
 A file with a mistake (an unknown condition or power type, a missing field, a count of 0, an unknown item, job or

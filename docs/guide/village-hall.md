@@ -31,10 +31,10 @@ The **bell** in the middle calls everyone home: villagers who wandered off are b
 - **Trade routes** (the minecart): caravans to other villages. See [Trade and caravans](trade-and-caravans.md).
 - **What next?** (the compass): what the village lacks most, from a builder or beds to guards or decorations, each with
   how to put it right.
-- **The village map**: draws the village on an empty map from your inventory, every building marked and coloured by what
+- **The village map**: draws the village on an empty map from your inventory, every building marked and colored by what
   it is.
 - **The calendar**: the season, the day, and when the next festival is.
-- **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defence](defence.md).
+- **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defense](defence.md).
 
 ![The chronicle](https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-1.jpg)
 

@@ -2,7 +2,7 @@
 
 ROADMAP 32.9. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. The desert raiders are a raider culture (see
-[Raids and threats](raids.md)) whose lair (see [Lairs and the Defence page](lairs.md)) is an old tomb, and who get over
+[Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is an old tomb, and who get over
 walls with sand where pillagers use ladders (see [Drowned pirates](pirates.md) for the culture before it).
 
 Roadmap items: 32.9
@@ -19,7 +19,7 @@ Roadmap items: 32.9
   head (one of twenty: "Pharaoh Khaemhet the Undying"). He leads the raids on a City himself. **While he lives, a
   husk that falls within 24 blocks of him gets up again** three seconds later, where it fell, at half health and in a
   burst of sand. It rises only once, and none rises once he is dead.
-- **The raiders**, all called "Desert raider": husks (55%), husks in gold armour with iron swords (25%) and skeleton
+- **The raiders**, all called "Desert raider": husks (55%), husks in gold armor with iron swords (25%) and skeleton
   archers in gold helmets (20%).
 - **Sand ramps.** Where pillagers set ladders, the plain husks pile sand against the wall: a block every half second,
   one up for one out, so the ramp rises step by step against the wall until it is level with the top. Then the
@@ -28,7 +28,7 @@ Roadmap items: 32.9
 - **Until noon.** Husks don't burn, so a desert siege doesn't end at dawn: the raiders stay, and the siege goes on, until
   noon.
 - **The sarcophagus** (`aliveworkplace:chests/pharaohs_tomb`): gold, emeralds, a golden apple, gold nuggets, bones,
-  lapis or an enchanted book, now and then a diamond, and one time in five the dune armour trim.
+  lapis or an enchanted book, now and then a diamond, and one time in five the dune armor trim.
 
 ## How it works
 
@@ -73,10 +73,10 @@ Roadmap items: 32.9
 
 - The Pharaoh leads the raids from a City on, as the Warlord does; at a Town his husks rise only round his camp.
 - Strength 10, +2 a day, at most 16, and weight 30: the roadmap gives no numbers; as the warband.
-- The plain husks are the climbers who pile sand; the armoured husks and the archers follow up the ramp.
+- The plain husks are the climbers who pile sand; the armored husks and the archers follow up the ramp.
 - A ramp needs flat-enough ground: every column of it must stand on something solid (no sand is poured into a hole),
   and a dead bush or grass in the way moves it along the wall, so no block but air is ever replaced.
-- The gold armour drops as the game decides for raiders (as the warband's iron).
+- The gold armor drops as the game decides for raiders (as the warband's iron).
 
 ## Known limits
 

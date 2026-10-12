@@ -10,7 +10,7 @@ Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27
 **The City Plan.** Craft one (a Map, a Blank Blueprint and a Heart of the Sea) and right-click a Village Hall to bind
 it. Right-click the air to open the plan: the village map under a grid of 32 by 32 cells. You paint up to 16 zones,
 each with a kind, a name, a building style and a "renew old houses" switch. Holding the plan shows the zone edges,
-roads and wall line on the ground around you as coloured dust that only you see.
+roads and wall line on the ground around you as colored dust that only you see.
 
 | Zone | What goes there |
 |---|---|
@@ -20,7 +20,7 @@ roads and wall line on the ground around you as coloured dust that only you see.
 | Market | storehouses, market stalls, the Market Square |
 | Civic | school, library, clinic, chapel, graveyard |
 | Gardens | wells, benches, fountains, gazebos |
-| Defences | lookout towers, barracks |
+| Defenses | lookout towers, barracks |
 | Keep Clear | nothing is ever built there (roads may cross) |
 
 **The Steward.** Sneak-right-click a Builder of Journeyman level or higher, standing by the hall, with that hall's

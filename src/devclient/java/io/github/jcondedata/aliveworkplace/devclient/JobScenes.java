@@ -4713,7 +4713,7 @@ final class JobScenes {
 						var lore = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.NAME).getOrDefault(net.minecraft.core.component.DataComponents.LORE,
 							net.minecraft.world.item.component.ItemLore.EMPTY).lines().stream().map(Component::getString).toList();
 						String me = player.getGameProfile().getName();
-						shown = lore.contains("Your standing: 320 (Hero)") && lore.contains("Your honours: Wayfinder") && lore.contains("1. " + me + ", Hero (320)")
+						shown = lore.contains("Your standing: 320 (Hero)") && lore.contains("Your honors: Wayfinder") && lore.contains("1. " + me + ", Hero (320)")
 							&& lore.contains("2. Mara, Friend (120)") && lore.contains("3. Tobin, Stranger (35)");
 					}
 					Showcase.check(shown, "the hall's name tag tooltip shows the player's standing, their honour and the three best regarded");

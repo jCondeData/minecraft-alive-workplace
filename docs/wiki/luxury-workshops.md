@@ -1,7 +1,7 @@
 # The luxury workshops
 
-The buildings of the four luxury jobs, the Vintner, the Tailor, the Printer and the Jeweller ([Classes](classes.md)):
-the Winery, the Tailor's Shop, the Print Shop and the Jeweller's Workshop, four blueprints with an upgrade each, and a
+The buildings of the four luxury jobs, the Vintner, the Tailor, the Printer and the Jeweler ([Classes](classes.md)):
+the Winery, the Tailor's Shop, the Print Shop and the Jeweler's Workshop, four blueprints with an upgrade each, and a
 small house of each that villages grow. Part of Classes and luxuries (1.8).
 
 Roadmap items: 34.13, 34.14
@@ -19,8 +19,8 @@ Four new buildings in the Blueprint Table, each with a II:
   sweet berry rows stepping down to a pergola hung with glow berries, a lamp at each foot of the garden.
 - **Tailor's Shop.** A timber shop, dark oak and white plaster under a spruce roof. The door is between two banners;
   beside it a bay window shows two dress forms and a bolt of cloth. Inside: the loom, a counter, bolts of wool in seven
-  colours, and a fitting room in a lower wing behind.
-- **Tailor's Shop II.** A cutting-room storey above (a cutting table, bolts of cloth on racks) and a drying loft in
+  colors, and a fitting room in a lower wing behind.
+- **Tailor's Shop II.** A cutting-room story above (a cutting table, bolts of cloth on racks) and a drying loft in
   the roof, open at the front behind a rail, with dyed wool hung from the rafters and a bale on the hoist. A ladder
   runs up through both floors.
 - **Print Shop.** A brick shop in a spruce frame, its plastered gable to the street under a dark oak roof. The
@@ -28,24 +28,24 @@ Four new buildings in the Blueprint Table, each with a II:
   door a counter for buyers, and behind it shelves of paper (white sheets) and ink (black pots). There is no lectern.
 - **Print Shop II.** A lower wing behind the shop: the bindery (a bench with sheets laid out, a chest of paper) and a
   reading room lined with bookshelves three high, with a chair on a red carpet under a lantern.
-- **Jeweller's Workshop.** A small shop of cut stone on a dark footing under a slate roof, with iron shutters. The
+- **Jeweler's Workshop.** A small shop of cut stone on a dark footing under a slate roof, with iron shutters. The
   street door is an iron door; a stone button beside it, outside and in, opens it. Inside: the stonecutter at a bench
   by the window under a lantern, a counter, and by the front window an amethyst cluster in a glass case. A plank door
-  in the east wall is the Jeweller's own way in.
-- **Jeweller's Workshop II.** A strong room behind, lower and windowless, through a second iron door: a vault of ten
+  in the east wall is the Jeweler's own way in.
+- **Jeweler's Workshop II.** A strong room behind, lower and windowless, through a second iron door: a vault of ten
   chests behind iron bars, with an iron door in the bars.
 
 A Vintner who reaches Journeyman sells the Winery's blueprint, a Tailor the Tailor's Shop's, a Printer the Print
-Shop's and a Jeweller the Jeweller's Workshop's, for 12 emeralds.
+Shop's and a Jeweler the Jeweler's Workshop's, for 12 emeralds.
 
 Villages of all five kinds (plains, desert, savanna, snowy, taiga) now and then grow a small Winery (a cauldron, a
 chest of fruit and bottles, casks) with a Vintner living in it, and a small Tailor's Shop (a loom, a chest of wool,
 string and dyes, bolts of wool) with a Tailor, a small Print Shop (a cartography table, a chest of paper and ink,
-bookshelves) with a Printer, and a small Jeweller's Workshop (a stonecutter, a chest of gold and stones, an amethyst
-cluster) with a Jeweller. The hall's house-looks screen names them "Winery", "Tailor's Shop", "Print Shop" and
-"Jeweller's Workshop".
+bookshelves) with a Printer, and a small Jeweler's Workshop (a stonecutter, a chest of gold and stones, an amethyst
+cluster) with a Jeweler. The hall's house-looks screen names them "Winery", "Tailor's Shop", "Print Shop" and
+"Jeweler's Workshop".
 
-In a village with a Steward, a Vintner, a Tailor, a Printer or a Jeweller who has no workstation makes him plan the
+In a village with a Steward, a Vintner, a Tailor, a Printer or a Jeweler who has no workstation makes him plan the
 building.
 
 ## How it works
@@ -53,16 +53,16 @@ building.
 **The blueprints.** Drawn in `tools/blueprints/workshops.py` to `tools/blueprints/STYLE.md`. Sizes (wide x tall x
 deep): Winery 13 x 14 x 12, Winery II 13 x 14 x 20, Tailor's Shop 11 x 11 x 12, Tailor's Shop II 11 x 15 x 12. Each II
 keeps its first tier (95% of the Winery's blocks, 79% of the Tailor's Shop's), so a builder upgrading one only builds
-what is new. Print Shop 11 x 11 x 9, Print Shop II 11 x 11 x 16, Jeweller's Workshop 9 x 10 x 9, Jeweller's Workshop II
+what is new. Print Shop 11 x 11 x 9, Print Shop II 11 x 11 x 16, Jeweler's Workshop 9 x 10 x 9, Jeweler's Workshop II
 9 x 10 x 14 (both II are the first tier grown backwards, so nearly all of it is kept).
 Each building has exactly one job block: the Winery its cauldron, the Tailor's Shop its loom, the Print Shop its
-cartography table, the Jeweller's Workshop its stonecutter.
+cartography table, the Jeweler's Workshop its stonecutter.
 
-**The iron door.** A villager can't open an iron door, and can't plan a path through a closed one. So the Jeweller's
+**The iron door.** A villager can't open an iron door, and can't plan a path through a closed one. So the Jeweler's
 Workshop has two doors: the iron one on the street for players (press the button), and a plank door in the east wall,
-which is how the Jeweller reaches the stonecutter.
+which is how the Jeweler reaches the stonecutter.
 
-**Half-sunk.** A blueprint can't dig below the block it is placed on, so the cellar is the ground storey and the earth
+**Half-sunk.** A blueprint can't dig below the block it is placed on, so the cellar is the ground story and the earth
 comes up to it: a bank of dirt and grass two blocks high against the walls and one high outside that. Winery II's
 garden is the same idea made bigger: the porch stands on a platform as high as the press room's floor, and the two
 terraces step down from it.
@@ -81,7 +81,7 @@ and one at a stonecutter a Mason. Each house has one job block and no other.
 `aliveworkplace:workplace_print_shop` and `aliveworkplace:workplace_jewellers_workshop`, in the same
 form as the other workplace rules: a worker of the trade without a workstation (or the job wanted with no free block)
 asks for the building, at priority 62, at most once every 2 days. The Winery and the Print Shop go in the Workshops
-zone, the Tailor's Shop and the Jeweller's Workshop in the Market zone.
+zone, the Tailor's Shop and the Jeweler's Workshop in the Market zone.
 
 ## Switches
 
@@ -90,7 +90,7 @@ zone, the Tailor's Shop and the Jeweller's Workshop in the Market zone.
 | `vintners` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Winery house. The blueprints stay in the Blueprint Table |
 | `tailors` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Tailor's Shop house. The blueprints stay in the Blueprint Table |
 | `printers` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Print Shop house. The blueprints stay in the Blueprint Table |
-| `jewellers` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Jeweller's Workshop house. The blueprints stay in the Blueprint Table |
+| `jewellers` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Jeweler's Workshop house. The blueprints stay in the Blueprint Table |
 
 The house pools are filled when the server starts, so a change takes a restart; houses already grown stay.
 
@@ -125,20 +125,20 @@ none (the Journeyman's blueprint is an ordinary trade, saved with the villager's
   would have a job that does nothing.
 - 34.13 (lane d): the Winery is planned in Workshops and the Tailor's Shop in Market (it is a shop).
 - 34.13 (lane d): each II adds no second job block; the item names none.
-- 34.14 (lane d): the Jeweller's Workshop keeps the iron door the item asks for and adds a plank door for the
-  Jeweller, because a villager can't open or path through an iron door.
+- 34.14 (lane d): the Jeweler's Workshop keeps the iron door the item asks for and adds a plank door for the
+  Jeweler, because a villager can't open or path through an iron door.
 - 34.14 (lane d): the skylight is glass blocks while the windows are panes; a pane can't lie in a roof.
 - 34.14 (lane d): paper and ink on the shelves are white carpets and unlit black candles.
-- 34.14 (lane d): Print Shop II is a wing behind, not a storey, so the skylight over the press stays.
-- 34.14 (lane d): the Print Shop is planned in Workshops and the Jeweller's Workshop in Market.
+- 34.14 (lane d): Print Shop II is a wing behind, not a story, so the skylight over the press stays.
+- 34.14 (lane d): the Print Shop is planned in Workshops and the Jeweler's Workshop in Market.
 - 34.14 (lane d): the village Print Shop's chest holds a Book and Quill now and then, not a Gazette, which would be
   blank from a chest.
 
 ## Known limits
 
 - One worker per building, in both tiers.
-- The iron doors open only by their buttons, for a moment; the Jeweller never uses them.
-- A worker of the four jobs who was set to Journeyman or higher without levelling up (by a command) doesn't sell the
+- The iron doors open only by their buttons, for a moment; the Jeweler never uses them.
+- A worker of the four jobs who was set to Journeyman or higher without leveling up (by a command) doesn't sell the
   blueprint; the next level-up to Journeyman is what adds it.
 - The Steward doesn't plan any of the four II by a rule of their own.
 - The showcase scene has not been filmed yet: `luxury_workshops` is filmed on GitHub after the push.

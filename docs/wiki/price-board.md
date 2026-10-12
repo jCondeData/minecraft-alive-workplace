@@ -9,7 +9,7 @@ Roadmap items: 33.2, 33.3, 33.4
 The minecart in the Village Hall's divider opens the **Trade** page. Its first row is a row of tabs. **Routes** is the
 trade routes page as it always was. **Prices** is the price board: every trade good by its icon, 28 of them (25
 without Cobblemon). On each icon a **gold star** means the village is known for the good, a **red mark** means it's
-short of it, and a small arrow in the corner shows how the price moved since yesterday (green up, red down, a grey bar
+short of it, and a small arrow in the corner shows how the price moved since yesterday (green up, red down, a gray bar
 for steady). The open tab has a green bar under it.
 
 Hovering a good shows:

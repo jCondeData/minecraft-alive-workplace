@@ -49,7 +49,7 @@ at Expert strength from the start, pays three times the prize, and takes one cha
 ## Move Tutor
 
 A **Training Post** and a **book**. Right-click the tutor, pick one of your Pokémon and a move it could learn but won't get
-from levelling (tutor moves, TM moves, egg moves). Click once to choose, again to pay and teach. A new tutor teaches
+from leveling (tutor moves, TM moves, egg moves). Click once to choose, again to pay and teach. A new tutor teaches
 weaker moves; a Master teaches everything.
 
 ![The Move Tutor's lessons](https://jcondedata.github.io/minecraft-alive-workplace/tutor/still-1.jpg)

@@ -15,9 +15,9 @@ with what there is."
 
 **Who volunteers.** Two settlers:
 
-- the colony's builder: the lowest-levelled builder if the village has two or more, otherwise a jobless grown-up
+- the colony's builder: the lowest-leveled builder if the village has two or more, otherwise a jobless grown-up
   (who becomes the builder when the colony is founded);
-- a second settler: a jobless villager, otherwise the lowest-levelled worker of a job the village has three or more
+- a second settler: a jobless villager, otherwise the lowest-leveled worker of a job the village has three or more
   of.
 
 Never a guard, the only worker of a job, a Legend or a child. A married volunteer brings their partner, so a
@@ -25,7 +25,7 @@ couple makes three or four settlers; someone whose partner can't be spared (a gu
 volunteer. If the village can't spare two, the hall says so and the charter stays in your hand.
 
 **Supplies.** 64 logs, 64 planks, 64 cobblestone, 32 bread, 16 torches, 12 glass panes and 3 beds (any wood, any
-bed colour) come out of the chests by the village's Storehouses. What is missing:
+bed color) come out of the chests by the village's Storehouses. What is missing:
 
 - goes on the village's wants, so partner villages' caravans bring it;
 - shows on every Storehouse's requests board in a settler's name ("24 planks"); a click hands yours over, into the

@@ -34,7 +34,7 @@ looking after. On the settings screen they are:
 | Monster Raids | monsters raid bigger villages at night |
 | Bandit Camps | bandits make camp near villages and raid them until their chief falls |
 | Builder Repairs | idle builders repair what they built |
-| Builder Paths | builders lay a dirt path from each new building to the village centre |
+| Builder Paths | builders lay a dirt path from each new building to the village center |
 | Villages Work Unseen | villages keep working while no player is near (as long as someone is online) |
 
 ## Tune the numbers
@@ -74,7 +74,7 @@ Change these in game with `/gamerule <name> <value>`:
 | `workplaceBuildersHelp` | false: idle builders stop helping with other builds |
 | `workplaceBuilderOwnership` | false: anyone can give orders to any builder |
 | `workplaceFoundationDepth` | how far down builders fill under a build on uneven ground (normally 12; 0: never) |
-| `workplaceLevelGround` | how many blocks round a build get levelled (normally 2; 0: leave the ground alone) |
+| `workplaceLevelGround` | how many blocks round a build get leveled (normally 2; 0: leave the ground alone) |
 | `workplaceAllowUploads` | false: only operators can upload blueprint files |
 | `workplaceVillageFarms` | false: village farmers don't take on the farm by their composter by themselves |
 | `workplaceKeepWorkLoaded` | false: builds and quarries stop when nobody is near them |

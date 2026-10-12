@@ -39,7 +39,7 @@ and lasts **3 days**, or until peace is accepted. During it:
 - relief riders and allies answer raids only, never a war.
 
 When the war ends, both chronicles record the guards each side lost ("Guards lost: ours 1, theirs 0"); no treasury
-changes hands. With PvP off (or `feudWars` off) the war button stays on the tab, greyed, and its tooltip says why it
+changes hands. With PvP off (or `feudWars` off) the war button stays on the tab, grayed, and its tooltip says why it
 can't be pressed; pressing it says so too.
 
 ## How it works
@@ -77,7 +77,7 @@ None new: buttons on the Pacts tab, letters through the post, a chatter topic an
 
 ## Known limits
 
-- With many neighbours and feuds the tab can run out of room and leave some buttons off.
+- With many neighbors and feuds the tab can run out of room and leave some buttons off.
 
 ## Proof
 

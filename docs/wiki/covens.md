@@ -2,7 +2,7 @@
 
 ROADMAP 32.11. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. The coven is a raider culture (see
-[Raids and threats](raids.md)) whose lair (see [Lairs and the Defence page](lairs.md)) is a hut in the swamp, who
+[Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is a hut in the swamp, who
 never storm the walls but throw potions over them, and who **hex** the village's villagers every night their hut
 stands (see [Piglin incursions](piglins.md) for the culture before it).
 

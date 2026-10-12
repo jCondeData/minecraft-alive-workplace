@@ -14,7 +14,7 @@ fill the stands from noon, and bouts are fought at the ring until there's a cham
 The champion's village **holds the Cup** until a new champion is crowned at that host. It goes on the roll of champions
 (Cup page) and into every circuit village's chronicle, and it is named on its hall's name tag ("Holders of the
 Thornholm Cup, won on day 12"), in other halls' trade-route lists and on its Village Map ("Holders of the Thornholm
-Cup"). The **Cup banner**, a trophy on a banner in the theme's colours (gold on red for the Grand Cup), flies over the
+Cup"). The **Cup banner**, a trophy on a banner in the theme's colors (gold on red for the Grand Cup), flies over the
 holder: on both faces of its Arena III's champion's pole, else on top of its Village Hall. It comes down when the title
 passes. While they hold the Cup, every villager there has the mood reason "our village holds the Cup" (+5).
 
@@ -23,7 +23,7 @@ passes. While they hold the Cup, every villager there has the mood reason "our v
 Each Cup has a theme, in this order (the host's owner may pick another on the Cup page until sign-up closes). Every
 Pokémon battles at the theme's level, and legendary, mythical, Ultra Beast and paradox Pokémon are never allowed. The
 fair sells the theme's wares (4 to 16 emeralds each), the feast serves its dish first, the bard plays its disc and the
-fireworks and Cup banner take its colours.
+fireworks and Cup banner take its colors.
 
 | Theme | Who may come | Battle | Wares | Dish | Fireworks | Disc |
 |---|---|---|---|---|---|---|
@@ -48,7 +48,7 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
   next round (the hall's round, once a day as it loads). The same goes for taking it down at the old holder. On the pole
   it hangs as two wall banners where the space is free. Elsewhere it is a standing banner on the hall block, if the two
   blocks above it are free, or on the roof over the hall (up to 24 blocks up). Only an Arena whose nearest hall is the
-  holder's counts, so a neighbour's Arena is never used. The colours are the theme's firework colours as the nearest
+  holder's counts, so a neighbor's Arena is never used. The colors are the theme's firework colors as the nearest
   dyes: the cup in the first, the field in the second (white, or black under a white cup, if the theme has only one).
 - **Themes** (28.22): one file each in `data/aliveworkplace/cups/` (a datapack can add or replace them). Two fields
   are new: `partner_days` (a player's Pokémon must have helped at work on that many days; 0 by default) and
@@ -98,7 +98,7 @@ they stay home ("it has helped a villager at work on 2 days, and this Cup asks f
 
 ## Proof
 
-- GameTests: `CupChampionGameTests` (the banner on the pole and its colours, passing to a hall, the pride, the chronicle
+- GameTests: `CupChampionGameTests` (the banner on the pole and its colors, passing to a hall, the pride, the chronicle
   in every circuit hall, the name lines, the win bonuses, seeding, saving, `festivalCup` off, a far champion's banner
   when it loads), `CupThemesCompatTests` (each theme's team, player filter and fair; the Workers' counter), plus `CupGameTests`, `CupBoutGameTests`, `CupDayGameTests` and `CupMatchGameTests`.
 - Showcase scenes: `cup_page`, `cup_bout`, `cup_day`, `cup_match`, `cup_champions`, `cup_themes`.

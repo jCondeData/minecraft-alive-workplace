@@ -590,8 +590,8 @@ public class HeartEventSetGameTests implements FabricGameTest {
 			sleepsAt(level, dara, beds[3]);
 			helper.assertTrue(!when("{\"rank_below\": \"city\"}").holds(level, dara), "a City is below a City");
 			tell(helper, me, 10, new Case("a Master farmer in a tier III home in a City", dara, "dream_festival",
-				"You'll laugh at what I dream of, " + ME + ". I dream of a festival, and it's in my honour.",
-				"Dara told " + ME + " they dream of a festival in their honour", "Dreams of a festival in their honour"));
+				"You'll laugh at what I dream of, " + ME + ". I dream of a festival, and it's in my honor.",
+				"Dara told " + ME + " they dream of a festival in their honor", "Dreams of a festival in their honor"));
 			hallEntity.setRank(VillageRanks.Rank.HAMLET);
 
 			// A happy, married Master has everything they wanted (fed and at home in a grand house: happy)...
@@ -692,7 +692,7 @@ public class HeartEventSetGameTests implements FabricGameTest {
 					"It stood in the gap on the night of their first raid."),
 				new Gift(JobFamilies.Family.TRADE, Items.SPYGLASS, 1, "Dara's Spyglass", null,
 					"The one thing they ever bought that showed more than was promised."),
-				new Gift(JobFamilies.Family.MUSIC, Items.MUSIC_DISC_OTHERSIDE, 1, "Dara's Favourite Record", null,
+				new Gift(JobFamilies.Family.MUSIC, Items.MUSIC_DISC_OTHERSIDE, 1, "Dara's Favorite Record", null,
 					"The nearest thing they found to the song nobody sings any more."),
 				new Gift(JobFamilies.Family.POKEMON, ball, 1, "Dara's First Poké Ball", null,
 					"Their first partner slept in it, when it wasn't asleep on their boots."),

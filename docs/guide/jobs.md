@@ -75,7 +75,7 @@ makes them faster. Villages keep working while you're away, as long as someone i
 | Teacher | Lectern | a book | [Porters, post and services](jobs-services.md) |
 | Scholar | Lectern | paper | [Porters, post and services](jobs-services.md) |
 | Bard | Jukebox | a music disc | [Porters, post and services](jobs-services.md) |
-| Guard | Grindstone | a sword | [Threats and defence](defence.md) |
+| Guard | Grindstone | a sword | [Threats and defense](defence.md) |
 | Trainer | Training Post | (takes it by itself) | [Pokémon and villagers](pokemon.md) |
 | Trainer Leader | Training Post | a block of gold | [Pokémon and villagers](pokemon.md) |
 | Move Tutor | Training Post | a book | [Pokémon and villagers](pokemon.md) |

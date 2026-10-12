@@ -59,11 +59,11 @@ arrive at the ticket's post. Many villages already have a ferry house.
 
 ## Innkeeper
 
-A **Shop Counter** and a **bed**. Each morning, while there's a free bed nearby, a **traveller** comes to stay. Travellers
+A **Shop Counter** and a **bed**. Each morning, while there's a free bed nearby, a **traveler** comes to stay. Travelers
 already know a trade: right-click one to **hire them** (8 emeralds for an Apprentice, 16 for a Journeyman, 32 for an
 Expert). They join your village at their level. If nobody hires them, they move on after two days.
 
-![A traveller checks in](https://jcondedata.github.io/minecraft-alive-workplace/innkeeper/still-4.jpg)
+![A traveler checks in](https://jcondedata.github.io/minecraft-alive-workplace/innkeeper/still-4.jpg)
 
 ## Nurse
 

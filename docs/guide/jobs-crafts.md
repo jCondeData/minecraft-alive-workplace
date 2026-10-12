@@ -18,7 +18,7 @@ and sand, and with a furnace by the stonecutter fire glass, smooth stone, terrac
 
 ## Leatherworker (the dyer)
 
-**Leatherworkers** (vanilla, at a cauldron) make anything coloured a builder is waiting for: wool, carpet, stained glass,
+**Leatherworkers** (vanilla, at a cauldron) make anything colored a builder is waiting for: wool, carpet, stained glass,
 terracotta, candles, beds, dyes. They also turn concrete powder into concrete.
 
 ## Tinkerer

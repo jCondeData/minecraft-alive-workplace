@@ -1,7 +1,7 @@
 # Plague and the Physician
 
 A Town or a City can be struck by a **plague**. It's likelier when the village has more villagers than beds, and a
-witch coven's hex or a traveller from a faraway land who stops at the inn can bring one too. It starts with one
+witch coven's hex or a traveler from a faraway land who stops at the inn can bring one too. It starts with one
 villager falling ill, and everyone in the village reads "A plague has broken out in Oakvale: the ill pass it on to
 anyone near them."
 

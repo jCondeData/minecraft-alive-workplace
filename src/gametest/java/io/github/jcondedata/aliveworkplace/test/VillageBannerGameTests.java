@@ -166,7 +166,7 @@ public class VillageBannerGameTests implements FabricGameTest {
 				helper.assertTrue(colours(helper).equals(entity.colours()), "the hall's colours: " + entity.colours());
 				helper.assertTrue(player.getMainHandItem().is(ModItems.VILLAGE_BANNER) && player.getMainHandItem().getCount() == 1, "the banner was used up");
 				helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.BANNER
-					&& e.text().getString().contains("raised new colours")), "not in the chronicle: " + entity.chronicle());
+					&& e.text().getString().contains("raised new colors")), "not in the chronicle: " + entity.chronicle());
 
 				switchOff(helper);
 				use(player, level, hall, Direction.UP, VillageBannerItem.of(DyeColor.RED, BannerPatternLayers.EMPTY));
@@ -468,7 +468,7 @@ public class VillageBannerGameTests implements FabricGameTest {
 			long today = Chronicle.day(level);
 			for (Villager v : villagers) {
 				helper.assertTrue(Festivals.mood(level, v) == Festivals.BANNER_MOOD && Festivals.BANNER_MOOD == 20, "mood under the banner: " + Festivals.mood(level, v));
-				helper.assertTrue(Moods.work(level, v).good().stream().anyMatch(r -> r.getString().contains("village's colours")), "reason: " + Moods.work(level, v).good());
+				helper.assertTrue(Moods.work(level, v).good().stream().anyMatch(r -> r.getString().contains("village's colors")), "reason: " + Moods.work(level, v).good());
 			}
 			Villager v = villagers.get(0);
 			// Three days on it still counts, four it doesn't.

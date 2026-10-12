@@ -50,7 +50,7 @@ sneak-right-clicking a worker with an empty hand shows their status.
 | Carpenter | Crafting Table + planks | any |
 | Mason | Stonecutter (vanilla) | any |
 | Gem Grower | Stonecutter + an amethyst shard | any |
-| Jeweller | Stonecutter + a gold nugget | Burgher |
+| Jeweler | Stonecutter + a gold nugget | Burgher |
 | Armorer (smelter) | Blast Furnace (vanilla) | any |
 | Weaponsmith | Grindstone (vanilla) | any |
 | Guard | Grindstone + a sword | any |
@@ -146,7 +146,7 @@ chunks, and the search never waits for a chunk.
 | `habitatKeepers` | on from 1.2 | The Habitat Keeper job |
 | `daycareKeepers` | on from 1.2 | The Daycare Keeper job |
 | `gemGrowers` | on from 1.2 | The Gem Grower job |
-| `jewellers` | on from 1.8 | The Jeweller job |
+| `jewellers` | on from 1.8 | The Jeweler job |
 | `firewardens` | on from 1.6 | The Firewarden job |
 | `wellKeepers` | on from 1.6 | The Well Keeper job |
 | `physicians` | on from 1.6 | The Physician job |

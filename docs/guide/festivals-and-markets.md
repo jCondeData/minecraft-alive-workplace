@@ -23,6 +23,6 @@ The world has four seasons, each sixteen days long, and every season has a festi
 ## Market days
 
 A village with a hall and a **Market Square** (it's in the Blueprint Table) holds a **market** once a week. In the
-morning two travelling traders come to the square with their wares and stay until nightfall; from Town rank a third
+morning two traveling traders come to the square with their wares and stay until nightfall; from Town rank a third
 comes. Each also sells a blueprint, a starter building (often in another style) or a decoration, for 6 emeralds.
 Everyone in the village is told when it's market day.

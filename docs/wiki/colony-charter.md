@@ -52,7 +52,7 @@ limit) gets the tip "Found a colony".
   caravans know, which is every hall that has had its first round (about half a minute after it is placed).
 - **The map** is 128 by 128 pixels, 16 blocks a pixel (a vanilla map's scale 4). The server draws it when the
   charter is used, from the chunks it has loaded at that moment: it loads and generates nothing for it, and never
-  touches the world off its own thread. The client only receives the colours and the villages' positions.
+  touches the world off its own thread. The client only receives the colors and the villages' positions.
 - **A click** sends the server the block column under the pointer; the server checks it again and answers. A click
   lands within one map pixel (16 blocks) of the place pointed at, whatever size the map is drawn.
 - **The spot's height** is where you stood for a click on the ground. For a click on the map it is the ground's
@@ -113,7 +113,7 @@ All 33.8, lane a, 2026-10-10 (also in ROADMAP's Notes):
 - A hall placed less than a round ago isn't on the map yet and doesn't keep a colony 128 blocks away.
 - The map shows only what the server has loaded when you open it: far from players that is parchment. It isn't
   redrawn while it is open.
-- A village's banner on the map is red or white, not its Village Banner's colours.
+- A village's banner on the map is red or white, not its Village Banner's colors.
 - The map has no zoom, and its text isn't checked for clipping at every GUI scale the way the City Plan's is.
 - A charter whose hall was removed still works where the hall's place isn't loaded; it is refused when the settlers
   are sent (33.9).

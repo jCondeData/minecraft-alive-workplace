@@ -36,6 +36,10 @@ asks for the steps, `latest.log` and any crash report).
   shows the prices of every village within caravan range, his village's caravans sell where they are paid most, and
   its board's spread is halved (105% instead of 110%).
 
+### Changed
+- **American spelling** (22.10a, part 1): the player guide, the wiki and every in-game text now say defense, color,
+  armor, gray, honor, favor, neighbor, center, traveler, Jeweler and the like; ids, config keys and saves are unchanged.
+
 ## 0.143.0 — 2026-10-11
 
 ### Added

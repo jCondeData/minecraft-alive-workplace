@@ -29,7 +29,7 @@ they're short of and which chest they're taking from.
 **Changed your mind?** Place the blueprint over the finished building and **sneak** while you hand it to a builder: they
 take it down and put the blocks back in the chests.
 
-**Building in a hillside?** Right-click the air with a placed blueprint to switch off the levelling for that build.
+**Building in a hillside?** Right-click the air with a placed blueprint to switch off the leveling for that build.
 
 ## Builders get better
 
@@ -57,11 +57,11 @@ gives you a copy for a Blank Blueprint.
 - **Decorations:** a Well, Street Lamp, Park Bench, Fountain, Gazebo, Market Square and Chapel. Near a Village Hall
   every one makes the village a little happier.
 - **Walls and gates:** the Palisade, Palisade Gate, Stone Wall, Wall Tower and Gatehouse (see
-  [Threats and defence](defence.md)).
+  [Threats and defense](defence.md)).
 
 ![The Blueprint Table's library](https://jcondedata.github.io/minecraft-alive-workplace/table/still-1.jpg)
 
-**Upgrades.** Most buildings have a bigger version: the Starter Cottage II adds an upper storey, the III a kitchen wing.
+**Upgrades.** Most buildings have a bigger version: the Starter Cottage II adds an upper story, the III a kitchen wing.
 Right-click a finished building with its upgrade and the blueprint lines up exactly over it; the builder only changes
 what's new. Once a builder finishes a building that has an upgrade, they sell its blueprint.
 

@@ -509,7 +509,7 @@ public class JewellerGameTests implements FabricGameTest {
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void theText(GameTestHelper helper) {
-		expect(helper, Component.translatable("message.aliveworkplace.jeweller.title", 5), "Jeweller · 5 made");
+		expect(helper, Component.translatable("message.aliveworkplace.jeweller.title", 5), "Jeweler · 5 made");
 		Stations.Station cutter = Stations.of(ModVillagers.JEWELLER).orElseThrow();
 		expect(helper, Component.translatable(Stations.itemKey(cutter.jobs().stream()
 			.filter(j -> j.profession().get() == ModVillagers.JEWELLER).findFirst().orElseThrow())), "A gold nugget");
@@ -517,8 +517,8 @@ public class JewellerGameTests implements FabricGameTest {
 			.filter(j -> j.profession().get() == VillagerProfession.MASON).findFirst().orElseThrow())), "A clay ball");
 		expect(helper, Component.translatable(Stations.itemKey(cutter.jobs().stream()
 			.filter(j -> j.profession().get() == ModVillagers.GEM_GROWER).findFirst().orElseThrow())), "An amethyst shard");
-		expect(helper, Component.translatable("entity.minecraft.villager.jeweller"), "Jeweller");
-		expect(helper, Component.translatable("entity.minecraft.zombie_villager.jeweller"), "Zombie Jeweller");
+		expect(helper, Component.translatable("entity.minecraft.villager.jeweller"), "Jeweler");
+		expect(helper, Component.translatable("entity.minecraft.zombie_villager.jeweller"), "Zombie Jeweler");
 		expect(helper, Component.translatable("item.aliveworkplace.amethyst_ring"), "Amethyst Ring");
 		expect(helper, Component.translatable("item.aliveworkplace.emerald_brooch"), "Emerald Brooch");
 		expect(helper, Component.translatable("item.aliveworkplace.gold_circlet"), "Gold Circlet");

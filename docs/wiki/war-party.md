@@ -2,20 +2,20 @@
 
 ROADMAP 32.13. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. How a player takes the fight to a lair (see
-[Lairs and the Defence page](lairs.md)) with the village's guards (see [Raids and threats](raids.md)) and hired swords.
+[Lairs and the Defense page](lairs.md)) with the village's guards (see [Raids and threats](raids.md)) and hired swords.
 
 Roadmap items: 32.13, B117
 
 ## What a player sees
 
-- **"Muster a war party"** on the hall's **Defence page** (the white banner in the third row). It says how many guards
+- **"Muster a war party"** on the hall's **Defense page** (the white banner in the third row). It says how many guards
   would march and how many keep the walls. A click takes **three in four** of the village's guards, nearest the hall
   first, **at most 12** (a scout out and hired swords don't count), enlists them on the **Rally Banner** in your
   inventory and **raises it**; they gather by the hall and follow you, as a raised Rally Banner always makes them. With
   no Rally Banner the chat says "Craft a Rally Banner first: the war party gathers under it"; with one guard there is
   no one to spare.
 - **"Hire the Siege-breakers"** (the crossbow beside it): five hired swords in iron, **two with crossbows, two knights**
-  (shields in the village's colours) **and a medic** with healing potions, for **30 emeralds, 3 less a level of
+  (shields in the village's colors) **and a medic** with healing potions, for **30 emeralds, 3 less a level of
   Commerce** (or CobbleDollars). They are named "Siege-breaker", follow the player who hired them (and go on your Rally
   Banner while it has room), and stay **until the second dawn**, or **the dawn after the lair falls** if that comes
   first. One band of hired swords at a time, as with the hall's mercenaries.
@@ -44,7 +44,7 @@ old soldier) gets a fresh brain as it is made, as `Relief` does, so its brain ha
 
 ## Switches
 
-All of it is behind Milestone 32's gate (`Lairs.live()`): before it opens the Defence page doesn't open, a muster does
+All of it is behind Milestone 32's gate (`Lairs.live()`): before it opens the Defense page doesn't open, a muster does
 nothing, kills at a lair pay once, and a broken lair gives the usual 5 days.
 
 ## Saved data

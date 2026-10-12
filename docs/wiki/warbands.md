@@ -2,7 +2,7 @@
 
 ROADMAP 32.7. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. The warband is a raider culture (see
-[Raids and threats](raids.md)) with a lair (see [Lairs and the Defence page](lairs.md)) that lays sieges (see
+[Raids and threats](raids.md)) with a lair (see [Lairs and the Defense page](lairs.md)) that lays sieges (see
 [Sieges](sieges.md)).
 
 Roadmap items: 32.7

@@ -10,7 +10,7 @@ Roadmap items: 31.9, 31.10
 ## What a player sees
 
 Now and then a villager you have **3 hearts** or more with walks up to you and asks for something, over their head
-and in your chat in grey:
+and in your chat in gray:
 
 > Dara: Jesse, the festival's nearly on us, and I'd dearly love to stand there having made Journeyman. Trade with me
 > a while, or spare me a Bottle o' Enchanting. Would you?
@@ -58,7 +58,7 @@ workstation, the villager takes it themselves.
 
 **A letter to family.** On [I'll help] you get a **Sealed Letter to Mira** (paper with a shine, its lore saying who
 it's from and for). Right-click Mira with it in her village: she reads it, writes back, and you get **Reply from
-Mira**; she counts it a favour (150 friendship) and her village's chronicle says "Jesse brought Mira a letter from Dara
+Mira**; she counts it a favor (150 friendship) and her village's chronicle says "Jesse brought Mira a letter from Dara
 of Oakvale". Right-click Dara with the reply and it's done. Lost the letter? Right-click Dara empty-handed and she
 writes another ("Lost it? Never mind, I'll write it out again"); a lost reply, Mira writes again.
 
@@ -108,7 +108,7 @@ the hall's round: their level (`level_up`), whether they sleep in a home of thei
 and, on the first round of each day ("at dawn"), whether a partner Pokémon is pastured by their workstation
 (`partner_pokemon`). A win against the Trainer (`beat_giver`) counts when the battle ends, once a day.
 
-**Done.** Every helper in the game gets the reward (each their own emeralds) and 150 friendship (a favour, once a
+**Done.** Every helper in the game gets the reward (each their own emeralds) and 150 friendship (a favor, once a
 day per villager); a helper who is away gets the friendship. The villager says their thanks, and the chronicle gets
 a line of the Friend kind.
 

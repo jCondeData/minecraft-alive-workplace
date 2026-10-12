@@ -2,7 +2,7 @@
 
 ROADMAP 32.10. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. The piglins are a raider culture (see
-[Raids and threats](raids.md)) whose lair (see [Lairs and the Defence page](lairs.md)) has a lit Nether portal they
+[Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) has a lit Nether portal they
 come through, and who carry off the village's gold (see [Desert raiders](desert.md) for the culture before it).
 
 Roadmap items: 32.10
@@ -18,7 +18,7 @@ Roadmap items: 32.10
   fences on crimson nylium; the **hoard**, gold blocks heaped against a broken wall with the loot chest; a campfire in
   the middle. Chat says so ("A portal has been lit beyond Thornholm: Warlord Grukk the Gilded has raised a blackstone
   outpost 60 blocks west...").
-- **The Warlord.** A piglin brute in full gold armour with a golden axe and 50 more health, his name over his head
+- **The Warlord.** A piglin brute in full gold armor with a golden axe and 50 more health, his name over his head
   (one of twenty: "Warlord Vorgash Goldmaw"). He stays at his outpost.
 - **The raiders**, all called "Piglin raider": piglins with golden swords (35%), piglins with crossbows (25%), piglin
   brutes with golden axes (25%) and hoglins as rams (15%). By night they **step out of the outpost's portal** (in a
@@ -26,7 +26,7 @@ Roadmap items: 32.10
 - **They never zombify** while they raid or hold the outpost, and they **go for the villagers and the guards**: their
   anger is set on the nearest villager in sight, as if it had struck them. Guards fight them all, hoglins too.
 - **Plunder.** A piglin (not a hoglin) that comes within 4 blocks of a chest, barrel or other storage in the village
-  takes the gold in it: gold ingots, nuggets, blocks, raw gold and golden tools, weapons and armour, **one stack at
+  takes the gold in it: gold ingots, nuggets, blocks, raw gold and golden tools, weapons and armor, **one stack at
   most**, carried on its head where you can see it. **Kill it and it drops the stack.** If it is still alive at dawn
   it carries the gold home, into the outpost's hoard, and the **siege report** the next morning says how much was
   carried off ("... 64 gold was carried off from the village's chests."), or the chronicle when there was no siege.
@@ -92,7 +92,7 @@ Roadmap items: 32.10
   the portal out.
 - The zombified raiders stay raiders (guards fight them, they leave at dawn); the zombified at the outpost are left
   as ordinary zombified piglins and zoglins.
-- What counts as gold: the five gold materials and any golden item that wears out (tools, weapons, armour), not golden
+- What counts as gold: the five gold materials and any golden item that wears out (tools, weapons, armor), not golden
   food, clocks or bells.
 - Strength 10, +2 a day, at most 16, and weight 30: the roadmap gives no numbers; as the other 1.6 cultures.
 

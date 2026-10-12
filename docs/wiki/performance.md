@@ -19,7 +19,7 @@ builder waiting for materials no longer recounts every other build of the villag
   the server's tick times, the heap after a garbage collection and a profile of the server thread
   (`tools/packtest/perf.py`). The nightly tests repeat it; the method and every run's numbers are in
   `docs/performance.md`.
-- **Our own time a tick (25.3).** In the benchmark only (`-Daliveworkplace.benchmark=true`), every job behaviour and
+- **Our own time a tick (25.3).** In the benchmark only (`-Daliveworkplace.benchmark=true`), every job behavior and
   tick handler of ours is timed and added up per server tick; the log gets a line a minute (p50, p99, max and the
   biggest call) and a line for each tick with over 50 ms of ours. On a normal server none of this runs.
 - **Tree searches a few trees at a time (25.3).** A lumberjack works out at most 6 trees (a flood fill of a trunk's

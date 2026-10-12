@@ -24,6 +24,10 @@ a to d (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start; they split milestones and 
 day. A lane coordinates and each
 feature is built by a fresh subagent (sessions.md), which keeps every conversation short and cheap.
 
+**Lanes start by hand** (owner, 2026-10-12: no scheduled routines on this account). When the owner says "get
+started" or types `/get-started [a|b]`, run one lane as `.claude/commands/get-started.md` says: lane A covers
+shares a and c and holds red duty, lane B covers b and d.
+
 **Start** (one step, about five minutes): `git pull`, `python3 tools/agent/sessions.py next --as <you>`, the latest CI
 run on `main`, Java setup (below). **Red `main` has one owner per window** (owner, 2026-10-05: three lanes once fixed
 the same red build at once): the lane on red duty, by the run's UTC start hour, 00/12 lane a, 03/15 lane b, 06/18

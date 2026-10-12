@@ -10,6 +10,20 @@ This guide is everything you need to play. No code, no jargon: just what you do 
 
 ![Three builders putting up the starter builds](https://jcondedata.github.io/minecraft-alive-workplace/builders/still-2.jpg)
 
+```portals
+Basics | https://jcondedata.github.io/minecraft-alive-workplace/camp/still-1.jpg
+Builder | https://jcondedata.github.io/minecraft-alive-workplace/crew/still-2.jpg
+Jobs | https://jcondedata.github.io/minecraft-alive-workplace/staff/still-1.jpg
+Village Hall | https://jcondedata.github.io/minecraft-alive-workplace/hall/still-4.jpg
+Quests | https://jcondedata.github.io/minecraft-alive-workplace/hall_quests/still-1.jpg
+Festivals | https://jcondedata.github.io/minecraft-alive-workplace/hall/still-3.jpg
+Trade | https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-2.jpg
+Defense | https://jcondedata.github.io/minecraft-alive-workplace/guard/still-2.jpg
+Disasters | https://jcondedata.github.io/minecraft-alive-workplace/fire/still-2.jpg
+Pokémon | https://jcondedata.github.io/minecraft-alive-workplace/battle/still-2.jpg
+Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1.jpg
+```
+
 ## Start here
 
 - [Getting started](getting-started.md): your first builder, your first building and your first village, in ten
@@ -33,9 +47,9 @@ This guide is everything you need to play. No code, no jargon: just what you do 
   your village.
 - [Village life](village-life.md): names, traits, moods, food, sickness, weddings, babies and research.
 - [Quests](quests.md): the jobs the village posts for you, and what they pay.
-- [Festivals and market days](festivals-and-markets.md): feasts, fireworks, the calendar and travelling traders.
+- [Festivals and market days](festivals-and-markets.md): feasts, fireworks, the calendar and traveling traders.
 - [Trade and caravans](trade-and-caravans.md): villages that supply each other, and selling from your own shop.
-- [Threats and defence](defence.md): guards, raids, bandit camps, walls, and how to fight back.
+- [Threats and defense](defence.md): guards, raids, bandit camps, walls, and how to fight back.
 - [Drought and the Well Keeper](drought.md): when the rain stays away, and the villager who carries water to your fields.
 - [Plague and the Physician](plague.md): when illness spreads through a town, the doctor who goes house to house, and the Remedy.
 - [Fire and the Firewarden](fire.md): how a wooden village catches fire, and the villager who puts it out.

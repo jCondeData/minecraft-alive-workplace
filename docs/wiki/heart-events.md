@@ -9,7 +9,7 @@ Roadmap items: 31.7, 31.8
 
 At 2, 4, 6, 8 and 10 hearts a villager has something to tell you. The next time you're within 8 blocks while they're
 off work, they walk up, face you and tell it: three to five lines over their head, one every 3 seconds, each also in
-your chat in grey ("Dara: I learned to walk on these paths. I know which roofs leak, and which hens bite.") so it can
+your chat in gray ("Dara: I learned to walk on these paths. I know which roofs leak, and which hens bite.") so it can
 be read again. Walk away halfway and they stop; next time they start again from the first line. Told to the end, it
 adds 20 friendship, the village's chronicle gets a line ("Dara told Jesse about growing up in Thornholm", with a pink
 tulip) and it becomes part of their **life story**.
@@ -26,7 +26,7 @@ There are five events, each in several variants; a villager tells the variant th
 | Event | Told by | It says |
 |---|---|---|
 | `born_here` | villagers born in the village | where they were born, and names both parents |
-| `traveller` | travellers hired at an inn | the road, the inn, and the day they were hired |
+| `traveller` | travelers hired at an inn | the road, the inn, and the day they were hired |
 | `before_hall` | everyone else | the village before it had a hall and a name |
 | `back_from_grave` | anyone brought back from a grave | what they remember of it |
 
@@ -84,7 +84,7 @@ a nitwit says no bench would have them.
 | `dream_sea` | a Master Fisherman, Ferryman, Cartographer, Postman or Porter | to see the sea |
 | `dream_house` | anyone else whose home is below tier III (or who has none) | a finer house |
 | `dream_city` | anyone else whose village is below a City | the village a City |
-| `dream_festival` | everyone else | a festival in their honour |
+| `dream_festival` | everyone else | a festival in their honor |
 
 When the 10-heart event is told to the end they give you a **keepsake**, once: an item named after them, with two
 lines of lore (what it was to them, and "A keepsake from Dara of Thornholm"), and a line in your chat ("Dara gave you
@@ -102,7 +102,7 @@ once.
 | healing | "<Name>'s Remedy" | golden apple |
 | arms | "<Name>'s Old Shield" | shield, Unbreaking II |
 | trade and travel | "<Name>'s Spyglass" | spyglass |
-| music | "<Name>'s Favourite Record" | music disc Otherside |
+| music | "<Name>'s Favorite Record" | music disc Otherside |
 | Pokémon | "<Name>'s First Poké Ball" | Cobblemon's Premier Ball (a snowball without Cobblemon) |
 | no trade yet | "<Name>'s Pressed Flower" | cornflower |
 
@@ -188,7 +188,7 @@ the page shows no hearts.
   saved before 31.8 read as before).
 - New attachments on villagers, all absent by default: `revived` (true once `Graves.revive` brings them back; absent
   on villagers revived before this update), `late_partner` (the id and name of the partner they lost, kept by
-  `Couples.onDeath`; absent on those widowed before), `hired_day` (the day a traveller was hired at an inn; absent on
+  `Couples.onDeath`; absent on those widowed before), `hired_day` (the day a traveler was hired at an inn; absent on
   those hired before, who say "a day nobody wrote down").
 - The chronicle's new kind `FRIEND`.
 
@@ -208,7 +208,7 @@ plays.
   stood where before a hall was placed, and villagers from before families were kept get this story too (31.7,
   lane c).
 - Someone brought back from a grave tells that story whatever else is true of them (31.7, lane c).
-- The traveller's story needs the day they were hired, which nothing kept: the new `hired_day` (31.7, lane c).
+- The traveler's story needs the day they were hired, which nothing kept: the new `hired_day` (31.7, lane c).
 - A villager who can't reach the player tells it from where they stand after 5 seconds, rather than never (31.7,
   lane c).
 - The page opens on a shift-click for villagers with a name only (the others keep no friendship and have nothing to

@@ -11,7 +11,7 @@ On the hall's Trade page, the **Realm** tab (see [Founding a realm](realms.md)) 
 map) in its last slot, at the capital and at every member. With an empty map in your inventory (none in creative), a
 click turns it into **Map of the County of Thornholm**:
 
-- a **banner for every member** in the realm's colour (the base colour of its arms; white without arms), named after
+- a **banner for every member** in the realm's color (the base color of its arms; white without arms), named after
   the village, the capital's as **Thornholm (capital)**;
 - **colonies** a member founded that are not in the realm in lime, **allies** (alliances, see
   [Trade pacts and alliances](pacts.md)) in light blue and **rivals** (the other side of a feud, see
@@ -20,12 +20,12 @@ click turns it into **Map of the County of Thornholm**:
 - a **colony whose settlers are on the road** as a red cross on the spot they are heading for;
 - the land the server has loaded drawn as on a vanilla map, and the rest as **plain parchment**.
 
-The map's tooltip has the legend, as the [Village Map's](village-hall.md) does: the colour and count of each kind of
+The map's tooltip has the legend, as the [Village Map's](village-hall.md) does: the color and count of each kind of
 banner, the routes, the crosses and what parchment means.
 
 ## How it works
 
-`realm/RealmMaps.java` builds a locked map (like a cartography table's copy). Its centre is the middle of the members'
+`realm/RealmMaps.java` builds a locked map (like a cartography table's copy). Its center is the middle of the members'
 halls, and its scale the smallest of vanilla's 2 to 4 (512, 1,024 or 2,048 blocks a side) at which every member is at
 least 24 blocks inside the edge, so each banner is drawn whole; a realm wider than 2,048 blocks stays at scale 4 and its
 farthest members fall off the edge. The land is drawn by the same code as the Colony Charter's map
@@ -44,7 +44,7 @@ where its banner sits. Only the hall's own dimension is drawn.
 
 ## Saved data
 
-None new in the realm records. Each drawn map is an ordinary vanilla map (`data/map_<id>.dat`: its land, scale, centre
+None new in the realm records. Each drawn map is an ordinary vanilla map (`data/map_<id>.dat`: its land, scale, center
 and banners); the cross is on the item (`minecraft:map_decorations`).
 
 ## Items, blocks, jobs, commands
@@ -53,7 +53,7 @@ None new: vanilla `minecraft:filled_map`, named "Map of ..." with the legend as 
 
 ## Decisions
 
-- "Every member in the realm's colour" holds for colonies that are members too (colonies join their mother's realm by
+- "Every member in the realm's color" holds for colonies that are members too (colonies join their mother's realm by
   themselves), so the lime banner is for a member's colony that has left the realm or never joined.
 - The cross sits on the colony's chosen spot, where the settlers are going, rather than on a guessed point of the walk.
 - Rivals are found from the capital's feuds, which cover the whole realm's side.
@@ -66,7 +66,7 @@ None new: vanilla `minecraft:filled_map`, named "Map of ..." with the legend as 
 ## Proof
 
 `RealmMapGameTests`: `realmMapShowsTheRealm` (the tab's button at a member, the empty map used, every banner's place,
-colour and name with the capital's, the ally, rival and colony, a far member, the route's dots all between its two
+color and name with the capital's, the ally, rival and colony, a far member, the route's dots all between its two
 halls, the colony's cross, the legend, parchment wherever no chunk is loaded, save and reload of the map and the item),
 `realmMapScalesToFitEveryMember` (scale 3 for members 900 blocks apart, both on the map; scales 2, 3, 4 and the cap),
 `realmMapSwitchOff` (no button, nothing drawn, the empty map kept; nothing outside a realm). Showcase scene `realm_map`.

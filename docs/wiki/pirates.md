@@ -2,7 +2,7 @@
 
 ROADMAP 32.8. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. The pirates are a raider culture (see
-[Raids and threats](raids.md)) whose lair (see [Lairs and the Defence page](lairs.md)) is a ship on the sea.
+[Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is a ship on the sea.
 
 Roadmap items: 32.8
 
@@ -18,7 +18,7 @@ Roadmap items: 32.8
   his name over his head. He stays in his cabin. His crew: drowned with tridents (40%), drowned (30%) and skeleton
   gunners in black leather caps with Flame bows (30%), all called "Drowned pirate".
 - **They come ashore.** On a raid night the crew wades in from the water off **the village's beach nearest the ship**,
-  never from the land side, so a sea wall or a harbour gate is what holds them. They raid by night only: at dawn they
+  never from the land side, so a sea wall or a harbor gate is what holds them. They raid by night only: at dawn they
   go back into the sea (with a splash).
 - **The ship burns and sinks.** When the captain falls, his chest is put on a 3 x 3 raft of spruce logs on the water
   between the ship and the village (past the bow, or off a side if the bow's water is taken), and the ship burns and

@@ -1,5 +1,20 @@
 # Crafters and smiths
 
+```infobox
+type: Jobs
+image: https://jcondedata.github.io/minecraft-alive-workplace/toolsmith/still-2.jpg
+caption: A toolsmith makes an axe
+Jobs: Carpenter, Mason, Leatherworker, Tinkerer, Armorer, Toolsmith, Weaponsmith, Fletcher, Chef, Cleric, Librarian
+Hire an Armorer: coal
+Hire a Toolsmith or Weaponsmith: an iron ingot
+Hire a Fletcher: flint
+Hire a Cleric: a glass bottle
+Hire a Librarian: lapis
+Chef's batches: up to 16 of each dish
+categories: Jobs
+related: jobs.md, builder.md, defence.md
+```
+
 The workers who make things: what the builders are short of, the tools the workers wear out, the guards' gear, the
 village's food and potions.
 
@@ -18,7 +33,7 @@ and sand, and with a furnace by the stonecutter fire glass, smooth stone, terrac
 
 ## Leatherworker (the dyer)
 
-**Leatherworkers** (vanilla, at a cauldron) make anything coloured a builder is waiting for: wool, carpet, stained glass,
+**Leatherworkers** (vanilla, at a cauldron) make anything colored a builder is waiting for: wool, carpet, stained glass,
 terracotta, candles, beds, dyes. They also turn concrete powder into concrete.
 
 ## Tinkerer

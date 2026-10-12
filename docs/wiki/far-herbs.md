@@ -18,7 +18,7 @@ Roadmap items: 31.17
   never spreads, never grows into anything and takes no bone meal.
 - **The Glowcap gives light 5** and only grows in shade: something must stand over it, such as a dark forest's leaves.
 - **The Three-Herb Tonic** is a round bottle of green tonic with leaves tied round its neck. In the Sickness story a
-  village's healer brews it from three far herbs and takes it round to cure the Grey Cough (31.18).
+  village's healer brews it from three far herbs and takes it round to cure the Gray Cough (31.18).
 
 ## How it works
 

@@ -19,7 +19,7 @@ Roadmap items: 31.13, 31.14
 - **The hideout** is the bandit camp, 120 to 200 blocks from the hall, with his own banner on a spruce pole by the
   fire. It is built (by the arc engine's `place`) when a player first comes within 96 blocks, with him and a band of 2
   or 3 bandits in it.
-- **Quirks**, one per captain: Ironhide (full iron armour, 20 more health), Fleetfoot (Speed II), Crossbow Ace (a
+- **Quirks**, one per captain: Ironhide (full iron armor, 20 more health), Fleetfoot (Speed II), Crossbow Ace (a
   pillager with a Multishot, Quick Charge II crossbow), Beast Rider (on a ravager), Night Stalker (invisible at night
   until he's hit), Warlord (a band of 5), Hexer (an evoker).
 - **The claim**: he drops a **Captain's Insignia** when he dies. Hand it in at a Bounty Board or the Village Hall

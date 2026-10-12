@@ -16,7 +16,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Personal requests](personal-requests.md): a villager's own ask, [I'll help] and [Not now], the six requests,
   deadlines and request files (31.9).
 - [Reputation and titles](reputation.md): standing in each village, what earns and costs it, Friend, Hero and Lord,
-  honours, the title in chat (31.11).
+  honors, the title in chat (31.11).
 - [The bounty board and bandit captains](bounties.md): bounties posted by villages, the Bounty Board, captains'
   quirks and hideouts, the Wanted Poster and the Captain's Insignia (1.5).
 - [The Bandit King](bandit-king.md): his fort rising a stage a dawn, the King, his horn and his treasure (31.15).
@@ -24,7 +24,7 @@ How everything in the mod works, in plain words: written for the owner first, th
   `follow_trail`, the raiders' stockade, the carter freed and walked home, the lost goods (31.19, 31.20).
 - [The Professor's Thesis](professors-thesis.md): a Cobblemon arc: six thesis topics, catches by type, biome, time and
   height, an evolved catch shown, a rival village's Leader or Thessaly beaten, the published book (31.21).
-- [The Sickness](the-sickness.md): the Grey Cough, the village's healer or Doctor Wren, three far herbs, the brew and
+- [The Sickness](the-sickness.md): the Gray Cough, the village's healer or Doctor Wren, three far herbs, the brew and
   the cure round (31.18).
 - [The far herbs](far-herbs.md): eight rare plants planted only by story arcs, their biomes and ground, the Glowcap's shade, `herb_patch` and the Three-Herb Tonic (31.17).
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
@@ -46,7 +46,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Edicts](edicts.md): laws with a boost, a cost and a reform (1.4).
 - [Guilds](guilds.md): Guild Charters, Guildhalls and the eleven guilds (1.4).
 - [Classes](classes.md): Peasant to Noble, what each needs and gives, and the Vintner (1.8).
-- [The luxury workshops](luxury-workshops.md): the Winery, the Tailor's Shop, the Print Shop and the Jeweller's Workshop, their II, the village houses,
+- [The luxury workshops](luxury-workshops.md): the Winery, the Tailor's Shop, the Print Shop and the Jeweler's Workshop, their II, the village houses,
   the Journeyman's blueprint and the Steward's rules (1.8).
 - [Grander homes](grander-homes.md): home grades, the Artisan's House, the Burgher's Townhouse and the Noble's Manor
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
@@ -55,20 +55,20 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Wonders](wonders.md): the eight Wonders, what each needs and gives; the data files, requirements, the Wonders page, the Wonder Plan and the Great Cathedral's design so far (2.0).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
-- [Lairs and the Defence page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's
-  Defence page (32.3).
+- [Lairs and the Defense page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's
+  Defense page (32.3).
 - [Sieges: rams, gates and ladders](sieges.md): shut gates, the portcullis, rams at the gate and gate hit points (32.4); ladders over the walls and guards who throw them down (32.5).
 - [Pillager warbands](warbands.md): the War Camp, the Warlord who leads a City's siege, ravager rams and the evoker (32.7).
 - [Drowned pirates](pirates.md): the Pirate Ship at anchor, the crew that wades ashore, Captain Silas Brine, and the ship that burns and sinks (32.8).
 - [Desert raiders](desert.md): the Tomb Camp, the Pharaoh whose husks rise again, sand ramps over the walls, sieges until noon (32.9).
 - [Piglin incursions](piglins.md): the Blackstone Outpost and its portal, piglins that never zombify, plunder of the village's gold, the Warlord whose fall puts the portal out (32.10).
 - [Witch covens](covens.md): the Coven Hut on its stilts, the nightly hex no nurse can cure, witches who throw potions over the walls, the Coven Mother who blinks away (32.11).
-- [Scouts](scouts.md): a guard with a spyglass, sent from the Defence page to look the lair over and bring home a Scouting Report map; raiders trailed home at dawn (32.12).
+- [Scouts](scouts.md): a guard with a spyglass, sent from the Defense page to look the lair over and bring home a Scouting Report map; raiders trailed home at dawn (32.12).
 - [Disasters](disasters.md): disasters as data, one at a time per village, foretold, their effects and how they end (32.15).
 - [Drought and the Well Keeper](drought.md): the drought's chance, its effects on crops, farmland, cauldrons and moods, the Well and the Fountain, and the Well Keeper who carries water to the fields (32.17).
 - [Plague and the Physician](plague.md): the plague's chance and carriers, how it passes on, beds and its end, the Physician who goes house to house and the Remedy (32.18).
 - [Village fire and the Firewarden](village-fire.md): lightning, chimney sparks and burning arrows, fire that only burns the builders' work, the Firewarden, the bucket brigade and Water-type partners (32.16).
-- [Peaceful settings and the threat level](peace.md): `threatLevel` 0 to 3, Peaceful, the Defence page's At peace and the lair that leaves at dawn, and `/workplace threat` for operators (32.21).
+- [Peaceful settings and the threat level](peace.md): `threatLevel` 0 to 3, Peaceful, the Defense page's At peace and the lair that leaves at dawn, and `/workplace threat` for operators (32.21).
 - [Marching on the lair](war-party.md): mustering a war party under the Rally Banner, the Siege-breakers, the band turning out and a broken lair's rewards (32.13).
 
 **Villages that build themselves**
@@ -87,7 +87,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 - **The lane that builds or changes a feature updates its page in the same commit** (`docs/agent/sessions.md`, the
   build loop's step 5), and adds the roadmap id to the page's "Roadmap items:" line.
-- **The QA lane checks it**: for every item it verifies, it reads the page against the behaviour its tests proved
+- **The QA lane checks it**: for every item it verifies, it reads the page against the behavior its tests proved
   and fixes the page or files a bug. When nothing is waiting it backfills one missing page per run, oldest milestone
   first, and removes those ids from the baseline.
 - **`tools/modtest/wikicheck.py` fails the build** (`./gradlew build` runs it as `checkWiki`) when a page names

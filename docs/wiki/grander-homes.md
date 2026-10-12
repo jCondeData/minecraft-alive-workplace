@@ -4,29 +4,32 @@ What a home is worth to the [classes](classes.md): every home has a grade, and t
 Burghers and the Nobles the homes their class asks for: the Artisan's House, the Burgher's Townhouse and the Noble's
 Manor. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.15, 34.16, B106
+Roadmap items: 34.15, 34.15a, 34.16, B106
 
 ## What a player sees
 
-Three new houses in the Blueprint Table, sold by builders too:
+Three new houses. The Artisan's House and the Burgher's Townhouse are **sold by builders only** (not in the Blueprint
+Table): a builder sells the Artisan's House from Apprentice on and the Townhouse once the village round the nearest hall
+has a household of Artisans or higher, and each upgrade comes from the builder who finishes the tier below. The Noble's
+Manor is in the Blueprint Table and sold by builders too:
 
 - **Artisan's House** (a grade I home). A narrow house with its gable to the street: a stone workroom below (a
   workbench, an anvil, a chest of stock, a ladder up) and an upper floor in a spruce frame with birch infill, jettied a
   block out over the street on stair brackets, with two beds under a dark oak roof. A stone chimney runs up the side.
 - **Artisan's House II** (grade II). A stone workshop wing at the back, through a doorway in the back wall: a long
   bench, a loom, a barrel and a third bed in the corner, under its own lower roof.
-- **Burgher's Townhouse** (grade II). Three storeys with a slate gable to the street: a brick shop below with a shop
-  window either side of the door and a stall board under each, a counter and shelves inside; two storeys of dark oak
+- **Burgher's Townhouse** (grade II). Three stories with a slate gable to the street: a brick shop below with a shop
+  window either side of the door and a stall board under each, a counter and shelves inside; two stories of dark oak
   and white plaster above, the first jettied over the street, with the main bedroom (two beds) and a second bedroom
   (one bed); a loft under the roof; a brick chimney up the side.
 - **Townhouse II** (grade III). A walled courtyard garden behind, through a back door: brick walls with stone caps, a
   gate, flower beds in their own soil, an azalea, a bench and a lamp; and the loft fitted out as a third bedroom.
-- **Townhouse III** (grade III). A stone corner tower, a block proud of the street front, four storeys up to a study
+- **Townhouse III** (grade III). A stone corner tower, a block proud of the street front, four stories up to a study
   under a slate cap: shelves of books, a desk, a reading chair and windows every way, reached from the main bedroom
   and up ladders.
-- **Noble's Manor** (a grade III home). A stone house of two storeys standing back behind a gravelled forecourt with
+- **Noble's Manor** (a grade III home). A stone house of two stories standing back behind a graveled forecourt with
   clipped hedges and two lamps. Inside, a double-height hall with a chequered floor, a three-wide grand stair up to a
-  gallery and a chandelier; the dining room (a long table, chairs down both sides) to the west and a parlour to the
+  gallery and a chandelier; the dining room (a long table, chairs down both sides) to the west and a parlor to the
   east; upstairs the main bedroom (two beds) and a second bedroom. Andesite quoins, dark oak string courses, a slate
   roof with two dormers front and back and a chimney up each gable.
 - **Manor II** (grade III). A walled formal garden behind, through the back door: gravel walks round a fountain and
@@ -36,7 +39,7 @@ Three new houses in the Blueprint Table, sold by builders too:
 - **Manor III** (grade III). A gatehouse on the street (an arched passage with a porter's room over it, under a slate
   hip roof), the forecourt walled in, and a **ballroom wing** on the east: one tall room with a chequered floor, tall
   windows between pilasters, three chandeliers, a musicians' dais with a jukebox and note blocks, through a doorway from
-  the parlour. **The Noble's Ball is held in the ballroom.**
+  the parlor. **The Noble's Ball is held in the ballroom.**
 
 The hall's "What next?" page names the households that want a grander home: "Dara and Tomas are Burghers and want a
 grade II home", or "Bo could be an Artisan and wants a grade I home" when the home is all they lack to rise. With a
@@ -117,14 +120,17 @@ worked out from the finished buildings already saved.
 
 - 34.15: the Townhouse's II and III are both grade III (the roadmap's "each upgrade one more, up to III"); III adds
   the study tower, not a grade.
-- 34.15: both houses are in the Blueprint Table for everyone, like the luxury workshops (34.13), as well as sold by
-  builders; the trades are a second way to get them, not a lock (lane-d, 2026-10-11).
+- 34.15a (the owner, 2026-10-12): the Artisan's House and the Townhouse, every tier, are sold by villagers only
+  (`StarterBlueprints.SOLD_ONLY`): the Table neither lists them nor hands one out when asked; operators' commands with
+  everything still see them. A blueprint already bought, a build site and a finished house in a save keep working,
+  since the blueprints still load by id; the Steward still builds them for his village by his rules. A wandering
+  trader's market-day blueprint may still be one (lane d, 2026-10-12).
 - 34.15: the tip names a household whose own class wants more than its home, and also one a step below that lacks
   only the home, since a household can't rise into a class whose home need fails (lane-d, 2026-10-11).
 - 34.15: a couple's home grade is the lower of their two beds' buildings, as a class need holds for a household only
   when it holds for both.
 - 34.16: every tier of the Manor is grade III (the Noble's need); II and III add the garden's beauty and the ballroom.
-- 34.16: the Manor is in the Blueprint Table for everyone like the other grand homes, and sold by builders once the
+- 34.16: the Manor is in the Blueprint Table for everyone (34.15a took only the other two out), and sold by builders once the
   village has Burghers (or higher); its Steward rule needs a Town, the Noble's own rank need.
 - 34.16: the garden's beauty counts only for the people whose bed is in the Manor (a home file's `garden`), not for the
   whole village like a decoration, as the roadmap says.

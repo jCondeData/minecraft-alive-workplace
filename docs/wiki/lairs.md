@@ -1,4 +1,4 @@
-# Lairs and the Defence page
+# Lairs and the Defense page
 
 ROADMAP 32.3. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
@@ -22,7 +22,7 @@ Roadmap items: 32.3
   kill at the camp. After a costly night the camp is weak, and a camp with nobody left sends no raid until it grows.
 - **Kill the captain** and the camp is broken up: the band scatters, the chest (the culture's loot table) is yours, the
   chronicle names who did it, and no camp comes for 5 days.
-- **The Defence page.** Click the guards icon (the iron sword) on the Village Hall. Everyone who may open the hall may
+- **The Defense page.** Click the guards icon (the iron sword) on the Village Hall. Everyone who may open the hall may
   read it:
   - second row: the camp (whose it is), the captain by name, the strength (the icon counts it; the tooltip says how many
     are at the camp, out raiding, lost in the last raid, and how fast it grows), roughly where ("south-east, about 90
@@ -51,7 +51,7 @@ Roadmap items: 32.3
 
 ## Items, blocks, jobs, commands
 
-None. One new screen page (the Defence page).
+None. One new screen page (the Defense page).
 
 ## Switches
 
@@ -84,7 +84,7 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - 32.3: a bandit killed at the camp lowers the strength at once; a raider's death is counted when the raid ends.
 - 32.3: `BanditCamps.near` and `all` answer for bandit camps only, so the lines that say "bandits" (advice, chatter,
   the Steward's rule) stay true when other cultures get lairs; `Lairs.near` answers for any lair. Raids, the raid
-  chance and the Defence page ask `Lairs`.
+  chance and the Defense page ask `Lairs`.
 - 32.3: the named lines use their own keys (`camp_named`, …) rather than changing today's, so the bandit camp reads as
   it always did while Milestone 32 is closed.
 - 32.3: the lines avoid "he" and "his", so a culture's list may hold any name.
@@ -93,7 +93,7 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 
 - A lair whose culture is switched off in `raiderCultures` stays until its captain falls (it sends no raids); the
   design's "leaves at the next dawn" is not built yet.
-- The Defence page's gates slot is on [Sieges](sieges.md); its other rows (scouts, war party, next attack, At peace)
+- The Defense page's gates slot is on [Sieges](sieges.md); its other rows (scouts, war party, next attack, At peace)
   come with 32.12 to 32.14 and 32.21; "where" is always rough until scouts exist.
 - A lair of a structure other than the bandit camp puts its captain and band round the middle of its floor; cultures
   that need their own spots, water or a portal add them in their own items (32.7 to 32.11).
@@ -102,7 +102,7 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 
 - GameTests: `LairGameTests`: a raid of 5 from a lair of strength 8 leaves 3, two alive at dawn make it 5, each day
   adds one up to 10, a costly night leaves a lair that can't raid, a save and load mid-raid; the captain's name on him,
-  on the Defence page and in the chronicle's three lines, every name a real line, the chest's loot, the lair broken up
+  on the Defense page and in the chronicle's three lines, every name a real line, the chest's loot, the lair broken up
   mid-raid, the rest days; the fixture `fixtures/bandit_camps_0.138.0.snbt` loading with its camp, chief and rest days;
   another culture's lair; the switches and the closed gate.
 - Unchanged: `RaidGameTests`, `ThreatGameTests`, `HallSpecGameTests` and every other caller of `BanditCamps`.

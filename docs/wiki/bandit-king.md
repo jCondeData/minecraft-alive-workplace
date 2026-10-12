@@ -31,7 +31,7 @@ Roadmap items: 31.15, 31.16
      "Captain of the Bandit King" in iron (36 extra health) and 3 or 4 bandits, and his war banner by the fire. Break
      the three banners (each drops "The Bandit King's War Banner", and counts). Villagers say "All the camps fly the
      same banner now."
-  2. **The King's fort**, the next dawn: the fort rises a stage a dawn (above). Allies, each optional: **the neighbours'
+  2. **The King's fort**, the next dawn: the fort rises a stage a dawn (above). Allies, each optional: **the neighbors'
      pledge** (finish any quest at another village with a hall within caravan range: 3 of its guards come for the
      storm), **swords for hire** (24 emeralds at the hall: 6 mercenaries), **the deserter** (Pell waits by the first
      camp; bring him 16 bread and he tells of the postern, which the keep leaves open, and joins the village after).
@@ -40,7 +40,7 @@ Roadmap items: 31.15, 31.16
      night until he falls. If he stands after 10 days, **the King's tribute**: he takes a third of the treasury and
      rides off with his band, the fort is left a ruin, moods drop 10 for 3 days, and the story ends badly.
   - **Ending**: his band leaves the fort (the treasure chest is yours), a festival the next evening, +150 reputation
-    and the honour **Kingslayer** to everyone who fought in the storm, Pell joins the village (no job), the allies go
+    and the honor **Kingslayer** to everyone who fought in the storm, Pell joins the village (no job), the allies go
     home, and no bandit camps come for 10 days. Every chapter, banner, ally, raid and ending has its chronicle line.
 
 ## How it works
@@ -108,7 +108,7 @@ horn) in their own entity data.
   player didn't come near for is built when one does (each next stage at the next dawn after).
 
 - 31.16: the allies are guards with a mercenary's leave time (11 days), so they leave the way hired mercenaries do
-  when the storm ends; the neighbours' guards don't walk home, they leave in a puff like mercenaries.
+  when the storm ends; the neighbors' guards don't walk home, they leave in a puff like mercenaries.
 - 31.16: Pell's quest is a `talk` the arc counts only once he has his 16 bread (without it he asks for it).
 - 31.16: "half again as big" raids are sized as a raid on a village of 6 + 1.5 times its villagers (the plain raid is
   3 + villagers / 4), still capped as every raid.

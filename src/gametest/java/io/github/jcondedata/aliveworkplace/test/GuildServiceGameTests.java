@@ -67,7 +67,7 @@ public class GuildServiceGameTests implements FabricGameTest {
 			&& w.jobs().equals(List.of(AliveWorkplace.id("nurse"), AliveWorkplace.id("undertaker"))), "healers: 16 further for nurses and undertakers");
 		Guilds.Guild merchants = check(helper, "merchants", "Merchants' Guild", List.of(AliveWorkplace.id("shopkeeper"), AliveWorkplace.id("innkeeper"),
 				AliveWorkplace.id("ferryman"), AliveWorkplace.id("postman"), AliveWorkplace.id("porter")),
-			"Shopkeepers, Innkeepers, Ferrymen, Postmen and Porters work 15% faster; travellers cost a quarter less to hire, and porters carry 3 more stacks.");
+			"Shopkeepers, Innkeepers, Ferrymen, Postmen and Porters work 15% faster; travelers cost a quarter less to hire, and porters carry 3 more stacks.");
 		helper.assertTrue(merchants.perks().get(0) instanceof CivicEffects.WorkPace p && p.percent() == 15, "merchants 15% faster");
 		helper.assertTrue(merchants.perks().get(1) instanceof Guilds.HirePrice h && h.percent() == -25, "merchants: hire a quarter less");
 		helper.assertTrue(merchants.perks().get(2) instanceof Guilds.Carry c && c.stacks() == 3, "merchants: porters carry 3 more");

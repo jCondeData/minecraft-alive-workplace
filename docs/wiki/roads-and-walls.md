@@ -10,7 +10,7 @@ Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18
 
 On the City Plan's screen two tools draw lines: **Road** (click points, double-click to end; a lane 1 block wide, a
 street 3 or an avenue 5) and **Wall line** (one line round the village, open or closed). Holding the plan shows them
-on the ground as coloured dust.
+on the ground as colored dust.
 
 Once the village has a Steward, the approved roads are built a stretch at a time by the nearest free builder, in the
 road style of the zone they start in. Every newly finished building gets a lane from its door to the nearest road.

@@ -309,4 +309,73 @@ public class HomeGradeGameTests implements FabricGameTest {
 		helper.assertTrue(mason.getOffers().isEmpty(), "a Mason sells no homes");
 		helper.succeed();
 	}
+
+	/**
+	 * ROADMAP 34.15a (the owner, 2026-10-12): the Artisan's House and the Townhouse are sold by villagers only. No tier of
+	 * either is in the Blueprint Table's list or handed out by it, the Manor still is; a builder's Artisan's House
+	 * blueprint, bought, sets out on the ground; the Steward's rules for both still find their blueprints.
+	 */
+	//$ gametest_batch AREA '"homeGradeSoldOnly"'
+	@GameTest(template = AREA, batch = "homeGradeSoldOnly")
+	public void theGranderHomesAreSoldNotInTheTable(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		var server = level.getServer();
+		List<ResourceLocation> table = io.github.jcondedata.aliveworkplace.table.TableServer.listing(server).stream()
+			.map(io.github.jcondedata.aliveworkplace.table.TablePayloads.Entry::id).toList();
+		List<ResourceLocation> everything = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.list(server, true);
+		helper.assertTrue(StarterBlueprints.SOLD_ONLY.size() == 5, "every tier of both houses: " + StarterBlueprints.SOLD_ONLY);
+		for (StarterBlueprints.Entry e : StarterBlueprints.SOLD_ONLY) {
+			helper.assertFalse(table.contains(e.id()), e.id() + " is in the Blueprint Table");
+			helper.assertTrue(everything.contains(e.id()), e.id() + " should still load for operators");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(server, e.id()).isPresent(), e.id() + " no longer loads");
+		}
+		helper.assertTrue(table.contains(StarterBlueprints.MANOR.id()) && table.contains(StarterBlueprints.STARTER_COTTAGE.id()),
+			"the Manor and the cottage stay in the Table");
+
+		// Asked for anyway (a request the screen never sends), the Table refuses and keeps the Blank Blueprint.
+		BlockPos tablePos = new BlockPos(3, 2, 3);
+		helper.setBlock(tablePos, ModBlocks.BLUEPRINT_TABLE);
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		try {
+			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+			BlockPos at = helper.absolutePos(tablePos);
+			player.moveTo(new net.minecraft.world.phys.Vec3(at.getX() + 1.5, at.getY(), at.getZ() + 0.5));
+			player.getInventory().add(new net.minecraft.world.item.ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT, 2));
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, StarterBlueprints.TOWNHOUSE.id()), "the Table handed out a Townhouse");
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, BlueprintStyles.styled(StarterBlueprints.ARTISANS_HOUSE_2.id(), "stonework")),
+				"the Table handed out a styled Artisan's House II");
+			helper.assertTrue(player.getInventory().countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT) == 2, "a Blank Blueprint was used up");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, StarterBlueprints.MANOR.id()), "the Manor still comes from the Table");
+			helper.assertTrue(Component.translatable("message.aliveworkplace.table.sold_only", "x").getString().equals("The x isn't in the Blueprint Table: a builder sells it"),
+				"the refusal's words: " + Component.translatable("message.aliveworkplace.table.sold_only", "x").getString());
+
+			// Bought from an Apprentice builder, the Artisan's House sets out on the ground like any blueprint.
+			Villager builder = villager(helper, new BlockPos(10, 2, 10), "Builder");
+			builder.setVillagerData(new VillagerData(builder.getVillagerData().getType(), ModVillagers.BUILDER, 2));
+			builder.getOffers().clear();
+			ModTrades.builderHomes(builder);
+			net.minecraft.world.item.ItemStack bought = builder.getOffers().stream().map(o -> o.getResult().copy())
+				.filter(r -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(r).map(d -> d.structure().equals(StarterBlueprints.ARTISANS_HOUSE.id())).orElse(false))
+				.findFirst().orElse(null);
+			helper.assertTrue(bought != null, "the Apprentice sells no Artisan's House: " + builder.getOffers().size());
+			player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bought);
+			BlockPos ground = helper.absolutePos(new BlockPos(14, 1, 4));
+			bought.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
+				new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(ground), net.minecraft.core.Direction.UP, ground, false)));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement).isPresent(),
+				"the bought Artisan's House didn't set out: " + io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(player.getMainHandItem()));
+		} finally {
+			server.getPlayerList().remove(player);
+		}
+
+		// The Steward's rules still build them: their blueprints load by id.
+		for (StewardRules.Rule r : StewardRules.all()) {
+			String path = r.id().getPath();
+			if (path.equals("homes_class_artisans_house") || path.equals("homes_class_townhouse")) {
+				helper.assertTrue(r.effect().blueprint().flatMap(id -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(server, id)).isPresent(),
+					path + "'s blueprint doesn't load");
+			}
+		}
+		helper.succeed();
+	}
 }

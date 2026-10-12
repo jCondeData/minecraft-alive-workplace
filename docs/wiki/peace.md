@@ -1,7 +1,7 @@
 # Peaceful settings and the threat level
 
 How much trouble comes to villages, server-wide and village by village: the `threatLevel` setting, Peaceful difficulty,
-the Defence page's **At peace**, and the operators' `/workplace threat` command. Part of Milestone 32 (1.6); the
+the Defense page's **At peace**, and the operators' `/workplace threat` command. Part of Milestone 32 (1.6); the
 threat level and the command work with today's raids and bandit camps too.
 
 Roadmap items: 32.21
@@ -13,7 +13,7 @@ Roadmap items: 32.21
   ramps, so no sieges), witches never hex, and there is no plague. At 3 everything comes half again as often and a
   quarter more raiders come each time.
 - **Peaceful difficulty**: nothing comes, whatever the threat level says.
-- **At peace** (the Defence page, top right, a white tulip when on): the hall's owner sets the village at peace and
+- **At peace** (the Defense page, top right, a white tulip when on): the hall's owner sets the village at peace and
   no raids, raiders' camps or disasters come there. A camp already standing leaves at the next dawn ("The raiders of the
   Bandit camp have packed up and gone: Oakvale is left in peace."). The guards icon says "At peace: no raiders, camps or
   disasters come", and "The Bandit camp leaves at the next dawn" while one still stands. At threat level 0 or on
@@ -71,7 +71,7 @@ Roadmap items: 32.21
 
 ## Items, blocks, jobs, commands
 
-- The Defence page's At peace slot (slot 8, a white tulip when on, gray dye when off).
+- The Defense page's At peace slot (slot 8, a white tulip when on, gray dye when off).
 - `/workplace threat start <culture>`, `/workplace threat lair <culture>`, `/workplace threat disaster <id>`,
   `/workplace threat end`, `/workplace threat clear` (operators; ours by their path, such as `bandits`, or a whole id
   such as `aliveworkplace:pillager_warband`).
@@ -85,12 +85,12 @@ Roadmap items: 32.21
 - A disaster under way ends when the village turns quiet, as one switched off does (32.15's rule), and a raid already
   under way runs on (32.21, lane b).
 - `threatLevel` isn't behind the expansion gate: it changes today's raids and camps too. The At peace slot is on the
-  Defence page, which opens with Milestone 32 (32.21, lane b).
+  Defense page, which opens with Milestone 32 (32.21, lane b).
 - A lair leaving in peace isn't "broken up": no rest days, no rewards, no bounty (32.21, lane b).
 
 ## Known limits
 
-- At peace can only be set from the Defence page, so players see it once Milestone 32 opens; the threat level and
+- At peace can only be set from the Defense page, so players see it once Milestone 32 opens; the threat level and
   Peaceful work now.
 - Bandit King arcs, bounty captains and other story threats don't read the threat level.
 - At threat level 3 the fire, drought and plague chances are capped at 100% a day.

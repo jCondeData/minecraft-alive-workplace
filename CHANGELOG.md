@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   under a cut copper cloak that weathers green. It stands on a stepped stone plinth ringed with braziers, over an arch 5
   wide and 6 high that the main road runs through, with the Founder's plaque (a row of signs) over it. It rises in four
   stages (the Plinth and the Road Arch, the Robes, the Arms and the Cloak, the Head and the Lantern), each with its goods.
+- **The player guide looks like a wiki**: a sidebar on every page, a main page with an article counter, an About box,
+  a portal box with a picture for each subject (Jobs, the Builder, the Village Hall, Pokémon, festivals, quests, trade,
+  defense, disasters, settings), a News box of what's new, and on every article an infobox (picture, recipes,
+  workstation, numbers), a contents box, "See also" links and its categories, with a page per category and an "All
+  pages" list. It reads well on a phone too.
 - **The Stadium's design, for 2.0** (35.23, with Cobblemon, behind the 2.0 switch): an oval arena of stone round a grass
   battle field, with stands of red and white seats (in the village's own banner colours if it has a Village Banner),
   two trainer boxes with Training Posts, a professor's box, a covered stand, a gateway arch with banners, a
@@ -54,6 +59,13 @@ asks for the steps, `latest.log` and any crash report).
   Founder's blessing" in both chronicles and his statue stands beside each colony's camp. The Merchant Prince's board
   shows the prices of every village within caravan range, his village's caravans sell where they are paid most, and
   its board's spread is halved (105% instead of 110%).
+
+### Changed
+- **The Artisan's House and the Burgher's Townhouse are sold by builders only** (34.15a): they're no longer in the
+  Blueprint Table. A builder sells the Artisan's House from Apprentice on and the Townhouse once the village has
+  Artisans; blueprints already bought and houses already built keep working.
+- **American spelling** (22.10a, part 1): the player guide, the wiki and every in-game text now say defense, color,
+  armor, gray, honor, favor, neighbor, center, traveler, Jeweler and the like; ids, config keys and saves are unchanged.
 
 ## 0.143.0 — 2026-10-11
 

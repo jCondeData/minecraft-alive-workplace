@@ -68,7 +68,7 @@ None new: the Pacts tab on the Trade page, letters through the post.
 
 ## Known limits
 
-- The tab shows up to 36 lines; with many neighbours some offers to make are left off.
+- The tab shows up to 36 lines; with many neighbors some offers to make are left off.
 
 ## Proof
 

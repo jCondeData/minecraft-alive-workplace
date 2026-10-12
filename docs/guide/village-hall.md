@@ -1,5 +1,19 @@
 # The Village Hall
 
+```infobox
+type: Block
+image: https://jcondedata.github.io/minecraft-alive-workplace/hall/still-4.jpg
+caption: The Village Hall's screen
+Recipe: gold, a book and gold over planks, an emerald in the middle
+Reach: everyone within 64 blocks
+Ranks: Hamlet, Village, Town, City
+Treasury: about a fifth of an emerald a worker a day
+Protection: shift-click the hall's name icon
+Village Ledger: a book and an emerald
+categories: Village Hall
+related: village-life.md, quests.md, festivals-and-markets.md, trade-and-caravans.md
+```
+
 The Village Hall turns a group of villagers into a village that lives: everyone gets a name, the village has needs, a
 rank, a treasury and a chronicle, and you can see all of it in one screen.
 
@@ -31,10 +45,10 @@ The **bell** in the middle calls everyone home: villagers who wandered off are b
 - **Trade routes** (the minecart): caravans to other villages. See [Trade and caravans](trade-and-caravans.md).
 - **What next?** (the compass): what the village lacks most, from a builder or beds to guards or decorations, each with
   how to put it right.
-- **The village map**: draws the village on an empty map from your inventory, every building marked and coloured by what
+- **The village map**: draws the village on an empty map from your inventory, every building marked and colored by what
   it is.
 - **The calendar**: the season, the day, and when the next festival is.
-- **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defence](defence.md).
+- **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defense](defence.md).
 
 ![The chronicle](https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-1.jpg)
 

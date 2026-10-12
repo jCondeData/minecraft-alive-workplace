@@ -61,7 +61,7 @@ what they want in red over their head. The day every need is met they go back to
 **The Gifted (29.6, 29.7).** One villager in `giftedChance` (30) has a gift, decided by who they are, so every
 existing villager already has theirs and nothing is migrated: Prodigy (learns three times as fast), Iron Will (never
 panics), Silver Tongue (trades 20% cheaper), Night Owl (works at night), Lucky, Hardy (never ill, twice the health),
-Beloved (neighbours are happier), Born Leader (workers of their trade nearby 10% faster).
+Beloved (neighbors are happier), Born Leader (workers of their trade nearby 10% faster).
 
 ## Switches
 
@@ -80,7 +80,7 @@ Beloved (neighbours are happier), Born Leader (workers of their trade nearby 10%
   the day they settled and the day they fell) and the structures already used for a found Legend.
 - On the Legend: the attachment `legend` (which Legend, guest or settled, their hall, the day they came, how many
   days each need has gone unmet, the day a strike began: -1 for none). Every field has a default.
-- On a Gifted villager: the attachment `gifted` only when it overrides the roll (the born, the inn's travellers).
+- On a Gifted villager: the attachment `gifted` only when it overrides the roll (the born, the inn's travelers).
 - On a Master in a strange mood: the attachment `strange_mood`.
 - On the hall: the guest in the village, `treasuryTotal` (starts at 0 in an old hall), the Founder's fields.
 - On a colony's order (33.23): `blessed`, whether the Founder lived in the mother village when it was given (false in
@@ -123,7 +123,7 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
   (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
 - The luxuries Legends take are stand-ins for now (honey bottles, amethyst shards and emeralds, books, leather
-  armour), through item tags, until the luxury jobs of 1.8 make the real ones.
+  armor), through item tags, until the luxury jobs of 1.8 make the real ones.
 
 ## Legends of the realm (33.23)
 

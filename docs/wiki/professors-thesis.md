@@ -3,7 +3,7 @@
 A Cobblemon story arc: the village's professor writes a thesis and needs a player for the field work: three catches
 made where and when the theory says, a Pokémon shown grown, and a battle against a rival's best. The thesis is
 published as a book with the player as co-author. ROADMAP 31.21 (`arcs/professors_thesis.json`). Builds on the arc
-engine (31.4), quests (31.2), reputation and honours (31.11), the Pokémon Professor (29.21), research (29.11) and
+engine (31.4), quests (31.2), reputation and honors (31.11), the Pokémon Professor (29.21), research (29.11) and
 the trainers (28.x). Part of the 1.5 expansion (behind `storyArcs`).
 
 Roadmap items: 31.21
@@ -39,7 +39,7 @@ Roadmap items: 31.21
 - **The ending**: every helper gets the thesis, a written book named "Professor Alder: Life in the Cold": a cover page
   (topic, author, co-author), a page per catch (species, biome, coordinates, day, catcher) and a closing page; 3 Rare
   Candies and an Ability Capsule (`cobblemon:rare_candy`, `cobblemon:ability_capsule`; 4 emeralds for each one missing);
-  +150 standing and the honour **Co-author**. The village gets a free research level: with the Pokémon Professor as
+  +150 standing and the honor **Co-author**. The village gets a free research level: with the Pokémon Professor as
   patron, the Pokédex tree's topic in progress or its next one not at its top; otherwise the scholars' topic in
   progress, or the next one open. The chronicle notes the thesis and the research.
 

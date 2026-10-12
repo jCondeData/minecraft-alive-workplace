@@ -943,7 +943,7 @@ public class PersonalRequestGameTests implements FabricGameTest {
 			helper.assertTrue(PersonalRequests.of(dara) == null && me.getInventory().countItem(Items.EMERALD) == 4 && Friendship.points(dara, me.getUUID()) > 300,
 				"finishing with the switch off: " + open + ", " + Friendship.points(dara, me.getUUID()));
 			helper.assertTrue(lore(menu.icon(22)).equals(List.of("A villager with 3 hearts or more may walk up and ask you for help when you're near"))
-				&& menu.icon(22).getHoverName().getString().equals("Nobody is waiting on a favour"), "the empty tab: " + menu.icon(22).getHoverName().getString());
+				&& menu.icon(22).getHoverName().getString().equals("Nobody is waiting on a favor"), "the empty tab: " + menu.icon(22).getHoverName().getString());
 			// With friendship off nobody asks either (requests go by hearts); on again, they do.
 			PersonalRequests.ENABLED = true;
 			Friendship.ENABLED = false;

@@ -243,12 +243,12 @@ public class HeartEventGameTests implements FabricGameTest {
 					"I only meant to sleep a night at the inn. The stew was hot, and nobody asked where I'd been.",
 					"Then somebody put down good coin for me to stay. That was day " + day + ". I've been unpacking ever since.",
 					"I've slept under a lot of roofs. " + village + " is the first one I'd call mine.",
-					"So if I fuss over the travellers at the inn, now you know why. I was one of them."),
-					"Bram told " + ME + " how they came to " + village, "Came to " + village + " as a traveller and was hired at the inn on day " + day),
+					"So if I fuss over the travelers at the inn, now you know why. I was one of them."),
+					"Bram told " + ME + " how they came to " + village, "Came to " + village + " as a traveler and was hired at the inn on day " + day),
 				new Case(cora, BEFORE, List.of(
 					"You want to know where I come from, " + ME + "? Here. I was here before here had a name.",
 					"There was no hall then, no bell, no list with us on it. Just a few doors and a well.",
-					"Then the hall went up and somebody wrote " + village + " over the door. I had to practise saying it.",
+					"Then the hall went up and somebody wrote " + village + " over the door. I had to practice saying it.",
 					"It's a good name. But between us, I still think of this place as just home."),
 					"Cora told " + ME + " about " + village + " before it had a name", "Lived here before the hall, when " + village + " had no name"),
 				new Case(back, GRAVE, List.of(

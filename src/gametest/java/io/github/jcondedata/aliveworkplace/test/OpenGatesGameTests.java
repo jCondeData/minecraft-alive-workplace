@@ -64,7 +64,7 @@ public class OpenGatesGameTests implements FabricGameTest {
 		helper.assertTrue(gates != null, "Open Gates didn't load: " + Edicts.all());
 		helper.assertTrue(gates.name().getString().equals("Open Gates") && gates.icon().equals(ResourceLocation.withDefaultNamespace("oak_fence_gate")),
 			"Open Gates: " + gates.name().getString() + ", " + gates.icon());
-		helper.assertTrue(gates.description().getString().equals("Inns take 4 guests and up to two travellers arrive a morning; one more trader comes"
+		helper.assertTrue(gates.description().getString().equals("Inns take 4 guests and up to two travelers arrive a morning; one more trader comes"
 			+ " on market days; bandits make camp near the village twice as often."), "description: " + gates.description().getString());
 		helper.assertTrue(gates.boost().size() == 3
 			&& gates.boost().get(0) instanceof CivicEffects.Inn inn && inn.guests().orElse(0) == 4 && inn.arrivals().orElse(0) == 2
@@ -312,10 +312,10 @@ public class OpenGatesGameTests implements FabricGameTest {
 
 			CivicEffects.LEGEND_VISITS_READ = false;
 			List<String> lore = bookLore(owner, hall);
-			for (String want : List.of("+ inns take 4 guests (not 2), up to 2 travellers arrive a morning (not 1)",
+			for (String want : List.of("+ inns take 4 guests (not 2), up to 2 travelers arrive a morning (not 1)",
 				"+ 1 more trader comes on market days", "- bandits make camp near the village twice as often",
 				"Reform: The Watchful Gate, step 1 of 3",
-				"A gate watch that knows every face: travellers keep coming, and bandits are no likelier to make camp than usual.")) {
+				"A gate watch that knows every face: travelers keep coming, and bandits are no likelier to make camp than usual.")) {
 				helper.assertTrue(lore.contains(want), "Open Gates lacks \"" + want + "\": " + lore);
 			}
 			helper.assertTrue(lore.stream().noneMatch(l -> l.contains("Legend")), "Legends promised before they visit: " + lore);

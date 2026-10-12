@@ -1,5 +1,18 @@
 # Giving villagers jobs
 
+```infobox
+type: Overview
+image: https://jcondedata.github.io/minecraft-alive-workplace/stations/still-1.jpg
+caption: One composter, four jobs
+Jobs: 43
+Picking a job: sneak-right-click the villager with the job's item, within about 4 blocks of the block
+Supply chests: chests and barrels within 8 blocks of the workstation
+Shared stock: workers within 48 blocks of each other
+Levels: Novice to Master, faster at every level
+categories: Jobs, Basics
+related: builder.md, jobs-land.md, jobs-crafts.md, jobs-services.md
+```
+
 Every worker in Alive Workplace is an ordinary villager with a job block. Here's how they get one, where they keep their
 things, and every job there is.
 
@@ -75,7 +88,7 @@ makes them faster. Villages keep working while you're away, as long as someone i
 | Teacher | Lectern | a book | [Porters, post and services](jobs-services.md) |
 | Scholar | Lectern | paper | [Porters, post and services](jobs-services.md) |
 | Bard | Jukebox | a music disc | [Porters, post and services](jobs-services.md) |
-| Guard | Grindstone | a sword | [Threats and defence](defence.md) |
+| Guard | Grindstone | a sword | [Threats and defense](defence.md) |
 | Trainer | Training Post | (takes it by itself) | [Pokémon and villagers](pokemon.md) |
 | Trainer Leader | Training Post | a block of gold | [Pokémon and villagers](pokemon.md) |
 | Move Tutor | Training Post | a book | [Pokémon and villagers](pokemon.md) |

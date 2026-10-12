@@ -259,7 +259,7 @@ public class SicknessStoryGameTests implements FabricGameTest {
 		helper.assertTrue(s != null && s.chapter == 0 && s.started, "the arc didn't start");
 		helper.assertTrue(grey(people) == 3 && !Sickness.isIll(nurse), "coughing: " + grey(people) + ", the nurse ill: " + Sickness.isIll(nurse));
 		helper.assertTrue(SicknessStory.healer(level, s) == nurse, "the healer isn't the nurse");
-		helper.assertTrue(chronicle(entity).stream().anyMatch(l -> l.startsWith("The Grey Cough came to the village:")), "no chronicle: " + chronicle(entity));
+		helper.assertTrue(chronicle(entity).stream().anyMatch(l -> l.startsWith("The Gray Cough came to the village:")), "no chronicle: " + chronicle(entity));
 		helper.assertTrue(Arcs.chatter(level, hall).contains("chatter.aliveworkplace.the_sickness.cough"), "no chatter: " + Arcs.chatter(level, hall));
 
 		Villager sick = people.stream().filter(Sickness::isGrey).findFirst().orElseThrow();
@@ -475,7 +475,7 @@ public class SicknessStoryGameTests implements FabricGameTest {
 		setDay(level, day + 21, 1000);
 		helper.assertTrue(Stories.mood(level, people.get(0)) == 0, "the mood lasted past 5 days: " + Stories.mood(level, people.get(0)));
 		List<String> lines = chronicle(entity);
-		helper.assertTrue(lines.stream().anyMatch(l -> l.startsWith("No cure came in fifteen days")) && lines.stream().anyMatch(l -> l.startsWith("The Grey Cough ran its course")),
+		helper.assertTrue(lines.stream().anyMatch(l -> l.startsWith("No cure came in fifteen days")) && lines.stream().anyMatch(l -> l.startsWith("The Gray Cough ran its course")),
 			"the chronicle: " + lines);
 		helper.succeed();
 	}

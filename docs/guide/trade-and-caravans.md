@@ -1,5 +1,18 @@
 # Trade and caravans
 
+```infobox
+type: Trade
+image: https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-2.jpg
+caption: The trade routes page
+Where: the minecart on the Village Hall's screen
+Reach: villages with a hall within 2048 blocks
+Caravans: once a day
+Kept at home: 16 of everything
+Routes: three for a Hamlet, one more for every rank
+categories: Trade, Village Hall
+related: jobs-services.md, festivals-and-markets.md, village-hall.md
+```
+
 Villages help each other out, and you can run a shop of your own.
 
 ## Caravans between villages
@@ -21,9 +34,9 @@ buy from you while you're away. See [Porters, post and services](jobs-services.m
 
 ## Buying from the villages
 
-- **Market days** bring travelling traders and their blueprints: see [Festivals and market days](festivals-and-markets.md).
+- **Market days** bring traveling traders and their blueprints: see [Festivals and market days](festivals-and-markets.md).
 - **Builders** sell blueprints, and more as they level up.
-- **Innkeepers** bring skilled travellers you can hire.
+- **Innkeepers** bring skilled travelers you can hire.
 - **Ferrymen** sell tickets between villages.
 - With Cobblemon, **Pokémon Traders** swap Pokémon with you: see [Pokémon and villagers](pokemon.md).
 

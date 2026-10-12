@@ -128,6 +128,7 @@ final class StewardCivicScene {
 	/** His morning at the hall, as {@code StewardWork}'s planner does it: the wishes, their plots, then the desk. */
 	private void round(MinecraftServer server) {
 		ServerLevel level = server.overworld();
+		holdVillage(level);
 		if (!started) {
 			if (StewardWishes.rankIfDue(level, HALL)) {
 				System.out.println("[steward_civic] wishes: " + StewardWishes.of(level, HALL).wishes().stream().map(w -> w.rule().getPath()).toList());
@@ -142,12 +143,27 @@ final class StewardCivicScene {
 		built = StewardDesk.openSites(level, HALL).isEmpty();
 	}
 
+	/**
+	 * The staged Village: the hall's round counts the rank again from its villagers (eight to eleven make a Hamlet, and a
+	 * Hamlet's Steward keeps one build open), so the scene sets the Village it stages again before each of his rounds:
+	 * with his Apprentice level, two builds open, as the scene shows.
+	 */
+	private static void holdVillage(ServerLevel level) {
+		if (level.getBlockEntity(HALL) instanceof VillageHallBlockEntity hall) {
+			hall.setRank(VillageRanks.Rank.VILLAGE);
+		}
+	}
+
 	/** A few ticks after the hall is placed (its point of interest is registered a tick later), he's made Steward. */
 	private void appoint(MinecraftServer server) {
 		ServerLevel level = server.overworld();
 		Stewards.appoint(player(server), steward, plan);
 		Showcase.check(Stewards.stewardOf(level, HALL) == steward, "the seasoned Builder is made Steward");
 		Showcase.check(StewardDesk.mode(level, HALL) == CityPlan.Mode.RUN, "the Steward runs the village");
+		// A new Steward starts as a Novice, who keeps one build open (27.1a): this one has served a while, an Apprentice
+		// Steward with two open, so the Lamp and the Well go up on day 1 and the Schoolhouse on day 2
+		steward.setVillagerData(steward.getVillagerData().setLevel(2));
+		steward.setVillagerXp(net.minecraft.world.entity.npc.VillagerData.getMinXpPerLevel(2));
 	}
 
 	private static void bed(ServerLevel level, BlockPos foot) {
@@ -185,7 +201,7 @@ final class StewardCivicScene {
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState());
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
 		hall.setOwner(player.getUUID(), player.getGameProfile().getName());
-		hall.setRank(VillageRanks.Rank.VILLAGE); // a Steward may keep two builds open in a Village
+		hall.setRank(VillageRanks.Rank.VILLAGE); // a Steward may keep two builds open in a Village (held: holdVillage)
 		BitSet homes = new BitSet();
 		paint(homes, 8, 30, -8, 12);
 		BitSet gardens = new BitSet();

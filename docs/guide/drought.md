@@ -1,5 +1,19 @@
 # Drought and the Well Keeper
 
+```infobox
+type: Disaster
+image: https://jcondedata.github.io/minecraft-alive-workplace/drought/still-2.jpg
+caption: The dry fields and the Well Keeper's buckets
+Comes after: five days without rain
+Lasts: three to five days, or until the first rain
+Crops: grow at a quarter of their pace
+Answered by: the Well Keeper (a shovel at a cauldron)
+Building: the Well House
+Pokémon: Water types help
+categories: Disasters, Jobs
+related: plague.md, fire.md, jobs-land.md
+```
+
 When the rain stays away for five days, a village can fall into a **drought**. Villages in the desert, the savanna and
 the badlands know it best: there it can come any dry day, and it's likelier still while desert raiders camp nearby.
 Everyone in the village reads "A drought has come to Oakvale: the crops wilt and the wells run low." It lasts three to

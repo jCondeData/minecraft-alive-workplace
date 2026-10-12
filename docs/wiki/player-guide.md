@@ -10,7 +10,7 @@ Roadmap items: 22.10
 A website, linked from the showcase page, at https://jcondedata.github.io/minecraft-alive-workplace/player-guide/.
 It has an index and 14 pages: getting started, giving jobs, the Builder and blueprints, jobs on the land, crafters
 and smiths, porters, post and services, the Village Hall, village life, quests, festivals and markets, trade and
-caravans, defence, Pokémon partners, and the settings a server owner can change. Each page uses pictures from the
+caravans, defense, Pokémon partners, and the settings a server owner can change. Each page uses pictures from the
 nightly showcase.
 
 ## 2. How it works

@@ -10,7 +10,7 @@ A villager working at a Trade Board becomes a Pokémon Trader. Right-click one w
 opens (sneak to see their ordinary item trades instead). On the left, the day's offers, one card each: the Pokémon on
 its button with its name, level and a gold ★ if it's shiny, the ball it comes in at the card's right end, and what the
 trader wants for it ("For: any Water, Lv. 20+", or for a special request "For: a Pikachu line, Lv. 25+"). On the right,
-your party. Click a card to pick that offer; your Pokémon that won't do are greyed out. Click one that fits and it
+your party. Click a card to pick that offer; your Pokémon that won't do are grayed out. Click one that fits and it
 presses in while the screen asks you to click again; the second click makes the trade. If a trader has nothing to offer,
 the panel says "No offers today. Come back tomorrow!".
 

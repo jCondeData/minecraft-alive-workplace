@@ -1,5 +1,20 @@
 # Fire and the Firewarden
 
+```infobox
+type: Disaster
+image: https://jcondedata.github.io/minecraft-alive-workplace/fire/still-2.jpg
+caption: A roof catches and the Firewarden puts it out
+Causes: lightning, chimney sparks, burning arrows
+Spreads through: only what your builders built
+Answered by: the Firewarden (a water bucket at a grindstone)
+Douses: everything burning within two blocks
+Bucket brigade: from Journeyman
+Building: the Fire Station
+Pokémon: Water types help
+categories: Disasters, Defense, Jobs
+related: drought.md, plague.md, defence.md
+```
+
 A village built of wood can burn. Lightning in a thunderstorm can set a roof alight, a chimney spark can do it on a
 long dry spell, and a pirate gunner's burning arrows light the wooden roofs they hit. The more of the village is wood,
 the likelier it is. When a fire starts, everyone in the village (and the hall's owner, wherever they are) reads

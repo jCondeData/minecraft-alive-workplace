@@ -28,11 +28,11 @@ restartable at any tick for this reason.
 - STRUCTURE goes bottom-up so every block has something to stand on.
 - DECORATION is what needs something to hang on or stand on (torches, doors, ladders, carpets...), placed after
   the structure is up.
-- LANDSCAPE (levelling the ground round the build, dirt) never waits for materials.
+- LANDSCAPE (leveling the ground round the build, dirt) never waits for materials.
 - FOUNDATION and LANDSCAPE depend on the terrain, so a site loaded in the middle of those stages makes its list
   again from the terrain; steps already done are skipped.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).
-- "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbours
+- "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
 
 **Materials.** Each block costs an item (`MaterialRules`; some blocks you cannot hold in survival use their base
@@ -81,7 +81,7 @@ Game rules (per world, `/gamerule`):
 | `workplaceBuildersHelp` | true | Idle Builders help builds near their bench |
 | `workplaceBuilderOwnership` | true | Only the owner, friends and operators give orders |
 | `workplaceKeepWorkLoaded` | true | Builds keep running while the ordering player is online but far away |
-| `workplaceLevelGround` | 2 (0 to 8) | Blocks around a finished build that get levelled; 0: leave the ground |
+| `workplaceLevelGround` | 2 (0 to 8) | Blocks around a finished build that get leveled; 0: leave the ground |
 | `workplaceAllowUploads` | true | Anyone may upload blueprint files at a Blueprint Table (operators always can) |
 
 ## 4. Saved data
@@ -94,7 +94,7 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 - `shown_progress`: the most progress shown so far, so the bar never goes backwards after a restart. Saves from
   0.138.0 and earlier lack it; it is worked out from the cursor (B64).
 - `builder` (the Builder's id; none by default), `queued` (false), `deconstruct` (false), `repair` (false).
-- `no_level_ground` (absent means levelling is on), `bench` (the lead's bench; absent in pre-0.6 saves).
+- `no_level_ground` (absent means leveling is on), `bench` (the lead's bench; absent in pre-0.6 saves).
 - `steward`, `hall` (a Steward's build from a Village Hall; absent for a player's own), `waiting_since` (absent:
   not waiting) and `player_blocks` (0): used by Stewards (27.19).
 
@@ -128,7 +128,7 @@ claims and trip counts.
 - A builder's steps need exactly the build's material list, nothing more (B22), and it fetches from its own site's
   bench chests and keeps its bench, never swapping to another builder's (B22, B28).
 - Progress never drops after a restart (B46, B64).
-- Unfinished blocks are never claimed done: `MaterialRules.matches` ignores neighbour-dependent properties.
+- Unfinished blocks are never claimed done: `MaterialRules.matches` ignores neighbor-dependent properties.
 
 ## 7. Known limits
 

@@ -1,4 +1,21 @@
-# Threats and defence
+# Threats and defense
+
+```infobox
+type: Threats
+image: https://jcondedata.github.io/minecraft-alive-workplace/guard/still-2.jpg
+caption: A guard fights off three husks
+Guard: a sword at a grindstone
+Guard reach: monsters within 24 blocks of their post
+Guard health: twice a villager's
+Kinds of guard: Archer, Knight, Medic
+Raids: from 8 villagers with a hall
+Bandit camps: from Village rank, 80 to 100 blocks out
+Mercenaries: three for 12 emeralds, until dawn
+Rally Banner: any banner and an iron ingot (up to twelve guards)
+Patrol Map: a map and red dye
+categories: Defense
+related: jobs-crafts.md, village-hall.md, settings.md
+```
 
 A growing village draws trouble: monsters at night, and bandits who make camp nearby. Here's what comes, and how to keep
 your people safe.
@@ -37,7 +54,7 @@ flee. The chronicle remembers every raid. Never more than one every three nights
 village hears of a raid the evening before: you get a message like "Smoke on the north road: the Bandits will strike
 Oakvale tomorrow night", even when you're away (if you own the hall). The next day the gates shut and the portcullis
 drops from noon, and at dusk the guards climb to their stations and the villagers go indoors before the raiders come.
-The hall's guards icon and Defence page show the coming attack. Without a lookout, the horn is your only warning.
+The hall's guards icon and Defense page show the coming attack. Without a lookout, the horn is your only warning.
 
 **A quieter world.** Whoever runs the server can turn the **Threat Level** setting down: at 0 no raiders or bandit camps
 come at all, at 1 they come half as often. At 3 they come half again as often, and a quarter more raiders come each
@@ -63,7 +80,7 @@ three banners. The next dawn his fort goes up 110 to 150 blocks from the village
 a palisade of sharpened logs round a yard with a fire and tents, then two watchtowers and a stable, then his **keep**
 with his black war banner (a red skull) over the door.
 
-The King himself is a vindicator with a golden crown, iron armour and a diamond axe, much tougher than a chief, and a
+The King himself is a vindicator with a golden crown, iron armor and a diamond axe, much tougher than a chief, and a
 boss bar shows his health when you're within about 30 blocks. At half health he blows a goat horn and four more
 bandits rush out of the keep, but only once. His men stay inside the palisade, and the ones on the towers stay up there.
 
@@ -71,11 +88,11 @@ His **treasure chest** sits beside his throne: emeralds, gold, diamonds, an ench
 **the King's Crown**, a golden helmet with Protection III and Unbreaking III. Look for a small door in the palisade behind
 the keep: sometimes it's left open.
 
-While the fort rises, win allies (any of them helps): finish a quest at a neighbouring village and 3 of its guards come;
+While the fort rises, win allies (any of them helps): finish a quest at a neighboring village and 3 of its guards come;
 pay 24 emeralds at the hall for 6 mercenaries; or bring **Pell**, a deserter waiting by the first camp, 16 bread: he
 tells of the postern and it's left open. When the keep stands, raise your **Rally Banner** near the fort and your guards
 and allies follow you in. His raiders come every second night until he falls. Kill him within 10 days for his treasure,
-a festival, +150 reputation, the honour **Kingslayer** and 10 days without bandit camps; Pell stays on in the village.
+a festival, +150 reputation, the honor **Kingslayer** and 10 days without bandit camps; Pell stays on in the village.
 Wait too long and he takes a third of your treasury and rides off, leaving his fort a ruin.
 
 ## Leading your guards

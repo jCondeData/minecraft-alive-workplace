@@ -26,7 +26,7 @@ village is only a Hamlet, it already has that guild, or it has all the guilds it
 | Herders' Guild | Shepherds, Butchers, Ranchers | 15% faster; every herd may be 4 bigger |
 | Scholars' Guild | Scholars, Teachers, Librarians, Cartographers | 15% faster; research costs a quarter less |
 | Healers' Guild | Nurses, Clerics, Undertakers | 15% faster; the ill get well in two days (not three); nurses and undertakers look 48 blocks out |
-| Merchants' Guild | Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters | 15% faster; travellers a quarter cheaper to hire; porters carry 3 more stacks |
+| Merchants' Guild | Shopkeepers, Innkeepers, Ferrymen, Postmen, Porters | 15% faster; travelers a quarter cheaper to hire; porters carry 3 more stacks |
 | Wardens' Guild | Guards | Train on the dummies up to Master (not Expert); hit 10% harder |
 | Trainers' Guild (with Cobblemon) | Trainers, Trainer Leaders, Move Tutors, Pokémon Traders, Fossil Scientists | Lessons and revivals a fifth cheaper; trainers rank up a quarter faster |
 

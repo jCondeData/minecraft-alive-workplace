@@ -1,5 +1,21 @@
 # Porters, post and services
 
+```infobox
+type: Jobs
+image: https://jcondedata.github.io/minecraft-alive-workplace/porter/still-2.jpg
+caption: A porter carrying goods
+Jobs: Porter, Postman, Shopkeeper, Ferryman, Innkeeper, Nurse, Teacher, Scholar, Undertaker, Bard
+Storehouse: three planks over a barrel, a chest and a barrel
+Mailbox: iron nuggets round a chest, on a fence
+Shop Counter: an emerald over planks and a chest
+Travel Post: a sign over planks and a boat
+Drop Box: a barrel and a hopper
+Delivery Note: paper, a feather and an ink sac
+Fares: an emerald for every 256 blocks
+categories: Jobs, Trade
+related: jobs.md, trade-and-caravans.md, village-life.md
+```
+
 The workers who keep a village running: carrying goods, delivering mail, selling, healing, teaching and more.
 
 ## Porter and the Storehouse
@@ -59,11 +75,11 @@ arrive at the ticket's post. Many villages already have a ferry house.
 
 ## Innkeeper
 
-A **Shop Counter** and a **bed**. Each morning, while there's a free bed nearby, a **traveller** comes to stay. Travellers
+A **Shop Counter** and a **bed**. Each morning, while there's a free bed nearby, a **traveler** comes to stay. Travelers
 already know a trade: right-click one to **hire them** (8 emeralds for an Apprentice, 16 for a Journeyman, 32 for an
 Expert). They join your village at their level. If nobody hires them, they move on after two days.
 
-![A traveller checks in](https://jcondedata.github.io/minecraft-alive-workplace/innkeeper/still-4.jpg)
+![A traveler checks in](https://jcondedata.github.io/minecraft-alive-workplace/innkeeper/still-4.jpg)
 
 ## Nurse
 

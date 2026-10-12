@@ -359,9 +359,9 @@ public class ReputationGameTests implements FabricGameTest {
 				&& Reputation.honours(level, hall, third.getUUID()).isEmpty(), "honours: " + Reputation.honours(level, hall, me.getUUID()));
 			// Listed with the standing: the command and the hall's tooltip.
 			helper.assertTrue(strings(Reputation.standingLines(me)).equals(List.of("Your standing:", "Thornholm: Friend, 200 standing",
-				"  Honours: Kingslayer, Healer of Thornholm")), "the command's lines: " + strings(Reputation.standingLines(me)));
+				"  Honors: Kingslayer, Healer of Thornholm")), "the command's lines: " + strings(Reputation.standingLines(me)));
 			List<String> lore = PersonalRequestGameTests.lore(VillageHallScreen.forTest(me, hall).icon(VillageHallScreen.NAME));
-			helper.assertTrue(lore.contains("Your honours: Kingslayer, Healer of Thornholm"), "the tooltip: " + lore);
+			helper.assertTrue(lore.contains("Your honors: Kingslayer, Healer of Thornholm"), "the tooltip: " + lore);
 			helper.assertTrue(titleLines(entity).contains(ME + " was named Kingslayer") && titleLines(entity).contains(ME + " was named Healer of Thornholm"),
 				"the chronicle: " + titleLines(entity));
 			// An honour a pack names itself reads as its id until a lang file names it.
@@ -610,7 +610,7 @@ public class ReputationGameTests implements FabricGameTest {
 			Reputation.add(level, hall, fourth, 5);
 			List<String> lore = PersonalRequestGameTests.lore(VillageHallScreen.forTest(me, hall).icon(VillageHallScreen.NAME));
 			int at = lore.indexOf("Your standing: 320 (Hero)");
-			helper.assertTrue(at >= 0 && lore.subList(at, at + 6).equals(List.of("Your standing: 320 (Hero)", "Your honours: Wayfinder", "Best regarded:",
+			helper.assertTrue(at >= 0 && lore.subList(at, at + 6).equals(List.of("Your standing: 320 (Hero)", "Your honors: Wayfinder", "Best regarded:",
 				"1. " + ME + ", Hero (320)", "2. " + ME + ", Friend (60)", "3. " + ME + ", Stranger (10)")), "the tooltip: " + lore);
 			helper.assertTrue(lore.stream().noneMatch(l -> l.startsWith("4. ")), "a fourth on the list: " + lore);
 			for (String line : lore.subList(at, at + 6)) {
@@ -621,7 +621,7 @@ public class ReputationGameTests implements FabricGameTest {
 			// The command: registered, and it lists what the player holds.
 			helper.assertTrue(level.getServer().getCommands().getDispatcher().findNode(List.of("workplace", "standing")) != null, "/workplace standing isn't registered");
 			PersonalRequestGameTests.command(me, "workplace standing");
-			helper.assertTrue(strings(Reputation.standingLines(me)).equals(List.of("Your standing:", "Thornholm: Hero, 320 standing", "  Honours: Wayfinder")),
+			helper.assertTrue(strings(Reputation.standingLines(me)).equals(List.of("Your standing:", "Thornholm: Hero, 320 standing", "  Honors: Wayfinder")),
 				"the command's lines: " + strings(Reputation.standingLines(me)));
 			helper.assertTrue(strings(Reputation.standingLines(second)).equals(List.of("Your standing:", "Thornholm: Friend, 60 standing")),
 				"the second's lines: " + strings(Reputation.standingLines(second)));

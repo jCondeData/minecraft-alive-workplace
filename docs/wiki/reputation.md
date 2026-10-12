@@ -25,11 +25,11 @@ Harm costs standing. Hit a villager and you lose a little, kill one and you lose
 the title is gone. Only you are told ("You are no longer a Hero of Thornholm. They know you as a Friend now."), and
 when you win it back only you are told again: the server hears of each title once.
 
-Hover the name tag at the top of the Village Hall's screen for **your standing** there, your **honours** and the
-three players the village thinks most of. `/workplace standing` lists your standing, title and honours in every
+Hover the name tag at the top of the Village Hall's screen for **your standing** there, your **honors** and the
+three players the village thinks most of. `/workplace standing` lists your standing, title and honors in every
 village, wherever you are.
 
-**Honours** are names a story gives those who saw it through: Kingslayer, Healer of the village, Wayfinder,
+**Honors** are names a story gives those who saw it through: Kingslayer, Healer of the village, Wayfinder,
 Co-author. They are kept for good and listed with your standing.
 
 ## What friendship and titles are worth (31.12)
@@ -91,7 +91,7 @@ Town. If the Town shrinks, its Lords are Heroes again until it grows back.
 
 **Telling.** A title you reach for the first time in a village is told to every player on the server, with a sound,
 and written in that village's chronicle as a TITLE line. Reaching it again after losing it, and losing one, are told
-only to you. An honour is told to you and written in the chronicle.
+only to you. An honor is told to you and written in the chronicle.
 
 **Chat.** The server's chat decorator puts "[Hero of Thornholm]" before the text of your message. If you stand in a
 village where you hold a title, that one shows, even when you hold a better one elsewhere; anywhere else (or in a
@@ -101,7 +101,7 @@ has plain chat.
 **For quest and arc files.** Two rewards: `{"type": "reputation", "points": 30, "who": "helpers"}` and
 `{"type": "honour", "id": "wayfinder", "who": "helpers"}`. `who` is `finisher` (the default), `helpers` (everyone
 credited with progress) or, in an arc's effects, `chapter_helpers` (those of its last chapter). Negative points take
-standing away. An honour id is lower-case letters, digits and `_`; ours are named in the lang file
+standing away. An honor id is lower-case letters, digits and `_`; ours are named in the lang file
 (`honour.aliveworkplace.kingslayer`, `honour.aliveworkplace.healer`, `honour.aliveworkplace.wayfinder`,
 `honour.aliveworkplace.co_author`), and a pack names its own the same way (unnamed, it reads as its id).
 
@@ -130,7 +130,7 @@ Breaking the hall drops its standings with the rest of the village's stories.
 
 ## Items, blocks, jobs, commands
 
-- `/workplace standing`: your standing, title and honours in every village. Any player may run it.
+- `/workplace standing`: your standing, title and honors in every village. Any player may run it.
 - `/workplace proposal approve|refuse <id>`: the owner's answer to a Hero's proposed edict (the chat's buttons run it).
 - A new chronicle kind, TITLE, drawn as a golden helmet.
 - No new items, blocks or jobs.
@@ -147,7 +147,7 @@ Breaking the hall drops its standings with the rest of the village's stories.
   to the player, so a player hovering around a threshold doesn't fill everyone's chat.
 - **Standing can go below 0** (31.11, lane c): 150 for a killing with nothing to lose it from would cost nothing
   otherwise.
-- **A gift earns standing unless the villager dislikes it** (31.11, lane c): a gift they hate is no favour to
+- **A gift earns standing unless the villager dislikes it** (31.11, lane c): a gift they hate is no favor to
   the village.
 - **A festival counts once a festival day, for being in the village while it is on** (31.11, lane c), at any
   moment of it, not only at the feast.
@@ -169,7 +169,7 @@ Breaking the hall drops its standings with the rest of the village's stories.
 - The title shows after the name in chat, not before it (see Decisions). Vanilla marks a decorated chat line as
   modified by the server, as it does for every mod that decorates chat.
 - The Lord's Town rule is read when the hall's chunk is loaded; while it isn't, a Lord stays one and a Hero waits.
-- A player who is away when a title or an honour comes is not told when they come back; the server was told and
+- A player who is away when a title or an honor comes is not told when they come back; the server was told and
   the chronicle has the line.
 - Standings go with the hall when it is broken.
 - A festival called on a server where `festivals` is off gives nothing, as there is none.

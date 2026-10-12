@@ -25,11 +25,11 @@ A village that keeps watch hears of an attack **the evening before**, when the c
   source yet (ROADMAP Notes, 32.14).
 - **Told at once.** Players in the village, and the hall's owner wherever they are online, read "Smoke on the north
   road: Warlord Harl's band will strike Oakvale tomorrow night." The chronicle has it; the guards icon says "Raiders
-  tomorrow night, from the north" and the Defence page's new slot shows the attack, who and the side.
+  tomorrow night, from the north" and the Defense page's new slot shows the attack, who and the side.
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
   dropped bars over; if no attack came, the bars go up the next morning.
-- **Without a source** the horn is the only warning, as before; the Defence page says "No lookout" and What next? says
+- **Without a source** the horn is the only warning, as before; the Defense page says "No lookout" and What next? says
   to build a Lookout Tower and post a guard by it.
 - The warning and the dropped bars are saved on the hall's clock (`warned`, `braced`; a save from before has none).
 
@@ -73,7 +73,7 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 | `name` | the lang key of what its raiders are called | unnamed |
 | `captain` | `entity`, `gear`, `health` (extra health), `names` (the lang key of his list of names: `<names>.1` to `<names>.20`) and `title` (the lang key of what goes before it); see [Lairs](lairs.md) | no captain |
 | `tactics` | names such as `ram_gates`, `ladders`, `sand_ramps`, `plunder`, `hex`; one the mod doesn't know (yet) is skipped | none |
-| `lair` | `structure`, `strength`, and `growth` a day (0), `max` (the strength), `home_max` (8), `icon` (an item, for the Defence page; a campfire); a culture with a lair raids only from its lair ([Lairs](lairs.md)) | no lair |
+| `lair` | `structure`, `strength`, and `growth` a day (0), `max` (the strength), `home_max` (8), `icon` (an item, for the Defense page; a campfire); a culture with a lair raids only from its lair ([Lairs](lairs.md)) | no lair |
 | `loot` | a loot table (also read from `lair.loot`): the chests of its lair hold it | none |
 | `messages`, `chronicle` | a key prefix (`<prefix>.raid`), or the keys by event: `{"raid": "…"}`; a lair's events are on [Lairs](lairs.md) | the monsters' lines |
 
@@ -166,7 +166,7 @@ None.
 - Unchanged and passing: `RaidGameTests`, `HallSpecGameTests`, `CheckBugGameTests`.
 - No showcase scene for 32.2: nothing new to see.
 - 32.14: `WarningGameTests` (a village with an archer by its Wall Tower warned at dusk, 25500 ticks ahead, in the
-  chronicle and on the Defence page, saved and loaded, a scout's count; a village without one not told and asked for a
+  chronicle and on the Defense page, saved and loaded, a scout's count; a village without one not told and asked for a
   lookout; on the warned day the gates shut and the portcullis down at noon, the archer on the tower within 400 ticks
   of dusk and the villagers in, the siege taking the bars over; the bars up when no attack came, raids and sieges
   switched off, every new sentence). Scene `warning`.

@@ -234,6 +234,11 @@ final class RenewalScene {
 		if (step >= steps.size()) {
 			BuildSite done = site;
 			site = null;
+			if (!done.isDeconstruction() && newBox != null) {
+				// The new beds went down in this server task; vanilla files their records only in its next one, so the
+				// move-in would find no beds. A real builder finishes ticks after his last block (B94).
+				ScreenshotHarness.fileRecords(level, new BlockPos(newBox.getCenter()), 16);
+			}
 			Builders.finish(level, builder, done);
 			next(level);
 		}

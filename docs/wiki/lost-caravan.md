@@ -25,8 +25,8 @@ Roadmap items: 31.19, 31.20
   hall: they go into its store (or are set down on its hall without one) and the quest pays 8 emeralds and +50
   standing there.
 - **The ending**: the carter joins the village he reached, with no job yet: he takes a free workstation like any
-  villager and starts at Journeyman, as a hired traveller does. Everyone who helped (found the wreck, followed the
-  marks, opened the cage, walked him home) gets +150 standing in both villages and the honour Wayfinder, and +100
+  villager and starts at Journeyman, as a hired traveler does. Everyone who helped (found the wreck, followed the
+  marks, opened the cage, walked him home) gets +150 standing in both villages and the honor Wayfinder, and +100
   friendship with him; both chronicles tell it.
 - **No rescue**: after 7 days from the loss without the carter home, he finds his own way back to the sending
   village with nothing (a plain villager by its hall, no head start), the goods are gone from the chest, and the arc
@@ -62,7 +62,7 @@ Renders: [the wreck](../media/caravan-wreck.png), [the stockade](../media/raider
     loaded and isn't fit ground (`CaravanTrail.fitAround`), or there's no road, 150 blocks out the road's way (or any
     way);
   - the stockade: `{"after": "wreck", "distance": [120, 180], "away": true}`: of sixteen ways round the wreck, the one
-    furthest from the nearest village it knows (the hall, the villages it has caravan roads to, its neighbours);
+    furthest from the nearest village it knows (the hall, the villages it has caravan roads to, its neighbors);
   - the marks: one `place` with `"each"` (one template per place, keys `trail`, `trail#2` ... `trail#5`) and the rule
     `{"between": ["wreck", "stockade"]}`: evenly along the line, the ends left out.
 - **Ground** (`CaravanTrail.fits`, used by `ArcEffects.build` for these builds): dry; as flat as the bandit camps'
@@ -121,7 +121,7 @@ every objective's.
 - 31.20: the delivery takes every stack at once, when the player comes within 24 blocks of the receiving hall
   carrying them all; a part load counts nothing.
 - 31.20: the carter joins with no job and the Journeyman head start (`HEAD_START` 3), so he takes whatever free
-  workstation the village has, as a hired traveller does.
+  workstation the village has, as a hired traveler does.
 
 - 31.19: the stockade's cage gate is an iron door with a lever outside, so the captive (31.20) can't let himself out
   and the raiders don't open it; a player opens it with the lever.
@@ -140,7 +140,7 @@ every objective's.
 
 - With no fit ground within 32 blocks of its column a piece isn't built (the arc logs it and the place is skipped);
   a skipped mark still counts when the player reaches its column.
-- The banner's torn look is drawn with banner patterns (a ragged grey hem), as no banner can be cut.
+- The banner's torn look is drawn with banner patterns (a ragged gray hem), as no banner can be cut.
 
 ## Proof
 

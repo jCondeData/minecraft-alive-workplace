@@ -10,7 +10,7 @@ Roadmap items: 32.18
 ## What a player sees
 
 - **A plague breaks out.** In a Town or bigger, 3% a day, twice that when the village has more villagers than beds. A
-  coven's hex (32.11) or a traveller from far away at the inn (dressed for another land than the innkeeper's) can bring
+  coven's hex (32.11) or a traveler from far away at the inn (dressed for another land than the innkeeper's) can bring
   it too (1 in 10 where a plague could start that day). It starts with a first case: one villager falls ill with it.
   Players read "A plague has broken out in Oakvale: the ill pass it on to anyone near them."
 - **While it lasts**, each hall round a well villager within 3 blocks of an ill one catches it 1 in 5 (a quarter less
@@ -41,13 +41,13 @@ Roadmap items: 32.18
 - `threat/Plague`: the plague's own rules, for the disaster with its id only (a datapack's contagion keeps the
   engine's plain rule). `Disasters.start` gives it a first case; `Disasters.contagion` calls
   `Plague.spread` (one roll a round per well villager near the ill; the Physician's seen reach only their house, a bed
-  within 6 blocks of theirs). `carried` starts it from a hexed villager (`Covens.hexNight`) or a far traveller
+  within 6 blocks of theirs). `carried` starts it from a hexed villager (`Covens.hexNight`) or a far traveler
   (`Innkeepers.arrive`), by chance only (never in GameTests).
 - `people/Sickness`: a third illness kind, `plague`, beside the ordinary one and the hex. In the hall's round a
   plague-ill villager doesn't recover while the plague is under way (`Plague.underway`), and after two days is walked
   to their bed and put to sleep there (`Plague.toBed`); `PlagueBedMixin` stops the brain waking them while their bed
   stands. Outside a plague (switched off mid-way) a plague illness passes like an ordinary one.
-- `work/PhysicianWork`: the job's WORK behaviour; `visit` is the bedside, `ready` takes or brews the Remedy.
+- `work/PhysicianWork`: the job's WORK behavior; `visit` is the bedside, `ready` takes or brews the Remedy.
 - `people/RemedyItem`: the item (a `DrinkItem`), the use-on-villager handler and the player's cure; `Plague.cure`
   recovers the villager and sets `well_until`.
 
@@ -83,7 +83,7 @@ game). All new fields are optional, so old saves load unchanged.
 - 32.18 (lane b): "sharing their house" is a bed within 6 blocks of theirs; an ill villager with no bed, once seen,
   passes it on to no one.
 - 32.18 (lane b): "less with Medicine research" is a quarter less per level (Medicine has two levels: half at the top).
-- 32.18 (lane b): a traveller "from far away" is one dressed for another land than the innkeeper's; a carrier brings
+- 32.18 (lane b): a traveler "from far away" is one dressed for another land than the innkeeper's; a carrier brings
   the plague 1 in 10 times, and only where the plague could start that day (a Town or bigger, nothing under way or in
   the engine's 7 days of rest).
 - 32.18 (lane b): a Remedy given to a well villager still keeps them well for 10 days.
@@ -98,7 +98,7 @@ game). All new fields are optional, so old saves load unchanged.
 
 - `PlagueGameTests.illnessPassesOnInAPlague`: 20 hall rounds pass nothing on without a plague; in one (fixed
   `RandomSource`) the two villagers beside the ill catch it and the one 10 blocks off doesn't; the chance is 1 in 5.
-- `PlagueGameTests.aSeenVillagerPassesItOnLess`: the seen ill pass it to their housemate and not to a neighbour from
+- `PlagueGameTests.aSeenVillagerPassesItOnLess`: the seen ill pass it to their housemate and not to a neighbor from
   another house; the unseen pass it to the villager beside them.
 - `PlagueGameTests.theRemedyCuresWhereHoneyDoesNot`: a honey bottle (a player's hand, the Physician's chest) cures
   neither the hex nor the plague; the Remedy from a player's hand cures the hex, from the Physician's chest the plague,

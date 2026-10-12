@@ -63,6 +63,16 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 
 - [Settings](settings.md): what a server owner can switch on and off or tune, in plain words.
 
+## Blocks and items
+
+### Blocks A to Z
+
+[Apiary](apiary.md) · [Ball Workbench](ball-workbench.md) · [Blueprint Table](blueprint-table.md) · [Builder's Bench](builder-s-bench.md) · [Carpenter's Bench](carpenter-s-bench.md) · [Chopping Block](chopping-block.md) · [Compost Bin](compost-bin.md) · [Drop Box](drop-box.md) · [Feed Trough](feed-trough.md) · [Flower Stand](flower-stand.md) · [Fossil Lab](fossil-lab.md) · [Fruit Basket](fruit-basket.md) · [Grave](grave.md) · [Guard Post](guard-post.md) · [Inn Counter](inn-counter.md) · [Kitchen Stove](kitchen-stove.md) · [Leader's Podium](leader-s-podium.md) · [Mailbox](mailbox.md) · [Miner's Bench](miner-s-bench.md) · [Music Stand](music-stand.md) · [Nether Brazier](nether-brazier.md) · [Nurse Station](nurse-station.md) · [Postal Desk](postal-desk.md) · [Scholar's Desk](scholar-s-desk.md) · [Shop Counter](shop-counter.md) · [Sieve](sieve.md) · [Storehouse](storehouse.md) · [Teacher's Desk](teacher-s-desk.md) · [Tinker's Bench](tinker-s-bench.md) · [Trade Board](trade-board.md) · [Training Dummy](training-dummy.md) · [Training Post](training-post.md) · [Travel Post](travel-post.md) · [Tutor's Desk](tutor-s-desk.md) · [Undertaker's Table](undertaker-s-table.md) · [Village Hall](village-hall.md)
+
+### Items A to Z
+
+[Blank Blueprint](blank-blueprint.md) · [Blueprint](blueprint.md) · [Delivery Note](delivery-note.md) · [Explorer's Map](explorer-s-map.md) · [Field Marker](field-marker.md) · [Guide Book](guide-book.md) · [Map of the village](map-of.md) · [Patrol Map](patrol-map.md) · [Price Tag](price-tag.md) · [Quarry Marker](quarry-marker.md) · [Rally Banner](rally-banner.md) · [Scan Tool](scan-tool.md) · [Shape Planner](shape-planner.md) · [Travel Ticket](travel-ticket.md) · [Village Ledger](village-ledger.md)
+
 ## Installing
 
 Alive Workplace is a Fabric mod for Minecraft 1.21.1. It goes on the **server and on every player's game**: download the

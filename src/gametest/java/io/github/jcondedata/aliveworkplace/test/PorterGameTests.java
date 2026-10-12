@@ -85,6 +85,7 @@ public class PorterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "porter_carries")
 	public void porterCarriesTheMinersGoodsToTheStorehouse(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		helper.setDayTime(2000); // work hours: a porter carries only in his WORK schedule, and the clock is wherever the last batch left it
 		Leftovers.village(helper, 48);
 		Villager miner = miner(helper);
 		Container minersChest = helper.getBlockEntity(MINERS_CHEST);
@@ -115,6 +116,7 @@ public class PorterGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "porter_drop_box")
 	public void porterEmptiesTheDropBox(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		helper.setDayTime(2000); // work hours: a porter carries only in his WORK schedule, and the clock is wherever the last batch left it
 		BlockPos boxPos = new BlockPos(8, 2, 8);
 		helper.setBlock(boxPos, ModBlocks.DROP_BOX);
 		Container box = helper.getBlockEntity(boxPos);

@@ -24,7 +24,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The Book of Edicts (ROADMAP 30.4): the village's page of laws, opened from the hall's lectern button (slot 9) or by
  * sneak-using a Village Ledger. At the top the village's name; the second row holds its edict slots (one per rank: in
- * force with its days, free, or locked with the rank that opens it); below, every edict with its boost and cost. Click
+ * force with its days, free, or locked with the rank that opens it); in a realm the third row holds the realm's slots
+ * (33.22, {@link RealmBook}: the capital proclaims there, members read them); below, every edict with its boost and
+ * cost, at the capital the realm edicts after the village's. Click
  * an edict twice to proclaim it, once to lift one in force. Only the hall's owner, friends, operators and the village's Lords may click (a Hero proposes one to the owner, 31.12);
  * everyone else reads it and is told why. The last row is kept for the civic items and guilds: the Work Horn's state first (30.11), then the Cradle (30.12), then the village's colours (30.13), then its guilds (30.17), paged when there are more than the row holds.
  */
@@ -103,6 +105,16 @@ public final class EdictBook {
 		if (!Edicts.ENABLED) {
 			header.add(VillageHallScreen.line("message.aliveworkplace.edict.disabled", ChatFormatting.RED));
 		}
+		io.github.jcondedata.aliveworkplace.realm.RealmData.Realm realm = io.github.jcondedata.aliveworkplace.realm.Realms.ENABLED
+			? io.github.jcondedata.aliveworkplace.realm.Realms.realmOf(level, hall) : null;
+		boolean capital = realm != null && realm.capital().equals(net.minecraft.core.GlobalPos.of(level.dimension(), hall));
+		if (realm != null) { // 33.22: the realm's slots, on the row below
+			int realmSlots = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.slots(level.getServer(), realm);
+			header.add(VillageHallScreen.line(Component.translatable(capital ? "screen.aliveworkplace.realm_edict.header_capital" : "screen.aliveworkplace.realm_edict.header_member",
+				io.github.jcondedata.aliveworkplace.realm.RealmEdicts.inForce(level.getServer(), realm).size(),
+				Words.counted("message.aliveworkplace.edict.count", realmSlots, realmSlots), io.github.jcondedata.aliveworkplace.realm.Realms.title(level.getServer(), realm)),
+				ChatFormatting.LIGHT_PURPLE));
+		}
 		header.add(VillageHallScreen.line("screen.aliveworkplace.edicts.how", ChatFormatting.DARK_GRAY));
 		// The village by its own banner when it has colours (30.13).
 		VillageBanners.Colours colours = VillageBanners.of(entity);
@@ -127,6 +139,9 @@ public final class EdictBook {
 			}
 		}
 		menu.divider(2);
+		if (realm != null) {
+			RealmBook.slots(menu, level, hall, realm, capital, today, () -> refresh(menu, level, hall, back, -1, guildPage));
+		}
 
 		// Every edict, in its order.
 		int slot = FIRST_EDICT;
@@ -166,6 +181,18 @@ public final class EdictBook {
 					}
 					refresh(menu, level, hall, back, -1, guildPage);
 				});
+			}
+		}
+		// 33.22: at the capital, the realm's edicts after the village's
+		if (capital) {
+			for (Edicts.Edict edict : Edicts.realm()) {
+				if (slot >= END_EDICTS) {
+					break;
+				}
+				int here = slot++;
+				int armedHere = armed;
+				RealmBook.edict(menu, level, hall, realm, edict, here, here == armedHere, today,
+					next -> refresh(menu, level, hall, back, next, guildPage));
 			}
 		}
 		// The last row: the civic items.
@@ -430,6 +457,10 @@ public final class EdictBook {
 				return Component.translatable("screen.aliveworkplace.edicts.effect.babies_usual");
 			}
 			return joined(parts);
+		}
+		Component realmEffect = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.describe(effect); // 33.22's types
+		if (realmEffect != null) {
+			return realmEffect;
 		}
 		return Component.literal(effect.type().getPath().replace('_', ' '));
 	}

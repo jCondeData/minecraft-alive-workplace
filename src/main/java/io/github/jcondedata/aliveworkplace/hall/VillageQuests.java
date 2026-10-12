@@ -245,8 +245,24 @@ public final class VillageQuests {
 				for (Quest q : counted) {
 					entity.quests().stream().filter(o -> o.id().equals(q.id())).findFirst().ifPresent(o -> progress(level, hall, entity, o, 1, player));
 				}
+				capital(level, hall, kind, player);
 			}
 		});
+	}
+
+	/** 33.22: a monster cleared round any member counts for its realm's steps of that kind at the capital (once, the capital's own counted above). */
+	private static void capital(ServerLevel level, BlockPos hall, Kind kind, ServerPlayer player) {
+		io.github.jcondedata.aliveworkplace.realm.RealmData.Realm realm = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.on()
+			? io.github.jcondedata.aliveworkplace.realm.Realms.realmOf(level, hall) : null;
+		if (realm == null || realm.capital().pos().equals(hall) || !realm.capital().dimension().equals(level.dimension())
+			|| !level.isLoaded(realm.capital().pos()) || !(level.getBlockEntity(realm.capital().pos()) instanceof VillageHallBlockEntity capital)) {
+			return;
+		}
+		for (Quest q : List.copyOf(capital.quests())) {
+			if (q.kind() == kind && q.reform().map(r -> Reforms.realm(r.edict())).orElse(false)) {
+				progress(level, realm.capital().pos(), capital, q, 1, player);
+			}
+		}
 	}
 
 	private VillageQuests() {

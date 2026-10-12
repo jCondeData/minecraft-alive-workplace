@@ -1,0 +1,49 @@
+{
+  "scope": "realm",
+  "icon": "minecraft:iron_sword",
+  "name": {
+    "translate": "edict.aliveworkplace.levy_of_arms"
+  },
+  "description": {
+    "translate": "edict.aliveworkplace.levy_of_arms.desc"
+  },
+  "order": 22,
+  "boost": [
+    {
+      "type": "aliveworkplace:relief_reach"
+    },
+    {
+      "type": "aliveworkplace:relief_band",
+      "factor": 2
+    }
+  ],
+  "cost": [
+    {
+      "type": "aliveworkplace:member_dues",
+      "emeralds": 2
+    }
+  ],
+  "excludes": [],
+  "reform": {
+    "name": {
+      "translate": "reform.aliveworkplace.armed_levy"
+    },
+    "line": {
+      "translate": "reform.aliveworkplace.armed_levy.line"
+    },
+    "steps": [
+      {
+        "kind": "bring",
+        "item": "minecraft:iron_sword",
+        "count": 12,
+        "reward": 6
+      }
+    ],
+    "count": {
+      "what": "aliveworkplace:raids_beaten_with_relief",
+      "times": 3
+    },
+    "effects": []
+  },
+  "enabled": true
+}

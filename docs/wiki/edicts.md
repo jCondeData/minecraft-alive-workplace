@@ -10,6 +10,8 @@ Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.
 Open the hall's Book of Edicts (the lectern button on the hall's screen, or sneak-use a Village Ledger). At the top
 are the village's edict slots, one per rank: in force with its days, free, or locked with the rank that opens it.
 Below is every edict with its boost and its cost. Click an edict twice to proclaim it; click one in force to lift it.
+In a realm, the row under the village's slots holds the realm's slots, and the capital's book lists the six realm
+edicts too (see [Founding a realm](realms.md), "Realm edicts").
 Everyone in the village is told, and the chronicle notes it. Only the hall's owner, their friends and operators may
 click; everyone else can read the book and is told why a click was refused.
 

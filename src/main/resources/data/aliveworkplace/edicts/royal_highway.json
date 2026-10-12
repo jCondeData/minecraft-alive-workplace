@@ -1,0 +1,52 @@
+{
+  "scope": "realm",
+  "icon": "minecraft:stone_bricks",
+  "name": {
+    "translate": "edict.aliveworkplace.royal_highway"
+  },
+  "description": {
+    "translate": "edict.aliveworkplace.royal_highway.desc"
+  },
+  "order": 20,
+  "boost": [
+    {
+      "type": "aliveworkplace:carry",
+      "stacks": 2,
+      "between": "members"
+    },
+    {
+      "type": "aliveworkplace:caravan_speed",
+      "percent": 25
+    }
+  ],
+  "cost": [
+    {
+      "type": "aliveworkplace:realm_upkeep",
+      "emeralds": 1,
+      "per": "route"
+    }
+  ],
+  "excludes": [],
+  "reform": {
+    "name": {
+      "translate": "reform.aliveworkplace.paved_highway"
+    },
+    "line": {
+      "translate": "reform.aliveworkplace.paved_highway.line"
+    },
+    "steps": [
+      {
+        "kind": "bring",
+        "item": "minecraft:stone_bricks",
+        "count": 128,
+        "reward": 6
+      }
+    ],
+    "count": {
+      "what": "aliveworkplace:caravans_between_members",
+      "times": 12
+    },
+    "effects": []
+  },
+  "enabled": true
+}

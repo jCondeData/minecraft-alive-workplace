@@ -443,6 +443,14 @@ SCENES = [
       "what it needs (Concord I, Royal Roads II); Ashford's own research screen shows Drill II from the capital", 60,
       [("01_the_realm_tab", "The capital's research screen: the Realm tab"), ("02_the_realm_row", "The Realm row: the eight realm topics"),
        ("03_a_realm_topic", "A realm topic: its price and what it needs"), ("04_from_the_capital", "Ashford: Drill from the capital")]),
+    # Realm edicts (ROADMAP 33.22): the capital's Book of Edicts with the realm's slots; the Royal Highway proclaimed
+    S("realm_edicts", "Realm", "Realm edicts: the capital's Book of Edicts",
+      "Thornholm, capital of the Barony of Thornholm with Ashford a member, opens its Book of Edicts: the realm's row has "
+      "one free realm slot (a Barony's) and three locked ones, and the six realm edicts follow the village's; the Royal "
+      "Highway's tooltip shows its boost, its upkeep from the realm treasury, its reform and the count across the realm; "
+      "two clicks proclaim it into the realm slot, and Ashford's own book shows it in force from the capital", 60,
+      [("01_realm_slots", "The capital's book: the realm's slots"), ("02_royal_highway", "The Royal Highway: boost, cost and reform"),
+       ("03_in_force", "Proclaimed: in force in every member"), ("04_a_members_book", "Ashford's book: in force from the capital")]),
     # Relief in a raid (ROADMAP 33.17): zombies raid Ashford; the capital's and Brookfield's riders come on horseback
     S("relief", "Realm", "Relief in a raid: riders from the realm",
       "zombies raid Ashford at night; Thornholm, the capital, and Brookfield, a member with 6 guards, send three riders, who "

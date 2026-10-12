@@ -91,6 +91,11 @@ public final class Festivals {
 		return Math.floorMod(hall.asLong() * 0x9E3779B97F4A7C15L >>> 20, EVERY_DAYS);
 	}
 
+	/** The festival day's offset of the village round {@code hall}: its own, or under the Realm Festival (33.22) its capital's. */
+	public static long offset(ServerLevel level, BlockPos hall) {
+		return offset(io.github.jcondedata.aliveworkplace.realm.RealmEdicts.festivalHall(level, hall));
+	}
+
 	/** Days between the regular festivals of {@code entity}'s village: {@link #EVERY_DAYS}, or fewer under Festival Season. */
 	public static int every(VillageHallBlockEntity entity) {
 		return Math.max(1, CivicEffects.of(entity).festivalEvery(EVERY_DAYS));
@@ -118,7 +123,7 @@ public final class Festivals {
 			return entity.festivalDay();
 		}
 		int every = every(entity);
-		long day = today + Math.floorMod(offset(hall) - today, every);
+		long day = today + Math.floorMod(offset(level, hall) - today, every);
 		return day == today && over ? day + every : day;
 	}
 
@@ -126,9 +131,17 @@ public final class Festivals {
 	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, int villagers) {
 		long today = Chronicle.day(level);
 		if (ENABLED && entity.festivalDay() < today && entity.festivalMissed() < today && villagers >= MIN_VILLAGERS
-			&& Math.floorMod(today - offset(hall), every(entity)) == 0 && timeOfDay(level) < START) {
+			&& Math.floorMod(today - offset(level, hall), every(entity)) == 0 && timeOfDay(level) < START) {
 			int cost = cost(entity, villagers);
-			if (cost <= 0) {
+			int realmCost = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.festivalCost(level, hall);
+			if (realmCost > 0 && (cost > 0 && entity.treasury() < cost * 100 || !io.github.jcondedata.aliveworkplace.realm.RealmEdicts.payFestival(level, hall))) {
+				// the Realm Festival's share (33.22): the realm treasury can't pay it (or the village can't pay its own), no festival
+				if (entity.treasury() >= cost * 100) {
+					noRealmMoney(level, hall, entity, today, realmCost);
+				} else {
+					noMoney(level, hall, entity, today, cost);
+				}
+			} else if (cost <= 0) {
 				plan(level, hall, entity, today);
 			} else if (entity.treasury() >= cost * 100) {
 				entity.setTreasury(entity.treasury() - cost * 100);
@@ -199,6 +212,18 @@ public final class Festivals {
 		}
 	}
 
+	/** The realm treasury can't pay its share of the festival due {@code today} (the Realm Festival, 33.22): none, the village is disappointed. */
+	static void noRealmMoney(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long today, int cost) {
+		entity.setFestivalMissed(today);
+		Component name = VillageHalls.name(level, hall);
+		Chronicle.record(level, hall, Chronicle.Kind.FESTIVAL,
+			io.github.jcondedata.aliveworkplace.work.Words.counted("chronicle.aliveworkplace.festival_no_realm_money", cost, cost));
+		for (ServerPlayer player : nearby(level, hall)) {
+			Chat.chat(player, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.festival.no_realm_money", cost, name, cost)
+				.withStyle(ChatFormatting.YELLOW));
+		}
+	}
+
 	private static List<ServerPlayer> nearby(ServerLevel level, BlockPos hall) {
 		return level.getPlayers(p -> p.blockPosition().distSqr(hall) <= (double) (VillageHalls.RADIUS + 32) * (VillageHalls.RADIUS + 32));
 	}
@@ -252,6 +277,7 @@ public final class Festivals {
 	public static void feast(ServerLevel level, BlockPos hall) {
 		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
 		io.github.jcondedata.aliveworkplace.story.ReformStories.onFeast(level, hall); // a grand festival's day (31.22)
+		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.festivalHeld(level, hall, Chronicle.day(level)); // a realm festival (33.22)
 		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
 			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		long today = Chronicle.day(level);
@@ -297,6 +323,7 @@ public final class Festivals {
 		if (day != null && io.github.jcondedata.aliveworkplace.story.ReformStories.grandFestival(level, villager, day)) {
 			days++; // a grand festival's good mood lasts a day longer (31.22)
 		}
+		days = Math.max(days, io.github.jcondedata.aliveworkplace.realm.RealmEdicts.festivalMoodDays(level, villager)); // the Realm Festival's 3 days (33.22)
 		return day != null && Chronicle.day(level) - day <= days;
 	}
 

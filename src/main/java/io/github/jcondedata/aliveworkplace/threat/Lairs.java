@@ -289,6 +289,9 @@ public final class Lairs {
 		BlockPos site = spec.flatMap(Culture.Lair::sea).isEmpty()
 			? site(level, hall, spec.map(Culture.Lair::near).orElse(NEAR), spec.map(Culture.Lair::far).orElse(FAR), random, spec.map(Culture.Lair::wet).orElse(false))
 			: ship == null ? null : Ships.site(level, hall, spec.get().sea().get(), ship, random);
+		if (site != null && culture.equals(Threats.BANDITS) && io.github.jcondedata.aliveworkplace.realm.RealmEdicts.peaceNear(level, site)) {
+			return null; // the Crown's Peace (33.22): no bandit camp near a member
+		}
 		return site == null ? null : found(level, hall, site, culture);
 	}
 

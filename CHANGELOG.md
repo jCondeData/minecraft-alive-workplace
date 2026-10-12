@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Realm edicts, for 1.7** (33.22, off until 1.7 is finished): the capital's Book of Edicts gets a row of realm slots
+  (1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II) and six realm edicts, in
+  force in every member and paid from the realm treasury: the Royal Highway (faster, fuller caravans between members),
+  the Common Market (one board at the members' average price, no spread for the realm's people), the Levy of Arms
+  (relief from every member in bands twice as big), the Realm Festival (one festival day for the realm, three days of
+  good mood), the Crown's Peace (no feuds on members, no bandit camps near them) and the Royal Charter (colonies from
+  Town rank, half the wait). Each has its reform: a quest at the capital and a count across the realm, after which the
+  boost stays and the cost goes for good.
 - **Legends of the realm, for 1.7** (33.23): the Founder now leads colonies. The village he lives in may found them from
   Town rank, sends four settlers instead of two and waits half as long between them; its colonies are "founded with the
   Founder's blessing" in both chronicles and his statue stands beside each colony's camp. The Merchant Prince's board

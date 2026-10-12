@@ -3647,7 +3647,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   Map's does. Done when:
   - GameTests check where the banners are and their colours, and that a route's dots lie between its two halls;
   - showcase scene `realm_map` (the map in hand and in an item frame).
-- [ ] **33.22** **Realm edicts** (needs M30's edict engine, the Book of Edicts). The capital's Book of Edicts gets
+- [x] **33.22** (review: pending 2026-10-12) **Realm edicts** (needs M30's edict engine, the Book of Edicts). The capital's Book of Edicts gets
   realm slots: 1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II. A realm
   edict is in force in every member, lasts at least 3 days like any edict, and is paid from the realm treasury where
   it costs money. Six realm edicts, as data in M30's format (`scope: realm`), each with its reform (the capital's
@@ -4486,6 +4486,17 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-12 (33.22, decisions; lane a; details in `docs/wiki/realms.md`, "Realm edicts"): (1) "no spread on trades
+  between members" is read as: at any member's board, the realm's people (members' owners, their friends, operators)
+  buy at the board's own price, strangers pay the 10%; (2) the Levy of Arms' dues are their own effect type
+  (`member_dues`, out of each member's treasury at its morning takings, as far as the realm treasury has room), not
+  `realm_upkeep`, which the realm pays (the Royal Highway's emerald a route); (3) an upkeep the realm treasury can't pay
+  makes that edict lapse at the dawn round; a Realm Festival share it can't pay means no festival (the village is
+  disappointed), a Royal Charter share it can't pay refuses the charter; (4) a reform's count only runs while its
+  edict is in force and starts again when it is proclaimed again; days without a raid count from the proclamation or
+  the last raid on a loaded member; (5) no switch of its own: off with `realms` or `villageEdicts`; (6) the Levy of
+  Arms' "wherever it is" lifts the 1,024-block limit, but an unloaded member still counts no guards, so sends no band.
 
 - 2026-10-11 (33.21, decisions; lane a; details in `docs/wiki/realm-map.md`, Decisions): (1) every member's banner is in
   the realm's colour (its arms' base, white without arms), colonies that are members too (they join by themselves),

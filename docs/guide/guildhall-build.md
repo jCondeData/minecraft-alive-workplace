@@ -14,7 +14,7 @@ categories: Builds, Guilds
 related: guilds.md, guild-charter.md, builder.md
 ```
 
-A two-storey guild hall: stone below, a timber-framed plaster storey above, under a slate roof, with a guild banner
+A two-story guild hall: stone below, a timber-framed plaster story above, under a slate roof, with a guild banner
 either side of the door. Inside, a long table with a high seat at each end, the guild's charter framed over the hearth
 and an archive upstairs.
 

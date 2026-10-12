@@ -20,7 +20,7 @@ fields all day.
 
 ## What it looks like
 
-A stone platform three blocks high with steps up the front. In its middle a kerbed well shaft goes three deep down to
+A stone platform three blocks high with steps up the front. In its middle a curbed well shaft goes three deep down to
 real water, under a spruce frame with a lantern on a chain. The Well Keeper's cauldron sits in a back corner, a wooden
 trough of water runs along the back, and benches stand either side, all under a dark oak hip roof on four spruce posts.
 

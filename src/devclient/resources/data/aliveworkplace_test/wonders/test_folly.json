@@ -3,7 +3,7 @@
   "description": "wonder.aliveworkplace_test.test_folly.description",
   "icon": "minecraft:stone_bricks",
   "enabled": true,
-  "crew": 4,
+  "crew": 12,
   "requirements": [
     {
       "type": "rank_at_least",

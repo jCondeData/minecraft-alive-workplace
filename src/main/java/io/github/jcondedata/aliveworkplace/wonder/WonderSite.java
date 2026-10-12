@@ -14,15 +14,17 @@ import net.minecraft.resources.ResourceLocation;
  * One Wonder going up or finished in a village (M35), saved in {@link WonderManager}: its id, which Wonder, the
  * village's hall, the player who started it, the current stage (1 up; past the last stage once finished) and the days
  * it was begun and finished ({@code Chronicle.day}). 35.2 keeps what the caps and {@code /workplace wonders} read; 35.4
- * adds the placement, the Foundation Stone and the build sites of the current stage's parts. Every field but the first three has a default.
+ * adds the placement, the Foundation Stone, the build sites of the current stage's parts and the builder it was handed to
+ * (who takes on each next stage: a finished part's site is gone, and with it who built it): the crew's lead. 35.5 adds
+ * whether every builder of the village was called to its crew ({@code called}). Every field but the first three has a default.
  */
 public record WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Optional<UUID> owner, String ownerName, int stage,
 						 long begun, Optional<Long> finished, Optional<BlueprintData.Placement> placement, Optional<BlockPos> stone,
-						 List<UUID> parts) {
-	/** A site as 35.2 recorded it: no placement, no stone, no parts. */
+						 List<UUID> parts, Optional<UUID> builder, boolean called) {
+	/** A site as 35.2 recorded it: no placement, no stone, no parts, no builder. */
 	public WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Optional<UUID> owner, String ownerName, int stage, long begun,
 					  Optional<Long> finished) {
-		this(id, wonder, hall, owner, ownerName, stage, begun, finished, Optional.empty(), Optional.empty(), List.of());
+		this(id, wonder, hall, owner, ownerName, stage, begun, finished, Optional.empty(), Optional.empty(), List.of(), Optional.empty(), false);
 	}
 
 	public static final Codec<WonderSite> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -36,7 +38,9 @@ public record WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Option
 		Codec.LONG.optionalFieldOf("finished").forGetter(WonderSite::finished),
 		BlueprintData.Placement.CODEC.optionalFieldOf("placement").forGetter(WonderSite::placement),
 		BlockPos.CODEC.optionalFieldOf("stone").forGetter(WonderSite::stone),
-		UUIDUtil.CODEC.listOf().optionalFieldOf("parts", List.of()).forGetter(WonderSite::parts)
+		UUIDUtil.CODEC.listOf().optionalFieldOf("parts", List.of()).forGetter(WonderSite::parts),
+		UUIDUtil.CODEC.optionalFieldOf("builder").forGetter(WonderSite::builder),
+		Codec.BOOL.optionalFieldOf("called", false).forGetter(WonderSite::called)
 	).apply(i, WonderSite::new));
 
 	/** Whether it's finished. */
@@ -50,18 +54,26 @@ public record WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Option
 	}
 
 	WonderSite atStage(int next) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, next, begun, finished, placement, stone, parts);
+		return new WonderSite(id, wonder, hall, owner, ownerName, next, begun, finished, placement, stone, parts, builder, called);
 	}
 
 	WonderSite finishedOn(long day) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, Optional.of(day), placement, stone, parts);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, Optional.of(day), placement, stone, parts, builder, called);
 	}
 
 	WonderSite placedAt(BlueprintData.Placement where, BlockPos stonePos) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, Optional.of(where), Optional.of(stonePos.immutable()), parts);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, Optional.of(where), Optional.of(stonePos.immutable()), parts, builder, called);
+	}
+
+	WonderSite withBuilder(UUID who) {
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, Optional.of(who), called);
+	}
+
+	WonderSite withCalled(boolean call) {
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, call);
 	}
 
 	WonderSite withParts(List<UUID> sites) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, List.copyOf(sites));
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, List.copyOf(sites), builder, called);
 	}
 }

@@ -307,11 +307,13 @@ public final class MaterialRules {
 
 	/**
 	 * Blocks the builder must not break while clearing (they would lose someone's stuff or can't be broken). A campfire
-	 * (it drops what's cooking on it) and a bell hold nothing: an upgrade can move the smoke up a taller chimney.
+	 * (it drops what's cooking on it) and a bell hold nothing: an upgrade can move the smoke up a taller chimney. A
+	 * Wonder's Foundation Stone stays too (its last stage levels the ground round it).
 	 */
 	public static boolean isProtected(BlockState state, float destroySpeed) {
 		Block block = state.getBlock();
-		return destroySpeed < 0 || state.hasBlockEntity() && !(block instanceof SignBlock) && !(block instanceof AbstractBannerBlock)
+		return destroySpeed < 0 || block == io.github.jcondedata.aliveworkplace.registry.ModBlocks.FOUNDATION_STONE // a Wonder's (35.4)
+			|| state.hasBlockEntity() && !(block instanceof SignBlock) && !(block instanceof AbstractBannerBlock)
 			&& !(block instanceof AbstractSkullBlock) && !(block instanceof BedBlock) && !(block instanceof net.minecraft.world.level.block.CampfireBlock)
 			&& !(block instanceof BellBlock);
 	}

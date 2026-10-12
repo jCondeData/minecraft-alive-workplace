@@ -778,6 +778,16 @@ SCENES = [
     S("wonders_page", "Wonders", "The Wonders page and the Wonder Plan",
       "the hall's Wonders page showed the Test Folly's card with every requirement ticked and the cap; Draw up the plans took 32 emeralds and gave a Wonder Plan, which placed north of the hall shows the whole tower as see-through blocks", 30,
       [("01_wonders_page", "The Wonders page: the folly's card, every line ticked, the cap"), ("02_wonder_plan_preview", "The Wonder Plan in hand: the whole tower see-through")]),
+    # The Foundation Stone (ROADMAP 35.4): the folly's plan handed to the builder, the stone going down, stage I starting
+    S("wonder_site", "Wonders", "The Foundation Stone: a Wonder begins",
+      "a Wonder Plan placed north of the hall was handed to the village's builder: the Foundation Stone (carved stone, brass plaque) went down at the folly's front corner, the start was announced in chat, and stage I, the Ground Storey, began from the chests by the stone; right-clicking the stone told the stage, its progress and its material list", 40,
+      [("01_wonder_site_plan", "The plan placed: the whole folly see-through, the builder at his bench"), ("02_wonder_site_stone", "Handed over: the Foundation Stone at the front corner, the chests beside it"),
+       ("03_wonder_site_status", "Stage I under way, and the stone's status in chat")]),
+    # Crews (ROADMAP 35.5): ten builders on the folly, each on a column of its own
+    S("wonder_crew", "Wonders", "Crews: every builder on one Wonder",
+      "ten builders of the village raised the folly together: the plan handed to one, every builder called from the stone, and each took a column of its own, never more than two layers above the lowest unfinished one; the stone named the lead and the crew of ten", 60,
+      [("01_wonder_crew_gathering", "Every builder called: the crew gathers at the folly"), ("02_wonder_crew_columns", "Ten builders, each on a column of its own"),
+       ("03_wonder_crew_status", "The stone names the lead and the crew of ten")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
       "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,

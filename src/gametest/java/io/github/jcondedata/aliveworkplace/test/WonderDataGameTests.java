@@ -116,7 +116,7 @@ public class WonderDataGameTests implements FabricGameTest {
 		Wonder folly = Wonders.loaded().get(FOLLY);
 		helper.assertTrue(folly != null, "the test folly isn't loaded: " + Wonders.loaded().keySet() + ", skipped: " + Wonders.problems());
 		helper.assertTrue(folly.name().equals("wonder.aliveworkplace_test.test_folly.name") && folly.icon().toString().equals("minecraft:stone_bricks")
-			&& folly.crew() == 4 && folly.enabled(), "name, icon, crew: " + folly);
+			&& folly.crew() == 12 && folly.enabled(), "name, icon, crew: " + folly);
 		helper.assertTrue(folly.stages().size() == 3 && folly.stages().get(0).parts().get(0).part().toString().equals("aliveworkplace_test:wonder/test_folly/stage_1_0"),
 			"stages: " + folly.stages());
 		Wonder.Stage two = folly.stages().get(1);

@@ -21,6 +21,10 @@ Trade | https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-
 Defense | https://jcondedata.github.io/minecraft-alive-workplace/guard/still-2.jpg
 Disasters | https://jcondedata.github.io/minecraft-alive-workplace/fire/still-2.jpg
 Pokémon | https://jcondedata.github.io/minecraft-alive-workplace/battle/still-2.jpg
+Story arcs | https://jcondedata.github.io/minecraft-alive-workplace/story_arc/still-2.jpg
+Edicts | https://jcondedata.github.io/minecraft-alive-workplace/edicts/still-1.jpg
+Classes | https://jcondedata.github.io/minecraft-alive-workplace/classes/still-2.jpg
+Wonders | https://jcondedata.github.io/minecraft-alive-workplace/wonders_page/still-1.jpg
 Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1.jpg
 ```
 
@@ -50,9 +54,32 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Festivals and market days](festivals-and-markets.md): feasts, fireworks, the calendar and traveling traders.
 - [Trade and caravans](trade-and-caravans.md): villages that supply each other, and selling from your own shop.
 - [Threats and defense](defence.md): guards, raids, bandit camps, walls, and how to fight back.
+- [Lairs and sieges](lairs-and-sieges.md): raiders' camps and their named captains, scouts, and sieges at the walls.
 - [Drought and the Well Keeper](drought.md): when the rain stays away, and the villager who carries water to your fields.
 - [Plague and the Physician](plague.md): when illness spreads through a town, the doctor who goes house to house, and the Remedy.
 - [Fire and the Firewarden](fire.md): how a wooden village catches fire, and the villager who puts it out.
+
+## Stories, laws, classes and Wonders
+
+- [Story arcs](story-arcs.md): the tales a village lives through, chapter by chapter.
+- [The Bandit King](the-bandit-king.md), [The Sickness](the-sickness.md), [The Lost Caravan](the-lost-caravan.md) and
+  [The Professor's Thesis](the-professors-thesis.md): the big stories.
+- [Edicts](edicts.md): laws with a boost and a cost: [Long Shifts](long-shifts.md), [Free Bread](free-bread.md),
+  [Large Families](large-families.md), [Open Gates](open-gates.md), [Festival Season](festival-season.md),
+  [Tithe](tithe.md), [Curfew](curfew.md) and [Conscription](conscription.md).
+- [The Shift Bell](the-shift-bell.md), [The Common Granary](the-common-granary.md), [The Midwives](the-midwives.md),
+  [The Watchful Gate](the-watchful-gate.md), [The Festival Fund](the-festival-fund.md),
+  [The Fair Ledger](the-fair-ledger.md), [The Lamplighters](the-lamplighters.md) and
+  [The Militia Drill](the-militia-drill.md): the stories that reform the edicts.
+- [Royal Highway](royal-highway.md), [Common Market](common-market.md), [Levy of Arms](levy-of-arms.md),
+  [Realm Festival](realm-festival.md), [Crown's Peace](crowns-peace.md) and [Royal Charter](royal-charter.md): the
+  edicts a realm's capital proclaims for every member.
+- [Classes](classes.md): [Peasant](peasant.md), [Artisan](artisan.md), [Burgher](burgher.md) and [Noble](noble.md),
+  what each household needs to rise, and the luxuries they live on.
+- [Wonders](wonders.md): a village's life's work: the [Great Cathedral](great-cathedral.md),
+  [Lighthouse](lighthouse.md), [Great Library](great-library.md), [Great Wall](great-wall.md),
+  [Observatory](observatory.md), [Hanging Gardens](hanging-gardens.md), [Colossus](colossus.md) and
+  [Stadium](stadium.md).
 
 ## With Cobblemon
 

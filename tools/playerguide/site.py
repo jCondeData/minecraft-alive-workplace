@@ -30,7 +30,12 @@ FOLDER = "player-guide"
 WIKI = "Alive Workplace Wiki"
 
 # Infobox keys with a meaning of their own; every other "Key: value" line is a row of the infobox's table.
-RESERVED = ("title", "image", "caption", "type", "categories", "related")
+RESERVED = ("title", "image", "caption", "type", "categories", "related", "expansion")
+
+# The pages left out of the published site because their expansion is still switched off ("expansion: M32" in the
+# infobox; Expansions.java holds the switches). Links to them from published pages render as plain text, and a list
+# item that starts with such a link (the index's lists) is left out. Site() fills it before reading the pages.
+HIDDEN = set()
 
 CSS = """
 :root{--bg:#eef0ea;--card:#fffefb;--text:#26231e;--muted:#6b6257;--accent:#3f6f2c;--accent2:#7a5a1e;--line:#d9d3c4;
@@ -155,6 +160,8 @@ def inline(text):
 
         def link(m):
             href = m.group(2)
+            if href.split("#")[0] in HIDDEN:
+                return m.group(1)
             if href.endswith(".md") or ".md#" in href:
                 href = href.replace(".md", ".html")
             return f'<a href="{html.escape(href)}">{m.group(1)}</a>'
@@ -264,6 +271,9 @@ def render(md):
                 else:
                     break
                 i += 1
+            items = [it for it in items if not hidden_item(it)]
+            if not items:
+                continue
             out.append(f"<{tag}>" + "".join(f"<li>{inline(it)}</li>" for it in items) + f"</{tag}>")
             continue
         para = []
@@ -274,7 +284,38 @@ def render(md):
         if not first:
             first = plain(text)
         out.append(f"<p>{inline(text)}</p>")
-    return title, "\n".join(out), heads, first
+    # A section left empty by gated pages (only links to them) goes too.
+    kept = []
+    for n, chunk in enumerate(out):
+        if chunk.startswith("<h2") and (n + 1 == len(out) or out[n + 1].startswith("<h2")):
+            hid = re.match(r'<h2 id="([^"]*)"', chunk).group(1)
+            heads = [h for h in heads if h[0] != hid]
+            continue
+        kept.append(chunk)
+    return title, "\n".join(kept), heads, first
+
+
+def hidden_item(item):
+    """A list item that starts with a link to a gated page (the index's "- [Drought](drought.md): ..." lines)."""
+    m = re.match(r"^\s*\[[^\]]+\]\(([^)\s#]+)", item)
+    return bool(m and m.group(1) in HIDDEN)
+
+
+def expansions(info):
+    """The milestones an infobox's "expansion:" names ("M32", or "M32, M34"), as numbers ("32")."""
+    return [re.sub(r"^M", "", e, flags=re.I) for e in csv(info.get("expansion"))]
+
+
+def gated_pages(off=None):
+    """The guide's pages whose expansion is still switched off: they aren't published until its switch flips."""
+    off = off_milestones() if off is None else off
+    out = set()
+    for name in os.listdir(GUIDE):
+        if name.endswith(".md") and name != "README.md":
+            _, info, _ = blocks(open(os.path.join(GUIDE, name), encoding="utf-8").read())
+            if set(expansions(info)) & set(off):
+                out.add(name)
+    return out
 
 
 class Page:
@@ -291,14 +332,14 @@ class Page:
 
 
 def page_order():
-    """The pages in the order index.md links them, index first."""
+    """The published pages in the order index.md links them, index first (gated pages left out)."""
     index = open(os.path.join(GUIDE, "index.md"), encoding="utf-8").read()
     order = ["index.md"]
     for target in re.findall(r"\]\(([\w-]+\.md)\)", index):
-        if target not in order and os.path.exists(os.path.join(GUIDE, target)):
+        if target not in order and target not in HIDDEN and os.path.exists(os.path.join(GUIDE, target)):
             order.append(target)
     for name in sorted(os.listdir(GUIDE)):
-        if name.endswith(".md") and name != "README.md" and name not in order:
+        if name.endswith(".md") and name != "README.md" and name not in order and name not in HIDDEN:
             order.append(name)
     return order
 
@@ -378,7 +419,11 @@ def news(limit=8, releases=12):
 
 
 class Site:
-    def __init__(self):
+    def __init__(self, off=None):
+        """off: the switched-off milestones ({"32", ...}); by default Expansions.java's."""
+        HIDDEN.clear()
+        HIDDEN.update(gated_pages(off))
+        self.hidden = set(HIDDEN)
         self.order = page_order()
         self.pages = {n: Page(n) for n in self.order}
         self.index = self.pages["index.md"]
@@ -572,7 +617,8 @@ def main():
     args = ap.parse_args()
     s = Site()
     n = s.write(args.site)
-    print(f"guide: {n} pages ({len(s.articles)} articles, {len(s.cats)} categories) in {os.path.join(args.site, FOLDER)}")
+    print(f"guide: {n} pages ({len(s.articles)} articles, {len(s.cats)} categories) in {os.path.join(args.site, FOLDER)}"
+          f"; {len(s.hidden)} pages wait for their expansion's switch")
     return 0
 
 

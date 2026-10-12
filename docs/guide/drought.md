@@ -2,6 +2,7 @@
 
 ```infobox
 type: Disaster
+expansion: M32
 image: https://jcondedata.github.io/minecraft-alive-workplace/drought/still-2.jpg
 caption: The dry fields and the Well Keeper's buckets
 Comes after: five days without rain

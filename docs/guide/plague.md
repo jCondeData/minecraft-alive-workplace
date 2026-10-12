@@ -2,6 +2,7 @@
 
 ```infobox
 type: Disaster
+expansion: M32
 image: https://jcondedata.github.io/minecraft-alive-workplace/plague/anim.gif
 caption: The Physician going house to house
 Strikes: a Town or a City

@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Great Wall's design, for 2.0** (35.15, nothing to start in game until Wonders is finished): the fifth Wonder's
+  build, a stone wall 97 long, 7 thick and 12 high on a battered deepslate plinth (about 10,800 blocks), placed like the
+  other walls with its stairs on the village side: a crenellated walk with braziers, four towers under hipped spruce roofs
+  (stairs inside, a guard's grindstone, an alcove on the walk for a sentry golem) and at the centre the Great Gate, a
+  gatehouse with an iron-bar portcullis over a gate of fence gates and a bretèche over it. It rises in four stages (the
+  Great Gate, the West Run, the East Run, the Walk and the Towers' Crowns), each with its goods.
 - **Legends of the realm, for 1.7** (33.23): the Founder now leads colonies. The village he lives in may found them from
   Town rank, sends four settlers instead of two and waits half as long between them; its colonies are "founded with the
   Founder's blessing" in both chronicles and his statue stands beside each colony's camp. The Merchant Prince's board

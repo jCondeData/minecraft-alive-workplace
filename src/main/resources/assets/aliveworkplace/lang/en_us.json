@@ -6164,5 +6164,11 @@
   "wonder.aliveworkplace.observatory.stage.1": "The Terrace and the Courtyard",
   "wonder.aliveworkplace.observatory.stage.2": "The Tower",
   "wonder.aliveworkplace.observatory.stage.3": "The Dome",
-  "wonder.aliveworkplace.observatory.stage.4": "The Great Telescope and the Orrery"
+  "wonder.aliveworkplace.observatory.stage.4": "The Great Telescope and the Orrery",
+  "wonder.aliveworkplace.great_wall.name": "Great Wall",
+  "wonder.aliveworkplace.great_wall.description": "A curtain of stone 97 long and 12 high on a battered plinth, with a crenellated walk, four towers and the Great Gate, its portcullis over a gate of fence gates. No raid gathers behind it, and iron golem sentries keep its walk.",
+  "wonder.aliveworkplace.great_wall.stage.1": "The Great Gate",
+  "wonder.aliveworkplace.great_wall.stage.2": "The West Run",
+  "wonder.aliveworkplace.great_wall.stage.3": "The East Run",
+  "wonder.aliveworkplace.great_wall.stage.4": "The Walk and the Towers' Crowns"
 }

@@ -868,7 +868,7 @@ def ray(y, d):
     return list(reversed(out))
 
 
-def band(y):
+def l_band(y):
     for lo, hi, colour in L_BANDS:
         if lo <= y <= hi:
             return colour
@@ -1053,7 +1053,7 @@ def stage_l1(b):
 
 # --- stage II: the tower -------------------------------------------------------------------------------------------------
 def tower_layer(b, y):
-    colour = band(y)
+    colour = l_band(y)
     for x, z in tower_wall(y):
         if colour:
             b.set(x, y, z, f"{colour}_terracotta")
@@ -2473,6 +2473,559 @@ def observatory_section(cut_x=OC[0]):
     return out
 
 
+# --- the Great Wall (35.15) ----------------------------------------------------------------------------------------------
+# The Great Wall, 97 x 25 x 15. It is placed like the other walls: the player stands in the village and places it facing
+# out, so its front (z = 0) is the village side, with its stairs, and the field is behind it (z 14). Design on paper:
+# - A curtain 7 thick (z 3-9) and 12 high: solid masonry to y 8, the walk paved on it at 9 (a player stands at 10), a
+#   breastwork corbelled out one over the field (z 10) on a row of upside-down stairs, its merlons to y 11; a low parapet
+#   of stone brick wall on the village side, with braziers (campfires on chiseled stone) along it.
+# - Five towers' worth of masses in a symmetric row (the east half mirrors the west about x = 48): the end towers (x 2-10
+#   and 86-94), the quarter towers (20-28 and 68-76), 9 x 9 (z 3-11, flush with the curtain on the village side and two
+#   out on the field side), 18 high (y 0-17) under hipped spruce roofs (an 11 x 11 overhang, eaves of upside-down
+#   stairs), and the Great Gate's gatehouse in the middle (x 40-56, 17 wide, z 2-12), as high, under a long hipped roof:
+#   the fifth tower, between the quarter towers.
+# - Each tower: walls two thick to the walk, a door from the village under a hood with lanterns on posts, a stair round
+#   the inside up to the walk-level room (doors onto the walk, a guard's grindstone, a barrel, a window to the field, and
+#   on the side facing the gate an alcove 3 wide and 3 high where a sentry golem stands, open to the walk), a stair on up
+#   to the top room (windows on three sides) under an attic floor; a cornice at 13, arrow slits low down, a banner to the
+#   field (and one to the side at the ends).
+# - The Great Gate: a gateway 5 wide (x 46-50) through the gatehouse, paved, vaulted (y 1-6), a keystone over each mouth,
+#   lanterns in the vault; across it spruce fence gates two high under a portcullis of iron bars, which runs up a slot
+#   into the hall and hangs from a windlass beam on a post. Either side a guardroom with its own door and a stair round
+#   its walls; the hall at the walk with doors onto it; the top room with a door onto a bretèche over the gate (a gallery
+#   on two courses of corbels, crenellated). Braziers on posts at both mouths, banners either side of them.
+# - The plinth: deepslate bricks, battered on the field side (a full course and a step out at y 0, a step at 1, two
+#   blocks out from every face), a step of stairs along the village side. A buttress every four or five blocks on the
+#   field side of the runs, and on the village side of the outer runs; on the inner runs (x 29-39 and 57-67) a stair of
+#   ten steps up the village side to a landing by the gatehouse, behind a cobblestone wall.
+# - Palette (60/30/10): stone bricks to the field and in the towers (mossy and cracked ones on the low courses), cobblestone
+#   to the village and at the heart; a deepslate brick plinth; spruce roofs, floors and doors; iron bars and chiseled stone
+#   as accents. Panes.
+# - Stages, each ending tidy: I the Great Gate (the gatehouse whole, its plinth, gate and roof); II the West Run (the west
+#   runs to under the walk, the west towers to their top room's floor, the west stair, their plinth); III the East Run
+#   (the same, mirrored); IV the Walk and the Towers' Crowns (the walk, breastwork, merlons, parapet and braziers on every
+#   run; the towers' top rooms, cornices, roofs and banners).
+WW, WH, WD = 97, 25, 15
+W_MID = 48  # the Great Gate's middle: the east half is the west half mirrored about it
+W_IN, W_OUT = 3, 9  # the curtain's inner and outer faces (z); the village is on the z = 0 side, and its stairs
+W_LIP = 10  # the corbelled breastwork (z)
+W_WALK = 9  # the walk's paving (y): a player stands on it at 10, the merlons' tops are at 12
+W_TOWERS = (2, 20)  # the west half's towers' west x, each 9 x 9 (z 3-11); the east half's mirror them
+W_TZ = (3, 11)
+W_GATE = (40, 56)  # the gatehouse, x 40-56 (17 wide), z 2-12
+W_GZ = (2, 12)
+W_ARCH = (46, 50)  # the gateway
+W_RUNS = ((11, 19), (29, 39))  # the west half's runs of curtain
+W_FLIGHT = 29  # the stair up from the village: steps x 29-38, a landing at 39 (z 0-2)
+W_BRAZIERS = (12, 15, 18, 30, 33, 36)  # on the inner parapet (the east half's mirror them)
+W_PORTCULLIS = 10  # the portcullis's z in the gateway
+W_TOP = 17  # the last course of the towers and the gatehouse (their attic floor); the roofs from 18
+
+
+class Courses(Mix):
+    """The wall's stone bricks by course: mossy and cracked in clusters on the low courses, now and then cracked above."""
+
+    LOW = Mix((5, "stone_bricks"), (3, "mossy_stone_bricks"), (2, "cracked_stone_bricks"), seed=51)
+    MID = Mix((12, "stone_bricks"), (1, "mossy_stone_bricks"), (2, "cracked_stone_bricks"), seed=52)
+    HIGH = Mix((20, "stone_bricks"), (1, "cracked_stone_bricks"), seed=53)
+
+    def __init__(self):
+        super().__init__((1, "stone_bricks"))
+
+    def at(self, x, y, z):
+        return (self.LOW if y <= 3 else self.MID if y <= 6 else self.HIGH).at(x, y, z)
+
+
+class Rubble(Mix):
+    """The village side's cobblestone, with stone bricks through it and moss low down."""
+
+    LOW = Mix((6, "cobblestone"), (3, "mossy_cobblestone"), (2, "stone_bricks"), seed=54)
+    HIGH = Mix((8, "cobblestone"), (3, "stone_bricks"), (1, "mossy_cobblestone"), seed=55)
+
+    def __init__(self):
+        super().__init__((1, "cobblestone"))
+
+    def at(self, x, y, z):
+        return (self.LOW if y <= 3 else self.HIGH).at(x, y, z)
+
+
+W_FACE = Courses()
+W_RUBBLE = Rubble()
+W_PLINTH = Mix((8, "deepslate_bricks"), (2, "cracked_deepslate_bricks"), seed=56)
+W_PAVING = Mix((5, "stone_bricks"), (2, "cobblestone"), (1, "cracked_stone_bricks"), seed=57)
+W_BANNER = [("white", "minecraft:triangles_top"), ("light_gray", "minecraft:stripe_bottom"), ("white", "minecraft:border")]
+
+
+class Mirror:
+    """Draws through x -> 96 - x, east and west swapped: the Wall's east half is its west half mirrored. The kit's
+    helpers draw through it as on a build."""
+
+    FLIP = {"east": "west", "west": "east", "left": "right", "right": "left"}
+
+    def __init__(self, b, on):
+        self.b, self.on = b, on
+
+    def x(self, x):
+        return WW - 1 - x if self.on else x
+
+    def set(self, x, y, z, name, **props):
+        if self.on:
+            for k in ("facing", "hinge"):
+                if k in props:
+                    props[k] = self.FLIP.get(props[k], props[k])
+        self.b.set(self.x(x), y, z, name, **props)
+
+    def get(self, x, y, z):
+        return self.b.get(self.x(x), y, z)
+
+    def clear(self, x0, y0, z0, x1, y1, z1):
+        self.b.clear(self.x(x0), y0, z0, self.x(x1), y1, z1)
+
+    def set_nbt(self, x, y, z, nbt):
+        self.b.set_nbt(self.x(x), y, z, nbt)
+
+
+def halves(b):
+    return Mirror(b, False), Mirror(b, True)
+
+
+def w_footprint():
+    """The masonry's cells (x, z) at its foot: the runs, the towers and the gatehouse."""
+    cells = set()
+    for m in (lambda x: x, lambda x: WW - 1 - x):
+        for x0, x1 in W_RUNS:
+            cells |= {(m(x), z) for x in range(x0, x1 + 1) for z in range(W_IN, W_OUT + 1)}
+        for t in W_TOWERS:
+            cells |= {(m(x), z) for x in range(t, t + 9) for z in range(W_TZ[0], W_TZ[1] + 1)}
+    cells |= {(x, z) for x in range(W_GATE[0], W_GATE[1] + 1) for z in range(W_GZ[0], W_GZ[1] + 1)}
+    return cells
+
+
+def w_stage_of(x):
+    """Which stage lays the foot round column x: the gatehouse's in I, the west's in II, the east's in III."""
+    return 1 if W_GATE[0] <= x <= W_GATE[1] else 2 if x < W_MID else 3
+
+
+def w_plinth(b, stage):
+    """The battered plinth round this stage's foot: on the outer side deepslate bricks stepping out two blocks (a full
+    course and a step of stairs at y 0, a step at y 1); on the village side one step of stairs along the faces. Cells
+    already drawn (doors' steps, the stair, braziers) and the gateway's paving are left as they are."""
+    foot = w_footprint()
+
+    def near(x, z, cells):
+        return any((x + dx, z + dz) in cells for dx in (-1, 0, 1) for dz in (-1, 0, 1))
+
+    def facing(x, z, cells):
+        for d, (dx, dz) in DIRS.items():
+            if (x + dx, z + dz) in cells:
+                return d
+        for dx, dz in ((-1, -1), (1, -1), (-1, 1), (1, 1)):
+            if (x + dx, z + dz) in cells:
+                return "north" if dz < 0 else "south"
+        return None
+
+    cols = [(x, z) for x in range(WW) for z in range(WD) if w_stage_of(x) == stage and not W_ARCH[0] <= x <= W_ARCH[1]]
+    ring1 = {(x, z) for x in range(WW) for z in range(WD) if (x, z) not in foot and near(x, z, foot)}
+    for x, z in cols:
+        if (x, z) in foot:
+            continue
+        inner = z < W_IN
+        if (x, z) in ring1:
+            d = facing(x, z, foot)
+            square = any((x + dx, z + dz) in foot for dx, dz in DIRS.values())
+            if inner:
+                if square and b.get(x, 0, z) is None:
+                    stairs(b, x, 0, z, DEEPSLATE_BRICK, d)
+                continue
+            if b.get(x, 0, z) is None:
+                b.set(x, 0, z, W_PLINTH)
+            if b.get(x, 1, z) is None:
+                stairs(b, x, 1, z, DEEPSLATE_BRICK, d)
+        elif not inner and near(x, z, ring1) and b.get(x, 0, z) is None:
+            stairs(b, x, 0, z, DEEPSLATE_BRICK, facing(x, z, ring1))
+
+
+def w_banner(b, x, y, z, facing):
+    b.set_nbt(x, y, z, Compound({"id": String("minecraft:banner"), "patterns": List[Compound]([
+        Compound({"color": String(c), "pattern": String(p)}) for c, p in W_BANNER])}))
+    b.set(x, y, z, "blue_wall_banner", facing=facing)
+
+
+def brazier(b, x, y, z):
+    b.set(x, y, z, "campfire", facing="south", lit=True, signal_fire=False, waterlogged=False)
+
+
+def climb(b, cells, y0, fam):
+    """A stair up the cells, a step a cell from y0, each rising towards the next; the head room over each step is cleared
+    (through a floor, too). Returns the y of the last step."""
+    y = y0
+    for i, (x, z) in enumerate(cells):
+        y = y0 + i
+        nx, nz = cells[i + 1] if i + 1 < len(cells) else (2 * x - cells[i - 1][0], 2 * z - cells[i - 1][1])
+        b.clear(x, y + 1, z, x, y + 2, z)
+        stairs(b, x, y, z, fam, {(1, 0): "east", (-1, 0): "west", (0, 1): "south", (0, -1): "north"}[(nx - x, nz - z)])
+    return y
+
+
+# --- stage I: the Great Gate ---------------------------------------------------------------------------------------------
+def gate_shell(p):
+    """The gatehouse's west half (x 40-48): its walls to the attic floor, the passage wall, the vault over the gateway."""
+    x0, z0, z1 = W_GATE[0], W_GZ[0], W_GZ[1]
+    for y in range(0, W_TOP + 1):
+        for x in range(x0, W_MID + 1):
+            for z in range(z0, z1 + 1):
+                edge = x == x0 or z in (z0, z1)
+                if edge:
+                    p.set(x, y, z, W_PLINTH if y <= 1 else W_FACE)
+                elif y == 0:
+                    p.set(x, y, z, "cobblestone")
+                elif x == W_ARCH[0] - 1 and y <= 8:
+                    p.set(x, y, z, W_FACE)  # the passage's wall
+                elif x >= W_ARCH[0] and 7 <= y <= 8:
+                    p.set(x, y, z, "cobblestone")  # the masonry over the vault
+                elif y in (9, 13, W_TOP):
+                    p.set(x, y, z, "spruce_planks")
+    # the gateway, through: paved, vaulted, a keystone over each mouth
+    p.clear(W_ARCH[0], 1, z0, W_MID, 6, z1)
+    for z in range(z0, z1 + 1):
+        stairs(p, W_ARCH[0], 6, z, STONE_BRICK, "east", top=True)
+    for z in range(0, WD):
+        for x in range(W_ARCH[0], W_MID + 1):
+            if z == 0:
+                stairs(p, x, 0, z, STONE_BRICK, "south")
+            elif z == WD - 1:
+                stairs(p, x, 0, z, STONE_BRICK, "north")
+            else:
+                p.set(x, 0, z, W_PAVING)
+    for z in (z0, z1):
+        p.set(W_MID, 7, z, "chiseled_stone_bricks")
+    lantern(p, W_MID, 6, 5, hanging=True)
+    lantern(p, W_MID, 6, 8, hanging=True)
+    # braziers at both mouths of the gateway, on posts either side
+    for z in (0, WD - 1):
+        p.set(W_ARCH[0] - 1, 0, z, "stone_bricks")
+        p.set(W_ARCH[0] - 1, 1, z, "chiseled_stone_bricks")
+        brazier(p, W_ARCH[0] - 1, 2, z)
+
+
+def gate_portcullis(p):
+    """The Great Gate: spruce fence gates across the gateway, two high, under a portcullis of iron bars that runs up a
+    slot in the vault to the hall, where it hangs from a windlass beam between two posts."""
+    z = W_PORTCULLIS
+    for x in range(W_ARCH[0], W_MID + 1):
+        for y in (1, 2):
+            p.set(x, y, z, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+        for y in range(3, 11):
+            if not (x == W_ARCH[0] and y == 6):
+                p.set(x, y, z, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+    p.set(W_ARCH[0] - 1, 10, z, "stripped_spruce_log", axis="y")
+    for x in range(W_ARCH[0] - 1, W_MID + 1):
+        log(p, x, 11, z, "spruce_log", axis="x")
+
+
+def gate_rooms(p):
+    """The west half's rooms: the guardroom on the ground (a door from the village, a stair up round its walls, an arrow
+    slit), the hall at the walk (a door onto the walk, the stair on up) and the top room (windows on three sides)."""
+    x0, z0, z1 = W_GATE[0], W_GZ[0], W_GZ[1]
+    # the guardroom: its door, a step and a lantern by it, a hood over it
+    door(p, 42, 1, z0, "spruce_door", "north")
+    stairs(p, 42, 0, z0 - 1, STONE_BRICK, "south")
+    for x in (41, 42, 43):
+        stairs(p, x, 3, z0 - 1, STONE_BRICK, "south", top=True)
+    p.set(41, 0, z0 - 1, "chiseled_stone_bricks")
+    lantern(p, 41, 1, z0 - 1)
+    climb(p, [(44, z) for z in range(4, 12)] + [(43, 11)], 1, STONE_BRICK)
+    p.clear(42, 2, z1, 42, 4, z1)  # an arrow slit to the field
+    p.set(41, 1, 11, "barrel", facing="up", open=False)
+    lantern(p, 41, 1, 4)
+    # the hall at the walk: the door onto it, a window to the field, a stair on up, lanterns under its ceiling
+    door(p, x0, 10, 5, "spruce_door", "west")
+    pane(p, 43, 10, z1)
+    pane(p, 43, 11, z1)
+    climb(p, [(x, z0 + 1) for x in range(41, 45)], 10, SPRUCE)
+    lantern(p, 43, 12, 7, hanging=True)
+    p.set(42, 10, 9, "grindstone", face="floor", facing="east")
+    # the top room: windows on three sides, a door onto the bretèche over the gate
+    for x, z in ((43, z0), (43, z1), (W_MID, z0)):
+        pane(p, x, 14, z)
+        pane(p, x, 15, z)
+    pane(p, x0, 14, 7)
+    pane(p, x0, 15, 7)
+    lantern(p, 44, 16, 7, hanging=True)
+
+
+def gate_breteche(p):
+    """A bretèche over the gate on the field side: a gallery on two courses of corbels, its breastwork crenellated."""
+    z1 = W_GZ[1]
+    for x in range(W_ARCH[0] - 1, W_MID + 1):
+        stairs(p, x, 12, z1 + 1, STONE_BRICK, "north", top=True)
+        p.set(x, 13, z1 + 1, "stone_bricks")
+        stairs(p, x, 13, z1 + 2, STONE_BRICK, "north", top=True)
+        p.set(x, 14, z1 + 2, W_FACE)
+        if (x - W_ARCH[0] + 1) % 2 == 0:
+            p.set(x, 15, z1 + 2, W_FACE)
+    for y in (14, 15):
+        p.set(W_ARCH[0] - 1, y, z1 + 1, W_FACE)
+    door(p, W_MID, 14, z1, "spruce_door", "south")
+
+
+def gate_piers(p):
+    """Buttresses either side of the gateway on both faces (the field side's carry the bretèche's corbels), and a string
+    course of upside-down stairs round the gatehouse at 13, the hall's ceiling."""
+    z0, z1 = W_GZ
+    x = W_ARCH[0] - 2
+    for y in range(0, 13):
+        p.set(x, y, z0 - 1, W_PLINTH if y <= 1 else W_FACE)
+    for y in range(0, 12):
+        p.set(x, y, z1 + 1, W_PLINTH if y <= 1 else W_FACE)
+    stairs(p, x, 12, z1 + 1, STONE_BRICK, "north")
+    for xx in range(W_GATE[0] - 1, W_MID + 1):
+        for z in range(z0 - 1, z1 + 2):
+            if (xx == W_GATE[0] - 1 or z in (z0 - 1, z1 + 1)) and p.get(xx, 13, z) is None:
+                d = "south" if z == z0 - 1 else "north" if z == z1 + 1 else "east"
+                stairs(p, xx, 13, z, STONE_BRICK, d, top=True)
+
+
+def gate_roof(b):
+    x0, x1, z0, z1 = W_GATE[0] - 1, W_GATE[1] + 1, W_GZ[0] - 1, W_GZ[1] + 1
+    eaves(b, x0, x1, z0, z1, W_TOP)
+    hip_roof(b, x0, x1, z0, z1, W_TOP + 1, SPRUCE)
+
+
+def eaves(b, x0, x1, z0, z1, y):
+    """Upside-down spruce stairs round a roof's overhang, under its lowest ring."""
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            if (x in (x0, x1) or z in (z0, z1)) and b.get(x, y, z) is None:
+                d = "south" if z == z0 else "north" if z == z1 else "east" if x == x0 else "west"
+                stairs(b, x, y, z, SPRUCE, d, top=True)
+
+
+def stage_w1(b):
+    for p in halves(b):
+        gate_shell(p)
+        gate_portcullis(p)
+        gate_rooms(p)
+        gate_breteche(p)
+        gate_piers(p)
+        for z, d in ((W_GZ[0] - 1, "north"), (W_GZ[1] + 1, "south")):
+            w_banner(p, 42, 8, z, d)
+    gate_roof(b)
+    w_plinth(b, 1)
+
+
+# --- stages II and III: the runs -----------------------------------------------------------------------------------------
+def w_run(p, x0, x1):
+    """A run of curtain to under the walk (y 0-8): a deepslate plinth, stone brick facing to the field, cobblestone to
+    the village, cobblestone at its heart; a buttress every four or five blocks on the field side, and on the village side
+    where no stair is."""
+    for x in range(x0, x1 + 1):
+        for z in range(W_IN, W_OUT + 1):
+            for y in range(0, W_WALK):
+                if y <= 1 and z in (W_IN, W_OUT):
+                    p.set(x, y, z, W_PLINTH)
+                elif z == W_OUT:
+                    p.set(x, y, z, W_FACE)
+                elif z == W_IN:
+                    p.set(x, y, z, W_RUBBLE)
+                else:
+                    p.set(x, y, z, "cobblestone")
+    piers = [(x0 + x1) // 2] if x1 - x0 < 10 else [x0 + 3, x1 - 3]
+    for x in piers:
+        p.set(x, 0, W_OUT + 1, W_PLINTH)
+        for y in range(1, W_WALK):
+            p.set(x, y, W_OUT + 1, W_FACE)
+        if x1 - x0 < 10:  # the outer run's inner face: no stair there
+            p.set(x, 0, W_IN - 1, W_PLINTH)
+            for y in range(1, 7):
+                p.set(x, y, W_IN - 1, W_RUBBLE)
+            stairs(p, x, 7, W_IN - 1, STONE_BRICK, "south")
+
+
+def w_flight(p):
+    """The stair up from the village to the walk: ten steps along the inner face, on solid masonry, a parapet of
+    cobblestone wall on its open side, to a landing by the gatehouse."""
+    for i in range(10):
+        x = W_FLIGHT + i
+        for y in range(0, i + 1):
+            p.set(x, y, 0, W_RUBBLE)
+        wall_block(p, x, i + 1, 0, "cobblestone_wall")
+        for z in (1, 2):
+            for y in range(0, i):
+                p.set(x, y, z, W_RUBBLE)
+            stairs(p, x, i, z, STONE_BRICK, "east")
+    x = W_FLIGHT + 10
+    for z in (0, 1, 2):
+        for y in range(0, W_WALK):
+            p.set(x, y, z, W_RUBBLE)
+        p.set(x, W_WALK, z, W_PAVING)
+    wall_block(p, x, W_WALK + 1, 0, "cobblestone_wall")
+
+
+def w_tower(p, t, west_door):
+    """A tower (x t to t + 8, z 3-11) to the floor of its top room (y 13): walls two thick to the walk, a door from
+    the village and a stair round the inside up to the walk-level room, which has doors onto the walk, the guard's
+    grindstone and, on the side facing the gate, the alcove where the sentry golem stands; a stair on up."""
+    z0, z1 = W_TZ
+    for y in range(0, 14):
+        for x in range(t, t + 9):
+            for z in range(z0, z1 + 1):
+                edge = x in (t, t + 8) or z in (z0, z1)
+                thick = y <= 8 and (x in (t + 1, t + 7) or z in (z0 + 1, z1 - 1))
+                if edge:
+                    p.set(x, y, z, W_PLINTH if y <= 1 else W_FACE)
+                elif thick or y == 0:
+                    p.set(x, y, z, "cobblestone")
+                elif y in (W_WALK, 13):
+                    p.set(x, y, z, "spruce_planks")
+    # the door from the village: a step, a hood, a lantern on a post either side
+    x = t + 4
+    p.clear(x, 1, z0, x, 2, z0 + 1)
+    door(p, x, 1, z0, "spruce_door", "north")
+    stairs(p, x, 0, z0 - 1, STONE_BRICK, "south")
+    for xx in (x - 1, x, x + 1):
+        stairs(p, xx, 3, z0 - 1, STONE_BRICK, "south", top=True)
+    for xx in (x - 2, x + 2):
+        p.set(xx, 0, z0 - 1, "chiseled_stone_bricks")
+        lantern(p, xx, 1, z0 - 1)
+    climb(p, [(t + 5, 5), (t + 6, 5), (t + 6, 6), (t + 6, 7), (t + 6, 8), (t + 6, 9), (t + 5, 9), (t + 4, 9), (t + 3, 9)],
+          1, STONE_BRICK)
+    lantern(p, t + 3, 1, 7)
+    p.set(t + 2, 1, 8, "barrel", facing="up", open=False)
+    # arrow slits to the field in the low storey (and to the side, at the ends)
+    p.clear(x, 3, z1 - 1, x, 5, z1)
+    if west_door is None:
+        p.clear(t, 3, 7, t + 1, 5, 7)
+    # the walk-level room: doors onto the walk, the alcove on the gate's side, the grindstone, windows
+    door(p, t + 8, 10, 5, "spruce_door", "east")
+    if west_door:
+        door(p, t, 10, 5, "spruce_door", "west")
+    else:
+        pane(p, t, 10, 7)
+        pane(p, t, 11, 7)
+    p.clear(t + 7, 10, 7, t + 8, 12, 9)
+    for z in (7, 8, 9):
+        for y in range(10, 13):
+            p.set(t + 6, y, z, "stone_bricks")
+    for z in (6, 10):
+        for y in range(10, 13):
+            p.set(t + 7, y, z, "stone_bricks")
+    p.set(t + 4, 10, z0 + 1, "grindstone", face="floor", facing="east")
+    p.set(t + 2, 10, z0 + 1, "barrel", facing="up", open=False)
+    lantern(p, t + 2, 11, z0 + 1)
+    for z in (z0, z1):
+        pane(p, x, 10, z)
+        pane(p, x, 11, z)
+    climb(p, [(xx, z1 - 1) for xx in range(t + 2, t + 6)], 10, SPRUCE)
+
+
+def w_side(p):
+    for x0, x1 in W_RUNS:
+        w_run(p, x0, x1)
+    w_flight(p)
+    w_tower(p, W_TOWERS[0], None)
+    w_tower(p, W_TOWERS[1], True)
+
+
+# --- stage IV: the walk and the towers' crowns ---------------------------------------------------------------------------
+def w_walk(p, x0, x1):
+    """The walk on a run: paved, its breastwork corbelled out over the field with merlons on it, a low parapet on the
+    village side with braziers on it (a gap where the stair comes up)."""
+    for x in range(x0, x1 + 1):
+        for z in range(W_IN, W_OUT + 1):
+            if p.get(x, W_WALK, z) is None:
+                p.set(x, W_WALK, z, W_PAVING)
+        if p.get(x, W_WALK - 1, W_LIP) is not None:
+            p.set(x, W_WALK, W_LIP, W_FACE)  # over a buttress, the pier carries the breastwork
+        else:
+            stairs(p, x, W_WALK, W_LIP, STONE_BRICK, "north", top=True)
+        p.set(x, W_WALK + 1, W_LIP, W_FACE)
+        if (x - x0) % 2 == 0:
+            p.set(x, W_WALK + 2, W_LIP, W_FACE)
+        if x in W_BRAZIERS:
+            p.set(x, W_WALK + 1, W_IN, "chiseled_stone_bricks")
+            brazier(p, x, W_WALK + 2, W_IN)
+        elif not W_FLIGHT + 9 <= x <= W_FLIGHT + 10:
+            wall_block(p, x, W_WALK + 1, W_IN, "stone_brick_wall")
+
+
+def w_crown(p, t, outer_end):
+    """A tower's top room (y 14-16, windows on three sides), its attic floor, a cornice under it, the hipped spruce
+    roof, a banner to the field."""
+    z0, z1 = W_TZ
+    for x in range(t - 1, t + 10):
+        for z in range(z0 - 1, z1 + 2):
+            if x in (t - 1, t + 9) or z in (z0 - 1, z1 + 1):
+                d = "south" if z == z0 - 1 else "north" if z == z1 + 1 else "east" if x == t - 1 else "west"
+                stairs(p, x, 13, z, STONE_BRICK, d, top=True)
+    for y in range(14, W_TOP + 1):
+        for x in range(t, t + 9):
+            for z in range(z0, z1 + 1):
+                if x in (t, t + 8) or z in (z0, z1):
+                    p.set(x, y, z, W_FACE)
+                elif y == W_TOP:
+                    p.set(x, y, z, "spruce_planks")
+    for x, z in ((t + 4, z0), (t, 7), (t + 8, 7)):
+        pane(p, x, 14, z)
+        pane(p, x, 15, z)
+    lantern(p, t + 4, 16, 7, hanging=True)
+    w_banner(p, t + 4, 15, z1 + 1, "south")
+    if outer_end:
+        w_banner(p, t - 1, W_WALK, 7, "west")
+    eaves(p, t - 1, t + 9, z0 - 1, z1 + 1, W_TOP)
+    hip_roof(p, t - 1, t + 9, z0 - 1, z1 + 1, W_TOP + 1, SPRUCE)
+
+
+def stage_w4(b):
+    for p in halves(b):
+        for x0, x1 in W_RUNS:
+            w_walk(p, x0, x1)
+        w_crown(p, W_TOWERS[0], True)
+        w_crown(p, W_TOWERS[1], False)
+
+
+def great_wall():
+    b = StagedBuild(WW, WH, WD)
+    b.begin(1)
+    stage_w1(b)
+    b.begin(2)
+    w_side(Mirror(b, False))
+    w_plinth(b, 2)
+    b.begin(3)
+    w_side(Mirror(b, True))
+    w_plinth(b, 3)
+    b.begin(4)
+    stage_w4(b)
+    return b
+
+
+def great_wall_stage(stage=None):
+    """For the renders only: the Great Wall as it stands after a stage (whole by default)."""
+    stages = great_wall().stage_builds()
+    return stages[(stage or len(stages)) - 1]
+
+
+def great_wall_piece(x0, x1, stage=None):
+    """For the renders only: the Wall from x0 to x1 (a stretch close up)."""
+    s = great_wall_stage(stage)
+    out = Build(x1 - x0 + 1, WH, WD)
+    out.blocks = {(x - x0, y, z): v for (x, y, z), v in s.blocks.items() if x0 <= x <= x1}
+    out.nbt = {(x - x0, y, z): v for (x, y, z), v in getattr(s, "nbt", {}).items() if x0 <= x <= x1}
+    return out
+
+
+def great_wall_eye(x_eye):
+    """For the renders only: the Wall cropped evenly about column x_eye and padded to 32 high, so that the preview
+    renderer (it orbits the middle of the lawn it adds: x and z halfway, y at (height + 1) / 2.6) at a tiny distance
+    (DIST=0.3) stands on the walk at a player's eye: x_eye + 0.5, y 11.7, z 7.5."""
+    k = min(x_eye, WW - 1 - x_eye)
+    s = great_wall_stage()
+    out = Build(2 * k + 1, 32, WD)
+    out.blocks = {(x - x_eye + k, y, z): v for (x, y, z), v in s.blocks.items() if abs(x - x_eye) <= k}
+    out.nbt = {(x - x_eye + k, y, z): v for (x, y, z), v in getattr(s, "nbt", {}).items() if abs(x - x_eye) <= k}
+    return out
+
+
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
 def goods(*lines):
     out = []
@@ -2601,6 +3154,36 @@ WONDERS = {
         "powers": [
             {"type": "sky_chart", "size": 1024},
             {"type": "forecast"},
+        ],
+    },
+    "great_wall": {
+        "draw": great_wall,
+        "icon": "minecraft:stone_brick_wall",
+        "crew": 12,
+        "requirements": [
+            {"type": "rank_at_least", "rank": "town"},
+            {"type": "legend", "id": "aliveworkplace:golem_smith",
+             "stand_in": [{"type": "iron_golems", "count": 4},
+                          {"type": "job_level", "job": "aliveworkplace:tinkerer", "level": 5, "count": 1}]},
+            {"type": "finished", "blueprint": "aliveworkplace:gatehouse", "count": 1},
+        ],
+        "goods": [
+            goods(("item", "minecraft:iron_sword", 8, "minecraft:weaponsmith"),
+                  ("item", "minecraft:arrow", 128, "minecraft:fletcher"),
+                  ("item", "minecraft:bread", 128, "aliveworkplace:chef")),
+            goods(("item", "minecraft:iron_shovel", 8, "minecraft:toolsmith"),
+                  ("item", "minecraft:potion", 12, "minecraft:cleric", "minecraft:strength"),
+                  ("item", "minecraft:baked_potato", 64, "aliveworkplace:chef")),
+            goods(("item", "minecraft:crossbow", 8, "minecraft:fletcher"),
+                  ("item", "minecraft:iron_chestplate", 8, "minecraft:armorer"),
+                  ("item", "minecraft:shield", 8, "aliveworkplace:carpenter")),
+            goods(("item", "minecraft:iron_block", 16, "minecraft:armorer"),
+                  ("item", "minecraft:pumpkin", 4, "minecraft:farmer"),
+                  ("item", "minecraft:campfire", 16, "aliveworkplace:carpenter")),
+        ],
+        "powers": [
+            {"type": "raid_barrier", "margin_degrees": 10},
+            {"type": "sentries", "count": 4, "range": 16},
         ],
     },
 }

@@ -522,7 +522,7 @@ public class JewellerGameTests implements FabricGameTest {
 		expect(helper, Component.translatable("item.aliveworkplace.amethyst_ring"), "Amethyst Ring");
 		expect(helper, Component.translatable("item.aliveworkplace.emerald_brooch"), "Emerald Brooch");
 		expect(helper, Component.translatable("item.aliveworkplace.gold_circlet"), "Gold Circlet");
-		expect(helper, Component.translatable("aliveworkplace.config.jewellers"), "Jewellers");
+		expect(helper, Component.translatable("aliveworkplace.config.jewellers"), "Jewelers");
 		helper.assertTrue(english(Component.translatable("aliveworkplace.config.jewellers.tooltip")).startsWith("Sneak-right-click a villager by a stonecutter with a gold nugget"),
 			"the setting's tooltip");
 		helper.succeed();

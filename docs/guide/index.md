@@ -41,6 +41,52 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Porters, post and services](jobs-services.md): the storehouse, mail, shops, ferries, the inn, nurses, teachers,
   scholars, undertakers and bards.
 
+### Jobs A to Z
+
+- [Armorer](armorer.md): smelts the ore and arms the guards.
+- [Ball Smith](ball-smith.md): Poké Balls from apricorns (Cobblemon).
+- [Bard](bard.md): music at the jukebox.
+- [Beekeeper](beekeeper.md): honey and honeycomb.
+- [Builder](builder.md): builds your blueprints.
+- [Butcher](butcher.md): the village's herder.
+- [Carpenter](carpenter.md): woodwork for the builders.
+- [Cartographer](cartographer.md): expeditions and Explorer's Maps.
+- [Chef](chef.md): feeds the village.
+- [Cleric](cleric.md): potions for the guards.
+- [Composter](composter.md): scraps into bone meal.
+- [Farmer](farmer.md): runs a field.
+- [Ferryman](ferryman.md): tickets between travel posts.
+- [Fisherman](fisherman.md): fishing, from the shore or a boat.
+- [Fletcher](fletcher.md): bows and arrows for the guards.
+- [Florist](florist.md): flowers and flower pots.
+- [Fossil Scientist](fossil-scientist.md): revives fossils (Cobblemon).
+- [Guard](guard.md): keeps the village safe.
+- [Innkeeper](innkeeper.md): travelers to hire.
+- [Leatherworker (the dyer)](leatherworker-dyer.md): anything colored for the builders.
+- [Librarian](librarian.md): enchants the village's gear.
+- [Lumberjack](lumberjack.md): fells and replants trees.
+- [Mason](mason.md): stone, glass and bricks for the builders.
+- [Miner](miner.md): quarries and strip mines.
+- [Move Tutor](move-tutor.md): teaches your Pokémon moves (Cobblemon).
+- [Netherworker](netherworker.md): trips to the Nether.
+- [Nurse](nurse.md): heals you and cures the sick.
+- [Orchard Keeper](orchard-keeper.md): picks fruit.
+- [Pokémon Trader](pokemon-trader.md): swaps Pokémon with you (Cobblemon).
+- [Porter](porter.md): carries goods to the storehouse.
+- [Postman](postman.md): mail and courier routes.
+- [Rancher](rancher.md): horses, grooming and a daycare.
+- [Scholar](scholar.md): research for the village.
+- [Shepherd](shepherd.md): sheep and wool.
+- [Shopkeeper](shopkeeper.md): runs your shop.
+- [Sifter](sifter.md): finds in gravel and sand.
+- [Teacher](teacher.md): lessons for the children.
+- [Tinkerer](tinkerer.md): redstone parts and golem repairs.
+- [Toolsmith](toolsmith.md): new tools for the workers.
+- [Trainer](trainer.md): Pokémon battles (Cobblemon).
+- [Trainer Leader](trainer-leader.md): the village's best trainer (Cobblemon).
+- [Undertaker](undertaker.md): brings the dead back.
+- [Weaponsmith](weaponsmith.md): mending and swords.
+
 ## The village
 
 - [The Village Hall](village-hall.md): the village at a glance, its ranks, its pages, the treasury and protecting

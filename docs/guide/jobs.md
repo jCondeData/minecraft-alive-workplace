@@ -52,49 +52,49 @@ makes them faster. Villages keep working while you're away, as long as someone i
 
 | Job | Workstation | Item to pick it | More |
 |---|---|---|---|
-| Builder | Blueprint Table | (takes it by itself) | [The Builder](builder.md) |
-| Miner | Blast Furnace | a pickaxe | [Jobs on the land](jobs-land.md) |
-| Lumberjack | Fletching Table | an axe | [Jobs on the land](jobs-land.md) |
-| Orchard Keeper | Composter | sweet berries, glow berries or an apple | [Jobs on the land](jobs-land.md) |
-| Farmer | Composter | (vanilla) | [Jobs on the land](jobs-land.md) |
-| Florist | Composter | a small flower | [Jobs on the land](jobs-land.md) |
-| Composter | Composter | bone meal | [Jobs on the land](jobs-land.md) |
-| Beekeeper | Beehive or Bee Nest | a glass bottle or shears | [Jobs on the land](jobs-land.md) |
-| Sifter | Cauldron | gravel, sand, red sand or soul sand | [Jobs on the land](jobs-land.md) |
-| Fisherman | Barrel | (vanilla) | [Jobs on the land](jobs-land.md) |
-| Rancher | Smoker | a saddle or a golden carrot | [Jobs on the land](jobs-land.md) |
-| Shepherd | Loom | (vanilla) | [Jobs on the land](jobs-land.md) |
-| Butcher | Smoker | (vanilla) | [Jobs on the land](jobs-land.md) |
-| Netherworker | Cartography Table | netherrack | [Jobs on the land](jobs-land.md) |
-| Cartographer | Cartography Table | (vanilla) | [Jobs on the land](jobs-land.md) |
-| Carpenter | Crafting Table | planks | [Crafters and smiths](jobs-crafts.md) |
-| Mason | Stonecutter | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Leatherworker (dyer) | Cauldron | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Tinkerer | Smithing Table | redstone | [Crafters and smiths](jobs-crafts.md) |
-| Armorer | Blast Furnace | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Toolsmith | Smithing Table | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Weaponsmith | Grindstone | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Fletcher | Fletching Table | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Chef | Smoker | raw meat, raw fish or a potato | [Crafters and smiths](jobs-crafts.md) |
-| Cleric | Brewing Stand | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Librarian | Lectern | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
-| Porter | Storehouse | (takes it by itself) | [Porters, post and services](jobs-services.md) |
-| Postman | Mailbox | paper | [Porters, post and services](jobs-services.md) |
-| Shopkeeper | Shop Counter | (takes it by itself) | [Porters, post and services](jobs-services.md) |
-| Innkeeper | Shop Counter | a bed | [Porters, post and services](jobs-services.md) |
-| Ferryman | Travel Post | (takes it by itself) | [Porters, post and services](jobs-services.md) |
-| Nurse | Brewing Stand | a honey bottle | [Porters, post and services](jobs-services.md) |
-| Undertaker | Brewing Stand | a golden apple or a totem | [Porters, post and services](jobs-services.md) |
-| Teacher | Lectern | a book | [Porters, post and services](jobs-services.md) |
-| Scholar | Lectern | paper | [Porters, post and services](jobs-services.md) |
-| Bard | Jukebox | a music disc | [Porters, post and services](jobs-services.md) |
-| Guard | Grindstone | a sword | [Threats and defense](defence.md) |
-| Trainer | Training Post | (takes it by itself) | [Pokémon and villagers](pokemon.md) |
-| Trainer Leader | Training Post | a block of gold | [Pokémon and villagers](pokemon.md) |
-| Move Tutor | Training Post | a book | [Pokémon and villagers](pokemon.md) |
-| Ball Smith | Smithing Table | an apricorn | [Pokémon and villagers](pokemon.md) |
-| Pokémon Trader | Shop Counter | a Poké Ball | [Pokémon and villagers](pokemon.md) |
-| Fossil Scientist | Cobblemon's Fossil Analyzer | a fossil | [Pokémon and villagers](pokemon.md) |
+| [Builder](builder.md) | Blueprint Table | (takes it by itself) | [The Builder](builder.md) |
+| [Miner](miner.md) | Blast Furnace | a pickaxe | [Jobs on the land](jobs-land.md) |
+| [Lumberjack](lumberjack.md) | Fletching Table | an axe | [Jobs on the land](jobs-land.md) |
+| [Orchard Keeper](orchard-keeper.md) | Composter | sweet berries, glow berries or an apple | [Jobs on the land](jobs-land.md) |
+| [Farmer](farmer.md) | Composter | (vanilla) | [Jobs on the land](jobs-land.md) |
+| [Florist](florist.md) | Composter | a small flower | [Jobs on the land](jobs-land.md) |
+| [Composter](composter.md) | Composter | bone meal | [Jobs on the land](jobs-land.md) |
+| [Beekeeper](beekeeper.md) | Beehive or Bee Nest | a glass bottle or shears | [Jobs on the land](jobs-land.md) |
+| [Sifter](sifter.md) | Cauldron | gravel, sand, red sand or soul sand | [Jobs on the land](jobs-land.md) |
+| [Fisherman](fisherman.md) | Barrel | (vanilla) | [Jobs on the land](jobs-land.md) |
+| [Rancher](rancher.md) | Smoker | a saddle or a golden carrot | [Jobs on the land](jobs-land.md) |
+| [Shepherd](shepherd.md) | Loom | (vanilla) | [Jobs on the land](jobs-land.md) |
+| [Butcher](butcher.md) | Smoker | (vanilla) | [Jobs on the land](jobs-land.md) |
+| [Netherworker](netherworker.md) | Cartography Table | netherrack | [Jobs on the land](jobs-land.md) |
+| [Cartographer](cartographer.md) | Cartography Table | (vanilla) | [Jobs on the land](jobs-land.md) |
+| [Carpenter](carpenter.md) | Crafting Table | planks | [Crafters and smiths](jobs-crafts.md) |
+| [Mason](mason.md) | Stonecutter | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Leatherworker (dyer)](leatherworker-dyer.md) | Cauldron | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Tinkerer](tinkerer.md) | Smithing Table | redstone | [Crafters and smiths](jobs-crafts.md) |
+| [Armorer](armorer.md) | Blast Furnace | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Toolsmith](toolsmith.md) | Smithing Table | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Weaponsmith](weaponsmith.md) | Grindstone | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Fletcher](fletcher.md) | Fletching Table | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Chef](chef.md) | Smoker | raw meat, raw fish or a potato | [Crafters and smiths](jobs-crafts.md) |
+| [Cleric](cleric.md) | Brewing Stand | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Librarian](librarian.md) | Lectern | (vanilla) | [Crafters and smiths](jobs-crafts.md) |
+| [Porter](porter.md) | Storehouse | (takes it by itself) | [Porters, post and services](jobs-services.md) |
+| [Postman](postman.md) | Mailbox | paper | [Porters, post and services](jobs-services.md) |
+| [Shopkeeper](shopkeeper.md) | Shop Counter | (takes it by itself) | [Porters, post and services](jobs-services.md) |
+| [Innkeeper](innkeeper.md) | Shop Counter | a bed | [Porters, post and services](jobs-services.md) |
+| [Ferryman](ferryman.md) | Travel Post | (takes it by itself) | [Porters, post and services](jobs-services.md) |
+| [Nurse](nurse.md) | Brewing Stand | a honey bottle | [Porters, post and services](jobs-services.md) |
+| [Undertaker](undertaker.md) | Brewing Stand | a golden apple or a totem | [Porters, post and services](jobs-services.md) |
+| [Teacher](teacher.md) | Lectern | a book | [Porters, post and services](jobs-services.md) |
+| [Scholar](scholar.md) | Lectern | paper | [Porters, post and services](jobs-services.md) |
+| [Bard](bard.md) | Jukebox | a music disc | [Porters, post and services](jobs-services.md) |
+| [Guard](guard.md) | Grindstone | a sword | [Threats and defense](defence.md) |
+| [Trainer](trainer.md) | Training Post | (takes it by itself) | [Pokémon and villagers](pokemon.md) |
+| [Trainer Leader](trainer-leader.md) | Training Post | a block of gold | [Pokémon and villagers](pokemon.md) |
+| [Move Tutor](move-tutor.md) | Training Post | a book | [Pokémon and villagers](pokemon.md) |
+| [Ball Smith](ball-smith.md) | Smithing Table | an apricorn | [Pokémon and villagers](pokemon.md) |
+| [Pokémon Trader](pokemon-trader.md) | Shop Counter | a Poké Ball | [Pokémon and villagers](pokemon.md) |
+| [Fossil Scientist](fossil-scientist.md) | Cobblemon's Fossil Analyzer | a fossil | [Pokémon and villagers](pokemon.md) |
 
 The last six need Cobblemon. A crafting table, a beehive, a jukebox or a Mailbox never takes a villager by itself: give
 them the item. Where one item fits two blocks (paper, a book, a glass bottle), the block they stand at decides.

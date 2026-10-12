@@ -4,7 +4,7 @@ ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the 
 finished** (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.20
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
 
 ## What a player sees
 
@@ -29,6 +29,13 @@ Roadmap items: 32.4, 32.5, 32.6, 32.20
   at night the guards shut both gates.
 - **Only gates the builders made break**: the fence gates, doors and iron bars of finished wall and gate builds. A
   gate you placed yourself is never hit, even right beside one.
+- **Nothing else of the builders' work breaks under a threat** (32.16a, the owner's rule): a raider's creeper or a
+  ghast's fireball blows a hole in your own blocks but leaves every block the builders placed standing, a ravager
+  doesn't trample a builder's roof, and a raiding vindicator or zombie doesn't break down a house's door. A build still
+  under way is spared too, so no builder's progress is ever lost.
+- **The builders always put back what threats took**: the gates rams broke and the blocks a village fire burned, even
+  with `builderRepairs` off (then those are the only repairs they make). The list is saved, so a restart forgets
+  nothing.
 - **Ladders go up the walls** (32.5). Raiders who carry ladders (the pillagers of the warband, 32.7) walk to the wall
   in their way and set a ladder up its outer face, a rung every half second, with the sound of a ladder being placed.
   When the first one stands the chat says "Ladders at the walls of Oakbrook! A guard on the wall can throw them down."
@@ -139,6 +146,16 @@ Roadmap items: 32.4, 32.5, 32.6, 32.20
   the farthest of them it is moved out to there. Raiders who come through a Nether portal are not moved.
 - **Repair**: a broken gate block is a hole in a finished build, which a builder's upkeep fills like any other; the
   list on the Defense page drops a block once something stands there again.
+- **What threats may damage** (32.16a, `threat/ThreatDamage`): a "threat" is a raider (`aliveworkplace_raider` tag)
+  or a projectile one shot; a "builder's block" is a finished build's block as drawn (`VillageFire.builderMade`) or
+  any block inside the outline of a build site under way. Three hooks keep threats off them: `ThreatGriefMixin` on
+  `Level.destroyBlock` (the ravager's leaf-breaking and any other mob breaking with itself as the breaker),
+  `ThreatDoorMixin` on `BreakDoorGoal` (it doesn't start, or stops, at a builder's door) and `ExplosionMixin` (a
+  threat's blast, direct or indirect, leaves those blocks out of what it blows up). The ram's own blow runs through
+  `ThreatDamage.asRam`, the one break allowed. Every gate a ram broke (not the dropped bars) and every builder's block
+  a village fire burned goes on `ThreatData.damaged`; `Upkeep` repairs any finished build holding one of them even with
+  `builderRepairs` off (`Upkeep.THREATS`, off in GameTests like `Upkeep.ENABLED`), and drops an entry once a block
+  stands there again or no finished build holds it.
 
 ## Switches
 
@@ -159,6 +176,7 @@ In `aliveworkplace_threats` (per dimension), all new and empty by default, so an
 |---|---|---|
 | `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told) | none; `ladders` empty and `laddered` false in a siege saved before 32.5 |
 | `broken` | per hall, the gate blocks rams broke that wait for a builder | none |
+| `damaged` (32.16a) | every builder's block a threat took (a gate a ram broke, a block a village fire burned) that no builder has put back yet, as packed positions | none |
 | in each of `sieges` (32.6) | `hp_factor` (what gate hit points were multiplied by), `came`, `fled`, `to_guards`, `to_players`, `to_others`, `kills` (guard, count, name), `players` (who killed a raider) | 1, 0, false, 0, 0, 0, none, none |
 | `after` (32.6) | per hall, the game time until which villagers are glad they held (`held`) and builders mend defenses first (`mending`) | none |
 
@@ -168,6 +186,13 @@ None. One new slot on the hall's Defense page (the gates). The ladders are vanil
 research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icons, so no new art.
 
 ## Decisions
+
+- 32.16a (the owner, 2026-10-12): "anything threats damage must be repairable by builders" is read as: they always
+  repair it, `builderRepairs` or not, since otherwise a server with repairs off would keep the holes. With
+  `builderRepairs` off they repair only finished builds that hold threat damage, and then the whole build's holes (a
+  repair fills every hole of a build). Explosions, trampling and door breaking by mobs that are not raiders (a wild
+  creeper) follow the game's rules as before: they are not a threat of this mod. Ladders and sand ramps only go into
+  air and are taken away, so they need nothing new.
 
 - 32.20: Palisade II's ditch is a bed of coarse earth level with the ground, its dripstone stakes on top: a blueprint
   starts on top of the clicked block and can't dig below it. Gatehouse II's murder holes are open holes in the
@@ -235,6 +260,16 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   gates, two sieges at once, and what a client sees of the cracks (the showcase scene films them).
 
 ## Proof
+
+- GameTests (32.16a): `ThreatDamageGameTests`: a raider's creeper blast beside a finished log hut leaves all its logs
+  and takes a player's planks, the same blast from a wild creeper takes some (so the test can see the rule); a raider's
+  block breaking (the game's destroy call) never takes a hut block nor one of a build under way, while a wild ravager's does and a raider's on a
+  player's leaves does; the door rule; two burned roof logs on the saved list, through a save and load, put back by
+  the builder with `builderRepairs` off and then off the list; with both repairs off, or a hole no threat made, no
+  repair; the changed tooltips. `SiegeGameTests.onlyTheGateBreaksAndABuilderPutsItBack`: a ravager ram breaks the
+  Palisade Gate's fence gate and every other block of the build still stands; the gate is on the saved list through a
+  save and load and a builder puts it back with `builderRepairs` off. Not tested in a GameTest: a vindicator's door
+  goal running against a real door (only the rule it asks), a ghast's fireball.
 
 - GameTests: `SiegeGameTests`: a ravager ram breaks a Palisade Gate's block within 400 ticks and a pillager is through
   within 600, nothing dropped, and a player's fence gate beside it untouched; a Gatehouse with its portcullis down takes

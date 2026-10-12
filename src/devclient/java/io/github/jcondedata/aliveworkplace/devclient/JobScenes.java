@@ -865,6 +865,53 @@ final class JobScenes {
 					&& warden.getVillagerXp() > 1;
 			};
 		}, null));
+		// Threats spare the builders' work (ROADMAP 32.16a): a raider's creeper hisses beside a Starter Cottage the builders
+		// finished and blows up; the player's dirt mound beside it is blown away, every block of the cottage still stands.
+		SCENES.put("threat_spared", new Job("a raider's creeper blew up right beside the Starter Cottage: the dirt mound a player had left there went, every block the builders placed still stood",
+			900, new Vec3(10.5, -52.0, 9.5), new Vec3(-1.0, -56.0, -9.0), (level, player) -> {
+			BlockPos origin = STATION.offset(-5, 0, -15);
+			net.minecraft.core.Vec3i size = StarterBlueprints.STARTER_COTTAGE.size();
+			level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(),
+				origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			io.github.jcondedata.aliveworkplace.threat.VillageFire.forgetBuilds();
+			List<BlockPos> cottage = new ArrayList<>();
+			for (BlockPos p : BlockPos.betweenClosed(origin, origin.offset(size).offset(-1, -1, -1))) {
+				if (!level.getBlockState(p).isAir()) {
+					cottage.add(p.immutable());
+				}
+			}
+			// The player's dirt mound, two blocks out from the cottage's east wall.
+			int mid = size.getZ() / 2;
+			List<BlockPos> mound = new ArrayList<>();
+			for (int dz = -1; dz <= 1; dz++) {
+				for (int dy = 0; dy <= 1; dy++) {
+					BlockPos at = origin.offset(size.getX() + 2, dy, mid + dz);
+					level.setBlockAndUpdate(at, net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState());
+					mound.add(at);
+				}
+			}
+			net.minecraft.world.entity.monster.Creeper creeper = EntityType.CREEPER.create(level);
+			BlockPos stand = origin.offset(size.getX(), 0, mid);
+			creeper.moveTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, 90f, 0f);
+			creeper.addTag(io.github.jcondedata.aliveworkplace.threat.Threats.RAIDER_TAG);
+			creeper.setNoAi(true);
+			level.addFreshEntity(creeper);
+			long began = level.getGameTime();
+			return l -> {
+				if (l.getGameTime() - began == 60 && creeper.isAlive()) {
+					creeper.ignite();
+				}
+				if (l.getGameTime() - began < 160 || creeper.isAlive()) {
+					return false;
+				}
+				long standing = cottage.stream().filter(p -> !l.getBlockState(p).isAir()).count();
+				Showcase.check(standing == cottage.size(), "every block of the cottage still stands (" + standing + " of " + cottage.size() + ")");
+				Showcase.check(mound.stream().anyMatch(p -> l.getBlockState(p).isAir()), "the player's dirt mound was blown away");
+				return true;
+			};
+		}, null));
 		// Drought (ROADMAP 32.17): a wheat field gone dry (farmland at moisture 0, dead bushes round it) in a village under
 		// a drought; the Well Keeper at the cauldron (picked with a shovel) fills a bucket at the pond and carries it to the
 		// field, bucket after bucket, each wetting 9 farmland dark again in a splash.
@@ -1791,6 +1838,34 @@ final class JobScenes {
 				int total = java.util.Arrays.stream(placed).sum();
 				// Each placed at least half an even share (the last few blocks after the final look don't count).
 				return java.util.Arrays.stream(placed).allMatch(n -> n * crew.size() * 2 >= total * 0.9);
+			};
+		}, null));
+		SCENES.put("scaffolding", new Job("the builder put up scaffolding to finish the pillar and its cap, then took it all down into the chest", 9000,
+			new Vec3(7.5, -50.5, 9.5), new Vec3(-6, -52, -4), (level, player) -> {
+			// 35.6: the test pillar, 14 high with a 5 x 5 cap overhanging it by two: nowhere near its top to stand.
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(4, level.getServer());
+			net.minecraft.resources.ResourceLocation pillar = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_pillar");
+			Blueprint blueprint = BlueprintLibrary.get(level, pillar).orElseThrow();
+			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), new BlockPos(-6, -60, -4),
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			BlockPos bench = new BlockPos(-1, -60, 2);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Container box = chest(level, bench.east(), new ItemStack(Items.STONE_BRICKS, 14), new ItemStack(Items.POLISHED_ANDESITE, 25),
+				new ItemStack(Items.SCAFFOLDING, 64));
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			BuildSite site = Builders.start(level, builder, null, pillar, placement);
+			int[] most = {0};
+			return l -> {
+				if (site == null) {
+					return false;
+				}
+				most[0] = Math.max(most[0], site.scaffolds().size());
+				int left = 0;
+				for (int i = 0; i < box.getContainerSize(); i++) {
+					left += box.getItem(i).is(Items.SCAFFOLDING) ? box.getItem(i).getCount() : 0;
+				}
+				return BuildSiteManager.get(l).get(site.id()) == null && most[0] > 0 && site.scaffolds().isEmpty() && left == 64;
 			};
 		}, null));
 		SCENES.put("nurse", job("the nurse healed the hurt villager and cured the ill one", 2000, (level, player) -> {

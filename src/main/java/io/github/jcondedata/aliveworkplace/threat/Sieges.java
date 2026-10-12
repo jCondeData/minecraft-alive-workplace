@@ -74,7 +74,9 @@ import org.jetbrains.annotations.Nullable;
  * <li><b>Only gate blocks of finished builds ever break</b>: the list comes from the builds' blueprints, and a block
  * counts only while the world still holds the blueprint's block there. A player's own gate is never in it. With
  * {@code mobGriefing} off or {@code siegeDamage} false ({@link #DAMAGE}) the rams pound and the gates hold.
- * {@code sieges} false ({@link #ENABLED}) makes every raid a plain one.</li>
+ * {@code sieges} false ({@link #ENABLED}) makes every raid a plain one. Nothing else a threat does breaks a builder's
+ * block, and every gate a ram broke goes on {@link ThreatData#damaged} for the builders, whatever {@code builderRepairs}
+ * says ({@link ThreatDamage}, 32.16a).</li>
  * <li><b>One director a siege</b>, every {@link #EVERY} ticks, asking for at most {@link #MAX_PATHS} paths a tick. Hit
  * points live in the siege's saved data, not on the blocks, so a restart mid-siege carries on where it was.</li>
  * </ul>
@@ -805,7 +807,10 @@ public final class Sieges {
 		gate.hp = 0;
 		gate.state = ThreatData.GateState.BROKEN;
 		level.destroyBlockProgress(crackId(gate.pos), gate.pos, -1);
-		level.destroyBlock(gate.pos, false, ram); // nothing drops; a door's other half goes with it
+		ThreatDamage.asRam(() -> level.destroyBlock(gate.pos, false, ram)); // nothing drops; a door's other half goes with it
+		if (!gate.dropped) {
+			ThreatDamage.took(level, gate.pos); // the builders put it back, whatever builderRepairs says (32.16a)
+		}
 		if (!iron) {
 			level.playSound(null, gate.pos, SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.HOSTILE, 2f, 1f);
 		}

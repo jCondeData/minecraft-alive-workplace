@@ -195,6 +195,9 @@ SCENES = [
     job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
     job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
+    # Scaffolding (ROADMAP 35.6): a 14-high pillar with an overhanging cap, built from scaffolding taken down after
+    job("scaffolding", "Builder", "Scaffolding up a pillar, and down again",
+        "the builder put up scaffolding to finish the pillar and its cap, then took it all down into the chest", 300),
     S("chef", "Chef", "Cooking at the smoker", "the chef cooked food into the chest", 120,
       [("*_chef@first", "Start"), ("*_chef@middle", "Cooking"), ("*_chef@last", "Done")]),
     job("smelter", "Armorer (smelter)", "Smelting ore in the blast furnace", "the armorer smelted the ore into ingots"),
@@ -848,6 +851,9 @@ SCENES = [
     # Village fire (ROADMAP 32.16): a roof catching, and the Firewarden putting it out with buckets of water
     job("fire", "Threats", "Village fire: the roof catches, the Firewarden puts it out",
         "the Starter Cottage's roof caught fire and the Firewarden ran over from the grindstone and put it out with buckets of water", 150),
+    # Threats spare the builders' work (ROADMAP 32.16a): a raider's creeper blows up beside a finished cottage
+    job("threat_spared", "Threats", "A raider's blast leaves the builders' work standing",
+        "a raider's creeper blew up right beside the Starter Cottage: the dirt mound a player had left there went, every block the builders placed still stood", 120),
     # Drought (ROADMAP 32.17): dry fields in a drought, and the Well Keeper carrying water to them from the pond
     job("drought", "Threats", "Drought: the dry fields and the Well Keeper's buckets",
         "the fields were dry in the drought, and the Well Keeper carried water from the pond to them, bucket after bucket", 150),

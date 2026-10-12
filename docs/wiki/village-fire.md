@@ -26,7 +26,8 @@ Roadmap items: 32.16
 - **When it's out**, players read "The fire in the Starter Cottage at Oakvale is out." and the hall's chronicle says
   "Fire in the Starter Cottage: 18 blocks burned; Rowan the Firewarden put it out." (or "the bucket brigade put it
   out", or "before it burned out").
-- **The builders put back what burned** on their next look round the village's buildings, once the fire is out.
+- **The builders put back what burned** on their next look round the village's buildings, once the fire is out,
+  even with `builderRepairs` off (32.16a, see [Sieges](sieges.md)): a fire never destroys a build for good.
 
 ## How it works
 
@@ -72,6 +73,8 @@ anywhere, as in vanilla.
 On a Firewarden: `firewarden_water` (how many of their two buckets are full; absent: both full). The village's fires
 (their blocks, what burned, who doused them, the brigade) are kept in memory: after a restart the fires still
 burning are noticed again as they spread, and the chronicle counts from then.
+Every builder's block the fire burned is also saved, on `damaged` in `aliveworkplace_threats` (32.16a), so the
+builders put it back after a restart too.
 
 ## Items, blocks, jobs, commands
 

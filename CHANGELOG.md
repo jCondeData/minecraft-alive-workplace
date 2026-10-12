@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Builders use scaffolding** (35.6, part of Wonders, for 2.0): a block with nowhere to stand near it (a raised arm,
+  a spire's tip, a dome's crown) is no longer skipped. The builder puts up a column of scaffolding from its chests
+  beside it, climbs it and works from the top, then takes it all down when that stage is done and the scaffolding goes
+  back into the chests. With none in the chests it's asked for on the requests board (a carpenter makes it from bamboo
+  and string) and the block is skipped as before: a build never waits on scaffolding. Cancelling a build takes its scaffolding down at once. Switch: `builderScaffolding`.
 - **A player-guide article for everything you can meet** (22.10a part 3): about 190 new wiki pages, one per job, block,
   item, build, threat, setting theme, game rule, command and village-life system, each with an infobox and a section
   on how it ties into the rest (what feeds it, what it affects, what stops it), all linked from the main page's A to Z
@@ -66,6 +71,10 @@ asks for the steps, `latest.log` and any crash report).
   its board's spread is halved (105% instead of 110%).
 
 ### Changed
+- **Threats never destroy your builders' work** (32.16a, part of 1.6): only the gate blocks of walls and gates break
+  under the rams, and nothing else a raider does (a creeper's blast, a ravager, a vindicator at a house door) breaks a
+  block the builders placed or a build still under way. Whatever rams and village fires take, the builders always put
+  back, even with Builder Repairs off, and a restart forgets none of it.
 - **The Artisan's House and the Burgher's Townhouse are sold by builders only** (34.15a): they're no longer in the
   Blueprint Table. A builder sells the Artisan's House from Apprentice on and the Townhouse once the village has
   Artisans; blueprints already bought and houses already built keep working.

@@ -56,6 +56,17 @@ def test_hut_2():
     return b
 
 
+def test_pillar():
+    """5x15x5 (ROADMAP 35.6): a 14-high stone-brick pillar with a 5x5 polished andesite cap overhanging it by two on
+    every side. Nothing to stand on near its top or under its cap: the builder puts up scaffolding. Needs 14 stone
+    bricks and 25 polished andesite."""
+    b = Build(5, 15, 5)
+    b.fill(2, 0, 2, 2, 13, 2, "stone_bricks")
+    b.fill(0, 14, 0, 4, 14, 4, "polished_andesite")
+    b.fill_air()
+    return b
+
+
 def test_area(name, w, h, d, folder=TEST_AREAS):
     """Flat smooth-stone floor at y=0, empty above. Saved as SNBT in the *packed* layout the gametest
     loader expects (palette of state strings, `data` entries with a `state` string)."""
@@ -195,6 +206,8 @@ if __name__ == "__main__":
         save_wonder(wonder_id)
     test_hut().save(TEST_STRUCTURES, "test_hut")
     test_hut_2().save(TEST_STRUCTURES, "test_hut_2")
+    test_pillar().save(TEST_STRUCTURES, "test_pillar")
+    test_pillar().save(DEVCLIENT_STRUCTURES, "test_pillar")  # the scaffolding scene's (35.6)
     test_area("build_area", 17, 8, 17)
     test_area("big_area", 22, 18, 22)
     test_area("huge_area", 30, 20, 30)

@@ -4347,7 +4347,7 @@ Legends.
     off;
   - scene `wonder_hanging_gardens`: the time-lapse, ending with the falls running and farmers on the terraces; its GIF
     and powers are in the README.
-- [ ] **35.21** **The Colossus: its design.** The Founder's statue, 47 high, drawn like 35.9: a robed villager, nose
+- [x] **35.21** (review: pending 2026-10-12) **The Colossus: its design.** The Founder's statue, 47 high, drawn like 35.9: a robed villager, nose
   and all, one hand on the chest and the other raising a lantern, on a 13-high stepped plinth with an arch through it
   (5 wide, 6 high) for the main road and its caravans, so the village passes beneath. The figure is stone (polished
   diorite and smooth stone) under a cloak of cut copper that weathers green over the weeks (about 250 copper blocks);
@@ -5645,3 +5645,10 @@ item waits.
   water bucket), as the builder does. The cocoa beans are goods only: cocoa needs jungle logs, which the palette doesn't
   have. Glow berries hang one block long, under solid blocks (a longer strand needs cave vine stems, which have no item
   and a builder skips).
+- **35.21 the Colossus' figure and copper** (lane-b-1012-0033, 2026-10-12): drawn at 29 x 47 x 29, 8,963 blocks (7,105 /
+  774 / 590 / 494), within 10% of the 9,000. The figure is the vanilla villager at a pixel a block (widths 9 instead of 8,
+  so the nose and the arch share the road's middle), its head 10 high; the robe is 22 high instead of the villager's 24 so
+  that the raised lantern stands above the head (y 42-46) inside the 47. "One hand on the chest" is the villager's folded
+  arms, half of them: the left forearm across the chest, the hand on it. The cut copper is about 370 blocks, not 250: the
+  cloak needs three pleats to stop its back being one flat sheet, and the lantern's plate and cap are copper too. The robe
+  and the head are shells (nothing a player sees is left out). The face has two emerald blocks for pupils.

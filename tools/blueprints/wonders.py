@@ -3770,6 +3770,266 @@ def hanging_gardens_running(stage=None):
     return h_flow(out)
 
 
+# --- the Colossus (35.21) ------------------------------------------------------------------------------------------------
+# The Colossus, 29 x 47 x 29: the Founder's statue over the village's main road, which runs front (z = 0) to back through
+# the arch. Design on paper (the figure drawn at a pixel a block, from the vanilla villager model, which is what makes it
+# read as one from far off: the tall head, the long nose hanging to the chin, the unibrow, the robe):
+# - The plinth, 13 high (y 0-12), stepped in three: A, 27 x 27 (x and z 1-27) and 7 high, on a skirt of deepslate brick
+#   stairs, its stone bricks mossy and cracked low down, polished andesite pilasters every five or six blocks standing
+#   one out, a cornice of upside-down stairs at y 6; B, 21 x 21 and 4 high, set back three (a terrace round it at y 7
+#   with a stone-brick balustrade and nine braziers), a polished andesite band and cornice; C, the pedestal, 15 x 15 and
+#   2 high, smooth stone over a polished andesite course.
+# - The road arch through A, front to back: 5 wide (x 12-16) and 6 high (y 0-5, the crown 3 wide on haunches of stairs),
+#   polished andesite jambs and voussoirs, a chiseled keystone; three lantern niches down each side of the passage; lamp
+#   posts at both mouths. The Founder's plaque: five dark oak signs over the front arch on a dark oak panel framed in
+#   polished andesite, on B's face above the terrace (35.22 writes them).
+# - The figure, 34 high (y 13-46), facing the front (north) up the road: the robe from y 13 to the shoulders at 34 (11 x 9
+#   at the hem, flaring with a course of stairs at y 19, then 9 x 7), polished diorite with smooth stone at the hem, the
+#   belt (y 24) and down the front; two feet under the hem. The head 9 x 9 and 10 high (y 35-44, a block out from the
+#   chest front and back, as the villager's is); the nose 3 x 4, two out, from y 37 down past the chin to 34; the unibrow
+#   a polished deepslate ledge one out across both eyes (y 40); the eyes white with emerald pupils on the inner side
+#   (y 39). The robe is 22 high, not the villager's 24, so the lantern stands above the head inside the 47. The left arm
+#   folds across the chest, its hand on the chest (the villager's folded arms, half of them); the right arm rises clear
+#   of the head and holds up the lantern: a cage of glass panes round three glowstone (y 43-45), on a copper plate, under
+#   a cut copper cap at y 46 (the top). The cloak: cut copper hanging behind from the shoulders to the pedestal (a gap
+#   behind the back, folds at the sides, three pleats, a collar), weathering green over the weeks.
+#   The robe and head are shells (the builders lay the stone, not the inside).
+# - Palette (60/30/10): stone bricks and deepslate below, polished diorite and smooth stone above (light going up), cut
+#   copper; polished andesite trim; a glass type: panes. The arm and the head need scaffolding (35.6).
+# - Stages, each ending tidy: I the Plinth and the Road Arch (all of it, the braziers, lamps and plaque); II the Robes
+#   (the robe and the feet); III the Arms and the Cloak; IV the Head and the Lantern.
+COW, COH, COD = 29, 47, 29
+CO_C = 14  # the middle (x and z)
+CO_ARCH = (12, 16)  # the road's arch (x)
+CO_TOP = 46  # the lantern's cap
+CO_HEM = 19  # the hem's last course, its flare
+CO_BELT = 24
+CO_NECK = 34  # the robe's top (the shoulders); the head is the 10 above it
+CO_LAMP_X = (21, 23)  # the raised arm and its lantern (x), clear of the head
+CO_FIGURE = "polished_diorite"
+CO_TRIM = "smooth_stone"
+CO_PIER = "polished_andesite"
+CO_COPPER = "cut_copper"
+CO_SKIRT = DEEPSLATE_BRICK
+CO_FACE = Courses()
+CO_UPPER = Mix((10, "stone_bricks"), (1, "cracked_stone_bricks"), seed=71)
+CO_PLEATS = (11, 14, 17)  # the cloak's folds (x)
+CO_PILASTERS = (1, 6, 11, 17, 22, 27)  # along each face of A (11 and 17 are the arch's jambs on the front and back)
+
+
+def co_ring(x0, x1, z0, z1):
+    return [(x, z) for x in range(x0, x1 + 1) for z in range(z0, z1 + 1) if x in (x0, x1) or z in (z0, z1)]
+
+
+def co_in_arch(x, y):
+    """The road's passage: 5 wide to y 4, the crown 3 wide at y 5."""
+    return CO_ARCH[0] <= x <= CO_ARCH[1] and y <= 4 or CO_ARCH[0] + 1 <= x <= CO_ARCH[1] - 1 and y == 5
+
+
+def co_out(x, z, lo, hi):
+    """Which way a cell on the ring lo..hi faces out (its side; a corner takes its z side)."""
+    return "north" if z == lo else "south" if z == hi else "west" if x == lo else "east"
+
+
+def co_plinth(b):
+    # the skirt and A
+    for x, z in co_ring(0, 28, 0, 28):
+        if not CO_ARCH[0] <= x <= CO_ARCH[1]:
+            stairs(b, x, 0, z, CO_SKIRT, OPP[co_out(x, z, 0, 28)])
+    for y in range(7):
+        for x in range(1, 28):
+            for z in range(1, 28):
+                if co_in_arch(x, y):
+                    continue
+                edge = x in (1, 27) or z in (1, 27)
+                b.set(x, y, z, CO_FACE if edge or y == 6 else "stone_bricks")
+    # the pilasters, one out on the skirt's line, the cornice over them
+    for k in CO_PILASTERS:
+        for x, z in ((k, 0), (k, 28), (0, k), (28, k)):
+            for y in range(0, 6):
+                b.set(x, y, z, CO_PIER)
+    for x, z in co_ring(0, 28, 0, 28):
+        stairs(b, x, 6, z, "stone_brick_stairs", co_out(x, z, 0, 28), top=True)
+    # the arch: jambs, haunches, voussoirs and keystone at both mouths; lantern niches down the passage
+    for z in (1, 27):
+        for y in range(6):
+            b.set(CO_ARCH[0] - 1, y, z, CO_PIER)
+            b.set(CO_ARCH[1] + 1, y, z, CO_PIER)
+        for x in range(CO_ARCH[0], CO_ARCH[1] + 1):
+            b.set(x, 6, z, CO_PIER)
+        b.set(CO_C, 6, z, "chiseled_stone_bricks")
+    for z in range(1, 28):
+        stairs(b, CO_ARCH[0], 5, z, "stone_brick_stairs", "west", top=True)
+        stairs(b, CO_ARCH[1], 5, z, "stone_brick_stairs", "east", top=True)
+    for z in (7, 14, 21):
+        for x in (CO_ARCH[0] - 1, CO_ARCH[1] + 1):
+            b.set(x, 2, z, "air")
+            lantern(b, x, 1, z)
+    # lamp posts at both mouths
+    for z in (0, 28):
+        for x in (9, 19):
+            b.set(x, 0, z, "chiseled_stone_bricks")
+            wall_block(b, x, 1, z, "stone_brick_wall")
+            lantern(b, x, 2, z)
+    # B, its band and cornice, and the terrace's balustrade and braziers
+    for y in range(7, 11):
+        for x in range(4, 25):
+            for z in range(4, 25):
+                edge = x in (4, 24) or z in (4, 24)
+                corner = x in (4, 24) and z in (4, 24)
+                b.set(x, y, z, CO_PIER if corner or (edge and y == 10) else CO_UPPER)
+    for x, z in co_ring(3, 25, 3, 25):
+        stairs(b, x, 10, z, "polished_andesite_stairs", co_out(x, z, 3, 25), top=True)
+    braziers = {(1, 1), (27, 1), (1, 27), (27, 27), (1, 14), (27, 14), (14, 27), (7, 1), (21, 1)}
+    for x, z in co_ring(1, 27, 1, 27):
+        if (x, z) in braziers:
+            b.set(x, 7, z, "campfire", facing="south", lit=True, signal_fire=False, waterlogged=False)
+        else:
+            wall_block(b, x, 7, z, "stone_brick_wall")
+    # the Founder's plaque over the front arch: a dark oak panel framed in polished andesite, five signs on it
+    for x in range(10, 19):
+        for y in (7, 8, 9):
+            b.set(x, y, 4, CO_PIER if x in (10, 18) or y != 8 else "dark_oak_planks")
+    for x in range(11, 18):
+        b.set(x, 8, 3, "dark_oak_wall_sign", facing="north", waterlogged=False)
+    stairs(b, 10, 9, 3, "polished_andesite_stairs", "south", top=True)
+    stairs(b, 18, 9, 3, "polished_andesite_stairs", "south", top=True)
+    for x in range(11, 18):
+        slab(b, x, 9, 3, "polished_andesite_slab", top=True)
+    # C, the pedestal
+    for x in range(7, 22):
+        for z in range(7, 22):
+            b.set(x, 11, z, CO_PIER)
+            b.set(x, 12, z, CO_TRIM)
+    for x, z in co_ring(7, 21, 7, 21):
+        if x in (7, 21) and z in (7, 21):
+            b.set(x, 12, z, "chiseled_stone_bricks")
+
+
+def co_shell(b, x0, x1, z0, z1, y, solid, name):
+    """One course of the figure: the whole rectangle if solid, else its outline."""
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            if solid or x in (x0, x1) or z in (z0, z1):
+                b.set(x, y, z, resolve(name, x, y, z) if not isinstance(name, str) else name)
+
+
+def co_robe(b):
+    for y in range(13, CO_NECK + 1):
+        if y <= CO_HEM:
+            x0, x1, z0, z1 = 9, 19, 10, 18
+        else:
+            x0, x1, z0, z1 = 10, 18, 11, 17
+        name = CO_TRIM if y in (13, 14, CO_BELT) else CO_FIGURE
+        co_shell(b, x0, x1, z0, z1, y, y in (13, CO_NECK), name)
+        if y not in (13, 14, CO_BELT):
+            b.set(CO_C, y, z0, CO_TRIM)  # the robe's front, closed down the middle
+    # the flare: the hem's outer course slopes in under the body
+    for x, z in co_ring(9, 19, 10, 18):
+        stairs(b, x, CO_HEM, z, DIORITE, OPP[co_side(x, z, 9, 19, 10, 18)])
+    # the feet
+    for x in (11, 12, 16, 17):
+        stairs(b, x, 13, 9, DIORITE, "south")
+
+
+def co_side(x, z, x0, x1, z0, z1):
+    return "north" if z == z0 else "south" if z == z1 else "west" if x == x0 else "east"
+
+
+def co_arms(b):
+    n = CO_NECK
+    # the left arm (west): the shoulder, the upper arm down the side, the forearm across the chest, the hand on it
+    for y in range(n - 7, n + 1):
+        for z in range(12, 16):
+            b.set(9, y, z, CO_FIGURE)
+    for x in range(9, 15):
+        for y in range(n - 8, n - 4):
+            for z in range(8, 11):
+                b.set(x, y, z, CO_FIGURE)
+    for y in range(n - 8, n - 4):
+        for z in range(8, 11):
+            b.set(14, y, z, CO_TRIM)  # the sleeve's cuff
+    for x in (15, 16):
+        for y in range(n - 7, n - 4):
+            for z in (9, 10):
+                b.set(x, y, z, CO_TRIM)
+    # the right arm (east): the shoulder, the elbow out, the arm rising clear of the head, the hand round the lantern's foot
+    for y in range(n - 3, n + 1):
+        for z in range(12, 16):
+            b.set(19, y, z, CO_FIGURE)
+    for y in range(n - 3, n):
+        for z in range(12, 15):
+            b.set(20, y, z, CO_FIGURE)
+    for x in range(CO_LAMP_X[0], CO_LAMP_X[1] + 1):
+        for z in range(12, 15):
+            for y in range(n - 3, 41):
+                b.set(x, y, z, CO_TRIM if y == 40 else CO_FIGURE)
+            b.set(x, 41, z, CO_TRIM)
+    # the cloak: cut copper from the shoulders down the back to the pedestal, a gap behind the back, folds at the sides
+    for x in range(9, 20):
+        for y in range(13, n + 1):
+            b.set(x, y, 19, CO_COPPER)
+    for x in range(10, 19):
+        b.set(x, n, 18, CO_COPPER)
+    for y in range(CO_HEM + 1, n):
+        b.set(9, y, 18, CO_COPPER)
+        b.set(19, y, 18, CO_COPPER)
+    for x in range(9, 20):
+        stairs(b, x, n + 1, 19, CUT_COPPER, "north")  # the collar
+    # its folds: three pleats a block out, from under the shoulders to the hem, ending in a step
+    for x in CO_PLEATS:
+        for y in range(14, n - 2):
+            b.set(x, y, 20, CO_COPPER)
+        stairs(b, x, n - 2, 20, CUT_COPPER, "north")
+        stairs(b, x, 13, 20, CUT_COPPER, "north")
+
+
+def co_head(b):
+    h0 = CO_NECK + 1  # the head's lowest course; it is 10 high, the villager's
+    for y in range(h0, h0 + 10):
+        co_shell(b, 10, 18, 10, 18, y, y in (h0, h0 + 9), CO_FIGURE)
+    # the face, counted down from the top row as on the villager's texture: the unibrow on row 4, the eyes on row 5, the
+    # nose rows 7 to 10 (hanging a row past the chin)
+    top = h0 + 9
+    for x in range(11, 18):
+        slab(b, x, top - 4, 9, "polished_deepslate_slab", top=True)
+    for x, name in ((11, "smooth_quartz"), (12, "emerald_block"), (16, "emerald_block"), (17, "smooth_quartz")):
+        b.set(x, top - 5, 10, name)
+    for x in range(13, 16):
+        for y in range(top - 10, top - 6):
+            for z in (8, 9):
+                b.set(x, y, z, CO_FIGURE)
+    # the lantern: a copper plate on the hand, a cage of panes round glowstone, a copper cap at the top
+    lo, hi = CO_LAMP_X
+    for x in range(lo, hi + 1):
+        for z in range(12, 15):
+            b.set(x, 42, z, CO_COPPER)
+            slab(b, x, CO_TOP, z, CUT_COPPER)
+    for y in (43, 44, 45):
+        b.set(lo + 1, y, 13, "glowstone")
+        for x, z in co_ring(lo, hi, 12, 14):
+            pane(b, x, y, z)
+
+
+def colossus():
+    b = StagedBuild(COW, COH, COD)
+    b.begin(1)
+    co_plinth(b)
+    b.begin(2)
+    co_robe(b)
+    b.begin(3)
+    co_arms(b)
+    b.begin(4)
+    co_head(b)
+    return b
+
+
+def colossus_stage(stage=None):
+    """For the renders only: the Colossus as it stands after a stage (whole by default)."""
+    stages = colossus().stage_builds()
+    return stages[(stage or len(stages)) - 1]
+
+
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
 def goods(*lines):
     out = []
@@ -3959,6 +4219,35 @@ WONDERS = {
         "powers": [
             {"type": "harvest", "scope": "realm", "extra_every": 4},
             {"type": "births", "meals": 12, "per_day": 2},
+        ],
+    },
+    "colossus": {
+        "draw": colossus,
+        "icon": "minecraft:lantern",
+        "crew": 12,
+        "requirements": [
+            {"type": "rank_at_least", "rank": "city"},
+            {"type": "legend", "id": "aliveworkplace:founder",
+             "stand_in": [{"type": "rank_at_least", "rank": "city"}]},
+        ],
+        "goods": [
+            goods(("item", "minecraft:baked_potato", 128, "aliveworkplace:chef"),
+                  ("item", "minecraft:coal", 64, "aliveworkplace:miner"),
+                  ("item", "minecraft:iron_pickaxe", 8, "minecraft:toolsmith")),
+            goods(("item", "minecraft:copper_ingot", 64, "minecraft:armorer"),
+                  ("item", "minecraft:white_wool", 64, "minecraft:shepherd"),
+                  ("item", "minecraft:leather", 32, "minecraft:butcher")),
+            goods(("item", "minecraft:chain", 32, "aliveworkplace:tinkerer"),
+                  ("item", "minecraft:stripped_dark_oak_log", 32, "aliveworkplace:lumberjack"),
+                  ("item", "minecraft:potion", 16, "minecraft:cleric", "minecraft:strength")),
+            goods(("item", "minecraft:glowstone_dust", 32, "aliveworkplace:netherworker"),
+                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
+                  ("item", "minecraft:cake", 16, "aliveworkplace:chef")),
+        ],
+        "powers": [
+            {"type": "mood", "scope": "realm", "amount": 8, "home_amount": 12},
+            {"type": "travellers", "factor": 2, "expert_factor": 2},
+            {"type": "beauty", "points": 8},
         ],
     },
 }

@@ -51,7 +51,8 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 		new Design("great_library", 16_000), // 35.13
 		new Design("observatory", 9_000), // 35.17
 		new Design("great_wall", 11_000), // 35.15 (the roadmap's 18,000 needs solid towers: ROADMAP Notes)
-		new Design("hanging_gardens", 15_000)); // 35.19
+		new Design("hanging_gardens", 15_000), // 35.19
+		new Design("colossus", 9_000)); // 35.21
 
 	/** The largest a part may be on any side (a structure file a Structure Block could load). */
 	static final int PART_LIMIT = 48;

@@ -3,10 +3,10 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall and the Hanging Gardens) are built, behind the 2.0 switch (see
+Wonders page, the Wonder Plan and the first Wonders' designs (the Great Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, the Hanging Gardens and the Colossus) are built, behind the 2.0 switch (see
 Known limits); the full plan is the design note, docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19
+Roadmap items: 35.1, 35.2, 35.3, 35.9, 35.11, 35.13, 35.15, 35.17, 35.19, 35.21
 
 ## What a player sees
 
@@ -158,6 +158,24 @@ bottles (Beekeeper), 64 carrots and 64 potatoes (Farmer), 32 cocoa beans (Orchar
 (Butcher), 32 raw cod (Fisherman). It needs a Town and the Grand Chef (or a Master Chef and 8 kinds of meal in the store
 while Legends are off). Its powers, the bigger harvests and the faster births, come with 35.20.
 
+**The Colossus** (35.21) is drawn: the Founder's statue, 47 high on a 29 by 29 site, about 9,000 blocks, standing over the
+village's main road. It is a villager drawn a pixel to a block from the game's own model, so it reads as one from far
+off: the tall head (9 across, 10 high), the long nose hanging past the chin, a dark unibrow over white eyes with emerald
+pupils, and a robe of polished diorite trimmed with smooth stone at the hem, the belt and down the front, flaring at the
+hem over two feet. Its left arm folds across the chest, the hand resting on it; its right arm rises clear of the head and
+holds up the lantern, a cage of glass panes round glowstone under a copper cap, lit day and night. A cloak of cut copper
+(about 370 blocks with the lantern's copper) hangs from the shoulders to the pedestal in three pleats, and weathers green
+over the weeks. The plinth is 13 high in three steps of stone bricks (mossy and cracked low down) on a skirt of deepslate
+brick: polished andesite pilasters and a cornice, a terrace with a balustrade and nine braziers round it, and a smooth
+stone pedestal. The road passes front to back through an arch 5 wide and 6 high, with lantern niches down the passage
+and lamp posts at both mouths; over the front arch is the Founder's plaque, a row of five dark oak signs on a dark oak
+panel (35.22 writes them). The arm and the head need scaffolding (35.6). Its stages: I *The Plinth and the Road Arch*,
+II *The Robes*, III *The Arms and the Cloak*, IV *The Head and the Lantern*. Its goods: I 128 baked potatoes (Chef), 64
+coal (Miner), 8 iron pickaxes (Toolsmith); II 64 copper ingots (Armorer), 64 white wool (Shepherd), 32 leather
+(Butcher); III 32 chains (Tinkerer), 32 stripped dark oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32
+glowstone dust (Netherworker), 64 small flowers (Florist), 16 cakes (Chef). It needs a City and the Founder (or City rank
+while Legends are off). Its powers, the realm's mood, the travellers and its beauty, come with 35.22.
+
 ## How it works
 
 **A Wonder is a data file** (35.2), `data/<namespace>/wonders/<id>.json`, read whenever data packs load, so a server
@@ -214,7 +232,7 @@ checks; stage parts are ordinary builds of the builder, using the Foundation Sto
 **Our Wonders' designs** (35.9 on) are drawn whole in `tools/blueprints/wonders.py`, one function each, stage by stage
 on a staged build that refuses to draw over an earlier stage's block; `wonder_stages()` cuts each stage into parts and
 `wonders.py` writes the Wonder's data file (`aliveworkplace:great_cathedral` is
-`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`, `aliveworkplace:observatory` is `.../observatory.json`, `aliveworkplace:great_wall` is `.../great_wall.json`, `aliveworkplace:hanging_gardens` is `.../hanging_gardens.json`) with those parts, so the two always agree. Each stage is checked
+`data/aliveworkplace/wonders/great_cathedral.json`, `aliveworkplace:lighthouse` is `.../lighthouse.json`, `aliveworkplace:great_library` is `.../great_library.json`, `aliveworkplace:observatory` is `.../observatory.json`, `aliveworkplace:great_wall` is `.../great_wall.json`, `aliveworkplace:hanging_gardens` is `.../hanging_gardens.json`, `aliveworkplace:colossus` is `.../colossus.json`) with those parts, so the two always agree. Each stage is checked
 as it will stand, on the stages before it (nothing held up by nothing), and every stage leaves the site tidy, since the
 village lives beside it for days.
 
@@ -276,10 +294,10 @@ Planned: the Foundation Stone (a block).
 ## Known limits
 
 - No Wonder can be started in game yet: the plan can be drawn and placed, but there's no Foundation Stone to hand it
-  over (35.4). The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's and the
-  Hanging Gardens' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19), so they are on the Wonders page behind the 2.0
-  switch; their powers come with 35.10, 35.12, 35.14, 35.18, 35.16 and 35.20, and the other two Wonders' files with 35.21
-  and 35.23. Everything is behind the 2.0 switch.
+  over (35.4). The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the
+  Hanging Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the
+  Wonders page behind the 2.0 switch; their powers come with 35.10, 35.12, 35.14, 35.18, 35.16, 35.20 and 35.22, and the
+  Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A Wonder going up shows "how far along" by its stages done; the parts' own progress joins with 35.4.
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
@@ -303,8 +321,8 @@ the plan is refused outside the village and over a finished building and goes do
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
-in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; its card shows four of the stills, the rest are in its gallery).
+in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; the Colossus faces its front, down the road through its arch; its card shows four of the stills, the rest are in its gallery).

@@ -10,7 +10,7 @@
   "order": 20,
   "boost": [
     {
-      "type": "aliveworkplace:carry",
+      "type": "aliveworkplace:caravan_carry",
       "stacks": 2,
       "between": "members"
     },

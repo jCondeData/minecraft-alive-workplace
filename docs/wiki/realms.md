@@ -397,7 +397,7 @@ the edict lapse ("the realm treasury hadn't the 1.00 emeralds of its upkeep"), a
 newest. The members' dues come out of each member's own treasury at its morning takings, as far as it has them and
 the realm treasury has room. The Realm Festival's share is paid when a member plans its festival; without it there is
 no festival and the village is disappointed. The Royal Charter's share is checked before a charter is sold and paid
-with it. Effect types (`carry`, `caravan_speed`, `realm_upkeep`, `member_dues`, `common_board`, `member_spread`,
+with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `caravan_speed`, `realm_upkeep`, `member_dues`, `common_board`, `member_spread`,
 `levy`, `relief_reach`, `relief_band`, `festival_together`, `festival_mood_days`, `realm_festival_cost`, `no_feuds`,
 `no_bandit_camps`, `takings`, `colony_rank`, `colony_cooldown`, `colony_cost`) are read by the system each changes.
 

@@ -73,7 +73,7 @@ public final class RealmEdicts {
 	public static final ResourceLocation COLONIES_AT_VILLAGE_RANK = AliveWorkplace.id("colonies_at_village_rank");
 
 	// The effect types.
-	public static final ResourceLocation CARRY = AliveWorkplace.id("carry");
+	public static final ResourceLocation CARRY = AliveWorkplace.id("caravan_carry");
 	public static final ResourceLocation REALM_UPKEEP = AliveWorkplace.id("realm_upkeep");
 	public static final ResourceLocation MEMBER_DUES = AliveWorkplace.id("member_dues");
 	public static final ResourceLocation COMMON_BOARD = AliveWorkplace.id("common_board");
@@ -173,7 +173,7 @@ public final class RealmEdicts {
 
 	// ---- the effect types ------------------------------------------------------------------------------------------------
 
-	/** {@code carry}: caravans between members carry {@code stacks} more stacks of what the other waits for. */
+	/** {@code caravan_carry} (not the guilds' {@code carry}, 30.20): caravans between members carry {@code stacks} more stacks of what the other waits for. */
 	public record Carry(int stacks, String between, List<ResourceLocation> jobs) implements CivicEffects.Effect {
 		@Override
 		public ResourceLocation type() {

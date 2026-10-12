@@ -250,6 +250,9 @@ public class CupMatchCompatTests implements FabricGameTest {
 		ServerPlayer p = player(helper, "pikachu level=25", "mewtwo level=70", "eevee level=20");
 		ServerPlayer q = player(helper, "rattata level=10", "pidgey level=12");
 		BlockPos ring = p.blockPosition();
+		// Mock players log in anywhere within the spawn radius (10) of the world spawn, up to 28 blocks apart: Q stands by P
+		// at the ring, or Q's ready is "come inside the Arena first" (B98: 24.04 apart, 1 run in 40)
+		q.teleportTo(p.getX(), p.getY(), p.getZ());
 		CupData.Entrant a = new CupData.Entrant(CupData.Kind.PLAYER, p.getUUID(), "P", 0, 0, host);
 		CupData.Entrant b = new CupData.Entrant(CupData.Kind.PLAYER, q.getUUID(), "Q", 0, 0, host);
 		CupData.Cup cup = cup(helper, host, theme, a, b);
@@ -263,9 +266,9 @@ public class CupMatchCompatTests implements FabricGameTest {
 		CupMatches.call(level, host, cup, new CupBouts.Pairing(1, a, b), ring, ring.west(10), ring.east(10));
 		helper.assertTrue(CupMatches.ready(p).getString().contains("Waiting for your opponent"), "the first ready didn't wait");
 		helper.assertTrue(BattleRegistry.getBattleByParticipatingPlayer(p) == null, "a battle started with one player ready");
-		CupMatches.ready(q);
+		String second = CupMatches.ready(q).getString();
 		PokemonBattle battle = BattleRegistry.getBattleByParticipatingPlayer(p);
-		helper.assertTrue(battle != null && battle.isPvP() && battle.getBattleId().equals(cup.call.battle), "no PvP battle started");
+		helper.assertTrue(battle != null && battle.isPvP() && battle.getBattleId().equals(cup.call.battle), "no PvP battle started: " + second);
 		List<String> mine = species(actorOf(battle, p.getUUID()));
 		List<String> theirs = species(actorOf(battle, q.getUUID()));
 		helper.assertTrue(mine.equals(List.of("pikachu", "eevee")), "P's side (Mewtwo is legendary): " + mine);

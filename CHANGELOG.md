@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A player-guide article for everything you can meet** (22.10a part 3): about 190 new wiki pages, one per job, block,
+  item, build, threat, setting theme, game rule, command and village-life system, each with an infobox and a section
+  on how it ties into the rest (what feeds it, what it affects, what stops it), all linked from the main page's A to Z
+  lists. Pages for every expansion (story arcs, edicts, classes, Wonders, Legends, guilds, the Steward, the Festival Cup, disasters, realms, luxuries and friendships) are written too and appear on
+  the published guide the night their expansion switches on.
 - **The Colossus' design, for 2.0** (35.21, nothing to start in game until Wonders is finished): the seventh Wonder's
   build, the Founder's statue 47 high (about 9,000 blocks): a robed villager in polished diorite and smooth stone, big
   nose, unibrow and all, one arm folded across the chest and the other holding up a lantern of glass round glowstone,
@@ -81,6 +86,10 @@ asks for the steps, `latest.log` and any crash report).
   standing there a tick for each one (about 20 seconds round a Wonder's last stage).
 
 ### Changed
+- **Threats never destroy your builders' work** (32.16a, part of 1.6): only the gate blocks of walls and gates break
+  under the rams, and nothing else a raider does (a creeper's blast, a ravager, a vindicator at a house door) breaks a
+  block the builders placed or a build still under way. Whatever rams and village fires take, the builders always put
+  back, even with Builder Repairs off, and a restart forgets none of it.
 - **The Artisan's House and the Burgher's Townhouse are sold by builders only** (34.15a): they're no longer in the
   Blueprint Table. A builder sells the Artisan's House from Apprentice on and the Townhouse once the village has
   Artisans; blueprints already bought and houses already built keep working.

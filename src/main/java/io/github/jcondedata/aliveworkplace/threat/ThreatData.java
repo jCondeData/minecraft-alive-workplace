@@ -46,6 +46,9 @@ import net.minecraft.world.level.saveddata.SavedData;
  * {@code to_others} (default 0 and false), {@code kills} (per guard: {@code guard}, {@code count}, {@code name};
  * default none) and {@code players} (who killed a raider; default none).</li>
  * <li>{@code broken} (32.4): per {@code hall}, the gate blocks rams broke that wait for a builder.</li>
+ * <li>{@code damaged} (32.16a): every builder's block a threat took (a gate a ram broke, a block a village fire
+ * burned) that no builder has put back yet, as packed positions; builders repair these even with {@code builderRepairs}
+ * off, and the list survives a restart. Default none.</li>
  * <li>{@code after} (32.6): per {@code hall}, the game time until which its villagers are glad they held
  * ({@code held}) and its builders mend defence builds first ({@code mending}); default none.</li>
  * <li>{@code plunder} (32.10): per {@code hall}, how many items of gold raiders carried off from its chests (counted at
@@ -174,6 +177,8 @@ public final class ThreatData extends SavedData {
 	private final Map<BlockPos, List<Past>> history = new LinkedHashMap<>();
 	private final Map<BlockPos, Siege> sieges = new LinkedHashMap<>();
 	private final Map<BlockPos, List<BlockPos>> broken = new LinkedHashMap<>();
+	/** Builders' blocks threats took and nobody has put back yet (32.16a). */
+	private final java.util.LinkedHashSet<BlockPos> damaged = new java.util.LinkedHashSet<>();
 	/** Per hall, the game time until which its villagers are glad they held (32.6). */
 	private final Map<BlockPos, Long> held = new LinkedHashMap<>();
 	/** Per hall, the game time until which its builders mend defence builds first (32.6). */
@@ -407,6 +412,25 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	/** A threat took the builder's block at {@code pos} (32.16a): it waits for a builder, whatever {@code builderRepairs} says. */
+	public void damaged(BlockPos pos) {
+		if (damaged.add(pos.immutable())) {
+			setDirty();
+		}
+	}
+
+	/** The builders' blocks threats took that nobody has put back yet. */
+	public List<BlockPos> damaged() {
+		return damaged.isEmpty() ? List.of() : List.copyOf(damaged);
+	}
+
+	/** The block at {@code pos} is back (or will never be: its build is gone). */
+	public void repaired(BlockPos pos) {
+		if (damaged.remove(pos)) {
+			setDirty();
+		}
+	}
+
 	/** The gate block at {@code pos} is back (or will never be: the build is gone). */
 	public void gateMended(BlockPos hall, BlockPos pos) {
 		List<BlockPos> list = broken.get(hall);
@@ -589,6 +613,7 @@ public final class ThreatData extends SavedData {
 			holes.add(h);
 		}
 		tag.put("broken", holes);
+		tag.putLongArray("damaged", damaged.stream().mapToLong(BlockPos::asLong).toArray());
 		ListTag lost = new ListTag();
 		for (Map.Entry<BlockPos, Integer> e : plundered.entrySet()) {
 			CompoundTag h = new CompoundTag();
@@ -613,6 +638,10 @@ public final class ThreatData extends SavedData {
 		history.clear();
 		sieges.clear();
 		broken.clear();
+		damaged.clear();
+		for (long pos : Nbt.getLongArray(tag, "damaged")) {
+			damaged.add(BlockPos.of(pos));
+		}
 		held.clear();
 		mending.clear();
 		plundered.clear();

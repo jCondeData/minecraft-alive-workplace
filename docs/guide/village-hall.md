@@ -10,8 +10,11 @@ Ranks: Hamlet, Village, Town, City
 Treasury: about a fifth of an emerald a worker a day
 Protection: shift-click the hall's name icon
 Village Ledger: a book and an emerald
-categories: Village Hall
-related: village-life.md, quests.md, festivals-and-markets.md, trade-and-caravans.md
+Mined with: an axe
+Stack size: 64
+Found in creative tab: yes
+categories: Village Hall, Blocks
+related: village-life.md, quests.md, festivals-and-markets.md, trade-and-caravans.md, village-ledger.md, map-of.md
 ```
 
 The Village Hall turns a group of villagers into a village that lives: everyone gets a name, the village has needs, a
@@ -22,6 +25,9 @@ rank, a treasury and a chronicle, and you can see all of it in one screen.
 Craft a **Village Hall** (gold, a book and gold over planks, with an emerald in the middle) and put it in the middle of
 your village; by the bell is a good spot. Everyone within 64 blocks belongs to it. The village gets a made-up name
 (*Thornholm*, *Ashford*...); use a **Name Tag** on the hall to call it what you like (the tag isn't used up).
+
+**Moving it.** Mine the hall with an axe and it drops itself, keeping a name you gave it. While it's gone, the village
+leaves the caravans' trade routes and its open quests are dropped, so put it back soon.
 
 ## The hall's screen
 
@@ -45,7 +51,7 @@ The **bell** in the middle calls everyone home: villagers who wandered off are b
 - **Trade routes** (the minecart): caravans to other villages. See [Trade and caravans](trade-and-caravans.md).
 - **What next?** (the compass): what the village lacks most, from a builder or beds to guards or decorations, each with
   how to put it right.
-- **The village map**: draws the village on an empty map from your inventory, every building marked and colored by what
+- **[The village map](map-of.md)**: draws the village on an empty map from your inventory, every building marked and colored by what
   it is.
 - **The calendar**: the season, the day, and when the next festival is.
 - **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defense](defence.md).
@@ -77,7 +83,7 @@ It's off until you turn it on.
 
 ## The Village Ledger
 
-Craft a **Village Ledger** (a book and an emerald) and right-click your hall with it. From then on, right-click the air
+Craft a **[Village Ledger](village-ledger.md)** (a book and an emerald) and right-click your hall with it. From then on, right-click the air
 anywhere nearby to open the hall's screen without walking back.
 
 ## Needs

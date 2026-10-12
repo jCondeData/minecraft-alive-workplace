@@ -2,6 +2,7 @@
 
 ```infobox
 type: Disaster
+expansion: M32
 image: https://jcondedata.github.io/minecraft-alive-workplace/drought/still-2.jpg
 caption: The dry fields and the Well Keeper's buckets
 Comes after: five days without rain
@@ -11,7 +12,7 @@ Answered by: the Well Keeper (a shovel at a cauldron)
 Building: the Well House
 Pokémon: Water types help
 categories: Disasters, Jobs
-related: plague.md, fire.md, jobs-land.md
+related: well-keeper.md, well-house-build.md, disasters.md, plague.md, fire.md, jobs-land.md
 ```
 
 When the rain stays away for five days, a village can fall into a **drought**. Villages in the desert, the savanna and

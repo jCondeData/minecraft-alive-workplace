@@ -24,10 +24,14 @@ import org.jetbrains.annotations.Nullable;
  * Upkeep: an idle builder looks over the buildings they (or whoever they work for) finished nearby every so often, and
  * when blocks are missing — a creeper's hole, a raid, a window someone broke, what a village fire burned (32.16, once
  * it's out) — sets about putting them back ({@link BuildPlan#repair}: only the holes are filled, with the builder's
- * usual materials; nothing players put there is touched). {@code builderRepairs} in the config turns it off.
+ * usual materials; nothing players put there is touched). {@code builderRepairs} in the config turns it off, except
+ * for what threats took (ROADMAP 32.16a: a gate a ram broke, a block a village fire burned; {@code ThreatData#damaged}):
+ * those buildings are always repaired, so no threat ever destroys the builders' work for good.
  */
 public final class Upkeep {
 	public static boolean ENABLED = true;
+	/** Whether builders put back what threats took even with {@link #ENABLED} off (off in GameTests, as {@link #ENABLED} is). */
+	public static boolean THREATS = true;
 	/** How often an idle builder looks (ticks). */
 	public static int EVERY = 1200;
 
@@ -41,7 +45,8 @@ public final class Upkeep {
 
 		@Override
 		protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-			if (!ENABLED || !Builders.isBuilder(villager) || ModAttachments.BUILDER_JOB.has(villager) || Builders.isHelping(villager)) {
+			if (!ENABLED && !(THREATS && !io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).damaged().isEmpty())
+				|| !Builders.isBuilder(villager) || ModAttachments.BUILDER_JOB.has(villager) || Builders.isHelping(villager)) {
 				return false;
 			}
 			long now = level.getGameTime();
@@ -72,10 +77,11 @@ public final class Upkeep {
 	@Nullable
 	public static BuildSite look(ServerLevel level, Villager builder) {
 		BlockPos bench = Builders.benchPos(builder).orElse(null);
-		if (bench == null) {
+		if (bench == null || !ENABLED && !THREATS) {
 			return null;
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);
+		java.util.List<BlockPos> taken = threatDamage(level);
 		java.util.List<BuildSiteManager.Finished> finished = new java.util.ArrayList<>(manager.finishedNear(level, bench, Builders.MAX_SITE_DISTANCE));
 		if (io.github.jcondedata.aliveworkplace.threat.SiegeReport.defencesFirst(level, bench)) {
 			// In a siege and for two days after it (32.6): the walls, gates and towers before anything else (the sort keeps the rest in order).
@@ -91,6 +97,14 @@ public final class Upkeep {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, f.structure());
 			if (blueprint.isEmpty()) {
 				continue;
+			}
+			if (!ENABLED) {
+				// builderRepairs off: only what threats took (32.16a).
+				net.minecraft.world.level.levelgen.structure.BoundingBox box = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(),
+					blueprint.get().size());
+				if (taken.stream().noneMatch(box::isInside)) {
+					continue;
+				}
 			}
 			int missing = BuildPlan.repair(blueprint.get(), f.placement(), level).size();
 			if (missing == 0) {
@@ -109,6 +123,28 @@ public final class Upkeep {
 			return site;
 		}
 		return null;
+	}
+
+	/**
+	 * The builders' blocks threats took that are still missing (32.16a); those back in place, or no longer in any
+	 * finished building, come off the saved list.
+	 */
+	static java.util.List<BlockPos> threatDamage(ServerLevel level) {
+		io.github.jcondedata.aliveworkplace.threat.ThreatData data = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
+		java.util.List<BlockPos> out = new java.util.ArrayList<>();
+		for (BlockPos pos : data.damaged()) {
+			if (!level.isLoaded(pos)) {
+				out.add(pos); // (can't tell yet)
+				continue;
+			}
+			boolean inBuild = io.github.jcondedata.aliveworkplace.threat.VillageFire.buildAt(level, pos).isPresent();
+			if (!inBuild || !level.getBlockState(pos).canBeReplaced()) {
+				data.repaired(pos);
+			} else {
+				out.add(pos);
+			}
+		}
+		return out;
 	}
 
 	private Upkeep() {

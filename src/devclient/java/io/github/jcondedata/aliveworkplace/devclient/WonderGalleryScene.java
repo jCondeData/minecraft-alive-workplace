@@ -39,7 +39,8 @@ final class WonderGalleryScene {
 		new Wonder("great_cathedral", new Vec3i(39, 53, 55), -1), // 35.9
 		new Wonder("lighthouse", new Vec3i(25, 46, 33), 11), // 35.11: the mole, the jetty and the boathouse in the sea
 		new Wonder("great_library", new Vec3i(41, 34, 41), -1), // 35.13
-		new Wonder("observatory", new Vec3i(31, 43, 31), -1)); // 35.17
+		new Wonder("observatory", new Vec3i(31, 43, 31), -1), // 35.17
+		new Wonder("stadium", new Vec3i(47, 20, 37), -1)); // 35.23: its file and its Healing Machine need Cobblemon, so the scene is filmed with it
 	/** How far the sea reaches past a coastal Wonder's sides and back. */
 	private static final int SEA_MARGIN = 10;
 	private static final int SPACING = 80;

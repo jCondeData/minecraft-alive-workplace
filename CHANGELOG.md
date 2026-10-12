@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Stadium's design, for 2.0** (35.23, with Cobblemon, behind the 2.0 switch): an oval arena of stone round a grass
+  battle field, with stands of red and white seats (in the village's own banner colours if it has a Village Banner),
+  two trainer boxes with Training Posts, a professor's box, a covered stand, a gateway arch with banners, a
+  scoreboard, four floodlight towers that light up at night, a nurse's booth with a Healing Machine and market pitches,
+  in four stages. Without Cobblemon it isn't on the Wonders page.
 - **Realm edicts, for 1.7** (33.22, off until 1.7 is finished): the capital's Book of Edicts gets a row of realm slots
   (1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II) and six realm edicts, in
   force in every member and paid from the realm treasury: the Royal Highway (faster, fuller caravans between members),

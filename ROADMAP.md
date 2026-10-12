@@ -4373,14 +4373,14 @@ Legends.
     with beds free; the plaque reads the village's name and founding day; a damaged Colossus turns them off;
   - scene `wonder_colossus`: the time-lapse with the scaffolding going up and coming down, ending at night with the
     lantern lit over the road; its GIF and powers are in the README.
-- [ ] **35.23** **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
+- [x] **35.23** (review: pending 2026-10-12) **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
   battle field 31 × 21 of grass with white lines and a centre circle (no logos), two trainer boxes with a Training
   Post each, a professor's box at the side, stands of five tiers along the sides and three at the ends with seats in
   red and white (the village's own colours once M30's Village Banner exists), a covered stand on the west under a
   canopy on columns, a gateway arch with banners, four floodlight towers of redstone lamps lit at night by daylight
   detectors, a scoreboard wall, and outside a nurse's booth (a brewing stand and a Healing Machine) and pitches for
   market stalls. Palette: stone bricks and smooth stone, spruce, red and white terracotta, iron for the floodlights.
-  About 18,000 blocks: I *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The
+  About 7,300 blocks (18,000 before it was drawn: Notes, 35.23): I *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The
   Gate and the Floodlights*. If M28 shipped a smaller Stadium for its Festival Cup, this one is the **Grand Stadium**
   in game, to tell them apart. Data (loaded only with Cobblemon, through `fabric:load_conditions` like the explorers'
   Cobblemon loot; without it the Stadium isn't on the Wonders page): Town; the Pokémon Professor (stand-in: 25
@@ -5631,6 +5631,18 @@ item waits.
   village's name as last seen, so `/workplace standing` and the chat never load a far village's chunk. No review
   package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.
 - **qa handoff** (qa-1011-0833, 2026-10-11 08:50Z): B65 (ConscriptionGameTests noWorkDuringARaid...): 12 isolated copies via the repeat generator (own batch each, huge_area, 1600 ticks) all passed, 12/12, on main b836b373; not reproducible alone, so the old flake needs the full suite's global state (Edicts/Sieges/VillageRaids/Conscription.STOPPED cache), nothing seen since 2026-10-05. No mod bug found; leave B65 open for the nightly 10x report. Env trap for QA runs: after the first Gradle failure 'plugin not found', run ./gradlew --stop and retry; Central 429s need retry loops; a cold runGameTest takes ~7 min. Wiki/guide checks pass; 167 items still unverified, next in line B60 B84 B85 B86 B92 B99.
+- **35.23 the Stadium's block count, height and colours** (lane-a-1012-0033, 2026-10-12): drawn at 47 x 37 with
+  everything the item lists, the bowl is 16 high but the gate's banners and the four floodlight heads reach 20 (lights
+  lower than the stands would light nothing), and it is about 7,300 blocks, not 18,000: solid stands of five tiers two
+  up and one back fill only part of a 47 x 37 x 16 box, and 18,000 would need the bowl near solid. Decided: keep the
+  size and the design, and the figure is now about 7,300 (the item's text and `StadiumCompatTests`, within 10%). M28
+  shipped the Arena (28.16), a smaller ring but not called a Stadium, so this one keeps the name "Stadium". The
+  village's colours: a Wonder file's `"village_colours": true` builds its red and white wool, carpet, terracotta and
+  banners in the village's banner base and first other pattern colour, chosen when each stage starts (not saved when
+  the plan is drawn, so a village that changes its banner mid-build gets the new colours from the next stage on).
+  The design checks run as compat tests (the file and the Healing Machine need Cobblemon), and the wonder_gallery
+  scene is now filmed with Cobblemon so it can show the Stadium. Owner: say if you'd rather have a bigger Stadium for
+  the 18,000 (about 55 x 45 with a roofed concourse).
 - **35.11 the Lighthouse's block count** (lane-b-1011-2133, 2026-10-11): drawn at 25 x 33 x 46 with everything the item
   lists (the tower 13 to 9 across, solid round its stair to 8 and three thick to 22, the stepped mole and its arm, the
   gallery, lantern and cupola, the two-storey cottage, the boathouse, the quay and the jetty with its ferry stop), it is

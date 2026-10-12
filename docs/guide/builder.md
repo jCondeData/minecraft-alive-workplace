@@ -91,17 +91,32 @@ The builder is the village's biggest customer. Almost every other worker ends up
 The **Blueprint Table** lists the server's blueprints with its size and exactly what it needs. **Get Blueprint**
 gives you a copy for a Blank Blueprint.
 
-- **Starter builds:** the Starter Cottage, Market Stall, Lookout Tower, Healing Center, Supply Shop, Storehouse, Berry
-  Farm and Research Lab. Build a Healing Center or a Supply Shop and a nurse or shopkeeper moves in.
-- **Homes:** the Terrace, the Inn and the Stone House, for a village that wants to grow.
-- **Sold by builders only:** the Artisan's House isn't in the Table. A builder sells it from Apprentice on, for 10
-  emeralds; its upgrades come from the builder who finishes it.
-- **Workplaces:** a Schoolhouse, Library, Ranch, Apiary Garden, Flower Shop, Graveyard, Tinker's Workshop, Nether
-  Gate, Barracks and more, each with a spot for its worker.
-- **Decorations:** a Well, Street Lamp, Park Bench, Fountain, Gazebo, Market Square and Chapel. Near a Village Hall
-  every one makes the village a little happier.
-- **Walls and gates:** the Palisade, Palisade Gate, Stone Wall, Wall Tower and Gatehouse (see
-  [Threats and defense](defence.md)).
+- **Starter builds:** the [Starter Cottage](starter-cottage-build.md), [Market Stall](market-stall-build.md),
+  [Lookout Tower](lookout-tower-build.md), [Healing Center](healing-center-build.md),
+  [Supply Shop](supply-shop-build.md), [Storehouse](storehouse-build.md), [Berry Farm](berry-farm-build.md) and
+  [Research Lab](research-lab-build.md). Build a Supply Shop and a shopkeeper moves in at its counter; a honey bottle
+  makes a nurse at the Healing Center's brewing stand.
+- **Homes:** the [Terrace](terrace-build.md), the [Inn](inn-build.md), the [Stone House](stone-house-build.md) and the
+  [Noble's Manor](manor-build.md), for a village that wants to grow.
+- **Sold by builders only:** the [Artisan's House](artisans-house-build.md) isn't in the Table. A builder sells it from
+  Apprentice on; its upgrades come from the builder who finishes it.
+- **Workplaces:** a [Schoolhouse](schoolhouse-build.md), [Library](library-build.md), [Ranch](ranch-build.md),
+  [Apiary Garden](apiary-garden-build.md), [Flower Shop](flower-shop-build.md), [Graveyard](graveyard-build.md),
+  [Tinker's Workshop](tinkers-workshop-build.md), [Nether Gate](nether-gate-build.md),
+  [Barracks](barracks-build.md), [Smithy](smithy-build.md), [Mason's Yard](masons-yard-build.md),
+  [Fletcher's Lodge](fletchers-lodge-build.md), [Map Room](map-room-build.md), [Farmstead](farmstead-build.md),
+  [Fisher's Hut](fishers-hut-build.md), [Weaver's Cottage](weavers-cottage-build.md),
+  [Compost Yard](compost-yard-build.md) and [Sifting Shed](sifting-shed-build.md), each with a spot for its worker.
+- **Village houses:** one worker's home and workplace in one: the [Builder's Workshop](builders-workshop-build.md),
+  [Carpenter's Workshop](carpenters-workshop-build.md), [Kitchen](kitchen-build.md),
+  [Post Office](post-office-build.md), [Guard House](guard-house-build.md), [Clinic](clinic-build.md) and
+  [Ferry House](ferry-house-build.md); with Cobblemon also the [Trainer's House](trainers-house-build.md),
+  [Leader's Hall](leaders-hall-build.md), [Ball Workshop](ball-workshop-build.md), [Trade Hall](trade-hall-build.md),
+  [School](school-build.md) and the [Pokémon Center](pokemon-center-build.md).
+- **Decorations:** a Well, Street Lamp, Park Bench, Fountain, Gazebo, Market Square and [Chapel](chapel-build.md).
+  Near a Village Hall every one makes the village a little happier.
+- **Walls and gates:** the Palisade, Palisade Gate, [Stone Wall](stone-wall-build.md),
+  [Wall Tower](wall-tower-build.md) and [Gatehouse](gatehouse-build.md) (see [Threats and defense](defence.md)).
 
 ![The Blueprint Table's library](https://jcondedata.github.io/minecraft-alive-workplace/table/still-1.jpg)
 

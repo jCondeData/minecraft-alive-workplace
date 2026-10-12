@@ -127,6 +127,11 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
   [Observatory](observatory.md), [Hanging Gardens](hanging-gardens.md), [Colossus](colossus.md) and
   [Stadium](stadium.md).
 
+### Builds A to Z
+
+The buildings, homes, workplaces and walls in the Blueprint Table, each with its upgrades:
+[Apiary Garden](apiary-garden-build.md) · [Artisan's House](artisans-house-build.md) · [Ball Workshop](ball-workshop-build.md) · [Barracks](barracks-build.md) · [Berry Farm](berry-farm-build.md) · [Builder's Workshop](builders-workshop-build.md) · [Carpenter's Workshop](carpenters-workshop-build.md) · [Chapel](chapel-build.md) · [Clinic](clinic-build.md) · [Compost Yard](compost-yard-build.md) · [Farmstead](farmstead-build.md) · [Ferry House](ferry-house-build.md) · [Fisher's Hut](fishers-hut-build.md) · [Fletcher's Lodge](fletchers-lodge-build.md) · [Flower Shop](flower-shop-build.md) · [Gatehouse](gatehouse-build.md) · [Graveyard](graveyard-build.md) · [Guard House](guard-house-build.md) · [Healing Center](healing-center-build.md) · [Inn](inn-build.md) · [Kitchen](kitchen-build.md) · [Leader's Hall](leaders-hall-build.md) · [Library](library-build.md) · [Lookout Tower](lookout-tower-build.md) · [Map Room](map-room-build.md) · [Market Stall](market-stall-build.md) · [Mason's Yard](masons-yard-build.md) · [Nether Gate](nether-gate-build.md) · [Noble's Manor](manor-build.md) · [Pokémon Center](pokemon-center-build.md) · [Post Office](post-office-build.md) · [Ranch](ranch-build.md) · [Research Lab](research-lab-build.md) · [School](school-build.md) · [Schoolhouse](schoolhouse-build.md) · [Sifting Shed](sifting-shed-build.md) · [Smithy](smithy-build.md) · [Starter Cottage](starter-cottage-build.md) · [Stone House](stone-house-build.md) · [Stone Wall](stone-wall-build.md) · [Storehouse Shed](storehouse-build.md) · [Supply Shop](supply-shop-build.md) · [Terrace](terrace-build.md) · [Tinker's Workshop](tinkers-workshop-build.md) · [Trade Hall](trade-hall-build.md) · [Trainer's House](trainers-house-build.md) · [Wall Tower](wall-tower-build.md) · [Weaver's Cottage](weavers-cottage-build.md)
+
 ## With Cobblemon
 
 - [Pokémon and villagers](pokemon.md): Pokémon partners that speed up the work, trainers to battle, move tutors, ball

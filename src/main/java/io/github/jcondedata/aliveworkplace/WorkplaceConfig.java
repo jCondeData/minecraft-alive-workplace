@@ -82,7 +82,7 @@ public final class WorkplaceConfig {
 	 * on the settings screen); each is clamped to 0-10, a short list is filled from the defaults.
 	 */
 	public List<Integer> mythicLegendCap = new ArrayList<>(DEFAULT_MYTHIC_CAP);
-	/** Idle builders repair the buildings they finished when blocks go missing. */
+	/** Idle builders repair the buildings they finished when blocks go missing. Off: they still put back what threats took (32.16a). */
 	public boolean builderRepairs = true;
 	/** A village with a Village Hall and a Market Square holds a market once a week. */
 	public boolean marketDays = true;
@@ -115,8 +115,9 @@ public final class WorkplaceConfig {
 	 */
 	public boolean sieges = Expansions.on(Expansions.M32);
 	/**
-	 * In a siege, rams break the gate blocks of finished wall and gate builds (the builders put them back). Off: gates
-	 * hold however hard they are hit. The {@code mobGriefing} gamerule off does the same.
+	 * In a siege, rams break only the gate blocks of finished wall and gate builds, and a village fire can burn the
+	 * builders' blocks; the builders always put back what either took (32.16a). Off: gates hold however hard they are hit
+	 * and a village fire burns nothing. The {@code mobGriefing} gamerule off holds the gates too.
 	 */
 	public boolean siegeDamage = Expansions.on(Expansions.M32);
 	/**
@@ -765,6 +766,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Sickness.ENABLED = villagerSickness && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = villagerMoods && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = builderRepairs && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS = System.getProperty("fabric-api.gametest") == null; // (32.16a: whatever builderRepairs says)
 		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;

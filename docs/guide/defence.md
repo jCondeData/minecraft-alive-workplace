@@ -116,6 +116,10 @@ fighting step and a ditch of dripstone stakes in front, **Stone Wall II** a roof
 **Wall Tower II** a roofed archers' gallery, and **Gatehouse II** a barbican with a second gate and portcullis: in a
 siege raiders have to break both, so it holds several times as long.
 
+Only the gate blocks ever break. A raider's creeper, a ravager or a raider at a house door never breaks a block your
+builders placed, or one of a build they're still working on; and whatever rams and fires do take, your builders put
+back, even with Builder Repairs switched off.
+
 ## Research that helps
 
 At the scholar's lectern, **Drill** makes guards hit harder, **Fortification** lets them turn aside blows, and **Warding**

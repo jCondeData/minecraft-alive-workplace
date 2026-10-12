@@ -664,6 +664,81 @@ public class SiegeGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * 32.16a: the ram breaks only the gate block; every other block of the Palisade Gate still stands as built. The
+	 * broken gate is on the saved list of what threats took (it survives a save and load), and with
+	 * {@code builderRepairs} off a builder still puts it back.
+	 */
+	//$ gametest_ticks_batch AREA '1800' '"siegeGateRepair"'
+	@GameTest(template = AREA, timeoutTicks = 1800, batch = "siegeGateRepair")
+	public void onlyTheGateBreaksAndABuilderPutsItBack(GameTestHelper helper) {
+		Yard yard = yard(helper, StarterBlueprints.PALISADE_GATE);
+		ServerLevel level = yard.level();
+		boolean repairs = io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED;
+		boolean threats = io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS;
+		BlockPos gate = yard.at(3, 0, 1);
+		Leftovers.after(helper, () -> {
+			io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = repairs;
+			io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS = threats;
+			ThreatData.get(level).repaired(gate);
+		});
+		BlockState gateState = level.getBlockState(gate);
+		helper.assertTrue(gateState.getBlock() instanceof FenceGateBlock, "no gate at " + gate);
+		// Every other block of the build, as built.
+		java.util.Map<BlockPos, BlockState> rest = new java.util.HashMap<>();
+		for (BlockPos p : BlockPos.betweenClosed(yard.origin(), yard.origin().offset(yard.build().size()).offset(-1, -1, -1))) {
+			BlockState state = level.getBlockState(p);
+			if (!state.isAir() && !Sieges.isGate(state)) {
+				rest.put(p.immutable(), state);
+			}
+		}
+		helper.assertTrue(rest.size() > 10, "the Palisade Gate has only " + rest.size() + " other blocks");
+		Mob ram = raider(helper, yard, Culture.Role.RAM, 14.5, 21.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(ram));
+		BlockPos bench = new BlockPos(18, 2, 7);
+		BlockPos chestPos = new BlockPos(19, 2, 7);
+		Villager[] builder = {null};
+		long[] broke = {-1};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (broke[0] < 0) {
+				if (!level.getBlockState(gate).is(gateState.getBlock())) {
+					broke[0] = tick;
+					ram.discard();
+					for (java.util.Map.Entry<BlockPos, BlockState> e : rest.entrySet()) {
+						helper.assertTrue(level.getBlockState(e.getKey()).is(e.getValue().getBlock()), "the ram broke a block that isn't a gate: "
+							+ e.getKey() + " is " + level.getBlockState(e.getKey()));
+					}
+					helper.assertTrue(ThreatData.get(level).damaged().contains(gate), "the broken gate isn't on the list of what threats took");
+					ThreatData.get(level).roundTrip(level.registryAccess()); // a save and load
+					helper.assertTrue(ThreatData.get(level).damaged().contains(gate), "the list was lost in the load");
+					helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+					helper.setBlock(chestPos, Blocks.CHEST);
+					net.minecraft.world.Container chest = helper.getBlockEntity(chestPos);
+					chest.setItem(0, new ItemStack(gateState.getBlock().asItem(), 4));
+					builder[0] = helper.spawn(EntityType.VILLAGER, new BlockPos(17, 2, 10));
+					io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder[0], helper.absolutePos(bench));
+					BuildSiteManager.get(level).recordFinished(yard.build().id(), new BlueprintData.Placement(level.dimension().location(), yard.origin(),
+						Rotation.NONE, Mirror.NONE), builder[0].getUUID()); // the builder's to look after
+					io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = false; // builderRepairs off
+					io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS = true; // as in a player's game
+					var site = io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder[0]);
+					helper.assertTrue(site != null && site.isRepair(), "no repair of the broken gate with builderRepairs off");
+				} else if (tick > 500) {
+					helper.fail("the ram never broke the gate: it has " + Sieges.hitPointsLeft(level, yard.hall(), gate));
+				}
+				return;
+			}
+			if (level.getBlockState(gate).is(gateState.getBlock())
+				&& !io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0])) {
+				helper.succeed();
+			} else if (tick > broke[0] + 1200) {
+				helper.fail("the builder didn't put the gate back: " + level.getBlockState(gate) + ", repairing "
+					+ io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0]));
+			}
+		});
+	}
+
+	/**
 	 * A player breaks the gate the ram is at. The siege notes it as gone, not as broken by the rams (so it isn't on the
 	 * rams' list for the builder), the way through counts as open, the pillager goes in, and the ram turns on the next
 	 * gate block.

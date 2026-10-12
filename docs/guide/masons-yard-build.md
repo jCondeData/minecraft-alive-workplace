@@ -7,7 +7,7 @@ Tiers: I, II (a second stonecutter and a hoist)
 Houses: a Mason at the stonecutter; two at tier II
 Where to get it: Blueprint Table
 Main materials: stone bricks, spruce stairs, dark oak logs, smooth stone, polished andesite
-categories: Builder, Builds
+categories: Builds
 related: jobs-crafts.md, smithy-build.md, builder.md
 ```
 

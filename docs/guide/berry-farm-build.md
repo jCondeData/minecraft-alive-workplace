@@ -7,7 +7,7 @@ Tiers: I, II (a pergola of glow berries)
 Houses: an Orchard Keeper at the composter
 Where to get it: Blueprint Table; an Expert orchard keeper sells it for 10 emeralds
 Main materials: grass blocks, spruce fences, sweet berry bushes, cobblestone, gravel paths
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, flower-shop-build.md, compost-yard-build.md
 ```
 

@@ -8,7 +8,7 @@ Blocks: about 50 (spruce logs, fences and slabs, ladders)
 Upgrade: Palisade II (a fighting step and a ditch of dripstone stakes)
 Where: the Blueprint Table
 Goes with: the Palisade Gate and the Palisade Tower
-categories: Builder, Defense
+categories: Builds, Defense
 related: palisade-gate-build.md, palisade-tower-build.md, defence.md, raids.md
 ```
 

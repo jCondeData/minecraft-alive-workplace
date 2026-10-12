@@ -7,7 +7,7 @@ Tiers: I, II (a stone workshop wing)
 Houses: two beds; three at tier II
 Where to get it: sold by builders from Apprentice on, for 10 emeralds (not in the Blueprint Table)
 Main materials: dark oak stairs, spruce logs and planks, birch planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: stone-house-build.md, manor-build.md, builder.md
 ```
 

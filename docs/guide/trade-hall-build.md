@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Pokémon Trader at the Shop Counter
 Where to get it: Blueprint Table (with Cobblemon)
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds, Pokémon
+categories: Builds, Pokémon
 related: pokemon.md, market-stall-build.md
 ```
 

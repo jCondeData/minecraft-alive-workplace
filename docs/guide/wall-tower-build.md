@@ -6,7 +6,7 @@ Size: 5 by 5, 10 high (II: 12 high)
 Tiers: I, II (a roofed archers' gallery)
 Where to get it: Blueprint Table
 Main materials: stone bricks, cobblestone, stone brick slabs, spruce logs and planks, ladders
-categories: Builder, Builds, Defense
+categories: Builds, Defense
 related: stone-wall-build.md, gatehouse-build.md, defence.md
 ```
 

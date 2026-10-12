@@ -7,7 +7,7 @@ Tiers: I, II (a dye garden)
 Houses: a Shepherd at the loom
 Where to get it: Blueprint Table
 Main materials: dark oak stairs, spruce logs, birch planks, grass, oak fences
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, jobs-crafts.md
 ```
 

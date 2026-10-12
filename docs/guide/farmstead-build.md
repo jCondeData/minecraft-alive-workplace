@@ -7,7 +7,7 @@ Tiers: I, II (a barn and a second field)
 Houses: a Farmer at the composter, with a bed; two composters at tier II
 Where to get it: Blueprint Table
 Main materials: oak logs, brick stairs, farmland, white concrete, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, compost-yard-build.md, kitchen-build.md
 ```
 

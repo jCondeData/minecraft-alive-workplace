@@ -7,7 +7,7 @@ Tiers: I, II (a fenced schoolyard)
 Houses: a Teacher at the lectern
 Where to get it: Blueprint Table
 Main materials: spruce stairs and planks, white concrete, spruce logs, polished diorite
-categories: Builder, Builds
+categories: Builds
 related: school-build.md, library-build.md, jobs-services.md
 ```
 

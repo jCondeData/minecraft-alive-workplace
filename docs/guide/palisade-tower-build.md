@@ -7,7 +7,7 @@ Size: 5 wide, 10 tall, 5 deep
 Blocks: about 150 (spruce logs, stripped spruce, dark oak roof, ladders, two lanterns)
 Upgrade: none
 Where: the Blueprint Table
-categories: Builder, Defense
+categories: Builds, Defense
 related: palisade-build.md, palisade-gate-build.md, defence.md, raids.md
 ```
 

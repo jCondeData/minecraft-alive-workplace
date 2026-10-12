@@ -7,7 +7,7 @@ Tiers: I, II (a bigger paddock, a stable wing and a silo)
 Houses: a Rancher at the smoker
 Where to get it: Blueprint Table
 Main materials: spruce planks, deepslate tile stairs, dark oak logs, coarse dirt, spruce fences
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, inn-build.md, kitchen-build.md
 ```
 

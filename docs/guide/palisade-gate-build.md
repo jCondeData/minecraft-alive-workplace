@@ -8,7 +8,7 @@ Blocks: about 33 (spruce logs and fences, three spruce fence gates, two lanterns
 Upgrade: none
 Gates: shut at nightfall, open in the morning (with a hall and a guard)
 Where: the Blueprint Table
-categories: Builder, Defense
+categories: Builds, Defense
 related: palisade-build.md, palisade-tower-build.md, defence.md, raids.md
 ```
 

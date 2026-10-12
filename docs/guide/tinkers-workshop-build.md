@@ -7,7 +7,7 @@ Tiers: I, II (twice the length)
 Houses: a Tinkerer at the smithing table
 Where to get it: Blueprint Table
 Main materials: bricks, deepslate tile stairs, spruce logs, stone bricks
-categories: Builder, Builds
+categories: Builds
 related: jobs-crafts.md, smithy-build.md, builder.md
 ```
 

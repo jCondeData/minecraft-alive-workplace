@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Nurse at the brewing stand
 Where to get it: Blueprint Table
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: healing-center-build.md, jobs-services.md, village-life.md
 ```
 

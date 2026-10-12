@@ -8,7 +8,7 @@ Houses: the village's weddings
 Where to get it: Blueprint Table
 Beauty: 4
 Main materials: stone bricks, deepslate tiles and stairs, polished andesite, glass panes
-categories: Builder, Builds
+categories: Builds
 related: village-life.md, graveyard-build.md, village-hall.md
 ```
 

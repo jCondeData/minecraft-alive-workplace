@@ -7,7 +7,7 @@ Tiers: I, II (a glass greenhouse)
 Houses: a Florist at the composter
 Where to get it: Blueprint Table
 Main materials: dark oak stairs, birch planks, bricks, stripped birch logs, glass panes
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, compost-yard-build.md, apiary-garden-build.md
 ```
 

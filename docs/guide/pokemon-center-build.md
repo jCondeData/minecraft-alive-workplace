@@ -10,7 +10,7 @@ Looks: the red-roofed Center, the Mountain Lodge and the Sunny Plaza
 Houses: a Healing Machine and two PCs; four beds and a Shop Counter at tier II
 Where to get it: Blueprint Table (with Cobblemon); a Journeyman nurse sells it for 14 emeralds
 Main materials: red nether brick stairs, smooth quartz, white concrete, quartz pillars, red terracotta
-categories: Builder, Builds, Pokémon
+categories: Builds, Pokémon
 related: pokemon.md, healing-center-build.md, trade-hall-build.md
 ```
 

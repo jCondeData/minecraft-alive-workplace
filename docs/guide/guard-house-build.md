@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Guard at the grindstone
 Where to get it: Blueprint Table
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: defence.md, barracks-build.md, lookout-tower-build.md
 ```
 

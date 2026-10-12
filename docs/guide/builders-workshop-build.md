@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Builder at the Blueprint Table
 Where to get it: Blueprint Table
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: builder.md, carpenters-workshop-build.md, jobs.md
 ```
 

@@ -9,7 +9,7 @@ Tiers: I, II (an upper story), III (a kitchen wing)
 Houses: one bed, two from tier II
 Where to get it: Blueprint Table; a Novice builder sells it for 6 emeralds
 Main materials: spruce stairs and logs, birch planks, cobblestone, glass panes
-categories: Builder, Builds
+categories: Builds
 related: builder.md, terrace-build.md, stone-house-build.md, village-life.md
 ```
 

@@ -7,7 +7,7 @@ Tiers: I, II (a study tower), III (an enchanting room)
 Houses: a Scholar at the lectern; two at tier II; a Librarian at tier III's
 Where to get it: Blueprint Table
 Main materials: stone bricks, deepslate tile stairs, dark oak logs, spruce planks, bookshelves
-categories: Builder, Builds
+categories: Builds
 related: schoolhouse-build.md, research-lab-build.md, jobs-services.md, jobs-crafts.md
 ```
 

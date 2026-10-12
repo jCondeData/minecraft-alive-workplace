@@ -9,7 +9,7 @@ Tiers: I, II (a timber upper story), III (a stone wing)
 Houses: two beds; three at tier II, five at tier III
 Where to get it: Blueprint Table
 Main materials: cobblestone, deepslate tile stairs, spruce planks, stone, andesite
-categories: Builder, Builds
+categories: Builds
 related: terrace-build.md, starter-cottage-build.md, village-life.md
 ```
 

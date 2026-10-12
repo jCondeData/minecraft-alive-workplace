@@ -7,7 +7,7 @@ Tiers: I, II (an open shed), III (a stone warehouse)
 Houses: a Porter at the Storehouse block
 Where to get it: Blueprint Table; a Novice porter sells it for 6 emeralds
 Main materials: dark oak stairs, spruce and birch planks, cobblestone, chests
-categories: Builder, Builds
+categories: Builds
 related: jobs-services.md, builder.md
 ```
 

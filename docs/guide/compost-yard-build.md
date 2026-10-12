@@ -7,7 +7,7 @@ Tiers: I, II (a third bay and a potting shed)
 Houses: a Composter at the composter
 Where to get it: Blueprint Table
 Main materials: dark oak stairs, spruce planks, cobblestone, coarse dirt, podzol
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, flower-shop-build.md, farmstead-build.md
 ```
 

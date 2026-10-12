@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A player-guide article for everything you can meet** (22.10a part 3): 190 new wiki pages, one per job, block,
+  item, build, threat, setting theme, game rule, command and village-life system, each with an infobox and a section
+  on how it ties into the rest (what feeds it, what it affects, what stops it), all linked from the main page's A to Z
+  lists. Pages for the expansions (story arcs, edicts, classes, Wonders, the disasters) are written too and appear on
+  the published guide the night their expansion switches on.
 - **The Colossus' design, for 2.0** (35.21, nothing to start in game until Wonders is finished): the seventh Wonder's
   build, the Founder's statue 47 high (about 9,000 blocks): a robed villager in polished diorite and smooth stone, big
   nose, unibrow and all, one arm folded across the chest and the other holding up a lantern of glass round glowstone,

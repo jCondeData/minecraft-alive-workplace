@@ -11,7 +11,7 @@ Upgrade: none
 Beauty: 5, the most of any decoration
 Brings: a market once a week
 Where: the Blueprint Table
-categories: Builder, Village life, Festivals
+categories: Builds, Village life, Festivals
 related: market-days.md, decorations.md, festivals-and-markets.md, builder.md
 ```
 

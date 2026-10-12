@@ -7,7 +7,7 @@ Tiers: I, II (a lych-gate)
 Houses: an Undertaker at the brewing stand
 Where to get it: Blueprint Table
 Main materials: deepslate tiles and stairs, stone bricks, cobblestone and mossy walls, polished andesite
-categories: Builder, Builds
+categories: Builds
 related: jobs-services.md, village-life.md, chapel-build.md
 ```
 

@@ -7,7 +7,7 @@ Tiers: I, II (a drying-rack wing)
 Houses: a Fletcher (or a Lumberjack) at the fletching table; two at tier II
 Where to get it: Blueprint Table
 Main materials: spruce logs, dark oak stairs, spruce planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-crafts.md, jobs-land.md, barracks-build.md
 ```
 

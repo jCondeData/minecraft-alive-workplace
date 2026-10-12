@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Chef at the smoker
 Where to get it: Blueprint Table
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-crafts.md, village-life.md, farmstead-build.md
 ```
 

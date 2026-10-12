@@ -7,7 +7,7 @@ Tiers: I, II (a second stall with a Shop Counter), III (a storeroom shed)
 Houses: a Shopkeeper at the Shop Counter (from tier II)
 Where to get it: Blueprint Table; an Apprentice builder sells it for 8 emeralds
 Main materials: spruce planks, logs and slabs, red and white wool, barrels
-categories: Builder, Builds
+categories: Builds
 related: supply-shop-build.md, jobs-services.md, builder.md
 ```
 

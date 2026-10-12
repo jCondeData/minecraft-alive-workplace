@@ -7,7 +7,7 @@ Tiers: I, II (a gatehouse roof, a store and a wart garden)
 Houses: a Netherworker at the cartography table
 Where to get it: Blueprint Table
 Main materials: polished blackstone bricks, obsidian, soul lanterns, soul campfires
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, map-room-build.md
 ```
 

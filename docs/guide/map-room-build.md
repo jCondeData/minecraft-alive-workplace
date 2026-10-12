@@ -7,7 +7,7 @@ Tiers: one (it has no upgrade)
 Houses: a Cartographer at the cartography table
 Where to get it: Blueprint Table
 Main materials: spruce planks and logs, deepslate tile stairs, stone bricks, white concrete
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, nether-gate-build.md
 ```
 

@@ -9,7 +9,7 @@ Tiers: I, II (a walled formal garden), III (a gatehouse and a ballroom wing)
 Houses: three beds, a grand home from the first tier
 Where to get it: Blueprint Table
 Main materials: stone bricks, deepslate tile stairs, stone, polished andesite, spruce planks, dark oak logs
-categories: Builder, Builds
+categories: Builds
 related: artisans-house-build.md, stone-house-build.md, village-life.md
 ```
 

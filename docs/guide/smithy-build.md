@@ -7,7 +7,7 @@ Tiers: I, II (a coal and ore store)
 Houses: an Armorer at the blast furnace, a Toolsmith at the smithing table, a Weaponsmith at the grindstone
 Where to get it: Blueprint Table
 Main materials: dark oak stairs, spruce logs, stone bricks, cobblestone, bricks
-categories: Builder, Builds
+categories: Builds
 related: jobs-crafts.md, tinkers-workshop-build.md, barracks-build.md
 ```
 

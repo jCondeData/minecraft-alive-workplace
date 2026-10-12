@@ -10,7 +10,7 @@ Blocks: about 120 (dark oak logs and stairs, spruce, cobblestone, flower pots, a
 Upgrade: none
 Beauty: 3
 Where: the Blueprint Table
-categories: Builder, Village life
+categories: Builds, Village life
 related: decorations.md, builder.md, fountain-build.md, bandstand-build.md
 ```
 

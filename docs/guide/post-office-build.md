@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Postman at the Mailbox
 Where to get it: Blueprint Table
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-services.md, supply-shop-build.md
 ```
 

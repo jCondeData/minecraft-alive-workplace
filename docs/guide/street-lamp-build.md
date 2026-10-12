@@ -10,7 +10,7 @@ Blocks: 14 (dark oak fence, stone brick stairs, a stone brick wall, two lanterns
 Upgrade: none
 Beauty: 1
 Where: the Blueprint Table
-categories: Builder, Village life
+categories: Builds, Village life
 related: decorations.md, builder.md, village-needs.md, park-bench-build.md
 ```
 

@@ -10,7 +10,7 @@ Blocks: about 80 (polished andesite, stone bricks, chiseled stone bricks, water)
 Upgrade: none
 Beauty: 3
 Where: the Blueprint Table
-categories: Builder, Village life
+categories: Builds, Village life
 related: decorations.md, builder.md, well-build.md, market-square-build.md
 ```
 

@@ -7,7 +7,7 @@ Tiers: I, II (a second sieve and a lean-to)
 Houses: a Sifter at the cauldron; two at tier II
 Where to get it: Blueprint Table
 Main materials: dark oak stairs, spruce planks, cobblestone, polished andesite, gravel
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, masons-yard-build.md
 ```
 

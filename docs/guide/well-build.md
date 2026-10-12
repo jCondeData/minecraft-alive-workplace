@@ -10,7 +10,7 @@ Blocks: about 65 (stone bricks, polished andesite, cobblestone, spruce, a lanter
 Upgrade: Well II (a roof, benches and lamp posts)
 Beauty: 2, or 3 as Well II
 Where: the Blueprint Table
-categories: Builder, Village life
+categories: Builds, Village life
 related: decorations.md, builder.md, village-needs.md, moods.md
 ```
 

@@ -6,7 +6,7 @@ Size: 11 wide, 5 deep, 9 high (II: 10 deep)
 Tiers: I, II (a barbican)
 Where to get it: Blueprint Table
 Main materials: stone bricks, cobblestone, stone brick slabs, ladders, spruce fence gates
-categories: Builder, Builds, Defense
+categories: Builds, Defense
 related: stone-wall-build.md, wall-tower-build.md, defence.md
 ```
 

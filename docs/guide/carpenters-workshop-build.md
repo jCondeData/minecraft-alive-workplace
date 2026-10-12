@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Carpenter at the crafting table
 Where to get it: Blueprint Table
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-crafts.md, builders-workshop-build.md, builder.md
 ```
 

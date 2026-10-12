@@ -7,7 +7,7 @@ Tiers: I, II (a smokehouse and a boat shed)
 Houses: a Fisherman at the barrel
 Where to get it: Blueprint Table
 Main materials: deepslate tile stairs, spruce logs, oak and spruce planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, ferry-house-build.md
 ```
 

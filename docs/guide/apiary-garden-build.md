@@ -7,7 +7,7 @@ Tiers: I, II (four more hives)
 Houses: a Beekeeper at the hives
 Where to get it: Blueprint Table
 Main materials: oak fences and planks, spruce stairs, grass, flowers, beehives
-categories: Builder, Builds
+categories: Builds
 related: jobs-land.md, flower-shop-build.md, healing-center-build.md
 ```
 

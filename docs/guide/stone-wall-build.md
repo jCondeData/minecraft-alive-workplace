@@ -6,7 +6,7 @@ Size: 7 long, 3 deep, 6 high (II: 4 deep, 9 high)
 Tiers: I, II (timber hoardings)
 Where to get it: Blueprint Table
 Main materials: stone bricks, cobblestone, stone brick slabs, ladders
-categories: Builder, Builds, Defense
+categories: Builds, Defense
 related: wall-tower-build.md, gatehouse-build.md, defence.md
 ```
 

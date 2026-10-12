@@ -7,7 +7,7 @@ Tiers: I, II (a ward with four beds), III (a berry garden)
 Houses: a Nurse at the brewing stand; four beds from tier II
 Where to get it: Blueprint Table; an Expert builder sells it for 16 emeralds
 Main materials: red nether brick stairs, white concrete, smooth quartz, stripped dark oak logs
-categories: Builder, Builds
+categories: Builds
 related: clinic-build.md, pokemon-center-build.md, jobs-services.md
 ```
 

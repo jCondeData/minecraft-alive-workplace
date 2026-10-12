@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Ferryman at the Travel Post
 Where to get it: Blueprint Table
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-services.md, fishers-hut-build.md
 ```
 

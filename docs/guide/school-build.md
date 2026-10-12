@@ -7,7 +7,7 @@ Tiers: one
 Houses: a Move Tutor at the Training Post
 Where to get it: Blueprint Table (with Cobblemon)
 Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
-categories: Builder, Builds, Pokémon
+categories: Builds, Pokémon
 related: pokemon.md, schoolhouse-build.md
 ```
 

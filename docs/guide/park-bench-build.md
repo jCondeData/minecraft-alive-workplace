@@ -10,7 +10,7 @@ Blocks: 12 (spruce stairs and fences, oak leaves, a lantern)
 Upgrade: none
 Beauty: 1
 Where: the Blueprint Table
-categories: Builder, Village life
+categories: Builds, Village life
 related: decorations.md, builder.md, street-lamp-build.md, moods.md
 ```
 

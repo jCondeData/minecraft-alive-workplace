@@ -10,7 +10,7 @@ Blocks: about 370 (stone bricks, birch, dark prismarine roof, a jukebox, two not
 Upgrade: none
 Beauty: 3
 Where: the Blueprint Table
-categories: Builder, Village life
+categories: Builds, Village life
 related: decorations.md, jobs-services.md, gazebo-build.md, builder.md
 ```
 

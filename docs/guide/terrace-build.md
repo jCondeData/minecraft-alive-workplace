@@ -7,7 +7,7 @@ Tiers: I, II (a third home)
 Houses: four beds in two homes; six in three at tier II
 Where to get it: Blueprint Table
 Main materials: dark oak stairs, stone bricks, spruce logs and planks, birch and oak planks
-categories: Builder, Builds
+categories: Builds
 related: stone-house-build.md, starter-cottage-build.md, village-life.md
 ```
 

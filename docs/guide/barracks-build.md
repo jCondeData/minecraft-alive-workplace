@@ -7,7 +7,7 @@ Tiers: I, II (a wing with two more posts)
 Houses: two Guards at the grindstones, with two bunks; four of each at tier II
 Where to get it: Blueprint Table
 Main materials: deepslate tile stairs, stone bricks, spruce planks, dark oak logs
-categories: Builder, Builds
+categories: Builds
 related: lookout-tower-build.md, guard-house-build.md, defence.md
 ```
 

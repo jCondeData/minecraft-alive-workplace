@@ -9,7 +9,7 @@ Tiers: I, II (a guard's grindstone and a bell), III (a guardhouse)
 Houses: a Guard at the grindstone (from tier II), two at tier III, with two bunks
 Where to get it: Blueprint Table; a Journeyman builder sells it for 12 emeralds
 Main materials: stone bricks and stairs, spruce planks and logs, ladders, lanterns
-categories: Builder, Builds
+categories: Builds
 related: barracks-build.md, guard-house-build.md, defence.md
 ```
 

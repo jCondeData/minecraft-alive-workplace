@@ -7,7 +7,7 @@ Tiers: I, II (a museum hall)
 Houses: a Fossil Scientist at the Fossil Analyzer (with Cobblemon)
 Where to get it: Blueprint Table; a Journeyman fossil scientist sells it for 12 emeralds
 Main materials: polished andesite, cut copper stairs, stone bricks, glass
-categories: Builder, Builds, Pokémon
+categories: Builds, Pokémon
 related: pokemon.md, library-build.md
 ```
 

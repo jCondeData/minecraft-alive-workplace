@@ -7,7 +7,7 @@ Tiers: I, II (a stable)
 Houses: an Innkeeper at the Shop Counter, six guest beds; a Rancher's smoker in tier II's stable
 Where to get it: Blueprint Table
 Main materials: spruce stairs and planks, dark oak logs, birch planks, cobblestone
-categories: Builder, Builds
+categories: Builds
 related: jobs-services.md, terrace-build.md, ranch-build.md
 ```
 

@@ -285,6 +285,7 @@ public class PastureCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '2400' '"herder_pokemon"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "herder_pokemon")
 	public void butcherMilksAMiltankAndBrushesAPidgey(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper); // alone in its batch: no earlier batch's butcher or Pokémon here
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.forget();
@@ -304,7 +305,17 @@ public class PastureCompatTests implements FabricGameTest {
 		BlockPos pasture = pasture(helper, new BlockPos(10, 2, 10));
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		pastured(helper, pasture, player, "miltank", Direction.NORTH);
-		pastured(helper, pasture, player, "pidgey", Direction.WEST);
+		Pokemon pidgey = pastured(helper, pasture, player, "pidgey", Direction.WEST);
+		int ground = helper.absolutePos(new BlockPos(0, 2, 0)).getY();
+		helper.onEachTick(() -> {
+			// B90: a pastured Pidgey takes off on flights of its own (Cobblemon's flight wander), and one flown about for
+			// most of the test was never brushed. Waiting for it to land is b24's test; this one keeps it on the ground.
+			var entity = pidgey.getEntity();
+			if (entity != null && io.github.jcondedata.aliveworkplace.ranch.PokemonChores.airborne(entity)) {
+				entity.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+				entity.teleportTo(entity.getX(), ground, entity.getZ());
+			}
+		});
 		helper.succeedWhen(() -> {
 			int milk = 0;
 			boolean feathers = false;

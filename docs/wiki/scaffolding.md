@@ -11,8 +11,8 @@ A builder that comes back to a block it couldn't reach (the top of a tall pillar
 spot beside it, puts a block of scaffolding under its feet, steps up on it, and does it again until the block is in
 reach; then it works from the top. When that stage of the build is done it climbs back up and takes the scaffolding
 down from the top, a block at a time, and the scaffolding goes back into its chests. With no scaffolding in the chests
-the build waits for it like any material, and it shows on the requests board, where a carpenter can make it from
-bamboo and string. Cancel the build with scaffolding up and it all comes down at once, into the chests.
+it's asked for on the requests board, where a carpenter can make it from bamboo and string, but the build doesn't wait:
+that block is skipped as before. Cancel the build with scaffolding up and it all comes down at once, into the chests.
 
 ## 2. How it works
 
@@ -45,9 +45,10 @@ the build is finished. Scaffolding someone else broke is simply struck off the l
 Wonder's part called off) has them all taken down at once, into the supply chests by its bench (else dropped there);
 its builder, if on a column, is first put down at the foot.
 
-**Asking for it.** While a builder waits for scaffolding, the shortfall (what the column needs beyond its bag and the
-chests) is added to the site's missing list: the Storehouse's requests board shows it, and a carpenter who sees a
-builder waiting for it makes it by the vanilla recipe (6 bamboo and a string make 6). Builders sell scaffolding too.
+**Asking for it.** When the column needs more scaffolding than the builder's bag, its chests and the village's spare
+hold, the shortfall is added to the site's missing list (the Storehouse's requests board shows it) and the step goes
+on as it always did: skipped and counted. The build never waits on scaffolding. A carpenter makes it by the vanilla
+recipe (6 bamboo and a string make 6); builders sell it too.
 
 ## 3. Switches
 
@@ -76,7 +77,8 @@ Vanilla scaffolding (`minecraft:scaffolding`). No new items, blocks or commands.
   stands where a block goes (ROADMAP 35.6).
 - A builder never steps off a column's top: it climbs down, and is put at the foot when its shift ends (a fall from a
   tall column would hurt it).
-- Without scaffolding the build waits and asks for it, like any material (ROADMAP 35.6), rather than skip.
+- Without scaffolding the build asks for it but never waits for it: the step is skipped as before (coordinator,
+  2026-10-12: builds stuck waiting for one scaffold broke 11 tests; builders never need babysitting, M23).
 
 ## 7. Known limits
 
@@ -85,8 +87,9 @@ Vanilla scaffolding (`minecraft:scaffolding`). No new items, blocks or commands.
 - Not in the landscaping stage.
 - With `workplaceFreeMaterials` on, scaffolding is put up and taken down for nothing (none taken from or added to the
   chests).
-- Not tested here: a carpenter crafting it for a waiting builder end to end (the recipe and the missing list are
-  tested separately).
+- A carpenter only crafts for a builder that is waiting for materials, so it doesn't make scaffolding for a build that
+  skipped its step without it; put scaffolding in the chests to have such steps built.
+- Not tested here: a carpenter crafting it end to end (the recipe and the missing list are tested separately).
 
 ## 8. Proof
 

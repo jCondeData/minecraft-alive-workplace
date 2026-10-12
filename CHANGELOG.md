@@ -21,7 +21,7 @@ asks for the steps, `latest.log` and any crash report).
   a spire's tip, a dome's crown) is no longer skipped. The builder puts up a column of scaffolding from its chests
   beside it, climbs it and works from the top, then takes it all down when that stage is done and the scaffolding goes
   back into the chests. With none in the chests it's asked for on the requests board (a carpenter makes it from bamboo
-  and string). Cancelling a build takes its scaffolding down at once. Switch: `builderScaffolding`.
+  and string) and the block is skipped as before: a build never waits on scaffolding. Cancelling a build takes its scaffolding down at once. Switch: `builderScaffolding`.
 - **The Colossus' design, for 2.0** (35.21, nothing to start in game until Wonders is finished): the seventh Wonder's
   build, the Founder's statue 47 high (about 9,000 blocks): a robed villager in polished diorite and smooth stone, big
   nose, unibrow and all, one arm folded across the chest and the other holding up a lantern of glass round glowstone,

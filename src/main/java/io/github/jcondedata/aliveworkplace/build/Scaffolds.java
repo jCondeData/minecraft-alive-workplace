@@ -37,7 +37,8 @@ import org.jetbrains.annotations.Nullable;
  * and works from the top. Every scaffold is recorded in the {@link BuildSite} (saved), taken down when the stage is
  * done (the builder climbs up and takes it down from the top, back into its bag and so the chests) and, when the build
  * is cancelled or ends any other way, taken down at once into the supply chests. With none in the chests it's asked for
- * like any material (the requests board; a carpenter makes it from bamboo and string). Config {@code builderScaffolding}.
+ * on the requests board (a carpenter makes it from bamboo and string) and the step is left as before:
+ * put off, then skipped and counted. A build never waits on scaffolding. Config {@code builderScaffolding}.
  *
  * <p>One instance per builder's work behaviour holds the column being put up (not saved: after a restart the builder
  * looks again, and a half-built column is found and built on).
@@ -101,6 +102,11 @@ public final class Scaffolds {
 			return false;
 		}
 		return true;
+	}
+
+	/** No scaffolding to be had for this column: drop it (the step goes on as it would without). */
+	void giveUp() {
+		job = null;
 	}
 
 	/** Scaffolds still to put up in the column being built (0 for none). */

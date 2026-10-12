@@ -149,27 +149,27 @@ public class ScaffoldingGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** With no scaffolding in the chests, it's asked for (the requests board shows a site's missing list); once there, the build finishes. */
-	//$ gametest_ticks_batch BIG '9000' '"scaffoldMissing"'
-	@GameTest(template = BIG, timeoutTicks = 9000, batch = "scaffoldMissing")
+	/**
+	 * With no scaffolding in the chests, it's asked for (the requests board shows a site's missing list), but the build
+	 * never waits on it: the step goes as it always did (skipped and counted) and the build finishes.
+	 */
+	//$ gametest_ticks_batch BIG '12000' '"scaffoldMissing"'
+	@GameTest(template = BIG, timeoutTicks = 12000, batch = "scaffoldMissing")
 	public void noScaffoldingInTheChestsIsAskedFor(GameTestHelper helper) {
 		Site s = pillar(helper, 0);
 		boolean[] asked = {false};
+		boolean[] waited = {false};
 		helper.onEachTick(() -> {
-			if (!asked[0] && s.site().status() == BuildSite.Status.WAITING_FOR_MATERIALS
-				&& s.site().missing().getOrDefault(Items.SCAFFOLDING, 0) > 0) {
-				asked[0] = true;
-				helper.assertTrue(s.site().skipped() == 0, "a step was skipped while waiting for scaffolding");
-				Container chest = helper.getBlockEntity(CHEST);
-				chest.setItem(26, new ItemStack(Items.SCAFFOLDING, SCAFFOLDING));
-			}
+			asked[0] |= s.site().missing().getOrDefault(Items.SCAFFOLDING, 0) > 0;
+			waited[0] |= s.site().status() == BuildSite.Status.WAITING_FOR_MATERIALS;
 		});
 		helper.succeedWhen(() -> {
-			helper.assertTrue(asked[0], "scaffolding wasn't asked for: status " + s.site().status() + ", missing " + s.site().missing());
-			assertFinished(helper, s);
-			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped");
+			helper.assertTrue(BuildSiteManager.get(s.level()).get(s.site().id()) == null, "still building: stage " + s.site().stage()
+				+ " status " + s.site().status() + " missing " + s.site().missing());
+			helper.assertTrue(asked[0], "scaffolding wasn't asked for: missing " + s.site().missing());
+			helper.assertFalse(waited[0], "the build waited for materials (for scaffolding)");
+			helper.assertTrue(s.site().skipped() > 0, "nothing was skipped without scaffolding");
 			assertNoScaffolding(helper, s);
-			helper.assertTrue(chestCount(helper, Items.SCAFFOLDING) == SCAFFOLDING, "the chest holds " + chestCount(helper, Items.SCAFFOLDING));
 		});
 	}
 

@@ -405,7 +405,16 @@ public class BuilderWork extends Behavior<Villager> {
 		if (!helping && scaffolds.needed(level, site, step.pos())) {
 			int toPlace = scaffolds.toPlace(level);
 			if (!free && bag.count(net.minecraft.world.item.Items.SCAFFOLDING) < toPlace) {
-				fetch(level, villager, site, plan, bag, bench, new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, toPlace));
+				MaterialRules.Requirement need = new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, toPlace);
+				if (inStock(level, villager, site, bench, plan, need)) {
+					fetch(level, villager, site, plan, bag, bench, need);
+				} else {
+					// None to be had: asked for on the requests board, and the step is left as it always was (put off,
+					// then skipped and counted). A build never waits on scaffolding (coordinator, 2026-10-12).
+					site.setMissing(scaffolds.addMissing(level, site.missing(), bag, SupplyContainers.find(level, bench, plan.bounds())));
+					scaffolds.giveUp();
+					defer(site, villager, step.pos());
+				}
 				return;
 			}
 			trackedTarget = null;

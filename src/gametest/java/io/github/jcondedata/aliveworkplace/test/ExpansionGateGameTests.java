@@ -43,7 +43,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "tradePacts", "alliances", "feuds", "feudWars", "realmMap", "weeklyLeaderboard", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
-		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends");
+		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends", "builderScaffolding");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
@@ -276,7 +276,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 119, "every option on the screen in GameTests (35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 120, "every option on the screen in GameTests (35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 }

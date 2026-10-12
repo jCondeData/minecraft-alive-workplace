@@ -165,6 +165,8 @@ public class BuilderWork extends Behavior<Villager> {
 	/** The site this builder has stocked up for (or found nothing to stock up with) before clearing. */
 	@Nullable
 	private java.util.UUID stockedFor;
+	/** The scaffolding this builder is putting up or taking down (35.6). */
+	private final Scaffolds scaffolds = new Scaffolds();
 
 	public BuilderWork() {
 		super(ImmutableMap.of(
@@ -200,6 +202,7 @@ public class BuilderWork extends Behavior<Villager> {
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		Scaffolds.toFoot(villager); // 35.6: off to bed or away: down the column first, never off its top
 		BuildSite site = Builders.activeSite(level, villager);
 		if (site != null) {
 			site.release(villager.getUUID());
@@ -318,6 +321,15 @@ public class BuilderWork extends Behavior<Villager> {
 		for (int budget = SKIP_BUDGET; !helping && step == null && budget > 0 && !site.isDone(); budget--) {
 			BuildPlan.Step candidate = site.current(plan);
 			if (candidate == null) {
+				// 35.6: the stage is done: its scaffolding comes down first (into the bag, so back to the chests)
+				if (site.endsStage() && !site.scaffolds().isEmpty()) {
+					if (bag.spaceFor(net.minecraft.world.item.Items.SCAFFOLDING) <= 0) {
+						deposit(level, villager, site, plan, bag, bench);
+					} else if (scaffolds.takeDown(level, villager, site, bag, bench, free)) {
+						setStatus(site, BuildSite.Status.WORKING);
+					}
+					return;
+				}
 				site.finishList();
 				continue;
 			}
@@ -421,6 +433,28 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 		} else if (bag.freeSlots() == 0) {
 			deposit(level, villager, site, plan, bag, bench);
+			return;
+		}
+
+		// 2b. 35.6: nowhere to stand within reach of it: put up scaffolding first (fetched like any material).
+		if (!helping && scaffolds.needed(level, site, step.pos())) {
+			int toPlace = scaffolds.toPlace(level);
+			if (!free && bag.count(net.minecraft.world.item.Items.SCAFFOLDING) < toPlace) {
+				MaterialRules.Requirement need = new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, toPlace);
+				if (inStock(level, villager, site, bench, plan, need)) {
+					fetch(level, villager, site, plan, bag, bench, need);
+				} else {
+					// None to be had: asked for on the requests board, and the step is left as it always was (put off,
+					// then skipped and counted). A build never waits on scaffolding (coordinator, 2026-10-12).
+					site.setMissing(scaffolds.addMissing(level, site.missing(), bag, SupplyContainers.find(level, bench, plan.bounds())));
+					scaffolds.giveUp();
+					defer(site, villager, step.pos());
+				}
+				return;
+			}
+			trackedTarget = null;
+			setStatus(site, BuildSite.Status.WORKING);
+			scaffolds.erect(level, villager, site, bag, free);
 			return;
 		}
 
@@ -775,6 +809,12 @@ public class BuilderWork extends Behavior<Villager> {
 			lastWalkPos = null;
 			approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
 		}
+		if (approachSpot != null && scaffolds.climbTo(level, villager, site, approachSpot)) {
+			stuckTimer = 0; // 35.6: climbing one of the site's columns to stand on its top
+			reachTicks = 0;
+			stillTicks = 0;
+			return false;
+		}
 		Vec3 at = villager.position();
 		stillTicks = lastWalkPos != null && at.distanceToSqr(lastWalkPos) < STILL_DISTANCE * STILL_DISTANCE ? stillTicks + 1 : 0;
 		lastWalkPos = at;
@@ -800,6 +840,8 @@ public class BuilderWork extends Behavior<Villager> {
 			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
 			if (spot != null) {
 				hop(level, villager, spot);
+			} else if (deferIfImpossible && !helping && plan != null && scaffolds.plan(level, villager, site, plan, target, reach)) {
+				return false; // 35.6: it would be skipped: scaffolding goes up to work from instead
 			} else if (deferIfImpossible) {
 				defer(site, villager, target);
 			} else {
@@ -813,6 +855,9 @@ public class BuilderWork extends Behavior<Villager> {
 	private int retryWait;
 
 	private void walkTo(Villager villager, BlockPos pos, int closeEnough) {
+		if (Scaffolds.climbDown(villager, pos)) {
+			return; // 35.6: down the column first
+		}
 		retryWait = io.github.jcondedata.aliveworkplace.work.Walker.requestWalk(villager, pos, SPEED, closeEnough, retryWait);
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(pos));
 	}
@@ -862,7 +907,8 @@ public class BuilderWork extends Behavior<Villager> {
 
 	private static boolean canStandAt(ServerLevel level, BlockPos feet) {
 		BlockPos below = feet.below();
-		return level.getBlockState(below).isFaceSturdy(level, below, Direction.UP)
+		BlockState under = level.getBlockState(below);
+		return (under.isFaceSturdy(level, below, Direction.UP) || under.is(net.minecraft.world.level.block.Blocks.SCAFFOLDING)) // 35.6: a column's top
 			&& level.getBlockState(feet).getCollisionShape(level, feet).isEmpty()
 			&& level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty()
 			&& level.getFluidState(feet).isEmpty();
@@ -1363,7 +1409,8 @@ public class BuilderWork extends Behavior<Villager> {
 		if (firstTick || --waitTimer <= 0) {
 			waitTimer = WAIT_RECHECK;
 			// What the whole village has counts: it isn't missing if another worker's chests hold it.
-			site.setMissing(Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)));
+			site.setMissing(scaffolds.addMissing(level, Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)),
+				bag, supplies)); // 35.6: and the scaffolding it's short of, for the requests board
 			if (firstTick && !helping) {
 				Builders.notifyWaiting(level, villager, site);
 			}

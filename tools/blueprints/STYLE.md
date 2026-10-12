@@ -54,9 +54,12 @@ lamps at y 0 are fine. A clean run prints no CHECK lines.
   same helper as the base (e.g. `cottage_ground_floor`) or `grow()` the base and add to it.
 - Don't hang anything (lanterns, bells) from a block an upgrade replaces: when the builder takes that block down, what
   hangs from it falls and the builder has to wait for a new one.
-- Builders can't stand on roofs (stairs and slabs aren't solid underfoot) and reach about four blocks: anything high
-  over a roof (a belfry, a finial) needs a floor or a wall top within reach below it, or it never gets built. Give tall
-  rooms a loft floor.
+- Builders can't stand on roofs (stairs and slabs aren't solid underfoot) and reach about four blocks, but since 35.6
+  they put up **scaffolding** where there's nowhere to stand (from the ground, a floor or a wall top, through air or
+  empty space in the drawing) and take it down after: raised arms, spires' tips, domes' crowns, finials and belfries
+  over a roof are fine now. Leave a column of air or open ground beside such a part (within four blocks of it) for the
+  scaffolding to stand in; a part walled in on every side by the drawing still can't be reached. With `builderScaffolding`
+  off they are skipped as before. Tall rooms still read better with a loft floor.
 - Plants on the ground (flowers, saplings) need grass or dirt under them, which a build site may not have: use potted
   plants, or a flower bed with its own soil (`flower_bed`).
 - Builders never break containers, and anything with a block entity except signs, banners, skulls, beds, campfires and

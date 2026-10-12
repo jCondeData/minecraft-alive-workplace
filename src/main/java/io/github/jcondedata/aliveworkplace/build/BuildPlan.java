@@ -438,6 +438,12 @@ public final class BuildPlan {
 		return !MaterialRules.matches(level.getBlockState(pos), wanted);
 	}
 
+	/** Whether the drawing puts a block at {@code pos} (anything but air or nothing): no scaffolding goes there (35.6). */
+	public boolean wantsBlockAt(BlockPos pos) {
+		BlockState wanted = targets.get(pos);
+		return wanted != null && !wanted.isAir();
+	}
+
 	/** Blocks that will be placed (foundation + structure + decoration). */
 	public int placeableCount() {
 		return foundation.size() + structure.size() + decoration.size() + deconstruct.size();

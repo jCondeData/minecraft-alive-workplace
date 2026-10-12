@@ -99,8 +99,14 @@ public final class BuildSiteManager extends SavedData {
 	}
 
 	public static BuildSiteManager get(ServerLevel level) {
-		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(BuildSiteManager::new, BuildSiteManager::load, null), NAME);
+		BuildSiteManager manager = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(BuildSiteManager::new, BuildSiteManager::load, null), NAME);
+		manager.level = level;
+		return manager;
 	}
+
+	/** The level these sites are in (each level has its own manager), for taking down a removed site's scaffolding. */
+	@Nullable
+	private ServerLevel level;
 
 	public BuildSite create(UUID owner, String ownerName, ResourceLocation structure, BlueprintData.Placement placement) {
 		BuildSite site = new BuildSite(UUID.randomUUID(), owner, ownerName, structure, placement);
@@ -121,7 +127,11 @@ public final class BuildSiteManager extends SavedData {
 	}
 
 	public void remove(UUID id) {
-		if (sites.remove(id) != null) {
+		BuildSite site = sites.remove(id);
+		if (site != null) {
+			if (level != null) {
+				Scaffolds.dismantle(level, site); // 35.6: cancelled, or ended any other way, with scaffolds still up
+			}
 			changes++;
 			setDirty();
 		}

@@ -1840,6 +1840,34 @@ final class JobScenes {
 				return java.util.Arrays.stream(placed).allMatch(n -> n * crew.size() * 2 >= total * 0.9);
 			};
 		}, null));
+		SCENES.put("scaffolding", new Job("the builder put up scaffolding to finish the pillar and its cap, then took it all down into the chest", 9000,
+			new Vec3(7.5, -50.5, 9.5), new Vec3(-6, -52, -4), (level, player) -> {
+			// 35.6: the test pillar, 14 high with a 5 x 5 cap overhanging it by two: nowhere near its top to stand.
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(4, level.getServer());
+			net.minecraft.resources.ResourceLocation pillar = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_pillar");
+			Blueprint blueprint = BlueprintLibrary.get(level, pillar).orElseThrow();
+			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), new BlockPos(-6, -60, -4),
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			BlockPos bench = new BlockPos(-1, -60, 2);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Container box = chest(level, bench.east(), new ItemStack(Items.STONE_BRICKS, 14), new ItemStack(Items.POLISHED_ANDESITE, 25),
+				new ItemStack(Items.SCAFFOLDING, 64));
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			BuildSite site = Builders.start(level, builder, null, pillar, placement);
+			int[] most = {0};
+			return l -> {
+				if (site == null) {
+					return false;
+				}
+				most[0] = Math.max(most[0], site.scaffolds().size());
+				int left = 0;
+				for (int i = 0; i < box.getContainerSize(); i++) {
+					left += box.getItem(i).is(Items.SCAFFOLDING) ? box.getItem(i).getCount() : 0;
+				}
+				return BuildSiteManager.get(l).get(site.id()) == null && most[0] > 0 && site.scaffolds().isEmpty() && left == 64;
+			};
+		}, null));
 		SCENES.put("nurse", job("the nurse healed the hurt villager and cured the ill one", 2000, (level, player) -> {
 			Villager nurse = picked(level, player, STATION, Blocks.BREWING_STAND, Items.HONEY_BOTTLE);
 			chest(level, chestPos(), new ItemStack(Items.HONEY_BOTTLE));

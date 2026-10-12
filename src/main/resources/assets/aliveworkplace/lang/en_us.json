@@ -5553,6 +5553,8 @@
   "aliveworkplace.config.wonders.tooltip": "Towns and Cities can raise a Wonder, a huge build in stages. Off: no new Wonders; finished ones keep their blocks, their powers stop, and everything stays saved.",
   "aliveworkplace.config.wonderLegends": "Wonders Need Legends",
   "aliveworkplace.config.wonderLegends.tooltip": "A Wonder needs its Legends living in the village. Off: each Legend's stand-in is asked for instead (a Master of a trade, and so on).",
+  "aliveworkplace.config.builderScaffolding": "Builders Use Scaffolding",
+  "aliveworkplace.config.builderScaffolding.tooltip": "Builders put up scaffolding from their chests to reach a spire's tip or a dome's crown, and take it down after. Off: blocks with nowhere to stand near them are skipped.",
   "aliveworkplace.config.wonderServerLimit": "Villages per Wonder",
   "aliveworkplace.config.wonderServerLimit.tooltip": "How many villages on the server may each build the same kind of Wonder. 0: no limit.",
   "aliveworkplace.config.wonderCrew": "Builders per Wonder",

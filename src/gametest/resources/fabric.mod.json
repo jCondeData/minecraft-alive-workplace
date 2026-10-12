@@ -106,6 +106,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B38GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B60GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B120GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScaffoldingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B92GameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",

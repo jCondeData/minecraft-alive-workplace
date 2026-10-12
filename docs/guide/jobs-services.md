@@ -20,6 +20,8 @@ The workers who keep a village running: carrying goods, delivering mail, selling
 
 ## Porter and the Storehouse
 
+*Full article: [Porter](porter.md).*
+
 Craft a **Storehouse** (three planks over a barrel, a chest and a barrel), put chests within 8 blocks of it, and a
 villager without a job becomes its **Porter**. The porter walks round the village's workers and carries what they make to
 the storehouse: the miner's ore, the lumberjack's logs, the farmer's harvest, the fisherman's catch. Tools, seeds and
@@ -41,6 +43,8 @@ straight into that worker's chest.
 
 ## Postman and mail
 
+*Full article: [Postman](postman.md).*
+
 Craft a **Mailbox** (iron nuggets round a chest, on a fence) and place it: it's yours, and mail for you arrives there
 (the red flag goes up). To send something, open your mailbox, put items in the top row, type a player's name and press
 **Send**; write in the **Letter** line to send a letter too. `/workplace mail` shows where your parcels are.
@@ -56,6 +60,8 @@ and an ink sac), right-click the chest to take from, then the one to bring to, a
 
 ## Shopkeeper
 
+*Full article: [Shopkeeper](shopkeeper.md).*
+
 Craft a **Shop Counter** (an emerald over planks and a chest) and place it near a villager without a job: the shop is
 yours and they become its **Shopkeeper**. Open the counter to set your prices: the top slot of each column is what one
 sale hands over, the slot below it the price. Put the goods in chests by the counter. Other players buy by trading with
@@ -66,6 +72,8 @@ CobbleDollars, and **Price Tags** set a price directly.
 
 ## Ferryman
 
+*Full article: [Ferryman](ferryman.md).*
+
 Craft a **Travel Post** (a sign over planks and a boat; name it in an anvil first, say "Riverside") and place it.
 Right-click posts to add them to the ones you know. A villager without a job becomes its **Ferryman** and sells **Travel
 Tickets** to every other post you know (an emerald for every 256 blocks). Use a ticket near any travel post and you
@@ -75,6 +83,8 @@ arrive at the ticket's post. Many villages already have a ferry house.
 
 ## Innkeeper
 
+*Full article: [Innkeeper](innkeeper.md).*
+
 A **Shop Counter** and a **bed**. Each morning, while there's a free bed nearby, a **traveler** comes to stay. Travelers
 already know a trade: right-click one to **hire them** (8 emeralds for an Apprentice, 16 for a Journeyman, 32 for an
 Expert). They join your village at their level. If nobody hires them, they move on after two days.
@@ -82,6 +92,8 @@ Expert). They join your village at their level. If nobody hires them, they move 
 ![A traveler checks in](https://jcondedata.github.io/minecraft-alive-workplace/innkeeper/still-4.jpg)
 
 ## Nurse
+
+*Full article: [Nurse](nurse.md).*
 
 A **brewing stand** and a **honey bottle**. Right-click the nurse with an empty hand to get your health back and bad
 effects cleared (with Cobblemon, your team is healed too). Nurses also look after hurt villagers and golems, and cure the
@@ -91,10 +103,14 @@ village's sick with a honey bottle, milk or a healing potion from their chest.
 
 ## Teacher
 
+*Full article: [Teacher](teacher.md).*
+
 A **lectern** and a **book**. By day the teacher gives the village's children lessons. A child who went to school starts
 their first job as an Apprentice instead of a Novice.
 
 ## Scholar and research
+
+*Full article: [Scholar](scholar.md).*
 
 A **lectern** and **paper**, in a village with a Village Hall. Sneak-right-click the scholar with an empty hand for the
 village's **research tree**, and click a topic to research it next. The scholar takes the cost (paper, books, emeralds)
@@ -121,11 +137,15 @@ from the chest and works it out at the lectern. Every level is a bonus for the w
 
 ## Undertaker
 
+*Full article: [Undertaker](undertaker.md).*
+
 A **brewing stand** and a **golden apple** (or a totem). A villager with a job or a name who dies leaves a **grave**. With
 a golden apple, a healing potion or a totem in the chest, the undertaker brings them back: job, level, trades and name
 as they were.
 
 ## Bard
+
+*Full article: [Bard](bard.md).*
 
 A **jukebox** and a **music disc**. Put discs in the chest and the bard plays them every morning and evening. No discs?
 They make up a tune on the harp.

@@ -6,6 +6,8 @@ image: https://jcondedata.github.io/minecraft-alive-workplace/builders/still-1.j
 caption: A builder at work
 Workstation: Blueprint Table
 Recipe: blue dye on top, a cartography table in the middle, planks around it
+Pick it: a villager without a job takes a Blueprint Table by themselves
+Pokémon helpers: Fighting, Rock, Steel
 Supply chests: within 8 blocks of the table
 Queue: up to five more blueprints
 Crew: up to three idle builders help
@@ -14,13 +16,14 @@ Styles: Stonework, Sandstone, Dark Oak, Cherry, Apricorn (with Cobblemon)
 Scan Tool: a Blank Blueprint and a spyglass
 Shape Planner: a Blank Blueprint and a compass
 categories: Builder, Jobs
-related: getting-started.md, jobs-crafts.md, defence.md
+related: getting-started.md, carpenter.md, porter.md, mason.md, lumberjack.md
 ```
 
 The Builder is the heart of the mod: a villager who builds whatever blueprint you hand them, block by block, from your
-chests.
+chests. Place a **Blueprint Table** near a villager without a job and they become a Builder; many villages already have
+a Builder's Workshop.
 
-![A builder at work](https://jcondedata.github.io/minecraft-alive-workplace/builders/still-1.jpg)
+![Three starter builds, finished](https://jcondedata.github.io/minecraft-alive-workplace/builders/still-2.jpg)
 
 ## Building something
 
@@ -61,6 +64,28 @@ take it down and put the blocks back in the chests.
 
 ![A crew of four on one build](https://jcondedata.github.io/minecraft-alive-workplace/crew/still-2.jpg)
 
+## How the builder fits in
+
+The builder is the village's biggest customer. Almost every other worker ends up feeding a build:
+
+- **Materials.** Besides the chests by their own table, a builder takes from the village's stock: the
+  [Porter](porter.md)'s storehouse and the chests of workers within 48 blocks who answer to the same people. The
+  [Miner](miner.md)'s stone and the [Lumberjack](lumberjack.md)'s logs end up there. Short of something? It shows on
+  the Storehouse's requests board, where a click hands over what you carry.
+- **Crafted parts.** A builder waiting for something that can be made gets it from a crafter nearby: the
+  [Carpenter](carpenter.md) (stairs, doors, fences, torches...), the [Mason](mason.md) (stone bricks, glass, bricks), the
+  [Leatherworker](leatherworker-dyer.md) (anything colored), the [Tinkerer](tinkerer.md) (redstone and iron parts) and the
+  [Librarian](librarian.md) (books and bookshelves). A [Lumberjack](lumberjack.md) strips logs when a blueprint wants
+  stripped ones, and a [Florist](florist.md) grows the flowers.
+- **Help.** Fighting, Rock and Steel Pokémon in a Pasture Block nearby make the work go faster (with Cobblemon; see
+  [Pokémon and villagers](pokemon.md)), and so does the **Swift Hands** research (see [Scholar](scholar.md)).
+- **What their builds bring.** Many blueprints have a spot for a worker: build a Healing Center and a
+  [Nurse](nurse.md) moves in, a Supply Shop and a [Shopkeeper](shopkeeper.md) does. Homes give the village beds to grow
+  into, and decorations near a Village Hall make it happier (see [Village life](village-life.md)).
+- **Trades.** A builder sells blueprints as they level up: the Starter Cottage at Novice, then the Market Stall, the
+  Lookout Tower, the Healing Center and, at Master, the Supply Shop. They also buy cobblestone, oak logs and glass, and
+  sell scaffolding and bricks.
+
 ## Blueprints to build
 
 The **Blueprint Table** lists the server's blueprints with its size and exactly what it needs. **Get Blueprint**
@@ -69,9 +94,8 @@ gives you a copy for a Blank Blueprint.
 - **Starter builds:** the Starter Cottage, Market Stall, Lookout Tower, Healing Center, Supply Shop, Storehouse, Berry
   Farm and Research Lab. Build a Healing Center or a Supply Shop and a nurse or shopkeeper moves in.
 - **Homes:** the Terrace, the Inn and the Stone House, for a village that wants to grow.
-- **Sold by builders only:** the Artisan's House and the Burgher's Townhouse aren't in the Table. A builder sells the
-  Artisan's House from Apprentice on, and the Townhouse once the village has a household of Artisans or higher; their
-  upgrades come from the builder who finishes them.
+- **Sold by builders only:** the Artisan's House isn't in the Table. A builder sells it from Apprentice on, for 10
+  emeralds; its upgrades come from the builder who finishes it.
 - **Workplaces:** a Schoolhouse, Library, Ranch, Apiary Garden, Flower Shop, Graveyard, Tinker's Workshop, Nether
   Gate, Barracks and more, each with a spot for its worker.
 - **Decorations:** a Well, Street Lamp, Park Bench, Fountain, Gazebo, Market Square and Chapel. Near a Village Hall

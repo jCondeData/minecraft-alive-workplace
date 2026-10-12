@@ -1,0 +1,147 @@
+{
+  "name": "wonder.aliveworkplace.colossus.name",
+  "description": "wonder.aliveworkplace.colossus.description",
+  "icon": "minecraft:lantern",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "city"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:founder",
+      "stand_in": [
+        {
+          "type": "rank_at_least",
+          "rank": "city"
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.colossus.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/colossus/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:baked_potato",
+          "count": 128,
+          "job": "aliveworkplace:chef"
+        },
+        {
+          "item": "minecraft:coal",
+          "count": 64,
+          "job": "aliveworkplace:miner"
+        },
+        {
+          "item": "minecraft:iron_pickaxe",
+          "count": 8,
+          "job": "minecraft:toolsmith"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.colossus.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/colossus/stage_2_0",
+          "offset": [9, 13, 9]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:copper_ingot",
+          "count": 64,
+          "job": "minecraft:armorer"
+        },
+        {
+          "item": "minecraft:white_wool",
+          "count": 64,
+          "job": "minecraft:shepherd"
+        },
+        {
+          "item": "minecraft:leather",
+          "count": 32,
+          "job": "minecraft:butcher"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.colossus.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/colossus/stage_3_0",
+          "offset": [9, 13, 8]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:chain",
+          "count": 32,
+          "job": "aliveworkplace:tinkerer"
+        },
+        {
+          "item": "minecraft:stripped_dark_oak_log",
+          "count": 32,
+          "job": "aliveworkplace:lumberjack"
+        },
+        {
+          "item": "minecraft:potion",
+          "count": 16,
+          "potion": "minecraft:strength",
+          "job": "minecraft:cleric"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.colossus.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/colossus/stage_4_0",
+          "offset": [10, 34, 8]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:glowstone_dust",
+          "count": 32,
+          "job": "aliveworkplace:netherworker"
+        },
+        {
+          "tag": "minecraft:small_flowers",
+          "count": 64,
+          "job": "aliveworkplace:florist"
+        },
+        {
+          "item": "minecraft:cake",
+          "count": 16,
+          "job": "aliveworkplace:chef"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "mood",
+      "scope": "realm",
+      "amount": 8,
+      "home_amount": 12
+    },
+    {
+      "type": "travellers",
+      "factor": 2,
+      "expert_factor": 2
+    },
+    {
+      "type": "beauty",
+      "points": 8
+    }
+  ]
+}

@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Colossus' design, for 2.0** (35.21, nothing to start in game until Wonders is finished): the seventh Wonder's
+  build, the Founder's statue 47 high (about 9,000 blocks): a robed villager in polished diorite and smooth stone, big
+  nose, unibrow and all, one arm folded across the chest and the other holding up a lantern of glass round glowstone,
+  under a cut copper cloak that weathers green. It stands on a stepped stone plinth ringed with braziers, over an arch 5
+  wide and 6 high that the main road runs through, with the Founder's plaque (a row of signs) over it. It rises in four
+  stages (the Plinth and the Road Arch, the Robes, the Arms and the Cloak, the Head and the Lantern), each with its goods.
 - **The Hanging Gardens' design, for 2.0** (35.19, nothing to start in game until Wonders is finished): the sixth
   Wonder's build, a garden mountain of four sandstone terraces (39 across at the foot, about 16,200 blocks), each faced
   with arcades hung with vines and glow berries over a gallery, its ledges planted with fields between water channels,

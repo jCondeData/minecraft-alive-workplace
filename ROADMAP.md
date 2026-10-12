@@ -4324,6 +4324,7 @@ Legends.
     in-game hour; the Coming days page lists a staged festival, wedding and caravan with their days;
   - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
     powers are in the README.
+  - [ ] **35.18a** Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
 - [ ] **35.19** **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
   31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
   soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four

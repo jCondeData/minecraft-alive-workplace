@@ -170,7 +170,8 @@ public final class Board {
 	/** What the village pays for a bundle of {@code good} now: its price, or its base before it has one. */
 	public static int price(ServerLevel level, BlockPos hall, TradeGoods.Good good) {
 		Market.Price p = Caravans.Data.get(level).market(hall).prices().get(good.id());
-		return p == null ? good.basePrice() : p.cents();
+		int own = p == null ? good.basePrice() : p.cents();
+		return io.github.jcondedata.aliveworkplace.realm.RealmEdicts.commonPrice(level, hall, good.id(), own); // the Common Market's average (33.22)
 	}
 
 	/** {@code cents} in CobbleDollars. */
@@ -246,6 +247,7 @@ public final class Board {
 		entity.setTreasury(treasury - paid);
 		Money.pay(player, dollars(owed), emeralds);
 		move(level, hall, good, price, -done);
+		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.boardTrade(level, hall); // a realm reform's count (33.22)
 		level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_TRADE, SoundSource.PLAYERS, 0.8f, 1f);
 		return new Result(true, good, done, done * good.bundle(), paid, stop);
 	}
@@ -276,7 +278,7 @@ public final class Board {
 				stop = Stop.PACK;
 				break;
 			}
-			int cost = share(TradePage.selling(level, hall, price), io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, player, true));
+			int cost = share(TradePage.selling(level, hall, price, player), io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, player, true));
 			long dueDollars = dollars(total + cost) - dollars(total);
 			int dueEmeralds = wholeUp(total + cost) - wholeUp(total);
 			if (!Money.canAfford(player, dueDollars, dueEmeralds) || !Money.charge(player, dueDollars, dueEmeralds)) {
@@ -303,6 +305,7 @@ public final class Board {
 		Tithe.put(entity, paid);
 		io.github.jcondedata.aliveworkplace.realm.Leaderboard.earned(level, hall, paid); // the week's board trades (33.19)
 		move(level, hall, good, price, done);
+		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.boardTrade(level, hall); // a realm reform's count (33.22)
 		level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_TRADE, SoundSource.PLAYERS, 0.8f, 1.1f);
 		return new Result(false, good, done, done * good.bundle(), paid, all && stop == Stop.STOCK ? Stop.NONE : stop);
 	}

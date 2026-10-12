@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
  * 33.19 adds the weekly leaderboard's part (under "leaderboard"): each village's numbers this week ({@link Tally}), the
  * villages their owners left off, the winners' ribbons ({@link Ribbon}), lines held for want of anyone online, and when
  * the week began.
+ * 33.22 adds the realm edicts ({@link Laws}, under "laws").
  * Everything is empty by default, so an older world loads unchanged; a part that can't be read is left empty and logged,
  * never a crash.
  */
@@ -339,6 +340,61 @@ public final class RealmData extends SavedData {
 	}
 
 	/**
+	 * A realm's edicts (33.22), kept on the realm so a new capital takes them: the realm edicts in force (id and day
+	 * proclaimed), its progress on their reforms (steps done at the capital, reformed for good), the count each reform
+	 * has reached across the realm (by edict id), the last day a member was seen raided (-1: never), the last dawn the
+	 * realm's round ran and the last realm festival day counted (-1: none). Every field has a default.
+	 */
+	public record Laws(UUID realm, List<io.github.jcondedata.aliveworkplace.hall.Edicts.InForce> edicts,
+					   List<io.github.jcondedata.aliveworkplace.hall.Reforms.Progress> reforms, java.util.Map<String, Integer> counts,
+					   long lastRaidDay, long lastDay, long festivalDay) {
+		public static final Codec<Laws> CODEC = RecordCodecBuilder.create(i -> i.group(
+			UUIDUtil.CODEC.fieldOf("realm").forGetter(Laws::realm),
+			io.github.jcondedata.aliveworkplace.hall.Edicts.InForce.CODEC.listOf().optionalFieldOf("edicts", List.of()).forGetter(Laws::edicts),
+			io.github.jcondedata.aliveworkplace.hall.Reforms.Progress.CODEC.listOf().optionalFieldOf("reforms", List.of()).forGetter(Laws::reforms),
+			Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("counts", java.util.Map.of()).forGetter(Laws::counts),
+			Codec.LONG.optionalFieldOf("lastRaidDay", -1L).forGetter(Laws::lastRaidDay),
+			Codec.LONG.optionalFieldOf("lastDay", -1L).forGetter(Laws::lastDay),
+			Codec.LONG.optionalFieldOf("festivalDay", -1L).forGetter(Laws::festivalDay)
+		).apply(i, Laws::new));
+
+		public Laws {
+			edicts = List.copyOf(edicts);
+			reforms = List.copyOf(reforms);
+			counts = java.util.Map.copyOf(counts);
+		}
+
+		/** A realm without edicts. */
+		public static Laws none(UUID realm) {
+			return new Laws(realm, List.of(), List.of(), java.util.Map.of(), -1L, -1L, -1L);
+		}
+
+		public Laws withEdicts(List<io.github.jcondedata.aliveworkplace.hall.Edicts.InForce> edicts) {
+			return new Laws(realm, edicts, reforms, counts, lastRaidDay, lastDay, festivalDay);
+		}
+
+		public Laws withReforms(List<io.github.jcondedata.aliveworkplace.hall.Reforms.Progress> reforms) {
+			return new Laws(realm, edicts, reforms, counts, lastRaidDay, lastDay, festivalDay);
+		}
+
+		public Laws withCounts(java.util.Map<String, Integer> counts) {
+			return new Laws(realm, edicts, reforms, counts, lastRaidDay, lastDay, festivalDay);
+		}
+
+		public Laws withLastRaidDay(long day) {
+			return new Laws(realm, edicts, reforms, counts, day, lastDay, festivalDay);
+		}
+
+		public Laws withLastDay(long day) {
+			return new Laws(realm, edicts, reforms, counts, lastRaidDay, day, festivalDay);
+		}
+
+		public Laws withFestivalDay(long day) {
+			return new Laws(realm, edicts, reforms, counts, lastRaidDay, lastDay, day);
+		}
+	}
+
+	/**
 	 * A village's numbers for the weekly leaderboard (33.19): the emeralds it earned this week, in hundredths (takings,
 	 * board trades, caravan sales), the sum of its hall's rounds' wellbeing in percent and how many rounds that was, and
 	 * its Legends and Masters as the last round counted them. Unloaded villages count at these last-known values.
@@ -384,6 +440,7 @@ public final class RealmData extends SavedData {
 
 	private final List<Realm> realms = new ArrayList<>();
 	private final List<Study> studies = new ArrayList<>();
+	private final List<Laws> laws = new ArrayList<>();
 	private final List<Known> known = new ArrayList<>();
 	private final List<Invite> invites = new ArrayList<>();
 	private final List<Vote> votes = new ArrayList<>();
@@ -505,6 +562,23 @@ public final class RealmData extends SavedData {
 		setDirty();
 	}
 
+	/** {@code realm}'s edicts (33.22): none until it proclaims one. */
+	public Laws laws(UUID realm) {
+		for (Laws l : laws) {
+			if (l.realm().equals(realm)) {
+				return l;
+			}
+		}
+		return Laws.none(realm);
+	}
+
+	/** Keeps {@code kept} in the place of the realm's last edicts. */
+	public void putLaws(Laws kept) {
+		laws.removeIf(l -> l.realm().equals(kept.realm()));
+		laws.add(kept);
+		setDirty();
+	}
+
 	/** Adds {@code realm}, or puts it in the place of the one with its id. */
 	public void putRealm(Realm realm) {
 		for (int i = 0; i < realms.size(); i++) {
@@ -520,7 +594,8 @@ public final class RealmData extends SavedData {
 
 	/** Ends the realm with {@code id}. */
 	public void removeRealm(UUID id) {
-		if (realms.removeIf(r -> r.id().equals(id)) | invites.removeIf(i -> i.realm().equals(id)) | votes.removeIf(v -> v.realm().equals(id))) {
+		if (realms.removeIf(r -> r.id().equals(id)) | invites.removeIf(i -> i.realm().equals(id)) | votes.removeIf(v -> v.realm().equals(id))
+			| laws.removeIf(l -> l.realm().equals(id))) {
 			setDirty();
 		}
 	}
@@ -710,6 +785,7 @@ public final class RealmData extends SavedData {
 	public void clearRealms() {
 		realms.clear();
 		studies.clear();
+		laws.clear();
 		known.clear();
 		invites.clear();
 		votes.clear();
@@ -734,6 +810,7 @@ public final class RealmData extends SavedData {
 		Cooldown.CODEC.listOf().encodeStart(ops, cooldowns).result().ifPresent(t -> tag.put("cooldowns", t));
 		Realm.CODEC.listOf().encodeStart(ops, realms).result().ifPresent(t -> tag.put("realms", t));
 		Study.CODEC.listOf().encodeStart(ops, studies).result().ifPresent(t -> tag.put("studies", t));
+		Laws.CODEC.listOf().encodeStart(ops, laws).result().ifPresent(t -> tag.put("laws", t));
 		Known.CODEC.listOf().encodeStart(ops, known).result().ifPresent(t -> tag.put("known", t));
 		Invite.CODEC.listOf().encodeStart(ops, invites).result().ifPresent(t -> tag.put("invites", t));
 		Vote.CODEC.listOf().encodeStart(ops, votes).result().ifPresent(t -> tag.put("votes", t));
@@ -756,6 +833,7 @@ public final class RealmData extends SavedData {
 		read(Cooldown.CODEC, tag.get("cooldowns"), ops, data.cooldowns, "colony cooldowns");
 		read(Realm.CODEC, tag.get("realms"), ops, data.realms, "realms");
 		read(Study.CODEC, tag.get("studies"), ops, data.studies, "realm research");
+		read(Laws.CODEC, tag.get("laws"), ops, data.laws, "realm edicts");
 		read(Known.CODEC, tag.get("known"), ops, data.known, "villages seen");
 		read(Invite.CODEC, tag.get("invites"), ops, data.invites, "realm invitations");
 		read(Vote.CODEC, tag.get("votes"), ops, data.votes, "capital votes");

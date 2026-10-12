@@ -3649,7 +3649,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   Map's does. Done when:
   - GameTests check where the banners are and their colours, and that a route's dots lie between its two halls;
   - showcase scene `realm_map` (the map in hand and in an item frame).
-- [ ] **33.22** **Realm edicts** (needs M30's edict engine, the Book of Edicts). The capital's Book of Edicts gets
+- [x] **33.22** (review: pending 2026-10-12) **Realm edicts** (needs M30's edict engine, the Book of Edicts). The capital's Book of Edicts gets
   realm slots: 1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II. A realm
   edict is in force in every member, lasts at least 3 days like any edict, and is paid from the realm treasury where
   it costs money. Six realm edicts, as data in M30's format (`scope: realm`), each with its reform (the capital's
@@ -4373,14 +4373,14 @@ Legends.
     with beds free; the plaque reads the village's name and founding day; a damaged Colossus turns them off;
   - scene `wonder_colossus`: the time-lapse with the scaffolding going up and coming down, ending at night with the
     lantern lit over the road; its GIF and powers are in the README.
-- [ ] **35.23** **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
+- [x] **35.23** (review: pending 2026-10-12) **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
   battle field 31 × 21 of grass with white lines and a centre circle (no logos), two trainer boxes with a Training
   Post each, a professor's box at the side, stands of five tiers along the sides and three at the ends with seats in
   red and white (the village's own colours once M30's Village Banner exists), a covered stand on the west under a
   canopy on columns, a gateway arch with banners, four floodlight towers of redstone lamps lit at night by daylight
   detectors, a scoreboard wall, and outside a nurse's booth (a brewing stand and a Healing Machine) and pitches for
   market stalls. Palette: stone bricks and smooth stone, spruce, red and white terracotta, iron for the floodlights.
-  About 18,000 blocks: I *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The
+  About 7,300 blocks (18,000 before it was drawn: Notes, 35.23): I *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The
   Gate and the Floodlights*. If M28 shipped a smaller Stadium for its Festival Cup, this one is the **Grand Stadium**
   in game, to tell them apart. Data (loaded only with Cobblemon, through `fabric:load_conditions` like the explorers'
   Cobblemon loot; without it the Stadium isn't on the Wonders page): Town; the Pokémon Professor (stand-in: 25
@@ -4389,7 +4389,7 @@ Legends.
   banners (Carpenter), 64 cooked beef (Chef), 32 berries (Orchard Keeper); IV 8 daylight detectors (Tinkerer), 16
   Ultra Balls (Ball Smith), 32 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it (the compat
   GameTests for the parts with Cobblemon's blocks).
-- [ ] **35.24** **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
+- [ ] **35.24** (blocked: needs 35.4-35.8, see Notes) **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
   - **Stadium Days**, every second day in the afternoon: two to four visiting trainers (from the villages of its realm
     or its caravan partners; travelling trainers from Journeyman to Master when those have none) stand in the trainer
     boxes until dusk. Players challenge them as they do the village's own (`trainer/Trainers`: CobbleDollars, once a
@@ -4490,6 +4490,17 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-12 (33.22, decisions; lane a; details in `docs/wiki/realms.md`, "Realm edicts"): (1) "no spread on trades
+  between members" is read as: at any member's board, the realm's people (members' owners, their friends, operators)
+  buy at the board's own price, strangers pay the 10%; (2) the Levy of Arms' dues are their own effect type
+  (`member_dues`, out of each member's treasury at its morning takings, as far as the realm treasury has room), not
+  `realm_upkeep`, which the realm pays (the Royal Highway's emerald a route); (3) an upkeep the realm treasury can't pay
+  makes that edict lapse at the dawn round; a Realm Festival share it can't pay means no festival (the village is
+  disappointed), a Royal Charter share it can't pay refuses the charter; (4) a reform's count only runs while its
+  edict is in force and starts again when it is proclaimed again; days without a raid count from the proclamation or
+  the last raid on a loaded member; (5) no switch of its own: off with `realms` or `villageEdicts`; (6) the Levy of
+  Arms' "wherever it is" lifts the 1,024-block limit, but an unloaded member still counts no guards, so sends no band.
 
 - 2026-10-11 (33.21, decisions; lane a; details in `docs/wiki/realm-map.md`, Decisions): (1) every member's banner is in
   the realm's colour (its arms' base, white without arms), colonies that are members too (they join by themselves),
@@ -5633,6 +5644,18 @@ item waits.
   village's name as last seen, so `/workplace standing` and the chat never load a far village's chunk. No review
   package was made by the lane and nothing was filmed locally: the digest makes it from the showcase.
 - **qa handoff** (qa-1011-0833, 2026-10-11 08:50Z): B65 (ConscriptionGameTests noWorkDuringARaid...): 12 isolated copies via the repeat generator (own batch each, huge_area, 1600 ticks) all passed, 12/12, on main b836b373; not reproducible alone, so the old flake needs the full suite's global state (Edicts/Sieges/VillageRaids/Conscription.STOPPED cache), nothing seen since 2026-10-05. No mod bug found; leave B65 open for the nightly 10x report. Env trap for QA runs: after the first Gradle failure 'plugin not found', run ./gradlew --stop and retry; Central 429s need retry loops; a cold runGameTest takes ~7 min. Wiki/guide checks pass; 167 items still unverified, next in line B60 B84 B85 B86 B92 B99.
+- **35.23 the Stadium's block count, height and colours** (lane-a-1012-0033, 2026-10-12): drawn at 47 x 37 with
+  everything the item lists, the bowl is 16 high but the gate's banners and the four floodlight heads reach 20 (lights
+  lower than the stands would light nothing), and it is about 7,300 blocks, not 18,000: solid stands of five tiers two
+  up and one back fill only part of a 47 x 37 x 16 box, and 18,000 would need the bowl near solid. Decided: keep the
+  size and the design, and the figure is now about 7,300 (the item's text and `StadiumCompatTests`, within 10%). M28
+  shipped the Arena (28.16), a smaller ring but not called a Stadium, so this one keeps the name "Stadium". The
+  village's colours: a Wonder file's `"village_colours": true` builds its red and white wool, carpet, terracotta and
+  banners in the village's banner base and first other pattern colour, chosen when each stage starts (not saved when
+  the plan is drawn, so a village that changes its banner mid-build gets the new colours from the next stage on).
+  The design checks run as compat tests (the file and the Healing Machine need Cobblemon), and the wonder_gallery
+  scene is now filmed with Cobblemon so it can show the Stadium. Owner: say if you'd rather have a bigger Stadium for
+  the 18,000 (about 55 x 45 with a roofed concourse).
 - **35.11 the Lighthouse's block count** (lane-b-1011-2133, 2026-10-11): drawn at 25 x 33 x 46 with everything the item
   lists (the tower 13 to 9 across, solid round its stair to 8 and three thick to 22, the stepped mole and its arm, the
   gallery, lantern and cupola, the two-storey cottage, the boathouse, the quay and the jetty with its ferry stop), it is
@@ -5662,3 +5685,10 @@ item waits.
   water bucket), as the builder does. The cocoa beans are goods only: cocoa needs jungle logs, which the palette doesn't
   have. Glow berries hang one block long, under solid blocks (a longer strand needs cave vine stems, which have no item
   and a builder skips).
+- **35.24 the Stadium's powers wait for 35.8** (lane-a-1012-0033, 2026-10-12): its Done when needs what 35.4 to 35.8
+  make and none of them is done yet: a Wonder that is ever finished in play (the Foundation Stone and stages, 35.4),
+  the power registry `wonder/powers/` and `Wonders.power(level, hall, type)` (35.8), the upkeep count that makes a
+  Wonder "damaged" (35.8; "a damaged Stadium holds no Stadium Days" tests it) and the harness's Wonder time-lapse that
+  scene `wonder_stadium` films (35.8). Decided: 35.24 is blocked until 35.8 lands, rather than building a second power
+  lookup and damage rule that 35.8 would replace. The same holds for every Wonder's powers item (35.10, 35.12, 35.14,
+  35.16, 35.18, 35.20, 35.22): take 35.4 to 35.8 first, in order.

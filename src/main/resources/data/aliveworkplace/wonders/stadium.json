@@ -1,0 +1,155 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblemon"
+      ]
+    }
+  ],
+  "name": "wonder.aliveworkplace.stadium.name",
+  "description": "wonder.aliveworkplace.stadium.description",
+  "icon": "cobblemon:poke_ball",
+  "enabled": true,
+  "crew": 12,
+  "village_colours": true,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:pokemon_professor",
+      "stand_in": [
+        {
+          "type": "pastured_pokemon",
+          "count": 25,
+          "types": 10
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:bone_meal",
+          "count": 128,
+          "job": "aliveworkplace:composter"
+        },
+        {
+          "tag": "minecraft:small_flowers",
+          "count": 64,
+          "job": "aliveworkplace:florist"
+        },
+        {
+          "item": "cobblemon:poke_ball",
+          "count": 32,
+          "job": "aliveworkplace:ball_smith"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_2_0",
+          "offset": [3, 1, 3]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:red_wool",
+          "count": 64,
+          "job": "minecraft:leatherworker"
+        },
+        {
+          "item": "minecraft:white_wool",
+          "count": 64,
+          "job": "minecraft:shepherd"
+        },
+        {
+          "item": "cobblemon:poke_snack",
+          "count": 16,
+          "job": "aliveworkplace:chef"
+        },
+        {
+          "item": "cobblemon:great_ball",
+          "count": 16,
+          "job": "aliveworkplace:ball_smith"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_3_0",
+          "offset": [2, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "tag": "minecraft:banners",
+          "count": 16,
+          "job": "aliveworkplace:carpenter"
+        },
+        {
+          "item": "minecraft:cooked_beef",
+          "count": 64,
+          "job": "aliveworkplace:chef"
+        },
+        {
+          "tag": "cobblemon:berries",
+          "count": 32,
+          "job": "aliveworkplace:orchard_keeper"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_4_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:daylight_detector",
+          "count": 8,
+          "job": "aliveworkplace:tinkerer"
+        },
+        {
+          "item": "cobblemon:ultra_ball",
+          "count": 16,
+          "job": "aliveworkplace:ball_smith"
+        },
+        {
+          "item": "minecraft:pumpkin_pie",
+          "count": 32,
+          "job": "aliveworkplace:chef"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "stadium_days",
+      "every_days": 2,
+      "min_visitors": 2,
+      "max_visitors": 4
+    },
+    {
+      "type": "tournament_host"
+    }
+  ]
+}

@@ -108,6 +108,8 @@ public final class Relief {
 	private static final Map<GlobalPos, Long> CALLED = new HashMap<>();
 	/** Who is away helping where (for the sender's hall line). */
 	private static final Map<GlobalPos, GlobalPos> AWAY = new HashMap<>();
+	/** The realm villages raided now that their realm's riders set out for (a raid beaten with relief counts for a reform, 33.22). */
+	private static final java.util.Set<GlobalPos> RELIEVED = new java.util.HashSet<>();
 
 	private Relief() {
 	}
@@ -176,6 +178,9 @@ public final class Relief {
 					}
 				} else {
 					CALLED.remove(member);
+					if (RELIEVED.remove(member)) {
+						io.github.jcondedata.aliveworkplace.realm.RealmEdicts.raidBeaten(server, member); // the Levy of Arms' reform count (33.22)
+					}
 				}
 			}
 		}
@@ -202,6 +207,9 @@ public final class Relief {
 		CALLED.put(at, now);
 		Component targetName = VillageHalls.name(level, hall);
 		int total = realm == null ? 0 : realmBands(level, hall, at, realm, targetName, now);
+		if (total > 0) {
+			RELIEVED.add(at);
+		}
 		// 33.18: allies (and their realms) within RANGE send their own bands, at their own cost, and both owners hear
 		for (GlobalPos home : allies) {
 			if (total >= MAX_RIDERS || !home.dimension().equals(level.dimension()) || home.pos().distSqr(hall) > (double) RANGE * RANGE) {
@@ -251,25 +259,29 @@ public final class Relief {
 	private static int realmBands(ServerLevel level, BlockPos hall, GlobalPos at, RealmData.Realm realm, Component targetName, long now) {
 		MinecraftServer server = level.getServer();
 		int levies = leviesBonus(server, realm);
+		// the Levy of Arms (33.22): every member sends, wherever it is, and its band is twice as big
+		boolean everywhere = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.reliefReach(server, realm);
+		int factor = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.reliefFactor(server, realm);
+		int most = MAX_RIDERS * factor;
 		int total = 0;
 		List<GlobalPos> homes = new ArrayList<>(Realms.members(realm));
 		homes.remove(realm.capital());
 		homes.add(0, realm.capital()); // the capital first: it comes even when the treasury is empty
 		for (GlobalPos home : homes) {
-			if (home.equals(at) || total >= MAX_RIDERS) {
+			if (home.equals(at) || total >= most) {
 				continue;
 			}
 			boolean capital = home.equals(realm.capital());
 			boolean sameWorld = home.dimension().equals(level.dimension());
 			double distance = sameWorld ? Math.sqrt(home.pos().distSqr(hall)) : RANGE;
-			if (!capital && (!sameWorld || distance > RANGE)) {
+			if (!capital && !everywhere && (!sameWorld || distance > RANGE)) {
 				continue;
 			}
 			int guards = guards(server, home);
 			if (!capital && guards < MIN_GUARDS) {
 				continue;
 			}
-			int riders = Math.min(band(guards, levies), MAX_RIDERS - total);
+			int riders = Math.min(band(guards, levies) * factor, most - total);
 			Component homeName = Realms.name(server, home);
 			boolean paid = RealmTreasury.spend(server, realm, riders * COST_CENTS,
 				Component.translatable("message.aliveworkplace.realm.relief_ledger", riders, homeName, targetName));
@@ -490,5 +502,6 @@ public final class Relief {
 		ON_THE_ROAD.clear();
 		CALLED.clear();
 		AWAY.clear();
+		RELIEVED.clear();
 	}
 }

@@ -1,0 +1,48 @@
+{
+  "scope": "realm",
+  "icon": "minecraft:white_banner",
+  "name": {
+    "translate": "edict.aliveworkplace.crowns_peace"
+  },
+  "description": {
+    "translate": "edict.aliveworkplace.crowns_peace.desc"
+  },
+  "order": 24,
+  "boost": [
+    {
+      "type": "aliveworkplace:no_feuds"
+    },
+    {
+      "type": "aliveworkplace:no_bandit_camps",
+      "radius": 128
+    }
+  ],
+  "cost": [
+    {
+      "type": "aliveworkplace:takings",
+      "percent": -10
+    }
+  ],
+  "excludes": [],
+  "reform": {
+    "name": {
+      "translate": "reform.aliveworkplace.cleared_roads"
+    },
+    "line": {
+      "translate": "reform.aliveworkplace.cleared_roads.line"
+    },
+    "steps": [
+      {
+        "kind": "slay",
+        "count": 16,
+        "reward": 6
+      }
+    ],
+    "count": {
+      "what": "aliveworkplace:days_without_raid",
+      "times": 7
+    },
+    "effects": []
+  },
+  "enabled": true
+}

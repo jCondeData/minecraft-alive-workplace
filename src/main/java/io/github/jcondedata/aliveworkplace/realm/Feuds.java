@@ -363,7 +363,8 @@ public final class Feuds {
 		String key = !ENABLED ? "off" : !Realms.mayRule(server, from, player) ? "not_yours"
 			: owner == null || !Pacts.strangers(server, from, to) || onSide(server, from, to) ? "not_stranger"
 			: hall.distSqr(target) > (double) Caravans.RANGE * Caravans.RANGE ? "too_far"
-			: feuding(server, from, to) ? "already" : null;
+			: feuding(server, from, to) ? "already"
+			: RealmEdicts.noFeuds(server, to) ? "crowns_peace" : null; // the Crown's Peace (33.22)
 		if (key != null) {
 			return refused(key, them);
 		}

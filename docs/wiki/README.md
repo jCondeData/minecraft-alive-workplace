@@ -35,7 +35,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [The Colony Charter](colony-charter.md): the hall's Colonies tab, the charter, its map and the rules for where a colony may go (33.8).
 - [The settlers set out](colony-settlers.md): sending the settlers with the charter, who volunteers, their supplies, the walk out and the order on the Colonies tab (33.9).
 - [A colony is born](colony-born.md): the settlers' camp, the new hall and Travel Post, the builder's first builds, the sister route and the letter; home again with no room (33.10).
-- [Founding a realm](realms.md): the Realm tab, founding a Barony, adding villages, colonies joining, leaving and letting go, the ranks and their fireworks, the arms and the crown passing (33.11).
+- [Founding a realm](realms.md): the Realm tab, founding a Barony, adding villages, colonies joining, leaving and letting go, the ranks and their fireworks, the arms and the crown passing (33.11); the treasury, research, relief and the six realm edicts in the capital's Book of Edicts (33.13 to 33.17, 33.22).
 - [Trade pacts and alliances](pacts.md): offers by letter and on the Pacts tab, routes to other players' villages, paid cargo and gifts, allies' relief riders, ending (33.18).
 - [Feuds and war](feuds.md): a feud declared on the Pacts tab, its board prices and grumbling, peace by letter, war on a PvP server and what guards may do in it (33.20).
 - [The Realm Map](realm-map.md): the Realm tab's map of the realm, its banners, allies and rivals, dotted caravan routes, the cross for a colony on the road, its scale and legend (33.21).

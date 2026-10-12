@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -146,7 +147,34 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 	}
 
 	public static Optional<Style> get(String name) {
-		return Optional.ofNullable(styles.get(name));
+		Style style = styles.get(name);
+		return style != null ? Optional.of(style) : colours(name);
+	}
+
+	/** The prefix of the village-colour styles (35.23): {@code colours_<base>_<accent>}, made up on demand, not listed. */
+	public static final String COLOURS = "colours_";
+	private static final Pattern COLOURS_NAME = Pattern.compile(COLOURS + "([a-z_]+?)_([a-z_]+)");
+	private static final String DYED = "(terracotta|wool|carpet|banner|wall_banner)";
+
+	/**
+	 * The style that builds red blocks in {@code base} and white ones in {@code accent} (wool, carpet, terracotta,
+	 * banners; not concrete, so a field's white lines stay white), for a Wonder drawn in red and white that takes its village's banner colours (the
+	 * Stadium's seats). Empty for a name that isn't one, or names a colour that doesn't exist.
+	 */
+	static Optional<Style> colours(String name) {
+		Matcher m = COLOURS_NAME.matcher(name);
+		if (!m.matches() || DyeColor.byName(m.group(1), null) == null
+			|| DyeColor.byName(m.group(2), null) == null) {
+			return Optional.empty();
+		}
+		return Optional.of(new Style(name, Integer.MAX_VALUE, ResourceLocation.withDefaultNamespace("white_banner"), List.of(
+			new Rule(Pattern.compile("minecraft:red_" + DYED), "minecraft:" + m.group(1) + "_$1"),
+			new Rule(Pattern.compile("minecraft:white_" + DYED), "minecraft:" + m.group(2) + "_$1"))));
+	}
+
+	/** The name of the style building red in {@code base} and white in {@code accent} (see {@link #colours}). */
+	public static String coloursStyle(DyeColor base, DyeColor accent) {
+		return COLOURS + base.getSerializedName() + "_" + accent.getSerializedName();
 	}
 
 	/** The id of {@code base} built in {@code style} ({@code base} itself for no style). */

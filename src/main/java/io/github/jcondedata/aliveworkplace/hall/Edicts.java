@@ -58,11 +58,17 @@ public final class Edicts implements ResourceManagerReloadListener {
 	 */
 	public record Edict(ResourceLocation id, ResourceLocation icon, Component name, Component description, int order,
 						List<CivicEffects.Effect> boost, List<CivicEffects.Effect> cost, List<ResourceLocation> excludes,
-						Optional<Reforms.Reform> reform) {
+						Optional<Reforms.Reform> reform, boolean realm) {
 		/** An edict without a reform. */
 		public Edict(ResourceLocation id, ResourceLocation icon, Component name, Component description, int order,
 					 List<CivicEffects.Effect> boost, List<CivicEffects.Effect> cost, List<ResourceLocation> excludes) {
-			this(id, icon, name, description, order, boost, cost, excludes, Optional.empty());
+			this(id, icon, name, description, order, boost, cost, excludes, Optional.empty(), false);
+		}
+
+		/** A village's edict ({@code "scope": "village"}, the default). */
+		public Edict(ResourceLocation id, ResourceLocation icon, Component name, Component description, int order,
+					 List<CivicEffects.Effect> boost, List<CivicEffects.Effect> cost, List<ResourceLocation> excludes, Optional<Reforms.Reform> reform) {
+			this(id, icon, name, description, order, boost, cost, excludes, reform, false);
 		}
 
 		/** Every effect it has while in force. */
@@ -95,8 +101,14 @@ public final class Edicts implements ResourceManagerReloadListener {
 	public static final Codec<ResourceLocation> ID_CODEC = Codec.STRING.xmap(Edicts::id, Edicts::shortId);
 
 	private record Body(ResourceLocation icon, Component name, Component description, int order, List<CivicEffects.Effect> boost,
-						List<CivicEffects.Effect> cost, List<ResourceLocation> excludes, Optional<Reforms.Reform> reform) {
+						List<CivicEffects.Effect> cost, List<ResourceLocation> excludes, Optional<Reforms.Reform> reform, String scope) {
 	}
+
+	/** Where an edict is proclaimed (33.22): {@code village} (the default, M30's) or {@code realm} (the capital's Book, in force in every member). */
+	public static final String VILLAGE = "village";
+	public static final String REALM = "realm";
+	private static final Codec<String> SCOPE = Codec.STRING.validate(s -> s.equals(VILLAGE) || s.equals(REALM)
+		? com.mojang.serialization.DataResult.success(s) : com.mojang.serialization.DataResult.error(() -> "unknown scope: " + s + " (village or realm)"));
 
 	private static final MapCodec<Body> BODY = RecordCodecBuilder.mapCodec(i -> i.group(
 		ResourceLocation.CODEC.optionalFieldOf("icon", ResourceLocation.withDefaultNamespace("paper")).forGetter(Body::icon),
@@ -106,7 +118,8 @@ public final class Edicts implements ResourceManagerReloadListener {
 		CivicEffects.CODEC.listOf().optionalFieldOf("boost", List.of()).forGetter(Body::boost),
 		CivicEffects.CODEC.listOf().optionalFieldOf("cost", List.of()).forGetter(Body::cost),
 		ID_CODEC.listOf().optionalFieldOf("excludes", List.of()).forGetter(Body::excludes),
-		Reforms.Reform.CODEC.optionalFieldOf("reform").forGetter(Body::reform)
+		Reforms.Reform.CODEC.optionalFieldOf("reform").forGetter(Body::reform),
+		SCOPE.optionalFieldOf("scope", VILLAGE).forGetter(Body::scope)
 	).apply(i, Body::new));
 
 	private static volatile Map<ResourceLocation, Edict> edicts = Map.of();
@@ -149,7 +162,8 @@ public final class Edicts implements ResourceManagerReloadListener {
 			return null;
 		}
 		Body body = BODY.codec().parse(JsonOps.INSTANCE, object).getOrThrow(IllegalArgumentException::new);
-		return new Edict(id, body.icon(), body.name(), body.description(), body.order(), body.boost(), body.cost(), body.excludes(), body.reform());
+		return new Edict(id, body.icon(), body.name(), body.description(), body.order(), body.boost(), body.cost(), body.excludes(), body.reform(),
+			body.scope().equals(REALM));
 	}
 
 	static void set(List<Edict> found) {
@@ -172,9 +186,14 @@ public final class Edicts implements ResourceManagerReloadListener {
 		return generation;
 	}
 
-	/** Every edict there is, in their order on the page. */
+	/** Every village edict there is, in their order on the page (the realm's are {@link #realm()}). */
 	public static List<Edict> all() {
-		return List.copyOf(edicts.values());
+		return edicts.values().stream().filter(e -> !e.realm()).toList();
+	}
+
+	/** Every realm edict there is ({@code "scope": "realm"}, 33.22), in their order on the capital's page. */
+	public static List<Edict> realm() {
+		return edicts.values().stream().filter(Edict::realm).toList();
 	}
 
 	public static Optional<Edict> get(ResourceLocation id) {
@@ -237,6 +256,9 @@ public final class Edicts implements ResourceManagerReloadListener {
 			return Result.no(Component.translatable("message.aliveworkplace.edict.no_hall"));
 		}
 		Component village = VillageHalls.name(level, hall);
+		if (edict.realm()) { // 33.22: proclaimed in the capital's Book for the whole realm
+			return Result.no(Component.translatable("message.aliveworkplace.edict.realm_only", edict.name()));
+		}
 		if (by != null && !io.github.jcondedata.aliveworkplace.story.Reputation.maySetEdicts(level, hall, by)) { // the owner's side, or a Lord (31.12)
 			return Result.no(Component.translatable("message.aliveworkplace.edict.not_allowed", entity.ownerName(), village));
 		}

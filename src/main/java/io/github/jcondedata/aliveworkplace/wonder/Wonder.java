@@ -12,9 +12,16 @@ import net.minecraft.resources.ResourceLocation;
  * One Wonder (M35), read from {@code data/<ns>/wonders/<id>.json} by {@link Wonders}: its name and description (lang
  * keys), its icon item, what a village needs before it may draw up the plans (the Master Architect's line is added by
  * the loader, so every Wonder has it), its stages, its powers, the most builders on its crew, and whether it's on.
+ * {@code villageColours} (the file's {@code "village_colours": true}, the Stadium's seats, 35.23): its red and white
+ * blocks are built in the village's two banner colours when it has a Village Banner ({@link WonderStages}).
  */
 public record Wonder(ResourceLocation id, String name, String description, ResourceLocation icon, boolean enabled, int crew,
-					 List<Condition> requirements, List<Stage> stages, List<Power> powers) {
+					 List<Condition> requirements, List<Stage> stages, List<Power> powers, boolean villageColours) {
+	public Wonder(ResourceLocation id, String name, String description, ResourceLocation icon, boolean enabled, int crew,
+				  List<Condition> requirements, List<Stage> stages, List<Power> powers) {
+		this(id, name, description, icon, enabled, crew, requirements, stages, powers, false);
+	}
+
 	/** One stage: its name (a lang key), its blueprint parts with their offsets, and the goods the village must bring. */
 	public record Stage(String name, List<Part> parts, List<Good> goods) {
 		public Component nameText() {

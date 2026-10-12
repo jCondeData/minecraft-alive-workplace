@@ -658,11 +658,12 @@ public final class Caravans {
 
 	/**
 	 * How long a caravan from {@code from} to {@code to} takes: {@link #travelTicks(double, boolean)}, and (33.16) Royal
-	 * Roads' percent sooner when both villages are of one realm (never under {@link #MIN_TRAVEL} less that share).
+	 * Roads' percent sooner when both villages are of one realm, with the Royal Highway edict's (33.22), 90% at most.
 	 */
 	public static long trip(ServerLevel level, BlockPos from, BlockPos to, Data data) {
 		long ticks = travelTicks(Math.sqrt(from.distSqr(to)), data.roadFinished(from, to));
-		int sooner = io.github.jcondedata.aliveworkplace.realm.RealmResearch.caravanSpeed(level, from, to);
+		int sooner = Math.min(90, io.github.jcondedata.aliveworkplace.realm.RealmResearch.caravanSpeed(level, from, to)
+			+ io.github.jcondedata.aliveworkplace.realm.RealmEdicts.caravanSpeed(level, from, to)); // and the Royal Highway (33.22)
 		return sooner <= 0 ? ticks : Math.max(1, ticks * (100 - sooner) / 100);
 	}
 
@@ -751,8 +752,9 @@ public final class Caravans {
 		}
 		List<BlockPos> ours = storehouse(level, hall);
 		List<ItemStack> goods = new ArrayList<>();
+		int cargo = CARGO_STACKS + io.github.jcondedata.aliveworkplace.realm.RealmEdicts.extraStacks(level, hall, to); // the Royal Highway (33.22)
 		for (Want want : them.wants()) {
-			if (goods.size() >= CARGO_STACKS) {
+			if (goods.size() >= cargo) {
 				break;
 			}
 			long have = SupplyContainers.count(level, ours, want.item());
@@ -778,6 +780,7 @@ public final class Caravans {
 		boolean lost = io.github.jcondedata.aliveworkplace.story.LostCaravanStory.lose(level, hall, to, all, level.random);
 		if (!lost) {
 			data.ship(shipment);
+			io.github.jcondedata.aliveworkplace.realm.RealmEdicts.caravanSent(level, hall, to); // a realm reform's count (33.22)
 		}
 		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
 		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);

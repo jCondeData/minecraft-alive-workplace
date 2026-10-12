@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import java.util.EnumMap;
 import java.util.List;
@@ -53,6 +54,22 @@ public final class VillageBanners {
 		public boolean on(BannerBlockEntity banner) {
 			return banner.getBaseColor() == base && banner.getPatterns().equals(patterns);
 		}
+	}
+
+	/**
+	 * The style a Wonder drawn in red and white takes in a village flying {@code colours} (the Stadium's seats, 35.23):
+	 * red becomes the banner's base, white the first other colour in its pattern (white, or red on a white banner, when
+	 * there's none). Null for a village without colours, or with red and white already.
+	 */
+	@Nullable
+	public static String wonderStyle(@Nullable Colours colours) {
+		if (colours == null) {
+			return null;
+		}
+		DyeColor base = colours.base();
+		DyeColor accent = colours.patterns().layers().stream().map(BannerPatternLayers.Layer::color).filter(c -> c != base).findFirst()
+			.orElse(base == DyeColor.WHITE ? DyeColor.RED : DyeColor.WHITE);
+		return base == DyeColor.RED && accent == DyeColor.WHITE ? null : BlueprintStyles.coloursStyle(base, accent);
 	}
 
 	/** The colours of the hall's village, or null when none were set (or Village Banners are off). */

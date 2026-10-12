@@ -22,6 +22,19 @@ asks for the steps, `latest.log` and any crash report).
   defense, disasters, settings), a News box of what's new, and on every article an infobox (picture, recipes,
   workstation, numbers), a contents box, "See also" links and its categories, with a page per category and an "All
   pages" list. It reads well on a phone too.
+- **The Stadium's design, for 2.0** (35.23, with Cobblemon, behind the 2.0 switch): an oval arena of stone round a grass
+  battle field, with stands of red and white seats (in the village's own banner colours if it has a Village Banner),
+  two trainer boxes with Training Posts, a professor's box, a covered stand, a gateway arch with banners, a
+  scoreboard, four floodlight towers that light up at night, a nurse's booth with a Healing Machine and market pitches,
+  in four stages. Without Cobblemon it isn't on the Wonders page.
+- **Realm edicts, for 1.7** (33.22, off until 1.7 is finished): the capital's Book of Edicts gets a row of realm slots
+  (1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II) and six realm edicts, in
+  force in every member and paid from the realm treasury: the Royal Highway (faster, fuller caravans between members),
+  the Common Market (one board at the members' average price, no spread for the realm's people), the Levy of Arms
+  (relief from every member in bands twice as big), the Realm Festival (one festival day for the realm, three days of
+  good mood), the Crown's Peace (no feuds on members, no bandit camps near them) and the Royal Charter (colonies from
+  Town rank, half the wait). Each has its reform: a quest at the capital and a count across the realm, after which the
+  boost stays and the cost goes for good.
 - **The Hanging Gardens' design, for 2.0** (35.19, nothing to start in game until Wonders is finished): the sixth
   Wonder's build, a garden mountain of four sandstone terraces (39 across at the foot, about 16,200 blocks), each faced
   with arcades hung with vines and glow berries over a gallery, its ledges planted with fields between water channels,

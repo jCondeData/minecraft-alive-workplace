@@ -1,0 +1,56 @@
+{
+  "scope": "realm",
+  "icon": "minecraft:book",
+  "name": {
+    "translate": "edict.aliveworkplace.royal_charter"
+  },
+  "description": {
+    "translate": "edict.aliveworkplace.royal_charter.desc"
+  },
+  "order": 25,
+  "boost": [
+    {
+      "type": "aliveworkplace:colony_rank",
+      "rank": "town"
+    },
+    {
+      "type": "aliveworkplace:colony_cooldown",
+      "percent": 50
+    }
+  ],
+  "cost": [
+    {
+      "type": "aliveworkplace:colony_cost",
+      "emeralds": 32
+    }
+  ],
+  "excludes": [],
+  "reform": {
+    "name": {
+      "translate": "reform.aliveworkplace.drafted_charter"
+    },
+    "line": {
+      "translate": "reform.aliveworkplace.drafted_charter.line"
+    },
+    "steps": [
+      {
+        "kind": "bring",
+        "item": "minecraft:paper",
+        "count": 16,
+        "reward": 3
+      },
+      {
+        "kind": "bring",
+        "item": "minecraft:book",
+        "count": 4,
+        "reward": 4
+      }
+    ],
+    "count": {
+      "what": "aliveworkplace:colonies_at_village_rank",
+      "times": 2
+    },
+    "effects": []
+  },
+  "enabled": true
+}

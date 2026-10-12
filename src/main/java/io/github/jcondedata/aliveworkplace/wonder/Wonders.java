@@ -222,7 +222,8 @@ public final class Wonders implements ResourceManagerReloadListener {
 			numbers.remove("type");
 			powers.add(new Wonder.Power(type, numbers));
 		}
-		return new Wonder(id, name, description, icon, true, crew, List.copyOf(requirements), List.copyOf(stages), List.copyOf(powers));
+		boolean colours = json.has("village_colours") && json.get("village_colours").getAsBoolean();
+		return new Wonder(id, name, description, icon, true, crew, List.copyOf(requirements), List.copyOf(stages), List.copyOf(powers), colours);
 	}
 
 	/** The line every Wonder has: the Master Architect settled in the village, or else a Master builder. */

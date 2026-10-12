@@ -75,7 +75,9 @@ public final class Colonies {
 
 	/** Why a charter isn't sold. */
 	public enum Refusal {
-		OFF, NO_HALL, NO_OWNER, NOT_YOURS, RANK, ON_ROAD, COOLDOWN, CAP, MONEY
+		OFF, NO_HALL, NO_OWNER, NOT_YOURS, RANK, ON_ROAD, COOLDOWN, CAP, MONEY,
+		/** The realm treasury hasn't the Royal Charter's share (33.22). */
+		REALM_MONEY
 	}
 
 	/** What came of buying a charter: the refusal (null: bought), what to tell the player, and who paid how many emeralds. */
@@ -171,13 +173,15 @@ public final class Colonies {
 	public static VillageRanks.Rank rankNeeded(ServerLevel level, BlockPos hall) {
 		// 33.23: a village the Founder lives in may found colonies from his rank (Town) on
 		java.util.Optional<LeadColoniesPower> lead = LeadColoniesPower.of(level, hall);
-		return lead.isPresent() && lead.get().rank().ordinal() < RANK.ordinal() ? lead.get().rank() : RANK;
+		VillageRanks.Rank rank = lead.isPresent() && lead.get().rank().ordinal() < RANK.ordinal() ? lead.get().rank() : RANK;
+		return io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyRank(level, hall, rank); // the Royal Charter: from Town (33.22)
 	}
 
 	/** Days the village at {@code hall} waits between colonies: {@link #COOLDOWN_DAYS}, half as long with the Founder (33.23). */
 	public static int cooldownDays(ServerLevel level, BlockPos hall) {
 		java.util.Optional<LeadColoniesPower> lead = LeadColoniesPower.of(level, hall);
-		return lead.isEmpty() ? COOLDOWN_DAYS : Math.max(lead.get().cooldown() > 0 ? 1 : 0, (COOLDOWN_DAYS * lead.get().cooldown() + 50) / 100); // 7 days: 4
+		int days = lead.isEmpty() ? COOLDOWN_DAYS : Math.max(lead.get().cooldown() > 0 ? 1 : 0, (COOLDOWN_DAYS * lead.get().cooldown() + 50) / 100); // 7 days: 4
+		return io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyCooldown(level, hall, days); // the Royal Charter: half as long (33.22)
 	}
 
 	/** Days until the village at {@code hall} may send its next colony (0: now). */
@@ -247,6 +251,9 @@ public final class Colonies {
 		int cost = cost(level, hall);
 		boolean free = player.getAbilities().instabuild; // creative: the treasury still pays its share, the rest costs nothing
 		int fromPlayer = free ? 0 : cost - fromTreasury;
+		if (refusal == null && !io.github.jcondedata.aliveworkplace.realm.RealmEdicts.canPayColony(level, hall)) {
+			refusal = Refusal.REALM_MONEY; // the Royal Charter's share (33.22)
+		}
 		if (refusal == null && fromPlayer > 0 && !Money.canAfford(player, (long) fromPlayer * Money.DOLLARS_PER_EMERALD, fromPlayer)) {
 			refusal = Refusal.MONEY;
 		}
@@ -257,6 +264,8 @@ public final class Colonies {
 			return new Bought(refusal, refusalMessage(level, hall, refusal, entity, player).copy().withStyle(ChatFormatting.RED), ItemStack.EMPTY, 0, 0);
 		}
 		entity.setTreasury(entity.treasury() - fromTreasury * 100);
+		int realmShare = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyCost(level, hall);
+		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.payColony(level, hall); // checked above
 		ItemStack charter = ColonyCharterItem.of(level, hall);
 		ItemStack given = charter.copy();
 		if (!player.getInventory().add(given)) {
@@ -268,6 +277,9 @@ public final class Colonies {
 			: fromPlayer == 0 ? Component.translatable("message.aliveworkplace.colony.bought_treasury", village, money(fromTreasury))
 			: fromTreasury == 0 ? Component.translatable("message.aliveworkplace.colony.bought_player", village, money(fromPlayer))
 			: Component.translatable("message.aliveworkplace.colony.bought_both", village, money(fromTreasury), money(fromPlayer));
+		if (realmShare > 0) {
+			message = message.copy().append(Component.literal(" ")).append(Component.translatable("message.aliveworkplace.colony.realm_share", money(realmShare)));
+		}
 		return new Bought(null, message.copy().withStyle(ChatFormatting.GREEN), charter, fromTreasury, fromPlayer);
 	}
 
@@ -289,6 +301,7 @@ public final class Colonies {
 			case ON_ROAD -> Component.translatable("message.aliveworkplace.colony.on_road", village);
 			case COOLDOWN -> Component.translatable("message.aliveworkplace.colony.cooldown", village, cooldownLeft(level, hall));
 			case CAP -> Component.translatable("message.aliveworkplace.colony.cap", village, PER_VILLAGE);
+			case REALM_MONEY -> Component.translatable("message.aliveworkplace.colony.realm_money", money(io.github.jcondedata.aliveworkplace.realm.RealmEdicts.colonyCost(level, hall)));
 			case MONEY -> {
 				int fromTreasury = entity == null ? 0 : treasuryShare(entity);
 				int cost = cost(level, hall);

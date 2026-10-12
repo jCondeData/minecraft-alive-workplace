@@ -87,6 +87,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.realm.Feuds.init();
 		io.github.jcondedata.aliveworkplace.realm.Leaderboard.init();
 		io.github.jcondedata.aliveworkplace.realm.RealmResearch.init();
+		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.init(); // 33.22: after the realm topics' effect types
 		io.github.jcondedata.aliveworkplace.people.SocialClasses.init();
 		io.github.jcondedata.aliveworkplace.people.ClassLook.init(); // dressed by class, in game (34.18)
 		io.github.jcondedata.aliveworkplace.people.HomeGrades.init(); // 34.15: data files that grade homes

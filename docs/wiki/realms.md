@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released).
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17
+Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17, 33.22
 
 ## What a player sees
 
@@ -154,6 +154,10 @@ empty in a world that never had them:
 - `invites` (33.12): `realm` (id), `village` (dimension and position), `owner` (UUID), `sent` (game time).
 - `votes` (33.12): `realm` (id), `candidate` (dimension and position), `started` (game time) and `ballots` (a list of
   `hall` and `yes`).
+- `laws` (33.22): one per realm that proclaimed a realm edict: `realm` (id), `edicts` (the realm edicts in force:
+  `id` and the `day` proclaimed), `reforms` (as a hall's: `id`, `step`, `reformed`, `nextDay`), `counts` (each reform's
+  count so far, by edict id), `lastRaidDay`, `lastDay` (the realm's last dawn round) and `festivalDay` (the last realm
+  festival counted), each -1 by default. Absent in older files: a realm with no edicts.
 - `studies` (33.15): one per realm with research: `realm` (id), `research` (the realm topics' `levels`, the `current`
   one, its `progress` and whether it is `paid`, the same shape as a hall's research) and `capital` (the capital's
   scholars' levels as its last round saw them, read by members while it isn't loaded). Absent in older files: a realm
@@ -351,9 +355,58 @@ Riders are guards on a stay like mercenaries (`MERCENARY_UNTIL`, until dawn) wit
 - The `realmRelief` switch (on with 1.7) off, or `realms` off: nobody comes.
 - Riders don't count as the village's own (no beds, no babies, not hired mercenaries).
 
+## Realm edicts (33.22)
+
+**What a player sees.** The capital's **Book of Edicts** (the hall's lectern button, or a Village Ledger used while
+sneaking) gets a third row: the **realm slots**. A Barony or County has 1, a Duchy 2, a Kingdom 3, and a finished Royal
+Hall II by the capital adds one more; the others show a grey dye saying what opens them ("Opens when the realm is a
+Duchy, or with the Royal Hall II"). The header says "Realm edicts: 1 in force of 2 edicts (the Duchy of Thornholm)".
+Below the village's eight edicts the capital's list has the six **realm edicts**, each with its boost (green), its cost
+(red), its reform and the count across the realm ("Across the realm: 7 of 12 caravans between members"). As with a
+village's edicts, click one once to choose it and again to proclaim it; click one in force to lift it, which is refused
+until it has stood 3 days. Only the capital's owner, their friends and operators may; a member's own Book shows the
+same row to read ("The capital's Book of Edicts can lift it") and lists no realm edicts. A village's book can't
+proclaim one ("Common Market is a realm edict: the capital proclaims it in its Book of Edicts."). Proclaiming, lifting,
+a lapse and a reform are told to every member's owner online and written in every loaded member's chronicle.
+
+| Edict | Boost | Cost (from the realm treasury where it's money) | Reform: the capital's quest, and the count |
+|---|---|---|---|
+| Royal Highway | caravans between members carry 2 more stacks and arrive 25% sooner | an emerald a day for each route between members | Pave the highway: 128 stone bricks; 12 caravans between members |
+| Common Market | every member's board pays the members' average price; the realm's people buy without the spread | the levy 5 points higher | Weights and measures: 8 gold ingots, then 16 paper; 20 board trades in members |
+| Levy of Arms | every member sends relief, wherever it is, in bands twice as big (12 riders at most) | each member pays 2 emeralds a day into the realm treasury | Arm the levy: 12 iron swords; 3 raids beaten with relief |
+| Realm Festival | every member holds its festival on the capital's day; the good mood lasts 3 days | 10 emeralds a member for each festival | Lanterns for the square: 32 lanterns; 3 realm festivals held |
+| Crown's Peace | no feud can be declared on a member; bandits never camp within 128 blocks of one | every member's takings 10% lower | Clear the roads: 16 monsters cleared round any member; 7 days without a raid on any member |
+| Royal Charter | members found colonies from Town rank and wait half as long (7 days: 4) | each colony costs the realm treasury 32 emeralds more | Draft the charter: 16 paper, then 4 books; 2 colonies grown to Village rank |
+
+The reform's steps go up one a day on the capital's quest page (a book and quill, like a village's reform), and the
+count is kept while the edict is in force (it starts again when it is proclaimed again). When both are done the realm
+has reformed it for good: fireworks over the capital, "the Barony of Thornholm has reformed the realm edict Royal
+Highway with Pave the highway", and from then on the boost stays and the cost is gone, also if it's lifted and
+proclaimed again.
+
+**How it works.** `realm/RealmEdicts`: the six are ordinary edict files with `"scope": "realm"`
+(`aliveworkplace:royal_highway`, `aliveworkplace:common_market`, `aliveworkplace:levy_of_arms`,
+`aliveworkplace:realm_festival`, `aliveworkplace:crowns_peace`, `aliveworkplace:royal_charter`); `Edicts.all` lists
+only the village's, `Edicts.realm` these. A reform may carry a `count` (`what` and `times`): `caravans_between_members`
+(a caravan sent between members), `board_trades` (a player's trade at a member's board), `raids_beaten_with_relief`
+(a raid on a member that riders set out for is over and the hall stands), `realm_festivals` (a member's feast, once a
+day), `days_without_raid` (days since it was proclaimed or a member was last seen raided) and
+`colonies_at_village_rank` (colonies founded by members that are a Village or more now). The realm's dawn round pays
+the Royal Highway's upkeep (one route each way counts once, sister routes too); an upkeep the treasury can't pay makes
+the edict lapse ("the realm treasury hadn't the 1.00 emeralds of its upkeep"), and a realm that lost a slot loses its
+newest. The members' dues come out of each member's own treasury at its morning takings, as far as it has them and
+the realm treasury has room. The Realm Festival's share is paid when a member plans its festival; without it there is
+no festival and the village is disappointed. The Royal Charter's share is checked before a charter is sold and paid
+with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `caravan_speed`, `realm_upkeep`, `member_dues`, `common_board`, `member_spread`,
+`levy`, `relief_reach`, `relief_band`, `festival_together`, `festival_mood_days`, `realm_festival_cost`, `no_feuds`,
+`no_bandit_camps`, `takings`, `colony_rank`, `colony_cooldown`, `colony_cost`) are read by the system each changes.
+
+- `realms` or `villageEdicts` off: realm edicts do nothing and none is proclaimed; those in force stay saved.
+- A new capital (33.12) takes them, with their reforms; the old capital's steps come down at its next round.
+
 ## Known limits
 
-- No edicts yet (33.21, 33.22). Bands still on the road and the hall's "away" line are kept in memory only: a restart
+- Bands still on the road and the hall's "away" line are kept in memory only: a restart
   mid-ride loses the band (already paid) and the village, if still raided, calls again; riders who have arrived are
   saved and still leave on time. A rider's horse that dies drops its saddle. `relief` hasn't been filmed yet (GitHub
   films it after the push).
@@ -375,6 +428,10 @@ Riders are guards on a stay like mercenaries (`MERCENARY_UNTIL`, until dawn) wit
   (GitHub films it after the push). The same goes for `realm_invite` (33.12).
 - Votes and invitations are counted by the overworld's clock; a vote's last hours show rounded up.
 - The invitation letter is written in the server's language (English), like the settlers' letter.
+- Realm edicts: the Levy of Arms' "wherever it is" still needs a member's hall loaded to count its guards (an unloaded
+  member sends no band, as before). The capital's quest page shows 4 reform steps at most, the village's first. A
+  common board's price moves the village's own price when traded. `realm_edicts` hasn't been filmed yet (GitHub films
+  it after the push).
 
 ## Proof
 - `RealmTopicsGameTests` (9, 33.16): `theRealmRowShowsTheEight` (the eight, their prices at levels 1 and 2, icons,
@@ -425,4 +482,18 @@ Riders are guards on a stay like mercenaries (`MERCENARY_UNTIL`, until dawn) wit
   finished with the chat line, the effect in every member, not in the rank, a reload of the topics, a save of the realm
   file, realms off and on).
 
-Showcase scenes: `realm`, `realm_invite`, `realm_treasury`, `realm_research`
+- `RealmEdictGameTests` (9, 33.22): `theCapitalsBookShowsRealmSlots` (the six, slots by rank, the capital's header,
+  free and locked slots, two clicks proclaim, the second finds no slot, the member's book reads it and lists none, a
+  village refused, lifted only after 3 days), `royalHighway` (25% sooner, 2 more stacks between members only, an
+  emerald a day for the route, a lapse when the treasury is empty, the reform's quest and 12 caravans, then no upkeep),
+  `commonMarket` (the average price on both boards and the tooltip, no spread for the owner, 10% for a stranger, a 15%
+  levy, two steps a day apart and 20 trades, the levy back to 10), `levyOfArms` (bands of 2 and 4, the dues, three
+  raids beaten counted as they end, no dues after), `realmFestival` (the capital's day, no festival without the realm's
+  10 emeralds, paid, 3 days of good mood, one realm festival a day, free after the reform), `crownsPeace` (a feud
+  refused, bandit camps within 128 blocks, takings 10% lower, 16 kills round a member count at the capital, a raid
+  starts the 7 days again, whole takings after, a feud allowed once lifted), `royalCharter` (a Town may, 4 days' wait,
+  refused without the realm's 32 emeralds, paid with it, two colonies at Village rank, nothing after),
+  `savedAndMovedWithTheCapital` (save and reload, an older file, a new capital keeps them), `switchedOff` (`realms` and
+  `villageEdicts` off).
+
+Showcase scenes: `realm`, `realm_invite`, `realm_treasury`, `realm_research`, `realm_edicts`

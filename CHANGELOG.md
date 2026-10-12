@@ -22,6 +22,23 @@ asks for the steps, `latest.log` and any crash report).
   Founder's blessing" in both chronicles and his statue stands beside each colony's camp. The Merchant Prince's board
   shows the prices of every village within caravan range, his village's caravans sell where they are paid most, and
   its board's spread is halved (105% instead of 110%).
+- **Crews: every builder on one Wonder** (35.5, 2.0, still switched off): every builder of the village with no build of
+  their own joins the Wonder's crew, up to 12 (the new `wonderCrew` setting). **[Call every builder]** under the
+  Foundation Stone's status brings the busy ones too, as they finish what they're on. Each takes a column of its own
+  and works it from the bottom (clearing, from the top), never more than two layers above the lowest unfinished one, so
+  nothing goes up with nothing under it; eight builders raise the test Wonder in under a third of one builder's time. The
+  stone and the hall's Wonders page name the lead (the Master Architect when there is one) and the crew.
+- **The Foundation Stone** (35.4, 2.0, still switched off): right-click a builder of the village with a placed Wonder
+  Plan and a **Foundation Stone** (carved stone, brass plaque) goes down just outside the Wonder's front corner; the
+  start is announced to the whole server and written in the chronicle. The chests within 8 blocks of the stone are the
+  Wonder's stockpile, and its stages go up one after another as ordinary builds (only stage I fills a foundation, only
+  the last levels the ground), stage II never before stage I is done, through any restart. Right-click the stone for the
+  stage, how far along it is and what the chests are short of. Sneak-breaking it (the owner or an operator) or
+  `/workplace cancel` abandons the Wonder: what's built stays and the plan comes back. The README has a Wonders section.
+
+### Fixed
+- Builders no longer die from falls while on a job (on a roof, a tower or a Wonder's dome), and a Wonder's part whose
+  builder is lost goes on to another builder of its crew instead of counting as built with blocks missing (35.5).
 
 ## 0.143.0 — 2026-10-11
 
@@ -111,19 +128,6 @@ asks for the steps, `latest.log` and any crash report).
   page: nothing comes to it, a camp already standing leaves at the next dawn, and the guards icon says so. Operators
   get `/workplace threat start <culture> | lair <culture> | disaster <id> | end | clear` at the nearest hall, and the
   README has a Threats section.
-- **Crews: every builder on one Wonder** (35.5, 2.0, still switched off): every builder of the village with no build of
-  their own joins the Wonder's crew, up to 12 (the new `wonderCrew` setting). **[Call every builder]** under the
-  Foundation Stone's status brings the busy ones too, as they finish what they're on. Each takes a column of its own
-  and works it from the bottom (clearing, from the top), never more than two layers above the lowest unfinished one, so
-  nothing goes up with nothing under it; eight builders raise the test Wonder in under a third of one builder's time. The
-  stone and the hall's Wonders page name the lead (the Master Architect when there is one) and the crew.
-- **The Foundation Stone** (35.4, 2.0, still switched off): right-click a builder of the village with a placed Wonder
-  Plan and a **Foundation Stone** (carved stone, brass plaque) goes down just outside the Wonder's front corner; the
-  start is announced to the whole server and written in the chronicle. The chests within 8 blocks of the stone are the
-  Wonder's stockpile, and its stages go up one after another as ordinary builds (only stage I fills a foundation, only
-  the last levels the ground), stage II never before stage I is done, through any restart. Right-click the stone for the
-  stage, how far along it is and what the chests are short of. Sneak-breaking it (the owner or an operator) or
-  `/workplace cancel` abandons the Wonder: what's built stays and the plan comes back. The README has a Wonders section.
 - **The Wonders page and the Wonder Plan** (35.3, 2.0, still switched off): a Wonders tab on the Village Hall lists every
   Wonder as a card (its icon, name and power), each requirement ticked or crossed with what's missing, the cap
   ("Wonders: 0 of 1 for a Town"), and a Wonder going up with its stage. With every line ticked, a click draws up the

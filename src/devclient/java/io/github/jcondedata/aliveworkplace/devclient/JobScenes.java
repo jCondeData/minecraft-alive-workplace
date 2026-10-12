@@ -1566,10 +1566,13 @@ final class JobScenes {
 				hall.setPlan(io.github.jcondedata.aliveworkplace.city.CityPlan.EMPTY.addZone("homes", names[i], "stonework").paint(0, cells));
 				BlockPos table = hallAt.offset(0, 0, 5);
 				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
-				chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
-					new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE_BRICK_STAIRS, 16),
-					new ItemStack(Items.STONE_BRICK_WALL, 16), new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 8),
-					new ItemStack(Items.DARK_OAK_TRAPDOOR, 4), new ItemStack(Items.LANTERN, 4));
+				// Enough for a 32-block half with its lamps (B94: one stack of Cobblestone and 8 Dark Oak Fences ran out mid-road)
+				chest(level, table.east(), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64), new ItemStack(Items.STONE_BRICKS, 64),
+					new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.CRACKED_STONE_BRICKS, 32), new ItemStack(Items.COBBLESTONE, 64),
+					new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE_BRICK_STAIRS, 32),
+					new ItemStack(Items.STONE_BRICK_SLAB, 32), new ItemStack(Items.STONE_BRICK_WALL, 32), new ItemStack(Items.COBBLESTONE_WALL, 16),
+					new ItemStack(Items.CHISELED_STONE_BRICKS, 8), new ItemStack(Items.DARK_OAK_FENCE, 32), new ItemStack(Items.DARK_OAK_TRAPDOOR, 8),
+					new ItemStack(Items.LANTERN, 16));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.south(), MobSpawnType.COMMAND);
 				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
@@ -1623,14 +1626,18 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.city.CityPlan.Road.STREET, "", true))
 				.withWall(wall.approvedWith("palisade")));
 			for (int i = 0; i < 3; i++) {
-				BlockPos table = STATION.offset(-6 + i * 6, 0, 10);
+				// East of the hall, clear of the cottage (B94: at z=10 the tables and their builders stood inside its floor)
+				BlockPos table = STATION.offset(7, 0, -7 + i * 5);
 				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				chest(level, table.south(), new ItemStack(Items.SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_LOG, 64),
 					new ItemStack(Items.STRIPPED_SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_FENCE, 64), new ItemStack(Items.SPRUCE_SLAB, 64),
 					new ItemStack(Items.SPRUCE_PLANKS, 64), new ItemStack(Items.SPRUCE_FENCE_GATE, 16), new ItemStack(Items.DARK_OAK_STAIRS, 64),
 					new ItemStack(Items.DARK_OAK_SLAB, 16), new ItemStack(Items.DARK_OAK_PLANKS, 16), new ItemStack(Items.LADDER, 32),
 					new ItemStack(Items.LANTERN, 16), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE, 64),
-					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64));
+					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64),
+					// and the street's (B94: the builders waited for its Coarse Dirt, Gravel and Cobblestone Stairs)
+					new ItemStack(Items.COARSE_DIRT, 64), new ItemStack(Items.GRAVEL, 32), new ItemStack(Items.COBBLESTONE_STAIRS, 16),
+					new ItemStack(Items.COBBLESTONE_SLAB, 16));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.east(), MobSpawnType.COMMAND);
 				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);

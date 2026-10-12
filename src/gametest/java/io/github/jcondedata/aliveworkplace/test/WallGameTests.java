@@ -250,6 +250,51 @@ public class WallGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * Built pieces still stand with their blocks in the world (B94): a tower's middle is its roof, so laid out again (each
+	 * piece at its ground's height) it sits on top of itself, and it must not be built a second time up there.
+	 */
+	//$ gametest_ticks_batch AREA '40' '"wallBuiltStands"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "wallBuiltStands")
+	public void builtPiecesStandWithTheirBlocksInTheWorld(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		boolean was = Walls.ENABLED;
+		Walls.ENABLED = true;
+		try {
+		BlockPos hall = ground(helper, new BlockPos(14, 2, 14));
+		VillageHallBlockEntity entity = hall(helper, hall);
+		// the area's barrier lid would be the wall's ground (a piece stands on the highest ground near the hall's height)
+		BlockPos.betweenClosed(helper.absolutePos(new BlockPos(0, 2, 0)), helper.absolutePos(new BlockPos(29, 29, 29))).forEach(at -> {
+			if (level.getBlockState(at).is(Blocks.BARRIER)) {
+				level.setBlock(at, Blocks.AIR.defaultBlockState(), 2);
+			}
+		});
+		entity.setPlan(CityPlan.EMPTY.withWall(square(10).approvedWith("palisade")));
+		List<Walls.Piece> pieces = Walls.pieces(level, hall);
+		helper.assertTrue(pieces.stream().allMatch(p -> p.box().minY() == hall.getY()), "setup: the pieces aren't on the area's floor: " + pieces.get(0).box());
+		// each built the way a builder builds it: its blocks in the world and the finished record
+		for (Walls.Piece piece : pieces) {
+			Blueprint blueprint = BlueprintLibrary.get(level, piece.blueprint()).orElseThrow();
+			for (Blueprint.Entry e : blueprint.blocks()) {
+				if (!e.state().isAir()) {
+					level.setBlock(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
+						e.pos(), Mirror.NONE, piece.placement().rotation(), BlockPos.ZERO).offset(piece.placement().origin()), e.state(), 3);
+				}
+			}
+			BuildSiteManager.get(level).recordFinished(piece.blueprint(), piece.placement(), UUID.randomUUID());
+		}
+		List<Walls.Piece> again = Walls.pieces(level, hall);
+		for (Walls.Piece piece : again) {
+			helper.assertTrue(Walls.stands(level, piece), "the built " + piece.kind() + " " + piece.index() + " doesn't stand once its blocks are there (laid out again at "
+				+ piece.box() + ", built at " + pieces.get(piece.index()).box() + ")");
+		}
+		helper.assertTrue(Walls.unbuilt(level, hall).isEmpty(), Walls.unbuilt(level, hall).size() + " built pieces are to be built again, on top of themselves");
+		} finally {
+			Walls.ENABLED = was;
+		}
+		helper.succeed();
+	}
+
 	/** An approved wall, its kit and which pieces stand survive save and reload. */
 	//$ gametest_ticks_batch AREA '40' '"wallReload"'
 	@GameTest(template = AREA, timeoutTicks = 40, batch = "wallReload")

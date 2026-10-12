@@ -72,6 +72,10 @@ asks for the steps, `latest.log` and any crash report).
 - **American spelling** (22.10a, part 1): the player guide, the wiki and every in-game text now say defense, color,
   armor, gray, honor, favor, neighbor, center, traveler, Jeweler and the like; ids, config keys and saves are unchanged.
 
+### Fixed
+- Village walls: a finished Palisade Tower no longer looks unbuilt to the Steward (its roof counted as the ground), so
+  builders no longer stack a second tower on top of the first (B94).
+
 ## 0.143.0 — 2026-10-11
 
 ### Added

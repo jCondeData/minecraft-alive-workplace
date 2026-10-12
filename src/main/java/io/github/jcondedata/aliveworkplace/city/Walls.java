@@ -461,11 +461,21 @@ public final class Walls {
 		return finishedOn(level, piece).filter(f -> BlueprintStyles.base(f.structure()).equals(piece.blueprint())).isPresent();
 	}
 
-	/** A wall piece of any kit finished on {@code piece}'s spot (an older kit's: this piece replaces it a piece at a time). */
+	/**
+	 * A wall piece of any kit finished on {@code piece}'s spot (an older kit's: this piece replaces it a piece at a time).
+	 * The spot is its footprint, at any height within {@link #GROUND_REACH}: a piece's height is its ground's ({@link #groundY}), and once it is built
+	 * that ground is the piece's own top, so the same piece laid out again sits on itself (B94: builders put towers on
+	 * the towers they had finished).
+	 */
 	static Optional<BuildSiteManager.Finished> finishedOn(ServerLevel level, Piece piece) {
-		return BuildSiteManager.get(level).finishedNear(level, piece.placement().origin(), 8).stream()
+		BoundingBox box = piece.box();
+		return BuildSiteManager.get(level).finishedNear(level, piece.placement().origin(), 8 + GROUND_REACH).stream()
 			.filter(f -> isPiece(f.structure()) && BlueprintLibrary.get(level, f.structure())
-				.map(b -> BlueprintOutline.bounds(f.placement(), b.size()).intersects(piece.box())).orElse(false))
+				.map(b -> {
+					BoundingBox built = BlueprintOutline.bounds(f.placement(), b.size());
+					return built.minX() <= box.maxX() && built.maxX() >= box.minX() && built.minZ() <= box.maxZ() && built.maxZ() >= box.minZ()
+						&& built.minY() <= box.maxY() + GROUND_REACH && built.maxY() >= box.minY() - GROUND_REACH;
+				}).orElse(false))
 			.findFirst();
 	}
 

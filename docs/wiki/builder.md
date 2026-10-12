@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, B120
 
 ## 1. What a player sees
 
@@ -56,6 +56,10 @@ their friends (`/workplace friend add|remove|list`) and operators.
 **Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished within
 `maxSiteDistance`, every 1200 ticks, and fills only the holes with its usual materials; things players put there
 are left alone. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long).
+
+**Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
+upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.
+Any other harm still hurts him, and a Builder with no build falls like any villager (B120).
 
 **Stall watch.** If a site with a Builder on shift makes no progress for 600 ticks (30 s), a log line starting
 "Builder stalled" is written. The soak test counts these lines.

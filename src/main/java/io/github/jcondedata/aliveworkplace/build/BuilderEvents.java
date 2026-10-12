@@ -419,6 +419,13 @@ public final class BuilderEvents {
 			return InteractionResult.PASS;
 		});
 
+		// B120: a builder at work takes no fall damage. He hops onto the build's own upper rows (the tops of a palisade's
+		// stakes, a tower's platform before its parapet) and from there vanilla's walking, a jump or a crewmate's shove
+		// takes him over the edge: in a GameTest a crew of three fell 8 to 12 blocks off a tower several times each, 8 to
+		// 9 health a fall, and a builder died on a Palisade Tower in the walls scene. Nothing else about him changes.
+		Platform.get().allowDamage((entity, source, amount) ->
+			!(entity instanceof Villager villager && !entity.level().isClientSide() && source.is(net.minecraft.tags.DamageTypeTags.IS_FALL)
+				&& io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(villager)));
 		// Knights block blows from in front with their shield.
 		Platform.get().allowDamage((entity, source, amount) ->
 			!(entity instanceof Villager villager && !entity.level().isClientSide() && (io.github.jcondedata.aliveworkplace.nether.Netherworkers.shields(villager, source)

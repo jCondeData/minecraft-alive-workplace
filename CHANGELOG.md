@@ -102,8 +102,15 @@ asks for the steps, `latest.log` and any crash report).
   armor, gray, honor, favor, neighbor, center, traveler, Jeweler and the like; ids, config keys and saves are unchanged.
 
 ### Fixed
+- Builders no longer get hurt falling off their own build (B120): a Builder at work stands on the build's upper rows
+  (a palisade's stake tops, a tower's platform) and could walk or be shoved off them, and one died building a
+  Palisade Tower. A Builder with a build now takes no fall damage; everything else still hurts him.
 - Village walls: a finished Palisade Tower no longer looks unbuilt to the Steward (its roof counted as the ground), so
   builders no longer stack a second tower on top of the first (B94).
+- The Blueprint Table no longer offers the builds of expansions that aren't out yet (B119): the Arena and the Pokémon
+  job builds (Camp Kitchen, Berry Nursery, Habitat Garden, Gem Grotto, Daycare), the Guildhall, the Fire Station, Well
+  House and Physician's House, and the luxury workshops wait for their expansion, so you can't build a workplace whose
+  job can't start yet. A blueprint already taken and a build already started keep working.
 
 ## 0.143.0 — 2026-10-11
 

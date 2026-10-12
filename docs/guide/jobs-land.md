@@ -1,5 +1,18 @@
 # Jobs on the land
 
+```infobox
+type: Jobs
+image: https://jcondedata.github.io/minecraft-alive-workplace/quarry/still-2.jpg
+caption: A miner digging out a quarry
+Jobs: Miner, Lumberjack, Orchard Keeper, Farmer, Fisherman, Beekeeper, Florist, Composter, Sifter, Rancher, Shepherd, Butcher, Netherworker, Cartographer
+Quarry Marker: a stick, red dye and paper
+Field Marker: a stick, wheat seeds and paper
+Quarry size: up to 32 by 32
+Reach: trees, fruit and hives within 16 blocks
+categories: Jobs
+related: jobs.md, jobs-services.md, pokemon.md
+```
+
 The workers who bring things in: stone and ore, wood, fruit, crops, fish, honey, flowers, animals and finds from far
 away. Each one stores what they gather in the chests within 8 blocks of their workstation (a porter carries it on to
 the storehouse).

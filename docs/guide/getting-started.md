@@ -1,5 +1,18 @@
 # Getting started
 
+```infobox
+type: Guide
+image: https://jcondedata.github.io/minecraft-alive-workplace/camp/still-1.jpg
+caption: A settlers' camp
+Time: about ten minutes
+Settler's Wagon: three white wool over two hay bales and a block of emerald, over a chest between planks
+Blueprint Table: blue dye on top, a cartography table in the middle, planks around it
+Blank Blueprint: paper and blue dye make two
+Village Hall: gold, a book and gold over planks, an emerald in the middle
+categories: Basics, Builder
+related: builder.md, jobs.md, village-hall.md
+```
+
 Your first builder, your first building and your first village. It takes about ten minutes.
 
 ## No village nearby? Bring settlers

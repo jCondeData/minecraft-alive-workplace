@@ -1,5 +1,19 @@
 # Village life
 
+```infobox
+type: Village
+image: https://jcondedata.github.io/minecraft-alive-workplace/hall/still-1.jpg
+caption: What the village needs to grow
+Needs: a Village Hall
+Traits: Diligent, Lazy, Nimble, Clever, Strong, Cheerful, Glutton, Frugal
+Meals: once a day, from the village's store
+Sickness: over after three days, or at once with a Nurse
+Weddings: two days after courting
+Homes: the Terrace, the Inn and the Stone House
+categories: Village Hall
+related: village-hall.md, jobs-services.md, festivals-and-markets.md
+```
+
 In a village with a [Village Hall](village-hall.md), villagers are people: they have names, quirks and moods, they eat,
 fall ill, fall in love, have babies and grow up.
 

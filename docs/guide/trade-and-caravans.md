@@ -1,5 +1,18 @@
 # Trade and caravans
 
+```infobox
+type: Trade
+image: https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-2.jpg
+caption: The trade routes page
+Where: the minecart on the Village Hall's screen
+Reach: villages with a hall within 2048 blocks
+Caravans: once a day
+Kept at home: 16 of everything
+Routes: three for a Hamlet, one more for every rank
+categories: Trade, Village Hall
+related: jobs-services.md, festivals-and-markets.md, village-hall.md
+```
+
 Villages help each other out, and you can run a shop of your own.
 
 ## Caravans between villages

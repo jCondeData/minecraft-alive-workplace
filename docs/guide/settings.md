@@ -1,5 +1,18 @@
 # Settings
 
+```infobox
+type: For server owners
+image: https://jcondedata.github.io/minecraft-alive-workplace/config/still-1.jpg
+caption: The settings screen
+Where: the settings file, or Mod Menu's Configure button
+On/off switches: 16
+Builder game rules: 9
+Threat Level: 0 to 3, normally 2
+Commands: start with /workplace
+categories: Settings
+related: defence.md, builder.md, village-hall.md
+```
+
 Everything here starts on with sensible numbers, so most servers never need to touch it. This page is for whoever runs
 the server.
 

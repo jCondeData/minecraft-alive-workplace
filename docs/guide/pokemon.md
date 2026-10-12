@@ -1,5 +1,19 @@
 # Pokémon and villagers
 
+```infobox
+type: With Cobblemon
+image: https://jcondedata.github.io/minecraft-alive-workplace/battle/still-2.jpg
+caption: A battle with a Master trainer
+Needs: Cobblemon
+Partner reach: a Pasture Block within 16 blocks
+Helpers: up to three per worker
+Training Post: a target block on planks
+Jobs: Trainer, Trainer Leader, Move Tutor, Ball Smith, Pokémon Trader, Fossil Scientist
+Fossil revival: 8 emeralds
+categories: Pokémon, Jobs
+related: jobs.md, defence.md, quests.md
+```
+
 With Cobblemon installed, Pokémon help the village work, and villagers become trainers, tutors, smiths and traders.
 Without Cobblemon none of this is there, and everything else works the same.
 

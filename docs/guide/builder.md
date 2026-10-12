@@ -1,5 +1,22 @@
 # The Builder and blueprints
 
+```infobox
+type: Job
+image: https://jcondedata.github.io/minecraft-alive-workplace/builders/still-1.jpg
+caption: A builder at work
+Workstation: Blueprint Table
+Recipe: blue dye on top, a cartography table in the middle, planks around it
+Supply chests: within 8 blocks of the table
+Queue: up to five more blueprints
+Crew: up to three idle builders help
+Speed: a Master builds two and a half times as fast as a Novice
+Styles: Stonework, Sandstone, Dark Oak, Cherry, Apricorn (with Cobblemon)
+Scan Tool: a Blank Blueprint and a spyglass
+Shape Planner: a Blank Blueprint and a compass
+categories: Builder, Jobs
+related: getting-started.md, jobs-crafts.md, defence.md
+```
+
 The Builder is the heart of the mod: a villager who builds whatever blueprint you hand them, block by block, from your
 chests.
 

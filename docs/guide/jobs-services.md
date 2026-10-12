@@ -1,5 +1,21 @@
 # Porters, post and services
 
+```infobox
+type: Jobs
+image: https://jcondedata.github.io/minecraft-alive-workplace/porter/still-2.jpg
+caption: A porter carrying goods
+Jobs: Porter, Postman, Shopkeeper, Ferryman, Innkeeper, Nurse, Teacher, Scholar, Undertaker, Bard
+Storehouse: three planks over a barrel, a chest and a barrel
+Mailbox: iron nuggets round a chest, on a fence
+Shop Counter: an emerald over planks and a chest
+Travel Post: a sign over planks and a boat
+Drop Box: a barrel and a hopper
+Delivery Note: paper, a feather and an ink sac
+Fares: an emerald for every 256 blocks
+categories: Jobs, Trade
+related: jobs.md, trade-and-caravans.md, village-life.md
+```
+
 The workers who keep a village running: carrying goods, delivering mail, selling, healing, teaching and more.
 
 ## Porter and the Storehouse

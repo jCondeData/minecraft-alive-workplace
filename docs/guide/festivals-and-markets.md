@@ -1,5 +1,19 @@
 # Festivals and market days
 
+```infobox
+type: Event
+image: https://jcondedata.github.io/minecraft-alive-workplace/hall_quests/still-4.jpg
+caption: The festival on the hall's screen
+Festivals: every eight days, with a hall and at least six villagers
+Early festival: a cake on the hall's festival button, at most every three days
+Seasons: four, sixteen days each
+Market day: once a week, with a Market Square
+Traders: two, a third from Town rank
+Blueprints from traders: 6 emeralds
+categories: Festivals, Village Hall
+related: village-hall.md, village-life.md, trade-and-caravans.md
+```
+
 Villages with a [Village Hall](village-hall.md) celebrate, and once a week traders come to town.
 
 ## Festivals

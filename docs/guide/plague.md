@@ -1,5 +1,19 @@
 # Plague and the Physician
 
+```infobox
+type: Disaster
+image: https://jcondedata.github.io/minecraft-alive-workplace/plague/anim.gif
+caption: The Physician going house to house
+Strikes: a Town or a City
+Ends: when nobody has been ill for a whole day
+Answered by: the Physician (a glistering melon slice at a brewing stand)
+Remedy: a glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye
+Building: the Physician's House
+Pokémon: Fairy and Psychic types help
+categories: Disasters, Jobs
+related: drought.md, fire.md, village-life.md
+```
+
 A Town or a City can be struck by a **plague**. It's likelier when the village has more villagers than beds, and a
 witch coven's hex or a traveler from a faraway land who stops at the inn can bring one too. It starts with one
 villager falling ill, and everyone in the village reads "A plague has broken out in Oakvale: the ill pass it on to

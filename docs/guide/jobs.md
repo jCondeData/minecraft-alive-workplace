@@ -1,5 +1,18 @@
 # Giving villagers jobs
 
+```infobox
+type: Overview
+image: https://jcondedata.github.io/minecraft-alive-workplace/stations/still-1.jpg
+caption: One composter, four jobs
+Jobs: 43
+Picking a job: sneak-right-click the villager with the job's item, within about 4 blocks of the block
+Supply chests: chests and barrels within 8 blocks of the workstation
+Shared stock: workers within 48 blocks of each other
+Levels: Novice to Master, faster at every level
+categories: Jobs, Basics
+related: builder.md, jobs-land.md, jobs-crafts.md, jobs-services.md
+```
+
 Every worker in Alive Workplace is an ordinary villager with a job block. Here's how they get one, where they keep their
 things, and every job there is.
 

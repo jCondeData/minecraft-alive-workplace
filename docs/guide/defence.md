@@ -1,5 +1,22 @@
 # Threats and defense
 
+```infobox
+type: Threats
+image: https://jcondedata.github.io/minecraft-alive-workplace/guard/still-2.jpg
+caption: A guard fights off three husks
+Guard: a sword at a grindstone
+Guard reach: monsters within 24 blocks of their post
+Guard health: twice a villager's
+Kinds of guard: Archer, Knight, Medic
+Raids: from 8 villagers with a hall
+Bandit camps: from Village rank, 80 to 100 blocks out
+Mercenaries: three for 12 emeralds, until dawn
+Rally Banner: any banner and an iron ingot (up to twelve guards)
+Patrol Map: a map and red dye
+categories: Defense
+related: jobs-crafts.md, village-hall.md, settings.md
+```
+
 A growing village draws trouble: monsters at night, and bandits who make camp nearby. Here's what comes, and how to keep
 your people safe.
 

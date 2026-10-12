@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The player guide looks like a wiki**: a sidebar on every page, a main page with an article counter, an About box,
+  a portal box with a picture for each subject (Jobs, the Builder, the Village Hall, Pokémon, festivals, quests, trade,
+  defense, disasters, settings), a News box of what's new, and on every article an infobox (picture, recipes,
+  workstation, numbers), a contents box, "See also" links and its categories, with a page per category and an "All
+  pages" list. It reads well on a phone too.
 - **The Hanging Gardens' design, for 2.0** (35.19, nothing to start in game until Wonders is finished): the sixth
   Wonder's build, a garden mountain of four sandstone terraces (39 across at the foot, about 16,200 blocks), each faced
   with arcades hung with vines and glow berries over a gallery, its ledges planted with fields between water channels,

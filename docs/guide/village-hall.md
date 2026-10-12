@@ -1,5 +1,19 @@
 # The Village Hall
 
+```infobox
+type: Block
+image: https://jcondedata.github.io/minecraft-alive-workplace/hall/still-4.jpg
+caption: The Village Hall's screen
+Recipe: gold, a book and gold over planks, an emerald in the middle
+Reach: everyone within 64 blocks
+Ranks: Hamlet, Village, Town, City
+Treasury: about a fifth of an emerald a worker a day
+Protection: shift-click the hall's name icon
+Village Ledger: a book and an emerald
+categories: Village Hall
+related: village-life.md, quests.md, festivals-and-markets.md, trade-and-caravans.md
+```
+
 The Village Hall turns a group of villagers into a village that lives: everyone gets a name, the village has needs, a
 rank, a treasury and a chronicle, and you can see all of it in one screen.
 

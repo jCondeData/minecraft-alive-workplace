@@ -1,5 +1,18 @@
 # Quests
 
+```infobox
+type: Village Hall page
+image: https://jcondedata.github.io/minecraft-alive-workplace/hall_quests/still-1.jpg
+caption: The hall's quests
+Where: the Village Hall's Quests button (the map icon)
+New quests: one each morning, three at most
+Lasts: three days
+Kinds: bring something, clear out monsters, beat a trainer
+Reward: emeralds (CobbleDollars with the pack), a quarter more for every rank
+categories: Quests, Village Hall
+related: village-hall.md, defence.md, pokemon.md
+```
+
 A village with a [Village Hall](village-hall.md) asks for your help, and pays for it.
 
 ## Where to find them

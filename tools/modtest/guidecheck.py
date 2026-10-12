@@ -12,6 +12,9 @@ reference; the guide must never read like it. A page is every docs/guide/*.md ex
   - Every picture from the showcase site (SITE/<scene>/still-N.jpg or anim.gif) names a scene in
     tools/showcase/scenes.py, and still-N is within that scene's stills, so a renamed or trimmed scene fails here
     instead of leaving a broken picture.
+  - The wiki layout's blocks (docs/guide/README.md): every page but index.md has an ```infobox block with
+    "categories:", each "related:" page exists, and each portal in index.md's ```portals block names a category some
+    page is in.
 """
 import importlib.util
 import re
@@ -85,6 +88,31 @@ def check(root):
                         problems.append(f"{name}:{n}: links {target}, which doesn't exist")
                     if page.name == "index.md":
                         linked_from_index.add(target)
+    used = set()
+    portals = []
+    for page in pages:
+        name = f"{GUIDE}/{page.name}"
+        info, kind = {}, None
+        for line in page.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"^```(\w*)\s*$", line)
+            if m:
+                kind = m.group(1) if kind is None else None
+                continue
+            if kind == "infobox":
+                key, _, value = (p.strip() for p in line.partition(":"))
+                info[key.lower()] = value
+            elif kind == "portals" and line.strip():
+                portals.append(line.lstrip("- ").partition("|")[0].strip())
+        cats = [c.strip() for c in info.get("categories", "").split(",") if c.strip()]
+        used.update(cats)
+        if page.name != "index.md" and not cats:
+            problems.append(f"{name}: needs an ```infobox block with 'categories:' (docs/guide/README.md)")
+        for r in (x.strip() for x in info.get("related", "").split(",")):
+            if r and not (guide / r).exists():
+                problems.append(f"{name}: related page {r} doesn't exist")
+    for p in portals:
+        if p not in used:
+            problems.append(f"{GUIDE}/index.md: portal '{p}' is no page's category")
     for page in pages:
         if page.name != "index.md" and page.name not in linked_from_index:
             problems.append(f"{GUIDE}/index.md: doesn't link {page.name}")

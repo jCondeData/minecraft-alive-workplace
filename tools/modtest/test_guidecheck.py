@@ -16,8 +16,9 @@ SCENES = '''SCENES = [
 ]
 '''
 SITE = guidecheck.SITE
-INDEX = "# Guide\n\n- [Builder](builder.md)\n"
-GOOD = (f"# Builder\n\nHand them a blueprint. Minecraft 1.21.1 and Cobblemon 1.7.3 are fine, and so is 28 blocks.\n\n"
+INDEX = "# Guide\n\n```portals\nBuilder | x\n```\n\n- [Builder](builder.md)\n"
+BOX = "```infobox\ntype: Job\nWorkstation: Blueprint Table\ncategories: Builder, Jobs\nrelated: index.md\n```\n\n"
+GOOD = (f"# Builder\n\n{BOX}Hand them a blueprint. Minecraft 1.21.1 and Cobblemon 1.7.3 are fine, and so is 28 blocks.\n\n"
         f"![A builder]({SITE}builders/still-2.jpg)\n\n![Decor]({SITE}decor/still-1.jpg)\n\n![GIF]({SITE}builders/anim.gif)\n")
 
 
@@ -58,6 +59,12 @@ def main():
         expect("a link to a missing page fails", run(GOOD + "\nSee [x](missing.md).\n"), "doesn't exist"),
         expect("a page the index doesn't link fails", run(GOOD, extra={"orphan.md": "# Orphan\n"}), "doesn't link orphan.md"),
         expect("a page without a title fails", run("Builder\n"), "title"),
+        expect("a page without categories fails", run(GOOD.replace("categories: Builder, Jobs\n", "")), "categories"),
+        expect("a page without an infobox fails", run(GOOD.replace(BOX, "")), "categories"),
+        expect("a related page that doesn't exist fails", run(GOOD.replace("index.md\n```", "gone.md\n```")),
+               "related page gone.md"),
+        expect("a portal no page is in fails", run(GOOD, index=INDEX.replace("Builder |", "Nowhere |")),
+               "portal 'Nowhere'"),
     ]
     failed = results.count(False)
     print(f"{len(results) - failed} of {len(results)} passed")

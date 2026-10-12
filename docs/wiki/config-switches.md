@@ -152,6 +152,7 @@ range is in brackets.
 | `wonders` | on | 2.0 | Towns and Cities can raise Wonders. Off: no new Wonders; finished ones keep their blocks, their powers stop, and everything stays saved. See [Wonders](wonders.md). |
 | `wonderCaps` | 0, 0, 1, 2 (each 0 to 8) | 2.0 | Wonders a village may hold by rank: Hamlet, Village, Town, City. In the file only; a short list is filled from the defaults. |
 | `wonderLegends` | on | 2.0 | A Wonder needs its Legends in the village. Off: each Legend's stand-in is asked for instead. |
+| `builderScaffolding` | on | 2.0 | Builders put up scaffolding to reach what has nowhere to stand near it, and take it down after. Off: those blocks are skipped. |
 | `wonderServerLimit` | 0 (0 to 64) | 2.0 | How many villages on the server may each build the same kind of Wonder; 0 is no limit. |
 | `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`); one already finished keeps its blocks and powers. In the file only. |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |

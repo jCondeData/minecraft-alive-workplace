@@ -306,6 +306,8 @@ public final class WorkplaceConfig {
 	public List<Integer> wonderCaps = new ArrayList<>(DEFAULT_WONDER_CAPS);
 	/** A Wonder needs its Legends in the village. Off: each Legend's stand-in (a Master of a trade, ...) is asked for instead. */
 	public boolean wonderLegends = Expansions.on(Expansions.M35);
+	/** Builders put up scaffolding to reach what has nowhere to stand near it, and take it down after (ROADMAP 35.6). Off: those blocks are skipped. */
+	public boolean builderScaffolding = Expansions.on(Expansions.M35);
 	/** How many villages on the server may each build the same kind of Wonder (0: no limit). */
 	public int wonderServerLimit = 0;
 	/** Wonder ids that can't be started ({@code great_cathedral} or {@code pack:id}); one already finished keeps its blocks and powers. File only. */
@@ -814,6 +816,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.CAPS = wonderCaps.stream().mapToInt(Integer::intValue).toArray();
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.SERVER_LIMIT = wonderServerLimit;
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.DISABLED = wonderIds(disabledWonders);
+		io.github.jcondedata.aliveworkplace.build.Scaffolds.ENABLED = builderScaffolding && Expansions.on(Expansions.M35);
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.

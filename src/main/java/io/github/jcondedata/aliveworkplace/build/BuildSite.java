@@ -600,6 +600,31 @@ public final class BuildSite {
 		this.onChange = onChange;
 	}
 
+	// --- scaffolding (35.6) ----------------------------------------------------------------
+
+	/** The scaffolding this site's builders have put up and not yet taken down ({@link Scaffolds}). Saved; empty by default. */
+	private final List<BlockPos> scaffolds = new ArrayList<>();
+
+	public List<BlockPos> scaffolds() {
+		return java.util.Collections.unmodifiableList(scaffolds);
+	}
+
+	public void addScaffold(BlockPos pos) {
+		scaffolds.add(pos.immutable());
+		onChange.run();
+	}
+
+	public void removeScaffold(BlockPos pos) {
+		if (scaffolds.remove(pos)) {
+			onChange.run();
+		}
+	}
+
+	/** True if the list running out now ends the stage (no deferred steps left to retry). */
+	public boolean endsStage() {
+		return retrying || deferred.isEmpty();
+	}
+
 	// --- persistence -----------------------------------------------------------------------
 
 	public CompoundTag save() {
@@ -649,6 +674,9 @@ public final class BuildSite {
 		if (wonder != null) {
 			Nbt.putUuid(tag, "wonder", wonder);
 		}
+		if (!scaffolds.isEmpty()) {
+			tag.putLongArray("scaffolds", scaffolds.stream().mapToLong(BlockPos::asLong).toArray());
+		}
 		return tag;
 	}
 
@@ -687,6 +715,9 @@ public final class BuildSite {
 		site.waitingSince = Nbt.has(tag, "waiting_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "waiting_since") : NOT_WAITING;
 		site.playerBlocks = Nbt.getInt(tag, "player_blocks");
 		site.wonder = Nbt.hasUuid(tag, "wonder") ? Nbt.getUuid(tag, "wonder") : null;
+		for (long p : Nbt.getLongArray(tag, "scaffolds")) { // 35.6: none in older saves
+			site.scaffolds.add(BlockPos.of(p));
+		}
 		return site;
 	}
 

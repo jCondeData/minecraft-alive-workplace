@@ -4130,7 +4130,7 @@ Legends.
   - a save and reload mid-stage keeps the crew together and they finish;
   - the benchmark (`PERF=true`) with a 12-builder crew stays within 25.2's targets;
   - scene `wonder_crew`: ten builders on the folly, a GIF.
-- [ ] **35.6** (claimed: lane-a-1012-0332, 2026-10-12 03:34Z) **Scaffolding.** Builders can't stand on roofs and reach about four blocks, so a raised arm, a spire's
+- [x] **35.6** (review: pending 2026-10-12) **Scaffolding.** Builders can't stand on roofs and reach about four blocks, so a raised arm, a spire's
   tip or a dome's crown is skipped today (STYLE.md says to avoid them). When a step has nowhere to stand within reach
   (`BuilderWork.findStandingSpot` finds nothing), the builder puts up a column of vanilla **scaffolding** from the
   supply chests beside it, from the ground or the nearest floor, only where the drawing leaves air or nothing, climbs

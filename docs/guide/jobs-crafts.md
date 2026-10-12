@@ -20,6 +20,8 @@ village's food and potions.
 
 ## Carpenter
 
+*Full article: [Carpenter](carpenter.md).*
+
 A **crafting table** and **planks**. When a builder nearby is waiting for something that can be crafted (stairs, slabs,
 doors, fences, torches, glass panes...), the carpenter makes it from what the village has and carries it to the
 builder's chest. Give a builder only logs, and the carpenter makes the rest.
@@ -28,20 +30,28 @@ builder's chest. Give a builder only logs, and the carpenter makes the rest.
 
 ## Mason
 
+*Full article: [Mason](mason.md).*
+
 **Masons** (vanilla, at a stonecutter) cut stone bricks, stairs and walls for the builders, crush cobblestone into gravel
 and sand, and with a furnace by the stonecutter fire glass, smooth stone, terracotta and bricks.
 
 ## Leatherworker (the dyer)
+
+*Full article: [Leatherworker](leatherworker-dyer.md).*
 
 **Leatherworkers** (vanilla, at a cauldron) make anything colored a builder is waiting for: wool, carpet, stained glass,
 terracotta, candles, beds, dyes. They also turn concrete powder into concrete.
 
 ## Tinkerer
 
+*Full article: [Tinkerer](tinkerer.md).*
+
 A **smithing table** and **redstone**. They make the redstone and iron parts a builder needs (pistons, rails, hoppers,
 lanterns, iron doors, chains...) and between jobs patch up the village's iron golems.
 
 ## Armorer, Toolsmith, Weaponsmith and Fletcher
+
+*Full article: [Armorer](armorer.md), [Toolsmith](toolsmith.md), [Weaponsmith](weaponsmith.md), [Fletcher](fletcher.md).*
 
 These are the vanilla smiths, and they now work for the village:
 
@@ -57,6 +67,8 @@ These are the vanilla smiths, and they now work for the village:
 
 ## Chef
 
+*Full article: [Chef](chef.md).*
+
 A **smoker** and raw meat, raw fish or a potato. With the makings in the chest the chef cooks bread, cookies, pies,
 cake, stews and everything a smoker cooks, a batch at a time, up to 16 of each dish. With Cobblemon they cook Poké
 Snacks, Poké Bait and Aprijuice too. The chef's food feeds the village (see [Village life](village-life.md)).
@@ -65,10 +77,14 @@ Snacks, Poké Bait and Aprijuice too. The chef's food feeds the village (see [Vi
 
 ## Cleric
 
+*Full article: [Cleric](cleric.md).*
+
 **Clerics** (vanilla, at a brewing stand) brew healing, regeneration and strength potions for the guards, from the
 ingredients in their chest. Guards drink them in a fight. Hire one with a glass bottle.
 
 ## Librarian
+
+*Full article: [Librarian](librarian.md).*
 
 **Librarians** (vanilla, at a lectern) with an **Enchanting Table** nearby enchant the guards' weapons and armor and the
 workers' tools, with lapis from their chest. Bookshelves round the table make them stronger, as for your own table.

@@ -93,7 +93,7 @@ builders put it back after a restart too.
   no `fires_a_day`). The design note's `fires_a_day` effect stays for datapacks.
 - 32.16 (lane b): "likelier the more wood" is the `when` gate (a wood share of 0.3) plus two `factors` of 1.25.
 - 32.16 (lane b): a fire with nothing of the builders' left beside it goes out once it's old (age 15), so a fire
-  stopped at a player's wall doesn't smoulder there forever.
+  stopped at a player's wall doesn't smolder there forever.
 - 32.16 (lane b): the brigade's bell is a swing and a ring only, so the rest of the village doesn't run and hide.
 - 32.16 (lane b): the Firewarden starts with both buckets full.
 

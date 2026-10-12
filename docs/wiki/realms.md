@@ -359,7 +359,7 @@ Riders are guards on a stay like mercenaries (`MERCENARY_UNTIL`, until dawn) wit
 
 **What a player sees.** The capital's **Book of Edicts** (the hall's lectern button, or a Village Ledger used while
 sneaking) gets a third row: the **realm slots**. A Barony or County has 1, a Duchy 2, a Kingdom 3, and a finished Royal
-Hall II by the capital adds one more; the others show a grey dye saying what opens them ("Opens when the realm is a
+Hall II by the capital adds one more; the others show a gray dye saying what opens them ("Opens when the realm is a
 Duchy, or with the Royal Hall II"). The header says "Realm edicts: 1 in force of 2 edicts (the Duchy of Thornholm)".
 Below the village's eight edicts the capital's list has the six **realm edicts**, each with its boost (green), its cost
 (red), its reform and the count across the realm ("Across the realm: 7 of 12 caravans between members"). As with a

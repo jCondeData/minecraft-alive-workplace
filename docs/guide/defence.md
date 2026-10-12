@@ -14,7 +14,7 @@ Mercenaries: three for 12 emeralds, until dawn
 Rally Banner: any banner and an iron ingot (up to twelve guards)
 Patrol Map: a map and red dye
 categories: Defense
-related: jobs-crafts.md, village-hall.md, settings.md
+related: raids.md, bandit-camps.md, threat-level.md, village-protection.md, jobs-crafts.md, village-hall.md, settings.md, lairs-and-sieges.md, the-bandit-king.md
 ```
 
 A growing village draws trouble: monsters at night, and bandits who make camp nearby. Here's what comes, and how to keep
@@ -44,56 +44,32 @@ sticks with wool on top) near the grindstone lets them spar on quiet days and le
 
 ## Raids
 
-A village with a Village Hall and at least 8 villagers may be **raided by monsters** at night: zombies, skeletons and
+More in [Raids](raids.md). A village with a Village Hall and at least 8 villagers may be **raided by monsters** at night: zombies, skeletons and
 spiders gather at the edge of the village and go for its people. The bigger the village, the likelier and the bigger
 the raid, and the more guards it has, the more raiders come in iron. The bell rings, the guards defend the whole
 village, and players in the village are told. The raid ends when the raiders are dead, or at dawn when the last ones
 flee. The chronicle remembers every raid. Never more than one every three nights.
 
-**See them coming.** Post a guard (or a Scout) at a Guard Post near a finished Lookout Tower or Wall Tower, and the
+**See them coming.** Post a guard at a Guard Post near a finished Lookout Tower or Wall Tower, and the
 village hears of a raid the evening before: you get a message like "Smoke on the north road: the Bandits will strike
 Oakvale tomorrow night", even when you're away (if you own the hall). The next day the gates shut and the portcullis
-drops from noon, and at dusk the guards climb to their stations and the villagers go indoors before the raiders come.
-The hall's guards icon and Defense page show the coming attack. Without a lookout, the horn is your only warning.
+drops from noon. The hall's guards icon shows the coming attack. Without a lookout, the horn is your only warning.
 
-**A quieter world.** Whoever runs the server can turn the **Threat Level** setting down: at 0 no raiders or bandit camps
+**A quieter world.** Whoever runs the server can turn the [**Threat Level**](threat-level.md) setting down: at 0 no raiders or bandit camps
 come at all, at 1 they come half as often. At 3 they come half again as often, and a quarter more raiders come each
 time. On **Peaceful** difficulty no raiders come, whatever the setting says. The hall's guards icon tells you when
-nothing will come. Operators can also start and end raids themselves for an event with `/workplace threat` (see
-[Settings](settings.md)).
+nothing will come. Operators can also start and end raids themselves for an event with [`/workplace threat`](command-threat.md) (see
+[Threat settings](settings-threats.md)).
 
 ## Bandit camps
 
-Once a village reaches Village rank, **bandits** may make camp 80 to 100 blocks out: tents round a fire, a **Bandit
+More in [Bandit camps](bandit-camps.md). Once a village reaches Village rank, **bandits** may make camp 80 to 100 blocks out: tents round a fire, a **Bandit
 Chief** in iron and a few of his men. Everyone nearby is told where, the hall's guards icon shows it, and the villagers
 feel less safe while it stands. Until the chief falls, the night raids come from the camp, twice as often.
 
 **Break it up.** Take your guards along with a Rally Banner, or hire mercenaries. When the chief dies, his band
 scatters, the chest in his tent is yours (emeralds, iron, gold, maybe a diamond) and the chronicle remembers who did it.
 The village then has a few days' peace.
-
-## The Bandit King
-
-A bigger story can bring a **Bandit King** to a Town that has broken up two bandit camps. First three camps go up
-round the village at once, their chiefs his captains, each flying his war banner (black, a red skull): break all
-three banners. The next dawn his fort goes up 110 to 150 blocks from the village, a stage each dawn: first
-a palisade of sharpened logs round a yard with a fire and tents, then two watchtowers and a stable, then his **keep**
-with his black war banner (a red skull) over the door.
-
-The King himself is a vindicator with a golden crown, iron armor and a diamond axe, much tougher than a chief, and a
-boss bar shows his health when you're within about 30 blocks. At half health he blows a goat horn and four more
-bandits rush out of the keep, but only once. His men stay inside the palisade, and the ones on the towers stay up there.
-
-His **treasure chest** sits beside his throne: emeralds, gold, diamonds, an enchanted sword or crossbow, and always
-**the King's Crown**, a golden helmet with Protection III and Unbreaking III. Look for a small door in the palisade behind
-the keep: sometimes it's left open.
-
-While the fort rises, win allies (any of them helps): finish a quest at a neighboring village and 3 of its guards come;
-pay 24 emeralds at the hall for 6 mercenaries; or bring **Pell**, a deserter waiting by the first camp, 16 bread: he
-tells of the postern and it's left open. When the keep stands, raise your **Rally Banner** near the fort and your guards
-and allies follow you in. His raiders come every second night until he falls. Kill him within 10 days for his treasure,
-a festival, +150 reputation, the honor **Kingslayer** and 10 days without bandit camps; Pell stays on in the village.
-Wait too long and he takes a third of your treasury and rides off, leaving his fort a ruin.
 
 ## Leading your guards
 
@@ -107,14 +83,14 @@ Wait too long and he takes a third of your treasury and rides off, leaving his f
 
 ## Walls and gates
 
-The Blueprint Table has a wooden **Palisade**, a **Palisade Gate**, a **Stone Wall** with battlements, a **Wall Tower** for
+The Blueprint Table has a wooden [**Palisade**](palisade-build.md), a [**Palisade Gate**](palisade-gate-build.md), a
+[**Palisade Tower**](palisade-tower-build.md), a **Stone Wall** with battlements, a **Wall Tower** for
 the corners and a **Gatehouse**. Stand inside the village and place them facing out. In a village with a hall and a
 guard, the gates are **shut at nightfall** and opened in the morning (you can still open them yourself).
 
 Each has an upgrade: click the II onto the finished build and a builder adds only what's new. **Palisade II** has a
 fighting step and a ditch of dripstone stakes in front, **Stone Wall II** a roofed timber walkway with murder holes,
-**Wall Tower II** a roofed archers' gallery, and **Gatehouse II** a barbican with a second gate and portcullis: in a
-siege raiders have to break both, so it holds several times as long.
+**Wall Tower II** a roofed archers' gallery, and **Gatehouse II** a barbican with a second gate and portcullis.
 
 Only the gate blocks ever break. A raider's creeper, a ravager or a raider at a house door never breaks a block your
 builders placed, or one of a build they're still working on; and whatever rams and fires do take, your builders put

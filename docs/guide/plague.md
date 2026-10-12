@@ -2,6 +2,7 @@
 
 ```infobox
 type: Disaster
+expansion: M32
 image: https://jcondedata.github.io/minecraft-alive-workplace/plague/anim.gif
 caption: The Physician going house to house
 Strikes: a Town or a City
@@ -11,7 +12,7 @@ Remedy: a glass bottle, a glistering melon slice, a honey bottle and a fermented
 Building: the Physician's House
 Pokémon: Fairy and Psychic types help
 categories: Disasters, Jobs
-related: drought.md, fire.md, village-life.md
+related: physician.md, remedy.md, physicians-house-build.md, disasters.md, drought.md, fire.md, village-life.md
 ```
 
 A Town or a City can be struck by a **plague**. It's likelier when the village has more villagers than beds, and a

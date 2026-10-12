@@ -174,14 +174,14 @@ II *The Robes*, III *The Arms and the Cloak*, IV *The Head and the Lantern*. Its
 coal (Miner), 8 iron pickaxes (Toolsmith); II 64 copper ingots (Armorer), 64 white wool (Shepherd), 32 leather
 (Butcher); III 32 chains (Tinkerer), 32 stripped dark oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32
 glowstone dust (Netherworker), 64 small flowers (Florist), 16 cakes (Chef). It needs a City and the Founder (or City rank
-while Legends are off). Its powers, the realm's mood, the travellers and its beauty, come with 35.22.
+while Legends are off). Its powers, the realm's mood, the travelers and its beauty, come with 35.22.
 
 **The Stadium** (35.23, only with Cobblemon) is drawn: an oval arena 47 by 37, its bowl 16 high (20 to the gate's
 banners and the floodlights, about 7,300 blocks), round a grass battle field 31 by 21 ruled in white (its edge, the
-half-way line, a centre circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
+half-way line, a center circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
 time, five tiers along the long sides and three at the ends, with red and white carpet seats in wedges round the bowl;
-in a village with a Village Banner the red and the white are built in its banner's two colours instead (the base and
-the first other colour of its pattern; the field's white lines stay white). A trainer's box is cut into each end, a
+in a village with a Village Banner the red and the white are built in its banner's two colors instead (the base and
+the first other color of its pattern; the field's white lines stay white). A trainer's box is cut into each end, a
 stone room under a spruce roof with a Training Post facing the field, and the professor's box stands raised in the
 middle of the south stand, a lectern behind its rail. The west end is the covered stand, under a lean-to canopy of
 spruce slabs on four spruce columns; over the east end stands the scoreboard, black terracotta in a stone frame under
@@ -348,9 +348,9 @@ aren't in the Blueprint Table, no part sets air over an earlier stage's block, t
 roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
 The Stadium's file and its Healing Machine need Cobblemon, so its same checks run in the compat tests
 (`StadiumCompatTests`, 7,300 blocks), with its requirements and goods as listed, its nurse's booth, Training Posts and
-floodlights, and its stages built in a village's banner colours (blue and red for a blue banner with a red stripe, the
+floodlights, and its stages built in a village's banner colors (blue and red for a blue banner with a red stripe, the
 field's lines still white; red and white for a village without one). `StadiumGameTests`, without Cobblemon: its file
-is skipped quietly (not on the page, no mistake logged), and the colours style and how a banner picks it.
+is skipped quietly (not on the page, no mistake logged), and the colors style and how a banner picks it.
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded

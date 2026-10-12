@@ -275,6 +275,36 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [/workplace leaderboard](command-leaderboard.md): this week's standings so far.
 - [Realm and economy settings](settings-realms-and-economy.md): trade, colonies, realms and feuds.
 
+### The Steward and the Festival Cup
+
+- [The Steward](steward.md): the builder who plans the village and has it built.
+- [City Plan](city-plan.md): paint the village's zones, streets and wall line.
+- [Zones and plots](plan-zones.md): where each kind of building goes, and how a plot is picked.
+- [The Steward's desk](stewards-desk.md): his proposals, Approve, and Ask me first or Run the village.
+- [The Steward's rules](steward-rules.md): what he asks for, and when.
+- [Jobs and research from the Steward](steward-jobs-and-research.md): work for the jobless, topics for the scholars.
+- [Roads](roads.md), [Bridges](bridges.md) and [Roads between villages](roads-between-villages.md): streets, lamps,
+  steps and the road to your trading partners.
+- [Walls](walls.md): a palisade or stone wall once raiders come.
+- [Old houses renewed](old-house-renewal.md): old village houses rebuilt one at a time.
+- [/workplace steward explain](command-steward-explain.md): every rule, its numbers, and today's wishes.
+- [Steward settings](settings-steward.md): the switches for villages that build themselves.
+- [The Festival Cup](festival-cup.md): a Pokémon tournament at the village's festival.
+- [Cup day](cup-day.md), [Cup bouts](cup-bouts.md), [Cup champions and the Cup banner](cup-champions.md) and
+  [The Cup themes](cup-themes.md).
+- [Arena](arena-build.md): the battle ring where the Cup is fought.
+- [/workplace cup](command-cup.md): ready for your bout, or watch one.
+- [Berry Breeder](berry-breeder.md), [Camp Cook](camp-cook.md), [Habitat Keeper](habitat-keeper.md),
+  [Daycare Keeper](daycare-keeper.md) and [Gem Grower](gem-grower.md): the Pokémon jobs.
+- [Camp Kitchen](camp-kitchen-build.md), [Berry Nursery](berry-nursery-build.md),
+  [Habitat Garden](habitat-garden-build.md), [Daycare](daycare-build.md) and [Gem Grotto](gem-grotto-build.md): their
+  builds.
+- [Pokémon village houses](pokemon-village-houses.md): villages that grow the Pokémon jobs' houses.
+- [Pokémon partners at work](partners-at-work.md): see pastured Pokémon lend a hand.
+- [The nurse's Healing Machine](nurse-healing-machine.md): healing at Cobblemon's own machine.
+- [The village's habitat](village-habitat.md): a Habitat Block of the village's own.
+- [Pokémon jobs and Cup settings](settings-pokemon-jobs-and-cup.md): the switches for Pokémon and villagers together.
+
 ## Installing
 
 Alive Workplace is a Fabric mod for Minecraft 1.21.1. It goes on the **server and on every player's game**: download the

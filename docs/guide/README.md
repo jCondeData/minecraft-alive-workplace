@@ -18,7 +18,7 @@ at `/guide/`: the Guide Book's showcase scene already owns that folder.
   written early, with `expansion: M32` (the expansion's milestone, M27 to M35; `M30, M33` for a page that needs both)
   in its infobox. `site.py` reads the switches from `Expansions.java` and leaves such a page out of the published site
   while any of them is off: no page, not counted, in no category, See also, All pages or portal, and the index's list
-  items that start with a link to it are dropped (a section left empty goes too). Links to it from published pages
+  items that start with a link to it are dropped (a section or subsection left empty goes too). Links to it from published pages
   show as plain text, so they never break. The night the switch flips, the page appears by itself: the lane that flips
   a switch needs no guide edit. Never write off content into a published page's text; link the gated page, or name it
   in `related`.

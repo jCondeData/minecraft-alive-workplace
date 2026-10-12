@@ -3204,6 +3204,7 @@ Rally Banner and the defence blueprints (tools/blueprints/defence.py).
     the job starts from the grindstone and a water bucket, and the station tooltip lists it;
   - a builder puts the burned blocks back;
   - scene `fire`: a roof catching and the firewarden putting it out (GIF).
+  - [ ] **32.16a** Change from the owner (2026-10-12): only gate blocks of walls and gates may break (rams); anything threats damage must be repairable by builders; no progress is ever lost. Village fire must not destroy builds (builders repair anything it does). siegeDamage stays true.
 - [x] **32.17** (approved 2026-10-12) **Drought and the Well Keeper.** `drought.json`: desert, savanna and badlands villages 15% a day,
   others 5% a day after 5 days without rain, twice as likely while a desert raiders' lair stands; it lasts 3–5 days
   and rain ends it. In the hall's area: crops, stems and berry bushes grow at a quarter pace, farmland dries, water

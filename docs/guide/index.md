@@ -185,7 +185,7 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 
 ### Items A to Z
 
-[Blank Blueprint](blank-blueprint.md) · [Blueprint](blueprint.md) · [Delivery Note](delivery-note.md) · [Explorer's Map](explorer-s-map.md) · [Field Marker](field-marker.md) · [Guide Book](guide-book.md) · [Map of the village](map-of.md) · [Patrol Map](patrol-map.md) · [Price Tag](price-tag.md) · [Quarry Marker](quarry-marker.md) · [Rally Banner](rally-banner.md) · [Scan Tool](scan-tool.md) · [Shape Planner](shape-planner.md) · [Travel Ticket](travel-ticket.md) · [Village Ledger](village-ledger.md)
+[Blank Blueprint](blank-blueprint.md) · [Blueprint](blueprint.md) · [Delivery Note](delivery-note.md) · [Explorer's Map](explorer-s-map.md) · [Field Marker](field-marker.md) · [Guide Book](guide-book.md) · [Letter](letter.md) · [Map of the village](map-of.md) · [Patrol Map](patrol-map.md) · [Price Tag](price-tag.md) · [Quarry Marker](quarry-marker.md) · [Rally Banner](rally-banner.md) · [Scan Tool](scan-tool.md) · [Shape Planner](shape-planner.md) · [Travel Ticket](travel-ticket.md) · [Village Ledger](village-ledger.md)
 
 ## Stories, laws, classes and Wonders
 
@@ -304,6 +304,46 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [The nurse's Healing Machine](nurse-healing-machine.md): healing at Cobblemon's own machine.
 - [The village's habitat](village-habitat.md): a Habitat Block of the village's own.
 - [Pokémon jobs and Cup settings](settings-pokemon-jobs-and-cup.md): the switches for Pokémon and villagers together.
+
+### Luxuries, households and friendships
+
+- [Luxuries](luxuries.md): the wine, clothes, news and jewelry the better classes live on.
+- [Vintner](vintner.md): cider and wine at the cauldron.
+- [Tailor](tailor.md): clothes for every class at the loom.
+- [Printer](printer.md): the Gazette, books and family trees.
+- [Jeweler](jeweler.md): rings, brooches and circlets at the stonecutter.
+- [Cider](cider.md), [Berry Wine](berry-wine.md) and [Vintage Wine](vintage-wine.md): the Vintner's drinks.
+- [Work Clothes](work-clothes.md), [Fine Clothes](fine-clothes.md) and [Noble Robes](noble-robes.md): the Tailor's
+  clothes.
+- [Village Gazette](village-gazette.md) and [Illuminated Book](illuminated-book.md): the Printer's papers.
+- [Amethyst Ring](amethyst-ring.md), [Emerald Brooch](emerald-brooch.md) and [Gold Circlet](gold-circlet.md): the
+  Jeweler's pieces.
+- [Winery](winery-build.md), [Tailor's Shop](tailors-shop-build.md), [Print Shop](print-shop-build.md) and
+  [Jeweler's Workshop](jewelers-workshop-build.md): the luxury workshops.
+- [Burgher's Townhouse](townhouse-build.md): a grade II home, sold by builders.
+- [Households](households.md): who lives together, and the homes each class needs.
+- [Elders](elders.md): growing old, retiring, teaching and passing away.
+- [Evergreen Charm](evergreen-charm.md): keeps a good elder for good.
+- [Family names](family-names.md): family trees, the Family page and the printed tree.
+- [/workplace classes](command-classes.md): how a village finds its places.
+- [Friendship](friendship.md): ten hearts with every named villager.
+- [Gift Wrap](gift-wrap.md) and [Gift](gift.md): presents, tastes and name days.
+- [Heart events](heart-events.md): the stories villagers tell their friends.
+- [Keepsakes](keepsakes.md): what a villager gives you at ten hearts.
+- [Personal requests](personal-requests.md): favors your friends ask.
+- [Sealed Letter](sealed-letter.md): a letter to family, carried by hand.
+- [The lost heirloom](lost-heirloom.md): a family treasure, far away.
+- [Quest journal](quest-journal.md): the Village, Personal, Story and Bounties tabs, and tracking.
+- [/workplace quests](command-quests.md): your quests in chat.
+- [Map to the place](map-to-the.md): the maps quests hand you.
+- [Quest rewards](quest-rewards.md): what stories, requests and bounties pay.
+- [Reputation and titles](reputation.md): Friend, Hero and Lord of a village.
+- [/workplace standing](command-standing.md): your standing everywhere.
+- [Bounty Board](bounty-board.md): wanted captains and their rewards.
+- [Wanted Poster](wanted-poster.md), [Hideout map](hideout-map.md) and [Captain's Insignia](captains-insignia.md):
+  hunting a bounty.
+- [Rogue Pokémon](rogue-pokemon.md): huge wild Pokémon with a price on their head (Cobblemon).
+- [The Fair Ledger](fair-ledger-book.md): the book of the treasury's takings.
 
 ## Installing
 

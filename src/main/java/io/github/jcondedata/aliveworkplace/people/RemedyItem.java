@@ -62,9 +62,11 @@ public class RemedyItem extends DrinkItem {
 		if (!(level instanceof ServerLevel server)) {
 			return InteractionResult.SUCCESS;
 		}
+		boolean grey = Sickness.isGrey(villager); // (the Grey Cough, 31.18: a Remedy only eases it for a day)
 		boolean wasIll = Plague.cure(server, villager);
-		Chat.actionBar(player, Component.translatable(wasIll ? "message.aliveworkplace.remedy.cured" : "message.aliveworkplace.remedy.kept_well",
-			villager.getDisplayName()).withStyle(ChatFormatting.GREEN));
+		Chat.actionBar(player, Component.translatable(grey ? "message.aliveworkplace.remedy.eased"
+			: wasIll ? "message.aliveworkplace.remedy.cured" : "message.aliveworkplace.remedy.kept_well",
+			villager.getDisplayName()).withStyle(grey ? ChatFormatting.YELLOW : ChatFormatting.GREEN));
 		if (!player.hasInfiniteMaterials()) {
 			stack.shrink(1);
 			ItemStack bottle = new ItemStack(Items.GLASS_BOTTLE);

@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
@@ -14,6 +15,8 @@ import io.github.jcondedata.aliveworkplace.nurse.Nurses;
 import io.github.jcondedata.aliveworkplace.people.Sickness;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.threat.Disasters;
+import io.github.jcondedata.aliveworkplace.work.PhysicianWork;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -52,8 +55,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The Sickness, II: the Grey Cough (ROADMAP 31.18), what {@code arcs/the_sickness.json} can't say in effects alone. Three
  * villagers fall ill with the Grey Cough ({@link Sickness#GREY}), which passes on at night ({@link #spread}) and which
- * no nurse's remedy cures. The village's healer (its Nurse, else Doctor Wren, a travelling physician who comes to the hall
- * the next morning) names the three far herbs (31.17) whose biomes are nearest and gives a map to each patch; with 3 of
+ * no nurse's remedy or Physician's Remedy cures. The village's healer (its Nurse, else its Physician, else Doctor Wren, a
+ * travelling physician who comes to the hall the next morning) names the three far herbs (31.17) whose biomes are nearest and gives a map to each patch; with 3 of
  * each handed in, the healer brews the Three-Herb Tonic over half a day and takes it round. Without the cure in 15 days
  * the cough runs its course. Everything it keeps is in the arc's flags and roles, so it carries on after a restart.
  *
@@ -62,7 +65,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class SicknessStory {
 	public static final ResourceLocation ARC = AliveWorkplace.id("the_sickness");
-	/** The healer's role: the village's Nurse, or Doctor Wren. */
+	/** The healer's role: the village's Nurse, else its Physician (32.18), else Doctor Wren. */
 	public static final String HEALER = "healer";
 	/** Doctor Wren's mob key. */
 	public static final String WREN = "wren";
@@ -325,16 +328,24 @@ public final class SicknessStory {
 
 	// ---- the healer ------------------------------------------------------------------------------------------------
 
-	/** Whether {@code v} is a healer a village can have: a Nurse (or 32.18's Physician, once that job exists). */
+	/**
+	 * Whether {@code v} is a healer a village can have: a Nurse, or 32.18's Physician (while config {@code physicians} is
+	 * on and the disasters expansion is open, as for the rest of the Physician's work).
+	 */
 	public static boolean isHealerJob(Villager v) {
-		return Nurses.isNurse(v);
+		return Nurses.isNurse(v) || isPhysicianHealer(v);
 	}
 
-	/** The village's healer by job, nearest the hall, or null. */
+	private static boolean isPhysicianHealer(Villager v) {
+		return PhysicianWork.ENABLED && Disasters.live() && PhysicianWork.isPhysician(v);
+	}
+
+	/** The village's healer by job: its Nurse nearest the hall, else its Physician nearest the hall (B135), or null. */
 	@Nullable
 	static Villager findHealer(ServerLevel level, BlockPos hall) {
 		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && isHealerJob(v) && !Arcs.isArcEntity(v)).stream()
-			.min(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5))).orElse(null);
+			.min(Comparator.<Villager, Boolean>comparing(v -> !Nurses.isNurse(v))
+				.thenComparingDouble(v -> v.distanceToSqr(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5))).orElse(null);
 	}
 
 	/** The arc's healer, if they're about. */
@@ -350,11 +361,14 @@ public final class SicknessStory {
 		return s.mobs.stream().anyMatch(m -> m.key.equals(WREN)) || stamp(s, WREN_DUE) >= 0;
 	}
 
-	/** Picks the healer: the village's Nurse; with none, Doctor Wren comes to the hall the next morning. */
+	/**
+	 * Picks the healer: the village's Nurse, else its Physician; with neither, Doctor Wren comes to the hall the next
+	 * morning (and with one, he isn't sent for).
+	 */
 	static void pickHealer(ServerLevel level, BlockPos hall, ArcState s) {
-		Villager nurse = findHealer(level, hall);
-		if (nurse != null) {
-			s.roles.put(HEALER, new ArcState.Role(Optional.of(nurse.getUUID()), nurse.getDisplayName().copy()));
+		Villager found = findHealer(level, hall);
+		if (found != null) {
+			s.roles.put(HEALER, new ArcState.Role(Optional.of(found.getUUID()), found.getDisplayName().copy()));
 			return;
 		}
 		s.roles.put(HEALER, new ArcState.Role(Optional.empty(), Component.translatable("entity.aliveworkplace.doctor_wren")));
@@ -705,6 +719,7 @@ public final class SicknessStory {
 			return;
 		}
 		if (!healer.getMainHandItem().is(ModItems.THREE_HERB_TONIC)) {
+			stow(level, healer);
 			healer.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.THREE_HERB_TONIC));
 			healer.setDropChance(EquipmentSlot.MAINHAND, 0f);
 		}
@@ -727,6 +742,23 @@ public final class SicknessStory {
 		}
 		give(level, healer, patient);
 		WALKS.remove(healer.getUUID());
+	}
+
+	/**
+	 * What the healer holds before taking the tonic in hand (a Physician's Remedy) goes back to the chest by their
+	 * workstation, or is dropped at their feet: the round doesn't swallow it.
+	 */
+	static void stow(ServerLevel level, Villager healer) {
+		ItemStack held = healer.getMainHandItem();
+		if (held.isEmpty() || held.is(ModItems.THREE_HERB_TONIC)) {
+			return;
+		}
+		healer.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		Optional<GlobalPos> site = healer.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(g -> g.dimension() == level.dimension());
+		ItemStack rest = site.isPresent() ? SupplyContainers.insert(level, SupplyContainers.find(level, site.get().pos(), null), held) : held;
+		if (!rest.isEmpty()) {
+			healer.spawnAtLocation(rest);
+		}
 	}
 
 	/** The healer gives {@code patient} the tonic: the cough is gone. */
@@ -841,7 +873,7 @@ public final class SicknessStory {
 			if (healer != null && Arcs.isArcEntity(healer)) {
 				dress(healer);
 			} else if (healer == null && !wren(s) && ArcEffects.near(level, r.hall()) && level.isLoaded(r.hall())) {
-				pickHealer(level, r.hall(), s); // the nurse is gone: another, or Doctor Wren
+				pickHealer(level, r.hall(), s); // the healer is gone: another Nurse or Physician, or Doctor Wren
 			}
 			if (!s.flags.containsKey(BREWED) && level.getDayTime() % VillageNeeds.DAY >= NIGHT && !s.flag(SPREAD_NIGHT, today)) {
 				s.flags.put(SPREAD_NIGHT, today);

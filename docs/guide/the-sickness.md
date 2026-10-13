@@ -8,14 +8,14 @@ caption: Villagers coughing the Gray Cough, and a patch of a far herb
 Starts: by chance (6% a day) in a Village of 12 or more, with sickness on
 Chapters: The Gray Cough, Three Far Cures, The Remedy
 You bring: 3 of each of three far herbs
-Healer: the village's Nurse, or Doctor Wren
+Healer: the village's Nurse, else its Physician, else Doctor Wren
 Rewards: a thanksgiving festival, +150 standing, the honor Healer of the village
 Without the cure: it passes after 15 days, and the village is unhappy for 5
 categories: Story arcs, Village Hall
-related: story-arcs.md, village-life.md, jobs-services.md
+related: story-arcs.md, village-life.md, jobs-services.md, physician.md
 ```
 
-A dry gray cough is going round the village, and nothing the nurse has does more than ease it. This is the **Gray
+A dry gray cough is going round the village, and nothing the village's healer has does more than ease it. This is the **Gray
 Cough**, and only an old tonic of three far herbs will end it.
 
 ## The Gray Cough
@@ -23,11 +23,12 @@ Cough**, and only an old tonic of three far herbs will end it.
 Three villagers fall ill at once: they puff gray smoke, cough and walk slowly. The chat, the chronicle and the
 villagers' chatter say so ("Cover your mouth! The gray cough is going round."), and the hall's people list shows "The
 Gray Cough" under each who has it. It passes from one villager to the next at night, to those who work or sleep near
-them, but never to more than half the village. The nurse's honey, milk or healing potion only takes the slowness away
-for a day.
+them, but never to more than half the village. The nurse's honey, milk or healing potion, and even a [Remedy](remedy.md),
+only take the slowness away for a day.
 
-**Talk to the healer** (right-click them): the village's Nurse. A village without one gets **Doctor Wren**, a
-traveling physician, who comes to the hall the next morning and stays until the story is over.
+**Talk to the healer** (right-click them): the village's Nurse, or if there's no Nurse, its
+[Physician](physician.md). A village with neither gets **Doctor Wren**, a traveling physician, who comes to the hall the
+next morning and stays until the story is over. With a Physician of your own, nobody needs sending for.
 
 ## Three Far Cures
 
@@ -53,6 +54,9 @@ Leave it, and after 15 days the cough runs its course: everyone is well within 3
 ## How it fits with the rest
 
 - It only comes while the **Sickness** setting is on, in a village with a hall and at least 12 villagers.
-- The [Nurse](jobs-services.md) is the healer; her usual remedies ease the cough but can't end it.
+- The [Nurse](jobs-services.md) is the healer, or the [Physician](physician.md) when there's no Nurse; their usual
+  remedies and Remedies ease the cough but can't end it. A Physician brews the tonic at their own brewing stand and
+  leaves their house calls until the cure has gone round.
+- A villager a Remedy is keeping well (for ten days) doesn't catch the cough.
 - Coughing villagers walk slowly, to their work and everywhere else, until the cure goes round.
 - The festival at the end is a real [festival](festivals-and-markets.md), feast and all.

@@ -30,6 +30,8 @@ chest by their brewing stand, and sells them too.
 
 ## How it fits in
 
+- **What it doesn't:** the Gray Cough of [the Sickness](the-sickness.md). A Remedy only eases it for a day; only the
+  Three-Herb Tonic ends it.
 - **What it cures:** the [plague](plague.md), which only a Remedy cures; a [witch coven](witch-coven.md)'s hex, which
   otherwise lasts until the coven is broken; and ordinary [sickness](sickness.md).
 - **Who uses it:** the [Physician](physician.md) carries one from house to house in a plague. Keep the chest by their

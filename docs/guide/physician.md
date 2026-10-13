@@ -45,6 +45,9 @@ The Physician works the long day shift.
   [Beekeeper](beekeeper.md) keeps the honey and potions side of things going.
 - **What it answers:** the plague, which strikes a Town or a City, and the hexes of a
   [witch coven](witch-coven.md): a Remedy lifts those too.
+- **The Sickness:** in a village with no Nurse, the Physician is the healer of [the Sickness](the-sickness.md): talk to
+  them about the Gray Cough, bring them the herbs, and they brew the tonic at their stand and take it round. A Remedy
+  only eases the cough for a day.
 - **Works with:** the [Nurse](nurse.md), who looks after ordinary illness. Her honey, milk and potions can't touch the
   plague; that's the Physician's work.
 - **Helped by:** Fairy- and Psychic-type Pokémon in a Pasture Block near the brewing stand (with Cobblemon): the

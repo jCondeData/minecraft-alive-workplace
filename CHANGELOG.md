@@ -24,6 +24,11 @@ asks for the steps, `latest.log` and any crash report).
   wherever they are) hears "A vision of the north road: ... will strike Oakvale in 2 days", the chronicle notes it and
   the Defense page shows it. On the day the gates shut from noon and the villagers go in before dark, just as with a
   guard on a Lookout Tower, and the raiders come from the side the Seer named.
+- **The Sickness now turns to your own Physician** (B135). A village with a Physician and no Nurse used to send for
+  Doctor Wren anyway; now the Physician is the healer: talk to them about the Gray Cough, bring them the herbs, and they
+  brew the Three-Herb Tonic at their brewing stand and take it round, with no traveling doctor sent for. A Remedy, from
+  them or from your hand, only eases the cough for a day, as the story says, and a villager a Remedy is keeping well
+  doesn't catch it. With **Physicians** off, Doctor Wren comes as before.
 
 ## 0.144.0 — 2026-10-13
 

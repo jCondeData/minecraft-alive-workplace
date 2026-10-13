@@ -3,18 +3,20 @@
 A story arc in which a new illness, the Gray Cough, goes round a village, and the village's healer needs three far
 herbs to brew the cure. Part of the 1.5 expansion; the herbs and the Three-Herb Tonic are on [their own page](far-herbs.md).
 
-Roadmap items: 31.18
+Roadmap items: 31.18, B135
 
 ## What a player sees
 
 - **The Gray Cough comes.** Three villagers fall ill at once: they puff gray smoke, cough with a low, rough sneeze and
   walk slowly. The chat, the hall's chronicle and the villagers' chatter say so, and the hall's villager list shows
   "The Gray Cough" under each who has it.
-- **It doesn't pass by itself.** The nurse's honey, milk or healing potion only takes the slowness away for a day
-  ("eased ... gray cough for a day" over her head); the cough stays. Each night every coughing villager may pass it to
+- **It doesn't pass by itself.** The nurse's honey, milk or healing potion, and the Physician's Remedy (from their
+  chest, or from a player's hand), only take the slowness away for a day ("eased ... gray cough for a day" over their
+  head); the cough stays. Each night every coughing villager may pass it to
   someone who works or sleeps near them, but never past half the village.
-- **Talk to the healer** (right-click them): the village's Nurse. A village without one gets **Doctor Wren**, a
-  traveling physician in a cleric's robe, who comes to the hall the next morning and stays until the story is over.
+- **Talk to the healer** (right-click them): the village's Nurse, or with no Nurse its [Physician](plague.md). Then
+  Doctor Wren isn't sent for. A village with neither gets **Doctor Wren**, a traveling physician in a cleric's robe, who
+  comes to the hall the next morning and stays until the story is over.
 - **Three far cures.** The healer names the three far herbs whose biomes are nearest the village and gives you a map
   to a patch of each. Bring back 3 of each and right-click the healer; you can hand them in a herb at a time, and
   friends can share the gathering.
@@ -39,10 +41,16 @@ Roadmap items: 31.18
   villager who worked or slept within 8 blocks of where they work, sleep or stand (their bed and workstation; where
   they stand if they have neither). Never past half the village's grown villagers, Doctor Wren not counted. It stops
   once the tonic is brewed.
-- **The healer** is the village's Nurse nearest the hall (32.18's Physician will count too once that job exists). With
-  none, Doctor Wren is sent for: he comes to the hall at the next day's start, a villager in a cleric's robe kept by
-  the hall, and leaves in a puff when the story ends. If the nurse is lost while players are near, another nurse (or
-  Doctor Wren) takes over.
+- **The healer** is the village's Nurse nearest the hall; with no Nurse, its Physician nearest the hall (32.18, while
+  `physicians` is on: B135). With neither, Doctor Wren is sent for: he comes to the hall at the next day's start, a
+  villager in a cleric's robe kept by the hall, and leaves in a puff when the story ends. With a Nurse or Physician he
+  never comes. If the healer is lost while players are near, another Nurse or Physician (or Doctor Wren) takes over.
+- **A Physician as healer** brews the tonic at their own brewing stand; their house-to-house rounds wait while they
+  brew and take it round. A Remedy in their hand when they take up the tonic goes back to the chest by the stand (or
+  is dropped there). Before the brew they go on visiting the ill as usual, and their Remedy only eases a cough for a day.
+- **The Remedy and the cough**: a Remedy, the Physician's or a player's, only eases the Gray Cough for a day, like a
+  nurse's remedy ("... gray cough is eased for a day"), and doesn't keep the villager well; an eased cough is off the
+  Physician's round until the day passes. A villager a Remedy kept well (10 days after one) doesn't catch the cough.
 - **The herbs**: when the healer is first spoken to, each of the eight herbs' biome tags is looked up once from the
   hall, within 3000 blocks; the three found nearest are the cure, and a herb not found is passed over for the next.
   Each gets a `herb_patch` at the spot found (planted when a player comes near), and every player near the hall gets a
@@ -51,7 +59,7 @@ Roadmap items: 31.18
 - **The hand-in**: a right-click on the healer takes 3 of each wanted herb the player carries; they say what they
   still need. Everyone who hands herbs in is a gatherer.
 - **The brew** takes half a day (12,000 ticks of the day's time, so sleeping through the night counts) from the hand-in.
-  The healer stays by their workstation (Doctor Wren by the hall) and their nurse's work waits; a right-click tells how
+  The healer stays by their workstation (Doctor Wren by the hall) and their nurse's or Physician's work waits; a right-click tells how
   far along it is.
 - **The cure round**: the healer holds the tonic and walks to the nearest coughing villager, gives it (they are well at
   once), and on to the next; anyone they can't reach in 400 ticks they step over to. When nobody in the village coughs,
@@ -65,6 +73,7 @@ Roadmap items: 31.18
 | Key | Default | What it does |
 |---|---|---|
 | `villagerSickness` | on | Off: the story never starts, and a running one ends quietly with everyone well. |
+| `physicians` | on | Off: a Physician doesn't count as the healer, so a village without a Nurse sends for Doctor Wren. |
 | `storyArcs` | on | Off: no story arcs at all. |
 | `disabledArcs` | empty | Add `the_sickness` to keep just this story from starting. |
 
@@ -96,14 +105,16 @@ Roadmap items: 31.18
 - The healer steps over to a villager they can't walk to within 400 ticks, so a walled-in villager can't hold the
   story up (31.18, lane c).
 - A remedy's ease keeps the illness's slower work pace; only the slowness effect goes (31.18, lane c).
+- A Nurse comes before a Physician as the healer, since the spec names "its Nurse, or the Physician"; the Physician is
+  counted only while `physicians` is on and the disasters expansion is open, as for the rest of their work (B135).
+- The Remedy's ten days well keep a villager from catching the Gray Cough, as they keep off the plague and hexes; on a
+  coughing villager it only eases, as 31.18 says, and gives no ten days (B135).
 - The arc needs illness on through a condition, `villager_sickness`, rather than code in the arc engine (31.18, lane c).
 
 ## Known limits
 
 - Friendship at the end goes only to the ill villagers who are loaded then (in practice, the village the players are
   in).
-- The arc's healer by job is only the Nurse: a village with a Physician (32.18, [Plague](plague.md)) and no Nurse still
-  sends for Doctor Wren, though 31.18 says the Physician counts (bug B135).
 - Doctor Wren trades as a cleric if someone sneaks and right-clicks him.
 - Not tested in a real game yet beyond the GameTests and the showcase scene.
 
@@ -114,4 +125,8 @@ Roadmap items: 31.18
   `theHealerNamesTheNearestHerbs` (a stubbed locator; a herb not found passed over; one lookup each; maps; the hand-in a
   herb at a time), `theBrewAndTheCureRound` (40% status, the round, the festival, +150, Healer, +100 friendship),
   `withoutTheCureTheCoughRunsItsCourse`, `sicknessSwitchedOff`.
+- `SicknessPhysicianGameTests` (B135): `thePhysicianIsTheHealer` (no Wren; the herbs, the brew at their stand, their
+  rounds waiting, the Remedy in hand stowed, the round), `aPhysiciansRemedyOnlyEasesTheGreyCough` (their visit and a
+  player's hand; a kept-well villager doesn't catch it; a Nurse comes first), `physiciansSwitchedOffWrenComes`,
+  `thePhysicianHealerSurvivesAReload` (two save-and-reloads mid-arc).
 - Showcase scenes: `sickness` (the coughing village, a herb patch, the brew, the cure going round).

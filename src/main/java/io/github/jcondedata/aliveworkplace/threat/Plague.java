@@ -143,9 +143,15 @@ public final class Plague {
 
 	/**
 	 * The Remedy (32.18) given to {@code villager}: any illness cured, hexes included, and they're kept well for
-	 * {@link #WELL_FOR}. Returns whether they were ill.
+	 * {@link #WELL_FOR}. Returns whether they were ill. The Grey Cough (31.18) it only eases for a day, like a nurse's
+	 * remedy ({@link Sickness#ease}): that returns false, and only the Three-Herb Tonic ends it.
 	 */
 	public static boolean cure(ServerLevel level, Villager villager) {
+		if (Sickness.isGrey(villager)) {
+			Sickness.ease(level, villager);
+			level.playSound(null, villager.blockPosition(), SoundEvents.GENERIC_DRINK, SoundSource.NEUTRAL, 0.6f, 1.1f);
+			return false;
+		}
 		boolean ill = Sickness.isIll(villager);
 		if (ill) {
 			Sickness.recover(level, villager);

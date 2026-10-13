@@ -95,9 +95,12 @@ public final class Sickness {
 		return isIll(villager) && GREY.equals(ModAttachments.ILL_KIND.get(villager));
 	}
 
-	/** {@code villager} catches the Grey Cough (31.18), unless they're Hardy or ill already; true if they did. */
+	/**
+	 * {@code villager} catches the Grey Cough (31.18), unless they're Hardy, ill already, or kept well by a Remedy (32.18:
+	 * ten days well after one); true if they did.
+	 */
 	public static boolean greyCough(ServerLevel level, Villager villager) {
-		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager) || isIll(villager)) {
+		if (io.github.jcondedata.aliveworkplace.legend.Gifted.noIllness(villager) || isIll(villager) || isImmune(villager, level.getGameTime())) {
 			return false;
 		}
 		ModAttachments.ILL_SINCE.set(villager, level.getGameTime());

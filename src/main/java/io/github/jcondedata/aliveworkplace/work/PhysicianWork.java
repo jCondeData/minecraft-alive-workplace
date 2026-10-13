@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.people.Sickness;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.story.SicknessStory;
 import io.github.jcondedata.aliveworkplace.threat.Disasters;
 import io.github.jcondedata.aliveworkplace.threat.Plague;
 import java.util.Comparator;
@@ -43,7 +44,9 @@ import org.jetbrains.annotations.Nullable;
  * fermented spider eye, which they brew into one). At the bedside ({@link #visit}) they've seen the patient: one with
  * the plague is sent home and passes it on only to those sharing their house; with a Remedy they cure them (any illness,
  * hexes included) and keep them well ten days. Without one they ask on the requests board. They foretell an outbreak at
- * its first case through plague.json's {@code foretold_by}. Fairy and Psychic partners shorten their rounds. Nothing at
+ * its first case through plague.json's {@code foretold_by}. The Grey Cough (31.18) a Remedy only eases for a day; with no
+ * Nurse in the village, the Physician is the Sickness story's healer, and their rounds wait while they brew its tonic and
+ * take it round ({@link SicknessStory#busy}). Fairy and Psychic partners shorten their rounds. Nothing at
  * all with config {@code physicians} off. Restartable at any tick: the Remedy in hand is the villager's own (saved by
  * vanilla); the patient is looked for again.
  */
@@ -105,8 +108,10 @@ public class PhysicianWork extends Behavior<Villager> {
 
 	/** The ill within {@link #REACH} of {@code post}, the plague's first, then the nearest. */
 	public static List<Villager> patients(ServerLevel level, Villager physician, BlockPos post) {
+		long now = level.getGameTime();
 		return level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(post).inflate(REACH, 8, REACH),
-				v -> v != physician && v.isAlive() && Sickness.isIll(v)).stream()
+				v -> v != physician && v.isAlive() && Sickness.isIll(v)
+					&& !(Sickness.isGrey(v) && Sickness.eased(v, now))).stream() // (an eased Grey Cough, 31.18, waits for the day to pass)
 			.sorted(Comparator.<Villager, Boolean>comparing(v -> !Sickness.isPlagueIll(v)).thenComparingDouble(v -> v.distanceToSqr(physician)))
 			.toList();
 	}
@@ -115,6 +120,9 @@ public class PhysicianWork extends Behavior<Villager> {
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
 		if (!ENABLED || !isPhysician(villager) || !Disasters.live() || villager.isSleeping()) {
 			return false;
+		}
+		if (SicknessStory.busy(level, villager)) {
+			return false; // brewing the Three-Herb Tonic, or taking it round (31.18, B135): the story shows what they're doing
 		}
 		Optional<BlockPos> post = post(level, villager);
 		State state = state(villager);
@@ -169,7 +177,7 @@ public class PhysicianWork extends Behavior<Villager> {
 	protected boolean canStillUse(ServerLevel level, Villager villager, long gameTime) {
 		State state = state(villager);
 		return ENABLED && isPhysician(villager) && Disasters.live() && !villager.isSleeping() && state.patient != null && state.patient.isAlive()
-			&& Sickness.isIll(state.patient);
+			&& Sickness.isIll(state.patient) && !SicknessStory.busy(level, villager);
 	}
 
 	@Override
@@ -214,6 +222,7 @@ public class PhysicianWork extends Behavior<Villager> {
 		if (RemedyItem.isRemedy(hand)) {
 			hand.shrink(1);
 			physician.setItemSlot(EquipmentSlot.MAINHAND, hand.isEmpty() ? ItemStack.EMPTY : hand);
+			boolean grey = Sickness.isGrey(patient); // (the Grey Cough, 31.18: the Remedy only eases it for a day)
 			Plague.cure(level, patient);
 			ItemStack bottle = new ItemStack(Items.GLASS_BOTTLE);
 			ItemStack rest = post.isPresent() ? SupplyContainers.insert(level, SupplyContainers.find(level, post.get(), null), bottle) : bottle;
@@ -223,6 +232,9 @@ public class PhysicianWork extends Behavior<Villager> {
 			Requests.clear(physician);
 			ModAttachments.VILLAGERS_CURED.set(physician, ModAttachments.VILLAGERS_CURED.getOrElse(physician, 0) + 1);
 			PartnerShows.cue(physician, "cure", patient.blockPosition());
+			if (grey) {
+				return Component.translatable("message.aliveworkplace.physician.state.eased", patient.getDisplayName()).withStyle(ChatFormatting.YELLOW);
+			}
 			return Component.translatable("message.aliveworkplace.physician.state.cured", patient.getDisplayName()).withStyle(ChatFormatting.GREEN);
 		}
 		if (Sickness.isPlagueIll(patient)) {

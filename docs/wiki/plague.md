@@ -28,6 +28,7 @@ Roadmap items: 32.18
   Physician has seen passes it on only to those who share their house. They ask for Remedies on the requests board.
 - **The Remedy** (a glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye, shapeless)
   cures any illness, hexes and the plague included, and keeps a villager well for 10 days (no illness, hex or plague).
+  The Gray Cough of [the Sickness](the-sickness.md) it only eases for a day, as 31.18 says (B135).
   Right-click a villager with it to give it to them; drink it yourself to lose poison, wither, hunger and nausea (the
   bottle comes back).
 - **With Cobblemon**, Fairy and Psychic Pokémon pastured near the stand shorten the Physician's pause between visits.

@@ -117,6 +117,10 @@ asks for the steps, `latest.log` and any crash report).
   the board now says so: the Prices tab tells each player their own price, and "You can't pay …" names the price that
   buyer would have paid. Long tooltips in the Village Hall and the Book of Edicts (the Royal Highway's) are wrapped to
   fit on screen (33.22a).
+- The test folly's top no longer gets a band of dirt round it under the dome, where the stone cornice is: a Wonder's
+  stage high up (a dome on a tower) no longer "levels the ground" round its own bottom in mid-air. The ground is
+  levelled with the last stage built on the Wonder's floor; the Colossus, the Great Cathedral, the Great Wall and the
+  Observatory had the same fault (35.8a).
 
 ### Changed
 - **The Observatory's Sky Chart covers about 6,144 blocks** (35.18a, part of Wonders, for 2.0; the owner's change from

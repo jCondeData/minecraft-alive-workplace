@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
 
 ## What a player sees
 
@@ -453,7 +453,9 @@ stage and the days it was begun and finished.
 **Stages as build sites** (35.4): each stage's parts become ordinary build sites, placed with the Wonder's turn and
 mirror at their offsets, pointing back at the Wonder, with the Foundation Stone as their bench (so a builder fetches from
 the chests round the stone and empties his bag there). Only stage I fills a foundation (later stages stand on the stage
-below), only the last stage levels the ground round it, and no part hands a blueprint back. Once a second the Wonders
+below), only the last stage with a part on the Wonder's floor levels the ground round it, with those parts alone (35.8a:
+the folly's dome, levelled round its own bottom, once filled a band of dirt round the tower under it; the folly now
+levels in stage I), and no part hands a blueprint back. Once a second the Wonders
 check their stage: when every part's site is done or gone, the next stage's sites are made for the Wonder's builder, or
 the Wonder is finished. The check reads only saved data, so the order holds through a restart at any tick. While
 `wonders` is off nothing moves on; it all waits, saved.

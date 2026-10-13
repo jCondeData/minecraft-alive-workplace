@@ -46,6 +46,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private io.github.jcondedata.aliveworkplace.legend.LegendGuests.State legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.EMPTY;
 	/** The Seer's dawn foretelling (29.16): tonight's raid, the next festival and market days, tomorrow's guest; empty in older halls. */
 	private io.github.jcondedata.aliveworkplace.legend.Seer.State seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.EMPTY;
+	/** The Observatory's search for the Sky Chart and what it found (35.18); empty in halls saved before. */
+	private io.github.jcondedata.aliveworkplace.wonder.SkyChart.Search skyChart = new io.github.jcondedata.aliveworkplace.wonder.SkyChart.Search();
 	/** The village Pokédex (29.21, the Pokémon Professor): every species ever kept in its pastures, in the order logged; empty in older halls. */
 	private final java.util.LinkedHashSet<String> pokedex = new java.util.LinkedHashSet<>();
 	private long founderMoodDay;
@@ -165,6 +167,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.city.Stewards.fixTicket(server, pos);
 			hall.stewardPlaceChecked = true;
 			hall.setChanged();
+		}
+		if (level instanceof net.minecraft.server.level.ServerLevel server) {
+			io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.tick(server, pos, hall); // the Sky Chart's search (35.18)
 		}
 		if (level instanceof net.minecraft.server.level.ServerLevel server) {
 			long cost = io.github.jcondedata.aliveworkplace.city.StewardCost.start(); // 27.22: counted as the Steward's work
@@ -776,6 +781,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		setChanged();
 	}
 
+	/** The Observatory's search for the Sky Chart (35.18), and what it found. */
+	public io.github.jcondedata.aliveworkplace.wonder.SkyChart.Search skyChart() {
+		return skyChart;
+	}
+
 	/** The Seer's last dawn foretelling here (29.16). */
 	public io.github.jcondedata.aliveworkplace.legend.Seer.State seer() {
 		return seer;
@@ -988,6 +998,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		festivalCrowd = Nbt.getInt(tag, "festivalCrowd");
 		legendGuests = io.github.jcondedata.aliveworkplace.legend.LegendGuests.State.load(tag);
 		seer = io.github.jcondedata.aliveworkplace.legend.Seer.State.load(tag);
+		skyChart = tag.contains("skyChart") ? io.github.jcondedata.aliveworkplace.wonder.SkyChart.Search.load(tag.getCompound("skyChart"))
+			: new io.github.jcondedata.aliveworkplace.wonder.SkyChart.Search();
 		pokedex.clear();
 		net.minecraft.nbt.ListTag dex = Nbt.getList(tag, "pokedex", net.minecraft.nbt.Tag.TAG_STRING);
 		for (int i = 0; i < dex.size(); i++) {
@@ -1119,6 +1131,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putInt("festivalCrowd", festivalCrowd);
 		legendGuests.save(tag);
 		seer.save(tag);
+		if (skyChart.week() >= 0 || !skyChart.found().isEmpty()) {
+			tag.put("skyChart", skyChart.save());
+		}
 		if (!pokedex.isEmpty()) {
 			net.minecraft.nbt.ListTag dex = new net.minecraft.nbt.ListTag();
 			pokedex.forEach(sp -> dex.add(net.minecraft.nbt.StringTag.valueOf(sp)));

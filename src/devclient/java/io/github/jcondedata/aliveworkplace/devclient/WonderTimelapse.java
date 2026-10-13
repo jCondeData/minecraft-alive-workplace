@@ -143,6 +143,14 @@ final class WonderTimelapse {
 	}
 
 	private Finale finale;
+	/** A second finale after the first, with a still of its own (35.18: the Sky Chart, then the Coming days). */
+	private Finale then;
+
+	/** After the finale, {@code then} (35.18). */
+	WonderTimelapse then(Finale then) {
+		this.then = then;
+		return this;
+	}
 
 	/** Ends inside the Wonder with {@code finale} (35.14). */
 	WonderTimelapse finale(Finale finale) {
@@ -354,7 +362,18 @@ final class WonderTimelapse {
 			ScreenshotHarness.shot(mc, String.format("20_%s_%s", scene, finale.name()));
 			server.execute(() -> finale.check(server.overworld(), player(server)));
 		}
-		int end = showAt + (night != null ? 260 + lastWait : finale != null ? 330 : 230);
+		if (showAt > 0 && then != null && tick == showAt + 330) {
+			server.execute(() -> then.ready(server.overworld(), player(server), placement, hall));
+		}
+		if (showAt > 0 && then != null && tick == showAt + 370) {
+			ScreenshotHarness.pointAt(mc, then.point());
+		}
+		if (showAt > 0 && then != null && tick == showAt + 400) {
+			mc.getToasts().clear();
+			ScreenshotHarness.shot(mc, String.format("21_%s_%s", scene, then.name()));
+			server.execute(() -> then.check(server.overworld(), player(server)));
+		}
+		int end = showAt + (night != null ? 260 + lastWait : then != null ? 430 : finale != null ? 330 : 230);
 		if (showAt > 0 && epilogue != null && tick >= end && tick < end + epilogue.length()) {
 			epilogue.tick(mc, server, tick - end); // 35.24: the scene's own ending after the time-lapse
 		}

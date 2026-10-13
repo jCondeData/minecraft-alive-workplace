@@ -288,9 +288,15 @@ public final class VillageHallScreen {
 			renderAdvice(menu, level, hall);
 			menu.broadcastChanges();
 		});
+		List<Component> mapLore = new ArrayList<>();
+		mapLore.add(line(Component.translatable("screen.aliveworkplace.hall.map_hint"), ChatFormatting.GRAY));
+		if (io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.charts(level, hall)) { // the Observatory's Sky Chart (35.18)
+			mapLore.add(line(Component.translatable("screen.aliveworkplace.hall.map_sky_chart"), ChatFormatting.AQUA));
+		}
 		menu.button(MAP, icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
-			line(Component.translatable("screen.aliveworkplace.hall.map_hint"), ChatFormatting.GRAY)), p -> {
+			mapLore.toArray(Component[]::new)), p -> {
 			Chat.chat(p, VillageMaps.draw(level, hall, p));
+			io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.draw(level, hall, p).ifPresent(m -> Chat.chat(p, m));
 		});
 		menu.button(RECALL, icon(Items.BELL, Component.translatable("screen.aliveworkplace.hall.recall"), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.recall_hint"), ChatFormatting.GRAY)), p -> {

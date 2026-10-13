@@ -31,8 +31,16 @@ asks for nothing else. See [Wonders](wonders.md) for drawing up the plans.
 
 ## While it stands
 
-- The Seer **charts the land** around the village.
-- The Seer **reads the coming days**.
+- **The Sky Chart.** The hall's map button also draws, on a second empty map, a chart of the land about 6,000 blocks
+  across round the village, with a marker on every village, outpost, temple, witch hut, igloo, monument, mansion,
+  shipwreck, ruined portal, trail ruin, ancient city, trial chamber and stronghold the Observatory has found, and a
+  red marker on each bandit camp. Hover the chart to read the nearest ones' names and where they are. The Observatory
+  searches one kind of place an in-game hour, and does it all again every week.
+- **The Coming days.** The hall's calendar page shows what's ahead and when: the next festival and market day, weddings
+  due, caravans on the road and when they arrive, a traveller expected at the inn, the full moon, the Legends the Seer
+  foretells, the bandit camps and where, and the night's raid risk.
+
+If the Observatory is damaged both stop until it's repaired; what it found is kept.
 
 ## How it fits with the rest
 

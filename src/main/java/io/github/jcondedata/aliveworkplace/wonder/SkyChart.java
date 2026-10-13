@@ -346,6 +346,8 @@ public final class SkyChart {
 		private long kindHour = -1;
 		/** Every kind searched this week. */
 		private boolean done;
+		/** The week ({@code (day - 1) / 7}) this search began in; -1: none yet (and in halls saved before 35.18). */
+		private long week = -1;
 		/** Regions searched since loading (tests and the cost check). */
 		private int steps;
 
@@ -368,6 +370,14 @@ public final class SkyChart {
 
 		public int steps() {
 			return steps;
+		}
+
+		public long week() {
+			return week;
+		}
+
+		public void setWeek(long week) {
+			this.week = week;
 		}
 
 		/** A new week: search every kind again (what was found stays until its region is searched again). */
@@ -442,6 +452,7 @@ public final class SkyChart {
 			tag.putInt("region", region);
 			tag.putLong("kindHour", kindHour);
 			tag.putBoolean("done", done);
+			tag.putLong("week", week);
 			return tag;
 		}
 
@@ -462,6 +473,7 @@ public final class SkyChart {
 			s.region = Math.max(0, Nbt.getInt(tag, "region"));
 			s.kindHour = Nbt.has(tag, "kindHour", Tag.TAG_LONG) ? Nbt.getLong(tag, "kindHour") : -1;
 			s.done = Nbt.getBoolean(tag, "done");
+			s.week = Nbt.has(tag, "week", Tag.TAG_LONG) ? Nbt.getLong(tag, "week") : -1;
 			return s;
 		}
 	}

@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24
 
 ## What a player sees
 
@@ -388,6 +388,25 @@ and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are of
 Damaged (or with Wonders off) both powers are down: raids gather anywhere, the sentries are plain golems that keep
 their marks for when it's repaired, and nobody is replaced.
 
+**The Observatory's powers** (35.18), while it is finished and stands:
+
+- **The Sky Chart** (`sky_chart`, `size` 6,144). The hall searches the land round the village, about 6,144 blocks
+  across (384 chunks, 12 regions a side), for villages, pillager outposts, desert and jungle temples, witch huts,
+  igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial chambers
+  and strongholds: one kind an in-game hour, only while the server's tick has room, and again each week (what it found
+  stays on the chart until its region is searched again). The hall's map button then also draws, on a second empty
+  map, the Sky Chart: the land in an explorer map's colours with a marker on every structure found (vanilla's own for
+  villages, mansions, monuments, jungle temples, witch huts and trial chambers, a red X for the rest) and a red marker
+  on each bandit camp. Its tooltip names the twelve nearest ("Plains Village: north-east, about 1,000 blocks") and
+  counts the rest.
+- **The Coming days** (`forecast`): the hall's calendar page shows, under the seasons, what's ahead and when: the next
+  festival and market day, weddings due, caravans on the road and when they arrive, a traveller expected at the inn,
+  the full moon, the Legends the Seer foretells, the bandit camps and where, and the night's raid risk (or, after the
+  Seer's dawn reading, whether a raid is foretold). The ones with a place say where.
+
+Damaged (or with Wonders off) both are paused: the search waits, the map button draws only the village map and the
+calendar has no Coming days; what was found stays in the hall.
+
 **The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops,
 about 16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all
 round with an arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a
@@ -665,6 +684,18 @@ the golem's own goals (`IronGolemRolesMixin`), and the Patrol Map's `WallSentrie
 `WonderCelebration.finished`. The Wall's sentries don't count toward the Golem Smith's own golems. `guard/Gates` shuts
 the fence gates of every finished Wonder with `raid_barrier` (`GreatWallPowers.shutGates`).
 
+**The Observatory's** (35.18): `sky_chart` (`wonder/powers/SkyChartPower`) takes `size` (512 to 12,288, default
+6,144); `forecast` (`wonder/powers/ForecastPower`) has no numbers. `wonder/ObservatoryPowers.tick` runs from the hall's
+block entity tick every 5 ticks: with the power, a new week (`(day - 1) / 7`) restarts the hall's
+`SkyChart.Search`, and `Search.tick` takes one region of one structure set while `SkyChart.tickHasRoom` (the average
+tick under 40 ms), starting at most one set an in-game hour, with `SkyChart.VANILLA` (the placement grid and the
+structure check, no chunk loaded; tests put a stub in `ObservatoryPowers.finder`). The map button calls
+`ObservatoryPowers.draw` after `VillageMaps.draw`: `SkyChart.chart` plus the bandit camps (`MapDecorationTypes.RED_MARKER`)
+and the tooltip lines. `ObservatoryPowers.comingDays` reads `Festivals.nextDay`, `MarketDays.nextDay`, each unmarried
+couple's `Partner.since` plus `Couples.COURTSHIP_DAYS`, `Caravans.Data.onTheRoad` (to or from the hall), an innkeeper
+in the village (`Innkeepers.arrivedOn`), vanilla's moon (day % 8), the hall's `Seer.State` (guests and tonight's
+raid), `BanditCamps.all` and `VillageRaids.chance`; `Seasons`' page calls `ObservatoryPowers.fill`.
+
 ## Switches
 
 All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
@@ -700,7 +731,9 @@ saves load unchanged. 35.7b adds `searches` beside the sites
 (its line, the item, the ticks searched and whether the helper was last seen in the village). A crew member's
 job is the ordinary saved builder job (as a helper), so a crew comes back together after a restart; the columns are
 worked out again; `wonder` and `no_foundation` on a build site (written only when set, so an ordinary
-build saves exactly as before). 35.16 saves nothing new: a Great Wall sentry is a Golem Smith's Wall Sentry
+build saves exactly as before). 35.18 adds `skyChart` on a Village Hall (written once a search has begun; absent:
+none begun): what was found, the set and region being searched, the hour the last set began, whether the week is done
+and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Great Wall sentry is a Golem Smith's Wall Sentry
 (`golem_role` `sentry`) with the tag `aliveworkplace_wall_sentry` and its post as `golem_post`, all saved with the golem.
 
 ## Items, blocks, jobs, commands
@@ -767,7 +800,7 @@ build saves exactly as before). 35.16 saves nothing new: a Great Wall sentry is 
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
   Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's, the Great Wall's, the Hanging Gardens', the Colossus's and the Stadium's powers are in (35.10, 35.12, 35.14, 35.16, 35.20, 35.22, 35.24), the Observatory's come with 35.18, and the
+  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's, the Great Wall's, the Observatory's, the Hanging Gardens', the Colossus's and the Stadium's powers are in (35.10, 35.12, 35.14, 35.16, 35.18, 35.20, 35.22, 35.24), the Observatory's come with 35.18, and the
   Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
   inside of its closed dome, is skipped until scaffolding (35.6).
@@ -929,3 +962,14 @@ a plain pumpkin it is. Damaged: no duty, no posts, no barrier, no replacement, a
 off the same; back on, it climbs back. A sentry saved and loaded is still one; the types' numbers and refusals. Showcase
 scene `wonder_great_wall` (group Wonders): the time-lapse, then at midnight a raid gathering on the open side while the
 four sentries watch from the walk and the Great Gate stands shut.
+
+GameTests in `ObservatoryPowerGameTests` (35.18), with a stub structure finder: three structures of three kinds are
+found in 432 regions (three kinds of 144) and the hall's map button, for two empty maps, gives the village map and the
+Sky Chart with a marker per structure and each named in its tooltip; the first in-game hour searches exactly one kind's
+144 regions, none while the tick has no room, the next hour the next kind; the search and its week survive a save and
+load, a hall saved without one loads with none begun, and a week later the search begins again keeping what it found;
+the Coming days list a staged festival (in 3 days), a wedding (tomorrow, once for the couple) and an incoming caravan
+on its arrival day, the full moon within the week, and the calendar page shows them under the seasons; damaged, or
+with Wonders off, the search, the chart and the Coming days stop, and repaired the search goes on. Showcase scene
+`wonder_observatory` (group Wonders): the time-lapse, then the Sky Chart in hand and the hall's calendar with the
+Coming days.

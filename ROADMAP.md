@@ -4325,7 +4325,7 @@ Legends.
   (Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers
   (Butcher); IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). Done when: 35.9's four design
   checks pass for it.
-- [ ] **35.18** **The Observatory: its powers and time-lapse.** While it stands:
+- [x] **35.18** (review: pending 2026-10-13) **The Observatory: its powers and time-lapse.** While it stands:
   - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart about 6,144 blocks across (384 chunks,
     12 regions; 35.18a) centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
     huts, igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial
@@ -4508,6 +4508,13 @@ item waits.
 
 ## Notes / blocked
 
+- 2026-10-13 (35.18, decisions; lane-a-1013-0813; details in `docs/wiki/wonders.md`, "The Observatory's powers"):
+  (1) the Sky Chart takes a second empty map, after the village map the same button draws (one click, both maps);
+  (2) a 1.21.1 map marker carries no name, so "each named in the map's tooltip" is the chart's lore: the twelve nearest
+  by name and where, then "and N more"; (3) the Coming days live on the hall's calendar page, under the seasons (the
+  page row has no free spare tab); (4) M32's disasters have no forecast to read ahead of time today (a disaster is
+  rolled and starts the same round), so the page shows the Seer's foretelling (tonight's raid, the Legends' visits)
+  and the raid risk; a disaster warning joins it when M32 gives one a day ahead (question for the owner if wanted).
 - 2026-10-13 (35.14, decisions; lane-a-1013-0813; details in `docs/wiki/wonders.md`, "The Great Library's power"):
   (1) "times its level" is the level's own number, so Swift Hands IV costs 96 paper, 24 books and 32 emeralds and V
   120/30/40 (Scholarship I: 24/6/8); the points are twice the first tier's for the same number; (2) the second tier's

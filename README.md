@@ -718,6 +718,23 @@ Seer (or a Master Cleric). While it stands, and less than a tenth of it is missi
 - **Its bells ring** for weddings, festivals and raids. A raider near the belfries glows, as with a village bell.
 - It adds **8 to the village's beauty**.
 
+### The Stadium
+
+![The Stadium going up round its field, then a Stadium Day with full stands and a battle with a visitor](https://jcondedata.github.io/minecraft-alive-workplace/wonder_stadium/anim.gif)
+
+An oval arena round a grass battle field, for a Town with the Pokémon Professor, only with Cobblemon. While it stands,
+and less than a tenth of it is missing:
+
+- **Stadium Days**, every second afternoon: two to four visiting trainers (from the villages of its realm, or its
+  caravan partners; travelling trainers of Journeyman to Master rank when those have none) stand in its trainer boxes
+  until dusk. Challenge them as you would the village's own trainers: a win pays CobbleDollars (emeralds without
+  them), once a day each. The village's own trainers take them on too, one bout an hour, settled by rank and team;
+  both gain battle experience and the result is in chat and the chronicle. The villagers off work fill the stands,
+  and those who watched are 5 happier until the next Stadium Day.
+- **The Festival Cup is held here**: among the villages taking part, the Cup goes to the nearest Stadium, which serves
+  as its Arena, so its village gets the Cup's fair and the crowds.
+- No badges and no gym leaders: battles pay money only.
+
 ### The Colossus
 
 ![The Colossus going up on its scaffolding, then the lantern lit over the road at night](https://jcondedata.github.io/minecraft-alive-workplace/wonder_colossus/anim.gif)

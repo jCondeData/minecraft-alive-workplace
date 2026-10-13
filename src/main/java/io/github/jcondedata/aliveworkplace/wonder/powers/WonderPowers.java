@@ -16,8 +16,7 @@ import java.util.function.Function;
 public final class WonderPowers {
 	/** The types our Wonders' powers items (35.12 to 35.24) fill in, declared until then (35.10's and 35.22's are registered above). */
 	public static final List<String> DECLARED = List.of("caravan_range", "caravan_speed", "ferry_fares",
-		"early_warning", "research_tier", "raid_barrier", "sentries", "sky_chart", "forecast", "harvest", "births",
-		"stadium_days", "tournament_host");
+		"early_warning", "research_tier", "raid_barrier", "sentries", "sky_chart", "forecast", "harvest", "births");
 
 	private static final Map<String, Function<JsonObject, WonderPower>> KINDS = new LinkedHashMap<>();
 
@@ -27,6 +26,8 @@ public final class WonderPowers {
 		register(UndertakersPower.TYPE, UndertakersPower::read); // the Great Cathedral's (35.10)
 		register(WeddingsPower.TYPE, WeddingsPower::read);
 		register(TravellersPower.TYPE, TravellersPower::read); // the Colossus's (35.22)
+		register(StadiumDaysPower.TYPE, StadiumDaysPower::read); // the Stadium's (35.24)
+		register(TournamentHostPower.TYPE, TournamentHostPower::read);
 		for (String type : DECLARED) {
 			register(type, json -> DeclaredPower.read(type, json));
 		}

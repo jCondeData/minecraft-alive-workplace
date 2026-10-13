@@ -156,6 +156,23 @@ final class WonderTimelapse {
 		return this;
 	}
 
+	/** What a scene films after the time-lapse's end (35.24: a Stadium Day), {@link #length} client ticks of it. */
+	interface Epilogue {
+		int length();
+
+		/** Client tick {@code t} (from 0) of the epilogue, on the client thread. */
+		void tick(Minecraft mc, MinecraftServer server, int t);
+	}
+
+	@org.jetbrains.annotations.Nullable
+	private Epilogue epilogue;
+
+	/** Films {@code then} after the fireworks (and the night still, if any) before the scene ends (35.24). */
+	WonderTimelapse then(Epilogue then) {
+		this.epilogue = then;
+		return this;
+	}
+
 	/** Runs {@code each} every second while the Wonder goes up (35.22). */
 	WonderTimelapse watching(java.util.function.Consumer<ServerLevel> each) {
 		this.watcher = each;
@@ -268,7 +285,11 @@ final class WonderTimelapse {
 			ScreenshotHarness.shot(mc, String.format("20_%s_night", scene));
 			server.execute(() -> night.accept(server.overworld()));
 		}
-		if (showAt > 0 && tick == showAt + (night != null ? 390 : 230)) {
+		int end = showAt + (night != null ? 390 : 230);
+		if (showAt > 0 && epilogue != null && tick >= end && tick < end + epilogue.length()) {
+			epilogue.tick(mc, server, tick - end); // 35.24: the scene's own ending after the time-lapse
+		}
+		if (showAt > 0 && tick == end + (epilogue != null ? epilogue.length() : 0)) {
 			over = true;
 			mc.stop();
 		}

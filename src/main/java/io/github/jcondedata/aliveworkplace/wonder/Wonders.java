@@ -136,6 +136,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 		forgetPowers(); // 35.8: the powers as the new files give them
 		WonderBlueprints.forget(); // the whole blueprints are merged again from the new files (35.3)
 		ColossusPlaque.forget(); // its plaque's signs found in the drawing again (35.22)
+		StadiumDays.forget(); // the Stadium's boxes and seats too (35.24)
 		AliveWorkplace.LOG.info("Wonders: {}", wonders.keySet());
 	}
 

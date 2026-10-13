@@ -160,6 +160,9 @@ public final class CupDays {
 
 	/** Whether the stands of the Arena at {@code at} are open now: a Cup's afternoon, until a while after the final. */
 	public static boolean standsOpen(ServerLevel level, BlockPos at) {
+		if (io.github.jcondedata.aliveworkplace.wonder.StadiumDays.standsOpen(level, at)) {
+			return true; // a Stadium Day's stands (35.24)
+		}
 		long t = level.getDayTime() % Cups.DAY;
 		for (Map.Entry<BlockPos, CupData.Cup> e : CupData.get(level).all().entrySet()) {
 			CupData.Cup cup = e.getValue();
@@ -389,7 +392,7 @@ public final class CupDays {
 			.stream().min(java.util.Comparator.comparingDouble(v -> v.distanceToSqr(Vec3.atCenterOf(host)))).orElse(null);
 	}
 
-	static void noJobNoBed(Villager v) {
+	public static void noJobNoBed(Villager v) {
 		for (MemoryModuleType<GlobalPos> poi : List.of(MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleType.HOME)) {
 			if (v.getBrain().hasMemoryValue(poi)) {
 				v.releasePoi(poi);
@@ -525,7 +528,7 @@ public final class CupDays {
 	}
 
 	/** Off work: idle, meeting, playing or at work (the afternoon is a holiday), not resting or hiding. */
-	static boolean offWork(Villager v) {
+	public static boolean offWork(Villager v) {
 		Activity a = v.getBrain().getActiveNonCoreActivity().orElse(Activity.IDLE);
 		return a == Activity.IDLE || a == Activity.MEET || a == Activity.PLAY || a == Activity.WORK;
 	}

@@ -4406,7 +4406,7 @@ Legends.
   Ultra Balls (Ball Smith), 32 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it (the compat
   GameTests for the parts with Cobblemon's blocks).
   - [x] **35.23a** (review: pending 2026-10-13) Change from the owner (2026-10-13): make the Stadium a little bigger with more decoration, and give it interiors to walk through like a real football stadium
-- [ ] **35.24** **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
+- [x] **35.24** (review: pending 2026-10-13) **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
   - **Stadium Days**, every second day in the afternoon: two to four visiting trainers (from the villages of its realm
     or its caravan partners; travelling trainers from Journeyman to Master when those have none) stand in the trainer
     boxes until dusk. Players challenge them as they do the village's own (`trainer/Trainers`: CobbleDollars, once a
@@ -5828,6 +5828,18 @@ item waits.
   scene `wonder_stadium` films (35.8). Decided: 35.24 is blocked until 35.8 lands, rather than building a second power
   lookup and damage rule that 35.8 would replace. The same holds for every Wonder's powers item (35.10, 35.12, 35.14,
   35.16, 35.18, 35.20, 35.22): take 35.4 to 35.8 first, in order.
+- **35.24 decisions** (lane-b-1013-0813, 2026-10-13): built as specified, with these choices taken (no owner question).
+  M28's Festival Cup exists, so `tournament_host` is wired, not only declared: the Stadium is its village's Arena for the
+  Cup (`Arenas.find` takes it first: its field the ring, its boxes, its seats, the road before the gate for the fair),
+  and a Cup host without a Stadium whose circuit has a Stadium host holds no Cup of its own (unless its sign-up had
+  already closed), so "the nearest Stadium among the villages taking part" hosts. "Every second day" is every even day
+  as the chronicle counts them; the afternoon is 6000 to dusk at 12000, the bouts one every 1,000 ticks from 7000.
+  "When those have none" is read as filling any shortfall: the realm's villages send one trainer each (the one they'd
+  send to a Cup), and travellers make up the day's two to four. "Journeyman to Master" are villager levels 3 to 5. A
+  visiting Trainer Leader stands as a Trainer of its rank (a second Leader in the village would clash with the one
+  Leader per village rule, and Leaders pay money only either way). Watchers' +5 lasts until the next Stadium Day
+  (`every_days` days). The visitors arrive in the boxes rather than walking in from the village's edge, so they are
+  there for the first challenger; they walk out of the gate at dusk when someone watches.
 - **35.7 decisions** (2026-10-13): built as specified, with these choices taken (no owner question). Stage I waits for
   its goods too (the design note's "the goods are taken and the stage begins"), so the 35.4/35.5 tests and the
   `wonder_site`/`wonder_crew` scenes now put every stage's goods in the stockpile first (`WonderGoodsKit`; nothing

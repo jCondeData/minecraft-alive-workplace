@@ -261,6 +261,12 @@ public final class Moods {
 			score += cup.points();
 			good.add(cup.reason());
 		}
+		// A Stadium Day they watched from the stands (35.24), until the next.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason stadium = io.github.jcondedata.aliveworkplace.wonder.StadiumDays.mood(level, villager);
+		if (stadium != null) {
+			score += stadium.points();
+			good.add(stadium.reason());
+		}
 		// The village's finished Wonders, and its realm's (35.8): their mood powers, while they stand.
 		for (io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason w : io.github.jcondedata.aliveworkplace.wonder.powers.MoodPower.moods(level, villager)) {
 			score += w.points();

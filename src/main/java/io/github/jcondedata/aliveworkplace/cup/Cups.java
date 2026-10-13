@@ -104,15 +104,45 @@ public final class Cups {
 		return out;
 	}
 
-	/** The host whose Cup the village round {@code hall} belongs to: itself if it hosts, else the nearest host whose circuit has it. */
+	/**
+	 * The host whose Cup the village round {@code hall} belongs to: itself if it hosts, else the nearest host whose circuit
+	 * has it. A host with a finished Stadium (35.24, {@code tournament_host}) comes first: the Cup of the villages taking
+	 * part is held at the nearest Stadium among them, so a host without one whose circuit has a Stadium holds none of its
+	 * own (unless its own Cup's sign-up has already closed).
+	 */
 	public static Optional<BlockPos> hostFor(ServerLevel level, BlockPos hall) {
 		if (canHost(level, hall)) {
+			if (!hasStadium(level, hall) && !closedHere(level, hall)) {
+				Optional<BlockPos> stadium = stadiumHost(level, hall);
+				if (stadium.isPresent()) {
+					return stadium;
+				}
+			}
 			return Optional.of(hall);
 		}
 		return CupData.get(level).all().keySet().stream()
 			.filter(h -> !h.equals(hall) && (!level.isLoaded(h) || canHost(level, h)))
 			.filter(h -> circuit(level, h).contains(hall))
+			.min(Comparator.<BlockPos>comparingInt(h -> hasStadium(level, h) ? 0 : 1).thenComparingDouble(h -> h.distSqr(hall)));
+	}
+
+	/** Whether the village round {@code hall} has a finished, standing Stadium that hosts its Festival Cup (35.24). */
+	public static boolean hasStadium(ServerLevel level, BlockPos hall) {
+		return io.github.jcondedata.aliveworkplace.wonder.powers.TournamentHostPower.at(level, hall).isPresent();
+	}
+
+	/** The nearest other Cup host with a Stadium (35.24) whose circuit has the village round {@code hall}. */
+	public static Optional<BlockPos> stadiumHost(ServerLevel level, BlockPos hall) {
+		return CupData.get(level).all().keySet().stream()
+			.filter(h -> !h.equals(hall) && hasStadium(level, h) && (!level.isLoaded(h) || canHost(level, h)))
+			.filter(h -> circuit(level, h).contains(hall))
 			.min(Comparator.comparingDouble(h -> h.distSqr(hall)));
+	}
+
+	/** Whether the village round {@code hall}'s own Cup has closed its sign-up (it's held where it was drawn). */
+	private static boolean closedHere(ServerLevel level, BlockPos hall) {
+		CupData.Cup cup = CupData.get(level).existing(hall);
+		return cup != null && cup.closed;
 	}
 
 	// ---------------------------------------------------------------- calendar
@@ -306,6 +336,9 @@ public final class Cups {
 		CupChampions.round(level, hall); // 28.21: the Cup banner up over a holder (one away at the final too), down when the title passed
 		if (!canHost(level, hall)) {
 			return;
+		}
+		if (!hasStadium(level, hall) && !closedHere(level, hall) && stadiumHost(level, hall).isPresent()) {
+			return; // 35.24: the circuit's Cup is held at the nearest Stadium among the villages taking part
 		}
 		CupData data = CupData.get(level);
 		CupData.Cup cup = data.cup(hall);

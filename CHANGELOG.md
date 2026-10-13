@@ -58,6 +58,12 @@ asks for the steps, `latest.log` and any crash report).
   two trainer boxes with Training Posts, a professor's box, a covered stand, a gateway arch with banners, a
   scoreboard, four floodlight towers that light up at night, a nurse's booth with a Healing Machine and market pitches,
   in four stages. Without Cobblemon it isn't on the Wonders page.
+- **A bigger Stadium you can walk through** (35.23a, with Cobblemon, behind the 2.0 switch): 53 by 43 now, seven tiers
+  of seats along the sides and five at the ends, with aisles of stairs to climb them, buttresses, banners and flower beds
+  on its facade and banners round its rim. Under the stands, all lit: a concourse right round, stairs up from it into
+  the front rows, two food kiosks, a first-aid room by the nurse's booth, a trophy room, the referees' room, the
+  groundsman's store, and the players' tunnel out to the pitch under the professor's box, with the home and away
+  dressing rooms off it and a dugout either side of its mouth.
 - **Realm edicts, for 1.7** (33.22, off until 1.7 is finished): the capital's Book of Edicts gets a row of realm slots
   (1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II) and six realm edicts, in
   force in every member and paid from the realm treasury: the Royal Highway (faster, fuller caravans between members),

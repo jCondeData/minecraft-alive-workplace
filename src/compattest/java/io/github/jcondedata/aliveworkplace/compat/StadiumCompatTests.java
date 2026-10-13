@@ -57,8 +57,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class StadiumCompatTests implements FabricGameTest {
 	private static final ResourceLocation STADIUM = AliveWorkplace.id("stadium");
-	/** The roadmap's figure (35.23: about 18,000 before it was drawn; ROADMAP Notes). */
-	private static final int BLOCKS = 7_300;
+	/** The roadmap's figure (35.23: about 18,000 before it was drawn, 7,300 as first drawn; 12,100 since 35.23a made it bigger, with its interiors; ROADMAP Notes). */
+	private static final int BLOCKS = 12_100;
 	private static final int PART_LIMIT = 48;
 	private static final Set<Block> UNOBTAINABLE = Set.of(Blocks.BEDROCK, Blocks.BARRIER, Blocks.COMMAND_BLOCK, Blocks.STRUCTURE_BLOCK,
 		Blocks.STRUCTURE_VOID, Blocks.JIGSAW, Blocks.SPAWNER, Blocks.REINFORCED_DEEPSLATE, Blocks.BUDDING_AMETHYST, Blocks.LIGHT,

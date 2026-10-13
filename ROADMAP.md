@@ -4404,7 +4404,7 @@ Legends.
   banners (Carpenter), 64 cooked beef (Chef), 32 berries (Orchard Keeper); IV 8 daylight detectors (Tinkerer), 16
   Ultra Balls (Ball Smith), 32 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it (the compat
   GameTests for the parts with Cobblemon's blocks).
-  - [ ] **35.23a** Change from the owner (2026-10-13): make the Stadium a little bigger with more decoration, and give it interiors to walk through like a real football stadium
+  - [x] **35.23a** (review: pending 2026-10-13) Change from the owner (2026-10-13): make the Stadium a little bigger with more decoration, and give it interiors to walk through like a real football stadium
 - [ ] **35.24** (blocked: needs 35.4-35.8, see Notes) **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
   - **Stadium Days**, every second day in the afternoon: two to four visiting trainers (from the villages of its realm
     or its caravan partners; travelling trainers from Journeyman to Master when those have none) stand in the trainer
@@ -5743,6 +5743,25 @@ item waits.
   The design checks run as compat tests (the file and the Healing Machine need Cobblemon), and the wonder_gallery
   scene is now filmed with Cobblemon so it can show the Stadium. Owner: say if you'd rather have a bigger Stadium for
   the 18,000 (about 55 x 45 with a roofed concourse).
+- **35.23a the bigger Stadium with its interiors** (lane-b-1013-0446, 2026-10-13): the owner's change, drawn. It is
+  now 53 x 43 (from 47 x 37, about 13% and 16% more), the field kept at 31 x 21; seven tiers along the sides and five
+  at the ends (from five and three), so the bowl is 18 high, 24 to the gate's banners, and it is about 12,100 blocks
+  (from 7,300; `StadiumCompatTests` now checks 12,100 within 10%). Interiors, every passage 3 high under a ceiling at
+  y 4 and lit (a lantern-light flood check found no dark cell inside): a concourse two wide right round under the two
+  top tiers, entered through the facade's open bays; eight vomitories climbing as stairs from it to the front rows;
+  north: the first-aid room in the north-west corner by the nurse's booth (cots of white wool, a red-cross banner, candles; no
+  bed, so no villager claims it as home, and no brewing stand, the booth keeps the only one), two food kiosks either
+  side of the gateway serving through a hatch onto the concourse (a furnace, a crafting table, hay, cakes; no smoker
+  or barrel, so no villager takes them as a job block), a trophy room; south: the players' tunnel from the concourse
+  under the professor's box to the pitch, the home and away dressing rooms off it (lockers of open trapdoors, a bench,
+  the team's banner), the referees' room and the groundsman's store; doors from the trainer boxes onto the concourse;
+  two covered dugouts on the apron. Decoration: zig-zag aisle stairs (a tier is two up, so a stair and a jump; a
+  walk check from the gate reaches every room, the professor's box, the boxes and the top tier all round), buttresses
+  on the straight sides, entrances and barred windows taking turns in the bays, banners over the entrances and on
+  every third pilaster, flower beds, a cornice and pennants on the scoreboard, stair footings on the floodlights. The
+  covered stand's canopy went up one so the top tier under it can be climbed. Stage II is now the first four tiers (so
+  the stages run about 2,100, 2,700, 6,700 and 700 blocks); the stages' names and goods are unchanged. No press box:
+  the professor's box is the stand's VIP box (it got a doorway each side onto the second tier).
 - **35.11 the Lighthouse's block count** (lane-b-1011-2133, 2026-10-11): drawn at 25 x 33 x 46 with everything the item
   lists (the tower 13 to 9 across, solid round its stair to 8 and three thick to 22, the stepped mole and its arm, the
   gallery, lantern and cupola, the two-storey cottage, the boathouse, the quay and the jetty with its ferry stop), it is

@@ -37,6 +37,10 @@
         {
           "part": "aliveworkplace:wonder/stadium/stage_1_0",
           "offset": [0, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_1",
+          "offset": [48, 0, 0]
         }
       ],
       "goods": [
@@ -62,7 +66,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/stadium/stage_2_0",
-          "offset": [3, 1, 3]
+          "offset": [5, 1, 5]
         }
       ],
       "goods": [
@@ -94,6 +98,10 @@
         {
           "part": "aliveworkplace:wonder/stadium/stage_3_0",
           "offset": [2, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_3_1",
+          "offset": [48, 0, 8]
         }
       ],
       "goods": [
@@ -120,6 +128,10 @@
         {
           "part": "aliveworkplace:wonder/stadium/stage_4_0",
           "offset": [0, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_4_1",
+          "offset": [48, 0, 0]
         }
       ],
       "goods": [

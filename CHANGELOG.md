@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Great Library's powers** (35.14, part of Wonders, for 2.0): while it stands, the village's research opens a
+  second tier, a row of its own on the scholar's screen ("Needs the Great Library" until then): Swift Hands IV-V,
+  Scholarship (scholars 25% faster a level, research a quarter cheaper at II), Engineering (builders' bags 9 more stacks
+  a level, Wonder crews 2 more builders a level), Cartography (explorers twice as far, maps to trial chambers and
+  ancient cities), Trade Law (caravans 2 more stacks a level, the treasury 10% more a level) and Pharmacy (the ill well
+  in a day, each Nurse curing one a day without a remedy). Each level costs 24 paper, 6 books and 8 emeralds times its
+  level and twice the points; work still stops at twice the pace. A damaged Library keeps the levels and pauses their
+  bonuses. Its time-lapse, ending in the rotunda on the scholar's screen, is on the showcase page.
 - **The Colossus's powers** (35.22, part of Wonders, for 2.0): while it stands, every villager of its village is 12
   happier and every villager of its realm (or its caravan partners) 8, with "the Colossus" among their reasons;
   travelers come to its village's inns twice as often (two a morning, room for twice as many) and are twice as likely

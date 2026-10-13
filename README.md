@@ -721,6 +721,15 @@ Master Chef and 8 kinds of meal in the store). While it stands, and less than a 
 
 ![The Great Cathedral going up stage by stage, then a wedding at its altar at dusk](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_cathedral/anim.gif)
 
+**The Great Library** (in a Town of scholars): its village's research opens a second tier, a row of its own on the
+scholar's screen: Swift Hands IV and V (every job up to 25% faster), Scholarship (scholars faster, research a quarter
+cheaper), Engineering (builders' bags up to 45 stacks, bigger Wonder crews), Cartography (explorers twice as far, maps to
+trial chambers and ancient cities), Trade Law (bigger caravans, a fuller treasury) and Pharmacy (the ill well in a day,
+Nurses curing one a day without a remedy). Each level costs 24 paper, 6 books and 8 emeralds times its level; speed
+still stops at twice the pace. A damaged Library keeps the levels but pauses their bonuses until it is repaired.
+
+![The Great Library going up, then its rotunda and the second tier on the scholar's screen](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_library/anim.gif)
+
 A Gothic cathedral on a cross plan, 55 blocks long with spires 52 high, for a Town with three finished Chapels and the
 Seer (or a Master Cleric). While it stands, and less than a tenth of it is missing:
 

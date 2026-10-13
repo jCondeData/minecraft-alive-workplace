@@ -230,6 +230,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		BlockPos bench = benchOpt.get();
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		bag.setSlots(engineeringSlots(villager)); // 9 more stacks a level of Engineering while the Great Library stands (35.14)
 		bagNow = bag;
 		boolean free = Rules.on(level, ModGameRules.FREE_MATERIALS);
 
@@ -1756,5 +1757,11 @@ public class BuilderWork extends Behavior<Villager> {
 		} catch (RuntimeException ignored) {
 			// Bad data in an imported blueprint should never crash the server; the block itself is placed.
 		}
+	}
+
+	/** How many stacks {@code builder}'s bag takes: {@link BuilderBag#SLOTS}, 9 more a level of Engineering (35.14). */
+	public static int engineeringSlots(Villager builder) {
+		return BuilderBag.SLOTS + 9 * io.github.jcondedata.aliveworkplace.research.Research.bonus(builder,
+			io.github.jcondedata.aliveworkplace.research.Research.Topic.ENGINEERING);
 	}
 }

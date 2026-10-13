@@ -226,7 +226,7 @@ public final class WonderStages {
 			wonder.stages().get(site.stage() - 1).nameText(), percent).withStyle(ChatFormatting.YELLOW));
 		// 35.5: the crew and its lead
 		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.crew", WonderCrews.leadName(level, site),
-			WonderCrews.crew(level, site).size(), WonderCrews.limit(site)).withStyle(ChatFormatting.AQUA));
+			WonderCrews.crew(level, site).size(), WonderCrews.limit(level, site)).withStyle(ChatFormatting.AQUA));
 		goodsText(level, site, text);
 		List<Line> lines = site.started() ? materials(level, site, pos) : List.of();
 		if (!site.started()) {

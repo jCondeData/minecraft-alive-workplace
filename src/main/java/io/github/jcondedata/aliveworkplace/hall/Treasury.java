@@ -43,6 +43,11 @@ public final class Treasury {
 		return base;
 	}
 
+	/** {@code cents} of takings with {@code tradeLaw} levels of Trade Law (35.14): 10% more a level, rounded down. */
+	public static long tradeLaw(long cents, int tradeLaw) {
+		return tradeLaw <= 0 || cents <= 0 ? cents : cents * (10 + tradeLaw) / 10;
+	}
+
 	/** A day's interest on {@code cents} at {@code percent}, in hundredths of an emerald (rounded down). */
 	public static long interest(long cents, int percent) {
 		return Math.max(0, cents) * percent / 100;
@@ -90,6 +95,7 @@ public final class Treasury {
 		long days = Math.min(MAX_DAYS, day - last);
 		long add = (long) takings(workers, wellbeing, rank) * days;
 		add = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.takings(level, hall, add); // the Crown's Peace (33.22)
+		add = tradeLaw(add, io.github.jcondedata.aliveworkplace.research.Research.bonus(level, hall, entity.research(), io.github.jcondedata.aliveworkplace.research.Research.Topic.TRADE_LAW)); // 10% more a level (35.14)
 		add -= io.github.jcondedata.aliveworkplace.realm.RealmTreasury.levy(level, hall, add); // the realm's levy first (33.13)
 		int before = entity.treasury();
 		long cap = cap(entity) * 100L;

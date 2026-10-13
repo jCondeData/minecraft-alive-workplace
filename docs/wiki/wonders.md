@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a
 
 ## What a player sees
 
@@ -281,8 +281,32 @@ a Wild Armor Trim Template (the Pathfinder, 11 days); made: 2 Noble Robes (Tailo
 days), an Enchanted Golden Apple (the Grand Chef, 22 days), a Vex Armor Trim Template (the Merchant Prince, 22 days);
 made: 2 Illuminated Books (Printer); IV an Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem
 Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days); made: 2 Gold Circlets (Jeweller). It needs a
-Town, 20 research levels and the Old Sage (or a Master Scholar while Legends are off). Its power, a second research
-tier, comes with 35.14.
+Town, 20 research levels and the Old Sage (or a Master Scholar while Legends are off).
+
+**The Great Library's power** (35.14, `research_tier`), while it is finished and stands (`wonderStanding`): the
+village's research opens a **second tier**, a row of its own on the scholar's screen (the row under the screen's
+title, a bookshelf headed "The Great Library's research"; until the Library stands each of its topics reads "Needs the
+Great Library" and a click says "Scholarship needs the Great Library"). Each level costs 24 paper, 6 books and 8
+emeralds times its level (Swift Hands IV: 96 paper, 24 books, 32 emeralds) and takes twice the points of a first-tier
+level:
+
+- **Swift Hands IV–V** (after Swift Hands III): every job 5% faster a level, 25% at V;
+- **Scholarship** (2 levels): scholars 25% faster a level (a pace source, "Scholarship"); at II research costs a
+  quarter less (after a Scholars' Guild's quarter, rounded, at least one of what cost any);
+- **Engineering** (2): a builder's bag holds 9 more stacks a level (36, then 45), and a Wonder's crew takes 2 more
+  builders a level (no more than 32);
+- **Cartography** (1): explorers search twice as far from their table, and the maps they draw can lead to trial
+  chambers and ancient cities too (the tag `aliveworkplace:explorer_deep_maps`);
+- **Trade Law** (2): caravans carry 2 more stacks a level (6, then 8), and the treasury takes 10% more a level of each
+  day's takings;
+- **Pharmacy** (1): the ill get well after a day instead of three, and each Nurse cures one villager a day with no
+  remedy at hand.
+
+Every speed bonus goes through the shared pace cap (`maxWorkPace`, twice the pace by default). A village keeps its
+second-tier levels if the Library is damaged later, but their bonuses pause with its powers: Swift Hands counts to III,
+the rest to nothing, bags take no new stacks past 27 (nothing in them is lost), a scholar on a second-tier level waits
+("Scholarship waits for the Great Library to be repaired") and the row reads "Needs the Great Library" again, "the
+levels are kept". Realm members get only the first tier's levels from their capital.
 
 **The Observatory** (35.17) is drawn: a round tower 15 across and 30 high under a copper dome, on a raised terrace 31
 by 31 (42 high to the dome's vane, about 8,400 blocks) of deepslate bricks behind a polished blackstone balustrade, a
@@ -670,13 +694,13 @@ build saves exactly as before).
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
   Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Hanging Gardens' and the Colossus's powers are in (35.10, 35.12, 35.20, 35.22), the others' come with 35.14, 35.18 and 35.16, and the
+  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's, the Hanging Gardens' and the Colossus's powers are in (35.10, 35.12, 35.14, 35.20, 35.22), the others' come with 35.18 and 35.16, and the
   Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
   inside of its closed dome, is skipped until scaffolding (35.6).
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
-- `mood`, `beauty`, `undertakers`, `weddings` and `travellers` act, and the Lighthouse's four (35.12) and the Gardens' `harvest` and `births` (35.20); the other power types are declared, their numbers kept and
+- `mood`, `beauty`, `undertakers`, `weddings`, `travellers`, the Lighthouse's four (35.12), `research_tier` (35.14) and the Gardens' `harvest` and `births` (35.20) act; the other power types are declared, their numbers kept and
   `Wonders.power` already answering for them, until their Wonder's powers item (35.12 on) reads them.
 - The Gardens' extra harvest goes to the mod's farmers and Orchard Keepers: a vanilla farmer with no chest by their
   composter (vanilla's own harvesting) brings in no more (35.20). A worker's count towards the next extra item isn't
@@ -771,6 +795,17 @@ child Gifted and another not); damaged, no free revival, no village-wide search,
 and the 8 beauty gone, repaired all back; the file's numbers and refusals, the page's lines, the altar before the gold
 in its drawing (and turned with it), and the belfries' bells. Showcase scene `wonder_great_cathedral` (group Wonders):
 the Cathedral's time-lapse with a crew of ten, ending at dusk with a blessed wedding at its altar before the guests.
+
+GameTests in `LibraryPowerGameTests` (35.14): without the Library its row reads "Needs the Great Library" and a click
+chooses nothing; with it Swift Hands IV waits for III, Scholarship is chosen on the screen and a scholar pays 24 paper,
+6 books and 8 emeralds and researches it at twice the points, and damaged the next level waits and the row says the
+levels are kept; Swift Hands V makes work 25% faster (15% damaged, the 5 levels kept), Scholarship II a scholar 50%,
+and on top of a fivefold rush the pace stops at the cap; Scholarship II's quarter off; Engineering's 36 and 45 stacks
+and 4 more crew, a 45-stack bag saved and loaded whole, and damaged new stacks keep to 27; Cartography's range and its
+maps' trial chambers and ancient cities; Trade Law's 8 stacks and a fifth more takings; Pharmacy's one day and a
+Nurse's one remedy-free cure a day; an old village's research (every first-tier topic, a tree's work in hand) and an
+old 27-stack bag loading unchanged. Showcase scene `wonder_great_library` (group Wonders): the Library's time-lapse,
+ending in its rotunda on the scholar's screen with the second tier open.
 
 GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
 village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;

@@ -746,6 +746,12 @@ public final class Caravans {
 	 * Loads a caravan for the village at {@code to} with what it wants and we have plenty of, then (33.6) with up to
 	 * {@link #TRADE_STACKS} stacks of goods to sell there; null if there's nothing to send.
 	 */
+	/** The stacks a caravan from the village round {@code hall} carries: {@link #CARGO_STACKS}, 2 more a level of Trade Law (35.14). */
+	public static int cargo(ServerLevel level, BlockPos hall) {
+		return CARGO_STACKS + (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity
+			? 2 * io.github.jcondedata.aliveworkplace.research.Research.bonus(level, hall, entity.research(), io.github.jcondedata.aliveworkplace.research.Research.Topic.TRADE_LAW) : 0);
+	}
+
 	@Nullable
 	static Shipment send(ServerLevel level, BlockPos hall, BlockPos to, Data data) {
 		Village them = data.village(to);
@@ -754,7 +760,7 @@ public final class Caravans {
 		}
 		List<BlockPos> ours = storehouse(level, hall);
 		List<ItemStack> goods = new ArrayList<>();
-		int cargo = CARGO_STACKS + io.github.jcondedata.aliveworkplace.realm.RealmEdicts.extraStacks(level, hall, to); // the Royal Highway (33.22)
+		int cargo = cargo(level, hall) + io.github.jcondedata.aliveworkplace.realm.RealmEdicts.extraStacks(level, hall, to); // the Royal Highway (33.22)
 		for (Want want : them.wants()) {
 			if (goods.size() >= cargo) {
 				break;

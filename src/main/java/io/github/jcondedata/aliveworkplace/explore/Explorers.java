@@ -52,6 +52,8 @@ public final class Explorers {
 	public static final ResourceKey<LootTable> COBBLEMON = table("explorer/cobblemon");
 	/** The places an explorer draws maps to. */
 	public static final TagKey<Structure> MAP_PLACES = TagKey.create(Registries.STRUCTURE, AliveWorkplace.id("explorer_maps"));
+	/** The deeper places a map may lead to with Cartography (35.14): trial chambers and ancient cities. */
+	public static final TagKey<Structure> DEEP_MAP_PLACES = TagKey.create(Registries.STRUCTURE, AliveWorkplace.id("explorer_deep_maps"));
 	/** How far out (in chunks) an explorer looks for a place to draw a map to (a vanilla treasure map's reach). */
 	static final int MAP_SEARCH_CHUNKS = 50;
 	/** Food worth packing: filling, and with no bad effects (no raw chicken, rotten flesh or golden apples). */
@@ -110,16 +112,37 @@ public final class Explorers {
 	 */
 	@Nullable
 	public static Place findPlace(ServerLevel level, BlockPos from) {
+		return findPlace(level, from, false);
+	}
+
+	/** As {@link #findPlace(ServerLevel, BlockPos)}; with {@code deep} (Cartography, 35.14) {@link #DEEP_MAP_PLACES} too. */
+	@Nullable
+	public static Place findPlace(ServerLevel level, BlockPos from, boolean deep) {
 		if (!level.getServer().getWorldData().worldGenOptions().generateStructures()) {
 			return null;
 		}
-		Optional<HolderSet.Named<Structure>> places = Lookup.tag(Lookup.registry(level.registryAccess(), Registries.STRUCTURE), MAP_PLACES);
-		if (places.isEmpty()) {
+		HolderSet<Structure> places = mapPlaces(level, deep);
+		if (places.size() == 0) {
 			return null;
 		}
 		Pair<BlockPos, Holder<Structure>> found = level.getChunkSource().getGenerator()
-			.findNearestMapStructure(level, places.get(), from, MAP_SEARCH_CHUNKS, true);
+			.findNearestMapStructure(level, places, from, MAP_SEARCH_CHUNKS, true);
 		return found == null ? null : new Place(found.getFirst(), found.getSecond());
+	}
+
+	/** The places an explorer's map may lead to: {@link #MAP_PLACES}, and with {@code deep} {@link #DEEP_MAP_PLACES} as well. */
+	public static HolderSet<Structure> mapPlaces(ServerLevel level, boolean deep) {
+		var registry = Lookup.registry(level.registryAccess(), Registries.STRUCTURE);
+		java.util.List<Holder<Structure>> all = new java.util.ArrayList<>();
+		Lookup.tag(registry, MAP_PLACES).ifPresent(set -> set.forEach(all::add));
+		if (deep) {
+			Lookup.tag(registry, DEEP_MAP_PLACES).ifPresent(set -> set.forEach(h -> {
+				if (!all.contains(h)) {
+					all.add(h);
+				}
+			}));
+		}
+		return HolderSet.direct(all);
 	}
 
 	/** A map to {@code place}, like a vanilla explorer map: the land around it sketched, the place marked and named. */

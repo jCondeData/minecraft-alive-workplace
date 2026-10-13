@@ -36,10 +36,14 @@ import org.jetbrains.annotations.Nullable;
  * <li>Green Thumb (after Hearth I): a layer less compost a bone meal a level;</li>
  * <li>Ramparts (after Fortification I): in a siege the gates have twice the hit points and archers on battle stations reach 28 blocks.</li>
  * </ul>
+ * While a Great Library stands in the village (35.14, its {@code research_tier} power: {@link #SECOND_TIER}) a second
+ * tier opens, each level {@link Cost#library} and twice the points: Swift Hands IV and V, Scholarship, Engineering,
+ * Cartography, Trade Law and Pharmacy. A village keeps those levels if the Library is damaged later, but their bonuses
+ * pause with its powers ({@link #bonus}): Swift Hands counts to III again, the others to nothing.
  */
 public final class Research {
 	public enum Topic {
-		SWIFT_HANDS(3, Items.FEATHER),
+		SWIFT_HANDS(3, 2, Items.FEATHER), // IV and V with the Great Library (35.14)
 		HEARTH(2, Items.CAMPFIRE),
 		DRILL(3, Items.IRON_SWORD),
 		KINSHIP(2, Items.LEAD),
@@ -54,14 +58,53 @@ public final class Research {
 		GREEN_THUMB(2, Items.BONE_MEAL),
 		WARDING(1, Items.OBSIDIAN),
 		/** Gates with twice the hit points in a siege, and archers on battle stations reach 28 blocks (32.6). */
-		RAMPARTS(1, Items.STONE_BRICK_WALL);
+		RAMPARTS(1, Items.STONE_BRICK_WALL),
+		// The Great Library's second tier (35.14): a level each, researched only while it stands.
+		/** Scholars 25% faster a level; the second level makes research cost a quarter less. */
+		SCHOLARSHIP(0, 2, Items.LECTERN),
+		/** Builders' bags hold 9 more stacks a level, and a Wonder's crew takes 2 more builders a level. */
+		ENGINEERING(0, 2, Items.PISTON),
+		/** Explorers range twice as far, and their maps can lead to trial chambers and ancient cities. */
+		CARTOGRAPHY(0, 1, Items.FILLED_MAP),
+		/** Caravans carry 2 more stacks a level, and the treasury takes 10% more a level. */
+		TRADE_LAW(0, 2, Items.GOLD_INGOT),
+		/** The ill get well in a day, and each Nurse cures one villager a day without a remedy. */
+		PHARMACY(0, 1, Items.BREWING_STAND);
 
+		/** The first tier's top level (0 for a topic of the second tier only). */
 		public final int maxLevel;
+		/** The levels above {@link #maxLevel} that need the Great Library (35.14): Swift Hands IV and V, all of a second-tier topic's. */
+		public final int libraryLevels;
 		public final Item icon;
 
 		Topic(int maxLevel, Item icon) {
+			this(maxLevel, 0, icon);
+		}
+
+		Topic(int maxLevel, int libraryLevels, Item icon) {
 			this.maxLevel = maxLevel;
+			this.libraryLevels = libraryLevels;
 			this.icon = icon;
+		}
+
+		/** The topic's top level with the second tier open. */
+		public int top() {
+			return maxLevel + libraryLevels;
+		}
+
+		/** Whether level {@code lvl} of this topic is one of the Great Library's second tier. */
+		public boolean libraryLevel(int lvl) {
+			return lvl > maxLevel;
+		}
+
+		/** Whether the topic has levels in the second tier (shown in the Great Library's row). */
+		public boolean inSecondTier() {
+			return libraryLevels > 0;
+		}
+
+		/** Whether the topic has levels in the first tier (shown in the scholars' rows). */
+		public boolean inFirstTier() {
+			return maxLevel > 0;
 		}
 
 		public String key() {
@@ -76,22 +119,29 @@ public final class Research {
 			return Component.translatable("research.aliveworkplace." + key() + ".effect");
 		}
 
-		/** Research points level {@code lvl} takes (a scholar makes a point a tick at the desk). */
+		/** Research points level {@code lvl} takes (a scholar makes a point a tick at the desk); twice as many in the second tier. */
 		public int points(int lvl) {
-			return POINTS * lvl;
+			return POINTS * lvl * (libraryLevel(lvl) ? 2 : 1);
 		}
 
-		/** Paper, books and emeralds level {@code lvl} costs. */
+		/** Paper, books and emeralds level {@code lvl} costs ({@link Cost#library} in the second tier). */
 		public Cost cost(int lvl) {
+			if (libraryLevel(lvl)) {
+				return Cost.library(lvl);
+			}
 			return new Cost(16 * lvl, 2 * (lvl - 1) + (this == ARCHITECTURE || this == LORE ? 4 : 0), 4 * lvl);
 		}
 
-		/** What level {@code lvl} costs in {@code hall}'s village: a quarter less with a founded Scholars' Guild (30.19). */
+		/**
+		 * What level {@code lvl} costs in {@code hall}'s village: a quarter less with a founded Scholars' Guild (30.19), and
+		 * a quarter less again with Scholarship II while the Great Library stands (35.14).
+		 */
 		public Cost cost(int lvl, ServerLevel level, @Nullable VillageHallBlockEntity hall) {
 			Cost usual = cost(lvl);
-			return new Cost(io.github.jcondedata.aliveworkplace.hall.Guilds.researchCost(level, hall, usual.paper()),
+			Cost guild = new Cost(io.github.jcondedata.aliveworkplace.hall.Guilds.researchCost(level, hall, usual.paper()),
 				io.github.jcondedata.aliveworkplace.hall.Guilds.researchCost(level, hall, usual.books()),
 				io.github.jcondedata.aliveworkplace.hall.Guilds.researchCost(level, hall, usual.emeralds()));
+			return hall != null && bonus(level, hall.getBlockPos(), hall.research(), SCHOLARSHIP) >= 2 ? guild.scholarship() : guild;
 		}
 
 		/** The topics (and levels) that must be done first. */
@@ -112,6 +162,20 @@ public final class Research {
 
 	/** What a level costs. */
 	public record Cost(int paper, int books, int emeralds) {
+		/** A second-tier level (35.14): 24 paper, 6 books and 8 emeralds times its level. */
+		public static Cost library(int lvl) {
+			return new Cost(24 * lvl, 6 * lvl, 8 * lvl);
+		}
+
+		/** A quarter less of each (Scholarship II, 35.14), rounded to the nearest, at least one of what cost any. */
+		public Cost scholarship() {
+			return new Cost(quarterLess(paper), quarterLess(books), quarterLess(emeralds));
+		}
+
+		private static int quarterLess(int n) {
+			return n <= 0 ? n : Math.max(1, Math.round(n * 0.75f));
+		}
+
 		public Map<Item, Integer> items() {
 			Map<Item, Integer> out = new java.util.LinkedHashMap<>();
 			if (paper > 0) {
@@ -173,9 +237,27 @@ public final class Research {
 			}).orElse(null);
 		}
 
-		/** Whether {@code topic}'s next level can be taken up: not at its top, and what it needs is done. */
+		/** Whether {@code topic}'s next level can be taken up in the first tier: not at its top, and what it needs is done. */
 		public boolean available(Topic topic) {
-			return level(topic) < topic.maxLevel && topic.needs().entrySet().stream().allMatch(e -> level(e.getKey()) >= e.getValue());
+			return available(topic, false);
+		}
+
+		/**
+		 * Whether {@code topic}'s next level can be taken up, with the Great Library's second tier open or not
+		 * ({@code library}): not at its top, and what it needs is done.
+		 */
+		public boolean available(Topic topic, boolean library) {
+			return level(topic) < (library ? topic.top() : topic.maxLevel)
+				&& topic.needs().entrySet().stream().allMatch(e -> level(e.getKey()) >= e.getValue());
+		}
+
+		/**
+		 * {@code topic}'s level as its bonus counts it: all of it with the second tier open ({@code library}), else no
+		 * more than the first tier's top (35.14: the levels are kept, their bonuses pause).
+		 */
+		public int bonus(Topic topic, boolean library) {
+			int lvl = level(topic);
+			return library ? Math.min(lvl, topic.top()) : Math.min(lvl, topic.maxLevel);
 		}
 
 		public State choose(Topic topic) {
@@ -201,24 +283,59 @@ public final class Research {
 		}
 	}
 
-	private record Cached(State state, long until) {
+	private record Cached(State state, boolean library, long until) {
+	}
+
+	/** Whether the village round {@code hall} has its second tier open (35.14: filled by {@code wonder/LibraryPowers}). */
+	@FunctionalInterface
+	public interface SecondTier {
+		boolean open(ServerLevel level, BlockPos hall);
+	}
+
+	/** Filled by {@code wonder/LibraryPowers}: a finished, standing Great Library (its {@code research_tier} power). */
+	public static SecondTier SECOND_TIER = (level, hall) -> false;
+
+	/** Whether the village round {@code hall} has the Great Library's second tier open now. */
+	public static boolean secondTier(ServerLevel level, BlockPos hall) {
+		return SECOND_TIER.open(level, hall);
+	}
+
+	/** {@code topic}'s level in {@code state}, the village round {@code hall}'s, as its bonus counts it (35.14). */
+	public static int bonus(ServerLevel level, BlockPos hall, State state, Topic topic) {
+		return state.bonus(topic, topic.inSecondTier() && secondTier(level, hall));
+	}
+
+	/** {@code topic}'s level in the village {@code villager} lives in, as its bonus counts it (35.14; looked up for 200 ticks). */
+	public static int bonus(Villager villager, Topic topic) {
+		if (!(villager.level() instanceof ServerLevel)) {
+			return 0;
+		}
+		Cached cached = cached(villager);
+		return cached.state().bonus(topic, cached.library());
 	}
 
 	private static final Map<Villager, Cached> CACHE = new WeakHashMap<>();
 
 	/** The research of the village {@code villager} lives in (none without a Village Hall nearby). */
 	public static State of(Villager villager) {
-		if (!(villager.level() instanceof ServerLevel level)) {
+		if (!(villager.level() instanceof ServerLevel)) {
 			return State.EMPTY;
 		}
+		return cached(villager).state();
+	}
+
+	private static Cached cached(Villager villager) {
+		ServerLevel level = (ServerLevel) villager.level();
 		long now = level.getGameTime();
 		Cached cached = CACHE.get(villager);
 		if (cached != null && now < cached.until()) {
-			return cached.state();
+			return cached;
 		}
-		State state = at(level, villager.blockPosition());
-		CACHE.put(villager, new Cached(state, now + 200));
-		return state;
+		BlockPos hall = VillageHalls.nearest(level, villager.blockPosition()).orElse(null);
+		State state = hall == null ? State.EMPTY : at(level, villager.blockPosition());
+		cached = new Cached(state, hall != null && secondTier(level, hall), now + 200);
+		CACHE.put(villager, cached);
+		return cached;
 	}
 
 	/** How a village's research is shared (33.15: a realm member gets the capital's higher levels). */

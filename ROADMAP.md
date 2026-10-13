@@ -4264,7 +4264,7 @@ Legends.
   II 64 books (Librarian), 64 black dye (Dyer), 16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis
   lazuli (Sifter), 32 copper ingots (Armorer); IV 64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves
   (Librarian). Done when: 35.9's four design checks pass for it, with the rotunda's inside in its renders.
-- [ ] **35.14** **The Great Library: its powers and time-lapse.** While it stands, the research tree
+- [x] **35.14** (review: pending 2026-10-13) **The Great Library: its powers and time-lapse.** While it stands, the research tree
   (`research/Research`) opens a second tier, shown on the scholar's screen in a row of its own ("needs the Great
   Library" until then). Each level costs 24 paper, 6 books and 8 emeralds times its level, and twice the points of the
   first tier:
@@ -4507,6 +4507,18 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-13 (35.14, decisions; lane-a-1013-0813; details in `docs/wiki/wonders.md`, "The Great Library's power"):
+  (1) "times its level" is the level's own number, so Swift Hands IV costs 96 paper, 24 books and 32 emeralds and V
+  120/30/40 (Scholarship I: 24/6/8); the points are twice the first tier's for the same number; (2) the second tier's
+  row takes the screen's divider row (slots 9-17, under the title) so every first-tier slot stays where it was
+  (Ramparts at 37); (3) Scholarship II's quarter off applies to every research level's paper, books and emeralds,
+  after a Scholars' Guild's quarter, not to the points; (4) Engineering's bag room is not saved: a builder's bag takes
+  45 stacks while the bonus holds, and when it pauses keeps what it carries but takes new stacks only into its first
+  27; the crew bonus is capped at `Wonders.MAX_CREW` (32); (5) a Nurse's remedy-free cure is one a Chronicle day per
+  Nurse (saved as `pharmacy_cure_day`, absent on old saves); (6) realm members get only first-tier levels from their
+  capital (each village needs its own Library); (7) research's 200-tick cache means a Library's damage or repair
+  reaches a villager's bonus within 10 seconds.
 
 - 2026-10-12 (33.22, decisions; lane a; details in `docs/wiki/realms.md`, "Realm edicts"): (1) "no spread on trades
   between members" is read as: at any member's board, the realm's people (members' owners, their friends, operators)

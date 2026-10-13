@@ -742,7 +742,7 @@ public final class StewardConditions {
 		register("research_idle", f -> new ResearchIdle());
 		register("research_at_least", f -> {
 			Research.Topic topic = StewardRules.topic(f, "topic");
-			return new ResearchAtLeast(topic, f.integer("level", 1, 1, topic.maxLevel));
+			return new ResearchAtLeast(topic, f.integer("level", 1, 1, topic.top())); // (the Great Library's levels too, 35.14)
 		});
 		register("mod_loaded", f -> new ModLoaded(f.string("mod", null)));
 		// 27.12: care, learning, safety, beauty and the market

@@ -106,7 +106,7 @@ public class ScholarWork extends Behavior<Villager> {
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.scholar.title",
 				ModAttachments.RESEARCH_DONE.getOrElse(villager, 0)), -1f,
 			Component.translatable("message.aliveworkplace.scholar.state." + state, detail)
-				.withStyle(state.equals("needs") || state.equals("no_hall") || state.equals("treasury") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+				.withStyle(state.equals("needs") || state.equals("no_hall") || state.equals("treasury") || state.equals("library") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 	}
 
 	/** One round at the desk (the behaviour calls it every {@link #EVERY} ticks; tests call it directly). */
@@ -168,6 +168,12 @@ public class ScholarWork extends Behavior<Villager> {
 		}
 		int next = research.level(topic) + 1;
 		detail = Component.translatable("research.aliveworkplace.level", topic.title(), BuilderLevels.levelName(next));
+		if (topic.libraryLevel(next) && !Research.secondTier(level, hall)) {
+			// A second-tier level (35.14) waits while the Great Library is damaged (or gone); what's paid and done is kept.
+			state = "library";
+			Requests.clear(villager);
+			return;
+		}
 		if (!research.paid()) {
 			List<BlockPos> own = SupplyContainers.find(level, desk, null);
 			Research.Cost price = topic.cost(next, level, entity); // a quarter less with a founded Scholars' Guild (30.19)

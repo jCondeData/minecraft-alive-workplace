@@ -2109,6 +2109,8 @@ final class JobScenes {
 					barrel.setItem(slot, stacks.get(b * 27 + slot));
 				}
 			}
+			// the hall's and table's records now, not in vanilla's next task: the builder keeps his job, the Architect has a village (B88)
+			ScreenshotHarness.fileRecords(level, STATION, 10);
 			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(2), MobSpawnType.COMMAND);
 			Builders.employ(level, builder, bench);
 			Villager architect = EntityType.VILLAGER.spawn(level, bench.offset(-2, 0, 2), MobSpawnType.COMMAND);
@@ -2315,7 +2317,9 @@ final class JobScenes {
 			}
 			long began = level.getGameTime();
 			boolean[] composed = {false};
+			boolean[] played = {false};
 			boolean[] sang = {false};
+			// the check runs every 10 client ticks, so a moment is "at or after", never one exact tick (B88)
 			return l -> {
 				long t = l.getGameTime() - began;
 				var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall);
@@ -2324,12 +2328,13 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.Anthems.round(l, hall, entity);
 					Showcase.check(entity.anthem().isPresent(), "the anthem was composed");
 				}
-				if (t == 200) {
+				if (t >= 200 && composed[0] && !played[0]) {
+					played[0] = true;
 					Showcase.check(io.github.jcondedata.aliveworkplace.hall.Anthems.notesPlayed(hall) == 16,
 						"the anthem played 16 notes (" + io.github.jcondedata.aliveworkplace.hall.Anthems.notesPlayed(hall) + ")");
 					l.setDayTime(3000);
 				}
-				if (t == 600 && !sang[0]) {
+				if (t >= 600 && played[0] && !sang[0]) {
 					sang[0] = true;
 					Showcase.check(io.github.jcondedata.aliveworkplace.legend.BardLaureate.singing(bard), "the Bard Laureate is singing a work song");
 					Showcase.check(io.github.jcondedata.aliveworkplace.legend.LegendPowers.pace(workers[0]) > 1.2f,
@@ -2371,15 +2376,18 @@ final class JobScenes {
 			boolean[] tamed = {false};
 			net.minecraft.world.entity.monster.Zombie[] zombies = new net.minecraft.world.entity.monster.Zombie[3];
 			boolean[] bit = {false};
+			boolean[] came = {false};
+			// the check runs every 10 client ticks, so a moment is "at or after", never one exact tick (B88)
 			return l -> {
 				long t = l.getGameTime() - began;
-				if (t == 60 && !tamed[0]) {
+				if (t >= 60 && !tamed[0]) {
 					tamed[0] = true;
 					io.github.jcondedata.aliveworkplace.legend.Beastmaster.round(l, hall);
 					Showcase.check(io.github.jcondedata.aliveworkplace.legend.Beastmaster.dog(l, guard) == wolf, "the wolf was tamed as the guard's war dog");
 					Showcase.check(wolf.hasArmor(), "the war dog wears wolf armour");
 				}
-				if (t == 220) {
+				if (t >= 220 && tamed[0] && !came[0]) {
+					came[0] = true;
 					for (int i = 0; i < zombies.length; i++) {
 						zombies[i] = EntityType.ZOMBIE.spawn(l, STATION.offset(2 + i * 3, 0, -6), MobSpawnType.COMMAND);
 						if (zombies[i] != null) {
@@ -2392,8 +2400,8 @@ final class JobScenes {
 						bit[0] = true;
 					}
 				}
-				boolean cleared = t > 220 && java.util.Arrays.stream(zombies).allMatch(z -> z == null || !z.isAlive());
-				if (cleared && t >= 400 || t == 880) {
+				boolean cleared = came[0] && java.util.Arrays.stream(zombies).allMatch(z -> z == null || !z.isAlive());
+				if (cleared && t >= 400 || t >= 880) {
 					Showcase.check(bit[0], "the war dog went for the guard's zombies");
 					Showcase.check(cleared, "the guard and the dog beat the zombies");
 					return true;
@@ -2419,6 +2427,8 @@ final class JobScenes {
 			}
 			BlockPos bench = STATION.offset(6, 0, 4);
 			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			// the hall's and table's records now, not in vanilla's next task: the builder keeps his job, the Founder has a village (B88)
+			ScreenshotHarness.fileRecords(level, STATION, 10);
 			Villager builder = EntityType.VILLAGER.spawn(level, bench.offset(-1, 0, 1), MobSpawnType.COMMAND);
 			Builders.employ(level, builder, bench);
 			Villager founder = EntityType.VILLAGER.spawn(level, STATION.offset(2, 0, 2), MobSpawnType.COMMAND);

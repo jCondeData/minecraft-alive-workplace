@@ -16,6 +16,14 @@ public interface CupBattlers {
 	/** The trainer's team for a Cup with this theme: its seeded pool filtered by the theme, as many as it brings, at its level. */
 	List<CupBout.Fighter> team(UUID trainer, int tier, CupThemes.Theme theme);
 
+	/**
+	 * The trainer's own team at {@code tier}, as players meet it at their post (35.24: a Stadium Day's bouts, settled by
+	 * rank and team strength); none without Cobblemon.
+	 */
+	default List<CupBout.Fighter> homeTeam(UUID trainer, int tier) {
+		return List.of();
+	}
+
 	/** Sends {@code fighter} out at {@code at}, facing {@code facing}: a real Pokémon that can't be caught, hurt or battled. */
 	@Nullable
 	Entity sendOut(ServerLevel level, CupBout.Fighter fighter, Vec3 at, Vec3 facing);

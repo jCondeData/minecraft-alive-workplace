@@ -58,6 +58,10 @@ public final class ModAttachments {
 	public static final Attachment<Boolean> RANGER_CALMED = Attachment.saved("ranger_calmed", com.mojang.serialization.Codec.BOOL);
 
 	/** A Festival Cup delegate (28.19), a visitor standing in for a far village's entrant: home hall, the Leader's UUID, tier, host, the Cup's day. Absent: not one. */
+	/** A visiting trainer at a Stadium Day (35.24): the Stadium's village and site, its home, the trainer it stands for, the day, its bout, its box. Absent: none. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.wonder.StadiumDays.Visitor> STADIUM_VISITOR = Attachment.saved("stadium_visitor", io.github.jcondedata.aliveworkplace.wonder.StadiumDays.Visitor.CODEC);
+	/** The day a villager last watched a Stadium Day from the stands (35.24). Absent: never. */
+	public static final Attachment<Long> STADIUM_WATCHED = Attachment.saved("stadium_watched", com.mojang.serialization.Codec.LONG);
 	public static final Attachment<io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate> CUP_DELEGATE = Attachment.saved("cup_delegate", io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate.CODEC);
 
 	/** A villager's gift (29.6): a gift's id, or {@code none}. Absent: the UUID roll decides ({@code Gifted.of}). */

@@ -25,6 +25,13 @@ asks for the steps, `latest.log` and any crash report).
   in a day, each Nurse curing one a day without a remedy). Each level costs 24 paper, 6 books and 8 emeralds times its
   level and twice the points; work still stops at twice the pace. A damaged Library keeps the levels and pauses their
   bonuses. Its time-lapse, ending in the rotunda on the scholar's screen, is on the showcase page.
+- **The Stadium's powers** (35.24, part of Wonders, for 2.0, with Cobblemon): while it stands, every second afternoon
+  is a Stadium Day: two to four visiting trainers from the realm's villages (or travelling Journeyman to Master
+  trainers) stand in its boxes until dusk, and players challenge them for prize money, once a day each; the village's
+  trainers fight them in bouts settled by rank and team, with the results in chat and the chronicle; the villagers off
+  work fill the stands and are 5 happier. The Festival Cup of the villages taking part is held at the nearest Stadium,
+  which serves as its Arena. A damaged Stadium holds none of it. Its time-lapse and a Stadium Day are on the showcase
+  page.
 - **The Colossus's powers** (35.22, part of Wonders, for 2.0): while it stands, every villager of its village is 12
   happier and every villager of its realm (or its caravan partners) 8, with "the Colossus" among their reasons;
   travelers come to its village's inns twice as often (two a morning, room for twice as many) and are twice as likely

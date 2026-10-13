@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24
 
 ## What a player sees
 
@@ -478,7 +478,34 @@ Smith, 14 days); made: 2 Ultra Balls (Ball Smith); IV a Nether Star (the Golem S
 Pokémon Ranger, 32 days), an Enchanted Golden Apple (the Grand Chef, 22 days); made: 2 Noble Robes (Tailor). It needs
 a Town and the Pokémon Professor (or 25 pastured Pokémon of 10 types while Legends are off). Without Cobblemon its
 file isn't loaded, so it isn't on the Wonders page. M28's Arena is a smaller ring of its own, not a Stadium, so this
-one keeps the name Stadium. Its powers, Stadium Days and hosting the Festival Cup, come with 35.24.
+one keeps the name Stadium.
+
+**The Stadium's powers** (35.24), while it is finished and stands (`wonderStanding`):
+
+- **Stadium Days** (`stadium_days`, `every_days` 2, `min_visitors` 2, `max_visitors` 4): on every second day (as the
+  chronicle counts them), from noon (6000) until dusk (12000), two to four visiting trainers (the day's random, fixed by
+  the site and the day) stand in the two trainer boxes, two to a box at most, facing the field. Each realm village
+  (with realms off, each caravan partner, a route either way) sends the trainer it would send to a Cup
+  (`Cups.delegate`: its Leader, else its best Trainer), named "(name) of (village)"; the rest are travelling trainers
+  of Journeyman to Master rank, "the Traveler". They are Trainers to a player: right-click to battle, a win pays the
+  rank's prize (CobbleDollars, or emeralds), once a day each (`trainer/Trainers`). From 7000, one bout every 1,000
+  ticks, the village's own trainers (the highest rank first, in turn) take the visitors on: the Cup's exhibition
+  (`CupBout`) played out at once with each side's own team at its rank, its random fixed by the village, the day and
+  the two; with no Pokémon on either side the higher rank wins. Both get battle XP (5, and 3 more for the winner, a
+  quarter more with the Trainers' Guild), the visitor's trainer at home too (banked on its village's caravans' entry
+  when that village isn't loaded); the result goes to the players at the Stadium or in the village and into the
+  chronicle ("At the Stadium, (winner) beat (loser)"). The villagers off work walk to the seats (the carpets on the
+  tiers) and sit down, and those who watched are 5 happier ("watched a Stadium Day") until the next Stadium Day. At
+  dusk the visitors leave: gone where no player is within 32 blocks, else walking out of the gate. A visitor never
+  takes a job or a bed. The visitors come once a day, a restart in the afternoon too.
+- **The tournament** (`tournament_host`): M28's Festival Cup exists, so it is wired. `Arenas.find` gives the village's
+  Stadium first, as an Arena of tier 3: its field's centre the ring, its two boxes, its seats, the road in front of
+  the gate for the fair and the notice board (no champion's pole). So a Town with a Stadium and no Arena can host a
+  Cup, and its village gets the fair and the crowds. A host without a Stadium whose circuit has a Stadium host holds
+  no Cup of its own (unless its sign-up has closed), and `Cups.hostFor` gives the nearest Stadium host first: the
+  Cup is held at the nearest Stadium among the villages taking part.
+- No badges and no gym leaders: visitors are Trainers (a visiting Leader stands as a Trainer of its rank), and battles
+  pay money only.
 
 ## How it works
 
@@ -593,6 +620,15 @@ and so the chests; the village is the hall nearest the worker's job site. `Villa
 the usual figure (an edict naming its own still wins) and `VillageGrowth.every` takes the larger of the edicts' and
 `per_day` babies a day, a Cradle's one more on top.
 
+**The Stadium's** (35.24): `stadium_days` (`wonder/powers/StadiumDaysPower`: `every_days` 1 to 28, `min_visitors` and
+`max_visitors` 1 to 4, the least first) and `tournament_host` (`TournamentHostPower`, no numbers). `wonder/StadiumDays`
+runs the days on a level tick every 20 ticks. The boxes, the field and the seats come from the Wonder's own drawing,
+placed where it stands (its two Training Posts, the field's centre between them, a spot before each post and one
+beside that, every carpet a seat), so a server owner's Wonder with the power and two Training Posts works the same.
+Saved: each site's last Stadium Day (`aliveworkplace_stadium_days`) and each visitor's record (the `stadium_visitor`
+attachment); a villager's last watched day is `stadium_watched`. The bouts' teams come from the `CupBattlers` extension
+(the trainer's own team at its rank; Cobblemon fills it).
+
 ## Switches
 
 All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
@@ -694,13 +730,13 @@ build saves exactly as before).
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
   Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's, the Hanging Gardens' and the Colossus's powers are in (35.10, 35.12, 35.14, 35.20, 35.22), the others' come with 35.18 and 35.16, and the
+  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's, the Hanging Gardens', the Colossus's and the Stadium's powers are in (35.10, 35.12, 35.14, 35.20, 35.22, 35.24), the others' come with 35.18 and 35.16, and the
   Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
   inside of its closed dome, is skipped until scaffolding (35.6).
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
-- `mood`, `beauty`, `undertakers`, `weddings`, `travellers`, the Lighthouse's four (35.12), `research_tier` (35.14) and the Gardens' `harvest` and `births` (35.20) act; the other power types are declared, their numbers kept and
+- `mood`, `beauty`, `undertakers`, `weddings`, `travellers`, the Lighthouse's four (35.12), `research_tier` (35.14), the Gardens' `harvest` and `births` (35.20) and the Stadium's `stadium_days` and `tournament_host` (35.24) act; the other power types are declared, their numbers kept and
   `Wonders.power` already answering for them, until their Wonder's powers item (35.12 on) reads them.
 - The Gardens' extra harvest goes to the mod's farmers and Orchard Keepers: a vanilla farmer with no chest by their
   composter (vanilla's own harvesting) brings in no more (35.20). A worker's count towards the next extra item isn't
@@ -806,6 +842,17 @@ maps' trial chambers and ancient cities; Trade Law's 8 stacks and a fifth more t
 Nurse's one remedy-free cure a day; an old village's research (every first-tier topic, a tree's work in hand) and an
 old 27-stack bag loading unchanged. Showcase scene `wonder_great_library` (group Wonders): the Library's time-lapse,
 ending in its rotunda on the scholar's screen with the second tier open.
+
+Compat GameTests in `StadiumPowerCompatTests` (35.24, with Cobblemon): a Stadium Day brings two to four travellers
+(the day's random) into the boxes at noon of an even day and none in the morning or on an odd day, no more on another
+round, all gone at dusk and none back that day; a Master beats a visiting Novice and a visiting Master the village's
+Novice, 8 XP to the winner and 5 to the loser, a battle each, in the chronicle, and the bouts one an hour from 7000;
+a player's win over a visitor pays once a day and a loss nothing; the Stadium is the village's Arena for the Cup; a
+damaged Stadium (and Wonders off) holds no Stadium Day and hosts nothing, repaired the visitors come and a villager by
+a seat sits down 5 happier ("watched a Stadium Day"); the drawing's own posts, field centre, box spots (room to stand),
+over 300 seats and the gate. Showcase scene `wonder_stadium` (group Wonders, with Cobblemon): the Stadium's
+time-lapse, then a Stadium Day with the visitors in the boxes, the stands full, a bout in the chronicle and the
+player's battle against a visitor.
 
 GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
 village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;

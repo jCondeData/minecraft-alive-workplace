@@ -104,6 +104,15 @@ public final class CobblemonCupBouts implements CupBattlers {
 		return out;
 	}
 
+	@Override
+	public List<CupBout.Fighter> homeTeam(UUID trainer, int tier) {
+		List<CupBout.Fighter> out = new ArrayList<>();
+		for (Pokemon pokemon : CobblemonTrainers.team(trainer, tier)) {
+			out.add(fighter(pokemon));
+		}
+		return out;
+	}
+
 	// A Pokémon as a bout's fighter: its species, name, types, stats at its level and its attacking moves.
 	public static CupBout.Fighter fighter(Pokemon pokemon) {
 		List<String> types = new ArrayList<>();

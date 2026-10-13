@@ -100,6 +100,10 @@ public final class Arenas {
 	 * Arena is remembered as finished at every tier), then the nearest; empty if the village has none.
 	 */
 	public static Optional<Arena> find(ServerLevel level, BlockPos hall) {
+		Optional<Arena> stadium = io.github.jcondedata.aliveworkplace.wonder.StadiumDays.arena(level, hall);
+		if (stadium.isPresent()) {
+			return stadium; // 35.24: a finished Stadium (tournament_host) is where its village's Cup is held
+		}
 		return BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
 			.filter(f -> tier(f.structure()) > 0)
 			.min(Comparator.<BuildSiteManager.Finished>comparingInt(f -> -tier(f.structure()))

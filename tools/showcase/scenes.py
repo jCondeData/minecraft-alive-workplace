@@ -817,6 +817,12 @@ SCENES = [
       "a crew of ten raised the folly stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished every player was told, its mood and beauty powers came on, and that evening's festival had the bigger show, gold rockets going up from the folly's top", 600,
       [("11_wonder_finished_stage_1", "Stage I, the Ground Storey, up"), ("frame_*@middle", "The crew at work, the camera going round"),
        ("13_wonder_finished_stage_3", "The Dome on: the folly finished"), ("19_wonder_finished_fireworks", "The festival's fireworks over the folly")]),
+    # The Stadium (ROADMAP 35.24, with Cobblemon): its time-lapse, then a Stadium Day with full stands and a battle with a visitor
+    S("wonder_stadium", "Wonders", "The Stadium: its time-lapse, and a Stadium Day",
+      "a crew of ten raised the Stadium stage by stage round its field on a sped-up server; once finished its powers came on (Stadium Days every second afternoon, the Festival Cup held here) and after the festival's fireworks came the next Stadium Day: visiting trainers stood in the two trainer boxes, the village's folk off work filled the stands, the village's trainer fought a visitor in a bout settled by rank and team (in chat and the chronicle), and the player walked onto the field and challenged a visitor to a real battle", 900,
+      [("11_wonder_stadium_stage_1", "Stage I, the Field, laid"), ("14_wonder_stadium_stage_4", "The Gate and the Floodlights: the Stadium finished"),
+       ("21_wonder_stadium_stands", "A Stadium Day: visitors in the boxes, the stands full"),
+       ("22_wonder_stadium_battle", "The player's battle against a visiting trainer")], cobblemon=True),
     # The Lighthouse (ROADMAP 35.12): its time-lapse beside a sea the harness digs, ending at night with the lamps lit
     S("wonder_lighthouse", "Wonders", "The Lighthouse: its time-lapse by the sea, lit at night",
       "a crew of ten raised the Lighthouse stage by stage beside a sea the harness dug and filled, the jetty running out over the water; once finished its powers came on (caravans twice as far in half the time, ferry fares halved, a day's warning of pirates) and the jetty's Travel Post joined the network under the village's name; after the festival's fireworks, at midnight the lantern's redstone lamps shone over the sea", 780,

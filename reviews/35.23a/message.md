@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. StadiumCompatTests (with Cobblemon) now checks the bigg
 Scene: SCENE=wonder_stadium (Cobblemon) for in-game; renders from tools/blueprints/render/preview.sh, before from the drawing as it was before this change. Set up by command: a flat Town with 10 builders, the plan handed over, goods in its chests, the server sped up.
 Reply: approve 35.23a · veto 35.23a: why · change 35.23a: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

@@ -5,4 +5,4 @@ Tester: FAIL on the scene. 4 new GameTests (ColossusPowerGameTests: mood +12 at 
 Scene: SCENE=wonder_colossus. Set up by command: a flat Town with 10 builders, the plan handed over, every stage's goods in its chests, the server sped up.
 Reply: approve 35.22 · veto 35.22: why · change 35.22: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

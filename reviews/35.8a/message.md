@@ -5,4 +5,4 @@ Tester: PASS. 1 new GameTest (theFollysDomeLeavesNoBandOfDirt raises the folly i
 Scene: SCENE=wonder_finished. Set up by command: a flat Town with 10 builders, the folly's plan handed over, its goods in the chests, the server sped up for the time-lapse.
 Reply: approve 35.8a · veto 35.8a: why · change 35.8a: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

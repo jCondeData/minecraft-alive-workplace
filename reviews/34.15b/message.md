@@ -5,4 +5,4 @@ Tester: PASS. 1 new GameTest (ManorGameTests.theManorIsSoldNotInTheTable: not li
 Scene: none.
 Reply: approve 34.15b · veto 34.15b: why · change 34.15b: what
 
-(from chat, 2026-10-13 14:41Z; not yet sent)
+(from chat, 2026-10-13 14:41Z; sent 2026-10-13 by the chat)

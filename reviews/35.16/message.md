@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. 4 new GameTests (GreatWallPowerGameTests: 50 raids with
 Scene: SCENE=wonder_great_wall. Set up by command: a flat Town with 10 builders, the plan handed over, every stage's goods in its chests, the server sped up, then the clock set to midnight with a raid due.
 Reply: approve 35.16 · veto 35.16: why · change 35.16: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

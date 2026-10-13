@@ -5,4 +5,4 @@ Tester: FAIL on the scene. 4 new GameTests (ObservatoryPowerGameTests, with a st
 Scene: SCENE=wonder_observatory. Set up by command: a flat Town with 10 builders, the plan handed over, every stage's goods in its chests, the server sped up; a wedding and a caravan staged for the Coming days.
 Reply: approve 35.18 · veto 35.18: why · change 35.18: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

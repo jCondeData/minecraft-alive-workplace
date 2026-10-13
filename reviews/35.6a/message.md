@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. 2 new GameTests (ScaffoldingGameTests: the column is un
 Scene: SCENE=scaffolding. Set up by command: flat world, noon, a pillar-and-cap blueprint site, a chest with stone and scaffolding.
 Reply: approve 35.6a · veto 35.6a: why · change 35.6a: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. 4 new GameTests (WonderFindsGameTests: every stage asks
 Scene: SCENE=wonder_finds. Set up by command: a Town, the Great Library's site and stone placed, the sherd put in its chest, the Pathfinder spawned by the stone (standing still), and his search run forward by command (4 days, then 5 more). The stone's lines are its own chat status.
 Reply: approve 35.7a · veto 35.7a: why · change 35.7a: what (the same answer covers 35.7b)
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

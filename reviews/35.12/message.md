@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. 3 new GameTests (LighthousePowerGameTests: a hall 3,000
 Scene: SCENE=wonder_lighthouse. Set up by command: a flat Town with 10 builders, a sea dug and filled beside the site, the plan handed over, every stage's goods in its chests, the server sped up, then the clock set to midnight.
 Reply: approve 35.12 · veto 35.12: why · change 35.12: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

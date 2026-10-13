@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. 1 new GameTest (RealmEdictGameTests.commonMarketPeople:
 Scene: SCENE=realm_edicts. Set up by command: Thornholm made capital of a Barony with Ashford as its member, the player at Thornholm's hall with its Book of Edicts open.
 Reply: approve 33.22a · veto 33.22a: why · change 33.22a: what
 
-(from chat, 2026-10-13 14:41Z; not yet sent)
+(from chat, 2026-10-13 14:41Z; sent 2026-10-13 by the chat)

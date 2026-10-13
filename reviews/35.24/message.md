@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. 5 new compat GameTests (StadiumPowerCompatTests, with C
 Scene: SCENE=wonder_stadium (Cobblemon). Set up by command: a flat Town with 10 builders and trainers, the plan handed over, every stage's goods in its chests, the server sped up; then the clock set to a Stadium Day's afternoon, 48 off-work villagers placed by the stands' gangways (they walk to the seats and sit by themselves), and the player given a team (Pikachu, Lucario, Garchomp, level 60).
 Reply: approve 35.24 · veto 35.24: why · change 35.24: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

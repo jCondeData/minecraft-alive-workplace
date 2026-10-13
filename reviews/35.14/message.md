@@ -5,4 +5,4 @@ Tester: PASS WITH RISKS. 8 new GameTests (LibraryPowerGameTests: the row is lock
 Scene: SCENE=wonder_great_library. Set up by command: a flat Town with 10 builders and a scholar, the plan handed over, every stage's goods in its chests, the server sped up; the second-tier levels researched by command for the shot.
 Reply: approve 35.14 · veto 35.14: why · change 35.14: what
 
-(from chat, 2026-10-13 14:42Z; not yet sent)
+(from chat, 2026-10-13 14:42Z; sent 2026-10-13 by the chat)

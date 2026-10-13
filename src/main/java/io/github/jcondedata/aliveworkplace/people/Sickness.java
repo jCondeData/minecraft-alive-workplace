@@ -46,6 +46,8 @@ public final class Sickness {
 	public static final long RECOVERY = 3 * VillageNeeds.DAY;
 	/** The ill work this much slower. */
 	public static final float PACE = 2f;
+	/** How long an illness lasts at most with Pharmacy (35.14): a day. */
+	public static final long PHARMACY = VillageNeeds.DAY;
 
 	public static boolean isIll(Villager villager) {
 		return ModAttachments.ILL_SINCE.has(villager);
@@ -145,7 +147,9 @@ public final class Sickness {
 	/** How long {@code villager}'s illness lasts without a nurse: {@link #RECOVERY}, with its founded guilds' {@code recovery_days} (30.20) and the village's {@code illness} days (29.11). */
 	public static long recovery(Villager villager) {
 		long days = Math.max(VillageNeeds.DAY, RECOVERY + io.github.jcondedata.aliveworkplace.hall.Guilds.recoveryDays(villager) * VillageNeeds.DAY); // the Healers' Guild: two days (30.20)
-		return io.github.jcondedata.aliveworkplace.research.TreeEffects.illnessLasts(villager, days);
+		long lasts = io.github.jcondedata.aliveworkplace.research.TreeEffects.illnessLasts(villager, days);
+		// Pharmacy (35.14): well in a day, while the Great Library stands.
+		return io.github.jcondedata.aliveworkplace.research.Research.bonus(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.PHARMACY) > 0 ? Math.min(lasts, PHARMACY) : lasts;
 	}
 
 	/** Work delay multiplier: the ill work at half pace. */

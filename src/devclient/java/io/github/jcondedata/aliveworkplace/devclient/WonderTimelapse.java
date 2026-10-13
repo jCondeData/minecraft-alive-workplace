@@ -123,6 +123,29 @@ final class WonderTimelapse {
 	@org.jetbrains.annotations.Nullable
 	private java.util.function.Consumer<ServerLevel> night;
 
+	/**
+	 * A last scene inside the finished Wonder after the fireworks (35.14: the Great Library's rotunda on the scholar's
+	 * screen): {@link Finale#ready} on the server thread, the GUI shown, the cursor on {@link Finale#point}, then a still
+	 * ({@code 20_<scene>_<name>}) and {@link Finale#check}.
+	 */
+	interface Finale {
+		String name();
+
+		void ready(ServerLevel level, ServerPlayer player, BlueprintData.Placement placement, BlockPos hall);
+
+		int point();
+
+		void check(ServerLevel level, ServerPlayer player);
+	}
+
+	private Finale finale;
+
+	/** Ends inside the Wonder with {@code finale} (35.14). */
+	WonderTimelapse finale(Finale finale) {
+		this.finale = finale;
+		return this;
+	}
+
 	/** Readies the ground before the crew begins (35.12). */
 	WonderTimelapse ground(java.util.function.BiConsumer<ServerLevel, BlueprintData.Placement> ready) {
 		this.ground = ready;
@@ -219,7 +242,19 @@ final class WonderTimelapse {
 			ScreenshotHarness.shot(mc, String.format("20_%s_night", scene));
 			server.execute(() -> night.accept(server.overworld()));
 		}
-		if (showAt > 0 && tick == showAt + (night != null ? 390 : 230)) {
+		if (showAt > 0 && finale != null && tick == showAt + 230) {
+			mc.options.hideGui = false;
+			server.execute(() -> finale.ready(server.overworld(), player(server), placement, hall));
+		}
+		if (showAt > 0 && finale != null && tick == showAt + 270) {
+			ScreenshotHarness.pointAt(mc, finale.point());
+		}
+		if (showAt > 0 && finale != null && tick == showAt + 300) {
+			mc.getToasts().clear();
+			ScreenshotHarness.shot(mc, String.format("20_%s_%s", scene, finale.name()));
+			server.execute(() -> finale.check(server.overworld(), player(server)));
+		}
+		if (showAt > 0 && tick == showAt + (night != null ? 390 : finale != null ? 330 : 230)) {
 			over = true;
 			mc.stop();
 		}

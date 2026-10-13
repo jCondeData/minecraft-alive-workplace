@@ -10,7 +10,7 @@ Cost of a level: 16 paper, 4 emeralds and some books, more for each level
 Time: about two minutes of the scholar's work for a level I, longer for higher levels
 Benefits: the whole village
 categories: Village Hall, Jobs
-related: jobs-services.md, ranks.md, village-needs.md, work-pace.md
+related: jobs-services.md, ranks.md, village-needs.md, work-pace.md, great-library.md
 ```
 
 A village's **Scholar** works out new ideas at the lectern, and every level of research is a bonus for the whole
@@ -44,6 +44,13 @@ open only after others.
 
 A level costs 16 paper and 4 emeralds for each level number (level II: 32 and 8), plus books from level II on. Lore and
 Architecture need 4 books even at level I.
+
+## The second tier
+
+A village with a finished, standing [Great Library](great-library.md) opens a second tier, in a row of its own at the
+top of the screen: Swift Hands IV–V, Scholarship, Engineering, Cartography, Trade Law and Pharmacy. Until then the row
+reads "Needs the Great Library". Its levels cost 24 paper, 6 books and 8 emeralds for each level number and take twice
+as long. If the Library is damaged the village keeps the levels, but their bonuses wait for its repair.
 
 ## How it interacts
 

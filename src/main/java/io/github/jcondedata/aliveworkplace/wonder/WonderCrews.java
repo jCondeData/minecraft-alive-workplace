@@ -37,6 +37,20 @@ public final class WonderCrews {
 		return Math.max(1, Math.min(LIMIT, wonder == null ? LIMIT : wonder.crew()));
 	}
 
+	/**
+	 * How many builders {@code site} may have on its crew in its village: {@link #limit(WonderSite)}, and 2 more a level of
+	 * the village's Engineering while its Great Library stands (35.14), no more than {@link Wonders#MAX_CREW}.
+	 */
+	public static int limit(ServerLevel level, WonderSite site) {
+		int base = limit(site);
+		if (!(level.getBlockEntity(site.hall()) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall)) {
+			return base;
+		}
+		int engineering = io.github.jcondedata.aliveworkplace.research.Research.bonus(level, site.hall(), hall.research(),
+			io.github.jcondedata.aliveworkplace.research.Research.Topic.ENGINEERING);
+		return engineering <= 0 ? base : Math.min(Math.max(base, Wonders.MAX_CREW), base + 2 * engineering);
+	}
+
 	/** The builders on {@code site}'s crew now: the lead and every member seen working on the current stage's parts. */
 	public static List<UUID> crew(ServerLevel level, WonderSite site) {
 		List<UUID> out = new ArrayList<>();
@@ -89,7 +103,7 @@ public final class WonderCrews {
 		for (WonderSite wonder : wonders) {
 			if (!wonder.goingUp() || wonder.placement().isEmpty() || !free && !wonder.called()
 				|| bench.get().distSqr(wonder.hall()) > (double) VillageHalls.RADIUS * VillageHalls.RADIUS
-				|| crew(level, wonder).size() >= limit(wonder)) {
+				|| crew(level, wonder).size() >= limit(level, wonder)) {
 				continue;
 			}
 			BuildSite best = null;
@@ -251,7 +265,7 @@ public final class WonderCrews {
 		}
 		callEveryone(level, site);
 		io.github.jcondedata.aliveworkplace.mc.Chat.system(player, Component.translatable("message.aliveworkplace.wonder.call.done",
-			Wonders.name(site.wonder()), limit(site)).withStyle(net.minecraft.ChatFormatting.GREEN));
+			Wonders.name(site.wonder()), limit(level, site)).withStyle(net.minecraft.ChatFormatting.GREEN));
 		return 1;
 	}
 

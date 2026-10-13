@@ -511,7 +511,7 @@ public final class VillageHallScreen {
 	public static ItemStack routesHeader(ServerLevel level, BlockPos hall) {
 		long onTheRoad = Caravans.Data.get(level).onTheRoad().stream().filter(s -> s.from().equals(hall) || s.to().equals(hall)).count();
 		List<Component> lore = new ArrayList<>();
-		lore.add(line(Component.translatable("screen.aliveworkplace.hall.routes_about", Caravans.KEEP, Caravans.CARGO_STACKS), ChatFormatting.GRAY));
+		lore.add(line(Component.translatable("screen.aliveworkplace.hall.routes_about", Caravans.KEEP, Caravans.cargo(level, hall)), ChatFormatting.GRAY));
 		if (io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED) { // 33.6: caravans also sell
 			lore.add(line(Component.translatable("screen.aliveworkplace.hall.routes_sell", Caravans.TRADE_STACKS,
 				io.github.jcondedata.aliveworkplace.trade.CaravanTrade.DEARER_PERCENT - 100), ChatFormatting.GRAY));

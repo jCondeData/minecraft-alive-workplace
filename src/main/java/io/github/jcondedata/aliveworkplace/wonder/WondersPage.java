@@ -134,7 +134,7 @@ public final class WondersPage {
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.wonders.going_up", stage, stages,
 					wonder.stages().get(stage - 1).nameText(), (stage - 1) * 100 / stages), ChatFormatting.YELLOW));
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.wonders.crew", WonderCrews.leadName(level, site),
-					WonderCrews.crew(level, site).size(), WonderCrews.limit(site)), ChatFormatting.AQUA));
+					WonderCrews.crew(level, site).size(), WonderCrews.limit(level, site)), ChatFormatting.AQUA));
 			}
 			return VillageHallScreen.icon(icon(wonder), wonder.nameText().copy(), ChatFormatting.GOLD, lore.toArray(Component[]::new));
 		}

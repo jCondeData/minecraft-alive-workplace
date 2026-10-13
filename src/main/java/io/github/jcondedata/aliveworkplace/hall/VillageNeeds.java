@@ -119,7 +119,8 @@ public final class VillageNeeds {
 			.map(pos -> level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity ? entity : null).orElse(null);
 		pace = hall == null ? new Pace(1f, 1f, now + PACE_TICKS)
 			: new Pace(hall.needs() != null ? hall.needs().factor() : 1f,
-				swiftHands(hall.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.SWIFT_HANDS)), now + PACE_TICKS);
+				swiftHands(io.github.jcondedata.aliveworkplace.research.Research.bonus(level, hall.getBlockPos(), hall.research(),
+					io.github.jcondedata.aliveworkplace.research.Research.Topic.SWIFT_HANDS)), now + PACE_TICKS); // IV and V only while the Great Library stands (35.14)
 		synchronized (PACE) {
 			PACE.put(villager, pace);
 		}

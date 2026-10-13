@@ -72,6 +72,16 @@ public class ExplorerWork extends Behavior<Villager> {
 	static final int MAP_EVERY = 3;
 
 	/** How much farther {@code explorer} ranges under the Ancient Lore's Star Charts (29.14): 25% a level. */
+	/**
+	 * How far from the table {@code explorer} searches: {@link #RANGE}, twice as far for the Pathfinder (29.13), a quarter
+	 * farther a level of the Ancient Lore's Star Charts (29.14), and twice as far with Cartography while the Great Library
+	 * stands (35.14).
+	 */
+	public static double range(Villager explorer) {
+		return RANGE * io.github.jcondedata.aliveworkplace.legend.Pathfinder.rangeFactor(explorer) * starCharts(explorer)
+			* (io.github.jcondedata.aliveworkplace.research.Research.bonus(explorer, io.github.jcondedata.aliveworkplace.research.Research.Topic.CARTOGRAPHY) > 0 ? 2 : 1);
+	}
+
 	public static double starCharts(Villager explorer) {
 		return 1 + 0.25 * io.github.jcondedata.aliveworkplace.research.TreeEffects.flagCount(explorer, "star_charts");
 	}
@@ -303,8 +313,7 @@ public class ExplorerWork extends Behavior<Villager> {
 	@Nullable
 	private BlockPos pickStop(ServerLevel level, Villager villager, BlockPos station) {
 		BlockPos from = villager.blockPosition();
-		double range = RANGE * io.github.jcondedata.aliveworkplace.legend.Pathfinder.rangeFactor(villager) // twice as far for the Pathfinder (29.13)
-			* starCharts(villager); // a quarter farther a level of the Ancient Lore's Star Charts (29.14)
+		double range = range(villager);
 		double rangeSqr = range * range;
 		for (int i = 0; i < 16; i++) {
 			double angle = level.random.nextDouble() * Math.PI * 2;
@@ -450,7 +459,9 @@ public class ExplorerWork extends Behavior<Villager> {
 		if (SupplyContainers.count(level, own, Items.MAP) <= 0) {
 			return;
 		}
-		Explorers.Place place = Explorers.findPlace(level, station);
+		// With Cartography (35.14) the maps can lead to trial chambers and ancient cities too.
+		Explorers.Place place = Explorers.findPlace(level, station,
+			io.github.jcondedata.aliveworkplace.research.Research.bonus(villager, io.github.jcondedata.aliveworkplace.research.Research.Topic.CARTOGRAPHY) > 0);
 		if (place == null || SupplyContainers.extract(level, own, Items.MAP, 1) != 1) {
 			return;
 		}

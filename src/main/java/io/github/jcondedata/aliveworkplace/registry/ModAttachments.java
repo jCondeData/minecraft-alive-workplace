@@ -203,6 +203,8 @@ public final class ModAttachments {
 
 	/** Until when a nurse's remedy eases a villager's Grey Cough (31.18): no slowness till then; absent: not eased. */
 	public static final Attachment<Long> ILL_EASED_UNTIL = Attachment.saved("ill_eased_until", com.mojang.serialization.Codec.LONG);
+	/** The day (Chronicle day) a Nurse last cured someone without a remedy, with Pharmacy (35.14); absent: never. */
+	public static final Attachment<Long> PHARMACY_CURE_DAY = Attachment.saved("pharmacy_cure_day", com.mojang.serialization.Codec.LONG);
 
 	/** The day a Steward last finished his morning rounds (27.5); absent: not yet. */
 	public static final Attachment<Long> STEWARD_ROUND_DAY = Attachment.saved("steward_round_day", com.mojang.serialization.Codec.LONG);

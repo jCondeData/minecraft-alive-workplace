@@ -45,6 +45,12 @@ public final class ResearchScreen {
 	public static final int[] TOPIC_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43}; // (the third row since Ramparts, 32.6)
 	/** The tabs: the scholars' tree first, then each Legend's tree in the village (shown only with one at least). */
 	public static final int[] TAB_SLOTS = {45, 46, 47, 48, 49, 50, 51, 52, 53};
+	/** The Great Library's row (35.14), in place of the divider on the scholars' tab: its title, then its topics. */
+	public static final int LIBRARY_HEADER = 9;
+	public static final int[] LIBRARY_SLOTS = {10, 11, 12, 13, 14, 15};
+	/** The second tier's topics, in {@link #LIBRARY_SLOTS} order. */
+	public static final List<Research.Topic> LIBRARY_TOPICS = java.util.Arrays.stream(Research.Topic.values())
+		.filter(Research.Topic::inSecondTier).toList();
 	/** A realm capital's Realm tab, the last of the bottom row (33.15): the realm topics. */
 	public static final int REALM_TAB = TAB_SLOTS[TAB_SLOTS.length - 1];
 
@@ -201,9 +207,13 @@ public final class ResearchScreen {
 		about.add(line(Component.translatable("screen.aliveworkplace.research.how"), ChatFormatting.DARK_GRAY));
 		menu.button(INFO, icon(Items.ENCHANTED_BOOK, Component.translatable("screen.aliveworkplace.research.info"), ChatFormatting.GOLD, about), null);
 		menu.divider(1);
+		renderLibrary(menu, level, hall, entity, view, state);
 		Research.Topic[] topics = Research.Topic.values();
-		for (int i = 0; i < topics.length; i++) {
+		for (int i = 0; i < topics.length && i < TOPIC_SLOTS.length; i++) {
 			Research.Topic topic = topics[i];
+			if (!topic.inFirstTier()) {
+				continue; // the Great Library's own topics have only its row (35.14)
+			}
 			int fromCapital = RealmResearch.fromCapital(level, hall, state, topic);
 			menu.button(TOPIC_SLOTS[i], topicIcon(state, topic, topic.cost(state.level(topic) + 1, level, entity), fromCapital), p -> {
 				Research.State now = entity.research();
@@ -223,6 +233,84 @@ public final class ResearchScreen {
 				menu.broadcastChanges();
 			});
 		}
+	}
+
+	/**
+	 * The Great Library's row (35.14): its second tier, open while a finished, standing Great Library is the village's;
+	 * until then every topic reads "Needs the Great Library" and a click says so.
+	 */
+	private static void renderLibrary(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, View view, Research.State state) {
+		boolean open = Research.secondTier(level, hall);
+		List<Component> about = new ArrayList<>();
+		if (open) {
+			about.add(line(Component.translatable("screen.aliveworkplace.research.library.open"), ChatFormatting.GREEN));
+		} else {
+			about.add(line(Component.translatable("screen.aliveworkplace.research.library.locked"), ChatFormatting.RED));
+			about.add(line(Component.translatable("screen.aliveworkplace.research.library.how"), ChatFormatting.GRAY));
+		}
+		about.add(line(Component.translatable("screen.aliveworkplace.research.library.price"), ChatFormatting.DARK_GRAY));
+		menu.button(LIBRARY_HEADER, icon(open ? Items.ENCHANTING_TABLE : Items.BOOKSHELF, Component.translatable("screen.aliveworkplace.research.library"),
+			open ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GRAY, about), null);
+		for (int i = 0; i < LIBRARY_TOPICS.size() && i < LIBRARY_SLOTS.length; i++) {
+			Research.Topic topic = LIBRARY_TOPICS.get(i);
+			int next = Math.max(topic.maxLevel, state.level(topic)) + 1;
+			menu.button(LIBRARY_SLOTS[i], libraryIcon(state, topic, topic.cost(next, level, entity), open), p -> {
+				Research.State now = entity.research();
+				Research.Topic busy = now.currentTopic();
+				if (!Research.secondTier(level, hall)) {
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.needs_library", libraryTitle(topic)).withStyle(ChatFormatting.YELLOW));
+				} else if (busy != null && now.paid()) {
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.busy", busy.title()).withStyle(ChatFormatting.YELLOW));
+				} else if (now.level(topic) < topic.maxLevel || !now.available(topic, true)) {
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.locked", libraryTitle(topic)).withStyle(ChatFormatting.YELLOW));
+				} else {
+					entity.setResearch(now.choose(topic));
+					level.playSound(null, p.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.research.chosen", libraryTitle(topic)).withStyle(ChatFormatting.GREEN));
+				}
+				render(menu, level, hall, view);
+				menu.broadcastChanges();
+			});
+		}
+	}
+
+	/** A topic's name in the Great Library's row: "Swift Hands IV–V" for the first tier's topic, else its own. */
+	public static Component libraryTitle(Research.Topic topic) {
+		return topic.inFirstTier() ? Component.translatable("screen.aliveworkplace.research.library." + topic.key()) : topic.title();
+	}
+
+	/** A second-tier topic's icon (35.14), {@code open} while the Great Library stands; {@code price}: its next level's. */
+	static ItemStack libraryIcon(Research.State state, Research.Topic topic, Research.Cost price, boolean open) {
+		int lvl = state.level(topic);
+		boolean isCurrent = topic == state.currentTopic() && topic.libraryLevel(lvl + 1);
+		List<Component> lore = new ArrayList<>();
+		lore.add(line(topic.inFirstTier() ? Component.translatable("research.aliveworkplace." + topic.key() + ".library_effect") : topic.effect(), ChatFormatting.GRAY));
+		lore.add(line(Component.translatable("screen.aliveworkplace.research.level", lvl, topic.top()), ChatFormatting.GRAY));
+		if (!open) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.library.needs"), ChatFormatting.RED));
+			if (topic.libraryLevel(lvl)) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.research.library.paused"), ChatFormatting.YELLOW));
+			}
+		} else if (lvl >= topic.top()) {
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.complete"), ChatFormatting.GREEN));
+		} else {
+			lore.add(line(Component.translatable("screen.aliveworkplace.research.cost", Research.describe(price)), ChatFormatting.GRAY));
+			if (lvl < topic.maxLevel) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.research.needs",
+					Component.translatable("research.aliveworkplace.level", topic.title(), BuilderLevels.levelName(topic.maxLevel))), ChatFormatting.RED));
+			} else if (isCurrent) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.research.current"), ChatFormatting.GREEN));
+			} else if (state.available(topic, true)) {
+				lore.add(line(Component.translatable("screen.aliveworkplace.research.click"), ChatFormatting.YELLOW));
+			}
+		}
+		ItemStack icon = icon(topic.inFirstTier() ? Items.RABBIT_FOOT : topic.icon, libraryTitle(topic).copy(),
+			!open ? ChatFormatting.DARK_GRAY : lvl >= topic.top() ? ChatFormatting.GREEN : ChatFormatting.LIGHT_PURPLE, lore);
+		icon.setCount(Math.max(1, lvl - topic.maxLevel));
+		if (isCurrent) {
+			icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+		}
+		return icon;
 	}
 
 	private static void renderTree(ChoiceMenu menu, ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, View view, ResearchTree tree) {
@@ -407,7 +495,7 @@ public final class ResearchScreen {
 
 	/** {@code fromCapital}: the capital's level where a realm member gets a higher one from it (33.15), else 0. */
 	static ItemStack topicIcon(Research.State state, Research.Topic topic, Research.Cost price, int fromCapital) {
-		int lvl = Math.max(state.level(topic), fromCapital);
+		int lvl = Math.min(topic.maxLevel, Math.max(state.level(topic), fromCapital)); // (Swift Hands IV and V show in the Great Library's row, 35.14)
 		List<Component> lore = new ArrayList<>();
 		lore.add(line(topic.effect(), ChatFormatting.GRAY));
 		lore.add(line(Component.translatable("screen.aliveworkplace.research.level", lvl, topic.maxLevel), ChatFormatting.GRAY));
@@ -434,7 +522,7 @@ public final class ResearchScreen {
 		}
 		ItemStack icon = icon(topic.icon, topic.title().copy(), lvl >= topic.maxLevel ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore);
 		icon.setCount(Math.max(1, lvl));
-		if (topic == state.currentTopic()) {
+		if (topic == state.currentTopic() && lvl < topic.maxLevel) {
 			icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
 		}
 		return icon;

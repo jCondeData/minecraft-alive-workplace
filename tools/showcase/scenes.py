@@ -823,6 +823,12 @@ SCENES = [
       [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"),
        ("14_wonder_lighthouse_stage_4", "The Lantern and the Keeper's House: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
+    # The Great Library (ROADMAP 35.14): its time-lapse, ending in the rotunda on the scholar's screen with the second tier
+    S("wonder_great_library", "Wonders", "The Great Library: its time-lapse, and the second research tier",
+      "a crew of ten raised the Great Library stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished its power came on and, after the festival's fireworks, inside the rotunda by the enchanting table a scholar's research screen showed the Great Library's row open: Swift Hands IV-V, Scholarship, Engineering, Cartography, Trade Law and Pharmacy", 840,
+      [("11_wonder_great_library_stage_1", "Stage I, the Stacks, up"), ("frame_*@middle", "The crew at work, the camera going round"),
+       ("14_wonder_great_library_stage_4", "The Dome and the Portico: the Library finished"),
+       ("20_wonder_great_library_research", "In the rotunda: the scholar's screen with the Great Library's row open")]),
     # The Great Cathedral (ROADMAP 35.10): its time-lapse with the crew, ending at dusk with a blessed wedding at its altar
     S("wonder_great_cathedral", "Wonders", "The Great Cathedral: its time-lapse, and a wedding at its altar",
       "a crew of ten raised the Great Cathedral stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished its powers came on (Undertakers free and village-wide, blessed weddings, 8 beauty), and at dusk a couple were wed at its altar before the guests: the wedding was blessed and its bells rang", 840,

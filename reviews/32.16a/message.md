@@ -7,4 +7,4 @@ Reply: approve 32.16a · veto 32.16a: why · change 32.16a: what
 
 (sent)
 
-(from chat, 2026-10-13 03:47Z; not yet sent)
+(from chat, 2026-10-13 03:47Z; sent 2026-10-13 by the chat)

@@ -7,4 +7,4 @@ Reply: approve 35.19 · veto 35.19: why · change 35.19: what
 
 (sent)
 
-(from chat, 2026-10-13 03:47Z; not yet sent)
+(from chat, 2026-10-13 03:47Z; sent 2026-10-13 by the chat)

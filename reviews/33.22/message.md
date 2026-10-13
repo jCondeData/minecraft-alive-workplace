@@ -13,4 +13,4 @@ Reply: approve 33.22 · veto 33.22: why · change 33.22: what
 
 (sent)
 
-(from chat, 2026-10-13 03:47Z; not yet sent)
+(from chat, 2026-10-13 03:47Z; sent 2026-10-13 by the chat)

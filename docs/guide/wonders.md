@@ -51,6 +51,18 @@ A Wonder goes up in four named stages, and up to twelve builders work on it toge
 the village's workers as well as its blocks: bread from the chef, pickaxes from the toolsmith, candles from the dyer,
 and so on. A Wonder is the one build that needs the whole village.
 
+![The stone's screen: flowers and potions in, the books short](https://jcondedata.github.io/minecraft-alive-workplace/wonder_goods/still-1.jpg)
+
+Right-click the Foundation Stone to see each stage's goods: "2 of 4 Flowers · Florist", and "no Florist in the village"
+when nobody there makes them. A stage starts only when all its goods are in the chests by the stone. The village sees
+to it: the goods are on the Storehouse's requests board, porters carry them over first, the chef, carpenter, mason,
+tinkerer and dyer make what's short, and the hall's daily quest asks for the line furthest behind. You can hand goods
+in yourself: right-click the stone holding them, or click the line on the board.
+
+Then, by day (at night it waits for the morning), the stage is **dedicated**: the bell rings, the villagers off work
+gather at the stone, the Bard plays and the guards stand in line, the goods are taken and the chronicle says so. Abandon
+the Wonder before that and the goods you handed in for the stage come back.
+
 ## Every Wonder
 
 | Wonder | Needs | While it stands |

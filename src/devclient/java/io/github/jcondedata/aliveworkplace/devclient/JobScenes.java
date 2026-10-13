@@ -5608,6 +5608,19 @@ final class JobScenes {
 						new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData(io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.idOf(WONDER_FOLLY),
 							java.util.Optional.empty(), java.util.Optional.empty())).orElseThrow();
 					BlockPos[] chests = {stone.east(2), stone.east(3)};
+					{ // 35.7: every stage's goods in a chest of the stockpile, so each stage starts once it may
+						BlockPos goods = stone.east(4).south(2);
+						level.setBlockAndUpdate(goods, Blocks.CHEST.defaultBlockState());
+						int g = 0;
+						for (var stage : io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().get(WONDER_FOLLY).stages()) {
+							for (var good : stage.goods()) {
+								ItemStack one = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.icon(good);
+								for (int left = good.count(); left > 0; left -= one.getMaxStackSize()) {
+									((net.minecraft.world.Container) level.getBlockEntity(goods)).setItem(g++, one.copyWithCount(Math.min(left, one.getMaxStackSize())));
+								}
+							}
+						}
+					}
 					int c = 0;
 					int slot = 0;
 					for (var line : list.lines()) {
@@ -5677,6 +5690,19 @@ final class JobScenes {
 					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData(io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.idOf(WONDER_FOLLY),
 						java.util.Optional.empty(), java.util.Optional.empty())).orElseThrow();
 				BlockPos[] chests = {stone.east(2), stone.east(3), stone.east(2).south(), stone.east(3).south()};
+				{ // 35.7: every stage's goods in a chest of the stockpile, so each stage starts once it may
+					BlockPos goods = stone.east(4).south(2);
+					level.setBlockAndUpdate(goods, Blocks.CHEST.defaultBlockState());
+					int g = 0;
+					for (var stage : io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().get(WONDER_FOLLY).stages()) {
+						for (var good : stage.goods()) {
+							ItemStack one = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.icon(good);
+							for (int left = good.count(); left > 0; left -= one.getMaxStackSize()) {
+								((net.minecraft.world.Container) level.getBlockEntity(goods)).setItem(g++, one.copyWithCount(Math.min(left, one.getMaxStackSize())));
+							}
+						}
+					}
+				}
 				int c = 0;
 				int slot = 0;
 				for (var line : list.lines()) {
@@ -5713,6 +5739,101 @@ final class JobScenes {
 				}
 				var site = sites.get(0);
 				return io.github.jcondedata.aliveworkplace.wonder.WonderCrews.crew(level, site).size() >= 8 && site.called();
+			}));
+		// A Wonder's goods (ROADMAP 35.7): the folly's stage II waits for its three lines, the stone's screen half filled (the
+		// flowers and one potion in the stockpile, the other potion handed in at the stone, the books short); the porter
+		// carries the two books from the storehouse, and the stage is dedicated: the bell rings, the village gathers at the
+		// stone, the Bard plays beside it and the guards stand in line.
+		SCREENS.put("wonder_goods", new Screen("the folly's stage II waited for its three lines: the stone's screen showed the flowers and the potions in and the books short, \"no Librarian in the village\"; the porter carried the two books from the storehouse to the stockpile, and the stage was dedicated: the bell rang, the villagers off work gathered at the stone, the Bard played beside it, the guards stood in line, the goods were taken and the chronicle said so",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setDayTime(2000);
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getName().getString());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				var wonder = io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().get(WONDER_FOLLY);
+				Showcase.check(wonder != null, "the Test Folly is loaded");
+				ItemStack plan = io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.of(level, STATION, wonder, Component.literal("Testholm"));
+				var data = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(plan).orElseThrow();
+				var placement = io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.placementAt(level.dimension().location(), data.size().orElseThrow(),
+					STATION.offset(0, 0, -6), net.minecraft.world.level.block.Rotation.CLOCKWISE_180);
+				BlockPos stone = io.github.jcondedata.aliveworkplace.wonder.WonderStages.stoneSpot(level, placement).orElseThrow();
+				// stage I stands already
+				level.getStructureManager().get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "wonder/test_folly/stage_1_0"))
+					.ifPresent(t -> t.placeInWorld(level, placement.origin(), placement.origin(),
+						new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation()), level.random, 2));
+				level.setBlockAndUpdate(stone, ModBlocks.FOUNDATION_STONE.defaultBlockState());
+				var manager = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
+				var site = manager.begin(WONDER_FOLLY, STATION, player.getUUID(), player.getName().getString(), io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
+				manager.place(site.id(), placement, stone);
+				manager.setStage(site.id(), 2);
+				// the stockpile: the flowers and one potion of healing
+				BlockPos pile = stone.east(2);
+				level.setBlockAndUpdate(pile, Blocks.CHEST.defaultBlockState());
+				var box = (net.minecraft.world.Container) level.getBlockEntity(pile);
+				box.setItem(0, new ItemStack(Items.POPPY, 2));
+				box.setItem(1, new ItemStack(Items.DANDELION, 2));
+				box.setItem(2, net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.HEALING));
+				// the storehouse with the two books, and its porter
+				BlockPos storehouse = stone.east(9).south(5);
+				level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+				level.setBlockAndUpdate(storehouse.east(), Blocks.CHEST.defaultBlockState());
+				((net.minecraft.world.Container) level.getBlockEntity(storehouse.east())).setItem(0, new ItemStack(Items.BOOK, 2));
+				String[] names = {"Bram", "Tobin", "Ilse", "Rolf", "Mags"};
+				net.minecraft.world.entity.npc.VillagerProfession[] jobs = {io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.BARD, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD, net.minecraft.world.entity.npc.VillagerProfession.NONE};
+				BlockPos[] stations = {storehouse, stone.east(7).south(8), stone.east(11), stone.east(12).south(2), null};
+				net.minecraft.world.level.block.Block[] blocks = {null, ModBlocks.MUSIC_STAND, ModBlocks.GUARD_POST, ModBlocks.GUARD_POST, null};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = EntityType.VILLAGER.create(level);
+					BlockPos at = stations[i] == null ? stone.east(6).south(10) : stations[i].south();
+					v.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 180, 0);
+					v.setCustomName(Component.literal(names[i]));
+					level.addFreshEntity(v);
+					if (stations[i] != null) {
+						if (blocks[i] != null) {
+							level.setBlockAndUpdate(stations[i], blocks[i].defaultBlockState());
+						}
+						var poi = i == 0 ? io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI
+							: i == 1 ? io.github.jcondedata.aliveworkplace.registry.ModVillagers.MUSIC_STAND_POI : io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI;
+						io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, v, stations[i], poi, jobs[i]);
+					}
+				}
+				// the other potion, handed in at the stone
+				player.getInventory().clearContent();
+				player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+					net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.HEALING));
+				Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderGoods.handInAtStone(player, stone, player.getMainHandItem()), "the potion handed in at the stone");
+			},
+			List.of(new Step("01_wonder_goods_screen", -1, 0, (level, player) -> {
+					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0);
+					BlockPos stone = site.stone().orElseThrow();
+					var lines = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, site);
+					Showcase.check(lines.size() == 3 && lines.get(0).full() && lines.get(1).full() && lines.get(2).in() == 0 && !site.started(),
+						"the stone's lines half filled: flowers and potions in, the books short: " + lines);
+					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(5.5, 3.5, 6.5), Vec3.atCenterOf(stone));
+				}, 60),
+				new Step("02_wonder_goods_porter", -1, 0, (level, player) -> {
+					BlockPos stone = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0).stone().orElseThrow();
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(8.5, 5, 9.5), Vec3.atCenterOf(stone).add(4, 0, 2.5));
+				}, 300),
+				new Step("03_wonder_goods_dedication", -1, 0, (level, player) -> {
+					BlockPos stone = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0).stone().orElseThrow();
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(6.5, 4, 7.5), Vec3.atCenterOf(stone));
+				}, 400)),
+			(level, player) -> {
+				var sites = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);
+				if (sites.isEmpty() || !sites.get(0).started()) {
+					return false;
+				}
+				var porters = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(STATION).inflate(40),
+					v -> v.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER);
+				return !porters.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CARRIED.getOrElse(porters.get(0), 0) >= 2
+					&& io.github.jcondedata.aliveworkplace.wonder.Dedications.gathered(level, sites.get(0)) >= 2;
 			}));
 		// Switching classes on (ROADMAP 34.22): a village from before 1.8 (a couple in a builder's cottage, three more without
 		// a home), the hall's Classes tab before; then the hall's rounds seed them, the chronicle says so once, and the tab and

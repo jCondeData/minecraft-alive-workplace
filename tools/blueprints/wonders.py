@@ -4625,7 +4625,7 @@ WONDERS = {
                   ("item", "minecraft:pumpkin_pie", 32, "aliveworkplace:chef")),
         ],
         "powers": [
-            {"type": "sky_chart", "size": 1024},
+            {"type": "sky_chart", "size": 6144},
             {"type": "forecast"},
         ],
     },

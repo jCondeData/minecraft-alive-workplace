@@ -4151,7 +4151,7 @@ Legends.
   - a GameTest cancels half-way and the scaffolds come down; a save and reload with scaffolds up finishes the build;
   - the folly's dome is finished with no skipped steps;
   - scene `scaffolding`: a builder scaffolding up the pillar and taking it down, a GIF.
-- [ ] **35.7** **Goods from every job.** Besides its building blocks, each stage of a Wonder asks for goods: the feast
+- [x] **35.7** (review: pending 2026-10-13) **Goods from every job.** Besides its building blocks, each stage of a Wonder asks for goods: the feast
   for the crew, their tools, what the rites need (candles, books, potions) and its treasures. A stage starts only when
   all its goods are in the stockpile; then (by day; at night it waits for the morning) it is **dedicated**: the
   villagers off work gather at the stone, the village's Bard plays and its guards stand in line (if it has them), the
@@ -4318,8 +4318,8 @@ Legends.
   (Butcher); IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). Done when: 35.9's four design
   checks pass for it.
 - [ ] **35.18** **The Observatory: its powers and time-lapse.** While it stands:
-  - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart 1,024 blocks across (map scale 3)
-    centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
+  - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart about 6,144 blocks across (384 chunks,
+    12 regions; 35.18a) centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
     huts, igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial
     chambers and strongholds (vanilla's own markers for villages, mansions, monuments, jungle temples, witch huts and
     trial chambers; a red X for the rest), each named in the map's tooltip. The Observatory searches one kind an
@@ -4335,7 +4335,7 @@ Legends.
     in-game hour; the Coming days page lists a staged festival, wedding and caravan with their days;
   - scene `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days page; its GIF and
     powers are in the README.
-  - [ ] **35.18a** Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
+  - [x] **35.18a** (approved auto 2026-10-12) Change from the owner (2026-10-12): the Observatory's Sky Chart covers about 6,144 blocks across (384 chunks, 12 regions), not 1,024; everything else approved
 - [x] **35.19** (review: pending 2026-10-12) **The Hanging Gardens: its design.** A stepped garden mountain, drawn like 35.9: four terraces (39,
   31, 23 and 15 across, 6 high each) faced with arcades of sandstone arches on columns. Each terrace is topped with
   soil: fields of wheat, carrots and beetroots between water channels with a composter and a chest on each level (four
@@ -5765,6 +5765,15 @@ item waits.
   arms, half of them: the left forearm across the chest, the hand on it. The cut copper is about 370 blocks, not 250: the
   cloak needs three pleats to stop its back being one flat sheet, and the lantern's plate and cap are copper too. The robe
   and the head are shells (nothing a player sees is left out). The face has two emerald blocks for pupils.
+- **35.18a the Sky Chart at 6,144 blocks** (2026-10-12): a vanilla map shows at most 2,048 blocks (scale 4), so
+  decided: the chart is one locked scale-4 map whose 128 pixels stand for 48 blocks each; `wonder/SkyChart` sketches
+  the land itself (one biome sample a pixel, as an explorer map takes, whatever the size) and places each marker at a
+  third of its distance so vanilla draws it at the right pixel; a structure in the last 48 blocks before the edge sits
+  on the edge pixel. The area is 144 regions (the 1,024 chart had 4), so the search walks one region of one kind (a
+  structure set, found by the world's own placement grid and structure check, no chunk loaded) every 5 ticks while the
+  average tick is under 40 ms, and starts at most one kind an in-game hour (a kind takes 720 ticks); cursor, hour and
+  finds are saved (`SkyChart.Search`, the hall's `skyChart`). Built ahead of 35.18 (which wires it to the hall's map
+  button, names the markers in the tooltip and calls `restart` weekly), tested in `SkyChartGameTests`.
 - **35.24 the Stadium's powers wait for 35.8** (lane-a-1012-0033, 2026-10-12): its Done when needs what 35.4 to 35.8
   make and none of them is done yet: a Wonder that is ever finished in play (the Foundation Stone and stages, 35.4),
   the power registry `wonder/powers/` and `Wonders.power(level, hall, type)` (35.8), the upkeep count that makes a
@@ -5772,5 +5781,16 @@ item waits.
   scene `wonder_stadium` films (35.8). Decided: 35.24 is blocked until 35.8 lands, rather than building a second power
   lookup and damage rule that 35.8 would replace. The same holds for every Wonder's powers item (35.10, 35.12, 35.14,
   35.16, 35.18, 35.20, 35.22): take 35.4 to 35.8 first, in order.
+- **35.7 decisions** (2026-10-13): built as specified, with these choices taken (no owner question). Stage I waits for
+  its goods too (the design note's "the goods are taken and the stage begins"), so the 35.4/35.5 tests and the
+  `wonder_site`/`wonder_crew` scenes now put every stage's goods in the stockpile first (`WonderGoodsKit`; nothing
+  weakened: they test the same things). The dedication is the moment the goods are taken (the stage's parts go down at
+  once); the gathering, the Bard beside the stone and the guards' line follow for 30 s unsaved (`wonder/Dedications`),
+  and the bell is played as a sound, since a rung bell sends villagers into hiding. Goods handed in (stone, board, a
+  porter with no chest) are kept by the stone (`WonderSite.delivered`) so a cancel can hand them back, to the Wonder's
+  owner; goods in the chests stay there. "The shortest line" for the hall's quest is the one with the least of it in
+  for its size; potion lines are left out of the quest and crafters make only plain-item lines. The folly's stage II
+  gained a third line (2 books, Librarian) to match the Done when. The stone's "screen" is its chat status, as 35.4
+  built it.
 - **lane-d handoff** (lane-d-1012-0033, 2026-10-12 02:58Z): lane-d-1012-0033 pushed b5e47ba1 at 02:58Z (full build green on the main suite, 1978/1978; compat 208/209 with B110's Combee flake, then 213/213 on re-run). On main: 34.15a (grander homes sold-only, review pending; owner question in Notes: Manor sold-only too?), 22.10a parts 1-2 (American spelling in guide/wiki/lang values; Fandom-style player guide in tools/playerguide/site.py), B94 renewal and steward_civic scenes fixed (staging). NEXT: 22.10a part 3 (an article for every job, block, item, build, threat, arc, edict, class, Wonder, switch, command). B94 left: caravan_road, walls, steward_jobs (27.9 design q). TRAPS: text merged after 02:01Z (35.x Wonders, realm edicts) may carry British spelling; tools/showcase/scenes.py captions still British (Jeweller, Grey Cough, colours); the owner's 34.15a note says the first day counts against the 15% tick target, which answers 30.22's day-1 question (30.22 still waits on B103).
 - **qa handoff** (qa-1012-0634, 2026-10-12 07:02Z): B65 (conscription raid-work test): ran the repeat generator, ConscriptionGameTests#noWorkDuringARaidNorTheMorningAfterUntilNoon 10x in separate batches on main 54ec47f0: 10 of 10 pass, so it does not reproduce in isolation (the earlier failures were in full builds, so load or batch neighbours; cause not found, mod code looked right: BrainMixin gates on Conscription.workStopped, raid ends only when raiders gone or dawn after 1200 ticks). Next: if it fails again, the failure message should print Conscription.workStopped and ThreatData.raid(hall). Also: Maven Central answered 429 for ~25 minutes at start, so no more tests ran this run. Still unverified: 213 items, oldest B101, 21.2, 22.7-22.10a; showcase has 38 of 227 scenes failing (soak, caravan_road, walls, steward_jobs, renewal) which B94/B72/B88 cover.

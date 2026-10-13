@@ -52,6 +52,7 @@ public class WonderStageGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void wonderStagesInOrder(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000); // 35.7: a stage's goods are dedicated by day
 		Wonder folly = Wonders.loaded().get(FOLLY);
 		helper.assertTrue(folly != null && folly.stages().size() == 3, "the test folly is loaded: " + folly);
 		BlockPos origin = new BlockPos(4000, 70, 4000);
@@ -86,6 +87,13 @@ public class WonderStageGameTests implements FabricGameTest {
 						finish(BuildSiteManager.get(level).get(id));
 					}
 					WonderStages.tick(level);
+					if (stage < 3) {
+						// 35.7: the next stage waits for its goods, then starts once they're handed in
+						WonderSite next = manager.site(site.id()).orElseThrow();
+						helper.assertTrue(next.stage() == stage + 1 && next.parts().isEmpty() && !next.started(), "stage " + (stage + 1) + " began without its goods " + where);
+						WonderGoodsKit.handInStage(level, site.id());
+						WonderStages.tick(level);
+					}
 				}
 				WonderSite done = manager.site(site.id()).orElseThrow();
 				helper.assertTrue(done.done(), "finished after stage III " + where + ": " + done);
@@ -100,6 +108,7 @@ public class WonderStageGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void wonderStagesSaveAndLoad(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000); // 35.7: a stage's goods are dedicated by day
 		var registries = level.registryAccess();
 		BlockPos origin = new BlockPos(4100, 70, 4000);
 		WonderManager manager = WonderManager.get(level);
@@ -107,6 +116,8 @@ public class WonderStageGameTests implements FabricGameTest {
 		BlueprintData.Placement at = new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.CLOCKWISE_90, Mirror.NONE);
 		List<BuildSite> first = WonderStages.start(level, site.id(), at, origin.offset(-1, 0, -1), null);
 		first.forEach(WonderStageGameTests::finish);
+		WonderStages.tick(level);
+		WonderGoodsKit.handInStage(level, site.id()); // 35.7: stage II's goods
 		WonderStages.tick(level);
 		WonderSite mid = manager.site(site.id()).orElseThrow();
 		helper.assertTrue(mid.stage() == 2, "stage II going: " + mid);
@@ -136,6 +147,10 @@ public class WonderStageGameTests implements FabricGameTest {
 				finish(BuildSiteManager.get(level).get(id));
 			}
 			WonderStages.tick(level);
+			if (stage < 3) {
+				WonderGoodsKit.handInStage(level, site.id()); // 35.7: stage III's goods
+				WonderStages.tick(level);
+			}
 		}
 		helper.assertTrue(manager.site(site.id()).orElseThrow().done(), "the folly is finished");
 		cleanUp(level, site.id());
@@ -147,6 +162,7 @@ public class WonderStageGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void wonderCancelDropsOpenSites(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000); // 35.7: a stage's goods are dedicated by day
 		BlockPos origin = helper.absolutePos(new BlockPos(1, 2, 1));
 		WonderManager manager = WonderManager.get(level);
 		WonderSite site = manager.begin(FOLLY, origin, null, "Test", 1);
@@ -154,7 +170,10 @@ public class WonderStageGameTests implements FabricGameTest {
 		List<BuildSite> first = WonderStages.start(level, site.id(), at, origin, null);
 		first.forEach(WonderStageGameTests::finish);
 		WonderStages.tick(level);
+		WonderGoodsKit.handInStage(level, site.id()); // 35.7: stage II's goods, so its sites are open
+		WonderStages.tick(level);
 		List<UUID> open = manager.site(site.id()).orElseThrow().parts();
+		helper.assertTrue(!open.isEmpty(), "stage II's sites aren't open");
 		net.minecraft.world.item.ItemStack plan = WonderStages.cancel(level, site.id());
 		helper.assertTrue(manager.site(site.id()).isEmpty(), "the Wonder is forgotten");
 		helper.assertTrue(plan.is(io.github.jcondedata.aliveworkplace.registry.ModItems.WONDER_PLAN), "the plan comes back: " + plan);

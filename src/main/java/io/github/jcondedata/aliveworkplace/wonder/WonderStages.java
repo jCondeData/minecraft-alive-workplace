@@ -45,8 +45,8 @@ import org.jetbrains.annotations.Nullable;
  * A Wonder's stages as build sites (35.4). Each stage's parts become ordinary {@link BuildSite}s, placed with the
  * Wonder's turn and mirror at their offsets, pointing back at the Wonder ({@link BuildSite#wonder}) with the Foundation
  * Stone as their bench (so the chests round the stone are the stockpile). Only the last stage levels the ground round
- * it. A stage starts only when every part of the one before is done: the check reads the saved sites alone, so the
- * order holds through a restart at any tick.
+ * it. A stage starts only when every part of the one before is done and its own goods are dedicated (35.7,
+ * {@link WonderGoods}): the checks read the saved sites alone, so the order holds through a restart at any tick.
  */
 public final class WonderStages {
 	/** Ticks between checks for a finished stage. */
@@ -61,6 +61,7 @@ public final class WonderStages {
 		Platform.get().onLevelTick(level -> {
 			if (level.getGameTime() % INTERVAL == 0) {
 				tick(level);
+				Dedications.tick(level);
 			}
 		});
 		Platform.get().allowBreakBlock((level, player, pos, state) -> !state.is(ModBlocks.FOUNDATION_STONE) || !(level instanceof ServerLevel server)
@@ -148,8 +149,9 @@ public final class WonderStages {
 	}
 
 	/**
-	 * Begins the Wonder of {@code plan} at {@code at}: lays the Foundation Stone at {@code stone}, records the Wonder and
-	 * starts its first stage for {@code builder}; announced to every player and written in the village's chronicle.
+	 * Begins the Wonder of {@code plan} at {@code at}: lays the Foundation Stone at {@code stone}, records the Wonder with
+	 * {@code builder}'s crew lead, and its first stage starts as soon as its goods are dedicated (35.7: straight away if
+	 * the stockpile holds them already, by day); announced to every player and written in the village's chronicle.
 	 */
 	public static WonderSite begin(ServerLevel level, WonderPlanItem.Plan plan, BlueprintData.Placement at, BlockPos stone, Villager builder,
 								   @Nullable UUID owner, String ownerName) {
@@ -159,14 +161,19 @@ public final class WonderStages {
 		level.playSound(null, stone, SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1f, 0.6f);
 		// 35.5: the Master Architect leads the crew when there is one; else the builder it was handed to.
 		UUID lead = WonderCrews.lead(level, site, List.of(builder.getUUID()), builder.getUUID());
-		start(level, site.id(), at, stone, lead);
+		WonderManager manager = WonderManager.get(level);
+		manager.place(site.id(), at, stone);
+		if (lead != null) {
+			manager.setBuilder(site.id(), lead);
+		}
 		Component name = Wonders.name(plan.wonder());
 		Component village = VillageHalls.name(level, hall);
 		Component who = ownerName == null || ownerName.isEmpty() ? builder.getDisplayName() : Component.literal(ownerName);
 		level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable("message.aliveworkplace.wonder.announce", who, name, village)
 			.withStyle(ChatFormatting.GOLD), false);
 		Chronicle.atHall(level, hall, Chronicle.Kind.WONDER, Component.translatable("chronicle.aliveworkplace.wonder.begun", who, name));
-		return WonderManager.get(level).site(site.id()).orElseThrow();
+		WonderGoods.check(level, manager.site(site.id()).orElseThrow()); // stage I's goods already in: dedicated now
+		return manager.site(site.id()).orElseThrow();
 	}
 
 	// ---------------------------------------------------------------- the stone
@@ -219,8 +226,11 @@ public final class WonderStages {
 		// 35.5: the crew and its lead
 		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.crew", WonderCrews.leadName(level, site),
 			WonderCrews.crew(level, site).size(), WonderCrews.limit(site)).withStyle(ChatFormatting.AQUA));
-		List<Line> lines = materials(level, site, pos);
-		if (lines.isEmpty()) {
+		goodsText(level, site, text);
+		List<Line> lines = site.started() ? materials(level, site, pos) : List.of();
+		if (!site.started()) {
+			// waiting for its goods: no blocks to bring yet
+		} else if (lines.isEmpty()) {
 			text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.nothing_left").withStyle(ChatFormatting.GREEN));
 		} else {
 			int shortOf = (int) lines.stream().filter(l -> l.toBring() > 0).count();
@@ -246,6 +256,35 @@ public final class WonderStages {
 					Component.translatable("message.aliveworkplace.wonder.status.call_hover")))));
 		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.abandon").withStyle(ChatFormatting.DARK_GRAY));
 		return text;
+	}
+
+	/**
+	 * The stone's goods lines (35.7): while the stage waits, every line ("5 of 8 Bread · Chef", or "no Chef in the
+	 * village"), what's left to do and how to hand goods in; once dedicated, that it is.
+	 */
+	static void goodsText(ServerLevel level, WonderSite site, MutableComponent text) {
+		List<WonderGoods.Line> lines = WonderGoods.lines(level, site);
+		if (site.started()) {
+			if (!WonderGoods.goods(site).isEmpty()) {
+				text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.goods.dedicated").withStyle(ChatFormatting.DARK_GREEN));
+			}
+			return;
+		}
+		boolean all = lines.stream().allMatch(WonderGoods.Line::full);
+		text.append("\n  ").append((all
+			? Component.translatable(WonderGoods.isDay(level) ? "message.aliveworkplace.wonder.goods.all_in" : "message.aliveworkplace.wonder.goods.morning")
+			: Component.translatable("message.aliveworkplace.wonder.goods.header", SupplyContainers.RADIUS)).withStyle(all ? ChatFormatting.GREEN : ChatFormatting.GOLD));
+		for (WonderGoods.Line l : lines) {
+			MutableComponent line = Component.translatable("message.aliveworkplace.wonder.goods.line", l.in(), l.need(), WonderGoods.what(l.good()),
+				WonderGoods.job(l.good()));
+			if (!l.full() && !WonderGoods.hasMaker(level, site.hall(), l.good().job())) {
+				line.append(Component.translatable("message.aliveworkplace.wonder.goods.no_maker", WonderGoods.job(l.good())).withStyle(ChatFormatting.RED));
+			}
+			text.append("\n    ").append(line.withStyle(l.full() ? ChatFormatting.DARK_GREEN : ChatFormatting.YELLOW));
+		}
+		if (!all) {
+			text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.goods.how").withStyle(ChatFormatting.GRAY));
+		}
 	}
 
 	/** One line of a stage's material list: the material, how many the stage still needs, how many the chests lack. */
@@ -303,11 +342,13 @@ public final class WonderStages {
 
 	/**
 	 * Puts the Wonder {@code id} down at {@code placement} with its stone at {@code stone} and starts its current stage
-	 * for {@code builder} (may be null: the village's builders pick it up). Returns the stage's build sites.
+	 * now for {@code builder} (may be null: the village's builders pick it up), its goods or not (commands and tests; a
+	 * player's plan goes through {@link #begin}, whose stage waits for its goods). Returns the stage's build sites.
 	 */
 	public static List<BuildSite> start(ServerLevel level, UUID id, BlueprintData.Placement placement, BlockPos stone, @Nullable UUID builder) {
 		WonderManager manager = WonderManager.get(level);
 		manager.place(id, placement, stone);
+		manager.setDedicated(id, true);
 		return startStage(level, manager.site(id).orElseThrow(), builder);
 	}
 
@@ -356,14 +397,22 @@ public final class WonderStages {
 		return true;
 	}
 
-	/** Moves every Wonder of {@code level} whose stage is done on to its next stage, or finishes it. */
+	/**
+	 * Moves every Wonder of {@code level} whose stage is done on to its next stage, or finishes it; a stage waiting for its
+	 * goods posts them and is dedicated once they're in, by day (35.7).
+	 */
 	public static void tick(ServerLevel level) {
 		if (!Wonders.ENABLED) {
 			return; // switched off: the Wonders wait, saved, for the switch to come back on
 		}
 		WonderManager manager = WonderManager.get(level);
 		for (WonderSite site : manager.sites()) {
-			if (site.goingUp() && site.placement().isPresent() && !site.parts().isEmpty() && stageDone(level, site)) {
+			if (!site.goingUp() || site.placement().isEmpty()) {
+				continue;
+			}
+			if (!site.started()) {
+				WonderGoods.check(level, site);
+			} else if (!site.parts().isEmpty() && stageDone(level, site)) {
 				advance(level, site);
 			}
 		}
@@ -388,13 +437,20 @@ public final class WonderStages {
 		}
 		// 35.5: the next stage's lead is the Master Architect, else the highest-level builder of the crew.
 		builder = WonderCrews.lead(level, site, WonderCrews.candidates(site, builder), builder);
+		if (builder != null) {
+			manager.setBuilder(site.id(), builder);
+		}
+		// 35.7: the next stage waits for its goods (dedicated at once if they're in already, by day)
 		manager.setStage(site.id(), next);
-		startStage(level, manager.site(site.id()).orElseThrow(), builder);
+		manager.setParts(site.id(), List.of());
+		manager.setDedicated(site.id(), false);
+		manager.setDelivered(site.id(), List.of());
 		ServerPlayer owner = site.owner().map(o -> level.getServer().getPlayerList().getPlayer(o)).orElse(null);
 		if (owner != null) {
 			Chat.system(owner, Component.translatable("message.aliveworkplace.wonder.stage_begun", next, wonder.stages().size(), wonder.nameText(),
 				wonder.stages().get(next - 1).nameText()).withStyle(ChatFormatting.GREEN));
 		}
+		WonderGoods.check(level, manager.site(site.id()).orElseThrow());
 	}
 
 	/**
@@ -417,6 +473,9 @@ public final class WonderStages {
 				sites.remove(part);
 			}
 		}
+		WonderGoods.handBack(level, site); // 35.7: the goods handed in for a stage not yet dedicated
+		site.stone().ifPresent(stone -> io.github.jcondedata.aliveworkplace.work.Requests.clearAt(level, stone));
+		Dedications.end(id);
 		manager.remove(id);
 		WonderCrews.forget(id);
 		Wonder wonder = Wonders.loaded().get(site.wonder());

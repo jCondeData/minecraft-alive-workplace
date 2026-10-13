@@ -174,7 +174,8 @@ public class WonderSiteGameTests implements FabricGameTest {
 			"a builder without a bench took it");
 		jobless.discard();
 
-		// handed over: the stone at the front corner, outside the Wonder
+		// handed over: the stone at the front corner, outside the Wonder (35.7: with stage I's goods in, it starts at once)
+		WonderGoodsKit.stockAll(level, FOLLY, at);
 		BlockPos stone = at.origin().offset(-1, 0, -1);
 		helper.assertTrue(WonderStages.handOver(v.owner(), v.builder(), plan) == InteractionResult.SUCCESS, "not handed over");
 		helper.assertTrue(level.getBlockState(stone).is(ModBlocks.FOUNDATION_STONE), "no Foundation Stone at " + stone + ": " + level.getBlockState(stone));
@@ -345,6 +346,7 @@ public class WonderSiteGameTests implements FabricGameTest {
 		ItemStack plan = plan(helper, v, helper.absolutePos(MIDDLE), turn, mirror);
 		BlueprintData.Placement at = placement(plan);
 		v.owner().setItemInHand(InteractionHand.MAIN_HAND, plan);
+		WonderGoodsKit.stockAll(level, FOLLY, at); // 35.7: every stage's goods in the stockpile
 		helper.assertTrue(WonderStages.handOver(v.owner(), v.builder(), plan) == InteractionResult.SUCCESS, "not handed over " + turn + "/" + mirror);
 		WonderSite begun = WonderManager.get(level).in(v.hall()).get(0);
 		BlockPos stone = begun.stone().orElseThrow();
@@ -448,6 +450,7 @@ public class WonderSiteGameTests implements FabricGameTest {
 		var registries = level.registryAccess();
 		ItemStack plan = plan(helper, v, helper.absolutePos(MIDDLE), Rotation.CLOCKWISE_90, Mirror.NONE);
 		BlueprintData.Placement at = placement(plan);
+		WonderGoodsKit.stockAll(level, FOLLY, at); // 35.7: every stage's goods in the stockpile
 		helper.assertTrue(WonderStages.handOver(v.owner(), v.builder(), plan) == InteractionResult.SUCCESS, "not handed over");
 		WonderSite begun = WonderManager.get(level).in(v.hall()).get(0);
 		stock(helper, level, begun.stone().orElseThrow(), at);

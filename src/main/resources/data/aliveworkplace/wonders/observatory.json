@@ -131,7 +131,7 @@
   "powers": [
     {
       "type": "sky_chart",
-      "size": 1024
+      "size": 6144
     },
     {
       "type": "forecast"

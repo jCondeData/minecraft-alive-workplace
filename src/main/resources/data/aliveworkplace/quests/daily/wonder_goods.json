@@ -1,0 +1,18 @@
+{
+  "giver": "hall",
+  "priority": 3,
+  "objectives": [
+    {
+      "type": "bring_wonder_goods"
+    }
+  ],
+  "rewards": [
+    {
+      "type": "money",
+      "emeralds": 3,
+      "per_count": 8,
+      "max": 12
+    }
+  ],
+  "days": 3
+}

@@ -103,6 +103,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 		BlockPos origin = helper.absolutePos(MIDDLE).subtract(StructureTemplate.transform(new BlockPos(4, 0, 4), Mirror.NONE, Rotation.NONE, BlockPos.ZERO));
 		plan.set(ModComponents.BLUEPRINT, data.withPlacement(Optional.of(new BlueprintData.Placement(v.level().dimension().location(), origin, Rotation.NONE, Mirror.NONE))));
 		BlueprintData.Placement where = BlueprintItem.data(plan).flatMap(BlueprintData::placement).orElseThrow();
+		WonderGoodsKit.stockAll(v.level(), FOLLY, where); // 35.7: every stage's goods in the stockpile
 		if (WonderStages.handOver(v.owner(), v.builders().get(0), plan) != InteractionResult.SUCCESS) {
 			helper.fail("not handed over: cap " + Wonders.capRefusal(v.level(), v.hall(), FOLLY).map(Component::getString)
 				+ ", place " + io.github.jcondedata.aliveworkplace.wonder.WonderPlans.placeRefusal(v.level(), WonderPlanItem.plan(plan).orElseThrow(), where,

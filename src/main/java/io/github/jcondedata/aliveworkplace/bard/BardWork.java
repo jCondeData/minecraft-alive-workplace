@@ -88,9 +88,15 @@ public class BardWork extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
-		BlockPos stand = Builders.benchPos(villager).orElse(null);
-		if (stand == null) {
+		BlockPos bench = Builders.benchPos(villager).orElse(null);
+		if (bench == null) {
 			return;
+		}
+		// 35.7: while a Wonder's stage is dedicated, the bard plays beside its Foundation Stone
+		BlockPos dedication = io.github.jcondedata.aliveworkplace.wonder.Dedications.bardSpot(level, villager).orElse(null);
+		BlockPos stand = dedication != null ? dedication : bench;
+		if (dedication != null && song != null) {
+			stopSong(level, villager);
 		}
 		if (!walker.walkTo(level, villager, stand, 2.5)) {
 			return;
@@ -104,6 +110,12 @@ public class BardWork extends Behavior<Villager> {
 				return;
 			}
 			stopSong(level, villager);
+		}
+		if (dedication != null) {
+			tune(level, villager);
+			WorkerStatus.set(villager, Component.translatable("entity.minecraft.villager.bard"), -1f,
+				Component.translatable("message.aliveworkplace.bard.dedication").withStyle(ChatFormatting.GOLD));
+			return; // a tune on the harp: the discs stay by the stand
 		}
 		Holder<JukeboxSong> next = pickDisc(level, stand);
 		if (next != null) {

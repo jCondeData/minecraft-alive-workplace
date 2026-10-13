@@ -99,6 +99,7 @@ public final class Objectives {
 	static {
 		register("bring", j -> j.has("by") ? BringBy.read(j) : Bring.read(j));
 		register("bring_request", j -> new BringRequest());
+		register("bring_wonder_goods", j -> new BringWonderGoods()); // 35.7
 		register("kill", Kill::read);
 		register("battle", j -> new Battle(GsonHelper.getAsInt(j, "count", 1)));
 		register("wait", j -> new Wait(positive(j, "days")));
@@ -647,6 +648,43 @@ public final class Objectives {
 				}
 			}
 			return null;
+		}
+	}
+
+	/**
+	 * {@code bring_wonder_goods} (35.7): the goods line furthest behind of the village's Wonder waiting for its goods (a
+	 * plain item or a tag, up to 64), into its stockpile, the chests by the Foundation Stone. Nothing to ask while no
+	 * Wonder of the village waits.
+	 */
+	public record BringWonderGoods() implements Objective {
+		@Override
+		public String type() {
+			return "bring_wonder_goods";
+		}
+
+		@Override
+		public int need() {
+			return 1;
+		}
+
+		@Override
+		public Component line() {
+			return Component.translatable("quest.aliveworkplace.bring_wonder_goods");
+		}
+
+		@Override
+		public JsonObject json() {
+			JsonObject o = new JsonObject();
+			o.addProperty("type", type());
+			return o;
+		}
+
+		@Override
+		@Nullable
+		public Objective resolve(Context context) {
+			return io.github.jcondedata.aliveworkplace.wonder.WonderGoods.shortest(context.level, context.hall)
+				.map(w -> (Objective) new Bring(w.item(), Math.min(64, Math.max(1, w.count())), "station", Optional.of(w.stone())))
+				.orElse(null);
 		}
 	}
 

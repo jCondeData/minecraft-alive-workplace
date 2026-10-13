@@ -404,9 +404,9 @@ public final class Festivals {
 
 	/**
 	 * The gathering, shared with the Grand Chef's banquets (29.18): a villager off work walks to {@code square}; one there
-	 * dances now and then. Returns whether they are at the square.
+	 * dances now and then. Returns whether they are at the square. Also a Wonder's dedication's (35.7, at its stone).
 	 */
-	static boolean gatherAt(ServerLevel level, Villager villager, BlockPos square) {
+	public static boolean gatherAt(ServerLevel level, Villager villager, BlockPos square) {
 		if (villager.isPassenger()) {
 			return square.closerToCenterThan(villager.position(), 24); // seated (in a Cup's stands, 28.19): there
 		}

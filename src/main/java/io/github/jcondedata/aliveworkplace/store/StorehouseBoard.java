@@ -42,6 +42,8 @@ public final class StorehouseBoard {
 	/** Back to the requests, on the orders page. */
 	public static final int BACK_SLOT = 0;
 	public static final int FIRST_REQUEST = 9;
+	/** How far from the storehouse the blocks whose requests it lists may be (35.7: a Wonder may stand 96 from its hall). */
+	public static final int BLOCK_RANGE = 160;
 
 	public static void open(ServerPlayer player, BlockPos storehouse) {
 		ServerLevel level = Players.level(player);
@@ -65,6 +67,7 @@ public final class StorehouseBoard {
 		long items = SupplyContainers.contents(level, store).values().stream().mapToLong(Long::longValue).sum();
 		List<Requests.Request> requests = new ArrayList<>(Requests.near(level, storehouse, Porters.owner(level, storehouse)));
 		requests.addAll(io.github.jcondedata.aliveworkplace.colony.Settlers.requests(level, storehouse)); // 33.9: the settlers' missing supplies
+		requests.addAll(Requests.atBlocks(level, storehouse, BLOCK_RANGE)); // 35.7: a Wonder's goods, posted by its Foundation Stone
 		ItemStack info = new ItemStack(Items.WRITABLE_BOOK);
 		info.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.info"), ChatFormatting.GOLD));
 		info.set(DataComponents.LORE, new ItemLore(List.of(
@@ -89,8 +92,8 @@ public final class StorehouseBoard {
 			menu.button(slot++, icon(level, request, store, viewer), p -> {
 				int given = give(p, request);
 				if (given > 0) {
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.storehouse.gave", given, request.what(), job(request))
-						.withStyle(ChatFormatting.GREEN));
+					Chat.actionBar(p, Component.translatable(request.forBlock() ? "message.aliveworkplace.storehouse.gave_for" : "message.aliveworkplace.storehouse.gave",
+						given, request.what(), job(request)).withStyle(ChatFormatting.GREEN));
 					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
 				} else {
 					Chat.actionBar(p, Component.translatable("message.aliveworkplace.storehouse.none", request.what()).withStyle(ChatFormatting.YELLOW));
@@ -185,6 +188,9 @@ public final class StorehouseBoard {
 		List<Component> lore = new ArrayList<>();
 		int away = (int) Math.round(Math.sqrt(request.station().distSqr(viewer.blockPosition())));
 		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.for", job(request), away), ChatFormatting.GRAY));
+		if (request.forBlock()) {
+			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.made_by", request.block().job()), ChatFormatting.GRAY));
+		}
 		if (request.item() != null) {
 			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.in_store", SupplyContainers.count(level, store, request.item())),
 				ChatFormatting.GRAY));
@@ -196,8 +202,14 @@ public final class StorehouseBoard {
 		return icon;
 	}
 
-	/** Moves up to what's asked for from {@code player}'s inventory into the worker's chests; returns how many. */
+	/**
+	 * Moves up to what's asked for from {@code player}'s inventory into the worker's chests (a request posted for a block:
+	 * its own taker, 35.7); returns how many.
+	 */
 	static int give(ServerPlayer player, Requests.Request request) {
+		if (request.forBlock()) {
+			return request.block().taker().take(player, request);
+		}
 		ServerLevel level = Players.level(player);
 		List<BlockPos> chests = SupplyContainers.find(level, request.station(), buildArea(level, request));
 		if (chests.isEmpty()) {
@@ -242,7 +254,7 @@ public final class StorehouseBoard {
 	/** A builder's chests don't count inside the building going up; nobody else's are excluded. */
 	@Nullable
 	private static BoundingBox buildArea(ServerLevel level, Requests.Request request) {
-		BuildSite site = Builders.activeSite(level, request.worker());
+		BuildSite site = request.worker() == null ? null : Builders.activeSite(level, request.worker());
 		if (site == null) {
 			return null;
 		}
@@ -252,6 +264,9 @@ public final class StorehouseBoard {
 	}
 
 	private static Component job(Requests.Request request) {
+		if (request.forBlock()) {
+			return request.block().name(); // "the Great Cathedral"
+		}
 		return Component.translatable("entity.minecraft.villager." + request.worker().getVillagerData().getProfession().name());
 	}
 

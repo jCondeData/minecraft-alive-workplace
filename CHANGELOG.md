@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A Wonder's goods and its dedication** (35.7, part of Wonders, for 2.0): each stage of a Wonder now waits for its
+  goods (the crew's feast, their tools, the rites' candles, books and potions, its treasures), each line naming the job
+  that makes it. The Foundation Stone shows every line ("2 of 4 Flowers · Florist", "no Florist in the village"); the
+  lines go on the Storehouse's requests board (a request for a block, not a villager), porters carry them to the
+  stockpile first, crafters make what's short, and the hall's daily quest asks for the line furthest behind. Anyone can
+  hand goods in at the stone or on the board. With every line in, by day, the stage is dedicated: the bell rings, the
+  village gathers at the stone, the Bard plays and the guards stand in line, the goods are taken and the chronicle says
+  so. Abandoning the Wonder hands back the goods handed in for a stage not yet dedicated.
 - **Builders use scaffolding** (35.6, part of Wonders, for 2.0): a block with nowhere to stand near it (a raised arm,
   a spire's tip, a dome's crown) is no longer skipped. The builder puts up a column of scaffolding from its chests
   beside it, climbs it and works from the top, then takes it all down when that stage is done and the scaffolding goes
@@ -93,6 +101,11 @@ asks for the steps, `latest.log` and any crash report).
   standing there a tick for each one (about 20 seconds round a Wonder's last stage).
 
 ### Changed
+- **The Observatory's Sky Chart covers about 6,144 blocks** (35.18a, part of Wonders, for 2.0; the owner's change from
+  1,024): 384 chunks and 12 regions across, every village, temple, monument, mansion and the rest on one locked map at
+  48 blocks a pixel (a vanilla map stops at 2,048). The Observatory searches that far without slowing the server: one
+  patch of land at a time, only when the tick has room, at most one kind of place an hour, and it carries on where it
+  was after a restart. The hall's button that hands the chart over comes with 35.18.
 - **Threats never destroy your builders' work** (32.16a, part of 1.6): only the gate blocks of walls and gates break
   under the rams, and nothing else a raider does (a creeper's blast, a ravager, a vindicator at a house door) breaks a
   block the builders placed or a build still under way. Whatever rams and village fires take, the builders always put

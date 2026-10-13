@@ -58,7 +58,7 @@ import org.jetbrains.annotations.Nullable;
  * each one's phase today ("Lush Cenote, today: Lotad, Wooper, Goomy"), from the block's saved pool and Cobblemon's
  * {@code data/cobblemon/habitat_pools}.</li>
  * <li><b>Founding:</b> an Expert keeper in a village with a finished Habitat Garden puts one natural-mode Habitat Block
- * in place of its mossy centre stone ({@link StarterBlueprints#HABITAT_GARDEN_CENTRE}), mimicking the moss, with the
+ * in place of its mossy centre stone ({@link StarterBlueprints#HABITAT_GARDEN_CENTRE}), mimicking that stone, with the
  * pool {@code data/aliveworkplace/village_habitats/<name>.json} gives the biome there. One per village (kept on the
  * hall); it lies inside the village, so the hall's protection covers it; taking the garden down removes it without a
  * drop.</li>
@@ -80,8 +80,8 @@ public final class VillageHabitats {
 	public static final String NATURAL = "cobblemon:natural";
 	/** The data folder of the biome-to-pool files. */
 	public static final String FOLDER = "village_habitats";
-	/** What the village's habitat mimics: the garden's moss centre stone it replaces. */
-	public static final ResourceLocation MIMIC = ResourceLocation.fromNamespaceAndPath("minecraft", "moss_block");
+	/** What the village's habitat mimics by default: the garden's centre stone it replaces (the template's block). */
+	public static final ResourceLocation MIMIC = ResourceLocation.fromNamespaceAndPath("minecraft", "mossy_cobblestone");
 	/** Cobblemon's own structures' range of influence for a natural block. */
 	public static final int RANGE_OF_INFLUENCE = 12;
 
@@ -135,11 +135,19 @@ public final class VillageHabitats {
 				continue;
 			}
 			BlockPos centre = centre(f.placement());
-			if (level.isLoaded(centre) && level.getBlockState(centre).is(Blocks.MOSS_BLOCK)) {
+			if (level.isLoaded(centre) && isCentreStone(level.getBlockState(centre))) {
 				return centre;
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Whether {@code state} is a garden's centre stone, still waiting for its habitat: the template's mossy cobblestone
+	 * (B88: only a moss block was accepted, so no keeper ever founded one in a real garden), or a moss block.
+	 */
+	public static boolean isCentreStone(BlockState state) {
+		return state.is(Blocks.MOSSY_COBBLESTONE) || state.is(Blocks.MOSS_BLOCK);
 	}
 
 	/** Whether the village of {@code hall} already has its habitat (forgetting one that is gone). */
@@ -171,7 +179,8 @@ public final class VillageHabitats {
 			return false;
 		}
 		ResourceLocation pool = poolFor(level, spot);
-		if (pool == null || !place(level, spot, pool)) {
+		ResourceLocation mimic = BuiltInRegistries.BLOCK.getKey(level.getBlockState(spot).getBlock());
+		if (pool == null || !place(level, spot, pool, mimic)) {
 			return false;
 		}
 		hall.setHabitat(spot);
@@ -180,8 +189,13 @@ public final class VillageHabitats {
 		return true;
 	}
 
-	/** Places a natural-mode Habitat Block with {@code pool} at {@code pos}, mimicking moss: false without Cobblemon's block. */
+	/** Places a natural-mode Habitat Block with {@code pool} at {@code pos}, mimicking the centre stone: false without Cobblemon's block. */
 	public static boolean place(ServerLevel level, BlockPos pos, ResourceLocation pool) {
+		return place(level, pos, pool, MIMIC);
+	}
+
+	/** Places a natural-mode Habitat Block with {@code pool} at {@code pos}, looking like {@code mimic}: false without Cobblemon's block. */
+	public static boolean place(ServerLevel level, BlockPos pos, ResourceLocation pool, ResourceLocation mimic) {
 		Block block = BuiltInRegistries.BLOCK.getOptional(HABITAT_BLOCK).orElse(null);
 		if (block == null) {
 			return false;
@@ -202,7 +216,7 @@ public final class VillageHabitats {
 			// The settings Cobblemon's own habitat structures carry for a natural block.
 			tag.putString("SpawningStyle", NATURAL);
 			tag.putString("PoolId", pool.toString());
-			tag.putString("MimicId", MIMIC.toString());
+			tag.putString("MimicId", mimic.toString());
 			tag.putString("PhaseOrder", "FULL_RANDOM");
 			tag.putString("Modifiers", "");
 			tag.putBoolean("ReplaceSpawns", true);

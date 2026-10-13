@@ -44,7 +44,7 @@ public class VillageHabitatCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		BlockPos origin = helper.absolutePos(CENTRE).subtract(StarterBlueprints.HABITAT_GARDEN_CENTRE);
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin, Rotation.NONE, Mirror.NONE);
-		helper.setBlock(CENTRE, Blocks.MOSS_BLOCK);
+		helper.setBlock(CENTRE, Blocks.MOSSY_COBBLESTONE); // the template's own centre stone (B88: a moss block hid that it was never founded on)
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.HABITAT_GARDEN.id(), placement, UUID.randomUUID());
 		PartnerShowsCompatTests.after(helper, () -> BuildSiteManager.get(level).forgetFinished(placement));
 		return placement;
@@ -76,7 +76,7 @@ public class VillageHabitatCompatTests implements FabricGameTest {
 		});
 		if (!PokemonFeatures.HABITATS.available()) {
 			helper.runAfterDelay(300, () -> {
-				helper.assertTrue(level.getBlockState(centre).is(Blocks.MOSS_BLOCK), "Cobblemon 1.7: the centre stone became " + level.getBlockState(centre));
+				helper.assertTrue(level.getBlockState(centre).is(Blocks.MOSSY_COBBLESTONE), "Cobblemon 1.7: the centre stone became " + level.getBlockState(centre));
 				List<Component> lines = VillageHabitats.hallLines(keeper);
 				helper.assertTrue(lines.size() == 1 && lines.get(0).getString().contains("Cobblemon 1.8"), "her page says " + lines);
 				helper.succeed();
@@ -89,7 +89,7 @@ public class VillageHabitatCompatTests implements FabricGameTest {
 			helper.assertTrue(VillageHabitats.isNatural(level.getBlockState(centre)), "no natural Habitat Block yet: " + level.getBlockState(centre));
 			CompoundTag settings = VillageHabitats.settings(level, centre);
 			helper.assertTrue(settings.getString("PoolId").equals(pool.toString()), "its pool is " + settings.getString("PoolId") + ", not " + pool);
-			helper.assertTrue(settings.getString("MimicId").equals("minecraft:moss_block"), "it mimics " + settings.getString("MimicId"));
+			helper.assertTrue(settings.getString("MimicId").equals("minecraft:mossy_cobblestone"), "it mimics " + settings.getString("MimicId"));
 			helper.assertTrue(VillageHabitats.NATURAL.equals(settings.getString("SpawningStyle")), "its style is " + settings.getString("SpawningStyle"));
 			VillageHallBlockEntity hall = (VillageHallBlockEntity) helper.getBlockEntity(HALL);
 			helper.assertTrue(centre.equals(hall.habitat()), "the hall keeps " + hall.habitat());

@@ -3,14 +3,17 @@ package io.github.jcondedata.aliveworkplace.devclient;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.guard.Gates;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
+import io.github.jcondedata.aliveworkplace.threat.Culture;
 import io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers;
 import io.github.jcondedata.aliveworkplace.wonder.GreatWallSentries;
 import io.github.jcondedata.aliveworkplace.wonder.WonderManager;
 import io.github.jcondedata.aliveworkplace.wonder.WonderSite;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.level.block.FenceGateBlock;
 
@@ -43,6 +46,9 @@ final class WonderGreatWallScene {
 		return lapse[0];
 	}
 
+	/** How far round from the Wall's ends the filmed raid gathers, at the least. */
+	private static final double CLEAR = Math.toRadians(40);
+
 	static WonderSite site(ServerLevel level) {
 		return WonderManager.get(level).sites().stream().filter(s -> s.wonder().equals(GREAT_WALL) && s.done()).findFirst().orElse(null);
 	}
@@ -52,7 +58,25 @@ final class WonderGreatWallScene {
 		BlockPos hall = lapse.hall();
 		Gates.round(level, hall, 0);
 		VillageRaids.lastGathering = null;
-		VillageRaids.Raid raid = VillageRaids.start(level, hall, 16, 0);
+		// The raid's dice fixed (a scene films the same night every run): the first that sends it well round the open side.
+		// Where it picks its side is the Wall's own doing (outside the arc it covers, checked below), but one drawn right
+		// by a wall's end gathers in the sentries' reach, and they rightly go down to fight it instead of watching.
+		List<GreatWallPowers.Arc> arcs = GreatWallPowers.arcs(level, hall);
+		long seed = 0;
+		for (long s = 0; s < 256; s++) {
+			RandomSource dice = RandomSource.create(s);
+			Optional<Culture> culture = VillageRaids.cultureFor(level, hall, 16, dice);
+			if (culture.isEmpty() || culture.get().arrival() != Culture.Arrival.EDGE && culture.get().arrival() != Culture.Arrival.LAIR) {
+				continue; // (from the shore or a portal they'd gather elsewhere)
+			}
+			double bearing = GreatWallPowers.bearing(arcs, 0, Math.PI, dice); // the same draw VillageRaids makes next with these dice
+			if (!GreatWallPowers.walled(arcs, bearing - CLEAR) && !GreatWallPowers.walled(arcs, bearing) && !GreatWallPowers.walled(arcs, bearing + CLEAR)) {
+				seed = s;
+				break;
+			}
+		}
+		RandomSource dice = RandomSource.create(seed);
+		VillageRaids.Raid raid = VillageRaids.cultureFor(level, hall, 16, dice).map(c -> VillageRaids.start(level, hall, 16, 0, Double.NaN, c, dice)).orElse(null);
 		Showcase.check(raid != null, "a night raid set out for the village");
 	}
 

@@ -14,9 +14,11 @@ import io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers;
 import io.github.jcondedata.aliveworkplace.wonder.SkyChart;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.List;
+import java.util.function.BiConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.MapDecorations;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -56,10 +59,19 @@ final class WonderObservatoryScene {
 			if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity)) {
 				return;
 			}
-			// the week's search, every kind at once (on the server it takes an in-game hour a kind)
-			long t = 0;
-			for (int i = 0; i < 40_000 && !entity.skyChart().done(); i++, t += SkyChart.STEP_TICKS) {
-				ObservatoryPowers.tick(level, hall, entity, t, true);
+			// the week's search, every kind at once (on the server it takes an in-game hour a kind). The scene's superflat
+			// world is made with structures off, so it has none to find: the land round the village is the one below,
+			// standing in for the world's structure check the way the Observatory's GameTests do.
+			ObservatoryPowers.finder = new Land(LAND.stream().map(s -> new SkyChart.Found(s.kind(), s.structure(), hall.offset(s.pos()))).toList());
+			ObservatoryPowers.kindsForTest = LAND.stream().map(SkyChart.Found::kind).distinct().toList();
+			try {
+				long t = 0;
+				for (int i = 0; i < 40_000 && !entity.skyChart().done(); i++, t += SkyChart.STEP_TICKS) {
+					ObservatoryPowers.tick(level, hall, entity, t, true);
+				}
+			} finally {
+				ObservatoryPowers.finder = SkyChart.VANILLA;
+				ObservatoryPowers.kindsForTest = null;
 			}
 			found = entity.skyChart().found().size();
 			chart = ObservatoryPowers.chart(level, hall);
@@ -79,6 +91,41 @@ final class WonderObservatoryScene {
 			Showcase.check(hall != null && ObservatoryPowers.charts(level, hall) && ObservatoryPowers.foretells(level, hall), "the finished Observatory's powers are on");
 			MapDecorations marks = chart.getOrDefault(DataComponents.MAP_DECORATIONS, MapDecorations.EMPTY);
 			Showcase.check(found > 0 && marks.decorations().size() >= found, "the Sky Chart marks the " + found + " structures found (" + marks.decorations().size() + " markers)");
+		}
+	}
+
+	private static ResourceLocation mc(String path) {
+		return ResourceLocation.withDefaultNamespace(path);
+	}
+
+	/** The land round the village (each start's offset from the hall), as a world with structures on would have it. */
+	private static final List<SkyChart.Found> LAND = List.of(
+		new SkyChart.Found(mc("villages"), mc("village_plains"), new BlockPos(820, 0, -610)),
+		new SkyChart.Found(mc("villages"), mc("village_taiga"), new BlockPos(-1340, 0, -1720)),
+		new SkyChart.Found(mc("villages"), mc("village_desert"), new BlockPos(2240, 0, 1450)),
+		new SkyChart.Found(mc("villages"), mc("village_savanna"), new BlockPos(-2050, 0, 980)),
+		new SkyChart.Found(mc("pillager_outposts"), mc("pillager_outpost"), new BlockPos(1180, 0, -1890)),
+		new SkyChart.Found(mc("desert_pyramids"), mc("desert_pyramid"), new BlockPos(1890, 0, 2210)),
+		new SkyChart.Found(mc("jungle_temples"), mc("jungle_pyramid"), new BlockPos(-2610, 0, 2380)),
+		new SkyChart.Found(mc("swamp_huts"), mc("swamp_hut"), new BlockPos(-770, 0, 1540)),
+		new SkyChart.Found(mc("igloos"), mc("igloo"), new BlockPos(-1620, 0, -2540)),
+		new SkyChart.Found(mc("ocean_monuments"), mc("monument"), new BlockPos(2570, 0, -1150)),
+		new SkyChart.Found(mc("woodland_mansions"), mc("mansion"), new BlockPos(-2830, 0, -930)),
+		new SkyChart.Found(mc("shipwrecks"), mc("shipwreck"), new BlockPos(2010, 0, -380)),
+		new SkyChart.Found(mc("ruined_portals"), mc("ruined_portal"), new BlockPos(-460, 0, -1050)),
+		new SkyChart.Found(mc("strongholds"), mc("stronghold"), new BlockPos(1500, -40, 2700)));
+
+	/** A stand-in for the world's structure check: these starts, each of its kind, reported only for the square asked about. */
+	private record Land(List<SkyChart.Found> starts) implements SkyChart.Finder {
+		@Override
+		public void find(ServerLevel level, ResourceLocation kind, ChunkPos min, int chunks, BiConsumer<ResourceLocation, BlockPos> found) {
+			for (SkyChart.Found f : starts) {
+				int cx = f.pos().getX() >> 4;
+				int cz = f.pos().getZ() >> 4;
+				if (f.kind().equals(kind) && cx >= min.x && cz >= min.z && cx < min.x + chunks && cz < min.z + chunks) {
+					found.accept(f.structure(), f.pos());
+				}
+			}
 		}
 	}
 

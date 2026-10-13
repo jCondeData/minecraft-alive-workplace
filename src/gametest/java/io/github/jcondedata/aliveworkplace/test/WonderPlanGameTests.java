@@ -297,6 +297,22 @@ public class WonderPlanGameTests implements FabricGameTest {
 		return BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement);
 	}
 
+	/** placeRefusal's reason for the plan at {@code at} turned {@code rotation}, with the records it looks at near the hall. */
+	private static String why(ServerLevel level, ItemStack plan, BlockPos at, Rotation rotation) {
+		WonderPlanItem.Plan p = WonderPlanItem.plan(plan).get();
+		net.minecraft.core.Vec3i size = BlueprintItem.data(plan).get().size().get();
+		BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), size, at, rotation);
+		String reason = WonderPlans.placeRefusal(level, p, placement, size).map(c -> key(c) + " (" + c.getString() + ")").orElse("none");
+		BlockPos hall = p.hall().pos();
+		List<String> near = new ArrayList<>();
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		sites.finishedNear(level, hall, WonderPlans.REACH + 2 * io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS)
+			.forEach(f -> near.add("finished " + f.structure() + " at " + f.placement().origin().subtract(hall).toShortString()));
+		sites.all().stream().filter(s -> s.structure().getPath().startsWith(WonderBlueprints.FOLDER))
+			.forEach(s -> near.add("Wonder site " + s.structure() + " at " + s.placement().origin().subtract(hall).toShortString()));
+		return "refusal " + reason + "; near the hall: " + near;
+	}
+
 	/** Refused outside the village, beyond 96 blocks and over a finished building, each saying why; elsewhere it goes down and turns all four ways. */
 	//$ gametest_batch SMALL '"wonderPlace"'
 	@GameTest(template = SMALL, batch = "wonderPlace")
@@ -304,6 +320,7 @@ public class WonderPlanGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = town(helper);
 		BlockPos hall = helper.absolutePos(HALL);
+		Leftovers.wonderGround(helper, hall); // B125: buildings and Wonder sites earlier batches left round the hall
 		Wonder folly = folly(helper);
 		ItemStack plan = WonderPlanItem.of(level, hall, folly, Component.literal("Testholm"));
 		player.setItemInHand(InteractionHand.MAIN_HAND, plan);
@@ -331,14 +348,14 @@ public class WonderPlanGameTests implements FabricGameTest {
 		// elsewhere in the village: down, then turned all four ways
 		BlockPos ground = hall.offset(-20, -1, -20);
 		use(player, ground, false);
-		helper.assertTrue(placed(player).isPresent(), "not placed inside the village, away from buildings");
+		helper.assertTrue(placed(player).isPresent(), "not placed inside the village, away from buildings: " + why(level, plan, ground.above(), Rotation.NONE));
 		Set<Rotation> turns = new HashSet<>();
 		turns.add(placed(player).get().rotation());
 		for (int i = 0; i < 3; i++) {
 			BlueprintData.Placement before = placed(player).get();
 			use(player, ground, true);
 			helper.assertTrue(placed(player).isPresent() && placed(player).get().rotation() == before.rotation().getRotated(Rotation.CLOCKWISE_90),
-				"turn " + (i + 1) + " refused: " + placed(player));
+				"turn " + (i + 1) + " refused: " + placed(player) + ", " + why(level, plan, ground.above(), before.rotation().getRotated(Rotation.CLOCKWISE_90)));
 			turns.add(placed(player).get().rotation());
 		}
 		helper.assertTrue(turns.size() == 4, "all four turns: " + turns);

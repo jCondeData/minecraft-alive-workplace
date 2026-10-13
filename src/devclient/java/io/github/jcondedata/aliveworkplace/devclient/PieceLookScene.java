@@ -148,6 +148,7 @@ final class PieceLookScene {
 		BlockPos bench = HALL.offset(-3, 0, -6);
 		level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
 		builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+		ScreenshotHarness.fileRecords(level, bench, 1); // the bench's record now, not in vanilla's next task, so he keeps his job
 		Builders.employ(level, builder, bench);
 		ScreenshotHarness.hover(player, Vec3.atCenterOf(HALL).add(-3, 2, 4), 200, 20);
 	}

@@ -130,6 +130,8 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("RETIRE_SHADOW", new io.github.jcondedata.aliveworkplace.people.Retirement.Shadow(B, "Bram", 138L));
 		samples.put("MENTORING", B);
 		samples.put("TAUGHT_BY", new io.github.jcondedata.aliveworkplace.people.Retirement.Teacher(B, "Bram", 24000L));
+		samples.put("WONDER_BLESSING", new io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.Blessed(41L, true, 2.0)); // (35.10)
+		samples.put("BLESSED_CHILD", 2.0); // (35.10)
 		return samples;
 	}
 

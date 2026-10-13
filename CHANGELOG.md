@@ -85,6 +85,8 @@ asks for the steps, `latest.log` and any crash report).
   `/workplace cancel` abandons the Wonder: what's built stays and the plan comes back. The README has a Wonders section.
 
 ### Fixed
+- A worker's status names their own job: a Miner's level line reads "Apprentice Miner · 10/70 XP…" instead of
+  calling every worker a builder (B124).
 - Builders no longer die from falls while on a job (on a roof, a tower or a Wonder's dome), and a Wonder's part whose
   builder is lost goes on to another builder of its crew instead of counting as built with blocks missing (35.5).
 - A builder levelling the ground round a finished build with no dirt in its chests leaves the holes at once instead of

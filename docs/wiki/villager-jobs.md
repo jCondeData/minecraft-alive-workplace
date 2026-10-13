@@ -17,7 +17,8 @@ needs Cobblemon, without it) isn't listed.
 
 Chests and barrels within 8 blocks of the workstation are that worker's supply chests: tools and materials come out
 of them and the work goes into them. A line over a worker's head says what they are doing or waiting for, and
-sneak-right-clicking a worker with an empty hand shows their status.
+sneak-right-clicking a worker with an empty hand shows their status, ending with their level in their own job
+("Apprentice Miner · 10/70 XP to the next level") and how fast that makes them.
 
 | Job | Workstation and item | Class |
 |---|---|---|

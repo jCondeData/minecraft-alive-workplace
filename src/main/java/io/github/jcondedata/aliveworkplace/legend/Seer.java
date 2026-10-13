@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
+import io.github.jcondedata.aliveworkplace.guard.Warnings;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
 import io.github.jcondedata.aliveworkplace.hall.MarketDays;
@@ -47,7 +48,9 @@ import net.minecraft.world.item.Items;
  *   and on the hall's "What next?", whether raiders come that night and from which side, the next festival and market
  *   day, and the next day's guest. The night's raid is rolled then ({@link VillageRaids#rollNight}) and the night goes as
  *   rolled; the next day's guest is rolled then too ({@link LegendGuests#rollAhead}), so the Seer is never wrong. Through
- *   {@link Legends#foretold} the Seer is M32's warning of attacks, {@link ForetellPower#warningDays} days ahead;</li>
+ *   {@link Legends#foretold} the Seer is M32's warning of attacks, {@link ForetellPower#warningDays} days ahead: the dawn
+ *   rolls the threat clock that many nights ahead ({@link VillageRaids#rollAhead}) and tonight is the clock's, and the
+ *   Seer is one of {@link Warnings#SOURCES} (B133);</li>
  *   <li>{@code bless_weddings}: a wedding at the Chapel with the Seer within {@link #CHAPEL_REACH} blocks is blessed: the
  *   couple is {@link BlessWeddingsPower#mood} happier for {@link BlessWeddingsPower#days} days, and their first baby
  *   comes within {@link BlessWeddingsPower#babyDays} days when a bed is free, past {@code VillageGrowth}'s daily wait
@@ -211,6 +214,18 @@ public final class Seer {
 		return withPower(level, hall, ForetellPower.class);
 	}
 
+	/** The kind of attack the threat clock's raids are, for {@link #warningDays}. */
+	public static final String RAID = "raid";
+
+	/**
+	 * The Seer as a source of 32.14's warning (B133, in {@link Warnings#SOURCES}): a Seer settled in the village sees
+	 * the clock's raids {@link Legends#foretold} days ahead, since their dawn rolls it that far.
+	 */
+	static Optional<Warnings.Source> warningSource(ServerLevel level, BlockPos hall) {
+		int days = Legends.foretold(level, hall, RAID);
+		return days <= 0 ? Optional.empty() : foreteller(level, hall).map(a -> new Warnings.Source(a.villager().getName(), false, days));
+	}
+
 	/** Days of warning the village round {@code hall} gets of attacks of {@code kind} (M32: {@link Legends#foretold}). */
 	public static int warningDays(ServerLevel level, BlockPos hall, String kind) {
 		int days = 0;
@@ -246,7 +261,8 @@ public final class Seer {
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
 		long today = Chronicle.day(level);
 		int villagers = VillageHalls.census(level, hall).villagers();
-		VillageRaids.Night night = VillageRaids.rollNight(level, hall, villagers, entity.lastRaidDay(), random);
+		// Tonight is the clock's, rolled now as many nights ahead as the Seer warns of (32.14, B133).
+		VillageRaids.Night night = VillageRaids.rollAhead(level, hall, villagers, entity.lastRaidDay(), today + warningDays(level, hall, RAID), random);
 		Map<String, Told> guests = new HashMap<>();
 		entity.seer().guests().forEach((key, told) -> {
 			if (told.day() == today) {

@@ -217,6 +217,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ResearchTreesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldSageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SeerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.SeerWarningGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LegendEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",

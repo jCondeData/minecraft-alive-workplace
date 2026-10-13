@@ -41,10 +41,11 @@ import net.minecraft.world.phys.Vec3;
  * <li>a guard on the night watch whose Guard Post is within {@link #REACH} blocks of a finished Lookout Tower or Wall
  * Tower (any style or tier): who comes and from which side;</li>
  * <li>a Scout posted there (not out on a mission): the same, and how many;</li>
- * <li>whatever other systems add to {@link #SOURCES} (M35's Lighthouse).</li>
+ * <li>whatever other systems add to {@link #SOURCES}: M29's Seer ({@code Seer#warningSource}, two days ahead: with a
+ * Seer in the village the clock is rolled two nights ahead at the Seer's dawn, B133) and M35's Lighthouse.</li>
  * </ul>
- * (The Seer of M29 is not a source yet: with a Seer the night is foretold at dawn by the Seer's own round, which the
- * clock leaves alone; ROADMAP Notes, 32.14.)
+ * A source sees attacks up to {@link Source#days} days ahead (a guard or scout: 1); the attack is told as soon as a
+ * source sees it.
  *
  * <p>When warned, players in the village and the hall's owner wherever they are online are told at once, the chronicle
  * has it, and the guards icon and the Defence page show the attack and its side. On the day, from {@link #NOON}, the gates
@@ -59,8 +60,11 @@ public final class Warnings {
 	/** From this time of the warned day the gates shut and the portcullis drops. */
 	public static final long NOON = 6000;
 
-	/** Who saw them coming: the name shown, and whether they counted the raiders (a scout). */
-	public record Source(Component who, boolean counts) {
+	/** Who saw them coming: the name shown, whether they counted the raiders (a scout), and how many days ahead they see (1: a day's warning). */
+	public record Source(Component who, boolean counts, int days) {
+		public Source(Component who, boolean counts) {
+			this(who, counts, 1);
+		}
 	}
 
 	/** Sources other systems add (M35's Lighthouse): given the level and the hall, one if the village has it. */
@@ -110,7 +114,12 @@ public final class Warnings {
 
 	/** The village's source of warning, if it has one: a scout by a tower first (they count), then a guard, then {@link #SOURCES}. */
 	public static Optional<Source> source(ServerLevel level, BlockPos hall) {
-		List<BlockPos> towers = towers(level, hall);
+		return source(level, hall, 0);
+	}
+
+	/** As {@link #source(ServerLevel, BlockPos)}, among the sources that see {@code ahead} days ahead (0: tonight). */
+	public static Optional<Source> source(ServerLevel level, BlockPos hall, int ahead) {
+		List<BlockPos> towers = ahead <= 1 ? towers(level, hall) : List.of();
 		if (!towers.isEmpty()) {
 			List<Villager> watch = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
 				v -> v.isAlive() && !v.isBaby() && Guards.isGuard(v) && !Scouts.out(v) && byATower(v, towers)));
@@ -122,7 +131,7 @@ public final class Warnings {
 		}
 		for (BiFunction<ServerLevel, BlockPos, Optional<Source>> other : SOURCES) {
 			Optional<Source> found = other.apply(level, hall);
-			if (found.isPresent()) {
+			if (found.isPresent() && found.get().days() >= ahead) {
 				return found;
 			}
 		}
@@ -177,11 +186,11 @@ public final class Warnings {
 		if (next.isEmpty() || data.warned(hall) >= next.get().day()) {
 			return false;
 		}
-		Optional<Source> source = source(level, hall);
+		ThreatData.Attack attack = next.get();
+		Optional<Source> source = source(level, hall, (int) Math.min(Integer.MAX_VALUE, attack.day() - today));
 		if (source.isEmpty()) {
 			return false;
 		}
-		ThreatData.Attack attack = next.get();
 		data.warned(hall, attack.day());
 		int count = source.get().counts() ? VillageRaids.expected(level, hall, villagers, guards, attack.culture()) : 0;
 		Component message = message(level, hall, attack, count);
@@ -202,12 +211,18 @@ public final class Warnings {
 
 	/**
 	 * "Smoke on the north road: Warlord Harl's band will strike Oakvale tomorrow night." With {@code count} above 0 (a
-	 * scout's), how many come.
+	 * scout's), how many come; two days or more ahead (the Seer's, B133), "A vision of the north road: ... in 2 days."
 	 */
 	public static Component message(ServerLevel level, BlockPos hall, ThreatData.Attack attack, int count) {
 		Component name = VillageHalls.name(level, hall);
+		long ahead = attack.day() - Chronicle.day(level);
 		String when = (io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.fromTheSea(attack) ? "sea_" : "") // sails, not smoke (35.12)
-			+ (attack.day() > Chronicle.day(level) ? "tomorrow" : "tonight");
+			+ (ahead >= 2 ? "later" : ahead == 1 ? "tomorrow" : "tonight");
+		if (ahead >= 2) {
+			return count > 0
+				? Component.translatable("message.aliveworkplace.warning." + when + "_count", side(hall, attack), who(level, hall, attack), name, count, ahead)
+				: Component.translatable("message.aliveworkplace.warning." + when, side(hall, attack), who(level, hall, attack), name, ahead);
+		}
 		return count > 0
 			? Component.translatable("message.aliveworkplace.warning." + when + "_count", side(hall, attack), who(level, hall, attack), name, count)
 			: Component.translatable("message.aliveworkplace.warning." + when, side(hall, attack), who(level, hall, attack), name);

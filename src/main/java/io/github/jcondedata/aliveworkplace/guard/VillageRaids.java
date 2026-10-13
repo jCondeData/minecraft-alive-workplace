@@ -200,10 +200,18 @@ public final class VillageRaids {
 		Optional<io.github.jcondedata.aliveworkplace.legend.Seer.State> told = io.github.jcondedata.aliveworkplace.legend.Seer.tonight(level, hall);
 		if (told.isPresent()) {
 			Night night = told.get().night();
-			if (ENABLED && night.raid() && !told.get().raidStarted() && isNight(level) && time >= night.at()
-				&& start(level, hall, villagers, guards, night.angle()) != null) {
-				io.github.jcondedata.aliveworkplace.legend.Seer.raidStarted(level, hall);
-				raided.accept(day);
+			data.drop(hall, day, false);
+			if (ENABLED && night.raid() && !told.get().raidStarted() && isNight(level) && time >= night.at()) {
+				// Who comes is the clock's attack the Seer read at dawn (B133); a foretelling saved before it has none.
+				Optional<Culture> culture = data.attacks(hall).stream().filter(a -> a.day() == day).findFirst()
+					.flatMap(a -> Threats.on(a.culture())).filter(c -> !c.needsLair() || lairOf(level, hall, c));
+				Raid started = culture.isPresent() ? start(level, hall, villagers, guards, night.angle(), culture.get(), level.random)
+					: start(level, hall, villagers, guards, night.angle());
+				if (started != null) {
+					data.drop(hall, day, true);
+					io.github.jcondedata.aliveworkplace.legend.Seer.raidStarted(level, hall);
+					raided.accept(day);
+				}
 			}
 			return;
 		}
@@ -311,6 +319,33 @@ public final class VillageRaids {
 	 */
 	public static Night rollNight(ServerLevel level, BlockPos hall, int villagers, long lastRaidDay, net.minecraft.util.RandomSource random) {
 		return roll(level, hall, villagers, lastRaidDay, Chronicle.day(level), random);
+	}
+
+	/**
+	 * Rolls the clock of the village of {@code villagers} round {@code hall} ahead through the night of {@code through}
+	 * (B133: at a Seer's dawn, as many nights ahead as the Seer warns of, so that 32.14's warning comes that many days
+	 * before), with {@code random}: each night from today on that the clock hasn't rolled yet, as the dusk roll does,
+	 * an attack set only {@link #REST_DAYS} after the last raid and the last attack already set. Who comes is
+	 * {@link #cultureFor}, else the plain monsters (as a foretold raid always brought). Returns tonight as the clock now
+	 * holds it; quiet, and nothing rolled, while raids are off.
+	 */
+	public static Night rollAhead(ServerLevel level, BlockPos hall, int villagers, long lastRaidDay, long through, RandomSource random) {
+		if (!ENABLED) {
+			return Night.QUIET;
+		}
+		ThreatData data = ThreatData.get(level);
+		long today = Chronicle.day(level);
+		data.drop(hall, today, false);
+		for (long night = Math.max(today, data.rolled(hall) + 2); night <= through; night++) {
+			final long day = night;
+			long last = Math.max(lastRaidDay, data.attacks(hall).stream().mapToLong(ThreatData.Attack::day).max().orElse(lastRaidDay));
+			Night rolled = roll(level, hall, villagers, last, day, random);
+			ThreatData.Attack attack = rolled.raid() ? cultureFor(level, hall, villagers, random).or(() -> Threats.on(Threats.MONSTERS))
+				.map(c -> new ThreatData.Attack(day, c.id(), rolled.angle(), rolled.at())).orElse(null) : null;
+			data.rolled(hall, day - 1, attack);
+		}
+		return data.attacks(hall).stream().filter(a -> a.day() == today).findFirst()
+			.map(a -> new Night(true, a.angle(), a.at())).orElse(Night.QUIET);
 	}
 
 	/** As {@link #rollNight}, for the night of {@code day} (the clock rolls tomorrow's). */

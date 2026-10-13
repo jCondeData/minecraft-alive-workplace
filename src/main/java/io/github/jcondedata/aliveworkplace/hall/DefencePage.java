@@ -75,9 +75,12 @@ public final class DefencePage {
 
 	/** The guards icon's line for a warned attack (32.14): "Raiders tomorrow night, from the north"; empty when none is known. */
 	static Optional<Component> attackLine(ServerLevel level, BlockPos hall) {
-		return io.github.jcondedata.aliveworkplace.guard.Warnings.warned(level, hall).map(a -> VillageHallScreen.line(Component.translatable(
-			a.day() <= Chronicle.day(level) ? "screen.aliveworkplace.hall.attack_tonight" : "screen.aliveworkplace.hall.attack_tomorrow",
-			io.github.jcondedata.aliveworkplace.guard.Warnings.side(hall, a)), ChatFormatting.RED));
+		return io.github.jcondedata.aliveworkplace.guard.Warnings.warned(level, hall).map(a -> {
+			long ahead = a.day() - Chronicle.day(level);
+			Component side = io.github.jcondedata.aliveworkplace.guard.Warnings.side(hall, a);
+			return VillageHallScreen.line(ahead >= 2 ? Component.translatable("screen.aliveworkplace.hall.attack_later", ahead, side) // the Seer's (B133)
+				: Component.translatable(ahead <= 0 ? "screen.aliveworkplace.hall.attack_tonight" : "screen.aliveworkplace.hall.attack_tomorrow", side), ChatFormatting.RED);
+		});
 	}
 
 	/** The line on the hall's guards icon: whose lair is camped where, or that none is near. */
@@ -245,8 +248,9 @@ public final class DefencePage {
 		Optional<ThreatData.Attack> warned = io.github.jcondedata.aliveworkplace.guard.Warnings.warned(level, hall);
 		if (warned.isPresent()) {
 			ThreatData.Attack attack = warned.get();
-			boolean tonight = attack.day() <= Chronicle.day(level);
-			return VillageHallScreen.icon(Items.BELL, Component.translatable(tonight ? "screen.aliveworkplace.defence.next_tonight" : "screen.aliveworkplace.defence.next_tomorrow"),
+			long ahead = attack.day() - Chronicle.day(level);
+			return VillageHallScreen.icon(Items.BELL, ahead >= 2 ? Component.translatable("screen.aliveworkplace.defence.next_later", ahead) // the Seer's (B133)
+					: Component.translatable(ahead <= 0 ? "screen.aliveworkplace.defence.next_tonight" : "screen.aliveworkplace.defence.next_tomorrow"),
 				ChatFormatting.RED,
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.next_who",
 					io.github.jcondedata.aliveworkplace.guard.Warnings.who(level, hall, attack), io.github.jcondedata.aliveworkplace.guard.Warnings.side(hall, attack)), ChatFormatting.GOLD),

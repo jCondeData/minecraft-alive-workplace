@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14
+Roadmap items: 32.2, 32.14, B133
 
 ## What a player sees
 
@@ -21,12 +21,15 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 
 - **Who keeps watch.** A guard whose Guard Post is within 24 blocks of a finished **Lookout Tower** or **Wall Tower**
   (any style or tier) says who comes and from which side; a **Scout** posted there (not out on a mission) also counts
-  them ("about 9 strong"). Other systems add sources to `guard/Warnings.SOURCES` (M35's Lighthouse). The Seer is not a
-  source yet, though 32.14 gives the Seer two days' warning (bug B133); with one in the village the night is foretold
-  at dawn by the Seer's own round (29.16).
+  them ("about 9 strong"). Other systems add sources to `guard/Warnings.SOURCES`: M35's Lighthouse, and the **Seer**
+  (29.16), who gives **two days' warning** (B133): with a Seer settled in the village, each dawn's foretelling rolls the
+  threat clock two nights ahead, so an attack is told the moment it is set, two days before it comes ("A vision of the
+  north road: Warlord Harl's band will strike Oakvale in 2 days."). The Seer's dawn line for tonight is read from the
+  same clock, so the two always agree. A guard or scout sees only a day ahead; the Seer doesn't count the raiders.
 - **Told at once.** Players in the village, and the hall's owner wherever they are online, read "Smoke on the north
   road: Warlord Harl's band will strike Oakvale tomorrow night." The chronicle has it; the guards icon says "Raiders
-  tomorrow night, from the north" and the Defense page's new slot shows the attack, who and the side.
+  tomorrow night, from the north" ("Raiders in 2 days" after a Seer's warning) and the Defense page's new slot shows
+  the attack, who and the side.
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
   dropped bars over; if no attack came, the bars go up the next morning.
@@ -52,8 +55,11 @@ A village that keeps watch hears of an attack **the evening before**, when the c
   hour (between 19:30 and midnight). The night after, at that hour, they come from that side. They don't if their culture
   was switched off meanwhile, or if they needed a lair and it was broken up during the day: killing the chief in time
   calls the attack off.
-- **With a Seer** (Legends) nothing changes: the Seer still rolls tonight at dawn and that night goes as foretold; the
-  clock is not asked on such a day (32.14 makes the two tell one story).
+- **With a Seer** (Legends) the clock rolls at the Seer's dawn instead of at dusk, as many nights ahead as the Seer
+  warns of (`warning_days`, 2), with the same chance and rest days; tonight goes as the clock holds it, so the Seer is
+  never wrong and the raiders are the culture the clock set (B133). A night already rolled is never rolled again, so a
+  Seer arriving or leaving changes nothing already set; without the Seer the dusk roll takes over from the last night
+  rolled.
 - **How long.** `hours: night` raiders flee at dawn, as before. `hours: until_noon` raiders stay through the morning.
 - **Guards** fight anything that carries the raider tag (`aliveworkplace_raider`), so a culture may bring hoglins, which
   the game doesn't count as monsters. Raiders also carry their role as a tag (`aliveworkplace_role_melee`, …).
@@ -142,6 +148,10 @@ None.
   plain monsters come, if they are switched on. With them off, no raid starts.
 - 32.2: the clock rolls one night ahead (the item's spec). The design note's "two nights" and the Seer reading the clock
   belong to 32.14.
+- B133: the Seer's two nights are rolled at the Seer's dawn (with the foretelling's own randomness), not at dusk, so a
+  village without a Seer rolls exactly as before. A Seer's raid with no culture fitting the village brings the plain
+  monsters, as a foretold raid always did. `Warnings.Source` gained how many days ahead it sees (1 unless said), and a
+  warning two days or more ahead reads "A vision of ..." (`message.aliveworkplace.warning.later`).
 - 32.2: an attack whose lair was broken up before its hour is called off, so striking first is worth it.
 - 32.2: `villageRaids` stays the switch of all raids by chance, as it always was, and also switches `monsters` off;
   `banditCamps` also switches `bandits` off.
@@ -171,3 +181,9 @@ None.
   lookout; on the warned day the gates shut and the portcullis down at noon, the archer on the tower within 400 ticks
   of dusk and the villagers in, the siege taking the bars over; the bars up when no attack came, raids and sieges
   switched off, every new sentence). Scene `warning`.
+- B133: `SeerWarningGameTests` (a village with a settled Seer and a player by the hall: a dawn that sets an attack
+  two days off tells the player, the chronicle and the Defense page at once, more than 48000 ticks ahead, once; the
+  warning and the clock saved and loaded; on the day the Seer foretells it for tonight from the side told, the gates shut
+  and the portcullis down at noon, the villagers in at dusk, the clock's raiders at the hour; with the Legends switch off no
+  warning, then told when it's on again; every new sentence). Unchanged and passing: `SeerGameTests`,
+  `WarningGameTests`, `LighthousePowerGameTests`, `LegendGuestsGameTests`.

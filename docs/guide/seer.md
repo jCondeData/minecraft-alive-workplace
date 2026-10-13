@@ -28,6 +28,9 @@ pale motes drift round them.
 - **Foretelling.** Every dawn the village's players hear, in chat and on the hall's "What next?": whether raiders come
   that night and from which side, the next festival and market day, and tomorrow's Legend guest. The Seer is never
   wrong: the night goes as foretold. "Post guards on the east side and see everyone home before dark."
+- **Two days' warning.** The Seer sees raids two days before they come. You're told at once, who's coming and from
+  which side, and on the day the gates shut from noon and everyone goes in before dark, as with a
+  [lookout](raids.md).
 - **Blessed weddings.** A wedding at the Chapel with the Seer nearby is blessed: the couple is 10 happier for 7 days,
   and their first baby comes within 2 days when a bed is free.
 

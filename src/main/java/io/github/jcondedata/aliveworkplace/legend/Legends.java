@@ -60,6 +60,7 @@ public final class Legends implements ResourceManagerReloadListener {
 		Beastmaster.init(); // the Beastmaster's war dogs (29.20)
 		PokemonProfessor.init(); // the village Pokédex's research counter (29.21)
 		PokemonRanger.init(); // calmed Alphas never hurt anyone in a village (29.22)
+		io.github.jcondedata.aliveworkplace.guard.Warnings.SOURCES.add(Seer::warningSource); // the Seer's two days' warning (32.14, B133)
 		Platform.get().onPlayerLeave(player -> Pathfinder.forgetOffer(player.getUUID()));
 		Platform.get().allowBreakBlock((level, player, pos, state) -> !(level instanceof net.minecraft.server.level.ServerLevel server)
 			|| LegendSites.onBreak(server, player, pos, state));

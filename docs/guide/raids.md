@@ -41,8 +41,8 @@ dawn, when the survivors flee. The village's chronicle remembers every raid.
 Post a guard at a Guard Post within 24 blocks of a finished **Lookout Tower** or **Wall Tower**, and the guard on the
 night watch spots raiders coming the evening before. You're told who's coming and from which side, even when you're away
 if you own the hall, and the chronicle notes it. On the day itself the gates of the village's
-[Palisade Gates](palisade-gate-build.md) and Gatehouses shut from noon. Without a lookout, the bell is your only
-warning.
+[Palisade Gates](palisade-gate-build.md) and Gatehouses shut from noon. A [Seer](seer.md) living in the village sees
+further: you're told of a raid two days before it comes. Without a lookout or a Seer, the bell is your only warning.
 
 ## How it interacts
 

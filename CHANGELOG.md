@@ -19,6 +19,11 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - The settings screen's **Rogue Bounties** and **Builder Scaffolding** switches (renamed from Rogue Pokémon Bounties
   and Builders Use Scaffolding) now fit their buttons when turned off (B131).
+- **The Seer now warns of raids two days ahead**, as promised (B133). A Seer living in the village used to foretell
+  only the coming night; now, as soon as raiders are on their way, everyone in the village (and the hall's owner,
+  wherever they are) hears "A vision of the north road: ... will strike Oakvale in 2 days", the chronicle notes it and
+  the Defense page shows it. On the day the gates shut from noon and the villagers go in before dark, just as with a
+  guard on a Lookout Tower, and the raiders come from the side the Seer named.
 
 ## 0.144.0 — 2026-10-13
 

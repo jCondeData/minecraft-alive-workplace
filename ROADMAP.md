@@ -4257,7 +4257,7 @@ Legends.
   explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64 glowstone dust
   (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it, with
   the jetty over water in its renders.
-- [x] **35.12** (review: pending 2026-10-13) **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
+- [x] **35.12** (approved 2026-10-13) **The Lighthouse: its powers and time-lapse.** While it stands, caravans from its village reach
   villages up to 4,096 blocks away (twice `Caravans.RANGE`) and arrive in half the time (`Caravans.travelTicks`);
   ferry fares to and from the village's Travel Posts are halved (`TravelNetwork.fare`: an emerald per 512 blocks), and
   the jetty's post joins the network under the village's name ("Thornholm Lighthouse"). And it watches the sea: the

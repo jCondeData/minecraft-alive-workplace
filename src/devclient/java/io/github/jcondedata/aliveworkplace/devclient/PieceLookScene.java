@@ -63,6 +63,9 @@ final class PieceLookScene {
 			ScreenshotHarness.shot(mc, "01_plains_house");
 			server.execute(() -> {
 				ServerPlayer player = player(server);
+				// The hall's screen stays open only within 8 blocks of the hall (VillageHallScreen.open): the house view is
+				// farther, and from there the server closed the screen on the next tick, so the look was never chosen (B72).
+				ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(HALL).add(-3, 2, 4), Vec3.atCenterOf(HALL));
 				VillageHallScreen.open(player, HALL);
 				if (player.containerMenu instanceof ChoiceMenu menu) {
 					menu.press(VillageHallScreen.BUILDS, player);
@@ -78,6 +81,7 @@ final class PieceLookScene {
 			ScreenshotHarness.shot(mc, "02_house_looks");
 			server.execute(() -> {
 				ServerPlayer player = player(server);
+				Showcase.check(player.containerMenu instanceof ChoiceMenu, "the hall's screen is still open");
 				if (player.containerMenu instanceof ChoiceMenu menu) {
 					menu.press(VillageHallScreen.FIRST_ROW, player);
 				}

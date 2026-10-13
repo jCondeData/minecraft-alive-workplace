@@ -703,6 +703,20 @@ four until its builder repairs it.
 
 ![The Lighthouse going up beside the sea, lit at night](https://jcondedata.github.io/minecraft-alive-workplace/wonder_lighthouse/anim.gif)
 
+### The Hanging Gardens
+
+![The Hanging Gardens going up terrace by terrace, then farmers on its terraces the next morning](https://jcondedata.github.io/minecraft-alive-workplace/wonder_hanging_gardens/anim.gif)
+
+A garden mountain of four sandstone terraces with a waterfall down its side, for a Town with the Grand Chef (or a
+Master Chef and 8 kinds of meal in the store). While it stands, and less than a tenth of it is missing:
+
+- **Farmers and orchard keepers bring in a quarter more**, in its village and across its realm (with realms off, in
+  the villages whose caravans trade with it): one more of each crop for every four a worker picks. Crops grow no faster.
+- **The village grows faster**: a baby needs 12 meals in the store instead of 16, and up to two are born a day when
+  there are free beds.
+- **Its terraces are four village farms**: each has a composter and a chest by its fields, and a farmer who takes the
+  composter looks after that terrace by themselves.
+
 ### The Great Cathedral
 
 ![The Great Cathedral going up stage by stage, then a wedding at its altar at dusk](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_cathedral/anim.gif)

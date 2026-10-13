@@ -467,7 +467,9 @@ public class FieldWork extends Behavior<Villager> {
 	private static void harvest(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
 		if (!(state.getBlock() instanceof CropBlock) && Fruit.isRipe(state)) {
-			for (ItemStack fruit : Fruit.pick(level, pos, villager)) {
+			List<ItemStack> picked = new ArrayList<>(Fruit.pick(level, pos, villager));
+			picked.addAll(io.github.jcondedata.aliveworkplace.wonder.GardensPowers.harvest(level, villager, pos, picked)); // the Hanging Gardens (35.20)
+			for (ItemStack fruit : picked) {
 				ItemStack rest = bag.add(fruit);
 				if (!rest.isEmpty()) {
 					Block.popResource(level, pos, rest);
@@ -479,12 +481,12 @@ public class FieldWork extends Behavior<Villager> {
 				top = top.above();
 			}
 			for (BlockPos p = top; p.getY() >= pos.getY(); p = p.below()) {
-				take(level, villager, bag, p);
+				take(level, villager, bag, p, true);
 			}
 		} else {
 			boolean replant = state.getBlock() instanceof CropBlock || state.getBlock() instanceof NetherWartBlock;
 			Item seed = replant ? state.getBlock().getCloneItemStack(level, pos, state).getItem() : null;
-			take(level, villager, bag, pos);
+			take(level, villager, bag, pos, true);
 			// The same crop goes straight back in.
 			if (seed != null && bag.has(seed, 1) && seed instanceof BlockItem bi) {
 				BlockState sown = bi.getBlock().defaultBlockState();
@@ -544,9 +546,13 @@ public class FieldWork extends Behavior<Villager> {
 		}
 	}
 
-	private static void take(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos) {
+	/** Breaks the block at {@code pos} into the bag; a {@code harvest} (not a weed cleared) has the Hanging Gardens' extra (35.20). */
+	private static void take(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos, boolean harvest) {
 		BlockState state = level.getBlockState(pos);
-		List<ItemStack> drops = Block.getDrops(state, level, pos, level.getBlockEntity(pos), villager, villager.getItemBySlot(EquipmentSlot.MAINHAND));
+		List<ItemStack> drops = new ArrayList<>(Block.getDrops(state, level, pos, level.getBlockEntity(pos), villager, villager.getItemBySlot(EquipmentSlot.MAINHAND)));
+		if (harvest) {
+			drops.addAll(io.github.jcondedata.aliveworkplace.wonder.GardensPowers.harvest(level, villager, pos, drops));
+		}
 		level.destroyBlock(pos, false, villager);
 		for (ItemStack drop : drops) {
 			ItemStack rest = bag.add(drop);
@@ -617,7 +623,7 @@ public class FieldWork extends Behavior<Villager> {
 		BlockPos above = pos.above();
 		BlockState weed = level.getBlockState(above);
 		if (isWeed(weed)) {
-			take(level, villager, bag, above);
+			take(level, villager, bag, above, false);
 		}
 		if (!level.getBlockState(above).isAir()) {
 			return;

@@ -4356,7 +4356,7 @@ Legends.
   Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey bottles (Beekeeper), 64 carrots and 64
   potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs (Butcher), 32 raw cod (Fisherman).
   Done when: 35.9's four design checks pass for it, with the falls running in its renders.
-- [ ] **35.20** **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
+- [x] **35.20** (review: pending 2026-10-13) **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
   linked to its village, M33; until that lands, its caravan partners; always its own): every farmer and orchard keeper
   harvests a quarter more (one more item for every four picked, counted per worker; no extra crop growth ticks), and
   villages grow faster (`hall/VillageGrowth`): a baby needs 12 meals in the store instead of 16, and up to two are
@@ -5805,6 +5805,13 @@ item waits.
   village, so a village the Colossus's village sends caravans to wasn't reached; it now uses `Caravans.Data.partners`
   (also for 35.8's "finished elsewhere" chronicle lines). The plaque is seven signs, not the five 35.21's notes say
   (`wonders.py` draws x 11 to 17); its words are in en_us (`sign.aliveworkplace.colossus.*`), in glowing yellow, waxed.
+- **35.20 the Hanging Gardens' powers** (lane-b-1013-0813, 2026-10-13): the crown's farm corner had no farmland within a
+  farmer's reach (the terraces' three did), so the crown got a small field by it (wheat and carrots either side of a
+  channel, 8 farmland, where berries were): now all four corners are village farms. The quarter more is counted per
+  worker and per kind of item, so 40 wheat are always 50 whatever seeds came with them; the counts aren't saved (a
+  restart loses at most three of a kind). It reaches the mod's farmers (a field, adopted or marked) and Orchard Keepers;
+  a vanilla farmer harvesting with vanilla's own behaviour (no chest by the composter) gets none. `births` sets the
+  usual meals (an edict's own figure still wins: Large Families stays 24) and takes the larger babies a day.
 - **35.21 the Colossus' figure and copper** (lane-b-1012-0033, 2026-10-12): drawn at 29 x 47 x 29, 8,963 blocks (7,105 /
   774 / 590 / 494), within 10% of the 9,000. The figure is the vanilla villager at a pixel a block (widths 9 instead of 8,
   so the nose and the arch share the road's middle), its head 10 high; the robe is 22 high instead of the villager's 24 so

@@ -180,6 +180,26 @@ final class WonderTimelapse {
 		return hall;
 	}
 
+	/** The last still's name, time of day (past 24000: the next day), the scene's readying for it, and the client ticks it waits. */
+	private String lastName = "night";
+	private long lastTime = 18000;
+	private java.util.function.Consumer<ServerLevel> lastStage = level -> {
+	};
+	private int lastWait = 130;
+
+	/**
+	 * Ends after the fireworks with a still {@code 20_<scene>_<name>} at {@code time} (35.20: the next morning, the farmers
+	 * on the Hanging Gardens' terraces): {@code stage} readies it, {@code wait} client ticks pass, then the still and {@code check}.
+	 */
+	WonderTimelapse finale(String name, long time, int wait, java.util.function.Consumer<ServerLevel> stage, java.util.function.Consumer<ServerLevel> check) {
+		this.night = check;
+		this.lastName = name;
+		this.lastTime = time;
+		this.lastStage = stage;
+		this.lastWait = wait;
+		return this;
+	}
+
 	void tick(Minecraft mc, MinecraftServer server) {
 		tick++;
 		if (over) {
@@ -255,20 +275,21 @@ final class WonderTimelapse {
 		}
 		if (showAt > 0 && tick == showAt + 230 && night != null) {
 			server.execute(() -> {
-				server.overworld().setDayTime((Chronicle.day(server.overworld()) - 1) * 24000L + 18000); // midnight
+				server.overworld().setDayTime((Chronicle.day(server.overworld()) - 1) * 24000L + lastTime); // midnight, or the scene's own time
 				if (nightEye != null && placement != null) { // the scene's own view, in the Wonder's blueprint (35.22)
 					ScreenshotHarness.hoverLookingAt(player(server), placed(nightEye[0], nightEye[1], nightEye[2]), placed(nightAt[0], nightAt[1], nightAt[2]));
 				} else {
 					ScreenshotHarness.hoverLookingAt(player(server), centre.add(size.getX() * 0.9 + 16, size.getY() * 0.5 + 6, size.getZ() * 0.9 + 16),
 						centre.add(0, size.getY() * 0.6, 0));
 				}
+				lastStage.accept(server.overworld());
 			});
 		}
-		if (showAt > 0 && night != null && tick == showAt + 360) {
-			ScreenshotHarness.shot(mc, String.format("20_%s_night", scene));
+		if (showAt > 0 && night != null && tick == showAt + 230 + lastWait) {
+			ScreenshotHarness.shot(mc, String.format("20_%s_%s", scene, lastName));
 			server.execute(() -> night.accept(server.overworld()));
 		}
-		if (showAt > 0 && tick == showAt + (night != null ? 390 : 230)) {
+		if (showAt > 0 && tick == showAt + (night != null ? 260 + lastWait : 230)) {
 			over = true;
 			mc.stop();
 		}

@@ -37,16 +37,18 @@ public final class VillageGrowth {
 
 	/**
 	 * Game time between two births in the village of the hall at {@code hall}: {@link #EVERY} over its babies a day (Large
-	 * Families: 2; a Cradle one more), halved for the days after a Grand Chef's banquet (29.18).
+	 * Families: 2; the Hanging Gardens, 35.20: at least 2; a Cradle one more), halved for the days after a Grand Chef's
+	 * banquet (29.18).
 	 */
 	public static long every(ServerLevel level, BlockPos hall) {
-		long every = EVERY / Math.max(1, CivicEffects.of(level, hall).birthsPerDay() + Cradles.extraBirths(level, hall));
+		int perDay = io.github.jcondedata.aliveworkplace.wonder.GardensPowers.birthsPerDay(level, hall, CivicEffects.of(level, hall).birthsPerDay());
+		long every = EVERY / Math.max(1, perDay + Cradles.extraBirths(level, hall));
 		return Banquets.growing(level, hall) ? every / 2 : every;
 	}
 
-	/** Meals the store of the village round {@code hall} must hold before a baby is on the way (Large Families: 24). */
+	/** Meals the store of the village round {@code hall} must hold before a baby is on the way (Large Families: 24; the Hanging Gardens: 12). */
 	public static int foodNeeded(ServerLevel level, BlockPos hall) {
-		return CivicEffects.of(level, hall).foodNeeded(FOOD_NEEDED);
+		return CivicEffects.of(level, hall).foodNeeded(io.github.jcondedata.aliveworkplace.wonder.GardensPowers.mealsNeeded(level, hall, FOOD_NEEDED));
 	}
 
 	/** Meals a birth takes from the store of the village round {@code hall} (Large Families: 12). */

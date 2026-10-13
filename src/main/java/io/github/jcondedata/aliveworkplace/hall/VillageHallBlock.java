@@ -64,10 +64,20 @@ public class VillageHallBlock extends BaseEntityBlock {
 		return RenderShape.MODEL;
 	}
 
+	/** A hall set down (by a player, a blueprint or a command): the nearest hall is searched for again (B103). */
+	@Override
+	protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+		super.onPlace(state, level, pos, oldState, movedByPiston);
+		if (!level.isClientSide() && !state.is(oldState.getBlock())) {
+			VillageHalls.forgetNearest();
+		}
+	}
+
 	/** A hall taken away: its village leaves the caravans' list. */
 	@Override
 	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
 		if (!state.is(newState.getBlock()) && level instanceof net.minecraft.server.level.ServerLevel server) {
+			VillageHalls.forgetNearest();
 			Caravans.Data.get(server).remove(pos);
 			CaravanSights.clear(server, pos); // a caravan out walking here goes with it (33.7)
 			io.github.jcondedata.aliveworkplace.story.Stories.Data.get(server).remove(pos); // its open quests go with it (31.2)

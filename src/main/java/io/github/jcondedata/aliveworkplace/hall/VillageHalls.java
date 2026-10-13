@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Requests;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -140,13 +141,13 @@ public final class VillageHalls {
 	/** The village's free workstations, nearest the hall first. */
 	public static List<FreeStation> freeStations(ServerLevel level, BlockPos hall) {
 		List<FreeStation> out = new ArrayList<>();
+		// The job a kind of workstation gives, found once per kind rather than once per workstation (B103).
+		java.util.Map<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>, Optional<VillagerProfession>> jobs = new java.util.HashMap<>();
 		level.getPoiManager().getInRange(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), hall, RADIUS, PoiManager.Occupancy.HAS_SPACE)
-			.forEach(record -> {
-				net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.stream()
-					.filter(p -> p != VillagerProfession.NONE && p != VillagerProfession.NITWIT && p.acquirableJobSite().test(record.getPoiType()))
-					.findFirst()
-					.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType())));
-			});
+			.forEach(record -> jobs.computeIfAbsent(record.getPoiType(), poi -> net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.stream()
+					.filter(p -> p != VillagerProfession.NONE && p != VillagerProfession.NITWIT && p.acquirableJobSite().test(poi))
+					.findFirst())
+				.ifPresent(p -> out.add(new FreeStation(record.getPos().immutable(), p, record.getPoiType()))));
 		out.sort(Comparator.comparingDouble(f -> f.pos().distSqr(hall)));
 		return out;
 	}
@@ -231,7 +232,45 @@ public final class VillageHalls {
 
 	/** The nearest Village Hall within {@link #RADIUS} of {@code pos}. */
 	public static Optional<BlockPos> nearest(ServerLevel level, BlockPos pos) {
+		if (!level.getServer().isSameThread()) {
+			return findNearest(level, pos);
+		}
+		long now = level.getGameTime();
+		if (nearestLevel != level || nearestTick != now || nearestRadius != RADIUS) {
+			NEAREST.clear();
+			nearestLevel = level;
+			nearestTick = now;
+			nearestRadius = RADIUS;
+		}
+		long key = pos.asLong();
+		Optional<BlockPos> found = NEAREST.get(key);
+		if (found == null) {
+			found = findNearest(level, pos);
+			NEAREST.put(key, found);
+		}
+		return found;
+	}
+
+	private static Optional<BlockPos> findNearest(ServerLevel level, BlockPos pos) {
 		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, RADIUS, PoiManager.Occupancy.ANY);
+	}
+
+	/**
+	 * {@link #nearest} within one tick, by position (B103). One villager's pace asks it once for each source that
+	 * depends on the village (the edicts, the horn, the guild, the hall's needs, the mood...), each a search of the
+	 * points of interest within {@link #RADIUS}; the answer can't change within a tick unless a hall is placed or
+	 * broken, and {@link #forgetNearest} handles that. Server thread only.
+	 */
+	private static final Long2ObjectOpenHashMap<Optional<BlockPos>> NEAREST = new Long2ObjectOpenHashMap<>();
+	@Nullable
+	private static ServerLevel nearestLevel;
+	private static long nearestTick = Long.MIN_VALUE;
+	private static int nearestRadius;
+
+	/** A hall placed or broken: {@link #nearest} searches again. */
+	public static void forgetNearest() {
+		nearestLevel = null;
+		NEAREST.clear();
 	}
 
 	/** The village's name: the hall's own (from a Name Tag or an anvil), else one made up from where it stands. */

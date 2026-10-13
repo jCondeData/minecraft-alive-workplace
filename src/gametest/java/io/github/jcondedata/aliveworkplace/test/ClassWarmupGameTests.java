@@ -2,6 +2,9 @@ package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.ClassWarmup;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.List;
 import java.util.function.Predicate;
@@ -73,5 +76,61 @@ public class ClassWarmupGameTests implements FabricGameTest {
 		helper.assertTrue(SupplyContainers.furnaces(level, far).isEmpty(), "furnaces found in an unloaded chunk");
 		helper.assertTrue(level.getChunkSource().getChunkNow(far.getX() >> 4, far.getZ() >> 4) == null, "looking loaded the far chunk");
 		helper.succeed();
+	}
+
+	/** The shape math a growing child runs, done ahead on fresh shapes: the free point beside the blocks is found. */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"b103_warmup"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "b103_warmup")
+	public void theShapeWarmUpFindsAFreePoint(GameTestHelper helper) {
+		var point = ClassWarmup.shapes();
+		helper.assertTrue(point.isPresent(), "no free point found");
+		helper.assertTrue(point.get().y >= 0 && point.get().x <= 1.0, "the free point is inside a block: " + point.get());
+		helper.succeed();
+	}
+
+	/**
+	 * The nearest hall is remembered within a tick (a pace asks for it once per source), and still follows a hall set
+	 * down or broken in that same tick.
+	 */
+	//$ gametest_batch AREA '"b103_halls"'
+	@GameTest(template = AREA, batch = "b103_halls")
+	public void theNearestHallFollowsAHallPlacedOrBrokenWithinATick(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos at = helper.absolutePos(new BlockPos(3, 2, 3));
+		BlockPos hall = helper.absolutePos(new BlockPos(4, 2, 3));
+		long tick = level.getGameTime();
+		helper.assertFalse(VillageHalls.nearest(level, at).map(hall::equals).orElse(false), "setup: a hall before one is placed");
+		helper.setBlock(new BlockPos(4, 2, 3), ModBlocks.VILLAGE_HALL);
+		helper.assertTrue(VillageHalls.nearest(level, at).map(hall::equals).orElse(false), "the hall just placed isn't the nearest: " + VillageHalls.nearest(level, at));
+		helper.assertTrue(VillageHalls.nearest(level, at).equals(VillageHalls.nearest(level, at.immutable())), "asked twice, two answers");
+		helper.setBlock(new BlockPos(4, 2, 3), Blocks.AIR);
+		helper.assertFalse(VillageHalls.nearest(level, at).map(hall::equals).orElse(false), "the broken hall is still the nearest");
+		helper.setBlock(new BlockPos(4, 2, 3), ModBlocks.VILLAGE_HALL);
+		helper.assertTrue(VillageHalls.nearest(level, at).map(hall::equals).orElse(false), "the hall placed again isn't the nearest");
+		helper.assertTrue(level.getGameTime() == tick, "setup: the checks ran over more than one tick");
+		helper.runAfterDelay(1, () -> {
+			helper.assertTrue(VillageHalls.nearest(level, at).map(hall::equals).orElse(false), "the hall isn't the nearest a tick later");
+			helper.succeed();
+		});
+	}
+
+	/** Free workstations: two of the same kind and one of another each come with their job (the job is found once per kind). */
+	//$ gametest_batch AREA '"b103_halls"'
+	@GameTest(template = AREA, batch = "b103_halls")
+	public void freeStationsGiveEachWorkstationItsJob(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(new BlockPos(1, 2, 1));
+		helper.setBlock(new BlockPos(3, 2, 2), ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(new BlockPos(5, 2, 2), ModBlocks.BUILDERS_BENCH);
+		helper.setBlock(new BlockPos(3, 2, 5), Blocks.COMPOSTER);
+		helper.runAfterDelay(2, () -> {
+			var mine = VillageHalls.freeStations(level, hall).stream().filter(f -> f.pos().getX() >= hall.getX() && f.pos().getX() < hall.getX() + 8
+				&& f.pos().getZ() >= hall.getZ() && f.pos().getZ() < hall.getZ() + 8 && f.pos().getY() == hall.getY()).toList();
+			helper.assertTrue(mine.size() == 3, "free stations: " + mine);
+			helper.assertTrue(mine.stream().filter(f -> f.profession() == ModVillagers.BUILDER).count() == 2, "builders' benches: " + mine);
+			helper.assertTrue(mine.stream().anyMatch(f -> f.profession() == net.minecraft.world.entity.npc.VillagerProfession.FARMER
+				&& f.pos().equals(helper.absolutePos(new BlockPos(3, 2, 5)))), "the composter: " + mine);
+			helper.succeed();
+		});
 	}
 }

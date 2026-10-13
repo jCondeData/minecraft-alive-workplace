@@ -11,7 +11,7 @@ Level: 35 in a Village, 50 in a Town, 65 in a City
 Size: half again as big as usual
 Claim it: beat it in battle or catch it
 Pays: 20 emeralds in a Village, 24 in a Town, 28 in a City, and +40 standing
-Setting: Rogue Pokémon Bounties
+Setting: Rogue Bounties
 categories: Pokémon, Quests, Defense
 related: bounty-board.md, wanted-poster.md, pokemon.md, reputation.md
 ```
@@ -54,5 +54,5 @@ and was paid 24 emeralds."). Unclaimed after 7 days, it wanders off in a puff.
 
 - **What feeds it:** your village's [rank](ranks.md) sets its level and its reward.
 - **What it gives:** emeralds, standing, and a strong Pokémon for your team (see [Pokémon and villagers](pokemon.md)).
-- **What stops it:** without Cobblemon, or with **Rogue Pokémon Bounties** off in the settings, no rogue is posted; open
+- **What stops it:** without Cobblemon, or with **Rogue Bounties** off in the settings, no rogue is posted; open
   rogue bounties still pay.

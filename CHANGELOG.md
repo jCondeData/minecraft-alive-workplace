@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- The settings screen's **Rogue Bounties** and **Builder Scaffolding** switches (renamed from Rogue Pokémon Bounties
+  and Builders Use Scaffolding) now fit their buttons when turned off (B131).
+
 ## 0.144.0 — 2026-10-13
 
 ### Added

@@ -8,7 +8,7 @@ caption: Up the scaffolding, working high on the pillar
 Used for: blocks with nowhere to stand near them, such as a spire's tip or a dome's crown
 Needs: scaffolding in the builder's chests
 Made by: a Carpenter, from bamboo and string
-Setting: Builders Use Scaffolding
+Setting: Builder Scaffolding
 categories: Builder
 related: builder.md, carpenter.md, wonders.md
 ```
@@ -41,6 +41,6 @@ make it from bamboo and string. The build never waits for it: that one block is 
 
 - **What feeds it**: scaffolding from your chests or from a [Carpenter](carpenter.md).
 - **What it affects**: tall builds, and above all the [Wonders](wonders.md), whose domes, towers and statues need it.
-- **What stops it**: the **Builders Use Scaffolding** setting off: blocks with nowhere to stand near them are left
+- **What stops it**: the **Builder Scaffolding** setting off: blocks with nowhere to stand near them are left
   out. Scaffolding is never used while the builder levels the ground round a finished build, and only the builder in
   charge of a build puts it up (helpers leave those blocks to them).

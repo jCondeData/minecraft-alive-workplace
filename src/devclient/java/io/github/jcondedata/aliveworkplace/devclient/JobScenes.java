@@ -2761,7 +2761,7 @@ final class JobScenes {
 		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
-			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 3000,
+			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 4800,
 			new Vec3(16, -48, 13), new Vec3(16, -60, -4), (level, player) -> {
 			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 28; // a small village: the whole walk to its edge is in the picture
 			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -2798,7 +2798,7 @@ final class JobScenes {
 			// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still
 			data.sent(STATION, -1);
 			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, STATION, null);
-			int[] act = {0};
+			int[] act = {0, 0};
 			return l -> {
 				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
 				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
@@ -2816,6 +2816,10 @@ final class JobScenes {
 					act[0] = 3; // standing by the Storehouse, unloading
 				} else if (act[0] == 3 && party == null) {
 					act[0] = 4; // and gone again
+				}
+				if (act[0] != act[1]) {
+					act[1] = act[0]; // B132: which part of the trip a timeout stopped at, in the scene's log
+					System.out.println("[showcase] caravan act " + act[0] + " at game tick " + l.getGameTime());
 				}
 				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
 			};

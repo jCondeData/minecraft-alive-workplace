@@ -965,7 +965,7 @@ public class BuilderWork extends Behavior<Villager> {
 	 * blocks under its feet is looked at too: a fence or a wall there is a block and a half tall.
 	 */
 	@Nullable
-	public static BlockPos insideBlock(ServerLevel level, Villager villager) {
+	public static BlockPos insideBlock(ServerLevel level, net.minecraft.world.entity.Entity villager) {
 		AABB body = villager.getBoundingBox().deflate(INSIDE_MARGIN);
 		CollisionContext context = CollisionContext.of(villager);
 		for (BlockPos p : BlockPos.betweenClosed(Mth.floor(body.minX), Mth.floor(body.minY) - 1, Mth.floor(body.minZ),
@@ -976,6 +976,41 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * B132: a block put down changes its neighbours' shapes (a stair beside a stair turns into a corner, which fills a
+	 * quarter more), and a villager standing there (a porter passing through) was left inside it, stuck in the wall. Any
+	 * other mob now inside a block around {@code pos} is moved to the nearest place with room to stand; the builder
+	 * itself walks out on its own (B92).
+	 */
+	public static void freeBystanders(ServerLevel level, BlockPos pos, @Nullable Villager builder) {
+		for (Mob mob : level.getEntitiesOfClass(Mob.class, new AABB(pos).inflate(1.5), m -> m.isAlive() && m != builder && !m.isPassenger()
+				&& !m.isSleeping() && m.getBbWidth() <= 1.0f && m.getBbHeight() <= 2.0f)) {
+			if (insideBlock(level, mob) == null) {
+				continue;
+			}
+			BlockPos from = mob.blockPosition();
+			BlockPos best = null;
+			double bestDistance = Double.MAX_VALUE;
+			for (BlockPos p : BlockPos.betweenClosed(from.offset(-2, -1, -2), from.offset(2, 2, 2))) {
+				if (!io.github.jcondedata.aliveworkplace.work.Walker.canStand(level, p)) {
+					continue;
+				}
+				double d = Vec3.atBottomCenterOf(p).distanceToSqr(mob.position());
+				if (d < bestDistance) {
+					bestDistance = d;
+					best = p.immutable();
+				}
+			}
+			if (best == null) {
+				continue;
+			}
+			level.sendParticles(ParticleTypes.POOF, mob.getX(), mob.getY() + 0.5, mob.getZ(), 4, 0.2, 0.3, 0.2, 0.01);
+			mob.getNavigation().stop();
+			mob.teleportTo(best.getX() + 0.5, best.getY(), best.getZ() + 0.5);
+			mob.setDeltaMovement(Vec3.ZERO);
+		}
 	}
 
 	/** Teleports the builder onto {@code spot}, only if there's still room to stand there (B60). */
@@ -1620,7 +1655,14 @@ public class BuilderWork extends Behavior<Villager> {
 			defer(site, villager, pos);
 			return;
 		}
-		if (!level.isUnobstructed(state, pos, CollisionContext.empty())) {
+		// B132: what goes down is the block shaped by its neighbours (an outer-corner stair with its neighbour not built yet
+		// goes down straight, a bigger block), so the room is checked for that one too, or it went down onto a villager.
+		BlockState shaped = step.secondaryPos() != null ? state : Block.updateFromNeighbourShapes(state, level, pos);
+		if (shaped.isAir()) {
+			shaped = state;
+		}
+		if (!level.isUnobstructed(state, pos, CollisionContext.empty())
+			|| shaped != state && !level.isUnobstructed(shaped, pos, CollisionContext.empty())) {
 			handleObstruction(level, villager, site, plan, step, pos);
 			return;
 		}
@@ -1652,9 +1694,9 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(step.secondaryPos(), step.secondaryState(), Block.UPDATE_ALL);
 			level.blockUpdated(pos, state.getBlock());
 		} else {
-			BlockState shaped = Block.updateFromNeighbourShapes(state, level, pos);
-			level.setBlock(pos, shaped.isAir() ? state : shaped, Block.UPDATE_ALL);
+			level.setBlock(pos, shaped, Block.UPDATE_ALL);
 		}
+		freeBystanders(level, pos, villager);
 		applyBlockEntityData(level, pos, state, step.nbt());
 		site.placedNow(pos);
 		MaterialRules.afterPlaced(level, pos, state);

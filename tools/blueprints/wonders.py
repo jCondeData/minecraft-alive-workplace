@@ -3698,7 +3698,7 @@ def h_foot(b):
 # --- the crown ------------------------------------------------------------------------------------------------------------
 def h_crown(b):
     """The crown's garden on the fourth terrace (x 13-27, z 16-30, its soil at y 24): the cistern, its walk, its
-    channel east to the edge, trees, hives, an arbor of glow berries, a farm corner, flowers and berries."""
+    channel east to the edge, trees, hives, an arbor of glow berries, a farm corner with its field, flowers and berries."""
     x0, x1, z0, z1 = h_box(3)
     s = 24
     cx, cz = H_C
@@ -3752,6 +3752,15 @@ def h_crown(b):
     b.set(cx - 2, s + 1, z0 + 1, "composter", level=0)
     b.set(cx - 1, s + 1, z0 + 1, "chest", facing="south", type="single", waterlogged=False)
     lamp_post(b, cx, s + 1, z0 + 1, post="oak_fence", height=1)
+    # the crown's field by its farm corner (35.20: the fourth village farm): wheat and carrots either side of a channel
+    for x in range(cx + 1, x1 - 1):
+        for z in (z0 + 1, z0 + 2):
+            if x == cx + 3:
+                b.set(x, s, z, "water", level=0)
+            else:
+                b.set(x, s, z, "farmland", moisture=7)
+                crop, age = H_CROPS[0 if x < cx + 3 else 1]
+                b.set(x, s + 1, z, crop, age=age)
     # the arbor over the south bed, the berries and flowers in the rest
     for x in range(cx - 4, cx + 5):
         for z in (z1 - 2, z1 - 1):
@@ -3761,7 +3770,7 @@ def h_crown(b):
         for z in range(z0 + 1, z1):
             if b.get(x, s, z) == ("minecraft:grass_block", (("snowy", "false"),)) and b.get(x, s + 1, z) is None:
                 r = h_hash("crown", x, z)
-                if z <= z0 + 2 and x >= cx + 1:
+                if z <= z0 + 3 and x >= cx + 1:
                     b.set(x, s + 1, z, "sweet_berry_bush", age=3)
                 else:
                     p = H_FLOWERS[r % len(H_FLOWERS)]

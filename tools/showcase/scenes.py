@@ -823,6 +823,12 @@ SCENES = [
       [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"),
        ("14_wonder_lighthouse_stage_4", "The Lantern and the Keeper's House: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
+    # The Hanging Gardens (ROADMAP 35.20): its time-lapse, ending the next morning with the falls running and farmers on the terraces
+    S("wonder_hanging_gardens", "Wonders", "The Hanging Gardens: its time-lapse, and farmers on its terraces",
+      "a crew of ten raised the Hanging Gardens terrace by terrace on a sped-up server, each stage's goods handed in at the stone; once finished its powers came on (a quarter more harvest across the realm, babies on 12 meals and two a day), and after the festival's fireworks, the next morning the falls ran from the crown's cistern into the pool and a farmer at each of the four farm corners took on that terrace's fields by themselves", 860,
+      [("11_wonder_hanging_gardens_stage_1", "Stage I, the First Terrace and the Cistern Vaults, up"), ("frame_*@middle", "The crew at work, the camera going round"),
+       ("14_wonder_hanging_gardens_stage_4", "The Crown Garden and the Falls: the Gardens finished"),
+       ("20_wonder_hanging_gardens_terraces", "The next morning: the falls running, farmers on the terraces")]),
     # The Great Cathedral (ROADMAP 35.10): its time-lapse with the crew, ending at dusk with a blessed wedding at its altar
     S("wonder_great_cathedral", "Wonders", "The Great Cathedral: its time-lapse, and a wedding at its altar",
       "a crew of ten raised the Great Cathedral stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished its powers came on (Undertakers free and village-wide, blessed weddings, 8 beauty), and at dusk a couple were wed at its altar before the guests: the wedding was blessed and its bells rang", 840,

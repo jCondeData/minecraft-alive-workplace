@@ -117,6 +117,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	/** SCENE=wonder_finished (ROADMAP 35.8): the folly's time-lapse, ending in its festival's fireworks. */
 	private final WonderTimelapse wonderFinished = new WonderTimelapse(
 		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly"), "wonder_finished");
+	/** SCENE=wonder_hanging_gardens (ROADMAP 35.20): the Gardens' time-lapse, ending the next morning with the falls running and farmers on the terraces. */
+	private final WonderTimelapse wonderGardens = WonderGardensScene.create();
 	/** SCENE=wonder_lighthouse (ROADMAP 35.12): the Lighthouse's time-lapse by the sea, ending at night with its lamps lit. */
 	private final WonderTimelapse wonderLighthouse = WonderLighthouseScene.create();
 	/** SCENE=wonder_great_cathedral (ROADMAP 35.10): the Cathedral's time-lapse, ending at dusk with a wedding at its altar. */
@@ -235,6 +237,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("wonder_finished".equals(System.getProperty("aliveworkplace.scene"))) {
 			wonderFinished.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("wonder_hanging_gardens".equals(System.getProperty("aliveworkplace.scene"))) {
+			wonderGardens.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_lighthouse".equals(System.getProperty("aliveworkplace.scene"))) {

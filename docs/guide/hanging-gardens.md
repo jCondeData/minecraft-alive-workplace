@@ -31,8 +31,14 @@ in), and the Master Architect. See [Wonders](wonders.md) for drawing up the plan
 
 ## While it stands
 
-- **Farmers and orchard keepers harvest more**, a quarter more, in the village and across its realm.
-- **The village grows faster**: up to two babies a day.
+- **Farmers and orchard keepers harvest more**, a quarter more, in the village and across its realm (with realms
+  off, in the villages whose caravans trade with it): one more of each crop for every four a worker picks, so 40 wheat
+  cut are 50 in the chest. The crops don't grow any faster.
+- **The village grows faster**: a baby needs 12 meals in the store instead of 16, and up to two are born a day when
+  there are free beds.
+- **Its terraces are village farms**: a farmer who takes a terrace's composter looks after its fields by themselves.
+
+A damaged Garden (more than a tenth of it missing) does none of this until its builders repair it.
 
 ## How it fits with the rest
 
@@ -40,4 +46,4 @@ in), and the Master Architect. See [Wonders](wonders.md) for drawing up the plan
   in the village finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: every [farm and orchard](jobs-land.md), the village store, and how fast the village grows (see
   [Village life](village-life.md)).
-- Its terraces hold four village farms of their own, with a composter and a chest on each level.
+- Its terraces hold four village farms of their own, with a composter, a chest and a field on each level.

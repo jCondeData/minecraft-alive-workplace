@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23, 35.23a
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.20, 35.21, 35.23, 35.23a
 
 ## What a player sees
 
@@ -362,8 +362,23 @@ Pathfinder, 11 days); made: 2 Berry Wine (Vintner); II a Pitcher Pod (the Beastm
 Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate,
 18 days); made: 2 Gold Circlets (Jeweller); IV a Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the
 Golem Smith, 36 days), a Conduit (the Founder, 18 days); made: 2 Noble Robes (Tailor). It needs a Town and the Grand
-Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off). Its powers, the bigger harvests and
-the faster births, come with 35.20.
+Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off). The crown has a field of its own by
+its farm corner (wheat and carrots either side of a channel, 35.20), so all four farm corners have a field in a
+farmer's reach.
+
+**The Hanging Gardens' powers** (35.20), while they are finished and stand (`wonderStanding`):
+
+- **Harvest** (`harvest`, across the realm): every farmer working a field (a village farmer by their composter, or a
+  player's marked field) and every Orchard Keeper in the Gardens' village, and in the villages linked to it (its
+  realm's, M33; with realms off, a village whose caravans run to the Gardens' village), brings in one more of each crop
+  for every four they pick: 40 wheat cut are 50 in the chest. It is counted per worker and per kind, so two farmers'
+  two wheat each are no extra one. Crops grow no faster. The hall's Wonders page reads "Farmers and orchard keepers
+  across the realm bring in a quarter more: one more of each crop for every four they pick".
+- **Births** (`births`, the Gardens' own village): a baby is on the way once the store holds 12 meals instead of 16,
+  and up to two are born a day when there are free beds (half a day between them). The page reads "The village grows
+  faster: a baby needs 12 meals in the store, not 16, and up to two are born a day".
+- **Its terraces are four village farms**: a farmer whose composter is a farm corner's takes on that terrace's fields
+  by themselves, as at any composter with a chest by it.
 
 **The Colossus** (35.21) is drawn: the Founder's statue, 47 high on a 29 by 29 site, about 9,000 blocks, standing over
 the village's main road. It is a villager drawn a pixel to a block from the game's own model, so it reads as one from
@@ -517,6 +532,14 @@ anything is needed; `VillageGrowth.blessedBirth` takes a Seer-blessed couple fir
 hall's round calls `UndertakersPower.morning` after the couples; `Festivals.feast` and `VillageRaids` ring
 `WonderBells`, which finds a Wonder's bells once in its blueprint.
 
+**The Gardens' power types** (35.20, `wonder/GardensPowers`, declared types read where they act, like the
+Lighthouse's): `harvest` takes `extra_every` (default 4, 1 to 64) and `scope` (`"realm"` in the Gardens' file);
+`births` takes `meals` (default 12) and `per_day` (default 2, at most 8). `FieldWork` (a harvest, not a weed cleared
+while tilling) and `OrchardWork` add `GardensPowers.harvest`'s extra items to what was picked, into the worker's bag
+and so the chests; the village is the hall nearest the worker's job site. `VillageGrowth.foodNeeded` uses `meals` as
+the usual figure (an edict naming its own still wins) and `VillageGrowth.every` takes the larger of the edicts' and
+`per_day` babies a day, a Cradle's one more on top.
+
 ## Switches
 
 All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
@@ -618,7 +641,7 @@ build saves exactly as before).
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
   Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; the Cathedral's powers are in (35.10), the others' come with 35.12, 35.14, 35.18, 35.16, 35.20 and 35.22, and the
+  page behind the 2.0 switch; the Cathedral's powers are in (35.10), the others' come with 35.12, 35.14, 35.18, 35.16 and 35.22, and the
   Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
   inside of its closed dome, is skipped until scaffolding (35.6).
@@ -626,6 +649,9 @@ build saves exactly as before).
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
 - `mood`, `beauty`, `undertakers` and `weddings` act; the other power types are declared, their numbers kept and
   `Wonders.power` already answering for them, until their Wonder's powers item (35.12 on) reads them.
+- The Gardens' extra harvest goes to the mod's farmers and Orchard Keepers: a vanilla farmer with no chest by their
+  composter (vanilla's own harvesting) brings in no more (35.20). A worker's count towards the next extra item isn't
+  saved: a restart loses at most three of each kind.
 - A Cathedral-blessed baby is the couple's first only: later children come as anyone's (35.10). A wedding blessed before
   the Cathedral was damaged keeps its mood and baby; only new weddings stop being blessed.
 - Goods handed in come back as the plain item (35.7): a renamed flower comes back unnamed. A tag line's name ("Flowers",
@@ -716,3 +742,13 @@ child Gifted and another not); damaged, no free revival, no village-wide search,
 and the 8 beauty gone, repaired all back; the file's numbers and refusals, the page's lines, the altar before the gold
 in its drawing (and turned with it), and the belfries' bells. Showcase scene `wonder_great_cathedral` (group Wonders):
 the Cathedral's time-lapse with a crew of ten, ending at dusk with a blessed wedding at its altar before the guests.
+
+GameTests in `WonderGardensGameTests` (35.20): a farmer in a village with a caravan route to the Gardens' village brings
+in 50 wheat from 40 harvests and a quarter more seeds (a fixed random), 25% more in all, and nothing more without the
+Gardens or the route, or once it closes; an Orchard Keeper there a quarter more berries; the Gardens' own farmer the
+same; two farmers' wheat counted apart; with the Gardens a baby needs 12 meals (11 aren't enough; without them 16) and
+two are born in a day with two free beds, not a third sooner; damaged, both off, repaired, both back; the whole Gardens
+built in the area, each of its four farm corners has a chest and a field in reach, and a farmer at the first terrace's
+composter takes on its field by themselves, harvests it and brings in the extra; the file's numbers and the page's
+lines. Showcase scene `wonder_hanging_gardens` (group Wonders): the Gardens' time-lapse with a crew of ten, the
+festival's fireworks, then the next morning the falls running and a farmer at each farm corner taking on its terrace.

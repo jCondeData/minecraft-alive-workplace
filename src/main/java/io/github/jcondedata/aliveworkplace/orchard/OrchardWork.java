@@ -168,7 +168,9 @@ public class OrchardWork extends Behavior<Villager> {
 		villager.swing(InteractionHand.MAIN_HAND);
 		// A Flying or Bug partner flutters through the plant being picked (28.4).
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "pick", fruit);
-		for (ItemStack stack : Fruit.pick(level, fruit, villager)) {
+		List<ItemStack> fruits = new ArrayList<>(Fruit.pick(level, fruit, villager));
+		fruits.addAll(io.github.jcondedata.aliveworkplace.wonder.GardensPowers.harvest(level, villager, fruit, fruits)); // the Hanging Gardens (35.20)
+		for (ItemStack stack : fruits) {
 			ItemStack rest = bag.add(stack);
 			if (!rest.isEmpty()) {
 				Block.popResource(level, villager.blockPosition(), rest);

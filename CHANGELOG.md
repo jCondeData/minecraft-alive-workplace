@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   halved, and the jetty's post joins the network as "<Village> Lighthouse"; the day before drowned pirates raid, the
   keeper warns the village ("Sails off the west shore..."), the chronicle notes it and at dusk the guards gather on the
   shore. A damaged Lighthouse turns all four off. Its time-lapse by the sea is on the showcase page.
+- **The Hanging Gardens' powers** (35.20, part of Wonders, for 2.0): while they stand, every farmer and orchard keeper
+  in the village and across its realm (with realms off, the villages whose caravans trade with it) brings in a quarter
+  more, one more of each crop for every four picked; a baby needs 12 meals in the store instead of 16, and up to two
+  are born a day. Its four terraces are village farms that farmers take on by themselves (the crown now has a field by
+  its farm corner too). A damaged Garden turns both off. The showcase films its time-lapse, ending the next morning
+  with the falls running and farmers on the terraces.
 - **The Great Cathedral's powers** (35.10, part of Wonders, for 2.0): while it stands, the village's Undertakers need no
   golden apple, potion or totem, look for graves across the whole village, and anyone still in a grave at dawn is back
   by morning. Weddings are held at its altar and blessed: everyone in the village is 15 happier for 3 days, the couple's

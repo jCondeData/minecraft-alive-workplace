@@ -4361,7 +4361,7 @@ Legends.
     off;
   - scene `wonder_hanging_gardens`: the time-lapse, ending with the falls running and farmers on the terraces; its GIF
     and powers are in the README.
-- [x] **35.21** (review: pending 2026-10-12) **The Colossus: its design.** The Founder's statue, 47 high, drawn like 35.9: a robed villager, nose
+- [x] **35.21** (approved 2026-10-13) **The Colossus: its design.** The Founder's statue, 47 high, drawn like 35.9: a robed villager, nose
   and all, one hand on the chest and the other raising a lantern, on a 13-high stepped plinth with an arch through it
   (5 wide, 6 high) for the main road and its caravans, so the village passes beneath. The figure is stone (polished
   diorite and smooth stone) under a cloak of cut copper that weathers green over the weeks (about 250 copper blocks);

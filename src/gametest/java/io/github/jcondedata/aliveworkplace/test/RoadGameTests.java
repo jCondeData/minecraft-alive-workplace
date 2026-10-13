@@ -268,6 +268,8 @@ public class RoadGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "roadReload")
 	public void aHalfBuiltSegmentSurvivesSaveAndReloadAndRoadsLeaveTheRankAlone(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
+		// builders work 1000-11000: alone in its batch, so set a working hour rather than inherit the suite's clock
+		helper.setDayTime(2000);
 		Village v = village(helper, new BlockPos(14, 2, 26), List.of(new BlockPos(8, 2, 20)));
 		v.entity().setPlan(CityPlan.EMPTY.addRoad(road(CityPlan.Road.STREET, "stonework", p(helper, v.hall(), 4, 14), p(helper, v.hall(), 13, 14))));
 		int buildingsBefore = VillageRanks.score(level, v.hall(), 0).buildings();

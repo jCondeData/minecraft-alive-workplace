@@ -173,14 +173,49 @@ final class GuildsScene {
 		VillagerProfession[] jobs = {ModVillagers.MINER, VillagerProfession.WEAPONSMITH, ModVillagers.LUMBERJACK,
 			VillagerProfession.FARMER, VillagerProfession.SHEPHERD, ModVillagers.SCHOLAR, ModVillagers.NURSE, ModVillagers.INNKEEPER, ModVillagers.GUARD,
 			ModVillagers.TUTOR};
+		// each Master's trade workstation beside them, its record filed and claimed: the census counts only villagers with
+		// a workstation as workers, and the hall shows a worker's pace (their guild's 'Works ...% faster') only on theirs (B88)
+		List<BlockPos> stations = new ArrayList<>();
+		List<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>> pois = new ArrayList<>();
+		for (int i = 0; i < count; i++) {
+			var poi = workstation(jobs[i]);
+			BlockPos station = HALLS[i].offset(10, 0, -2);
+			level.setBlockAndUpdate(station, poi.value().matchingStates().iterator().next());
+			stations.add(station);
+			pois.add(poi);
+		}
+		for (BlockPos station : stations) {
+			ScreenshotHarness.fileRecords(level, station, 1);
+		}
 		for (int i = 0; i < count; i++) {
 			Villager v = EntityType.VILLAGER.spawn(level, HALLS[i].offset(9, 0, -2), MobSpawnType.COMMAND);
 			v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(5));
 			v.setCustomName(Component.literal(NAMES[i]));
 			v.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, v, stations.get(i), pois.get(i).unwrapKey().orElseThrow(), jobs[i]);
 			masters.add(v);
 		}
 		ScreenshotHarness.hoverLookingAt(player, new Vec3(30, -44, -24), new Vec3(30, -56, 17));
+	}
+
+	/** The trade's own workstation: the profession's job site from its own mod first (a Miner's bench, not the armorer's furnace). */
+	private static net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> workstation(VillagerProfession job) {
+		String own = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION.getKey(job).getNamespace();
+		net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> found = null;
+		for (var holder : net.minecraft.core.registries.BuiltInRegistries.POINT_OF_INTEREST_TYPE.holders().toList()) {
+			if (job.heldJobSite().test(holder) && !holder.value().matchingStates().isEmpty()) {
+				if (holder.unwrapKey().orElseThrow().location().getNamespace().equals(own)) {
+					return holder;
+				}
+				if (found == null) {
+					found = holder;
+				}
+			}
+		}
+		if (found == null) {
+			throw new IllegalStateException("no workstation for " + job);
+		}
+		return found;
 	}
 
 	/** The player grants each Master a charter; each guild claims a finished Guildhall. */

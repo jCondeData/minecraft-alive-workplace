@@ -168,6 +168,10 @@ asks for the steps, `latest.log` and any crash report).
   `/workplace cancel` abandons the Wonder: what's built stays and the plan comes back. The README has a Wonders section.
 
 ### Fixed
+- A siege's ram no longer plugs the breach it just made: once the way through is open, the rams stand aside, out of
+  the gateway, while their band is still outside, and widen it after. A ravager at the next bar of a Gatehouse's
+  portcullis stood right in front of the one-block way it had opened, and the raiders behind it waited until the next
+  bar went too (B126).
 - An Expert Habitat Keeper now founds the village's Habitat Block in a Habitat Garden a Builder built: she
   only looked for a moss block, but the garden's centre stone is mossy cobblestone, so she never did. The block now
   looks like the stone it replaces (B88, Cobblemon 1.8).

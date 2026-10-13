@@ -16,7 +16,7 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
 - **The ram goes for the gate** nearest the raiders' side: a ravager, or without one the raiders with axes. Every blow
   is heard, the block cracks a little more with each, and at the end it breaks: nothing drops. The chat says "The
   raiders have broken through a gate of Oakbrook!" The other raiders wait a few blocks behind the ram and walk in
-  through the gap.
+  through the gap; the ram steps aside out of the gateway to let them past, then widens it.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
@@ -80,7 +80,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
 - **The cracks** are the block's destroy progress, 0 to 9, from the share of hit points gone, shown again every 10
   seconds because a client forgets them after 20.
 - **One director a siege**, every 20 ticks, asking for at most 4 paths a tick. It walks the rams to the block, has
-  them strike, keeps the others 5 blocks out while the way is shut and sends them 6 blocks in once it is open. A raider
+  them strike, keeps the others 5 blocks out while the way is shut and sends them 6 blocks in once it is open. While
+  any of them is still outside the gate line within 12 blocks, the rams wait 4 blocks out and 4 along the wall from the
+  breach and strike no blow (B126: a ravager at the next bar stood in the one-block way it had opened). A raider
   with a foe in sight is left to fight. Each raider carries a goal that holds it to the director's order; without it
   their own hunting walks them round the walls after villagers they cannot reach.
 - **The portcullis** is found from the blueprint: under every iron bar a gate build's blueprint has, bars are set down

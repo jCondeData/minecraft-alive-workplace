@@ -312,7 +312,8 @@ public class HomeGradeGameTests implements FabricGameTest {
 
 	/**
 	 * ROADMAP 34.15a (the owner, 2026-10-12): the Artisan's House and the Townhouse are sold by villagers only. No tier of
-	 * either is in the Blueprint Table's list or handed out by it, the Manor still is; a builder's Artisan's House
+	 * either is in the Blueprint Table's list or handed out by it (nor the Manor's since 34.15b, see ManorGameTests), the
+	 * cottage still is; a builder's Artisan's House
 	 * blueprint, bought, sets out on the ground; the Steward's rules for both still find their blueprints.
 	 */
 	//$ gametest_batch AREA '"homeGradeSoldOnly"'
@@ -323,14 +324,13 @@ public class HomeGradeGameTests implements FabricGameTest {
 		List<ResourceLocation> table = io.github.jcondedata.aliveworkplace.table.TableServer.listing(server).stream()
 			.map(io.github.jcondedata.aliveworkplace.table.TablePayloads.Entry::id).toList();
 		List<ResourceLocation> everything = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.list(server, true);
-		helper.assertTrue(StarterBlueprints.SOLD_ONLY.size() == 5, "every tier of both houses: " + StarterBlueprints.SOLD_ONLY);
+		helper.assertTrue(StarterBlueprints.SOLD_ONLY.size() == 8, "every tier of the three grander homes: " + StarterBlueprints.SOLD_ONLY);
 		for (StarterBlueprints.Entry e : StarterBlueprints.SOLD_ONLY) {
 			helper.assertFalse(table.contains(e.id()), e.id() + " is in the Blueprint Table");
 			helper.assertTrue(everything.contains(e.id()), e.id() + " should still load for operators");
 			helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(server, e.id()).isPresent(), e.id() + " no longer loads");
 		}
-		helper.assertTrue(table.contains(StarterBlueprints.MANOR.id()) && table.contains(StarterBlueprints.STARTER_COTTAGE.id()),
-			"the Manor and the cottage stay in the Table");
+		helper.assertTrue(table.contains(StarterBlueprints.STARTER_COTTAGE.id()), "the cottage stays in the Table");
 
 		// Asked for anyway (a request the screen never sends), the Table refuses and keeps the Blank Blueprint.
 		BlockPos tablePos = new BlockPos(3, 2, 3);
@@ -345,7 +345,7 @@ public class HomeGradeGameTests implements FabricGameTest {
 			helper.assertFalse(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, BlueprintStyles.styled(StarterBlueprints.ARTISANS_HOUSE_2.id(), "stonework")),
 				"the Table handed out a styled Artisan's House II");
 			helper.assertTrue(player.getInventory().countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT) == 2, "a Blank Blueprint was used up");
-			helper.assertTrue(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, StarterBlueprints.MANOR.id()), "the Manor still comes from the Table");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, StarterBlueprints.STARTER_COTTAGE.id()), "the cottage still comes from the Table");
 			helper.assertTrue(Component.translatable("message.aliveworkplace.table.sold_only", "x").getString().equals("The x isn't in the Blueprint Table: a builder sells it"),
 				"the refusal's words: " + Component.translatable("message.aliveworkplace.table.sold_only", "x").getString());
 

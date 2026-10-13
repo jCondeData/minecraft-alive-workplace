@@ -3928,7 +3928,7 @@ on a real world.
   in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
   five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
   - [x] **34.15a** (approved 2026-10-13) Change from the owner (2026-10-12): Artisan's House and Townhouse are sold by villagers only, not in everyone's Blueprint Table. Also: other players may become Lord (31.11 as built); chat title after the name; first day counts against the 15% tick target; 25.2 targets confirmed; builders keep their usual Gazette order.
-  - [ ] **34.15b** Change from the owner (2026-10-13): the Manor works the same way: sold by villagers only, not in everyone's Blueprint Table
+  - [x] **34.15b** (review: pending 2026-10-13) Change from the owner (2026-10-13): the Manor works the same way: sold by villagers only, not in everyone's Blueprint Table
 - [x] **34.16** (approved 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
   hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
   garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's
@@ -5662,6 +5662,12 @@ item waits.
   trader's market-day blueprint may still be one of them (a trader is a villager-like seller). **For the owner**: say if
   the Manor should be sold-only too. (5) The item's "Also" sentence confirms work as built (31.11's Lord, the chat title, the
   tick target, 25.2's targets, the builders' Gazette order): nothing changed for it.
+- 2026-10-13 (34.15b, decisions; lane b): the owner's answer to 34.15a's question, the Manor sold by villagers only
+  too. Every tier (`MANOR`, `MANOR_2`, `MANOR_3`) joins `StarterBlueprints.SOLD_ONLY`, so the Table neither lists it
+  (plain or styled) nor hands one out when asked; builders sell it as 34.16 built (once the village has Burghers) and
+  each upgrade after a builder finishes the tier below. Saves: nothing to migrate (the Table keeps no unlocks), a Manor
+  blueprint already bought, a Manor site and a finished Manor load by id; the Steward's `homes_class_manor` and the
+  Noble's Ball are unchanged; a market-day trader may still bring it. Test: `ManorGameTests.theManorIsSoldNotInTheTable`.
 - **lane-b handoff** (lane-b-1009-2231, 2026-10-10 01:11Z): lane-b-1009-2231: nothing on main this run; 32.2 threat engine, 32.3 lairs + Defence page and B92 (builders step out of a door/block placed on them) are finished on wip/lane-b (tip 'Correct the WIP note'). Full build was green on lane b's work alone (1346 + 192 compat); lane a's landing 2a7c1b63 then brought src/ code at minute 150, and the merge got only compile, checkLayers and 259 targeted GameTests (all pass), no full build. NEXT lane b run, first thing: merge newest main into wip/lane-b, full build, merge to main, push; no CI build of the branch exists (dispatch refused, 403). Then 32.4. TRAPS: a full build is 30-45 min locally even with B93 fixed and only one Minecraft process fits, so a lane gets one build per run and a push refused for src/ changes can't be rebuilt in time: with four lanes landing code this will keep happening (owner/digest: decide whether a clean merge of two separately green trees may push after targeted tests). B93 was fixed twice (lane a's fix kept). PeopleGameTests.illVillagersWorkSlowlyAndGetWell failed once ('ill pace: 205 vs 103', a rounding edge of delay == 2 * well), passed 3 times after: QA flake. B92's fix was not checked with SCENE=soak.
 - 2026-10-10 (31.8, decisions; lane c): the roadmap leaves these open, decided as follows (all on the wiki page
   `heart-events.md`, "Decisions"). (1) **Without Cobblemon the "First Poké Ball" keepsake is a snowball**; with it,

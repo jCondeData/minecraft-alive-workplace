@@ -249,4 +249,76 @@ public class ManorGameTests implements FabricGameTest {
 		helper.assertTrue(Festivals.square(level, pos).equals(pos), "an ordinary festival isn't held in the ballroom");
 		helper.succeed();
 	}
+
+	/**
+	 * ROADMAP 34.15b (the owner, 2026-10-13): the Manor is sold by villagers only, like the Artisan's House and the
+	 * Townhouse (34.15a). No tier, plain or styled, is in the Blueprint Table's list or handed out by it, and a refused
+	 * request keeps the Blank Blueprint; every tier still loads by id. A Manor bought from a builder in a village with
+	 * Burghers sets out on the ground; a finished Manor brings its upgrade's trade; the Steward's rule still finds it.
+	 */
+	//$ gametest_batch AREA '"manorSoldOnly"'
+	@GameTest(template = AREA, batch = "manorSoldOnly")
+	public void theManorIsSoldNotInTheTable(GameTestHelper helper) {
+		village(helper);
+		ServerLevel level = helper.getLevel();
+		var server = level.getServer();
+		java.util.List<ResourceLocation> table = io.github.jcondedata.aliveworkplace.table.TableServer.listing(server).stream()
+			.map(io.github.jcondedata.aliveworkplace.table.TablePayloads.Entry::id).toList();
+		java.util.List<ResourceLocation> everything = BlueprintLibrary.list(server, true);
+		for (StarterBlueprints.Entry e : java.util.List.of(StarterBlueprints.MANOR, StarterBlueprints.MANOR_2, StarterBlueprints.MANOR_3)) {
+			helper.assertTrue(StarterBlueprints.SOLD_ONLY.contains(e), e.id() + " isn't sold-only");
+			helper.assertFalse(table.contains(e.id()), e.id() + " is in the Blueprint Table");
+			helper.assertFalse(table.contains(BlueprintStyles.styled(e.id(), "grand")), e.id() + " in the grand style is in the Blueprint Table");
+			helper.assertTrue(everything.contains(e.id()), e.id() + " should still load for operators");
+			helper.assertTrue(BlueprintLibrary.get(server, e.id()).isPresent(), e.id() + " no longer loads");
+		}
+		helper.assertTrue(table.contains(StarterBlueprints.STONE_HOUSE.id()), "the Stone House stays in the Table");
+
+		// Asked for anyway (a request the screen never sends), the Table refuses and keeps the Blank Blueprint.
+		BlockPos tablePos = new BlockPos(3, 2, 3);
+		helper.setBlock(tablePos, ModBlocks.BLUEPRINT_TABLE);
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		try {
+			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+			BlockPos at = helper.absolutePos(tablePos);
+			player.moveTo(new net.minecraft.world.phys.Vec3(at.getX() + 1.5, at.getY(), at.getZ() + 0.5));
+			player.getInventory().add(new net.minecraft.world.item.ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT, 2));
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, StarterBlueprints.MANOR.id()), "the Table handed out a Manor");
+			helper.assertFalse(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, BlueprintStyles.styled(StarterBlueprints.MANOR_3.id(), "cherry")),
+				"the Table handed out a cherry Manor III");
+			helper.assertTrue(player.getInventory().countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT) == 2, "a Blank Blueprint was used up");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.table.TableServer.take(player, at, StarterBlueprints.STONE_HOUSE.id()), "the Stone House still comes from the Table");
+
+			// Bought from a builder once the village has Burghers, the Manor sets out on the ground like any blueprint.
+			Villager burgher = villager(helper, new BlockPos(14, 2, 10), "Bertram");
+			SocialClasses.seed(burgher, SocialClasses.get(ours("burgher")));
+			Villager builder = villager(helper, new BlockPos(10, 2, 10), "Builder");
+			builder.setVillagerData(new VillagerData(builder.getVillagerData().getType(), ModVillagers.BUILDER, 1));
+			builder.getOffers().clear();
+			ModTrades.builderHomes(builder);
+			net.minecraft.world.item.ItemStack bought = builder.getOffers().stream().map(o -> o.getResult().copy())
+				.filter(r -> BlueprintItem.data(r).map(d -> d.structure().equals(StarterBlueprints.MANOR.id())).orElse(false))
+				.findFirst().orElse(null);
+			helper.assertTrue(bought != null, "the builder sells no Manor: " + builder.getOffers().size());
+			player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bought);
+			BlockPos ground = helper.absolutePos(new BlockPos(8, 1, 4));
+			bought.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND,
+				new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(ground), net.minecraft.core.Direction.UP, ground, false)));
+			helper.assertTrue(BlueprintItem.data(player.getMainHandItem()).flatMap(BlueprintData::placement).isPresent(),
+				"the bought Manor didn't set out: " + BlueprintItem.data(player.getMainHandItem()));
+
+			// The builder who finishes a Manor sells Manor II from then on, though the Table doesn't list it.
+			helper.assertTrue(UpgradeOffers.offer(level, builder, StarterBlueprints.MANOR.id()).equals(java.util.Optional.of(StarterBlueprints.MANOR_2.id())),
+				"no Manor II trade after a finished Manor");
+			helper.assertTrue(UpgradeOffers.sells(builder, StarterBlueprints.MANOR_2.id()), "the builder doesn't sell Manor II");
+		} finally {
+			server.getPlayerList().remove(player);
+		}
+
+		// The Steward's rule still builds it: its blueprint loads by id.
+		StewardRules.Rule rule = StewardRules.all().stream().filter(r -> r.id().getPath().equals("homes_class_manor")).findFirst().orElse(null);
+		helper.assertTrue(rule != null && rule.effect().blueprint().flatMap(id -> BlueprintLibrary.get(server, id)).isPresent(),
+			"homes_class_manor's blueprint doesn't load: " + rule);
+		helper.succeed();
+	}
 }

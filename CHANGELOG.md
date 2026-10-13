@@ -117,6 +117,9 @@ asks for the steps, `latest.log` and any crash report).
   under the rams, and nothing else a raider does (a creeper's blast, a ravager, a vindicator at a house door) breaks a
   block the builders placed or a build still under way. Whatever rams and village fires take, the builders always put
   back, even with Builder Repairs off, and a restart forgets none of it.
+- **The Noble's Manor is sold by builders only too** (34.15b): it's no longer in the Blueprint Table. A builder sells it
+  once the village has a household of Burghers or higher, and its upgrades come from the builder who finishes it; Manor
+  blueprints already bought, sites in progress and finished Manors keep working.
 - **The Artisan's House and the Burgher's Townhouse are sold by builders only** (34.15a): they're no longer in the
   Blueprint Table. A builder sells the Artisan's House from Apprentice on and the Townhouse once the village has
   Artisans; blueprints already bought and houses already built keep working.

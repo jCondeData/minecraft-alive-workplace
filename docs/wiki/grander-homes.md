@@ -4,14 +4,14 @@ What a home is worth to the [classes](classes.md): every home has a grade, and t
 Burghers and the Nobles the homes their class asks for: the Artisan's House, the Burgher's Townhouse and the Noble's
 Manor. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.15, 34.15a, 34.16, B106
+Roadmap items: 34.15, 34.15a, 34.15b, 34.16, B106
 
 ## What a player sees
 
-Three new houses. The Artisan's House and the Burgher's Townhouse are **sold by builders only** (not in the Blueprint
-Table): a builder sells the Artisan's House from Apprentice on and the Townhouse once the village round the nearest hall
-has a household of Artisans or higher, and each upgrade comes from the builder who finishes the tier below. The Noble's
-Manor is in the Blueprint Table and sold by builders too:
+Three new houses, all **sold by builders only** (not in the Blueprint Table): a builder sells the Artisan's House from
+Apprentice on, the Townhouse once the village round the nearest hall has a household of Artisans or higher and the
+Noble's Manor once it has a household of Burghers or higher, and each upgrade comes from the builder who finishes the
+tier below:
 
 - **Artisan's House** (a grade I home). A narrow house with its gable to the street: a stone workroom below (a
   workbench, an anvil, a chest of stock, a ladder up) and an upper floor in a spruce frame with birch infill, jettied a
@@ -130,8 +130,12 @@ worked out from the finished buildings already saved.
 - 34.15: a couple's home grade is the lower of their two beds' buildings, as a class need holds for a household only
   when it holds for both.
 - 34.16: every tier of the Manor is grade III (the Noble's need); II and III add the garden's beauty and the ballroom.
-- 34.16: the Manor is in the Blueprint Table for everyone (34.15a took only the other two out), and sold by builders once the
-  village has Burghers (or higher); its Steward rule needs a Town, the Noble's own rank need.
+- 34.16: the Manor is sold by builders once the village has Burghers (or higher); its Steward rule needs a Town, the
+  Noble's own rank need.
+- 34.15b (the owner, 2026-10-13): the Manor, every tier, is sold by villagers only like the other two
+  (`StarterBlueprints.SOLD_ONLY`): the Table neither lists it nor hands one out when asked. A Manor blueprint already
+  bought, a Manor site in progress and a finished Manor keep working (they load by id), its upgrades still come from
+  the builder who finished it, and the Steward still builds it by `homes_class_manor` (lane b, 2026-10-13).
 - 34.16: the garden's beauty counts only for the people whose bed is in the Manor (a home file's `garden`), not for the
   whole village like a decoration, as the roadmap says.
 - 34.16: with no ballroom the ball gathers in a Manor I or II's hall (its middle), as 34.7 did, before the Village Hall.
@@ -158,7 +162,8 @@ worked out from the finished buildings already saved.
   `HomeGradeGameTests.householdsWhoOutgrowTheirHomeAskForAGranderOne`, `HomeGradeGameTests.theHomesClassRulesLoad`,
   `HomeGradeGameTests.buildersSellTheGranderHomes`.
 - `ManorGameTests.theManorIsGradeIIIAndItsGardenCountsThreeBeauty`, `ManorGameTests.aHomeFileCanGiveItsGardenBeauty`,
-  `ManorGameTests.buildersSellTheManorOnceTheVillageHasBurghers`, `ManorGameTests.theBallGathersInTheBallroomWhenThereIsOne`.
+  `ManorGameTests.buildersSellTheManorOnceTheVillageHasBurghers`, `ManorGameTests.theBallGathersInTheBallroomWhenThereIsOne`,
+  `ManorGameTests.theManorIsSoldNotInTheTable`.
 - `BuilderGameTests.buildsArtisansHouse`, `BuilderGameTests.buildsArtisansHouseII`, `BuilderGameTests.buildsTownhouse`,
   `BuilderGameTests.buildsTownhouseII`, `BuilderGameTests.buildsTownhouseIII`, `BuilderGameTests.buildsManor`,
   `BuilderGameTests.buildsManorII`, `BuilderGameTests.buildsManorIII` (in the huge area): a builder builds each tier from bare

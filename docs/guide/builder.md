@@ -96,10 +96,11 @@ gives you a copy for a Blank Blueprint.
   [Supply Shop](supply-shop-build.md), [Storehouse](storehouse-build.md), [Berry Farm](berry-farm-build.md) and
   [Research Lab](research-lab-build.md). Build a Supply Shop and a shopkeeper moves in at its counter; a honey bottle
   makes a nurse at the Healing Center's brewing stand.
-- **Homes:** the [Terrace](terrace-build.md), the [Inn](inn-build.md), the [Stone House](stone-house-build.md) and the
-  [Noble's Manor](manor-build.md), for a village that wants to grow.
-- **Sold by builders only:** the [Artisan's House](artisans-house-build.md) isn't in the Table. A builder sells it from
-  Apprentice on; its upgrades come from the builder who finishes it.
+- **Homes:** the [Terrace](terrace-build.md), the [Inn](inn-build.md) and the [Stone House](stone-house-build.md), for a
+  village that wants to grow.
+- **Sold by builders only:** the [Artisan's House](artisans-house-build.md) and the [Noble's Manor](manor-build.md)
+  aren't in the Table. A builder sells the Artisan's House from Apprentice on, and the Manor once the village has a
+  household of Burghers or higher; their upgrades come from the builder who finishes them.
 - **Workplaces:** a [Schoolhouse](schoolhouse-build.md), [Library](library-build.md), [Ranch](ranch-build.md),
   [Apiary Garden](apiary-garden-build.md), [Flower Shop](flower-shop-build.md), [Graveyard](graveyard-build.md),
   [Tinker's Workshop](tinkers-workshop-build.md), [Nether Gate](nether-gate-build.md),

@@ -45,7 +45,10 @@ II home", or "Bo could be an Artisan and wants a grade I home" when the home is 
 - the [Artisan's House](artisans-house-build.md): builders sell it from Apprentice on;
 - the [Burgher's Townhouse](townhouse-build.md): builders sell it once the village has a household of Artisans or
   better;
-- the [Noble's Manor](manor-build.md): in the Blueprint Table, and builders sell it once the village has Burghers.
+- the [Noble's Manor](manor-build.md): builders sell it once the village has Burghers.
+
+None of the three is in the Blueprint Table: only builders sell them, and each upgrade comes from the builder who
+finishes the tier below.
 
 ## How it fits with the rest
 

@@ -422,11 +422,12 @@ public final class StarterBlueprints {
 
 	/**
 	 * Sold by villagers only, not in the Blueprint Table (ROADMAP 34.15a, the owner's change of 2026-10-12): every tier
-	 * of the Artisan's House and the Burgher's Townhouse. Builders sell the first tier ({@code ModTrades.builderHomes})
-	 * and, once one is finished, its upgrade ({@code UpgradeOffers}); the blueprints still load by id, so a blueprint
-	 * already bought, a build site and the Steward's rules keep working.
+	 * of the Artisan's House and the Burgher's Townhouse, and (34.15b, 2026-10-13) of the Noble's Manor. Builders sell
+	 * the first tier ({@code ModTrades.builderHomes}) and, once one is finished, its upgrade ({@code UpgradeOffers}); the
+	 * blueprints still load by id, so a blueprint already bought, a build site and the Steward's rules keep working.
 	 */
-	public static final List<Entry> SOLD_ONLY = List.of(ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3);
+	public static final List<Entry> SOLD_ONLY = List.of(ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3,
+		MANOR, MANOR_2, MANOR_3);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
 	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);

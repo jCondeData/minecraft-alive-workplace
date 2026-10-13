@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140
 
 ## What a player sees
 
@@ -988,6 +988,8 @@ Sky Chart with a marker per structure and each named in its tooltip; the first i
 load, a hall saved without one loads with none begun, and a week later the search begins again keeping what it found;
 the Coming days list a staged festival (in 3 days), a wedding (tomorrow, once for the couple) and an incoming caravan
 on its arrival day, the full moon within the week, and the calendar page shows them under the seasons; damaged, or
-with Wonders off, the search, the chart and the Coming days stop, and repaired the search goes on. Showcase scene
+with Wonders off, the search, the chart and the Coming days stop, and repaired the search goes on. The chart in
+hand is drawn and marked (B140): most of its pixels hold the land, holding it puts a marker on the map for each
+structure found, and the packet sent to its holder carries the whole land and the markers. Showcase scene
 `wonder_observatory` (group Wonders): the time-lapse, then the Sky Chart in hand and the hall's calendar with the
 Coming days.

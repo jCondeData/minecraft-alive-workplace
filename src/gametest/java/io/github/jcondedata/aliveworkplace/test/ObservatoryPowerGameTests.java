@@ -35,18 +35,24 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.MapDecorations;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
+import net.minecraft.world.level.saveddata.maps.MapId;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
 /**
  * The Observatory's powers (ROADMAP 35.18), with a stub structure finder: the hall's map button draws the Sky Chart
@@ -178,6 +184,49 @@ public class ObservatoryPowerGameTests implements FabricGameTest {
 		String lore = String.join(" / ", chart.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).lines().stream().map(Component::getString).toList());
 		helper.assertTrue(lore.contains("Village Plains") || lore.contains("Plains Village"), "the village isn't named: " + lore);
 		helper.assertTrue(lore.contains("Stronghold") && lore.contains("Ruined Portal"), "the stronghold and the portal aren't named: " + lore);
+		helper.succeed();
+	}
+
+	/**
+	 * B140: the chart a player gets from the map button is drawn, not blank, and holding it shows its markers. The land
+	 * is sketched into the map's colours, carrying it in hand (the inventory tick, as every tick does) puts a marker for
+	 * each structure on the map, and the packet the server sends the holder carries both the colours and the markers.
+	 */
+	//$ gametest_batch AREA '"observatoryChartInHand"'
+	@GameTest(template = AREA, batch = "observatoryChartInHand")
+	public void theSkyChartInHandIsDrawnAndMarked(GameTestHelper helper) {
+		BlockPos hall = observatory(helper);
+		search(helper, hall, 0, 3 * SkyChart.HOUR_TICKS + 1_000);
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) helper.getLevel().getBlockEntity(hall);
+		int found = entity.skyChart().found().size();
+		helper.assertTrue(found == 3, "found " + entity.skyChart().found());
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		player.getInventory().clearContent();
+		player.getInventory().add(new ItemStack(Items.MAP, 2));
+		VillageHallScreen.forTest(player, hall).press(VillageHallScreen.MAP, player);
+		ItemStack chart = filledMaps(player).stream().filter(ObservatoryPowerGameTests::isChart).findFirst().orElse(null);
+		helper.assertTrue(chart != null, "no Sky Chart from the map button");
+		MapItemSavedData data = MapItem.getSavedData(chart, helper.getLevel());
+		helper.assertTrue(data != null, "the Sky Chart has no map data");
+		int drawn = 0;
+		for (byte colour : data.colors) {
+			if (colour != 0) {
+				drawn++;
+			}
+		}
+		helper.assertTrue(drawn > SkyChart.PIXELS * SkyChart.PIXELS / 2, "the Sky Chart is blank: " + drawn + " of 16384 pixels drawn");
+
+		player.setItemInHand(InteractionHand.MAIN_HAND, chart);
+		chart.inventoryTick(helper.getLevel(), player, player.getInventory().selected, true);
+		List<MapDecoration> marks = new ArrayList<>();
+		data.getDecorations().forEach(marks::add);
+		helper.assertTrue(marks.size() >= found, "holding the Sky Chart shows " + marks.size() + " markers, not the " + found + " structures found");
+
+		MapId id = chart.get(DataComponents.MAP_ID);
+		helper.assertTrue(data.getUpdatePacket(id, player) instanceof ClientboundMapItemDataPacket packet
+			&& packet.colorPatch().map(p -> p.width() == SkyChart.PIXELS && p.height() == SkyChart.PIXELS).orElse(false)
+			&& packet.decorations().map(d -> d.size() >= found).orElse(false),
+			"the packet to the player holding the Sky Chart doesn't carry the whole land and the " + found + " markers");
 		helper.succeed();
 	}
 

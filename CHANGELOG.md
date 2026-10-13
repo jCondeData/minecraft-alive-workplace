@@ -123,6 +123,12 @@ asks for the steps, `latest.log` and any crash report).
   Observatory had the same fault (35.8a).
 
 ### Changed
+- **The Great Wall's towers stand on solid, decorated bases** (35.15a, part of Wonders, for 2.0; the owner's change):
+  each tower is solid stone up to the walk, on a battered deepslate base with buttresses at its corners, a ledge round
+  it at the walk with lanterns on its corners, banners on both sides, a lit niche toward the village, and a lantern on
+  its roof's peak. The rest of the wall is more decorated too: banners in every bay on the field side with arrow slits
+  above them, taller merlons over the buttresses, vines low down, lanterns along the walk and on the village side, and
+  the gatehouse gets the towers' buttresses and ledge. You now reach the towers from the walk. About 12,300 blocks.
 - **The Observatory's Sky Chart covers about 6,144 blocks** (35.18a, part of Wonders, for 2.0; the owner's change from
   1,024): 384 chunks and 12 regions across, every village, temple, monument, mansion and the rest on one locked map at
   48 blocks a pixel (a vanilla map stops at 2,048). The Observatory searches that far without slowing the server: one

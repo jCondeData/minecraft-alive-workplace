@@ -5756,6 +5756,12 @@ item waits.
   come out the same as before. The `wonder_gallery` scene now accepts a first-stage part that is only air (it clears
   the site, as `WonderBlueprintGameTests` already allowed; the Cathedral has two). Owner: say if you'd rather have
   solid tower bases for the 18,000.
+- **35.15a the Great Wall's solid tower bases** (lane-a-1013-0446, 2026-10-13): the owner asked for solid tower bases
+  with more decoration. Each tower is now solid masonry to the walk (no ground-floor door or stair: you enter from the
+  walk, up the two village-side stairs by the gate) on a base a block out all round, and the Wall has banners, slits,
+  lanterns, taller merlons, vines and buttresses added (CHANGELOG). It is 12,338 blocks, not 18,000: whole solid towers
+  would still be needed for that, and the owner asked for bases. `WonderBlueprintGameTests` now expects about 12,300,
+  and `greatWallTowerBasesSolid` checks the bases. The stairs inside each tower now start at the walk-level room.
 - **35.19 the Hanging Gardens' site, water and count** (lane-b-1012-0033, 2026-10-12): drawn with everything the item
   lists, the terraces stand on the 39 x 39 foot (24 high, 31 to the crown's treetops), but the whole site is 47 x 44:
   the falls' pool lies outside the foot on the east and the ramp's first flight runs along the front from the ground.

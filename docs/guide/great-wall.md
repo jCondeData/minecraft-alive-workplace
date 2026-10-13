@@ -11,8 +11,10 @@ categories: Wonders, Defense
 related: wonders.md, defence.md, builder.md
 ```
 
-A curtain of stone 97 long and 12 high on a battered plinth, with a crenellated walk lit by braziers, four towers under
-spruce roofs, and the **Great Gate** at its center, its portcullis over a gate of fence gates.
+A curtain of stone 97 long and 12 high on a battered plinth, with a crenellated walk lit by braziers and lanterns, four
+towers under spruce roofs, and the **Great Gate** at its center, its portcullis over a gate of fence gates. The towers are
+solid stone up to the walk, on buttressed deepslate bases hung with banners, so you go in from the walk: climb one of the
+two stairs on the village side by the gate. Banners hang in every bay on the field side, under arrow slits.
 
 ## What it needs
 

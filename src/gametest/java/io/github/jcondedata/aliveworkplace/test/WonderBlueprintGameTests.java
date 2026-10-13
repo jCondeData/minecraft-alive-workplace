@@ -21,6 +21,7 @@ import java.util.function.BiConsumer;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestGenerator;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -50,7 +51,7 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 		new Design("lighthouse", 5_000), // 35.11 (the roadmap's 7,500 doesn't fit its 25 x 33 x 46: ROADMAP Notes)
 		new Design("great_library", 16_000), // 35.13
 		new Design("observatory", 9_000), // 35.17
-		new Design("great_wall", 11_000), // 35.15 (the roadmap's 18,000 needs solid towers: ROADMAP Notes)
+		new Design("great_wall", 12_300), // 35.15, with 35.15a's solid tower bases (the roadmap's 18,000 needs solid towers: ROADMAP Notes)
 		new Design("hanging_gardens", 15_000), // 35.19
 		new Design("colossus", 9_000)); // 35.21
 	// The Stadium (35.23) needs Cobblemon for its file and its Healing Machine: the same checks are compat StadiumCompatTests.
@@ -208,6 +209,48 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 		}
 		helper.assertTrue(Math.abs(blocks - d.blocks()) <= d.blocks() / 10,
 			d.id() + " has " + blocks + " blocks, not within 10% of " + d.blocks());
+	}
+
+	/** The Great Wall's four towers (west x 2, 20, 68 and 86; z 3-11) as the parts place them. */
+	static final int[] WALL_TOWERS = {2, 20, 68, 86};
+
+	/**
+	 * 35.15a: the Great Wall's towers stand on solid bases. Inside its faces each tower is full blocks from the ground to
+	 * the walk (y 0-8), with no air under the walk-level room; its faces are laid to y 2 and the base a block out round
+	 * it at the foot.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void greatWallTowerBasesSolid(GameTestHelper helper) {
+		Map<BlockPos, BlockState> placed = new HashMap<>();
+		for (List<Part> stage : stages(helper.getLevel().getServer(), "great_wall")) {
+			for (Part p : stage) {
+				for (Blueprint.Entry e : p.blueprint().blocks()) {
+					if (!e.state().isAir()) {
+						placed.put(p.offset().offset(e.pos()), e.state());
+					}
+				}
+			}
+		}
+		List<String> wrong = new ArrayList<>();
+		for (int t : WALL_TOWERS) {
+			for (int x = t - 1; x <= t + 9; x++) {
+				for (int z = 2; z <= 12; z++) {
+					boolean inside = x > t && x < t + 8 && z > 3 && z < 11; // the faces have niches and blind slits in them
+					boolean tower = x >= t && x <= t + 8 && z >= 3 && z <= 11;
+					for (int y = 0; y <= (inside ? 8 : tower ? 2 : 0); y++) {
+						BlockState state = placed.get(new BlockPos(x, y, z));
+						boolean solid = state != null && (!tower || state.isCollisionShapeFullBlock(helper.getLevel(), BlockPos.ZERO));
+						if (!solid && wrong.size() < 10) {
+							wrong.add((tower ? "tower " : "base ") + t + ": " + (state == null ? "air" : state.getBlock().getName().getString())
+								+ " at " + x + ", " + y + ", " + z);
+						}
+					}
+				}
+			}
+		}
+		helper.assertTrue(wrong.isEmpty(), "the Great Wall's tower bases aren't solid: " + wrong);
+		helper.succeed();
 	}
 
 	/**

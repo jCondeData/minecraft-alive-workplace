@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.11, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23
 
 ## What a player sees
 
@@ -294,21 +294,25 @@ the server's tick has room, at most one kind an in-game hour, saved as it goes; 
 over comes with 35.18.
 
 **The Great Wall** (35.15) is drawn: a defense 97 long, placed like the other walls (stand in the village and place it
-facing out: its stairs are on your side), about 10,800 blocks. A curtain 7 thick and 12 high on a battered plinth of
+facing out: its stairs are on your side), about 12,300 blocks. A curtain 7 thick and 12 high on a battered plinth of
 deepslate bricks, faced with stone bricks to the field (mossy and cracked on the low courses, a buttress every four or
 five blocks) and cobblestone to the village; on top a walk paved six wide behind a breastwork corbeled out over the
-field, crenellated, with a low parapet on the village side carrying braziers (campfires on chiseled stone). Four
-towers 9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters, each with a door from
-the village, a stair round its inside to a room at the walk (doors onto the walk, a guard's grindstone, and on the
-side facing the gate an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a
-top room with windows on three sides, arrow slits low down and a banner to the field. At the center the Great Gate, a
-gatehouse 17 wide and as high as the towers under a long hipped roof: a vaulted gateway 5 wide with spruce fence gates
-two high across it under a portcullis of iron bars, which runs up a slot into the hall and hangs from a windlass; a
-guardroom either side with its own stair, a hall at the walk, a top room opening onto a crenellated bretèche over the
-gate, buttresses either side of the gateway, braziers at both its mouths and banners beside them. Two stairs of ten
-steps climb the village side to landings by the gatehouse. Its stages: I *The Great Gate*, II *The West Run*, III *The
-East Run*, IV *The Walk and the Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs).
-Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
+field, crenellated, with a low parapet on the village side carrying braziers (campfires on chiseled stone). Four towers
+9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters. Since 35.15a each tower is solid
+stone from the ground to the walk, on a solid base a block wider all round (deepslate bricks under a battered step, the
+plinth stepping out round it again), with buttresses up its corners, a ledge of upside-down stairs round it at the walk
+with lanterns on its corners, a banner over a blind slit to the field and a lit niche under a keystone and a banner to
+the village. You enter a tower from the walk: a room at the walk (doors onto the walk, a guard's grindstone, and on the
+side facing the gate an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a top
+room with windows on three sides, a banner to the field and a watch lantern on the roof's peak. Along the runs a banner
+hangs in every bay on the field side under an arrow slit, taller chiseled merlons stand over the buttresses, vines grow
+on the low courses, lanterns stand on the parapet between the braziers and on corbels on the village side. At the center the Great Gate, a gatehouse 17 wide and as high
+as the towers under a long hipped roof: a vaulted gateway 5 wide with spruce fence gates two high across it under a
+portcullis of iron bars, which runs up a slot into the hall and hangs from a windlass; a guardroom either side with its
+own stair, a hall at the walk, a top room opening onto a crenellated bretèche over the gate, buttresses either side of
+the gateway and at its corners, the towers' ledge at the walk, braziers at both its mouths and banners beside them. Two stairs of ten steps climb the village side to
+landings by the gatehouse. Its stages: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the
+Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs). Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
 Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 Emerald Brooches
 (Jeweller); II a Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a
 Rib Armor Trim Template (the Seer, 14 days); made: 2 Vintage Wine (Vintner); III a Wither Skeleton Skull (the Founder,
@@ -638,7 +642,7 @@ bringing the books, then the dedication.
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 12,300 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
 The Stadium's file and its Healing Machine need Cobblemon, so its same checks run in the compat tests
 (`StadiumCompatTests`, 7,300 blocks), with its requirements and goods as listed, its nurse's booth, Training Posts and
 floodlights, and its stages built in a village's banner colors (blue and red for a blue banner with a red stripe, the

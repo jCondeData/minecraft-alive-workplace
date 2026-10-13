@@ -109,6 +109,29 @@ final class Leftovers {
 	}
 
 	/**
+	 * Forgets every finished building and removes every Wonder site that a Wonder Plan placed for the hall at
+	 * {@code hall} (absolute) would be checked against: what {@code WonderPlans.placeRefusal} looks at, the Wonder's
+	 * reach plus two villages round the hall. Both are saved world data that outlive their test, and the area is wider
+	 * than {@link #finished}'s, so a building or Wonder site an earlier batch left there refused a plan the test meant
+	 * to go down ("not placed inside the village", "turn 1 refused", B125). Only for tests alone in their batch.
+	 */
+	static void wonderGround(GameTestHelper helper, net.minecraft.core.BlockPos hall) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		int reach = io.github.jcondedata.aliveworkplace.wonder.WonderPlans.REACH + 2 * io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		for (io.github.jcondedata.aliveworkplace.build.BuildSiteManager.Finished f : sites.finishedNear(level, hall, reach)) {
+			sites.forgetFinished(f.placement());
+		}
+		net.minecraft.resources.ResourceLocation dimension = level.dimension().location();
+		for (io.github.jcondedata.aliveworkplace.build.BuildSite site : java.util.List.copyOf(sites.all())) {
+			if (site.structure().getPath().startsWith(io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.FOLDER)
+				&& site.placement().dimension().equals(dimension) && site.placement().origin().distSqr(hall) <= (double) reach * reach) {
+				sites.remove(site.id());
+			}
+		}
+	}
+
+	/**
 	 * Removes every fruit plant (berry bushes, cave vines, cocoa, and anything else ripe) outside the test area within
 	 * {@code radius} of {@code center} (absolute), from 4 below to 10 above. An Orchard Keeper picks ripe fruit within 16
 	 * of the basket before planting, and an earlier batch's glow berries left just outside the area took the planting

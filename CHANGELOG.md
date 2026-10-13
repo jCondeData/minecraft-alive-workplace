@@ -124,6 +124,9 @@ asks for the steps, `latest.log` and any crash report).
   `/workplace cancel` abandons the Wonder: what's built stays and the plan comes back. The README has a Wonders section.
 
 ### Fixed
+- An Expert Habitat Keeper now founds the village's Habitat Block in a Habitat Garden a Builder built: she
+  only looked for a moss block, but the garden's centre stone is mossy cobblestone, so she never did. The block now
+  looks like the stone it replaces (B88, Cobblemon 1.8).
 - A worker's status names their own job: a Miner's level line reads "Apprentice Miner · 10/70 XP…" instead of
   calling every worker a builder (B124).
 - Builders no longer die from falls while on a job (on a roof, a tower or a Wonder's dome), and a Wonder's part whose

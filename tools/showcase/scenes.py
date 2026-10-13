@@ -820,7 +820,7 @@ SCENES = [
     # The Lighthouse (ROADMAP 35.12): its time-lapse beside a sea the harness digs, ending at night with the lamps lit
     S("wonder_lighthouse", "Wonders", "The Lighthouse: its time-lapse by the sea, lit at night",
       "a crew of ten raised the Lighthouse stage by stage beside a sea the harness dug and filled, the jetty running out over the water; once finished its powers came on (caravans twice as far in half the time, ferry fares halved, a day's warning of pirates) and the jetty's Travel Post joined the network under the village's name; after the festival's fireworks, at midnight the lantern's redstone lamps shone over the sea", 780,
-      [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"), ("frame_*@middle", "The crew at work, the camera going round"),
+      [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"),
        ("14_wonder_lighthouse_stage_4", "The Lantern and the Keeper's House: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
     # The Great Cathedral (ROADMAP 35.10): its time-lapse with the crew, ending at dusk with a blessed wedding at its altar

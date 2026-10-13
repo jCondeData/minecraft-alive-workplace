@@ -121,6 +121,9 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("TONIC", new io.github.jcondedata.aliveworkplace.people.Tonics.Drunk("aliveworkplace:miners_brew", 48_000L));
 		samples.put("CUP_DELEGATE", new io.github.jcondedata.aliveworkplace.cup.CupDays.Delegate(new BlockPos(300, 64, -120), A, 2,
 			new BlockPos(10, 64, 20), 72_000L));
+		samples.put("STADIUM_VISITOR", new io.github.jcondedata.aliveworkplace.wonder.StadiumDays.Visitor(new BlockPos(40, 64, -8), B,
+			java.util.Optional.of(new BlockPos(-200, 64, 30)), A, 6L, true, 3)); // (35.24)
+		samples.put("STADIUM_WATCHED", 4L); // (35.24)
 		samples.put("REQUEST_LET_DOWN", new io.github.jcondedata.aliveworkplace.story.PersonalRequests.LetDown(44L, 123456L));
 		samples.put("FRIENDSHIP", new io.github.jcondedata.aliveworkplace.story.Friendship.Data(Map.of(A,
 			new io.github.jcondedata.aliveworkplace.story.Friendship.Bond("Jesse", 120, 40L, 5L, 2, Map.of("chat", 41L), 900L, List.of("heart_2"), true, 7L, 3L))));

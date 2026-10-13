@@ -335,8 +335,8 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			action = actionFor(level, site, candidate, bench);
-			if (action == Action.NONE) {
-				site.advance();
+			if (action == Action.NONE || crew && site.placedThisStage(candidate.pos())) {
+				site.advance(); // (B139: a crew member placed it, and it has changed by itself since: it stays)
 			} else if (action == Action.PLACE && outForLandscape(level, site, candidate, bag)) {
 				site.defer(); // nothing to fill it with: comes round once more at the end, then is left
 			} else if (crew && action == Action.SKIP && site.isRetrying() && crewHasWork(level, site, plan, bench)) {
@@ -601,8 +601,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step columnWork(ServerLevel level, BuildSite site, BuildPlan plan, List<BuildPlan.Step> column, int layer, BlockPos bench) {
 		boolean topDown = site.stage() == BuildPlan.Stage.CLEAR;
 		for (BuildPlan.Step s : column) {
-			if (avoid.contains(s.pos()) || site.gaveUp(s.pos())) {
-				continue;
+			if (avoid.contains(s.pos()) || site.gaveUp(s.pos()) || site.placedThisStage(s.pos())) {
+				continue; // (B139: a block placed this stage that changed by itself since, as farmland drying out, stays)
 			}
 			Action a = actionFor(level, site, s, bench);
 			if (a != Action.BREAK && a != Action.PLACE) {
@@ -641,13 +641,17 @@ public class BuilderWork extends Behavior<Villager> {
 		return site.stage() != BuildPlan.Stage.LANDSCAPE;
 	}
 
-	/** A foundation or structure block goes up only once the block the drawing puts under it is there. */
+	/**
+	 * A foundation or structure block goes up only once the block the drawing puts under it is there, or the lead gave
+	 * that one up (B139: a crewmate stood on top of the Colossus's half-built robe, the block under its feet was given
+	 * up, and the robe above it waited for it for good, the whole crew with it).
+	 */
 	private static boolean supported(ServerLevel level, BuildSite site, BuildPlan plan, BuildPlan.Step step) {
 		if (site.stage() != BuildPlan.Stage.STRUCTURE && site.stage() != BuildPlan.Stage.FOUNDATION) {
 			return true;
 		}
 		BlockPos below = step.pos().below();
-		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced();
+		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced() || site.gaveUp(below);
 	}
 
 	/** Whether any step of the stage still has work a builder can do (one the lead gave up on doesn't count). */
@@ -661,8 +665,8 @@ public class BuilderWork extends Behavior<Villager> {
 		return site.crewLayer(level.getGameTime(), () -> {
 			// The stage's steps go bottom-up (clearing: top-down), so the first with work is on the layer.
 			for (BuildPlan.Step s : plan.steps(site.stage())) {
-				if (site.gaveUp(s.pos())) {
-					continue; // left for good (out of reach, say): nothing waits for it
+				if (site.gaveUp(s.pos()) || site.placedThisStage(s.pos())) {
+					continue; // left for good (out of reach, say), or placed already (B139): nothing waits for it
 				}
 				Action a = actionFor(level, site, s, bench);
 				if (a == Action.BREAK || a == Action.PLACE) {
@@ -1598,6 +1602,13 @@ public class BuilderWork extends Behavior<Villager> {
 				return;
 			}
 		}
+		BlockPos under = pos.below();
+		if ((state.getBlock() instanceof net.minecraft.world.level.block.CropBlock || state.getBlock() instanceof net.minecraft.world.level.block.StemBlock)
+			&& level.getBlockState(under).is(net.minecraft.world.level.block.Blocks.DIRT) && !state.canSurvive(level, pos)) {
+			// B139: a crop goes only on farmland, which dries out to dirt while the walls go up and its water hasn't come
+			// yet: the builder tills it again, as a farmer would, rather than leave the field bare
+			level.setBlock(under, net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState(), Block.UPDATE_ALL);
+		}
 		if (!state.canSurvive(level, pos)) {
 			defer(site, villager, pos); // nothing to attach to yet; retried at the end of the stage
 			return;
@@ -1645,6 +1656,7 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(pos, shaped.isAir() ? state : shaped, Block.UPDATE_ALL);
 		}
 		applyBlockEntityData(level, pos, state, step.nbt());
+		site.placedNow(pos);
 		MaterialRules.afterPlaced(level, pos, state);
 		if (state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE)) {
 			io.github.jcondedata.aliveworkplace.store.Porters.onBuilt(level, pos, site);

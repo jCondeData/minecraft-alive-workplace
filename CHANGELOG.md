@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- **A Wonder's crew no longer stops for good partway up** (B139). When the lead had to give up on one block (a
+  crewmate stood on it the whole time, as on top of the Colossus's half-built robe), the wall above it waited for that
+  block forever and the whole crew stood idle; now the wall goes on over the gap, also after a restart. And a block that
+  changes by itself once laid, like farmland drying out before its water comes, is no longer broken and laid again
+  over and over (the Hanging Gardens never got past their first terrace, and it used up the chests' stone): the crew
+  leaves it, and a crop to go on dried-out farmland is planted after the builder tills it again.
 - The settings screen's **Rogue Bounties** and **Builder Scaffolding** switches (renamed from Rogue Pokémon Bounties
   and Builders Use Scaffolding) now fit their buttons when turned off (B131).
 - **The Seer now warns of raids two days ahead**, as promised (B133). A Seer living in the village used to foretell

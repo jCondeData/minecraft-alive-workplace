@@ -209,6 +209,7 @@ public final class BuildSite {
 				cursor = 0;
 				retrying = false;
 				deferred.clear();
+				gaveUp.clear();
 			}
 		}
 		return plan;
@@ -375,8 +376,34 @@ public final class BuildSite {
 	private BuildPlan.Stage crewLayerStage;
 	private int crewLayer;
 
-	/** Steps the lead gave up on this stage (deferred twice): a crew's lowest layer doesn't wait for them. */
+	/**
+	 * Steps the lead gave up on this stage (deferred twice): a crew's lowest layer doesn't wait for them, and the block
+	 * over one goes up without it (B139). Saved: after a reload a given-up block would hold its column up for good.
+	 */
 	private final java.util.Set<BlockPos> gaveUp = new java.util.HashSet<>();
+
+	/**
+	 * Steps placed in {@link #placedStage} (B139): a crew doesn't go back to one that changed by itself since (farmland
+	 * drying out to dirt before its water comes, grass under a floor), as a lone builder never goes back behind its
+	 * cursor. Not saved: after a load such a block is redone once at most.
+	 */
+	private final java.util.Set<BlockPos> placedThisStage = new java.util.HashSet<>();
+	@Nullable
+	private BuildPlan.Stage placedStage;
+
+	/** The block at {@code pos} was placed (B139). */
+	public void placedNow(BlockPos pos) {
+		if (placedStage != stage) {
+			placedThisStage.clear();
+			placedStage = stage;
+		}
+		placedThisStage.add(pos.immutable());
+	}
+
+	/** Whether the block at {@code pos} was placed in this stage (since the site was loaded). */
+	public boolean placedThisStage(BlockPos pos) {
+		return placedStage == stage && placedThisStage.contains(pos);
+	}
 
 	/** Whether the lead gave up on the step at {@code pos} (35.5). */
 	public boolean gaveUp(BlockPos pos) {
@@ -758,6 +785,9 @@ public final class BuildSite {
 		if (!scaffolds.isEmpty()) {
 			tag.putLongArray("scaffolds", scaffolds.stream().mapToLong(BlockPos::asLong).toArray());
 		}
+		if (!gaveUp.isEmpty()) {
+			tag.putLongArray("gave_up", gaveUp.stream().mapToLong(BlockPos::asLong).toArray());
+		}
 		return tag;
 	}
 
@@ -799,6 +829,9 @@ public final class BuildSite {
 		site.foundation = !Nbt.getBoolean(tag, "no_foundation");
 		for (long p : Nbt.getLongArray(tag, "scaffolds")) { // 35.6: none in older saves
 			site.scaffolds.add(BlockPos.of(p));
+		}
+		for (long p : Nbt.getLongArray(tag, "gave_up")) { // B139: none in older saves
+			site.gaveUp.add(BlockPos.of(p));
 		}
 		return site;
 	}

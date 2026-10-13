@@ -62,6 +62,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  */
 public class WonderCrewGameTests implements FabricGameTest {
 	private static final String TALL = "aliveworkplace_test:tall_area";
+	private static final String BIG = "aliveworkplace_test:big_area";
 	private static final ResourceLocation FOLLY = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
 	private static final ResourceLocation WHOLE = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "wonder/test_folly");
 	private static final ResourceLocation DRAWN = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "wonder_drawn/test_folly");
@@ -544,6 +545,234 @@ public class WonderCrewGameTests implements FabricGameTest {
 			helper.assertTrue(now.done(), "still at stage " + now.stage() + ", " + Math.round(WonderStages.stageProgress(level, now) * 100) + "%" + parts(level, now));
 			List<BlockPos> left = unlikeButTheFinial(level, at);
 			helper.assertTrue(left.isEmpty(), left.size() + " blocks unlike the drawing, e.g. " + left.stream().limit(3).toList());
+		});
+	}
+
+	/**
+	 * B139: a wall block of stage II the lead gives up on (someone stood on it all along; on the Colossus, a crewmate on
+	 * top of the half-built robe) doesn't hold up the rest: the wall above it goes on, and the crew finishes the folly
+	 * with only those blocks missing. The time-lapses stood still for good there, the block over the given-up one never
+	 * "supported" and the crew's layers waiting on it.
+	 */
+	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpUnder"'
+	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpUnder")
+	public void aBlockGivenUpMidWallDoesNotStallTheCrew(GameTestHelper helper) {
+		gaveUpMidWall(helper, false);
+	}
+
+	/** B139: the same, saved and loaded the moment the blocks are given up: they stay given up, and the crew finishes. */
+	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpReload"'
+	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpReload")
+	public void aBlockGivenUpMidWallStaysGivenUpAfterAReload(GameTestHelper helper) {
+		gaveUpMidWall(helper, true);
+	}
+
+	/**
+	 * B139: a block the crew placed that then changes by itself (on the Hanging Gardens, the first terrace's farmland
+	 * drying out to dirt before its water comes) is left as it is: the crew used to break it and lay it again, over and
+	 * over, and the stage never ended. The folly is finished with only that block unlike the drawing.
+	 */
+	//$ gametest_ticks_batch TALL '24000' '"crewChangedBlock"'
+	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewChangedBlock")
+	public void aBlockThatChangesByItselfIsNotLaidAgainAndAgain(GameTestHelper helper) {
+		Village v = village(helper, 4, 4);
+		ServerLevel level = v.level();
+		WonderSite begun = begin(helper, v);
+		stock(helper, level, begun.stone().orElseThrow());
+		BlueprintData.Placement at = begun.placement().orElseThrow();
+		UUID id = begun.id();
+		BlockPos[] changing = {null};
+		long[] since = {-1};
+		AtomicInteger changes = new AtomicInteger();
+		helper.onEachTick(() -> {
+			if (level.getGameTime() % 200 == 0) {
+				helper.setDayTime(2000);
+			}
+			WonderSite now = WonderManager.get(level).site(id).orElse(null);
+			if (now == null || now.done() || now.stage() != 2 || now.parts().isEmpty()) {
+				return;
+			}
+			BuildSite part = BuildSiteManager.get(level).get(now.parts().get(0));
+			BuildPlan plan = part == null ? null : part.plan(level);
+			if (plan == null || part.stage() != BuildPlan.Stage.STRUCTURE) {
+				return;
+			}
+			List<BuildPlan.Step> walls = plan.steps(BuildPlan.Stage.STRUCTURE);
+			if (changing[0] == null) {
+				int low = walls.stream().mapToInt(s -> s.pos().getY()).min().orElse(0);
+				walls.stream().filter(s -> s.pos().getY() == low + 1 && level.getBlockState(s.pos()).isAir()).findFirst()
+					.ifPresent(s -> changing[0] = s.pos());
+				return;
+			}
+			BuildPlan.Step step = walls.stream().filter(s -> s.pos().equals(changing[0])).findFirst().orElseThrow();
+			if (!io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(level.getBlockState(changing[0]), step.state())) {
+				since[0] = -1;
+				return;
+			}
+			// laid as drawn: a little later it changes by itself, every time (as farmland with no water dries out)
+			if (since[0] < 0) {
+				since[0] = level.getGameTime();
+			} else if (level.getGameTime() - since[0] >= 40) {
+				level.setBlockAndUpdate(changing[0], Blocks.COBBLESTONE.defaultBlockState());
+				changes.incrementAndGet();
+				since[0] = -1;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(changes.get() >= 1, "the chosen block was never laid and changed (" + changing[0] + ")");
+			WonderSite now = WonderManager.get(level).site(id).orElseThrow();
+			helper.assertTrue(now.done(), "still at stage " + now.stage() + ", " + Math.round(WonderStages.stageProgress(level, now) * 100) + "%, the block changed "
+				+ changes.get() + " times" + parts(level, now));
+			helper.assertTrue(changes.get() <= 2, "the crew laid the changed block again " + changes.get() + " times");
+			List<BlockPos> left = unlikeButTheFinial(level, at);
+			helper.assertTrue(left.stream().allMatch(p -> p.equals(changing[0])), left.size() + " blocks unlike the drawing besides the changed one, e.g. "
+				+ left.stream().filter(p -> !p.equals(changing[0])).limit(4).toList());
+		});
+	}
+
+	/**
+	 * B139: a crop's farmland dried out to dirt while the build went up (its water not poured yet): the builder tills it
+	 * again and plants the crop, rather than leave the field bare.
+	 */
+	//$ gametest_ticks_batch BIG '6000' '"cropOnDriedFarmland"'
+	@GameTest(template = BIG, timeoutTicks = 6000, batch = "cropOnDriedFarmland")
+	public void aCropOnFarmlandThatDriedOutIsStillPlanted(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, level.getServer());
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer()));
+		// a row of five wheat on farmland, saved as a structure the way a player saves one, then taken up again
+		BlockPos from = new BlockPos(3, 2, 6);
+		for (int i = 0; i < 5; i++) {
+			helper.setBlock(from.offset(i, 0, 0), Blocks.FARMLAND);
+			helper.setBlock(from.offset(i, 1, 0), Blocks.WHEAT.defaultBlockState().setValue(net.minecraft.world.level.block.CropBlock.AGE, 7));
+		}
+		ResourceLocation field = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "b139_field");
+		StructureTemplate template = level.getStructureManager().getOrCreate(field);
+		template.fillFromWorld(level, helper.absolutePos(from), new net.minecraft.core.Vec3i(5, 2, 1), false, null);
+		for (int i = 0; i < 5; i++) {
+			helper.setBlock(from.offset(i, 1, 0), Blocks.AIR);
+			helper.setBlock(from.offset(i, 0, 0), Blocks.AIR);
+		}
+		BlockPos bench = new BlockPos(1, 2, 1);
+		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 2));
+		Builders.employ(level, builder, helper.absolutePos(bench));
+		BuildSite site = Builders.start(level, builder, null, field,
+			new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(from), Rotation.NONE, Mirror.NONE));
+		helper.assertTrue(site != null, "the field's build didn't start");
+		UUID siteId = site.id();
+		AtomicInteger dried = new AtomicInteger();
+		helper.onEachTick(() -> {
+			BuildSite now = BuildSiteManager.get(level).get(siteId);
+			if (now == null || now.stage() != BuildPlan.Stage.DECORATION) {
+				return;
+			}
+			for (int i = 0; i < 5; i++) { // farmland with no water and no crop on it dries out to dirt, as in vanilla
+				BlockPos soil = helper.absolutePos(from.offset(i, 0, 0));
+				if (level.getBlockState(soil).is(Blocks.FARMLAND) && level.getBlockState(soil.above()).isAir()) {
+					level.setBlockAndUpdate(soil, Blocks.DIRT.defaultBlockState());
+					dried.incrementAndGet();
+				}
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(dried.get() >= 1, "no farmland dried out before its crop");
+			helper.assertTrue(BuildSiteManager.get(level).get(siteId) == null, "the field isn't finished");
+			for (int i = 0; i < 5; i++) {
+				BlockPos soil = from.offset(i, 0, 0);
+				helper.assertBlockPresent(Blocks.FARMLAND, soil);
+				helper.assertBlockPresent(Blocks.WHEAT, soil.above());
+			}
+		});
+	}
+
+	private static void gaveUpMidWall(GameTestHelper helper, boolean reload) {
+		Village v = village(helper, 4, 4);
+		ServerLevel level = v.level();
+		var registries = level.registryAccess();
+		WonderSite begun = begin(helper, v);
+		stock(helper, level, begun.stone().orElseThrow());
+		BlueprintData.Placement at = begun.placement().orElseThrow();
+		UUID id = begun.id();
+		ServerPlayer stander = ProtectionSpecGameTests.player(helper);
+		List<BlockPos> holes = new ArrayList<>();
+		AtomicBoolean placedStander = new AtomicBoolean(false);
+		AtomicBoolean gone = new AtomicBoolean(false);
+		List<CompoundTag> saved = new ArrayList<>();
+		helper.onEachTick(() -> {
+			if (level.getGameTime() % 200 == 0) {
+				helper.setDayTime(2000);
+			}
+			if (!saved.isEmpty()) { // the builders come back the tick after leaving, as the world loads them
+				for (CompoundTag tag : saved) {
+					Villager back = EntityType.VILLAGER.create(level);
+					back.load(tag);
+					level.addFreshEntity(back);
+				}
+				saved.clear();
+				return;
+			}
+			WonderSite now = WonderManager.get(level).site(id).orElse(null);
+			if (now == null || now.done() || now.stage() != 2 || now.parts().isEmpty() || gone.get()) {
+				return;
+			}
+			BuildSite part = BuildSiteManager.get(level).get(now.parts().get(0));
+			BuildPlan plan = part == null ? null : part.plan(level);
+			if (plan == null || part.stage() != BuildPlan.Stage.STRUCTURE) {
+				return;
+			}
+			if (!placedStander.get()) {
+				// a wall's lowest course of stage II with two more courses over it: someone stands in its two lowest blocks
+				Set<BlockPos> wall = new HashSet<>();
+				plan.steps(BuildPlan.Stage.STRUCTURE).forEach(s -> wall.add(s.pos()));
+				BlockPos spot = plan.steps(BuildPlan.Stage.STRUCTURE).stream().map(BuildPlan.Step::pos)
+					.filter(p -> wall.contains(p.above()) && wall.contains(p.above(2)) && !wall.contains(p.below())
+						&& !level.getBlockState(p.below()).canBeReplaced() && level.getBlockState(p).isAir() && level.getBlockState(p.above()).isAir())
+					.findFirst().orElse(null);
+				if (spot == null) {
+					return;
+				}
+				holes.add(spot);
+				holes.add(spot.above());
+				stander.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);
+				placedStander.set(true);
+				return;
+			}
+			if (!holes.stream().allMatch(part::gaveUp)) {
+				stander.teleportTo(holes.get(0).getX() + 0.5, holes.get(0).getY(), holes.get(0).getZ() + 0.5);
+				return;
+			}
+			// the lead gave both up: they step away, and the wall over them is the crew's to finish
+			level.getServer().getPlayerList().remove(stander);
+			gone.set(true);
+			if (reload) {
+				WonderManager wonders = WonderManager.get(level);
+				level.getDataStorage().set(WonderManager.NAME, WonderManager.load(wonders.save(new CompoundTag(), registries), registries));
+				BuildSiteManager sites = BuildSiteManager.get(level);
+				level.getDataStorage().set(BuildSiteManager.NAME, BuildSiteManager.load(sites.save(new CompoundTag(), registries), registries));
+				BuildSite back = BuildSiteManager.get(level).get(part.id());
+				helper.assertTrue(back != null && holes.stream().allMatch(back::gaveUp), "the given-up blocks weren't kept through the reload");
+				for (Villager b : v.builders()) {
+					Villager live = (Villager) level.getEntity(b.getUUID());
+					if (live != null) {
+						saved.add(live.saveWithoutId(new CompoundTag()));
+						live.discard();
+					}
+				}
+			}
+		});
+		helper.succeedWhen(() -> {
+			WonderSite now = WonderManager.get(level).site(id).orElseThrow();
+			helper.assertTrue(gone.get(), "no stage II wall block was given up (stander placed " + placedStander.get() + ", at " + holes + " "
+				+ holes.stream().map(p -> level.getBlockState(p).getBlock().toString()).toList() + "; stage " + now.stage() + ", done " + now.done() + parts(level, now) + ")");
+			helper.assertTrue(now.done(), "still at stage " + now.stage() + ", " + Math.round(WonderStages.stageProgress(level, now) * 100) + "%" + parts(level, now));
+			List<BlockPos> left = unlikeButTheFinial(level, at);
+			helper.assertTrue(holes.containsAll(left), left.size() + " blocks unlike the drawing besides the given-up " + holes + ", e.g. "
+				+ left.stream().filter(p -> !holes.contains(p)).limit(4).toList());
 		});
 	}
 

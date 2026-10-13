@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
+import io.github.jcondedata.aliveworkplace.wonder.powers.TravellersPower;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -33,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Inns and travellers: an Innkeeper at an Inn Counter takes in a traveller each morning while there's a free bed nearby
  * (at most {@link #MAX_GUESTS} at a time; the village's {@code inn} effect, Open Gates (30.7), raises both). A traveller has a trade already — an Apprentice, a Journeyman, now and then an
- * Expert — and can be hired for emeralds (or CobbleDollars): they stay, take the first free job and start at that level.
+ * Expert (twice as many, and twice as often, while the village's Colossus stands: 35.22) — and can be hired for emeralds (or CobbleDollars): they stay, take the first free job and start at that level.
  * Travellers nobody hires move on after {@link #STAY} ticks. Until they're hired they won't take a job (they're nitwits
  * while they travel).
  */
@@ -67,14 +68,22 @@ public final class Innkeepers {
 		return level.getEntitiesOfClass(Villager.class, new AABB(counter).inflate(RADIUS, 16, RADIUS), v -> v.isAlive() && isTraveller(v));
 	}
 
-	/** Travellers {@code innkeeper}'s inn takes at once: {@link #MAX_GUESTS}, or what the village's {@code inn} effect names. */
+	/**
+	 * Travellers {@code innkeeper}'s inn takes at once: {@link #MAX_GUESTS}, or what the village's {@code inn} effect
+	 * names; times a standing Wonder's {@code travellers} factor (the Colossus, 35.22: room for the twice as many).
+	 */
 	public static int maxGuests(Villager innkeeper) {
-		return io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(innkeeper).innGuests(MAX_GUESTS);
+		int usual = io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(innkeeper).innGuests(MAX_GUESTS);
+		return innkeeper.level() instanceof ServerLevel level ? TravellersPower.more(level, innkeeper.blockPosition(), usual) : usual;
 	}
 
-	/** Travellers who may arrive at {@code innkeeper}'s inn a morning: 1, or what the village's {@code inn} effect names. */
+	/**
+	 * Travellers who may arrive at {@code innkeeper}'s inn a morning: 1, or what the village's {@code inn} effect names;
+	 * times a standing Wonder's {@code travellers} factor (the Colossus, 35.22: twice as often).
+	 */
 	public static int arrivalsPerMorning(Villager innkeeper) {
-		return io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(innkeeper).innArrivals();
+		int usual = io.github.jcondedata.aliveworkplace.hall.CivicEffects.of(innkeeper).innArrivals();
+		return innkeeper.level() instanceof ServerLevel level ? TravellersPower.more(level, innkeeper.blockPosition(), usual) : usual;
 	}
 
 	/** How many travellers {@code innkeeper} has taken in on game day {@code day} (a save from before 30.7 kept no count: 1). */
@@ -129,14 +138,24 @@ public final class Innkeepers {
 		return level.getPoiManager().findClosest(h -> h.is(PoiTypes.HOME), counter, RADIUS, PoiManager.Occupancy.HAS_SPACE).isPresent();
 	}
 
-	/** The level a new traveller has: mostly Apprentices and Journeymen; an Expert more often at a better innkeeper's inn. */
+	/**
+	 * The level a new traveller has: mostly Apprentices and Journeymen; an Expert more often at a better innkeeper's inn,
+	 * and {@code expert_factor} times as often while a Wonder grants {@code travellers} (the Colossus, 35.22).
+	 */
 	static int newcomerLevel(ServerLevel level, Villager innkeeper) {
-		int skill = BuilderLevels.level(innkeeper);
+		return newcomerLevel(level.random, BuilderLevels.level(innkeeper), TravellersPower.expertFactor(level, innkeeper.blockPosition()));
+	}
+
+	/**
+	 * A new traveller's level by {@code random}, at the inn of an innkeeper of level {@code skill}: a Journeyman with
+	 * chance 0.35 + 0.08 a level, and a Journeyman an Expert with chance 0.05 a level times {@code expertFactor} (at most 1).
+	 */
+	public static int newcomerLevel(net.minecraft.util.RandomSource random, int skill, double expertFactor) {
 		int lvl = 2;
-		if (level.random.nextFloat() < 0.35f + 0.08f * skill) {
+		if (random.nextFloat() < 0.35f + 0.08f * skill) {
 			lvl++;
 		}
-		if (lvl == 3 && level.random.nextFloat() < 0.05f * skill) {
+		if (lvl == 3 && random.nextFloat() < Math.min(1f, 0.05f * skill * (float) expertFactor)) {
 			lvl++;
 		}
 		return lvl;

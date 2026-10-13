@@ -6,7 +6,7 @@ expansion: M35
 Needs: a City, the Founder, the Master Architect
 Size: 29 by 29, 47 high
 Stages: The Plinth and the Road Arch; The Robes; The Arms and the Cloak; The Head and the Lantern
-While it stands: the whole realm is happier; more travelers come, more of them Experts; the village is more beautiful
+While it stands: the realm 8 happier and its village 12; travelers twice as often, twice as likely Experts; 8 beauty
 categories: Wonders
 related: wonders.md, village-life.md, jobs-services.md
 ```
@@ -32,9 +32,21 @@ the only Wonder that needs a City. See [Wonders](wonders.md) for drawing up the 
 
 ## While it stands
 
-- **The whole realm is happier**: every villager in its realm by 8, and its own village by 12.
-- **More travelers** come to the inn, twice as many, and twice as many of them are Experts.
-- The village is the more **beautiful** for it.
+- **The whole realm is happier**: every villager of its own village is 12 happier ("proud of the Colossus" among the
+  reasons for their mood), and every villager of the realm's other villages 8 ("the realm's Colossus"). Without a
+  realm, the villages it trades with by caravan, either way, count as its realm.
+- **Travelers come twice as often**: up to two arrive at the village's inns in a morning while there are beds free, and
+  an inn has room for twice as many at once. Each traveler is **twice as likely to be an Expert**.
+- It adds **8 to the village's beauty**.
+- If the Colossus is **damaged** (less of it standing than `wonderStanding`), all three are off until its builder
+  repairs it.
+
+## The Founder's plaque
+
+When the Colossus is finished, the seven signs over its road arch are written in glowing letters: "Raised in honor of
+the Founder *Aldric* who founded *Thornholm* on day 3. Finished by its people on day 41. May it stand a thousand
+years." The name is the village's Founder (the hall owner's while there is none), and the day comes from the
+village's chronicle. The signs are waxed, so nobody can change them; a sign broken and put back is written again.
 
 ## How it fits with the rest
 

@@ -718,6 +718,23 @@ Seer (or a Master Cleric). While it stands, and less than a tenth of it is missi
 - **Its bells ring** for weddings, festivals and raids. A raider near the belfries glows, as with a village bell.
 - It adds **8 to the village's beauty**.
 
+### The Colossus
+
+![The Colossus going up on its scaffolding, then the lantern lit over the road at night](https://jcondedata.github.io/minecraft-alive-workplace/wonder_colossus/anim.gif)
+
+The Founder's statue, 47 high over an arch the main road passes through, for a City with the Founder. While it stands,
+and less than a tenth of it is missing:
+
+- **The whole realm is happier**: every villager of its own village is 12 happier ("proud of the Colossus"), and every
+  villager of the realm's other villages (with realms off, of its caravan partners) 8 ("the realm's Colossus").
+- **Travelers come twice as often**: two can arrive at its village's inns in a morning, and an inn has room for twice as
+  many. Each is **twice as likely to be an Expert**.
+- It adds **8 to the village's beauty**.
+
+When it's finished, the plaque over the arch is written in glowing letters: "Raised in honor of the Founder (their name)
+who founded (the village) on day (the day it was founded). Finished by its people on day (that day). May it stand a
+thousand years." The name is the village's Founder's, or the hall owner's while there is none.
+
 ## From village to realm
 
 *Part of 1.7, which isn't released yet: `villageEconomy` stays off until then.*

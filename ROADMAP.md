@@ -4379,7 +4379,7 @@ Legends.
   oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32 glowstone dust (Netherworker), 64 small flowers
   (Florist), 16 cakes (Chef). Done when: 35.9's four design checks pass for it, with the face seen from the road in
   its renders.
-- [ ] **35.22** **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
+- [x] **35.22** (review: pending 2026-10-13) **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
   (+8 mood, +12 in its own village; "the Colossus" shows among the reasons for their mood, `people/Moods`), travellers
   come to its village's inns twice as often and are twice as likely to be Experts (`inn/Innkeepers`), and it counts 8
   beauty. When it's finished, the plaque's signs are filled in: the Founder's name (M29's Founder; the hall's owner
@@ -5798,6 +5798,13 @@ item waits.
   water bucket), as the builder does. The cocoa beans are goods only: cocoa needs jungle logs, which the palette doesn't
   have. Glow berries hang one block long, under solid blocks (a longer strand needs cave vine stems, which have no item
   and a builder skips).
+- **35.22 the Colossus's powers, decided** (lane-b-1013-0813, 2026-10-13): "twice as often" doubles both the inn's
+  arrivals a morning and its room (2 to 4 guests): with the room left at two the inn would be full and the doubling
+  would do nothing. "Twice as likely Experts" doubles the Journeyman-to-Expert roll (P(Expert) exactly doubles). A
+  "caravan-linked village" is a caravan partner either way: `Wonders.linked` used only the routes out of the asking
+  village, so a village the Colossus's village sends caravans to wasn't reached; it now uses `Caravans.Data.partners`
+  (also for 35.8's "finished elsewhere" chronicle lines). The plaque is seven signs, not the five 35.21's notes say
+  (`wonders.py` draws x 11 to 17); its words are in en_us (`sign.aliveworkplace.colossus.*`), in glowing yellow, waxed.
 - **35.21 the Colossus' figure and copper** (lane-b-1012-0033, 2026-10-12): drawn at 29 x 47 x 29, 8,963 blocks (7,105 /
   774 / 590 / 494), within 10% of the 9,000. The figure is the vanilla villager at a pixel a block (widths 9 instead of 8,
   so the nose and the arch share the road's middle), its head 10 high; the robe is 22 high instead of the villager's 24 so

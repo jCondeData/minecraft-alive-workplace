@@ -5523,6 +5523,7 @@
   "screen.aliveworkplace.journal.bounties.none.about": "A village of Village rank posts one every few days, two at most.",
   "screen.aliveworkplace.journal.bounties.rank": "Bounties are posted from Village rank.",
   "screen.aliveworkplace.journal.bounties.off": "Bounties are switched off in the settings.",
+  "screen.aliveworkplace.journal.bounties.quiet": "No captains are posted while the village is at peace or threats are off.",
   "screen.aliveworkplace.journal.bounties.fallen": "He has fallen: hand in his insignia.",
   "screen.aliveworkplace.journal.bounties.take": "Click to take the bounty: a poster and a map.",
   "screen.aliveworkplace.journal.bounties.taken": "You took this bounty.",

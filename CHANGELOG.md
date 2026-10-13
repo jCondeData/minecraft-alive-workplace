@@ -25,6 +25,9 @@ asks for the steps, `latest.log` and any crash report).
   Wine and Vintage Wine; one who likes jewels takes the Jeweler's rings, brooches and circlets; books, the Printer's
   Village Gazette and Illuminated Book; clothes, the Tailor's Work Clothes, Fine Clothes and Noble Robes. The honey bottles,
   gems, books and leather armor they took before still count.
+- **A village at peace posts no more bounties** (B134). A village set At peace on its Defense page, or every village
+  at threat level 0 or on Peaceful, no longer puts new captains on its Bounty Board, and the Bounties tab says why;
+  bounties already up stay until they're paid or run out.
 - **A Wonder's crew no longer stops for good partway up** (B139). When the lead had to give up on one block (a
   crewmate stood on it the whole time, as on top of the Colossus's half-built robe), the wall above it waited for that
   block forever and the whole crew stood idle; now the wall goes on over the gap, also after a restart. And a block that

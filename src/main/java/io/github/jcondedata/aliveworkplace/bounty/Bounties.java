@@ -17,6 +17,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.story.ArcEffects;
 import io.github.jcondedata.aliveworkplace.story.ArcState;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
+import io.github.jcondedata.aliveworkplace.threat.Threats;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -90,7 +91,8 @@ import org.jetbrains.annotations.Nullable;
  * journal, also opened by a Bounty Board) gives a Wanted Poster and a map to the hideout. He drops his Captain's
  * Insignia; handed in at the board or the hall it pays {@link #REWARD} emeralds times the rank factor, once. An
  * unclaimed bounty comes down after {@link #LIFE_DAYS} days and the band leaves in a puff. A standing lair's captain
- * (32.3) is posted too, and paid to his killer when he falls. Config {@code bountyBoard}. With Cobblemon, half the
+ * (32.3) is posted too, and paid to his killer when he falls. A village set At peace or at threat level 0 posts none
+ * ({@link #quiet}, B134). Config {@code bountyBoard}. With Cobblemon, half the
  * posters are on a rogue Pokémon instead ({@link Rogues}, 31.14).
  *
  * <p>Names come from {@code data/<namespace>/bounties/captains.json} ({@code first_names}, {@code epithets}), quirks
@@ -386,9 +388,20 @@ public final class Bounties implements ResourceManagerReloadListener {
 		return Data.get(level).bounties.values().stream().filter(b -> b.hall.equals(hall)).toList();
 	}
 
-	/** Whether the village round {@code hall} may post a bounty today: on, Village rank or more, fewer than 2 open, 3 days since the last. */
+	/**
+	 * Whether the village round {@code hall} is quiet (B134, 32.21): set At peace, the threat level 0, or Peaceful. No new
+	 * bounty is posted there (a captain's, a lair's or a rogue's); the open ones stay until they lapse or are paid.
+	 */
+	public static boolean quiet(ServerLevel level, BlockPos hall) {
+		return Threats.quiet(level, hall);
+	}
+
+	/**
+	 * Whether the village round {@code hall} may post a bounty today: on, Village rank or more, not {@link #quiet}, fewer
+	 * than 2 open, 3 days since the last.
+	 */
 	public static boolean mayPost(ServerLevel level, BlockPos hall) {
-		if (!ENABLED || VillageRanks.of(level, hall).ordinal() < VillageRanks.Rank.VILLAGE.ordinal()) {
+		if (!ENABLED || VillageRanks.of(level, hall).ordinal() < VillageRanks.Rank.VILLAGE.ordinal() || quiet(level, hall)) {
 			return false;
 		}
 		Data data = Data.get(level);
@@ -399,7 +412,10 @@ public final class Bounties implements ResourceManagerReloadListener {
 		return last == null || Chronicle.day(level) - last >= EVERY_DAYS;
 	}
 
-	/** The hall's round: bounties past their days come down, a lair's captain is posted, and (by itself) a new captain. */
+	/**
+	 * The hall's round: bounties past their days come down, a lair's captain is posted, and (by itself) a new captain;
+	 * nothing new in a {@link #quiet} village.
+	 */
 	public static void round(ServerLevel level, BlockPos hall) {
 		long today = Chronicle.day(level);
 		for (Bounty b : List.copyOf(open(level, hall))) {
@@ -407,7 +423,7 @@ public final class Bounties implements ResourceManagerReloadListener {
 				takeDown(level, b);
 			}
 		}
-		if (!ENABLED || VillageRanks.of(level, hall).ordinal() < VillageRanks.Rank.VILLAGE.ordinal()) {
+		if (!ENABLED || VillageRanks.of(level, hall).ordinal() < VillageRanks.Rank.VILLAGE.ordinal() || quiet(level, hall)) {
 			return;
 		}
 		Lairs.near(level, hall).ifPresent(lair -> {

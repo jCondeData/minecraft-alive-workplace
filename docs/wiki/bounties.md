@@ -4,7 +4,7 @@ Villages post bounties on named bandit captains; players take them, hunt the cap
 insignia for the reward; with Cobblemon, half the posters are on a rogue Pokémon instead. ROADMAP 31.13 and 31.14; builds on the quest journal (31.3), the arc engine's `place` (31.4), lairs
 (32.3) and reputation (31.11). Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.13, 31.14
+Roadmap items: 31.13, 31.14, B134
 
 ## What a player sees
 
@@ -26,6 +26,10 @@ Roadmap items: 31.13, 31.14
   (right-click with it), or with the tab's hand-in button: 12 emeralds times the rank factor, once, to whoever hands it
   in, plus a bounty's standing (+40). The chronicle says who. A second insignia of the same bounty pays nothing.
 - **Expiry**: an unclaimed bounty comes down after 7 days and its band leaves in a puff of smoke.
+- **Quiet villages post none**: a village set **At peace** on its Defense page, every village at threat level 0, and
+  every village on Peaceful post no new bounty (no captain, no lair's captain, no rogue); the Bounties tab says "No
+  captains are posted while the village is at peace or threats are off." Bounties already open stay up until they are
+  paid or their 7 days run out (B134, from 31.13 and 32.21).
 - **Lairs**: a captain holding a lair (32.3) near a village of Village rank is posted too, with his name and his lair's
   place; when he falls his bounty is paid straight to his killer.
 - **Gossip**: villagers say where a wanted captain was seen ("They say Grimwald the Red was seen 160 blocks
@@ -119,12 +123,12 @@ default; a world without the file starts with none.
   Pokémon, battleable and catchable) at the spot, rather than waiting for Cobblemon's spawner to roll that species.
 - 31.14: bounty rewards are paid in CobbleDollars where that mod keeps the money (the 31.13 insignia paid 0 dollars
   with CobbleDollars installed; fixed with this item).
-- 31.13: the 32.21 hook (no captains' bounties in a village at peace or at threat level 0) waits for 32.21.
+- B134: "quiet" is 32.21's own `Threats.quiet` (At peace, threat level 0 or Peaceful), so Peaceful posts none too; a
+  quiet village posts no rogue (31.14) or lair captain's bounty either, since both are bounties on a threat.
+- B134: open bounties stay when a village turns quiet (they can still be taken and paid), as the switch off keeps them.
 
 ## Known limits
 
-- The At peace / threat level 0 rule (no captains' bounties in a quiet village, 32.21) isn't applied: such a village
-  still posts them (bug B134).
 - A hideout with no clear natural ground within 32 blocks of its spot isn't built; its bounty stays up and comes down
   after 7 days.
 
@@ -138,7 +142,10 @@ default; a world without the file starts with none.
 
 - GameTests: `BountyGameTests`: posting rules (`postedFromVillageRankTwoAtMostThreeDaysApart`), one test per quirk,
   the hideout built once a player is near (`theHideoutIsBuiltOnceAPlayerIsNear`), taking a bounty, the insignia paying
-  once (`theInsigniaDropsAndPaysOnce`), expiry with the band, the board's posters, save and load, the switch off.
+  once (`theInsigniaDropsAndPaysOnce`), expiry with the band, the board's posters, save and load, the switch off; quiet villages (B134): none posted At
+  peace (`anAtPeaceVillagePostsNoBounty`) or at threat level 0 (`threatLevelZeroPostsNoBounty`), still one at levels
+  1 to 3 (`aNormalVillageStillPostsOne`), and an open bounty stays when the village turns At peace
+  (`anOpenBountySurvivesTheVillageTurningPeaceful`).
 - GameTests: `RogueBountyGameTests` (the eight groups load and a biome finds its group; never posted without Cobblemon,
   saved and loaded, nothing spawned). Compat GameTests: `RogueCompatTests` (species, level and name by biome and rank,
   size or Alpha, through a save; a win pays once; a capture pays once and the catcher keeps it, named; the glow for

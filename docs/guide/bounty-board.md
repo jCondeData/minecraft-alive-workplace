@@ -54,5 +54,7 @@ With Cobblemon, half the posters are on a [rogue Pokémon](rogue-pokemon.md) ins
 
 - **What feeds it:** your village's [rank](ranks.md).
 - **What it affects:** emeralds, [standing](reputation.md), and fewer bandits round your village.
-- **What stops it:** a village below Village rank posts nothing. With **Bounty Board** off in the settings nothing new
+- **What stops it:** a village below Village rank posts nothing. A village set [At peace](defense-page.md), or every
+  village when the [Threat Level](threat-level.md) is 0 or the world is on Peaceful, posts no new bounty; ones already up
+  stay until they are paid or run out. With **Bounty Board** off in the settings nothing new
   is posted; open bounties can still be taken and paid.

@@ -47,6 +47,7 @@ public final class BountyPage {
 		if (open.isEmpty()) {
 			Component why = !Bounties.ENABLED ? Component.translatable("screen.aliveworkplace.journal.bounties.off")
 				: VillageRanks.of(level, hall).ordinal() < VillageRanks.Rank.VILLAGE.ordinal() ? Component.translatable("screen.aliveworkplace.journal.bounties.rank")
+				: Bounties.quiet(level, hall) ? Component.translatable("screen.aliveworkplace.journal.bounties.quiet")
 				: Component.translatable("screen.aliveworkplace.journal.bounties.none.about");
 			menu.button(22, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.journal.bounties.none"), ChatFormatting.GRAY,
 				line(why, ChatFormatting.DARK_GRAY)), null);

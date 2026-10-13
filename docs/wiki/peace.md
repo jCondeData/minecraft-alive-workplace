@@ -4,7 +4,7 @@ How much trouble comes to villages, server-wide and village by village: the `thr
 the Defense page's **At peace**, and the operators' `/workplace threat` command. Part of Milestone 32 (1.6); the
 threat level and the command work with today's raids and bandit camps too.
 
-Roadmap items: 32.21
+Roadmap items: 32.21, B134
 
 ## What a player sees
 
@@ -18,6 +18,8 @@ Roadmap items: 32.21
   Bandit camp have packed up and gone: Oakvale is left in peace."). The guards icon says "At peace: no raiders, camps or
   disasters come", and "The Bandit camp leaves at the next dawn" while one still stands. At threat level 0 or on
   Peaceful it says that instead ("Threats are off on this server", "The world is on Peaceful").
+- **No new bounties** in a quiet village (At peace, threat level 0 or Peaceful): no captain is posted on its Bounty
+  Board; ones already up stay until they are paid or run out (B134, [bounties](bounties.md)).
 - **`/workplace threat`** (operators): starts a raid by any culture, sets a lair down, starts a disaster, ends what is
   under way or clears the village, at the nearest Village Hall, for events and testing.
 
@@ -32,7 +34,8 @@ Roadmap items: 32.21
   - no lair makes camp; one standing leaves at the first dawn after the village became quiet (`Lairs.leave`: its band and
     captain go in a puff, a portal goes out, a ship sails off, a coven's hex lifts; unlike a lair broken up it leaves no
     rest days and nobody is credited);
-  - a disaster under way ends at once, as when it is switched off; covens hex nobody.
+  - a disaster under way ends at once, as when it is switched off; covens hex nobody;
+  - no bounty is posted (`Bounties.mayPost` and the hall's bounty round ask `Threats.quiet`); open ones stay (B134).
   A raid already under way when the village turns quiet runs its course.
 - **The threat level multiplies the chances** (`Threats.often`): 0, ×0.5, ×1, ×1.5, on top of each system's own
   factors (Curfew, research, a lair near). Hard multiplies the raid's size by 1.25, rounded up, after the usual cap of 16
@@ -92,8 +95,7 @@ Roadmap items: 32.21
 
 - At peace can only be set from the Defense page, so players see it once Milestone 32 opens; the threat level and
   Peaceful work now.
-- Bandit King arcs, bounty captains and other story threats don't read the threat level (for bounties 31.13 says they
-  should: bug B134).
+- Bandit King arcs and other story threats don't read the threat level.
 - At threat level 3 the fire, drought and plague chances are capped at 100% a day.
 
 ## Proof

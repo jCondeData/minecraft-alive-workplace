@@ -36,6 +36,7 @@ room: who's camped outside, how strong they are, how your gates stand and what y
 - **Muster a war party** (a white banner) and **Hire the Siege-breakers** (a crossbow): see [War party](war-party.md).
 - **At peace** (a white tulip, top right): the hall's owner sets the village at peace. No raids, raiders' camps or
   disasters come there, and a camp already standing packs up and leaves at the next dawn. The guards icon says so.
+  Its [Bounty Board](bounty-board.md) posts no new captains; bounties already up stay until paid or run out.
 
 ## How it fits in
 

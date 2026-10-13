@@ -22,7 +22,7 @@ switch, so you can keep raids on but make them rarer, or turn everything up for 
 
 | Level | What it means |
 |---|---|
-| 0, none | no [raids](raids.md) and no [bandit camps](bandit-camps.md), ever |
+| 0, none | no [raids](raids.md), no [bandit camps](bandit-camps.md) and no new [bounties](bounty-board.md), ever |
 | 1, gentle | raids and camps come half as often |
 | 2, normal | the usual (the default) |
 | 3, hard | raids and camps come half again as often, and every raid brings a quarter more raiders |

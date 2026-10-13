@@ -13,6 +13,7 @@ import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.story.Arcs;
+import io.github.jcondedata.aliveworkplace.threat.Threats;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -56,6 +57,7 @@ public class BountyGameTests implements FabricGameTest {
 		int radius = VillageHalls.RADIUS;
 		int near = Arcs.NEAR;
 		boolean enabled = Bounties.ENABLED;
+		int threat = Threats.LEVEL;
 		long time = level.getDayTime();
 		VillageHalls.RADIUS = 16;
 		Bounties.forget(level);
@@ -63,6 +65,10 @@ public class BountyGameTests implements FabricGameTest {
 			VillageHalls.RADIUS = radius;
 			Arcs.NEAR = near;
 			Bounties.ENABLED = enabled;
+			Threats.LEVEL = threat;
+			if (level.getBlockEntity(helper.absolutePos(HALL)) instanceof VillageHallBlockEntity e) {
+				e.setAtPeace(false, -1);
+			}
 			Bounties.forget(level);
 			level.setDayTime(time);
 		});
@@ -389,6 +395,89 @@ public class BountyGameTests implements FabricGameTest {
 		ChoiceMenu menu = ChoiceMenu.detached(me, m -> QuestJournal.render(m, level, hall, me, QuestJournal.Tab.BOUNTIES));
 		String lore = menu.icon(22).get(DataComponents.LORE).lines().toString();
 		helper.assertTrue(lore.contains("screen.aliveworkplace.journal.bounties.off"), "the tab: " + lore);
+		helper.succeed();
+	}
+
+	/** The hall's round with its posting switched on, as the server runs it. */
+	private static void round(ServerLevel level, BlockPos hall) {
+		boolean auto = Bounties.AUTO;
+		Bounties.AUTO = true;
+		try {
+			Bounties.round(level, hall);
+		} finally {
+			Bounties.AUTO = auto;
+		}
+	}
+
+	/** A Village-rank village set At peace posts no captain, by its round or by hand, and the tab says why (B134). */
+	//$ gametest_ticks_batch AREA '20' '"bountyAtPeace"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "bountyAtPeace")
+	public void anAtPeaceVillagePostsNoBounty(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		setDay(level, 300);
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setAtPeace(true, 300);
+		helper.assertTrue(Bounties.quiet(level, hall) && !Bounties.mayPost(level, hall), "an At peace village may post");
+		round(level, hall);
+		helper.assertTrue(Bounties.post(level, hall, RandomSource.create(134)) == null, "posted by hand while At peace");
+		helper.assertTrue(Bounties.open(level, hall).isEmpty(), "posted while At peace: " + Bounties.open(level, hall).size());
+		ServerPlayer me = player(helper);
+		ChoiceMenu menu = ChoiceMenu.detached(me, m -> QuestJournal.render(m, level, hall, me, QuestJournal.Tab.BOUNTIES));
+		String lore = menu.icon(22).get(DataComponents.LORE).lines().toString();
+		helper.assertTrue(lore.contains("screen.aliveworkplace.journal.bounties.quiet"), "the tab: " + lore);
+		helper.succeed();
+	}
+
+	/** At threat level 0 no village posts a captain (B134). */
+	//$ gametest_ticks_batch AREA '20' '"bountyThreatZero"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "bountyThreatZero")
+	public void threatLevelZeroPostsNoBounty(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		setDay(level, 300);
+		Threats.LEVEL = 0;
+		helper.assertTrue(Bounties.quiet(level, hall) && !Bounties.mayPost(level, hall), "a village may post at threat level 0");
+		round(level, hall);
+		helper.assertTrue(Bounties.post(level, hall, RandomSource.create(134)) == null, "posted by hand at threat level 0");
+		helper.assertTrue(Bounties.open(level, hall).isEmpty(), "posted at threat level 0: " + Bounties.open(level, hall).size());
+		helper.succeed();
+	}
+
+	/** A village that isn't quiet (threat level 1 to 3, not At peace) still posts one by its round (B134). */
+	//$ gametest_ticks_batch AREA '20' '"bountyNotQuiet"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "bountyNotQuiet")
+	public void aNormalVillageStillPostsOne(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		setDay(level, 300);
+		for (int threat = 1; threat <= 3; threat++) {
+			Threats.LEVEL = threat;
+			helper.assertTrue(!Bounties.quiet(level, hall) && Bounties.mayPost(level, hall), "quiet at threat level " + threat);
+		}
+		Threats.LEVEL = 2;
+		round(level, hall);
+		helper.assertTrue(Bounties.open(level, hall).size() == 1, "the round posted " + Bounties.open(level, hall).size());
+		helper.succeed();
+	}
+
+	/** An open bounty stays when the village turns At peace, comes down when its days run out, and none follows (B134). */
+	//$ gametest_ticks_batch AREA '20' '"bountyPeaceKeepsOpen"'
+	@GameTest(template = AREA, timeoutTicks = 20, batch = "bountyPeaceKeepsOpen")
+	public void anOpenBountySurvivesTheVillageTurningPeaceful(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		setDay(level, 300);
+		Bounties.Bounty b = bounty(helper, hall, "fleetfoot");
+		((VillageHallBlockEntity) level.getBlockEntity(hall)).setAtPeace(true, 300);
+		setDay(level, 304);
+		round(level, hall);
+		helper.assertTrue(Bounties.open(level, hall).size() == 1 && Bounties.open(level, hall).get(0).id.equals(b.id),
+			"the open bounty didn't stay alone: " + Bounties.open(level, hall).size());
+		ServerPlayer me = player(helper);
+		helper.assertTrue(Bounties.take(me, level, b) && b.takers.contains(me.getUUID()), "can't take the open bounty At peace");
+		setDay(level, 307);
+		round(level, hall);
+		helper.assertTrue(Bounties.open(level, hall).isEmpty(), "still up after 7 days, or a new one posted: " + Bounties.open(level, hall).size());
 		helper.succeed();
 	}
 }

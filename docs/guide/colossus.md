@@ -23,12 +23,12 @@ the only Wonder that needs a City. See [Wonders](wonders.md) for drawing up the 
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The Plinth and the Road Arch | 128 baked potatoes (Chef), 64 coal (Miner), 8 iron pickaxes (Toolsmith) |
-| The Robes | 64 copper ingots (Armorer), 64 white wool (Shepherd), 32 leather (Butcher) |
-| The Arms and the Cloak | 32 chains (Tinkerer), 32 stripped dark oak logs (Lumberjack), 16 potions of strength (Cleric) |
-| The Head and the Lantern | 32 glowstone dust (Netherworker), 64 small flowers (Florist), 16 cakes (Chef) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The Plinth and the Road Arch | A Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7 days) | 2 Emerald Brooches (Jeweller) |
+| The Robes | A Trident (the Beastmaster, 14 days), a Sponge (the Seer, 18 days), a Netherite Upgrade Template (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweller) |
+| The Arms and the Cloak | A Tide Armor Trim Template (a Master Fisherman, 22 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull (the Old Sage, 14 days) | 2 Noble Robes (Tailor) |
+| The Head and the Lantern | A Heavy Core (the Golem Smith, 32 days), a Nether Star (the Beastmaster, 36 days), an Elytra (the Pathfinder, 45 days) | 2 Vintage Wine (Vintner) |
 
 ## While it stands
 
@@ -38,6 +38,7 @@ the only Wonder that needs a City. See [Wonders](wonders.md) for drawing up the 
 
 ## How it fits with the rest
 
-- **What feeds it**: a City, and goods from eleven jobs.
+- **What feeds it**: a City, rare things found by exploring (a rare worker in the village finds each faster), and the
+  best goods of upgraded workshops.
 - **What it affects**: the mood of every village in the realm, the travelers at the [inn](jobs-services.md) you can
   hire, and the village's decorations.

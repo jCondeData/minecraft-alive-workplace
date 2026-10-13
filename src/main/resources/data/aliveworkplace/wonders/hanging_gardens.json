@@ -37,19 +37,33 @@
       ],
       "goods": [
         {
-          "item": "minecraft:bone_meal",
-          "count": 128,
-          "job": "aliveworkplace:composter"
+          "item": "minecraft:sniffer_egg",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
         },
         {
-          "item": "minecraft:wheat_seeds",
-          "count": 128,
-          "job": "minecraft:farmer"
+          "item": "minecraft:wild_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "item": "minecraft:clay_ball",
-          "count": 64,
-          "job": "aliveworkplace:sifter"
+          "item": "aliveworkplace:berry_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
         }
       ]
     },
@@ -63,24 +77,47 @@
       ],
       "goods": [
         {
-          "item": "minecraft:sweet_berries",
-          "count": 64,
-          "job": "aliveworkplace:orchard_keeper"
+          "item": "minecraft:pitcher_pod",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
         },
         {
-          "item": "minecraft:glow_berries",
-          "count": 32,
-          "job": "aliveworkplace:orchard_keeper"
+          "item": "minecraft:torchflower_seeds",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
         },
         {
-          "tag": "minecraft:small_flowers",
-          "count": 64,
-          "job": "aliveworkplace:florist"
+          "item": "minecraft:heart_pottery_sherd",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:sifter",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "tag": "minecraft:saplings",
-          "count": 16,
-          "job": "aliveworkplace:lumberjack"
+          "item": "aliveworkplace:vintage_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
         }
       ]
     },
@@ -94,24 +131,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:honey_bottle",
-          "count": 32,
-          "job": "aliveworkplace:beekeeper"
+          "item": "minecraft:enchanted_golden_apple",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
         },
         {
-          "item": "minecraft:carrot",
-          "count": 64,
-          "job": "minecraft:farmer"
+          "item": "minecraft:heart_of_the_sea",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "item": "minecraft:potato",
-          "count": 64,
-          "job": "minecraft:farmer"
+          "item": "minecraft:sponge",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
         },
         {
-          "item": "minecraft:cocoa_beans",
-          "count": 32,
-          "job": "aliveworkplace:orchard_keeper"
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
         }
       ]
     },
@@ -125,19 +183,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:cake",
-          "count": 16,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
         },
         {
-          "item": "minecraft:egg",
-          "count": 32,
-          "job": "minecraft:butcher"
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
         },
         {
-          "item": "minecraft:cod",
-          "count": 32,
-          "job": "minecraft:fisherman"
+          "item": "minecraft:conduit",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
         }
       ]
     }

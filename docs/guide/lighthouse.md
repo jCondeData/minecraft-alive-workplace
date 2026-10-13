@@ -21,12 +21,12 @@ in) and the Master Architect. See [Wonders](wonders.md) for drawing up the plans
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The Mole and the Quay | 64 cooked cod (Fisherman), 8 oak boats (Carpenter), 64 coal (Miner) |
-| The Tower | 16 chains (Tinkerer), 32 iron ingots (Armorer), 32 white wool (Shepherd) |
-| The Gallery | 4 explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher) |
-| The Lantern and the Keeper's House | 64 glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The Mole and the Quay | A Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (a Master Fisherman, 7 days) | 2 Emerald Brooches (Jeweller) |
+| The Tower | A Trident (the Beastmaster, 14 days), a Sponge (the Founder, 18 days), an Angler Pottery Sherd (the Grand Chef, 11 days) | 2 Gold Circlets (Jeweller) |
+| The Gallery | A Tide Armor Trim Template (a Master Fisherman, 22 days), a Conduit (the Seer, 18 days), a Totem of Undying (the Old Sage, 22 days) | 2 Illuminated Books (Printer) |
+| The Lantern and the Keeper's House | A Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 Vintage Wine (Vintner) |
 
 ## While it stands
 
@@ -36,6 +36,7 @@ in) and the Master Architect. See [Wonders](wonders.md) for drawing up the plans
 
 ## How it fits with the rest
 
-- **What feeds it**: [caravan routes](trade-and-caravans.md), the coast, and goods from eleven jobs.
+- **What feeds it**: [caravan routes](trade-and-caravans.md), the coast, rare things found by exploring (a rare worker
+  in the village finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: trade with far villages, the [Ferryman](jobs-services.md)'s prices, and the village's
   [defense](defence.md).

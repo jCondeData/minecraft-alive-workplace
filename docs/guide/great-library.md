@@ -22,12 +22,12 @@ Scholar stands in) and the Master Architect. See [Wonders](wonders.md) for drawi
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The Stacks | 128 sugar cane (Farmer), 64 leather (Butcher), 64 spruce logs (Lumberjack) |
-| The Galleries | 64 books (Librarian), 64 black dye (Dyer), 16 lanterns (Tinkerer) |
-| The Rotunda | 8 explorer's maps (Cartographer), 32 lapis lazuli (Sifter), 32 copper ingots (Armorer) |
-| The Dome and the Portico | 64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves (Librarian) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The Stacks | A Heart Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days) | An Illuminated Book (Printer) |
+| The Galleries | An Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days), a Wild Armor Trim Template (the Pathfinder, 11 days) | 2 Noble Robes (Tailor) |
+| The Rotunda | An Echo Shard (the Seer, 18 days), an Enchanted Golden Apple (the Grand Chef, 22 days), a Vex Armor Trim Template (the Merchant Prince, 22 days) | 2 Illuminated Books (Printer) |
+| The Dome and the Portico | An Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweller) |
 
 ## While it stands
 
@@ -35,5 +35,6 @@ The village's **scholars open a second tier of research**.
 
 ## How it fits with the rest
 
-- **What feeds it**: your [scholars](jobs-services.md) (20 levels of research first), and goods from eleven jobs.
+- **What feeds it**: your [scholars](jobs-services.md) (20 levels of research first), rare things found by exploring
+  (a rare worker in the village finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: the village's research, and every bonus it brings.

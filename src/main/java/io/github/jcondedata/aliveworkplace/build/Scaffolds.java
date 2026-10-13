@@ -48,6 +48,8 @@ public final class Scaffolds {
 	public static volatile boolean ENABLED = io.github.jcondedata.aliveworkplace.Expansions.on(io.github.jcondedata.aliveworkplace.Expansions.M35);
 	/** The tallest column put up at once (blocks). */
 	static final int MAX_HEIGHT = 32;
+	/** How much scaffolding a builder takes from the chests in one trip when it has a column to put up (35.6a). */
+	static final int CARRY = 16;
 	/** How far a builder climbs a column in a tick (blocks). */
 	private static final double CLIMB = 0.3;
 	/** Ticks a builder walks to a column's foot before hopping there (and sooner with no path at all). */
@@ -84,6 +86,32 @@ public final class Scaffolds {
 		if (!ENABLED || !site.isRetrying() || site.stage() == BuildPlan.Stage.LANDSCAPE) {
 			return false;
 		}
+		return planColumn(level, villager, site, plan, target, reach);
+	}
+
+	/**
+	 * 35.6a: called where the builder would hop onto a spot the drawing still needs (the top of a pillar it's building, a
+	 * gap in it, the cap above): nowhere within reach of {@code target} leaves the drawing alone. With scaffolding on hand
+	 * ({@code available}: in the bag and the supply chests, or free materials), it puts up a column of it instead and
+	 * climbs that, from the first go. With too little on hand nothing changes (the hop, as before). True if there's a
+	 * column to put up.
+	 */
+	boolean planInsteadOfHop(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos target, double reach, long available) {
+		if (!ENABLED || site.stage() == BuildPlan.Stage.LANDSCAPE || site.stage() == BuildPlan.Stage.CLEAR) {
+			return false;
+		}
+		Column column = column(level, plan, target, villager.blockPosition(), reach - 0.5);
+		if (column == null) {
+			return false;
+		}
+		int toPut = 0;
+		for (BlockPos cell : column.cells()) {
+			toPut += level.getBlockState(cell).is(Blocks.SCAFFOLDING) ? 0 : 1;
+		}
+		return toPut <= available && planColumn(level, villager, site, plan, target, reach);
+	}
+
+	private boolean planColumn(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos target, double reach) {
 		jobTarget = target;
 		jobStage = site.stage();
 		walkTicks = 0;
@@ -284,9 +312,36 @@ public final class Scaffolds {
 		}
 		BlockPos bottom = foot(villager.level(), cell);
 		if (villager.getY() <= bottom.getY() + 0.05) {
-			return false; // at its foot: walks off
+			// 35.6a: at its foot, it steps out of the column beside it (from inside a scaffold, a villager's path out
+			// failed and it stood there 100 ticks, then hopped away, every trip to the chests)
+			return stepOut(villager, bottom, dest);
 		}
 		set(villager, cell.getX() + 0.5, Math.max(bottom.getY(), villager.getY() - CLIMB * 1.5), cell.getZ() + 0.5);
+		return true;
+	}
+
+	/** Steps the builder from inside a column's foot onto the free spot beside it nearest {@code dest}. False if there's none. */
+	private static boolean stepOut(Villager villager, BlockPos bottom, BlockPos dest) {
+		Level level = villager.level();
+		BlockPos best = null;
+		double bestDistance = Double.MAX_VALUE;
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			BlockPos p = new BlockPos(bottom.getX(), (int) Math.floor(villager.getY() + 0.01), bottom.getZ()).relative(d);
+			if (!level.getBlockState(p).getCollisionShape(level, p).isEmpty() || !level.getBlockState(p.above()).getCollisionShape(level, p.above()).isEmpty()
+				|| level.getBlockState(p).is(Blocks.SCAFFOLDING) || !level.getFluidState(p).isEmpty()
+				|| !level.getBlockState(p.below()).isFaceSturdy(level, p.below(), Direction.UP)) {
+				continue;
+			}
+			double distance = p.distSqr(dest);
+			if (distance < bestDistance) {
+				bestDistance = distance;
+				best = p;
+			}
+		}
+		if (best == null) {
+			return false;
+		}
+		set(villager, best.getX() + 0.5, best.getY(), best.getZ() + 0.5);
 		return true;
 	}
 
@@ -299,6 +354,12 @@ public final class Scaffolds {
 				set(villager, cell.getX() + 0.5, bottom.getY(), cell.getZ() + 0.5);
 			}
 		}
+	}
+
+	/** Whether the villager is up a column of scaffolding (in or on it, in its middle, above its foot). */
+	static boolean onAColumn(Villager villager) {
+		BlockPos cell = columnAt(villager);
+		return cell != null && villager.getY() > foot(villager.level(), cell).getY() + 0.5;
 	}
 
 	/** The scaffold the villager stands in or on, if it's on a column (in the middle of it), else null. */

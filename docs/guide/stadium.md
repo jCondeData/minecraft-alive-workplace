@@ -28,12 +28,12 @@ different types stand in), and the Master Architect. Without Cobblemon it isn't 
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The Field | 128 bone meal (Composter), 64 small flowers (Florist), 32 Poké Balls (Ball Smith) |
-| The Lower Stands | 64 red wool (Dyer), 64 white wool (Shepherd), 16 Poké Snacks (Chef), 16 Great Balls (Ball Smith) |
-| The Upper Stands and the Covered Stand | 16 banners (Carpenter), 64 cooked beef (Chef), 32 berries (Orchard Keeper) |
-| The Gate and the Floodlights | 8 daylight detectors (Tinkerer), 16 Ultra Balls (Ball Smith), 32 pumpkin pies (Chef) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The Field | Diamond Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days) | 2 Great Balls (Ball Smith) |
+| The Lower Stands | A Trident (a Master Fisherman, 14 days), the music disc Pigstep (the Bard Laureate, 18 days), a Netherite Upgrade Template (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweller) |
+| The Upper Stands and the Covered Stand | A Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a Flow Armor Trim Template (the Golem Smith, 14 days) | 2 Ultra Balls (Ball Smith) |
+| The Gate and the Floodlights | A Nether Star (the Golem Smith, 36 days), a Heavy Core (the Pokémon Ranger, 32 days), an Enchanted Golden Apple (the Grand Chef, 22 days) | 2 Noble Robes (Tailor) |
 
 ## While it stands
 
@@ -42,6 +42,7 @@ different types stand in), and the Master Architect. Without Cobblemon it isn't 
 
 ## How it fits with the rest
 
-- **What feeds it**: your [Pokémon](pokemon.md) in pastures, a [Ball Smith](pokemon.md), and goods from nine jobs.
+- **What feeds it**: your [Pokémon](pokemon.md) in pastures, a [Ball Smith](pokemon.md), rare things found by
+  exploring (a rare worker in the village finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: battles for you and the village's [trainers](pokemon.md), and the village's
   [festivals](festivals-and-markets.md).

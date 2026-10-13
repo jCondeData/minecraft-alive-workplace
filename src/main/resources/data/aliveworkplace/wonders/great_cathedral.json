@@ -50,19 +50,37 @@
       ],
       "goods": [
         {
-          "item": "minecraft:bread",
-          "count": 128,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:prize_pottery_sherd",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 9,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:sifter",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "item": "minecraft:iron_pickaxe",
-          "count": 8,
-          "job": "minecraft:toolsmith"
+          "item": "minecraft:ghast_tear",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:netherworker",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "item": "minecraft:gold_ingot",
-          "count": 16,
-          "job": "minecraft:armorer"
+          "item": "aliveworkplace:fine_clothes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
         }
       ]
     },
@@ -76,19 +94,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:white_candle",
-          "count": 64,
-          "job": "minecraft:leatherworker"
+          "item": "minecraft:music_disc_otherside",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
         },
         {
-          "item": "minecraft:honeycomb",
-          "count": 32,
-          "job": "aliveworkplace:beekeeper"
+          "item": "minecraft:echo_shard",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
         },
         {
-          "item": "minecraft:white_wool",
-          "count": 64,
-          "job": "minecraft:shepherd"
+          "item": "minecraft:heart_of_the_sea",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:illuminated_book",
+          "count": 2,
+          "job": "aliveworkplace:printer"
         }
       ]
     },
@@ -106,20 +150,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:book",
-          "count": 16,
-          "job": "minecraft:librarian"
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
         },
         {
-          "item": "minecraft:potion",
-          "count": 12,
-          "potion": "minecraft:healing",
-          "job": "minecraft:cleric"
+          "item": "minecraft:enchanted_golden_apple",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:grand_chef"
+            }
+          }
         },
         {
-          "tag": "minecraft:small_flowers",
-          "count": 64,
-          "job": "aliveworkplace:florist"
+          "item": "minecraft:eye_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
         }
       ]
     },
@@ -137,19 +206,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:chiseled_stone_bricks",
-          "count": 32,
-          "job": "minecraft:mason"
+          "item": "minecraft:elytra",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 45,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "item": "minecraft:cake",
-          "count": 16,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
         },
         {
-          "item": "minecraft:bone_meal",
-          "count": 64,
-          "job": "aliveworkplace:composter"
+          "item": "minecraft:music_disc_relic",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 16,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
         }
       ]
     }

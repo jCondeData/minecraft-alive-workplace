@@ -44,8 +44,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A Wonder's stages as build sites (35.4). Each stage's parts become ordinary {@link BuildSite}s, placed with the
  * Wonder's turn and mirror at their offsets, pointing back at the Wonder ({@link BuildSite#wonder}) with the Foundation
- * Stone as their bench (so the chests round the stone are the stockpile). Only the last stage levels the ground round
- * it. A stage starts only when every part of the one before is done and its own goods are dedicated (35.7,
+ * Stone as their bench (so the chests round the stone are the stockpile). Only the last stage with a part on the
+ * Wonder's floor levels the ground round it, and only with those parts (35.8a). A stage starts only when every part of the one before is done and its own goods are dedicated (35.7,
  * {@link WonderGoods}): the checks read the saved sites alone, so the order holds through a restart at any tick.
  */
 public final class WonderStages {
@@ -291,10 +291,27 @@ public final class WonderStages {
 			? Component.translatable(WonderGoods.isDay(level) ? "message.aliveworkplace.wonder.goods.all_in" : "message.aliveworkplace.wonder.goods.morning")
 			: Component.translatable("message.aliveworkplace.wonder.goods.header", SupplyContainers.RADIUS)).withStyle(all ? ChatFormatting.GREEN : ChatFormatting.GOLD));
 		for (WonderGoods.Line l : lines) {
-			MutableComponent line = Component.translatable("message.aliveworkplace.wonder.goods.line", l.in(), l.need(), WonderGoods.what(l.good()),
-				WonderGoods.job(l.good()));
-			if (!l.full() && !WonderGoods.hasMaker(level, site.hall(), l.good().job())) {
-				line.append(Component.translatable("message.aliveworkplace.wonder.goods.no_maker", WonderGoods.job(l.good())).withStyle(ChatFormatting.RED));
+			Wonder.Good good = l.good();
+			MutableComponent line;
+			if (good.found()) {
+				// 35.7a/b: where it's found, and the rare worker who'd find it: wanted, searching, or brought it
+				line = Component.translatable("message.aliveworkplace.wonder.goods.found_line", l.in(), l.need(), WonderGoods.what(good), WonderGoods.hint(good));
+				if (good.helper().isPresent()) {
+					Component who = WonderGoods.helperName(level, site.hall(), good.helper().get());
+					if (l.brought()) {
+						line.append(Component.translatable("message.aliveworkplace.wonder.goods.helper_brought", who).withStyle(ChatFormatting.GOLD));
+					} else if (!l.full() && good.helper().get().condition().met(level, site.hall())) {
+						line.append(Component.translatable("message.aliveworkplace.wonder.goods.helper_searching", who,
+							Math.min(good.helper().get().days(), WonderGoods.searchedDays(level, site, l) + 1), good.helper().get().days()).withStyle(ChatFormatting.AQUA));
+					} else if (!l.full()) {
+						line.append(Component.translatable("message.aliveworkplace.wonder.goods.helper_wanted", who, good.helper().get().days()).withStyle(ChatFormatting.GRAY));
+					}
+				}
+			} else {
+				line = Component.translatable("message.aliveworkplace.wonder.goods.line", l.in(), l.need(), WonderGoods.what(good), WonderGoods.job(good));
+				if (!l.full() && !WonderGoods.hasMaker(level, site.hall(), good.job())) {
+					line.append(Component.translatable("message.aliveworkplace.wonder.goods.no_maker", WonderGoods.job(good)).withStyle(ChatFormatting.RED));
+				}
 			}
 			text.append("\n    ").append(line.withStyle(l.full() ? ChatFormatting.DARK_GREEN : ChatFormatting.YELLOW));
 		}
@@ -368,6 +385,24 @@ public final class WonderStages {
 		return startStage(level, manager.site(id).orElseThrow(), builder);
 	}
 
+	/** Whether {@code part} stands on the Wonder's floor (its bottom at the Wonder's y = 0). */
+	static boolean onFloor(Wonder.Part part) {
+		return part.offset().getY() <= 0;
+	}
+
+	/**
+	 * The stage whose parts level the ground round the Wonder (35.8a): the last one with a part on the Wonder's floor,
+	 * so the ground is tidied once, after the last building done at ground level (0: none has one).
+	 */
+	static int levellingStage(Wonder wonder) {
+		for (int stage = wonder.stages().size(); stage >= 1; stage--) {
+			if (wonder.stages().get(stage - 1).parts().stream().anyMatch(WonderStages::onFloor)) {
+				return stage;
+			}
+		}
+		return 0;
+	}
+
 	/** Creates the build sites of {@code site}'s current stage, and records them on the Wonder. */
 	static List<BuildSite> startStage(ServerLevel level, WonderSite site, @Nullable UUID builder) {
 		Optional<Wonder> wonder = Optional.ofNullable(Wonders.loaded().get(site.wonder()));
@@ -375,7 +410,7 @@ public final class WonderStages {
 			return List.of();
 		}
 		BlueprintData.Placement at = site.placement().get();
-		boolean last = site.stage() == wonder.get().stages().size();
+		int levelling = levellingStage(wonder.get());
 		BuildSiteManager sites = BuildSiteManager.get(level);
 		List<BuildSite> made = new ArrayList<>();
 		UUID owner = site.owner().orElse(new UUID(0L, 0L));
@@ -386,7 +421,9 @@ public final class WonderStages {
 				new BlueprintData.Placement(at.dimension(), origin, at.rotation(), at.mirror()));
 			build.setWonder(site.id());
 			site.stone().ifPresent(build::setBench);
-			build.setLevelGround(last);
+			// 35.8a: only a part on the Wonder's floor levels the ground round it. A part higher up (the folly's dome)
+			// once "levelled" round its own bottom, filling the air beside the tower with a band of dirt.
+			build.setLevelGround(site.stage() == levelling && onFloor(part));
 			build.setFoundation(site.stage() == 1); // later stages stand on the stage below
 			if (builder != null) {
 				build.setBuilder(builder);
@@ -427,7 +464,8 @@ public final class WonderStages {
 				continue;
 			}
 			if (!site.started()) {
-				WonderGoods.check(level, site);
+				WonderGoods.search(level, site, INTERVAL); // 35.7b: the rare workers search for the found goods
+				WonderGoods.check(level, manager.site(site.id()).orElse(site));
 			} else if (!site.parts().isEmpty() && stageDone(level, site)) {
 				advance(level, site);
 			}

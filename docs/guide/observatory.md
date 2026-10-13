@@ -22,12 +22,12 @@ asks for nothing else. See [Wonders](wonders.md) for drawing up the plans.
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The Terrace and the Courtyard | 32 lapis lazuli (Sifter), 64 cooked chicken (Chef), 8 explorer's maps (Cartographer) |
-| The Tower | 64 copper ingots (Armorer), 4 spyglasses (Toolsmith), 32 amethyst shards (Miner) |
-| The Dome | 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers (Butcher) |
-| The Great Telescope and the Orrery | 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The Terrace and the Courtyard | A Heart of the Sea (the Merchant Prince, 11 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 spyglasses (Toolsmith) |
+| The Tower | An Echo Shard (the Old Sage, 18 days), an Eye Armor Trim Template (the Pathfinder, 18 days), the music disc Precipice (the Bard Laureate, 18 days) | 2 Illuminated Books (Printer) |
+| The Dome | An Ominous Trial Key (the Golem Smith, 14 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweller) |
+| The Great Telescope and the Orrery | A Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Shulker Shell (the Beastmaster, 9 days) | 2 Noble Robes (Tailor) |
 
 ## While it stands
 
@@ -36,5 +36,6 @@ asks for nothing else. See [Wonders](wonders.md) for drawing up the plans.
 
 ## How it fits with the rest
 
-- **What feeds it**: a Master [Cleric](jobs-crafts.md), and goods from ten jobs.
+- **What feeds it**: a Master [Cleric](jobs-crafts.md), rare things found by exploring (a rare worker in the village
+  finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: what you know of the land around the village and of the days ahead.

@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.8, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23, 35.23a
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.11, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23, 35.23a
 
 ## What a player sees
 
@@ -109,6 +109,61 @@ in a line three blocks out, on the side away from the Wonder ("standing in line 
   they're away): "The 5 goods handed in for the Test Folly came back to you"; what lies in the stockpile's chests stays
   there, and a dedicated stage's goods were given.
 
+**Found goods and rare workers** (35.7a, 35.7b, the owner's change): a Wonder is a month's work for a group, slow
+progress towards a big goal with lots of little wins, and never "bring 640 bread". So each stage of the shipped Wonders
+asks for two or three hard things **found by exploring**, one of each (a Heart of the Sea from buried treasure, an Echo
+Shard from an ancient city, a Heavy Core from a trial chamber's ominous vault, a Nether Star from the Wither), and one
+**rare good from an upgraded workshop**, two at most: from stage II on a Journeyman's luxury of M34's workshops
+(Vintage Wine, Gold Circlets, Illuminated Books, Noble Robes), in stage I an Apprentice's (Berry Wine, Emerald
+Brooches, Fine Clothes; the Observatory's spyglasses, the Stadium's Great Balls). Each found thing has a **helper**, a rare worker who finds it for the village:
+a Legend (the Pathfinder, the Old Sage, the Seer, the Beastmaster, the Bard Laureate, the Grand Chef, the Merchant
+Prince, the Golem Smith, the Founder; the Pokémon Ranger at the Stadium) or a Master Netherworker, Sifter or
+Fisherman. A Wonder's own Legend is never one of its helpers.
+
+- **The stone** says where each found thing is found and who would find it: "0 of 1 Dune Armor Trim Template · found
+  in a desert temple's chests · faster with the Pathfinder (finds it in 9 days)"; with the helper in the village, "· the
+  Pathfinder is searching: day 4 of 9"; once he has it, "1 of 1 Dune Armor Trim Template · … · brought by the
+  Pathfinder". Things whose own name says too little are named in full ("Netherite Upgrade Template", "Music Disc: Lena
+  Raine - Pigstep").
+- **The search** goes on while the helper is in the village (looked at whenever the village is loaded, remembered while
+  it isn't) and somebody is on the server: time in play, not time with the server empty. After the helper's days (a
+  Minecraft day each 20 minutes of play) the line is in, nothing taken from the chests for it: the owner reads "The
+  Pathfinder found what the Great Library needed: Dune Armor Trim Template" (with a chime), the chronicle says the same
+  and the line's post comes down. Players who find it first just bring it; the search then waits.
+- **The board** lists found lines like the rest, with "Found in a desert temple's chests" instead of the maker.
+  Crafters never get found lines as stock orders, and the hall's daily quest leaves them out (a week's search isn't a
+  day's quest); porters carry one from the storehouse like any good.
+- **A save from before** (a Wonder waiting for its old goods, 128 bread and so on): what was handed in for a line that
+  no longer takes it moves to a line that does, or else goes into the stockpile's chests (by the stone if they're full),
+  and the chronicle says "The Great Library asked for new goods: 110 goods handed in before went back to its
+  stockpile"; the stockpile's chests keep whatever they held.
+
+**Pacing** (35.7b): `python3 tools/blueprints/wonder_goods.py` prints this table; the hours are hours of play for a
+group of three or four with iron and diamond gear. Each found thing has an estimate of the hours the group spends
+finding it, from setting out to coming home with it (1.5 for a shipwreck's Coast Armor Trim Template, 2.5 for a Heart
+of the Sea, 4 for an Echo Shard, 5 for a Totem of Undying, 7 for a Heavy Core, 8 for a Nether Star, 10 for an Elytra).
+A stage takes the hours of the finds no helper covers, one after another, plus 2.5 hours for the workshop goods and the
+stage's materials and build that don't overlap the searching; a helper takes one and a half times the group's hours
+(the days on the stone), in the background, so the group searches for the rest meanwhile, and the stage waits for the
+slowest helper unless searching for that one itself is quicker. "Typical" is a Town with Masters of the Netherworker,
+Sifter and Fisherman trades and one Legend, the Pathfinder (the commonest: born to Cartographers). The target is 45
+hours: every other day for 3 hours, about 15 sessions, a month.
+
+| Wonder | No helpers (I, II, III, IV) | Typical | Every helper | Helpers |
+|---|---|---|---|---|
+| Great Cathedral | 6.0, 13.0, 16.5, 24.0 = 59.5 | 46.0 | 30.3 | 8 |
+| Lighthouse | 6.5, 12.0, 16.5, 22.0 = 57.0 | 43.2 | 31.0 | 9 |
+| Great Library | 7.5, 12.5, 16.5, 17.5 = 54.0 | 46.2 | 30.0 | 7 |
+| Observatory | 6.5, 14.5, 13.5, 22.5 = 57.0 | 41.5 | 30.7 | 7 |
+| Great Wall | 6.0, 13.5, 13.5, 20.5 = 53.5 | 42.0 | 29.7 | 7 |
+| Hanging Gardens | 8.0, 11.0, 14.0, 19.5 = 52.5 | 44.5 | 29.7 | 9 |
+| Colossus | 6.5, 12.5, 15.5, 27.5 = 62.0 | 41.7 | 31.0 | 8 |
+| Stadium | 7.0, 12.5, 13.5, 22.5 = 55.5 | 46.5 | 30.3 | 9 |
+
+So a typical group takes 42 to 47 hours (mean 44, about 15 sessions); a village without any of the helpers about 56
+(19 sessions), one with all of them about 30 (10 sessions). Each helper who arrives saves the group a few hours of one
+stage, the little wins on the way; the estimates are reckoned, not yet timed in play (the owner's group is the test).
+
 **A finished Wonder** (35.8). When the last stage is done:
 
 - **Every player on the server is told**, wherever they are: "Pinevale has finished the Test Folly!"
@@ -160,10 +215,14 @@ buttresses over the aisles and tall lancet windows; transepts with gable windows
 rounded apse; open belfries with three bells. Inside: pews either side of a red runner, banners and lanterns on the
 polished andesite piers, an altar of gold and candles, three side chapels with lecterns, and a sacristy with a brewing
 stand. It goes up in four stages, each leaving the site tidy: I *The Foundations and the West Front*, II *The Nave*,
-III *The Transepts and the Choir*, IV *The Towers and the Rose Window*. Its goods: I 128 bread (Chef), 8 iron pickaxes
-(Toolsmith), 16 gold ingots (Armorer); II 64 white candles (Dyer), 32 honeycomb (Beekeeper), 64 white wool (Shepherd);
-III 16 books (Librarian), 12 potions of healing (Cleric), 64 small flowers (Florist); IV 32 chiseled stone bricks
-(Mason), 16 cakes (Chef), 64 bone meal (Composter). It can't be built in game until the rest of Wonders is.
+III *The Transepts and the Choir*, IV *The Towers and the Rose Window*. Its goods (found, with the rare worker who
+finds each and in how many days; then what a workshop makes): I a Prize Pottery Sherd (a Master Sifter, 9 days), a
+Ghast Tear (a Master Netherworker, 7 days); made: 2 Fine Clothes (Tailor); II the music disc otherside (the Bard
+Laureate, 18 days), an Echo Shard (the Old Sage, 18 days), a Heart of the Sea (the Pathfinder, 11 days); made: 2
+Illuminated Books (Printer); III a Totem of Undying (the Merchant Prince, 22 days), an Enchanted Golden Apple (the
+Grand Chef, 22 days), an Eye Armor Trim Template (the Old Sage, 18 days); made: 2 Noble Robes (Tailor); IV an Elytra
+(the Pathfinder, 45 days), a Nether Star (the Golem Smith, 36 days), the music disc Relic (the Bard Laureate, 16
+days); made: 2 Gold Circlets (Jeweller). It can't be built in game until the rest of Wonders is.
 
 **The Lighthouse** (35.11) is drawn: a coastal landmark 25 by 33 and 46 high, about 5,000 blocks, its back half in the
 sea. A round tower banded in white and red terracotta tapers from 13 across to 9 on a stepped stone mole (mossy at the
@@ -174,35 +233,44 @@ vane. Inside, a spiral stair of spruce climbs past five rooms from the door to t
 cottage (a stone ground floor, an upper story of white terracotta in a spruce frame, a slate roof; a bed upstairs, the
 fisherman's barrel by the stove), a spruce boathouse half over the water, a stone quay with mooring posts, and a
 timber jetty out over the sea to a ferry stop, the Travel Post under a little roof. Its stages: I *The Mole and the
-Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Its goods: I 64 cooked cod
-(Fisherman), 8 oak boats (Carpenter), 64 coal (Miner); II 16 chains (Tinkerer), 32 iron ingots (Armorer), 32 white
-wool (Shepherd); III 4 explorer's maps (Cartographer), 32 spectral arrows (Fletcher), 32 leather (Butcher); IV 64
-glowstone dust (Netherworker), 32 redstone (Miner), 16 pumpkin pies (Chef). Its powers come with 35.12.
+Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Its goods (found, with the rare
+worker who finds each and in how many days; then what a workshop makes): I a Heart of the Sea (the Pathfinder, 11
+days), a Coast Armor Trim Template (a Master Fisherman, 7 days); made: 2 Emerald Brooches (Jeweller); II a Trident
+(the Beastmaster, 14 days), a Sponge (the Founder, 18 days), an Angler Pottery Sherd (the Grand Chef, 11 days); made:
+2 Gold Circlets (Jeweller); III a Tide Armor Trim Template (a Master Fisherman, 22 days), a Conduit (the Seer, 18
+days), a Totem of Undying (the Old Sage, 22 days); made: 2 Illuminated Books (Printer); IV a Nether Star (the Golem
+Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 Vintage
+Wine (Vintner). Its powers come with 35.12.
 
-**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 15,000 blocks, on a
-square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
+**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 15,000 blocks, on
+a square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
 diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
-the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of reading
-halls under deepslate-tile roofs: a drum of polished diorite with clerestory windows and a cornice, a shallow copper
-dome with eight ribs (it weathers green), coffered inside in smooth stone and diorite, and a glass lantern on top. Each
-wing has two stories of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the walls under
-a dark oak gallery on both sides (two floors of bookshelf galleries, a ladder up to each), carrels under the windows,
-reading tables with lanterns and low bookcases down the middle, and a coffered dark oak ceiling. The rotunda has three
-rings of bookshelves with two galleries round them; at its center an Enchanting Table ringed by fifteen bookshelves,
-open towards the door, with the librarian's lectern before it and four reading desks round it. A lectern for a scholar
-stands in each wing; the west wing's end is the map room, a carpet map of seas and islands round a cartography table.
-Its stages: I *The Stacks*, II *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*. Its goods: I 128
-sugar cane (Farmer), 64 leather (Butcher), 64 spruce logs (Lumberjack); II 64 books (Librarian), 64 black dye (Dyer),
-16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis lazuli (Sifter), 32 copper ingots (Armorer); IV
-64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves (Librarian). It needs a Town, 20 research levels and
-the Old Sage (or a Master Scholar while Legends are off). Its power, a second research tier, comes with 35.14.
+the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of
+reading halls under deepslate-tile roofs: a drum of polished diorite with clerestory windows and a cornice, a shallow
+copper dome with eight ribs (it weathers green), coffered inside in smooth stone and diorite, and a glass lantern on
+top. Each wing has two stories of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the
+walls under a dark oak gallery on both sides (two floors of bookshelf galleries, a ladder up to each), carrels under
+the windows, reading tables with lanterns and low bookcases down the middle, and a coffered dark oak ceiling. The
+rotunda has three rings of bookshelves with two galleries round them; at its center an Enchanting Table ringed by
+fifteen bookshelves, open towards the door, with the librarian's lectern before it and four reading desks round it. A
+lectern for a scholar stands in each wing; the west wing's end is the map room, a carpet map of seas and islands round
+a cartography table. Its stages: I *The Stacks*, II *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*.
+Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Heart
+Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days); made: an Illuminated
+Book (Printer); II an Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days),
+a Wild Armor Trim Template (the Pathfinder, 11 days); made: 2 Noble Robes (Tailor); III an Echo Shard (the Seer, 18
+days), an Enchanted Golden Apple (the Grand Chef, 22 days), a Vex Armor Trim Template (the Merchant Prince, 22 days);
+made: 2 Illuminated Books (Printer); IV an Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem
+Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days); made: 2 Gold Circlets (Jeweller). It needs a
+Town, 20 research levels and the Old Sage (or a Master Scholar while Legends are off). Its power, a second research
+tier, comes with 35.14.
 
 **The Observatory** (35.17) is drawn: a round tower 15 across and 30 high under a copper dome, on a raised terrace 31
 by 31 (42 high to the dome's vane, about 8,400 blocks) of deepslate bricks behind a polished blackstone balustrade, a
 wide stair up its front. The tower is deepslate bricks and tiles with polished blackstone bands at its floors, eight
 blackstone pilasters up its height and tall windows; inside, a dark oak spiral stair climbs past the Seer's study
-(bookshelves and a lectern), a store of chests and barrels and the instrument room (a cartography table, a lectern)
-to the top, where a walk behind a blackstone parapet runs round the dome: the viewing platform. The dome, of cut copper
+(bookshelves and a lectern), a store of chests and barrels and the instrument room (a cartography table, a lectern) to
+the top, where a walk behind a blackstone parapet runs round the dome: the viewing platform. The dome, of cut copper
 on a blackstone drum (it weathers green), has a slit of tinted glass three wide from its foot to its crown on the
 courtyard side and a door onto the walk at the back; the great telescope, a cut copper barrel 12 long on a blackstone
 mount, leans up and out of the slit over the courtyard. Two low wings under hipped deepslate-tile roofs flank the
@@ -211,74 +279,95 @@ Seer's lodging (a bed, a brewing stand, a barrel). The courtyard is paved in dee
 amethyst set in it: a compass star round the sundial (a round stone face and its gnomon), studs along the path and a
 ring round the tower's foot. Opposite the sundial stands the orrery: a gold sun on a chain under a blackstone frame,
 with five planets (iron, copper, lapis, redstone and raw gold) hung on chains round it. Its stages: I *The Terrace and
-the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the Orrery*. Its goods: I 32 lapis lazuli
-(Sifter), 64 cooked chicken (Chef), 8 explorer's maps (Cartographer); II 64 copper ingots (Armorer), 4 spyglasses
-(Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers (Butcher);
-IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). It needs a Town and the Seer (or a Master
-Cleric while Legends are off). Its powers, the Sky Chart and the Coming days page, come with 35.18. The Sky Chart
-covers about 6,144 blocks across (384 chunks, 12 regions; 35.18a): one locked map at 48 blocks a pixel, since a vanilla
-map shows at most 2,048. Its search and the chart itself are built (`wonder/SkyChart`): one region of one structure kind
-every 5 ticks while the server's tick has room, at most one kind an in-game hour, saved as it goes; the hall's map
-button that hands it over comes with 35.18.
+the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the Orrery*. Its goods (found, with the
+rare worker who finds each and in how many days; then what a workshop makes): I a Heart of the Sea (the Merchant
+Prince, 11 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 spyglasses (Toolsmith); II an Echo Shard (the
+Old Sage, 18 days), an Eye Armor Trim Template (the Pathfinder, 18 days), the music disc Precipice (the Bard Laureate,
+18 days); made: 2 Illuminated Books (Printer); III an Ominous Trial Key (the Golem Smith, 14 days), a Totem of Undying
+(the Merchant Prince, 22 days), a Wither Skeleton Skull (a Master Netherworker, 14 days); made: 2 Gold Circlets
+(Jeweller); IV a Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Shulker Shell (the
+Beastmaster, 9 days); made: 2 Noble Robes (Tailor). It needs a Town and the Seer (or a Master Cleric while Legends are
+off). Its powers, the Sky Chart and the Coming days page, come with 35.18. The Sky Chart covers about 6,144 blocks
+across (384 chunks, 12 regions; 35.18a): one locked map at 48 blocks a pixel, since a vanilla map shows at most 2,048.
+Its search and the chart itself are built (`wonder/SkyChart`): one region of one structure kind every 5 ticks while
+the server's tick has room, at most one kind an in-game hour, saved as it goes; the hall's map button that hands it
+over comes with 35.18.
 
 **The Great Wall** (35.15) is drawn: a defense 97 long, placed like the other walls (stand in the village and place it
-facing out: its stairs are on your side), about 10,800 blocks. A curtain 7 thick and 12 high on a battered plinth of
+facing out: its stairs are on your side), about 12,300 blocks. A curtain 7 thick and 12 high on a battered plinth of
 deepslate bricks, faced with stone bricks to the field (mossy and cracked on the low courses, a buttress every four or
 five blocks) and cobblestone to the village; on top a walk paved six wide behind a breastwork corbeled out over the
 field, crenellated, with a low parapet on the village side carrying braziers (campfires on chiseled stone). Four towers
-9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters, each with a door from the village,
-a stair round its inside to a room at the walk (doors onto the walk, a guard's grindstone, and on the side facing the gate
-an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a top room with windows on
-three sides, arrow slits low down and a banner to the field. At the center the Great Gate, a gatehouse 17 wide and as high
+9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters. Since 35.15a each tower is solid
+stone from the ground to the walk, on a solid base a block wider all round (deepslate bricks under a battered step, the
+plinth stepping out round it again), with buttresses up its corners, a ledge of upside-down stairs round it at the walk
+with lanterns on its corners, a banner over a blind slit to the field and a lit niche under a keystone and a banner to
+the village. You enter a tower from the walk: a room at the walk (doors onto the walk, a guard's grindstone, and on the
+side facing the gate an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a top
+room with windows on three sides, a banner to the field and a watch lantern on the roof's peak. Along the runs a banner
+hangs in every bay on the field side under an arrow slit, taller chiseled merlons stand over the buttresses, vines grow
+on the low courses, lanterns stand on the parapet between the braziers and on corbels on the village side. At the center the Great Gate, a gatehouse 17 wide and as high
 as the towers under a long hipped roof: a vaulted gateway 5 wide with spruce fence gates two high across it under a
 portcullis of iron bars, which runs up a slot into the hall and hangs from a windlass; a guardroom either side with its
 own stair, a hall at the walk, a top room opening onto a crenellated bretèche over the gate, buttresses either side of
-the gateway, braziers at both its mouths and banners beside them. Two stairs of ten steps climb the village side to
+the gateway and at its corners, the towers' ledge at the walk, braziers at both its mouths and banners beside them. Two stairs of ten steps climb the village side to
 landings by the gatehouse. Its stages: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the
-Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs). Its goods: I 8 iron swords
-(Weaponsmith), 128 arrows (Fletcher), 128 bread (Chef); II 8 iron shovels (Toolsmith), 12 potions of strength (Cleric),
-64 baked potatoes (Chef); III 8 crossbows (Fletcher), 8 iron chestplates (Armorer), 8 shields (Carpenter); IV 16 iron
-blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter). It needs a Town, a finished Gatehouse and the Golem
-Smith (or 4 iron golems and a Master Tinkerer while Legends are off). Its powers, the raid barrier and the sentries,
-come with 35.16.
+Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs). Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
+Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 Emerald Brooches
+(Jeweller); II a Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a
+Rib Armor Trim Template (the Seer, 14 days); made: 2 Vintage Wine (Vintner); III a Wither Skeleton Skull (the Founder,
+14 days), a Netherite Upgrade Template (the Beastmaster, 14 days), a Vex Armor Trim Template (the Merchant Prince, 22
+days); made: 2 Gold Circlets (Jeweller); IV a Heavy Core (the Pathfinder, 32 days), a Nether Star (the Founder, 36
+days), a Netherite Ingot (the Old Sage, 14 days); made: 2 Noble Robes (Tailor). It needs a Town, a finished Gatehouse
+and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are off). Its powers, the raid barrier and
+the sentries, come with 35.16.
 
-**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops, about
-16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all round with an
-arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a cut sandstone
-coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries hanging in the arch
-heads and lanterns. Inside the first terrace are the Cistern Vaults: a hall 29 by 29 of 36 columns round a pool with a
-chain pump, a doorway from the gallery on each side. Each ledge is a garden on the gallery's roof: a hedge of azalea and
-oak leaves on the coping, fields of wheat, carrots and beetroots between water channels, sweet berry beds, glow berry
-arbors, flower beds with azaleas, beehives, and on the corners oaks, flowering azalea trees and a farm corner with a
-composter and a chest on each level (four village farms). Vines hang down the columns and over the arches. A ramp
-spirals up, a stair with a balustrade on each side in turn: along the front from the ground, up the second terrace's east
-face, the third's back and the crown's west face. On the crown a cistern with a fountain pours down a channel to the east
-edge: the falls drop from a basin on each ledge to the next and into a pool with lily pads at the foot, past a blind,
-mossy stretch of arcade. Its stages: I *The First Terrace and the Cistern Vaults*, II *The Second Terrace*, III *The
-Third Terrace*, IV *The Crown Garden and the Falls* (the crown, its garden and cistern, the last ramp and the water,
-poured from buckets). Its goods: I 128 bone meal (Composter), 128 wheat seeds (Farmer), 64 clay balls (Sifter); II 64
-sweet berries and 32 glow berries (Orchard Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey
-bottles (Beekeeper), 64 carrots and 64 potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs
-(Butcher), 32 raw cod (Fisherman). It needs a Town and the Grand Chef (or a Master Chef and 8 kinds of meal in the store
-while Legends are off). Its powers, the bigger harvests and the faster births, come with 35.20.
+**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops,
+about 16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all
+round with an arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a
+cut sandstone coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries
+hanging in the arch heads and lanterns. Inside the first terrace are the Cistern Vaults: a hall 29 by 29 of 36 columns
+round a pool with a chain pump, a doorway from the gallery on each side. Each ledge is a garden on the gallery's roof:
+a hedge of azalea and oak leaves on the coping, fields of wheat, carrots and beetroots between water channels, sweet
+berry beds, glow berry arbors, flower beds with azaleas, beehives, and on the corners oaks, flowering azalea trees and
+a farm corner with a composter and a chest on each level (four village farms). Vines hang down the columns and over
+the arches. A ramp spirals up, a stair with a balustrade on each side in turn: along the front from the ground, up the
+second terrace's east face, the third's back and the crown's west face. On the crown a cistern with a fountain pours
+down a channel to the east edge: the falls drop from a basin on each ledge to the next and into a pool with lily pads
+at the foot, past a blind, mossy stretch of arcade. Its stages: I *The First Terrace and the Cistern Vaults*, II *The
+Second Terrace*, III *The Third Terrace*, IV *The Crown Garden and the Falls* (the crown, its garden and cistern, the
+last ramp and the water, poured from buckets). Its goods (found, with the rare worker who finds each and in how many
+days; then what a workshop makes): I a Sniffer Egg (the Beastmaster, 14 days), a Wild Armor Trim Template (the
+Pathfinder, 11 days); made: 2 Berry Wine (Vintner); II a Pitcher Pod (the Beastmaster, 18 days), Torchflower Seeds
+(the Old Sage, 7 days), a Heart Pottery Sherd (a Master Sifter, 14 days); made: 2 Vintage Wine (Vintner); III an
+Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate,
+18 days); made: 2 Gold Circlets (Jeweller); IV a Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the
+Golem Smith, 36 days), a Conduit (the Founder, 18 days); made: 2 Noble Robes (Tailor). It needs a Town and the Grand
+Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off). Its powers, the bigger harvests and
+the faster births, come with 35.20.
 
-**The Colossus** (35.21) is drawn: the Founder's statue, 47 high on a 29 by 29 site, about 9,000 blocks, standing over the
-village's main road. It is a villager drawn a pixel to a block from the game's own model, so it reads as one from far
-off: the tall head (9 across, 10 high), the long nose hanging past the chin, a dark unibrow over white eyes with emerald
-pupils, and a robe of polished diorite trimmed with smooth stone at the hem, the belt and down the front, flaring at the
-hem over two feet. Its left arm folds across the chest, the hand resting on it; its right arm rises clear of the head and
-holds up the lantern, a cage of glass panes round glowstone under a copper cap, lit day and night. A cloak of cut copper
-(about 370 blocks with the lantern's copper) hangs from the shoulders to the pedestal in three pleats, and weathers green
-over the weeks. The plinth is 13 high in three steps of stone bricks (mossy and cracked low down) on a skirt of deepslate
-brick: polished andesite pilasters and a cornice, a terrace with a balustrade and nine braziers round it, and a smooth
-stone pedestal. The road passes front to back through an arch 5 wide and 6 high, with lantern niches down the passage
-and lamp posts at both mouths; over the front arch is the Founder's plaque, a row of five dark oak signs on a dark oak
-panel (35.22 writes them). The arm and the head need scaffolding (35.6). Its stages: I *The Plinth and the Road Arch*,
-II *The Robes*, III *The Arms and the Cloak*, IV *The Head and the Lantern*. Its goods: I 128 baked potatoes (Chef), 64
-coal (Miner), 8 iron pickaxes (Toolsmith); II 64 copper ingots (Armorer), 64 white wool (Shepherd), 32 leather
-(Butcher); III 32 chains (Tinkerer), 32 stripped dark oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32
-glowstone dust (Netherworker), 64 small flowers (Florist), 16 cakes (Chef). It needs a City and the Founder (or City rank
-while Legends are off). Its powers, the realm's mood, the travelers and its beauty, come with 35.22.
+**The Colossus** (35.21) is drawn: the Founder's statue, 47 high on a 29 by 29 site, about 9,000 blocks, standing over
+the village's main road. It is a villager drawn a pixel to a block from the game's own model, so it reads as one from
+far off: the tall head (9 across, 10 high), the long nose hanging past the chin, a dark unibrow over white eyes with
+emerald pupils, and a robe of polished diorite trimmed with smooth stone at the hem, the belt and down the front,
+flaring at the hem over two feet. Its left arm folds across the chest, the hand resting on it; its right arm rises
+clear of the head and holds up the lantern, a cage of glass panes round glowstone under a copper cap, lit day and
+night. A cloak of cut copper (about 370 blocks with the lantern's copper) hangs from the shoulders to the pedestal in
+three pleats, and weathers green over the weeks. The plinth is 13 high in three steps of stone bricks (mossy and
+cracked low down) on a skirt of deepslate brick: polished andesite pilasters and a cornice, a terrace with a
+balustrade and nine braziers round it, and a smooth stone pedestal. The road passes front to back through an arch 5
+wide and 6 high, with lantern niches down the passage and lamp posts at both mouths; over the front arch is the
+Founder's plaque, a row of five dark oak signs on a dark oak panel (35.22 writes them). The arm and the head need
+scaffolding (35.6). Its stages: I *The Plinth and the Road Arch*, II *The Robes*, III *The Arms and the Cloak*, IV
+*The Head and the Lantern*. Its goods (found, with the rare worker who finds each and in how many days; then what a
+workshop makes): I a Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7
+days); made: 2 Emerald Brooches (Jeweller); II a Trident (the Beastmaster, 14 days), a Sponge (the Seer, 18 days), a
+Netherite Upgrade Template (a Master Netherworker, 14 days); made: 2 Gold Circlets (Jeweller); III a Tide Armor Trim
+Template (a Master Fisherman, 22 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull
+(the Old Sage, 14 days); made: 2 Noble Robes (Tailor); IV a Heavy Core (the Golem Smith, 32 days), a Nether Star (the
+Beastmaster, 36 days), an Elytra (the Pathfinder, 45 days); made: 2 Vintage Wine (Vintner). It needs a City and the
+Founder (or City rank while Legends are off). Its powers, the realm's mood, the travelers and its beauty, come with
+35.22.
 
 **The Stadium** (35.23, only with Cobblemon; made bigger, with more dressing and walk-through interiors, by 35.23a) is
 drawn: an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners, about 12,100 blocks), round a grass battle
@@ -303,13 +392,16 @@ banners hung over the stand. Four floodlight towers stand at the corners, each a
 wired round a daylight detector that lights them at night. In the corners outside are the nurse's booth (a striped
 stall with a Healing Machine and a brewing stand) and seven market pitches, three with stalls on them. Its stages: I
 *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The Gate and the Floodlights*.
-Its goods: I 128 bone meal (Composter), 64 small flowers (Florist), 32 Poké Balls (Ball Smith); II 64 red wool (Dyer)
-and 64 white wool (Shepherd), 16 Poké Snacks (Chef), 16 Great Balls (Ball Smith); III 16 banners (Carpenter), 64
-cooked beef (Chef), 32 berries (Orchard Keeper); IV 8 daylight detectors (Tinkerer), 16 Ultra Balls (Ball Smith), 32
-pumpkin pies (Chef). It needs a Town and the Pokémon Professor (or 25 pastured Pokémon of 10 types while Legends are
-off). Without Cobblemon its file isn't loaded, so it isn't on the Wonders page. M28's Arena is a smaller ring of its
-own, not a Stadium, so this one keeps the name Stadium. Its powers, Stadium Days and hosting the Festival Cup, come with
-35.24.
+Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I Diamond
+Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days); made: 2 Great Balls
+(Ball Smith); II a Trident (a Master Fisherman, 14 days), the music disc Pigstep (the Bard Laureate, 18 days), a
+Netherite Upgrade Template (a Master Netherworker, 14 days); made: 2 Gold Circlets (Jeweller); III a Totem of Undying
+(the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a Flow Armor Trim Template (the Golem
+Smith, 14 days); made: 2 Ultra Balls (Ball Smith); IV a Nether Star (the Golem Smith, 36 days), a Heavy Core (the
+Pokémon Ranger, 32 days), an Enchanted Golden Apple (the Grand Chef, 22 days); made: 2 Noble Robes (Tailor). It needs
+a Town and the Pokémon Professor (or 25 pastured Pokémon of 10 types while Legends are off). Without Cobblemon its
+file isn't loaded, so it isn't on the Wonders page. M28's Arena is a smaller ring of its own, not a Stadium, so this
+one keeps the name Stadium. Its powers, Stadium Days and hosting the Festival Cup, come with 35.24.
 
 ## How it works
 
@@ -319,7 +411,10 @@ owner can add their own Wonder with a data pack and it works like ours. The file
 - `name` and `description`: lang keys. `icon`: any item.
 - `requirements`: a list of conditions (below).
 - `stages`: each a `name`, its blueprint `parts` (a structure id and its `offset` from the Wonder's corner), and its
-  `goods`, each `{"item"` or `"tag", "count", "job"}`, with an optional `potion` to name a kind of potion.
+  `goods`, each `{"item"` or `"tag", "count", "job"}`, with an optional `potion` to name a kind of potion. A found line
+  (35.7a) has `"found": true` (its `job` may be left out: the Cartographer, the village's explorers) and an optional
+  `"helper": {"days": 1 to 60, "condition": {...}}`, any condition (a `legend`, a `job_level`) for the rare worker who
+  finds it; where it's found is the lang key `goods.aliveworkplace.hint.<namespace>.<item>` ("by exploring" without one).
 - `powers`: `[{"type": ..., numbers}]`. Each type is code registered by its id (35.8, `wonder/powers/`): `mood`
   (`scope` `village` or `realm`, `amount`, optional `home_amount`; each -50 to 50) and `beauty` (`points`, 0 to 50) work
   now; the other types our Wonders name are declared (their numbers kept as written) until their Wonder's item fills
@@ -369,7 +464,9 @@ stage and the days it was begun and finished.
 **Stages as build sites** (35.4): each stage's parts become ordinary build sites, placed with the Wonder's turn and
 mirror at their offsets, pointing back at the Wonder, with the Foundation Stone as their bench (so a builder fetches from
 the chests round the stone and empties his bag there). Only stage I fills a foundation (later stages stand on the stage
-below), only the last stage levels the ground round it, and no part hands a blueprint back. Once a second the Wonders
+below), only the last stage with a part on the Wonder's floor levels the ground round it, with those parts alone (35.8a:
+the folly's dome, levelled round its own bottom, once filled a band of dirt round the tower under it; the folly now
+levels in stage I), and no part hands a blueprint back. Once a second the Wonders
 check their stage: when every part's site is done or gone, the next stage's sites are made for the Wonder's builder, or
 the Wonder is finished. The check reads only saved data, so the order holds through a restart at any tick. While
 `wonders` is off nothing moves on; it all waits, saved.
@@ -417,7 +514,9 @@ sites) and `builder` on a site; 35.5 adds `called` (default false: every builder
 handed in at the stone for it, each its line, item, potion and count). A site saved before 35.7 with its stage's parts
 down counts as started, so a Wonder going up keeps going. 35.8 adds `standing` (default 100: the share standing at the
 last count), `counted` (default 0: that count's day), `damaged` (default false) and `festival` (default 0: the day of
-its finishing festival); a Wonder saved before 35.8 reads as standing whole, its powers on. A crew member's
+its finishing festival); a Wonder saved before 35.8 reads as standing whole, its powers on. 35.7b adds `searches` beside the sites
+(absent in a world saved before: nothing searched): for each site waiting for goods, each found line's helper search
+(its line, the item, the ticks searched and whether the helper was last seen in the village). A crew member's
 job is the ordinary saved builder job (as a helper), so a crew comes back together after a restart; the columns are
 worked out again; `wonder` and `no_foundation` on a build site (written only when set, so an ordinary
 build saves exactly as before).
@@ -436,6 +535,13 @@ build saves exactly as before).
 
 ## Decisions
 
+- Found goods (35.7a, 35.7b) are one of each and never made: their counts are what the owner disliked. The workshop
+  good is two at most and from a Journeyman's recipe, so the workshop has to be upgraded and staffed. A helper is
+  slower than the group (one and a half times its hours) so it frees the group rather than doing the stage; it counts
+  only while someone is on the server, because the owner's server runs all day. A helper brings the line without an
+  item, so cancelling never hands back something nobody found.
+- The goods lists live in `tools/blueprints/wonder_goods.py` with their hour estimates and the pacing reckoning;
+  `wonders.py` takes them from there, so drawing the Wonders again writes the same lines.
 - The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9): nine parts, two of stage I only
   clearing the air up to the spires' tips (y 48 to 52), and the spires' last few blocks a small part of stage IV.
 - A stage's round rose opening and the nave's open east end wait for the next stage (35.9): the rose's ring is built
@@ -543,7 +649,7 @@ bringing the books, then the dedication.
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
-roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 11,000 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
+roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 12,300 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
 The Stadium's file and its Healing Machine need Cobblemon, so its same checks run in the compat tests
 (`StadiumCompatTests`, 12,100 blocks), with its requirements and goods as listed, its nurse's booth, Training Posts and
 floodlights, and its stages built in a village's banner colors (blue and red for a blue banner with a red stripe, the

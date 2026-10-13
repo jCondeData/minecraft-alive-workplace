@@ -189,7 +189,8 @@ public class WonderSiteGameTests implements FabricGameTest {
 		helper.assertTrue(site.parts().size() == 1, "stage I has one part: " + site.parts());
 		BuildSite part = BuildSiteManager.get(level).get(site.parts().get(0));
 		helper.assertTrue(part != null && stone.equals(part.bench()) && v.builder().getUUID().equals(part.builder()) && part.foundation()
-			&& !part.levelGround() && site.id().equals(part.wonder()), "stage I's part: queued for the builder, the stone its bench, with a foundation");
+			&& part.levelGround() && site.id().equals(part.wonder()), "stage I's part: queued for the builder, the stone its bench, with a foundation, "
+			+ "levelling the ground (35.8a: the folly's last part on its floor)");
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(v.hall());
 		helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.WONDER
 			&& key(e.text()).equals("chronicle.aliveworkplace.wonder.begun")), "not in the chronicle");

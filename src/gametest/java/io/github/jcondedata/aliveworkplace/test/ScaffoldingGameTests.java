@@ -131,6 +131,96 @@ public class ScaffoldingGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * 35.6a (the owner: in the shots no scaffolding showed, the builder stood on the cap and the pillar had a gap): while
+	 * the builder works high up, a continuous column of vanilla scaffolding stands beside the pillar from the ground up,
+	 * the builder is up it at the working height, never on the pillar or its cap, and the pillar always rises from the
+	 * ground without a gap. Afterwards it's all down.
+	 */
+	//$ gametest_ticks_batch BIG '8000' '"scaffoldColumn"'
+	@GameTest(template = BIG, timeoutTicks = 8000, batch = "scaffoldColumn")
+	public void builderClimbsAContinuousColumnBesideThePillar(GameTestHelper helper) {
+		Site s = pillar(helper, SCAFFOLDING);
+		int ground = helper.absolutePos(PILLAR_AT).getY();
+		BlockPos pillarFoot = helper.absolutePos(PILLAR_AT.offset(2, 0, 2));
+		int[] most = {0};
+		double[] highestOnScaffold = {Double.NEGATIVE_INFINITY};
+		helper.onEachTick(() -> {
+			List<BlockPos> up = s.site().scaffolds();
+			most[0] = Math.max(most[0], up.size());
+			for (BlockPos p : up) {
+				BlockPos below = p.below();
+				boolean based = s.level().getBlockState(below).is(Blocks.SCAFFOLDING) || below.getY() < ground;
+				if (s.level().getBlockState(p).is(Blocks.SCAFFOLDING) && !based) {
+					throw new GameTestAssertException("a gap in the scaffolding under " + helper.relativePos(p) + ": " + up.stream().map(helper::relativePos).toList());
+				}
+			}
+			Villager v = s.builder()[0];
+			BlockPos feet = v.blockPosition();
+			if (v.getY() > ground + 1.5) {
+				net.minecraft.world.level.block.state.BlockState under = s.level().getBlockState(feet.below());
+				if (under.is(Blocks.STONE_BRICKS) || under.is(Blocks.POLISHED_ANDESITE)) {
+					throw new GameTestAssertException("the builder stood on the build at " + helper.relativePos(feet) + " (on " + under + ")");
+				}
+				if (s.level().getBlockState(feet).is(Blocks.SCAFFOLDING) || under.is(Blocks.SCAFFOLDING)) {
+					highestOnScaffold[0] = Math.max(highestOnScaffold[0], v.getY() - ground);
+				}
+			}
+			boolean gap = false;
+			for (int y = 0; y < 14; y++) {
+				boolean placed = s.level().getBlockState(pillarFoot.above(y)).is(Blocks.STONE_BRICKS);
+				if (placed && gap) {
+					throw new GameTestAssertException("the pillar has a gap below " + helper.relativePos(pillarFoot.above(y)));
+				}
+				gap |= !placed;
+			}
+		});
+		helper.succeedWhen(() -> {
+			assertFinished(helper, s);
+			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped");
+			helper.assertTrue(most[0] >= 6, "the scaffolding never stood more than " + most[0] + " high");
+			helper.assertTrue(highestOnScaffold[0] >= 7, "the builder was never up its scaffolding at the working height: highest " + highestOnScaffold[0]);
+			assertNoScaffolding(helper, s);
+			helper.assertTrue(chestCount(helper, Items.SCAFFOLDING) == SCAFFOLDING,
+				"the chest holds " + chestCount(helper, Items.SCAFFOLDING) + " scaffolding, not the " + SCAFFOLDING + " it had");
+		});
+	}
+
+	/** 35.6a: saved and loaded with the builder high up its scaffolding: it carries on, and the scaffolding all comes down. */
+	//$ gametest_ticks_batch BIG '9000' '"scaffoldReloadHigh"'
+	@GameTest(template = BIG, timeoutTicks = 9000, batch = "scaffoldReloadHigh")
+	public void reloadWithTheBuilderUpTheScaffolding(GameTestHelper helper) {
+		Site s = pillar(helper, SCAFFOLDING);
+		int ground = helper.absolutePos(PILLAR_AT).getY();
+		boolean[] reloaded = {false};
+		helper.onEachTick(() -> {
+			Villager old = s.builder()[0];
+			if (!reloaded[0] && old.getY() >= ground + 5 && s.site().scaffolds().size() >= 4
+				&& s.level().getBlockState(old.blockPosition().below()).is(Blocks.SCAFFOLDING)) {
+				reloaded[0] = true;
+				BuildSite back = BuildSite.load(s.site().save());
+				helper.assertTrue(back != null && back.scaffolds().equals(s.site().scaffolds()), "the scaffolds didn't survive a save");
+				CompoundTag tag = new CompoundTag();
+				helper.assertTrue(old.save(tag), "the builder wasn't saved");
+				old.discard();
+				Entity loaded = EntityType.loadEntityRecursive(tag, s.level(), e -> e);
+				helper.assertTrue(loaded instanceof Villager, "the builder didn't load as a villager: " + loaded);
+				s.level().addFreshEntity(loaded);
+				s.builder()[0] = (Villager) loaded;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(reloaded[0], "the builder was never up the scaffolding to reload with");
+			assertFinished(helper, s);
+			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped after the reload");
+			assertNoScaffolding(helper, s);
+			helper.assertTrue(chestCount(helper, Items.SCAFFOLDING) == SCAFFOLDING,
+				"the chest holds " + chestCount(helper, Items.SCAFFOLDING) + " scaffolding, not " + SCAFFOLDING);
+			Villager v = s.builder()[0];
+			helper.assertTrue(v.isAlive() && v.getHealth() >= v.getMaxHealth(), "the builder got hurt: " + v.getHealth());
+		});
+	}
+
 	/** A save from before 35.6 has no scaffolds: it loads with none. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

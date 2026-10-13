@@ -2485,11 +2485,18 @@ def observatory_section(cut_x=OC[0]):
 #   out on the field side), 18 high (y 0-17) under hipped spruce roofs (an 11 x 11 overhang, eaves of upside-down
 #   stairs), and the Great Gate's gatehouse in the middle (x 40-56, 17 wide, z 2-12), as high, under a long hipped roof:
 #   the fifth tower, between the quarter towers.
-# - Each tower: walls two thick to the walk, a door from the village under a hood with lanterns on posts, a stair round
-#   the inside up to the walk-level room (doors onto the walk, a guard's grindstone, a barrel, a window to the field, and
-#   on the side facing the gate an alcove 3 wide and 3 high where a sentry golem stands, open to the walk), a stair on up
-#   to the top room (windows on three sides) under an attic floor; a cornice at 13, arrow slits low down, a banner to the
-#   field (and one to the side at the ends).
+# - Each tower (35.15a): solid masonry from the ground to the walk, on a solid base a block out all round (two courses
+#   of deepslate bricks under a battered step of stairs, the plinth stepping out round it again), angle buttresses up
+#   its free corners capped with stairs, a cordon of upside-down stairs round it at the walk with lanterns on its
+#   corners; on the field side a banner over a blind slit (and on the outer side at the ends), on the village side a
+#   lantern in a niche under a keystone and a hood, a banner above. Over the base the walk-level room (doors onto the
+#   walk, a guard's grindstone, a barrel, a window to the field, and on the side facing the gate an alcove 3 wide and 3
+#   high where a sentry golem stands, open to the walk), a stair on up to the top room (windows on three sides) under an
+#   attic floor; a cornice at 13, a banner to the field, a watch lantern on the roof's peak.
+# - Along the runs (35.15a): a banner in each bay between the buttresses on the field side, hung under the breastwork,
+#   an arrow slit through the breastwork over it, taller chiseled merlons under slabs over the buttresses, vines down
+#   the low courses beside them; lanterns on the parapet between the braziers, and on the outer runs' village side a
+#   lantern on a corbel in each bay. The gatehouse has the towers' angle buttresses and cordon.
 # - The Great Gate: a gateway 5 wide (x 46-50) through the gatehouse, paved, vaulted (y 1-6), a keystone over each mouth,
 #   lanterns in the vault; across it spruce fence gates two high under a portcullis of iron bars, which runs up a slot
 #   into the hall and hangs from a windlass beam on a post. Either side a guardroom with its own door and a stair round
@@ -2519,6 +2526,7 @@ W_ARCH = (46, 50)  # the gateway
 W_RUNS = ((11, 19), (29, 39))  # the west half's runs of curtain
 W_FLIGHT = 29  # the stair up from the village: steps x 29-38, a landing at 39 (z 0-2)
 W_BRAZIERS = (12, 15, 18, 30, 33, 36)  # on the inner parapet (the east half's mirror them)
+W_LAMPS = (13, 17, 31, 35)  # lanterns on the inner parapet between them (35.15a)
 W_PORTCULLIS = 10  # the portcullis's z in the gateway
 W_TOP = 17  # the last course of the towers and the gatehouse (their attic floor); the roofs from 18
 
@@ -2596,8 +2604,8 @@ def w_footprint():
     for m in (lambda x: x, lambda x: WW - 1 - x):
         for x0, x1 in W_RUNS:
             cells |= {(m(x), z) for x in range(x0, x1 + 1) for z in range(W_IN, W_OUT + 1)}
-        for t in W_TOWERS:
-            cells |= {(m(x), z) for x in range(t, t + 9) for z in range(W_TZ[0], W_TZ[1] + 1)}
+        for t in W_TOWERS:  # the tower on its solid base, a block out all round (35.15a)
+            cells |= {(m(x), z) for x in range(t - 1, t + 10) for z in range(W_TZ[0] - 1, W_TZ[1] + 2)}
     cells |= {(x, z) for x in range(W_GATE[0], W_GATE[1] + 1) for z in range(W_GZ[0], W_GZ[1] + 1)}
     return cells
 
@@ -2787,6 +2795,24 @@ def gate_piers(p):
                 stairs(p, xx, 13, z, STONE_BRICK, d, top=True)
 
 
+def gate_dress(p):
+    """35.15a: the gatehouse dressed as the towers are: angle buttresses at its corners capped with stairs, and the
+    cordon of upside-down stairs round it at the walk."""
+    x0, (z0, z1) = W_GATE[0], W_GZ
+    for x, z, d in ((x0, z0 - 1, "south"), (x0, z1 + 1, "north"), (x0 - 1, z1, "east")):
+        p.set(x, 0, z, W_PLINTH)
+        p.set(x, 1, z, W_PLINTH)
+        p.set(x, 2, z, W_PLINTH)
+        for y in range(3, 8):
+            p.set(x, y, z, W_FACE)
+        stairs(p, x, 8, z, STONE_BRICK, d)
+    ring = [(x, z0 - 1, "south") for x in range(x0, W_MID + 1)] + [(x, z1 + 1, "north") for x in range(x0 - 1, W_MID + 1)]
+    ring.append((x0 - 1, z1, "east"))
+    for x, z, d in ring:
+        if p.get(x, W_WALK, z) is None and not W_ARCH[0] <= x <= W_ARCH[1]:
+            stairs(p, x, W_WALK, z, STONE_BRICK, d, top=True)
+
+
 def gate_roof(b):
     x0, x1, z0, z1 = W_GATE[0] - 1, W_GATE[1] + 1, W_GZ[0] - 1, W_GZ[1] + 1
     eaves(b, x0, x1, z0, z1, W_TOP)
@@ -2809,6 +2835,7 @@ def stage_w1(b):
         gate_rooms(p)
         gate_breteche(p)
         gate_piers(p)
+        gate_dress(p)
         for z, d in ((W_GZ[0] - 1, "north"), (W_GZ[1] + 1, "south")):
             w_banner(p, 42, 8, z, d)
     gate_roof(b)
@@ -2816,6 +2843,15 @@ def stage_w1(b):
 
 
 # --- stages II and III: the runs -----------------------------------------------------------------------------------------
+def w_bays(x0, x1):
+    """A run's buttresses (x) and the middles of the bays between them and its ends (rounded towards the run's middle)."""
+    piers = [(x0 + x1) // 2] if x1 - x0 < 10 else [x0 + 3, x1 - 3]
+    edges = [x0 - 1] + piers + [x1 + 1]
+    centre = (x0 + x1) / 2
+    mids = [int(m) if m == int(m) else int(m + (0.5 if m < centre else -0.5)) for m in ((a + c) / 2 for a, c in zip(edges, edges[1:]))]
+    return piers, mids
+
+
 def w_run(p, x0, x1):
     """A run of curtain to under the walk (y 0-8): a deepslate plinth, stone brick facing to the field, cobblestone to
     the village, cobblestone at its heart; a buttress every four or five blocks on the field side, and on the village side
@@ -2831,7 +2867,7 @@ def w_run(p, x0, x1):
                     p.set(x, y, z, W_RUBBLE)
                 else:
                     p.set(x, y, z, "cobblestone")
-    piers = [(x0 + x1) // 2] if x1 - x0 < 10 else [x0 + 3, x1 - 3]
+    piers, mids = w_bays(x0, x1)
     for x in piers:
         p.set(x, 0, W_OUT + 1, W_PLINTH)
         for y in range(1, W_WALK):
@@ -2841,6 +2877,18 @@ def w_run(p, x0, x1):
             for y in range(1, 7):
                 p.set(x, y, W_IN - 1, W_RUBBLE)
             stairs(p, x, 7, W_IN - 1, STONE_BRICK, "south")
+    # 35.15a: a banner in each bay on the field side, hung under the breastwork; on the outer run's village side a
+    # lantern on a corbel in each bay
+    for x in range(x0, x1 + 1):  # vines down the low courses beside the buttresses, weathering in clusters
+        n = (0, 3, 1, 4, 2, 0, 2, 3)[(x * 5 + x0) % 8] if any(abs(x - q) == 1 for q in piers) else 0
+        for y in range(6, 6 - n, -1):
+            if p.get(x, y, W_OUT + 1) is None:
+                p.set(x, y, W_OUT + 1, "vine", north=True, south=False, east=False, west=False, up=False)
+    for mid in mids:
+        w_banner(p, mid, 7, W_OUT + 1, "south")
+        if x1 - x0 < 10:
+            stairs(p, mid, 4, W_IN - 1, STONE_BRICK, "south", top=True)
+            lantern(p, mid, 5, W_IN - 1)
 
 
 def w_flight(p):
@@ -2863,40 +2911,79 @@ def w_flight(p):
     wall_block(p, x, W_WALK + 1, 0, "cobblestone_wall")
 
 
+def w_tower_base(p, t, outer_end):
+    """The tower's solid base (35.15a): a block out from the tower all round, two courses of deepslate bricks under a
+    battered step of stairs (the plinth steps out round it again); angle buttresses up the corners to the walk, capped
+    with stairs; a cordon of upside-down stairs round it at the walk (carrying on the breastwork's corbels on the field
+    side); a banner over a blind slit on the field side (and the outer side at the ends); a lantern in a niche under a
+    keystone and a banner on the village side."""
+    z0, z1 = W_TZ
+    for x in range(t - 1, t + 10):
+        for z in range(z0 - 1, z1 + 2):
+            if t <= x <= t + 8 and z0 <= z <= z1 or p.get(x, 0, z) is not None:
+                continue  # the tower itself, the curtain it stands in, the stair from the village
+            p.set(x, 0, z, W_PLINTH)
+            p.set(x, 1, z, W_PLINTH)
+            d = "south" if z == z0 - 1 else "north" if z == z1 + 1 else "east" if x == t - 1 else "west"
+            stairs(p, x, 2, z, DEEPSLATE_BRICK, d)
+    # angle buttresses at the corners, on the faces that are free (not in the curtain)
+    piers = [(t, z1 + 1, "north"), (t + 8, z1 + 1, "north"), (t - 1, z1, "east"), (t + 9, z1, "west"),
+             (t, z0 - 1, "south"), (t + 8, z0 - 1, "south")]
+    if outer_end:
+        piers.append((t - 1, z0, "east"))
+    for x, z, d in piers:
+        if p.get(x, 3, z) is not None or (x >= W_FLIGHT and z < z0):
+            continue
+        p.set(x, 2, z, W_PLINTH)
+        for y in range(3, 8):
+            p.set(x, y, z, W_FACE)
+        stairs(p, x, 8, z, STONE_BRICK, d)
+    # the cordon at the walk, round the free faces
+    ring = [(x, z1 + 1, "north") for x in range(t - 1, t + 10)] + [(t - 1, z1, "east"), (t + 9, z1, "west")]
+    ring += [(x, z0 - 1, "south") for x in range(t, t + 9)]
+    if outer_end:
+        ring += [(t - 1, z, "east") for z in range(z0 - 1, z1)]
+    for x, z, d in ring:
+        if p.get(x, W_WALK, z) is None and not (x >= W_FLIGHT and z < z0):
+            stairs(p, x, W_WALK, z, STONE_BRICK, d, top=True)
+    for x, z in ((t - 1, z1 + 1), (t + 9, z1 + 1), (t, z0 - 1), (t + 8, z0 - 1)):
+        if p.get(x, W_WALK, z) is not None and p.get(x, W_WALK + 1, z) is None:
+            lantern(p, x, W_WALK + 1, z)  # lanterns on the cordon's corners
+    # the field side: a blind slit under a banner; the same on the outer side at the ends
+    x = t + 4
+    p.clear(x, 3, z1, x, 5, z1)
+    p.set(x, 6, z1, "chiseled_stone_bricks")
+    w_banner(p, x, 7, z1 + 1, "south")
+    if outer_end:
+        p.clear(t, 3, 7, t, 5, 7)
+        p.set(t, 6, 7, "chiseled_stone_bricks")
+        w_banner(p, t - 1, 7, 7, "west")
+    # the village side: a lantern in a niche, a keystone over it, a hood of stairs, a banner above
+    p.clear(x, 3, z0, x, 4, z0)
+    lantern(p, x, 3, z0)
+    p.set(x, 5, z0, "chiseled_stone_bricks")
+    for xx in (x - 1, x, x + 1):
+        stairs(p, xx, 5, z0 - 1, STONE_BRICK, "south", top=True)
+    w_banner(p, x, 7, z0 - 1, "north")
+
+
 def w_tower(p, t, west_door):
-    """A tower (x t to t + 8, z 3-11) to the floor of its top room (y 13): walls two thick to the walk, a door from
-    the village and a stair round the inside up to the walk-level room, which has doors onto the walk, the guard's
-    grindstone and, on the side facing the gate, the alcove where the sentry golem stands; a stair on up."""
+    """A tower (x t to t + 8, z 3-11) to the floor of its top room (y 13): solid to the walk on its decorated base
+    (35.15a), then the walk-level room, which has doors onto the walk, the guard's grindstone and, on the side facing
+    the gate, the alcove where the sentry golem stands; a stair on up."""
     z0, z1 = W_TZ
     for y in range(0, 14):
         for x in range(t, t + 9):
             for z in range(z0, z1 + 1):
                 edge = x in (t, t + 8) or z in (z0, z1)
-                thick = y <= 8 and (x in (t + 1, t + 7) or z in (z0 + 1, z1 - 1))
                 if edge:
                     p.set(x, y, z, W_PLINTH if y <= 1 else W_FACE)
-                elif thick or y == 0:
+                elif y < W_WALK:
                     p.set(x, y, z, "cobblestone")
                 elif y in (W_WALK, 13):
                     p.set(x, y, z, "spruce_planks")
-    # the door from the village: a step, a hood, a lantern on a post either side
+    w_tower_base(p, t, west_door is None)
     x = t + 4
-    p.clear(x, 1, z0, x, 2, z0 + 1)
-    door(p, x, 1, z0, "spruce_door", "north")
-    stairs(p, x, 0, z0 - 1, STONE_BRICK, "south")
-    for xx in (x - 1, x, x + 1):
-        stairs(p, xx, 3, z0 - 1, STONE_BRICK, "south", top=True)
-    for xx in (x - 2, x + 2):
-        p.set(xx, 0, z0 - 1, "chiseled_stone_bricks")
-        lantern(p, xx, 1, z0 - 1)
-    climb(p, [(t + 5, 5), (t + 6, 5), (t + 6, 6), (t + 6, 7), (t + 6, 8), (t + 6, 9), (t + 5, 9), (t + 4, 9), (t + 3, 9)],
-          1, STONE_BRICK)
-    lantern(p, t + 3, 1, 7)
-    p.set(t + 2, 1, 8, "barrel", facing="up", open=False)
-    # arrow slits to the field in the low storey (and to the side, at the ends)
-    p.clear(x, 3, z1 - 1, x, 5, z1)
-    if west_door is None:
-        p.clear(t, 3, 7, t + 1, 5, 7)
     # the walk-level room: doors onto the walk, the alcove on the gate's side, the grindstone, windows
     door(p, t + 8, 10, 5, "spruce_door", "east")
     if west_door:
@@ -2940,14 +3027,25 @@ def w_walk(p, x0, x1):
             p.set(x, W_WALK, W_LIP, W_FACE)  # over a buttress, the pier carries the breastwork
         else:
             stairs(p, x, W_WALK, W_LIP, STONE_BRICK, "north", top=True)
-        p.set(x, W_WALK + 1, W_LIP, W_FACE)
-        if (x - x0) % 2 == 0:
-            p.set(x, W_WALK + 2, W_LIP, W_FACE)
+        pier = p.get(x, W_WALK - 1, W_LIP) is not None
+        banner = p.get(x, 7, W_LIP) is not None
+        if banner:
+            pass  # 35.15a: an arrow slit through the breastwork over each bay's banner
+        else:
+            p.set(x, W_WALK + 1, W_LIP, W_FACE)
+        if (x - w_bays(x0, x1)[1][0]) % 2 == 0:  # merlons in step with the bays' banners
+            if pier:  # over a buttress a taller merlon, chiseled, under a slab
+                p.set(x, W_WALK + 2, W_LIP, "chiseled_stone_bricks")
+                slab(p, x, W_WALK + 3, W_LIP, STONE_BRICK)
+            else:
+                p.set(x, W_WALK + 2, W_LIP, W_FACE)
         if x in W_BRAZIERS:
             p.set(x, W_WALK + 1, W_IN, "chiseled_stone_bricks")
             brazier(p, x, W_WALK + 2, W_IN)
         elif not W_FLIGHT + 9 <= x <= W_FLIGHT + 10:
             wall_block(p, x, W_WALK + 1, W_IN, "stone_brick_wall")
+            if x in W_LAMPS:  # 35.15a: lanterns on the parapet between the braziers
+                lantern(p, x, W_WALK + 2, W_IN)
 
 
 def w_crown(p, t, outer_end):
@@ -2971,10 +3069,10 @@ def w_crown(p, t, outer_end):
         pane(p, x, 15, z)
     lantern(p, t + 4, 16, 7, hanging=True)
     w_banner(p, t + 4, 15, z1 + 1, "south")
-    if outer_end:
-        w_banner(p, t - 1, W_WALK, 7, "west")
     eaves(p, t - 1, t + 9, z0 - 1, z1 + 1, W_TOP)
-    hip_roof(p, t - 1, t + 9, z0 - 1, z1 + 1, W_TOP + 1, SPRUCE)
+    top = hip_roof(p, t - 1, t + 9, z0 - 1, z1 + 1, W_TOP + 1, SPRUCE)
+    p.set(t + 4, top, 7, "spruce_planks")  # 35.15a: a watch lantern on the peak
+    lantern(p, t + 4, top + 1, 7)
 
 
 def stage_w4(b):
@@ -4845,15 +4943,7 @@ def stadium_interiors(cut=4):
 
 
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
-def goods(*lines):
-    out = []
-    for kind, ident, count, job, *extra in lines:
-        line = {kind: ident, "count": count}
-        if extra:
-            line["potion"] = extra[0]
-        line["job"] = job
-        out.append(line)
-    return out
+from wonder_goods import GOODS  # each stage's goods and their pacing (35.7a, 35.7b)
 
 
 WONDERS = {
@@ -4867,20 +4957,7 @@ WONDERS = {
              "stand_in": [{"type": "job_level", "job": "minecraft:cleric", "level": 5, "count": 1}]},
             {"type": "finished", "blueprint": "aliveworkplace:chapel", "count": 3},
         ],
-        "goods": [
-            goods(("item", "minecraft:bread", 128, "aliveworkplace:chef"),
-                  ("item", "minecraft:iron_pickaxe", 8, "minecraft:toolsmith"),
-                  ("item", "minecraft:gold_ingot", 16, "minecraft:armorer")),
-            goods(("item", "minecraft:white_candle", 64, "minecraft:leatherworker"),
-                  ("item", "minecraft:honeycomb", 32, "aliveworkplace:beekeeper"),
-                  ("item", "minecraft:white_wool", 64, "minecraft:shepherd")),
-            goods(("item", "minecraft:book", 16, "minecraft:librarian"),
-                  ("item", "minecraft:potion", 12, "minecraft:cleric", "minecraft:healing"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist")),
-            goods(("item", "minecraft:chiseled_stone_bricks", 32, "minecraft:mason"),
-                  ("item", "minecraft:cake", 16, "aliveworkplace:chef"),
-                  ("item", "minecraft:bone_meal", 64, "aliveworkplace:composter")),
-        ],
+        "goods": GOODS["great_cathedral"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "undertakers", "search": "village", "revive_by": "morning"},
             {"type": "weddings", "mood": 15, "days": 3, "gifted_factor": 2.0},
@@ -4897,20 +4974,7 @@ WONDERS = {
              "stand_in": [{"type": "caravan_routes", "count": 3}]},
             {"type": "coastal"},
         ],
-        "goods": [
-            goods(("item", "minecraft:cooked_cod", 64, "minecraft:fisherman"),
-                  ("item", "minecraft:oak_boat", 8, "aliveworkplace:carpenter"),
-                  ("item", "minecraft:coal", 64, "aliveworkplace:miner")),
-            goods(("item", "minecraft:chain", 16, "aliveworkplace:tinkerer"),
-                  ("item", "minecraft:iron_ingot", 32, "minecraft:armorer"),
-                  ("item", "minecraft:white_wool", 32, "minecraft:shepherd")),
-            goods(("item", "minecraft:filled_map", 4, "minecraft:cartographer"),
-                  ("item", "minecraft:spectral_arrow", 32, "minecraft:fletcher"),
-                  ("item", "minecraft:leather", 32, "minecraft:butcher")),
-            goods(("item", "minecraft:glowstone_dust", 64, "aliveworkplace:netherworker"),
-                  ("item", "minecraft:redstone", 32, "aliveworkplace:miner"),
-                  ("item", "minecraft:pumpkin_pie", 16, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["lighthouse"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "caravan_range", "factor": 2},
             {"type": "caravan_speed", "factor": 0.5},
@@ -4928,20 +4992,7 @@ WONDERS = {
              "stand_in": [{"type": "job_level", "job": "aliveworkplace:scholar", "level": 5, "count": 1}]},
             {"type": "research_levels", "count": 20},
         ],
-        "goods": [
-            goods(("item", "minecraft:sugar_cane", 128, "minecraft:farmer"),
-                  ("item", "minecraft:leather", 64, "minecraft:butcher"),
-                  ("item", "minecraft:spruce_log", 64, "aliveworkplace:lumberjack")),
-            goods(("item", "minecraft:book", 64, "minecraft:librarian"),
-                  ("item", "minecraft:black_dye", 64, "minecraft:leatherworker"),
-                  ("item", "minecraft:lantern", 16, "aliveworkplace:tinkerer")),
-            goods(("item", "minecraft:filled_map", 8, "minecraft:cartographer"),
-                  ("item", "minecraft:lapis_lazuli", 32, "aliveworkplace:sifter"),
-                  ("item", "minecraft:copper_ingot", 32, "minecraft:armorer")),
-            goods(("item", "minecraft:quartz", 64, "aliveworkplace:netherworker"),
-                  ("item", "minecraft:cookie", 32, "aliveworkplace:chef"),
-                  ("item", "minecraft:bookshelf", 16, "minecraft:librarian")),
-        ],
+        "goods": GOODS["great_library"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "research_tier", "tier": 2},
         ],
@@ -4955,20 +5006,7 @@ WONDERS = {
             {"type": "legend", "id": "aliveworkplace:seer",
              "stand_in": [{"type": "job_level", "job": "minecraft:cleric", "level": 5, "count": 1}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:lapis_lazuli", 32, "aliveworkplace:sifter"),
-                  ("item", "minecraft:cooked_chicken", 64, "aliveworkplace:chef"),
-                  ("item", "minecraft:filled_map", 8, "minecraft:cartographer")),
-            goods(("item", "minecraft:copper_ingot", 64, "minecraft:armorer"),
-                  ("item", "minecraft:spyglass", 4, "minecraft:toolsmith"),
-                  ("item", "minecraft:amethyst_shard", 32, "aliveworkplace:miner")),
-            goods(("item", "minecraft:book", 16, "minecraft:librarian"),
-                  ("item", "minecraft:tinted_glass", 8, "aliveworkplace:carpenter"),
-                  ("item", "minecraft:feather", 32, "minecraft:butcher")),
-            goods(("item", "minecraft:chain", 32, "aliveworkplace:tinkerer"),
-                  ("item", "minecraft:gold_ingot", 9, "minecraft:armorer"),
-                  ("item", "minecraft:pumpkin_pie", 32, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["observatory"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "sky_chart", "size": 6144},
             {"type": "forecast"},
@@ -4985,20 +5023,7 @@ WONDERS = {
                           {"type": "job_level", "job": "aliveworkplace:tinkerer", "level": 5, "count": 1}]},
             {"type": "finished", "blueprint": "aliveworkplace:gatehouse", "count": 1},
         ],
-        "goods": [
-            goods(("item", "minecraft:iron_sword", 8, "minecraft:weaponsmith"),
-                  ("item", "minecraft:arrow", 128, "minecraft:fletcher"),
-                  ("item", "minecraft:bread", 128, "aliveworkplace:chef")),
-            goods(("item", "minecraft:iron_shovel", 8, "minecraft:toolsmith"),
-                  ("item", "minecraft:potion", 12, "minecraft:cleric", "minecraft:strength"),
-                  ("item", "minecraft:baked_potato", 64, "aliveworkplace:chef")),
-            goods(("item", "minecraft:crossbow", 8, "minecraft:fletcher"),
-                  ("item", "minecraft:iron_chestplate", 8, "minecraft:armorer"),
-                  ("item", "minecraft:shield", 8, "aliveworkplace:carpenter")),
-            goods(("item", "minecraft:iron_block", 16, "minecraft:armorer"),
-                  ("item", "minecraft:pumpkin", 4, "minecraft:farmer"),
-                  ("item", "minecraft:campfire", 16, "aliveworkplace:carpenter")),
-        ],
+        "goods": GOODS["great_wall"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "raid_barrier", "margin_degrees": 10},
             {"type": "sentries", "count": 4, "range": 16},
@@ -5014,22 +5039,7 @@ WONDERS = {
              "stand_in": [{"type": "job_level", "job": "aliveworkplace:chef", "level": 5, "count": 1},
                           {"type": "meal_kinds", "count": 8}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:bone_meal", 128, "aliveworkplace:composter"),
-                  ("item", "minecraft:wheat_seeds", 128, "minecraft:farmer"),
-                  ("item", "minecraft:clay_ball", 64, "aliveworkplace:sifter")),
-            goods(("item", "minecraft:sweet_berries", 64, "aliveworkplace:orchard_keeper"),
-                  ("item", "minecraft:glow_berries", 32, "aliveworkplace:orchard_keeper"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
-                  ("tag", "minecraft:saplings", 16, "aliveworkplace:lumberjack")),
-            goods(("item", "minecraft:honey_bottle", 32, "aliveworkplace:beekeeper"),
-                  ("item", "minecraft:carrot", 64, "minecraft:farmer"),
-                  ("item", "minecraft:potato", 64, "minecraft:farmer"),
-                  ("item", "minecraft:cocoa_beans", 32, "aliveworkplace:orchard_keeper")),
-            goods(("item", "minecraft:cake", 16, "aliveworkplace:chef"),
-                  ("item", "minecraft:egg", 32, "minecraft:butcher"),
-                  ("item", "minecraft:cod", 32, "minecraft:fisherman")),
-        ],
+        "goods": GOODS["hanging_gardens"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "harvest", "scope": "realm", "extra_every": 4},
             {"type": "births", "meals": 12, "per_day": 2},
@@ -5044,20 +5054,7 @@ WONDERS = {
             {"type": "legend", "id": "aliveworkplace:founder",
              "stand_in": [{"type": "rank_at_least", "rank": "city"}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:baked_potato", 128, "aliveworkplace:chef"),
-                  ("item", "minecraft:coal", 64, "aliveworkplace:miner"),
-                  ("item", "minecraft:iron_pickaxe", 8, "minecraft:toolsmith")),
-            goods(("item", "minecraft:copper_ingot", 64, "minecraft:armorer"),
-                  ("item", "minecraft:white_wool", 64, "minecraft:shepherd"),
-                  ("item", "minecraft:leather", 32, "minecraft:butcher")),
-            goods(("item", "minecraft:chain", 32, "aliveworkplace:tinkerer"),
-                  ("item", "minecraft:stripped_dark_oak_log", 32, "aliveworkplace:lumberjack"),
-                  ("item", "minecraft:potion", 16, "minecraft:cleric", "minecraft:strength")),
-            goods(("item", "minecraft:glowstone_dust", 32, "aliveworkplace:netherworker"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
-                  ("item", "minecraft:cake", 16, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["colossus"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "mood", "scope": "realm", "amount": 8, "home_amount": 12},
             {"type": "travellers", "factor": 2, "expert_factor": 2},
@@ -5076,21 +5073,7 @@ WONDERS = {
             {"type": "legend", "id": "aliveworkplace:pokemon_professor",
              "stand_in": [{"type": "pastured_pokemon", "count": 25, "types": 10}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:bone_meal", 128, "aliveworkplace:composter"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
-                  ("item", "cobblemon:poke_ball", 32, "aliveworkplace:ball_smith")),
-            goods(("item", "minecraft:red_wool", 64, "minecraft:leatherworker"),
-                  ("item", "minecraft:white_wool", 64, "minecraft:shepherd"),
-                  ("item", "cobblemon:poke_snack", 16, "aliveworkplace:chef"),
-                  ("item", "cobblemon:great_ball", 16, "aliveworkplace:ball_smith")),
-            goods(("tag", "minecraft:banners", 16, "aliveworkplace:carpenter"),
-                  ("item", "minecraft:cooked_beef", 64, "aliveworkplace:chef"),
-                  ("tag", "cobblemon:berries", 32, "aliveworkplace:orchard_keeper")),
-            goods(("item", "minecraft:daylight_detector", 8, "aliveworkplace:tinkerer"),
-                  ("item", "cobblemon:ultra_ball", 16, "aliveworkplace:ball_smith"),
-                  ("item", "minecraft:pumpkin_pie", 32, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["stadium"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "stadium_days", "every_days": 2, "min_visitors": 2, "max_visitors": 4},
             {"type": "tournament_host"},

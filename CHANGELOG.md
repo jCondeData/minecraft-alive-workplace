@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Wonder goods you explore for** (35.7a, 35.7b, the owner's change to 35.7, part of Wonders, for 2.0): a Wonder's
+  stages no longer ask for stacks of farm produce. Each asks for two or three hard things found by exploring, one of
+  each (a Heart of the Sea, an Echo Shard, a Heavy Core, a Nether Star, an Elytra...), and two of an upgraded workshop's
+  best goods (Vintage Wine, Gold Circlets, Illuminated Books, Noble Robes). The stone says where each is found; a rare
+  worker in the village (a Legend like the Pathfinder, or a Master Netherworker, Sifter or Fisherman) searches for it in
+  play time and brings it, told in chat and the chronicle. A Wonder now takes a typical group about 44 hours of play
+  (15 evenings); a Wonder saved mid-stage puts the goods handed in for its old lines into its stockpile.
 - **A finished Wonder: its celebration, upkeep and powers** (35.8, part of Wonders, for 2.0): when a Wonder's last
   stage is done every player on the server is told, the village holds a festival that evening with a bigger firework
   show (gold rockets from the Wonder's own top), the chronicles of the village and of its realm's villages (or its
@@ -112,8 +119,27 @@ asks for the steps, `latest.log` and any crash report).
   builder is lost goes on to another builder of its crew instead of counting as built with blocks missing (35.5).
 - A builder levelling the ground round a finished build with no dirt in its chests leaves the holes at once instead of
   standing there a tick for each one (about 20 seconds round a Wonder's last stage).
+- Under the Common Market the realm's own people buy at the board's price and strangers still pay the 10 percent, and
+  the board now says so: the Prices tab tells each player their own price, and "You can't pay …" names the price that
+  buyer would have paid. Long tooltips in the Village Hall and the Book of Edicts (the Royal Highway's) are wrapped to
+  fit on screen (33.22a).
+- The test folly's top no longer gets a band of dirt round it under the dome, where the stone cornice is: a Wonder's
+  stage high up (a dome on a tower) no longer "levels the ground" round its own bottom in mid-air. The ground is
+  levelled with the last stage built on the Wonder's floor; the Colossus, the Great Cathedral, the Great Wall and the
+  Observatory had the same fault (35.8a).
 
 ### Changed
+- **The Great Wall's towers stand on solid, decorated bases** (35.15a, part of Wonders, for 2.0; the owner's change):
+  each tower is solid stone up to the walk, on a battered deepslate base with buttresses at its corners, a ledge round
+  it at the walk with lanterns on its corners, banners on both sides, a lit niche toward the village, and a lantern on
+  its roof's peak. The rest of the wall is more decorated too: banners in every bay on the field side with arrow slits
+  above them, taller merlons over the buttresses, vines low down, lanterns along the walk and on the village side, and
+  the gatehouse gets the towers' buttresses and ledge. You now reach the towers from the walk. About 12,300 blocks.
+- **Builders really climb their scaffolding** (35.6a, part of Wonders, for 2.0; the owner's change): a builder working
+  high on a pillar, a tower or a dome puts up an unbroken column of vanilla scaffolding beside it, climbs it and works
+  from it at that height, instead of hopping onto the unfinished pillar (which left a gap in it) or onto the cap above.
+  It takes enough scaffolding for the column in one trip, steps out of the column's foot when it walks back to the
+  chests, and takes it all down when that part is done. With no scaffolding in the chests nothing changes.
 - **The Observatory's Sky Chart covers about 6,144 blocks** (35.18a, part of Wonders, for 2.0; the owner's change from
   1,024): 384 chunks and 12 regions across, every village, temple, monument, mansion and the rest on one locked map at
   48 blocks a pixel (a vanilla map stops at 2,048). The Observatory searches that far without slowing the server: one

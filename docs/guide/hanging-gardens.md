@@ -22,12 +22,12 @@ in), and the Master Architect. See [Wonders](wonders.md) for drawing up the plan
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The First Terrace and the Cistern Vaults | 128 bone meal (Composter), 128 wheat seeds (Farmer), 64 clay balls (Sifter) |
-| The Second Terrace | 64 sweet berries and 32 glow berries (Orchard Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack) |
-| The Third Terrace | 32 honey bottles (Beekeeper), 64 carrots and 64 potatoes (Farmer), 32 cocoa beans (Orchard Keeper) |
-| The Crown Garden and the Falls | 16 cakes (Chef), 32 eggs (Butcher), 32 raw cod (Fisherman) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The First Terrace and the Cistern Vaults | A Sniffer Egg (the Beastmaster, 14 days), a Wild Armor Trim Template (the Pathfinder, 11 days) | 2 Berry Wine (Vintner) |
+| The Second Terrace | A Pitcher Pod (the Beastmaster, 18 days), Torchflower Seeds (the Old Sage, 7 days), a Heart Pottery Sherd (a Master Sifter, 14 days) | 2 Vintage Wine (Vintner) |
+| The Third Terrace | An Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweller) |
+| The Crown Garden and the Falls | A Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the Golem Smith, 36 days), a Conduit (the Founder, 18 days) | 2 Noble Robes (Tailor) |
 
 ## While it stands
 
@@ -36,7 +36,8 @@ in), and the Master Architect. See [Wonders](wonders.md) for drawing up the plan
 
 ## How it fits with the rest
 
-- **What feeds it**: a Master [Chef](jobs-crafts.md) with a full larder, and goods from ten jobs.
+- **What feeds it**: a Master [Chef](jobs-crafts.md) with a full larder, rare things found by exploring (a rare worker
+  in the village finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: every [farm and orchard](jobs-land.md), the village store, and how fast the village grows (see
   [Village life](village-life.md)).
 - Its terraces hold four village farms of their own, with a composter and a chest on each level.

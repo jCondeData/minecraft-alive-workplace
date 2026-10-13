@@ -1,9 +1,13 @@
 package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.mc.Rules;
+import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.wonder.Wonder;
 import io.github.jcondedata.aliveworkplace.wonder.WonderManager;
 import io.github.jcondedata.aliveworkplace.wonder.WonderSite;
@@ -18,6 +22,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -29,6 +34,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * and load; old saves read with the defaults; cancelling drops the open sites and forgets the Wonder.
  */
 public class WonderStageGameTests implements FabricGameTest {
+	private static final String TALL = "aliveworkplace_test:tall_area";
 	private static final ResourceLocation FOLLY = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
 
 	private static void finish(BuildSite site) {
@@ -78,7 +84,8 @@ public class WonderStageGameTests implements FabricGameTest {
 						helper.assertTrue(part.placement().origin().equals(expected) && part.placement().rotation() == turn
 							&& part.placement().mirror() == mirror, "part placed with the Wonder's turn " + where + ": " + part.placement());
 						helper.assertTrue(site.id().equals(part.wonder()) && stone.equals(part.bench()), "part points back, stone is its bench");
-						helper.assertTrue(part.levelGround() == (stage == 3), "only the last stage levels the ground (stage " + stage + ")");
+						// 35.8a: the folly's stage I is its last on the floor; its dome (stage III) once filled a band of dirt round the tower
+						helper.assertTrue(part.levelGround() == (stage == 1), "only the last stage on the floor levels the ground (stage " + stage + ")");
 						helper.assertTrue(builder.equals(part.builder()), "the builder kept through stage " + stage);
 					}
 					WonderStages.tick(level);
@@ -98,6 +105,67 @@ public class WonderStageGameTests implements FabricGameTest {
 				WonderSite done = manager.site(site.id()).orElseThrow();
 				helper.assertTrue(done.done(), "finished after stage III " + where + ": " + done);
 				cleanUp(level, site.id());
+			}
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * 35.8a: the folly raised stage by stage in the world. Only stage I, its last part on the floor, levels the ground,
+	 * and its dirt goes no higher than the ground under the floor; the dome (stage III, standing on the upper cornice)
+	 * levels nothing, so no band of dirt is filled round the tower under the dome. Levelled round its own bottom as it
+	 * once was, it would have put dirt beside the cornice, 12 above the floor.
+	 */
+	//$ gametest_ticks_batch TALL '400' '"wonderDomeNoDirt"'
+	@GameTest(template = TALL, timeoutTicks = 400, batch = "wonderDomeNoDirt")
+	public void theFollysDomeLeavesNoBandOfDirt(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000); // 35.7: a stage's goods are dedicated by day
+		BlockPos origin = helper.absolutePos(new BlockPos(10, 2, 10));
+		BlueprintData.Placement at = new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.NONE, Mirror.NONE);
+		WonderManager manager = WonderManager.get(level);
+		WonderSite site = manager.begin(FOLLY, origin, null, "Test", 1);
+		Leftovers.after(helper, () -> cleanUp(level, site.id()));
+		WonderStages.start(level, site.id(), at, origin.offset(-2, 0, -2), null);
+		int margin = Rules.number(level, ModGameRules.LEVEL_GROUND);
+		helper.assertTrue(margin > 0, "levelGround is off: " + margin);
+		for (int stage = 1; stage <= 3; stage++) {
+			WonderSite now = manager.site(site.id()).orElseThrow();
+			helper.assertTrue(now.stage() == stage, "at stage " + stage + ": " + now);
+			for (UUID id : now.parts()) {
+				BuildSite part = BuildSiteManager.get(level).get(id);
+				BuildPlan plan = part.plan(level);
+				helper.assertTrue(part.levelGround() == (stage == 1), "stage " + stage + " levels the ground: " + part.levelGround());
+				for (BuildPlan.Step step : plan.steps(BuildPlan.Stage.LANDSCAPE)) {
+					helper.assertTrue(!step.state().is(Blocks.DIRT) || step.pos().getY() < origin.getY(),
+						"stage " + stage + " fills dirt at " + step.pos().subtract(origin).toShortString() + " (above the ground)");
+				}
+				if (stage == 3) {
+					helper.assertTrue(plan.steps(BuildPlan.Stage.LANDSCAPE).isEmpty(), "the dome levels round itself: " + plan.steps(BuildPlan.Stage.LANDSCAPE).size());
+					// the old rule, levelling round the dome's own bottom: the band beside the cornice
+					BuildPlan old = BuildPlan.create(BlueprintLibrary.get(level.getServer(), part.structure()).orElseThrow(), part.placement(), level, 0, margin);
+					helper.assertTrue(old.steps(BuildPlan.Stage.LANDSCAPE).stream().anyMatch(s -> s.state().is(Blocks.DIRT) && s.pos().getY() == origin.getY() + 12),
+						"the test doesn't see the band the old rule made");
+				}
+				for (BuildPlan.Stage kind : new BuildPlan.Stage[] {BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION}) {
+					for (BuildPlan.Step step : plan.steps(kind)) {
+						level.setBlock(step.pos(), step.state(), 2 | 16);
+					}
+				}
+				finish(part);
+			}
+			WonderStages.tick(level);
+			if (stage < 3) {
+				WonderGoodsKit.handInStage(level, site.id());
+				WonderStages.tick(level);
+			}
+		}
+		helper.assertTrue(manager.site(site.id()).orElseThrow().done(), "the folly wasn't finished");
+		// the cornice under the dome is stone, all round
+		for (int i = 0; i < 9; i++) {
+			for (BlockPos p : List.of(origin.offset(i, 12, 0), origin.offset(i, 12, 8), origin.offset(0, 12, i), origin.offset(8, 12, i))) {
+				helper.assertTrue(level.getBlockState(p).is(Blocks.STONE_BRICK_STAIRS), "the cornice at " + p.subtract(origin).toShortString() + ": " + level.getBlockState(p));
 			}
 		}
 		helper.succeed();

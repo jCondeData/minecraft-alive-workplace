@@ -87,6 +87,9 @@ final class JobScenes {
 	record Job(String what, int maxTicks, Vec3 camera, Vec3 target, Stage stage, After after) {
 	}
 
+	/** Stills a job scene's server side asks for (named like any still), taken on the client's next tick. */
+	static final java.util.concurrent.ConcurrentLinkedQueue<String> SHOTS = new java.util.concurrent.ConcurrentLinkedQueue<>();
+
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
 	/** gifted_born's family (29.7): a still villager facing the camera; a parent is a schooled Master farmer. */
 	private static Villager bornSceneVillager(ServerLevel level, BlockPos at, String name, boolean master) {
@@ -1848,7 +1851,7 @@ final class JobScenes {
 			};
 		}, null));
 		SCENES.put("scaffolding", new Job("the builder put up scaffolding to finish the pillar and its cap, then took it all down into the chest", 9000,
-			new Vec3(7.5, -50.5, 9.5), new Vec3(-6, -52, -4), (level, player) -> {
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-4, -54, -2), (level, player) -> {
 			// 35.6: the test pillar, 14 high with a 5 x 5 cap overhanging it by two: nowhere near its top to stand.
 			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(4, level.getServer());
 			net.minecraft.resources.ResourceLocation pillar = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_pillar");
@@ -1862,17 +1865,52 @@ final class JobScenes {
 			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
 			Builders.employ(level, builder, bench);
 			BuildSite site = Builders.start(level, builder, null, pillar, placement);
+			// 35.6a: the camera stays close: about 7 blocks from the scaffolding, at the builder's height as it climbs, so
+			// the scaffolding and the builder on it fill the shot (from 19 blocks away none of it showed).
+			net.minecraft.world.level.levelgen.structure.BoundingBox bounds = site == null ? null : site.plan(level).bounds();
+			Vec3 middle = bounds == null ? new Vec3(-4, -60, -2)
+				: new Vec3((bounds.minX() + bounds.maxX()) / 2.0 + 0.5, bounds.minY(), (bounds.minZ() + bounds.maxZ()) / 2.0 + 0.5);
+			ScreenshotHarness.hoverLookingAt(player, middle.add(5, 6, 8), middle.add(0, 5, 0));
 			int[] most = {0};
+			double[] cameraY = {Double.NaN};
+			boolean[] shot = {false, false};
 			return l -> {
 				if (site == null) {
 					return false;
 				}
-				most[0] = Math.max(most[0], site.scaffolds().size());
+				int up = site.scaffolds().size();
+				if (up > 0 && l.getEntity(builder.getUUID()) instanceof Villager v) {
+					BlockPos column = site.scaffolds().get(0);
+					Vec3 away = new Vec3(column.getX() + 0.5 - middle.x, 0, column.getZ() + 0.5 - middle.z);
+					away = away.lengthSqr() < 0.01 ? new Vec3(0, 0, 1) : away.normalize();
+					Vec3 side = new Vec3(-away.z, 0, away.x);
+					double y = Math.max(middle.y + 2, v.getY() + 1);
+					if (Double.isNaN(cameraY[0]) || Math.abs(y - cameraY[0]) > 1.5) {
+						cameraY[0] = y;
+						Vec3 at = new Vec3(column.getX() + 0.5, y, column.getZ() + 0.5);
+						ScreenshotHarness.hoverLookingAt(player, at.add(away.scale(6)).add(side.scale(3)).add(0, 1, 0), new Vec3(at.x, y - 0.5, at.z));
+					}
+					boolean onIt = l.getBlockState(v.blockPosition().below()).is(Blocks.SCAFFOLDING) || l.getBlockState(v.blockPosition()).is(Blocks.SCAFFOLDING);
+					if (!shot[0] && onIt && v.getY() >= middle.y + 7) {
+						shot[0] = true; // up its scaffolding, high on the pillar
+						SHOTS.add("02_on_scaffolding");
+					}
+					if (shot[0] && !shot[1] && up < most[0] - 1) {
+						shot[1] = true;
+						SHOTS.add("02_taking_down");
+					}
+				}
+				most[0] = Math.max(most[0], up);
 				int left = 0;
 				for (int i = 0; i < box.getContainerSize(); i++) {
 					left += box.getItem(i).is(Items.SCAFFOLDING) ? box.getItem(i).getCount() : 0;
 				}
-				return BuildSiteManager.get(l).get(site.id()) == null && most[0] > 0 && site.scaffolds().isEmpty() && left == 64;
+				boolean done = BuildSiteManager.get(l).get(site.id()) == null && most[0] > 0 && site.scaffolds().isEmpty() && left == 64;
+				if (done) {
+					Showcase.check(shot[0], "the builder stood on its scaffolding high up the pillar");
+					Showcase.check(most[0] >= 6, "a column of at least 6 scaffolds stood beside the pillar (most at once: " + most[0] + ")");
+				}
+				return done;
 			};
 		}, null));
 		SCENES.put("nurse", job("the nurse healed the hurt villager and cured the ill one", 2000, (level, player) -> {
@@ -5835,6 +5873,67 @@ final class JobScenes {
 				return !porters.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CARRIED.getOrElse(porters.get(0), 0) >= 2
 					&& io.github.jcondedata.aliveworkplace.wonder.Dedications.gathered(level, sites.get(0)) >= 2;
 			}));
+		// A Wonder's found goods (ROADMAP 35.7a, 35.7b): the Great Library's stage I asks for a Heart Pottery Sherd and a Dune
+		// Armor Trim Template, found by exploring, and an Illuminated Book from the Print Shop. The sherd is in, the
+		// Pathfinder settled in the village is searching for the template (day 5 of 9) and the book is short; then his
+		// search ends and he brings the template, a little win on the way, told in chat and in the chronicle.
+		SCREENS.put("wonder_finds", new Screen("the Great Library's stage I asked for things found by exploring, not stacks: the stone showed the Heart Pottery Sherd in, the Pathfinder searching for the Dune Armor Trim Template (day 5 of 9) and the Illuminated Book short; then the Pathfinder brought the template, chat and the chronicle said so, and the stone showed it brought by him",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setDayTime(2000);
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getName().getString());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				var library = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_library");
+				Showcase.check(io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().containsKey(library), "the Great Library is loaded");
+				var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(),
+					STATION.offset(-3, 0, -8), net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BlockPos stone = io.github.jcondedata.aliveworkplace.wonder.WonderStages.stoneSpot(level, placement).orElseThrow();
+				level.setBlockAndUpdate(stone, ModBlocks.FOUNDATION_STONE.defaultBlockState());
+				var manager = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
+				var site = manager.begin(library, STATION, player.getUUID(), player.getName().getString(), io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
+				manager.place(site.id(), placement, stone);
+				// the stockpile: the sherd, brought home from the trail ruins
+				BlockPos pile = stone.east(2);
+				level.setBlockAndUpdate(pile, Blocks.CHEST.defaultBlockState());
+				((net.minecraft.world.Container) level.getBlockEntity(pile)).setItem(0, new ItemStack(Items.HEART_POTTERY_SHERD));
+				// the Pathfinder, settled by the stone, four days into his search
+				var pathfinder = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+					net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "pathfinder")).orElseThrow();
+				Villager him = EntityType.VILLAGER.create(level);
+				BlockPos at = stone.east(1).south(2);
+				him.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 180, 0);
+				him.setNoAi(true);
+				level.addFreshEntity(him);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, him, pathfinder, "found");
+				io.github.jcondedata.aliveworkplace.wonder.WonderGoods.search(level, manager.site(site.id()).orElseThrow(),
+					(int) (4 * io.github.jcondedata.aliveworkplace.wonder.WonderGoods.DAY));
+			},
+			List.of(new Step("01_wonder_finds_screen", -1, 0, (level, player) -> {
+					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0);
+					BlockPos stone = site.stone().orElseThrow();
+					var lines = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, site);
+					Showcase.check(lines.size() == 3 && lines.get(0).full() && !lines.get(1).full() && lines.get(1).good().found() && !lines.get(2).full(),
+						"the stone's lines: the sherd in, the template searched for, the book short: " + lines);
+					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+				}, 80),
+				new Step("02_wonder_finds_brought", -1, 0, (level, player) -> {
+					var manager = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
+					var site = manager.in(STATION).get(0);
+					BlockPos stone = site.stone().orElseThrow();
+					io.github.jcondedata.aliveworkplace.wonder.WonderGoods.search(level, site, (int) (5 * io.github.jcondedata.aliveworkplace.wonder.WonderGoods.DAY));
+					var now = manager.in(STATION).get(0);
+					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
+					Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, now).get(1).brought(), "the Pathfinder brought the template");
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+				}, 80)),
+			(level, player) -> {
+				var sites = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);
+				return !sites.isEmpty() && io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, sites.get(0)).get(1).brought();
+			}));
 		// Switching classes on (ROADMAP 34.22): a village from before 1.8 (a couple in a builder's cottage, three more without
 		// a home), the hall's Classes tab before; then the hall's rounds seed them, the chronicle says so once, and the tab and
 		// page show "Settling in: 7 days left" with what each class will need.
@@ -6246,6 +6345,10 @@ final class JobScenes {
 
 	private void job(Minecraft mc, MinecraftServer server, Job job) {
 		ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+		// A still a scene's server side asked for at a moment it chose (35.6a: the builder up its scaffolding).
+		for (String shot = SHOTS.poll(); shot != null; shot = SHOTS.poll()) {
+			ScreenshotHarness.shot(mc, shot);
+		}
 		if (tick == 1) {
 			mc.options.hideGui = true;
 		}

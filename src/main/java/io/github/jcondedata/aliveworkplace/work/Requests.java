@@ -67,9 +67,13 @@ public final class Requests {
 
 	/**
 	 * A request posted for a block (35.7): who it is for ("the Great Cathedral"), the job that makes it ("Chef") and how a
-	 * player's things are taken for it.
+	 * player's things are taken for it. For goods found by exploring ({@code found}, 35.7a), {@code job} says where.
 	 */
-	public record ForBlock(Component name, Component job, Taker taker) {
+	public record ForBlock(Component name, Component job, Taker taker, boolean found) {
+		/** A request for goods a job makes (35.7). */
+		public ForBlock(Component name, Component job, Taker taker) {
+			this(name, job, taker, false);
+		}
 	}
 
 	/** Takes what {@code player} has towards a request posted for a block; returns how many were taken. */

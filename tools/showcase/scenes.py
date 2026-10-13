@@ -195,9 +195,12 @@ SCENES = [
     job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
     job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
-    # Scaffolding (ROADMAP 35.6): a 14-high pillar with an overhanging cap, built from scaffolding taken down after
-    job("scaffolding", "Builder", "Scaffolding up a pillar, and down again",
-        "the builder put up scaffolding to finish the pillar and its cap, then took it all down into the chest", 300),
+    # Scaffolding (ROADMAP 35.6, 35.6a): a 14-high pillar with an overhanging cap, built from a column of vanilla
+    # scaffolding the builder climbs, filmed close up at the builder's height, and taken down after
+    S("scaffolding", "Builder", "Scaffolding up a pillar, and down again",
+      "the builder put up scaffolding to finish the pillar and its cap, then took it all down into the chest", 300,
+      [START, ("02_on_scaffolding", "Up the scaffolding, working high on the pillar"),
+       ("02_taking_down", "Taking the scaffolding down"), DONE]),
     S("chef", "Chef", "Cooking at the smoker", "the chef cooked food into the chest", 120,
       [("*_chef@first", "Start"), ("*_chef@middle", "Cooking"), ("*_chef@last", "Done")]),
     job("smelter", "Armorer (smelter)", "Smelting ore in the blast furnace", "the armorer smelted the ore into ingots"),
@@ -804,6 +807,11 @@ SCENES = [
       "the folly's stage II waited for its three lines: the stone's screen showed the flowers and the potions in and the books short, \"no Librarian in the village\"; the porter carried the two books from the storehouse to the stockpile, and the stage was dedicated: the bell rang, the villagers off work gathered at the stone, the Bard played beside it, the guards stood in line, the goods were taken and the chronicle said so", 55,
       [("01_wonder_goods_screen", "The stone's screen: flowers and potions in, the books short"), ("02_wonder_goods_porter", "The porter carries the books to the stockpile"),
        ("03_wonder_goods_dedication", "The dedication: the village gathers at the stone, the Bard plays, the guards in line")]),
+    # A Wonder's found goods (ROADMAP 35.7a, 35.7b): the stone asks for things found by exploring; a rare worker finds one
+    S("wonder_finds", "Wonders", "A Wonder's found goods, and a rare worker who finds one",
+      "the Great Library's stage I asked for things found by exploring, not stacks: the stone showed the Heart Pottery Sherd in, the Pathfinder searching for the Dune Armor Trim Template (day 5 of 9) and the Illuminated Book short; then the Pathfinder brought the template, chat and the chronicle said so, and the stone showed it brought by him", 30,
+      [("01_wonder_finds_screen", "The stone: the sherd in, the Pathfinder searching (day 5 of 9), the book short"),
+       ("02_wonder_finds_brought", "The Pathfinder brings the template: chat says so, the stone shows it brought")]),
     # A finished Wonder (ROADMAP 35.8): the folly's time-lapse with a crew of ten, ending in its festival's bigger fireworks
     S("wonder_finished", "Wonders", "A finished Wonder: the folly's time-lapse and its festival",
       "a crew of ten raised the folly stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished every player was told, its mood and beauty powers came on, and that evening's festival had the bigger show, gold rockets going up from the folly's top", 600,

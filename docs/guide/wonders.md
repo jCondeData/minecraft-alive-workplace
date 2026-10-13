@@ -9,13 +9,14 @@ Where: the Wonders tab on the Village Hall
 Plans: 32 emeralds, for a Wonder Plan
 Every Wonder needs: a Town (the Colossus a City) and a Legend, or the villager who stands in
 How many: a Town 1, a City 2, one of each kind
-Stages: four, each with its own goods from the village's workers
+Stages: four, each asking for rare finds from exploring and a workshop's best goods
 categories: Wonders, Builder
 related: builder.md, village-hall.md, jobs.md
 ```
 
-A **Wonder** is a village's life's work: a huge build raised in four stages by the village's builders, fed by goods
-from nearly every job, and changing what the village (or its whole realm) can do while it stands. There are eight.
+A **Wonder** is a village's life's work: a huge build raised in four stages by the village's builders, fed by rare
+things found all over the world, and changing what the village (or its whole realm) can do while it stands. There are
+eight. Expect one to take a group about a month of evenings.
 
 ## The Wonders page
 
@@ -47,16 +48,27 @@ finished building. A book and quill in your other hand writes down the whole Won
 
 ## Building it
 
-A Wonder goes up in four named stages, and up to twelve builders work on it together. Each stage asks for goods from
-the village's workers as well as its blocks: bread from the chef, pickaxes from the toolsmith, candles from the dyer,
-and so on. A Wonder is the one build that needs the whole village.
+A Wonder goes up in four named stages, and up to twelve builders work on it together. Besides its blocks, each stage
+asks for goods: two or three hard things **found by exploring**, one of each (a Heart of the Sea from buried treasure,
+an Echo Shard from an ancient city, a Heavy Core from a trial chamber, a Nether Star from the Wither), and one rare good
+from an upgraded workshop, like Vintage Wine or Gold Circlets. Each Wonder's page lists them. A Wonder is the one build
+that needs the whole village, and a few expeditions.
+
+Each found thing has a **rare worker** who can find it for you: a Legend such as the Pathfinder or the Old Sage, or a
+Master Netherworker, Sifter or Fisherman. While they live in the village they search for it whenever someone is
+playing, and after their days are up they bring it: "The Pathfinder found what the Great Library needed: Dune Armor
+Trim Template". You don't have to wait for them: bring it yourself and the line is in. Every rare worker who settles is
+one less expedition.
+
+![The stone: the sherd in, the Pathfinder searching](https://jcondedata.github.io/minecraft-alive-workplace/wonder_finds/still-1.jpg)
 
 ![The stone's screen: flowers and potions in, the books short](https://jcondedata.github.io/minecraft-alive-workplace/wonder_goods/still-1.jpg)
 
-Right-click the Foundation Stone to see each stage's goods: "2 of 4 Flowers · Florist", and "no Florist in the village"
-when nobody there makes them. A stage starts only when all its goods are in the chests by the stone. The village sees
-to it: the goods are on the Storehouse's requests board, porters carry them over first, the chef, carpenter, mason,
-tinkerer and dyer make what's short, and the hall's daily quest asks for the line furthest behind. You can hand goods
+Right-click the Foundation Stone to see each stage's goods: "0 of 1 Dune Armor Trim Template · found in a desert
+temple's chests · the Pathfinder is searching: day 4 of 9", "0 of 1 Illuminated Book · Printer", and "no Printer in the
+village" when nobody there makes them. A stage starts only when all its goods are in the chests by the stone. The village sees
+to it: the goods are on the Storehouse's requests board, porters carry them over first, the workshops make what's short,
+and the hall's daily quest asks for the workshop line furthest behind. You can hand goods
 in yourself: right-click the stone holding them, or click the line on the board.
 
 Then, by day (at night it waits for the morning), the stage is **dedicated**: the bell rings, the villagers off work

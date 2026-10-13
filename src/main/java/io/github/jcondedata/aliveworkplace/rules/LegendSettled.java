@@ -63,7 +63,7 @@ public record LegendSettled(ResourceLocation id, List<Condition> standIn) implem
 	}
 
 	/** The Legend's title ("the Seer"), from the file when it's loaded, else by the lang key its file would use. */
-	static Component title(ResourceLocation id) {
+	public static Component title(ResourceLocation id) {
 		return Legends.get(id).map(Legend::titleText).orElse(Component.translatable("legend." + id.getNamespace() + "." + id.getPath() + ".title"));
 	}
 }

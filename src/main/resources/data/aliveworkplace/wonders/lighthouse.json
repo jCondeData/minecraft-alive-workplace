@@ -34,19 +34,35 @@
       ],
       "goods": [
         {
-          "item": "minecraft:cooked_cod",
-          "count": 64,
-          "job": "minecraft:fisherman"
+          "item": "minecraft:heart_of_the_sea",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "item": "minecraft:oak_boat",
-          "count": 8,
-          "job": "aliveworkplace:carpenter"
+          "item": "minecraft:coast_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "job_level",
+              "job": "minecraft:fisherman",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "item": "minecraft:coal",
-          "count": 64,
-          "job": "aliveworkplace:miner"
+          "item": "aliveworkplace:emerald_brooch",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
         }
       ]
     },
@@ -60,19 +76,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:chain",
-          "count": 16,
-          "job": "aliveworkplace:tinkerer"
+          "item": "minecraft:trident",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
         },
         {
-          "item": "minecraft:iron_ingot",
-          "count": 32,
-          "job": "minecraft:armorer"
+          "item": "minecraft:sponge",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
         },
         {
-          "item": "minecraft:white_wool",
-          "count": 32,
-          "job": "minecraft:shepherd"
+          "item": "minecraft:angler_pottery_sherd",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:grand_chef"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
         }
       ]
     },
@@ -86,19 +128,47 @@
       ],
       "goods": [
         {
-          "item": "minecraft:filled_map",
-          "count": 4,
-          "job": "minecraft:cartographer"
+          "item": "minecraft:tide_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "job_level",
+              "job": "minecraft:fisherman",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "item": "minecraft:spectral_arrow",
-          "count": 32,
-          "job": "minecraft:fletcher"
+          "item": "minecraft:conduit",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
         },
         {
-          "item": "minecraft:leather",
-          "count": 32,
-          "job": "minecraft:butcher"
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:illuminated_book",
+          "count": 2,
+          "job": "aliveworkplace:printer"
         }
       ]
     },
@@ -112,19 +182,47 @@
       ],
       "goods": [
         {
-          "item": "minecraft:glowstone_dust",
-          "count": 64,
-          "job": "aliveworkplace:netherworker"
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
         },
         {
-          "item": "minecraft:redstone",
-          "count": 32,
-          "job": "aliveworkplace:miner"
+          "item": "minecraft:elytra",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 45,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "item": "minecraft:pumpkin_pie",
-          "count": 16,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:ghast_tear",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:netherworker",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:vintage_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
         }
       ]
     }

@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released).
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17, 33.22
+Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17, 33.22, 33.22a
 
 ## What a player sees
 
@@ -368,6 +368,14 @@ until it has stood 3 days. Only the capital's owner, their friends and operators
 same row to read ("The capital's Book of Edicts can lift it") and lists no realm edicts. A village's book can't
 proclaim one ("Common Market is a realm edict: the capital proclaims it in its Book of Edicts."). Proclaiming, lifting,
 a lapse and a reform are told to every member's owner online and written in every loaded member's chronicle.
+The Book's tooltips are wrapped to fit the screen (33.22a): the hall's screen breaks any line wider than half the screen
+(120 to 240 GUI pixels) between words, keeping its colours, so a long description such as the Royal Highway's never
+runs off the edge.
+
+Under the Common Market the realm's own people (the owner of a member, their friends and operators) buy at the board's
+price, and strangers still pay the 10% spread (33.22a). The board charges each buyer their own price, the Prices tab's
+first line tells each viewer theirs ("Under the Common Market the realm's people buy at that price too; strangers pay
+10% more"), and "You can't pay …" names the price that buyer would have been charged.
 
 | Edict | Boost | Cost (from the realm treasury where it's money) | Reform: the capital's quest, and the count |
 |---|---|---|---|

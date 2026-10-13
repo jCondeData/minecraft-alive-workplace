@@ -3681,7 +3681,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each edict (boost on, cost on; the reform turns the cost off and keeps the boost); the
   capital's book shows the realm slots; showcase scene `realm_edicts`.
-  - [ ] **33.22a** Change from the owner (2026-10-13): keep the Common Market as built, the realm's own people buy at the board's price and strangers still pay the 10 percent; wrap the Royal Highway tooltip so it fits on screen
+  - [x] **33.22a** (review: pending 2026-10-13) Change from the owner (2026-10-13): keep the Common Market as built, the realm's own people buy at the board's price and strangers still pay the 10 percent; wrap the Royal Highway tooltip so it fits on screen
 - [x] **33.23** (approved 2026-10-12) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
   - **The Founder**: a village he lives in can found colonies from Town rank, sends four settlers instead of two and
     waits half as long between colonies; its colonies are "founded with the Founder's blessing" in both chronicles,
@@ -4153,7 +4153,7 @@ Legends.
   - a GameTest cancels half-way and the scaffolds come down; a save and reload with scaffolds up finishes the build;
   - the folly's dome is finished with no skipped steps;
   - scene `scaffolding`: a builder scaffolding up the pillar and taking it down, a GIF.
-  - [ ] **35.6a** Change from the owner (2026-10-13): the builder must visibly put up and climb real vanilla scaffolding blocks; in the bot's shots no scaffolding shows at all, the builder stands on the cap and the pillar has a gap; refilm close enough to see the scaffolding
+  - [x] **35.6a** (review: pending 2026-10-13) Change from the owner (2026-10-13): the builder must visibly put up and climb real vanilla scaffolding blocks; in the bot's shots no scaffolding shows at all, the builder stands on the cap and the pillar has a gap; refilm close enough to see the scaffolding
 - [x] **35.7** (approved 2026-10-13) **Goods from every job.** Besides its building blocks, each stage of a Wonder asks for goods: the feast
   for the crew, their tools, what the rites need (candles, books, potions) and its treasures. A stage starts only when
   all its goods are in the stockpile; then (by day; at night it waits for the morning) it is **dedicated**: the
@@ -4170,8 +4170,8 @@ Legends.
     the storehouse to the stockpile; a chef cooks a short line as a stock order; a click on the requests board hands a
     line over; the dedication takes exactly the goods; a cancel gives them back;
   - scene `wonder_goods`: the stone's screen half filled, a porter delivering, then the dedication.
-  - [ ] **35.7a** Change from the owner (2026-10-13): make a Wonder's goods big and difficult, something the player really needs to work for over a long time; progress should be slow, a big goal with lots of little wins on the way, never busy work: each stage should also need things found by exploring and searching, week-long efforts, and rare goods made by upgraded workshops, not just stacks of farm produce
-  - [ ] **35.7b** Change from the owner (2026-10-13): pacing target, one Wonder takes about a month for a group playing every other day for 3 hours a night, about 15 sessions or 45 hours of play; no 'have X amount of things' counts, those are annoying; each stage needs a few hard items found by exploring and searching, week-long efforts, and getting them can be sped up by having certain rare workers in the village (Legends and other rare villagers), so each rare worker is a little win on the way; measure the real time in play and tune to the target
+  - [x] **35.7a** (review: pending 2026-10-13) Change from the owner (2026-10-13): make a Wonder's goods big and difficult, something the player really needs to work for over a long time; progress should be slow, a big goal with lots of little wins on the way, never busy work: each stage should also need things found by exploring and searching, week-long efforts, and rare goods made by upgraded workshops, not just stacks of farm produce
+  - [x] **35.7b** (review: pending 2026-10-13) Change from the owner (2026-10-13): pacing target, one Wonder takes about a month for a group playing every other day for 3 hours a night, about 15 sessions or 45 hours of play; no 'have X amount of things' counts, those are annoying; each stage needs a few hard items found by exploring and searching, week-long efforts, and getting them can be sped up by having certain rare workers in the village (Legends and other rare villagers), so each rare worker is a little win on the way; measure the real time in play and tune to the target
 - [x] **35.8** (approved 2026-10-13) **A finished Wonder: celebration, upkeep and powers.** When the last stage is done, every player on the
   server is told; the village holds a festival that evening (`hall/Festivals`) with a bigger firework show; the
   chronicles of the village and of every village linked to it (its realm, M33; until that lands, its caravan partners)
@@ -4190,7 +4190,7 @@ Legends.
     builders repair it and it comes back; finished Wonders survive a save and reload;
   - a GameTest checks the server-wide message and the chronicle lines;
   - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
-  - [ ] **35.8a** Change from the owner (2026-10-13): fix the dirt band round the folly's top under the dome (it should be the stone cornice)
+  - [x] **35.8a** (review: pending 2026-10-13) Change from the owner (2026-10-13): fix the dirt band round the folly's top under the dome (it should be the stone cornice)
 - [x] **35.9** (approved 2026-10-12) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
   critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
   `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two
@@ -4299,7 +4299,7 @@ Legends.
   (Cleric), 64 baked potatoes (Chef); III 8 crossbows (Fletcher), 8 iron chestplates (Armorer), 8 shields (Carpenter);
   IV 16 iron blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter): the iron and the pumpkins become its
   sentries. Done when: 35.9's four design checks pass for it, with the walk at a player's eye in its renders.
-  - [ ] **35.15a** Change from the owner (2026-10-13): add solid tower bases with more decoration; wonders should have lots of decoration, so give the Great Wall a bit more decoration and detail, similar to the Hanging Gardens
+  - [x] **35.15a** (review: pending 2026-10-13) Change from the owner (2026-10-13): add solid tower bases with more decoration; wonders should have lots of decoration, so give the Great Wall a bit more decoration and detail, similar to the Hanging Gardens
 - [ ] **35.16** **The Great Wall: its powers and time-lapse.** While it stands, no raid gathers behind it: our night
   raids and the bandits' (`guard/VillageRaids.gatheringPoint`, `guard/BanditCamps`) gather outside the arc the wall
   covers as seen from the hall, plus 10° either side, and (needs M32's sieges item) siege raiders can't put ladders to
@@ -5781,6 +5781,12 @@ item waits.
   come out the same as before. The `wonder_gallery` scene now accepts a first-stage part that is only air (it clears
   the site, as `WonderBlueprintGameTests` already allowed; the Cathedral has two). Owner: say if you'd rather have
   solid tower bases for the 18,000.
+- **35.15a the Great Wall's solid tower bases** (lane-a-1013-0446, 2026-10-13): the owner asked for solid tower bases
+  with more decoration. Each tower is now solid masonry to the walk (no ground-floor door or stair: you enter from the
+  walk, up the two village-side stairs by the gate) on a base a block out all round, and the Wall has banners, slits,
+  lanterns, taller merlons, vines and buttresses added (CHANGELOG). It is 12,338 blocks, not 18,000: whole solid towers
+  would still be needed for that, and the owner asked for bases. `WonderBlueprintGameTests` now expects about 12,300,
+  and `greatWallTowerBasesSolid` checks the bases. The stairs inside each tower now start at the walk-level room.
 - **35.19 the Hanging Gardens' site, water and count** (lane-b-1012-0033, 2026-10-12): drawn with everything the item
   lists, the terraces stand on the 39 x 39 foot (24 high, 31 to the crown's treetops), but the whole site is 47 x 44:
   the falls' pool lies outside the foot on the east and the ramp's first flight runs along the front from the ground.
@@ -5825,5 +5831,19 @@ item waits.
   for its size; potion lines are left out of the quest and crafters make only plain-item lines. The folly's stage II
   gained a third line (2 books, Librarian) to match the Done when. The stone's "screen" is its chat status, as 35.4
   built it.
+- **35.7a/35.7b found goods and pacing** (lane-a-1013-0446, 2026-10-13): every shipped Wonder's stage now asks for 2 or 3
+  things found by exploring (count 1 each: structure loot, rare drops, archaeology, trial chambers, the Nether, the End)
+  and one workshop good (2 at most: Journeyman luxuries from stage II, Apprentice ones in stage I). Each found line has
+  a helper, a Legend or a Master Netherworker/Sifter/Fisherman (never the Wonder's own Legend), who searches in play
+  time (only while someone is on the server; the village loaded, or last seen there) for 1.5x the group's hours and
+  brings it (chat, chronicle, no item, so a cancel hands nothing back). Goods lists and estimates:
+  `tools/blueprints/wonder_goods.py` (wonders.py takes them from it; `--write` rewrites only the goods). Old saves:
+  goods handed in for a line that no longer takes them go into the stockpile's chests. Pacing (hours of play for 3-4
+  players with iron/diamond gear; per find: 1.5 Coast trim to 10 Elytra; stage = unhelped finds in a row + 2.5 h
+  for materials/build/workshop; the slowest helper bounds it), totals per Wonder, no helpers / typical (Masters of
+  the three trades + the Pathfinder) / every helper: Cathedral 59.5/46.0/30.3, Lighthouse 57.0/43.2/31.0, Library
+  54.0/46.2/30.0, Observatory 57.0/41.5/30.7, Wall 53.5/42.0/29.7, Gardens 52.5/44.5/29.7, Colossus 62.0/41.7/31.0,
+  Stadium 55.5/46.5/30.3: typical 41.5 to 46.5 h, mean 43.9 (target 45, about 15 three-hour evenings). Reckoned, not
+  timed: once the owner's group has played a stage, tune FINDS/HELPER_SHARE/OVERHEAD in that file and `--write`.
 - **lane-d handoff** (lane-d-1012-0033, 2026-10-12 02:58Z): lane-d-1012-0033 pushed b5e47ba1 at 02:58Z (full build green on the main suite, 1978/1978; compat 208/209 with B110's Combee flake, then 213/213 on re-run). On main: 34.15a (grander homes sold-only, review pending; owner question in Notes: Manor sold-only too?), 22.10a parts 1-2 (American spelling in guide/wiki/lang values; Fandom-style player guide in tools/playerguide/site.py), B94 renewal and steward_civic scenes fixed (staging). NEXT: 22.10a part 3 (an article for every job, block, item, build, threat, arc, edict, class, Wonder, switch, command). B94 left: caravan_road, walls, steward_jobs (27.9 design q). TRAPS: text merged after 02:01Z (35.x Wonders, realm edicts) may carry British spelling; tools/showcase/scenes.py captions still British (Jeweller, Grey Cough, colours); the owner's 34.15a note says the first day counts against the 15% tick target, which answers 30.22's day-1 question (30.22 still waits on B103).
 - **qa handoff** (qa-1012-0634, 2026-10-12 07:02Z): B65 (conscription raid-work test): ran the repeat generator, ConscriptionGameTests#noWorkDuringARaidNorTheMorningAfterUntilNoon 10x in separate batches on main 54ec47f0: 10 of 10 pass, so it does not reproduce in isolation (the earlier failures were in full builds, so load or batch neighbours; cause not found, mod code looked right: BrainMixin gates on Conscription.workStopped, raid ends only when raiders gone or dawn after 1200 ticks). Next: if it fails again, the failure message should print Conscription.workStopped and ThreatData.raid(hall). Also: Maven Central answered 429 for ~25 minutes at start, so no more tests ran this run. Still unverified: 213 items, oldest B101, 21.2, 22.7-22.10a; showcase has 38 of 227 scenes failing (soak, caravan_road, walls, steward_jobs, renewal) which B94/B72/B88 cover.

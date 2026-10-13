@@ -195,7 +195,8 @@ public final class TradePage {
 			synchronized (TradePage.class) {
 				entry = TABS.get(t);
 			}
-			ItemStack icon = entry.icon().icon(level, hall);
+			// 33.22a: the Prices tab tells each viewer their own spread (the Common Market drops it for the realm's people)
+			ItemStack icon = t == Tab.PRICES ? pricesTab(level, hall, viewer) : entry.icon().icon(level, hall);
 			if (t == tab) {
 				mark(icon, OPEN);
 				menu.button(t.slot(), icon, null);
@@ -247,8 +248,17 @@ public final class TradePage {
 
 	/** The Prices tab's icon: an emerald, with what the page's marks mean. */
 	static ItemStack pricesTab(ServerLevel level, BlockPos hall) {
+		return pricesTab(level, hall, null);
+	}
+
+	/** The same as {@code viewer} reads it: the realm's people under the Common Market (33.22a) are told they buy at the board's price. */
+	static ItemStack pricesTab(ServerLevel level, BlockPos hall, @Nullable ServerPlayer viewer) {
 		List<Component> lore = new ArrayList<>();
-		lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.trade.prices_about", sellPercent(level, hall) - 100), ChatFormatting.GRAY));
+		int usual = sellPercent(level, hall);
+		int theirs = io.github.jcondedata.aliveworkplace.realm.RealmEdicts.sellPercent(level, hall, viewer, usual);
+		lore.add(VillageHallScreen.line(theirs < usual && theirs == 100
+			? Component.translatable("screen.aliveworkplace.trade.prices_about_realm", usual - 100)
+			: Component.translatable("screen.aliveworkplace.trade.prices_about", theirs - 100), ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.prices_marks", ChatFormatting.GRAY));
 		lore.add(VillageHallScreen.line("screen.aliveworkplace.trade.prices_trade", ChatFormatting.GRAY));
 		if (Caravans.Data.get(level).market(hall).priceDay() < 0) {
@@ -281,7 +291,7 @@ public final class TradePage {
 			menu.button(slot++, icon, p -> {
 				boolean buying = menu.rightClicked() || Board.carried(p, good) < good.bundle();
 				Board.Result result = buying ? Board.buy(level, hall, p, good, menu.shiftClicked()) : Board.sell(level, hall, p, good, menu.shiftClicked());
-				Component said = Board.message(level, hall, result);
+				Component said = Board.message(level, hall, result, p);
 				if (!result.traded()) {
 					level.playSound(null, p.blockPosition(), net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1f);
 				}

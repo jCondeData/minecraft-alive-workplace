@@ -759,6 +759,19 @@ stands, and less than a tenth of it is missing:
   pumpkin in the Wonder's stockpile.
 - **The Great Gate shuts at night**, and opens in the morning.
 
+### The Observatory
+
+![The Observatory going up, then the Sky Chart in hand and the hall's calendar with the Coming days](https://jcondedata.github.io/minecraft-alive-workplace/wonder_observatory/anim.gif)
+
+A round tower under a copper dome on a raised terrace, for a Town with the Seer. While it stands, and less than a tenth
+of it is missing:
+
+- **The Sky Chart**: the hall's map button also draws a chart about 6,000 blocks across, with a marker on every
+  structure the Observatory has found (villages, temples, monuments, mansions, ancient cities, strongholds...), each
+  named in its tooltip. It searches one kind an in-game hour, and again each week.
+- **The Coming days**: the hall's calendar shows the next festival and market day, weddings due, caravans and when
+  they arrive, a traveller expected at the inn, the full moon, bandit camps and the night's raid risk.
+
 ## From village to realm
 
 *Part of 1.7, which isn't released yet: `villageEconomy` stays off until then.*

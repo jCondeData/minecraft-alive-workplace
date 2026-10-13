@@ -125,7 +125,10 @@ public final class Seasons {
 			}
 		});
 		HallPages.register(PAGE, (level, hall) -> tab(today(level)), (level, hall) -> header(level, hall),
-			(menu, level, hall, viewer) -> fill(menu, today(level)));
+			(menu, level, hall, viewer) -> {
+				fill(menu, today(level));
+				io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.fill(menu, level, hall); // the Coming days, with the Observatory (35.18)
+			});
 	}
 
 	/** The page row's tab: today's date, the festival and the next season. */

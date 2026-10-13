@@ -128,6 +128,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final WonderTimelapse wonderColossus = WonderColossusScene.create();
 	/** SCENE=wonder_great_wall (ROADMAP 35.16): the Great Wall's time-lapse, ending at midnight with a raid gathering on the open side while its sentries watch. */
 	private final WonderTimelapse wonderGreatWall = WonderGreatWallScene.create();
+	/** SCENE=wonder_observatory (ROADMAP 35.18): the Observatory's time-lapse, then the Sky Chart in hand and the Coming days page. */
+	private final WonderTimelapse wonderObservatory = WonderObservatoryScene.create();
 	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
@@ -261,6 +263,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("wonder_great_wall".equals(System.getProperty("aliveworkplace.scene"))) {
 			wonderGreatWall.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("wonder_observatory".equals(System.getProperty("aliveworkplace.scene"))) {
+			wonderObservatory.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {

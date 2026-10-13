@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Observatory's powers** (35.18, part of Wonders, for 2.0): while it stands, the hall searches the land about
+  6,144 blocks across round the village, one kind of structure an in-game hour (and again each week), and the hall's
+  map button also draws the Sky Chart on a second empty map: a marker on every village, outpost, temple, witch hut,
+  igloo, monument, mansion, shipwreck, ruined portal, trail ruin, ancient city, trial chamber and stronghold found,
+  and on the bandit camps, the nearest named in its tooltip. The hall's calendar shows the Coming days: the next
+  festival and market day, weddings due, caravans and when they arrive, a traveller expected at the inn, the full
+  moon, the Seer's foretold guests, bandit camps and the night's raid risk. A damaged Observatory pauses both. Scene
+  `wonder_observatory`: the time-lapse, then the Sky Chart in hand and the Coming days.
 - **The Great Wall's powers** (35.16, part of Wonders, for 2.0): while it stands, no raid gathers behind it. Night
   raids, bandits and the other raiders gather outside the stretch of the compass the Wall covers from the hall, plus
   10 degrees either side, and a siege can't put ladders against it or ram its Great Gate. Four Wall Sentries come with

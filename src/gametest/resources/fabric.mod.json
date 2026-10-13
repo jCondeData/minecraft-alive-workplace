@@ -228,6 +228,7 @@
 			"io.github.jcondedata.aliveworkplace.test.LibraryPowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ColossusPowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GreatWallPowerGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ObservatoryPowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderCathedralGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderGoodsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderFindsGameTests",

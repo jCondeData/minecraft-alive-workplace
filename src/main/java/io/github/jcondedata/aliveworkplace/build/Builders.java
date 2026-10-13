@@ -730,8 +730,14 @@ public final class Builders {
 		level.playSound(null, villager, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null) {
-			tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct" : "message.aliveworkplace.finished",
-				villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
+			if (site.wonder() != null) {
+				// B138: a Wonder's part is told as a part of its stage (no blueprint comes back for it, 35.4)
+				io.github.jcondedata.aliveworkplace.wonder.WonderStages.partFinishedLine(level, site, villager.getDisplayName())
+					.ifPresent(line -> tell(owner, line, ChatFormatting.GREEN));
+			} else {
+				tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct" : "message.aliveworkplace.finished",
+					villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
+			}
 			if (entitiesLeft > 0) {
 				tell(owner, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.entities_left", entitiesLeft, entitiesLeft), ChatFormatting.YELLOW);
 			}

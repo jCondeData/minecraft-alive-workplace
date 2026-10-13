@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- **A builder finishing a part of a Wonder now says so properly** (B138). The chat used to read "Odo finished
+  building Stage 1 0! The blueprint is back in the supply chest." (no blueprint comes back for a Wonder's part); now it
+  says "Odo finished stage 1 of 4 of the Colossus: The Plinth and the Road Arch." or, while other parts of the stage are still
+  going up, how many of them stand. The Wonder's very last part leaves the telling to the Wonder's own announcement.
 - **A Wonder's crew no longer stops for good partway up** (B139). When the lead had to give up on one block (a
   crewmate stood on it the whole time, as on top of the Colossus's half-built robe), the wall above it waited for that
   block forever and the whole crew stood idle; now the wall goes on over the gap, also after a restart. And a block that

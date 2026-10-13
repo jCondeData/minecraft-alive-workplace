@@ -105,6 +105,7 @@ final class WonderTimelapse {
 	private volatile boolean done;
 	private volatile int mostCrew;
 	private volatile int rockets;
+	private int watched;
 	private volatile Vec3 centre = Vec3.ZERO;
 	private volatile Vec3i size = Vec3i.ZERO;
 	/** The whole Wonder's box as placed (35.22: where its scaffolding is counted). */
@@ -474,6 +475,15 @@ final class WonderTimelapse {
 		}
 		stage = now.done() ? (Wonders.loaded().containsKey(wonder) ? Wonders.loaded().get(wonder).stages().size() : now.stage()) : now.stage();
 		done = now.done();
+		if (++watched % 30 == 0) { // every half minute, the build's progress in the log (a scene that runs out of time shows where it stood)
+			StringBuilder parts = new StringBuilder();
+			for (UUID part : now.parts()) {
+				io.github.jcondedata.aliveworkplace.build.BuildSite s = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).get(part);
+				parts.append(s == null ? " gone" : " " + s.stage() + " placed " + s.placed() + " skipped " + s.skipped());
+			}
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[{}] stage {} at game tick {} ({} ms a tick), crew {}:{}", scene, now.stage(), level.getGameTime(),
+				server.getAverageTickTimeNanos() / 1_000_000, WonderCrews.crew(level, now).size(), parts);
+		}
 	}
 
 	/** Finished: the checks so far, and on to the evening's festival, the day moving again. */

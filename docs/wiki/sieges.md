@@ -1,7 +1,6 @@
 # Sieges: rams, gates, ladders and battle stations
 
-ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), so it is **off for players until the milestone is
-finished** (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
+ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
 Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
@@ -69,8 +68,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
 
 - `threat/Sieges` registers the tactic `ram_gates` with the threat engine. A raid by a culture whose file lists that
   tactic, on a village with a finished build from the walls and gates family (Palisade, Palisade Gate, Palisade Tower,
-  Stone Wall, Wall Tower, Gatehouse, any style, their later tiers, and the wall kits' pieces), is a siege. No culture
-  the mod ships rams gates yet: the pillager warband (32.7) is the first.
+  Stone Wall, Wall Tower, Gatehouse, any style, their later tiers, and the wall kits' pieces), is a siege. The pillager
+  warband ([Pillager warbands](warbands.md), 32.7) and the piglins ([Piglin incursions](piglins.md)) ram gates.
 - **Hit points**: fence gate 60, door 80 (both halves as one), iron bars 150. A ram (role `ram`) does 12 every 40
   ticks; an axe does 4 every 20. So a fence gate takes a ravager 5 blows, and a bar 13.
 - **The breach** is the gate build with the gate block nearest the middle of the raiders when the siege begins. Its
@@ -163,8 +162,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
 
 | Key | Default | What it does |
 |---|---|---|
-| `sieges` | on from 1.6 (off until then) | Off: every raid is a plain one. No shut gates, no portcullis, no rams, no ladders, and raids gather where they always did. |
-| `siegeDamage` | on from 1.6 (off until then) | Off: it is still a siege and the rams still pound, but gates lose no hit points and never break. |
+| `sieges` | on from 1.0 | Off: every raid is a plain one. No shut gates, no portcullis, no rams, no ladders, and raids gather where they always did. |
+| `siegeDamage` | on from 1.0 | Off: it is still a siege and the rams still pound, but gates lose no hit points and never break. |
 
 The vanilla game rule mobGriefing set to false does what `siegeDamage` off does, and with it off no ladder is set
 either. `siegeDamage` off alone leaves the ladders: then a siege is decided at the walls. Ladders have no switch of
@@ -234,8 +233,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 - 32.6: the report counts what died, so raiders who fled are "came" but not "fell". Kills by golems and mercenaries
   count as fallen but are in neither of the two named numbers.
 - 32.6: "the morning after" is the dawn the siege lifts (23500), the same moment the gates open.
-- 32.6: "when a warned siege is near" needs the warnings of 32.14, which does not exist yet. Stations are taken
-  when the siege begins; 32.14 can call the same watch earlier.
+- 32.6: "when a warned siege is near": stations are taken when the siege begins, and with a day's warning (32.14,
+  [Raids and threats](raids.md)) the guards take them at dusk, before the horn.
 
 ## Known limits
 
@@ -312,4 +311,4 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   tested: Lookout Tower, Gatehouse, Stone Wall and Palisade stations in a GameTest (the scene uses a Gatehouse), a
   crossbow from a station, the damage an arrow does with the height bonus (only the factor), an offline player.
 - Showcase scene `battle_stations`: two archers leaving their Guard Post for stations on a Gatehouse and a Wall Tower
-  and shooting down at raiders hacking at the portcullis. Not filmed yet when this was written.
+  and shooting down at raiders hacking at the portcullis.

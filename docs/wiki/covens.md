@@ -1,6 +1,6 @@
 # Witch covens
 
-ROADMAP 32.11. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.11. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. The coven is a raider culture (see
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is a hut in the swamp, who
 never storm the walls but throw potions over them, and who **hex** the village's villagers every night their hut
@@ -94,7 +94,7 @@ Roadmap items: 32.11
   the raid's reach before they arrived.
 - "Archers on stations matter most": nothing new for the guards; the witches simply stand where only arrows reach.
 - A hex is not lifted by a Gifted villager's Hardiness, nor by the Healers' Guild or Medicine: only by breaking the
-  coven (and, once 32.18 lands, the Remedy).
+  coven or the Remedy ([Plague and the Physician](plague.md), 32.18).
 - The zombie villagers wear a dark leather cap so they don't burn by day at the hut.
 - Strength 8, +1 a day, at most 14, and weight 30: the roadmap gives no numbers; a little weaker than the other 1.6
   lairs, since the hex works on the village every night without a raid.

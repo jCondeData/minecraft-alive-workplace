@@ -25,8 +25,8 @@ the only Wonder that needs a City. See [Wonders](wonders.md) for drawing up the 
 
 | Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
 |---|---|---|
-| The Plinth and the Road Arch | A Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7 days) | 2 Emerald Brooches (Jeweller) |
-| The Robes | A Trident (the Beastmaster, 14 days), a Sponge (the Seer, 18 days), a Netherite Upgrade Template (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweller) |
+| The Plinth and the Road Arch | A Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7 days) | 2 Emerald Brooches (Jeweler) |
+| The Robes | A Trident (the Beastmaster, 14 days), a Sponge (the Seer, 18 days), a Netherite Upgrade Template (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweler) |
 | The Arms and the Cloak | A Tide Armor Trim Template (a Master Fisherman, 22 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull (the Old Sage, 14 days) | 2 Noble Robes (Tailor) |
 | The Head and the Lantern | A Heavy Core (the Golem Smith, 32 days), a Nether Star (the Beastmaster, 36 days), an Elytra (the Pathfinder, 45 days) | 2 Vintage Wine (Vintner) |
 
@@ -38,7 +38,7 @@ the only Wonder that needs a City. See [Wonders](wonders.md) for drawing up the 
 - **Travelers come twice as often**: up to two arrive at the village's inns in a morning while there are beds free, and
   an inn has room for twice as many at once. Each traveler is **twice as likely to be an Expert**.
 - It adds **8 to the village's beauty**.
-- If the Colossus is **damaged** (less of it standing than `wonderStanding`), all three are off until its builder
+- If the Colossus is **damaged** (less of it standing than the **Wonder Standing** setting), all three are off until its builder
   repairs it.
 
 ## The Founder's plaque

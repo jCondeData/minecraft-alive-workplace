@@ -2,7 +2,7 @@
 
 The roads and the wall you draw on a City Plan get built by the village's builders: streets with lamps, bridges and
 steps, a road to each trading partner, and a wall once the village has been raided. Part of 1.1 (Villages that build
-themselves): off until that expansion is finished.
+themselves): switched on in 1.0 with every other expansion.
 
 Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18
 
@@ -58,11 +58,11 @@ are open at once.
 
 | Key | Default | What it does |
 |---|---|---|
-| `stewardRoads` | on from 1.1 | Off: roads are drawn on the plan but never built |
-| `caravanRoads` | on from 1.1 | Off: no roads between villages |
+| `stewardRoads` | on from 1.0 | Off: roads are drawn on the plan but never built |
+| `caravanRoads` | on from 1.0 | Off: no roads between villages |
 | `caravanRoadReach` | 256 (32 to 512) | The longest half of a road towards another village |
-| `stewardWalls` | on from 1.1 | Off: the Steward never proposes a wall |
-| `steward` | on from 1.1 | Roads and walls need a Steward |
+| `stewardWalls` | on from 1.0 | Off: the Steward never proposes a wall |
+| `steward` | on from 1.0 | Roads and walls need a Steward |
 
 ## Saved data
 

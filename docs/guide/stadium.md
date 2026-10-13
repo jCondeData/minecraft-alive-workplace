@@ -31,7 +31,7 @@ different types stand in), and the Master Architect. Without Cobblemon it isn't 
 | Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
 |---|---|---|
 | The Field | Diamond Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days) | 2 Great Balls (Ball Smith) |
-| The Lower Stands | A Trident (a Master Fisherman, 14 days), the music disc Pigstep (the Bard Laureate, 18 days), a Netherite Upgrade Template (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweller) |
+| The Lower Stands | A Trident (a Master Fisherman, 14 days), the music disc Pigstep (the Bard Laureate, 18 days), a Netherite Upgrade Template (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweler) |
 | The Upper Stands and the Covered Stand | A Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a Flow Armor Trim Template (the Golem Smith, 14 days) | 2 Ultra Balls (Ball Smith) |
 | The Gate and the Floodlights | A Nether Star (the Golem Smith, 36 days), a Heavy Core (the Pokémon Ranger, 32 days), an Enchanted Golden Apple (the Grand Chef, 22 days) | 2 Noble Robes (Tailor) |
 
@@ -39,7 +39,7 @@ different types stand in), and the Master Architect. Without Cobblemon it isn't 
 
 - **Stadium Days**: every second afternoon, from noon until dusk, two to four visiting trainers stand in the two
   trainer boxes. They come from the villages of its realm (without a realm, the villages it trades with by caravan,
-  either way): each sends the trainer it would send to a Cup. When those have none to send, travelling trainers of
+  either way): each sends the trainer it would send to a Cup. When those have none to send, traveling trainers of
   Journeyman to Master rank come instead. You'll read "Stadium Day at (the village): 3 visiting trainers stand in the
   boxes until dusk" in chat.
 - **Challenge a visitor** as you would the village's own trainers: right-click them. A win pays CobbleDollars
@@ -54,7 +54,7 @@ different types stand in), and the Master Architect. Without Cobblemon it isn't 
 - **The Festival Cup is held here**: among the villages taking part in a Cup, the nearest one with a Stadium hosts
   it, and the Stadium serves as its Arena (its field the ring, its boxes, its seats), so its village gets the Cup's
   fair by the gate and the crowds. A village with an Arena whose Cup circuit has a Stadium holds no Cup of its own.
-- If the Stadium is **damaged** (less of it standing than `wonderStanding`), there are no Stadium Days and it hosts
+- If the Stadium is **damaged** (less of it standing than the **Wonder Standing** setting), there are no Stadium Days and it hosts
   no Cup until its builder repairs it.
 
 ## How it fits with the rest

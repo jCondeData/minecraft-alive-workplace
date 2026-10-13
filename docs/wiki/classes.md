@@ -1,8 +1,8 @@
 # Classes
 
 Every household in a village with a hall lives as a class: Peasant, Artisan, Burgher or Noble. Meet the next class's
-needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): off until that
-expansion is finished, and several of its pieces are not built yet (see Known limits).
+needs and the household rises; lack your own and it falls. Part of 1.8 (Classes and luxuries): switched on in 1.0 with
+every other expansion (`Expansions.M34`).
 
 Roadmap items: 34.1, 34.6, 34.7, 34.8, 34.9, 34.10, 34.11, 34.17, 34.17a, 34.18, 34.22
 
@@ -119,15 +119,15 @@ The day a server first runs 1.8, every village with a hall switches on by itself
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageClasses` | on from 1.8 | Off: no classes, no job gate, no class taxes; what is saved stays |
+| `villageClasses` | on from 1.0 | Off: no classes, no job gate, no class taxes; what is saved stays |
 | `classRiseDays` | 2 (1 to 30) | Dawns running the next class's needs must hold to rise |
 | `classFallDays` | 3 (1 to 30) | Dawns running a need of their own class must fail to fall |
 | `classGraceDays` | 7 (0 to 30) | Days a village settles in after it is first seeded (34.22): nobody falls, luxuries aren't needed, nobody retires |
-| `jewellers` | on from 1.8 | Off: no Jeweler job, and Jewelers already hired stand idle |
-| `vintners` | on from 1.8 | Off: no Vintner job, and Vintners already hired stand idle |
-| `tailors` | on from 1.8 | Off: no Tailor job, and Tailors already hired stand idle |
-| `printers` | on from 1.8 | Off: no Printer job, Printers already hired stand idle, no Spread the news quest |
-| `classOutfits` | on from 1.8 | Off: villagers wear only their job's outfit (no class layer, no elder's face) and no class packet is sent |
+| `jewellers` | on from 1.0 | Off: no Jeweler job, and Jewelers already hired stand idle |
+| `vintners` | on from 1.0 | Off: no Vintner job, and Vintners already hired stand idle |
+| `tailors` | on from 1.0 | Off: no Tailor job, and Tailors already hired stand idle |
+| `printers` | on from 1.0 | Off: no Printer job, Printers already hired stand idle, no Spread the news quest |
+| `classOutfits` | on from 1.0 | Off: villagers wear only their job's outfit (no class layer, no elder's face) and no class packet is sent |
 
 ## Saved data
 
@@ -210,13 +210,9 @@ versions of each were drawn for a pick round; the owner picked one per row on 20
 
 ## Known limits
 
-- **Nobody can rise past Artisan yet with the mod's own data.** The Burgher needs the Gazette, and the Printer who
-  makes it (34.11) isn't built. The three wines, the three sets of clothes and the three pieces of jewelry have
-  luxury files today, and a luxury without a file is a need that never holds.
 - Seeding counts villagers loaded round the hall: one standing in an unloaded chunk at the village's edge is seeded
   when it next loads, without a second chronicle line.
-- The grander homes (34.15, 34.16), the class outfits in game (34.18) and family trees are not built: the outfits'
-  art is (34.17), but no player sees it until 34.18's render layer.
+- The grander homes are on [Grander homes](grander-homes.md), the elders and family trees on [Elders](elders.md).
 - In GameTests classes are switched off unless a class test turns them on, so other tests' numbers don't move.
 
 ## Proof

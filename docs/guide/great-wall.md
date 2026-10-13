@@ -28,9 +28,9 @@ its stairs are on your side. See [Wonders](wonders.md) for drawing up the plans.
 
 | Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
 |---|---|---|
-| The Great Gate | A Sentry Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 Emerald Brooches (Jeweller) |
+| The Great Gate | A Sentry Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 Emerald Brooches (Jeweler) |
 | The West Run | A Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a Rib Armor Trim Template (the Seer, 14 days) | 2 Vintage Wine (Vintner) |
-| The East Run | A Wither Skeleton Skull (the Founder, 14 days), a Netherite Upgrade Template (the Beastmaster, 14 days), a Vex Armor Trim Template (the Merchant Prince, 22 days) | 2 Gold Circlets (Jeweller) |
+| The East Run | A Wither Skeleton Skull (the Founder, 14 days), a Netherite Upgrade Template (the Beastmaster, 14 days), a Vex Armor Trim Template (the Merchant Prince, 22 days) | 2 Gold Circlets (Jeweler) |
 | The Walk and the Towers' Crowns | A Heavy Core (the Pathfinder, 32 days), a Nether Star (the Founder, 36 days), a Netherite Ingot (the Old Sage, 14 days) | 2 Noble Robes (Tailor) |
 
 ## While it stands

@@ -87,10 +87,10 @@ zone, the Tailor's Shop and the Jeweler's Workshop in the Market zone.
 
 | Key | Default | What it does |
 |---|---|---|
-| `vintners` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Winery house. The blueprints stay in the Blueprint Table |
-| `tailors` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Tailor's Shop house. The blueprints stay in the Blueprint Table |
-| `printers` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Print Shop house. The blueprints stay in the Blueprint Table |
-| `jewellers` | on from 1.8 | Off (or 1.8 not yet released): villages don't grow the Jeweler's Workshop house. The blueprints stay in the Blueprint Table |
+| `vintners` | on from 1.0 | Off: villages don't grow the Winery house. The blueprints stay in the Blueprint Table |
+| `tailors` | on from 1.0 | Off: villages don't grow the Tailor's Shop house. The blueprints stay in the Blueprint Table |
+| `printers` | on from 1.0 | Off: villages don't grow the Print Shop house. The blueprints stay in the Blueprint Table |
+| `jewellers` | on from 1.0 | Off: villages don't grow the Jeweler's Workshop house. The blueprints stay in the Blueprint Table |
 
 The house pools are filled when the server starts, so a change takes a restart; houses already grown stay.
 
@@ -141,7 +141,6 @@ none (the Journeyman's blueprint is an ordinary trade, saved with the villager's
 - A worker of the four jobs who was set to Journeyman or higher without leveling up (by a command) doesn't sell the
   blueprint; the next level-up to Journeyman is what adds it.
 - The Steward doesn't plan any of the four II by a rule of their own.
-- The showcase scene has not been filmed yet: `luxury_workshops` is filmed on GitHub after the push.
 
 ## Proof
 

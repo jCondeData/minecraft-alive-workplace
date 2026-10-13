@@ -65,7 +65,7 @@ blocks.
 | Key | Default | What it does |
 |---|---|---|
 | `partnerRadius` | 16 (4 to 48) | How close to a workstation a pasture must be |
-| `partnerShows` | on from 1.2 | Off: partners still speed the work, but aren't seen doing it |
+| `partnerShows` | on from 1.0 | Off: partners still speed the work, but aren't seen doing it |
 | `maxWorkPace` | 200 (100 to 400) | The cap partners share with every other speed bonus |
 
 ## Saved data

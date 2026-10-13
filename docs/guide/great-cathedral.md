@@ -27,7 +27,7 @@ the Master Architect. See [Wonders](wonders.md) for drawing up the plans.
 | The Foundations and the West Front | A Prize Pottery Sherd (a Master Sifter, 9 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 Fine Clothes (Tailor) |
 | The Nave | The music disc otherside (the Bard Laureate, 18 days), an Echo Shard (the Old Sage, 18 days), a Heart of the Sea (the Pathfinder, 11 days) | 2 Illuminated Books (Printer) |
 | The Transepts and the Choir | A Totem of Undying (the Merchant Prince, 22 days), an Enchanted Golden Apple (the Grand Chef, 22 days), an Eye Armor Trim Template (the Old Sage, 18 days) | 2 Noble Robes (Tailor) |
-| The Towers and the Rose Window | An Elytra (the Pathfinder, 45 days), a Nether Star (the Golem Smith, 36 days), the music disc Relic (the Bard Laureate, 16 days) | 2 Gold Circlets (Jeweller) |
+| The Towers and the Rose Window | An Elytra (the Pathfinder, 45 days), a Nether Star (the Golem Smith, 36 days), the music disc Relic (the Bard Laureate, 16 days) | 2 Gold Circlets (Jeweler) |
 
 ## While it stands
 

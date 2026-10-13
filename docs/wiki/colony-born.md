@@ -1,6 +1,6 @@
 # A colony is born
 
-ROADMAP 33.10 (part of 1.7, "From village to realm"; off until 1.7 is released). The third step of founding a colony:
+ROADMAP 33.10 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). The third step of founding a colony:
 the settlers [sent with the charter](colony-settlers.md) reach the spot, make camp, raise a Village Hall and a Travel
 Post, and their builder starts the colony's first two buildings.
 
@@ -62,7 +62,7 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
 
 | Key | Default | What it does |
 |---|---|---|
-| `colonies` | on from 1.7 (off until then) | Off: no charters or tab. An order already on the road still arrives (or comes home), so nobody is lost. |
+| `colonies` | on from 1.0 | Off: no charters or tab. An order already on the road still arrives (or comes home), so nobody is lost. |
 
 ## Saved data
 
@@ -89,7 +89,6 @@ it and the owner hears it in chat. No colony is counted, so no wait before the n
 
 ## Known limits
 
-- The camp is the Settler's Wagon's until 33.14's Colony Camp lands.
 - If the server stops in the one tick between the camp and the builder's start, the builder has no table or builds
   until he takes the table by himself, and both blueprints wait in the chest (not tested).
 - Seen in the real client only through the showcase scene, which GitHub films; it was not filmed locally.

@@ -23,8 +23,8 @@ in) and the Master Architect. See [Wonders](wonders.md) for drawing up the plans
 
 | Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
 |---|---|---|
-| The Mole and the Quay | A Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (a Master Fisherman, 7 days) | 2 Emerald Brooches (Jeweller) |
-| The Tower | A Trident (the Beastmaster, 14 days), a Sponge (the Founder, 18 days), an Angler Pottery Sherd (the Grand Chef, 11 days) | 2 Gold Circlets (Jeweller) |
+| The Mole and the Quay | A Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (a Master Fisherman, 7 days) | 2 Emerald Brooches (Jeweler) |
+| The Tower | A Trident (the Beastmaster, 14 days), a Sponge (the Founder, 18 days), an Angler Pottery Sherd (the Grand Chef, 11 days) | 2 Gold Circlets (Jeweler) |
 | The Gallery | A Tide Armor Trim Template (a Master Fisherman, 22 days), a Conduit (the Seer, 18 days), a Totem of Undying (the Old Sage, 22 days) | 2 Illuminated Books (Printer) |
 | The Lantern and the Keeper's House | A Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 Vintage Wine (Vintner) |
 
@@ -37,7 +37,7 @@ in) and the Master Architect. See [Wonders](wonders.md) for drawing up the plans
 - The keeper watches the sea: **the day before drowned pirates raid**, everyone in the village is told ("Sails off the
   west shore: Drowned Pirates will strike Thornholm tomorrow night."), the chronicle notes it, and at dusk on the day
   the guards gather on the shore. Raids by land are left to the village's own lookouts.
-- If the Lighthouse is **damaged** (less of it standing than `wonderStanding`), all four are off until its builder
+- If the Lighthouse is **damaged** (less of it standing than the **Wonder Standing** setting), all four are off until its builder
   repairs it.
 
 ## How it fits with the rest

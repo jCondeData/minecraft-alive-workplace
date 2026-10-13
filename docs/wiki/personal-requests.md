@@ -241,7 +241,7 @@ the letter or the map; `revive`, `pet_near_home` (at dawn), `schooled` and `buil
 - A request by a villager who was let down can still be joined and finished; only their asking pauses.
 - "At dawn" is the hall's first round of the day, which is at dawn only when the village is loaded then.
 - The same request can be asked again on a later day.
-- The showcase scenes have not been filmed locally; GitHub films them after the push.
+- The showcase scenes were not filmed locally; GitHub films them every night.
 - A heirloom place is found from the hall when the request is asked (the nearest such structure within 1500 blocks,
   looked up at most once a day per village); in a world without structures the heirloom isn't asked.
 - The heirloom is looked for in chests within 3 chunks of where the structure was found; a big mineshaft's chests

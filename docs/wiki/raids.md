@@ -7,13 +7,13 @@ Roadmap items: 32.2, 32.14
 
 ## What a player sees
 
-Nothing new yet. Monsters still raid a village with a Village Hall and 8 villagers or more at night, and bandits still
-raid from their camp until their chief falls. Two things changed under the same look:
+Monsters raid a village with a Village Hall and 8 villagers or more at night, and raiders come from their lair until
+its captain falls. Under that look:
 
 - A raid under way **survives a restart**. Before, a server that stopped mid-raid forgot the raid: the raiders stayed,
   but the village no longer counted as raided and never got its "fought off" or "fled at dawn" line.
 - An attack is now **decided a day ahead**. At dusk each hall rolls whether raiders come the *next* night, so there is a
-  day in which a warning can be given (32.14 adds the warnings; until then the horn is still the first you hear of it).
+  day in which a warning can be given (below); a village with nobody keeping watch still hears the horn first.
 
 ## A day's warning (32.14)
 
@@ -22,7 +22,8 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **Who keeps watch.** A guard whose Guard Post is within 24 blocks of a finished **Lookout Tower** or **Wall Tower**
   (any style or tier) says who comes and from which side; a **Scout** posted there (not out on a mission) also counts
   them ("about 9 strong"). Other systems add sources to `guard/Warnings.SOURCES` (M35's Lighthouse). The Seer is not a
-  source yet (ROADMAP Notes, 32.14).
+  source yet, though 32.14 gives the Seer two days' warning (bug B133); with one in the village the night is foretold
+  at dawn by the Seer's own round (29.16).
 - **Told at once.** Players in the village, and the hall's owner wherever they are online, read "Smoke on the north
   road: Warlord Harl's band will strike Oakvale tomorrow night." The chronicle has it; the guards icon says "Raiders
   tomorrow night, from the north" and the Defense page's new slot shows the attack, who and the side.
@@ -152,8 +153,8 @@ None.
 - The first night after updating is quiet: a hall first rolls at its next dusk, for the night after.
 - A village whose chunks aren't loaded at dusk doesn't roll that day.
 - `coast` is checked when the clock rolls (once a day), not cached.
-- `shore` and `portal` arrivals pick a place only; wading in from a ship and the piglins' outpost come with their
-  cultures (32.8, 32.10). The lair's `strength`, the `loot` table and the captain's `names` are used from 32.3 on
+- `shore` and `portal` arrivals pick a place only; wading in from a ship and the piglins' outpost are their
+  cultures' own ([Drowned pirates](pirates.md), [Piglin incursions](piglins.md)). The lair's `strength`, the `loot` table and the captain's `names` are used from 32.3 on
   ([Lairs](lairs.md)).
 
 ## Proof

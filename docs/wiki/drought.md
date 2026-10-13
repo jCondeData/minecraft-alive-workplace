@@ -1,6 +1,6 @@
 # Drought and the Well Keeper
 
-ROADMAP 32.17. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.17. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. When the rain stays away a village can fall into a
 drought: the crops wilt, the farmland dries, the cauldrons run low and the villagers fret about the wells. A new job,
 the **Well Keeper**, carries water to the fields.
@@ -56,7 +56,7 @@ Roadmap items: 32.17
 
 | Key | Default | What it does |
 |---|---|---|
-| `wellKeepers` | on from 1.6 | Villagers at a cauldron can be made Well Keepers with a shovel. Off: no Well Keeper job (the cauldron's tooltip leaves it out), and Well Keepers already hired stand idle. |
+| `wellKeepers` | on from 1.0 | Villagers at a cauldron can be made Well Keepers with a shovel. Off: no Well Keeper job (the cauldron's tooltip leaves it out), and Well Keepers already hired stand idle. |
 | `disasters` | every disaster id → true | `drought: false`: no drought ever starts, and one under way ends at once. |
 
 ## Saved data

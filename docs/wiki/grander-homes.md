@@ -99,7 +99,7 @@ rules use it:
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageClasses` | on from 1.8 | With classes off nobody wants a grander home: no tips, the Steward's condition never holds and builders don't sell the Townhouse or the Manor. |
+| `villageClasses` | on from 1.0 | With classes off nobody wants a grander home: no tips, the Steward's condition never holds and builders don't sell the Townhouse or the Manor. |
 
 ## Saved data
 

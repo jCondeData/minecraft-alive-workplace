@@ -46,9 +46,29 @@ sneak-right-click the ground to turn it, and sneak-right-click the air to pick i
 mirror it. It must stand with its middle within 64 blocks of the hall and every corner within 96, and never over a
 finished building. A book and quill in your other hand writes down the whole Wonder's material list.
 
+## Laying the Foundation Stone
+
+With the plan placed, right-click one of the village's builders with it. A **Foundation Stone**, a carved stone with
+a brass plaque, goes down just outside the Wonder's front corner, everyone on the server hears that you have begun it,
+and the village's chronicle notes it. The chests within 8 blocks of the stone are the Wonder's stockpile: stock them
+there. If the builder can't take it on (no bench, they work for another village, no room for the stone) you are told
+why.
+
+Right-click the stone at any time for the stage it is on, how far along it is and what the chests are still short of.
+To abandon the Wonder, sneak and break the stone (you must be the owner or an operator): what's built stays, and the
+plan comes back to you.
+
+## The crew
+
+Every builder of the village with no build of their own joins the Wonder's crew, up to twelve (the **Builders per
+Wonder** setting). The stone and the Wonder's card on the hall name who leads it (the Master Architect, when he is one of the village's builders) and how many are on it. Click
+**[Call every builder]** under the stone's status (owner or operator) to bring in the busy ones too, as they finish what they're on. Each
+builder takes a column of the Wonder and works it from the bottom up, so nothing goes up with nothing under it, and
+domes, towers and statues are reached by [scaffolding](scaffolding.md).
+
 ## Building it
 
-A Wonder goes up in four named stages, and up to twelve builders work on it together. Besides its blocks, each stage
+A Wonder goes up in four named stages, one after another. Besides its blocks, each stage
 asks for goods: two or three hard things **found by exploring**, one of each (a Heart of the Sea from buried treasure,
 an Echo Shard from an ancient city, a Heavy Core from a trial chamber, a Nether Star from the Wither), and one rare good
 from an upgraded workshop, like Vintage Wine or Gold Circlets. Each Wonder's page lists them. A Wonder is the one build

@@ -1,7 +1,7 @@
 # Edicts
 
 Laws a village's owner proclaims at the Village Hall. Each gives the village a boost at a cost, and each has a reform
-that takes the cost away for good. Part of 1.4 (Edicts and civic items): off until that expansion is finished.
+that takes the cost away for good. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
 Roadmap items: 30.1, 30.1a, 30.3, 30.4, 30.5, 30.6, 30.7, 30.8, 30.9, 30.10, 30.21, 30.22, 31.22
 
@@ -79,7 +79,7 @@ loads, so a save in the middle of a raid can't leave a free sword.
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageEdicts` | on from 1.4 | Off: none can be proclaimed, and those in force do nothing but stay saved |
+| `villageEdicts` | on from 1.0 | Off: none can be proclaimed, and those in force do nothing but stay saved |
 | `edictMinDays` | 3 (0 to 30) | Days an edict stays in force before it can be lifted |
 | `maxWorkPace` | 200 (100 to 400) | The cap every speed bonus shares, Long Shifts included |
 

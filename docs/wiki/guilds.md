@@ -1,7 +1,7 @@
 # Guilds
 
 A Master of a trade, given a Guild Charter, leads that trade's guild. Once the village has built a Guildhall, the
-guild's perks reach every member. Part of 1.4 (Edicts and civic items): off until that expansion is finished.
+guild's perks reach every member. Part of 1.4 (Edicts and civic items): switched on in 1.0 with every other expansion.
 
 Roadmap items: 30.17, 30.18, 30.19, 30.20, B78
 
@@ -54,7 +54,7 @@ member left the guild is dissolved.
 
 | Key | Default | What it does |
 |---|---|---|
-| `guilds` | on from 1.4 | Off: charters are refused and perks are off; guilds stay saved |
+| `guilds` | on from 1.0 | Off: charters are refused and perks are off; guilds stay saved |
 | `guildsPerRank` | 1 (1 to 4) | Guilds a village may have per rank above Hamlet |
 
 ## Saved data

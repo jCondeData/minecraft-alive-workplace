@@ -42,4 +42,3 @@ type `/workplace quests untrack`, to stop.
 - **What feeds it:** the hall's daily quests, your [friends](friendship.md)' requests, the village's
   [stories](story-arcs.md) and its bounties.
 - **What it affects:** finishing quests pays emeralds and earns [standing](reputation.md) and friendship.
-- Without this expansion, the hall's Quests page shows just today's daily quests, with no tabs and no tracking.

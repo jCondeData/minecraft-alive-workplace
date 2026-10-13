@@ -1,6 +1,6 @@
 # The settlers set out
 
-ROADMAP 33.9 (part of 1.7, "From village to realm"; off until 1.7 is released). The second step of founding a
+ROADMAP 33.9 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). The second step of founding a
 colony: the owner takes the [Colony Charter](colony-charter.md), its spot chosen, back to the hall, and the village
 sends two settlers with supplies. What happens when they arrive (33.10) gets its own page.
 
@@ -64,7 +64,7 @@ The journey takes 3 minutes plus a tick for every block to the spot (612 blocks:
 
 | Key | Default | What it does |
 |---|---|---|
-| `colonies` | on from 1.7 (off until then) | Off: the hall refuses the charter ("Colonies are switched off on this server."). An order already given goes on. |
+| `colonies` | on from 1.0 | Off: the hall refuses the charter ("Colonies are switched off on this server."). An order already given goes on. |
 
 ## Saved data
 

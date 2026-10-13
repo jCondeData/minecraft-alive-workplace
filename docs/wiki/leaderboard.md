@@ -1,6 +1,6 @@
 # The weekly leaderboard
 
-ROADMAP 33.19 (part of 1.7, "From village to realm"; off until 1.7 is released). Once a week the whole server hears
+ROADMAP 33.19 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). Once a week the whole server hears
 how the players' villages did: the biggest, the richest, the happiest, the one with most Legends and the greatest
 realm. Winners get a line in their chronicle and a ribbon on their hall for a week.
 

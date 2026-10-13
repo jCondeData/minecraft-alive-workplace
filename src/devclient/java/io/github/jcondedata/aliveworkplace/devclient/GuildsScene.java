@@ -84,7 +84,7 @@ final class GuildsScene {
 			server.execute(() -> charter(server));
 		}
 		if (tick == 70) {
-			server.execute(() -> VillageHallScreen.open(player(server), HALL));
+			server.execute(() -> VillageHallScreen.openRemote(player(server), HALL)); // the camera hovers 40 blocks off: opened as from a Village Ledger (B88)
 		}
 		if (tick == 85) {
 			server.execute(() -> findCards(server));
@@ -167,6 +167,9 @@ final class GuildsScene {
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
 		hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+		// the hall's record now, not in vanilla's next task: otherwise the Masters spawned below find no hall, and that
+		// answer is kept 200 ticks (CivicEffects), past the charters, so no guild's numbers reach them (B88)
+		ScreenshotHarness.fileRecords(level, HALL, 4);
 		VillagerProfession[] jobs = {ModVillagers.MINER, VillagerProfession.WEAPONSMITH, ModVillagers.LUMBERJACK,
 			VillagerProfession.FARMER, VillagerProfession.SHEPHERD, ModVillagers.SCHOLAR, ModVillagers.NURSE, ModVillagers.INNKEEPER, ModVillagers.GUARD,
 			ModVillagers.TUTOR};

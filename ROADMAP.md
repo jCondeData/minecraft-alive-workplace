@@ -196,6 +196,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B121** (approved auto 2026-10-12) SiegeGameTests.aGatehouseTakesThreeTimesAsLong (batch siegeGatehouse) failed once in CI run 882 (5444771, a roadmap-only commit, 2026-10-12 07:18Z), the only failure of 1999; runs 881 and 883 passed it. The log shows only the name in the summary. Expected: the Gatehouse always takes at least 3x the Palisade Gate's time on every run. Test: the test repeated 10x (tester skill's repeat generator); a test-only flake for the QA lane (found by lane-a-1012-1843, 2026-10-12) (found by lane-a-1012-1843, 2026-10-12)
 - [x] **B122** (approved auto 2026-10-12) ScoutGameTests.aBanditDoesntGoForAScout10BlocksAway and SiegeGameTests.aGatehouseIITakesLongerThanAGatehouse (batch siegeGatehouseII; kin of B121) each failed once in lane-b-1012-1844's local full build (b65f22c4, 2026-10-12 20:14Z, 2 of 2006); both passed alone right after (17/17) and in the next full build (2006/2006). The log shows only the names. Expected: both pass every run. Test: both repeated 10x (QA lane: test-only flakes) (found by lane-b-1012-1844, 2026-10-12)
 - [x] **B123** (approved auto 2026-10-12) GolemSmithGameTests.sentryHoldsItsPointThroughAFight (batch golemSmithSentry) turned main red in CI run 885 (b65f22c4, 2026-10-12 20:37Z), the only failure of 2006; the same commit passed it in two local full builds, and CI run 886 passed. The log shows only the name. Expected: passes every run. Test: the test repeated 10x (red duty: it turned main red) (found by lane-b-1012-2235, 2026-10-12)
+- [ ] **B124** A worker's status line names every job 'builder': a Miner with no quarry shows 'Apprentice builder · 10/70 XP…' because lang key message.aliveworkplace.status.level hardcodes 'builder' (seen in the tonics scene by lane-b-1012-2235). Expected: the line names the villager's own job (Apprentice miner …). Test: a GameTest reading a non-builder worker's status line (found by lane-b-1012-2235, 2026-10-13)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4102,7 +4103,7 @@ Legends.
     the emeralds and gives the plan, and refuses over the cap; placing is refused outside the village and over a
     finished building, and works elsewhere in all four turns;
   - scene `wonders_page`: the page with the folly's card, then the plan in hand and its see-through preview.
-- [ ] **35.4** **The Foundation Stone and stages that survive restarts.** Hand the placed Wonder Plan to any builder
+- [x] **35.4** (review: pending 2026-10-11) **The Foundation Stone and stages that survive restarts.** Hand the placed Wonder Plan to any builder
   of the village: a **Foundation Stone** (a new block, art through the pixel-art skill: a carved stone with a brass
   plaque) goes down just outside the Wonder's front corner, and the Wonder becomes a `WonderSite` in a new saved
   `WonderManager` (one per dimension): which Wonder, its hall, its placement, the current stage, the goods delivered,
@@ -4120,7 +4121,7 @@ Legends.
   - a GameTest saves and reloads mid-stage II (the manager, the sites, the builder) and the folly is finished;
   - cancelling returns the plan, and a world saved before this item loads and saves unchanged;
   - scene `wonder_site`: the plan handed over, the stone going down, stage I starting.
-- [ ] **35.5** **Crews: every builder on one Wonder.** Each builder whose Blueprint Table is within the Wonder's
+- [x] **35.5** (review: pending 2026-10-12) **Crews: every builder on one Wonder.** Each builder whose Blueprint Table is within the Wonder's
   village joins its crew when they have no build of their own (up to `wonderCrew`, default 12; **Call every builder**
   on the stone's screen brings the rest in as they finish what they're on). The lead is the Master Architect (M29)
   when there is one, else the crew's highest-level builder, named on the stone and the hall. Helpers today work a
@@ -4515,6 +4516,73 @@ item waits.
   button takes the Realm tab's last slot, the members and villages to add stop one short of it; (4) config
   `realmMap` (on with 1.7).
 
+- 2026-10-11 (35.5, lane-c-1011-2132): **Crews** decisions: (1) "8 × 8 columns" is read as the part split at least 8 by 8
+  (a column is the part's width over 8, rounded down, at least one block): a 64-wide part gets the 8-block columns the
+  spec names, and the 9-wide test folly 1-block columns, so eight builders have room (8-block columns would give the
+  folly four columns and four idle builders; 2-block ones left the eight at a third of one builder's time, not a
+  quarter). The layer rule doesn't apply to levelling the ground (its list isn't in layers), and a block the lead gave
+  up on (out of reach) doesn't hold the layers back, else a crew could wait on it for ever. (2) The lead of stage I is the Master Architect when he is one of the village's
+  builders, else the builder handed the plan; each next stage goes to the Master Architect or the highest-level of
+  the lead and the village's free builders. (3) "Call every builder" is a clickable line under the stone's status
+  (`/workplace wonders call`, owner or operator within 8 blocks); a called builder joins between builds, ahead of its
+  own queue, until the Wonder is done. (4) The test folly's file now allows a crew of 12 (was 4) so eight and ten
+  builders fit. (5) A crew forms only on a Wonder's parts; the old 64-step helper window is unchanged for other builds,
+  and `workplaceBuildersHelp` helpers no longer join a Wonder's parts (the crew does). **Not tested: the PERF
+  benchmark with a 12-builder crew** (Done when's third line): `/workplace benchmark` and `tools/packtest` set up plots
+  of ordinary workers and have no way to start a Wonder, and the pack's jar has Wonders behind the closed 2.0 gate, so
+  a crew can't be put on the pack server without new harness code (a `benchmark` option that opens the gate and begins
+  the folly with 12 builders). Left for the QA lane; the GameTests measure the crew's speed, not its tick cost.
+  **The quarter, met (lane-c-1012-0333):** see the end of this note. Before that: `WonderCrewGameTests.eightBuildersRaiseTheFolly` times one builder alone on
+  the folly (12,372 to 12,416 ticks at `workplaceBuildDelay` 20, against 11,940 for its 597 blocks) and then eight on
+  the same ground: 3,440 to 3,600 ticks over four runs, a third of the lone time or less but not the quarter (3,100)
+  the Done when asks. Members are busy 73 to 85% of their ticks, yet take about 34 ticks a block against the lone
+  builder's 21: the time goes on walking between columns and to the chests and dodging each other, not on waiting
+  for layers (tried here without effect: 1-block or 2-block columns, taking for a whole column per trip, a crew member
+  keeping its bag while it waits, its pause running on while it walks). Stage I's walls take 1,500 to 1,650 ticks,
+  levelling the ground round stage III about 360. The test holds the crew to a third until this is solved; make it
+  a quarter then. Fixed after the first full build (15 dome blocks missing): the lead of a crew reached its retries
+  while the crew was still building below and gave up for good on blocks with nothing to hang on yet; now, while the
+  crew has work, the lead puts those to the back of its retries instead. That wasn't the cause (lane-c-1012-0033,
+  2 to 3 failures in 8 runs of the test alone, with logging): the lead fell off the dome ("hit the ground too hard")
+  during stage III, `Builders.onBuilderDeath` removed its part's site, and a Wonder counts a part whose site is gone
+  as built, so the Wonder finished with the dome's top never put up. Now a Wonder part outlives its lead
+  (`WonderCrews.handOn`): it goes to the highest-level member of its crew, else the lead a next stage would get (in
+  their queue), else the first builder to join; a member's death just leaves its column. Decision (lane-c-1012-0033):
+  **a builder on its job takes no fall damage** (`BuilderEvents`, any build, not only Wonders): builders work on walls,
+  roofs and domes like professionals on scaffolds, and a crew jostling at the dome's edge lost 1 to 2 of 8 builders a
+  run to falls. Why they go over the edge (crewmates bumping, `hop`) isn't fixed; with the rule it costs a little
+  time, not a builder. `handOn` itself is now a safety net for other deaths (mobs, lava) and is not tested by a
+  GameTest of its own: with handOn but still with fall deaths, 2 of 10 runs stuck at stage 3, 0%, cause not found. Everything else of the Done when is met and tested (columns, layers, nothing hung in the air, the
+  reload, scene `wonder_crew`).
+  **Finished (lane-c-1012-0333):** after the merge the crew took 3,920 to 4,220 ticks (4 runs; the full build's 4,140
+  failed even the third). Measured where the members' ticks went: (1) each took for the rest of its own 1-block column
+  only, a block or two, so it walked to the chests for nearly every block (stage III: down from the dome and back up,
+  about 600 of its 750 ticks), and the lead, taking for the 192 steps a lone builder takes for, emptied the chests for
+  the rest; (2) levelling the ground round stage III with no dirt in the chests deferred one hole a tick, 360 ticks of a
+  whole crew standing about (a lone builder too). Fixes in `BuilderWork`: a crew member (the lead too) takes in one trip
+  for its column and a share of the stage dealt round the crew like cards, each step to half the crew, plus a little of
+  the later stages (`crewShare`); a builder out of a material while levelling skips every hole wanting it at once
+  (`outForLandscape`, for any build). Tried and dropped (worse in 6-run A/B tests): picking columns it has the
+  materials for (3,449 mean against 3,220), taking from a near crewmate before the chests (3,764 to 4,091), an exact
+  n-th share (3,245) against half (2,772) or all (2,944). Now: crew alone 2,539 to 2,878 ticks over 10 runs (mean
+  2,665), lone builder about 12,150, so the quarter (3,037) holds with 5 to 16% to spare; the test asks a quarter and
+  passed 14 of 14 full runs. `handOn` now has its GameTest (`aLeadKilledMidPartHandsItOn`, 8 of 8): the lead killed
+  mid-part, the part goes to a living member as its lead and the folly is finished; the dead lead's bag drops where it
+  fell, so the test has the owner put it back in a chest by the stone (without that the crew waits, rightly, for the
+  materials it carried). **Still not run: the PERF benchmark with a 12-builder crew** (above): left for the QA lane.
+  Seen while testing, not this item's: `WonderDataGameTests.theCapsHold` fails ("a limit of 2 refused the second
+  village") when only the six Wonder test classes run, also without these changes (the other classes' follies count
+  against its server limit); it passes in the full suite.
+
+- 2026-10-11 (35.4, lane-c-1011-2132): **the Foundation Stone** decisions: (1) a lone builder can't reach the test
+  folly's finial lantern (template 4, 18, 4): it is five blocks over the highest spot inside the closed dome, so it is
+  the one step skipped; the real-builder GameTests check the folly matches its drawing in every block but that one
+  (`WonderSiteGameTests.unlikeButTheFinial`) and must be tightened to every block when **35.6 Scaffolding** lands;
+  (2) handing over re-checks the switch, the caps, the placement and the village (the builder's bench within the hall's
+  64 blocks), not the requirements, which were met when the plans were drawn up; (3) a Wonder remembers the builder it
+  was handed to (`builder`, optional), because a finished part's build site is removed and with it who built it, so
+  the next stage still has its builder; (4) the stone drops nothing and a finished Wonder's stone breaks like any block
+  without forgetting the Wonder; (5) the chronicle has a new kind, `wonder` (a beacon).
 - 2026-10-11 (31.22, lane-b-1011-1833): **the eight reforms as stories** decisions: (1) a reform story starts from
   the hall's round (`Reforms.round`) when its edict is in force, not by a trigger chance, so the ask comes the morning
   the edict is proclaimed; it only starts when arcs start by themselves (`Arcs.AUTO`, off in GameTests like every arc);

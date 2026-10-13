@@ -311,6 +311,8 @@ public final class WorkplaceConfig {
 	public boolean builderScaffolding = Expansions.on(Expansions.M35);
 	/** How many villages on the server may each build the same kind of Wonder (0: no limit). */
 	public int wonderServerLimit = 0;
+	/** Most builders on one Wonder's crew, its lead included (35.5); a Wonder's file may allow fewer. */
+	public int wonderCrew = 12;
 	/** Wonder ids that can't be started ({@code great_cathedral} or {@code pack:id}); one already finished keeps its blocks and powers. File only. */
 	public List<String> disabledWonders = new ArrayList<>();
 	/** Which of a host's festivals are Cups: every one (1), every second (2), ... (owner, 28.1a: every festival). */
@@ -452,7 +454,8 @@ public final class WorkplaceConfig {
 		"cupEveryFestivals", 1, 8,
 		"threatLevel", 0, 3,
 		"leaderboardHour", 0, 23,
-		"wonderServerLimit", 0, 64);
+		"wonderServerLimit", 0, 64,
+		"wonderCrew", 1, 32);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -817,6 +820,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.LEGENDS = wonderLegends && Expansions.on(Expansions.M35);
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.CAPS = wonderCaps.stream().mapToInt(Integer::intValue).toArray();
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.SERVER_LIMIT = wonderServerLimit;
+		io.github.jcondedata.aliveworkplace.wonder.WonderCrews.LIMIT = wonderCrew;
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.DISABLED = wonderIds(disabledWonders);
 		io.github.jcondedata.aliveworkplace.build.Scaffolds.ENABLED = builderScaffolding && Expansions.on(Expansions.M35);
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.

@@ -376,6 +376,56 @@ public final class BuildPlan {
 		return bounds;
 	}
 
+	// --- crews (35.5) -------------------------------------------------------------------------
+
+	/** Columns across a part, each way: a Wonder's crew splits each part into 8 x 8 columns (35.5). */
+	public static final int CREW_COLUMNS = 8;
+	/** Each stage's steps by crew column, in the stage's order; bucketed once, the first time a crew asks. */
+	private final Map<Stage, Map<Long, List<Step>>> columns = new java.util.EnumMap<>(Stage.class);
+	/** Where the plan puts a foundation or structure block (what a structure block may need under it). */
+	@Nullable
+	private java.util.Set<BlockPos> solid;
+
+	/**
+	 * How wide (and deep) a crew column is: the part's width over {@link #CREW_COLUMNS}, rounded down, at least one
+	 * block (a 64-wide part has 8-block columns, a 9-wide one 1-block columns: at least 8 x 8 of them).
+	 */
+	public int columnWidth() {
+		int span = Math.max(bounds.getXSpan(), bounds.getZSpan());
+		return Math.max(1, span / CREW_COLUMNS);
+	}
+
+	/** The crew column {@code pos} is in (blocks outside the part, the landscaping's, fall in columns past its edge). */
+	public long column(BlockPos pos) {
+		int w = columnWidth();
+		int cx = Math.floorDiv(pos.getX() - bounds.minX(), w);
+		int cz = Math.floorDiv(pos.getZ() - bounds.minZ(), w);
+		return ((long) cx << 32) | (cz & 0xffffffffL);
+	}
+
+	/** {@code stage}'s steps by crew column, each column in the stage's order (35.5). */
+	public synchronized Map<Long, List<Step>> columns(Stage stage) {
+		return columns.computeIfAbsent(stage, s -> {
+			Map<Long, List<Step>> out = new java.util.LinkedHashMap<>();
+			for (Step step : steps(s)) {
+				out.computeIfAbsent(column(step.pos()), k -> new ArrayList<>()).add(step);
+			}
+			out.replaceAll((k, v) -> List.copyOf(v));
+			return java.util.Collections.unmodifiableMap(out);
+		});
+	}
+
+	/** Whether the plan puts a foundation or structure block at {@code pos}. */
+	public synchronized boolean solidPlannedAt(BlockPos pos) {
+		if (solid == null) {
+			java.util.Set<BlockPos> set = new java.util.HashSet<>();
+			foundation.forEach(s -> set.add(s.pos()));
+			structure.forEach(s -> set.add(s.pos()));
+			solid = set;
+		}
+		return solid.contains(pos);
+	}
+
 	/**
 	 * True if the plan still has to put a solid block at {@code pos}: somewhere a builder should not
 	 * stand (or send anyone else to stand), or it will be in its own way later.

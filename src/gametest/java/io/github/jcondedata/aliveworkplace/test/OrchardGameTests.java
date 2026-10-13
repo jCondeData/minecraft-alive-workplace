@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.orchard.Fruit;
+import io.github.jcondedata.aliveworkplace.orchard.OrchardWork;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
@@ -46,12 +47,14 @@ public class OrchardGameTests implements FabricGameTest {
 
 	/**
 	 * An orchard (a Field Marker's area): sweet berries from the chest planted as bushes in a grid, 2 apart. Alone in its
-	 * batch: the keeper picks ripe fruit within 16 blocks first, and the next test's bushes are that close.
+	 * batch: the keeper picks ripe fruit within 16 blocks first, and the next test's bushes are that close (and fruit an
+	 * earlier batch left outside the area is cleared first).
 	 */
 	//$ gametest_ticks_batch AREA '2400' '"orchard_planting"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "orchard_planting")
 	public void orchardKeeperPlantsTheOrchard(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.fruit(helper, helper.absolutePos(BASKET), OrchardWork.RADIUS + 8);
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(14, 1, 14))) {
 			helper.setBlock(p, Blocks.GRASS_BLOCK);
 		}
@@ -82,6 +85,7 @@ public class OrchardGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "orchard_glow")
 	public void orchardKeeperHangsGlowBerries(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.fruit(helper, helper.absolutePos(BASKET), OrchardWork.RADIUS + 8);
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(9, 5, 9), new BlockPos(13, 5, 13))) {
 			helper.setBlock(p, Blocks.STONE);
 		}

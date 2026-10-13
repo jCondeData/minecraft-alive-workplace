@@ -109,6 +109,28 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every fruit plant (berry bushes, cave vines, cocoa, and anything else ripe) outside the test area within
+	 * {@code radius} of {@code center} (absolute), from 4 below to 10 above. An Orchard Keeper picks ripe fruit within 16
+	 * of the basket before planting, and an earlier batch's glow berries left just outside the area took the planting
+	 * test's keeper out of it, into a chunk that doesn't tick, where he stood frozen for the rest of the test. Only for
+	 * tests alone in their batch.
+	 */
+	static void fruit(GameTestHelper helper, net.minecraft.core.BlockPos center, int radius) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB area = helper.getBounds();
+		for (net.minecraft.core.BlockPos p : net.minecraft.core.BlockPos.betweenClosed(center.offset(-radius, -4, -radius), center.offset(radius, 10, radius))) {
+			if (area.contains(net.minecraft.world.phys.Vec3.atCenterOf(p))) {
+				continue;
+			}
+			net.minecraft.world.level.block.state.BlockState state = level.getBlockState(p);
+			if (state.getBlock() instanceof net.minecraft.world.level.block.SweetBerryBushBlock || state.getBlock() instanceof net.minecraft.world.level.block.CaveVines
+				|| state.getBlock() instanceof net.minecraft.world.level.block.CocoaBlock || io.github.jcondedata.aliveworkplace.orchard.Fruit.isRipe(state)) {
+				level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+			}
+		}
+	}
+
+	/**
 	 * Turns village sharing on for this test ({@code Village.RADIUS}, normally off in tests) and off again when the test
 	 * ends, passed or failed — a failed test that left it on made the next batches' builders share chests and fail too.
 	 */

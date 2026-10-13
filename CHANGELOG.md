@@ -129,7 +129,8 @@ asks for the steps, `latest.log` and any crash report).
   looks like the stone it replaces (B88, Cobblemon 1.8).
 - Smoother first day on big packs (B103): the first child of a Cradle to grow up no longer holds up a tick by up to a
   quarter of a second (the code it needs is loaded in the background while the server starts), and the nearest Village
-  Hall is looked up once a tick instead of once for each thing that speeds a worker up or slows them down. The season
+  Hall, and the building a villager's bed is in, are looked up once a tick instead of once for each thing that speeds a
+  worker up or slows them down. The season
   test's first day went from 4 ticks with over 50 ms of our code to 1, and from 16.7% to 14.7% of the tick.
 - A worker's status names their own job: a Miner's level line reads "Apprentice Miner · 10/70 XP…" instead of
   calling every worker a builder (B124).

@@ -53,26 +53,51 @@ public final class Homes {
 
 	/** {@link #at}, with the box the building fills (a Legend's home is shared by every bed in it, ROADMAP 29.5). */
 	public static Optional<Building> building(ServerLevel level, BlockPos bed) {
-		Building best = null;
-		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
+		return in(homes(level), bed);
+	}
+
+	/**
+	 * Every finished building in the dimension but roads (a road is nobody's home, 27.15), with its box. On the server
+	 * thread the list is worked out once a tick (B103: a mood or pace check for every villager in one tick looked up
+	 * every building's size once per villager) and again whenever a building is added or forgotten in that tick.
+	 */
+	private static java.util.List<Building> homes(ServerLevel level) {
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		if (!level.getServer().isSameThread()) {
+			return homesNow(level, manager);
+		}
+		long now = level.getGameTime();
+		if (homesLevel != level || homesManager != manager || homesTick != now || homesChanges != manager.changes()) {
+			homesCached = homesNow(level, manager);
+			homesLevel = level;
+			homesManager = manager;
+			homesTick = now;
+			homesChanges = manager.changes();
+		}
+		return homesCached;
+	}
+
+	private static java.util.List<Building> homesNow(ServerLevel level, BuildSiteManager manager) {
+		java.util.List<Building> out = new java.util.ArrayList<>();
+		for (BuildSiteManager.Finished f : manager.finishedIn(level)) {
 			if (io.github.jcondedata.aliveworkplace.city.Roads.isSegment(f.structure())) {
-				continue; // a road is nobody's home (27.15)
+				continue;
 			}
 			Vec3i size = size(level, f.structure());
-			if (size == null || Math.abs(f.placement().origin().getX() - bed.getX()) >= size.getX() + size.getZ()
-				|| Math.abs(f.placement().origin().getZ() - bed.getZ()) >= size.getX() + size.getZ()) {
-				continue; // (too far away to be in it whichever way it's turned)
-			}
-			BoundingBox box = BlueprintOutline.bounds(f.placement(), size);
-			if (box.isInside(bed)) {
-				Home home = new Home(f.structure(), HomeGrades.grade(f.structure()));
-				if (best == null || home.tier() > best.home().tier()) {
-					best = new Building(home, box);
-				}
+			if (size != null) {
+				out.add(new Building(new Home(f.structure(), HomeGrades.grade(f.structure())), BlueprintOutline.bounds(f.placement(), size)));
 			}
 		}
-		return Optional.ofNullable(best);
+		return java.util.List.copyOf(out);
 	}
+
+	@Nullable
+	private static ServerLevel homesLevel;
+	@Nullable
+	private static BuildSiteManager homesManager;
+	private static long homesTick = Long.MIN_VALUE;
+	private static int homesChanges;
+	private static java.util.List<Building> homesCached = java.util.List.of();
 
 	/**
 	 * Every finished building in the dimension with the box it fills, worked out once (each size read once), for checking

@@ -133,4 +133,34 @@ public class ClassWarmupGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * The buildings a bed is looked up in are worked out once a tick (B103: the pace of every villager at once read every
+	 * building's size per villager), and still follow a building finished or taken down in that same tick.
+	 */
+	//$ gametest_batch AREA '"b103_homes"'
+	@GameTest(template = AREA, batch = "b103_homes")
+	public void homesFollowABuildingFinishedOrForgottenWithinATick(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(
+			level.dimension().location(), helper.absolutePos(new BlockPos(2, 2, 2)), net.minecraft.world.level.block.Rotation.NONE,
+			net.minecraft.world.level.block.Mirror.NONE);
+		net.minecraft.resources.ResourceLocation house = io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STONE_HOUSE.id();
+		BlockPos bed = helper.absolutePos(new BlockPos(4, 3, 5));
+		Leftovers.after(helper, () -> sites.forgetFinished(placement));
+		long tick = level.getGameTime();
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Homes.building(level, bed).isEmpty(), "setup: a building before one is finished");
+		sites.recordFinished(house, placement, java.util.UUID.randomUUID());
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Homes.building(level, bed).map(b -> b.home().structure().equals(house)).orElse(false),
+			"the house just finished isn't the bed's home: " + io.github.jcondedata.aliveworkplace.people.Homes.building(level, bed));
+		sites.forgetFinished(placement);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Homes.building(level, bed).isEmpty(), "the house taken down is still the bed's home");
+		sites.recordFinished(house, placement, java.util.UUID.randomUUID());
+		helper.assertTrue(level.getGameTime() == tick, "setup: the checks ran over more than one tick");
+		helper.runAfterDelay(1, () -> {
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Homes.building(level, bed).isPresent(), "the house isn't the bed's home a tick later");
+			helper.succeed();
+		});
+	}
 }

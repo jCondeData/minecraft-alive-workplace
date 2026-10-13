@@ -125,7 +125,8 @@ first hall round, village-mates check or cradle of a new world doesn't wait for 
 pack every class loaded goes through other mods' transformers first). The same thread also runs the collection and
 shape code a child growing up uses once on throwaway data, so the first child of a Cradle to grow up doesn't load it
 mid-tick. Supply chests are looked for only in loaded chunks, and the search never waits for a chunk. The nearest
-Village Hall to a spot is searched for once a tick (a worker's pace asks for it for each of its sources), and the hall's
+Village Hall to a spot is searched for once a tick (a worker's pace asks for it for each of its sources), the list of
+finished buildings a bed is looked up in (for a villager's home) is worked out once a tick, and the hall's
 list of free workstations finds each kind of workstation's job once.
 
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
@@ -201,7 +202,8 @@ GameTests: `StationsGameTests` (12: every item gives its job at its block, a pic
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
 `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
-the shape warm-up, the nearest hall within a tick, free workstations with their jobs).
+the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
+their jobs).
 
 Showcase scenes: `stations` (one composter, four jobs), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

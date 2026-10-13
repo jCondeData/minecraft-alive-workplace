@@ -116,9 +116,12 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 				if (up > 0 && Double.isNaN(takeOffY[0])) {
 					takeOffY[0] = pidgey.getY() - up;
 				}
-				if (up == 0 && lastUp[0] > 0 && Double.isNaN(landedY[0])) {
+				if (up == 0 && lastUp[0] != 0 && highest[0] > 0 && Double.isNaN(landedY[0])) {
 					// B90: where the show set it down, the tick it landed. Checked at the end instead, the Pidgey had
 					// taken off again on a flight of its own (Cobblemon's flight wander) while the postman walked on.
+					// B89: flying() is exactly 0 only once the flight is over. On its last tick the show holds the Pidgey
+					// a fraction of a block up and its own fall can take it a little below where it took off (-0.04
+					// once), so the tick before landing may read below zero: not only above.
 					landedY[0] = pidgey.getY();
 				}
 				lastUp[0] = up;
@@ -172,9 +175,12 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 				if (up > 0 && Double.isNaN(takeOffY[0])) {
 					takeOffY[0] = pidgey.getY() - up;
 				}
-				if (up == 0 && lastUp[0] > 0 && Double.isNaN(landedY[0])) {
+				if (up == 0 && lastUp[0] != 0 && highest[0] > 0 && Double.isNaN(landedY[0])) {
 					// B90: where the show set it down, the tick it landed. Checked at the end instead, the Pidgey had
 					// taken off again on a flight of its own (Cobblemon's flight wander) while the postman walked on.
+					// B89: flying() is exactly 0 only once the flight is over. On its last tick the show holds the Pidgey
+					// a fraction of a block up and its own fall can take it a little below where it took off (-0.04
+					// once), so the tick before landing may read below zero: not only above.
 					landedY[0] = pidgey.getY();
 				}
 				lastUp[0] = up;

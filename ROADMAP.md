@@ -4124,7 +4124,7 @@ Legends.
   - a GameTest saves and reloads mid-stage II (the manager, the sites, the builder) and the folly is finished;
   - cancelling returns the plan, and a world saved before this item loads and saves unchanged;
   - scene `wonder_site`: the plan handed over, the stone going down, stage I starting.
-- [x] **35.5** (review: pending 2026-10-12) **Crews: every builder on one Wonder.** Each builder whose Blueprint Table is within the Wonder's
+- [x] **35.5** (approved 2026-10-13) **Crews: every builder on one Wonder.** Each builder whose Blueprint Table is within the Wonder's
   village joins its crew when they have no build of their own (up to `wonderCrew`, default 12; **Call every builder**
   on the stone's screen brings the rest in as they finish what they're on). The lead is the Master Architect (M29)
   when there is one, else the crew's highest-level builder, named on the stone and the hall. Helpers today work a

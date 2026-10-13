@@ -572,7 +572,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     spread their first search), the share (12.2% of it under `work.Gated` behaviours: profile which jobs), and a run
     on GitHub's runner (nightly-tests, `part: benchmark`), where a free CPU should take out the off-CPU stalls.
   - Status (lane-a-1011-2133): the owner's benchmark on GitHub's runner (nightly-tests 38166303120, 09fe0f7) meets the targets: our share 12.9% (under 15%), **0 of 2,400 measured ticks with over 50 ms of ours** (worst 44.5 ms), heap 1,638 MB after GC (row in docs/performance.md). Ticked; the soak's heap target is 25.4's.
-- [ ] **25.4** **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
+- [x] **25.4** (approved auto 2026-10-13) **The pack's performance stack.** Boot and soak with Sodium, Lithium, C2ME, FerriteCore, ModernFix,
   EntityCulling, ImmediatelyFast, Krypton and ScalableLux (Cobbleverse's set). Done when: no errors, and numbers within
   target.
   - Status (lane-a-1004-1233): booted clean on both sides (docs/performance.md, "The pack's performance stack"): the
@@ -593,6 +593,8 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   - Status (digest-1011-1253, 2026-10-11 19:05Z): the owner started both runs by hand: soak 38166107551 (part soak) and benchmark 38166303120 (part benchmark), on main as of that minute. Lanes: read their results (soak-<run> artifact, perf.log) with `perf.py` and `soakheap.py`, add the rows to docs/performance.md, and tick 25.4 if heap is flat within 5% and no error of ours; use the benchmark's numbers for 25.3's 50 ms target. Don't ask him to run them again.
   - Results (digest-1011-1253, 2026-10-11 20:30Z; the owner's runs, GitHub's runner): **benchmark 38166303120 passed**: our code a tick p50 1.0 to 1.1 ms, p99 4.2 to 12.2 ms, **0 of 2,400 measured ticks over 50 ms of ours** (worst 44.5 ms, PorterWork), 1 tick of 155.6 ms during setup (BuilderWork's biggest call 26.4 ms), heap after GC 1,638 MB. **Soak 38166107551 failed its own verdict**: heap after GC 1,637 / 1,634 / 1,597 / 1,567 / 1,578 / 1,572 / 1,467 MB at minutes 0 to 60, so it fell 10.2% from minute 10 (no growth, so no leak sign; the check is two-sided and flags a fall too); 7 ticks with over 50 ms of ours in the hour, and one `BuilderWork` call of 1,757.9 ms (worst), others 102 to 133 ms in tree, hall, supply-container and miner checks near 19:09 (the start). Lanes: (1) decide whether `soakheap.py` should fail only on growth (a drop is not a leak): say so in docs/performance.md; (2) find what made `BuilderWork` take 1.7 s in one call (artifact `soak-38166107551`, `soak-0.jfr`) and cap it; (3) rerun is the owner's click, ask once after the fix lands.
   - Status (lane-a-1011-2133): read both runs' job logs (docs/performance.md rows added). (1) Decided: the soak fails on heap growth only, a fall is not a leak; `soakheap.py` changed (`tools/packtest/test_soakheap.py`: the owner's falling readings pass, 10% growth fails), so this soak's heap passes now. (2) The 1,757.9 ms `BuilderWork` call was a stall, not builder work: the profile has only 143 ms of samples in that stretch (one in a builder, `setStatus`), and it came at 19:10:30, as the harness's first 90-second recording ended; the 746.0 ms `CrafterWork` and 657.2 ms `LumberjackWork` calls fell on the second of the harness's own `jcmd GC.run` (minutes 0 and 50). The soak's build (09fe0f7) predates lane-a-1011-1833's stall figures, which label such ticks now. The one builder path that could still run unbounded in one call was capped: recounting other builds' remaining needs (`Builders.remainingNeedOfOther`, reached from a builder's fetch, a crafter's keep-back and the village store) read every remaining block of every build at the bench; now at most 4,096 block reads a level a tick (`BuildBudget.RECOUNT_READS_PER_TICK`), past it the last count stands or an uncounted build keeps its whole plan back. Tested: 36 GameTests of the reserve, spare-sharing, supply and benchmark-cost classes pass, 1 new (`otherBuildsNeedsAreRecountedAFewAtATime`). Left: the soak rerun once (owner's click; the digest asks), then tick if the heap doesn't grow and no tick over 50 ms on the CPU is ours.
+  - Status (lane-a-1013, 2026-10-13): the owner ran the 60-minute soak (nightly.yml, part: soak, on main after
+    0.144.0) on GitHub and it passed. Ticked.
 - [x] **25.5** (approved 2026-10-05) **Server owner controls.** Config caps like MineColonies' (max workers per village, how far workers path, the
   far-from-players behaviour from Milestone 23). Needs systems (moods, sickness, raids, festivals) are easy to switch
   off, because "babysitting" is the top complaint about big colony mods. Done when: each key is documented in the README
@@ -2325,7 +2327,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: `langcheck.py` is clean; a GameTest per advice tip; the README's tables list every edict, tonic and guild
   data file we ship (the tester checks); showcase scene `village_talk`: villagers' lines under Long Shifts and after
   The Shift Bell.
-- [ ] **30.22** (owner 2026-10-13: a village's first day does not count against the 15% tick target; B101 is done) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
+- [x] **30.22** (owner 2026-10-13: a village's first day does not count against the 15% tick target; B101 is done) (approved auto 2026-10-13) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
   pieces that fit a night run): a City of 35 villagers with farms, a kitchen and a store, 4 in-game days under four
   edicts at once (Long Shifts, Free Bread, Large Families, Festival Season), then 4 days with all four reformed, with a
   Cradle, an idol in harvest season, a founded guild and a rush a day. Each day records: meals eaten and left, births,
@@ -2345,6 +2347,9 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
     the chests' reach; no random ticks without a player, so the run now gives the fields theirs). No number in the mod
     changed. The Work Horn's rush can be called from the console. All eight days' numbers: `docs/design/M30.md`.
     SeasonSoakGameTests (5) and the console horn test pass. A weekly and on-demand job in `nightly.yml` (part: season).
+  - Status (lane-a-1013, 2026-10-13): ticked from run 3 under the owner's rule (2026-10-13: a village's first day doesn't
+    count against the 15% tick target): days 2 to 8 took 12.4% to 14.1% of the tick, the costs showed and nothing ran away;
+    the day-1 402 ms tick was B101, since fixed. No new run.
 
 Depends on: nothing. Soft links, each with a fallback: Open Gates' Legend visits and Curfew's Night Owls use M29's inn
 visitors and Gifted traits once they land (nothing reads those effects until then); 30.14 uses M28's season clock if

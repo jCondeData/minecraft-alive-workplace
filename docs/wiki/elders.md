@@ -1,8 +1,8 @@
 # Elders, retirement, family trees and the Evergreen Charm
 
 Life stages for villagers: after a long grown life a villager becomes an elder and, in time, passes in their sleep,
-unless a player gives a good elder an Evergreen Charm; and every family keeps a tree. Part of 1.8 (Classes and luxuries): off for players until 1.8
-is finished. Built so far: ages, the slower walk, the "quiet old age" mood, the elders' chatter and the chronicle's note
+unless a player gives a good elder an Evergreen Charm; and every family keeps a tree. Part of 1.8 (Classes and luxuries), switched on in 1.0
+with every other expansion. It covers: ages, the slower walk, the "quiet old age" mood, the elders' chatter and the chronicle's note
 (34.19), the passing and the charm (34.19a), retirement, apprentices and mentoring (34.20), family names, the Book of
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
@@ -26,7 +26,8 @@ An elder:
   this was all fields.", "I've seen more harvests than you've had hot dinners.", "These knees knew every path in the
   village, once.", "Sit a while. The young ones are always in a hurry."
 
-They do not look any different yet: the elder look comes with the class outfits (34.18).
+**Looks it.** An elder has gray brows and a short beard under any hat (the class outfits' elder face, 34.18; see
+[Classes](classes.md)).
 
 **Retirement.** An elder with a job retires once someone can take over, at most one villager a village every 3 days.
 The successor is their own grown child without a job, else any jobless grown villager whose class the job allows
@@ -148,7 +149,7 @@ everyone of the family, generation by generation, two to a page.
 
 ## Switches
 
-All six belong to 1.8 (`Expansions.M34`): off for players, whatever the file says, until 1.8 is finished.
+All six belong to 1.8 (`Expansions.M34`), which 1.0 switches on with every other expansion; while that gate is closed they are off whatever the file says.
 
 - `villagerAges` (true): villagers become elders. Off: nobody is an elder, so nobody is slowed, has the quiet old age,
   talks like one or passes; `adult_since` is kept, so turning it on again makes them the elders they were all along.
@@ -241,11 +242,7 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
 
 ## Known limits
 
-- Planned, not built, so no player sees it (34.18): the elder look. Its art is drawn (34.17: `class/elder.png`, gray
-  brows and a short beard, the owner's pick; see the Classes page), but the render layer and its packet don't
-  exist yet, so an elder looks like any villager of their trade.
-  34.18 should draw the look for whoever `LifeStages.stage` calls an elder, and send its packet where the chronicle's
-  note is written (`LifeStages.becameElder`).
+- The elder look (gray brows and a short beard, under any hat) is drawn by the class layers (34.18, see [Classes](classes.md)); `classOutfits` off hides it.
 - Only the walks our jobs ask for are slower (through `Walker`); vanilla's own strolls are not.
 - The successor's shadowing walk and the mentor's walk use the villager's own tick, so with the village far from
   every player nothing moves; the hand-over still happens in the hall's round.

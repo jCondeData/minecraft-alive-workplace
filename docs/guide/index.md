@@ -208,6 +208,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   [Lighthouse](lighthouse.md), [Great Library](great-library.md), [Great Wall](great-wall.md),
   [Observatory](observatory.md), [Hanging Gardens](hanging-gardens.md), [Colossus](colossus.md) and
   [Stadium](stadium.md).
+- [Scaffolding](scaffolding.md): how builders climb to the tops of Wonders and other tall builds, and take it all
+  down after.
 
 ### Legends and guilds
 

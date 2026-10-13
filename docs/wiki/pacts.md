@@ -1,6 +1,6 @@
 # Trade pacts and alliances
 
-ROADMAP 33.18 (part of 1.7, "From village to realm"; off until 1.7 is released). Villages of different owners deal
+ROADMAP 33.18 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). Villages of different owners deal
 through offers: a **trade pact** lets caravans run between them, paid for at board prices; an **alliance** is a pact
 whose villages also ride to each other's raids.
 

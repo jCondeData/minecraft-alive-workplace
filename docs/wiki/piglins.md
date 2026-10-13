@@ -1,6 +1,6 @@
 # Piglin incursions
 
-ROADMAP 32.10. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.10. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. The piglins are a raider culture (see
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) has a lit Nether portal they
 come through, and who carry off the village's gold (see [Desert raiders](desert.md) for the culture before it).

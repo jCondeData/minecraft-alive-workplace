@@ -53,7 +53,7 @@ How everything in the mod works, in plain words: written for the owner first, th
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
   rules (1.8).
 - [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).
-- [Wonders](wonders.md): the eight Wonders, what each needs and gives; the data files, requirements, the Wonders page, the Wonder Plan and the Great Cathedral's design so far (2.0).
+- [Wonders](wonders.md): the eight Wonders, what each needs and gives; the data files, requirements, the Wonders page, the Wonder Plan, the Foundation Stone, crews, goods and dedication, a finished Wonder's celebration, upkeep and powers, and each Wonder's design and powers (2.0, 35.1 to 35.24).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 - [Lairs and the Defense page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's
@@ -77,7 +77,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Roads and walls](roads-and-walls.md): streets, lamps, bridges, roads between villages and walls (1.1).
 
 **Legends**
-- [Legends](legends.md): the twelve Legends, how they come, their needs, and the Gifted (1.3).
+- [Legends](legends.md): the twelve Legends, how they come, their needs, the Gifted (1.3), and the Founder's and the Merchant Prince's powers in a realm (33.23).
 
 **For server owners**
 - [Config switches](config-switches.md): every setting and game rule with its default, and the expansion gate.

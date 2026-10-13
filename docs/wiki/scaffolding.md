@@ -1,7 +1,8 @@
 # Scaffolding
 
 Builders put up vanilla scaffolding to reach blocks with nowhere to stand near them (a raised arm, a spire's tip, a
-dome's crown) and take it down again afterwards. Part of Wonders (2.0), behind its expansion gate.
+dome's crown) and take it down again afterwards. Part of Wonders (2.0), behind its expansion gate (`Expansions.M35`), which
+1.0 opens with every other expansion.
 
 Roadmap items: 35.6, 35.6a
 
@@ -51,7 +52,7 @@ builder takes the site's scaffolding down: the top of the column it is on, or of
 in reach, else climbing up to it. Each scaffold goes into its bag, and so back into the chests on its next trip or when
 the build is finished. Scaffolding someone else broke is simply struck off the list.
 
-**When the build ends any other way.** A site removed with scaffolds still recorded (cancelled, its builder died, a
+**When the build ends any other way.** A site removed with scaffolds still recorded (canceled, its builder died, a
 Wonder's part called off) has them all taken down at once, into the supply chests by its bench (else dropped there);
 its builder, if on a column, is first put down at the foot.
 
@@ -64,7 +65,7 @@ recipe (6 bamboo and a string make 6); builders sell it too.
 
 | Key | Default | What it does |
 |---|---|---|
-| `builderScaffolding` | on (2.0) | Builders put up scaffolding to reach what has nowhere to stand near it. Off: those blocks are skipped as before |
+| `builderScaffolding` | on from 1.0 | Builders put up scaffolding to reach what has nowhere to stand near it. Off: those blocks are skipped as before |
 
 ## 4. Saved data
 

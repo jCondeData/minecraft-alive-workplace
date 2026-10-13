@@ -6,7 +6,8 @@ what its village or its realm can do while it stands. Part of 2.0 (Wonders): the
 Wonders page, the Wonder Plan, the Foundation Stone with its stages, crews and goods, a finished Wonder's celebration,
 upkeep and powers, and the first Wonders' designs (the Great
 Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, the Hanging Gardens, the Colossus and, with
-Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
+Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which 1.0 switches on with every other
+expansion; the full plan is the design note,
 docs/design/M35.md.
 
 Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24
@@ -64,7 +65,7 @@ else the builder it was handed to; each next stage goes to the highest-level bui
 - Each member takes a **column** of its own (the part split at least 8 × 8: a 64-wide part has 8-block columns, the
   9-wide folly 1-block ones), the free one with work nearest to them, and works it in the stage's order: clearing from the top, the rest
   from the bottom. Nobody works more than two layers above the part's lowest unfinished layer (a block the lead gave up
-  on, out of reach, doesn't hold the rest back; levelling the ground round it isn't layered), and no structure block
+  on, out of reach, doesn't hold the rest back; leveling the ground round it isn't layered), and no structure block
   goes up before the block the drawing puts under it.
 - Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 2,500 to
   2,900 ticks against about 12,150 for one alone (at one block a second): under a quarter of the time.
@@ -105,7 +106,7 @@ in a line three blocks out, on the side away from the Wonder ("standing in line 
   their own chests and the storehouses near (not what those keep for their orders), before the storehouse's own orders.
 - **The hall's daily quest** asks for the line furthest behind: "Bring goods for the village's Wonder", as many as it
   lacks, handed in at the hall into the stockpile.
-- **Cancelling** a Wonder hands the goods handed in for a stage not yet dedicated back to its owner (by the stone if
+- **Canceling** a Wonder hands the goods handed in for a stage not yet dedicated back to its owner (by the stone if
   they're away): "The 5 goods handed in for the Test Folly came back to you"; what lies in the stockpile's chests stays
   there, and a dedicated stage's goods were given.
 
@@ -181,7 +182,7 @@ stage, the little wins on the way; the estimates are reckoned, not yet timed in 
 
 **Keeping it up.** Once a day each finished Wonder counts how much of it still stands, every block of every stage (at
 most 4,096 blocks a tick, and only while all of it is loaded). A block stands when it's there as drawn; properties
-that depend on neighbours don't count, and copper that weathered or was waxed is still the copper it was, so a dome
+that depend on neighbors don't count, and copper that weathered or was waxed is still the copper it was, so a dome
 turned green still stands. The stone and the hall's card say "Standing: 97% of it (counted on day 12). Its powers are
 on."
 
@@ -222,7 +223,7 @@ Laureate, 18 days), an Echo Shard (the Old Sage, 18 days), a Heart of the Sea (t
 Illuminated Books (Printer); III a Totem of Undying (the Merchant Prince, 22 days), an Enchanted Golden Apple (the
 Grand Chef, 22 days), an Eye Armor Trim Template (the Old Sage, 18 days); made: 2 Noble Robes (Tailor); IV an Elytra
 (the Pathfinder, 45 days), a Nether Star (the Golem Smith, 36 days), the music disc Relic (the Bard Laureate, 16
-days); made: 2 Gold Circlets (Jeweller). It can't be built in game until the rest of Wonders is.
+days); made: 2 Gold Circlets (Jeweler).
 
 **The Great Cathedral's powers** (35.10), while it is finished and stands (`wonderStanding`):
 
@@ -254,12 +255,26 @@ fisherman's barrel by the stove), a spruce boathouse half over the water, a ston
 timber jetty out over the sea to a ferry stop, the Travel Post under a little roof. Its stages: I *The Mole and the
 Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Its goods (found, with the rare
 worker who finds each and in how many days; then what a workshop makes): I a Heart of the Sea (the Pathfinder, 11
-days), a Coast Armor Trim Template (a Master Fisherman, 7 days); made: 2 Emerald Brooches (Jeweller); II a Trident
+days), a Coast Armor Trim Template (a Master Fisherman, 7 days); made: 2 Emerald Brooches (Jeweler); II a Trident
 (the Beastmaster, 14 days), a Sponge (the Founder, 18 days), an Angler Pottery Sherd (the Grand Chef, 11 days); made:
-2 Gold Circlets (Jeweller); III a Tide Armor Trim Template (a Master Fisherman, 22 days), a Conduit (the Seer, 18
+2 Gold Circlets (Jeweler); III a Tide Armor Trim Template (a Master Fisherman, 22 days), a Conduit (the Seer, 18
 days), a Totem of Undying (the Old Sage, 22 days); made: 2 Illuminated Books (Printer); IV a Nether Star (the Golem
 Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 Vintage
-Wine (Vintner). Its powers come with 35.12.
+Wine (Vintner).
+
+**The Lighthouse's powers** (35.12, `wonder/LighthousePowers`), while it is finished and stands (`wonderStanding`):
+
+- **Farther caravans** (`caravan_range`, `factor` 2): caravans from the village reach villages twice the usual 2,048
+  blocks, so up to 4,096 blocks away show on the Trade Routes page.
+- **Quicker caravans** (`caravan_speed`, `factor` 0.5): a caravan from the village takes half the time on the road.
+- **Cheaper ferries** (`ferry_fares`, `factor` 0.5): a fare to or from one of the village's Travel Posts is halved, at
+  least an emerald; the Travel Post at the end of the jetty joins the network under the village's name ("Thornholm
+  Lighthouse").
+- **The keeper's watch** (`early_warning`): a source of the day's warning ([Raids and threats](raids.md), 32.14) for
+  raiders who come from the sea (the drowned pirates, any culture arriving at the `shore`): the day before, everyone in
+  the village is told and the chronicle has it, and at dusk on the day the guards gather on the shore.
+
+Each factor is kept between 1/16 and 16. Damaged (or with Wonders off) all four are off; nothing of them is saved.
 
 **The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 15,000 blocks, on
 a square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
@@ -280,7 +295,7 @@ Book (Printer); II an Eye Armor Trim Template (the Seer, 18 days), the music dis
 a Wild Armor Trim Template (the Pathfinder, 11 days); made: 2 Noble Robes (Tailor); III an Echo Shard (the Seer, 18
 days), an Enchanted Golden Apple (the Grand Chef, 22 days), a Vex Armor Trim Template (the Merchant Prince, 22 days);
 made: 2 Illuminated Books (Printer); IV an Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem
-Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days); made: 2 Gold Circlets (Jeweller). It needs a
+Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days); made: 2 Gold Circlets (Jeweler). It needs a
 Town, 20 research levels and the Old Sage (or a Master Scholar while Legends are off).
 
 **The Great Library's power** (35.14, `research_tier`), while it is finished and stands (`wonderStanding`): the
@@ -328,13 +343,13 @@ Prince, 11 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 spyglass
 Old Sage, 18 days), an Eye Armor Trim Template (the Pathfinder, 18 days), the music disc Precipice (the Bard Laureate,
 18 days); made: 2 Illuminated Books (Printer); III an Ominous Trial Key (the Golem Smith, 14 days), a Totem of Undying
 (the Merchant Prince, 22 days), a Wither Skeleton Skull (a Master Netherworker, 14 days); made: 2 Gold Circlets
-(Jeweller); IV a Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Shulker Shell (the
+(Jeweler); IV a Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Shulker Shell (the
 Beastmaster, 9 days); made: 2 Noble Robes (Tailor). It needs a Town and the Seer (or a Master Cleric while Legends are
-off). Its powers, the Sky Chart and the Coming days page, come with 35.18. The Sky Chart covers about 6,144 blocks
+off). Its powers, the Sky Chart and the Coming days page, are below (35.18). The Sky Chart covers about 6,144 blocks
 across (384 chunks, 12 regions; 35.18a): one locked map at 48 blocks a pixel, since a vanilla map shows at most 2,048.
 Its search and the chart itself are built (`wonder/SkyChart`): one region of one structure kind every 5 ticks while
-the server's tick has room, at most one kind an in-game hour, saved as it goes; the hall's map button that hands it
-over comes with 35.18.
+the server's tick has room, at most one kind an in-game hour, saved as it goes; the hall's map button hands it over
+(35.18).
 
 **The Great Wall** (35.15) is drawn: a defense 97 long, placed like the other walls (stand in the village and place it
 facing out: its stairs are on your side), about 12,300 blocks. A curtain 7 thick and 12 high on a battered plinth of
@@ -357,10 +372,10 @@ the gateway and at its corners, the towers' ledge at the walk, braziers at both 
 landings by the gatehouse. Its stages: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the
 Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs). Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
 Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 Emerald Brooches
-(Jeweller); II a Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a
+(Jeweler); II a Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a
 Rib Armor Trim Template (the Seer, 14 days); made: 2 Vintage Wine (Vintner); III a Wither Skeleton Skull (the Founder,
 14 days), a Netherite Upgrade Template (the Beastmaster, 14 days), a Vex Armor Trim Template (the Merchant Prince, 22
-days); made: 2 Gold Circlets (Jeweller); IV a Heavy Core (the Pathfinder, 32 days), a Nether Star (the Founder, 36
+days); made: 2 Gold Circlets (Jeweler); IV a Heavy Core (the Pathfinder, 32 days), a Nether Star (the Founder, 36
 days), a Netherite Ingot (the Old Sage, 14 days); made: 2 Noble Robes (Tailor). It needs a Town, a finished Gatehouse
 and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are off).
 
@@ -395,12 +410,12 @@ their marks for when it's repaired, and nobody is replaced.
   igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial chambers
   and strongholds: one kind an in-game hour, only while the server's tick has room, and again each week (what it found
   stays on the chart until its region is searched again). The hall's map button then also draws, on a second empty
-  map, the Sky Chart: the land in an explorer map's colours with a marker on every structure found (vanilla's own for
+  map, the Sky Chart: the land in an explorer map's colors with a marker on every structure found (vanilla's own for
   villages, mansions, monuments, jungle temples, witch huts and trial chambers, a red X for the rest) and a red marker
   on each bandit camp. Its tooltip names the twelve nearest ("Plains Village: north-east, about 1,000 blocks") and
   counts the rest.
 - **The Coming days** (`forecast`): the hall's calendar page shows, under the seasons, what's ahead and when: the next
-  festival and market day, weddings due, caravans on the road and when they arrive, a traveller expected at the inn,
+  festival and market day, weddings due, caravans on the road and when they arrive, a traveler expected at the inn,
   the full moon, the Legends the Seer foretells, the bandit camps and where, and the night's raid risk (or, after the
   Seer's dawn reading, whether a raid is foretold). The ones with a place say where.
 
@@ -426,7 +441,7 @@ days; then what a workshop makes): I a Sniffer Egg (the Beastmaster, 14 days), a
 Pathfinder, 11 days); made: 2 Berry Wine (Vintner); II a Pitcher Pod (the Beastmaster, 18 days), Torchflower Seeds
 (the Old Sage, 7 days), a Heart Pottery Sherd (a Master Sifter, 14 days); made: 2 Vintage Wine (Vintner); III an
 Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate,
-18 days); made: 2 Gold Circlets (Jeweller); IV a Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the
+18 days); made: 2 Gold Circlets (Jeweler); IV a Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the
 Golem Smith, 36 days), a Conduit (the Founder, 18 days); made: 2 Noble Robes (Tailor). It needs a Town and the Grand
 Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off). The crown has a field of its own by
 its farm corner (wheat and carrots either side of a channel, 35.20), so all four farm corners have a field in a
@@ -461,8 +476,8 @@ Founder's plaque, a row of seven dark oak signs on a dark oak panel (35.22 write
 scaffolding (35.6). Its stages: I *The Plinth and the Road Arch*, II *The Robes*, III *The Arms and the Cloak*, IV
 *The Head and the Lantern*. Its goods (found, with the rare worker who finds each and in how many days; then what a
 workshop makes): I a Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7
-days); made: 2 Emerald Brooches (Jeweller); II a Trident (the Beastmaster, 14 days), a Sponge (the Seer, 18 days), a
-Netherite Upgrade Template (a Master Netherworker, 14 days); made: 2 Gold Circlets (Jeweller); III a Tide Armor Trim
+days); made: 2 Emerald Brooches (Jeweler); II a Trident (the Beastmaster, 14 days), a Sponge (the Seer, 18 days), a
+Netherite Upgrade Template (a Master Netherworker, 14 days); made: 2 Gold Circlets (Jeweler); III a Tide Armor Trim
 Template (a Master Fisherman, 22 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull
 (the Old Sage, 14 days); made: 2 Noble Robes (Tailor); IV a Heavy Core (the Golem Smith, 32 days), a Nether Star (the
 Beastmaster, 36 days), an Elytra (the Pathfinder, 45 days); made: 2 Vintage Wine (Vintner). It needs a City and the
@@ -514,7 +529,7 @@ stall with a Healing Machine and a brewing stand) and seven market pitches, thre
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I Diamond
 Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days); made: 2 Great Balls
 (Ball Smith); II a Trident (a Master Fisherman, 14 days), the music disc Pigstep (the Bard Laureate, 18 days), a
-Netherite Upgrade Template (a Master Netherworker, 14 days); made: 2 Gold Circlets (Jeweller); III a Totem of Undying
+Netherite Upgrade Template (a Master Netherworker, 14 days); made: 2 Gold Circlets (Jeweler); III a Totem of Undying
 (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a Flow Armor Trim Template (the Golem
 Smith, 14 days); made: 2 Ultra Balls (Ball Smith); IV a Nether Star (the Golem Smith, 36 days), a Heavy Core (the
 Pokémon Ranger, 32 days), an Enchanted Golden Apple (the Grand Chef, 22 days); made: 2 Noble Robes (Tailor). It needs
@@ -528,7 +543,7 @@ one keeps the name Stadium.
   chronicle counts them), from noon (6000) until dusk (12000), two to four visiting trainers (the day's random, fixed by
   the site and the day) stand in the two trainer boxes, two to a box at most, facing the field. Each realm village
   (with realms off, each caravan partner, a route either way) sends the trainer it would send to a Cup
-  (`Cups.delegate`: its Leader, else its best Trainer), named "(name) of (village)"; the rest are travelling trainers
+  (`Cups.delegate`: its Leader, else its best Trainer), named "(name) of (village)"; the rest are traveling trainers
   of Journeyman to Master rank, "the Traveler". They are Trainers to a player: right-click to battle, a win pays the
   rank's prize (CobbleDollars, or emeralds), once a day each (`trainer/Trainers`). From 7000, one bout every 1,000
   ticks, the village's own trainers (the highest rank first, in turn) take the visitors on: the Cup's exhibition
@@ -541,7 +556,7 @@ one keeps the name Stadium.
   dusk the visitors leave: gone where no player is within 32 blocks, else walking out of the gate. A visitor never
   takes a job or a bed. The visitors come once a day, a restart in the afternoon too.
 - **The tournament** (`tournament_host`): M28's Festival Cup exists, so it is wired. `Arenas.find` gives the village's
-  Stadium first, as an Arena of tier 3: its field's centre the ring, its two boxes, its seats, the road in front of
+  Stadium first, as an Arena of tier 3: its field's center the ring, its two boxes, its seats, the road in front of
   the gate for the fair and the notice board (no champion's pole). So a Town with a Stadium and no Arena can host a
   Cup, and its village gets the fair and the crowds. A host without a Stadium whose circuit has a Stadium host holds
   no Cup of its own (unless its sign-up has closed), and `Cups.hostFor` gives the nearest Stadium host first: the
@@ -611,7 +626,7 @@ stage and the days it was begun and finished.
 mirror at their offsets, pointing back at the Wonder, with the Foundation Stone as their bench (so a builder fetches from
 the chests round the stone and empties his bag there). Only stage I fills a foundation (later stages stand on the stage
 below), only the last stage with a part on the Wonder's floor levels the ground round it, with those parts alone (35.8a:
-the folly's dome, levelled round its own bottom, once filled a band of dirt round the tower under it; the folly now
+the folly's dome, leveled round its own bottom, once filled a band of dirt round the tower under it; the folly now
 levels in stage I), and no part hands a blueprint back. Once a second the Wonders
 check their stage: when every part's site is done or gone, the next stage's sites are made for the Wonder's builder, or
 the Wonder is finished. The check reads only saved data, so the order holds through a restart at any tick. While
@@ -665,7 +680,7 @@ the usual figure (an edict naming its own still wins) and `VillageGrowth.every` 
 **The Stadium's** (35.24): `stadium_days` (`wonder/powers/StadiumDaysPower`: `every_days` 1 to 28, `min_visitors` and
 `max_visitors` 1 to 4, the least first) and `tournament_host` (`TournamentHostPower`, no numbers). `wonder/StadiumDays`
 runs the days on a level tick every 20 ticks. The boxes, the field and the seats come from the Wonder's own drawing,
-placed where it stands (its two Training Posts, the field's centre between them, a spot before each post and one
+placed where it stands (its two Training Posts, the field's center between them, a spot before each post and one
 beside that, every carpet a seat), so a server owner's Wonder with the power and two Training Posts works the same.
 Saved: each site's last Stadium Day (`aliveworkplace_stadium_days`) and each visitor's record (the `stadium_visitor`
 attachment); a villager's last watched day is `stadium_watched`. The bouts' teams come from the `CupBattlers` extension
@@ -698,7 +713,7 @@ raid), `BanditCamps.all` and `VillageRaids.chance`; `Seasons`' page calls `Obser
 
 ## Switches
 
-All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
+All behind the 2.0 gate (`Expansions.M35`), which 1.0 opens with every other expansion; while it is closed they are off and hidden, whatever the config file says.
 
 | Switch | Default | Off means |
 |---|---|---|
@@ -754,7 +769,7 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
   good is two at most and from a Journeyman's recipe, so the workshop has to be upgraded and staffed. A helper is
   slower than the group (one and a half times its hours) so it frees the group rather than doing the stage; it counts
   only while someone is on the server, because the owner's server runs all day. A helper brings the line without an
-  item, so cancelling never hands back something nobody found.
+  item, so canceling never hands back something nobody found.
 - The goods lists live in `tools/blueprints/wonder_goods.py` with their hour estimates and the pacing reckoning;
   `wonders.py` takes them from there, so drawing the Wonders again writes the same lines.
 - The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9): nine parts, two of stage I only
@@ -777,7 +792,7 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
 - One Legend can serve two Wonders (the Seer for the Cathedral and the Observatory): a requirement only checks that the
   Legend lives in the village.
 - The Master Architect requirement is added to every Wonder by the mod, so a server owner's own Wonder needs it too.
-- Builders' scaffolding comes with 2.0, for every build (an owner question in the design note).
+- Builders' scaffolding came with 2.0, for every build (35.6, [Scaffolding](scaffolding.md); an owner question in the design note).
 - Stage I waits for its goods too (35.7): the design note's "the goods are taken and the stage begins" holds for every
   stage. `WonderStages.start` (commands and tests) still starts a stage at once.
 - The dedication's state is the moment the goods are taken (35.7): the stage begins then, and the gathering, the Bard
@@ -792,22 +807,22 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
 - A damaged Wonder is repaired whatever `builderRepairs` says (35.8), as what threats took is: its powers wait on
   it. Below the line, the builders' ordinary upkeep still mends a finished part's holes as for any building.
 - A block put back as something else (a player's dirt in a wall) doesn't stand, and the builders never take a player's
-  block out (35.8): the owner puts it right. A Wonder in the village's colours (the Stadium's seats) also stands in the
-  colours it was drawn in, so a new banner doesn't damage it.
-- The Village Map's gold banner is a yellow one (35.8): a map's banners come only in the sixteen dye colours.
+  block out (35.8): the owner puts it right. A Wonder in the village's colors (the Stadium's seats) also stands in the
+  colors it was drawn in, so a new banner doesn't damage it.
+- The Village Map's gold banner is a yellow one (35.8): a map's banners come only in the sixteen dye colors.
 
 ## Known limits
 
-- The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
-  Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's, the Great Wall's, the Observatory's, the Hanging Gardens', the Colossus's and the Stadium's powers are in (35.10, 35.12, 35.14, 35.16, 35.18, 35.20, 35.22, 35.24), the Observatory's come with 35.18, and the
-  Stadium's file with 35.23. Everything is behind the 2.0 switch.
-- A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
-  inside of its closed dome, is skipped until scaffolding (35.6).
+- All eight Wonders' files ship (the Stadium's only with Cobblemon) and every Wonder's powers are in (35.10, 35.12, 35.14,
+  35.16, 35.18, 35.20, 35.22, 35.24). Everything is behind the 2.0 gate that 1.0 opens.
+- A lone builder reaches blocks far over anywhere he can stand (the folly's finial lantern, five blocks over the inside
+  of its closed dome) only by scaffolding ([Scaffolding](scaffolding.md), 35.6); with no scaffolding in the chests such a
+  block is skipped, as before.
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
-- `mood`, `beauty`, `undertakers`, `weddings`, `travellers`, the Lighthouse's four (35.12), `research_tier` (35.14), `raid_barrier` and `sentries` (35.16), the Gardens' `harvest` and `births` (35.20) and the Stadium's `stadium_days` and `tournament_host` (35.24) act; the other power types are declared, their numbers kept and
-  `Wonders.power` already answering for them, until their Wonder's powers item (35.12 on) reads them.
+- `mood`, `beauty`, `undertakers`, `weddings`, `travellers`, the Lighthouse's four (35.12), `research_tier` (35.14), `raid_barrier` and `sentries` (35.16), the Gardens' `harvest` and `births` (35.20) and the Stadium's `stadium_days` and `tournament_host` (35.24) act. The seven types in `WonderPowers.DECLARED` (`caravan_range`, `caravan_speed`, `ferry_fares`,
+  `early_warning`, `research_tier`, `harvest`, `births`) keep the generic reader; their Wonder's own code
+  (`LighthousePowers`, `LibraryPowers`, `GardensPowers`) reads their numbers through `Wonders.power`.
 - The Gardens' extra harvest goes to the mod's farmers and Orchard Keepers: a vanilla farmer with no chest by their
   composter (vanilla's own harvesting) brings in no more (35.20). A worker's count towards the next extra item isn't
   saved: a restart loses at most three of each kind.
@@ -917,13 +932,13 @@ Nurse's one remedy-free cure a day; an old village's research (every first-tier 
 old 27-stack bag loading unchanged. Showcase scene `wonder_great_library` (group Wonders): the Library's time-lapse,
 ending in its rotunda on the scholar's screen with the second tier open.
 
-Compat GameTests in `StadiumPowerCompatTests` (35.24, with Cobblemon): a Stadium Day brings two to four travellers
+Compat GameTests in `StadiumPowerCompatTests` (35.24, with Cobblemon): a Stadium Day brings two to four travelers
 (the day's random) into the boxes at noon of an even day and none in the morning or on an odd day, no more on another
 round, all gone at dusk and none back that day; a Master beats a visiting Novice and a visiting Master the village's
 Novice, 8 XP to the winner and 5 to the loser, a battle each, in the chronicle, and the bouts one an hour from 7000;
 a player's win over a visitor pays once a day and a loss nothing; the Stadium is the village's Arena for the Cup; a
 damaged Stadium (and Wonders off) holds no Stadium Day and hosts nothing, repaired the visitors come and a villager by
-a seat sits down 5 happier ("watched a Stadium Day"); the drawing's own posts, field centre, box spots (room to stand),
+a seat sits down 5 happier ("watched a Stadium Day"); the drawing's own posts, field center, box spots (room to stand),
 over 300 seats and the gate. Showcase scene `wonder_stadium` (group Wonders, with Cobblemon): the Stadium's
 time-lapse, then a Stadium Day with the visitors in the boxes, the stands full, a bout in the chronicle and the
 player's battle against a visitor.

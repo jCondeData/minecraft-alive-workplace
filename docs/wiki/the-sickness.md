@@ -102,7 +102,8 @@ Roadmap items: 31.18
 
 - Friendship at the end goes only to the ill villagers who are loaded then (in practice, the village the players are
   in).
-- 32.18's Physician and Remedy don't exist yet; the Nurse is the only healer by job.
+- The arc's healer by job is only the Nurse: a village with a Physician (32.18, [Plague](plague.md)) and no Nurse still
+  sends for Doctor Wren, though 31.18 says the Physician counts (bug B135).
 - Doctor Wren trades as a cleric if someone sneaks and right-clicks him.
 - Not tested in a real game yet beyond the GameTests and the showcase scene.
 

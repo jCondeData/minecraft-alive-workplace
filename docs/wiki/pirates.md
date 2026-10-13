@@ -1,6 +1,6 @@
 # Drowned pirates
 
-ROADMAP 32.8. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.8. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. The pirates are a raider culture (see
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is a ship on the sea.
 
@@ -76,7 +76,7 @@ Roadmap items: 32.8
 
 ## Known limits
 
-- The gunners' burning arrows don't light roofs yet: that comes with village fires (32.16).
+- The gunners' burning arrows light only builders' blocks, and only with village fires on ([Village fire](village-fire.md)).
 - A ship whose ground is unloaded when its captain falls (he can't be killed there) or mid-sinking goes on sinking
   when it is loaded again, all at once if the ten seconds are past.
 

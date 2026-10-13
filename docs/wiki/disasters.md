@@ -1,6 +1,6 @@
 # Disasters
 
-ROADMAP 32.15. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.15. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests run with it on. The engine that lets a fire, a drought or a plague strike a village,
 described as data the way the raider cultures are (see [Raids and threats](raids.md)). The village fire ships with
 32.16 ([Village fire and the Firewarden](village-fire.md)) and the drought with 32.17 ([Drought and the Well
@@ -82,8 +82,8 @@ No new item or block; the chronicle gains the kinds `FIRE`, `DROUGHT` and `PLAGU
 ## Decisions
 
 - The `messages` and `chronicle` keys are lang-key prefixes (`.name`, `.start`, `.foretold`, `.end`); a file without
-  them gets the engine's own lines, naming it by its id (32.15: no disaster ships yet, so a datapack's works without
-  a resource pack).
+  them gets the engine's own lines, naming it by its id, so a datapack's disaster works without a resource pack (the three the
+  mod ships, `drought`, `plague` and `village_fire`, have their own lines).
 - `answered_by` is shown in What next? only; what the answering job does is its own item (32.16 to 32.18).
 - A house tip (32.19) asks only the disaster's `when`, not its `requires`: those wait for the weather (days without
   rain), and a village should build before the drought, not during it. A house tip and the `disaster_answer` tip can
@@ -106,7 +106,8 @@ No new item or block; the chronicle gains the kinds `FIRE`, `DROUGHT` and `PLAGU
 after, farmland dries by water, cauldrons lose one level a day, villagers fall ill, illness passes on within range,
 villagers are unhappy, a fire starts, farmers work at half pace, it ends after its two days and with rain (and none
 starts in the days of rest), it survives a save and load of the hall (and an old hall loads with none), a librarian
-foretells it a day ahead, switched off it never starts, and every new sentence has its text. No scene (nothing ships).
+foretells it a day ahead, switched off it never starts, and every new sentence has its text. The engine has no scene of its own; the three
+disasters' pages list theirs.
 
 `AnsweringHousesGameTests` (32.19): the three houses are in the Blueprint Table, named and on the Village Map; each
 has its job's block once and no other job block, and what the item asks (the basin, the pails on racks, the loft and

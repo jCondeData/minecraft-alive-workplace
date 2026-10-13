@@ -27,7 +27,7 @@ Scholar stands in) and the Master Architect. See [Wonders](wonders.md) for drawi
 | The Stacks | A Heart Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days) | An Illuminated Book (Printer) |
 | The Galleries | An Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days), a Wild Armor Trim Template (the Pathfinder, 11 days) | 2 Noble Robes (Tailor) |
 | The Rotunda | An Echo Shard (the Seer, 18 days), an Enchanted Golden Apple (the Grand Chef, 22 days), a Vex Armor Trim Template (the Merchant Prince, 22 days) | 2 Illuminated Books (Printer) |
-| The Dome and the Portico | An Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweller) |
+| The Dome and the Portico | An Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweler) |
 
 ## While it stands
 
@@ -46,7 +46,7 @@ twice as long as a first-tier level.
 | Pharmacy | 1 | the ill get well in a day instead of three; each Nurse cures one villager a day without a remedy |
 
 The speed bonuses add up with everything else under the usual limit: work is never more than **twice as fast**
-(`maxWorkPace`). If the Library is **damaged**, the village keeps its levels, but their bonuses stop (Swift Hands counts
+(the **Fastest Work Pace** setting). If the Library is **damaged**, the village keeps its levels, but their bonuses stop (Swift Hands counts
 to III) and the scholars wait, until its builder repairs it.
 
 ## How it fits with the rest

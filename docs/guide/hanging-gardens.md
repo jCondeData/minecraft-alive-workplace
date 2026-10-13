@@ -26,7 +26,7 @@ in), and the Master Architect. See [Wonders](wonders.md) for drawing up the plan
 |---|---|---|
 | The First Terrace and the Cistern Vaults | A Sniffer Egg (the Beastmaster, 14 days), a Wild Armor Trim Template (the Pathfinder, 11 days) | 2 Berry Wine (Vintner) |
 | The Second Terrace | A Pitcher Pod (the Beastmaster, 18 days), Torchflower Seeds (the Old Sage, 7 days), a Heart Pottery Sherd (a Master Sifter, 14 days) | 2 Vintage Wine (Vintner) |
-| The Third Terrace | An Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweller) |
+| The Third Terrace | An Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweler) |
 | The Crown Garden and the Falls | A Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the Golem Smith, 36 days), a Conduit (the Founder, 18 days) | 2 Noble Robes (Tailor) |
 
 ## While it stands

@@ -18,15 +18,16 @@ worlds. A dedicated server keeps its own file.
 **Game rules.** Per-world tuning of builders uses vanilla's `/gamerule`, so it can differ from world to world and be
 changed without a restart.
 
-**Unfinished expansions stay off.** A switch that belongs to an expansion that isn't released yet (the "Off until"
-column) is off whatever the file says, and isn't on the settings screen until then.
+**Expansions open together in 1.0.** A switch that belongs to an expansion (the "Expansion" column) is off whatever
+the file says, and isn't on the settings screen, while that expansion's gate is closed. 1.0 opens every gate (1.1 to
+2.0) at once (owner, 2026-10-13); from then on these switches default on and obey the file.
 
 ## How it works
 
 - The file is read once at start-up (`WorkplaceConfig`), clamped, written back and applied: each value is handed to
   the system that uses it.
-- **The expansion gate (B76).** Each expansion that has switches (1.1 to 1.5, 1.7, 1.8 and 2.0 today) has one flag in the code
-  that the release finishing it turns on. Until then its switches are forced off, even in a config file that says on. The release flips the flag
+- **The expansion gate (B76).** Each expansion (1.1 to 2.0) has one flag in the code
+  (`Expansions.M27` to `M35`) that the release finishing it turns on; 1.0 turns all nine on together. Until then its switches are forced off, even in a config file that says on. The release flips the flag
   and nothing else: the switches then default on and obey the file again.
 - **A file from before the release (34.23).** The file records which expansions were open when it was written
   (a list in the file; files written by 0.139.0 to 0.142.0 have none, so none were). A switch of an expansion that was
@@ -53,7 +54,7 @@ column) is off whatever the file says, and isn't on the settings screen until th
 The config file (`config/aliveworkplace.json`). "on" and "off" are written true and false in the file. A number's
 range is in brackets.
 
-| Key | Default | Off until | What it does |
+| Key | Default | Expansion | What it does |
 |---|---|---|---|
 | `supplyRadius` | 8 (2 to 32) |  | Chests and barrels within this many blocks of a workstation are that villager's supply chests. |
 | `maxSiteDistance` | 48 (16 to 256) |  | How far from their Blueprint Table (or bench) a builder takes a build; also how far upkeep looks. |

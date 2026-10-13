@@ -1,7 +1,7 @@
 # Legends
 
 Rare named villagers with powers, who come to a village that has earned them. Also the Gifted: about one villager in
-thirty with a rare gift. Part of 1.3 (Legends): off until that expansion is finished.
+thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
 29.19, 29.20, 29.21, 29.22, 29.23, 33.23
@@ -67,10 +67,10 @@ Beloved (neighbors are happier), Born Leader (workers of their trade nearby 10% 
 
 | Key | Default | What it does |
 |---|---|---|
-| `legends` | on from 1.3 | Off: none come; settled Legends stay as ordinary Masters and come back when it is on again |
-| `legendNeeds` | on from 1.3 | Off: no needs and no strikes |
-| `legendSites` | on from 1.3 | Off: no Legends found at ruins, outposts or shipwrecks |
-| `strangeMoods` | on from 1.3 | Off: no strange moods |
+| `legends` | on from 1.0 | Off: none come; settled Legends stay as ordinary Masters and come back when it is on again |
+| `legendNeeds` | on from 1.0 | Off: no needs and no strikes |
+| `legendSites` | on from 1.0 | Off: no Legends found at ruins, outposts or shipwrecks |
+| `strangeMoods` | on from 1.0 | Off: no strange moods |
 | `giftedChance` | 30 (0 to 1000) | One villager in this many is Gifted; 0: nobody is, and nothing is erased |
 | `mythicLegendCap` | 0, 0, 1, 2 | Mythic Legends by rank (Hamlet, Village, Town, City); in the file only |
 
@@ -122,8 +122,8 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - The Pokémon Professor and Ranger don't exist without Cobblemon; Alphas need Cobblemon 1.8.
 - The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
   (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
-- The luxuries Legends take are stand-ins for now (honey bottles, amethyst shards and emeralds, books, leather
-  armor), through item tags, until the luxury jobs of 1.8 make the real ones.
+- The luxuries Legends take are still the stand-ins (honey bottles, amethyst shards and emeralds, books, leather
+  armor), through item tags: 1.8's wines, jewelry, books and clothes haven't joined the tags (bug B136).
 
 ## Legends of the realm (33.23)
 

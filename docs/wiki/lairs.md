@@ -1,6 +1,6 @@
 # Lairs and the Defense page
 
-ROADMAP 32.3. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
@@ -56,7 +56,7 @@ None. One new screen page (the Defense page).
 ## Switches
 
 - `banditCamps` (true): bandit camps. `raiderCultures`: each culture; one switched off founds no lair.
-- Until Milestone 32 is finished a camp is the bandit camp as it was: an unnamed "Bandit Chief", three or four men, no
+- While the 1.6 gate (`Expansions.M32`) is closed, which ends in 1.0, a camp is the bandit camp as it was: an unnamed "Bandit Chief", three or four men, no
   strength limit on raids, and a guards icon that opens nothing.
 
 ## Saved data
@@ -92,11 +92,12 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 ## Known limits
 
 - A lair whose culture is switched off in `raiderCultures` stays until its captain falls (it sends no raids); the
-  design's "leaves at the next dawn" is not built yet.
-- The Defense page's gates slot is on [Sieges](sieges.md); its other rows (scouts, war party, next attack, At peace)
-  come with 32.12 to 32.14 and 32.21; "where" is always rough until scouts exist.
+  design's "leaves at the next dawn" holds only for a quiet village ([Peaceful settings](peace.md), 32.21).
+- The Defense page's gates slot is on [Sieges](sieges.md); its other rows are on [Scouts](scouts.md) (32.12),
+  [Marching on the lair](war-party.md) (32.13), [Raids and threats](raids.md) (the next attack, 32.14) and [Peaceful settings](peace.md) (32.21); "where" stays rough until a
+  scout has been.
 - A lair of a structure other than the bandit camp puts its captain and band round the middle of its floor; cultures
-  that need their own spots, water or a portal add them in their own items (32.7 to 32.11).
+  that need their own spots, water or a portal add them on their own pages (32.7 to 32.11).
 
 ## Proof
 

@@ -1,6 +1,6 @@
 # Caravans that trade
 
-ROADMAP 33.6 (part of 1.7, "From village to realm"; off until 1.7 is released). It builds on
+ROADMAP 33.6 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). It builds on
 [the price board](price-board.md) and [trading at the board](board-trade.md).
 
 Roadmap items: 33.6
@@ -57,7 +57,7 @@ says "Our caravan came home from Ashford with 16 × Oak Log unsold". The logs ar
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageEconomy` | on from 1.7 (off until then) | Off: caravans carry only what the other village waits for, as before, and the routes page shows no sales; goods for sale already on the road come home unsold. |
+| `villageEconomy` | on from 1.0 | Off: caravans carry only what the other village waits for, as before, and the routes page shows no sales; goods for sale already on the road come home unsold. |
 
 ## Saved data
 

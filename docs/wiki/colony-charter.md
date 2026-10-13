@@ -1,6 +1,6 @@
 # The Colony Charter
 
-ROADMAP 33.8 (part of 1.7, "From village to realm"; off until 1.7 is released). A City can found a sister village.
+ROADMAP 33.8 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). A City can found a sister village.
 This page is the first step: buying the Colony Charter at the hall and choosing, on its map, where the colony goes.
 Sending the settlers is on [its own page](colony-settlers.md) (33.9); the colony's first day (33.10) comes next.
 
@@ -66,7 +66,7 @@ limit) gets the tip "Found a colony".
 
 | Key | Default | What it does |
 |---|---|---|
-| `colonies` | on from 1.7 (off until then) | Off: no Colonies tab, no charters sold, a charter chooses no spot, and "What next?" never suggests a colony. |
+| `colonies` | on from 1.0 | Off: no Colonies tab, no charters sold, a charter chooses no spot, and "What next?" never suggests a colony. |
 | `colonyRank` | `city` | The rank a village needs to buy a charter: `hamlet`, `village`, `town` or `city`. In the file only (not on the settings screen). Anything else reads as `city`. |
 | `colonyCooldownDays` | 7 (0 to 60) | Days a village waits after founding a colony before the next. |
 | `coloniesPerVillage` | 3 (0 to 16) | Colonies one village may found in all. |
@@ -109,7 +109,8 @@ All 33.8, lane a, 2026-10-10 (also in ROADMAP's Notes):
 
 ## Known limits
 
-- Right-clicking the hall with the charter sends the settlers ([33.9](colony-settlers.md)); no colony is founded until 33.10.
+- Right-clicking the hall with the charter only sends the settlers ([33.9](colony-settlers.md)); the colony is founded
+  when they arrive ([A colony is born](colony-born.md), 33.10).
 - A hall placed less than a round ago isn't on the map yet and doesn't keep a colony 128 blocks away.
 - The map shows only what the server has loaded when you open it: far from players that is parchment. It isn't
   redrawn while it is open.

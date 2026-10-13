@@ -1,6 +1,6 @@
 # Founding a realm
 
-ROADMAP 33.11 (part of 1.7, "From village to realm"; off until 1.7 is released). A Town or better founds a realm with
+ROADMAP 33.11 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). A Town or better founds a realm with
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
@@ -133,7 +133,7 @@ member.
 
 | Key | Default | What it does |
 |---|---|---|
-| `realms` | on from 1.7 (off until then) | Off: no Realm tab, nothing founded, added, invited, joined or voted on, no name icon line or tip, and the arms aren't used; invitations don't lapse and votes don't end. Realms, invitations and votes stay saved and come back when it is turned on. A broken hall still leaves its realm. |
+| `realms` | on from 1.0 | Off: no Realm tab, nothing founded, added, invited, joined or voted on, no name icon line or tip, and the arms aren't used; invitations don't lapse and votes don't end. Realms, invitations and votes stay saved and come back when it is turned on. A broken hall still leaves its realm. |
 | `realmMaxMembers` | 12 (2 to 32) | Villages one realm may hold. |
 | `realmRelief` | on (with 1.7) | Raided realm villages get riders from the capital and near members (33.17). |
 
@@ -169,8 +169,8 @@ empty in a world that never had them:
 - Chronicle kind `REALM` (a gold helmet): founded, joined, left, let go, a member lost, rank ups, renamed, new arms,
   the crown passed, the realm ended.
 - 33.12's letters are ordinary written books (the mail's letters), sent through the post office's parcels.
-- No new item, block, job or command (`/workplace realm info|disband` for operators is in the design note, not built
-  yet).
+- No new item, block, job or command (`/workplace realm info|disband` for operators is in the design note and was not
+  built).
 
 ## Decisions
 
@@ -196,9 +196,9 @@ Lane a, 2026-10-11 (also in ROADMAP's Notes):
   members votes for all of them with one click. The proposer's villages start out for the move.
 - "If one player owns every member": whoever may put the village forward (that owner, their friends, operators) moves
   it at once.
-- The realm's treasury, research and edicts don't exist yet (33.13 on). Everything a realm has is kept on its record in
-  `aliveworkplace_realms`, so it moves with the capital by itself; 33.13 on should keep their state there too (or follow
-  `Realms.onCapitalMoved`). The GameTest checks the realm's name, arms, rank and members move.
+- 33.11, written before the realm's treasury, research and edicts (33.13 on): everything a realm has is kept on its
+  record in `aliveworkplace_realms`, so it moves with the capital by itself; what a later item keeps per village
+  follows `Realms.onCapitalMoved`. The GameTest checks the realm's name, arms, rank and members move.
 - The invitation's line on the tab is two buttons (Join, Decline), not one line with a right click, so it works by plain
   clicks like the rest of the tab.
 - The capital's owner who invites a friend's or their own village through the invitation path just adds it, as before.
@@ -369,7 +369,7 @@ same row to read ("The capital's Book of Edicts can lift it") and lists no realm
 proclaim one ("Common Market is a realm edict: the capital proclaims it in its Book of Edicts."). Proclaiming, lifting,
 a lapse and a reform are told to every member's owner online and written in every loaded member's chronicle.
 The Book's tooltips are wrapped to fit the screen (33.22a): the hall's screen breaks any line wider than half the screen
-(120 to 240 GUI pixels) between words, keeping its colours, so a long description such as the Royal Highway's never
+(120 to 240 GUI pixels) between words, keeping its colors, so a long description such as the Royal Highway's never
 runs off the edge.
 
 Under the Common Market the realm's own people (the owner of a member, their friends and operators) buy at the board's
@@ -416,30 +416,24 @@ with it. Effect types (`caravan_carry` (named apart from the guilds' `carry`), `
 
 - Bands still on the road and the hall's "away" line are kept in memory only: a restart
   mid-ride loses the band (already paid) and the village, if still raided, calls again; riders who have arrived are
-  saved and still leave on time. A rider's horse that dies drops its saddle. `relief` hasn't been filmed yet (GitHub
-  films it after the push).
+  saved and still leave on time. A rider's horse that dies drops its saddle.
 - Granaries only move meals between members whose halls are loaded at dawn and in one dimension; Concord, like the
   33.15 effects, is off with the `edicts` switch off (the other seven topics aren't).
 - Realm research effects reach the edicts' toolbox, so with the `edicts` switch off they are off too (the scholars'
   levels are still shared). A `work_pace` realm topic would be named "the ... edict" in a worker's pace line; the mod's
   topics don't use it.
-- Only the scholars' tree is shared, not the Legends' trees. `realm_research` hasn't been filmed yet (GitHub films it
-  after the push).
-- `realm_treasury` hasn't been filmed yet (GitHub films it after the push). Nor has `realm_builds` (33.14).
+- Only the scholars' tree is shared, not the Legends' trees.
 - The members' villagers and wellbeing are as their last round saw them (every half minute while loaded); a village
   far from players shows its last numbers.
 - Fireworks go up only if the capital is loaded at the rank up (a rank up counted in a far member's round has its
   chat line but no fireworks nobody would see).
 - More than 27 members and candidates together don't fit the tab (with the default 12 members, at most 15
   candidates show, nearest first).
-- The rank-up fireworks and the tab have been seen only in the showcase scene's checks; it hasn't been filmed yet
-  (GitHub films it after the push). The same goes for `realm_invite` (33.12).
 - Votes and invitations are counted by the overworld's clock; a vote's last hours show rounded up.
 - The invitation letter is written in the server's language (English), like the settlers' letter.
 - Realm edicts: the Levy of Arms' "wherever it is" still needs a member's hall loaded to count its guards (an unloaded
   member sends no band, as before). The capital's quest page shows 4 reform steps at most, the village's first. A
-  common board's price moves the village's own price when traded. `realm_edicts` hasn't been filmed yet (GitHub films
-  it after the push).
+  common board's price moves the village's own price when traded.
 
 ## Proof
 - `RealmTopicsGameTests` (9, 33.16): `theRealmRowShowsTheEight` (the eight, their prices at levels 1 and 2, icons,

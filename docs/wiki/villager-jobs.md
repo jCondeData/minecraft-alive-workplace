@@ -143,18 +143,18 @@ list of free workstations finds each kind of workstation's job once.
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
-| `vintners` | on from 1.8 | The Vintner job |
-| `tailors` | on from 1.8 | The Tailor job |
-| `printers` | on from 1.8 | The Printer job |
-| `berryBreeders` | on from 1.2 | The Berry Breeder job |
-| `campCooks` | on from 1.2 | The Camp Cook job |
-| `habitatKeepers` | on from 1.2 | The Habitat Keeper job |
-| `daycareKeepers` | on from 1.2 | The Daycare Keeper job |
-| `gemGrowers` | on from 1.2 | The Gem Grower job |
-| `jewellers` | on from 1.8 | The Jeweler job |
-| `firewardens` | on from 1.6 | The Firewarden job |
-| `wellKeepers` | on from 1.6 | The Well Keeper job |
-| `physicians` | on from 1.6 | The Physician job |
+| `vintners` | on from 1.0 | The Vintner job |
+| `tailors` | on from 1.0 | The Tailor job |
+| `printers` | on from 1.0 | The Printer job |
+| `berryBreeders` | on from 1.0 | The Berry Breeder job |
+| `campCooks` | on from 1.0 | The Camp Cook job |
+| `habitatKeepers` | on from 1.0 | The Habitat Keeper job |
+| `daycareKeepers` | on from 1.0 | The Daycare Keeper job |
+| `gemGrowers` | on from 1.0 | The Gem Grower job |
+| `jewellers` | on from 1.0 | The Jeweler job |
+| `firewardens` | on from 1.0 | The Firewarden job |
+| `wellKeepers` | on from 1.0 | The Well Keeper job |
+| `physicians` | on from 1.0 | The Physician job |
 
 ## Saved data
 
@@ -192,8 +192,8 @@ and so on). Status lines and the requests board are not saved: workers post agai
 
 - A job needs a free block of its kind within about 4 blocks of the villager when it is picked.
 - Jobs given by order (a player's pick, the Steward) aren't held back by the worker cap.
-- The five Pokémon jobs, the Gem Grower, the Vintner, the Tailor and the Printer are behind their expansions' switches until 1.2
-  and 1.8.
+- The five Pokémon jobs and the Gem Grower are behind 1.2's gate, the Vintner, the Tailor, the Printer and the Jeweler
+  behind 1.8's, and the Firewarden, the Well Keeper and the Physician behind 1.6's; 1.0 opens them all.
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
 
 ## Proof

@@ -125,7 +125,7 @@ every objective's.
 
 - 31.19: the stockade's cage gate is an iron door with a lever outside, so the captive (31.20) can't let himself out
   and the raiders don't open it; a player opens it with the lever.
-- 31.19: the stockade's chest has the bandit camps' loot until 31.20 fills it with the lost shipment.
+- 31.19: the stockade's chest had the bandit camps' loot until 31.20 filled it with the lost shipment.
 - 31.19: crates are composters (a slatted wooden box); the arrows in the arrow-studded crate are tripwire hooks, the
   nearest thing in the game to a shaft stuck in wood.
 - 31.19: a mark counts within 6 blocks of its middle, so a player who sees it from the trail's line counts it as they

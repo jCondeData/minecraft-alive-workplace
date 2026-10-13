@@ -173,7 +173,7 @@ Breaking the hall drops its standings with the rest of the village's stories.
   the chronicle has the line.
 - Standings go with the hall when it is broken.
 - A festival called on a server where `festivals` is off gives nothing, as there is none.
-- The showcase scene has not been filmed locally; GitHub films it after the push.
+- The showcase scene was not filmed locally; GitHub films it every night.
 - Not tested: a chat line typed in a real client (the tests call the server's chat decorator, which is what a typed
   line goes through), a vanilla pillager raid, and the sound.
 

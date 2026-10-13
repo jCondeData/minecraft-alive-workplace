@@ -20,6 +20,7 @@ import io.github.jcondedata.aliveworkplace.people.Couples;
 import io.github.jcondedata.aliveworkplace.people.Moods;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
@@ -289,6 +290,46 @@ public class LegendNeedsGameTests implements net.fabricmc.fabric.api.gametest.v1
 		}
 	}
 
+	/** B136: a Legend who likes wine drinks the Vintner's Vintage Wine, not only the honey-bottle stand-in, and leaves the Jeweller's ring. */
+	//$ gametest_ticks_batch AREA '100' '"legendNeedsModGoods"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "legendNeedsModGoods")
+	public void theVintnersWineIsHerLuxury(GameTestHelper helper) {
+		List<BuildSiteManager.Finished> homes = new ArrayList<>();
+		List<BlockPos> skyBlocks = new ArrayList<>();
+		setUp(helper, homes, skyBlocks);
+		helper.runAfterDelay(2, () -> staged(helper, legend("wine"), () -> {
+			ServerLevel level = helper.getLevel();
+			BlockPos hall = helper.absolutePos(HALL);
+			try {
+				Villager ada = legendary(helper, new BlockPos(10, 2, 10), Legends.get(id("needs_mason")).orElseThrow(), 1);
+				BlockPos origin = sky(helper);
+				home(helper, "needs_manor_3", origin, new Vec3i(8, 5, 8), homes);
+				sleepsAt(level, ada, origin.offset(1, 1, 1));
+				BlockPos homeChestPos = origin.offset(3, 1, 3);
+				level.setBlockAndUpdate(homeChestPos, Blocks.CHEST.defaultBlockState());
+				skyBlocks.add(homeChestPos);
+				Container homeChest = (Container) level.getBlockEntity(homeChestPos);
+				homeChest.setItem(0, new ItemStack(ModItems.AMETHYST_RING, 3)); // a jewel: not what she likes
+				homeChest.setItem(1, new ItemStack(ModItems.VINTAGE_WINE, 2));
+
+				LegendData data = LegendNeeds.check(level, hall, ada, 10);
+				helper.assertTrue(data.lastLuxury() == 10 && LegendText.met(data, LegendText.LUXURY) && homeChest.countItem(ModItems.VINTAGE_WINE) == 1,
+					"day 10: she didn't drink a Vintage Wine from her home chest: " + data + ", wine left " + homeChest.countItem(ModItems.VINTAGE_WINE));
+				helper.assertTrue(homeChest.countItem(ModItems.AMETHYST_RING) == 3, "she took an Amethyst Ring, liking wine");
+				data = LegendNeeds.check(level, hall, ada, 17);
+				helper.assertTrue(data.lastLuxury() == 17 && homeChest.countItem(ModItems.VINTAGE_WINE) == 0, "day 17: not the second Vintage Wine: " + data);
+			} finally {
+				for (BlockPos p : skyBlocks) {
+					if (level.getBlockEntity(p) instanceof Container c) {
+						c.clearContent();
+					}
+					level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
+				}
+			}
+			helper.succeed();
+		}));
+	}
+
 	/** A happy village: the grown-ups' average mood 60 or more with moods on; wellbeing 60% with moods off. */
 	//$ gametest_ticks_batch AREA '100' '"legendNeedsHappy"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "legendNeedsHappy")
@@ -537,6 +578,19 @@ public class LegendNeedsGameTests implements net.fabricmc.fabric.api.gametest.v1
 		for (var e : stand.entrySet()) {
 			for (var item : e.getValue()) {
 				helper.assertTrue(new ItemStack(item).is(LegendNeeds.luxuryTag(e.getKey())), item + " isn't in luxury/" + e.getKey());
+			}
+		}
+		// B136: the 1.8 luxury trades' goods are in the tags beside the stand-ins
+		Map<String, List<net.minecraft.world.item.Item>> goods = Map.of("wine", List.of(ModItems.CIDER, ModItems.BERRY_WINE, ModItems.VINTAGE_WINE),
+			"jewels", List.of(ModItems.AMETHYST_RING, ModItems.EMERALD_BROOCH, ModItems.GOLD_CIRCLET),
+			"books", List.of(ModItems.GAZETTE, ModItems.ILLUMINATED_BOOK),
+			"clothes", List.of(ModItems.WORK_CLOTHES, ModItems.FINE_CLOTHES, ModItems.NOBLE_ROBES));
+		for (var e : goods.entrySet()) {
+			for (var item : e.getValue()) {
+				helper.assertTrue(new ItemStack(item).is(LegendNeeds.luxuryTag(e.getKey())), item + " isn't in luxury/" + e.getKey());
+				for (String other : goods.keySet()) {
+					helper.assertTrue(other.equals(e.getKey()) || !new ItemStack(item).is(LegendNeeds.luxuryTag(other)), item + " is in luxury/" + other + " too");
+				}
 			}
 		}
 		ItemStack dyed = new ItemStack(Items.LEATHER_CHESTPLATE);

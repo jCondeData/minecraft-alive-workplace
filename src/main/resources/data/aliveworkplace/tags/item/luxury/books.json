@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "minecraft:book",
-    "minecraft:enchanted_book"
+    "minecraft:enchanted_book",
+    "aliveworkplace:gazette",
+    "aliveworkplace:illuminated_book"
   ]
 }

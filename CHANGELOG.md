@@ -24,6 +24,14 @@ asks for the steps, `latest.log` and any crash report).
   Great Library's Scholarship tooltip no longer covers the second-tier row, and it no longer ends with "A villager's
   workstation: hold Shift for its jobs" (its picture is a lectern). The found-goods showcase now films the Foundation
   Stone above the chat, so the Pathfinder's line no longer shows through the stone's status.
+- **A builder finishing a part of a Wonder now says so properly** (B138). The chat used to read "Odo finished
+  building Stage 1 0! The blueprint is back in the supply chest." (no blueprint comes back for a Wonder's part); now it
+  says "Odo finished stage 1 of 4 of the Colossus: The Plinth and the Road Arch." or, while other parts of the stage are still
+  going up, how many of them stand. The Wonder's very last part leaves the telling to the Wonder's own announcement.
+- **Legends take the village's own luxuries** (B136). A Legend who likes wine now drinks the Vintner's Cider, Berry
+  Wine and Vintage Wine; one who likes jewels takes the Jeweler's rings, brooches and circlets; books, the Printer's
+  Village Gazette and Illuminated Book; clothes, the Tailor's Work Clothes, Fine Clothes and Noble Robes. The honey bottles,
+  gems, books and leather armor they took before still count.
 - **A Wonder's crew no longer stops for good partway up** (B139). When the lead had to give up on one block (a
   crewmate stood on it the whole time, as on top of the Colossus's half-built robe), the wall above it waited for that
   block forever and the whole crew stood idle; now the wall goes on over the gap, also after a restart. And a block that

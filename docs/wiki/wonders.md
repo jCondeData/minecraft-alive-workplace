@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138
 
 ## What a player sees
 
@@ -49,6 +49,10 @@ room for the stone.
 - **Each stage starts when every part of the one before is done and its own goods are dedicated**, and the builder it
   was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Storey. It begins once
   its goods are in").
+- **The builder tells the owner of each part it finishes** (B138): with other parts of the stage still going up, "Odo
+  finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Storey) stand."; the stage's last part, "Odo
+  finished stage 1 of 3 of the Test Folly: The Ground Storey."; the Wonder's very last part says nothing itself, as
+  everyone hears the Wonder is finished. No blueprint comes back for a part.
 - **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` on a part to abandon the Wonder: what's
   built stays, the open parts end, the plan comes back (to the owner, else by the stone) and the chronicle says so. A
   plain break says to sneak; anyone else is refused. Builders never clear it and pistons can't push it; a finished

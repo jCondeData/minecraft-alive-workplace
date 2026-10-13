@@ -6495,6 +6495,8 @@
   "message.aliveworkplace.wonder.repaired": "The %s of %s stands again (%s%%): its powers have returned.",
   "message.aliveworkplace.wonder.repairing": "%s is repairing the %s: %s blocks to put back, from the chests by its Foundation Stone.",
   "message.aliveworkplace.wonder.part_repaired": "%s put back a part of the %s.",
+  "message.aliveworkplace.wonder.part_built": "%1$s finished a part of the %2$s: %5$s of %6$s parts of stage %3$s (%4$s) stand.",
+  "message.aliveworkplace.wonder.stage_built": "%s finished stage %s of %s of the %s: %s.",
   "message.aliveworkplace.wonder.status.damaged": "Damaged: %s%% of it stands (%s%% needed). Its powers have stopped until the builders repair it.",
   "message.aliveworkplace.wonder.status.standing": "Standing: %s%% of it (counted on day %s). Its powers are on.",
   "message.aliveworkplace.wonder.status.standing_new": "Standing whole. Its powers are on.",

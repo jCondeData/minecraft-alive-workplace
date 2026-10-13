@@ -451,6 +451,43 @@ public final class WonderStages {
 	}
 
 	/**
+	 * What the owner is told when {@code who} finishes {@code part}, a part of a Wonder still going up (B138): with other
+	 * parts of its stage still open, how many of the stage's parts stand; the stage's last part, that the stage is
+	 * finished (the stone then says which stage is next). Empty for the last part of the last stage, whose finish is
+	 * announced to everyone (WonderCelebration), and for a part of a Wonder that's gone or no longer loaded.
+	 */
+	public static Optional<Component> partFinishedLine(ServerLevel level, BuildSite part, Component who) {
+		if (part.wonder() == null) {
+			return Optional.empty();
+		}
+		Optional<WonderSite> site = WonderManager.get(level).site(part.wonder());
+		Wonder wonder = site.map(s -> Wonders.loaded().get(s.wonder())).orElse(null);
+		if (wonder == null || site.get().stage() < 1 || site.get().stage() > wonder.stages().size()) {
+			return Optional.empty();
+		}
+		WonderSite s = site.get();
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		int total = Math.max(1, s.parts().size());
+		int standing = 0;
+		for (UUID id : s.parts()) {
+			BuildSite build = sites.get(id);
+			if (id.equals(part.id()) || build == null || build.isDone()) {
+				standing++; // (a part whose site is gone counts as built, as in stageDone)
+			}
+		}
+		Component stageName = wonder.stages().get(s.stage() - 1).nameText();
+		if (standing < total) {
+			return Optional.of(Component.translatable("message.aliveworkplace.wonder.part_built", who, wonder.nameText(), s.stage(),
+				stageName, standing, total));
+		}
+		if (s.stage() == wonder.stages().size()) {
+			return Optional.empty(); // the Wonder's finished: everyone hears it from WonderCelebration
+		}
+		return Optional.of(Component.translatable("message.aliveworkplace.wonder.stage_built", who, s.stage(), wonder.stages().size(),
+			wonder.nameText(), stageName));
+	}
+
+	/**
 	 * Moves every Wonder of {@code level} whose stage is done on to its next stage, or finishes it; a stage waiting for its
 	 * goods posts them and is dedicated once they're in, by day (35.7).
 	 */

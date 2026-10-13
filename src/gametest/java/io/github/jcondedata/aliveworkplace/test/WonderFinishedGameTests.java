@@ -312,6 +312,84 @@ public class WonderFinishedGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B138: the builder finishing a part of a Wonder tells the owner about the Wonder's stage, never "finished building
+	 * Stage 1 0! The blueprint is back in the supply chest." A part with others of its stage still open says how many
+	 * stand; the stage's last part says the stage is finished; the Wonder's very last part says nothing itself, as
+	 * everyone hears the Wonder is finished.
+	 */
+	//$ gametest_ticks_batch TALL '200' '"wonderPartTold"'
+	@GameTest(template = TALL, timeoutTicks = 200, batch = "wonderPartTold")
+	public void aFinishedWonderPartIsToldAsAPartOfItsStage(GameTestHelper helper) {
+		Village v = village(helper);
+		ServerLevel level = v.level();
+		WonderManager manager = WonderManager.get(level);
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		UUID id = begin(helper, v).id();
+		for (int i = 0; i < 5 && manager.site(id).orElseThrow().parts().isEmpty(); i++) {
+			WonderStages.tick(level);
+		}
+		WonderSite site = manager.site(id).orElseThrow();
+		helper.assertTrue(site.stage() == 1 && site.parts().size() == 1, "stage I didn't start: " + site);
+		// Stage I given a second part, as the Great Wall's and the Cathedral's stages have several.
+		BuildSite first = sites.get(site.parts().get(0));
+		BuildSite second = sites.create(first.owner(), "Owner", first.structure(), first.placement());
+		second.setWonder(id);
+		manager.setParts(id, List.of(first.id(), second.id()));
+		String who = v.builder().getDisplayName().getString();
+
+		finishPart(level, v.builder(), first);
+		List<String> lines = v.heard().stream().map(Component::getString).toList();
+		String partLine = who + " finished a part of the Test Folly: 1 of 2 parts of stage 1 (The Ground Storey) stand.";
+		helper.assertTrue(lines.contains(partLine), "the first part: \"" + partLine + "\" not in " + lines);
+
+		v.heard().clear();
+		finishPart(level, v.builder(), second);
+		lines = v.heard().stream().map(Component::getString).toList();
+		String stageLine = who + " finished stage 1 of 3 of the Test Folly: The Ground Storey.";
+		helper.assertTrue(lines.contains(stageLine), "the stage's last part: \"" + stageLine + "\" not in " + lines);
+		helper.assertTrue(!said(v.heard(), "message.aliveworkplace.wonder.part_built"), "the stage's last part told as one of several: " + lines);
+
+		// Stages II and III, each part finished by the builder; the Wonder's last part leaves the telling to the Wonder.
+		List<Component> all = new ArrayList<>(v.heard());
+		for (int round = 0; round < 12 && manager.site(id).map(WonderSite::goingUp).orElse(false); round++) {
+			WonderStages.tick(level);
+			WonderSite now = manager.site(id).orElseThrow();
+			for (UUID partId : now.parts()) {
+				BuildSite part = sites.get(partId);
+				if (part == null || part.isDone()) {
+					continue;
+				}
+				v.heard().clear();
+				finishPart(level, v.builder(), part);
+				lines = v.heard().stream().map(Component::getString).toList();
+				if (now.stage() == 2) {
+					helper.assertTrue(lines.contains(who + " finished stage 2 of 3 of the Test Folly: The Upper Storey."), "stage II: " + lines);
+				} else {
+					helper.assertTrue(lines.stream().noneMatch(l -> l.startsWith(who + " finished")), "the Wonder's last part told by the builder too: " + lines);
+				}
+				all.addAll(v.heard());
+			}
+		}
+		helper.assertTrue(manager.site(id).orElseThrow().done(), "the folly wasn't finished");
+		all.addAll(v.heard());
+		String village = VillageHalls.name(level, v.hall()).getString();
+		helper.assertTrue(all.stream().anyMatch(c -> c.getString().equals(village + " has finished the Test Folly!")), "the finish wasn't announced: "
+			+ all.stream().map(Component::getString).toList());
+		helper.assertTrue(!said(all, "message.aliveworkplace.finished"), "a part told as a building with its blueprint back: "
+			+ all.stream().map(Component::getString).toList());
+		translated(helper, all);
+		helper.succeed();
+	}
+
+	/** {@code part}'s steps done and its finish run as the builder's, as BuilderWork does at the part's last step. */
+	private static void finishPart(ServerLevel level, Villager builder, BuildSite part) {
+		for (int i = 0; i < 20 && !part.isDone(); i++) {
+			part.finishList();
+		}
+		Builders.finish(level, builder, part);
+	}
+
 	/** Finished Wonders and their upkeep survive a save and reload; the powers come from what was loaded; an old save reads standing whole. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

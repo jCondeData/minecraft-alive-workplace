@@ -4705,7 +4705,7 @@ def s_scoreboard(b):
 
 
 def s_score(z, y):
-    for digit, z0 in (("2", 18), ("1", 22)):
+    for digit, z0 in (("2", 17), ("1", 23)):
         if z0 <= z < z0 + 3:
             return S_DIGITS[digit][17 - y][z - z0] == "#"
     return z == 21 and y == 15  # the dash

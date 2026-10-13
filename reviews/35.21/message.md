@@ -1,0 +1,10 @@
+Review 35.21: The Colossus, its design
+What changed: a new Wonder design, the Founder's statue, 47 high on a 29 x 29 site over the main road. The figure is the vanilla villager drawn at a pixel a block, so it reads as a villager from far off: the tall head, the long nose, a dark unibrow over white eyes with emerald pupils, and a robe of polished diorite with smooth-stone trim. The left forearm lies across the chest, and the right arm raises a lantern above the head (glass round glowstone under a copper cap, lit day and night). A cut-copper cloak hangs from the shoulders in three pleats and weathers green over the weeks. The 13-high stepped plinth has a road arch through it (5 wide, 6 high) so caravans pass beneath, nine braziers, lamp posts, and the Founder's plaque (five signs) over the arch. About 9,000 blocks in four stages (the Plinth and the Road Arch, the Robes, the Arms and the Cloak, the Head and the Lantern), each with goods from the village's jobs.
+Please judge: 1) Does the face read well from the road (the "face from the road" render)? The emerald pupils in particular. 2) The cloak uses about 370 copper blocks, not the 250 the item said, because it needs pleats so its back isn't one flat sheet. OK? 3) "One hand on the chest" was drawn as the villager's folded arms, half of them. Does that pose work?
+Tester: PASS WITH RISKS. CI build on main (65cd5f9b) is green, including WonderBlueprintGameTests (the four design checks with the Colossus at about 9,000). Renders on the sheet are from the building renderer. In game (scene `wonder_gallery` PASSED its check), the back shot is good, but in the front shot the plinth isn't drawn yet (it hadn't loaded on the client), so the statue seems to float. That's a filming problem, not the build: the back shot shows the plinth in place. Not checked in the bot: the lantern's light at night, or the copper weathering.
+Scene: SCENE=wonder_gallery (filmed with Cobblemon). Set up by command: every Wonder placed whole by command, not built by builders.
+Reply: approve 35.21 · veto 35.21: why · change 35.21: what
+
+(sent)
+
+(from chat, 2026-10-13 03:48Z; not yet sent)

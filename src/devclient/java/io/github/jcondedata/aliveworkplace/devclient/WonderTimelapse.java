@@ -10,7 +10,6 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlock;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
-import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
@@ -273,6 +272,9 @@ final class WonderTimelapse {
 		if (tick == 20) {
 			server.execute(() -> stage(server));
 		}
+		if (tick > 20 && tick % 20 == 0) { // B129: the staged Town held all scene long (the hall's round counts a Hamlet from the crew)
+			server.execute(() -> JobScenes.holdTown(server.overworld(), hall));
+		}
 		if (tick == 120) {
 			server.execute(() -> {
 				run(server, "tick rate " + RATE);
@@ -405,7 +407,7 @@ final class WonderTimelapse {
 		level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.NORTH));
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
 		entity.setOwner(player.getUUID(), player.getName().getString());
-		entity.setRank(VillageRanks.Rank.TOWN);
+		JobScenes.holdTown(level, hall); // B129: a Town, and a count on record so the hall's first round doesn't make it a Hamlet
 		village.accept(level, entity);
 		String[] names = {"Odo", "Pia", "Bram", "Ilse", "Tam", "Wren", "Edda", "Hob", "Mags", "Rolf"};
 		List<Villager> crew = new ArrayList<>();

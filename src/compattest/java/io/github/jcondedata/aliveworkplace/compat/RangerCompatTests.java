@@ -120,6 +120,9 @@ public class RangerCompatTests implements FabricGameTest {
 	public void rangerComesOnlyWithAnAlphaNear(GameTestHelper helper) {
 		setUp(helper);
 		ServerLevel level = helper.getLevel();
+		// past the morning (B142): in the hall's morning window its own round may roll a visit, and with the level-55
+		// Pikachu near the Ranger could really come (1 in 3), so the cooldown would take them off the list before the last check
+		level.setDayTime(level.getDayTime() / 24000L * 24000L + 7000L);
 		BlockPos hall = helper.absolutePos(HALL);
 		Legend ranger = legend();
 		helper.assertTrue(ranger.rarity().name().equals("RARE"), "rarity: " + ranger.rarity());

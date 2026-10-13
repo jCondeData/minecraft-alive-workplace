@@ -3946,7 +3946,7 @@ on a real world.
   in Townhouse I counts II and in its upgrade III; a data file overrides a tier) pass; renders of every tier in all
   five styles are in the review package; a builder builds each in a GameTest; scene `grand_houses` passes.
   - [x] **34.15a** (approved 2026-10-13) Change from the owner (2026-10-12): Artisan's House and Townhouse are sold by villagers only, not in everyone's Blueprint Table. Also: other players may become Lord (31.11 as built); chat title after the name; first day counts against the 15% tick target; 25.2 targets confirmed; builders keep their usual Gazette order.
-  - [x] **34.15b** (review: pending 2026-10-13) Change from the owner (2026-10-13): the Manor works the same way: sold by villagers only, not in everyone's Blueprint Table
+  - [x] **34.15b** (approved 2026-10-13) Change from the owner (2026-10-13): the Manor works the same way: sold by villagers only, not in everyone's Blueprint Table
 - [x] **34.16** (approved 2026-10-11) **Grander homes: the Noble's Manor.** The **Manor** (grade III: a stone house of two storeys round a
   hall with a grand stair, a dining room and two bedrooms, under a slate roof with dormers; **II** a walled formal
   garden with clipped hedges, a fountain and gravel walks; **III** a gatehouse and a ballroom wing, where 34.7's

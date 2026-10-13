@@ -3657,7 +3657,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
   Map's does. Done when:
   - GameTests check where the banners are and their colours, and that a route's dots lie between its two halls;
   - showcase scene `realm_map` (the map in hand and in an item frame).
-- [x] **33.22** (review: pending 2026-10-12) **Realm edicts** (needs M30's edict engine, the Book of Edicts). The capital's Book of Edicts gets
+- [x] **33.22** (approved 2026-10-13) **Realm edicts** (needs M30's edict engine, the Book of Edicts). The capital's Book of Edicts gets
   realm slots: 1 for a Barony or County, 2 for a Duchy, 3 for a Kingdom, one more with the Royal Hall II. A realm
   edict is in force in every member, lasts at least 3 days like any edict, and is paid from the realm treasury where
   it costs money. Six realm edicts, as data in M30's format (`scope: realm`), each with its reform (the capital's

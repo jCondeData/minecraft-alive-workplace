@@ -122,8 +122,11 @@ past that, a crafter looks again a few seconds later.
 
 **No first-day stalls (B103).** The mod's classes are loaded on a background thread while the server starts, so the
 first hall round, village-mates check or cradle of a new world doesn't wait for them in the middle of a tick (on a big
-pack every class loaded goes through other mods' transformers first). Supply chests are looked for only in loaded
-chunks, and the search never waits for a chunk.
+pack every class loaded goes through other mods' transformers first). The same thread also runs the collection and
+shape code a child growing up uses once on throwaway data, so the first child of a Cradle to grow up doesn't load it
+mid-tick. Supply chests are looked for only in loaded chunks, and the search never waits for a chunk. The nearest
+Village Hall to a spot is searched for once a tick (a worker's pace asks for it for each of its sources), and the hall's
+list of free workstations finds each kind of workstation's job once.
 
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 
@@ -197,7 +200,8 @@ and so on). Status lines and the requests board are not saved: workers post agai
 GameTests: `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
 `StationsRetakeGameTests`, `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
-`PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks).
+`PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
+the shape warm-up, the nearest hall within a tick, free workstations with their jobs).
 
 Showcase scenes: `stations` (one composter, four jobs), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

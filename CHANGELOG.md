@@ -127,6 +127,10 @@ asks for the steps, `latest.log` and any crash report).
 - An Expert Habitat Keeper now founds the village's Habitat Block in a Habitat Garden a Builder built: she
   only looked for a moss block, but the garden's centre stone is mossy cobblestone, so she never did. The block now
   looks like the stone it replaces (B88, Cobblemon 1.8).
+- Smoother first day on big packs (B103): the first child of a Cradle to grow up no longer holds up a tick by up to a
+  quarter of a second (the code it needs is loaded in the background while the server starts), and the nearest Village
+  Hall is looked up once a tick instead of once for each thing that speeds a worker up or slows them down. The season
+  test's first day went from 4 ticks with over 50 ms of our code to 1, and from 16.7% to 14.7% of the tick.
 - A worker's status names their own job: a Miner's level line reads "Apprentice Miner · 10/70 XP…" instead of
   calling every worker a builder (B124).
 - Builders no longer die from falls while on a job (on a roof, a tower or a Wonder's dome), and a Wonder's part whose

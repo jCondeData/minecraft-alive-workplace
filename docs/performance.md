@@ -39,6 +39,9 @@ profile samples). The daily numbers are in `docs/design/M30.md`.
 
 | Date | Run | Sprint | Our share, day 1 | Our share, days 2 to 8 | Ticks over 50 ms | Of them ours |
 |---|---|---|---|---|---|---|
+| 2026-10-13 | B103 after (`SEASON_PART=edicts SEASON_DAYS=1`; nearest hall once a tick, the growing-up warm-up) | 479 ticks a second (2.09 ms a tick) | **14.7%** | not run | 5 | 1: 51 ms (2 of 2 samples, both the harness's pace of every villager at once, `SeasonSoak.everyone` > `Moods.of` > `Homes.building`) |
+| 2026-10-13 | B103 midway (same one day; nearest hall once a tick, no fastutil warm-up yet) | 527 ticks a second (1.90 ms a tick) | **17.7%** | not run | 5 | 2: 69 ms (cold `FieldWork` code and a vanilla packet class loaded by a swing) and 53 ms (`Cradles.round`, Lithium loading fastutil's double collections as a child grows up) |
+| 2026-10-11 | B103 before (lane-c-1011-1833, main, the same one day) | not recorded | **16.7%** | not run | not recorded | 4: 254 ms `Cradles.round` (the same fastutil load), 127 ms, 84 and 76 ms (the harness's `VillageHalls.nearest` and `Pace.of`) |
 | 2026-10-10 | 4 (the reformed half alone, 4 days) | 794 ticks a second (1.26 ms a tick) | **17.2%** | 12.7% to 14.7% | 6 of 96,000 | 1, on day 1: 296 ms of a 296 ms tick, the same lookup (B101) |
 | 2026-10-10 | 3 (the fields growing) | 814 ticks a second (1.23 ms a tick) | **17.1%** | 12.4% to 14.1% | 17 of 192,000 (worst 425 ms) | 2, both on day 1: 402 ms of a 424 ms tick in the crafters' first recipe lookup (B101), and a 98 ms tick with one sample, in a farmer's harvest |
 | 2026-10-10 | 2 (nothing growing: the store ran out) | 718 ticks a second (1.39 ms a tick) | **16.6%** | 9.2% to 13.1% | not counted properly (it counted the ticks before the sprint) | 307 ms of a 333 ms tick on day 1, the same lookup |

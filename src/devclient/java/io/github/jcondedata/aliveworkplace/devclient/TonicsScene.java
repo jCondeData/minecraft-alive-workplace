@@ -2,8 +2,10 @@ package io.github.jcondedata.aliveworkplace.devclient;
 
 import io.github.jcondedata.aliveworkplace.mine.Miners;
 import io.github.jcondedata.aliveworkplace.people.Tonics;
+import io.github.jcondedata.aliveworkplace.people.Traits;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.work.Jobs;
 import io.github.jcondedata.aliveworkplace.work.Pace;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
@@ -14,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
@@ -22,6 +25,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * SCENE=tonics (ROADMAP 30.15): a miner, Dara, at her blast furnace and the player holding Miner's Brew; its tooltip in
@@ -127,8 +133,10 @@ final class TonicsScene {
 					ItemStack tonic = new ItemStack(NEW_ITEMS[i].get());
 					ServerPlayer player = server.getPlayerList().getPlayers().get(0);
 					Tonics.Offer offer = Tonics.offer(player, v, tonic);
-					Showcase.check(offer.outcome() == Tonics.Outcome.DRUNK && Pace.of(v).percent() == 25,
-						v.getName().getString() + " drank " + NEW[i] + ": " + (offer.message() == null ? offer.outcome() : offer.message().getString()));
+					Pace.Breakdown pace = Pace.of(v);
+					Showcase.check(offer.outcome() == Tonics.Outcome.DRUNK && pace.percent() == 25,
+						v.getName().getString() + " drank " + NEW[i] + ": " + (offer.message() == null ? offer.outcome() : offer.message().getString())
+							+ " (pace " + pace.percent() + "%: " + sources(pace) + ")");
 				}
 			});
 		}
@@ -143,7 +151,14 @@ final class TonicsScene {
 	private void stage(MinecraftServer server) {
 		ServerLevel level = server.overworld();
 		ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-		Villager v = JobScenes.worker(level, FURNACE, Blocks.BLAST_FURNACE, PoiTypes.ARMORER, ModVillagers.MINER);
+		// Every villager here gets a UUID without Diligent or Lazy (traits go by the UUID), so the tonic alone sets their
+		// pace: with a random one, a Diligent drinker read 37% faster and the checks failed now and then (B94).
+		JobScenes.place(level, FURNACE, Blocks.BLAST_FURNACE);
+		Villager v = EntityType.VILLAGER.create(level);
+		v.setUUID(steady(0));
+		v.moveTo(FURNACE.getX() + 0.5, FURNACE.getY(), FURNACE.getZ() + 1.5, 180f, 0f);
+		level.addFreshEntity(v);
+		Jobs.employ(level, v, FURNACE, PoiTypes.ARMORER, ModVillagers.MINER);
 		v.setVillagerData(v.getVillagerData().setLevel(2));
 		v.setVillagerXp(10);
 		v.setCustomName(Component.literal("Dara"));
@@ -163,6 +178,7 @@ final class TonicsScene {
 		double[] xs = {-2.5, -1.0, 2.0, 3.5};
 		for (int i = 0; i < 4; i++) {
 			Villager o = EntityType.VILLAGER.create(level);
+			o.setUUID(steady(i + 1));
 			o.setVillagerData(o.getVillagerData().setProfession(jobs[i]).setLevel(2));
 			o.setVillagerXp(10);
 			o.setCustomName(Component.literal(names[i]));
@@ -178,6 +194,31 @@ final class TonicsScene {
 		player.onUpdateAbilities();
 		player.teleportTo(level, 0.5, -60, 4.2, 180f, 12f);
 		Showcase.check(miner != null && miner.getVillagerData().getProfession() == ModVillagers.MINER, "a miner was staged");
+	}
+
+	/** The {@code n}th UUID (from a fixed seed) whose traits leave the work pace alone: neither Diligent nor Lazy. */
+	private static UUID steady(int n) {
+		RandomSource random = RandomSource.create(3015);
+		int found = 0;
+		while (true) {
+			UUID id = new UUID(random.nextLong(), random.nextLong());
+			List<Traits.Trait> traits = Traits.of(id);
+			if (!traits.contains(Traits.Trait.DILIGENT) && !traits.contains(Traits.Trait.LAZY) && found++ == n) {
+				return id;
+			}
+		}
+	}
+
+	/** The pace's sources and their factors, for a check's message. */
+	private static String sources(Pace.Breakdown pace) {
+		StringBuilder out = new StringBuilder();
+		for (Pace.Part part : pace.faster()) {
+			out.append(part.source().id()).append(' ').append(part.factor()).append(' ');
+		}
+		for (Pace.Part part : pace.slower()) {
+			out.append(part.source().id()).append(' ').append(part.factor()).append(' ');
+		}
+		return out.toString().trim();
 	}
 
 	/** Puts the mouse at window pixel ({@code x}, {@code y}); the harness has no real mouse. */

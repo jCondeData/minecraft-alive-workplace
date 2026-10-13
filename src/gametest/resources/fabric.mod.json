@@ -11,6 +11,7 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StatusLineJobGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReleaseGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ServerControlsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderBenchGameTests",

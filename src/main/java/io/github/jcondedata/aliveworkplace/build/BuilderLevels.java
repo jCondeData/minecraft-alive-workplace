@@ -100,12 +100,20 @@ public final class BuilderLevels {
 		return Component.translatable("merchant.level." + Math.max(1, Math.min(5, level)));
 	}
 
-	/** "Apprentice · 35/70 XP · 18% faster" for the status message, then the pace with what's behind it (ROADMAP 30.2). */
+	/** The villager's own job name ("Builder", "Miner"), as the status line and the hall show it. */
+	public static Component jobName(Villager villager) {
+		return Component.translatable("entity.minecraft.villager." + villager.getVillagerData().getProfession().name());
+	}
+
+	/**
+	 * "Apprentice Miner · 35/70 XP · 18% faster" for the status message, naming the villager's own job (B124), then the
+	 * pace with what's behind it (ROADMAP 30.2).
+	 */
 	public static Component describe(Villager villager) {
 		int lvl = level(villager);
 		net.minecraft.network.chat.MutableComponent out = !VillagerData.canLevelUp(lvl)
-			? Component.translatable("message.aliveworkplace.status.level_max", levelName(lvl), speedBonus(lvl))
-			: Component.translatable("message.aliveworkplace.status.level", levelName(lvl), villager.getVillagerXp(),
+			? Component.translatable("message.aliveworkplace.status.level_max", levelName(lvl), jobName(villager), speedBonus(lvl))
+			: Component.translatable("message.aliveworkplace.status.level", levelName(lvl), jobName(villager), villager.getVillagerXp(),
 				VillagerData.getMaxXpPerLevel(lvl), speedBonus(lvl));
 		Component guildMaster = io.github.jcondedata.aliveworkplace.hall.Guilds.masterLine(villager);
 		if (guildMaster != null) {

@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.144.0 — 2026-10-13
+
 ### Added
 - **The Observatory's powers** (35.18, part of Wonders, for 2.0): while it stands, the hall searches the land about
   6,144 blocks across round the village, one kind of structure an in-game hour (and again each week), and the hall's

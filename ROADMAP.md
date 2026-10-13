@@ -427,7 +427,7 @@ first; many items below are "verify and harden", not "build".
   - Sloped ground is handled (foundation fill and landscaping).
 
   Done when: a review package shows each step, and a cancel test returns every material.
-- [ ] **23.9** (blocked: owner, optional: his call) **Owner-built signature builds.** The owner builds 3–5
+- [x] **23.9** (dropped: owner 2026-10-13, "I don't need a signature build") **Owner-built signature builds.** The owner builds 3–5
   flagship buildings in-game. Claude tidies them with the Architect skill, and they are scanned in with the Scan Tool
   and shipped as blueprints with upgrades. This gives the mod human-made content; see 26.1. Done when: each is in the
   Blueprint Table with its upgrades, and a builder has built it in a test.
@@ -638,7 +638,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 - [ ] **26.4** **Release candidate.** A Full tester run, a pack boot, the performance benchmark, and the last 3 nightly
   runs green (blocked until they have run). Then the owner's own play session in the pack's client (carried over from
   Milestone 5). Done when: all of these have passed, and the owner has played.
-- [ ] **26.5** (blocked: owner, says go) **Publish.** Done when: the pages are live and linked from the README.
+- [ ] **26.5** (approved: owner 2026-10-13, publish once 26.4 has passed and we feel ready; waits on 26.4) **Publish.** Done when: the pages are live and linked from the README.
 
 ## Milestone 27: Villages that build themselves (1.1)
 
@@ -2308,7 +2308,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: `langcheck.py` is clean; a GameTest per advice tip; the README's tables list every edict, tonic and guild
   data file we ship (the tester checks); showcase scene `village_talk`: villagers' lines under Long Shifts and after
   The Shift Bell.
-- [ ] **30.22** (blocked: B101 and the owner's day-1 answer in the Notes: the tick check fails on day 1) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
+- [ ] **30.22** (owner 2026-10-13: a village's first day does not count against the 15% tick target; B101 is done) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
   pieces that fit a night run): a City of 35 villagers with farms, a kitchen and a store, 4 in-game days under four
   edicts at once (Long Shifts, Free Bread, Large Families, Festival Season), then 4 days with all four reformed, with a
   Cradle, an idol in harvest season, a founded guild and a rush a day. Each day records: meals eaten and left, births,
@@ -4437,6 +4437,11 @@ item waits.
 
 ## Design decisions (from the owner)
 
+- **Everything ships at once in 1.0** (2026-10-13): every expansion (1.1 to 2.0) is done but 30.22, so 1.0 turns them all
+  on together (every `Expansions.M27`..`M35` flag), and the server updates once. Before that: 0.144.0 pre-release
+  (2026-10-13, all flags still off), a pass through the wiki, every known bug fixed (the showcase's failing scenes
+  included), 25.4's soak at the earliest run, then 26.4. Publishing (26.5) is approved for when we feel ready. A
+  village's first day doesn't count against the 15% tick target (30.22). No owner signature builds (23.9 dropped).
 - **Unfinished expansions stay off** (2026-10-05, after 0.139.0 shipped 1.1-1.4 switched on): each expansion is
   switched off until the whole of it (e.g. all of 1.1) is done; the release that completes it turns it on (B76).
 - Target **Fabric 1.21.1** to match the Cobbleverse pack. The mod is needed on both the server and the clients.

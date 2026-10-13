@@ -122,6 +122,24 @@ public final class WonderManager extends SavedData {
 		}
 	}
 
+	/** Records whether a site's current stage was dedicated (35.7). */
+	public void setDedicated(UUID id, boolean dedicated) {
+		WonderSite site = sites.get(id);
+		if (site != null && site.dedicated() != dedicated) {
+			sites.put(id, site.withDedicated(dedicated));
+			setDirty();
+		}
+	}
+
+	/** Records the goods handed in at the stone for a site's current stage (35.7). */
+	public void setDelivered(UUID id, List<WonderSite.Handed> delivered) {
+		WonderSite site = sites.get(id);
+		if (site != null && !site.delivered().equals(delivered)) {
+			sites.put(id, site.withDelivered(delivered));
+			setDirty();
+		}
+	}
+
 	/** Forgets a site (a cancelled Wonder, or a test's). */
 	public void remove(UUID id) {
 		if (sites.remove(id) != null) {

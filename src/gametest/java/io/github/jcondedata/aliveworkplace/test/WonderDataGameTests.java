@@ -120,7 +120,9 @@ public class WonderDataGameTests implements FabricGameTest {
 		helper.assertTrue(folly.stages().size() == 3 && folly.stages().get(0).parts().get(0).part().toString().equals("aliveworkplace_test:wonder/test_folly/stage_1_0"),
 			"stages: " + folly.stages());
 		Wonder.Stage two = folly.stages().get(1);
-		helper.assertTrue(two.goods().size() == 2 && two.goods().get(0).tag().map(Object::toString).equals(Optional.of("minecraft:small_flowers"))
+		helper.assertTrue(two.goods().size() == 3 && two.goods().get(2).item().map(Object::toString).equals(Optional.of("minecraft:book"))
+			&& two.goods().get(2).count() == 2 && two.goods().get(2).job().toString().equals("minecraft:librarian") // three lines (35.7)
+			&& two.goods().get(0).tag().map(Object::toString).equals(Optional.of("minecraft:small_flowers"))
 			&& two.goods().get(1).potion().map(Object::toString).equals(Optional.of("minecraft:healing")) && two.goods().get(1).count() == 2
 			&& two.goods().get(1).job().toString().equals("minecraft:cleric"), "stage II's goods: " + two.goods());
 		helper.assertTrue(folly.powers().size() == 1 && folly.powers().get(0).type().equals("beauty") && folly.powers().get(0).numbers().get("points").getAsInt() == 2,

@@ -799,6 +799,11 @@ SCENES = [
       "ten builders of the village raised the folly together: the plan handed to one, every builder called from the stone, and each took a column of its own, never more than two layers above the lowest unfinished one; the stone named the lead and the crew of ten", 60,
       [("01_wonder_crew_gathering", "Every builder called: the crew gathers at the folly"), ("02_wonder_crew_columns", "Ten builders, each on a column of its own"),
        ("03_wonder_crew_status", "The stone names the lead and the crew of ten")]),
+    # A Wonder's goods (ROADMAP 35.7): the stone's lines half filled, the porter bringing the books, then the dedication
+    S("wonder_goods", "Wonders", "A Wonder's goods and its dedication",
+      "the folly's stage II waited for its three lines: the stone's screen showed the flowers and the potions in and the books short, \"no Librarian in the village\"; the porter carried the two books from the storehouse to the stockpile, and the stage was dedicated: the bell rang, the villagers off work gathered at the stone, the Bard played beside it, the guards stood in line, the goods were taken and the chronicle said so", 55,
+      [("01_wonder_goods_screen", "The stone's screen: flowers and potions in, the books short"), ("02_wonder_goods_porter", "The porter carries the books to the stockpile"),
+       ("03_wonder_goods_dedication", "The dedication: the village gathers at the stone, the Bard plays, the guards in line")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
       "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,

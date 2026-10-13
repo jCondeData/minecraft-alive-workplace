@@ -30,7 +30,10 @@ public class GuardRally extends Behavior<Villager> {
 	private static final int BELL_SEARCH = 40;
 	private static final float SPEED = 0.75f;
 
-	private record Rally(BlockPos bell, long until) {
+	private record Rally(BlockPos bell, long until, boolean dedication) {
+		Rally(BlockPos bell, long until) {
+			this(bell, until, false);
+		}
 	}
 
 	private static final Map<Villager, Rally> RALLIES = new WeakHashMap<>();
@@ -53,6 +56,24 @@ public class GuardRally extends Behavior<Villager> {
 
 	public static boolean isRallying(Villager villager) {
 		return rallyPoint(villager).isPresent();
+	}
+
+	/**
+	 * A Wonder's dedication (35.7): the guard stands in line at {@code spot} till {@code until}, as at a rally (a real
+	 * rally, the bell rung, takes over). Their combat goes on as ever.
+	 */
+	public static void lineUp(Villager villager, BlockPos spot, long until) {
+		Rally now = RALLIES.get(villager);
+		if (now != null && !now.dedication() && villager.level().getGameTime() <= now.until()) {
+			return; // answering the bell comes first
+		}
+		RALLIES.put(villager, new Rally(spot.immutable(), until, true));
+	}
+
+	/** Whether the guard is standing in line at a Wonder's dedication (35.7). */
+	public static boolean inLine(Villager villager) {
+		Rally rally = RALLIES.get(villager);
+		return rally != null && rally.dedication() && villager.level().getGameTime() <= rally.until();
 	}
 
 	/**
@@ -83,7 +104,8 @@ public class GuardRally extends Behavior<Villager> {
 
 	private static boolean needsToWalk(Villager villager) {
 		Optional<BlockPos> bell = rallyPoint(villager);
-		return bell.isPresent() && !BattleStations.stationed(villager) && !GuardCombat.isFighting(villager) && !Escorts.isEscorting(villager) && !bell.get().closerToCenterThan(villager.position(), 4);
+		return bell.isPresent() && !BattleStations.stationed(villager) && !GuardCombat.isFighting(villager) && !Escorts.isEscorting(villager)
+			&& !bell.get().closerToCenterThan(villager.position(), inLine(villager) ? 1.5 : 4);
 	}
 
 	@Override
@@ -93,11 +115,13 @@ public class GuardRally extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
+		boolean line = inLine(villager);
 		rallyPoint(villager).ifPresent(bell -> {
-			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(bell, SPEED, 2));
+			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(bell, SPEED, line ? 0 : 2));
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(bell));
 			WorkerStatus.set(villager, GuardCombat.title(villager), -1f,
-				Component.translatable("message.aliveworkplace.guard.state.rally").withStyle(ChatFormatting.GOLD));
+				Component.translatable(line ? "message.aliveworkplace.guard.state.dedication" : "message.aliveworkplace.guard.state.rally")
+					.withStyle(ChatFormatting.GOLD));
 		});
 	}
 

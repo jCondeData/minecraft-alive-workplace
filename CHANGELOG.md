@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A Wonder's goods and its dedication** (35.7, part of Wonders, for 2.0): each stage of a Wonder now waits for its
+  goods (the crew's feast, their tools, the rites' candles, books and potions, its treasures), each line naming the job
+  that makes it. The Foundation Stone shows every line ("2 of 4 Flowers · Florist", "no Florist in the village"); the
+  lines go on the Storehouse's requests board (a request for a block, not a villager), porters carry them to the
+  stockpile first, crafters make what's short, and the hall's daily quest asks for the line furthest behind. Anyone can
+  hand goods in at the stone or on the board. With every line in, by day, the stage is dedicated: the bell rings, the
+  village gathers at the stone, the Bard plays and the guards stand in line, the goods are taken and the chronicle says
+  so. Abandoning the Wonder hands back the goods handed in for a stage not yet dedicated.
 - **Builders use scaffolding** (35.6, part of Wonders, for 2.0): a block with nowhere to stand near it (a raised arm,
   a spire's tip, a dome's crown) is no longer skipped. The builder puts up a column of scaffolding from its chests
   beside it, climbs it and works from the top, then takes it all down when that stage is done and the scaffolding goes

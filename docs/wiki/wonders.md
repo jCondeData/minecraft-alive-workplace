@@ -3,12 +3,12 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan, the Foundation Stone with its stages and crews, and the first Wonders' designs (the Great
+Wonders page, the Wonder Plan, the Foundation Stone with its stages, crews and goods, and the first Wonders' designs (the Great
 Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, the Hanging Gardens, the Colossus and, with
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
 
 ## What a player sees
 
@@ -36,15 +36,17 @@ hall's owner, their friends and operators may. Before that, a click says what's 
 **The Foundation Stone** (35.4): right-click a builder of the village (their bench within 64 blocks of the hall) with
 the placed plan. A **Foundation Stone**, a carved stone with a brass plaque, goes down just outside the Wonder's front
 corner (the next free spot round it if that one's taken); everyone on the server reads "Owner has begun the Test Folly
-in Testholm!", the chronicle gets "Owner laid the Foundation Stone of the Test Folly", and the builder starts stage I.
+in Testholm!", the chronicle gets "Owner laid the Foundation Stone of the Test Folly", and stage I starts as soon as
+its goods are in (35.7, below; at once if the stockpile holds them already).
 The chests within 8 blocks of the stone are the Wonder's stockpile. Refused, saying why, when the plan isn't placed,
 the builder has no bench or works for another village or another player, the caps no longer allow it, or there's no
 room for the stone.
 
 - **Right-click the stone**: "The Test Folly of Testholm", "Stage 1 of 3, The Ground Storey: 34% built", then the
   stage's material list, each line "40 Stone Bricks, 12 still to bring" or "… all there", what's still to bring first.
-- **Each stage starts when every part of the one before is done**, and the builder it was handed to takes it on (the
-  owner reads "Stage 2 of 3 of the Test Folly begins: The Upper Storey").
+- **Each stage starts when every part of the one before is done and its own goods are dedicated**, and the builder it
+  was handed to takes it on (the owner reads "Stage 2 of 3 of the Test Folly is next: The Upper Storey. It begins once
+  its goods are in").
 - **Sneak-break the stone** (the owner or an operator) or `/workplace cancel` on a part to abandon the Wonder: what's
   built stays, the open parts end, the plan comes back (to the owner, else by the stone) and the chronicle says so. A
   plain break says to sneak; anyone else is refused. Builders never clear it and pistons can't push it; a finished
@@ -75,8 +77,39 @@ else the builder it was handed to; each next stage goes to the highest-level bui
 **What next?** names the Wonder closest to ready once the village is a Town with room for one: "The Great Cathedral can
 be begun", or the first line it lacks ("The Great Cathedral is nearly in reach: Finished Chapel: 2 of 3").
 
-Still to come (the design note): scaffolding where builders can't reach; goods from every job, dedicated at the stone stage by stage; and a finished
-Wonder announced to the server, celebrated with a festival, and its powers on while at least 90% of it stands.
+**Goods and the dedication** (35.7): besides its blocks, each stage asks for goods from the village's jobs, the lines of
+its file: the feast for the crew, their tools, what the rites need (candles, books, potions) and its treasures. A line
+is in when the stockpile's chests and what was handed in at the stone hold its count together. A stage starts only
+when every line is in; then, by day, it is **dedicated** (at night it waits for the morning): the bell rings at the
+stone and at the village's bell, the goods are taken (exactly each line's count: what was handed in first, then from
+the chests), the chronicle says "Stage 2, The Upper Storey, of the Test Folly was dedicated: the village gathered at
+the stone, the bell rang and the goods were given", the owner reads "Stage 2 of 3 of the Test Folly is dedicated: The
+Upper Storey begins", and the stage's parts go down for its lead. For the next 30 seconds the villagers off work
+gather round the stone, the village's Bard plays a tune beside it ("playing at the dedication") and its guards stand
+in a line three blocks out, on the side away from the Wonder ("standing in line at the dedication"), when it has them.
+
+- **The stone's status** shows every line while the stage waits: "Before it begins, this stage needs its goods (in the
+  chests within 8 blocks, or handed in here):", then "2 of 4 Flowers · Florist (no Florist in the village)", "0 of 2
+  Potion of Healing · Cleric", and how to hand goods in; with every line in, "Every good is in: the stage is dedicated
+  shortly" (by night "… in the morning"); once dedicated, "This stage's goods are dedicated".
+- **Anyone can hand goods in**: right-click the stone holding them (up to what the line lacks: "Handed in 4 Flowers for
+  the Test Folly: 4 of 4 in"; a full line says "The Test Folly has all the Flowers it needs"), or click the line on a
+  Storehouse's board.
+- **The requests board**: each line still short is posted for the stone (a request for a block instead of a villager):
+  "8 × Bread", "For the Test Folly, 30 blocks away", "Made by the Chef"; a click hands over what you have of it.
+- **Porters** carry matching goods from the storehouse (and what a worker's job doesn't keep from their chests; tools
+  and potions only from the job that makes them) to the stockpile before anything else ("carrying goods to the Test
+  Folly").
+- **Crafters** (chefs, carpenters, masons, tinkerers, dyers) make a short line as a stock order for the stockpile, from
+  their own chests and the storehouses near (not what those keep for their orders), before the storehouse's own orders.
+- **The hall's daily quest** asks for the line furthest behind: "Bring goods for the village's Wonder", as many as it
+  lacks, handed in at the hall into the stockpile.
+- **Cancelling** a Wonder hands the goods handed in for a stage not yet dedicated back to its owner (by the stone if
+  they're away): "The 5 goods handed in for the Test Folly came back to you"; what lies in the stockpile's chests stays
+  there, and a dedicated stage's goods were given.
+
+Still to come (the design note): a finished Wonder announced to the server, celebrated with a festival, and its powers
+on while at least 90% of it stands.
 
 | Wonder | Rank | Legend (stand-in) | Other requirements | Powers |
 |---|---|---|---|---|
@@ -329,7 +362,10 @@ Later items add two more: builders' scaffolding, and how much of a Wonder must s
 A new saved file per dimension, `aliveworkplace_wonders`, with a list of `sites`: each with its `id`, `wonder`, `hall`,
 `owner` and `ownerName`, `stage` (default 1), `begun` and `finished` (absent until it is). A world saved before 35.2 has
 no such file and loads unchanged. 35.4 adds, all optional: `placement`, `stone`, `parts` (the current stage's build
-sites) and `builder` on a site; 35.5 adds `called` (default false: every builder called to the crew). A crew member's
+sites) and `builder` on a site; 35.5 adds `called` (default false: every builder called to the crew); 35.7 adds
+`dedicated` (default false: whether the current stage's goods were dedicated) and `delivered` (default empty: the goods
+handed in at the stone for it, each its line, item, potion and count). A site saved before 35.7 with its stage's parts
+down counts as started, so a Wonder going up keeps going. A crew member's
 job is the ordinary saved builder job (as a helper), so a crew comes back together after a restart; the columns are
 worked out again; `wonder` and `no_foundation` on a build site (written only when set, so an ordinary
 build saves exactly as before).
@@ -369,6 +405,16 @@ build saves exactly as before).
   Legend lives in the village.
 - The Master Architect requirement is added to every Wonder by the mod, so a server owner's own Wonder needs it too.
 - Builders' scaffolding comes with 2.0, for every build (an owner question in the design note).
+- Stage I waits for its goods too (35.7): the design note's "the goods are taken and the stage begins" holds for every
+  stage. `WonderStages.start` (commands and tests) still starts a stage at once.
+- The dedication's state is the moment the goods are taken (35.7): the stage begins then, and the gathering, the Bard
+  and the guards' line follow for 30 seconds without being saved, so a restart only cuts the gathering short and a
+  stage never waits on villagers walking.
+- The bell is heard, not rung (35.7): a rung bell sends every villager into hiding and the guards to a rally.
+- Goods handed in are kept by the stone apart from the chests (35.7), so a cancel can give them back; they go to the
+  Wonder's owner, whoever brought them.
+- "The shortest line" for the daily quest is the one with the least of it in for its size (35.7); potion lines are left
+  out of it (a quest's item can't name a potion's kind), and crafters fill only lines that name one plain item.
 
 ## Known limits
 
@@ -381,6 +427,9 @@ build saves exactly as before).
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
 - Powers are read and checked for their type only; what each does comes with its Wonder.
+- Goods handed in come back as the plain item (35.7): a renamed flower comes back unnamed. A tag line's name ("Flowers",
+  "Saplings", "Banners", "Berries") comes from the language file; a server owner's own tag shows as `#namespace:path`.
+- The stone's status is its chat text, as in 35.4: there is no separate screen.
 
 ## Proof
 
@@ -416,6 +465,20 @@ Wonders off, and a member lost mid-job is replaced; a builder with its own build
 called, a stranger can't call, the stone names the crew and offers the call, the highest-level builder leads; the
 lead killed mid-part hands the part to a living member, who leads it, and the crew finishes the folly as drawn.
 Showcase scene `wonder_crew` (group Wonders): ten builders on the folly.
+
+GameTests in `WonderGoodsGameTests` (35.7): the folly's stage II (three lines) waits through one line, two, a line one
+short and the wrong potion, each line posted for the stone, then is dedicated taking exactly its goods (the spares and
+the water bottle stay), in the chronicle, its posts down, never twice; a porter carries the eight bread stage I lacks
+(and no more) from the storehouse to the stockpile; a chef cooks them from the wheat by his stove as a stock order; a
+click on a Storehouse's board hands a line over (only what it lacks) and names the Wonder and the Chef; a stranger hands
+flowers in at the stone (dirt is refused, a full line takes no more) and the owner's sneak-break gives the goods back
+while the chest's stay; at night the stage waits and the stone says it's for the morning; the dedication puts the guard
+in line, the Bard by the stone and brings a villager off work, and the stone broken in the middle ends it with nothing
+given back; the goods and `dedicated` survive a save and load, a 35.5 site reads with the defaults; with Wonders off
+nothing is handed in, posted or dedicated; the stone shows every line with "no Florist in the village" and every
+sentence has its text; the hall's quest asks for the line furthest behind. The 35.4 and 35.5 tests put each stage's
+goods in the stockpile (`WonderGoodsKit`). Showcase scene `wonder_goods`: the stone's lines half filled, the porter
+bringing the books, then the dedication.
 
 `WonderBlueprintGameTests` checks every one of our Wonders' designs (35.9 on): its file loads with the mod's own
 loader, every part loads and is at most 48 a side, its name, description and stage names have their lines, the parts

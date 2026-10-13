@@ -32,19 +32,58 @@ import org.jetbrains.annotations.Nullable;
  * the jobs that can make something see what's wanted: lumberjacks fell the kinds of tree whose wood is asked for first.
  * Builders and miners keep what they're missing in their saved site; the others post it here while they wait (not
  * saved: they post again as soon as they check after a restart).
+ *
+ * <p>35.7 adds a second kind: a request posted for a block instead of a villager (a Wonder's Foundation Stone asking for
+ * a stage's goods, {@link #postAt}). It names who it's for and the job that makes it, and a player hands it in through
+ * its own {@link Taker}. These are listed by {@link #atBlocks}, never by {@link #of} or {@link #near}, so nothing that
+ * reads a worker's requests ever meets one without a worker.
  */
 public final class Requests {
 	/** A post is forgotten if its worker hasn't repeated it for this long (they stopped waiting, or aren't loaded). */
 	private static final long FRESH_TICKS = 600;
 
-	/** One thing a worker is waiting for: {@code count} of what {@code accepts}, shown as {@code icon}. */
-	public record Request(Villager worker, BlockPos station, ItemStack icon, int count, Component what, Predicate<ItemStack> accepts) {
+	/**
+	 * One thing a worker is waiting for: {@code count} of what {@code accepts}, shown as {@code icon}. A request posted for
+	 * a block (35.7) has no {@code worker}, its block as {@code station} and the post's {@code block}.
+	 */
+	public record Request(Villager worker, BlockPos station, ItemStack icon, int count, Component what, Predicate<ItemStack> accepts,
+						  @Nullable ForBlock block) {
+		/** A worker's request. */
+		public Request(Villager worker, BlockPos station, ItemStack icon, int count, Component what, Predicate<ItemStack> accepts) {
+			this(worker, station, icon, count, what, accepts, null);
+		}
+
 		/** The exact item asked for, or null for "any pickaxe" and the like. */
 		@Nullable
 		public Item item() {
 			return accepts instanceof ExactItem exact ? exact.item() : null;
 		}
+
+		/** Whether it was posted for a block, not a worker (35.7). */
+		public boolean forBlock() {
+			return block != null;
+		}
 	}
+
+	/**
+	 * A request posted for a block (35.7): who it is for ("the Great Cathedral"), the job that makes it ("Chef") and how a
+	 * player's things are taken for it.
+	 */
+	public record ForBlock(Component name, Component job, Taker taker) {
+	}
+
+	/** Takes what {@code player} has towards a request posted for a block; returns how many were taken. */
+	@FunctionalInterface
+	public interface Taker {
+		int take(net.minecraft.server.level.ServerPlayer player, Request request);
+	}
+
+	private record BlockPost(net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dimension, BlockPos block, ItemStack icon, int count,
+							 Component what, Predicate<ItemStack> accepts, ForBlock forBlock, long time) {
+	}
+
+	/** The posts for blocks, by dimension, block and the poster's key for the line (insertion order: the order posted). */
+	private static final Map<String, BlockPost> BLOCK_POSTS = new java.util.LinkedHashMap<>();
 
 	/** Accepts one plain item (so it can be counted and moved by item). */
 	record ExactItem(Item item) implements Predicate<ItemStack> {
@@ -74,6 +113,9 @@ public final class Requests {
 
 	/** {@code player} handed over {@code count} for {@code request}. */
 	public static void given(net.minecraft.server.level.ServerPlayer player, Request request, int count) {
+		if (request.forBlock()) {
+			return; // the listeners are about the worker who asked
+		}
 		for (Given listener : GIVEN) {
 			listener.given(player, request, count);
 		}
@@ -89,6 +131,53 @@ public final class Requests {
 	/** A tool: one of whatever {@code accepts}, shown as {@code icon} and called {@code key} ("a pickaxe"). */
 	public static void postTool(Villager villager, Item icon, String key, Predicate<ItemStack> accepts) {
 		post(villager, new ItemStack(icon), 1, Component.translatable("request.aliveworkplace." + key), accepts);
+	}
+
+	/**
+	 * The block at {@code block} asks for {@code count} of what {@code accepts}, as its line {@code key} (call again every so
+	 * often while it waits; 35.7). A post not repeated for a while is forgotten, like a worker's.
+	 */
+	public static void postAt(ServerLevel level, BlockPos block, String key, ItemStack icon, int count, Component what, Predicate<ItemStack> accepts,
+							  ForBlock forBlock) {
+		synchronized (BLOCK_POSTS) {
+			BLOCK_POSTS.put(level.dimension().location() + "|" + block.asLong() + "|" + key,
+				new BlockPost(level.dimension(), block.immutable(), icon, count, what, accepts, forBlock, level.getGameTime()));
+		}
+	}
+
+	/** The block at {@code block} asks for nothing (any more). */
+	public static void clearAt(ServerLevel level, BlockPos block) {
+		String prefix = level.dimension().location() + "|" + block.asLong() + "|";
+		synchronized (BLOCK_POSTS) {
+			BLOCK_POSTS.keySet().removeIf(k -> k.startsWith(prefix));
+		}
+	}
+
+	/** One line of the block at {@code block} asks for nothing (any more). */
+	public static void clearAt(ServerLevel level, BlockPos block, String key) {
+		synchronized (BLOCK_POSTS) {
+			BLOCK_POSTS.remove(level.dimension().location() + "|" + block.asLong() + "|" + key);
+		}
+	}
+
+	/** What the blocks within {@code radius} of {@code pos} ask for (35.7), in the order posted. */
+	public static List<Request> atBlocks(ServerLevel level, BlockPos pos, int radius) {
+		List<Request> out = new ArrayList<>();
+		long now = level.getGameTime();
+		synchronized (BLOCK_POSTS) {
+			BLOCK_POSTS.values().removeIf(p -> now - p.time() > FRESH_TICKS || now < p.time());
+			for (BlockPost p : BLOCK_POSTS.values()) {
+				if (p.dimension().equals(level.dimension()) && p.block().closerThan(pos, radius)) {
+					out.add(new Request(null, p.block(), p.icon(), p.count(), p.what(), p.accepts(), p.forBlock()));
+				}
+			}
+		}
+		return out;
+	}
+
+	/** Accepts one plain item, for a request posted for a block (so the board can count it in the store). */
+	public static Predicate<ItemStack> exactly(Item item) {
+		return new ExactItem(item);
 	}
 
 	/** {@code villager} isn't waiting for anything (any more). */

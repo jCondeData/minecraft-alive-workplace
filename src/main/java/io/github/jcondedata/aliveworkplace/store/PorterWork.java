@@ -36,6 +36,10 @@ import org.jetbrains.annotations.Nullable;
  * their chests — what their job makes, never what it needs (see {@link Porters#keeps}) — and carry them to the chests
  * by the Storehouse. The storehouse is part of the village's stock, so builders and everyone else find things there.
  * Restartable at any tick: what's being carried is in the porter's bag, and a porter with a full bag heads home first.
+ *
+ * <p>35.7: before anything else, the goods a Wonder of the village is waiting for: the porter takes what matches a short
+ * line from the storehouse (or a worker's chests, what their job doesn't keep) and carries it to the Wonder's stockpile,
+ * the chests by its Foundation Stone. Interrupted on the way, the bag goes back to the storehouse as any other load.
  */
 public class PorterWork extends Behavior<Villager> {
 	/** A worker's goods have to add up to this many items to be worth a trip. */
@@ -52,6 +56,16 @@ public class PorterWork extends Behavior<Villager> {
 	private static final int FULL_WAIT = 400;
 
 	private enum Phase { IDLE, COLLECTING, STORING, FULL, NO_CHESTS }
+
+	/** A Wonder's goods being fetched (35.7): the line, the chest they're taken from, its worker's job (null: the storehouse). */
+	private record Goods(io.github.jcondedata.aliveworkplace.wonder.WonderGoods.Need need, BlockPos from, @Nullable VillagerProfession job,
+						 boolean furnaceNear) {
+	}
+
+	@Nullable
+	private Goods goods;
+	/** The bag holds a Wonder's goods for its stone. */
+	private boolean carryingGoods;
 
 	private final Walker walker = new Walker(SPEED);
 	@Nullable
@@ -103,6 +117,14 @@ public class PorterWork extends Behavior<Villager> {
 			return;
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		if (goods != null) {
+			if (carryingGoods) {
+				deliverGoods(level, villager, bag);
+			} else {
+				fetchGoods(level, villager, store, bag);
+			}
+			return;
+		}
 		if (!bag.isEmpty() && target == null) {
 			storeAll(level, villager, store, bag);
 			return;
@@ -113,6 +135,12 @@ public class PorterWork extends Behavior<Villager> {
 				return;
 			}
 			lookTimer = LOOK_EVERY;
+			goods = wonderGoods(level, villager, storehouse, store);
+			if (goods != null) {
+				carryingGoods = false;
+				walker.reset();
+				return; // a Wonder's goods before anything else (35.7)
+			}
 			if (SupplyContainers.freeSlots(level, store) == 0) {
 				phase = Phase.FULL;
 				return;
@@ -138,6 +166,110 @@ public class PorterWork extends Behavior<Villager> {
 		}
 		target = null;
 		walker.reset();
+	}
+
+	@Override
+	protected void stop(ServerLevel level, Villager villager, long gameTime) {
+		goods = null; // the bag, if it holds any, goes back to the storehouse next shift
+		carryingGoods = false;
+	}
+
+	/**
+	 * The first goods line short at a Wonder of the village that the storehouse, or else a worker's chests, can fill; null
+	 * if none. The stockpile's own chests are never taken from.
+	 */
+	@Nullable
+	private static Goods wonderGoods(ServerLevel level, Villager villager, BlockPos storehouse, List<BlockPos> store) {
+		for (io.github.jcondedata.aliveworkplace.wonder.WonderGoods.Need need : io.github.jcondedata.aliveworkplace.wonder.WonderGoods.needs(level, storehouse)) {
+			java.util.Set<BlockPos> stockpile = new java.util.HashSet<>(SupplyContainers.find(level, need.stone(), null));
+			for (BlockPos chest : store) {
+				if (!stockpile.contains(chest) && io.github.jcondedata.aliveworkplace.wonder.WonderGoods.spare(level, chest, need, null, false) > 0) {
+					return new Goods(need, chest, null, false);
+				}
+			}
+			for (Village.Stash stash : Village.stashes(level, villager, storehouse, null)) {
+				if (stash.job() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER || stash.job() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER) {
+					continue; // a builder's chests hold their materials; another porter's are a store
+				}
+				boolean furnaceNear = !SupplyContainers.furnaces(level, stash.station()).isEmpty();
+				for (BlockPos chest : stash.chests()) {
+					if (!stockpile.contains(chest) && io.github.jcondedata.aliveworkplace.wonder.WonderGoods.spare(level, chest, need, stash.job(), furnaceNear) > 0) {
+						return new Goods(need, chest, stash.job(), furnaceNear);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/** Walks to the chest the goods are in and takes what the line is short of (as much as the bag holds). */
+	private void fetchGoods(ServerLevel level, Villager villager, List<BlockPos> store, BuilderBag bag) {
+		statusGoods(villager);
+		if (!walker.walkTo(level, villager, goods.from(), REACH)) {
+			return;
+		}
+		int spare = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.spare(level, goods.from(), goods.need(), goods.job(), goods.furnaceNear());
+		int want = Math.min(Math.min(spare, goods.need().count()), capacity(villager) * 64);
+		List<ItemStack> taken = want <= 0 ? List.of()
+			: io.github.jcondedata.aliveworkplace.wonder.WonderGoods.takeStacks(level, List.of(goods.from()), goods.need().good(), want);
+		for (ItemStack stack : taken) {
+			ItemStack over = bag.add(stack);
+			if (!over.isEmpty()) {
+				SupplyContainers.insert(level, List.of(goods.from()), over); // didn't fit after all: put it back
+			}
+		}
+		if (bag.isEmpty()) {
+			goods = null; // someone took them first
+			return;
+		}
+		villager.swing(InteractionHand.MAIN_HAND);
+		level.playSound(null, goods.from(), SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
+		hold(villager, bag);
+		carryingGoods = true;
+		walker.reset();
+	}
+
+	/** Carries the goods to the Wonder's stockpile and puts them in its chests (or hands them in at the stone, with none). */
+	private void deliverGoods(ServerLevel level, Villager villager, BuilderBag bag) {
+		statusGoods(villager);
+		BlockPos stone = goods.need().stone();
+		if (!walker.walkTo(level, villager, stone, REACH)) {
+			return;
+		}
+		List<BlockPos> chests = SupplyContainers.find(level, stone, null);
+		int stored = 0;
+		for (ItemStack stack : bag.takeAll()) {
+			int count = stack.getCount();
+			ItemStack rest = chests.isEmpty() ? stack : SupplyContainers.insert(level, chests, stack);
+			if (!rest.isEmpty()) {
+				rest = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.deliver(level, goods.need().wonder(), goods.need().line(), rest);
+			}
+			stored += count - rest.getCount();
+			if (!rest.isEmpty()) {
+				ItemStack back = bag.add(rest); // the storehouse takes it back
+				if (!back.isEmpty()) {
+					Block.popResource(level, villager.blockPosition(), back);
+				}
+			}
+		}
+		if (stored > 0) {
+			villager.swing(InteractionHand.MAIN_HAND);
+			level.playSound(null, stone, SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.5f, 1.0f);
+			ModAttachments.ITEMS_CARRIED.set(villager, ModAttachments.ITEMS_CARRIED.getOrElse(villager, 0) + stored);
+			BuilderLevels.addXp(level, villager, 1, null);
+		}
+		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+		goods = null;
+		carryingGoods = false;
+		lookTimer = 0; // straight on
+		walker.reset();
+	}
+
+	private void statusGoods(Villager villager) {
+		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.porter.title", ModAttachments.ITEMS_CARRIED.getOrElse(villager, 0)), -1f,
+			Component.translatable("message.aliveworkplace.porter.state.wonder", io.github.jcondedata.aliveworkplace.wonder.WonderManager.get((ServerLevel) villager.level())
+				.site(goods.need().wonder()).map(s -> io.github.jcondedata.aliveworkplace.wonder.Wonders.name(s.wonder())).orElse(Component.literal("?")))
+				.withStyle(ChatFormatting.GOLD));
 	}
 
 	private List<BlockPos> storeChests = List.of();

@@ -58,6 +58,11 @@
           "potion": "minecraft:healing",
           "count": 2,
           "job": "minecraft:cleric"
+        },
+        {
+          "item": "minecraft:book",
+          "count": 2,
+          "job": "minecraft:librarian"
         }
       ]
     },

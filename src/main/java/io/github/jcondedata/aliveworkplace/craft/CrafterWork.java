@@ -485,6 +485,10 @@ public class CrafterWork extends Behavior<Villager> {
 		List<BlockPos> storehouses = level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
 				p -> true, station, io.github.jcondedata.aliveworkplace.store.StockOrders.RANGE, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
 			.map(BlockPos::immutable).sorted(java.util.Comparator.comparingDouble(p -> p.distSqr(station))).toList();
+		Job wonder = chooseWonderOrder(level, station, storehouses, now);
+		if (wonder != null) {
+			return wonder; // 35.7: a Wonder's goods first
+		}
 		for (BlockPos storehouse : storehouses) {
 			Map<Item, Integer> orders = io.github.jcondedata.aliveworkplace.store.StockOrders.of(level, storehouse);
 			if (orders.isEmpty() || boss != null && !Village.sameSide(level, boss, io.github.jcondedata.aliveworkplace.store.Porters.owner(level, storehouse))) {
@@ -512,6 +516,53 @@ public class CrafterWork extends Behavior<Villager> {
 				}
 				claim(claim, now);
 				return new Job(storehouse, null, plan, claim, store);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * A Wonder of the village short of goods this crafter makes (ROADMAP 35.7): a stock order for its stockpile, the chests
+	 * by its Foundation Stone, made from what's in our own chests and the storehouses near (never what their orders keep).
+	 */
+	@Nullable
+	private Job chooseWonderOrder(ServerLevel level, BlockPos station, List<BlockPos> storehouses, long now) {
+		List<io.github.jcondedata.aliveworkplace.wonder.WonderGoods.Order> orders = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.orders(level, station);
+		if (orders.isEmpty()) {
+			return null;
+		}
+		List<BlockPos> sources = new ArrayList<>(SupplyContainers.find(level, station, null));
+		Map<Item, Integer> keep = new HashMap<>();
+		for (BlockPos storehouse : storehouses) {
+			for (BlockPos chest : SupplyContainers.find(level, storehouse, null)) {
+				if (!sources.contains(chest)) {
+					sources.add(chest);
+				}
+			}
+			io.github.jcondedata.aliveworkplace.store.StockOrders.of(level, storehouse).forEach((item, n) -> keep.merge(item, n, Integer::sum));
+		}
+		for (io.github.jcondedata.aliveworkplace.wonder.WonderGoods.Order order : orders) {
+			if (!wants(order.item())) {
+				continue;
+			}
+			List<BlockPos> stockpile = SupplyContainers.find(level, order.stone(), null);
+			List<BlockPos> from = sources.stream().filter(p -> !stockpile.contains(p)).toList();
+			if (from.isEmpty()) {
+				continue;
+			}
+			String claim = "wonder|" + order.stone().asLong() + "|" + order.line();
+			if (claimed(claim, now)) {
+				continue;
+			}
+			Map<Item, Long> usable = new HashMap<>(usableIn(level, from));
+			keep.forEach((item, n) -> usable.computeIfPresent(item, (k, have) -> have > n ? have - n : null));
+			// as many as there are makings for, up to what's short
+			for (int count = Math.min(64, order.count()); count >= 1; count /= 2) {
+				Crafting.Plan plan = planFor(level, order.item(), count, usable);
+				if (fits(plan)) {
+					claim(claim, now);
+					return new Job(order.stone(), null, plan, claim, from);
+				}
 			}
 		}
 		return null;

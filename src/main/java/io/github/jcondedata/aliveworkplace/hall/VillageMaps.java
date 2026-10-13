@@ -47,7 +47,9 @@ public final class VillageMaps {
 	/** What a building is, for its banner's colour. */
 	public enum Kind {
 		HALL(DyeColor.RED), HOMES(DyeColor.WHITE), LEARNING(DyeColor.BLUE), CARE(DyeColor.PINK), TRADE(DyeColor.YELLOW),
-		FARMS(DyeColor.LIME), DEFENCE(DyeColor.BLACK), WORKSHOPS(DyeColor.ORANGE), DECORATIONS(DyeColor.LIGHT_BLUE), OTHER(DyeColor.PURPLE);
+		FARMS(DyeColor.LIME), DEFENCE(DyeColor.BLACK), WORKSHOPS(DyeColor.ORANGE), DECORATIONS(DyeColor.LIGHT_BLUE), OTHER(DyeColor.PURPLE),
+		/** A finished Wonder (35.8): a gold banner, named. Its parts aren't marked one by one. */
+		WONDER(DyeColor.YELLOW);
 
 		public final DyeColor color;
 
@@ -64,7 +66,8 @@ public final class VillageMaps {
 	public static Optional<Kind> kindOf(ResourceLocation blueprint) {
 		ResourceLocation id = BlueprintStyles.parse(blueprint).map(BlueprintStyles.Styled::base).orElse(blueprint);
 		String path = id.getPath();
-		if (path.startsWith("shapes/") || path.startsWith("camp/") || path.startsWith("legend/") || path.startsWith("story/") || path.startsWith("roads/")) {
+		if (path.startsWith("shapes/") || path.startsWith("camp/") || path.startsWith("legend/") || path.startsWith("story/") || path.startsWith("roads/")
+			|| path.startsWith(io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.FOLDER)) { // a Wonder's parts: the Wonder has one banner (35.8)
 			return Optional.empty();
 		}
 		String name = path.substring(path.lastIndexOf('/') + 1).replaceAll("_\\d+$", "");
@@ -273,6 +276,10 @@ public final class VillageMaps {
 				continue;
 			}
 			out.add(new Mark(new BlockPos(centre.getX(), hall.getY(), centre.getZ()), kind.get(), Blueprints.displayName(f.structure())));
+		}
+		for (io.github.jcondedata.aliveworkplace.wonder.WonderSite w : io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(hall)) {
+			// a finished Wonder of the village (35.8): its gold banner at its middle, with its name
+			io.github.jcondedata.aliveworkplace.wonder.WonderCelebration.mark(level, w, hall, half).ifPresent(out::add);
 		}
 		return out;
 	}

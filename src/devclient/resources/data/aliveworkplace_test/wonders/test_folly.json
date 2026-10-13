@@ -91,6 +91,11 @@
     {
       "type": "beauty",
       "points": 2
+    },
+    {
+      "type": "mood",
+      "scope": "village",
+      "amount": 4
     }
   ]
 }

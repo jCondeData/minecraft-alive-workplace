@@ -63,6 +63,27 @@ Then, by day (at night it waits for the morning), the stage is **dedicated**: th
 gather at the stone, the Bard plays and the guards stand in line, the goods are taken and the chronicle says so. Abandon
 the Wonder before that and the goods you handed in for the stage come back.
 
+## When it's finished
+
+![The festival's fireworks over the folly](https://jcondedata.github.io/minecraft-alive-workplace/wonder_finished/still-4.jpg)
+
+When the last stage is done, everyone on the server hears of it ("Pinevale has finished the Great Cathedral!"). That
+evening the village holds a festival, with a bigger firework show than usual: gold rockets go up round the square and
+from the top of the Wonder itself. The village's chronicle records it, and so do the chronicles of the villages in its
+realm (or, without a realm, the villages its caravans trade with). On the Village Map it gets a gold banner with its
+name. Its powers come on.
+
+## Keeping it up
+
+Once a day a finished Wonder counts how much of it still stands. Copper that has weathered green, or been waxed, still
+counts as the copper it was. Right-click its Foundation Stone, or look at its card on the hall's Wonders page: "Standing:
+97% of it. Its powers are on."
+
+If less than nine tenths of it stands (a creeper, a raid, blocks someone took), it is **damaged**: its powers stop, and
+the stone and the card say "Damaged: 84% of it stands (90% needed)". The village's builders mend it before anything
+else, from the chests by the stone, putting back only the missing blocks. Once enough stands again, its powers come
+back. A server owner can set how much must stand with the "Wonder Standing" setting.
+
 ## Every Wonder
 
 | Wonder | Needs | While it stands |

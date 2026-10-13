@@ -114,6 +114,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
 	private final RealmBuildsScene realmBuilds = new RealmBuildsScene();
 	private final WonderGalleryScene wonderGallery = new WonderGalleryScene();
+	/** SCENE=wonder_finished (ROADMAP 35.8): the folly's time-lapse, ending in its festival's fireworks. */
+	private final WonderTimelapse wonderFinished = new WonderTimelapse(
+		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly"), "wonder_finished");
 	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
@@ -223,6 +226,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("wonder_gallery".equals(System.getProperty("aliveworkplace.scene"))) {
 			wonderGallery.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("wonder_finished".equals(System.getProperty("aliveworkplace.scene"))) {
+			wonderFinished.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {

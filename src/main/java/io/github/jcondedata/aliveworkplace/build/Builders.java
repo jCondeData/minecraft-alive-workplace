@@ -691,7 +691,15 @@ public final class Builders {
 			// A repair: nothing to hand back, nothing new to sell, the building's already on the books.
 			level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
-			if (owner != null) {
+			if (site.wonder() != null) {
+				// a part of a damaged Wonder (35.8): counted again straight away, so its powers come back once enough stands
+				io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.recount(site.wonder());
+				if (owner != null) {
+					io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).site(site.wonder()).ifPresent(w -> tell(owner,
+						Component.translatable("message.aliveworkplace.wonder.part_repaired", villager.getDisplayName(),
+							io.github.jcondedata.aliveworkplace.wonder.Wonders.name(w.wonder())), ChatFormatting.GREEN));
+				}
+			} else if (owner != null) {
 				tell(owner, Component.translatable("message.aliveworkplace.repaired", villager.getDisplayName(), Blueprints.displayName(site.structure())),
 					ChatFormatting.GREEN);
 			}

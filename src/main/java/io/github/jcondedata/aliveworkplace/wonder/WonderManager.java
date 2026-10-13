@@ -64,7 +64,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = new WonderSite(UUID.randomUUID(), wonder, hall.immutable(), Optional.ofNullable(owner), ownerName == null ? "" : ownerName,
 			1, day, Optional.empty());
 		sites.put(site.id(), site);
-		setDirty();
+		changed();
 		return site;
 	}
 
@@ -73,7 +73,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null) {
 			sites.put(id, site.atStage(stage));
-			setDirty();
+			changed();
 		}
 	}
 
@@ -82,7 +82,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null) {
 			sites.put(id, site.finishedOn(day));
-			setDirty();
+			changed();
 		}
 	}
 
@@ -91,7 +91,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null) {
 			sites.put(id, site.placedAt(placement, stone));
-			setDirty();
+			changed();
 		}
 	}
 
@@ -100,7 +100,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null) {
 			sites.put(id, site.withParts(parts));
-			setDirty();
+			changed();
 		}
 	}
 
@@ -109,7 +109,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null && !site.builder().equals(Optional.of(builder))) {
 			sites.put(id, site.withBuilder(builder));
-			setDirty();
+			changed();
 		}
 	}
 
@@ -118,7 +118,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null && site.called() != called) {
 			sites.put(id, site.withCalled(called));
-			setDirty();
+			changed();
 		}
 	}
 
@@ -127,7 +127,7 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null && site.dedicated() != dedicated) {
 			sites.put(id, site.withDedicated(dedicated));
-			setDirty();
+			changed();
 		}
 	}
 
@@ -136,14 +136,29 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null && !site.delivered().equals(delivered)) {
 			sites.put(id, site.withDelivered(delivered));
-			setDirty();
+			changed();
 		}
+	}
+
+	/** Records how a finished site is kept up: its last count, whether it's damaged, its festival (35.8). */
+	public void setKept(UUID id, WonderSite.Kept kept) {
+		WonderSite site = sites.get(id);
+		if (site != null && !site.kept().equals(kept)) {
+			sites.put(id, site.withKept(kept));
+			changed();
+		}
+	}
+
+	/** Something changed: saved with the world, and the Wonders' powers looked up again (35.8, {@link Wonders#power}). */
+	private void changed() {
+		setDirty();
+		Wonders.forgetPowers();
 	}
 
 	/** Forgets a site (a cancelled Wonder, or a test's). */
 	public void remove(UUID id) {
 		if (sites.remove(id) != null) {
-			setDirty();
+			changed();
 		}
 	}
 
@@ -161,6 +176,7 @@ public final class WonderManager extends SavedData {
 				.resultOrPartial(err -> AliveWorkplace.LOG.warn("Wonders: {}", err))
 				.ifPresent(all -> all.forEach(s -> manager.sites.put(s.id(), s)));
 		}
+		Wonders.forgetPowers(); // 35.8: the powers worked out again from what was loaded
 		return manager;
 	}
 }

@@ -4167,7 +4167,7 @@ Legends.
     the storehouse to the stockpile; a chef cooks a short line as a stock order; a click on the requests board hands a
     line over; the dedication takes exactly the goods; a cancel gives them back;
   - scene `wonder_goods`: the stone's screen half filled, a porter delivering, then the dedication.
-- [ ] **35.8** (claimed: lane-d-1012-0633, 2026-10-12 06:38Z) **A finished Wonder: celebration, upkeep and powers.** When the last stage is done, every player on the
+- [x] **35.8** (review: pending 2026-10-13) **A finished Wonder: celebration, upkeep and powers.** When the last stage is done, every player on the
   server is told; the village holds a festival that evening (`hall/Festivals`) with a bigger firework show; the
   chronicles of the village and of every village linked to it (its realm, M33; until that lands, its caravan partners)
   record it; and the Village Map marks it with a gold banner. Powers: each power type is code in `wonder/powers/`,

@@ -1,0 +1,291 @@
+package io.github.jcondedata.aliveworkplace.devclient;
+
+import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
+import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.Festivals;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlock;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.registry.ModComponents;
+import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.wonder.Wonder;
+import io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints;
+import io.github.jcondedata.aliveworkplace.wonder.WonderCrews;
+import io.github.jcondedata.aliveworkplace.wonder.WonderGoods;
+import io.github.jcondedata.aliveworkplace.wonder.WonderManager;
+import io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem;
+import io.github.jcondedata.aliveworkplace.wonder.WonderSite;
+import io.github.jcondedata.aliveworkplace.wonder.WonderStages;
+import io.github.jcondedata.aliveworkplace.wonder.Wonders;
+import io.github.jcondedata.aliveworkplace.wonder.powers.MoodPower;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import net.minecraft.client.CloudStatus;
+import net.minecraft.client.GraphicsStatus;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * The Wonder time-lapse (ROADMAP 35.8) every Wonder's scene uses: a Town round its hall, a crew of {@link #CREW} builders
+ * with a lead (the first, an Expert, handed the plan; every builder called from the stone), free materials, each stage's
+ * goods handed in at the stone as it waits for them, the server sped up ({@code /tick rate}) and held at mid-morning
+ * while it goes up; a slow orbit round it, a frame every {@link #ORBIT_EVERY} client ticks, and a still as each stage is
+ * done ({@code 1N_<scene>_stage_N}). Once finished, the evening's festival: time is moved on to dusk, the server slowed
+ * to its usual rate, and the Wonder's bigger fireworks are filmed ({@code 19_<scene>_fireworks}). Each check is the
+ * scene's: the crew raised it, the server was told and the festival planned, its powers came on, its rockets went up.
+ * Each Wonder's own scene makes one with its id ({@code new WonderTimelapse(id, "wonder_great_cathedral")}).
+ */
+final class WonderTimelapse {
+	/** Builders on the crew, the lead included. */
+	static final int CREW = 10;
+	/** Client ticks between the orbit's frames (and how far it turns each: a full turn in 24). */
+	static final int ORBIT_EVERY = 100;
+	private static final int ORBIT_STEPS = 24;
+	/** The server's rate while the Wonder goes up (ticks a second; 20 is the usual). */
+	static final int RATE = 100;
+	/** Client ticks before giving up: 13 minutes, under the 15 a scene has on GitHub's runner with the client's start. */
+	private static final int GIVE_UP = 15600;
+	private static final long MORNING = 3000;
+
+	private final ResourceLocation wonder;
+	private final String scene;
+	/** The hall, away from the other scenes; the superflat ground's top is at y -61. */
+	private final BlockPos hall = new BlockPos(900, -60, 900);
+	private int tick;
+	private int frame;
+	private int stillsTaken;
+	private int finishedAt = -1;
+	private int showAt = -1;
+	private boolean over;
+	private volatile UUID site;
+	private volatile int stage;
+	private volatile boolean done;
+	private volatile int mostCrew;
+	private volatile int rockets;
+	private volatile Vec3 centre = Vec3.ZERO;
+	private volatile Vec3i size = Vec3i.ZERO;
+
+	WonderTimelapse(ResourceLocation wonder, String scene) {
+		this.wonder = wonder;
+		this.scene = scene;
+	}
+
+	void tick(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (over) {
+			return;
+		}
+		if (tick == 1) {
+			mc.options.renderDistance().set(8);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.graphicsMode().set(GraphicsStatus.FAST);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> stage(server));
+		}
+		if (tick == 120) {
+			server.execute(() -> {
+				run(server, "tick rate " + RATE);
+				orbit(server, 0);
+			});
+		}
+		if (tick > 120 && finishedAt < 0) {
+			if (tick % 20 == 0) {
+				server.execute(() -> watch(server));
+			}
+			if (tick % ORBIT_EVERY == 0) {
+				ScreenshotHarness.shot(mc, String.format("frame_%03d", frame++));
+				server.execute(() -> orbit(server, frame));
+			}
+			if (stillsTaken < stage - 1 || done && stillsTaken < stage) {
+				stillsTaken++;
+				ScreenshotHarness.shot(mc, String.format("1%d_%s_stage_%d", stillsTaken, scene, stillsTaken));
+			}
+			if (done && stillsTaken >= stage) {
+				finishedAt = tick;
+				server.execute(() -> evening(server));
+			}
+		}
+		if (finishedAt > 0 && showAt < 0 && tick % 10 == 0) {
+			server.execute(() -> countRockets(server));
+			if (rockets > 0) {
+				showAt = tick;
+				server.execute(() -> {
+					run(server, "tick rate 20"); // the show at its own pace
+					ScreenshotHarness.hoverLookingAt(player(server), centre.add(size.getX() * 0.9 + 14, size.getY() * 0.4 + 6, -size.getZ() * 0.9 - 14),
+						centre.add(0, size.getY() * 0.6, 0));
+				});
+			}
+		}
+		if (showAt > 0 && tick == showAt + 70) {
+			ScreenshotHarness.shot(mc, String.format("19_%s_fireworks", scene));
+			server.execute(() -> countRockets(server));
+		}
+		if (showAt > 0 && tick == showAt + 200) {
+			server.execute(() -> finalChecks(server));
+		}
+		if (showAt > 0 && tick == showAt + 230) {
+			over = true;
+			mc.stop();
+		}
+		if (tick >= GIVE_UP && !over) {
+			over = true;
+			Showcase.check(false, "the " + wonder + " went up and was celebrated in time (stage " + stage + ", finished " + done + ", rockets " + rockets + ")");
+			mc.stop();
+		}
+	}
+
+	/** The village, its crew and the plan handed to the lead, on the server thread. */
+	private void stage(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		GameRules rules = level.getGameRules();
+		rules.getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+		rules.getRule(GameRules.RULE_WEATHER_CYCLE).set(false, server);
+		rules.getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+		rules.getRule(ModGameRules.FREE_MATERIALS).set(true, server);
+		rules.getRule(ModGameRules.BUILD_DELAY).set(6, server);
+		level.setDayTime(MORNING);
+		run(server, "forceload add " + (hall.getX() - 64) + " " + (hall.getZ() - 112) + " " + (hall.getX() + 64) + " " + (hall.getZ() + 32));
+		ServerPlayer player = player(server);
+		player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, -1, 0, false, false));
+		level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.NORTH));
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		entity.setOwner(player.getUUID(), player.getName().getString());
+		entity.setRank(VillageRanks.Rank.TOWN);
+		String[] names = {"Odo", "Pia", "Bram", "Ilse", "Tam", "Wren", "Edda", "Hob", "Mags", "Rolf"};
+		List<Villager> crew = new ArrayList<>();
+		for (int i = 0; i < CREW; i++) {
+			BlockPos bench = hall.offset(-9 + 2 * i, 0, 4);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Villager builder = EntityType.VILLAGER.create(level);
+			builder.moveTo(bench.getX() + 0.5, bench.getY(), bench.getZ() + 1.5, 180, 0);
+			builder.setCustomName(Component.literal(names[i % names.length]));
+			builder.setVillagerData(builder.getVillagerData().setProfession(ModVillagers.BUILDER).setLevel(i == 0 ? 4 : 2)); // the lead: an Expert
+			level.addFreshEntity(builder);
+			Builders.employ(level, builder, bench);
+			crew.add(builder);
+		}
+		Wonder w = Wonders.loaded().get(wonder);
+		Showcase.check(w != null, "the " + wonder + " is loaded: " + Wonders.problems());
+		if (w == null) {
+			return;
+		}
+		ItemStack plan = WonderPlanItem.of(level, hall, w, Component.literal("Testholm"));
+		BlueprintData data = BlueprintItem.data(plan).orElseThrow();
+		BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), data.size().orElseThrow(), hall.offset(0, 0, -8),
+			Rotation.CLOCKWISE_180); // its front faces the hall
+		plan.set(ModComponents.BLUEPRINT, data.withPlacement(Optional.of(placement)));
+		player.getInventory().clearContent();
+		player.setItemInHand(InteractionHand.MAIN_HAND, plan);
+		InteractionResult result = WonderStages.handOver(player, crew.get(0), plan);
+		Showcase.check(result == InteractionResult.SUCCESS, "the plan handed to the lead, " + crew.get(0).getName().getString() + ": " + result);
+		List<WonderSite> sites = WonderManager.get(level).in(hall);
+		if (sites.isEmpty()) {
+			return;
+		}
+		site = sites.get(0).id();
+		WonderCrews.callEveryone(level, sites.get(0));
+		Optional<Blueprint> whole = BlueprintLibrary.get(level, WonderBlueprints.idOf(wonder));
+		whole.ifPresent(b -> {
+			BoundingBox box = BlueprintOutline.bounds(placement, b.size());
+			centre = new Vec3(box.getCenter().getX() + 0.5, box.minY(), box.getCenter().getZ() + 0.5);
+			size = new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan());
+		});
+	}
+
+	/** Every second: the stage's goods handed in as it waits for them, the crew counted, the stage and whether it's finished. */
+	private void watch(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		Optional<WonderSite> found = site == null ? Optional.empty() : WonderManager.get(level).site(site);
+		if (found.isEmpty()) {
+			return;
+		}
+		WonderSite now = found.get();
+		if (now.goingUp() && !now.started()) {
+			List<Wonder.Good> goods = WonderGoods.goods(now);
+			for (int i = 0; i < goods.size(); i++) {
+				ItemStack one = WonderGoods.icon(goods.get(i));
+				for (int left = goods.get(i).count(); left > 0; left -= one.getMaxStackSize()) {
+					WonderGoods.deliver(level, now.id(), i, one.copyWithCount(Math.min(left, one.getMaxStackSize())));
+				}
+			}
+		}
+		if (now.goingUp()) {
+			level.setDayTime(MORNING); // held at mid-morning: the crew's working hours, goods dedicated by day
+			mostCrew = Math.max(mostCrew, WonderCrews.crew(level, now).size());
+		}
+		stage = now.done() ? (Wonders.loaded().containsKey(wonder) ? Wonders.loaded().get(wonder).stages().size() : now.stage()) : now.stage();
+		done = now.done();
+	}
+
+	/** Finished: the checks so far, and on to the evening's festival, the day moving again. */
+	private void evening(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		WonderSite now = WonderManager.get(level).site(site).orElseThrow();
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		long today = Chronicle.day(level);
+		Showcase.check(mostCrew >= CREW - 2, "a crew of " + mostCrew + " raised the " + Wonders.name(wonder).getString() + " (of " + CREW + " builders)");
+		Showcase.check(entity.festivalDay() == today && now.kept().festival() == today, "its festival planned for this evening (day " + entity.festivalDay()
+			+ ", today " + today + ")");
+		Showcase.check(Wonders.power(level, hall, MoodPower.TYPE).isPresent() || Wonders.loaded().get(wonder).powers().stream()
+			.noneMatch(p -> p.type().equals(MoodPower.TYPE)), "its powers came on: " + Wonders.loaded().get(wonder).powers().stream().map(Wonder.Power::type).toList());
+		level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(true, server);
+		level.setDayTime((today - 1) * 24000L + Festivals.FIREWORKS - 300); // the feast's last hour, then dusk and the fireworks
+		ScreenshotHarness.hoverLookingAt(player(server), centre.add(-size.getX() * 0.8 - 12, size.getY() * 0.5 + 6, -size.getZ() * 0.8 - 12),
+			centre.add(0, size.getY() * 0.4, 0));
+	}
+
+	private void countRockets(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		AABB around = new AABB(hall).inflate(64, 96, 120);
+		rockets = Math.max(rockets, level.getEntitiesOfClass(FireworkRocketEntity.class, around, r -> r.getY() > centre.y + size.getY() * 0.5).size());
+	}
+
+	private void finalChecks(MinecraftServer server) {
+		Showcase.check(rockets > 0, "the Wonder's fireworks went up from its top at the festival (" + rockets + " rockets above it at once)");
+	}
+
+	/** The camera {@code step} steps round the Wonder, from its front-right, looking at its middle. */
+	private void orbit(MinecraftServer server, int step) {
+		double angle = Math.PI / 4 + step * 2 * Math.PI / ORBIT_STEPS;
+		double radius = Math.max(size.getX(), size.getZ()) * 0.9 + 16;
+		Vec3 eye = centre.add(Math.sin(angle) * radius, size.getY() * 0.6 + 8, Math.cos(angle) * radius);
+		ScreenshotHarness.hoverLookingAt(player(server), eye, centre.add(0, size.getY() * 0.4, 0));
+	}
+
+	private static ServerPlayer player(MinecraftServer server) {
+		return server.getPlayerList().getPlayers().get(0);
+	}
+
+	private static void run(MinecraftServer server, String command) {
+		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);
+	}
+}

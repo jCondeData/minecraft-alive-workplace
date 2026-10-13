@@ -41,8 +41,21 @@ public record Wonder(ResourceLocation id, String name, String description, Resou
 					   Optional<ResourceLocation> potion) {
 	}
 
-	/** A power: its type and its numbers, as written ({@code {"type": "beauty", "points": 8}}). */
-	public record Power(String type, JsonObject numbers) {
+	/**
+	 * A power: its type and its numbers, as written ({@code {"type": "beauty", "points": 8}}), and the power its type's
+	 * reader made of them (35.8, {@link io.github.jcondedata.aliveworkplace.wonder.powers.WonderPowers}).
+	 */
+	public record Power(String type, JsonObject numbers, io.github.jcondedata.aliveworkplace.wonder.powers.WonderPower power) {
+		/** A power read from its numbers (its {@code type} added back for the reader). */
+		public Power(String type, JsonObject numbers) {
+			this(type, numbers, read(type, numbers));
+		}
+
+		private static io.github.jcondedata.aliveworkplace.wonder.powers.WonderPower read(String type, JsonObject numbers) {
+			JsonObject json = numbers.deepCopy();
+			json.addProperty("type", type);
+			return io.github.jcondedata.aliveworkplace.wonder.powers.WonderPowers.parse(json);
+		}
 	}
 
 	public Component nameText() {

@@ -255,6 +255,11 @@ public final class Moods {
 			score += cup.points();
 			good.add(cup.reason());
 		}
+		// The village's finished Wonders, and its realm's (35.8): their mood powers, while they stand.
+		for (io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason w : io.github.jcondedata.aliveworkplace.wonder.powers.MoodPower.moods(level, villager)) {
+			score += w.points();
+			(w.points() >= 0 ? good : bad).add(w.reason());
+		}
 		// Their class (34.6): a rise or fall of the last days, and the needs of their class had or lacking.
 		for (io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason c : SocialClasses.moods(villager, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level))) {
 			score += c.points();

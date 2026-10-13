@@ -125,7 +125,8 @@ public class WonderDataGameTests implements FabricGameTest {
 			&& two.goods().get(0).tag().map(Object::toString).equals(Optional.of("minecraft:small_flowers"))
 			&& two.goods().get(1).potion().map(Object::toString).equals(Optional.of("minecraft:healing")) && two.goods().get(1).count() == 2
 			&& two.goods().get(1).job().toString().equals("minecraft:cleric"), "stage II's goods: " + two.goods());
-		helper.assertTrue(folly.powers().size() == 1 && folly.powers().get(0).type().equals("beauty") && folly.powers().get(0).numbers().get("points").getAsInt() == 2,
+		helper.assertTrue(folly.powers().size() == 2 && folly.powers().get(0).type().equals("beauty") && folly.powers().get(0).numbers().get("points").getAsInt() == 2
+			&& folly.powers().get(1).type().equals("mood") && folly.powers().get(1).numbers().get("amount").getAsInt() == 4, // 35.8's test mood
 			"powers: " + folly.powers());
 		helper.assertTrue(folly.requirements().size() == 3 && folly.requirements().get(2) instanceof LegendSettled architect
 			&& architect.id().equals(Wonders.MASTER_ARCHITECT) && architect.standIn().size() == 1, "the Master Architect's line: " + folly.requirements());

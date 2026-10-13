@@ -26,7 +26,8 @@ import org.jetbrains.annotations.Nullable;
  * it's out) — sets about putting them back ({@link BuildPlan#repair}: only the holes are filled, with the builder's
  * usual materials; nothing players put there is touched). {@code builderRepairs} in the config turns it off, except
  * for what threats took (ROADMAP 32.16a: a gate a ram broke, a block a village fire burned; {@code ThreatData#damaged}):
- * those buildings are always repaired, so no threat ever destroys the builders' work for good.
+ * those buildings are always repaired, so no threat ever destroys the builders' work for good. A damaged Wonder (35.8,
+ * {@code WonderUpkeep}) comes first and is always repaired too: its powers wait on it.
  */
 public final class Upkeep {
 	public static boolean ENABLED = true;
@@ -46,6 +47,7 @@ public final class Upkeep {
 		@Override
 		protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
 			if (!ENABLED && !(THREATS && !io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).damaged().isEmpty())
+				&& !io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.anyDamaged(level) // a damaged Wonder is always repaired (35.8)
 				|| !Builders.isBuilder(villager) || ModAttachments.BUILDER_JOB.has(villager) || Builders.isHelping(villager)) {
 				return false;
 			}
@@ -77,7 +79,16 @@ public final class Upkeep {
 	@Nullable
 	public static BuildSite look(ServerLevel level, Villager builder) {
 		BlockPos bench = Builders.benchPos(builder).orElse(null);
-		if (bench == null || !ENABLED && !THREATS) {
+		if (bench == null) {
+			return null;
+		}
+		// 35.8: the village's damaged Wonder before anything else, a repair site per part with holes (whatever builderRepairs says:
+		// its powers wait on it)
+		java.util.List<BuildSite> wonder = io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.repair(level, builder, bench);
+		if (!wonder.isEmpty()) {
+			return wonder.get(0);
+		}
+		if (!ENABLED && !THREATS) {
 			return null;
 		}
 		BuildSiteManager manager = BuildSiteManager.get(level);

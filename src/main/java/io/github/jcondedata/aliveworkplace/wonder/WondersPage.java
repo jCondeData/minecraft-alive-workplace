@@ -123,6 +123,12 @@ public final class WondersPage {
 			int stages = Math.max(1, wonder.stages().size());
 			if (site.done()) {
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.wonders.finished", site.finished().get()), ChatFormatting.GREEN));
+				// 35.8: how much of it stands, and its powers: on, or stopped while it's damaged
+				lore.add(VillageHallScreen.line(WonderStages.standingLine(site), site.kept().damaged() ? ChatFormatting.RED : ChatFormatting.DARK_GREEN));
+				for (Wonder.Power power : wonder.powers()) {
+					lore.add(VillageHallScreen.line(Component.translatable(site.empowered() ? "screen.aliveworkplace.wonders.power_on" : "screen.aliveworkplace.wonders.power_off",
+						power.power().describe()), site.empowered() ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY));
+				}
 			} else {
 				int stage = Math.max(1, Math.min(site.stage(), stages));
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.wonders.going_up", stage, stages,

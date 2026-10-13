@@ -185,7 +185,7 @@ public class WonderPlanGameTests implements FabricGameTest {
 		ItemStack card = menu.icon(WondersPage.slot(index));
 		List<String> lines = lore(card);
 		helper.assertTrue(card.is(Items.STONE_BRICKS) && card.getHoverName().getString().equals("Test Folly"), "the card's icon and name: " + card + " " + card.getHoverName().getString());
-		helper.assertTrue(lines.get(0).equals("A stone tower with a dome: +2 beauty"), "the power line: " + lines);
+		helper.assertTrue(lines.get(0).equals("A stone tower with a dome: +2 beauty, and the village 4 happier"), "the power line: " + lines);
 		helper.assertTrue(lines.contains("  ✔ Standing in for the Master Architect: Builders at Master or above: 1 of 1"), "the Master builder's line: " + lines);
 		for (Condition.Progress p : Wonders.requirements(level, hall, folly)) {
 			helper.assertTrue(lines.contains("  ✔ " + p.line().getString()), "not ticked: " + p.line().getString() + " in " + lines);

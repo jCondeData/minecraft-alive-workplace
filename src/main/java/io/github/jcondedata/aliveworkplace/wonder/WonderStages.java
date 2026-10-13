@@ -215,7 +215,8 @@ public final class WonderStages {
 		text.append(Component.translatable("message.aliveworkplace.wonder.status.header", Wonders.name(site.wonder()), VillageHalls.name(level, site.hall()))
 			.withStyle(ChatFormatting.GOLD));
 		if (site.done()) {
-			return text.append("\n  ").append(Component.translatable("command.aliveworkplace.wonders.finished", site.finished().get()).withStyle(ChatFormatting.GREEN));
+			text.append("\n  ").append(Component.translatable("command.aliveworkplace.wonders.finished", site.finished().get()).withStyle(ChatFormatting.GREEN));
+			return text.append("\n  ").append(standingLine(site)); // 35.8: how much of it stands, and whether its powers are off
 		}
 		if (wonder == null || site.stage() < 1 || site.stage() > wonder.stages().size()) {
 			return text.append("\n  ").append(Component.translatable("command.aliveworkplace.wonders.stage_unknown", site.stage()).withStyle(ChatFormatting.GRAY));
@@ -256,6 +257,21 @@ public final class WonderStages {
 					Component.translatable("message.aliveworkplace.wonder.status.call_hover")))));
 		text.append("\n  ").append(Component.translatable("message.aliveworkplace.wonder.status.abandon").withStyle(ChatFormatting.DARK_GRAY));
 		return text;
+	}
+
+	/**
+	 * A finished Wonder's upkeep line (35.8), for the stone and the hall: "Standing: 100% (counted on day 12). Its powers are
+	 * on." or, under {@code wonderStanding}, "Damaged: 82% stands (90% needed). Its powers have stopped until the builders
+	 * repair it."
+	 */
+	public static Component standingLine(WonderSite site) {
+		WonderSite.Kept kept = site.kept();
+		if (kept.damaged()) {
+			return Component.translatable("message.aliveworkplace.wonder.status.damaged", kept.standing(), WonderUpkeep.STANDING).withStyle(ChatFormatting.RED);
+		}
+		return (kept.counted() > 0
+			? Component.translatable("message.aliveworkplace.wonder.status.standing", kept.standing(), kept.counted())
+			: Component.translatable("message.aliveworkplace.wonder.status.standing_new")).withStyle(ChatFormatting.DARK_GREEN);
 	}
 
 	/**
@@ -432,7 +448,9 @@ public final class WonderStages {
 		}
 		int next = site.stage() + 1;
 		if (wonder == null || next > wonder.stages().size()) {
-			manager.finish(site.id(), io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
+			long day = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
+			manager.finish(site.id(), day);
+			WonderCelebration.finished(level, manager.site(site.id()).orElseThrow(), day); // 35.8: told, the festival, the chronicles, its powers on
 			return; // (its crew is remembered while the server runs: a member's leftovers still go back to the stone)
 		}
 		// 35.5: the next stage's lead is the Master Architect, else the highest-level builder of the crew.

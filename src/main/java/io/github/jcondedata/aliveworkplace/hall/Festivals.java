@@ -377,6 +377,7 @@ public final class Festivals {
 			}
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity held && Curfew.fireworks(held)
 				&& !io.github.jcondedata.aliveworkplace.story.ReformStories.supper(level, hall) // a harvest supper has none (31.22)
+				&& io.github.jcondedata.aliveworkplace.wonder.WonderCelebration.show(level, hall, square, level.random) == 0 // a Wonder's finishing: the bigger show (35.8)
 				&& level.random.nextFloat() < (io.github.jcondedata.aliveworkplace.story.ReformStories.grand(level, hall) ? 0.8f : 0.4f)) { // twice at a grand one
 				BlockPos column = square.offset(level.random.nextInt(13) - 6, 0, level.random.nextInt(13) - 6);
 				launch(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column),

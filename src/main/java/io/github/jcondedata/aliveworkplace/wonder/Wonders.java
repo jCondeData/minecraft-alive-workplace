@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import io.github.jcondedata.aliveworkplace.wonder.powers.WonderPower;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -54,10 +57,6 @@ public final class Wonders implements ResourceManagerReloadListener {
 	public static final ResourceLocation BUILDER = AliveWorkplace.id("builder");
 	/** Most builders a Wonder's crew may list in its file. */
 	public static final int MAX_CREW = 32;
-	/** The power types a file may name (each read by the feature it changes; 35.9 to 35.24 make them work). */
-	private static final Set<String> POWER_TYPES = new LinkedHashSet<>(List.of("mood", "beauty", "undertakers", "weddings", "caravan_range",
-		"caravan_speed", "ferry_fares", "early_warning", "research_tier", "raid_barrier", "sentries", "sky_chart", "forecast", "harvest",
-		"births", "travellers", "stadium_days", "tournament_host"));
 
 	/** The {@code wonders} switch (behind M35's gate). */
 	public static volatile boolean ENABLED = true;
@@ -130,6 +129,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 			problems = java.util.Collections.unmodifiableMap(all);
 		}
 		wonders = out;
+		forgetPowers(); // 35.8: the powers as the new files give them
 		WonderBlueprints.forget(); // the whole blueprints are merged again from the new files (35.3)
 		AliveWorkplace.LOG.info("Wonders: {}", wonders.keySet());
 	}
@@ -170,6 +170,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 	/** Puts loaded Wonders in place (tests). */
 	public static void setForTest(Map<ResourceLocation, Wonder> map) {
 		wonders = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(map));
+		forgetPowers();
 	}
 
 	/**
@@ -214,13 +215,11 @@ public final class Wonders implements ResourceManagerReloadListener {
 		List<Wonder.Power> powers = new ArrayList<>();
 		for (JsonElement p : json.has("powers") ? array(json, "powers") : new JsonArray()) {
 			JsonObject power = p.getAsJsonObject();
-			String type = power.has("type") ? power.get("type").getAsString() : "";
-			if (!POWER_TYPES.contains(type)) {
-				throw new IllegalArgumentException("unknown power type '" + type + "'");
-			}
+			// 35.8: each type is read by the code registered for it (wonder/powers/); an unknown type fails the file
+			io.github.jcondedata.aliveworkplace.wonder.powers.WonderPower read = io.github.jcondedata.aliveworkplace.wonder.powers.WonderPowers.parse(power);
 			JsonObject numbers = power.deepCopy();
 			numbers.remove("type");
-			powers.add(new Wonder.Power(type, numbers));
+			powers.add(new Wonder.Power(read.type(), numbers, read));
 		}
 		boolean colours = json.has("village_colours") && json.get("village_colours").getAsBoolean();
 		return new Wonder(id, name, description, icon, true, crew, List.copyOf(requirements), List.copyOf(stages), List.copyOf(powers), colours);
@@ -410,6 +409,114 @@ public final class Wonders implements ResourceManagerReloadListener {
 		return w != null ? w.nameText() : Component.literal(id.toString());
 	}
 
+	// ---------------------------------------------------------------- powers (35.8)
+
+	/**
+	 * One finished Wonder's power reaching a village: the Wonder's site and file, the power, and whether the village is
+	 * the Wonder's own ({@code home}) or one of its realm's ({@link #linked}).
+	 */
+	public record Granted(WonderSite site, Wonder wonder, WonderPower power, boolean home) {
+	}
+
+	/** Each village's own powers by dimension and hall, from every finished, standing Wonder; null: to be worked out again. */
+	@Nullable
+	private static volatile Map<ResourceKey<Level>, Map<BlockPos, List<Granted>>> powerCache;
+	/** The server {@link #powerCache} was worked out for (a new world in the same game starts afresh). */
+	@Nullable
+	private static volatile MinecraftServer powerServer;
+	/** Whether any power in {@link #powerCache} reaches a realm (else a lookup never asks for the linked villages). */
+	private static volatile boolean anyRealm;
+
+	/**
+	 * The power {@code type} of a finished, standing Wonder of the village round {@code hall} (or, for a realm power, of
+	 * a village linked to it), the first such; empty when none, when the Wonder is damaged, or while Wonders are off.
+	 * A lookup in a cache worked out again when a Wonder is finished, damaged, repaired or forgotten, and on load.
+	 */
+	public static Optional<WonderPower> power(ServerLevel level, BlockPos hall, String type) {
+		List<Granted> all = powers(level, hall, type);
+		return all.isEmpty() ? Optional.empty() : Optional.of(all.get(0).power());
+	}
+
+	/** Every grant of the power {@code type} reaching the village round {@code hall}: its own Wonders' first, then its realm's. */
+	public static List<Granted> powers(ServerLevel level, BlockPos hall, String type) {
+		if (!ENABLED) {
+			return List.of();
+		}
+		Map<ResourceKey<Level>, Map<BlockPos, List<Granted>>> cache = powerCache(level.getServer());
+		List<Granted> out = new ArrayList<>();
+		for (Granted g : cache.getOrDefault(level.dimension(), Map.of()).getOrDefault(hall, List.of())) {
+			if (g.power().type().equals(type)) {
+				out.add(g);
+			}
+		}
+		if (anyRealm) {
+			for (GlobalPos other : linked(level, hall)) {
+				for (Granted g : cache.getOrDefault(other.dimension(), Map.of()).getOrDefault(other.pos(), List.of())) {
+					if (g.power().realm() && g.power().type().equals(type)) {
+						out.add(new Granted(g.site(), g.wonder(), g.power(), false));
+					}
+				}
+			}
+		}
+		return out;
+	}
+
+	/** Forgets the powers' cache: a Wonder was finished, damaged, repaired, forgotten or loaded, or the files were read again. */
+	public static void forgetPowers() {
+		powerCache = null;
+	}
+
+	private static Map<ResourceKey<Level>, Map<BlockPos, List<Granted>>> powerCache(MinecraftServer server) {
+		Map<ResourceKey<Level>, Map<BlockPos, List<Granted>>> cache = powerCache;
+		if (cache != null && powerServer == server) {
+			return cache;
+		}
+		Map<ResourceKey<Level>, Map<BlockPos, List<Granted>>> built = new LinkedHashMap<>();
+		boolean realm = false;
+		for (WonderManager.Located l : WonderManager.everywhere(server)) {
+			WonderSite site = l.site();
+			Wonder wonder = wonders.get(site.wonder());
+			if (!site.empowered() || wonder == null) {
+				continue;
+			}
+			for (Wonder.Power p : wonder.powers()) {
+				built.computeIfAbsent(l.level().dimension(), k -> new LinkedHashMap<>()).computeIfAbsent(site.hall(), k -> new ArrayList<>())
+					.add(new Granted(site, wonder, p.power(), true));
+				realm |= p.power().realm();
+			}
+		}
+		anyRealm = realm;
+		powerServer = server;
+		powerCache = built;
+		return built;
+	}
+
+	/**
+	 * The villages linked to the one round {@code hall}, which its realm powers reach and whose chronicles record its
+	 * Wonder (35.8): the other villages of its realm (M33), or with realms off (or no realm), its caravan partners.
+	 */
+	public static List<GlobalPos> linked(ServerLevel level, BlockPos hall) {
+		List<GlobalPos> out = new ArrayList<>();
+		GlobalPos self = GlobalPos.of(level.dimension(), hall);
+		io.github.jcondedata.aliveworkplace.realm.RealmData.Realm realm = io.github.jcondedata.aliveworkplace.realm.Realms.ENABLED
+			? io.github.jcondedata.aliveworkplace.realm.Realms.realmOf(level, hall) : null;
+		if (realm != null) {
+			for (GlobalPos member : io.github.jcondedata.aliveworkplace.realm.Realms.members(realm)) {
+				if (!member.equals(self) && !out.contains(member)) {
+					out.add(member);
+				}
+			}
+			return out;
+		}
+		for (BlockPos partner : io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level).routesFrom(hall)) {
+			GlobalPos at = GlobalPos.of(level.dimension(), partner);
+			if (!at.equals(self) && !out.contains(at)) {
+				out.add(at);
+			}
+		}
+		return out;
+	}
+
 	// ---------------------------------------------------------------- /workplace wonders
 
 	/** {@code /workplace wonders}: every Wonder on the server with its village, owner and stage, one line each. */
@@ -430,7 +537,9 @@ public final class Wonders implements ResourceManagerReloadListener {
 			Wonder wonder = wonders.get(site.wonder());
 			Component stage;
 			if (site.done()) {
-				stage = Component.translatable("command.aliveworkplace.wonders.finished", site.finished().get());
+				stage = site.kept().damaged() // 35.8: under wonderStanding, its powers off
+					? Component.translatable("command.aliveworkplace.wonders.finished_damaged", site.finished().get(), site.kept().standing())
+					: Component.translatable("command.aliveworkplace.wonders.finished", site.finished().get());
 			} else if (wonder != null) {
 				int i = Math.max(1, Math.min(site.stage(), wonder.stages().size()));
 				stage = Component.translatable("command.aliveworkplace.wonders.stage", i, wonder.stages().size(), wonder.stages().get(i - 1).nameText());

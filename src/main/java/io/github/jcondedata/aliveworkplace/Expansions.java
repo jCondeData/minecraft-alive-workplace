@@ -47,7 +47,7 @@ public final class Expansions {
 	public static final boolean M34 = false;
 	/**
 	 * Milestone 35, Wonders (2.0): {@code wonders}, {@code wonderCaps}, {@code wonderLegends}, {@code wonderServerLimit},
-	 * {@code disabledWonders} (35.2); later items add {@code wonderCrew}, {@code builderScaffolding}, {@code wonderStanding}.
+	 * {@code disabledWonders} (35.2), {@code wonderCrew} (35.5), {@code builderScaffolding} (35.6), {@code wonderStanding} (35.8).
 	 */
 	public static final boolean M35 = false;
 

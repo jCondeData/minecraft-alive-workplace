@@ -3,12 +3,13 @@
 A Wonder is a village's life's work: a huge build raised in four stages by every builder in the village at once, fed by
 goods from every job, drawn up by the Master Architect and needing a second Legend. Each of the eight Wonders changes
 what its village or its realm can do while it stands. Part of 2.0 (Wonders): the data files, requirements and caps, the
-Wonders page, the Wonder Plan, the Foundation Stone with its stages, crews and goods, and the first Wonders' designs (the Great
+Wonders page, the Wonder Plan, the Foundation Stone with its stages, crews and goods, a finished Wonder's celebration,
+upkeep and powers, and the first Wonders' designs (the Great
 Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, the Hanging Gardens, the Colossus and, with
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.8, 35.9, 35.11, 35.13, 35.15, 35.17, 35.18a, 35.19, 35.21, 35.23
 
 ## What a player sees
 
@@ -108,8 +109,36 @@ in a line three blocks out, on the side away from the Wonder ("standing in line 
   they're away): "The 5 goods handed in for the Test Folly came back to you"; what lies in the stockpile's chests stays
   there, and a dedicated stage's goods were given.
 
-Still to come (the design note): a finished Wonder announced to the server, celebrated with a festival, and its powers
-on while at least 90% of it stands.
+**A finished Wonder** (35.8). When the last stage is done:
+
+- **Every player on the server is told**, wherever they are: "Pinevale has finished the Test Folly!"
+- **The village holds a festival that evening** (the next evening if this one's festival is already over): the usual
+  feast, music and dancing, and at dusk a bigger firework show: three rockets every two seconds, large gold balls with
+  trails and stars, two from round the square and one from the Wonder's own top (under Curfew's "stay in", none).
+- **The chronicles record it**: the village's ("The Test Folly was finished, its Foundation Stone laid on day 3") and
+  every village linked to it, its realm's villages or, without a realm, its caravan partners ("Pinevale finished the
+  Test Folly").
+- **The Village Map marks it with a gold banner** at its middle, with its name (its parts aren't marked one by one).
+- **Its powers come on**: those its file lists. Two kinds are made for server owners' own Wonders: `mood` (everyone in
+  the village, or with `"scope": "realm"` the whole realm, is that much happier, "proud of the Test Folly" among their
+  reasons; `home_amount` for its own village) and `beauty` (points added to the village's beauty, as a fountain's). The
+  hall's card lists each power ("✔ Everyone in the village is 4 happier").
+
+**Keeping it up.** Once a day each finished Wonder counts how much of it still stands, every block of every stage (at
+most 4,096 blocks a tick, and only while all of it is loaded). A block stands when it's there as drawn; properties
+that depend on neighbours don't count, and copper that weathered or was waxed is still the copper it was, so a dome
+turned green still stands. The stone and the hall's card say "Standing: 97% of it (counted on day 12). Its powers are
+on."
+
+- **Under `wonderStanding` (90%) it is damaged**: its powers stop (the card lists them "(stopped)"), the stone and the
+  card say "Damaged: 84% of it stands (90% needed). Its powers have stopped until the builders repair it.", the
+  chronicle says so and its owner is told.
+- **The village's builders repair it before anything else**: an idle builder of the village puts back every missing
+  block, a repair per part, from the chests by its Foundation Stone (nothing players put there is touched), even with
+  `builderRepairs` off: "Odo is repairing the Test Folly: 87 blocks to put back, from the chests by its Foundation
+  Stone." Each part they finish counts it again.
+- **Back at 90%, the powers return**: "The Test Folly of Pinevale stands again (91%): its powers have returned.", and
+  the chronicle says it was repaired.
 
 | Wonder | Rank | Legend (stand-in) | Other requirements | Powers |
 |---|---|---|---|---|
@@ -284,7 +313,10 @@ owner can add their own Wonder with a data pack and it works like ours. The file
 - `requirements`: a list of conditions (below).
 - `stages`: each a `name`, its blueprint `parts` (a structure id and its `offset` from the Wonder's corner), and its
   `goods`, each `{"item"` or `"tag", "count", "job"}`, with an optional `potion` to name a kind of potion.
-- `powers`: `[{"type": ..., numbers}]`. The types are listed in the design note; each Wonder's item makes its own work.
+- `powers`: `[{"type": ..., numbers}]`. Each type is code registered by its id (35.8, `wonder/powers/`): `mood`
+  (`scope` `village` or `realm`, `amount`, optional `home_amount`; each -50 to 50) and `beauty` (`points`, 0 to 50) work
+  now; the other types our Wonders name are declared (their numbers kept as written) until their Wonder's item fills
+  them in. An unknown type, or numbers its reader refuses, fail the file.
 - `crew` (default 12, at most 32) and `enabled` (false: the file is skipped). `fabric:load_conditions` are honored,
   so a Wonder can need a mod (the Stadium will need Cobblemon).
 
@@ -342,6 +374,16 @@ on a staged build that refuses to draw over an earlier stage's block; `wonder_st
 as it will stand, on the stages before it (nothing held up by nothing), and every stage leaves the site tidy, since the
 village lives beside it for days.
 
+**Powers and upkeep** (35.8): the rest of the mod asks `Wonders.power(level, hall, type)` (the first) or
+`Wonders.powers(level, hall, type)` (every Wonder that grants it, its own village's first, then its realm's): a lookup
+in a cache worked out again whenever a Wonder is finished, damaged, repaired, forgotten or loaded, and when the files
+are read again. It answers only for finished Wonders that aren't damaged, and nothing while `wonders` is off. A realm
+power reaches the village's realm (or its caravan partners). A Wonder's item adds its type with
+`WonderPowers.register(type, reader)` and reads the numbers where the power acts. The upkeep count goes one dimension
+at a time, a Wonder at a time, 4,096 blocks a tick, and starts over if part of it unloads; it isn't saved, so a
+restart only begins that day's count again. Repairs are ordinary repair build sites, one per part with holes, pointing
+back at the Wonder with its stone as their bench; the first goes to the builder that looked, the rest in its queue.
+
 ## Switches
 
 All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
@@ -354,8 +396,9 @@ All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatev
 | `wonderCaps` | 0, 0, 1, 2 | file only: Wonders per village by rank (each 0 to 8; a short list is filled from the defaults) |
 | `disabledWonders` | empty | file only: Wonder ids that can't be started (`great_cathedral` or `pack:id`) |
 | `wonderCrew` | 12 (1 to 32) | the most builders on one Wonder's crew, its lead included |
+| `wonderStanding` | 90 (50 to 100) | the share (%) of a finished Wonder that must stand for its powers; under it, it's damaged and repaired |
 
-Later items add two more: builders' scaffolding, and how much of a Wonder must stand for its powers.
+`builderScaffolding` (35.6) is on the Builder's pages.
 
 ## Saved data
 
@@ -365,7 +408,9 @@ no such file and loads unchanged. 35.4 adds, all optional: `placement`, `stone`,
 sites) and `builder` on a site; 35.5 adds `called` (default false: every builder called to the crew); 35.7 adds
 `dedicated` (default false: whether the current stage's goods were dedicated) and `delivered` (default empty: the goods
 handed in at the stone for it, each its line, item, potion and count). A site saved before 35.7 with its stage's parts
-down counts as started, so a Wonder going up keeps going. A crew member's
+down counts as started, so a Wonder going up keeps going. 35.8 adds `standing` (default 100: the share standing at the
+last count), `counted` (default 0: that count's day), `damaged` (default false) and `festival` (default 0: the day of
+its finishing festival); a Wonder saved before 35.8 reads as standing whole, its powers on. A crew member's
 job is the ordinary saved builder job (as a helper), so a crew comes back together after a restart; the columns are
 worked out again; `wonder` and `no_foundation` on a build site (written only when set, so an ordinary
 build saves exactly as before).
@@ -375,7 +420,7 @@ build saves exactly as before).
 - `/workplace wonders call`: the stone's [Call every builder], for the owner or an operator within 8 blocks of it.
 
 - `/workplace wonders`: every Wonder on the server, one line each: its name, village, owner and stage ("stage 2 of 3,
-  …" or "finished on day 12"). While `wonders` is off it says "Wonders are off."
+  …", "finished on day 12" or "finished on day 12, damaged (84% stands)"). While `wonders` is off it says "Wonders are off."
 
 - **Wonder Plan** (`aliveworkplace:wonder_plan`): drawn up on the Wonders page; not crafted, not in the creative tab.
 
@@ -416,6 +461,13 @@ build saves exactly as before).
 - "The shortest line" for the daily quest is the one with the least of it in for its size (35.7); potion lines are left
   out of it (a quest's item can't name a potion's kind), and crafters fill only lines that name one plain item.
 
+- A damaged Wonder is repaired whatever `builderRepairs` says (35.8), as what threats took is: its powers wait on
+  it. Below the line, the builders' ordinary upkeep still mends a finished part's holes as for any building.
+- A block put back as something else (a player's dirt in a wall) doesn't stand, and the builders never take a player's
+  block out (35.8): the owner puts it right. A Wonder in the village's colours (the Stadium's seats) also stands in the
+  colours it was drawn in, so a new banner doesn't damage it.
+- The Village Map's gold banner is a yellow one (35.8): a map's banners come only in the sixteen dye colours.
+
 ## Known limits
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
@@ -426,7 +478,8 @@ build saves exactly as before).
   inside of its closed dome, is skipped until scaffolding (35.6).
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
-- Powers are read and checked for their type only; what each does comes with its Wonder.
+- Only `mood` and `beauty` act yet; the other power types are declared, their numbers kept and `Wonders.power` already
+  answering for them, until their Wonder's powers item (35.10 on) reads them.
 - Goods handed in come back as the plain item (35.7): a renamed flower comes back unnamed. A tag line's name ("Flowers",
   "Saplings", "Banners", "Berries") comes from the language file; a server owner's own tag shows as `#namespace:path`.
 - The stone's status is its chat text, as in 35.4: there is no separate screen.
@@ -493,3 +546,14 @@ is skipped quietly (not on the page, no mistake logged), and the colors style an
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
 in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; the Colossus faces its front, down the road through its arch; the Stadium needs Cobblemon, so the scene is filmed with it; its card shows four of the stills, the rest are in its gallery).
+
+GameTests in `WonderFinishedGameTests` (35.8): the folly raised through its plan has its test mood (+4, "proud of the
+Test Folly" among a villager's reasons) and beauty (+2) on; 15% of it broken, the next day's count turns them off, the
+stone, the hall's card, the chronicle and the owner say "damaged", the village's builder repairs it with
+`builderRepairs` off and the powers come back; every player on the server is told (one 5,000 blocks away too), the
+festival is that evening with the Wonder's bigger show (rockets from its top), the village's and its caravan partner's
+chronicles record it, the Village Map has its gold banner and no part's; finished Wonders and their upkeep survive a
+save and reload (the powers from the loaded copy), old saves read as standing whole; `wonderStanding` 50 against 90,
+weathered and waxed copper standing as drawn, Wonders off; every power type registered by id, bad numbers refused, a
+type registered later read from a file. Showcase scene `wonder_finished` (group Wonders): the folly's time-lapse, a
+crew of ten, ending in its festival's fireworks.

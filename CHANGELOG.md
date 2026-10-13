@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A finished Wonder: its celebration, upkeep and powers** (35.8, part of Wonders, for 2.0): when a Wonder's last
+  stage is done every player on the server is told, the village holds a festival that evening with a bigger firework
+  show (gold rockets from the Wonder's own top), the chronicles of the village and of its realm's villages (or its
+  caravan partners) record it, and the Village Map marks it with a gold banner. Its powers come on: `mood` and `beauty`
+  work now, for server owners' own Wonders too. Once a day it counts how much of it stands (weathered copper still
+  counts); under the new `wonderStanding` setting (90%) its powers stop, the stone and the hall say "damaged", and the
+  village's builders repair it before anything else; back at 90%, the powers return.
 - **A Wonder's goods and its dedication** (35.7, part of Wonders, for 2.0): each stage of a Wonder now waits for its
   goods (the crew's feast, their tools, the rites' candles, books and potions, its treasures), each line naming the job
   that makes it. The Foundation Stone shows every line ("2 of 4 Flowers · Florist", "no Florist in the village"); the

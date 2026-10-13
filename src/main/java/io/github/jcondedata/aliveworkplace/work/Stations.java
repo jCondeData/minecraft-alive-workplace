@@ -519,6 +519,40 @@ public final class Stations {
 		return !COBBLEMON_JOBS.contains(id.getPath()) || io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
 	}
 
+	/**
+	 * The lines a workstation's tooltip adds (21.1a): "hold Shift for its jobs", or with {@code shift} the job it takes by
+	 * itself and the item that picks each of the others. None for an item that isn't a station, or that is only a menu's
+	 * picture ({@link io.github.jcondedata.aliveworkplace.mc.Tooltips#nameAndLoreOnly}: B141, the Library's Scholarship
+	 * button, a lectern, ended in "A villager's workstation").
+	 */
+	public static List<Component> tooltip(ItemStack stack, boolean shift) {
+		if (!(stack.getItem() instanceof net.minecraft.world.item.BlockItem item) || io.github.jcondedata.aliveworkplace.mc.Tooltips.isPicture(stack)) {
+			return List.of();
+		}
+		Optional<Station> found = at(item.getBlock());
+		if (found.isEmpty()) {
+			return List.of();
+		}
+		Station station = found.get();
+		List<Job> jobs = station.jobs().stream().filter(Stations::available).toList();
+		if (jobs.isEmpty()) {
+			return List.of();
+		}
+		if (!shift) {
+			return List.of(Component.translatable("tooltip.aliveworkplace.station.hint").withStyle(ChatFormatting.DARK_GRAY));
+		}
+		List<Component> lines = new ArrayList<>();
+		if (station.byItself() && jobs.get(0) == station.jobs().get(0)) {
+			lines.add(Component.translatable("tooltip.aliveworkplace.station.by_itself", name(jobs.get(0).profession().get())).withStyle(ChatFormatting.GRAY));
+		}
+		lines.add(Component.translatable("tooltip.aliveworkplace.station.header").withStyle(ChatFormatting.GOLD));
+		for (Job job : jobs) {
+			lines.add(Component.translatable("tooltip.aliveworkplace.station.job", Component.translatable(itemKey(job)), name(job.profession().get()))
+				.withStyle(ChatFormatting.GRAY));
+		}
+		return lines;
+	}
+
 	/** The translation key saying which items pick {@code job} ("Sweet berries, glow berries or an apple"). */
 	public static String itemKey(Job job) {
 		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job.profession().get());

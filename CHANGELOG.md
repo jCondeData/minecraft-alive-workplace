@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- **Small things in the Wonders' looks** (B141). The Stadium's scoreboard reads 2 - 1 from outside the bowl too (from
+  behind it read "1 - S"). A festival, a Cup's final and a won siege still make you a Hero of the Village, but no longer
+  send its pale-green swirls up past your eyes, where they floated in the sky over the fireworks. A button's tooltip on
+  a menu screen (the research screen, the lessons...) now opens under its row with its long lines wrapped, so the
+  Great Library's Scholarship tooltip no longer covers the second-tier row, and it no longer ends with "A villager's
+  workstation: hold Shift for its jobs" (its picture is a lectern). The found-goods showcase now films the Foundation
+  Stone above the chat, so the Pathfinder's line no longer shows through the stone's status.
 - **A Wonder's crew no longer stops for good partway up** (B139). When the lead had to give up on one block (a
   crewmate stood on it the whole time, as on top of the Colossus's half-built robe), the wall above it waited for that
   block forever and the whole crew stood idle; now the wall goes on over the gap, also after a restart. And a block that

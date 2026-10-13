@@ -4173,7 +4173,8 @@ def colossus_stage(stage=None):
 # - The covered stand on the west: a lean-to canopy of spruce slabs over the west end's five tiers, on four spruce
 #   columns standing on the barrier, the back wall carried up to meet it, lanterns under it.
 # - The scoreboard wall on the east: a board 11 wide over the east back wall, black terracotta in a stone frame with
-#   the score in white and a red header, a stone brick cornice, on two buttresses topped with banners.
+#   the score in white and a red header on both faces (the stands' and the road's), a stone brick cornice, between two
+#   buttresses topped with banners.
 # - The gateway on the north: a tunnel five wide through the north stand to the field (its ceiling stepping down under
 #   the tiers, open over the front two); over its mouth two piers rising to 22 carry a lintel banded red and white with
 #   an arch under it, standing banners on the piers and banners hung inside.
@@ -4695,18 +4696,21 @@ S_DIGITS = {"2": ["###", "..#", "###", "#..", "###"], "1": [".#.", "##.", ".#.",
 
 
 def s_scoreboard(b):
-    """The scoreboard over the east wall, facing the field: a stone frame, a red header, the score 2 - 1 (the board
-    faces west, so the stands read it north to south), a cornice of stone brick slabs; two buttresses behind it."""
+    """The scoreboard over the east wall, two-faced: a stone frame, a red header and the score 2 - 1 on each face, a
+    cornice of stone brick slabs; two buttresses at its ends. The west face (x) is read from the stands, north to south;
+    the east face (x + 1) has the score drawn mirrored, so it reads 2 - 1 too from outside the bowl (B141: one face alone
+    read "1 - S" from behind)."""
     x, z0, z1 = S_SCORE
-    for z in range(z0, z1 + 1):
-        for y in range(12, 20):
-            if z in (z0, z1) or y in (12, 19):
-                b.set(x, y, z, "smooth_stone" if y == 12 else "stone_bricks")
-            elif y == 18:
-                b.set(x, y, z, "red_terracotta")
-            else:
-                b.set(x, y, z, "white_terracotta" if s_score(z, y) else "black_terracotta")
-        slab(b, x, 20, z, STONE_BRICK)
+    for face, score in ((x, s_score), (x + 1, lambda z, y: s_score(z0 + z1 - z, y))):
+        for z in range(z0, z1 + 1):
+            for y in range(12, 20):
+                if z in (z0, z1) or y in (12, 19):
+                    b.set(face, y, z, "smooth_stone" if y == 12 else "stone_bricks")
+                elif y == 18:
+                    b.set(face, y, z, "red_terracotta")
+                else:
+                    b.set(face, y, z, "white_terracotta" if score(z, y) else "black_terracotta")
+            slab(b, face, 20, z, STONE_BRICK)
     for z in (z0 - 1, z1 + 1):
         for y in range(0, 20):
             b.set(x + 1, y, z, "smooth_stone" if y in (0, 19) else "stone_bricks")

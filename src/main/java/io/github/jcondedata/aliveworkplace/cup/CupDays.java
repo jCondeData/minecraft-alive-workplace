@@ -33,8 +33,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -593,7 +591,7 @@ public final class CupDays {
 		for (ServerPlayer player : level.players()) {
 			if (player.position().distanceToSqr(ring) <= CupBouts.AT_THE_ARENA * CupBouts.AT_THE_ARENA) {
 				Chat.chat(player, line);
-				player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, (int) left, 0, true, true));
+				player.addEffect(io.github.jcondedata.aliveworkplace.hall.Festivals.hero((int) left, 0));
 			}
 		}
 		// the festival's mood for everyone who came

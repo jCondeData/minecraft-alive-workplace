@@ -179,6 +179,22 @@ public class LibraryPowerGameTests implements net.fabricmc.fabric.api.gametest.v
 			String scholarship = lore(menu.icon(slot(Research.Topic.SCHOLARSHIP)));
 			helper.assertTrue(!scholarship.contains("Needs the Great Library") && scholarship.contains("24") && scholarship.contains("Click"), "Scholarship with it: " + scholarship);
 			translated(helper, scholarship);
+			// B141: the Scholarship button is a lectern, but only a picture: no "A villager's workstation" at the end of it
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.work.Stations.tooltip(menu.icon(slot(Research.Topic.SCHOLARSHIP)), false).isEmpty()
+				&& io.github.jcondedata.aliveworkplace.work.Stations.tooltip(menu.icon(slot(Research.Topic.SCHOLARSHIP)), true).isEmpty(),
+				"the Scholarship button ends in a workstation's lines: " + io.github.jcondedata.aliveworkplace.work.Stations.tooltip(menu.icon(slot(Research.Topic.SCHOLARSHIP)), false));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.work.Stations.tooltip(new ItemStack(Items.LECTERN), false).size() == 1,
+				"a lectern of one's own lost its \"hold Shift\" line");
+			// B141: a button's tooltip opens under its row (the Scholarship tooltip covered the second-tier row): its frame's top
+			// below the bottom of every slot in the Great Library's row, and no further than the next row's middle
+			int scholarTop = menu.getSlot(slot(Research.Topic.SCHOLARSHIP)).y;
+			int frame = io.github.jcondedata.aliveworkplace.mc.Tooltips.frameTop(io.github.jcondedata.aliveworkplace.mc.Tooltips.belowSlot(scholarTop));
+			for (int s : ResearchScreen.LIBRARY_SLOTS) {
+				helper.assertTrue(menu.getSlot(s).y == scholarTop, "the Great Library's row isn't one row: slot " + s + " at " + menu.getSlot(s).y);
+				helper.assertTrue(frame > menu.getSlot(s).y + 16, "the Scholarship tooltip's top (" + frame + ") covers slot " + s + " (" + menu.getSlot(s).y + " to "
+					+ (menu.getSlot(s).y + 16) + ")");
+			}
+			helper.assertTrue(frame <= scholarTop + 18 + 8, "the tooltip opens far from its button: " + frame + " for a row at " + scholarTop);
 			menu.press(slot(Research.Topic.SWIFT_HANDS), player);
 			helper.assertTrue(v.entity().research().currentTopic() == null, "Swift Hands IV before Swift Hands III");
 			helper.assertTrue(lore(menu.icon(slot(Research.Topic.SWIFT_HANDS))).contains("First:"), "Swift Hands IV doesn't say it needs III");

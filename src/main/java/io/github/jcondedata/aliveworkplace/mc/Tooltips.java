@@ -22,6 +22,29 @@ public final class Tooltips {
 		return stack;
 	}
 
+	/** Whether {@code stack} is a menu button's picture, made by {@link #nameAndLoreOnly}: its tooltip is only its name and lore. */
+	public static boolean isPicture(ItemStack stack) {
+		return stack.has(DataComponents.HIDE_ADDITIONAL_TOOLTIP);
+	}
+
+	/** The widest a menu button's tooltip line is drawn, in GUI pixels: longer ones wrap (a chest screen is 176 wide). */
+	public static final int BUTTON_WIDTH = 200;
+
+	/**
+	 * The mouse height to hand the game's tooltip placer for a menu button whose slot's top is at {@code slotTop} (screen
+	 * GUI pixels), so its tooltip opens under the button's row instead of over it (B141: the Great Library's Scholarship
+	 * tooltip covered the row of topics it was part of). The placer draws a tooltip 12 above the mouse, its frame 4 above
+	 * that; a slot is 16 high and its frame 1 more.
+	 */
+	public static int belowSlot(int slotTop) {
+		return slotTop + 16 + 1 + 1 + 4 + 12;
+	}
+
+	/** The top of the frame the game draws round a tooltip placed for mouse height {@code mouseY} (when it fits on screen). */
+	public static int frameTop(int mouseY) {
+		return mouseY - 12 - 4;
+	}
+
 	private Tooltips() {
 	}
 }

@@ -5948,7 +5948,7 @@ final class JobScenes {
 					Showcase.check(lines.size() == 3 && lines.get(0).full() && !lines.get(1).full() && lines.get(1).good().found() && !lines.get(2).full(),
 						"the stone's lines: the sherd in, the template searched for, the book short: " + lines);
 					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
-					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone).add(0, -3.5, 0)); // the stone and the Pathfinder's line above the chat (B141)
 				}, 80),
 				new Step("02_wonder_finds_brought", -1, 0, (level, player) -> {
 					var manager = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
@@ -5958,7 +5958,7 @@ final class JobScenes {
 					var now = manager.in(STATION).get(0);
 					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
 					Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, now).get(1).brought(), "the Pathfinder brought the template");
-					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone).add(0, -3.5, 0)); // the stone and the Pathfinder's line above the chat (B141)
 				}, 80)),
 			(level, player) -> {
 				var sites = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);

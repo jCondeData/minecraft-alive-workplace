@@ -4281,7 +4281,7 @@ Legends.
   II 64 books (Librarian), 64 black dye (Dyer), 16 lanterns (Tinkerer); III 8 explorer's maps (Cartographer), 32 lapis
   lazuli (Sifter), 32 copper ingots (Armorer); IV 64 nether quartz (Netherworker), 32 cookies (Chef), 16 bookshelves
   (Librarian). Done when: 35.9's four design checks pass for it, with the rotunda's inside in its renders.
-- [x] **35.14** (review: pending 2026-10-13) **The Great Library: its powers and time-lapse.** While it stands, the research tree
+- [x] **35.14** (approved 2026-10-13) **The Great Library: its powers and time-lapse.** While it stands, the research tree
   (`research/Research`) opens a second tier, shown on the scholar's screen in a row of its own ("needs the Great
   Library" until then). Each level costs 24 paper, 6 books and 8 emeralds times its level, and twice the points of the
   first tier:

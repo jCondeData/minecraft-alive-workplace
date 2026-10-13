@@ -4406,7 +4406,7 @@ Legends.
   Ultra Balls (Ball Smith), 32 pumpkin pies (Chef). Done when: 35.9's four design checks pass for it (the compat
   GameTests for the parts with Cobblemon's blocks).
   - [x] **35.23a** (review: pending 2026-10-13) Change from the owner (2026-10-13): make the Stadium a little bigger with more decoration, and give it interiors to walk through like a real football stadium
-- [ ] **35.24** (blocked: needs 35.4-35.8, see Notes) **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
+- [ ] **35.24** **The Stadium: its powers and time-lapse (Cobblemon).** While it stands:
   - **Stadium Days**, every second day in the afternoon: two to four visiting trainers (from the villages of its realm
     or its caravan partners; travelling trainers from Journeyman to Master when those have none) stand in the trainer
     boxes until dusk. Players challenge them as they do the village's own (`trainer/Trainers`: CobbleDollars, once a

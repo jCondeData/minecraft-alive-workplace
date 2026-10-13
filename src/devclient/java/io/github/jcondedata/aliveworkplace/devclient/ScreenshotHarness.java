@@ -126,6 +126,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_cathedral"), "wonder_great_cathedral", WonderTimelapse.Ending.WEDDING);
 	/** SCENE=wonder_colossus (ROADMAP 35.22): the Colossus's time-lapse with its scaffolding, ending at night with the lantern lit over the road. */
 	private final WonderTimelapse wonderColossus = WonderColossusScene.create();
+	/** SCENE=wonder_great_wall (ROADMAP 35.16): the Great Wall's time-lapse, ending at midnight with a raid gathering on the open side while its sentries watch. */
+	private final WonderTimelapse wonderGreatWall = WonderGreatWallScene.create();
 	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
@@ -255,6 +257,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("wonder_colossus".equals(System.getProperty("aliveworkplace.scene"))) {
 			wonderColossus.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("wonder_great_wall".equals(System.getProperty("aliveworkplace.scene"))) {
+			wonderGreatWall.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {

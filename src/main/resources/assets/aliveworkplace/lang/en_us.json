@@ -6474,6 +6474,8 @@
   "wonder.aliveworkplace.power.research_tier": "A second tier of research",
   "wonder.aliveworkplace.power.raid_barrier": "No raid gathers behind it",
   "wonder.aliveworkplace.power.sentries": "Iron golem sentries keep its walk",
+  "chronicle.aliveworkplace.great_wall.sentries": "%s iron golem sentries took up their posts on the %s",
+  "chronicle.aliveworkplace.great_wall.sentry_replaced": "%s made a new sentry for the %s from four iron blocks and a pumpkin",
   "wonder.aliveworkplace.power.sky_chart": "The land charted for a thousand blocks around",
   "wonder.aliveworkplace.power.forecast": "The coming days foretold",
   "wonder.aliveworkplace.power.harvest": "Farmers and orchard keepers across the realm harvest more",

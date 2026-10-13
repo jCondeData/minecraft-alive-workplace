@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.22, 35.23, 35.23a
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18a, 35.19, 35.21, 35.22, 35.23, 35.23a
 
 ## What a player sees
 
@@ -362,8 +362,31 @@ Rib Armor Trim Template (the Seer, 14 days); made: 2 Vintage Wine (Vintner); III
 14 days), a Netherite Upgrade Template (the Beastmaster, 14 days), a Vex Armor Trim Template (the Merchant Prince, 22
 days); made: 2 Gold Circlets (Jeweller); IV a Heavy Core (the Pathfinder, 32 days), a Nether Star (the Founder, 36
 days), a Netherite Ingot (the Old Sage, 14 days); made: 2 Noble Robes (Tailor). It needs a Town, a finished Gatehouse
-and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are off). Its powers, the raid barrier and
-the sentries, come with 35.16.
+and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are off).
+
+**The Great Wall's powers** (35.16), while it is finished and stands (`wonderStanding`):
+
+- **No raid gathers behind it** (`raid_barrier`, `margin_degrees` 10). Seen from the village's hall the Wall covers an
+  arc of the compass (from the bearings of its footprint's corners), and 10 degrees more either side. Our night raids,
+  the bandits' (who gather toward their camp) and every other culture's that gathers by the village's edge pick a
+  bearing outside it: drawn evenly over the open part of the side they come from, or the open bearing nearest it when
+  the Wall covers all of that side (a camp right behind the Wall). The raiders gather 0.6 of the village's radius out,
+  as ever. A siege's ladders never go up against it, and its Great Gate is no siege's breach: the rams only go for the
+  village's own gate builds.
+- **Sentries** (`sentries`, `count` 4, `range` 16, `posts`): four Wall Sentries, the Golem Smith's (twice a golem's
+  health, their blows throwing foes back), come with the finished Wall and stand in the towers' alcoves on the walk. A
+  sentry fights any foe within 16 blocks of the wall as a golem does, and once none is left goes back to its alcove;
+  while foes are about further out (within 80 blocks), it steps out onto the walk and watches them. Pushed or knocked
+  off the Wall it walks back up, and where there is no way up it climbs the wall's face. A sentry lost is replaced the
+  next morning (the hall's round before 2000 ticks of the day) by the village's Golem Smith, or a Tinkerer standing in,
+  from 4 iron blocks and a pumpkin (or a carved one) in the stockpile, the chests round the Foundation Stone; the
+  chronicle says "Tibbs made a new sentry for the Great Wall from four iron blocks and a pumpkin". Without the iron,
+  or nobody to make it, nobody comes.
+- **The Great Gate** shuts at nightfall and opens in the morning with the village's gates (guards or none), and stays
+  shut through a siege.
+
+Damaged (or with Wonders off) both powers are down: raids gather anywhere, the sentries are plain golems that keep
+their marks for when it's repaired, and nobody is replaced.
 
 **The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot, 31 high to its treetops,
 about 16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all
@@ -570,6 +593,19 @@ again on a level tick every 100 ticks for any sign standing blank and unwaxed; a
 middle lines on the middle signs. `Wonders.linked` takes the caravan partners both ways (`Caravans.Data.partners`),
 so a realm power reaches a village that sends caravans to the Wonder's as well as one it sends caravans to.
 
+**The Great Wall's** (35.16): `raid_barrier` (`wonder/powers/RaidBarrierPower`) takes `margin_degrees` (0 to 45,
+default 10); `wonder/GreatWallPowers` works out each site's footprint once (every stage's parts, turned with it) and
+the arc from the hall, and `guard/VillageRaids.gatheringPoint` asks it for each try's bearing (`GreatWallPowers.bearing`,
+with the raid's own random; without a Wall the very same draw as before). `threat/Ladders` refuses a ladder against
+any block in its footprint (`GreatWallPowers.shields`). `sentries` (`wonder/powers/SentriesPower`) takes `posts` (each
+[x, y, z] in the Wonder's own blueprint), `count` (at most the posts, default all) and `range` (4 to 48, default 16).
+`wonder/GreatWallSentries` raises a sentry with `GolemSmith.build` (role `sentry`), tags it `aliveworkplace_wall_sentry`
+and gives it its post (`golem_post`), so nothing new is saved; its duty is `GreatWallSentries.WatchGoal`, ranked above
+the golem's own goals (`IronGolemRolesMixin`), and the Patrol Map's `WallSentries.HoldGoal` leaves it alone. The
+"next morning" is `GreatWallSentries.morning`, in the hall's round; the first four come from
+`WonderCelebration.finished`. The Wall's sentries don't count toward the Golem Smith's own golems. `guard/Gates` shuts
+the fence gates of every finished Wonder with `raid_barrier` (`GreatWallPowers.shutGates`).
+
 ## Switches
 
 All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
@@ -605,7 +641,8 @@ saves load unchanged. 35.7b adds `searches` beside the sites
 (its line, the item, the ticks searched and whether the helper was last seen in the village). A crew member's
 job is the ordinary saved builder job (as a helper), so a crew comes back together after a restart; the columns are
 worked out again; `wonder` and `no_foundation` on a build site (written only when set, so an ordinary
-build saves exactly as before).
+build saves exactly as before). 35.16 saves nothing new: a Great Wall sentry is a Golem Smith's Wall Sentry
+(`golem_role` `sentry`) with the tag `aliveworkplace_wall_sentry` and its post as `golem_post`, all saved with the golem.
 
 ## Items, blocks, jobs, commands
 
@@ -671,19 +708,23 @@ build saves exactly as before).
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
   Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's and the Colossus's powers are in (35.10, 35.12, 35.14, 35.22), the others' come with 35.18, 35.16 and 35.20, and the
+  page behind the 2.0 switch; the Cathedral's, the Lighthouse's, the Great Library's, the Great Wall's and the Colossus's powers are in (35.10, 35.12, 35.14, 35.16, 35.22), the others' come with 35.18 and 35.20, and the
   Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
   inside of its closed dome, is skipped until scaffolding (35.6).
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
-- `mood`, `beauty`, `undertakers`, `weddings`, `travellers`, the Lighthouse's four (35.12) and `research_tier` act; the other power types are declared, their numbers kept and
+- `mood`, `beauty`, `undertakers`, `weddings`, `travellers`, the Lighthouse's four (35.12), `research_tier`, `raid_barrier` and `sentries` act; the other power types are declared, their numbers kept and
   `Wonders.power` already answering for them, until their Wonder's powers item (35.12 on) reads them.
 - A Cathedral-blessed baby is the couple's first only: later children come as anyone's (35.10). A wedding blessed before
   the Cathedral was damaged keeps its mood and baby; only new weddings stop being blessed.
 - Goods handed in come back as the plain item (35.7): a renamed flower comes back unnamed. A tag line's name ("Flowers",
   "Saplings", "Banners", "Berries") comes from the language file; a server owner's own tag shows as `#namespace:path`.
 - The stone's status is its chat text, as in 35.4: there is no separate screen.
+- A foretold raid (32.14) whose side is behind a standing Great Wall gathers on the open side nearest it, so the warning's
+  side can be off by the Wall's arc (35.16). The sentries climb a wall's face only where they bump into it on the
+  straight way to the walk beside their post; a Wall with no way up and an overhang there leaves one below until the
+  hall's next look (it keeps trying).
 
 ## Proof
 
@@ -791,3 +832,17 @@ ignored) and the finishing day, waxed and glowing, written once; a sign put back
 name; the type's numbers, defaults, refusals and its page line. Showcase scene `wonder_colossus` (group Wonders): the
 Colossus's time-lapse with a crew of ten and its scaffolding, ending at midnight seen from the road, the lantern lit
 over the arch and the plaque written.
+
+GameTests in `GreatWallPowerGameTests` (35.16): the Great Wall placed north of a hall covers about 195 degrees of its
+compass with the margin; 50 raids started with a fixed random gather outside it, none of their raiders behind the
+Wall itself, and bearings toward a camp behind it come out on the open side; the same 50 with the Wall damaged, and
+without it, gather on its side too; repaired its barrier is back, with Wonders off it isn't; its Great Gate's fence
+gates (in the gateway) shut at night and open by day with no guards; it shields its blocks from ladders and none of
+its parts is a siege's wall or gate. A test wall's sentry, a Wall Sentry with 200 health, holds its post on the walk,
+and put down at the wall's foot with no way up it climbs back to its post. A lost sentry isn't replaced the same
+evening, nor in the morning with no Golem Smith or Tinkerer; with a Tinkerer it is, from the stockpile's 4 iron blocks
+and carved pumpkin (used up) with the chronicle line; not again without the iron, nor from three blocks; from four and
+a plain pumpkin it is. Damaged: no duty, no posts, no barrier, no replacement, a sentry left below stays there; Wonders
+off the same; back on, it climbs back. A sentry saved and loaded is still one; the types' numbers and refusals. Showcase
+scene `wonder_great_wall` (group Wonders): the time-lapse, then at midnight a raid gathering on the open side while the
+four sentries watch from the walk and the Great Gate stands shut.

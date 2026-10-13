@@ -486,6 +486,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 	/** Forgets the powers' cache: a Wonder was finished, damaged, repaired, forgotten or loaded, or the files were read again. */
 	public static void forgetPowers() {
 		powerCache = null;
+		GreatWallPowers.forget();
 	}
 
 	private static Map<ResourceKey<Level>, Map<BlockPos, List<Granted>>> powerCache(MinecraftServer server) {

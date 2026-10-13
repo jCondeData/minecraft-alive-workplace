@@ -4301,7 +4301,7 @@ Legends.
   IV 16 iron blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter): the iron and the pumpkins become its
   sentries. Done when: 35.9's four design checks pass for it, with the walk at a player's eye in its renders.
   - [x] **35.15a** (review: pending 2026-10-13) Change from the owner (2026-10-13): add solid tower bases with more decoration; wonders should have lots of decoration, so give the Great Wall a bit more decoration and detail, similar to the Hanging Gardens
-- [ ] **35.16** **The Great Wall: its powers and time-lapse.** While it stands, no raid gathers behind it: our night
+- [x] **35.16** (review: pending 2026-10-13) **The Great Wall: its powers and time-lapse.** While it stands, no raid gathers behind it: our night
   raids and the bandits' (`guard/VillageRaids.gatheringPoint`, `guard/BanditCamps`) gather outside the arc the wall
   covers as seen from the hall, plus 10° either side, and (needs M32's sieges item) siege raiders can't put ladders to
   it or break the Great Gate. Its **sentries**: four iron golems watch from the walk (the Golem Smith's wall sentries,

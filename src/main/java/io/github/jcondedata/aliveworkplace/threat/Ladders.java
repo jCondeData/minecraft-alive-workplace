@@ -423,6 +423,9 @@ public final class Ladders {
 	 */
 	private static int height(ServerLevel level, ThreatData.Siege siege, BlockPos foot, Direction into) {
 		BlockPos wall = foot.relative(into);
+		if (io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.shields(level, siege.hall, wall)) {
+			return -1; // a standing Great Wall takes no ladder (35.16)
+		}
 		for (int h = 0; h <= MAX_HEIGHT; h++) {
 			BlockPos w = wall.above(h);
 			if (!blocked(level, w) && !blocked(level, w.above())) {

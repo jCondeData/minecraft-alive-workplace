@@ -744,6 +744,21 @@ When it's finished, the plaque over the arch is written in glowing letters: "Rai
 who founded (the village) on day (the day it was founded). Finished by its people on day (that day). May it stand a
 thousand years." The name is the village's Founder's, or the hall owner's while there is none.
 
+### The Great Wall
+
+![The Great Wall going up, then a night raid gathering on the open side while its sentries watch from the walk](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_wall/anim.gif)
+
+A curtain of stone 97 long and 12 high with four towers and the Great Gate, for a Town with the Golem Smith. While it
+stands, and less than a tenth of it is missing:
+
+- **No raid gathers behind it**: night raids and bandits gather outside the stretch the Wall covers as seen from the
+  hall (10 degrees more either side), and a siege can't lean ladders on it or ram its Great Gate.
+- **Four iron golem sentries** keep its walk, from alcoves in the towers. They fight anything within 16 blocks of the
+  wall and go back to their posts, and step out onto the walk to watch raiders further off. Knocked off, one climbs
+  back up. A lost sentry is replaced the next morning by the Golem Smith (or a Tinkerer) from 4 iron blocks and a
+  pumpkin in the Wonder's stockpile.
+- **The Great Gate shuts at night**, and opens in the morning.
+
 ## From village to realm
 
 *Part of 1.7, which isn't released yet: `villageEconomy` stays off until then.*

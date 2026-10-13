@@ -377,7 +377,7 @@ public final class VillageRaids {
 		if (foretold) {
 			gather = foretoldPoint(level, hall, angle);
 		} else if (culture.arrival() == Culture.Arrival.LAIR) {
-			gather = camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5)).orElse(null);
+			gather = camp.map(c -> gatheringPoint(level, hall, Math.atan2(c.pos().getZ() - hall.getZ(), c.pos().getX() - hall.getX()), 0.5, random)).orElse(null);
 		} else if (culture.arrival() == Culture.Arrival.SHORE) {
 			// From a ship they wade ashore at the village's beach nearest it (32.8), not from the land side.
 			BlockPos beach = camp.map(c -> io.github.jcondedata.aliveworkplace.threat.Ships.beach(level, hall, c.pos())).orElse(null);
@@ -399,11 +399,12 @@ public final class VillageRaids {
 			}
 		}
 		if (gather == null) {
-			gather = gatheringPoint(level, hall);
+			gather = gatheringPoint(level, hall, 0, Math.PI, random);
 		}
 		if (gather == null) {
 			return null;
 		}
+		lastGathering = gather;
 		if (!portal && (io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture) || culture.tactics().contains(io.github.jcondedata.aliveworkplace.threat.Covens.TACTIC) && !Threats.gentle())) {
 			// A siege gathers beyond the outermost finished wall on its side (32.5), and so does a coven (32.11): no raider appears inside the walls.
 			BlockPos beyond = io.github.jcondedata.aliveworkplace.threat.Sieges.outside(level, hall, gather);
@@ -581,6 +582,10 @@ public final class VillageRaids {
 		});
 	}
 
+	/** Where the last raid started gathered (the showcase's and the tests' look at it; null before any). */
+	@Nullable
+	public static volatile BlockPos lastGathering;
+
 	/** Where the raiders gather: out at the edge of the village, on open ground. */
 	@Nullable
 	static BlockPos gatheringPoint(ServerLevel level, BlockPos hall) {
@@ -595,9 +600,11 @@ public final class VillageRaids {
 	static BlockPos foretoldPoint(ServerLevel level, BlockPos hall, double toward) {
 		double nearest = VillageHalls.RADIUS * 0.6;
 		double spread = foretoldSpread(nearest);
+		java.util.List<io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.Arc> walls = io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.arcs(level, hall);
 		for (int tries = 0; tries < 8; tries++) {
 			double distance = nearest + VillageHalls.RADIUS * 0.3 * tries / 7;
-			double angle = toward + (level.random.nextDouble() * 2 - 1) * spread;
+			// never behind a standing Great Wall (35.16): the open side nearest the foretold one
+			double angle = io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.bearing(walls, toward, spread, level.random);
 			BlockPos at = groundAt(level, hall, hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance)));
 			if (at != null) {
 				return at;
@@ -619,9 +626,19 @@ public final class VillageRaids {
 	/** Where the raiders gather: out at the edge of the village, about {@code angle} from the hall (give or take {@code spread}). */
 	@Nullable
 	static BlockPos gatheringPoint(ServerLevel level, BlockPos hall, double toward, double spread) {
+		return gatheringPoint(level, hall, toward, spread, level.random);
+	}
+
+	/**
+	 * As {@link #gatheringPoint(ServerLevel, BlockPos, double, double)} with {@code random}; never behind a standing Great
+	 * Wall (35.16): each bearing is drawn outside the arcs its village's walls cover ({@code wonder/GreatWallPowers}).
+	 */
+	@Nullable
+	static BlockPos gatheringPoint(ServerLevel level, BlockPos hall, double toward, double spread, RandomSource random) {
 		double distance = VillageHalls.RADIUS * 0.6;
+		java.util.List<io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.Arc> walls = io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.arcs(level, hall);
 		for (int tries = 0; tries < 8; tries++) {
-			double angle = toward + (level.random.nextDouble() * 2 - 1) * spread;
+			double angle = io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.bearing(walls, toward, spread, random);
 			BlockPos column = hall.offset((int) (Math.cos(angle) * distance), 0, (int) (Math.sin(angle) * distance));
 			if (!level.isLoaded(column)) {
 				continue;

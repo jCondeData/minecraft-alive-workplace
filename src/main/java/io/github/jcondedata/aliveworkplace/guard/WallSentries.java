@@ -93,8 +93,8 @@ public final class WallSentries {
 
 		@Override
 		public boolean canUse() {
-			if (!(golem.level() instanceof ServerLevel) || golem.isPassenger()) {
-				return false;
+			if (!(golem.level() instanceof ServerLevel) || golem.isPassenger() || golem.getTags().contains(io.github.jcondedata.aliveworkplace.wonder.GreatWallSentries.TAG)) {
+				return false; // a Great Wall's sentry keeps its own duty (35.16)
 			}
 			BlockPos post = post(golem);
 			if (post == null) {

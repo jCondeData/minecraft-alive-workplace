@@ -130,6 +130,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final WonderTimelapse wonderColossus = WonderColossusScene.create();
 	/** SCENE=wonder_stadium (ROADMAP 35.24, with Cobblemon): the Stadium's time-lapse, then a Stadium Day with full stands and a battle with a visitor. */
 	private final WonderTimelapse wonderStadium = WonderStadiumScene.create();
+	/** SCENE=wonder_great_wall (ROADMAP 35.16): the Great Wall's time-lapse, ending at midnight with a raid gathering on the open side while its sentries watch. */
+	private final WonderTimelapse wonderGreatWall = WonderGreatWallScene.create();
 	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
@@ -267,6 +269,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("wonder_stadium".equals(System.getProperty("aliveworkplace.scene"))) {
 			wonderStadium.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("wonder_great_wall".equals(System.getProperty("aliveworkplace.scene"))) {
+			wonderGreatWall.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {

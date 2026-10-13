@@ -28,6 +28,7 @@ abstract class IronGolemRolesMixin extends AbstractGolem {
 	private void aliveworkplace$roleGoals(CallbackInfo ci) {
 		IronGolem self = (IronGolem) (Object) this;
 		this.goalSelector.addGoal(0, new WallSentries.HoldGoal(self));
+		this.goalSelector.addGoal(0, new io.github.jcondedata.aliveworkplace.wonder.GreatWallSentries.WatchGoal(self)); // the Great Wall's sentries (35.16)
 		this.goalSelector.addGoal(2, new GolemRoleGoal(self));
 	}
 

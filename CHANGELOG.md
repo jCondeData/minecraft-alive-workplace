@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Great Wall's powers** (35.16, part of Wonders, for 2.0): while it stands, no raid gathers behind it. Night
+  raids, bandits and the other raiders gather outside the stretch of the compass the Wall covers from the hall, plus
+  10 degrees either side, and a siege can't put ladders against it or ram its Great Gate. Four Wall Sentries come with
+  it and stand in the towers' alcoves. They fight anything within 16 blocks of the wall, go back to their posts after,
+  and step out onto the walk to watch raiders further off. One pushed off climbs back up. A lost one is replaced the
+  next morning by the Golem Smith (or a Tinkerer) from 4 iron blocks and a pumpkin in the stockpile. The Great Gate
+  shuts at night. A damaged Wall turns both powers off. Scene `wonder_great_wall`: the time-lapse, then a night raid
+  gathering on the open side while the sentries watch.
 - **The Great Library's powers** (35.14, part of Wonders, for 2.0): while it stands, the village's research opens a
   second tier, a row of its own on the scholar's screen ("Needs the Great Library" until then): Swift Hands IV-V,
   Scholarship (scholars 25% faster a level, research a quarter cheaper at II), Engineering (builders' bags 9 more stacks

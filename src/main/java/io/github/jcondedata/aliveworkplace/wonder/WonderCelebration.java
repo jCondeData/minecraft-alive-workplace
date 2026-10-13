@@ -66,6 +66,8 @@ public final class WonderCelebration {
 		}
 		WonderManager.get(level).setKept(site.id(), new WonderSite.Kept(100, day, false, festival));
 		ColossusPlaque.write(level, WonderManager.get(level).site(site.id()).orElse(site)); // the Colossus's plaque filled in (35.22)
+		Wonders.forgetPowers();
+		GreatWallSentries.man(level, WonderManager.get(level).site(site.id()).orElse(site)); // the Great Wall's sentries take up their posts (35.16)
 		BlockPos at = site.stone().orElse(site.hall());
 		level.playSound(null, at, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.BLOCKS, 2f, 1f);
 		level.playSound(null, site.hall(), SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2f, 1f);

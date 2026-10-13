@@ -5036,7 +5036,9 @@ WONDERS = {
         "goods": GOODS["great_wall"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "raid_barrier", "margin_degrees": 10},
-            {"type": "sentries", "count": 4, "range": 16},
+            # 35.16: a sentry in each tower's alcove (the cell on the walk's side, at the walk), west to east
+            {"type": "sentries", "count": 4, "range": 16,
+             "posts": [[t + 8, W_WALK + 1, 8] for t in W_TOWERS] + [[WW - 1 - (t + 8), W_WALK + 1, 8] for t in reversed(W_TOWERS)]},
         ],
     },
     "hanging_gardens": {

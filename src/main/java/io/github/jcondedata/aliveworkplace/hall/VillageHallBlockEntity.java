@@ -198,6 +198,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
 			io.github.jcondedata.aliveworkplace.wonder.powers.UndertakersPower.morning(server, pos); // the night's dead back by morning (35.10)
+			io.github.jcondedata.aliveworkplace.wonder.GreatWallSentries.morning(server, pos); // the Great Wall's lost sentries replaced (35.16)
 			io.github.jcondedata.aliveworkplace.people.ClassMigration.round(server, pos, hall); // classes switched on: 16 seeded a round (34.22)
 			io.github.jcondedata.aliveworkplace.people.FamilyBook.round(server, pos, hall); // family names and the Book of Families (34.21)
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it

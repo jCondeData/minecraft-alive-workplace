@@ -254,7 +254,9 @@ public final class GolemSmith {
 
 	/** The golems of the village round {@code hall} built by a Golem Smith. */
 	public static int forged(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(IronGolem.class, VillageHalls.area(hall), g -> g.isAlive() && role(g) != null).size();
+		// the Great Wall's sentries (35.16) are the Wall's, not the smith's own
+		return level.getEntitiesOfClass(IronGolem.class, VillageHalls.area(hall), g -> g.isAlive() && role(g) != null
+			&& !g.getTags().contains(io.github.jcondedata.aliveworkplace.wonder.GreatWallSentries.TAG)).size();
 	}
 
 	/** The chests round the smithing table near {@code smith}'s workstation (or round the workstation, without a table). */

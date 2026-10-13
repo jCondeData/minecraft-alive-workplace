@@ -43,10 +43,12 @@ public final class Gates {
 	public static int round(ServerLevel level, BlockPos hall, int guards) {
 		// A siege keeps them shut; so does a warned attack's day, from noon (32.14).
 		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall) || Warnings.ready(level, hall);
+		// a Great Wall's Great Gate shuts at night, guards or none (35.16)
+		int moved = io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.shutGates(level, hall, siege || shutTime(level));
 		if (guards <= 0 && !siege) {
-			return 0;
+			return moved;
 		}
-		return shut(level, hall, siege || shutTime(level));
+		return moved + shut(level, hall, siege || shutTime(level));
 	}
 
 	/** Shuts ({@code shut}) or opens the gates of the village round {@code hall} now. Returns how many gates moved. */

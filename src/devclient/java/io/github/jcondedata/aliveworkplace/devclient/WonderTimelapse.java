@@ -196,6 +196,16 @@ final class WonderTimelapse {
 		return this;
 	}
 
+	/** Called at midnight, before the night still (35.16: the Great Wall's night raid sent at the village). */
+	private java.util.function.Consumer<ServerLevel> nightfall = level -> {
+	};
+
+	/** Runs {@code at} at midnight, once the night still's view is set and a little before it is taken (35.16). */
+	WonderTimelapse nightfall(java.util.function.Consumer<ServerLevel> at) {
+		this.nightfall = at;
+		return this;
+	}
+
 	/** Runs {@code each} every second while the Wonder goes up (35.22). */
 	WonderTimelapse watching(java.util.function.Consumer<ServerLevel> each) {
 		this.watcher = each;
@@ -324,6 +334,9 @@ final class WonderTimelapse {
 				}
 				lastStage.accept(server.overworld());
 			});
+		}
+		if (showAt > 0 && night != null && tick == showAt + 270) {
+			server.execute(() -> nightfall.accept(server.overworld()));
 		}
 		if (showAt > 0 && night != null && tick == showAt + 230 + lastWait) {
 			ScreenshotHarness.shot(mc, String.format("20_%s_%s", scene, lastName));

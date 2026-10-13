@@ -122,6 +122,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	/** SCENE=wonder_great_cathedral (ROADMAP 35.10): the Cathedral's time-lapse, ending at dusk with a wedding at its altar. */
 	private final WonderTimelapse wonderCathedral = new WonderTimelapse(
 		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_cathedral"), "wonder_great_cathedral", WonderTimelapse.Ending.WEDDING);
+	/** SCENE=wonder_colossus (ROADMAP 35.22): the Colossus's time-lapse with its scaffolding, ending at night with the lantern lit over the road. */
+	private final WonderTimelapse wonderColossus = WonderColossusScene.create();
 	private final VillageHabitatScene villageHabitat = new VillageHabitatScene();
 	private final PartnersForgeScene partnersForge = new PartnersForgeScene();
 	private final PartnersAllScene partnersAll = new PartnersAllScene();
@@ -243,6 +245,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("wonder_great_cathedral".equals(System.getProperty("aliveworkplace.scene"))) {
 			wonderCathedral.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("wonder_colossus".equals(System.getProperty("aliveworkplace.scene"))) {
+			wonderColossus.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {

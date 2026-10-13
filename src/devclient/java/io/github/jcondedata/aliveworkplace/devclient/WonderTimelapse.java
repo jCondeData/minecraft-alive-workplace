@@ -64,7 +64,9 @@ import net.minecraft.world.phys.Vec3;
  * done ({@code 1N_<scene>_stage_N}). Once finished, the evening's festival: time is moved on to dusk, the server slowed
  * to its usual rate, and the Wonder's bigger fireworks are filmed ({@code 19_<scene>_fireworks}). Each check is the
  * scene's: the crew raised it, the server was told and the festival planned, its powers came on, its rockets went up.
- * Each Wonder's own scene makes one with its id ({@code new WonderTimelapse(id, "wonder_great_cathedral")}).
+ * Each Wonder's own scene makes one with its id ({@code new WonderTimelapse(id, "wonder_great_cathedral")}), and may
+ * ready the ground ({@link #ground}) and the village ({@link #village}), look on every second ({@link #watching}) and end
+ * with a still at night ({@link #night}, from its own view: {@link #nightView}).
  *
  * <p>An ending of its own replaces the fireworks: {@link Ending#WEDDING} (the Great Cathedral, 35.10) moves time on to
  * dusk, has a couple wed at the altar (blessed, the bells ringing) and films them from the nave
@@ -105,6 +107,8 @@ final class WonderTimelapse {
 	private volatile int rockets;
 	private volatile Vec3 centre = Vec3.ZERO;
 	private volatile Vec3i size = Vec3i.ZERO;
+	/** The whole Wonder's box as placed (35.22: where its scaffolding is counted). */
+	private volatile BoundingBox box;
 
 	WonderTimelapse(ResourceLocation wonder, String scene) {
 		this(wonder, scene, Ending.FIREWORKS);
@@ -133,6 +137,47 @@ final class WonderTimelapse {
 	WonderTimelapse night(java.util.function.Consumer<ServerLevel> check) {
 		this.night = check;
 		return this;
+	}
+
+	/** The village readied once its hall stands (35.22: the Colossus's village named, its founding in the chronicle). */
+	private java.util.function.BiConsumer<ServerLevel, VillageHallBlockEntity> village = (level, entity) -> {
+	};
+	/** Called every second while the Wonder goes up (35.22: its scaffolding counted). */
+	private java.util.function.Consumer<ServerLevel> watcher = level -> {
+	};
+	/** The night still's eye and what it looks at, in the Wonder's own blueprint; null: the usual view from its back corner. */
+	@org.jetbrains.annotations.Nullable
+	private double[] nightEye;
+	private double[] nightAt;
+
+	/** Readies the village once its hall stands, before the plan is drawn (35.22). */
+	WonderTimelapse village(java.util.function.BiConsumer<ServerLevel, VillageHallBlockEntity> ready) {
+		this.village = ready;
+		return this;
+	}
+
+	/** Runs {@code each} every second while the Wonder goes up (35.22). */
+	WonderTimelapse watching(java.util.function.Consumer<ServerLevel> each) {
+		this.watcher = each;
+		return this;
+	}
+
+	/** The night still from {@code eye} looking at {@code at}, both {x, y, z} in the Wonder's own blueprint (35.22: from the road). */
+	WonderTimelapse nightView(double[] eye, double[] at) {
+		this.nightEye = eye;
+		this.nightAt = at;
+		return this;
+	}
+
+	/** The whole Wonder's box as placed, once the plan is down (null before). */
+	@org.jetbrains.annotations.Nullable
+	BoundingBox box() {
+		return box;
+	}
+
+	/** The village's hall. */
+	BlockPos hall() {
+		return hall;
 	}
 
 	void tick(Minecraft mc, MinecraftServer server) {
@@ -211,8 +256,12 @@ final class WonderTimelapse {
 		if (showAt > 0 && tick == showAt + 230 && night != null) {
 			server.execute(() -> {
 				server.overworld().setDayTime((Chronicle.day(server.overworld()) - 1) * 24000L + 18000); // midnight
-				ScreenshotHarness.hoverLookingAt(player(server), centre.add(size.getX() * 0.9 + 16, size.getY() * 0.5 + 6, size.getZ() * 0.9 + 16),
-					centre.add(0, size.getY() * 0.6, 0));
+				if (nightEye != null && placement != null) { // the scene's own view, in the Wonder's blueprint (35.22)
+					ScreenshotHarness.hoverLookingAt(player(server), placed(nightEye[0], nightEye[1], nightEye[2]), placed(nightAt[0], nightAt[1], nightAt[2]));
+				} else {
+					ScreenshotHarness.hoverLookingAt(player(server), centre.add(size.getX() * 0.9 + 16, size.getY() * 0.5 + 6, size.getZ() * 0.9 + 16),
+						centre.add(0, size.getY() * 0.6, 0));
+				}
 			});
 		}
 		if (showAt > 0 && night != null && tick == showAt + 360) {
@@ -247,6 +296,7 @@ final class WonderTimelapse {
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
 		entity.setOwner(player.getUUID(), player.getName().getString());
 		entity.setRank(VillageRanks.Rank.TOWN);
+		village.accept(level, entity);
 		String[] names = {"Odo", "Pia", "Bram", "Ilse", "Tam", "Wren", "Edda", "Hob", "Mags", "Rolf"};
 		List<Villager> crew = new ArrayList<>();
 		for (int i = 0; i < CREW; i++) {
@@ -285,6 +335,7 @@ final class WonderTimelapse {
 		Optional<Blueprint> whole = BlueprintLibrary.get(level, WonderBlueprints.idOf(wonder));
 		whole.ifPresent(b -> {
 			BoundingBox box = BlueprintOutline.bounds(placement, b.size());
+			this.box = box;
 			centre = new Vec3(box.getCenter().getX() + 0.5, box.minY(), box.getCenter().getZ() + 0.5);
 			size = new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan());
 		});
@@ -310,6 +361,7 @@ final class WonderTimelapse {
 		if (now.goingUp()) {
 			level.setDayTime(MORNING); // held at mid-morning: the crew's working hours, goods dedicated by day
 			mostCrew = Math.max(mostCrew, WonderCrews.crew(level, now).size());
+			watcher.accept(level);
 		}
 		stage = now.done() ? (Wonders.loaded().containsKey(wonder) ? Wonders.loaded().get(wonder).stages().size() : now.stage()) : now.stage();
 		done = now.done();

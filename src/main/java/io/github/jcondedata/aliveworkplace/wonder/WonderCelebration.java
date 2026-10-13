@@ -65,6 +65,7 @@ public final class WonderCelebration {
 			festival = entity.festivalDay() == evening ? evening : entity.festivalDay();
 		}
 		WonderManager.get(level).setKept(site.id(), new WonderSite.Kept(100, day, false, festival));
+		ColossusPlaque.write(level, WonderManager.get(level).site(site.id()).orElse(site)); // the Colossus's plaque filled in (35.22)
 		BlockPos at = site.stone().orElse(site.hall());
 		level.playSound(null, at, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.BLOCKS, 2f, 1f);
 		level.playSound(null, site.hall(), SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2f, 1f);

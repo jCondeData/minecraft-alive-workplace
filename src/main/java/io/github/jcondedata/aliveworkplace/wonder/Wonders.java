@@ -135,6 +135,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 		wonders = out;
 		forgetPowers(); // 35.8: the powers as the new files give them
 		WonderBlueprints.forget(); // the whole blueprints are merged again from the new files (35.3)
+		ColossusPlaque.forget(); // its plaque's signs found in the drawing again (35.22)
 		AliveWorkplace.LOG.info("Wonders: {}", wonders.keySet());
 	}
 
@@ -514,7 +515,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 
 	/**
 	 * The villages linked to the one round {@code hall}, which its realm powers reach and whose chronicles record its
-	 * Wonder (35.8): the other villages of its realm (M33), or with realms off (or no realm), its caravan partners.
+	 * Wonder (35.8): the other villages of its realm (M33), or with realms off (or no realm), its caravan partners (a route either way, 35.22).
 	 */
 	public static List<GlobalPos> linked(ServerLevel level, BlockPos hall) {
 		List<GlobalPos> out = new ArrayList<>();
@@ -529,7 +530,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 			}
 			return out;
 		}
-		for (BlockPos partner : io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level).routesFrom(hall)) {
+		for (BlockPos partner : io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level).partners(hall)) { // a route either way (35.22)
 			GlobalPos at = GlobalPos.of(level.dimension(), partner);
 			if (!at.equals(self) && !out.contains(at)) {
 				out.add(at);

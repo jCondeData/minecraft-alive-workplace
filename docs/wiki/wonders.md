@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23, 35.23a
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.22, 35.23, 35.23a
 
 ## What a player sees
 
@@ -376,7 +376,7 @@ three pleats, and weathers green over the weeks. The plinth is 13 high in three 
 cracked low down) on a skirt of deepslate brick: polished andesite pilasters and a cornice, a terrace with a
 balustrade and nine braziers round it, and a smooth stone pedestal. The road passes front to back through an arch 5
 wide and 6 high, with lantern niches down the passage and lamp posts at both mouths; over the front arch is the
-Founder's plaque, a row of five dark oak signs on a dark oak panel (35.22 writes them). The arm and the head need
+Founder's plaque, a row of seven dark oak signs on a dark oak panel (35.22 writes them). The arm and the head need
 scaffolding (35.6). Its stages: I *The Plinth and the Road Arch*, II *The Robes*, III *The Arms and the Cloak*, IV
 *The Head and the Lantern*. Its goods (found, with the rare worker who finds each and in how many days; then what a
 workshop makes): I a Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7
@@ -385,8 +385,27 @@ Netherite Upgrade Template (a Master Netherworker, 14 days); made: 2 Gold Circle
 Template (a Master Fisherman, 22 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull
 (the Old Sage, 14 days); made: 2 Noble Robes (Tailor); IV a Heavy Core (the Golem Smith, 32 days), a Nether Star (the
 Beastmaster, 36 days), an Elytra (the Pathfinder, 45 days); made: 2 Vintage Wine (Vintner). It needs a City and the
-Founder (or City rank while Legends are off). Its powers, the realm's mood, the travelers and its beauty, come with
-35.22.
+Founder (or City rank while Legends are off).
+
+**The Colossus's powers** (35.22), while it is finished and stands (`wonderStanding`):
+
+- **Mood** (`mood`, `scope: "realm"`, `amount` 8, `home_amount` 12): every grown villager of its own village is 12
+  happier ("proud of the Colossus" among their reasons) and every villager of the realm's other villages 8 ("the
+  realm's Colossus"). With realms off, or a village in no realm, "the realm" is the village's caravan partners: a
+  village with a trade route either way (or a sister route) with it.
+- **Travelers** (`travellers`, `factor` 2, `expert_factor` 2): its village's inns take twice as many travelers a morning
+  (two instead of one; four under Open Gates) and have room for twice as many at once (four instead of two; eight
+  under Open Gates), so they really come twice as often; and each is twice as likely to be an Expert (a Journeyman
+  becomes one with chance 0.05 a level of the innkeeper, now 0.10). The Old Sage's Old Tongues still makes them at
+  least Journeymen.
+- **Beauty** (`beauty`): 8 to the village's beauty.
+- **The plaque**: once it is finished, its seven signs over the front arch are written in glowing yellow letters,
+  waxed so nobody edits them, read left to right from the road: "Raised in / honor of", "the Founder / *Aldric*",
+  "who founded", "*Thornholm*", "on day 3", "Finished by / its people / on day 41", "May it stand / a thousand /
+  years". The name is the village's settled Founder (M29); without one, the hall owner's; with neither it is left
+  out. The day is the chronicle's first "founded" line (a colony the village sent out doesn't count); a chronicle that
+  has forgotten it reads "long ago". A sign broken and put back is written again on the next round (every 5 seconds),
+  with the names as they are then.
 
 **The Stadium** (35.23, only with Cobblemon; made bigger, with more dressing and walk-through interiors, by 35.23a) is
 drawn: an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners, about 12,100 blocks), round a grass battle
@@ -517,6 +536,16 @@ anything is needed; `VillageGrowth.blessedBirth` takes a Seer-blessed couple fir
 hall's round calls `UndertakersPower.morning` after the couples; `Festivals.feast` and `VillageRaids` ring
 `WonderBells`, which finds a Wonder's bells once in its blueprint.
 
+**The Colossus's** (35.22): `travellers` (`wonder/powers/TravellersPower`) takes `factor` and `expert_factor` (each 1
+to 8, default 1); `Innkeepers.maxGuests` and `Innkeepers.arrivalsPerMorning` multiply the usual (or Open Gates') numbers by
+`factor`, rounded, and `Innkeepers.newcomerLevel` multiplies the Expert chance by `expert_factor` (at most certain). A
+server owner's Wonder can use it. `mood` and `beauty` are the generic types (35.8). The plaque is
+`wonder/ColossusPlaque`, for the Colossus only: it finds the row of wall signs in the Wonder's blueprint once
+(the facing and height of the first; left to right for a reader), writes them from `WonderCelebration.finished` and
+again on a level tick every 100 ticks for any sign standing blank and unwaxed; a row of other than seven puts the
+middle lines on the middle signs. `Wonders.linked` takes the caravan partners both ways (`Caravans.Data.partners`),
+so a realm power reaches a village that sends caravans to the Wonder's as well as one it sends caravans to.
+
 ## Switches
 
 All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
@@ -618,13 +647,13 @@ build saves exactly as before).
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
   Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; the Cathedral's powers are in (35.10), the others' come with 35.12, 35.14, 35.18, 35.16, 35.20 and 35.22, and the
+  page behind the 2.0 switch; the Cathedral's, the Lighthouse's and the Colossus's powers are in (35.10, 35.12, 35.22), the others' come with 35.14, 35.18, 35.16 and 35.20, and the
   Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
   inside of its closed dome, is skipped until scaffolding (35.6).
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
-- `mood`, `beauty`, `undertakers` and `weddings` act; the other power types are declared, their numbers kept and
+- `mood`, `beauty`, `undertakers`, `weddings` and `travellers` act, and the Lighthouse's four (35.12); the other power types are declared, their numbers kept and
   `Wonders.power` already answering for them, until their Wonder's powers item (35.12 on) reads them.
 - A Cathedral-blessed baby is the couple's first only: later children come as anyone's (35.10). A wedding blessed before
   the Cathedral was damaged keeps its mood and baby; only new weddings stop being blessed.
@@ -716,3 +745,14 @@ child Gifted and another not); damaged, no free revival, no village-wide search,
 and the 8 beauty gone, repaired all back; the file's numbers and refusals, the page's lines, the altar before the gold
 in its drawing (and turned with it), and the belfries' bells. Showcase scene `wonder_great_cathedral` (group Wonders):
 the Cathedral's time-lapse with a crew of ten, ending at dusk with a blessed wedding at its altar before the guests.
+
+GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
+village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;
+damaged all back as before, repaired on again, Wonders off off; the inn one traveler a morning and two at most
+without it, two arriving the same morning (beds free) and four fitting with it, full at two when damaged, Wonders off
+the usual; the same dice making twice as many Experts in 4,000 rolls (every usual Expert one too); the plaque's seven
+signs written once finished and not before, reading the hall owner, Thornholm, "on day 3" (a colony's founding line
+ignored) and the finishing day, waxed and glowing, written once; a sign put back written with the settled Founder's
+name; the type's numbers, defaults, refusals and its page line. Showcase scene `wonder_colossus` (group Wonders): the
+Colossus's time-lapse with a crew of ten and its scaffolding, ending at midnight seen from the road, the lantern lit
+over the arch and the plaque written.

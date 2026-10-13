@@ -4388,7 +4388,7 @@ Legends.
     with beds free; the plaque reads the village's name and founding day; a damaged Colossus turns them off;
   - scene `wonder_colossus`: the time-lapse with the scaffolding going up and coming down, ending at night with the
     lantern lit over the road; its GIF and powers are in the README.
-- [x] **35.23** (review: pending 2026-10-12) **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
+- [x] **35.23** (approved 2026-10-13) **The Stadium: its design (Cobblemon).** An oval arena about 47 × 37 and 16 high, drawn like 35.9: a
   battle field 31 × 21 of grass with white lines and a centre circle (no logos), two trainer boxes with a Training
   Post each, a professor's box at the side, stands of five tiers along the sides and three at the ends with seats in
   red and white (the village's own colours once M30's Village Banner exists), a covered stand on the west under a

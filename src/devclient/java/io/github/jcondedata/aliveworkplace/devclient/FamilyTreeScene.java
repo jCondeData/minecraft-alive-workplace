@@ -75,7 +75,7 @@ final class FamilyTreeScene {
 		}
 		if (tick == 60) {
 			server.execute(() -> {
-				VillageHallScreen.open(player(server), HALL);
+				VillageHallScreen.openRemote(player(server), HALL); // the camera stands 9.5 blocks off (open needs 8): as from a Village Ledger (B128)
 				if (player(server).containerMenu instanceof ChoiceMenu m) {
 					for (int s = VillageHallScreen.FIRST_PERSON; s < ChoiceMenu.SIZE; s++) {
 						if (m.icon(s).getHoverName().getString().startsWith("Dara")) {

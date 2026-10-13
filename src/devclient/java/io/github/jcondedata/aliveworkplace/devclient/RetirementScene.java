@@ -105,7 +105,7 @@ final class RetirementScene {
 				Showcase.check(chronicle.stream().anyMatch(l -> l.startsWith("Bram retired from the Farmer trade"))
 					&& chronicle.stream().anyMatch(l -> l.startsWith("Tom took over the Farmer trade from Bram")), "the chronicle has the retirement and the hand-over");
 				Showcase.check(Retirement.teacher(ida) != null, "Bram mentors Ida, a Novice farmer");
-				VillageHallScreen.open(player(server), HALL);
+				VillageHallScreen.openRemote(player(server), HALL); // the camera stands 9.5 blocks off (open needs 8): as from a Village Ledger (B128)
 			});
 		}
 		if (tick == 140) {

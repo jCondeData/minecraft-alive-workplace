@@ -189,6 +189,11 @@ final class RealmResearchScene {
 				RealmResearch.get("common_coin").map(t -> t.points() * 2 / 5).orElse(0), true);
 			data.putStudy(data.study(realm.id()).withResearch(realmState));
 		}
+		// the halls' records now, not in vanilla's next task: ResearchScreen.open finds the scholar's hall by them, in
+		// this same task, and found none, so the capital's screen never opened (B128)
+		ScreenshotHarness.fileRecords(level, hall, 2);
+		ScreenshotHarness.fileRecords(level, ashford, 2);
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		scholar = scholarAt(level, hall.offset(-2, 0, 2));
 		ashfordScholar = scholarAt(level, ashford.offset(-2, 0, 2));
 	}

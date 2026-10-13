@@ -14,9 +14,9 @@ import java.util.function.Function;
  * place. An unknown type, or numbers its reader refuses, fail the file (logged with its path and the reason).
  */
 public final class WonderPowers {
-	/** The types our Wonders' powers items (35.12 to 35.24) fill in, declared until then (35.10's are registered above). */
+	/** The types our Wonders' powers items (35.12 to 35.24) fill in, declared until then (35.10's and 35.22's are registered above). */
 	public static final List<String> DECLARED = List.of("caravan_range", "caravan_speed", "ferry_fares",
-		"early_warning", "research_tier", "raid_barrier", "sentries", "sky_chart", "forecast", "harvest", "births", "travellers",
+		"early_warning", "research_tier", "raid_barrier", "sentries", "sky_chart", "forecast", "harvest", "births",
 		"stadium_days", "tournament_host");
 
 	private static final Map<String, Function<JsonObject, WonderPower>> KINDS = new LinkedHashMap<>();
@@ -26,6 +26,7 @@ public final class WonderPowers {
 		register(BeautyPower.TYPE, BeautyPower::read);
 		register(UndertakersPower.TYPE, UndertakersPower::read); // the Great Cathedral's (35.10)
 		register(WeddingsPower.TYPE, WeddingsPower::read);
+		register(TravellersPower.TYPE, TravellersPower::read); // the Colossus's (35.22)
 		for (String type : DECLARED) {
 			register(type, json -> DeclaredPower.read(type, json));
 		}

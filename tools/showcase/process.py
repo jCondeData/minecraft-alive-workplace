@@ -43,6 +43,19 @@ FOREIGN = re.compile(r"cobblemon|cobbledollars|mega_?showdown|showdown|accessori
 CRASH = re.compile(r"---- Minecraft Crash Report ----|#@!@# Game crashed|Exception in server tick loop")
 
 
+def grow(mask, n):
+    """The mask grown by n pixels (up, down, left and right)."""
+    out = mask.copy()
+    for _ in range(n):
+        grown = out.copy()
+        grown[1:, :] |= out[:-1, :]
+        grown[:-1, :] |= out[1:, :]
+        grown[:, 1:] |= out[:, :-1]
+        grown[:, :-1] |= out[:, 1:]
+        out = grown
+    return out
+
+
 def magenta_pixels(im):
     """Pixels of the missing texture: solid patches of its magenta (#F800F8, however lit) with black squares beside them.
 
@@ -60,19 +73,15 @@ def magenta_pixels(im):
             solid[1:-1, 1:-1] &= raw[1 + dy:raw.shape[0] - 1 + dy, 1 + dx:raw.shape[1] - 1 + dx]
     solid[0, :] = solid[-1, :] = False
     solid[:, 0] = solid[:, -1] = False
+    # The checkerboard's black is black. A tooltip's background (#100010) is a dark purple: dark purple text on it (a
+    # reform's line, solid at GUI scale 4) has no black squares beside it, so only patches near true black count.
+    dark = (np.maximum(np.maximum(r, g), b) < 30) & (np.minimum(r, b) - g < 8)
+    solid &= grow(dark, 6)
     count = int(np.count_nonzero(solid))
     if count == 0:
         return 0, None
-    near = solid.copy()
-    for _ in range(6):  # grow the patches by 6 pixels
-        grown = near.copy()
-        grown[1:, :] |= near[:-1, :]
-        grown[:-1, :] |= near[1:, :]
-        grown[:, 1:] |= near[:, :-1]
-        grown[:, :-1] |= near[:, 1:]
-        near = grown
-    ring = near & ~raw
-    black = (np.maximum(np.maximum(r, g), b) < 30) & ring
+    ring = grow(solid, 6) & ~raw  # just around the patches
+    black = dark & ring
     if not ring.any() or np.count_nonzero(black) * 100 < np.count_nonzero(ring) * 15:
         return 0, None
     ys, xs = np.nonzero(solid)

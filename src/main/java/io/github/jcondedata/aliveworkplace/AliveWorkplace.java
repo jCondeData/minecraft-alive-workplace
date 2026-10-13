@@ -109,6 +109,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.wonder.WondersPage.init(); // the hall's Wonders page (35.3)
 		io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.init(); // the Lighthouse's powers (35.12)
 		io.github.jcondedata.aliveworkplace.wonder.LibraryPowers.init(); // the Great Library's second research tier (35.14)
+		io.github.jcondedata.aliveworkplace.wonder.ColossusPlaque.init(); // the Colossus's plaque, filled in when finished (35.22)
 		io.github.jcondedata.aliveworkplace.threat.Threats.init(); // raider cultures as data (32.2)
 		io.github.jcondedata.aliveworkplace.threat.Disasters.init(); // disasters as data (32.15)
 		io.github.jcondedata.aliveworkplace.people.RemedyItem.init(); // the Physician's Remedy given to a villager (32.18)

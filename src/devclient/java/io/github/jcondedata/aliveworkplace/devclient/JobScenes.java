@@ -3409,6 +3409,7 @@ final class JobScenes {
 				level.setBlockAndUpdate(counter, ModBlocks.INN_COUNTER.defaultBlockState());
 				Villager keeper = EntityType.VILLAGER.spawn(level, new BlockPos(-3, -60, -1), MobSpawnType.COMMAND);
 				keeper.setNoAi(true);
+				ScreenshotHarness.fileRecords(level, counter, 1); // the counter's record now, not in vanilla's next task, so she takes the job
 				Jobs.employ(level, keeper, counter, ModVillagers.INN_COUNTER_POI, ModVillagers.INNKEEPER);
 				scholar = keeper;
 				for (int x : new int[] {-6, -5}) {
@@ -3458,6 +3459,7 @@ final class JobScenes {
 					level.setBlockAndUpdate(new BlockPos(5, -60, -5), Blocks.BLUE_BED.defaultBlockState()
 						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
 						.setValue(BlockStateProperties.BED_PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
+					ScreenshotHarness.fileRecords(level, new BlockPos(5, -60, -5), 1); // the new bed's record now, so the round finds the home free
 					io.github.jcondedata.aliveworkplace.legend.LegendGuests.tend(level, STATION);
 					var data = io.github.jcondedata.aliveworkplace.registry.ModAttachments.LEGEND.get(subject);
 					Showcase.check(data != null && data.settled(), "she settled once the home was ready");
@@ -5203,6 +5205,7 @@ final class JobScenes {
 				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.HAMLET);
 				hall.setEdicts(List.of());
 				hall.setReforms(List.of());
+				ScreenshotHarness.fileRecords(level, STATION, 1); // the hall's record now, not in vanilla's next task, so the innkeeper finds her village
 				for (int x = -4; x <= 4; x += 2) {
 					level.setBlockAndUpdate(new BlockPos(x, -60, -5), Blocks.RED_BED.defaultBlockState()
 						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
@@ -5220,6 +5223,7 @@ final class JobScenes {
 			},
 			List.of(new Step("01_open_gates_inn", -1, 0, (level, player) -> {
 					player.closeContainer();
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget(); // a village looked up before the hall's record was filed is kept 200 ticks
 					BlockPos counter = new BlockPos(-3, -60, -2);
 					long morning = (level.getDayTime() / 24000 + 1) * 24000 + 1000;
 					// Two mornings of the inn's rounds: two travellers each.
@@ -5356,8 +5360,9 @@ final class JobScenes {
 				VillagerProfession[] jobs = {VillagerProfession.FARMER, VillagerProfession.LIBRARIAN, VillagerProfession.FLETCHER};
 				for (int i = 0; i < 3; i++) {
 					int x = -4 + 4 * i;
-					// A cabin: spruce walls round a bed, a slab roof, a lantern by the open front.
-					for (int y = -60; y <= -59; y++) {
+					// A cabin: spruce walls round a bed, a slab roof, a lantern by the open front. Three blocks high inside, so a
+					// villager standing on the bed's foot (a block up the path to its head) has room under the roof.
+					for (int y = -60; y <= -58; y++) {
 						for (int z = -7; z <= -4; z++) {
 							level.setBlockAndUpdate(new BlockPos(x - 1, y, z), Blocks.SPRUCE_PLANKS.defaultBlockState());
 							level.setBlockAndUpdate(new BlockPos(x + 1, y, z), Blocks.SPRUCE_PLANKS.defaultBlockState());
@@ -5366,10 +5371,10 @@ final class JobScenes {
 					}
 					for (int dx = -1; dx <= 1; dx++) {
 						for (int z = -7; z <= -4; z++) {
-							level.setBlockAndUpdate(new BlockPos(x + dx, -58, z), Blocks.SPRUCE_SLAB.defaultBlockState());
+							level.setBlockAndUpdate(new BlockPos(x + dx, -57, z), Blocks.SPRUCE_SLAB.defaultBlockState());
 						}
 					}
-					level.setBlockAndUpdate(new BlockPos(x + 1, -58, -3), Blocks.LANTERN.defaultBlockState());
+					level.setBlockAndUpdate(new BlockPos(x + 1, -57, -3), Blocks.LANTERN.defaultBlockState());
 					BlockPos head = new BlockPos(x, -60, -6);
 					level.setBlockAndUpdate(head.south(), Blocks.RED_BED.defaultBlockState()
 						.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
@@ -5381,6 +5386,7 @@ final class JobScenes {
 					v.setVillagerData(v.getVillagerData().setProfession(jobs[i]).setLevel(2));
 					v.setVillagerXp(10);
 					v.refreshBrain(level);
+					ScreenshotHarness.fileRecords(level, head, 1); // the bed's record now, not in vanilla's next task, so it can be claimed
 					level.getPoiManager().take(t -> t.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), (t, p) -> p.equals(head), head, 4);
 					v.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME, net.minecraft.core.GlobalPos.of(level.dimension(), head));
 					curfewSleepers.add(v);
@@ -5388,6 +5394,7 @@ final class JobScenes {
 				subject = worker(level, new BlockPos(6, -60, 2), Blocks.GRINDSTONE, net.minecraft.world.entity.ai.village.poi.PoiTypes.WEAPONSMITH, ModVillagers.GUARD);
 				subject.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 				var curfew = io.github.jcondedata.aliveworkplace.hall.Edicts.find("curfew").orElseThrow();
+				ScreenshotHarness.fileRecords(level, STATION.offset(-7, 0, 0), 1); // the hall's record now, so the villagers find their village
 				var told = io.github.jcondedata.aliveworkplace.hall.Edicts.proclaim(level, STATION.offset(-7, 0, 0), player, curfew);
 				Showcase.check(told.done(), "Curfew was proclaimed: " + told.message().getString());
 				io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();

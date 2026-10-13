@@ -25,6 +25,13 @@ asks for the steps, `latest.log` and any crash report).
   in a day, each Nurse curing one a day without a remedy). Each level costs 24 paper, 6 books and 8 emeralds times its
   level and twice the points; work still stops at twice the pace. A damaged Library keeps the levels and pauses their
   bonuses. Its time-lapse, ending in the rotunda on the scholar's screen, is on the showcase page.
+- **The Colossus's powers** (35.22, part of Wonders, for 2.0): while it stands, every villager of its village is 12
+  happier and every villager of its realm (or its caravan partners) 8, with "the Colossus" among their reasons;
+  travelers come to its village's inns twice as often (two a morning, room for twice as many) and are twice as likely
+  to be Experts; it adds 8 beauty. Once finished, the plaque over its road arch is written in glowing letters with the
+  Founder's name (the hall owner's without one), the village's name and its founding day from the chronicle. A damaged
+  Colossus turns its powers off. Its time-lapse, scaffolding and all, is on the showcase page. Realm powers now reach a
+  village with a caravan route either way, not only one the Wonder's village sends caravans to.
 - **The Lighthouse's powers** (35.12, part of Wonders, for 2.0): while it stands, caravans from its village reach
   villages up to 4,096 blocks away and arrive in half the time; ferry fares to and from the village's Travel Posts are
   halved, and the jetty's post joins the network as "<Village> Lighthouse"; the day before drowned pirates raid, the

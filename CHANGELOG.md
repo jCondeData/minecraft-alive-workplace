@@ -28,6 +28,10 @@ asks for the steps, `latest.log` and any crash report).
   building Stage 1 0! The blueprint is back in the supply chest." (no blueprint comes back for a Wonder's part); now it
   says "Odo finished stage 1 of 4 of the Colossus: The Plinth and the Road Arch." or, while other parts of the stage are still
   going up, how many of them stand. The Wonder's very last part leaves the telling to the Wonder's own announcement.
+- **A Wonder's parts no longer show up in the chronicle as buildings** (B143). Each finished part used to add an
+  ordinary line with its raw name ("Odo finished the Stage 1 0") and was counted among the village's buildings, with
+  a lane to it like a house's. Now the chronicle tells a Wonder only through its own lines: the Foundation Stone laid,
+  each stage dedicated and the Wonder finished. Ordinary buildings still get their line.
 - **Legends take the village's own luxuries** (B136). A Legend who likes wine now drinks the Vintner's Cider, Berry
   Wine and Vintage Wine; one who likes jewels takes the Jeweler's rings, brooches and circlets; books, the Printer's
   Village Gazette and Illuminated Book; clothes, the Tailor's Work Clothes, Fine Clothes and Noble Robes. The honey bottles,

@@ -745,7 +745,9 @@ public final class Builders {
 		if (site.isDeconstruction()) {
 			BuildSiteManager.get(level).forgetFinished(site.placement());
 			io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
-		} else {
+		} else if (site.wonder() == null) {
+			// (B143: a Wonder's part is no building of its own: no "X was built" line with the part's name, nothing on the
+			// books, no upgrade, no lane; the Wonder's own begun, dedicated and finished lines tell it, 35.4/35.7/35.8)
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
 			io.github.jcondedata.aliveworkplace.city.Walls.pieceBuilt(level, site, villager); // 27.18: the last piece finishes the wall
 			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, site.placement().origin(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BUILT, Component.translatable("chronicle.aliveworkplace.built",
@@ -759,7 +761,7 @@ public final class Builders {
 			});
 		}
 		// The door joins the village's roads with a lane (27.15); a village without roads gets the dirt path to its bell.
-		if (!io.github.jcondedata.aliveworkplace.city.Roads.joinNearest(level, site) && Paths.ENABLED) {
+		if (site.wonder() == null && !io.github.jcondedata.aliveworkplace.city.Roads.joinNearest(level, site) && Paths.ENABLED) {
 			Paths.afterBuild(level, villager, site);
 		}
 		endJob(level, villager, site);

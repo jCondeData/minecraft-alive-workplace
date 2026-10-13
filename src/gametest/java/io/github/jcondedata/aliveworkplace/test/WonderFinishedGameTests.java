@@ -382,6 +382,66 @@ public class WonderFinishedGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B143: a Wonder's parts finished by the builder write no "X finished the <part>" line in the village's chronicle
+	 * (with the part's raw name) and aren't put on the village's books as buildings; the chronicle holds only the
+	 * Wonder's own lines (begun, each stage dedicated, finished). An ordinary building finished by the same builder still
+	 * writes its line and goes on the books.
+	 */
+	//$ gametest_ticks_batch TALL '200' '"wonderPartChronicle"'
+	@GameTest(template = TALL, timeoutTicks = 200, batch = "wonderPartChronicle")
+	public void aWonderPartWritesNoBuildingLineInTheChronicle(GameTestHelper helper) {
+		Village v = village(helper);
+		ServerLevel level = v.level();
+		WonderManager manager = WonderManager.get(level);
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(v.hall());
+		UUID id = begin(helper, v).id();
+		List<String> partNames = new ArrayList<>();
+		for (int round = 0; round < 12 && manager.site(id).map(WonderSite::goingUp).orElse(false); round++) {
+			WonderStages.tick(level);
+			for (UUID partId : manager.site(id).orElseThrow().parts()) {
+				BuildSite part = sites.get(partId);
+				if (part == null || part.isDone()) {
+					continue;
+				}
+				partNames.add(io.github.jcondedata.aliveworkplace.blueprint.Blueprints.displayName(part.structure()).getString());
+				finishPart(level, v.builder(), part);
+				helper.assertTrue(sites.finishedNear(level, part.placement().origin(), 1).stream().noneMatch(f -> f.placement().equals(part.placement())),
+					"a Wonder's part went on the books as a building: " + part.structure());
+			}
+		}
+		helper.assertTrue(manager.site(id).orElseThrow().done(), "the folly wasn't finished");
+		helper.assertTrue(partNames.size() >= 3, "the builder finished too few parts: " + partNames);
+		List<String> all = hall.chronicle().stream().map(e -> e.text().getString()).toList();
+		helper.assertTrue(hall.chronicle().stream().noneMatch(e -> e.kind() == Chronicle.Kind.BUILT), "a building line for a Wonder's part: " + all);
+		for (String name : partNames) {
+			helper.assertTrue(all.stream().noneMatch(l -> l.contains(name)), "the part's raw name \"" + name + "\" in the chronicle: " + all);
+		}
+		List<String> wonder = chronicle(level, v.hall());
+		helper.assertTrue(wonder.stream().anyMatch(l -> l.contains("laid the Foundation Stone of the Test Folly")), "no begun line: " + all);
+		helper.assertTrue(wonder.stream().anyMatch(l -> l.startsWith("Stage 1, The Ground Storey, of the Test Folly was dedicated")), "no dedication line: " + all);
+		helper.assertTrue(wonder.stream().anyMatch(l -> l.startsWith("The Test Folly was finished")), "no finished line: " + all);
+		for (Chronicle.Entry e : hall.chronicle()) {
+			helper.assertTrue(!e.text().getString().contains("aliveworkplace.") && !e.text().getString().contains("%s"), "untranslated: " + e.text().getString());
+		}
+
+		// An ordinary building by the same builder still writes its line and goes on the books.
+		ResourceLocation pillar = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_pillar");
+		BlueprintData.Placement where = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(24, 2, 26)), Rotation.NONE, Mirror.NONE);
+		BuildSite house = sites.create(v.owner().getUUID(), "Owner", pillar, where);
+		Leftovers.after(helper, () -> {
+			sites.remove(house.id());
+			sites.forgetFinished(where);
+		});
+		finishPart(level, v.builder(), house);
+		String line = v.builder().getDisplayName().getString() + " finished the " + io.github.jcondedata.aliveworkplace.blueprint.Blueprints.displayName(pillar).getString();
+		helper.assertTrue(hall.chronicle().stream().anyMatch(e -> e.kind() == Chronicle.Kind.BUILT && e.text().getString().equals(line)),
+			"the ordinary building's line \"" + line + "\" not in " + hall.chronicle().stream().map(e -> e.text().getString()).toList());
+		helper.assertTrue(sites.finishedNear(level, where.origin(), 1).stream().anyMatch(f -> f.placement().equals(where)), "the ordinary building isn't on the books");
+		helper.succeed();
+	}
+
 	/** {@code part}'s steps done and its finish run as the builder's, as BuilderWork does at the part's last step. */
 	private static void finishPart(ServerLevel level, Villager builder, BuildSite part) {
 		for (int i = 0; i < 20 && !part.isDone(); i++) {

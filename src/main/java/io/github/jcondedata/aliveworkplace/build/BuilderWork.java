@@ -442,7 +442,9 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!free && bag.count(net.minecraft.world.item.Items.SCAFFOLDING) < toPlace) {
 				MaterialRules.Requirement need = new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, toPlace);
 				if (inStock(level, villager, site, bench, plan, need)) {
-					fetch(level, villager, site, plan, bag, bench, need);
+					// 35.6a: takes enough for the column to grow on as the part rises, not one or two a trip
+					int carry = (int) Math.max(toPlace, Math.min(Scaffolds.CARRY, scaffoldingOnHand(level, site, plan)));
+					fetch(level, villager, site, plan, bag, bench, new MaterialRules.Requirement(net.minecraft.world.item.Items.SCAFFOLDING, carry));
 				} else {
 					// None to be had: asked for on the requests board, and the step is left as it always was (put off,
 					// then skipped and counted). A build never waits on scaffolding (coordinator, 2026-10-12).
@@ -815,6 +817,14 @@ public class BuilderWork extends Behavior<Villager> {
 			stillTicks = 0;
 			return false;
 		}
+		// 35.6a: up a column with the next block out of reach and nowhere to stand for it: the column grows from where the
+		// builder is, rather than it climbing all the way down to find out (once per block)
+		if (approachSpot == null && !target.equals(scaffoldTriedFor) && deferIfImpossible && !helping && plan != null && Scaffolds.onAColumn(villager)) {
+			scaffoldTriedFor = target;
+			if (scaffolds.planInsteadOfHop(level, villager, site, plan, target, reach, scaffoldingOnHand(level, site, plan))) {
+				return false;
+			}
+		}
 		Vec3 at = villager.position();
 		stillTicks = lastWalkPos != null && at.distanceToSqr(lastWalkPos) < STILL_DISTANCE * STILL_DISTANCE ? stillTicks + 1 : 0;
 		lastWalkPos = at;
@@ -837,6 +847,14 @@ public class BuilderWork extends Behavior<Villager> {
 			if (approachSpot != null && !canStandAt(level, approachSpot)) {
 				approachSpot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5);
 			}
+			// 35.6a: rather than hop onto the pillar it's building (into its gaps, onto its top) or up onto the cap over it,
+			// scaffolding goes up beside the work and the builder climbs it. Only with scaffolding on hand; else as before.
+			boolean hopUp = approachSpot == null
+				|| approachSpot.getY() > villager.getY() + 1.5 && !level.getBlockState(approachSpot.below()).is(net.minecraft.world.level.block.Blocks.SCAFFOLDING);
+			if (hopUp && deferIfImpossible && !helping && plan != null
+				&& scaffolds.planInsteadOfHop(level, villager, site, plan, target, reach, scaffoldingOnHand(level, site, plan))) {
+				return false;
+			}
 			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
 			if (spot != null) {
 				hop(level, villager, spot);
@@ -849,6 +867,19 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 		}
 		return false;
+	}
+
+	/** 35.6a: the last block the builder tried to grow the column it stands on for (once per block). */
+	@Nullable
+	private BlockPos scaffoldTriedFor;
+
+	/** 35.6a: the scaffolding this builder could put up now: in its bag and the site's supply chests (all it wants, with free materials). */
+	private long scaffoldingOnHand(ServerLevel level, BuildSite site, BuildPlan plan) {
+		if (Rules.on(level, ModGameRules.FREE_MATERIALS)) {
+			return Long.MAX_VALUE;
+		}
+		long n = bagNow == null ? 0 : bagNow.count(net.minecraft.world.item.Items.SCAFFOLDING);
+		return site.bench() == null ? n : n + SupplyContainers.count(level, SupplyContainers.find(level, site.bench(), plan.bounds()), net.minecraft.world.item.Items.SCAFFOLDING);
 	}
 
 	/** Ticks since a path to where we're going last failed (see {@link io.github.jcondedata.aliveworkplace.work.Walker#requestWalk}). */

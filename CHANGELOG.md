@@ -129,6 +129,11 @@ asks for the steps, `latest.log` and any crash report).
   its roof's peak. The rest of the wall is more decorated too: banners in every bay on the field side with arrow slits
   above them, taller merlons over the buttresses, vines low down, lanterns along the walk and on the village side, and
   the gatehouse gets the towers' buttresses and ledge. You now reach the towers from the walk. About 12,300 blocks.
+- **Builders really climb their scaffolding** (35.6a, part of Wonders, for 2.0; the owner's change): a builder working
+  high on a pillar, a tower or a dome puts up an unbroken column of vanilla scaffolding beside it, climbs it and works
+  from it at that height, instead of hopping onto the unfinished pillar (which left a gap in it) or onto the cap above.
+  It takes enough scaffolding for the column in one trip, steps out of the column's foot when it walks back to the
+  chests, and takes it all down when that part is done. With no scaffolding in the chests nothing changes.
 - **The Observatory's Sky Chart covers about 6,144 blocks** (35.18a, part of Wonders, for 2.0; the owner's change from
   1,024): 384 chunks and 12 regions across, every village, temple, monument, mansion and the rest on one locked map at
   48 blocks a pixel (a vanilla map stops at 2,048). The Observatory searches that far without slowing the server: one

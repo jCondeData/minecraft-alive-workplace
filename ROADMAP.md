@@ -4286,7 +4286,7 @@ Legends.
     research loads unchanged; Swift Hands V on top of every other bonus stays at or under twice the pace;
   - scene `wonder_great_library`: the time-lapse, ending in the rotunda on the scholar's screen with the second tier;
     its GIF and powers are in the README.
-- [x] **35.15** (review: pending 2026-10-12) **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
+- [x] **35.15** (approved 2026-10-13) **The Great Wall: its design.** A defence placed like the other walls (stand inside the village and
   place it facing out: its stairs are on your side), drawn like 35.9: 97 long, 7 thick and 12 high on a battered
   plinth, a walk along the top behind crenellations, and five towers (9 × 9, 18 high, hipped roofs; one at each end
   and two at the quarters), each with stairs inside, a grindstone for a guard and an alcove where a sentry golem

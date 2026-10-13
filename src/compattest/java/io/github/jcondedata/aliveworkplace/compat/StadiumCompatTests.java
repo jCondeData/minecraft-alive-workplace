@@ -38,6 +38,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -53,12 +54,13 @@ import net.minecraft.world.level.block.state.BlockState;
  * (WonderBlueprintGameTests, which runs without Cobblemon and so can't load the Stadium's file or its Healing Machine)
  * — its file loads, every part loads and is at most 48 a side, no stage clears an earlier stage's block, the block count
  * is within 10% of the roadmap's figure, no retired job block, no calcite, nothing a player can't get — plus its
- * requirements and goods as the roadmap lists them, and its seats built in the village's banner colours.
+ * requirements and goods as the roadmap lists them, its seats built in the village's banner colours, and (35.23a) the
+ * insides a player walks through.
  */
 public class StadiumCompatTests implements FabricGameTest {
 	private static final ResourceLocation STADIUM = AliveWorkplace.id("stadium");
-	/** The roadmap's figure (35.23: about 18,000 before it was drawn; ROADMAP Notes). */
-	private static final int BLOCKS = 7_300;
+	/** The design's count (35.23 drew it at about 7,300; 35.23a made it bigger, with its insides: about 9,550). */
+	private static final int BLOCKS = 9_550;
 	private static final int PART_LIMIT = 48;
 	private static final Set<Block> UNOBTAINABLE = Set.of(Blocks.BEDROCK, Blocks.BARRIER, Blocks.COMMAND_BLOCK, Blocks.STRUCTURE_BLOCK,
 		Blocks.STRUCTURE_VOID, Blocks.JIGSAW, Blocks.SPAWNER, Blocks.REINFORCED_DEEPSLATE, Blocks.BUDDING_AMETHYST, Blocks.LIGHT,
@@ -227,6 +229,112 @@ public class StadiumCompatTests implements FabricGameTest {
 		helper.assertTrue(named.getOrDefault("aliveworkplace:training_post", 0) == 2, "training posts: " + named.get("aliveworkplace:training_post"));
 		helper.assertTrue(named.getOrDefault("minecraft:daylight_detector", 0) == 4 && named.getOrDefault("minecraft:redstone_lamp", 0) == 32,
 			"floodlights: " + named.get("minecraft:daylight_detector") + " detectors, " + named.get("minecraft:redstone_lamp") + " lamps");
+		helper.succeed();
+	}
+
+	/** The whole Stadium as its stages' parts build it: each block (not air) by its place in the Wonder. */
+	private static Map<BlockPos, BlockState> built(MinecraftServer server) {
+		Map<BlockPos, BlockState> out = new HashMap<>();
+		for (List<Part> stage : stages(server)) {
+			for (Part p : stage) {
+				for (Blueprint.Entry e : p.blueprint().blocks()) {
+					if (!e.state().isAir()) {
+						out.put(p.offset().offset(e.pos()), e.state());
+					}
+				}
+			}
+		}
+		return out;
+	}
+
+	/** What a player walks through: air, carpets, doors, banners, flowers, redstone wire. */
+	private static boolean passable(BlockState state) {
+		return state.isAir() || state.is(BlockTags.WOOL_CARPETS) || state.is(BlockTags.DOORS) || state.is(BlockTags.BANNERS)
+			|| state.is(BlockTags.SMALL_FLOWERS) || state.is(Blocks.REDSTONE_WIRE);
+	}
+
+	/**
+	 * 35.23a: the insides, like a real football ground. A concourse three high runs round under the stands (cells with a
+	 * floor, three of air and a roof), an upper corridor runs over it, the players' tunnel runs straight and roofed from
+	 * the back wall to the pitch, and walking a block up or down at a time from the paving outside the south wall a
+	 * player reaches the pitch, both changing rooms, the concourse, the press room and the professor's box, a seat on
+	 * the second row (through a vomitory), the top rows (up the aisles) and the ends' top rows (up their stairwells).
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void stadiumInsideIsWalkable(GameTestHelper helper) {
+		Map<BlockPos, BlockState> built = built(helper.getLevel().getServer());
+		java.util.function.Function<BlockPos, BlockState> at = p -> built.getOrDefault(p, Blocks.AIR.defaultBlockState());
+		List<String> wrong = new ArrayList<>();
+		int covered = 0;
+		int upper = 0;
+		for (int x = 0; x < 55; x++) {
+			for (int z = 0; z < 45; z++) {
+				int fx = x;
+				int fz = z;
+				java.util.function.IntPredicate air = y -> at.apply(new BlockPos(fx, y, fz)).isAir();
+				if (!air.test(0) && air.test(1) && air.test(2) && air.test(3) && !air.test(4)) {
+					covered++;
+				}
+				if (!air.test(4) && air.test(5) && air.test(6) && !air.test(8)) {
+					upper++;
+				}
+			}
+		}
+		if (covered < 400) {
+			wrong.add("only " + covered + " covered cells three high (the concourse, the rooms and the tunnels)");
+		}
+		if (upper < 80) {
+			wrong.add("only " + upper + " cells of upper corridor");
+		}
+		for (int z = 34; z <= 42; z++) {
+			BlockPos floor = new BlockPos(27, 0, z);
+			if (at.apply(floor).isAir() || !at.apply(floor.above()).isAir() || !at.apply(floor.above(2)).isAir()
+				|| (z >= 35 && at.apply(floor.above(4)).isAir())) {
+				wrong.add("the players' tunnel at z " + z);
+			}
+		}
+		java.util.function.Predicate<BlockPos> stand = p -> passable(at.apply(p)) && passable(at.apply(p.above()))
+			&& !passable(at.apply(p.below())) && !at.apply(p.below()).is(Blocks.LANTERN);
+		BlockPos start = new BlockPos(27, 1, 44);
+		Set<BlockPos> seen = new java.util.HashSet<>(List.of(start));
+		java.util.ArrayDeque<BlockPos> todo = new java.util.ArrayDeque<>(List.of(start));
+		while (!todo.isEmpty()) {
+			BlockPos p = todo.poll();
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+				for (int dy = -1; dy <= 1; dy++) {
+					BlockPos q = p.relative(d).above(dy);
+					if (q.getX() < -1 || q.getX() > 55 || q.getZ() < -1 || q.getZ() > 45 || q.getY() < 1 || q.getY() > 23) {
+						continue;
+					}
+					if (dy == 1 && !passable(at.apply(p.above(2)))) {
+						continue; // no head room to step up
+					}
+					if (!seen.contains(q) && stand.test(q)) {
+						seen.add(q);
+						todo.add(q);
+					}
+				}
+			}
+		}
+		Map<String, BlockPos> places = new java.util.LinkedHashMap<>();
+		places.put("the pitch", new BlockPos(27, 1, 22));
+		places.put("the home changing room", new BlockPos(22, 1, 39));
+		places.put("the away changing room", new BlockPos(32, 1, 39));
+		places.put("the concourse by the gate", new BlockPos(21, 1, 4));
+		places.put("the press room", new BlockPos(27, 5, 40));
+		places.put("the professor's box", new BlockPos(26, 5, 36));
+		places.put("a second-row seat (north)", new BlockPos(18, 6, 7));
+		places.put("a top-row seat (north)", new BlockPos(20, 14, 3));
+		places.put("a top-row seat (south)", new BlockPos(20, 14, 41));
+		places.put("the west end's top row", new BlockPos(5, 10, 22));
+		places.put("the east end's top row", new BlockPos(49, 10, 22));
+		places.forEach((name, p) -> {
+			if (!seen.contains(p)) {
+				wrong.add("can't walk to " + name + " " + p.toShortString());
+			}
+		});
+		helper.assertTrue(wrong.isEmpty(), "inside the Stadium: " + wrong + " (" + seen.size() + " places reached)");
 		helper.succeed();
 	}
 

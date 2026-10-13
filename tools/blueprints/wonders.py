@@ -4130,49 +4130,68 @@ def colossus_stage(stage=None):
 
 
 # --- the Stadium (with Cobblemon) ---------------------------------------------------------------------------------------
-# On paper (35.23), 47 x 16 x 37, the front (the gateway, on the north long side) at z = 0:
-# - An oval bowl round a battle field. The field, 31 x 21 (x 8-38, z 8-28), is grass ruled in white concrete: its edge,
-#   the half-way line (x 23), a centre circle of radius 3 round the centre spot (23, 18). No logos. Round it a smooth
+# On paper (35.23, made bigger and given its insides in 35.23a), 55 x 22 x 45, the front (the gateway, on the north long
+# side) at z = 0:
+# - An oval bowl round a battle field. The field, 33 x 23 (x 11-43, z 11-33), is grass ruled in white concrete: its edge,
+#   the half-way line (x 27), a centre circle of radius 3 round the centre spot (27, 22). No logos. Round it a smooth
 #   stone apron, then a barrier two high (stone bricks under a smooth stone cap).
-# - The stands follow a rounded oblong (the field's rectangle shrunk by 5 with corners of radius 5): five tiers along the
-#   long sides (north and south), three at the ends (east and west), stepping from five to three round the curves. Each
-#   tier is one up and one back, a smooth stone tread with a carpet seat on it, red and white in sixteen wedges round
+# - The stands follow a rounded oblong (the field's rectangle shrunk by 5 with corners of radius 6): six tiers along the
+#   long sides (north and south), four at the ends (east and west), stepping from six to four round the curves. Each
+#   tier is two up and one back, a smooth stone tread with a carpet seat on it, red and white in sixteen wedges round
 #   the bowl (the village's own colours once it has a Village Banner: those two dyes take the place of red and white
 #   when the plan is drawn).
-# - The back wall (the outer face) stands two over the top tier: a smooth stone footing, stone bricks with pilasters
-#   every four cells, a band of red and white terracotta under a smooth stone cornice, a stone brick parapet with
-#   lanterns.
-# - The two trainer boxes, cut into the stands at the field's ends (x 5-7 and 39-41, z 17-19), each a stone room under
-#   a spruce roof with a Training Post facing the field; the professor's box raised in the middle of the south stand
-#   (x 21-25, z 30-33) with a lectern behind its rail, under a spruce roof.
-# - The covered stand on the west: a lean-to canopy of spruce slabs over the west end's three tiers, on four spruce
+# - The back wall (the outer face) stands three over the top tier: an arcade of three-wide arches between pilasters
+#   every four cells into the concourse, a smooth stone lintel course, slit windows to the upper corridor along the long
+#   sides, two bands of red and white terracotta, a smooth stone cornice and a stone brick parapet with lanterns; banners
+#   hang on the wall between the bays. A paved promenade runs round outside it.
+# - Inside, like a real football ground (35.23a): a concourse three wide and three high runs round under the back three
+#   tiers, lit by lanterns, floored in smooth stone, with a food kiosk either side of the gate (a counter under a striped
+#   awning, a smoker and barrels). Along the long sides an upper corridor runs over it under the top three tiers, reached
+#   by a stair at each end, with slit windows out and four vomitories (one on each half side) through the stand onto the
+#   second row of seats. On the south side, under the professor's box, the players' tunnel runs from a door in the back
+#   wall straight out onto the pitch, between the two changing rooms (home in red, away in white: benches, lockers,
+#   a basin, a banner); over it the professor's box looks onto the field from the press room in the upper corridor
+#   (desks and chairs). The trainers' boxes at the ends are dugouts opening off the concourse.
+# - The covered stand on the west: a lean-to canopy of spruce slabs over the west end's four tiers, on four spruce
 #   columns standing on the barrier, the back wall carried up to meet it, lanterns under it.
 # - The scoreboard wall on the east: a board 11 wide over the east back wall, black terracotta in a stone frame with
 #   the score in white and a red header, on two buttresses.
-# - The gateway on the north: a tunnel five wide through the north stand to the field, open over the lower tiers; over
-#   its mouth two piers rising to 13 carry a lintel banded red and white with an arch under it, standing banners on the
-#   piers and banners hung inside.
-# - Four floodlight towers outside the bowl's curves: stone brick shafts 2 x 2 to 10, an iron platform, a ring of
-#   redstone lamps wired round a daylight detector set to light them at night.
+# - The gateway on the north: a tunnel five wide through the north stand to the field, through the concourse (the upper
+#   corridor looks down into it over rails), open over the lowest rows; over its mouth two piers rising to 21 carry a
+#   lintel banded red and white with an arch under it, standing banners on the piers and banners hung inside; flower
+#   beds either side of the steps.
+# - Four floodlight towers outside the bowl's curves: stone brick shafts to 18, an iron platform, a ring of redstone
+#   lamps wired round a daylight detector set to light them at night.
 # - Outside, in the corners: the nurse's booth on the north-west (a striped stall with a Healing Machine and a brewing
-#   stand), and six pitches for market stalls (smooth stone plots with a lamp post), one in each corner with a stall.
+#   stand), and seven pitches for market stalls (smooth stone plots with a lamp post), three with a stall.
 # - Palette (60/30/10): stone bricks and smooth stone; spruce; red and white terracotta and wool; iron at the lights.
-# - Stages, each ending tidy: I the Field (the ground across the whole bowl, the field and its lines, the apron, the
-#   barrier, the trainer boxes and the professor's box); II the Lower Stands (the first three tiers all round); III the
-#   Upper Stands and the Covered Stand (the upper tiers, the back wall, the gate's piers to the wall top, the canopy, the
-#   scoreboard); IV the Gate and the Floodlights (the gateway arch and banners, the four towers, the nurse's booth and
-#   the market pitches).
-SW, SH, SD = 47, 20, 37
-SCX, SCZ = 23, 18  # the field's centre
-S_FIELD = (8, 8, 38, 28)  # x0, z0, x1, z1
-S_CORE = (12, 12, 34, 24)  # the stands' rounded oblong: this rectangle grown by its corner radius
-S_RADIUS = 5
+# - Stages, each ending tidy: I the Field (the ground across the whole bowl and the promenade, the field and its lines,
+#   the apron, the barrier, the dugouts, the players' tunnel and changing rooms, the professor's box); II the Lower
+#   Stands (the first three tiers all round); III the Upper Stands and the Covered Stand (the upper tiers over the
+#   concourse and the upper corridor, its stairs, the back wall, the gate's piers to the wall top, the canopy, the
+#   scoreboard, the kiosks, the press room and the lights inside); IV the Gate and the Floodlights (the gateway arch and
+#   banners, the four towers, the banners on the wall, the flower beds, the nurse's booth and the market pitches).
+SW, SH, SD = 55, 24, 45
+SCX, SCZ = 27, 22  # the field's centre
+S_FIELD = (11, 11, 43, 33)  # x0, z0, x1, z1
+S_RADIUS = 6
+S_CORE = (S_FIELD[0] + S_RADIUS - 1, S_FIELD[1] + S_RADIUS - 1, S_FIELD[2] - S_RADIUS + 1, S_FIELD[3] - S_RADIUS + 1)
 S_BODY = Mix((7, "stone_bricks"), (2, "cracked_stone_bricks"), (1, "mossy_stone_bricks"), seed=51)
 S_GROUND = Mix((6, "stone_bricks"), (3, "smooth_stone"), (1, "cracked_stone_bricks"), seed=52)
-S_TUNNEL = (21, 25)  # the gateway tunnel's x (z 0-6)
-S_PIERS = ((19, 20), (26, 27))  # the gate piers' x (z 0-2)
-S_BOXES = {"east": (39, 41), "west": (5, 7)}  # the trainer boxes' x (z 17-19)
-S_PROF = (21, 25, 30, 33)  # the professor's box: x0, x1, z0, z1
+S_TUNNEL = (25, 29)  # the gateway tunnel's x (z 0-9)
+S_PIERS = ((23, 24), (30, 31))  # the gate piers' x (z 1-2)
+S_BOXES = {"east": (45, 46), "west": (8, 9)}  # the trainers' dugouts' x (z 20-24, walls at 20 and 24)
+S_PROF = (25, 29, 35, 38)  # the professor's box: x0, x1, z0, z1 (over the players' tunnel)
+S_PLAYERS = (19, 35, 35, 41)  # the players' rooms and tunnel under the south stand: x0, x1, z0, z1 (walls at x0, x1)
+S_ROOMS = {"home": (20, 24), "away": (30, 34)}  # the changing rooms' x (z 37-41)
+S_PTUNNEL = (26, 28)  # the players' tunnel's x (z 34-42)
+S_UPPER = (16, 38)  # the upper corridors' x, along the long sides
+S_STAIRS = ((16, 1), (38, -1))  # the stairs up to the upper corridor: (the foot's x, the way up along x)
+S_VOMS = {"north": (21, 33), "south": (20, 34)}  # the vomitories' middle x (three wide)
+S_AISLES = {"north": (23, 30), "south": (22, 31), "west": (18,), "east": (18,)}  # the aisles' first x or z (two wide)
+S_END_STAIRS = {"west": 6, "east": 48}  # the ends' stairwells: along the third tier's x, z 28 (the foot) to 24
+S_KIOSKS = (21, 33)  # the food kiosks' middle x, either side of the gate in the north concourse
+S_BEDS = {(x, 0) for x in list(range(19, 23)) + list(range(32, 36))}  # the flower beds either side of the gate's steps
 S_SEATS = ("red_carpet", "white_carpet")
 S_BANNER = [("white", "minecraft:stripe_middle"), ("white", "minecraft:border")]
 
@@ -4188,32 +4207,45 @@ def s_offset(x, z):
 
 
 def s_ring(x, z):
-    """How far out from the field a cell is: 0 the apron, 1 the barrier, 2 to 6 the tiers, then the wall."""
+    """How far out from the field a cell is: 0 the apron, 1 the barrier, 2 to 7 the tiers, then the wall."""
     dx, dz = s_offset(x, z)
     return max(0, math.ceil(math.hypot(dx, dz) - S_RADIUS - 1e-9))
 
 
 def s_tiers(x, z):
-    """The tiers the stand has here: five along the sides, three at the ends, between round the curves."""
+    """The tiers the stand has here: six along the sides, four at the ends, between round the curves."""
     dx, dz = s_offset(x, z)
     if dx == 0:
-        return 5
+        return 6
     s = dz / math.hypot(dx, dz)
-    return round(3 + 2 * s * s)
+    return round(4 + 2 * s * s)
 
 
 def s_in_box(x, z):
-    if 17 <= z <= 19 and any(x0 <= x <= x1 for x0, x1 in S_BOXES.values()):
+    """The dugouts and the professor's box, drawn whole in stage I (the stands run round them)."""
+    if 20 <= z <= 24 and any(x0 <= x <= x1 for x0, x1 in S_BOXES.values()):
         return True
     return S_PROF[0] <= x <= S_PROF[1] and S_PROF[2] <= z <= S_PROF[3]
 
 
 def s_tunnel(x, z):
-    return S_TUNNEL[0] <= x <= S_TUNNEL[1] and z <= 6
+    return S_TUNNEL[0] <= x <= S_TUNNEL[1] and z <= 9
 
 
 def s_pier(x, z):
-    return z <= 1 and any(a <= x <= b for a, b in S_PIERS)
+    return 1 <= z <= 2 and any(a <= x <= b for a, b in S_PIERS)
+
+
+def s_players_inside(x, z):
+    """The players' tunnel (from the pitch to the back wall) and the changing rooms: the cells left empty to 3."""
+    if S_PTUNNEL[0] <= x <= S_PTUNNEL[1]:
+        return S_PLAYERS[2] <= z <= S_PLAYERS[3]
+    return 37 <= z <= S_PLAYERS[3] and any(r0 <= x <= r1 for r0, r1 in S_ROOMS.values())
+
+
+def s_players(x, z):
+    """The players' rooms and tunnel under the south stand (their walls included), closed to the concourse."""
+    return S_PLAYERS[0] <= x <= S_PLAYERS[1] and S_PLAYERS[2] <= z <= S_PLAYERS[3]
 
 
 def s_tread(n):
@@ -4221,7 +4253,7 @@ def s_tread(n):
     return 1 + 2 * n
 
 
-S_TUNNEL_HEIGHT = {0: 7, 1: 7, 2: 6, 3: 4, 4: 3}  # the tunnel's clear height under each row (z); open at 5 and 6
+S_TUNNEL_HEIGHT = {0: 7, 1: 7, 2: 7, 3: 7, 4: 7, 5: 6, 6: 4, 7: 3}  # the gate tunnel's clear height by row; open at 8, 9
 
 
 def s_plan():
@@ -4254,8 +4286,118 @@ def s_plan():
 S_PLAN = s_plan()
 
 
+def s_tier_of(x, z):
+    kind = S_PLAN.get((x, z))
+    return kind[1] if isinstance(kind, tuple) and kind[0] == "tier" else None
+
+
+def s_concourse(x, z):
+    """Whether the concourse runs here: under the back three tiers, round the bowl (not in the players' rooms)."""
+    n = s_tier_of(x, z)
+    return n is not None and n >= s_tiers(x, z) - 2 and not s_players(x, z) and not s_pier(x, z)
+
+
+def s_upper(x, z):
+    """The upper corridor along the long sides, over the concourse under the top three tiers."""
+    n = s_tier_of(x, z)
+    return n is not None and n >= 4 and S_UPPER[0] <= x <= S_UPPER[1] and not s_tunnel(x, z)
+
+
+def s_side(z, x=None):
+    """The side of the bowl a stand's cell is on: north or south, or (given x) west or east at the ends."""
+    if x is not None and s_tiers(x, z) == 4:
+        return "west" if x < SCX else "east"
+    return "north" if z < SCZ else "south"
+
+
+def s_end_step(x, z):
+    """The height of the step a cell holds in an end's stairwell, or None."""
+    if x in S_END_STAIRS.values() and 24 <= z <= 28 and s_tiers(x, z) == 4:
+        return 29 - z
+    return None
+
+
+def s_row(side, n):
+    """The z of tier n on a long side."""
+    return S_FIELD[1] - 2 - n if side == "north" else S_FIELD[3] + 2 + n
+
+
+def s_stair_cells():
+    """The upper corridor's stairs: ((x, z), y of the step) in the middle row of the concourse, four steps each."""
+    out = []
+    for side in ("north", "south"):
+        z = s_row(side, 5)
+        for x0, way in S_STAIRS:
+            out += [((x0 + way * k, z), 1 + k) for k in range(4)]
+    return out
+
+
+S_STAIR_STEPS = dict(s_stair_cells())
+
+
+def s_vomitory(x, z):
+    """'mouth' for the tier-3 cells cut through to the upper corridor, 'step' for the tier-2 cells in front of them."""
+    side = s_side(z)
+    if not any(abs(x - m) <= 1 for m in S_VOMS[side]):
+        return None
+    if z == s_row(side, 3):
+        return "mouth"
+    if z == s_row(side, 2):
+        return "step"
+    return None
+
+
+def s_aisle(x, z):
+    """An aisle up the long side's tiers, two wide beside a vomitory: which of its two columns (0 or 1) a cell is in,
+    or None. Its steps are stair blocks in a checkerboard (each tier's tread in one column, a step on it in the other),
+    so a player climbs it a block at a time from row to row."""
+    n = s_tier_of(x, z)
+    if n is None or s_tiers(x, z) not in (4, 6):
+        return None
+    side = s_side(z, x)
+    along = x if side in ("north", "south") else z
+    if side in ("west", "east") and not S_FIELD[1] + 5 <= z <= S_FIELD[3] - 5:
+        return None
+    for a in S_AISLES[side]:
+        if a <= along <= a + 1:
+            return along - a
+    return None
+
+
+def s_kiosk(x, z):
+    """'niche' for the tier-3 cells the kiosks are cut into, 'counter' for the concourse cells in front of them."""
+    if not any(abs(x - m) <= 1 for m in S_KIOSKS):
+        return None
+    if z == s_row("north", 3):
+        return "niche"
+    if z == s_row("north", 4):
+        return "counter"
+    return None
+
+
+def s_hollow(x, z):
+    """The heights left empty in a stand's column (under its tread): the concourse, the upper corridor, the tunnels, the
+    players' rooms, the stair wells, the vomitories and the kiosks."""
+    empty = set()
+    if s_concourse(x, z) or s_kiosk(x, z) == "niche":
+        empty |= {1, 2, 3}
+    if s_upper(x, z):
+        empty |= {5, 6, 7}
+    if (x, z) in S_STAIR_STEPS:
+        empty |= set(range(1, 5)) if S_STAIR_STEPS[(x, z)] < 4 else {1, 2, 3}
+    if s_vomitory(x, z) == "mouth":
+        empty |= set(range(5, SH))
+    if s_end_step(x, z):
+        empty |= set(range(1, SH))
+    if s_players_inside(x, z):
+        empty |= {1, 2, 3}
+    if s_tunnel(x, z):
+        empty |= set(range(1, S_TUNNEL_HEIGHT[z] + 1)) if z in S_TUNNEL_HEIGHT else set(range(1, SH))
+    return empty
+
+
 def s_put(b, x, y, z, name, **props):
-    """A block where nothing is yet (the stands run round the boxes and the tunnel drawn before them)."""
+    """A block where nothing is yet (the stands run round the boxes and the rooms drawn before them)."""
     if b.get(x, y, z) is None:
         b.set(x, y, z, name, **props)
 
@@ -4267,19 +4409,23 @@ def s_seat(x, z):
 
 def s_covered(x, z):
     """The west end under the canopy."""
-    return x <= 7 and 9 <= z <= 27
+    return x <= 9 and 16 <= z <= 28
 
 
-def s_banner(b, x, y, z, facing=None, rotation=None):
+def s_scoreboard_wall(x, z):
+    return x == 50 and 17 <= z <= 27
+
+
+def s_banner(b, x, y, z, facing=None, rotation=None, colour="red"):
     b.set_nbt(x, y, z, Compound({"id": String("minecraft:banner"), "patterns": List[Compound]([
-        Compound({"color": String(c), "pattern": String(p)}) for c, p in S_BANNER])}))
+        Compound({"color": String(c if colour == "red" else "red"), "pattern": String(p)}) for c, p in S_BANNER])}))
     if facing:
-        b.set(x, y, z, "red_wall_banner", facing=facing)
+        b.set(x, y, z, colour + "_wall_banner", facing=facing)
     else:
-        b.set(x, y, z, "red_banner", rotation=rotation)
+        b.set(x, y, z, colour + "_banner", rotation=rotation)
 
 
-# --- stage I: the field ---------------------------------------------------------------------------------------------------
+# --- stage I: the field, the dugouts and the players' rooms ------------------------------------------------------------------
 def s_line(x, z):
     fx0, fz0, fx1, fz1 = S_FIELD
     if x in (fx0, fx1) or z in (fz0, fz1) or x == SCX:
@@ -4288,14 +4434,29 @@ def s_line(x, z):
     return 2.5 <= r < 3.5 or r == 0
 
 
+def s_promenade():
+    """The paved walk round outside the back wall: every cell within two of the wall that isn't the bowl."""
+    walls = [c for c, k in S_PLAN.items() if isinstance(k, tuple) and k[0] == "wall"]
+    out = set()
+    for x, z in walls:
+        for dx in range(-2, 3):
+            for dz in range(-2, 3):
+                c = (x + dx, z + dz)
+                if c not in S_PLAN and 0 <= c[0] < SW and 0 <= c[1] < SD and c not in S_BEDS:
+                    out.add(c)
+    return out
+
+
 def s_ground(b):
     for (x, z), kind in S_PLAN.items():
         if kind == "field":
             b.set(x, 0, z, "white_concrete" if s_line(x, z) else "grass_block", snowy=False)
-        elif kind == "apron" or s_tunnel(x, z):
+        elif kind == "apron" or s_tunnel(x, z) or s_concourse(x, z) or s_players(x, z):
             b.set(x, 0, z, "smooth_stone")
         else:
             b.set(x, 0, z, S_GROUND)
+    for x, z in s_promenade():
+        b.set(x, 0, z, S_GROUND)
     for (x, z), kind in S_PLAN.items():
         if kind == "barrier" and not s_in_box(x, z) and not s_tunnel(x, z):
             b.set(x, 1, z, S_BODY)
@@ -4303,76 +4464,125 @@ def s_ground(b):
 
 
 def s_trainer_box(b, side):
+    """A dugout cut into the end's barrier and first tier, open at the back onto the concourse: stone walls each side,
+    a spruce roof, benches at the back, the Training Post at the front facing the field."""
     x0, x1 = S_BOXES[side]
-    inner = x1 if side == "east" else x0  # the box's back, against the stand
-    back = inner + (1 if side == "east" else -1)
+    inner = x0 if side == "east" else x1  # the box's front, by the apron
+    back = x1 if side == "east" else x0
     toward = "west" if side == "east" else "east"
-    for z in (16, 20):
+    for z in (20, 24):
         for x in range(x0, x1 + 1):
-            if S_PLAN.get((x, z)) != "apron":
-                for y in (1, 2, 3):
-                    b.set(x, y, z, S_BODY if y < 3 else "smooth_stone")
-    for z in range(16, 21):
-        for y in (1, 2, 3):
-            b.set(back, y, z, S_BODY if y < 3 else "smooth_stone")
+            for y in (1, 2, 3):
+                b.set(x, y, z, S_BODY if y < 3 else "smooth_stone")
     for x in range(x0, x1 + 1):
-        for z in range(16, 21):
+        for z in range(20, 25):
             slab(b, x, 4, z, SPRUCE)
-    b.set(inner, 1, 18, "aliveworkplace:training_post", facing=toward)
-    lantern(b, inner, 3, 17, hanging=True)
-    lantern(b, inner, 3, 19, hanging=True)
-    for z in range(17, 20):
-        b.set(x0 if side == "east" else x1, 0, z, "white_concrete")  # the box's line on the apron
+    b.set(inner, 1, SCZ, "aliveworkplace:training_post", facing=toward)
+    for z in (21, 23):
+        stairs(b, back, 1, z, SPRUCE, side)  # the trainers' benches, either side of the way in from the concourse
+    lantern(b, back, 3, 21, hanging=True)
+    lantern(b, back, 3, 23, hanging=True)
+    line = inner + (-1 if side == "east" else 1)
+    for z in range(21, 24):
+        b.set(line, 0, z, "white_concrete")  # the box's line on the apron
 
 
 def s_professor_box(b):
+    """The professor's box over the players' tunnel: a spruce-railed balcony on the stand, roofed in spruce, open at
+    the back into the press room."""
     x0, x1, z0, z1 = S_PROF
     for x in range(x0, x1 + 1):
         for z in range(z0, z1 + 1):
-            side = x in (x0, x1) or z == z1
-            for y in range(1, 6 if side else 3):
-                b.set(x, y, z, "smooth_stone" if y in (2, 5) and side else S_BODY)
-            slab(b, x, 6, z, SPRUCE)
+            b.set(x, 4, z, "smooth_stone" if x in (x0, x1) or z == z0 else "spruce_planks")
+            if x in (x0, x1):
+                for y in (5, 6, 7):
+                    b.set(x, y, z, "stone_bricks" if y < 7 else "smooth_stone")
+            slab(b, x, 8, z, SPRUCE)
     for x in range(x0 + 1, x1):
-        fence(b, x, 3, z0, "spruce_fence")
-    b.set(SCX, 3, z1 - 1, "lectern", facing="north", has_book=False, powered=False)
-    stairs(b, SCX - 1, 3, z1 - 1, SPRUCE, "south")
-    stairs(b, SCX + 1, 3, z1 - 1, SPRUCE, "south")
-    lantern(b, SCX, 5, z0 + 1, hanging=True)
+        fence(b, x, 5, z0, "spruce_fence")
+    b.set(SCX, 5, z0 + 1, "lectern", facing="south", has_book=False, powered=False)
+    stairs(b, SCX - 1, 5, z0 + 2, SPRUCE, "south")
+    stairs(b, SCX + 1, 5, z0 + 2, SPRUCE, "south")
+    lantern(b, SCX, 7, z0 + 2, hanging=True)
+
+
+def s_players_rooms(b):
+    """The players' tunnel from the back wall out onto the pitch, and the two changing rooms either side of it."""
+    x0, x1, z0, z1 = S_PLAYERS
+    t0, t1 = S_PTUNNEL
+    for x in (x0, t0 - 1, t1 + 1, x1):
+        for z in range(z0 if x in (t0 - 1, t1 + 1) else 37, z1 + 1):
+            for y in (1, 2, 3):
+                b.set(x, y, z, "stone_bricks" if z == z0 else S_BODY)
+    door(b, t0 - 1, 1, 39, "spruce_door", "west", hinge="left")
+    door(b, t1 + 1, 1, 39, "spruce_door", "east", hinge="right")
+    stairs(b, t0, 3, z0, STONE_BRICK, "west", top=True)  # the tunnel's mouth, arched under the box
+    stairs(b, t1, 3, z0, STONE_BRICK, "east", top=True)
+    for name, (r0, r1) in S_ROOMS.items():
+        colour = "red" if name == "home" else "white"
+        for x in range(r0 + 1, r1):
+            stairs(b, x, 1, 37, SPRUCE, "north")  # a bench along the stand's side
+        for x in (r0, r1):
+            stairs(b, x, 1, 38, SPRUCE, "west" if x == r0 else "east")
+        for x in range(r0, r1 + 1):
+            if (x - r0) % 2 == 0:
+                b.set(x, 1, 41, "barrel", facing="north", open=False)  # the lockers
+            else:
+                trapdoor(b, x, 1, 41, "spruce_trapdoor", "north", half="top")
+        for x in range(r0 + 1, r1):
+            b.set(x, 0, 39, colour + "_wool")  # the club's colour in the floor
+        b.set(r0 if name == "home" else r1, 1, 40, "cauldron")
 
 
 def stage_s1(b):
     s_ground(b)
     for side in S_BOXES:
         s_trainer_box(b, side)
+    s_players_rooms(b)
     s_professor_box(b)
 
 
 # --- stages II and III: the stands -----------------------------------------------------------------------------------------
 def s_tier(b, x, z, n):
-    """The column of tier n: solid to its tread, its seat on top. The tunnel runs under it, open under the first two
-    rows."""
+    """The column of tier n: solid to its tread with its seat on top, but for what stays hollow inside."""
     if s_in_box(x, z) or s_pier(x, z):
         return
-    y0 = 1
-    if s_tunnel(x, z):
-        if z not in S_TUNNEL_HEIGHT:
-            return
-        y0 = S_TUNNEL_HEIGHT[z] + 1
     top = s_tread(n)
-    if S_PLAN[(x, z)] == ("tier", s_tiers(x, z)) and not s_tunnel(x, z):
-        y0 = 5  # the concourse runs round under the top tier, behind the back wall's arches
-    for y in range(y0, top):
-        s_put(b, x, y, z, S_BODY)
-    s_put(b, x, top, z, "smooth_stone")
-    s_put(b, x, top + 1, z, s_seat(x, z))
+    empty = s_hollow(x, z)
+    if s_vomitory(x, z) == "step":
+        for y in range(1, top):
+            if y not in empty:
+                s_put(b, x, y, z, S_BODY)
+        stairs(b, x, top, z, STONE_BRICK, "south" if s_side(z) == "north" else "north")
+        return
+    for y in range(1, top):
+        if y not in empty:
+            s_put(b, x, y, z, S_BODY)
+    if top not in empty:
+        s_put(b, x, top, z, "smooth_stone")
+        col = s_aisle(x, z)
+        if col is None:
+            s_put(b, x, top + 1, z, s_seat(x, z))
+        elif (n + col) % 2 == 0:
+            stairs(b, x, top + 1, z, STONE_BRICK, s_side(z, x))  # the aisle's step
+
+
+def s_end_stairs(b):
+    """The ends' stairwells: five steps up along the third tier from the concourse to the second row, open over the
+    stand like a trench."""
+    for x in S_END_STAIRS.values():
+        for z in range(24, 29):
+            y = s_end_step(x, z)
+            for yy in range(1, y):
+                b.set(x, yy, z, S_BODY)
+            stairs(b, x, y, z, STONE_BRICK, "north")
 
 
 def stage_s2(b):
     for (x, z), kind in S_PLAN.items():
         if isinstance(kind, tuple) and kind[0] == "tier" and kind[1] <= 3:
             s_tier(b, x, z, kind[1])
-    lantern(b, SCX, 3, 4, hanging=True)  # in the tunnel
+    s_end_stairs(b)
 
 
 def s_wall_order():
@@ -4381,29 +4591,52 @@ def s_wall_order():
     return sorted(cells, key=lambda c: math.atan2(c[1] - SCZ, c[0] - SCX))
 
 
+def s_opens(x, z):
+    """Whether a wall cell has the concourse behind it (an arch there leads somewhere)."""
+    return any(s_concourse(x + dx, z + dz) for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+
+
+def s_outward(x, z):
+    """The way out of the bowl from a wall cell (towards a cell outside the plan)."""
+    for f, (dx, dz) in sorted(DIRS.items(), key=lambda d: -((x - SCX) * d[1][0] / 27 + (z - SCZ) * d[1][1] / 22)):
+        if (x + dx, z + dz) not in S_PLAN:
+            return f
+    return None
+
+
 def s_back_wall(b):
     order = s_wall_order()
     for i, (x, z) in enumerate(order):
         top = S_PLAN[(x, z)][1]
         if s_covered(x, z):
-            top = 10  # carried up to the canopy
-        if x == 44 and 13 <= z <= 23:
-            top = 7  # under the scoreboard
+            top = 12  # up to the canopy
+        if s_scoreboard_wall(x, z):
+            top = 9  # under the scoreboard
         if s_pier(x, z):
             continue
         pilaster = i % 4 == 0
         covered_wall = s_covered(x, z)
         portal = s_tunnel(x, z)  # the gateway's mouth, open to 7 under an arch
-        arch = i % 4 != 0 and not portal and not (x == 44 and 13 <= z <= 23) and s_opens(x, z)
+        players = z == 42 and S_PLAYERS[0] <= x <= S_PLAYERS[1]
+        room_window = players and any(r0 <= x <= r1 for r0, r1 in S_ROOMS.values()) and x not in (22, 32)
+        ptunnel = players and S_PTUNNEL[0] <= x <= S_PTUNNEL[1]
+        arch = not pilaster and not portal and not players and s_opens(x, z)
+        upper_window = i % 4 == 2 and z in (2, 42) and S_UPPER[0] < x < S_UPPER[1] and not portal
         for y in range(1, top + 1):
-            if arch and y <= 3:
-                continue  # an arch into the concourse
+            if (arch or ptunnel) and y <= 3:
+                continue  # an arch into the concourse, or the players' door
             if y == 4 and not pilaster and not portal:
                 b.set(x, y, z, "smooth_stone")  # the arcade's lintel, a course right round
                 continue
             if portal and y <= 7:
                 if y == 7 and x in S_TUNNEL:
                     stairs(b, x, y, z, STONE_BRICK, "west" if x == S_TUNNEL[0] else "east", top=True)
+                continue
+            if room_window and not pilaster and y == 2:
+                pane(b, x, y, z)  # a changing room's window
+                continue
+            if upper_window and y in (5, 6):
+                pane(b, x, y, z)  # the upper corridor's slit windows
                 continue
             if y == top:
                 name = "smooth_stone"
@@ -4414,48 +4647,120 @@ def s_back_wall(b):
             else:
                 name = "stone_bricks" if pilaster else S_BODY
             b.set(x, y, z, name)
-        if s_covered(x, z) or (x == 44 and 13 <= z <= 23) or portal:
+        if covered_wall or s_scoreboard_wall(x, z) or portal:
             continue  # under the canopy, the scoreboard or the gate's lintel
         if pilaster:
             b.set(x, top + 1, z, "stone_bricks")
             lantern(b, x, top + 2, z)
         else:
             wall_block(b, x, top + 1, z, "stone_brick_wall")
-    lantern(b, SCX, 7, 1, hanging=True)  # in the gateway
 
 
-def s_opens(x, z):
-    """Whether a wall cell has the concourse behind it (an arch there leads somewhere)."""
-    return any(S_PLAN.get((x + dx, z + dz), ("", 0)) == ("tier", s_tiers(x + dx, z + dz))
-               and not s_in_box(x + dx, z + dz) and not s_pier(x + dx, z + dz)
-               for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+def s_cornices(b):
+    """Depth on the back wall: a hood of slabs over the arcade and a cornice of stone brick stairs under the top band,
+    both one out from the wall."""
+    for i, (x, z) in enumerate(s_wall_order()):
+        if s_covered(x, z) or s_scoreboard_wall(x, z) or s_tunnel(x, z) or s_pier(x, z):
+            continue
+        f = s_outward(x, z)
+        if not f:
+            continue
+        ox, oz = x + DIRS[f][0], z + DIRS[f][1]
+        if b.get(ox, 4, oz) is None:
+            slab(b, ox, 4, oz, STONE_BRICK, top=True)
+        top = S_PLAN[(x, z)][1]
+        if b.get(ox, top - 2, oz) is None:
+            stairs(b, ox, top - 2, oz, STONE_BRICK, OPP[f], top=True)
 
 
 def s_piers_low(b):
     """The gate's piers as high as the wall, so the stand ends square against them."""
     for a, c in S_PIERS:
         for x in (a, c):
-            for z in (0, 1):
-                for y in range(1, 15):
-                    if z == 1 and y <= 3:
-                        continue  # the concourse comes through into the gateway
-                    name = "smooth_stone" if y in (1, 14) else ("chiseled_stone_bricks" if y in (5, 10) else "stone_bricks")
+            for z in (1, 2):
+                for y in range(1, 17):
+                    name = "smooth_stone" if y in (1, 16) else ("chiseled_stone_bricks" if y in (5, 10) else "stone_bricks")
                     b.set(x, y, z, name)
+
+
+def s_stairs(b):
+    """The stairs from the concourse up to the upper corridor, four steps along its middle row at each end."""
+    for (x, z), y in S_STAIR_STEPS.items():
+        way = next(w for x0, w in S_STAIRS if abs(x - x0) <= 3)
+        for yy in range(1, y):
+            s_put(b, x, yy, z, S_BODY)
+        stairs(b, x, y, z, STONE_BRICK, "east" if way > 0 else "west")
+
+
+def s_upper_rails(b):
+    """Rails where the north upper corridor looks down into the gateway."""
+    for x in (S_TUNNEL[0] - 1, S_TUNNEL[1] + 1):
+        for n in (4, 5, 6):
+            fence(b, x, 5, s_row("north", n), "spruce_fence")
+
+
+def s_kiosks(b):
+    """The food kiosks in the north concourse: a counter under a striped awning before a niche with a smoker and
+    barrels, a lantern on the counter."""
+    zn, zc = s_row("north", 3), s_row("north", 4)
+    for m in S_KIOSKS:
+        for k, x in enumerate(range(m - 1, m + 2)):
+            if k == 1:
+                b.set(x, 1, zn, "smoker", facing="south", lit=False)
+            else:
+                b.set(x, 1, zn, "barrel", facing="up", open=False)
+            slab(b, x, 1, zc, SPRUCE, top=True)
+            b.set(x, 3, zc, "red_wool" if k % 2 == 0 else "white_wool")
+        b.set(m - 1, 2, zn, "cake", bites=0)
+        lantern(b, m, 2, zc)
+
+
+def s_press_room(b):
+    """The press room in the south upper corridor behind the professor's box: desks against the wall, chairs at them."""
+    zd, zc = s_row("south", 6), s_row("south", 5)
+    for x0 in (22, 30):
+        for x in (x0, x0 + 1, x0 + 2):
+            slab(b, x, 5, zd, SPRUCE, top=True)
+            stairs(b, x, 5, zc, SPRUCE, "north")
+    b.set(SCX, 5, zd, "lectern", facing="north", has_book=False, powered=False)
+
+
+def s_inside_lights(b):
+    """Lanterns hung along the concourse, the upper corridors, the tunnels and the rooms."""
+    mids = [c for c in S_PLAN if s_concourse(*c) and s_tier_of(*c) == s_tiers(*c) - 1]
+    mids.sort(key=lambda c: math.atan2(c[1] - SCZ, c[0] - SCX))
+    for i, (x, z) in enumerate(mids):
+        if i % 5 == 2 and (x, z) not in S_STAIR_STEPS and not s_tunnel(x, z) and not s_kiosk(x, z) \
+                and b.get(x, 4, z) is not None and b.get(x, 3, z) is None:
+            lantern(b, x, 3, z, hanging=True)
+    for side in ("north", "south"):
+        z = s_row(side, 5)
+        for x in range(S_UPPER[0] + 3, S_UPPER[1] - 2, 4):
+            if s_upper(x, z) and b.get(x, 8, z) is not None and b.get(x, 7, z) is None:
+                lantern(b, x, 7, z, hanging=True)
+    lantern(b, SCX, 7, 3, hanging=True)  # in the gateway
+    lantern(b, SCX, 4, 6, hanging=True)
+    for z in (37, 40):
+        lantern(b, SCX, 3, z, hanging=True)  # in the players' tunnel
+    for r0, r1 in S_ROOMS.values():
+        lantern(b, (r0 + r1) // 2, 3, 39, hanging=True)
+    for x, colour in ((22, "red"), (32, "white")):
+        s_banner(b, x, 3, 41, facing="north", colour=colour)  # the club's banner over the lockers
 
 
 def s_canopy(b):
     """The covered stand's lean-to: spruce slabs stepping up from the barrier to the back wall, on spruce columns."""
-    for z in range(9, 28):
-        wall_x = min(x for x in range(0, 8) if S_PLAN.get((x, z), ("", 0))[0] == "wall")
-        for x in range(wall_x, 8):
-            k = 7 - x
-            y = 9 + k // 2
+    for z in range(16, 29):
+        wall_x = min(x for x in range(0, 10) if S_PLAN.get((x, z), ("", 0))[0] == "wall")
+        for x in range(wall_x, 10):
+            k = 9 - x
+            y = 11 + k // 2
             slab(b, x, y, z, SPRUCE, top=k % 2 == 1)
-    for z in (12, 15, 21, 24):
-        for y in range(3, 9):
-            log(b, 6, y, z, "spruce_log")
-    for z in (13, 18, 23):
-        lantern(b, 5, 9, z, hanging=True)
+    for z in (16, 19, 25, 28):
+        for y in range(3, 11):
+            log(b, 9, y, z, "spruce_log")
+    for z in (18, 22, 26):
+        lantern(b, 7, 11, z, hanging=True)
 
 
 S_DIGITS = {"2": ["###", "..#", "###", "#..", "###"], "1": [".#.", "##.", ".#.", ".#.", "###"]}
@@ -4464,25 +4769,25 @@ S_DIGITS = {"2": ["###", "..#", "###", "#..", "###"], "1": [".#.", "##.", ".#.",
 def s_scoreboard(b):
     """The scoreboard over the east wall, facing the field: a stone frame, a red header, the score 2 - 1 (the board
     faces west, so the stands read it north to south)."""
-    x = 44
-    for z in range(13, 24):
-        for y in range(8, 16):
-            if z in (13, 23) or y in (8, 15):
-                b.set(x, y, z, "smooth_stone" if y == 8 else "stone_bricks")
-            elif y == 14:
+    x = 50
+    for z in range(17, 28):
+        for y in range(10, 18):
+            if z in (17, 27) or y in (10, 17):
+                b.set(x, y, z, "smooth_stone" if y == 10 else "stone_bricks")
+            elif y == 16:
                 b.set(x, y, z, "red_terracotta")
             else:
                 b.set(x, y, z, "white_terracotta" if s_score(z, y) else "black_terracotta")
-    for z in (12, 24):
-        for y in range(0, 16):
-            b.set(45, y, z, "smooth_stone" if y in (0, 15) else "stone_bricks")
+    for z in (16, 28):
+        for y in range(1, 18):
+            b.set(51, y, z, "smooth_stone" if y in (1, 17) else "stone_bricks")
 
 
 def s_score(z, y):
-    for digit, z0 in (("2", 15), ("1", 19)):
+    for digit, z0 in (("2", 19), ("1", 23)):
         if z0 <= z < z0 + 3:
-            return S_DIGITS[digit][13 - y][z - z0] == "#"
-    return z == 18 and y == 11  # the dash
+            return S_DIGITS[digit][15 - y][z - z0] == "#"
+    return z == 22 and y == 13  # the dash
 
 
 def stage_s3(b):
@@ -4490,67 +4795,90 @@ def stage_s3(b):
     for (x, z), kind in S_PLAN.items():
         if isinstance(kind, tuple) and kind[0] == "tier" and kind[1] >= 4:
             s_tier(b, x, z, kind[1])
+    s_stairs(b)
     s_back_wall(b)
+    s_cornices(b)
     s_canopy(b)
     s_scoreboard(b)
+    s_upper_rails(b)
+    s_kiosks(b)
+    s_press_room(b)
+    s_inside_lights(b)
 
 
 # --- stage IV: the gate and the floodlights ---------------------------------------------------------------------------------
 def s_gate(b):
-    """The gateway arch over the tunnel's mouth: the piers carried up to 18, a lintel banded red and white on an arch,
-    standing banners on the piers, banners hung from the lintel over the stand."""
+    """The gateway arch over the tunnel's mouth: the piers carried up to 21, a lintel banded red and white on an arch,
+    standing banners on the piers, banners hung from the lintel over the stand, flower beds either side of the steps."""
     for a, c in S_PIERS:
         for x in (a, c):
-            for z in (0, 1):
-                for y in range(15, 19):
-                    b.set(x, y, z, "chiseled_stone_bricks" if y == 18 else "stone_bricks")
+            for z in (1, 2):
+                for y in range(17, 22):
+                    b.set(x, y, z, "chiseled_stone_bricks" if y == 21 else "stone_bricks")
     for x in range(S_TUNNEL[0], S_TUNNEL[1] + 1):
-        for z in (0, 1):
-            b.set(x, 16, z, "red_terracotta" if x % 2 else "white_terracotta")
-            b.set(x, 17, z, "stone_bricks")
-            b.set(x, 18, z, "smooth_stone")
-            slab(b, x, 19, z, STONE_BRICK)
-    for z in (0, 1):
-        stairs(b, S_TUNNEL[0], 15, z, STONE_BRICK, "west", top=True)
-        stairs(b, S_TUNNEL[1], 15, z, STONE_BRICK, "east", top=True)
+        for z in (1, 2):
+            b.set(x, 18, z, "red_terracotta" if x % 2 else "white_terracotta")
+            b.set(x, 19, z, "stone_bricks")
+            b.set(x, 20, z, "smooth_stone")
+            slab(b, x, 21, z, STONE_BRICK)
+    for z in (1, 2):
+        stairs(b, S_TUNNEL[0], 17, z, STONE_BRICK, "west", top=True)
+        stairs(b, S_TUNNEL[1], 17, z, STONE_BRICK, "east", top=True)
     for x in (S_PIERS[0][1], S_PIERS[1][0]):
-        s_banner(b, x, 19, 0, rotation=8)
-    for x in (22, 24):
-        s_banner(b, x, 16, 2, facing="south")
+        s_banner(b, x, 22, 1, rotation=8)
+    for x in (26, 28):
+        s_banner(b, x, 18, 3, facing="south")
+    for x0, x1 in ((19, 22), (32, 35)):  # S_BEDS
+        flower_bed(b, x0, 0, x1, 0, 0, ["poppy", "oxeye_daisy", "azure_bluet", None], edge=None)
+
+
+def s_wall_banners(b):
+    """Banners hung on the back wall in the middle of every other bay, under the upper band."""
+    for i, (x, z) in enumerate(s_wall_order()):
+        if i % 8 != 2 or s_covered(x, z) or s_scoreboard_wall(x, z) or s_tunnel(x, z) or s_pier(x, z):
+            continue
+        f = s_outward(x, z)
+        if not f:
+            continue
+        dx, dz = DIRS[f]
+        top = S_PLAN[(x, z)][1]
+        y = top - 3
+        if b.get(x + dx, y, z + dz) is None and b.get(x, y, z) is not None:
+            s_banner(b, x + dx, y, z + dz, facing=f, colour="red" if (i // 8) % 2 else "white")
 
 
 def s_floodlight(b, sx, sz):
-    """A floodlight tower: a stone shaft at (sx, sz) to 15, an iron head, a ring of eight lamps under redstone wire round
+    """A floodlight tower: a stone shaft at (sx, sz) to 18, an iron head, a ring of eight lamps under redstone wire round
     the daylight detector on the iron at its middle (inverted: it lights them at night)."""
-    for y in range(0, 16):
-        b.set(sx, y, sz, "smooth_stone" if y in (0, 5, 10) else "stone_bricks")
+    for y in range(0, 19):
+        b.set(sx, y, sz, "smooth_stone" if y in (0, 6, 12) else "stone_bricks")
     head = [(x, z) for x in range(sx - 1, sx + 2) for z in range(sz - 1, sz + 2)]
     for x, z in head:
         if (x, z) == (sx, sz):
-            b.set(x, 16, z, "iron_block")
-            b.set(x, 17, z, "iron_block")
-            b.set(x, 18, z, "daylight_detector", inverted=True, power=0)
+            b.set(x, 19, z, "iron_block")
+            b.set(x, 20, z, "iron_block")
+            b.set(x, 21, z, "daylight_detector", inverted=True, power=0)
         else:
-            b.set(x, 16, z, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
-            b.set(x, 17, z, "redstone_lamp", lit=False)
+            b.set(x, 19, z, "iron_bars", north=False, south=False, east=False, west=False, waterlogged=False)
+            b.set(x, 20, z, "redstone_lamp", lit=False)
             sides = {f: ("side" if (x + dx, z + dz) in head and (x + dx, z + dz) != (sx, sz) else "none")
                      for f, (dx, dz) in DIRS.items()}
-            b.set(x, 18, z, "redstone_wire", power=0, **sides)
+            b.set(x, 21, z, "redstone_wire", power=0, **sides)
 
 
-S_FLOODS = ((1, 1), (45, 1), (1, 35), (45, 35))
+S_FLOODS = ((2, 2), (52, 2), (2, 42), (52, 42))
 S_BARREL = ("barrel", {"facing": "up", "open": False})
-S_PITCHES = ((41, 0, [S_BARREL, ("melon", {}), ("pumpkin", {})]),
-             (41, 34, [("hay_block", {"axis": "y"}), S_BARREL, None]),
-             (3, 34, [S_BARREL, ("cake", {"bites": 0}), ("carved_pumpkin", {"facing": "north"})]),
-             (0, 6, None), (44, 6, None), (0, 28, None), (44, 28, None))
+S_PITCHES = ((46, 0, [S_BARREL, ("melon", {}), ("pumpkin", {})]),
+             (46, 40, [("hay_block", {"axis": "y"}), S_BARREL, None]),
+             (6, 40, [S_BARREL, ("cake", {"bites": 0}), ("carved_pumpkin", {"facing": "north"})]),
+             (0, 8, None), (52, 8, None), (0, 34, None), (52, 34, None))
 
 
 def s_pitch(b, x0, z0, stall=None):
     """A market pitch: a 3 x 3 plot of smooth stone with a lamp post at its corner; a stall on it if given."""
     for x in range(x0, x0 + 3):
         for z in range(z0, z0 + 3):
-            b.set(x, 0, z, "smooth_stone")
+            s_put(b, x, 0, z, "smooth_stone")  # where the promenade isn't already
     if stall:
         from decor import kiosk
         kiosk(b, x0, z0, ["red_wool", "white_wool"], stall)
@@ -4562,7 +4890,7 @@ def s_nurse_booth(b, x0, z0):
     """The nurse's booth: a striped stall with a Healing Machine and a brewing stand on its counter."""
     for x in range(x0, x0 + 3):
         for z in range(z0, z0 + 3):
-            b.set(x, 0, z, "smooth_stone")
+            s_put(b, x, 0, z, "smooth_stone")
     from decor import kiosk
     kiosk(b, x0, z0, ["white_wool", "red_wool"], [
         ("cobblemon:healing_machine", {"facing": "north"}), None,
@@ -4571,9 +4899,10 @@ def s_nurse_booth(b, x0, z0):
 
 def stage_s4(b):
     s_gate(b)
+    s_wall_banners(b)
     for sx, sz in S_FLOODS:
         s_floodlight(b, sx, sz)
-    s_nurse_booth(b, 3, 0)
+    s_nurse_booth(b, 6, 0)
     for x0, z0, stall in S_PITCHES:
         s_pitch(b, x0, z0, stall)
 
@@ -4595,6 +4924,18 @@ def stadium_stage(stage=None):
     """For the renders only: the Stadium as it stands after a stage (whole by default)."""
     stages = stadium().stage_builds()
     return stages[(stage or len(stages)) - 1]
+
+
+def stadium_cut(y_max=SH, x_min=0, x_max=SW - 1, z_min=0, z_max=SD - 1):
+    """For the renders only: a piece of the whole Stadium (the blocks below y_max within the x and z range), cut out and
+    framed on its own, to see the concourse, the rooms and the tunnels inside."""
+    whole = stadium_stage()
+    cut = Build(x_max - x_min + 1, y_max, z_max - z_min + 1)
+    cut.blocks = {(x - x_min, y, z - z_min): v for (x, y, z), v in whole.blocks.items()
+                  if y < y_max and x_min <= x <= x_max and z_min <= z <= z_max}
+    cut.nbt = {(x - x_min, y, z - z_min): v for (x, y, z), v in getattr(whole, "nbt", {}).items()
+               if y < y_max and x_min <= x <= x_max and z_min <= z <= z_max}
+    return cut
 
 
 # --- the Wonders' data files -------------------------------------------------------------------------------------------

@@ -43,7 +43,7 @@ final class WonderGalleryScene {
 		new Wonder("great_wall", new Vec3i(97, 25, 15), -1), // 35.15: front (z = 0) is the village side
 		new Wonder("hanging_gardens", new Vec3i(47, 33, 44), -1), // 35.19
 		new Wonder("colossus", new Vec3i(29, 47, 29), -1), // 35.21: the road runs front to back through its arch
-		new Wonder("stadium", new Vec3i(47, 20, 37), -1)); // 35.23: its file and its Healing Machine need Cobblemon, so the scene is filmed with it
+		new Wonder("stadium", new Vec3i(55, 24, 45), -1)); // 35.23, 35.23a: its file and its Healing Machine need Cobblemon, so the scene is filmed with it
 	/** How far the sea reaches past a coastal Wonder's sides and back. */
 	private static final int SEA_MARGIN = 10;
 	private static final int SPACING = 80;

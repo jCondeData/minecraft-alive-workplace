@@ -4,17 +4,23 @@
 type: Wonder
 expansion: M35
 Needs: Cobblemon, a Town, the Pokémon Professor (or 25 pastured Pokémon of 10 types), the Master Architect
-Size: 47 by 37, its stands 16 high
+Size: 55 by 45, its stands 16 high
 Stages: The Field; The Lower Stands; The Upper Stands and the Covered Stand; The Gate and the Floodlights
 While it stands: every second afternoon visiting trainers come to battle, and the Festival Cup is held here
 categories: Wonders, Pokémon
 related: wonders.md, pokemon.md, festivals-and-markets.md
 ```
 
-An oval arena of stone round a grass battle field ruled in white, with stands of red and white seats, a trainer's box
-at each end and a professor's box, a covered stand, a gateway arch, a scoreboard and four floodlight towers that light
-up at night. Outside are a nurse's booth with a Healing Machine and pitches for market stalls. In a village with its
-own colors, the seats are built in them.
+An oval arena of stone round a grass battle field ruled in white, with stands of red and white seats, a trainer's
+dugout at each end and a professor's box, a covered stand, a gateway arch, a scoreboard and four floodlight towers that
+light up at night. Outside are a nurse's booth with a Healing Machine and pitches for market stalls. In a village with
+its own colors, the seats are built in them.
+
+You can walk all through it, like a real football ground. Go in under the arches into the concourse that runs right
+round under the stands, past two food kiosks by the gate, then up the stairs at the end of a long side into the upper
+corridor and out through a vomitory onto the seats; aisles of steps climb every stand. Behind the south wall a door
+leads into the players' tunnel, between the home and away changing rooms and straight out onto the pitch, and above it
+the press room opens into the professor's box.
 
 ## What it needs
 

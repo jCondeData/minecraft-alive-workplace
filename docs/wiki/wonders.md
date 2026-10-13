@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.11, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.11, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23, 35.23a
 
 ## What a player sees
 
@@ -369,21 +369,30 @@ Beastmaster, 36 days), an Elytra (the Pathfinder, 45 days); made: 2 Vintage Wine
 Founder (or City rank while Legends are off). Its powers, the realm's mood, the travelers and its beauty, come with
 35.22.
 
-**The Stadium** (35.23, only with Cobblemon) is drawn: an oval arena 47 by 37, its bowl 16 high (20 to the gate's
-banners and the floodlights, about 7,300 blocks), round a grass battle field 31 by 21 ruled in white (its edge, the
-half-way line, a center circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
-time, five tiers along the long sides and three at the ends, with red and white carpet seats in wedges round the bowl;
-in a village with a Village Banner the red and the white are built in its banner's two colors instead (the base and
-the first other color of its pattern; the field's white lines stay white). A trainer's box is cut into each end, a
-stone room under a spruce roof with a Training Post facing the field, and the professor's box stands raised in the
-middle of the south stand, a lectern behind its rail. The west end is the covered stand, under a lean-to canopy of
-spruce slabs on four spruce columns; over the east end stands the scoreboard, black terracotta in a stone frame under
-a red header, showing 2 - 1. Outside, the back wall is an arcade into a concourse that runs round under the top tier,
-with pilasters, two bands of red and white terracotta and a parapet with lanterns. The gateway on the north side is a
-tunnel through the stand under two piers and a lintel banded red and white, with standing banners on the piers and
-banners hung over the stand. Four floodlight towers stand at the corners, each an iron head with eight redstone lamps
-wired round a daylight detector that lights them at night. In the corners outside are the nurse's booth (a striped
-stall with a Healing Machine and a brewing stand) and seven market pitches, three with stalls on them. Its stages: I
+**The Stadium** (35.23, only with Cobblemon; made bigger and given its insides in 35.23a) is drawn: an oval arena 55
+by 45, its bowl 16 high (22 to the gate's banners and the floodlights, about 9,550 blocks), round a grass battle field
+33 by 23 ruled in white (its edge, the half-way line, a center circle; no logos) inside a smooth stone apron and a
+stone barrier. The stands step up two at a time, six tiers along the long sides and four at the ends, with red and
+white carpet seats in wedges round the bowl; in a village with a Village Banner the red and the white are built in its
+banner's two colors instead (the base and the first other color of its pattern; the field's white lines stay white).
+Aisles of steps (stair blocks in a checkerboard) climb each stand a block at a time. Inside, like a real football
+ground: a concourse three wide and three high runs right round under the stands behind the back wall's arcade, lit by
+lanterns, with a food kiosk either side of the gate (a counter under a striped awning, a smoker and barrels); along the
+long sides an upper corridor runs over it, reached by a stair at each end, with slit windows out and four vomitories
+through the stand onto the second row; at the ends a stairwell climbs from the concourse to the second row. On the
+south side the players' tunnel runs from a door in the back wall straight out onto the pitch between the home (red)
+and away (white) changing rooms, each with benches, lockers, a basin and its banner; over it the professor's box (a
+lectern behind a spruce rail) opens at the back into the press room, with desks and chairs. The trainers' boxes at the
+ends are dugouts off the concourse, each with a bench and a Training Post facing the field. The west end is the covered
+stand, under a lean-to canopy of spruce slabs on four spruce columns; over the east end stands the scoreboard, black
+terracotta in a stone frame under a red header, showing 2 - 1. Outside, the back wall has pilasters, a hood of slabs
+over the arcade, slit windows, two bands of red and white terracotta under a cornice, banners between the bays and a
+parapet with lanterns, and a paved promenade runs round it. The gateway on the north side is a tunnel through the stand
+and the concourse (the upper corridor looks down into it over rails) under two piers and a lintel banded red and white,
+with standing banners on the piers, banners hung over the stand and flower beds by the steps. Four floodlight towers
+stand at the corners, each an iron head with eight redstone lamps wired round a daylight detector that lights them at
+night. In the corners outside are the nurse's booth (a striped stall with a Healing Machine and a brewing stand) and
+seven market pitches, three with stalls on them. Its stages: I
 *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The Gate and the Floodlights*.
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I Diamond
 Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days); made: 2 Great Balls
@@ -644,9 +653,13 @@ loader, every part loads and is at most 48 a side, its name, description and sta
 aren't in the Blueprint Table, no part sets air over an earlier stage's block, the block count is within 10% of the
 roadmap's (14,000 for the Cathedral, 5,000 for the Lighthouse, 16,000 for the Great Library, 9,000 for the Observatory, 12,300 for the Great Wall, 15,000 for the Hanging Gardens, 9,000 for the Colossus), and it uses no retired job block, no calcite and nothing a player can't get (still water counts: a builder pours it from a bucket).
 The Stadium's file and its Healing Machine need Cobblemon, so its same checks run in the compat tests
-(`StadiumCompatTests`, 7,300 blocks), with its requirements and goods as listed, its nurse's booth, Training Posts and
-floodlights, and its stages built in a village's banner colors (blue and red for a blue banner with a red stripe, the
-field's lines still white; red and white for a village without one). `StadiumGameTests`, without Cobblemon: its file
+(`StadiumCompatTests`, 9,550 blocks), with its requirements and goods as listed, its nurse's booth, Training Posts and
+floodlights, its stages built in a village's banner colors (blue and red for a blue banner with a red stripe, the
+field's lines still white; red and white for a village without one), and its insides (35.23a,
+`StadiumCompatTests.stadiumInsideIsWalkable`): the concourse and the upper corridor are there, the players' tunnel runs
+roofed from the back wall to the pitch, and walking a block up or down at a time from outside a player reaches the
+pitch, both changing rooms, the press room, the professor's box, a second-row seat through a vomitory, the top rows up
+the aisles and the ends' stands up their stairwells. `StadiumGameTests`, without Cobblemon: its file
 is skipped quietly (not on the page, no mistake logged), and the colors style and how a banner picks it.
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and

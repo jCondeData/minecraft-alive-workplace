@@ -2,7 +2,7 @@
 
 ```infobox
 type: Legend
-expansion: M29
+expansion: M29, M33
 image: https://jcondedata.github.io/minecraft-alive-workplace/legend_founder/still-3.jpg
 caption: The Founder's statue by the hall
 Rarity: Mythic (a Town 1, a City 2)
@@ -11,9 +11,9 @@ The village must have: City rank, for the first time
 Trade: keeps their own trade
 Likes: books
 Masterwork: the Charter of the village, a written book of its story
-Powers: a statue by the hall; a [Founder's Wagon](founders-wagon.md) every 7 days
+Powers: a statue by the hall; a [Founder's Wagon](founders-wagon.md) every 7 days; leads [colonies](colonies.md)
 categories: Legends, Village Hall
-related: legends.md, founders-wagon.md, ranks.md
+related: legends.md, founders-wagon.md, ranks.md, colonies.md
 ```
 
 "The Master who stood up on the day the village became a City and wrote down how it all began."
@@ -33,10 +33,14 @@ it goes after a week to the next most experienced Master.
   beauty and everyone in the village is 5 happier.
 - **New villages.** Every 7 days the hall's owner is given a [Founder's Wagon](founders-wagon.md) to found a new village
   of their own.
+- **Colonies.** The village the Founder lives in may send out [colonies](colonies.md) from **Town** rank instead of
+  City. It sends four settlers instead of two and waits half as long between colonies (4 days instead of 7). A colony
+  sent while he lives there is "founded with the Founder's blessing" in both villages' chronicles, and his statue goes
+  up beside the colony's camp when the settlers arrive.
 
 ## How it fits with the rest
 
 - **What feeds them**: everything that makes a City, and your [builders](builder.md) for the statue.
-- **What they affect**: [moods](moods.md), [decorations](decorations.md) (the statue's beauty) and how many villages
-  you have.
+- **What they affect**: [moods](moods.md), [decorations](decorations.md) (the statue's beauty), how many villages
+  you have and how soon your [colonies](colonies.md) can go out.
 - **What stops them**: a strike stops the wagons; the statue keeps its beauty while it stands.

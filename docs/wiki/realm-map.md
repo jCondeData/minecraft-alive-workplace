@@ -1,6 +1,6 @@
 # The Realm Map
 
-ROADMAP 33.21 (part of 1.7, "From village to realm"; off until 1.7 is released). At any member's Village Hall the
+ROADMAP 33.21 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). At any member's Village Hall the
 Realm tab draws the whole realm on an empty map: a vanilla map you can hold, copy or hang in an item frame.
 
 Roadmap items: 33.21

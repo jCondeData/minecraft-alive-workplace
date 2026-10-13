@@ -1,6 +1,6 @@
 # Pillager warbands
 
-ROADMAP 32.7. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.7. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. The warband is a raider culture (see
 [Raids and threats](raids.md)) with a lair (see [Lairs and the Defense page](lairs.md)) that lays sieges (see
 [Sieges](sieges.md)).

@@ -25,4 +25,4 @@ Stops tracking: "You're no longer tracking a quest." The bar goes away.
 ## How it fits with the rest
 
 It's the same list as the journal's tabs. A quest that closed since you last looked says "That quest isn't open any
-more." Without this expansion the command answers "The quest journal isn't available yet."
+more."

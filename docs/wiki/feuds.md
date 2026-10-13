@@ -1,6 +1,6 @@
 # Feuds and war
 
-ROADMAP 33.20 (part of 1.7, "From village to realm"; off until 1.7 is released). An owner can fall out with another
+ROADMAP 33.20 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). An owner can fall out with another
 player's village: a **feud** ends trade between them and makes each side's board unfriendly to the other's people. On a
 server with PvP on, a feud can become a **war**, in which guards fight the rival owners, and nothing else.
 

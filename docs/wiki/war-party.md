@@ -1,6 +1,6 @@
 # Marching on the lair
 
-ROADMAP 32.13. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.13. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. How a player takes the fight to a lair (see
 [Lairs and the Defense page](lairs.md)) with the village's guards (see [Raids and threats](raids.md)) and hired swords.
 

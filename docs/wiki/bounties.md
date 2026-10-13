@@ -123,7 +123,8 @@ default; a world without the file starts with none.
 
 ## Known limits
 
-- The At peace / threat level 0 rule (32.21) is not built: 32.21 isn't on `main` yet.
+- The At peace / threat level 0 rule (no captains' bounties in a quiet village, 32.21) isn't applied: such a village
+  still posts them (bug B134).
 - A hideout with no clear natural ground within 32 blocks of its spot isn't built; its bounty stays up and comes down
   after 7 days.
 

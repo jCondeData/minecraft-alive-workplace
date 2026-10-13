@@ -1,6 +1,6 @@
 # The price board
 
-ROADMAP 33.2 to 33.4 (part of 1.7, "From village to realm"; off until 1.7 is released).
+ROADMAP 33.2 to 33.4 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion).
 
 Roadmap items: 33.2, 33.3, 33.4
 
@@ -54,7 +54,7 @@ A click on a good trades it: see [Trading at the board](board-trade.md) (33.5).
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageEconomy` | on from 1.7 (off until then) | Off: nothing is counted, the minecart opens the trade routes page as before (no tabs), the name icon has no "Known for" line and nobody talks of trade. The last prices stay saved for when it's back on. |
+| `villageEconomy` | on from 1.0 | Off: nothing is counted, the minecart opens the trade routes page as before (no tabs), the name icon has no "Known for" line and nobody talks of trade. The last prices stay saved for when it's back on. |
 | `villagerChatter` | on | Off: villagers say nothing, trade talk included. |
 
 ## Saved data

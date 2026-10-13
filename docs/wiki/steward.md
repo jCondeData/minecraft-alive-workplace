@@ -1,7 +1,7 @@
 # Steward
 
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
-has the builders build it. Part of 1.1 (Villages that build themselves): off until that expansion is finished.
+has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
 Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22
 
@@ -69,10 +69,10 @@ build the new one on the plot. The sleepers get the new beds and the worker keep
 
 | Key | Default | What it does |
 |---|---|---|
-| `steward` | on from 1.1 | Off: no new Stewards, and those appointed stand idle (the plan still paints) |
+| `steward` | on from 1.0 | Off: no new Stewards, and those appointed stand idle (the plan still paints) |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | The most builds a Steward may have open at once |
-| `stewardSelfRun` | on from 1.1 | Off: "Run the village" asks first, like every other mode |
-| `stewardRenewal` | on from 1.1 | Off: old houses are listed, never renewed |
+| `stewardSelfRun` | on from 1.0 | Off: "Run the village" asks first, like every other mode |
+| `stewardRenewal` | on from 1.0 | Off: old houses are listed, never renewed |
 | `maxSiteDistance` | 48 (16 to 256) | How far from a builder's bench a plot may be |
 | `villageHallRadius` | 64 (16 to 160) | The plan covers this far; a cell is 4 by 4 blocks at 64 |
 

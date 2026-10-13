@@ -1,6 +1,6 @@
 # Village fire and the Firewarden
 
-ROADMAP 32.16. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. Wooden villages can catch fire: from lightning, a
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
@@ -61,9 +61,9 @@ Roadmap items: 32.16
 
 | Key | Default | What it does |
 |---|---|---|
-| `firewardens` | on from 1.6 | Villagers at a grindstone can be made Firewardens with a water bucket. Off: no Firewarden job (the grindstone's tooltip leaves it out), and Firewardens already hired stand idle. |
+| `firewardens` | on from 1.0 | Villagers at a grindstone can be made Firewardens with a water bucket. Off: no Firewarden job (the grindstone's tooltip leaves it out), and Firewardens already hired stand idle. |
 | `disasters` | every disaster id → true | `village_fire: false`: no lightning, chimney or arrow fires, and the fire rules above are off (fire is vanilla's everywhere). |
-| `siegeDamage` | on from 1.6 | Off: a village fire burns nothing at all, the builders' blocks included, and goes out where it started. |
+| `siegeDamage` | on from 1.0 | Off: a village fire burns nothing at all, the builders' blocks included, and goes out where it started. |
 
 The mobGriefing game rule off keeps raiders' arrows from lighting anything; doFireTick off stops fire spreading
 anywhere, as in vanilla.

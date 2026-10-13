@@ -1,6 +1,6 @@
 # Scouts
 
-ROADMAP 32.12. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.12. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. A new kind of guard (see [Raids and threats](raids.md)) who finds
 where a lair (see [Lairs and the Defense page](lairs.md)) really is, and brings home a map to it.
 

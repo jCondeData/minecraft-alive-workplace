@@ -1,6 +1,6 @@
 # Plague and the Physician
 
-ROADMAP 32.18. Part of Milestone 32 (1.6), so it is **off for players until the milestone is finished**
+ROADMAP 32.18. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion
 (`Expansions.M32`); GameTests and the showcase run with it on. A Town or bigger can be struck by a plague: illness
 passes from villager to villager, the ill take to their beds, and the Nurse's remedies don't help. A new job, the
 **Physician**, goes house to house with a new item, the **Remedy**.
@@ -55,7 +55,7 @@ Roadmap items: 32.18
 
 | Key | Default | What it does |
 |---|---|---|
-| `physicians` | on from 1.6 | Villagers at a brewing stand can be made Physicians with a glistering melon slice. Off: no Physician job (the brewing stand's tooltip leaves it out), and Physicians already hired stand idle. |
+| `physicians` | on from 1.0 | Villagers at a brewing stand can be made Physicians with a glistering melon slice. Off: no Physician job (the brewing stand's tooltip leaves it out), and Physicians already hired stand idle. |
 | `disasters` | every disaster id → true | `plague: false`: no plague ever starts, and one under way ends at once. |
 
 ## Saved data

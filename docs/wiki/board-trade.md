@@ -1,6 +1,6 @@
 # Trading at the board
 
-ROADMAP 33.5 (part of 1.7, "From village to realm"; off until 1.7 is released). It builds on
+ROADMAP 33.5 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). It builds on
 [the price board](price-board.md).
 
 Roadmap items: 33.5
@@ -69,7 +69,7 @@ nugget, and nothing else: no way back to the hall's screen, no Routes tab. So an
 
 | Key | Default | What it does |
 |---|---|---|
-| `villageEconomy` | on from 1.7 (off until then) | Off: no Trade page, so no trading; a stranger's right click on a protected hall is refused as before; and anyone who can open a hall collects its treasury, as before 1.7. |
+| `villageEconomy` | on from 1.0 | Off: no Trade page, so no trading; a stranger's right click on a protected hall is refused as before; and anyone who can open a hall collects its treasury, as before 1.7. |
 | `villageTreasury` | on | Off: the village puts by no takings; the board still pays from and into whatever the treasury holds. |
 | `villageProtection` | on | Off: no village keeps anyone out, so everyone gets the whole hall. Who may collect doesn't depend on it. |
 
@@ -94,7 +94,7 @@ None of its own. It needs a Village Hall and a Storehouse with at least one ches
   the difference to the village. Selling one 0.8-emerald bundle for nothing would be a trap, so it's refused with a
   hint to sell several at once.
 - **The treasury nugget sits in slot 3 of the page's row**, on every tab, between the way back and the tabs.
-- **The collecting rule follows `villageEconomy`** (33.1: "waits for the M33 flag"): until 1.7 nothing changes.
+- **The collecting rule follows `villageEconomy`** (33.1: "waits for the M33 flag"): while the 1.7 gate is closed (before 1.0) nothing changes.
 - **Healing potions only, and no worn tools** (33.3's note on Remedies; worn tools are lane a's): otherwise water
   bottles and nearly broken swords would empty a treasury.
 - **Earnings stop at the treasury's cap**, like the takings and the Merchant Prince's caravan pay.
@@ -108,7 +108,8 @@ None of its own. It needs a Village Hall and a Storehouse with at least one ches
 - In very large modded storage (drawers), what the village can spare may be undercounted: each slot counts as 64 at
   most.
 - A shift-click in a full inventory still buys the first bundle; what doesn't fit drops at your feet.
-- Feuds (25% dearer for a rival, 33.20) and the realm's Common Coin (a smaller spread, 33.16) aren't built yet.
+- A feud changes the board's prices for a rival's people ([Feuds and war](feuds.md), 33.20), and a realm's Common Coin
+  narrows the spread ([Founding a realm](realms.md), 33.16); this page's numbers are without either.
 
 ## Proof
 

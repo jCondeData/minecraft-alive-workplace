@@ -92,7 +92,8 @@ Roadmap items: 32.21
 
 - At peace can only be set from the Defense page, so players see it once Milestone 32 opens; the threat level and
   Peaceful work now.
-- Bandit King arcs, bounty captains and other story threats don't read the threat level.
+- Bandit King arcs, bounty captains and other story threats don't read the threat level (for bounties 31.13 says they
+  should: bug B134).
 - At threat level 3 the fire, drought and plague chances are capped at 100% a day.
 
 ## Proof

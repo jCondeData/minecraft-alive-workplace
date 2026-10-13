@@ -1,6 +1,6 @@
 # Caravans you can see
 
-ROADMAP 33.7 (part of 1.7, "From village to realm"; off until 1.7 is released). When a caravan leaves or arrives in a
+ROADMAP 33.7 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). When a caravan leaves or arrives in a
 village you are standing in, you see it: a carter leading two pack llamas. It builds on
 [caravans that trade](caravan-trade.md).
 
@@ -49,7 +49,7 @@ chests, no feeding. Nothing can hurt them, they pick nothing up, and when they g
 
 | Key | Default | What it does |
 |---|---|---|
-| `visibleCaravans` | on from 1.7 (off until then) | Off: no carter or llamas are shown, and any out walking are taken away. The goods travel exactly the same. |
+| `visibleCaravans` | on from 1.0 | Off: no carter or llamas are shown, and any out walking are taken away. The goods travel exactly the same. |
 | `villageBanners` | on | Off: every village's caravans wear the color picked from its hall's position. |
 
 ## Saved data

@@ -97,6 +97,7 @@ final class ReliefScene {
 	private static BlockPos hall(ServerLevel level, ServerPlayer player, int x, String name, VillageRanks.Rank rank, int villagers) {
 		BlockPos at = ground(level, x, 4);
 		level.setBlockAndUpdate(at, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
+		ScreenshotHarness.fileRecords(level, at, 1); // the hall's record now, not in vanilla's next task, so its guards find it (B130)
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(at);
 		entity.setCustomName(Component.literal(name));
 		entity.setOwner(player.getUUID(), player.getGameProfile().getName());
@@ -142,6 +143,8 @@ final class ReliefScene {
 			level.addFreshEntity(zombie);
 			raiders.add(zombie);
 		}
+		io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget(); // (the halls were filed above: look them up again)
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		VillageRaids.track(level, ashford, raiders.size());
 		Relief.call(level, ashford);
 		Vec3 eye = new Vec3(ashford.getX() + 0.5, ashford.getY() + 12, ashford.getZ() + 26);

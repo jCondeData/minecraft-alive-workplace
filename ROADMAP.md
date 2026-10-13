@@ -4208,7 +4208,7 @@ Legends.
     builders repair it and it comes back; finished Wonders survive a save and reload;
   - a GameTest checks the server-wide message and the chronicle lines;
   - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
-  - [x] **35.8a** (review: pending 2026-10-13) Change from the owner (2026-10-13): fix the dirt band round the folly's top under the dome (it should be the stone cornice)
+  - [x] **35.8a** (approved 2026-10-13) Change from the owner (2026-10-13): fix the dirt band round the folly's top under the dome (it should be the stone cornice)
 - [x] **35.9** (approved 2026-10-12) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
   critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
   `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two

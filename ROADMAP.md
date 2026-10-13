@@ -4154,7 +4154,7 @@ Legends.
   - the folly's dome is finished with no skipped steps;
   - scene `scaffolding`: a builder scaffolding up the pillar and taking it down, a GIF.
   - [ ] **35.6a** Change from the owner (2026-10-13): the builder must visibly put up and climb real vanilla scaffolding blocks; in the bot's shots no scaffolding shows at all, the builder stands on the cap and the pillar has a gap; refilm close enough to see the scaffolding
-- [x] **35.7** (review: pending 2026-10-13) **Goods from every job.** Besides its building blocks, each stage of a Wonder asks for goods: the feast
+- [x] **35.7** (approved 2026-10-13) **Goods from every job.** Besides its building blocks, each stage of a Wonder asks for goods: the feast
   for the crew, their tools, what the rites need (candles, books, potions) and its treasures. A stage starts only when
   all its goods are in the stockpile; then (by day; at night it waits for the morning) it is **dedicated**: the
   villagers off work gather at the stone, the village's Bard plays and its guards stand in line (if it has them), the

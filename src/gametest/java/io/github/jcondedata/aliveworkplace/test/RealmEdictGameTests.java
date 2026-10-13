@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.hall.Edicts;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
 import io.github.jcondedata.aliveworkplace.hall.Treasury;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageQuests;
 import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
@@ -20,6 +21,7 @@ import io.github.jcondedata.aliveworkplace.realm.RealmEdicts;
 import io.github.jcondedata.aliveworkplace.realm.RealmTreasury;
 import io.github.jcondedata.aliveworkplace.realm.Realms;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.trade.Board;
 import io.github.jcondedata.aliveworkplace.trade.Market;
 import io.github.jcondedata.aliveworkplace.trade.TradeGoods;
@@ -37,6 +39,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.npc.Villager;
@@ -44,6 +47,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 
 /**
  * Realm edicts (ROADMAP 33.22): the capital's Book of Edicts shows the realm's slots (a Barony's one, the rest locked
@@ -314,6 +318,73 @@ public class RealmEdictGameTests implements FabricGameTest {
 		helper.assertTrue(reformed(land, "common_market"), "not reformed at 20 trades");
 		helper.assertTrue(RealmTreasury.levy(server, theRealm(land)) == 10, "the levy after the reform: " + RealmTreasury.levy(server, theRealm(land)));
 		helper.assertTrue(Board.price(level, land.hall(0), good) == 150 && TradePage.selling(level, land.hall(1), 150, land.owner()) == 150, "the boost went");
+		helper.succeed();
+	}
+
+	/**
+	 * 33.22a, the Common Market at the board, the way players buy: the realm's own people (the members' owner) buy a
+	 * bundle at the board's price, a stranger still pays the 10 percent; the Prices tab tells each their own spread and a
+	 * buyer who can't pay is told their own price. The common price is 1 emerald (the members' 0.5 and 1.5), so the
+	 * owner is charged 1 emerald and the stranger 1.1, charged 2.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"realmEdictsMarketPeople"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "realmEdictsMarketPeople")
+	public void commonMarketPeople(GameTestHelper helper) {
+		RealmGameTests.Land land = realm(helper, 1, VillageRanks.Rank.TOWN, VillageRanks.Rank.HAMLET);
+		TradeGoodsDataGameTests.goodsFrom(helper, "aliveworkplace_test");
+		ServerLevel level = land.level();
+		ServerPlayer owner = land.owner();
+		ServerPlayer stranger = RealmGameTests.listener(helper, new ArrayList<>(), "market-people-stranger");
+		TradeGoods.Good timber = TradeGoods.get(BoardTradeGameTests.TIMBER);
+		BlockPos hall = land.hall(1);
+		helper.setBlock(new BlockPos(12, 2, 6), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(12, 2, 8), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(12, 2, 8));
+		Runnable prices = () -> {
+			chest.setItem(0, new ItemStack(Items.OAK_LOG, 64));
+			BoardTradeGameTests.price(helper, land.hall(0), BoardTradeGameTests.TIMBER, 50);
+			BoardTradeGameTests.price(helper, hall, BoardTradeGameTests.TIMBER, 150);
+		};
+		prices.run();
+		proclaim(helper, land, "common_market");
+		helper.assertTrue(Board.price(level, hall, timber) == 100, "the common price: " + Board.price(level, hall, timber));
+
+		// the Prices tab: each reads their own spread
+		ChoiceMenu ownMenu = VillageHallScreen.forTest(owner, hall);
+		ownMenu.press(VillageHallScreen.ROUTES, owner);
+		ownMenu.press(TradePage.Tab.PRICES.slot(), owner);
+		ChoiceMenu strangerMenu = TradePage.forStrangerTest(stranger, hall);
+		String ownTab = lore(ownMenu.icon(TradePage.Tab.PRICES.slot())).get(0);
+		String strangerTab = lore(strangerMenu.icon(TradePage.Tab.PRICES.slot())).get(0);
+		helper.assertTrue(ownTab.equals("What the village pays for a bundle of each good. Under the Common Market the realm's people buy at that price too; "
+			+ "strangers pay 10% more. Prices move a third of the way toward supply and demand each dawn"), "the owner's Prices tab: " + ownTab);
+		helper.assertTrue(strangerTab.contains("what it sells one for (10% more)"), "the stranger's Prices tab: " + strangerTab);
+		int ownSlot = BoardTradeGameTests.slot(helper, ownMenu, "Test Timber");
+		int strangerSlot = BoardTradeGameTests.slot(helper, strangerMenu, "Test Timber");
+		helper.assertTrue(lore(ownMenu.icon(ownSlot)).contains("We sell: 1 emerald") && lore(strangerMenu.icon(strangerSlot)).contains("We sell: 1.1 emeralds"),
+			"the good's tooltips: " + lore(ownMenu.icon(ownSlot)) + " / " + lore(strangerMenu.icon(strangerSlot)));
+
+		// without the money: each is told their own price
+		ownMenu.clicked(ownSlot, 1, ClickType.PICKUP, owner);
+		strangerMenu.clicked(strangerSlot, 1, ClickType.PICKUP, stranger);
+		helper.assertTrue(lore(ownMenu.icon(ownSlot)).get(0).equals("You can't pay 1 emerald for a bundle of Test Timber."), "the owner, broke: " + lore(ownMenu.icon(ownSlot)));
+		helper.assertTrue(lore(strangerMenu.icon(strangerSlot)).get(0).equals("You can't pay 1.1 emeralds for a bundle of Test Timber."),
+			"the stranger, broke: " + lore(strangerMenu.icon(strangerSlot)));
+
+		// the owner buys a bundle at the board's price
+		owner.getInventory().add(new ItemStack(Items.EMERALD, 5));
+		ownMenu.clicked(ownSlot, 1, ClickType.PICKUP, owner);
+		helper.assertTrue(BoardTradeGameTests.has(owner, Items.OAK_LOG) == 16 && BoardTradeGameTests.has(owner, Items.EMERALD) == 4,
+			"the owner: " + BoardTradeGameTests.has(owner, Items.OAK_LOG) + " logs, " + BoardTradeGameTests.has(owner, Items.EMERALD) + " emeralds");
+		helper.assertTrue(lore(ownMenu.icon(ownSlot)).get(0).endsWith("for 1 emerald."), "the owner's trade: " + lore(ownMenu.icon(ownSlot)));
+
+		// the same price again, and the stranger pays the 10 percent
+		prices.run();
+		stranger.getInventory().add(new ItemStack(Items.EMERALD, 5));
+		strangerMenu.clicked(strangerSlot, 1, ClickType.PICKUP, stranger);
+		helper.assertTrue(BoardTradeGameTests.has(stranger, Items.OAK_LOG) == 16 && BoardTradeGameTests.has(stranger, Items.EMERALD) == 3,
+			"the stranger: " + BoardTradeGameTests.has(stranger, Items.OAK_LOG) + " logs, " + BoardTradeGameTests.has(stranger, Items.EMERALD) + " emeralds");
+		helper.assertTrue(lore(strangerMenu.icon(strangerSlot)).get(0).endsWith("for 2 emeralds."), "the stranger's trade: " + lore(strangerMenu.icon(strangerSlot)));
 		helper.succeed();
 	}
 

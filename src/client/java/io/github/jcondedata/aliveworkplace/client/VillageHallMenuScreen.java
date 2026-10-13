@@ -3,13 +3,17 @@ package io.github.jcondedata.aliveworkplace.client;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.trade.TradePage;
 import io.github.jcondedata.aliveworkplace.work.ChoiceView;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * The Village Hall's own screen (ROADMAP 30.4a), drawn like vanilla's workstation screens: a grey bevelled window
@@ -70,6 +74,34 @@ public class VillageHallMenuScreen extends AbstractContainerScreen<ChoiceView> {
 		}
 		g.pose().popPose();
 		renderTooltip(g, mouseX, mouseY);
+	}
+
+	/**
+	 * A button's tooltip, every line wider than {@link #tooltipWidth} broken between words (ROADMAP 33.22a: an edict's
+	 * description, the Royal Highway's in the capital's book, ran off the screen), keeping each line's colours.
+	 */
+	@Override
+	protected void renderTooltip(GuiGraphics g, int x, int y) {
+		if (!menu.getCarried().isEmpty() || hoveredSlot == null || !hoveredSlot.hasItem()) {
+			return;
+		}
+		ItemStack stack = hoveredSlot.getItem();
+		int max = tooltipWidth(width);
+		List<FormattedCharSequence> lines = new ArrayList<>();
+		for (Component line : getTooltipFromContainerItem(stack)) {
+			List<FormattedCharSequence> parts = font.split(line, max);
+			if (parts.isEmpty()) {
+				lines.add(FormattedCharSequence.EMPTY);
+			} else {
+				lines.addAll(parts);
+			}
+		}
+		g.renderTooltip(font, lines, x, y);
+	}
+
+	/** How wide a tooltip line may be on a screen {@code screenWidth} GUI pixels wide: half of it less the gap to the mouse, 120 to 240. */
+	static int tooltipWidth(int screenWidth) {
+		return Math.max(120, Math.min(240, screenWidth / 2 - 20));
 	}
 
 	/** Draws an icon's marks over it; {@code x}, {@code y} is the icon's top-left corner. */

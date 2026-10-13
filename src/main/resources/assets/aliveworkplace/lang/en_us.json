@@ -1425,6 +1425,7 @@
   "screen.aliveworkplace.trade.tab.colonies": "Colonies",
   "screen.aliveworkplace.trade.prices_title": "Prices in %s",
   "screen.aliveworkplace.trade.prices_about": "What the village pays for a bundle of each good, and what it sells one for (%s%% more). Prices move a third of the way toward supply and demand each dawn",
+  "screen.aliveworkplace.trade.prices_about_realm": "What the village pays for a bundle of each good. Under the Common Market the realm's people buy at that price too; strangers pay %s%% more. Prices move a third of the way toward supply and demand each dawn",
   "screen.aliveworkplace.trade.prices_marks": "Gold star: known for it. Red mark: short of it. Arrow: up or down since yesterday",
   "screen.aliveworkplace.trade.prices_not_yet": "Not worked out yet: the hall counts its goods once a day",
   "screen.aliveworkplace.trade.no_goods": "No trade goods",

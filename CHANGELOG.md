@@ -113,6 +113,10 @@ asks for the steps, `latest.log` and any crash report).
   builder is lost goes on to another builder of its crew instead of counting as built with blocks missing (35.5).
 - A builder levelling the ground round a finished build with no dirt in its chests leaves the holes at once instead of
   standing there a tick for each one (about 20 seconds round a Wonder's last stage).
+- Under the Common Market the realm's own people buy at the board's price and strangers still pay the 10 percent, and
+  the board now says so: the Prices tab tells each player their own price, and "You can't pay …" names the price that
+  buyer would have paid. Long tooltips in the Village Hall and the Book of Edicts (the Royal Highway's) are wrapped to
+  fit on screen (33.22a).
 
 ### Changed
 - **The Observatory's Sky Chart covers about 6,144 blocks** (35.18a, part of Wonders, for 2.0; the owner's change from

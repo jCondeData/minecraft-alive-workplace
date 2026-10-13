@@ -399,6 +399,11 @@ public final class Board {
 
 	/** What to tell the player about {@code result}: what was traded and for how much, and what stopped it. */
 	public static Component message(ServerLevel level, BlockPos hall, Result result) {
+		return message(level, hall, result, null);
+	}
+
+	/** The same for {@code player}: a price they couldn't pay is the one they'd have been charged (the Common Market, 33.22a; a feud, 33.20). */
+	public static Component message(ServerLevel level, BlockPos hall, Result result, @org.jetbrains.annotations.Nullable ServerPlayer player) {
 		Component village = VillageHalls.name(level, hall);
 		Component good = result.good().name();
 		if (!result.traded()) {
@@ -410,7 +415,10 @@ public final class Board {
 				case SMALL -> Component.translatable("message.aliveworkplace.board.small", good);
 				case ROOM -> Component.translatable("message.aliveworkplace.board.room", village, good);
 				case STOCK -> Component.translatable("message.aliveworkplace.board.stock", village, good, Caravans.KEEP);
-				case MONEY -> Component.translatable("message.aliveworkplace.board.money", TradePage.money(TradePage.selling(level, hall, price(level, hall, result.good()))), good);
+				case MONEY -> Component.translatable("message.aliveworkplace.board.money", TradePage.money(player == null
+					? TradePage.selling(level, hall, price(level, hall, result.good()))
+					: share(TradePage.selling(level, hall, price(level, hall, result.good()), player),
+						io.github.jcondedata.aliveworkplace.realm.Feuds.boardPercent(level, hall, player, true))), good);
 				default -> Component.translatable("message.aliveworkplace.board.not_open");
 			}).withStyle(ChatFormatting.YELLOW);
 		}

@@ -18,7 +18,8 @@ One board for the whole realm.
 
 A realm edict (see [Royal Highway](royal-highway.md) for how realm edicts work). While the Common Market is in force,
 **every member's price board pays the members' average price**, and the realm's own people **buy and sell without the
-spread** between buying and selling prices. To pay for it, the **realm's levy**, the share of each member's takings
+spread** between buying and selling prices: they buy a bundle at the price the board pays, while strangers still pay
+10% more. The board's Prices tab tells each player which price is theirs. To pay for it, the **realm's levy**, the share of each member's takings
 that goes to the realm treasury, is **5 points higher**.
 
 ## Reforming it

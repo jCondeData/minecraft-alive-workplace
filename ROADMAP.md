@@ -4396,7 +4396,7 @@ Legends.
   oak logs (Lumberjack), 16 potions of strength (Cleric); IV 32 glowstone dust (Netherworker), 64 small flowers
   (Florist), 16 cakes (Chef). Done when: 35.9's four design checks pass for it, with the face seen from the road in
   its renders.
-- [x] **35.22** (review: pending 2026-10-13) **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
+- [x] **35.22** (approved 2026-10-13) **The Colossus: its powers and time-lapse.** While it stands, every villager in its realm is happier
   (+8 mood, +12 in its own village; "the Colossus" shows among the reasons for their mood, `people/Moods`), travellers
   come to its village's inns twice as often and are twice as likely to be Experts (`inn/Innkeepers`), and it counts 8
   beauty. When it's finished, the plaque's signs are filled in: the Founder's name (M29's Founder; the hall's owner

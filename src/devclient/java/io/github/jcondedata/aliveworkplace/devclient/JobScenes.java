@@ -199,6 +199,21 @@ final class JobScenes {
 	/** The test folly (35.3), the wonder scenes' Wonder. */
 	private static final net.minecraft.resources.ResourceLocation WONDER_FOLLY = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
 
+	/**
+	 * The wonder scenes' staged Town. The hall's round counts the rank again from its villagers and buildings (its first
+	 * tick, then every {@code VillageNeeds.CHECK_EVERY}), and a hall with a builder or two counts a Hamlet, which holds no
+	 * Wonder ("Wonders: 0 of 0 for a Hamlet"). So the scene keeps the Town it stages: a count on record (the first round
+	 * waits for the next check) and the rank set again right before anything reads it.
+	 */
+	static void holdWonderTown(ServerLevel level) {
+		if (level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+			if (hall.needs() == null) {
+				hall.setNeeds(new io.github.jcondedata.aliveworkplace.hall.VillageNeeds.Needs(12, 12, 12, 12, 1, 0, 0, 1f));
+			}
+			hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+		}
+	}
+
 	/** The lost_caravan scene's carter (31.20). */
 	private static final String LOST_CARAVAN_TOBIN = "aliveworkplace_scene_tobin";
 	/** The reform_story scene's hall and Toolsmith (31.22). */
@@ -5560,7 +5575,7 @@ final class JobScenes {
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
 				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
 				hall.setOwner(player.getUUID(), player.getName().getString());
-				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				holdWonderTown(level); // 35.3: the round would count a Hamlet
 				hall.setTreasury(0);
 				io.github.jcondedata.aliveworkplace.wonder.Wonders.LEGENDS = false; // the Master Architect's stand-in: a Master builder
 				String[] names = {"Odo", "Pia"};
@@ -5577,6 +5592,7 @@ final class JobScenes {
 				player.getInventory().add(new ItemStack(Items.EMERALD, 32));
 			},
 			List.of(new Step("01_wonders_page", -2, 6, (level, player) -> {
+					holdWonderTown(level);
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					var folly = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
 					int index = new java.util.ArrayList<>(io.github.jcondedata.aliveworkplace.wonder.Wonders.all()).stream().map(w -> w.id()).toList().indexOf(folly);
@@ -5590,7 +5606,9 @@ final class JobScenes {
 					}
 				}, 40),
 				new Step("02_wonder_plan_preview", -1, 0, (level, player) -> {
+					holdWonderTown(level);
 					var folly = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_folly");
+					player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL); // the price really paid (free in creative); the hover below flies again
 					var drawn = io.github.jcondedata.aliveworkplace.wonder.WonderPlans.draw(level, STATION, player, folly);
 					Showcase.check(drawn.drawn() && player.getInventory().countItem(Items.EMERALD) == 0, "the plans drawn up for 32 emeralds: " + drawn.message().getString());
 					player.closeContainer();
@@ -5617,7 +5635,7 @@ final class JobScenes {
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
 				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
 				hall.setOwner(player.getUUID(), player.getName().getString());
-				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				holdWonderTown(level); // 35.3: the round would count a Hamlet
 				level.getGameRules().getRule(io.github.jcondedata.aliveworkplace.registry.ModGameRules.BUILD_DELAY).set(2, level.getServer());
 				BlockPos bench = STATION.offset(-4, 0, -2);
 				level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
@@ -5642,6 +5660,7 @@ final class JobScenes {
 			List.of(new Step("01_wonder_site_plan", -1, 0, (level, player) ->
 					ScreenshotHarness.hoverLookingAt(player, new Vec3(9.5, -54, 6.5), new Vec3(-1, -57, -8)), 40),
 				new Step("02_wonder_site_stone", -1, 0, (level, player) -> {
+					holdWonderTown(level);
 					var result = io.github.jcondedata.aliveworkplace.wonder.WonderStages.handOver(player, wonderBuilder[0], player.getMainHandItem());
 					Showcase.check(result == net.minecraft.world.InteractionResult.SUCCESS, "the plan handed to Odo: " + result);
 					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);
@@ -5703,7 +5722,7 @@ final class JobScenes {
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
 				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
 				hall.setOwner(player.getUUID(), player.getName().getString());
-				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				holdWonderTown(level); // 35.3: the round would count a Hamlet
 				level.getGameRules().getRule(io.github.jcondedata.aliveworkplace.registry.ModGameRules.BUILD_DELAY).set(6, level.getServer());
 				String[] names = {"Odo", "Pia", "Bram", "Ilse", "Tam", "Wren", "Edda", "Hob", "Mags", "Rolf"};
 				crewBuilders.clear();
@@ -5762,7 +5781,9 @@ final class JobScenes {
 						}
 					}
 				}
-				Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderCrews.call(player) == 1, "every builder called from the stone");
+				// the player calls from beside the stone (within its reach; the camera is farther off)
+				player.teleportTo(stone.getX() + 1.5, stone.getY(), stone.getZ() + 2.5);
+				Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderCrews.call(player) == 1, "every builder called from the stone at " + stone.toShortString() + ", the player at " + player.blockPosition().toShortString());
 			},
 			List.of(new Step("01_wonder_crew_gathering", -1, 0, (level, player) ->
 					ScreenshotHarness.hoverLookingAt(player, new Vec3(12.5, -52, 8.5), new Vec3(-1, -57, -8)), 200),
@@ -5797,7 +5818,7 @@ final class JobScenes {
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
 				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
 				hall.setOwner(player.getUUID(), player.getName().getString());
-				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				holdWonderTown(level); // 35.3: the round would count a Hamlet
 				var wonder = io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().get(WONDER_FOLLY);
 				Showcase.check(wonder != null, "the Test Folly is loaded");
 				ItemStack plan = io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.of(level, STATION, wonder, Component.literal("Testholm"));
@@ -5821,11 +5842,11 @@ final class JobScenes {
 				box.setItem(0, new ItemStack(Items.POPPY, 2));
 				box.setItem(1, new ItemStack(Items.DANDELION, 2));
 				box.setItem(2, net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, net.minecraft.world.item.alchemy.Potions.HEALING));
-				// the storehouse with the two books, and its porter
+				// the storehouse and its porter (the two books come in once the stone's screen is read: the porter would
+				// otherwise carry them over before the first shot)
 				BlockPos storehouse = stone.east(9).south(5);
 				level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
 				level.setBlockAndUpdate(storehouse.east(), Blocks.CHEST.defaultBlockState());
-				((net.minecraft.world.Container) level.getBlockEntity(storehouse.east())).setItem(0, new ItemStack(Items.BOOK, 2));
 				String[] names = {"Bram", "Tobin", "Ilse", "Rolf", "Mags"};
 				net.minecraft.world.entity.npc.VillagerProfession[] jobs = {io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER,
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.BARD, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD,
@@ -5858,8 +5879,10 @@ final class JobScenes {
 					BlockPos stone = site.stone().orElseThrow();
 					var lines = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, site);
 					Showcase.check(lines.size() == 3 && lines.get(0).full() && lines.get(1).full() && lines.get(2).in() == 0 && !site.started(),
-						"the stone's lines half filled: flowers and potions in, the books short: " + lines);
+						"the stone's lines half filled: flowers and potions in, the books short: " + lines + " (stage " + site.stage() + ", started " + site.started() + ", handed " + site.delivered() + ", stone " + stone.toShortString() + ")");
 					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
+					// the two books reach the storehouse, for its porter to carry to the stockpile
+					((net.minecraft.world.Container) level.getBlockEntity(stone.east(10).south(5))).setItem(0, new ItemStack(Items.BOOK, 2));
 					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(5.5, 3.5, 6.5), Vec3.atCenterOf(stone));
 				}, 60),
 				new Step("02_wonder_goods_porter", -1, 0, (level, player) -> {

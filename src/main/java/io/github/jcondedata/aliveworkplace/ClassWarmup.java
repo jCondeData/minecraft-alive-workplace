@@ -39,10 +39,47 @@ public final class ClassWarmup {
 		Thread thread = new Thread(() -> {
 			Result result = run(Platform.get().modRoots());
 			AliveWorkplace.LOG.info("Loaded {} classes ahead of use in {} ms ({} skipped)", result.loaded(), result.millis(), result.failed());
+			try {
+				shapes();
+			} catch (Throwable e) { // nothing depends on it: the same code still runs, and loads, the first time a villager grows
+				AliveWorkplace.LOG.debug("Shape warm-up failed: {}", e.toString());
+			}
 		}, "Alive Workplace class warm-up");
 		thread.setDaemon(true);
 		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
+	}
+
+	/**
+	 * Runs, on fresh shapes and collections of its own, the work an entity does when it changes size (a child of the
+	 * Cradle growing up: {@code Entity.fudgePositionAfterSizeChange} joins its box with the blocks round it and asks for
+	 * the closest free point). On the pack another mod (Lithium) does that with fastutil's double sets, lists and maps,
+	 * which nothing else had loaded by then, and loading them on the server thread was a 50 to 250 ms tick in
+	 * {@code Cradles.round} on day 1 (B103). Loading them here, and the arm-swing packet a worker's swing makes (with no
+	 * player online nothing else does), takes that off the tick. Pure functions of what is passed in: nothing in the
+	 * world is read or changed. Returns the free point found, for tests.
+	 */
+	public static java.util.Optional<net.minecraft.world.phys.Vec3> shapes() {
+		it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet coords = new it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet();
+		coords.addAll(net.minecraft.world.phys.shapes.Shapes.block().getCoords(net.minecraft.core.Direction.Axis.X));
+		coords.add(0.5);
+		it.unimi.dsi.fastutil.doubles.DoubleArrayList sorted = new it.unimi.dsi.fastutil.doubles.DoubleArrayList(coords);
+		sorted.sort(null);
+		it.unimi.dsi.fastutil.doubles.Double2IntOpenHashMap index = new it.unimi.dsi.fastutil.doubles.Double2IntOpenHashMap();
+		for (int i = 0; i < sorted.size(); i++) {
+			index.put(sorted.getDouble(i), i);
+		}
+		new java.util.BitSet(index.size()).set(index.get(0.5));
+		Class<?> swing = net.minecraft.network.protocol.game.ClientboundAnimatePacket.class; // loaded, not initialised
+		AliveWorkplace.LOG.debug("Warmed {} with {} coordinates", swing.getSimpleName(), index.size());
+		net.minecraft.world.phys.Vec3 at = new net.minecraft.world.phys.Vec3(0.5, 0.2, 0.5);
+		net.minecraft.world.phys.shapes.VoxelShape box = net.minecraft.world.phys.shapes.Shapes.create(
+			net.minecraft.world.phys.AABB.ofSize(at, 1.2, 2.0, 1.2));
+		net.minecraft.world.phys.shapes.VoxelShape blocks = net.minecraft.world.phys.shapes.Shapes.or(
+			net.minecraft.world.phys.shapes.Shapes.box(0, -1, 0, 1, 0, 1), net.minecraft.world.phys.shapes.Shapes.box(1, 0, 0, 2, 1, 1));
+		net.minecraft.world.phys.shapes.VoxelShape free = net.minecraft.world.phys.shapes.Shapes.join(box, blocks,
+			net.minecraft.world.phys.shapes.BooleanOp.ONLY_FIRST);
+		return free.closestPointTo(at);
 	}
 
 	/** Loads (without initialising) every class of ours under {@code roots} that {@link #wanted} names. */

@@ -75,8 +75,9 @@ public final class BuildSiteManager extends SavedData {
 	/** Every finished building in {@code level}. */
 	public List<Finished> finishedIn(ServerLevel level) {
 		List<Finished> out = new java.util.ArrayList<>();
+		ResourceLocation dimension = Ids.of(level.dimension());
 		for (Finished f : finished) {
-			if (f.placement().dimension().equals(Ids.of(level.dimension()))) {
+			if (f.placement().dimension().equals(dimension)) {
 				out.add(f);
 			}
 		}

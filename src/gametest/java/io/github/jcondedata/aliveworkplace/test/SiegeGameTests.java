@@ -180,6 +180,32 @@ public class SiegeGameTests implements FabricGameTest {
 		return mob;
 	}
 
+	/**
+	 * What a raider is doing, for a failure message: where it is (in the test's own coordinates), whether it is alive, the
+	 * foe it has (what, where, and in sight or not: a raider with a foe in sight fights on and the siege's director leaves
+	 * it be) and where its path goes.
+	 */
+	private static String state(GameTestHelper helper, Mob mob) {
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		java.util.function.Function<net.minecraft.world.phys.Vec3, String> rel = v -> String.format(java.util.Locale.ROOT, "(%.1f, %.1f, %.1f)",
+			v.x - base.getX(), v.y - base.getY(), v.z - base.getZ());
+		StringBuilder out = new StringBuilder("at " + rel.apply(mob.position()) + (mob.isAlive() ? "" : " dead"));
+		net.minecraft.world.entity.LivingEntity foe = mob.getTarget();
+		out.append(foe == null ? ", no foe" : ", foe " + net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(foe.getType()).getPath()
+			+ " at " + rel.apply(foe.position()) + (foe.isAlive() ? "" : " dead") + (mob.getSensing().hasLineOfSight(foe) ? " in sight" : " out of sight"));
+		net.minecraft.world.level.pathfinder.Path path = mob.getNavigation().getPath();
+		out.append(mob.getNavigation().isDone() || path == null ? ", standing" : ", walking to " + path.getTarget().subtract(base).toShortString());
+		return out.toString();
+	}
+
+	/** The siege's state and the players about, for a failure message. */
+	private static String siegeState(ServerLevel level, Yard yard) {
+		Optional<ThreatData.Siege> siege = Sieges.siege(level, yard.hall());
+		long players = level.players().stream().filter(p -> p.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(yard.hall())) < 64 * 64).count();
+		return (siege.isEmpty() ? "no siege" : "siege " + (siege.get().over ? "over" : "on") + ", way " + (Sieges.open(siege.get()) ? "open" : "shut"))
+			+ ", raid " + (ThreatData.get(level).raid(yard.hall()).isPresent() ? "on" : "over") + ", players within 64: " + players;
+	}
+
 	/** Whether {@code mob} is through the gate: inside the yard's front wall. */
 	private static boolean through(GameTestHelper helper, Yard yard, Mob mob) {
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
@@ -315,7 +341,8 @@ public class SiegeGameTests implements FabricGameTest {
 					helper.assertTrue(Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 3)) == Sieges.IRON_BARS_HP, "a bar has 150 hit points");
 					helper.assertTrue(siege.breach != null && siege.breach.equals(yard.at(5, 1, 3)), "the breach is the middle of the portcullis: " + siege.breach);
 				} else if (tick > 600) {
-					helper.fail("the pillager isn't through the Palisade Gate within 600 ticks: it is at " + pillager.position());
+					helper.fail("the pillager isn't through the Palisade Gate within 600 ticks: pillager " + state(helper, pillager) + "; ram " + state(helper, ram)
+						+ "; " + siegeState(level, palisade));
 				}
 				return;
 			}
@@ -330,9 +357,10 @@ public class SiegeGameTests implements FabricGameTest {
 					&& !ThreatData.get(level).brokenGates(yard.hall()).contains(yard.at(5, 1, 3)), "for the builder: " + ThreatData.get(level).brokenGates(yard.hall()));
 				helper.succeed();
 			} else if (since > 2800) {
-				helper.fail("the pillager isn't through the Gatehouse after 2800 ticks: it is at " + second[1].position() + ", the ram at " + second[0].position()
-					+ ", bars " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 3)) + "/" + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 2, 3))
-					+ ", gate " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 2)));
+				helper.fail("the pillager isn't through the Gatehouse after 2800 ticks (through the Palisade Gate in " + took[0] + "): pillager "
+					+ state(helper, second[1]) + "; ram " + state(helper, second[0]) + "; bars " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 3)) + "/"
+					+ Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 2, 3)) + ", gate " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 2)) + "; "
+					+ siegeState(level, yard));
 			}
 		});
 	}

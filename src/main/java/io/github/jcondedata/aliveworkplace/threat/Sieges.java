@@ -70,7 +70,8 @@ import org.jetbrains.annotations.Nullable;
  * blow does {@link #RAM_BLOW} every {@link #RAM_EVERY} ticks, an axe {@link #AXE_BLOW} every {@link #AXE_EVERY}. A
  * fence gate has {@link #FENCE_GATE_HP} hit points, a door {@link #DOOR_HP}, iron bars {@link #IRON_BARS_HP}. Cracks
  * show (the block's destroy progress) and every blow is heard; at 0 the block goes, nothing drops, and it waits for a
- * builder ({@link ThreatData#brokenGates}). The other raiders wait behind the rams and go through once a way is open.</li>
+ * builder ({@link ThreatData#brokenGates}). The other raiders wait behind the rams and go through once a way is open;
+ * while any of them is still outside, the rams stand aside, out of the gateway, before they widen it.</li>
  * <li><b>Only gate blocks of finished builds ever break</b>: the list comes from the builds' blueprints, and a block
  * counts only while the world still holds the blueprint's block there. A player's own gate is never in it. With
  * {@code mobGriefing} off or {@code siegeDamage} false ({@link #DAMAGE}) the rams pound and the gates hold.
@@ -660,10 +661,22 @@ public final class Sieges {
 		Set<UUID> ordered = new HashSet<>();
 		if (target != null) {
 			BlockPos stand = new BlockPos(target.pos.getX() + siege.out.getStepX(), siege.breach.getY(), target.pos.getZ() + siege.out.getStepZ());
-			for (Mob ram : rams(raiders)) {
+			List<Mob> rams = rams(raiders);
+			// Once the way is open the rams make way (B126): a ravager at the next gate block, beside the way it opened, stood
+			// right in it, and a way one block wide stayed shut to the raiders behind it until the next one went too. While
+			// any of them still waits outside the breach, the rams stand aside, out of the gateway, and strike no blow.
+			Vec3 aside = makingWay(siege, target, raiders, rams) ? aside(siege, target) : null;
+			for (Mob ram : rams) {
 				ramming.add(ram.getUUID());
 				order(ram, new Order(target.pos), ordered);
-				if (inReach(ram, target.pos)) {
+				if (aside != null) {
+					BlockPos going = ram.getNavigation().isDone() ? null : ram.getNavigation().getTargetPos();
+					boolean there = going != null && Vec3.atBottomCenterOf(going).distanceToSqr(aside) <= 4;
+					if (ram.position().distanceToSqr(aside) > 4 && !there && paths < MAX_PATHS) {
+						ram.getNavigation().moveTo(aside.x, aside.y, aside.z, 1.0);
+						paths++;
+					}
+				} else if (inReach(ram, target.pos)) {
 					ram.getNavigation().stop();
 					boolean heavy = Threats.role(ram) == Culture.Role.RAM;
 					// (once it went, the others' blows wait for the next tick, which picks the next block)
@@ -735,6 +748,43 @@ public final class Sieges {
 		director.ordered.addAll(ordered);
 		director.most = Math.max(director.most, paths);
 		director.total += paths;
+	}
+
+	/** How near the breach a raider waiting outside it holds the rams back (blocks). */
+	private static final int MAKE_WAY = 12;
+
+	/**
+	 * Whether the rams make way: the way through is open (so their next gate block is beside it or above it) and a raider
+	 * of theirs who isn't a ram (nor at a ladder or ramp) still stands outside the gate line the rams are at, within
+	 * {@link #MAKE_WAY} of their next block.
+	 */
+	private static boolean makingWay(ThreatData.Siege siege, ThreatData.Gate target, List<Mob> raiders, List<Mob> rams) {
+		if (!open(siege)) {
+			return false; // (the next block is on the way, then: the rams are what opens it)
+		}
+		// Outside the gate line the rams work on (a barbican's inner one, once its outer gate is down: 32.20).
+		Vec3 gate = Vec3.atBottomCenterOf(target.pos);
+		for (Mob mob : raiders) {
+			if (rams.contains(mob) || Ladders.claims(mob.getUUID()) || SandRamps.claims(mob.getUUID())) {
+				continue;
+			}
+			Vec3 d = mob.position().subtract(gate);
+			if (d.x * siege.out.getStepX() + d.z * siege.out.getStepZ() > 0 && d.horizontalDistanceSqr() < MAKE_WAY * MAKE_WAY) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Where the rams wait while they make way: four blocks out from the breach (the outermost gate) and four along the
+	 * wall, on their next block's side.
+	 */
+	private static Vec3 aside(ThreatData.Siege siege, ThreatData.Gate target) {
+		int sx = -siege.out.getStepZ();
+		int sz = siege.out.getStepX();
+		int side = (target.pos.getX() - siege.breach.getX()) * sx + (target.pos.getZ() - siege.breach.getZ()) * sz < 0 ? -1 : 1;
+		return Vec3.atBottomCenterOf(siege.breach).add(siege.out.getStepX() * 4 + sx * side * 4, 0, siege.out.getStepZ() * 4 + sz * side * 4);
 	}
 
 	/** The raiders still about in the village round {@code hall} (as {@code VillageRaids.raiders} finds them). */

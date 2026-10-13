@@ -189,7 +189,8 @@ public final class StorehouseBoard {
 		int away = (int) Math.round(Math.sqrt(request.station().distSqr(viewer.blockPosition())));
 		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.for", job(request), away), ChatFormatting.GRAY));
 		if (request.forBlock()) {
-			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.made_by", request.block().job()), ChatFormatting.GRAY));
+			lore.add(plain(Component.translatable(request.block().found() ? "screen.aliveworkplace.storehouse.found" : "screen.aliveworkplace.storehouse.made_by",
+				request.block().job()), ChatFormatting.GRAY));
 		}
 		if (request.item() != null) {
 			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.in_store", SupplyContainers.count(level, store, request.item())),

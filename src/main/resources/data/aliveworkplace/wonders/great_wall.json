@@ -50,19 +50,35 @@
       ],
       "goods": [
         {
-          "item": "minecraft:iron_sword",
-          "count": 8,
-          "job": "minecraft:weaponsmith"
+          "item": "minecraft:sentry_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 9,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
         },
         {
-          "item": "minecraft:arrow",
-          "count": 128,
-          "job": "minecraft:fletcher"
+          "item": "minecraft:ghast_tear",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:netherworker",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "item": "minecraft:bread",
-          "count": 128,
-          "job": "aliveworkplace:chef"
+          "item": "aliveworkplace:emerald_brooch",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
         }
       ]
     },
@@ -76,20 +92,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:iron_shovel",
-          "count": 8,
-          "job": "minecraft:toolsmith"
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
         },
         {
-          "item": "minecraft:potion",
-          "count": 12,
-          "potion": "minecraft:strength",
-          "job": "minecraft:cleric"
+          "item": "minecraft:ominous_trial_key",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "item": "minecraft:baked_potato",
-          "count": 64,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:rib_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:vintage_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
         }
       ]
     },
@@ -107,19 +148,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:crossbow",
-          "count": 8,
-          "job": "minecraft:fletcher"
+          "item": "minecraft:wither_skeleton_skull",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
         },
         {
-          "item": "minecraft:iron_chestplate",
-          "count": 8,
-          "job": "minecraft:armorer"
+          "item": "minecraft:netherite_upgrade_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
         },
         {
-          "item": "minecraft:shield",
-          "count": 8,
-          "job": "aliveworkplace:carpenter"
+          "item": "minecraft:vex_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
         }
       ]
     },
@@ -137,19 +204,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:iron_block",
-          "count": 16,
-          "job": "minecraft:armorer"
+          "item": "minecraft:heavy_core",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 32,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "item": "minecraft:pumpkin",
-          "count": 4,
-          "job": "minecraft:farmer"
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
         },
         {
-          "item": "minecraft:campfire",
-          "count": 16,
-          "job": "aliveworkplace:carpenter"
+          "item": "minecraft:netherite_ingot",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
         }
       ]
     }

@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Wonder goods you explore for** (35.7a, 35.7b, the owner's change to 35.7, part of Wonders, for 2.0): a Wonder's
+  stages no longer ask for stacks of farm produce. Each asks for two or three hard things found by exploring, one of
+  each (a Heart of the Sea, an Echo Shard, a Heavy Core, a Nether Star, an Elytra...), and two of an upgraded workshop's
+  best goods (Vintage Wine, Gold Circlets, Illuminated Books, Noble Robes). The stone says where each is found; a rare
+  worker in the village (a Legend like the Pathfinder, or a Master Netherworker, Sifter or Fisherman) searches for it in
+  play time and brings it, told in chat and the chronicle. A Wonder now takes a typical group about 44 hours of play
+  (15 evenings); a Wonder saved mid-stage puts the goods handed in for its old lines into its stockpile.
 - **A finished Wonder: its celebration, upkeep and powers** (35.8, part of Wonders, for 2.0): when a Wonder's last
   stage is done every player on the server is told, the village holds a festival that evening with a bigger firework
   show (gold rockets from the Wonder's own top), the chronicles of the village and of its realm's villages (or its

@@ -52,16 +52,29 @@ import org.jetbrains.annotations.Nullable;
  * ({@link #shortest}). Anyone can hand goods in, at the stone or on the board ({@link #handIn}). Cancelling hands back
  * what was handed in for a stage not yet dedicated ({@link #handBack}); what lies in the stockpile's chests stays there.
  * Nothing here is saved but the site's {@code dedicated} and {@code delivered}: the posts come back on the next check.
+ *
+ * <p>35.7a/b (the owner's change): most lines are things found by exploring ({@link Wonder.Good#found}), one of each, which
+ * no crafter makes and the daily quest leaves out; each has a rare worker who finds it ({@link Wonder.Helper}): while
+ * they're in the village their search goes on in play time ({@link #search}, saved as {@link WonderManager#searches}),
+ * and when it's done the line is in, brought by them. A save from before a file changed gets back what was handed in for
+ * lines that no longer take it ({@link #migrate}).
  */
 public final class WonderGoods {
 	/** The key of a goods line's post on the requests board. */
 	static final String POST = "goods_";
 
-	/** One goods line of the current stage: the line, how many it needs, how many were handed in and how many lie in the stockpile. */
-	public record Line(int index, Wonder.Good good, int need, int handed, int stocked) {
+	/**
+	 * One goods line of the current stage: the line, how many it needs, how many were handed in and how many lie in the
+	 * stockpile, and (35.7b) whether its helper brought it (then it's in, whatever lies in the chests).
+	 */
+	public record Line(int index, Wonder.Good good, int need, int handed, int stocked, boolean brought) {
+		public Line(int index, Wonder.Good good, int need, int handed, int stocked) {
+			this(index, good, need, handed, stocked, false);
+		}
+
 		/** How many are in (at most what's needed). */
 		public int in() {
-			return Math.min(need, handed + stocked);
+			return brought ? need : Math.min(need, handed + stocked);
 		}
 
 		/** How many are still to bring. */
@@ -112,14 +125,32 @@ public final class WonderGoods {
 		return potion.isPresent() ? PotionContents.createItemStack(item, potion.get()) : new ItemStack(item);
 	}
 
-	/** What {@code good} is called: "Bread", "Potion of Healing", or a tag's name ("Flowers"). */
+	/**
+	 * What {@code good} is called: "Bread", "Potion of Healing", or a tag's name ("Flowers"). Things whose own name says
+	 * too little (35.7a) say which: "Dune Armor Trim Template", "Netherite Upgrade Template", "Music Disc: Lena Raine - Pigstep".
+	 */
 	public static Component what(Wonder.Good good) {
 		if (good.tag().isPresent() && good.item().isEmpty()) {
 			ResourceLocation tag = good.tag().get();
 			return Component.translatableWithFallback("goods.aliveworkplace.tag." + tag.getNamespace() + "." + tag.getPath(), "#" + tag);
 		}
+		ResourceLocation id = good.item().get();
+		String path = id.getPath();
+		if (path.endsWith(TRIM)) {
+			return Component.translatable("goods.aliveworkplace.template",
+				Component.translatable("trim_pattern." + id.getNamespace() + "." + path.substring(0, path.length() - TRIM.length())));
+		}
+		if (path.equals("netherite_upgrade_smithing_template")) {
+			return Component.translatable("goods.aliveworkplace.template", Component.translatable("upgrade.minecraft.netherite_upgrade"));
+		}
+		if (path.startsWith(DISC)) {
+			return Component.translatable("goods.aliveworkplace.music_disc", Component.translatable("jukebox_song." + id.getNamespace() + "." + path.substring(DISC.length())));
+		}
 		return icon(good).getHoverName();
 	}
+
+	private static final String TRIM = "_armor_trim_smithing_template";
+	private static final String DISC = "music_disc_";
 
 	/** The job that makes {@code good}, by its villagers' name ("Chef"). */
 	public static Component job(Wonder.Good good) {
@@ -172,10 +203,11 @@ public final class WonderGoods {
 		}
 		int[] handed = new int[goods.size()];
 		for (WonderSite.Handed h : site.delivered()) {
-			if (h.line() >= 0 && h.line() < goods.size()) {
-				handed[h.line()] += h.count();
+			if (h.line() >= 0 && h.line() < goods.size() && matches(goods.get(h.line()), stackOf(h))) {
+				handed[h.line()] += h.count(); // (35.7b: goods handed in for a line its file has since changed don't count)
 			}
 		}
+		List<WonderManager.Search> searches = WonderManager.get(level).searches(site.id());
 		List<ItemStack> stock = site.stone().map(s -> stockpile(level, s)).orElse(List.of());
 		List<Line> out = new ArrayList<>();
 		for (int i = 0; i < goods.size(); i++) {
@@ -192,9 +224,22 @@ public final class WonderGoods {
 					stocked += n;
 				}
 			}
-			out.add(new Line(i, good, good.count(), handed[i], stocked));
+			out.add(new Line(i, good, good.count(), handed[i], stocked, brought(good, i, searches)));
 		}
 		return out;
+	}
+
+	/** Whether {@code good} (line {@code index}) was brought by its helper: their search for it has gone on long enough. */
+	static boolean brought(Wonder.Good good, int index, List<WonderManager.Search> searches) {
+		if (!good.found() || good.helper().isEmpty() || good.item().isEmpty()) {
+			return false;
+		}
+		long need = (long) good.helper().get().days() * DAY;
+		return search(searches, index, good.item().get()).map(s -> s.ticks() >= need).orElse(false);
+	}
+
+	private static Optional<WonderManager.Search> search(List<WonderManager.Search> searches, int index, ResourceLocation item) {
+		return searches.stream().filter(s -> s.line() == index && s.item().equals(item)).findFirst();
 	}
 
 	/** By day: from dawn till dusk (a dedication waits for the morning). */
@@ -210,6 +255,7 @@ public final class WonderGoods {
 		if (site.started() || !site.goingUp() || site.stone().isEmpty() || site.placement().isEmpty()) {
 			return false;
 		}
+		site = migrate(level, site);
 		List<Line> lines = lines(level, site);
 		post(level, site, lines);
 		return lines.stream().allMatch(Line::full) && isDay(level) && dedicate(level, site);
@@ -228,9 +274,161 @@ public final class WonderGoods {
 				continue;
 			}
 			int index = line.index();
-			Requests.postAt(level, stone, key, icon(line.good()), line.left(), what(line.good()), accepts(line.good()),
-				new Requests.ForBlock(name, job(line.good()), (player, request) -> handIn(player, id, stage, index, true)));
+			Wonder.Good good = line.good();
+			Requests.postAt(level, stone, key, icon(good), line.left(), what(good), accepts(good),
+				new Requests.ForBlock(name, good.found() ? hint(good) : job(good), (player, request) -> handIn(player, id, stage, index, true), good.found()));
 		}
+	}
+
+	// ---------------------------------------------------------------- found goods and their helpers (35.7a, 35.7b)
+
+	/** A day of a helper's search, in ticks of play. */
+	public static final long DAY = 24000L;
+
+	/**
+	 * Where {@code good} is found, for the stone and the board: "in buried treasure, by a shipwreck's or an ocean ruin's
+	 * map" ({@code goods.aliveworkplace.hint.<namespace>.<item>}), or "by exploring" for an item with no hint of its own.
+	 */
+	public static Component hint(Wonder.Good good) {
+		ResourceLocation id = good.item().or(good::tag).orElse(ResourceLocation.withDefaultNamespace("air"));
+		return Component.translatableWithFallback("goods.aliveworkplace.hint." + id.getNamespace() + "." + id.getPath(),
+			Component.translatable("goods.aliveworkplace.hint.default").getString());
+	}
+
+	/** Who {@code helper} is, by name: a Legend's title ("Pathfinder"), "Master Netherworker", or the condition's own line. */
+	public static Component helperName(ServerLevel level, BlockPos hall, Wonder.Helper helper) {
+		if (helper.condition() instanceof io.github.jcondedata.aliveworkplace.rules.LegendSettled legend) {
+			return io.github.jcondedata.aliveworkplace.rules.LegendSettled.title(legend.id());
+		}
+		if (helper.condition() instanceof io.github.jcondedata.aliveworkplace.rules.JobLevel job) {
+			return Component.translatable("goods.aliveworkplace.helper.job", Component.translatable("merchant.level." + job.level()),
+				io.github.jcondedata.aliveworkplace.rules.JobLevel.profession(job.job()));
+		}
+		return helper.condition().progress(level, hall).line();
+	}
+
+	/** How many whole days {@code line}'s helper has searched for it so far. */
+	public static int searchedDays(ServerLevel level, WonderSite site, Line line) {
+		return line.good().item().flatMap(item -> search(WonderManager.get(level).searches(site.id()), line.index(), item))
+			.map(s -> (int) Math.min(Integer.MAX_VALUE, s.ticks() / DAY)).orElse(0);
+	}
+
+	/**
+	 * The helpers search ({@code ticks} of the WonderStages round): for each found line of {@code site}'s waiting stage
+	 * still short, whose helper is in the village (looked at while the village is loaded; remembered while it isn't), the
+	 * search goes on while any player is on the server: time in play, not time with the server empty. Once it has gone on
+	 * for the helper's days, the line is in, brought by them: the owner is told, the chronicle says so and the posts update.
+	 * A line players fill themselves keeps its search for if they take their goods out again.
+	 */
+	public static void search(ServerLevel level, WonderSite site, int ticks) {
+		if (!Wonders.ENABLED || site.started() || !site.goingUp() || site.stone().isEmpty() || site.placement().isEmpty()) {
+			return;
+		}
+		if (goods(site).stream().noneMatch(g -> g.found() && g.helper().isPresent())) {
+			return;
+		}
+		WonderManager manager = WonderManager.get(level);
+		List<WonderManager.Search> before = manager.searches(site.id());
+		boolean loaded = level.isLoaded(site.hall());
+		boolean playing = !level.getServer().getPlayerList().getPlayers().isEmpty();
+		List<WonderManager.Search> now = new ArrayList<>();
+		List<Wonder.Good> brought = new ArrayList<>();
+		for (Line line : lines(level, site)) {
+			Wonder.Good good = line.good();
+			if (!good.found() || good.helper().isEmpty() || good.item().isEmpty()) {
+				continue;
+			}
+			ResourceLocation item = good.item().get();
+			WonderManager.Search was = search(before, line.index(), item).orElse(new WonderManager.Search(line.index(), item, 0L, false));
+			if (line.full()) {
+				now.add(was);
+				continue;
+			}
+			boolean seen = loaded ? good.helper().get().condition().met(level, site.hall()) : was.seen();
+			long need = (long) good.helper().get().days() * DAY;
+			long searched = Math.min(need, was.ticks() + (seen && playing ? ticks : 0));
+			now.add(new WonderManager.Search(line.index(), item, searched, seen));
+			if (was.ticks() < need && searched >= need) {
+				brought.add(good);
+			}
+		}
+		manager.setSearches(site.id(), now);
+		WonderSite current = manager.site(site.id()).orElseThrow();
+		for (Wonder.Good good : brought) {
+			Component who = helperName(level, site.hall(), good.helper().get());
+			Component name = Wonders.name(site.wonder());
+			if (loaded) {
+				Chronicle.atHall(level, site.hall(), Chronicle.Kind.WONDER, Component.translatable("chronicle.aliveworkplace.wonder.brought", who, what(good), name));
+			}
+			ServerPlayer owner = site.owner().map(o -> level.getServer().getPlayerList().getPlayer(o)).orElse(null);
+			if (owner != null) {
+				Chat.system(owner, Component.translatable("message.aliveworkplace.wonder.goods.brought", who, what(good), name).withStyle(ChatFormatting.GOLD));
+				owner.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.7f, 1.2f);
+			}
+		}
+		if (!brought.isEmpty()) {
+			post(level, current, lines(level, current));
+		}
+	}
+
+	/**
+	 * A save from before its file changed (35.7a: the old goods of farm produce became found goods and workshop goods):
+	 * what was handed in for a line that no longer takes it moves to a line that does, or else goes into the stockpile's
+	 * chests (dropped by the stone when they're full), and the owner is told. Returns the site as it is now.
+	 */
+	static WonderSite migrate(ServerLevel level, WonderSite site) {
+		List<Wonder.Good> goods = goods(site);
+		if (site.delivered().isEmpty() || goods.isEmpty()) {
+			return site;
+		}
+		List<WonderSite.Handed> kept = new ArrayList<>();
+		List<ItemStack> back = new ArrayList<>();
+		boolean changed = false;
+		for (WonderSite.Handed h : site.delivered()) {
+			ItemStack one = stackOf(h);
+			if (h.line() >= 0 && h.line() < goods.size() && matches(goods.get(h.line()), one)) {
+				kept.add(h);
+				continue;
+			}
+			changed = true;
+			int other = -1;
+			for (int i = 0; i < goods.size() && other < 0; i++) {
+				if (matches(goods.get(i), one)) {
+					other = i;
+				}
+			}
+			if (other >= 0) {
+				kept.add(new WonderSite.Handed(other, h.item(), goods.get(other).potion(), h.count()));
+			} else if (!one.isEmpty()) {
+				for (int left = h.count(); left > 0; ) {
+					int n = Math.min(left, one.getMaxStackSize());
+					back.add(one.copyWithCount(n));
+					left -= n;
+				}
+			}
+		}
+		if (!changed) {
+			return site;
+		}
+		WonderManager manager = WonderManager.get(level);
+		manager.setDelivered(site.id(), kept);
+		BlockPos stone = site.stone().orElse(site.hall());
+		List<BlockPos> chests = SupplyContainers.find(level, stone, null);
+		for (ItemStack stack : back) {
+			ItemStack rest = chests.isEmpty() ? stack : SupplyContainers.insert(level, chests, stack);
+			if (!rest.isEmpty()) {
+				Containers.dropItemStack(level, stone.getX() + 0.5, stone.getY() + 1, stone.getZ() + 0.5, rest);
+			}
+		}
+		if (!back.isEmpty()) {
+			int n = back.stream().mapToInt(ItemStack::getCount).sum();
+			Chronicle.atHall(level, site.hall(), Chronicle.Kind.WONDER, Component.translatable("chronicle.aliveworkplace.wonder.goods_changed", Wonders.name(site.wonder()), n));
+			ServerPlayer owner = site.owner().map(o -> level.getServer().getPlayerList().getPlayer(o)).orElse(null);
+			if (owner != null) {
+				Chat.system(owner, Component.translatable("message.aliveworkplace.wonder.goods.changed", Wonders.name(site.wonder()), n).withStyle(ChatFormatting.YELLOW));
+			}
+		}
+		return manager.site(site.id()).orElseThrow();
 	}
 
 	// ---------------------------------------------------------------- handing in
@@ -390,11 +588,12 @@ public final class WonderGoods {
 		BlockPos stone = site.stone().get();
 		List<BlockPos> chests = SupplyContainers.find(level, stone, null);
 		for (Line line : lines) {
-			int fromChests = line.need() - Math.min(line.need(), line.handed());
+			int fromChests = line.brought() ? 0 : line.need() - Math.min(line.need(), line.handed()); // (35.7b: what a helper brought is in already)
 			take(level, chests, line.good(), fromChests);
 		}
 		WonderManager manager = WonderManager.get(level);
 		manager.setDelivered(site.id(), List.of());
+		manager.setSearches(site.id(), List.of());
 		manager.setDedicated(site.id(), true);
 		Requests.clearAt(level, stone);
 		Wonder.Stage stage = wonder.stages().get(site.stage() - 1);
@@ -469,12 +668,10 @@ public final class WonderGoods {
 	public static List<ItemStack> handedStacks(WonderSite site) {
 		List<ItemStack> out = new ArrayList<>();
 		for (WonderSite.Handed h : site.delivered()) {
-			Item item = Lookup.value(BuiltInRegistries.ITEM, h.item());
-			if (item == Items.AIR) {
+			ItemStack one = stackOf(h);
+			if (one.isEmpty()) {
 				continue;
 			}
-			Optional<Holder.Reference<Potion>> potion = h.potion().flatMap(p -> Lookup.holder(BuiltInRegistries.POTION, ResourceKey.create(Registries.POTION, p)));
-			ItemStack one = potion.isPresent() ? PotionContents.createItemStack(item, potion.get()) : new ItemStack(item);
 			for (int left = h.count(); left > 0; ) {
 				int n = Math.min(left, one.getMaxStackSize());
 				out.add(one.copyWithCount(n));
@@ -482,6 +679,16 @@ public final class WonderGoods {
 			}
 		}
 		return out;
+	}
+
+	/** One of what {@code h} handed in (a potion of its kind), or empty for an item no longer known. */
+	static ItemStack stackOf(WonderSite.Handed h) {
+		Item item = Lookup.value(BuiltInRegistries.ITEM, h.item());
+		if (item == Items.AIR) {
+			return ItemStack.EMPTY;
+		}
+		Optional<Holder.Reference<Potion>> potion = h.potion().flatMap(p -> Lookup.holder(BuiltInRegistries.POTION, ResourceKey.create(Registries.POTION, p)));
+		return potion.isPresent() ? PotionContents.createItemStack(item, potion.get()) : new ItemStack(item);
 	}
 
 	/**
@@ -560,7 +767,7 @@ public final class WonderGoods {
 	public static List<Order> orders(ServerLevel level, BlockPos pos) {
 		List<Order> out = new ArrayList<>();
 		for (Need need : needs(level, pos)) {
-			if (need.good().item().isPresent() && need.good().potion().isEmpty()) {
+			if (need.good().item().isPresent() && need.good().potion().isEmpty() && !need.good().found()) { // (35.7a: found goods are explored for, not made)
 				out.add(new Order(need.wonder(), need.stone(), need.line(), Lookup.value(BuiltInRegistries.ITEM, need.good().item().get()), need.count()));
 			}
 		}
@@ -581,8 +788,8 @@ public final class WonderGoods {
 			}
 			for (Line line : lines(level, site)) {
 				Wonder.Good good = line.good();
-				if (line.full() || good.potion().isPresent()) {
-					continue;
+				if (line.full() || good.potion().isPresent() || good.found()) {
+					continue; // (35.7a: a found line is a week's search, not a day's quest: it stays on the board and the stone)
 				}
 				double share = (double) line.in() / line.need();
 				if (best == null || share < bestShare || share == bestShare && line.left() > best.count()) {

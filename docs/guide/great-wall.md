@@ -22,12 +22,12 @@ its stairs are on your side. See [Wonders](wonders.md) for drawing up the plans.
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The Great Gate | 8 iron swords (Weaponsmith), 128 arrows (Fletcher), 128 bread (Chef) |
-| The West Run | 8 iron shovels (Toolsmith), 12 potions of strength (Cleric), 64 baked potatoes (Chef) |
-| The East Run | 8 crossbows (Fletcher), 8 iron chestplates (Armorer), 8 shields (Carpenter) |
-| The Walk and the Towers' Crowns | 16 iron blocks (Armorer), 4 pumpkins (Farmer), 16 campfires (Carpenter) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The Great Gate | A Sentry Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 Emerald Brooches (Jeweller) |
+| The West Run | A Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a Rib Armor Trim Template (the Seer, 14 days) | 2 Vintage Wine (Vintner) |
+| The East Run | A Wither Skeleton Skull (the Founder, 14 days), a Netherite Upgrade Template (the Beastmaster, 14 days), a Vex Armor Trim Template (the Merchant Prince, 22 days) | 2 Gold Circlets (Jeweller) |
+| The Walk and the Towers' Crowns | A Heavy Core (the Pathfinder, 32 days), a Nether Star (the Founder, 36 days), a Netherite Ingot (the Old Sage, 14 days) | 2 Noble Robes (Tailor) |
 
 ## While it stands
 
@@ -36,6 +36,6 @@ its stairs are on your side. See [Wonders](wonders.md) for drawing up the plans.
 
 ## How it fits with the rest
 
-- **What feeds it**: a [Gatehouse](defence.md#walls-and-gates) first, iron golems or a Master Tinkerer, and goods from
-  eight jobs.
+- **What feeds it**: a [Gatehouse](defence.md#walls-and-gates) first, iron golems or a Master Tinkerer, rare things
+  found by exploring (a rare worker in the village finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: [raids](defence.md#raids) on the village, and where they can come from.

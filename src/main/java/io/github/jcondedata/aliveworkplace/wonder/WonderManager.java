@@ -26,6 +26,49 @@ public final class WonderManager extends SavedData {
 	public static final String NAME = "aliveworkplace_wonders";
 
 	private final Map<UUID, WonderSite> sites = new LinkedHashMap<>();
+	/**
+	 * The helpers' searches for the found lines of each site's waiting stage (35.7b), saved beside the sites as
+	 * {@code searches} (a world saved before has none: nothing searched yet).
+	 */
+	private final Map<UUID, List<Search>> searches = new LinkedHashMap<>();
+
+	/**
+	 * A helper's search for goods line {@code line} (the item it was for, so a changed file never counts it for another
+	 * line): how many ticks of play it has gone on, and whether the helper was in the village when last seen (kept for
+	 * while the village is unloaded and its players are away).
+	 */
+	public record Search(int line, ResourceLocation item, long ticks, boolean seen) {
+		public static final com.mojang.serialization.Codec<Search> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(i -> i.group(
+			com.mojang.serialization.Codec.INT.fieldOf("line").forGetter(Search::line),
+			ResourceLocation.CODEC.fieldOf("item").forGetter(Search::item),
+			com.mojang.serialization.Codec.LONG.optionalFieldOf("ticks", 0L).forGetter(Search::ticks),
+			com.mojang.serialization.Codec.BOOL.optionalFieldOf("seen", false).forGetter(Search::seen)
+		).apply(i, Search::new));
+	}
+
+	private record Searches(UUID site, List<Search> lines) {
+		static final com.mojang.serialization.Codec<Searches> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.create(i -> i.group(
+			net.minecraft.core.UUIDUtil.CODEC.fieldOf("site").forGetter(Searches::site),
+			Search.CODEC.listOf().fieldOf("lines").forGetter(Searches::lines)
+		).apply(i, Searches::new));
+	}
+
+	/** The helpers' searches for {@code id}'s waiting stage (35.7b). */
+	public List<Search> searches(UUID id) {
+		return searches.getOrDefault(id, List.of());
+	}
+
+	/** Records the helpers' searches for {@code id}'s waiting stage; saved, but the Wonders' powers stay as they were. */
+	public void setSearches(UUID id, List<Search> now) {
+		if (!searches(id).equals(now)) {
+			if (now.isEmpty()) {
+				searches.remove(id);
+			} else {
+				searches.put(id, List.copyOf(now));
+			}
+			setDirty();
+		}
+	}
 
 	public static WonderManager get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(WonderManager::new, WonderManager::load, null), NAME);
@@ -72,6 +115,9 @@ public final class WonderManager extends SavedData {
 	public void setStage(UUID id, int stage) {
 		WonderSite site = sites.get(id);
 		if (site != null) {
+			if (site.stage() != stage) {
+				searches.remove(id); // 35.7b: a stage's searches end with it
+			}
 			sites.put(id, site.atStage(stage));
 			changed();
 		}
@@ -157,6 +203,7 @@ public final class WonderManager extends SavedData {
 
 	/** Forgets a site (a cancelled Wonder, or a test's). */
 	public void remove(UUID id) {
+		searches.remove(id);
 		if (sites.remove(id) != null) {
 			changed();
 		}
@@ -165,6 +212,10 @@ public final class WonderManager extends SavedData {
 	@Override
 	public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
 		WonderSite.CODEC.listOf().encodeStart(NbtOps.INSTANCE, List.copyOf(sites.values())).result().ifPresent(t -> tag.put("sites", t));
+		List<Searches> all = searches.entrySet().stream().map(e -> new Searches(e.getKey(), e.getValue())).toList();
+		if (!all.isEmpty()) {
+			Searches.CODEC.listOf().encodeStart(NbtOps.INSTANCE, all).result().ifPresent(t -> tag.put("searches", t));
+		}
 		return tag;
 	}
 
@@ -175,6 +226,16 @@ public final class WonderManager extends SavedData {
 			WonderSite.CODEC.listOf().parse(NbtOps.INSTANCE, list)
 				.resultOrPartial(err -> AliveWorkplace.LOG.warn("Wonders: {}", err))
 				.ifPresent(all -> all.forEach(s -> manager.sites.put(s.id(), s)));
+		}
+		Tag found = tag.get("searches"); // 35.7b: absent in a world saved before
+		if (found != null) {
+			Searches.CODEC.listOf().parse(NbtOps.INSTANCE, found)
+				.resultOrPartial(err -> AliveWorkplace.LOG.warn("Wonders' searches: {}", err))
+				.ifPresent(all -> all.forEach(s -> {
+					if (manager.sites.containsKey(s.site())) {
+						manager.searches.put(s.site(), List.copyOf(s.lines()));
+					}
+				}));
 		}
 		Wonders.forgetPowers(); // 35.8: the powers worked out again from what was loaded
 		return manager;

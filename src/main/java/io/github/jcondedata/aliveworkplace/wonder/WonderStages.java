@@ -291,10 +291,27 @@ public final class WonderStages {
 			? Component.translatable(WonderGoods.isDay(level) ? "message.aliveworkplace.wonder.goods.all_in" : "message.aliveworkplace.wonder.goods.morning")
 			: Component.translatable("message.aliveworkplace.wonder.goods.header", SupplyContainers.RADIUS)).withStyle(all ? ChatFormatting.GREEN : ChatFormatting.GOLD));
 		for (WonderGoods.Line l : lines) {
-			MutableComponent line = Component.translatable("message.aliveworkplace.wonder.goods.line", l.in(), l.need(), WonderGoods.what(l.good()),
-				WonderGoods.job(l.good()));
-			if (!l.full() && !WonderGoods.hasMaker(level, site.hall(), l.good().job())) {
-				line.append(Component.translatable("message.aliveworkplace.wonder.goods.no_maker", WonderGoods.job(l.good())).withStyle(ChatFormatting.RED));
+			Wonder.Good good = l.good();
+			MutableComponent line;
+			if (good.found()) {
+				// 35.7a/b: where it's found, and the rare worker who'd find it: wanted, searching, or brought it
+				line = Component.translatable("message.aliveworkplace.wonder.goods.found_line", l.in(), l.need(), WonderGoods.what(good), WonderGoods.hint(good));
+				if (good.helper().isPresent()) {
+					Component who = WonderGoods.helperName(level, site.hall(), good.helper().get());
+					if (l.brought()) {
+						line.append(Component.translatable("message.aliveworkplace.wonder.goods.helper_brought", who).withStyle(ChatFormatting.GOLD));
+					} else if (!l.full() && good.helper().get().condition().met(level, site.hall())) {
+						line.append(Component.translatable("message.aliveworkplace.wonder.goods.helper_searching", who,
+							Math.min(good.helper().get().days(), WonderGoods.searchedDays(level, site, l) + 1), good.helper().get().days()).withStyle(ChatFormatting.AQUA));
+					} else if (!l.full()) {
+						line.append(Component.translatable("message.aliveworkplace.wonder.goods.helper_wanted", who, good.helper().get().days()).withStyle(ChatFormatting.GRAY));
+					}
+				}
+			} else {
+				line = Component.translatable("message.aliveworkplace.wonder.goods.line", l.in(), l.need(), WonderGoods.what(good), WonderGoods.job(good));
+				if (!l.full() && !WonderGoods.hasMaker(level, site.hall(), good.job())) {
+					line.append(Component.translatable("message.aliveworkplace.wonder.goods.no_maker", WonderGoods.job(good)).withStyle(ChatFormatting.RED));
+				}
 			}
 			text.append("\n    ").append(line.withStyle(l.full() ? ChatFormatting.DARK_GREEN : ChatFormatting.YELLOW));
 		}
@@ -427,7 +444,8 @@ public final class WonderStages {
 				continue;
 			}
 			if (!site.started()) {
-				WonderGoods.check(level, site);
+				WonderGoods.search(level, site, INTERVAL); // 35.7b: the rare workers search for the found goods
+				WonderGoods.check(level, manager.site(site.id()).orElse(site));
 			} else if (!site.parts().isEmpty() && stageDone(level, site)) {
 				advance(level, site);
 			}

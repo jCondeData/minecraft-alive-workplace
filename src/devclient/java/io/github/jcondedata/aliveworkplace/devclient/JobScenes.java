@@ -5835,6 +5835,67 @@ final class JobScenes {
 				return !porters.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CARRIED.getOrElse(porters.get(0), 0) >= 2
 					&& io.github.jcondedata.aliveworkplace.wonder.Dedications.gathered(level, sites.get(0)) >= 2;
 			}));
+		// A Wonder's found goods (ROADMAP 35.7a, 35.7b): the Great Library's stage I asks for a Heart Pottery Sherd and a Dune
+		// Armor Trim Template, found by exploring, and an Illuminated Book from the Print Shop. The sherd is in, the
+		// Pathfinder settled in the village is searching for the template (day 5 of 9) and the book is short; then his
+		// search ends and he brings the template, a little win on the way, told in chat and in the chronicle.
+		SCREENS.put("wonder_finds", new Screen("the Great Library's stage I asked for things found by exploring, not stacks: the stone showed the Heart Pottery Sherd in, the Pathfinder searching for the Dune Armor Trim Template (day 5 of 9) and the Illuminated Book short; then the Pathfinder brought the template, chat and the chronicle said so, and the stone showed it brought by him",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setDayTime(2000);
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+				hall.setOwner(player.getUUID(), player.getName().getString());
+				hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				var library = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_library");
+				Showcase.check(io.github.jcondedata.aliveworkplace.wonder.Wonders.loaded().containsKey(library), "the Great Library is loaded");
+				var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(),
+					STATION.offset(-3, 0, -8), net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BlockPos stone = io.github.jcondedata.aliveworkplace.wonder.WonderStages.stoneSpot(level, placement).orElseThrow();
+				level.setBlockAndUpdate(stone, ModBlocks.FOUNDATION_STONE.defaultBlockState());
+				var manager = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
+				var site = manager.begin(library, STATION, player.getUUID(), player.getName().getString(), io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level));
+				manager.place(site.id(), placement, stone);
+				// the stockpile: the sherd, brought home from the trail ruins
+				BlockPos pile = stone.east(2);
+				level.setBlockAndUpdate(pile, Blocks.CHEST.defaultBlockState());
+				((net.minecraft.world.Container) level.getBlockEntity(pile)).setItem(0, new ItemStack(Items.HEART_POTTERY_SHERD));
+				// the Pathfinder, settled by the stone, four days into his search
+				var pathfinder = io.github.jcondedata.aliveworkplace.legend.Legends.get(
+					net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("aliveworkplace", "pathfinder")).orElseThrow();
+				Villager him = EntityType.VILLAGER.create(level);
+				BlockPos at = stone.east(1).south(2);
+				him.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 180, 0);
+				him.setNoAi(true);
+				level.addFreshEntity(him);
+				io.github.jcondedata.aliveworkplace.legend.Legends.make(level, him, pathfinder, "found");
+				io.github.jcondedata.aliveworkplace.wonder.WonderGoods.search(level, manager.site(site.id()).orElseThrow(),
+					(int) (4 * io.github.jcondedata.aliveworkplace.wonder.WonderGoods.DAY));
+			},
+			List.of(new Step("01_wonder_finds_screen", -1, 0, (level, player) -> {
+					var site = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION).get(0);
+					BlockPos stone = site.stone().orElseThrow();
+					var lines = io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, site);
+					Showcase.check(lines.size() == 3 && lines.get(0).full() && !lines.get(1).full() && lines.get(1).good().found() && !lines.get(2).full(),
+						"the stone's lines: the sherd in, the template searched for, the book short: " + lines);
+					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+				}, 80),
+				new Step("02_wonder_finds_brought", -1, 0, (level, player) -> {
+					var manager = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
+					var site = manager.in(STATION).get(0);
+					BlockPos stone = site.stone().orElseThrow();
+					io.github.jcondedata.aliveworkplace.wonder.WonderGoods.search(level, site, (int) (5 * io.github.jcondedata.aliveworkplace.wonder.WonderGoods.DAY));
+					var now = manager.in(STATION).get(0);
+					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
+					Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, now).get(1).brought(), "the Pathfinder brought the template");
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+				}, 80)),
+			(level, player) -> {
+				var sites = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);
+				return !sites.isEmpty() && io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, sites.get(0)).get(1).brought();
+			}));
 		// Switching classes on (ROADMAP 34.22): a village from before 1.8 (a couple in a builder's cottage, three more without
 		// a home), the hall's Classes tab before; then the hall's rounds seed them, the chronicle says so once, and the tab and
 		// page show "Settling in: 7 days left" with what each class will need.

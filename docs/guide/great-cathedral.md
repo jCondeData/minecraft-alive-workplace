@@ -22,12 +22,12 @@ the Master Architect. See [Wonders](wonders.md) for drawing up the plans.
 
 ## Its stages and goods
 
-| Stage | Goods from the village |
-|---|---|
-| The Foundations and the West Front | 128 bread (Chef), 8 iron pickaxes (Toolsmith), 16 gold ingots (Armorer) |
-| The Nave | 64 white candles (Dyer), 32 honeycomb (Beekeeper), 64 white wool (Shepherd) |
-| The Transepts and the Choir | 16 books (Librarian), 12 potions of healing (Cleric), 64 small flowers (Florist) |
-| The Towers and the Rose Window | 32 chiseled stone bricks (Mason), 16 cakes (Chef), 64 bone meal (Composter) |
+| Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
+|---|---|---|
+| The Foundations and the West Front | A Prize Pottery Sherd (a Master Sifter, 9 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 Fine Clothes (Tailor) |
+| The Nave | The music disc otherside (the Bard Laureate, 18 days), an Echo Shard (the Old Sage, 18 days), a Heart of the Sea (the Pathfinder, 11 days) | 2 Illuminated Books (Printer) |
+| The Transepts and the Choir | A Totem of Undying (the Merchant Prince, 22 days), an Enchanted Golden Apple (the Grand Chef, 22 days), an Eye Armor Trim Template (the Old Sage, 18 days) | 2 Noble Robes (Tailor) |
+| The Towers and the Rose Window | An Elytra (the Pathfinder, 45 days), a Nether Star (the Golem Smith, 36 days), the music disc Relic (the Bard Laureate, 16 days) | 2 Gold Circlets (Jeweller) |
 
 ## While it stands
 
@@ -37,6 +37,7 @@ the Master Architect. See [Wonders](wonders.md) for drawing up the plans.
 
 ## How it fits with the rest
 
-- **What feeds it**: Chapels from your [builder](builder.md), a Master Cleric, and goods from eleven different jobs.
+- **What feeds it**: Chapels from your [builder](builder.md), a Master Cleric, rare things found by exploring (a rare
+  worker in the village finds each faster), and the best goods of upgraded workshops.
 - **What it affects**: the [Undertaker](jobs-services.md), weddings (see [Village life](village-life.md)) and the
   village's decorations.

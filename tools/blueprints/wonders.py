@@ -4500,15 +4500,7 @@ def stadium_stage(stage=None):
 
 
 # --- the Wonders' data files -------------------------------------------------------------------------------------------
-def goods(*lines):
-    out = []
-    for kind, ident, count, job, *extra in lines:
-        line = {kind: ident, "count": count}
-        if extra:
-            line["potion"] = extra[0]
-        line["job"] = job
-        out.append(line)
-    return out
+from wonder_goods import GOODS  # each stage's goods and their pacing (35.7a, 35.7b)
 
 
 WONDERS = {
@@ -4522,20 +4514,7 @@ WONDERS = {
              "stand_in": [{"type": "job_level", "job": "minecraft:cleric", "level": 5, "count": 1}]},
             {"type": "finished", "blueprint": "aliveworkplace:chapel", "count": 3},
         ],
-        "goods": [
-            goods(("item", "minecraft:bread", 128, "aliveworkplace:chef"),
-                  ("item", "minecraft:iron_pickaxe", 8, "minecraft:toolsmith"),
-                  ("item", "minecraft:gold_ingot", 16, "minecraft:armorer")),
-            goods(("item", "minecraft:white_candle", 64, "minecraft:leatherworker"),
-                  ("item", "minecraft:honeycomb", 32, "aliveworkplace:beekeeper"),
-                  ("item", "minecraft:white_wool", 64, "minecraft:shepherd")),
-            goods(("item", "minecraft:book", 16, "minecraft:librarian"),
-                  ("item", "minecraft:potion", 12, "minecraft:cleric", "minecraft:healing"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist")),
-            goods(("item", "minecraft:chiseled_stone_bricks", 32, "minecraft:mason"),
-                  ("item", "minecraft:cake", 16, "aliveworkplace:chef"),
-                  ("item", "minecraft:bone_meal", 64, "aliveworkplace:composter")),
-        ],
+        "goods": GOODS["great_cathedral"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "undertakers", "search": "village", "revive_by": "morning"},
             {"type": "weddings", "mood": 15, "days": 3, "gifted_factor": 2.0},
@@ -4552,20 +4531,7 @@ WONDERS = {
              "stand_in": [{"type": "caravan_routes", "count": 3}]},
             {"type": "coastal"},
         ],
-        "goods": [
-            goods(("item", "minecraft:cooked_cod", 64, "minecraft:fisherman"),
-                  ("item", "minecraft:oak_boat", 8, "aliveworkplace:carpenter"),
-                  ("item", "minecraft:coal", 64, "aliveworkplace:miner")),
-            goods(("item", "minecraft:chain", 16, "aliveworkplace:tinkerer"),
-                  ("item", "minecraft:iron_ingot", 32, "minecraft:armorer"),
-                  ("item", "minecraft:white_wool", 32, "minecraft:shepherd")),
-            goods(("item", "minecraft:filled_map", 4, "minecraft:cartographer"),
-                  ("item", "minecraft:spectral_arrow", 32, "minecraft:fletcher"),
-                  ("item", "minecraft:leather", 32, "minecraft:butcher")),
-            goods(("item", "minecraft:glowstone_dust", 64, "aliveworkplace:netherworker"),
-                  ("item", "minecraft:redstone", 32, "aliveworkplace:miner"),
-                  ("item", "minecraft:pumpkin_pie", 16, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["lighthouse"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "caravan_range", "factor": 2},
             {"type": "caravan_speed", "factor": 0.5},
@@ -4583,20 +4549,7 @@ WONDERS = {
              "stand_in": [{"type": "job_level", "job": "aliveworkplace:scholar", "level": 5, "count": 1}]},
             {"type": "research_levels", "count": 20},
         ],
-        "goods": [
-            goods(("item", "minecraft:sugar_cane", 128, "minecraft:farmer"),
-                  ("item", "minecraft:leather", 64, "minecraft:butcher"),
-                  ("item", "minecraft:spruce_log", 64, "aliveworkplace:lumberjack")),
-            goods(("item", "minecraft:book", 64, "minecraft:librarian"),
-                  ("item", "minecraft:black_dye", 64, "minecraft:leatherworker"),
-                  ("item", "minecraft:lantern", 16, "aliveworkplace:tinkerer")),
-            goods(("item", "minecraft:filled_map", 8, "minecraft:cartographer"),
-                  ("item", "minecraft:lapis_lazuli", 32, "aliveworkplace:sifter"),
-                  ("item", "minecraft:copper_ingot", 32, "minecraft:armorer")),
-            goods(("item", "minecraft:quartz", 64, "aliveworkplace:netherworker"),
-                  ("item", "minecraft:cookie", 32, "aliveworkplace:chef"),
-                  ("item", "minecraft:bookshelf", 16, "minecraft:librarian")),
-        ],
+        "goods": GOODS["great_library"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "research_tier", "tier": 2},
         ],
@@ -4610,20 +4563,7 @@ WONDERS = {
             {"type": "legend", "id": "aliveworkplace:seer",
              "stand_in": [{"type": "job_level", "job": "minecraft:cleric", "level": 5, "count": 1}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:lapis_lazuli", 32, "aliveworkplace:sifter"),
-                  ("item", "minecraft:cooked_chicken", 64, "aliveworkplace:chef"),
-                  ("item", "minecraft:filled_map", 8, "minecraft:cartographer")),
-            goods(("item", "minecraft:copper_ingot", 64, "minecraft:armorer"),
-                  ("item", "minecraft:spyglass", 4, "minecraft:toolsmith"),
-                  ("item", "minecraft:amethyst_shard", 32, "aliveworkplace:miner")),
-            goods(("item", "minecraft:book", 16, "minecraft:librarian"),
-                  ("item", "minecraft:tinted_glass", 8, "aliveworkplace:carpenter"),
-                  ("item", "minecraft:feather", 32, "minecraft:butcher")),
-            goods(("item", "minecraft:chain", 32, "aliveworkplace:tinkerer"),
-                  ("item", "minecraft:gold_ingot", 9, "minecraft:armorer"),
-                  ("item", "minecraft:pumpkin_pie", 32, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["observatory"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "sky_chart", "size": 6144},
             {"type": "forecast"},
@@ -4640,20 +4580,7 @@ WONDERS = {
                           {"type": "job_level", "job": "aliveworkplace:tinkerer", "level": 5, "count": 1}]},
             {"type": "finished", "blueprint": "aliveworkplace:gatehouse", "count": 1},
         ],
-        "goods": [
-            goods(("item", "minecraft:iron_sword", 8, "minecraft:weaponsmith"),
-                  ("item", "minecraft:arrow", 128, "minecraft:fletcher"),
-                  ("item", "minecraft:bread", 128, "aliveworkplace:chef")),
-            goods(("item", "minecraft:iron_shovel", 8, "minecraft:toolsmith"),
-                  ("item", "minecraft:potion", 12, "minecraft:cleric", "minecraft:strength"),
-                  ("item", "minecraft:baked_potato", 64, "aliveworkplace:chef")),
-            goods(("item", "minecraft:crossbow", 8, "minecraft:fletcher"),
-                  ("item", "minecraft:iron_chestplate", 8, "minecraft:armorer"),
-                  ("item", "minecraft:shield", 8, "aliveworkplace:carpenter")),
-            goods(("item", "minecraft:iron_block", 16, "minecraft:armorer"),
-                  ("item", "minecraft:pumpkin", 4, "minecraft:farmer"),
-                  ("item", "minecraft:campfire", 16, "aliveworkplace:carpenter")),
-        ],
+        "goods": GOODS["great_wall"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "raid_barrier", "margin_degrees": 10},
             {"type": "sentries", "count": 4, "range": 16},
@@ -4669,22 +4596,7 @@ WONDERS = {
              "stand_in": [{"type": "job_level", "job": "aliveworkplace:chef", "level": 5, "count": 1},
                           {"type": "meal_kinds", "count": 8}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:bone_meal", 128, "aliveworkplace:composter"),
-                  ("item", "minecraft:wheat_seeds", 128, "minecraft:farmer"),
-                  ("item", "minecraft:clay_ball", 64, "aliveworkplace:sifter")),
-            goods(("item", "minecraft:sweet_berries", 64, "aliveworkplace:orchard_keeper"),
-                  ("item", "minecraft:glow_berries", 32, "aliveworkplace:orchard_keeper"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
-                  ("tag", "minecraft:saplings", 16, "aliveworkplace:lumberjack")),
-            goods(("item", "minecraft:honey_bottle", 32, "aliveworkplace:beekeeper"),
-                  ("item", "minecraft:carrot", 64, "minecraft:farmer"),
-                  ("item", "minecraft:potato", 64, "minecraft:farmer"),
-                  ("item", "minecraft:cocoa_beans", 32, "aliveworkplace:orchard_keeper")),
-            goods(("item", "minecraft:cake", 16, "aliveworkplace:chef"),
-                  ("item", "minecraft:egg", 32, "minecraft:butcher"),
-                  ("item", "minecraft:cod", 32, "minecraft:fisherman")),
-        ],
+        "goods": GOODS["hanging_gardens"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "harvest", "scope": "realm", "extra_every": 4},
             {"type": "births", "meals": 12, "per_day": 2},
@@ -4699,20 +4611,7 @@ WONDERS = {
             {"type": "legend", "id": "aliveworkplace:founder",
              "stand_in": [{"type": "rank_at_least", "rank": "city"}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:baked_potato", 128, "aliveworkplace:chef"),
-                  ("item", "minecraft:coal", 64, "aliveworkplace:miner"),
-                  ("item", "minecraft:iron_pickaxe", 8, "minecraft:toolsmith")),
-            goods(("item", "minecraft:copper_ingot", 64, "minecraft:armorer"),
-                  ("item", "minecraft:white_wool", 64, "minecraft:shepherd"),
-                  ("item", "minecraft:leather", 32, "minecraft:butcher")),
-            goods(("item", "minecraft:chain", 32, "aliveworkplace:tinkerer"),
-                  ("item", "minecraft:stripped_dark_oak_log", 32, "aliveworkplace:lumberjack"),
-                  ("item", "minecraft:potion", 16, "minecraft:cleric", "minecraft:strength")),
-            goods(("item", "minecraft:glowstone_dust", 32, "aliveworkplace:netherworker"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
-                  ("item", "minecraft:cake", 16, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["colossus"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "mood", "scope": "realm", "amount": 8, "home_amount": 12},
             {"type": "travellers", "factor": 2, "expert_factor": 2},
@@ -4731,21 +4630,7 @@ WONDERS = {
             {"type": "legend", "id": "aliveworkplace:pokemon_professor",
              "stand_in": [{"type": "pastured_pokemon", "count": 25, "types": 10}]},
         ],
-        "goods": [
-            goods(("item", "minecraft:bone_meal", 128, "aliveworkplace:composter"),
-                  ("tag", "minecraft:small_flowers", 64, "aliveworkplace:florist"),
-                  ("item", "cobblemon:poke_ball", 32, "aliveworkplace:ball_smith")),
-            goods(("item", "minecraft:red_wool", 64, "minecraft:leatherworker"),
-                  ("item", "minecraft:white_wool", 64, "minecraft:shepherd"),
-                  ("item", "cobblemon:poke_snack", 16, "aliveworkplace:chef"),
-                  ("item", "cobblemon:great_ball", 16, "aliveworkplace:ball_smith")),
-            goods(("tag", "minecraft:banners", 16, "aliveworkplace:carpenter"),
-                  ("item", "minecraft:cooked_beef", 64, "aliveworkplace:chef"),
-                  ("tag", "cobblemon:berries", 32, "aliveworkplace:orchard_keeper")),
-            goods(("item", "minecraft:daylight_detector", 8, "aliveworkplace:tinkerer"),
-                  ("item", "cobblemon:ultra_ball", 16, "aliveworkplace:ball_smith"),
-                  ("item", "minecraft:pumpkin_pie", 32, "aliveworkplace:chef")),
-        ],
+        "goods": GOODS["stadium"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "stadium_days", "every_days": 2, "min_visitors": 2, "max_visitors": 4},
             {"type": "tournament_host"},

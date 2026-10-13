@@ -55,6 +55,10 @@ public final class Wonders implements ResourceManagerReloadListener {
 	/** The Legend every Wonder needs to draw up its plans, and its stand-in's trade. */
 	public static final ResourceLocation MASTER_ARCHITECT = AliveWorkplace.id("master_architect");
 	public static final ResourceLocation BUILDER = AliveWorkplace.id("builder");
+	/** The job a found goods line names when its file names none: the village's explorers (35.7a). */
+	public static final ResourceLocation FINDERS = ResourceLocation.withDefaultNamespace("cartographer");
+	/** Most days a found line's helper may take (35.7b). */
+	public static final int MAX_HELPER_DAYS = 60;
 	/** Most builders a Wonder's crew may list in its file. */
 	public static final int MAX_CREW = 32;
 
@@ -279,7 +283,9 @@ public final class Wonders implements ResourceManagerReloadListener {
 			throw new IllegalArgumentException("a goods line's 'count' must be 1 or more");
 		}
 		int count = json.get("count").getAsInt();
-		ResourceLocation job = id(string(json, "job"), "job");
+		// 35.7a: a found line (explored for, not made) names no job unless it wants to: the explorers find it
+		boolean found = json.has("found") && json.get("found").getAsBoolean();
+		ResourceLocation job = found && !json.has("job") ? FINDERS : id(string(json, "job"), "job");
 		if (!BuiltInRegistries.VILLAGER_PROFESSION.containsKey(job)) {
 			throw new IllegalArgumentException("unknown job '" + job + "'");
 		}
@@ -291,7 +297,22 @@ public final class Wonders implements ResourceManagerReloadListener {
 			}
 			potion = Optional.of(p);
 		}
-		return new Wonder.Good(itemId, tagId, count, job, potion);
+		Optional<Wonder.Helper> helper = Optional.empty();
+		if (json.has("helper")) {
+			if (!found) {
+				throw new IllegalArgumentException("only a found line ('found': true) may have a 'helper'");
+			}
+			JsonObject h = json.getAsJsonObject("helper");
+			int days = h.has("days") ? h.get("days").getAsInt() : 0;
+			if (days < 1 || days > MAX_HELPER_DAYS) {
+				throw new IllegalArgumentException("a helper's 'days' must be 1 to " + MAX_HELPER_DAYS);
+			}
+			if (!h.has("condition") || !h.get("condition").isJsonObject()) {
+				throw new IllegalArgumentException("a helper needs a 'condition'");
+			}
+			helper = Optional.of(new Wonder.Helper(Conditions.parse(h.getAsJsonObject("condition")), days));
+		}
+		return new Wonder.Good(itemId, tagId, count, job, potion, found, helper);
 	}
 
 	private static String string(JsonObject json, String field) {

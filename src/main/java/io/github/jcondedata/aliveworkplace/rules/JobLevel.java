@@ -34,7 +34,7 @@ public record JobLevel(ResourceLocation job, int level, int count) implements Co
 	}
 
 	/** A trade's name ("Builder"), as the villager's name shows it. */
-	static Component profession(ResourceLocation job) {
+	public static Component profession(ResourceLocation job) {
 		// Ours are named as vanilla's are ("entity.minecraft.villager.builder"); another mod's trades keep their namespace.
 		boolean plain = "minecraft".equals(job.getNamespace()) || io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID.equals(job.getNamespace());
 		return Component.translatable("entity.minecraft.villager." + (plain ? "" : job.getNamespace() + ".") + job.getPath());

@@ -41,18 +41,32 @@
       ],
       "goods": [
         {
-          "item": "minecraft:bone_meal",
-          "count": 128,
-          "job": "aliveworkplace:composter"
+          "item": "minecraft:diamond_horse_armor",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
         },
         {
-          "tag": "minecraft:small_flowers",
-          "count": 64,
-          "job": "aliveworkplace:florist"
+          "item": "minecraft:coast_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
         },
         {
-          "item": "cobblemon:poke_ball",
-          "count": 32,
+          "item": "cobblemon:great_ball",
+          "count": 2,
           "job": "aliveworkplace:ball_smith"
         }
       ]
@@ -67,24 +81,49 @@
       ],
       "goods": [
         {
-          "item": "minecraft:red_wool",
-          "count": 64,
-          "job": "minecraft:leatherworker"
+          "item": "minecraft:trident",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "job_level",
+              "job": "minecraft:fisherman",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "item": "minecraft:white_wool",
-          "count": 64,
-          "job": "minecraft:shepherd"
+          "item": "minecraft:music_disc_pigstep",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
         },
         {
-          "item": "cobblemon:poke_snack",
-          "count": 16,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:netherite_upgrade_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:netherworker",
+              "level": 5,
+              "count": 1
+            }
+          }
         },
         {
-          "item": "cobblemon:great_ball",
-          "count": 16,
-          "job": "aliveworkplace:ball_smith"
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
         }
       ]
     },
@@ -98,19 +137,45 @@
       ],
       "goods": [
         {
-          "tag": "minecraft:banners",
-          "count": 16,
-          "job": "aliveworkplace:carpenter"
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
         },
         {
-          "item": "minecraft:cooked_beef",
-          "count": 64,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:ominous_trial_key",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
         },
         {
-          "tag": "cobblemon:berries",
-          "count": 32,
-          "job": "aliveworkplace:orchard_keeper"
+          "item": "minecraft:flow_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
+        },
+        {
+          "item": "cobblemon:ultra_ball",
+          "count": 2,
+          "job": "aliveworkplace:ball_smith"
         }
       ]
     },
@@ -124,19 +189,45 @@
       ],
       "goods": [
         {
-          "item": "minecraft:daylight_detector",
-          "count": 8,
-          "job": "aliveworkplace:tinkerer"
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
         },
         {
-          "item": "cobblemon:ultra_ball",
-          "count": 16,
-          "job": "aliveworkplace:ball_smith"
+          "item": "minecraft:heavy_core",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 32,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pokemon_ranger"
+            }
+          }
         },
         {
-          "item": "minecraft:pumpkin_pie",
-          "count": 32,
-          "job": "aliveworkplace:chef"
+          "item": "minecraft:enchanted_golden_apple",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:grand_chef"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
         }
       ]
     }

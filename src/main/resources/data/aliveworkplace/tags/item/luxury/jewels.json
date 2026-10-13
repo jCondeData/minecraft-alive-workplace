@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "minecraft:amethyst_shard",
-    "minecraft:emerald"
+    "minecraft:emerald",
+    "aliveworkplace:amethyst_ring",
+    "aliveworkplace:emerald_brooch",
+    "aliveworkplace:gold_circlet"
   ]
 }

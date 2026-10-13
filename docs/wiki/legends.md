@@ -4,7 +4,7 @@ Rare named villagers with powers, who come to a village that has earned them. Al
 thirty with a rare gift. Part of 1.3 (Legends): switched on in 1.0 with every other expansion.
 
 Roadmap items: 29.2, 29.3, 29.4, 29.5, 29.6, 29.7, 29.8, 29.9, 29.10, 29.12, 29.13, 29.14, 29.15, 29.16, 29.17, 29.18,
-29.19, 29.20, 29.21, 29.22, 29.23, 33.23
+29.19, 29.20, 29.21, 29.22, 29.23, 33.23, B136
 
 ## What a player sees
 
@@ -57,6 +57,10 @@ dead with no grave they fall 7 days later and the slot is free again.
 building), their luxury once every 7 days, and a happy village (average mood 60 or more). A need unmet 2 days
 running starts a strike, but not in the first 3 days. On strike their powers stop and they picket by the hall with
 what they want in red over their head. The day every need is met they go back to work. Legends never leave.
+Their luxury is an item tag, `aliveworkplace:luxury/<kind>` (B136): wine is a honey bottle, Cider, Berry Wine or
+Vintage Wine; jewels an amethyst shard, an emerald, an Amethyst Ring, an Emerald Brooch or a Gold Circlet; books a
+book, an enchanted book, the Village Gazette or an Illuminated Book; clothes leather armor, Work Clothes, Fine Clothes or Noble
+Robes. The vanilla stand-ins stay, so a village without 1.8's luxury trades still keeps its Legends.
 
 **The Gifted (29.6, 29.7).** One villager in `giftedChance` (30) has a gift, decided by who they are, so every
 existing villager already has theirs and nothing is migrated: Prodigy (learns three times as fast), Iron Will (never
@@ -122,8 +126,6 @@ From the design note `docs/design/M29.md`, section 7 (the owner may change any):
 - The Pokémon Professor and Ranger don't exist without Cobblemon; Alphas need Cobblemon 1.8.
 - The Pathfinder's file asked for a Cartographer of level 3 (Journeyman) until B96; it now asks for an Expert
   (level 4), as roadmap 29.13 says. A Pathfinder who has already come stays.
-- The luxuries Legends take are still the stand-ins (honey bottles, amethyst shards and emeralds, books, leather
-  armor), through item tags: 1.8's wines, jewelry, books and clothes haven't joined the tags (bug B136).
 
 ## Legends of the realm (33.23)
 

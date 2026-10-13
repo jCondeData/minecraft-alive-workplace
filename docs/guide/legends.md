@@ -80,9 +80,11 @@ take the **Legend** job, which needs no workstation.
 A settled Legend needs three things:
 
 - **a home of their own**: their bed in a finished building of tier III or better, shared with nobody but a spouse;
-- **their luxury once a week**: wine (a honey bottle), jewels (an amethyst shard or an emerald), books (a book) or fine
-  clothing (leather armor), taken from a chest in their home or else the [Storehouse](storehouse.md). While it lasts
-  they're 10 happier;
+- **their luxury once a week**: wine (a honey bottle, or the [Vintner](vintner.md)'s Cider, Berry Wine or Vintage
+  Wine), jewels (an amethyst shard, an emerald, or the [Jeweler](jeweler.md)'s Amethyst Ring, Emerald Brooch or Gold
+  Circlet), books (a book, or the [Printer](printer.md)'s Village Gazette or Illuminated Book) or fine clothing (leather armor,
+  or the [Tailor](tailor.md)'s Work Clothes, Fine Clothes or Noble Robes), taken from a chest in their home or else
+  the [Storehouse](storehouse.md). While it lasts they're 10 happier;
 - **a happy village**: the grown-ups' average [mood](moods.md) at 60 or more.
 
 A need unmet two days running starts a **strike** (never in their first three days). On strike their powers stop and

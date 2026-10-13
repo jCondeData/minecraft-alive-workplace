@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "minecraft:honey_bottle"
+    "minecraft:honey_bottle",
+    "aliveworkplace:cider",
+    "aliveworkplace:berry_wine",
+    "aliveworkplace:vintage_wine"
   ]
 }

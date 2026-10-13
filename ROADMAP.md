@@ -4342,7 +4342,7 @@ Legends.
   (Toolsmith), 32 amethyst shards (Miner); III 16 books (Librarian), 8 tinted glass (Carpenter), 32 feathers
   (Butcher); IV 32 chains (Tinkerer), 9 gold ingots (Armorer), 32 pumpkin pies (Chef). Done when: 35.9's four design
   checks pass for it.
-- [x] **35.18** (review: pending 2026-10-13) **The Observatory: its powers and time-lapse.** While it stands:
+- [x] **35.18** (approved 2026-10-13) **The Observatory: its powers and time-lapse.** While it stands:
   - **The Sky Chart**: the hall's map button also draws, on an empty map, a chart about 6,144 blocks across (384 chunks,
     12 regions; 35.18a) centred on the hall, marking every structure found: villages, pillager outposts, desert and jungle temples, witch
     huts, igloos, ocean monuments, woodland mansions, shipwrecks, ruined portals, trail ruins, ancient cities, trial

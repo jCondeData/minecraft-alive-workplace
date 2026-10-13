@@ -4233,7 +4233,7 @@ Legends.
   - its review package has the renders after two critique rounds: each stage as the village would see it, and the
     whole from the front, the back and at eye level;
   - scene `wonder_gallery` (made here; each Wonder's design adds to it) shows it whole from the front and the back.
-- [x] **35.10** (review: pending 2026-10-13) **The Great Cathedral: its powers and time-lapse.** While it stands, the village's Undertakers need no
+- [x] **35.10** (approved 2026-10-13) **The Great Cathedral: its powers and time-lapse.** While it stands, the village's Undertakers need no
   golden apple, potion or totem, look for graves across the whole village instead of 32 blocks, and bring each
   villager back by the next morning (`grave/UndertakerWork`). Weddings are held at the Cathedral, before a Chapel or
   the bell (`people/Couples`), and are **blessed**: the whole village gets +15 mood for 3 days, the couple's first

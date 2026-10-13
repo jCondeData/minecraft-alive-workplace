@@ -3681,7 +3681,7 @@ treasury, travel posts, mail, village protection and the Settler's Wagon (camp/)
 
   Done when: a GameTest for each edict (boost on, cost on; the reform turns the cost off and keeps the boost); the
   capital's book shows the realm slots; showcase scene `realm_edicts`.
-  - [ ] **33.22a** Change from the owner (2026-10-13): keep the Common Market as built, the realm's own people buy at the board's price and strangers still pay the 10 percent; wrap the Royal Highway tooltip so it fits on screen
+  - [x] **33.22a** (review: pending 2026-10-13) Change from the owner (2026-10-13): keep the Common Market as built, the realm's own people buy at the board's price and strangers still pay the 10 percent; wrap the Royal Highway tooltip so it fits on screen
 - [x] **33.23** (approved 2026-10-12) **Legends of the realm** (needs M29's The Founder and Merchant Prince):
   - **The Founder**: a village he lives in can found colonies from Town rank, sends four settlers instead of two and
     waits half as long between colonies; its colonies are "founded with the Founder's blessing" in both chronicles,
@@ -4190,7 +4190,7 @@ Legends.
     builders repair it and it comes back; finished Wonders survive a save and reload;
   - a GameTest checks the server-wide message and the chronicle lines;
   - scene `wonder_finished`: the folly's time-lapse, ending in its festival fireworks.
-  - [ ] **35.8a** Change from the owner (2026-10-13): fix the dirt band round the folly's top under the dome (it should be the stone cornice)
+  - [x] **35.8a** (review: pending 2026-10-13) Change from the owner (2026-10-13): fix the dirt band round the folly's top under the dome (it should be the stone cornice)
 - [x] **35.9** (approved 2026-10-12) **The Great Cathedral: its design.** Through the architect skill (design on paper, renders, its
   critique questions, STYLE.md), drawn in a new `tools/blueprints/wonders.py` with the kit and saved by
   `wonder_stages()`: a Gothic cathedral on a cross plan, about 27 wide (39 across the transepts) and 55 long, its two

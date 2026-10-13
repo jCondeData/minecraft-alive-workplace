@@ -4373,7 +4373,7 @@ Legends.
   Keeper), 64 small flowers (Florist), 16 saplings (Lumberjack); III 32 honey bottles (Beekeeper), 64 carrots and 64
   potatoes (Farmer), 32 cocoa beans (Orchard Keeper); IV 16 cakes (Chef), 32 eggs (Butcher), 32 raw cod (Fisherman).
   Done when: 35.9's four design checks pass for it, with the falls running in its renders.
-- [x] **35.20** (review: pending 2026-10-13) **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
+- [x] **35.20** (approved 2026-10-13) **The Hanging Gardens: its powers and time-lapse.** While it stands, across its realm (the villages
   linked to its village, M33; until that lands, its caravan partners; always its own): every farmer and orchard keeper
   harvests a quarter more (one more item for every four picked, counted per worker; no extra crop growth ticks), and
   villages grow faster (`hall/VillageGrowth`): a baby needs 12 meals in the store instead of 16, and up to two are

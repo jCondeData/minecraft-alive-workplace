@@ -102,7 +102,7 @@ public class StadiumCompatTests implements FabricGameTest {
 		return out;
 	}
 
-	/** The file loads with Cobblemon: Town, the Pokémon Professor or 25 pastured Pokémon of 10 types, the roadmap's goods, its powers. */
+	/** The file loads with Cobblemon: Town, the Pokémon Professor or 25 pastured Pokémon of 10 types, its found goods and workshop luxuries (35.7a), its powers. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void stadiumFileLoads(GameTestHelper helper) {
@@ -125,10 +125,10 @@ public class StadiumCompatTests implements FabricGameTest {
 			goods.add(String.join(", ", line));
 		}
 		List<String> expected = List.of(
-			"128 bone_meal composter, 64 #small_flowers florist, 32 poke_ball ball_smith",
-			"64 red_wool leatherworker, 64 white_wool shepherd, 16 poke_snack chef, 16 great_ball ball_smith",
-			"16 #banners carpenter, 64 cooked_beef chef, 32 #berries orchard_keeper",
-			"8 daylight_detector tinkerer, 16 ultra_ball ball_smith, 32 pumpkin_pie chef");
+			"1 diamond_horse_armor cartographer, 1 coast_armor_trim_smithing_template cartographer, 2 great_ball ball_smith",
+			"1 trident cartographer, 1 music_disc_pigstep cartographer, 1 netherite_upgrade_smithing_template cartographer, 2 gold_circlet jeweller",
+			"1 totem_of_undying cartographer, 1 ominous_trial_key cartographer, 1 flow_armor_trim_smithing_template cartographer, 2 ultra_ball ball_smith",
+			"1 nether_star cartographer, 1 heavy_core cartographer, 1 enchanted_golden_apple cartographer, 2 noble_robes tailor");
 		helper.assertTrue(goods.equals(expected), "goods: " + goods);
 		helper.assertTrue(stadium.powers().stream().map(Wonder.Power::type).toList().equals(List.of("stadium_days", "tournament_host")),
 			"powers: " + stadium.powers());

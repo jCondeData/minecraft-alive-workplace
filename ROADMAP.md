@@ -4170,6 +4170,7 @@ Legends.
     the storehouse to the stockpile; a chef cooks a short line as a stock order; a click on the requests board hands a
     line over; the dedication takes exactly the goods; a cancel gives them back;
   - scene `wonder_goods`: the stone's screen half filled, a porter delivering, then the dedication.
+  - [ ] **35.7a** Change from the owner (2026-10-13): make a Wonder's goods big and difficult, something the player really needs to work for over a long time; progress should be slow, a big goal with lots of little wins on the way, never busy work: each stage should also need things found by exploring and searching, week-long efforts, and rare goods made by upgraded workshops, not just stacks of farm produce
 - [x] **35.8** (review: pending 2026-10-13) **A finished Wonder: celebration, upkeep and powers.** When the last stage is done, every player on the
   server is told; the village holds a festival that evening (`hall/Festivals`) with a bigger firework show; the
   chronicles of the village and of every village linked to it (its realm, M33; until that lands, its caravan partners)

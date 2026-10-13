@@ -135,6 +135,7 @@ public class ConscriptionGameTests implements FabricGameTest {
 	public void aFarmerAndABuilderFightTheRaidersOnlyInARaid(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		village(helper);
+		Leftovers.halls(helper); // B65: an earlier batch's hall nearer the builder made him its villager, back at work in the raid
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(new BlockPos(11, 2, 4), Blocks.CHEST);
 		pen(helper, 1, 9);
@@ -195,6 +196,7 @@ public class ConscriptionGameTests implements FabricGameTest {
 	public void aChildAndAnIllVillagerDontFight(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		village(helper);
+		Leftovers.halls(helper); // B65: an earlier batch's hall nearer the builder made him its villager, back at work in the raid
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		pen(helper, 1, 9);
 		pen(helper, 15, 9);
@@ -234,6 +236,7 @@ public class ConscriptionGameTests implements FabricGameTest {
 	public void noWorkDuringARaidNorTheMorningAfterUntilNoon(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		village(helper, 32);
+		Leftovers.halls(helper); // B65: an earlier batch's hall nearer the builder made him its villager, back at work in the raid
 		helper.setBlock(new BlockPos(14, 2, 14), ModBlocks.VILLAGE_HALL);
 		Build build = build(helper);
 		Zombie zombie = caged(helper, new BlockPos(26, 2, 26));
@@ -291,6 +294,7 @@ public class ConscriptionGameTests implements FabricGameTest {
 	public void reformedABuilderFarFromTheRaidersKeepsBuilding(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		village(helper, 32);
+		Leftovers.halls(helper); // B65: an earlier batch's hall nearer the builder made him its villager, back at work in the raid
 		helper.setBlock(new BlockPos(14, 2, 14), ModBlocks.VILLAGE_HALL);
 		Build build = build(helper);
 		// The raider up on a glass perch in the far corner, more than 24 blocks from anywhere the builder works.
@@ -348,6 +352,7 @@ public class ConscriptionGameTests implements FabricGameTest {
 	public void aConscriptSavedMidRaidLoadsWithoutTheSword(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		village(helper);
+		Leftovers.halls(helper); // B65: an earlier batch's hall nearer the builder made him its villager, back at work in the raid
 		boolean edicts = Edicts.ENABLED;
 		Leftovers.after(helper, () -> Edicts.setEnabled(edicts));
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);

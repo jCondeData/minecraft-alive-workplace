@@ -29,6 +29,11 @@ public final class ModAttachments {
 	/** A wedding the Seer blessed (29.16), on each of the couple: the day, the mood and its days, the baby's days, whether it's still due. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.legend.Seer.Blessing> SEER_BLESSING = Attachment.saved("seer_blessing", io.github.jcondedata.aliveworkplace.legend.Seer.Blessing.CODEC);
 
+	/** A wedding a Wonder blessed (35.10, the Great Cathedral), on each of the couple: the day, whether the first baby is still due, the Gifted factor. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.Blessed> WONDER_BLESSING = Attachment.saved("wonder_blessing", io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.Blessed.CODEC);
+	/** A child of a Wonder-blessed couple (35.10): how many times as likely they are to grow up Gifted. Absent: as anyone. */
+	public static final Attachment<Double> BLESSED_CHILD = Attachment.saved("blessed_child", com.mojang.serialization.Codec.DOUBLE);
+
 	/** The last banquet of the Grand Chef's (29.18) a villager came to: the day, the mood and its days. Absent: none. */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.hall.Banquets.Feasted> BANQUET = Attachment.saved("banquet", io.github.jcondedata.aliveworkplace.hall.Banquets.Feasted.CODEC);
 

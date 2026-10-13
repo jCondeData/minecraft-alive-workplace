@@ -30,7 +30,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Couples: in a village with a Village Hall, now and then two grown villagers who aren't family start courting, and
- * {@link #COURTSHIP_DAYS} days later they marry — a wedding at the village's bell, with fireworks, and everyone there in
+ * {@link #COURTSHIP_DAYS} days later they marry — a wedding at the village's bell (its Chapel, or with the Great
+ * Cathedral standing its altar, blessed: 35.10), with fireworks, and everyone there in
  * a better mood (as after a festival). Couples are happier near each other, a married couple are the first to have a
  * baby when there's a free bed, and when one of them dies the other mourns for {@link #MOURNING_DAYS} days. The hall's
  * list says who's with whom. {@code villagerCouples} in the config turns it off.
@@ -166,12 +167,18 @@ public final class Couples {
 		Chronicle.record(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.wedding", a.getDisplayName(),
 			b.getDisplayName()));
 		io.github.jcondedata.aliveworkplace.legend.Seer.bless(level, hall, a, b, square); // at the Chapel with the Seer there (29.16)
+		io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.bless(level, hall, a, b, square); // at the Great Cathedral (35.10)
+		io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.ring(level, hall, io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.Reason.WEDDING);
 		io.github.jcondedata.aliveworkplace.hall.Anthems.play(level, hall, "wedding"); // the Bard Laureate's anthem (29.19)
 		io.github.jcondedata.aliveworkplace.story.Friendship.onWedding(level, hall, a, b); // the guests' friendship (31.5)
 	}
 
-	/** Where weddings are held: the village's finished Chapel, else its bell. */
+	/** Where weddings are held: the altar of the village's standing Great Cathedral (35.10), else its finished Chapel, else its bell. */
 	public static BlockPos venue(ServerLevel level, BlockPos hall) {
+		java.util.Optional<BlockPos> cathedral = io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.venue(level, hall);
+		if (cathedral.isPresent()) {
+			return cathedral.get();
+		}
 		return io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).finishedNear(level, hall, VillageHalls.RADIUS).stream()
 			.filter(f -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(f.structure())
 				.equals(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.CHAPEL.id()))

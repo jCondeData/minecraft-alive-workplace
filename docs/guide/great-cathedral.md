@@ -6,7 +6,7 @@ expansion: M35
 Needs: a Town, the Seer (or a Master Cleric), 3 finished Chapels, the Master Architect
 Size: 39 blocks across the transepts, 55 long, its spires 52 high
 Stages: The Foundations and the West Front; The Nave; The Transepts and the Choir; The Towers and the Rose Window
-While it stands: undertakers bring the village's dead back by morning; weddings are blessed; the village is more beautiful
+While it stands: undertakers need nothing and bring the village's dead back by morning; weddings at its altar are blessed; its bells ring; 8 beauty
 categories: Wonders
 related: wonders.md, jobs-services.md, village-life.md
 ```
@@ -31,9 +31,21 @@ the Master Architect. See [Wonders](wonders.md) for drawing up the plans.
 
 ## While it stands
 
-- The village's **Undertakers** bring its dead back by morning, from anywhere in the village.
-- **Weddings** are blessed, with a good mood of 15 that lasts 3 days.
-- The whole village is the more **beautiful** for it, which the better [classes](classes.md) look for.
+![Dusk: a blessed wedding at the altar](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_cathedral/still-4.jpg)
+
+While it is finished and at least nine tenths of it stands (see [Wonders](wonders.md), "Keeping it up"):
+
+- The village's **Undertakers** need nothing from their chest: no golden apple, healing potion or totem. They look for
+  graves anywhere in the village, not just 32 blocks from their table, and anyone still lying in a grave at dawn is
+  brought back in the night ("Uma brought Mira back in the night"). The village needs an Undertaker at their table.
+- **Weddings** are held at its altar instead of a Chapel or the bell, and are **blessed**: everyone in the village is 15
+  happier for 3 days, the couple's first baby comes the next day there's a free bed (without waiting for the 16 meals in
+  the store), and their children are twice as likely to grow up Gifted.
+- Its **bells** ring for weddings, festivals and raids; raiders near the towers glow, as with a village bell.
+- The whole village is the more **beautiful** for it (8 beauty), which the better [classes](classes.md) look for.
+
+If it is damaged, the Undertakers need their golden apples again and weddings go back to the Chapel or the bell until
+the builders have mended it. A wedding already blessed keeps its mood and its baby.
 
 ## How it fits with the rest
 

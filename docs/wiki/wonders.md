@@ -9,7 +9,7 @@ Cathedral, the Lighthouse, the Great Library, the Observatory, the Great Wall, t
 Cobblemon, the Stadium) are built, behind the 2.0 switch (see Known limits); the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.11, 35.12, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23, 35.23a
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.15, 35.15a, 35.17, 35.18a, 35.19, 35.21, 35.23, 35.23a
 
 ## What a player sees
 
@@ -223,6 +223,25 @@ Illuminated Books (Printer); III a Totem of Undying (the Merchant Prince, 22 day
 Grand Chef, 22 days), an Eye Armor Trim Template (the Old Sage, 18 days); made: 2 Noble Robes (Tailor); IV an Elytra
 (the Pathfinder, 45 days), a Nether Star (the Golem Smith, 36 days), the music disc Relic (the Bard Laureate, 16
 days); made: 2 Gold Circlets (Jeweller). It can't be built in game until the rest of Wonders is.
+
+**The Great Cathedral's powers** (35.10), while it is finished and stands (`wonderStanding`):
+
+- **Undertakers** (`undertakers`): the village's Undertakers need no golden apple, healing potion or totem; they look
+  for graves across the whole village (the hall's 64 blocks), not only 32 (48 with the Healers' Guild) round their
+  table; and at the hall's first rounds of the morning (before 2,000 ticks into the day) everyone who died before that
+  dawn and still lies in a grave of the village is brought back by the village's Undertaker in the night, credited to
+  them, and the players near read "Uma brought Mira back in the night: by the Great Cathedral's grace, nobody lies in
+  the graveyard past morning". The village needs an Undertaker at their table for either.
+- **Weddings** (`weddings`): a wedding is held before its altar (the red runner's end, before the gold), before a
+  Chapel or the bell, and is blessed: the players near read "The bells of the Great Cathedral ring out: Dara and Tom are
+  wed at its altar, and the wedding is blessed. All of Testholm is 15 happier for 3 days", the chronicle "Dara and Tom
+  were wed at the altar of the Great Cathedral, and the wedding was blessed"; every villager of the village is 15
+  happier for 3 days ("a blessed wedding at the Great Cathedral" among their reasons); the couple's first baby comes the
+  next day there's a free bed, past the store's meals, the mood and the daily wait (once); and their children, grown
+  up, are twice as likely to be Gifted (M29's born gifts: 2 in 4 for a child of two schooled Masters).
+- **Bells**: its belfries' bells (every bell of its blueprint still in place) ring for a wedding, a festival's feast and
+  a raid beginning, as a player's hit rings them, so raiders near them glow.
+- **Beauty** (`beauty`): 8 to the village's beauty.
 
 **The Lighthouse** (35.11) is drawn: a coastal landmark 25 by 33 and 46 high, about 5,000 blocks, its back half in the
 sea. A round tower banded in white and red terracotta tapers from 13 across to 9 on a stepped stone mole (mossy at the
@@ -488,6 +507,16 @@ at a time, a Wonder at a time, 4,096 blocks a tick, and starts over if part of i
 restart only begins that day's count again. Repairs are ordinary repair build sites, one per part with holes, pointing
 back at the Wonder with its stone as their bench; the first goes to the builder that looked, the rest in its queue.
 
+**The Cathedral's power types** (35.10, `wonder/powers/`): `undertakers` takes `search` (`"village"`, the default, or
+`"table"`) and `revive_by` (`"morning"`, the default, or `"none"`); `weddings` takes `mood` (default 15, at most 50
+either way), `days` (default 3), `gifted_factor` (1 to 4, default 1; rounded, it is how many of the gift die's 4 faces
+make a child Gifted), `altar` (a spot `[x, y, z]` in the Wonder's own blueprint, turned and mirrored with it; without
+one a wedding anywhere in the village is blessed) and `bells` (default true). A server owner's Wonder can use them.
+`Couples.venue` asks `WeddingsPower.venue` first; `UndertakerWork` asks `UndertakersPower` for the graves and whether
+anything is needed; `VillageGrowth.blessedBirth` takes a Seer-blessed couple first, then a Wonder-blessed one; the
+hall's round calls `UndertakersPower.morning` after the couples; `Festivals.feast` and `VillageRaids` ring
+`WonderBells`, which finds a Wonder's bells once in its blueprint.
+
 ## Switches
 
 All behind the 2.0 switch: until 2.0 is finished they are off and hidden, whatever the config file says.
@@ -514,7 +543,11 @@ sites) and `builder` on a site; 35.5 adds `called` (default false: every builder
 handed in at the stone for it, each its line, item, potion and count). A site saved before 35.7 with its stage's parts
 down counts as started, so a Wonder going up keeps going. 35.8 adds `standing` (default 100: the share standing at the
 last count), `counted` (default 0: that count's day), `damaged` (default false) and `festival` (default 0: the day of
-its finishing festival); a Wonder saved before 35.8 reads as standing whole, its powers on. 35.7b adds `searches` beside the sites
+its finishing festival); a Wonder saved before 35.8 reads as standing whole, its powers on. 35.10 adds
+`wonderWedding` on a Village Hall (absent: none; its day, mood, days and Wonder) and two villager attachments,
+`wonder_blessing` (on each of a blessed couple: the day, whether the first baby is still due, the Gifted
+factor) and `blessed_child` (a blessed couple's child's Gifted factor), each absent until set, so older
+saves load unchanged. 35.7b adds `searches` beside the sites
 (absent in a world saved before: nothing searched): for each site waiting for goods, each found line's helper search
 (its line, the item, the ticks searched and whether the helper was last seen in the village). A crew member's
 job is the ordinary saved builder job (as a helper), so a crew comes back together after a restart; the columns are
@@ -585,14 +618,16 @@ build saves exactly as before).
 
 - The Great Cathedral's, the Lighthouse's, the Great Library's, the Observatory's, the Great Wall's, the Hanging
   Gardens' and the Colossus' files ship (35.9, 35.11, 35.13, 35.17, 35.15, 35.19, 35.21), so they are on the Wonders
-  page behind the 2.0 switch; their powers come with 35.10, 35.12, 35.14, 35.18, 35.16, 35.20 and 35.22, and the
+  page behind the 2.0 switch; the Cathedral's powers are in (35.10), the others' come with 35.12, 35.14, 35.18, 35.16, 35.20 and 35.22, and the
   Stadium's file with 35.23. Everything is behind the 2.0 switch.
 - A lone builder can't reach blocks far over anywhere he can stand: the folly's finial lantern, five blocks over the
   inside of its closed dome, is skipped until scaffolding (35.6).
 - Drawing up the plans doesn't reserve the Wonder: two plans of one Wonder can be drawn; the caps hold when it's begun.
 - A stage's `parts` are checked to exist when the plans are drawn up (the log names a missing one), not when loaded.
-- Only `mood` and `beauty` act yet; the other power types are declared, their numbers kept and `Wonders.power` already
-  answering for them, until their Wonder's powers item (35.10 on) reads them.
+- `mood`, `beauty`, `undertakers` and `weddings` act; the other power types are declared, their numbers kept and
+  `Wonders.power` already answering for them, until their Wonder's powers item (35.12 on) reads them.
+- A Cathedral-blessed baby is the couple's first only: later children come as anyone's (35.10). A wedding blessed before
+  the Cathedral was damaged keeps its mood and baby; only new weddings stop being blessed.
 - Goods handed in come back as the plain item (35.7): a renamed flower comes back unnamed. A tag line's name ("Flowers",
   "Saplings", "Banners", "Berries") comes from the language file; a server owner's own tag shows as `#namespace:path`.
 - The stone's status is its chat text, as in 35.4: there is no separate screen.
@@ -670,3 +705,14 @@ save and reload (the powers from the loaded copy), old saves read as standing wh
 weathered and waxed copper standing as drawn, Wonders off; every power type registered by id, bad numbers refused, a
 type registered later read from a file. Showcase scene `wonder_finished` (group Wonders): the folly's time-lapse, a
 crew of ten, ending in its festival's fireworks.
+
+GameTests in `WonderCathedralGameTests` (35.10): an Undertaker with an empty chest and a grave 40 blocks from the table
+leaves it for 800 ticks without the Cathedral, then with it standing walks there and brings Mira back, nothing used;
+the night's grave emptied at dawn (the Undertaker credited, the players' line), not one from after dawn, not at 3,000
+ticks, not without an Undertaker; a wedding goes to the altar and is blessed (the couple, the hall, the chronicle and the
+players' lines), a guest 15 happier with its reason for 3 days and not on the 4th, the first baby not on the wedding
+day, then the next day past the store and the mood, once, and twice as likely Gifted (the same dice make the blessed
+child Gifted and another not); damaged, no free revival, no village-wide search, no morning, the bell's wedding unblessed
+and the 8 beauty gone, repaired all back; the file's numbers and refusals, the page's lines, the altar before the gold
+in its drawing (and turned with it), and the belfries' bells. Showcase scene `wonder_great_cathedral` (group Wonders):
+the Cathedral's time-lapse with a crew of ten, ending at dusk with a blessed wedding at its altar before the guests.

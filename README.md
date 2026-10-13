@@ -693,6 +693,8 @@ How to start one:
 Sneak-breaking the stone (its owner or an operator) or `/workplace cancel` abandons the Wonder: what's built stays and
 the plan comes back. `wonders` in the config switches Wonders off; every one stays saved.
 
+### The Lighthouse
+
 **The Lighthouse** (on the coast): caravans from its village reach villages twice as far off (4,096 blocks) and arrive
 in half the time; ferry fares to and from the village's Travel Posts are halved, and its jetty's post joins the network
 under the village's name ("Thornholm Lighthouse"); and its keeper watches the sea: the day before drowned pirates come,
@@ -700,6 +702,21 @@ the village is told, the chronicle notes it and at dusk the guards gather on the
 four until its builder repairs it.
 
 ![The Lighthouse going up beside the sea, lit at night](https://jcondedata.github.io/minecraft-alive-workplace/wonder_lighthouse/anim.gif)
+
+### The Great Cathedral
+
+![The Great Cathedral going up stage by stage, then a wedding at its altar at dusk](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_cathedral/anim.gif)
+
+A Gothic cathedral on a cross plan, 55 blocks long with spires 52 high, for a Town with three finished Chapels and the
+Seer (or a Master Cleric). While it stands, and less than a tenth of it is missing:
+
+- **Undertakers need nothing**: no golden apple, healing potion or totem. They look for graves across the whole village,
+  not just 32 blocks from their table, and anyone still in a grave at dawn is back by morning.
+- **Weddings are held at its altar and blessed**: everyone in the village is 15 happier for 3 days, and the couple's
+  first baby comes the next day there's a free bed, without waiting for the store's meals. Their children are twice as
+  likely to grow up Gifted.
+- **Its bells ring** for weddings, festivals and raids. A raider near the belfries glows, as with a village bell.
+- It adds **8 to the village's beauty**.
 
 ## From village to realm
 

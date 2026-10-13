@@ -197,6 +197,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.legend.LegendNeeds.round(server, pos);
 			io.github.jcondedata.aliveworkplace.legend.StrangeMoods.round(server, pos);
 			io.github.jcondedata.aliveworkplace.people.Couples.round(server, pos);
+			io.github.jcondedata.aliveworkplace.wonder.powers.UndertakersPower.morning(server, pos); // the night's dead back by morning (35.10)
 			io.github.jcondedata.aliveworkplace.people.ClassMigration.round(server, pos, hall); // classes switched on: 16 seeded a round (34.22)
 			io.github.jcondedata.aliveworkplace.people.FamilyBook.round(server, pos, hall); // family names and the Book of Families (34.21)
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
@@ -680,6 +681,20 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		return fairDay;
 	}
 
+	/** The village's last wedding a Wonder blessed (35.10), whose mood everyone has for its days; null: none (and in halls saved before). */
+	@org.jetbrains.annotations.Nullable
+	private io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.VillageBlessing wonderWedding;
+
+	@org.jetbrains.annotations.Nullable
+	public io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.VillageBlessing wonderWedding() {
+		return wonderWedding;
+	}
+
+	public void setWonderWedding(@org.jetbrains.annotations.Nullable io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.VillageBlessing blessing) {
+		wonderWedding = blessing;
+		setChanged();
+	}
+
 	/** The day of the village's last banquet (29.18), -1 before the first. */
 	public long banquetDay() {
 		return banquetDay;
@@ -959,6 +974,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		fairDay = tag.contains("fairDay") ? Nbt.getLong(tag, "fairDay") : -1;
 		banquetDay = tag.contains("banquetDay") ? Nbt.getLong(tag, "banquetDay") : -1;
 		banquetEaten = Nbt.getBoolean(tag, "banquetEaten");
+		wonderWedding = tag.contains("wonderWedding") ? io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.VillageBlessing.CODEC
+			.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("wonderWedding")).result().orElse(null) : null;
 		String instrument = Nbt.getString(tag, "anthemInstrument");
 		int[] notes = Nbt.getIntArray(tag, "anthemNotes");
 		anthem = !instrument.isEmpty() && notes.length > 0 ? new Anthems.Anthem(instrument, notes) : null;
@@ -1086,6 +1103,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		tag.putLong("fairDay", fairDay);
 		tag.putLong("banquetDay", banquetDay);
 		tag.putBoolean("banquetEaten", banquetEaten);
+		if (wonderWedding != null) {
+			io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.VillageBlessing.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, wonderWedding)
+				.result().ifPresent(t -> tag.put("wonderWedding", t));
+		}
 		if (anthem != null) {
 			tag.putString("anthemInstrument", anthem.instrument());
 			tag.putIntArray("anthemNotes", anthem.notes());

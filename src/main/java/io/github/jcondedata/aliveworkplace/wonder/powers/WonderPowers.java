@@ -14,8 +14,8 @@ import java.util.function.Function;
  * place. An unknown type, or numbers its reader refuses, fail the file (logged with its path and the reason).
  */
 public final class WonderPowers {
-	/** The types our Wonders' powers items (35.10 to 35.24) fill in, declared until then. */
-	public static final List<String> DECLARED = List.of("undertakers", "weddings", "caravan_range", "caravan_speed", "ferry_fares",
+	/** The types our Wonders' powers items (35.12 to 35.24) fill in, declared until then (35.10's are registered above). */
+	public static final List<String> DECLARED = List.of("caravan_range", "caravan_speed", "ferry_fares",
 		"early_warning", "research_tier", "raid_barrier", "sentries", "sky_chart", "forecast", "harvest", "births", "travellers",
 		"stadium_days", "tournament_host");
 
@@ -24,6 +24,8 @@ public final class WonderPowers {
 	static {
 		register(MoodPower.TYPE, MoodPower::read);
 		register(BeautyPower.TYPE, BeautyPower::read);
+		register(UndertakersPower.TYPE, UndertakersPower::read); // the Great Cathedral's (35.10)
+		register(WeddingsPower.TYPE, WeddingsPower::read);
 		for (String type : DECLARED) {
 			register(type, json -> DeclaredPower.read(type, json));
 		}

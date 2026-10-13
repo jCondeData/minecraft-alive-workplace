@@ -45,7 +45,9 @@ public final class BornGifts {
 				return new Outcome(legend, null);
 			}
 		}
-		if (Gifted.CHANCE > 0 && random.nextInt(GIFTED_ONE_IN) == 0) {
+		// a child of a wedding the Great Cathedral blessed (35.10): its factor's times as likely (twice: 2 in 4)
+		int odds = (int) Math.max(1, Math.min(GIFTED_ONE_IN, Math.round(io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.giftedFactor(villager))));
+		if (Gifted.CHANCE > 0 && random.nextInt(GIFTED_ONE_IN) < odds) {
 			Gifted.Gift gift = Gifted.pick(random);
 			if (gift != null) {
 				Gifted.set(villager, gift.id());

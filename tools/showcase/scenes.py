@@ -823,6 +823,11 @@ SCENES = [
       [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"), ("frame_*@middle", "The crew at work, the camera going round"),
        ("14_wonder_lighthouse_stage_4", "The Lantern and the Keeper's House: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
+    # The Great Cathedral (ROADMAP 35.10): its time-lapse with the crew, ending at dusk with a blessed wedding at its altar
+    S("wonder_great_cathedral", "Wonders", "The Great Cathedral: its time-lapse, and a wedding at its altar",
+      "a crew of ten raised the Great Cathedral stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished its powers came on (Undertakers free and village-wide, blessed weddings, 8 beauty), and at dusk a couple were wed at its altar before the guests: the wedding was blessed and its bells rang", 840,
+      [("11_wonder_great_cathedral_stage_1", "Stage I, the Foundations and the West Front, up"), ("frame_*@middle", "The crew at work, the camera going round"),
+       ("14_wonder_great_cathedral_stage_4", "The Towers and the Rose Window: the Cathedral finished"), ("19_wonder_great_cathedral_wedding", "Dusk: a blessed wedding at the altar")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
       "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,

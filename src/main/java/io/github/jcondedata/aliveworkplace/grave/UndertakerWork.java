@@ -33,7 +33,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * An Undertaker's shift at their table: with a golden apple, a healing potion or a totem of undying in the chests, they
  * take it to the nearest grave within {@link #RADIUS} blocks and, after a little while at the graveside, bring back
- * whoever lies there. Without one they post a request for a golden apple (the Storehouse board shows it).
+ * whoever lies there. Without one they post a request for a golden apple (the Storehouse board shows it). With the Great
+ * Cathedral standing in the village (35.10, {@code UndertakersPower}) they need nothing and tend every grave in the village.
  */
 public class UndertakerWork extends Behavior<Villager> {
 	/** How far from the table graves are tended. */
@@ -62,6 +63,18 @@ public class UndertakerWork extends Behavior<Villager> {
 	/** The Ancient Lore's Undying Flame (29.14): the village's undertakers bring the dead back with nothing from the chest. */
 	public static boolean undyingFlame(Villager villager) {
 		return io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(villager, "undying_flame");
+	}
+
+	/**
+	 * Whether {@code villager} brings the dead back with nothing from the chest: the Undying Flame (29.14), or a finished,
+	 * standing Wonder with the {@code undertakers} power in their village (the Great Cathedral, 35.10).
+	 */
+	public static boolean needsNothing(ServerLevel level, Villager villager) {
+		if (undyingFlame(villager)) {
+			return true;
+		}
+		BlockPos table = Builders.benchPos(villager).orElse(null);
+		return table != null && io.github.jcondedata.aliveworkplace.wonder.powers.UndertakersPower.at(level, table).isPresent();
 	}
 
 	public static boolean isUndertaker(Villager villager) {
@@ -134,13 +147,14 @@ public class UndertakerWork extends Behavior<Villager> {
 			return;
 		}
 		timer = LOOK_EVERY;
-		List<BlockPos> graves = Graves.near(level, table, radius(villager));
+		// the whole village with the Cathedral's power (35.10), else round the table
+		List<BlockPos> graves = io.github.jcondedata.aliveworkplace.wonder.powers.UndertakersPower.graves(level, table, radius(villager));
 		if (graves.isEmpty()) {
 			state = "none";
 			Requests.clear(villager);
 			return;
 		}
-		boolean inBag = bag.stacks().stream().anyMatch(Graves::isRevivalItem) || undyingFlame(villager);
+		boolean inBag = bag.stacks().stream().anyMatch(Graves::isRevivalItem) || needsNothing(level, villager);
 		if (!inBag && (own.isEmpty() || SupplyContainers.firstMatching(level, own, Graves::isRevivalItem) == null)) {
 			state = own.isEmpty() ? "no_chest" : "needs";
 			Requests.post(villager, new ItemStack(Items.GOLDEN_APPLE), 1, Component.translatable("request.aliveworkplace.revival"), Graves::isRevivalItem);
@@ -164,7 +178,7 @@ public class UndertakerWork extends Behavior<Villager> {
 		if (--timer > 0) {
 			return;
 		}
-		boolean flame = undyingFlame(villager);
+		boolean flame = needsNothing(level, villager);
 		ItemStack item = flame ? ItemStack.EMPTY : bag.takeFirst(Graves::isRevivalItem);
 		if (item.isEmpty() && !flame) {
 			task = Task.NONE;

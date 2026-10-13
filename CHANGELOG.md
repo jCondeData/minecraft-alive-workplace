@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   halved, and the jetty's post joins the network as "<Village> Lighthouse"; the day before drowned pirates raid, the
   keeper warns the village ("Sails off the west shore..."), the chronicle notes it and at dusk the guards gather on the
   shore. A damaged Lighthouse turns all four off. Its time-lapse by the sea is on the showcase page.
+- **The Great Cathedral's powers** (35.10, part of Wonders, for 2.0): while it stands, the village's Undertakers need no
+  golden apple, potion or totem, look for graves across the whole village, and anyone still in a grave at dawn is back
+  by morning. Weddings are held at its altar and blessed: everyone in the village is 15 happier for 3 days, the couple's
+  first baby comes the next day there's a free bed without waiting for the store's meals, and their children are twice
+  as likely to grow up Gifted. Its bells ring for weddings, festivals and raids, and it adds 8 to the village's beauty.
+  The showcase films its time-lapse, ending at dusk with a wedding at the altar.
 - **Wonder goods you explore for** (35.7a, 35.7b, the owner's change to 35.7, part of Wonders, for 2.0): a Wonder's
   stages no longer ask for stacks of farm produce. Each asks for two or three hard things found by exploring, one of
   each (a Heart of the Sea, an Echo Shard, a Heavy Core, a Nether Star, an Elytra...), and two of an upgraded workshop's

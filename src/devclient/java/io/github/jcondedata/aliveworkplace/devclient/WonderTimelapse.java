@@ -24,7 +24,10 @@ import io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem;
 import io.github.jcondedata.aliveworkplace.wonder.WonderSite;
 import io.github.jcondedata.aliveworkplace.wonder.WonderStages;
 import io.github.jcondedata.aliveworkplace.wonder.Wonders;
+import io.github.jcondedata.aliveworkplace.people.Couples;
 import io.github.jcondedata.aliveworkplace.wonder.powers.MoodPower;
+import io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower;
+import io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +52,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -61,6 +65,10 @@ import net.minecraft.world.phys.Vec3;
  * to its usual rate, and the Wonder's bigger fireworks are filmed ({@code 19_<scene>_fireworks}). Each check is the
  * scene's: the crew raised it, the server was told and the festival planned, its powers came on, its rockets went up.
  * Each Wonder's own scene makes one with its id ({@code new WonderTimelapse(id, "wonder_great_cathedral")}).
+ *
+ * <p>An ending of its own replaces the fireworks: {@link Ending#WEDDING} (the Great Cathedral, 35.10) moves time on to
+ * dusk, has a couple wed at the altar (blessed, the bells ringing) and films them from the nave
+ * ({@code 19_<scene>_wedding}); its checks: the wedding was at the altar and blessed, and the bells hang in the belfries.
  */
 final class WonderTimelapse {
 	/** Builders on the crew, the lead included. */
@@ -74,8 +82,14 @@ final class WonderTimelapse {
 	private static final int GIVE_UP = 15600;
 	private static final long MORNING = 3000;
 
+	/** How the scene ends once the Wonder is finished. */
+	enum Ending { FIREWORKS, WEDDING }
+
 	private final ResourceLocation wonder;
 	private final String scene;
+	private final Ending ending;
+	private volatile BlueprintData.Placement placement;
+	private volatile boolean wed;
 	/** The hall, away from the other scenes; the superflat ground's top is at y -61. */
 	private final BlockPos hall = new BlockPos(900, -60, 900);
 	private int tick;
@@ -93,8 +107,13 @@ final class WonderTimelapse {
 	private volatile Vec3i size = Vec3i.ZERO;
 
 	WonderTimelapse(ResourceLocation wonder, String scene) {
+		this(wonder, scene, Ending.FIREWORKS);
+	}
+
+	WonderTimelapse(ResourceLocation wonder, String scene, Ending ending) {
 		this.wonder = wonder;
 		this.scene = scene;
+		this.ending = ending;
 	}
 
 	/** The ground a Wonder's scene readies once its plan is placed (35.12: the Lighthouse's sea), given the level and where the plan went. */
@@ -152,6 +171,24 @@ final class WonderTimelapse {
 				finishedAt = tick;
 				server.execute(() -> evening(server));
 			}
+		}
+		if (ending == Ending.WEDDING) {
+			if (finishedAt > 0 && tick == finishedAt + 60) {
+				server.execute(() -> wedding(server));
+			}
+			if (finishedAt > 0 && tick == finishedAt + 130) {
+				ScreenshotHarness.shot(mc, String.format("19_%s_wedding", scene));
+			}
+			if (finishedAt > 0 && tick == finishedAt + 200) {
+				over = true;
+				mc.stop();
+			}
+			if (tick >= GIVE_UP && !over) {
+				over = true;
+				Showcase.check(false, "the " + wonder + " went up and a wedding was held at it in time (stage " + stage + ", finished " + done + ", wed " + wed + ")");
+				mc.stop();
+			}
+			return;
 		}
 		if (finishedAt > 0 && showAt < 0 && tick % 10 == 0) {
 			server.execute(() -> countRockets(server));
@@ -234,6 +271,7 @@ final class WonderTimelapse {
 			Rotation.CLOCKWISE_180); // its front faces the hall
 		plan.set(ModComponents.BLUEPRINT, data.withPlacement(Optional.of(placement)));
 		ground.accept(level, placement);
+		this.placement = placement;
 		player.getInventory().clearContent();
 		player.setItemInHand(InteractionHand.MAIN_HAND, plan);
 		InteractionResult result = WonderStages.handOver(player, crew.get(0), plan);
@@ -288,10 +326,73 @@ final class WonderTimelapse {
 			+ ", today " + today + ")");
 		Showcase.check(Wonders.power(level, hall, MoodPower.TYPE).isPresent() || Wonders.loaded().get(wonder).powers().stream()
 			.noneMatch(p -> p.type().equals(MoodPower.TYPE)), "its powers came on: " + Wonders.loaded().get(wonder).powers().stream().map(Wonder.Power::type).toList());
+		if (ending == Ending.WEDDING) {
+			level.setDayTime((today - 1) * 24000L + DUSK); // held at dusk: the wedding at the altar
+			return;
+		}
 		level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(true, server);
 		level.setDayTime((today - 1) * 24000L + Festivals.FIREWORKS - 300); // the feast's last hour, then dusk and the fireworks
 		ScreenshotHarness.hoverLookingAt(player(server), centre.add(-size.getX() * 0.8 - 12, size.getY() * 0.5 + 6, -size.getZ() * 0.8 - 12),
 			centre.add(0, size.getY() * 0.4, 0));
+	}
+
+	/** Dusk: the time of day the wedding is held at (the sun on the horizon). */
+	private static final long DUSK = 12600;
+
+	/** A point of the Wonder's own blueprint ({@code local}), placed as the Wonder was. */
+	private Vec3 placed(double x, double y, double z) {
+		BlockPos at = placement.origin().offset(StructureTemplate.transform(BlockPos.containing(x, y, z), placement.mirror(), placement.rotation(), BlockPos.ZERO));
+		return Vec3.atBottomCenterOf(at);
+	}
+
+	/**
+	 * The ending at dusk (35.10): a courting couple at the Cathedral's altar wed, the wedding blessed and its bells ringing;
+	 * the camera in the nave, looking up the red runner at them.
+	 */
+	private void wedding(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		Optional<BlockPos> altar = WeddingsPower.venue(level, hall);
+		Showcase.check(altar.isPresent() && Couples.venue(level, hall).equals(altar.get()), "weddings are held at the altar of the " + Wonders.name(wonder).getString()
+			+ " (" + altar + ", venue " + Couples.venue(level, hall) + ")");
+		if (altar.isEmpty() || placement == null) {
+			return;
+		}
+		float toAltar = placement.rotation().rotate(Direction.SOUTH).toYRot(); // facing the gold
+		Villager bride = couple(level, altar.get(), "Ilse", toAltar);
+		Villager groom = couple(level, altar.get().relative(placement.rotation().rotate(Direction.EAST)), "Bram", toAltar);
+		long today = Chronicle.day(level);
+		io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(bride, new Couples.Partner(groom.getUUID(), groom.getDisplayName(), today - 2, false));
+		io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARTNER.set(groom, new Couples.Partner(bride.getUUID(), bride.getDisplayName(), today - 2, false));
+		int[][] rows = {{16, 36}, {17, 36}, {21, 36}, {22, 36}, {15, 34}, {23, 34}};
+		for (int[] row : rows) { // the guests between the front pews (the pews are on the odd rows)
+			Vec3 seat = placed(row[0], 1, row[1]);
+			Villager guest = EntityType.VILLAGER.create(level);
+			float yaw = (float) (Math.toDegrees(Math.atan2(altar.get().getZ() + 0.5 - seat.z, altar.get().getX() + 0.5 - seat.x)) - 90); // facing the altar
+			guest.moveTo(seat.x, seat.y, seat.z, yaw, 0);
+			guest.setYHeadRot(yaw);
+			guest.setNoAi(true);
+			level.addFreshEntity(guest);
+		}
+		Wonders.Granted granted = WeddingsPower.granted(level, hall).orElse(null);
+		List<BlockPos> bells = granted == null ? List.of() : WonderBells.bells(level, granted);
+		Showcase.check(!bells.isEmpty() && bells.stream().allMatch(p -> level.getBlockState(p).is(net.minecraft.world.level.block.Blocks.BELL)),
+			"the bells hang in its belfries (" + bells.size() + ")");
+		Couples.wed(level, hall, bride, groom);
+		wed = io.github.jcondedata.aliveworkplace.registry.ModAttachments.WONDER_BLESSING.has(bride)
+			&& ((VillageHallBlockEntity) level.getBlockEntity(hall)).wonderWedding() != null;
+		Showcase.check(wed, "the wedding at the altar was blessed: the couple's first baby to come, the whole village 15 happier for 3 days");
+		Vec3 target = Vec3.atBottomCenterOf(altar.get()).add(0, 1.2, 0);
+		ScreenshotHarness.hoverLookingAt(player(server), placed(19, 5, 29), target);
+	}
+
+	private static Villager couple(ServerLevel level, BlockPos at, String name, float yaw) {
+		Villager v = EntityType.VILLAGER.create(level);
+		v.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, yaw, 0);
+		v.setYHeadRot(yaw);
+		v.setCustomName(Component.literal(name));
+		v.setNoAi(true);
+		level.addFreshEntity(v);
+		return v;
 	}
 
 	private void countRockets(MinecraftServer server) {

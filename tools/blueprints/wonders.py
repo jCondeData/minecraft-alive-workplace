@@ -4960,7 +4960,8 @@ WONDERS = {
         "goods": GOODS["great_cathedral"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "undertakers", "search": "village", "revive_by": "morning"},
-            {"type": "weddings", "mood": 15, "days": 3, "gifted_factor": 2.0},
+            # 35.10: the altar is where the couple stand, before the gold (19, 2, 50); the bells ring for weddings, festivals, raids
+            {"type": "weddings", "mood": 15, "days": 3, "gifted_factor": 2.0, "altar": [19, 2, 49], "bells": True},
             {"type": "beauty", "points": 8},
         ],
     },

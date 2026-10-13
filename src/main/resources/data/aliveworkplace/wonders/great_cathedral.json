@@ -259,7 +259,9 @@
       "type": "weddings",
       "mood": 15,
       "days": 3,
-      "gifted_factor": 2.0
+      "gifted_factor": 2.0,
+      "altar": [19, 2, 49],
+      "bells": true
     },
     {
       "type": "beauty",

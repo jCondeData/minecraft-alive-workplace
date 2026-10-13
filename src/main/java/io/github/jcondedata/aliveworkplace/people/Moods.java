@@ -213,6 +213,12 @@ public final class Moods {
 			score += blessed.points();
 			good.add(blessed.reason());
 		}
+		// A wedding the village's Great Cathedral blessed (35.10), for the days it lasts: the whole village.
+		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason wonderWedding = io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.mood(level, villager);
+		if (wonderWedding != null) {
+			score += wonderWedding.points();
+			(wonderWedding.points() >= 0 ? good : bad).add(wonderWedding.reason());
+		}
 		// A Bard Laureate's work song heard today (29.19).
 		io.github.jcondedata.aliveworkplace.legend.LegendPowers.MoodReason song = io.github.jcondedata.aliveworkplace.legend.BardLaureate.heardMood(level, villager);
 		if (song != null) {

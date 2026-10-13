@@ -276,6 +276,7 @@ public final class Festivals {
 	/** The feast: every grown villager eats from the store, everyone is remembered as having come. */
 	public static void feast(ServerLevel level, BlockPos hall) {
 		Anthems.play(level, hall, "festival"); // the Bard Laureate's anthem (29.19)
+		io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.ring(level, hall, io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.Reason.FESTIVAL); // the Cathedral's bells (35.10)
 		io.github.jcondedata.aliveworkplace.story.ReformStories.onFeast(level, hall); // a grand festival's day (31.22)
 		io.github.jcondedata.aliveworkplace.realm.RealmEdicts.festivalHeld(level, hall, Chronicle.day(level)); // a realm festival (33.22)
 		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,

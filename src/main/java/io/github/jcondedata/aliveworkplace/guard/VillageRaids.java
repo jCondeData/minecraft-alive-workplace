@@ -115,6 +115,7 @@ public final class VillageRaids {
 	private static Raid begin(ServerLevel level, BlockPos hall, net.minecraft.resources.ResourceLocation culture, int raiders) {
 		ThreatData.Under raid = new ThreatData.Under(hall.immutable(), culture, raiders, level.getGameTime());
 		ThreatData.get(level).begin(raid);
+		io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.ring(level, hall, io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.Reason.RAID); // the Cathedral's bells (35.10)
 		return raid(raid);
 	}
 

@@ -127,7 +127,8 @@ public final class VillageGrowth {
 
 	/**
 	 * A wedding the Seer blessed (29.16): the couple's first baby comes within the blessing's days as soon as a bed is free
-	 * and the village isn't full, past the daily wait, the store and the mood (once). Returns it, or null.
+	 * and the village isn't full, past the daily wait, the store and the mood (once); a wedding the Great Cathedral blessed
+	 * (35.10) the same, from the day after it, with no last day. Returns it, or null.
 	 */
 	@Nullable
 	static Villager blessedBirth(ServerLevel level, BlockPos hall, @Nullable VillageNeeds.Needs needs) {
@@ -136,12 +137,21 @@ public final class VillageGrowth {
 			return null;
 		}
 		List<Villager> parents = io.github.jcondedata.aliveworkplace.legend.Seer.blessedCouple(level, hall);
+		if (parents.size() >= 2) {
+			Villager baby = born(level, hall, parents);
+			if (baby != null) {
+				io.github.jcondedata.aliveworkplace.legend.Seer.babyCame(parents);
+			}
+			return baby;
+		}
+		// A wedding at the Great Cathedral (35.10): the first baby the next day a bed is free.
+		parents = io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.blessedCouple(level, hall);
 		if (parents.size() < 2) {
 			return null;
 		}
 		Villager baby = born(level, hall, parents);
 		if (baby != null) {
-			io.github.jcondedata.aliveworkplace.legend.Seer.babyCame(parents);
+			io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.babyCame(parents);
 		}
 		return baby;
 	}
@@ -160,6 +170,7 @@ public final class VillageGrowth {
 		baby.setVillagerData(baby.getVillagerData().setType((level.random.nextBoolean() ? mother : father).getVillagerData().getType()));
 		baby.setAge(-24000);
 		io.github.jcondedata.aliveworkplace.people.Families.born(baby, mother, father);
+		io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.born(baby, parents); // a blessed couple's child: likelier Gifted (35.10)
 		level.addFreshEntityWithPassengers(baby);
 		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
 			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs

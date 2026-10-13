@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- **Small things in the Wonders' looks** (B141). The Stadium's scoreboard reads 2 - 1 from outside the bowl too (from
+  behind it read "1 - S"). A festival, a Cup's final and a won siege still make you a Hero of the Village, but no longer
+  send its pale-green swirls up past your eyes, where they floated in the sky over the fireworks. A button's tooltip on
+  a menu screen (the research screen, the lessons...) now opens under its row with its long lines wrapped, so the
+  Great Library's Scholarship tooltip no longer covers the second-tier row, and it no longer ends with "A villager's
+  workstation: hold Shift for its jobs" (its picture is a lectern). The found-goods showcase now films the Foundation
+  Stone above the chat, so the Pathfinder's line no longer shows through the stone's status.
 - **A builder finishing a part of a Wonder now says so properly** (B138). The chat used to read "Odo finished
   building Stage 1 0! The blueprint is back in the supply chest." (no blueprint comes back for a Wonder's part); now it
   says "Odo finished stage 1 of 4 of the Colossus: The Plinth and the Road Arch." or, while other parts of the stage are still

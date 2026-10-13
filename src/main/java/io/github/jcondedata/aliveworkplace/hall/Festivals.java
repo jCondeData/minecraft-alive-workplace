@@ -166,11 +166,19 @@ public final class Festivals {
 			MobEffectInstance hero = player.getEffect(MobEffects.HERO_OF_THE_VILLAGE);
 			int amplifier = io.github.jcondedata.aliveworkplace.story.FriendPerks.heroLevel(level, hall, player); // II for Heroes and Lords (31.12)
 			if (hero == null || hero.getAmplifier() < amplifier || hero.getAmplifier() == amplifier && hero.getDuration() < left) {
-				player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, left, amplifier, true, true));
+				player.addEffect(hero(left, amplifier));
 			}
 			io.github.jcondedata.aliveworkplace.story.Friendship.onFestival(level, hall, player); // at the festival with them (31.5)
 			io.github.jcondedata.aliveworkplace.story.FriendPerks.festivalGifts(level, hall, player); // friends bring gifts (31.12)
 		}
+	}
+
+	/**
+	 * Hero of the Village for {@code ticks}, as a won raid gives it: its icon shows, but no swirls rise from the player
+	 * (B141: the swirls, drifting up past a player's own eyes, were a large pale-green shape in the sky at the fireworks).
+	 */
+	public static MobEffectInstance hero(int ticks, int amplifier) {
+		return new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, ticks, amplifier, false, false, true);
 	}
 
 	/** A festival on {@code day} (a story arc's ending, 31.4), told to the players about; nothing if one is already set. */

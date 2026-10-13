@@ -206,7 +206,12 @@ final class JobScenes {
 	 * waits for the next check) and the rank set again right before anything reads it.
 	 */
 	static void holdWonderTown(ServerLevel level) {
-		if (level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+		holdTown(level, STATION);
+	}
+
+	/** {@link #holdWonderTown} for the hall at {@code at} (B129: the Wonder time-lapses' hall, the bounty scenes'). */
+	static void holdTown(ServerLevel level, BlockPos at) {
+		if (level.getBlockEntity(at) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
 			if (hall.needs() == null) {
 				hall.setNeeds(new io.github.jcondedata.aliveworkplace.hall.VillageNeeds.Needs(12, 12, 12, 12, 1, 0, 0, 1f));
 			}
@@ -4035,13 +4040,13 @@ final class JobScenes {
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION))
-					.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
+				holdWonderTown(level); // B129: the hall's first round would count a Hamlet and post a Hamlet's rogue
 				level.setBlockAndUpdate(new BlockPos(2, -60, 1), ModBlocks.BOUNTY_BOARD.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.bounty.BountyBoardBlock.FACING, Direction.SOUTH));
 				io.github.jcondedata.aliveworkplace.bounty.Bounties.forget(level);
 			},
 			List.of(new Step("01_poster", io.github.jcondedata.aliveworkplace.bounty.BountyPage.ROW, 6, (level, player) -> {
+					holdWonderTown(level); // the staged Town, right before the rogue's level and reward are read from it
 					var b = io.github.jcondedata.aliveworkplace.bounty.Rogues.post(level, STATION, net.minecraft.resources.ResourceLocation.parse("cobblemon:ursaring"),
 						new BlockPos(-1, -60, -4));
 					io.github.jcondedata.aliveworkplace.bounty.Bounties.boardPlaced(level, new BlockPos(2, -60, 1));
@@ -5948,7 +5953,7 @@ final class JobScenes {
 					Showcase.check(lines.size() == 3 && lines.get(0).full() && !lines.get(1).full() && lines.get(1).good().found() && !lines.get(2).full(),
 						"the stone's lines: the sherd in, the template searched for, the book short: " + lines);
 					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
-					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone).add(0, -3.5, 0)); // the stone and the Pathfinder's line above the chat (B141)
 				}, 80),
 				new Step("02_wonder_finds_brought", -1, 0, (level, player) -> {
 					var manager = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
@@ -5958,7 +5963,7 @@ final class JobScenes {
 					var now = manager.in(STATION).get(0);
 					io.github.jcondedata.aliveworkplace.mc.Chat.system(player, io.github.jcondedata.aliveworkplace.wonder.WonderStages.statusText(level, stone));
 					Showcase.check(io.github.jcondedata.aliveworkplace.wonder.WonderGoods.lines(level, now).get(1).brought(), "the Pathfinder brought the template");
-					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone));
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atCenterOf(stone).add(4.5, 3, 5.5), Vec3.atCenterOf(stone).add(0, -3.5, 0)); // the stone and the Pathfinder's line above the chat (B141)
 				}, 80)),
 			(level, player) -> {
 				var sites = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(STATION);

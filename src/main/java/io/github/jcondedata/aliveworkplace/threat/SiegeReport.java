@@ -16,8 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
@@ -123,7 +121,7 @@ public final class SiegeReport {
 			for (UUID id : siege.players) {
 				ServerPlayer player = level.getServer().getPlayerList().getPlayer(id);
 				if (player != null) {
-					player.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, HERO_TICKS, 0, true, true));
+					player.addEffect(io.github.jcondedata.aliveworkplace.hall.Festivals.hero(HERO_TICKS, 0));
 					Chat.chat(player, Component.translatable("message.aliveworkplace.siege.heroes", name).withStyle(ChatFormatting.GREEN));
 				}
 			}

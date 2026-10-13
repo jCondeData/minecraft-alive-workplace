@@ -898,6 +898,9 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 			}
 			helper.assertTrue(entity.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FESTIVAL), "not in the chronicle");
 			helper.assertTrue(player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE), "the player isn't a hero");
+			var hero = player.getEffect(MobEffects.HERO_OF_THE_VILLAGE);
+			// B141: as a won raid's, its icon shows but no swirls rise past the player's eyes (a pale-green shape at the fireworks)
+			helper.assertTrue(!hero.isVisible() && !hero.isAmbient() && hero.showIcon(), "the hero's swirls show: " + hero);
 			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.Festivals.launch(level, helper.absolutePos(bell).above()).isAlive(), "no firework");
 			ready[0] = true;
 		});

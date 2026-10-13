@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B138, B139, B140
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138
 
 ## What a player sees
 
@@ -520,7 +520,7 @@ the first other color of its pattern; the field's white lines stay white). A tra
 stone room under a spruce roof with a Training Post facing the field, and the professor's box stands raised in the
 middle of the south stand, a lectern behind its rail. The west end is the covered stand, under a lean-to canopy of
 spruce slabs on four spruce columns; over the east end stands the scoreboard, black terracotta in a stone frame under
-a red header, showing 2 - 1. Outside, the back wall has pilasters (buttresses on the straight sides) and bays that take
+a red header, showing 2 - 1 on both faces, to the stands and to the road outside. Outside, the back wall has pilasters (buttresses on the straight sides) and bays that take
 turns as open, lit entrances (a banner over each) and barred windows with flower beds at their foot, two bands of red
 and white terracotta and a parapet with lanterns and banners. Inside it, under the stands, everything is walkable and
 lit, three high: a concourse two wide right round; eight vomitories climbing as stairs from it into the front rows; on

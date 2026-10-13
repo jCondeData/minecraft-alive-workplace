@@ -438,6 +438,7 @@ public class BattleStationGameTests implements FabricGameTest {
 				"the report: " + report);
 			MobEffectInstance effect = player.getEffect(MobEffects.HERO_OF_THE_VILLAGE);
 			helper.assertTrue(effect != null && effect.getDuration() > SiegeReport.HERO_TICKS - 200, "the player who fought isn't a Hero of the Village for a day: " + effect);
+			helper.assertTrue(!effect.isVisible() && effect.showIcon(), "the hero's swirls show (B141): " + effect);
 			Moods.Mood mood = Moods.work(level, farmer);
 			helper.assertTrue(mood.good().stream().anyMatch(c -> c.getString().equals("we held against the siege")), "no \"we held\" among " + mood.good());
 			ThreatData data = ThreatData.get(level);

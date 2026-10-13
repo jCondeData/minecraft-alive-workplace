@@ -3,6 +3,7 @@
 	"package": "io.github.jcondedata.aliveworkplace.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
+		"ButtonTooltipMixin",
 		"VillagerModelMixin",
 		"LegendNameMixin",
 		"LegendNameShownMixin"

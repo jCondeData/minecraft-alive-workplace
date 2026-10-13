@@ -664,7 +664,8 @@ public final class Caravans {
 		long ticks = travelTicks(Math.sqrt(from.distSqr(to)), data.roadFinished(from, to));
 		int sooner = Math.min(90, io.github.jcondedata.aliveworkplace.realm.RealmResearch.caravanSpeed(level, from, to)
 			+ io.github.jcondedata.aliveworkplace.realm.RealmEdicts.caravanSpeed(level, from, to)); // and the Royal Highway (33.22)
-		return sooner <= 0 ? ticks : Math.max(1, ticks * (100 - sooner) / 100);
+		ticks = sooner <= 0 ? ticks : Math.max(1, ticks * (100 - sooner) / 100);
+		return io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.caravanTrip(level, from, ticks); // half the time with the Lighthouse (35.12)
 	}
 
 	/**
@@ -679,10 +680,11 @@ public final class Caravans {
 		return shipment;
 	}
 
-	/** The villages {@code hall} can trade with, nearest first. */
+	/** The villages {@code hall} can trade with, nearest first: within {@link #RANGE}, or further with a Lighthouse (35.12). */
 	public static List<Village> neighbours(ServerLevel level, BlockPos hall) {
+		long range = io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.caravanRange(level, hall); // twice as far with the Lighthouse (35.12)
 		return Data.get(level).villages().stream()
-			.filter(v -> !v.hall().equals(hall) && v.hall().distSqr(hall) <= (double) RANGE * RANGE)
+			.filter(v -> !v.hall().equals(hall) && v.hall().distSqr(hall) <= (double) range * range)
 			.sorted(Comparator.comparingDouble(v -> v.hall().distSqr(hall)))
 			.toList();
 	}

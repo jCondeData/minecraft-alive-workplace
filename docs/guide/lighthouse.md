@@ -6,7 +6,7 @@ expansion: M35
 Needs: a Town on the coast, the Merchant Prince (or 3 caravan routes), the Master Architect
 Size: 25 by 33, 46 high, half of it in the sea
 Stages: The Mole and the Quay; The Tower; The Gallery; The Lantern and the Keeper's House
-While it stands: caravans go twice as far in half the time; ferry fares are halved; the village is warned before a raid
+While it stands: caravans go twice as far in half the time; ferry fares are halved; the village is warned a day before pirates come
 categories: Wonders, Trade
 related: wonders.md, trade-and-caravans.md, defence.md
 ```
@@ -30,9 +30,15 @@ in) and the Master Architect. See [Wonders](wonders.md) for drawing up the plans
 
 ## While it stands
 
-- **Caravans** from the village reach **twice as far** and take **half the time**.
-- **Ferry fares** are halved.
-- The village is **warned before a raid**, as if a guard kept watch from a tower.
+- **Caravans** from the village reach **twice as far** (villages up to 4,096 blocks away show on the Trade Routes
+  page) and take **half the time** on the road.
+- **Ferry fares** to and from the village's Travel Posts are **halved** (never below an emerald), and the Travel Post
+  at the end of the jetty joins the ferry network under the village's name, such as "Thornholm Lighthouse".
+- The keeper watches the sea: **the day before drowned pirates raid**, everyone in the village is told ("Sails off the
+  west shore: Drowned Pirates will strike Thornholm tomorrow night."), the chronicle notes it, and at dusk on the day
+  the guards gather on the shore. Raids by land are left to the village's own lookouts.
+- If the Lighthouse is **damaged** (less of it standing than `wonderStanding`), all four are off until its builder
+  repairs it.
 
 ## How it fits with the rest
 

@@ -604,7 +604,7 @@ public final class VillageHallScreen {
 		}
 		if (neighbours.isEmpty()) {
 			menu.button(FIRST_ROW + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.no_neighbours"), ChatFormatting.GRAY,
-				line(Component.translatable("screen.aliveworkplace.hall.no_neighbours_hint", Caravans.RANGE), ChatFormatting.DARK_GRAY)), null);
+				line(Component.translatable("screen.aliveworkplace.hall.no_neighbours_hint", io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.caravanRange(level, hall)), ChatFormatting.DARK_GRAY)), null);
 		}
 	}
 

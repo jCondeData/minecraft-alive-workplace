@@ -97,6 +97,25 @@ final class WonderTimelapse {
 		this.scene = scene;
 	}
 
+	/** The ground a Wonder's scene readies once its plan is placed (35.12: the Lighthouse's sea), given the level and where the plan went. */
+	private java.util.function.BiConsumer<ServerLevel, BlueprintData.Placement> ground = (level, placement) -> {
+	};
+	/** A last still at night after the fireworks ({@code 20_<scene>_night}), with the scene's own night check. */
+	@org.jetbrains.annotations.Nullable
+	private java.util.function.Consumer<ServerLevel> night;
+
+	/** Readies the ground before the crew begins (35.12). */
+	WonderTimelapse ground(java.util.function.BiConsumer<ServerLevel, BlueprintData.Placement> ready) {
+		this.ground = ready;
+		return this;
+	}
+
+	/** Ends at night with a still and {@code check} (35.12: the Lighthouse's lamps lit). */
+	WonderTimelapse night(java.util.function.Consumer<ServerLevel> check) {
+		this.night = check;
+		return this;
+	}
+
 	void tick(Minecraft mc, MinecraftServer server) {
 		tick++;
 		if (over) {
@@ -152,7 +171,18 @@ final class WonderTimelapse {
 		if (showAt > 0 && tick == showAt + 200) {
 			server.execute(() -> finalChecks(server));
 		}
-		if (showAt > 0 && tick == showAt + 230) {
+		if (showAt > 0 && tick == showAt + 230 && night != null) {
+			server.execute(() -> {
+				server.overworld().setDayTime((Chronicle.day(server.overworld()) - 1) * 24000L + 18000); // midnight
+				ScreenshotHarness.hoverLookingAt(player(server), centre.add(size.getX() * 0.9 + 16, size.getY() * 0.5 + 6, size.getZ() * 0.9 + 16),
+					centre.add(0, size.getY() * 0.6, 0));
+			});
+		}
+		if (showAt > 0 && night != null && tick == showAt + 360) {
+			ScreenshotHarness.shot(mc, String.format("20_%s_night", scene));
+			server.execute(() -> night.accept(server.overworld()));
+		}
+		if (showAt > 0 && tick == showAt + (night != null ? 390 : 230)) {
 			over = true;
 			mc.stop();
 		}
@@ -203,6 +233,7 @@ final class WonderTimelapse {
 		BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), data.size().orElseThrow(), hall.offset(0, 0, -8),
 			Rotation.CLOCKWISE_180); // its front faces the hall
 		plan.set(ModComponents.BLUEPRINT, data.withPlacement(Optional.of(placement)));
+		ground.accept(level, placement);
 		player.getInventory().clearContent();
 		player.setItemInHand(InteractionHand.MAIN_HAND, plan);
 		InteractionResult result = WonderStages.handOver(player, crew.get(0), plan);

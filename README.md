@@ -693,6 +693,14 @@ How to start one:
 Sneak-breaking the stone (its owner or an operator) or `/workplace cancel` abandons the Wonder: what's built stays and
 the plan comes back. `wonders` in the config switches Wonders off; every one stays saved.
 
+**The Lighthouse** (on the coast): caravans from its village reach villages twice as far off (4,096 blocks) and arrive
+in half the time; ferry fares to and from the village's Travel Posts are halved, and its jetty's post joins the network
+under the village's name ("Thornholm Lighthouse"); and its keeper watches the sea: the day before drowned pirates come,
+the village is told, the chronicle notes it and at dusk the guards gather on the shore. A damaged Lighthouse loses all
+four until its builder repairs it.
+
+![The Lighthouse going up beside the sea, lit at night](https://jcondedata.github.io/minecraft-alive-workplace/wonder_lighthouse/anim.gif)
+
 ## From village to realm
 
 *Part of 1.7, which isn't released yet: `villageEconomy` stays off until then.*

@@ -817,6 +817,12 @@ SCENES = [
       "a crew of ten raised the folly stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished every player was told, its mood and beauty powers came on, and that evening's festival had the bigger show, gold rockets going up from the folly's top", 600,
       [("11_wonder_finished_stage_1", "Stage I, the Ground Storey, up"), ("frame_*@middle", "The crew at work, the camera going round"),
        ("13_wonder_finished_stage_3", "The Dome on: the folly finished"), ("19_wonder_finished_fireworks", "The festival's fireworks over the folly")]),
+    # The Lighthouse (ROADMAP 35.12): its time-lapse beside a sea the harness digs, ending at night with the lamps lit
+    S("wonder_lighthouse", "Wonders", "The Lighthouse: its time-lapse by the sea, lit at night",
+      "a crew of ten raised the Lighthouse stage by stage beside a sea the harness dug and filled, the jetty running out over the water; once finished its powers came on (caravans twice as far in half the time, ferry fares halved, a day's warning of pirates) and the jetty's Travel Post joined the network under the village's name; after the festival's fireworks, at midnight the lantern's redstone lamps shone over the sea", 780,
+      [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"), ("frame_*@middle", "The crew at work, the camera going round"),
+       ("14_wonder_lighthouse_stage_4", "The Lantern and the Keeper's House: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
+       ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
       "a village saved before 1.8 found its places when classes were switched on: before, with classes still off, the hall's Classes tab had no one to count; the hall's rounds seeded everyone (the couple in a builder's cottage Artisans, the others Peasants), the chronicle said so once, and the tab and the Classes page said \"Settling in: 7 days left\" with each class's luxuries to come", 30,

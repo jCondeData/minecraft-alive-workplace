@@ -206,7 +206,8 @@ public final class Warnings {
 	 */
 	public static Component message(ServerLevel level, BlockPos hall, ThreatData.Attack attack, int count) {
 		Component name = VillageHalls.name(level, hall);
-		String when = attack.day() > Chronicle.day(level) ? "tomorrow" : "tonight";
+		String when = (io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.fromTheSea(attack) ? "sea_" : "") // sails, not smoke (35.12)
+			+ (attack.day() > Chronicle.day(level) ? "tomorrow" : "tonight");
 		return count > 0
 			? Component.translatable("message.aliveworkplace.warning." + when + "_count", side(hall, attack), who(level, hall, attack), name, count)
 			: Component.translatable("message.aliveworkplace.warning." + when, side(hall, attack), who(level, hall, attack), name);

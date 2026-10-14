@@ -43,6 +43,8 @@ asks for the steps, `latest.log` and any crash report).
   Chapel's string course reaches the tower's corner, and the Fisher's Hut boat shed's back gable is shut. Builds
   already standing keep their blocks; build or upgrade again to get the new ones. (Dev: `tools/blueprints/holes.py`
   finds roof holes, gaps between roofs and stray empty blocks in every blueprint: 512 before, 16 left, all on purpose.)
+- **Questbook chapters you haven't edited now update** to the mod's new version (they used to keep the old layout
+  forever). Chapters you edited are kept (delete one to get a fresh copy), and unedited ones you deleted stay deleted.
 - **Small things in the Wonders' looks** (B141). The Stadium's scoreboard reads 2 - 1 from outside the bowl too (from
   behind it read "1 - S"). A festival, a Cup's final and a won siege still make you a Hero of the Village, but no longer
   send its pale-green swirls up past your eyes, where they floated in the sky over the fireworks. A button's tooltip on

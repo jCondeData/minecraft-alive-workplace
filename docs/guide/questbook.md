@@ -46,6 +46,7 @@ to tick yourself, with a sentence that says exactly what to do first.
 
 ## For server owners
 
-The chapters are added the first time the server starts with FTB Quests, and each one only once. Change them in FTB
-Quests' editor as you like: your changes are kept, and a chapter you delete stays deleted. The quest text can be
-translated in FTB Quests like the pack's own.
+The chapters are added the first time the server starts with FTB Quests. A chapter you haven't edited updates by
+itself when a new version of the mod brings a new one. Change them in FTB Quests' editor as you like: a chapter you
+edited is kept as it is, and to get a fresh copy of it, delete it. A chapter you delete without editing stays deleted. The
+quest text can be translated in FTB Quests like the pack's own.

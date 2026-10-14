@@ -1,6 +1,6 @@
 # Config switches
 
-Every setting of the mod in one place: the server's config file, the nine game rules, and how unfinished expansions
+Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
 Roadmap items: 25.5, B76, B119, B131
@@ -185,6 +185,7 @@ range is in brackets.
 | `seasonDays` | 16 (1 to 120) |  | Days in each of the village calendar's four seasons (each has a festival on its middle day). |
 | `treasuryPerWorker` | 20 (0 to 500) |  | Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). |
 | `dollarsPerEmerald` | 100 (1 to 10000) |  | What an emerald price comes to in CobbleDollars (lessons, shops, fares). |
+| `retrainPrices` | 5, 10, 20, 35, 50 (each 0 to 1000) |  | Emeralds to retrain a villager who has a job as a Builder, by their level: Novice to Master (26.6; in CobbleDollars, times `dollarsPerEmerald`). In the file only; a short list is filled from the defaults. |
 
 Game rules (per world, `/gamerule`):
 
@@ -199,6 +200,7 @@ Game rules (per world, `/gamerule`):
 | `workplaceKeepWorkLoaded` | true | Builds and quarries keep running while the player who ordered them is online but far away |
 | `workplaceLevelGround` | 2 (0 to 8) | Blocks around a finished build that get leveled; 0: leave the ground alone |
 | `workplaceVillageFarms` | true | A village farmer with no field takes on the farm by their composter, once a chest is near it |
+| `workplaceRetraining` | true | A villager who has a job can be retrained as a Builder for a price at a free Blueprint Table (26.6); false: the old rule, only jobless villagers |
 
 ## Saved data
 
@@ -231,7 +233,7 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 ## Known limits
 
 - The file is read at start-up: a change needs a restart (or the settings screen, in your own worlds).
-- Lists (`mythicLegendCap`, `disabledArcs`, `wonderCaps`, `disabledWonders`) can only be edited in the file.
+- Lists (`mythicLegendCap`, `disabledArcs`, `wonderCaps`, `disabledWonders`, `retrainPrices`) can only be edited in the file.
 - A dedicated server's settings don't follow a player's own file.
 - The build delay and the foundation depth have no upper limit; a build delay of 1 is the fastest.
 

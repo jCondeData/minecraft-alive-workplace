@@ -326,6 +326,12 @@ public final class WorkplaceConfig {
 	/** What an emerald price comes to in CobbleDollars (lessons, shops, fares). */
 	public int dollarsPerEmerald = 100;
 	/**
+	 * What retraining a villager who has a job costs in emeralds, by their level: Novice, Apprentice, Journeyman, Expert,
+	 * Master (ROADMAP 26.6; in CobbleDollars, times dollarsPerEmerald). Edited in the file only; each is clamped to 0-1000,
+	 * a short list is filled from the defaults.
+	 */
+	public List<Integer> retrainPrices = new ArrayList<>(io.github.jcondedata.aliveworkplace.work.Retraining.DEFAULT_PRICES);
+	/**
 	 * The file's format (not an option: private, so it's no switch or slider). A file without it was written before
 	 * the seasons grew to 16 days (owner, 2026-10-04): its {@code seasonDays} of 8 was the old default, not a choice.
 	 */
@@ -482,6 +488,12 @@ public final class WorkplaceConfig {
 			wonderCapList.add(v == null ? DEFAULT_WONDER_CAPS.get(i) : clamp(v, 0, 8));
 		}
 		wonderCaps = wonderCapList;
+		List<Integer> prices = new ArrayList<>();
+		for (int i = 0; i < io.github.jcondedata.aliveworkplace.work.Retraining.DEFAULT_PRICES.size(); i++) {
+			Integer v = retrainPrices != null && i < retrainPrices.size() ? retrainPrices.get(i) : null;
+			prices.add(v == null ? io.github.jcondedata.aliveworkplace.work.Retraining.DEFAULT_PRICES.get(i) : clamp(v, 0, 1000));
+		}
+		retrainPrices = prices;
 		if (disabledWonders == null) {
 			disabledWonders = new ArrayList<>();
 		}
@@ -746,6 +758,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.RADIUS = villageRadius;
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.PATH_RANGE = workerPathRange;
 		Money.DOLLARS_PER_EMERALD = dollarsPerEmerald;
+		io.github.jcondedata.aliveworkplace.work.Retraining.prices(retrainPrices);
 		io.github.jcondedata.aliveworkplace.hall.Treasury.CENTS_PER_WORKER = treasuryPerWorker;
 		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = villageHallRadius;
 		io.github.jcondedata.aliveworkplace.hall.VillageGrowth.CAP = villageGrowthCap;

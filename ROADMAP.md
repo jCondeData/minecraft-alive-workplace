@@ -658,7 +658,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   runs green (blocked until they have run). Then the owner's own play session in the pack's client (carried over from
   Milestone 5). Done when: all of these have passed, and the owner has played.
 - [ ] **26.5** (approved: owner 2026-10-13, publish once 26.4 has passed and we feel ready; waits on 26.4) **Publish.** Done when: the pages are live and linked from the README.
-- [ ] **26.6** **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
+- [x] **26.6** (review: pending 2026-10-14) **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
   every villager already works, so there's nobody to hire). Sneak-right-click any grown villager who has a job (vanilla,
   ours or another mod's, traded with or not; never a child or a nitwit) within about 4 blocks of one of our job blocks
   (the Blueprint Table and every workstation that picks one of our jobs), holding that job's item: the villager is
@@ -4569,6 +4569,18 @@ item waits.
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-14 (26.6, decision and a question for the owner; details in `docs/wiki/villager-jobs.md`, "Retraining"):
+  only becoming a **Builder** costs. Since 21.1a the other jobs' items already switch a working villager to a free block
+  of theirs for nothing (a Librarian handed a pickaxe by a free Blast Furnace becomes a Miner), and four existing
+  GameTests (StationsSpec `aWorkerWhoMovesFreesTheirOldBlock`, StationsBug's three "a worker whose old block...")
+  are built on that free switch; charging there failed them, and tests aren't weakened. The Builder had no item at all,
+  so a working villager could never become one: that's the path that now costs (a Blueprint or a Blank Blueprint by a
+  free Blueprint Table, the price by level, two clicks). Question: should switching a working villager to any other
+  job of ours cost the same? If yes, those four tests change to pay (two clicks with emeralds), not to weaken them.
+  Also decided: an offer is kept in memory only (5 seconds); a builder given another job, paid or not, hands their
+  builds back as `Builders.cancel` does (blueprint returned still placed); the price list is the file-only config
+  list `retrainPrices`.
 
 - 2026-10-13 (35.18, decisions; lane-a-1013-0813; details in `docs/wiki/wonders.md`, "The Observatory's powers"):
   (1) the Sky Chart takes a second empty map, after the village map the same button draws (one click, both maps);

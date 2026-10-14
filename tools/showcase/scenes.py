@@ -53,6 +53,11 @@ SCENES = [
     S("stations", "Picking a job", "One composter, four jobs", "the villager took each job its item picks at the composter", 45,
       [("02_orchard_keeper", "Sweet berries: Orchard Keeper"), ("03_florist", "A flower: Florist"),
        ("04_composter", "Bone meal: Composter"), ("05_farmer", "Wheat: back to Farmer")]),
+    # Retraining (ROADMAP 26.6): a working Librarian made a Builder for emeralds at the Blueprint Table
+    S("retrain", "Picking a job", "Retraining a Librarian as a Builder",
+      "the Journeyman Librarian was shown the price, then paid for and retrained as a Novice Builder at the Blueprint Table", 40,
+      [("01_librarian", "A Journeyman Librarian by a Blueprint Table"), ("02_offer", "First click: the price"),
+       ("03_builder", "Second click: paid, now a Builder")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
       [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),

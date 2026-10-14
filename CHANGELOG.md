@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **Retrain a villager who already has a job** (26.6). In Cobblemon villages nearly everyone works, so nobody was left
+  to become a Builder: now sneak-right-click any grown villager with a job by a free Blueprint Table, holding a Blueprint
+  or a Blank Blueprint. You're shown the price first (5 emeralds for a Novice up to 50 for a Master, in CobbleDollars
+  with the Cobbleverse pack); a second click within 5 seconds pays, and they start again as a Novice Builder, their old
+  trades gone. A builder given another job now hands their build back first, its blueprint still placed for another
+  builder. Game rule `workplaceRetraining` (on) and config `retrainPrices`.
+
 ### Fixed
 - **Small things in the Wonders' looks** (B141). The Stadium's scoreboard reads 2 - 1 from outside the bowl too (from
   behind it read "1 - S"). A festival, a Cup's final and a won siege still make you a Hero of the Village, but no longer

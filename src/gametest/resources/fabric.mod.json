@@ -196,6 +196,7 @@
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StationsSpecGameTests",
+			"io.github.jcondedata.aliveworkplace.test.RetrainingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SavedDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteSaveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildSiteStepsGameTests",

@@ -1,0 +1,123 @@
+{
+	id: "408896C32D1DA93C",
+	group: "",
+	order_index: 108,
+	filename: "aliveworkplace_14_edicts",
+	title: "1.4 Edicts, Guilds and Civic Things",
+	subtitle: ["Laws, guilds, tonics and the village's own things"],
+	icon: {id: "aliveworkplace:guild_charter", count: 1},
+	default_quest_shape: "",
+	default_hide_dependency_lines: false,
+	quests: [
+		{
+			id: "6E460311397F3914",
+			x: 0.0d,
+			y: -4.5d,
+			title: "Proclaim an edict",
+			description: ["Open the Book of Edicts on the hall's screen. An edict gives the village a boost and makes it pay for it: Long Shifts, Free Bread, Curfew... A Hamlet has room for one, a City for four."],
+			dependencies: ["3A0C9323349C9445"],
+			tasks: [{id: "795DA7DEF9EB0F4F", type: "checkmark", title: "I proclaimed an edict"}],
+			rewards: [{id: "1B08D6961781D870", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "4B891698741E7BA3",
+			x: 2.0d,
+			y: -0.8d,
+			title: "Reform it",
+			description: ["Every edict can be reformed: do a few big jobs for the village and the cost goes away for good, while the boost stays."],
+			dependencies: ["6E460311397F3914"],
+			tasks: [{id: "23199DE3059A8950", type: "checkmark", title: "I reformed an edict"}],
+			rewards: [{id: "776AB6F7B7817210", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}, {id: "4E844A36567E3D08", type: "xp", xp: 200}]
+		},
+		{
+			id: "43B1817BAF8803CE",
+			x: 0.0d,
+			y: -3.0d,
+			title: "The Guild Charter",
+			description: ["3 paper, an emerald, a gold ingot and red dye make a Guild Charter. Sneak-right-click a Master with it to start a guild of their trade."],
+			dependencies: ["256059D7ED1AE149"],
+			icon: {id: "aliveworkplace:guild_charter", count: 1},
+			tasks: [{id: "71CFDF19E4EB4BC8", type: "item", item: {id: "aliveworkplace:guild_charter", count: 1}}],
+			rewards: [{id: "678B06B69C590ED4", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "14B3AF6A526E6877",
+			x: 2.0d,
+			y: 0.8d,
+			title: "Found a guild",
+			description: ["The guild is founded once a builder finishes a Guildhall for it. From then on every member works better."],
+			dependencies: ["43B1817BAF8803CE"],
+			tasks: [{id: "1786C672D71E7F9D", type: "checkmark", title: "My village founded a guild"}],
+			rewards: [{id: "1B7C365FE792769B", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}]
+		},
+		{
+			id: "1340CD9A13BA8BAC",
+			x: 0.0d,
+			y: -1.5d,
+			title: "The Work Horn",
+			description: ["A goat horn, a gold ingot and an emerald make a Work Horn."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "aliveworkplace:work_horn", count: 1},
+			tasks: [{id: "48F93219F3883ECE", type: "item", item: {id: "aliveworkplace:work_horn", count: 1}}],
+			rewards: [{id: "39AE9689A15BBB3E", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "1F5B1130BFFD79CD",
+			x: 0.0d,
+			y: 0.0d,
+			title: "The Village Banner",
+			description: ["Any banner and a gold ingot make a Village Banner. It keeps the banner's design."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "aliveworkplace:village_banner", count: 1},
+			tasks: [{id: "35E97DC0C9DAAA85", type: "item", item: {id: "aliveworkplace:village_banner", count: 1}}],
+			rewards: [{id: "2ED746A6C7DD35A9", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "1F72B305B28C1EAA",
+			x: 0.0d,
+			y: 1.5d,
+			title: "The Cradle",
+			description: ["White wool in the top corners, planks either side of white wool in the middle and sticks in the bottom corners make a Cradle."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "aliveworkplace:cradle", count: 1},
+			tasks: [{id: "799C0BA94CAD323B", type: "item", item: {id: "aliveworkplace:cradle", count: 1}}],
+			rewards: [{id: "3FA889F4A4B66330", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "137EF4337B09CFD9",
+			x: 0.0d,
+			y: 3.0d,
+			title: "The Harvest Idol",
+			description: ["A hay bale, 3 wheat, a stick and a gold ingot make a Harvest Idol."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "aliveworkplace:harvest_idol", count: 1},
+			tasks: [{id: "74C2DF6DEC85AB54", type: "item", item: {id: "aliveworkplace:harvest_idol", count: 1}}],
+			rewards: [{id: "36FBB8BDA30CE40C", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "13A854E572AC1EF7",
+			x: 0.0d,
+			y: 4.5d,
+			title: "A tonic",
+			description: ["Your Cleric and Chef make tonics: one sip and a worker works 25% faster for a whole day. They keep 4 of every tonic in the chests by their workstation: take a Builder's Tea and right-click a builder with it."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "aliveworkplace:builders_tea", count: 1},
+			tasks: [{id: "7C781EB5BA4BB481", type: "item", item: {id: "aliveworkplace:builders_tea", count: 1}}],
+			rewards: [{id: "7DA9CDEF23B6E22F", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "100F8E975FA0F8AF",
+			x: 4.0d,
+			y: 0.0d,
+			shape: "gear",
+			size: 1.5d,
+			title: "A well-run village",
+			description: ["Laws, a guild and the village's own things: your village runs like a town council's dream."],
+			dependencies: ["4B891698741E7BA3", "14B3AF6A526E6877", "1340CD9A13BA8BAC", "1F5B1130BFFD79CD", "1F72B305B28C1EAA", "137EF4337B09CFD9", "13A854E572AC1EF7"],
+			tasks: [{id: "75A8C6956C6E2E53", type: "checkmark", title: "My village has a reformed edict and a guild"}],
+			rewards: [{id: "726D3CE797F1CD9B", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}, {id: "30C295252DD361F3", type: "xp", xp: 400}]
+		}
+	],
+	quest_links: [],
+	images: []
+}

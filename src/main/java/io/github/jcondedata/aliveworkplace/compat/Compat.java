@@ -25,6 +25,11 @@ public final class Compat {
 				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsCompat::init);
 		}
 		//?}
+		// The questbook: our chapters copied into FTB Quests' config folder (data only, never FTB Quests' classes).
+		if (Platform.get().isModLoaded("ftbquests")) {
+			io.github.jcondedata.aliveworkplace.compat.ftbquests.FtbQuestsBook.init();
+			AliveWorkplace.LOG.info("Alive Workplace: ftbquests {} questbook on", Platform.get().modVersion("ftbquests"));
+		}
 	}
 
 	/** Starts {@code modId}'s integration, warning when its version is outside {@code tested} (a Fabric version range). */

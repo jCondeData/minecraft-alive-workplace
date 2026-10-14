@@ -1,0 +1,164 @@
+{
+	id: "1E71F89364345C5E",
+	group: "",
+	order_index: 101,
+	filename: "aliveworkplace_02_builder",
+	title: "The Builder and the Blueprint Table",
+	subtitle: ["Hand a villager a blueprint and they build it, block by block"],
+	icon: {id: "aliveworkplace:blueprint_table", count: 1},
+	default_quest_shape: "",
+	default_hide_dependency_lines: false,
+	quests: [
+		{
+			id: "60776510D36845B8",
+			x: 0.0d,
+			y: 0.0d,
+			title: "The Blueprint Table",
+			description: ["Craft a Blueprint Table: blue dye on top, a cartography table in the middle with planks on each side, and planks in the two bottom corners."],
+			dependencies: [],
+			icon: {id: "aliveworkplace:blueprint_table", count: 1},
+			tasks: [{id: "1EFD0E42D7035313", type: "item", item: {id: "aliveworkplace:blueprint_table", count: 1}}],
+			rewards: [{id: "53D50EB2D3BCF1CE", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "198DCDD25FBADD3A",
+			x: 2.0d,
+			y: -0.8d,
+			title: "Your first builder",
+			description: ["Put the Blueprint Table down near a villager without a job. They take it like any job block and become a Builder.", "", "Newly explored villages often have a builder's workshop with one already in it."],
+			dependencies: ["60776510D36845B8"],
+			tasks: [{id: "16B4D417BFBC3266", type: "checkmark", title: "A villager took my Blueprint Table"}],
+			rewards: [{id: "1210B595744BFAC7", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "3F77B6523A2A2308",
+			x: 2.0d,
+			y: 0.8d,
+			title: "Blank Blueprints",
+			description: ["Paper and blue dye make two Blank Blueprints. At the Blueprint Table, Get Blueprint copies any blueprint in the library onto one."],
+			dependencies: ["60776510D36845B8"],
+			tasks: [{id: "4526607062458797", type: "item", item: {id: "aliveworkplace:blank_blueprint", count: 1}, count: 2L}],
+			rewards: [{id: "27B05E9FD468A80B", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 1}]
+		},
+		{
+			id: "1EC22AE053C7B6EB",
+			x: 4.0d,
+			y: 0.0d,
+			title: "A blueprint",
+			description: ["Builders sell the starter blueprints, the Starter Cottage first and more as they level up. Or copy one at the table for a Blank Blueprint."],
+			dependencies: ["198DCDD25FBADD3A", "3F77B6523A2A2308"],
+			icon: {id: "aliveworkplace:blueprint", count: 1},
+			tasks: [{id: "237BFDAED572A98B", type: "item", item: {id: "aliveworkplace:blueprint", count: 1}}],
+			rewards: [{id: "4F17B04C5A60D866", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "13D6E50DCD475903",
+			x: 6.0d,
+			y: 0.0d,
+			title: "Place it and stock the chests",
+			description: ["Hold the blueprint and right-click the ground where the front should go: you see the building as see-through blocks, and the gold edge is the front. Sneak-right-click the ground to turn it.", "", "Put the materials in chests or barrels within 8 blocks of the Blueprint Table. Hold Shift over the blueprint for the list; once placed, its tooltip shows only what's still missing."],
+			dependencies: ["1EC22AE053C7B6EB"],
+			tasks: [{id: "507278D9B67237ED", type: "checkmark", title: "The blueprint is placed and the chests are stocked"}],
+			rewards: [{id: "6C69E5001569A768", type: "xp", xp: 50}]
+		},
+		{
+			id: "694682BB5A92E7B1",
+			x: 8.0d,
+			y: 0.0d,
+			title: "Hand it over",
+			description: ["Right-click the builder with the blueprint. They clear the ground, lay a foundation, put up the walls and roof, add the doors, beds and torches, and tidy the ground round it.", "", "What they're doing and what they're waiting for floats over their head. Sneak-right-click them with an empty hand for the full story."],
+			dependencies: ["13D6E50DCD475903"],
+			tasks: [{id: "52D13925B96595C9", type: "checkmark", title: "My builder finished a building"}],
+			rewards: [{id: "5373C57F71A8A938", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 5}, {id: "2D0998A870096EF6", type: "xp", xp: 150}]
+		},
+		{
+			id: "5A0E99E4CAFFCAA2",
+			x: 10.0d,
+			y: -3.0d,
+			optional: true,
+			title: "Build with friends",
+			description: ["The first player to hand a builder a blueprint hires them. Add your friends with /workplace friend add <name> and your builders take their orders too."],
+			dependencies: ["694682BB5A92E7B1"],
+			tasks: [{id: "7C99080E1C5E2FFE", type: "checkmark", title: "I added a friend to my crew"}],
+			rewards: [{id: "3C5FD000FAF2B461", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 1}]
+		},
+		{
+			id: "197D0F50A19AD1DB",
+			x: 10.0d,
+			y: -1.5d,
+			title: "Upgrades",
+			description: ["Most buildings have a bigger version: the Starter Cottage II adds an upper story. Once a builder finishes a building with an upgrade, they sell its blueprint.", "", "Right-click the finished building with the upgrade: it lines up exactly over it, and the builder only changes what's new."],
+			dependencies: ["694682BB5A92E7B1"],
+			tasks: [{id: "5E75EB8375C30104", type: "checkmark", title: "A builder upgraded one of my buildings"}],
+			rewards: [{id: "176D940E19AB9C56", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "1AD3E816F7516BED",
+			x: 10.0d,
+			y: 0.0d,
+			title: "A crew of four",
+			description: ["Up to three builders with nothing to do join a build near their table, so a crew of four finishes in under a third of the time.", "", "Busy builders also queue up to five more blueprints and build them in order."],
+			dependencies: ["694682BB5A92E7B1"],
+			tasks: [{id: "5FD0077B7BC22C54", type: "checkmark", title: "Several builders worked on one build"}],
+			rewards: [{id: "1B2D69B8E09C852A", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "5B85396BC9BD697E",
+			x: 10.0d,
+			y: 1.5d,
+			title: "Your own builds: the Scan Tool",
+			description: ["A Blank Blueprint and a spyglass make a Scan Tool. Right-click two opposite corners of something you built, then sneak-right-click the air: you get a blueprint of it, and it's in the Blueprint Table for everyone.", "", "Rename the tool in an anvil first to name the build."],
+			dependencies: ["694682BB5A92E7B1"],
+			icon: {id: "aliveworkplace:scan_tool", count: 1},
+			tasks: [{id: "43B3C1DB4004B895", type: "item", item: {id: "aliveworkplace:scan_tool", count: 1}}],
+			rewards: [{id: "739F5977A5BC98DC", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "24310E7CB4B1DCF9",
+			x: 10.0d,
+			y: 3.0d,
+			title: "The Shape Planner",
+			description: ["A Blank Blueprint and a compass make a Shape Planner. Pick a box, cylinder, dome, sphere, cone, pyramid or arch, its size and a block you carry, and draw it as a blueprint. Great for walls, towers and domes."],
+			dependencies: ["694682BB5A92E7B1"],
+			icon: {id: "aliveworkplace:shape_planner", count: 1},
+			tasks: [{id: "1D0651F8D33F6BF6", type: "item", item: {id: "aliveworkplace:shape_planner", count: 1}}],
+			rewards: [{id: "2979B427DDDB27DC", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "5159BE625786950E",
+			x: 12.0d,
+			y: -1.5d,
+			optional: true,
+			title: "Builds from the internet",
+			description: ["Download a build as a .litematic or .schem file and drop it in your blueprints folder. At the Blueprint Table, Upload a File puts it in the library for everyone.", "", "Only operators can upload, unless the server allows it with the workplaceAllowUploads game rule."],
+			dependencies: ["5B85396BC9BD697E"],
+			tasks: [{id: "2BB7A09AADF28549", type: "checkmark", title: "I uploaded a build at the Blueprint Table"}],
+			rewards: [{id: "7706B863DD92616B", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "5F3953D6E050FA8E",
+			x: 12.0d,
+			y: 0.0d,
+			optional: true,
+			title: "Imports for server owners",
+			description: ["Server operators: put .litematic, .schem or .nbt files in the aliveworkplace/import folder inside the world's folder and run /workplace import. Each file becomes a blueprint everyone can use."],
+			dependencies: ["5B85396BC9BD697E"],
+			tasks: [{id: "122C52DD84EF5EC4", type: "checkmark", title: "I imported a build with /workplace import"}],
+			rewards: [{id: "2B350C3C38DED5EE", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "62600EB892F1BBD7",
+			x: 12.0d,
+			y: 1.5d,
+			shape: "gear",
+			size: 1.5d,
+			title: "A Master builder",
+			description: ["Builders level up as they build, like villagers you trade with. A Master builds two and a half times as fast as a Novice, and every level unlocks new blueprints to buy.", "", "Keep your builder busy until they reach Master."],
+			dependencies: ["197D0F50A19AD1DB", "1AD3E816F7516BED"],
+			tasks: [{id: "54FF44700AB724DB", type: "checkmark", title: "One of my builders is a Master"}],
+			rewards: [{id: "486787877B16F106", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 10}, {id: "23AE42C53D2113D1", type: "xp", xp: 300}]
+		}
+	],
+	quest_links: [],
+	images: []
+}

@@ -1,0 +1,88 @@
+{
+	id: "2E283D396AD88FDF",
+	group: "",
+	order_index: 107,
+	filename: "aliveworkplace_13_legends",
+	title: "1.3 Legends",
+	subtitle: ["Rare named villagers with powers no ordinary worker has"],
+	icon: {id: "minecraft:nether_star", count: 1},
+	default_quest_shape: "",
+	default_hide_dependency_lines: false,
+	quests: [
+		{
+			id: "45E85C2098AA6FC6",
+			x: 0.0d,
+			y: 0.0d,
+			title: "The Legends page",
+			description: ["The hall's Legends page (the nether star) shows who your village might earn and what they need: a home of their own, their luxury once a week and a happy village."],
+			dependencies: ["3A0C9323349C9445"],
+			tasks: [{id: "7204D92F4B89FE4C", type: "checkmark", title: "I opened the Legends page"}],
+			rewards: [{id: "26F68EAC0A72F300", type: "xp", xp: 50}]
+		},
+		{
+			id: "26F670B76251B2F5",
+			x: 2.0d,
+			y: -0.8d,
+			title: "A gifted villager",
+			description: ["About one villager in thirty is born with a gift. Look out for them in your village."],
+			dependencies: ["45E85C2098AA6FC6"],
+			tasks: [{id: "2DE7E82F2F3FAF55", type: "checkmark", title: "My village has a gifted villager"}],
+			rewards: [{id: "184C40949A0430BF", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "280CF58250139F8F",
+			x: 2.0d,
+			y: 0.8d,
+			title: "A strange mood",
+			description: ["Sometimes a Master is taken by a strange mood: they claim their workstation and ask for three rare materials in a chest by it, within 3 days. Bring them, and they make a Masterwork. Sometimes a Legend is born of it."],
+			dependencies: ["45E85C2098AA6FC6"],
+			tasks: [{id: "55250295B5B9B437", type: "checkmark", title: "A Master of mine made a Masterwork"}],
+			rewards: [{id: "4B91E62C7A4489BB", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 6}]
+		},
+		{
+			id: "132BD9AA632259F4",
+			x: 4.0d,
+			y: 0.0d,
+			title: "Your first Legend",
+			description: ["A Legend comes on a visit, is found out in the world, is born, or rises from a strange mood. They are always a Master, with their name in gold over their head."],
+			dependencies: ["26F670B76251B2F5", "280CF58250139F8F"],
+			tasks: [{id: "4F2931AC36831E6D", type: "checkmark", title: "A Legend lives in my village"}],
+			rewards: [{id: "153CBBBEB372441F", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 10}, {id: "5DF132527EA7278A", type: "xp", xp: 300}]
+		},
+		{
+			id: "333BECEEFA065D33",
+			x: 6.0d,
+			y: -0.8d,
+			title: "The Master Architect",
+			description: ["The builders' Legend. Every Wonder needs one."],
+			dependencies: ["132BD9AA632259F4"],
+			tasks: [{id: "71FF1BC2CFADECCA", type: "checkmark", title: "The Master Architect lives in my village"}],
+			rewards: [{id: "20AC25E8F75FA7D5", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}]
+		},
+		{
+			id: "4BAB347AD131C380",
+			x: 6.0d,
+			y: 0.8d,
+			title: "The Founder's Wagon",
+			description: ["The Founder sends a weekly gift: a Founder's Wagon, a new village in a wagon. Make camp where a new village should stand."],
+			dependencies: ["132BD9AA632259F4"],
+			icon: {id: "aliveworkplace:founders_wagon", count: 1},
+			tasks: [{id: "4C377DF8D8DBDD8F", type: "item", item: {id: "aliveworkplace:founders_wagon", count: 1}}],
+			rewards: [{id: "7FCAFA60798EEBF0", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 6}]
+		},
+		{
+			id: "2B900F41F18A8A81",
+			x: 8.0d,
+			y: 0.0d,
+			shape: "gear",
+			size: 1.5d,
+			title: "A village of Legends",
+			description: ["Rare ones come once per village, Legendary ones once per world. Keep three Legends happy at once."],
+			dependencies: ["333BECEEFA065D33", "4BAB347AD131C380"],
+			tasks: [{id: "145178DEA6448764", type: "checkmark", title: "Three Legends live in my village"}],
+			rewards: [{id: "78016C257E82083E", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 20}, {id: "650B61BBB74D6105", type: "xp", xp: 500}]
+		}
+	],
+	quest_links: [],
+	images: []
+}

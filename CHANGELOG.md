@@ -16,6 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **A questbook for FTB Quests** (26.8). On a server with FTB Quests, the quest book gains Alive Workplace's chapters,
+  start to finish: Getting Started (your starter, apricorns, Poké Balls, first catch and battle, and with Radical
+  Cobblemon Trainers your first trainers and gym leader), The Builder and the Blueprint Table, Hiring and Retraining,
+  The Village Hall and its Ranks, and Pokémon in the Village, 138 quests in all with the expansions' chapters (1.1
+  to 2.0), which come in by themselves when each expansion is switched on. Rewards are emeralds and experience. The
+  chapters are added once, on the first start with FTB Quests: a server owner's edits and deletions are kept. The
+  guide's new page, The questbook, lists them.
+
 ### Fixed
 - **Small things in the Wonders' looks** (B141). The Stadium's scoreboard reads 2 - 1 from outside the bowl too (from
   behind it read "1 - S"). A festival, a Cup's final and a won siege still make you a Hero of the Village, but no longer

@@ -1,0 +1,15 @@
+# file milestone mods (written by tools/questbook/generate.py)
+aliveworkplace_01_getting_started.snbt - cobblemon
+aliveworkplace_02_builder.snbt - -
+aliveworkplace_03_jobs.snbt - -
+aliveworkplace_04_village_hall.snbt - -
+aliveworkplace_05_pokemon_village.snbt - cobblemon
+aliveworkplace_11_steward.snbt M27 -
+aliveworkplace_12_pokemon_jobs.snbt M28 cobblemon
+aliveworkplace_13_legends.snbt M29 -
+aliveworkplace_14_edicts.snbt M30 -
+aliveworkplace_15_story_arcs.snbt M31 -
+aliveworkplace_16_threats.snbt M32 -
+aliveworkplace_17_realms.snbt M33 -
+aliveworkplace_18_classes.snbt M34 -
+aliveworkplace_20_wonders.snbt M35 -

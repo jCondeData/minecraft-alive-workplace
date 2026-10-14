@@ -1,0 +1,119 @@
+{
+	id: "180FD5B752E2A84C",
+	group: "",
+	order_index: 104,
+	filename: "aliveworkplace_05_pokemon_village",
+	title: "Pokémon in the Village",
+	subtitle: ["Partners at work, and villagers who train"],
+	icon: {id: "aliveworkplace:training_post", count: 1},
+	default_quest_shape: "",
+	default_hide_dependency_lines: false,
+	quests: [
+		{
+			id: "139C96DACEB5F53B",
+			x: 0.0d,
+			y: -3.0d,
+			title: "Pokémon partners",
+			description: ["Keep Pokémon in a Pasture Block within 16 blocks of a villager's workstation. If their type suits the job, each one makes the work go faster, up to three helpers.", "", "Fighting, Rock and Steel types help builders; Ground, Rock and Steel help miners."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "cobblemon:pasture", count: 1},
+			tasks: [{id: "64CF1D7AE9BCBE80", type: "item", item: {id: "cobblemon:pasture", count: 1}}],
+			rewards: [{id: "505C5A5965356A5F", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "6CF27C72B6D8ED96",
+			x: 2.0d,
+			y: -1.5d,
+			title: "With Machop",
+			description: ["The line over a worker's head says who's helping (\"· with Machop\"). Sneak-right-click the worker to see how much faster they are."],
+			dependencies: ["139C96DACEB5F53B"],
+			tasks: [{id: "10AC7643FAB19061", type: "checkmark", title: "A Pokémon is helping one of my workers"}],
+			rewards: [{id: "76DBBC1582228246", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "1DAE643B005B8A9D",
+			x: 0.0d,
+			y: -1.5d,
+			title: "The Training Post",
+			description: ["A target block on top of three planks makes a Training Post. A villager without a job takes it and becomes a Trainer."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "aliveworkplace:training_post", count: 1},
+			tasks: [{id: "1CC699DE9FC05DD3", type: "item", item: {id: "aliveworkplace:training_post", count: 1}}],
+			rewards: [{id: "5AA1CD92A6DAF971", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "180F138557AFD18D",
+			x: 2.0d,
+			y: 0.0d,
+			title: "Battle a villager",
+			description: ["Right-click a Trainer to battle. Every trainer starts as a Novice with two young Pokémon and ranks up as people battle them. Beating one pays, once a day per trainer."],
+			dependencies: ["1DAE643B005B8A9D"],
+			tasks: [{id: "73B045EB091BE8ED", type: "checkmark", title: "I beat a village Trainer"}],
+			rewards: [{id: "4EE464A1F3ED3E02", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "70ACC128CAB2B990",
+			x: 4.0d,
+			y: 0.0d,
+			title: "The Trainer Leader",
+			description: ["Sneak-right-click a villager at a Training Post with a block of gold: the village's leader battles at Expert strength, pays three times the prize, and takes one challenge a day from each player."],
+			dependencies: ["180F138557AFD18D"],
+			tasks: [{id: "5362FD905300614D", type: "checkmark", title: "I beat a Trainer Leader"}],
+			rewards: [{id: "30D697893DD73A26", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}, {id: "430A623E900AB8BD", type: "xp", xp: 200}]
+		},
+		{
+			id: "24EA9FD1EE52F2AE",
+			x: 2.0d,
+			y: 1.5d,
+			title: "The Move Tutor",
+			description: ["A book at a Training Post makes a Move Tutor. Pick one of your Pokémon and a move it could learn but won't get from leveling. Click once to choose, again to pay and teach."],
+			dependencies: ["1DAE643B005B8A9D"],
+			tasks: [{id: "38FE761AD518ECC4", type: "checkmark", title: "A Move Tutor taught my Pokémon a move"}],
+			rewards: [{id: "1AF4413A38CE4B43", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "1914C128C44ABFF6",
+			x: 0.0d,
+			y: 0.0d,
+			title: "The Ball Smith",
+			description: ["An apricorn at a smithing table makes a Ball Smith. Put apricorns and metal in the chest (copper for Poké Balls, iron for Great Balls, gold for Ultra Balls) and they make balls, four at a time."],
+			dependencies: ["5FEAB93EEF736663"],
+			tasks: [{id: "54EE2B01ECF307DD", type: "item", item: {id: "cobblemon:great_ball", count: 1}, count: 4L}],
+			rewards: [{id: "6B4454EAA7BEBA05", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "3401FEE33C1F617F",
+			x: 0.0d,
+			y: 1.5d,
+			title: "The Pokémon Trader",
+			description: ["A Poké Ball at a Shop Counter makes a Pokémon Trader. Pick one of today's offers and a Pokémon of yours that fits, and click twice to swap. Each player gets one trade per trader a day."],
+			dependencies: ["501B2AAAD169D185"],
+			tasks: [{id: "13D5AE226652D1B4", type: "checkmark", title: "I swapped a Pokémon with a trader"}],
+			rewards: [{id: "3CACC2B27EAF46DA", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "22413FD9C5CB6A1A",
+			x: 0.0d,
+			y: 3.0d,
+			title: "The Fossil Scientist",
+			description: ["A fossil at Cobblemon's Fossil Analyzer makes a Fossil Scientist. Right-click them holding a fossil and pay 8 emeralds: the revived Pokémon joins your party when it's done."],
+			dependencies: ["5FEAB93EEF736663"],
+			tasks: [{id: "571F57F087A75330", type: "checkmark", title: "A Fossil Scientist revived a fossil for me"}],
+			rewards: [{id: "3AAA818CB222447D", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 6}]
+		},
+		{
+			id: "29E7437AFCE9CE80",
+			x: 6.0d,
+			y: 0.0d,
+			shape: "gear",
+			size: 1.5d,
+			title: "A Pokémon village",
+			description: ["Trainers, tutors, smiths and traders: your village lives alongside Pokémon now."],
+			dependencies: ["70ACC128CAB2B990", "24EA9FD1EE52F2AE", "1914C128C44ABFF6", "3401FEE33C1F617F", "6CF27C72B6D8ED96"],
+			tasks: [{id: "7FE41A7472E85CAA", type: "checkmark", title: "My village has a Trainer, a Move Tutor, a Ball Smith and a Pokémon Trader"}],
+			rewards: [{id: "72E0467BA1FC6F8A", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 12}, {id: "14E9F69F5FC6265D", type: "xp", xp: 300}]
+		}
+	],
+	quest_links: [],
+	images: []
+}

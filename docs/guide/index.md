@@ -32,6 +32,7 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 
 - [Getting started](getting-started.md): your first builder, your first building and your first village, in ten
   minutes.
+- [The questbook](questbook.md): the FTB Quests chapters that take you from your first Pokémon to a City.
 
 ## Villagers and their jobs
 

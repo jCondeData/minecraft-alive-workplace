@@ -1370,7 +1370,7 @@ def inn():
     for x in range(2, 8):
         slab(b, x, 1, 9, SPRUCE, double=True) if x == 2 else stairs(b, x, 1, 9, SPRUCE, "north", top=True)
     b.set(8, 1, 9, "aliveworkplace:shop_counter", facing="north")  # the innkeeper's end of the bar
-    for x in (2, 4, 6):
+    for x in (2, 4, 5, 6):  # (the one at 5 carries the barrel stacked on top)
         b.set(x, 1, 10, "barrel", facing="north", open=False)
     b.set(3, 1, 10, "barrel", facing="up", open=False)
     b.set(5, 2, 10, "barrel", facing="north", open=False)
@@ -2288,6 +2288,7 @@ def graveyard_2():
             fence(b, x, y, 2, "dark_oak_fence")  # the roof's back posts
     for x in range(5, 8):
         log(b, x, 3, 0, "dark_oak_log", axis="x")
+    for x in range(4, 9):  # the back beam runs over the fence posts, so nothing gapes between a post and the gable
         log(b, x, 3, 2, "dark_oak_log", axis="x")
     for z in (1,):
         log(b, 4, 3, z, "dark_oak_log", axis="z")

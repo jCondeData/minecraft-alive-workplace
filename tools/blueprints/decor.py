@@ -377,7 +377,7 @@ def chapel():
     # A string course round the tower at the belfry floor; the spire: slate, steep, straight up from the walls
     for x in range(3, 8):
         stairs(b, x, 8, 0, STONE_BRICK, "south", top=True)
-    for z in range(1, 5):
+    for z in range(1, 6):  # (on to the tower's back corner, where the nave's roof takes it up)
         stairs(b, 2, 8, z, STONE_BRICK, "west", top=True)
         stairs(b, 8, 8, z, STONE_BRICK, "east", top=True)
     hip_roof(b, 3, 7, 1, 5, 12, CHAPEL_ROOF, steep=True, rings=2)

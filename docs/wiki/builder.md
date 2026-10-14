@@ -143,6 +143,9 @@ claims and trip counts.
   bench chests and keeps its bench, never swapping to another builder's (B22, B28).
 - Progress never drops after a restart (B46, B64).
 - Unfinished blocks are never claimed done: `MaterialRules.matches` ignores neighbor-dependent properties.
+- An upgrade is a whole new blueprint on the same spot. Where its new room's roof runs in under the old roof's edge,
+  the wall is carried up to that edge, so the roofs meet with no open blocks between them; `tools/blueprints/holes.py`
+  checks every blueprint for roof holes, gaps between roofs and stray empty blocks (owner's report, 2026-10-14).
 
 ## 7. Known limits
 

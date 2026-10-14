@@ -452,8 +452,7 @@ def boat_shed(b):
         posts(b, [(x, z)], 0, 3, HUT_FRAME)
     beam_ring(b, 8, 0, 12, 3, 4, HUT_FRAME)
     gable_roof(b, 7, 13, 0, 4, 4, HUT_ROOF, axis="z", gable="spruce_planks", gable_at=(0, 3), eave_trim=SPRUCE)
-    for z in (0, 3):
-        b.set(10, 5, z, "air")
+    b.set(10, 5, 0, "air")  # the gable open to the water (the back one, against the hut's eaves, stays shut)
     for z in range(0, 4):
         log(b, 10, 6, z, HUT_FRAME, axis="z")
     lantern(b, 10, 5, 1, hanging=True)

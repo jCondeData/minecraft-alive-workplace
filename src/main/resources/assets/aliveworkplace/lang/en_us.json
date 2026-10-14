@@ -72,6 +72,7 @@
   "item.aliveworkplace.blueprint.named": "Blueprint: %s",
   "entity.minecraft.villager.builder": "Builder",
   "entity.minecraft.villager.legend": "Legend",
+  "advancements.aliveworkplace.built.description": "A builder finished one for you.",
   "blueprint.aliveworkplace.starter_cottage": "Starter Cottage",
   "blueprint.aliveworkplace.market_stall": "Market Stall",
   "blueprint.aliveworkplace.lookout_tower": "Lookout Tower",

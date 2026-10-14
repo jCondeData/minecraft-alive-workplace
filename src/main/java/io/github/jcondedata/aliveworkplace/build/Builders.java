@@ -749,6 +749,7 @@ public final class Builders {
 			// (B143: a Wonder's part is no building of its own: no "X was built" line with the part's name, nothing on the
 			// books, no upgrade, no lane; the Wonder's own begun, dedicated and finished lines tell it, 35.4/35.7/35.8)
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
+			BuiltAdvancements.award(level, site); // the questbook's build quests (none for a Wonder's part or an import)
 			io.github.jcondedata.aliveworkplace.city.Walls.pieceBuilt(level, site, villager); // 27.18: the last piece finishes the wall
 			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, site.placement().origin(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BUILT, Component.translatable("chronicle.aliveworkplace.built",
 				villager.getDisplayName(), Blueprints.displayName(site.structure())));

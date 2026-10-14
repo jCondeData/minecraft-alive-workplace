@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The questbook says what to build.** The Builder chapter starts with "Build a Starter Cottage" (what it's for and
+  how, step by step), then the homes' upgrades I to II to III; the Jobs chapter has a quest per job naming the building
+  for it, and the item to use when the job has no table of its own. Build quests tick off by themselves when a builder
+  finishes that building for you (hidden advancements per blueprint; imports and Wonder parts give none).
 - **See a build before you pick it** (26.9). The Blueprint Table's library shows the selected build in 3D beside its
   materials: it turns slowly, you can drag it round, and big builds shrink to fit. Uploaded and scanned builds get one
   too, drawn from their own blocks; the server sends only the blocks you could see, once per build.

@@ -14,11 +14,12 @@ workplaceLevelGround: 2 blocks (0 to 8)
 workplaceAllowUploads: true
 workplaceKeepWorkLoaded: true
 workplaceVillageFarms: true
+workplaceRetraining: true
 categories: Settings, Builder
 related: settings.md, builder.md, command-import.md, settings-worker-limits-and-performance.md
 ```
 
-Nine of the mod's settings are **game rules**: they belong to the world, not the server's settings file, and an
+Ten of the mod's settings are **game rules**: they belong to the world, not the server's settings file, and an
 operator changes them in game with `/gamerule <name> <value>`. They take effect at once. Most are about builders.
 
 ## The rules
@@ -34,6 +35,7 @@ operator changes them in game with `/gamerule <name> <value>`. They take effect 
 | `workplaceAllowUploads` | true | any player can upload blueprint files at a Blueprint Table. false: only operators can. |
 | `workplaceKeepWorkLoaded` | true | builds and quarries keep running while the player who ordered them is online but far away. false: they stop when nobody is near. |
 | `workplaceVillageFarms` | true | a village farmer with no field takes on the farm by their composter by themselves, once there's a chest by the composter for the harvest. false: you give farmers their fields yourself. |
+| `workplaceRetraining` | true | a villager who already has a job can be retrained as a Builder for emeralds at a Blueprint Table ([Giving villagers jobs](jobs.md)). false: only jobless villagers become Builders. |
 
 For example, `/gamerule workplaceBuildDelay 4` makes every builder in the world twice as fast.
 

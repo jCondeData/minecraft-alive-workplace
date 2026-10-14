@@ -71,6 +71,11 @@ public final class Expansions {
 		return milestone == null ? null : flag(milestone);
 	}
 
+	/** Whether the expansion of a milestone ("M34") may run now: its flag, or the open gate of a test. */
+	public static boolean isOpen(String milestone) {
+		return on(flag(milestone));
+	}
+
 	/** A milestone's flag by its name ("M34"). */
 	static boolean flag(String milestone) {
 		return switch (milestone) {

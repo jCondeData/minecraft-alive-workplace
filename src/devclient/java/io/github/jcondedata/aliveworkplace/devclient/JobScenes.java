@@ -2890,6 +2890,32 @@ final class JobScenes {
 			(level, player) -> subject.getVillagerData().getProfession() == VillagerProfession.FARMER
 				&& subject.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(STATION)).orElse(false)));
+		// Retraining (ROADMAP 26.6): a Journeyman Librarian who works at a lectern, by a Blueprint Table. The first
+		// sneak-right-click with a Blank Blueprint shows the price in chat; the second pays, and she's a Novice Builder.
+		SCREENS.put("retrain", new Screen("the Journeyman Librarian was shown the price, then paid for and retrained as a Novice Builder at the Blueprint Table",
+			new Vec3(2.2, -58.6, 3.6), TARGET,
+			(level, player) -> {
+				place(level, STATION, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BLUEPRINT_TABLE);
+				BlockPos lectern = STATION.east(3);
+				place(level, lectern, Blocks.LECTERN);
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+				subject.setNoAi(true); // stands still for the camera (their job still shows on their clothes)
+				subject.setYRot(160);
+				subject.setYHeadRot(160);
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, subject, lectern, net.minecraft.world.entity.ai.village.poi.PoiTypes.LIBRARIAN,
+					VillagerProfession.LIBRARIAN);
+				subject.setVillagerData(subject.getVillagerData().setLevel(3));
+				subject.setVillagerXp(150);
+				subject.setCustomName(net.minecraft.network.chat.Component.literal("Dara"));
+				subject.getOffers(); // she has her trades
+				player.getInventory().setItem(8, new ItemStack(Items.EMERALD, 32));
+			},
+			List.of(new Step("01_librarian", -1, 0, null, 25), hand("02_offer", io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT),
+				hand("03_builder", io.github.jcondedata.aliveworkplace.registry.ModItems.BLANK_BLUEPRINT)),
+			(level, player) -> subject.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER
+				&& subject.getVillagerData().getLevel() == 1
+				&& subject.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> g.pos().equals(STATION)).orElse(false)));
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);

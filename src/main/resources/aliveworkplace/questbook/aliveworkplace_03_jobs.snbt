@@ -1,0 +1,144 @@
+{
+	id: "68EC9D2CD3151391",
+	group: "",
+	order_index: 102,
+	filename: "aliveworkplace_03_jobs",
+	title: "Hiring and Retraining",
+	subtitle: ["Every villager can have a real job"],
+	icon: {id: "aliveworkplace:storehouse", count: 1},
+	default_quest_shape: "",
+	default_hide_dependency_lines: false,
+	quests: [
+		{
+			id: "5FEAB93EEF736663",
+			x: 0.0d,
+			y: 0.0d,
+			title: "Pick a job",
+			description: ["Vanilla jobs work as in vanilla: put the block near a villager without a job.", "", "Most of our jobs share a vanilla block. Stand the villager within about 4 blocks of it and sneak-right-click them holding the job's item: a pickaxe at a Blast Furnace makes a Miner, an axe at a Fletching Table a Lumberjack.", "", "Hold Shift over a workstation in your inventory to see every job it gives and the item for each."],
+			dependencies: ["198DCDD25FBADD3A"],
+			tasks: [{id: "5706D753AECBB4A3", type: "checkmark", title: "I gave a villager one of the new jobs"}],
+			rewards: [{id: "68FD7B4E92911EFC", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "764D63D279D7BECE",
+			x: 2.0d,
+			y: -6.0d,
+			title: "Retrain a villager",
+			description: ["In a busy village almost everyone already works. You can retrain any grown villager who has a job (not a child or a nitwit).", "", "Stand them within about 4 blocks of one of our job blocks, like the Blueprint Table, and sneak-right-click them holding the new job's item. You're shown the price: 5 emeralds for a Novice, up to 50 for a Master. Click again within a few seconds to pay.", "", "Their old trades and level are lost, and they start the new job as a Novice."],
+			dependencies: ["5FEAB93EEF736663"],
+			tasks: [{id: "4CD4FE932C9B7A59", type: "checkmark", title: "I retrained a villager"}],
+			rewards: [{id: "3BA0C98A0B8C563A", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 5}]
+		},
+		{
+			id: "5007642FFF4DACC0",
+			x: 2.0d,
+			y: -4.5d,
+			title: "Hire a vanilla worker",
+			description: ["Picking a job isn't hiring. A vanilla worker whose job we've extended (an Armorer, a Toolsmith...) is hired with that job's item: hired, they work with your own workers; unhired, they work for their village."],
+			dependencies: ["5FEAB93EEF736663"],
+			tasks: [{id: "1F9D09040DE103F9", type: "checkmark", title: "I hired a vanilla worker"}],
+			rewards: [{id: "71A652142345953D", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "703E70201DACFC60",
+			x: 2.0d,
+			y: -3.0d,
+			title: "A Miner",
+			description: ["A pickaxe at a Blast Furnace makes a Miner. A stick, red dye and paper make a Quarry Marker: it tells the miner where to dig."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "aliveworkplace:quarry_marker", count: 1},
+			tasks: [{id: "64AF859281C5DE7D", type: "item", item: {id: "aliveworkplace:quarry_marker", count: 1}}],
+			rewards: [{id: "4C48CD909852AF18", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "398D9AE65D91997C",
+			x: 2.0d,
+			y: -1.5d,
+			title: "Fields for the Farmer",
+			description: ["A stick, wheat seeds and paper make a Field Marker. It marks out a plot of land and hands it to a worker to look after."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "aliveworkplace:field_marker", count: 1},
+			tasks: [{id: "59D81BD214D6E199", type: "item", item: {id: "aliveworkplace:field_marker", count: 1}}],
+			rewards: [{id: "6404D5633CBE8977", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "7F72A885171E7D72",
+			x: 2.0d,
+			y: 0.0d,
+			title: "The Storehouse",
+			description: ["Three planks on top, then a barrel, a chest and a barrel. A jobless villager takes it by themselves and becomes a Porter, who carries what every worker makes to the store."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "aliveworkplace:storehouse", count: 1},
+			tasks: [{id: "2E7F0777E2F565E5", type: "item", item: {id: "aliveworkplace:storehouse", count: 1}}],
+			rewards: [{id: "1286246FD67E028E", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "658737736C7C62AC",
+			x: 4.0d,
+			y: -0.8d,
+			title: "A Drop Box",
+			description: ["A barrel and a hopper make a Drop Box. Drop your loot in, and a porter takes it to the storehouse."],
+			dependencies: ["7F72A885171E7D72"],
+			icon: {id: "aliveworkplace:drop_box", count: 1},
+			tasks: [{id: "15700C0993370CB0", type: "item", item: {id: "aliveworkplace:drop_box", count: 1}}],
+			rewards: [{id: "61559FEC0E64890A", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "501B2AAAD169D185",
+			x: 2.0d,
+			y: 1.5d,
+			title: "Open a shop",
+			description: ["An emerald on top, then planks, a chest and planks make a Shop Counter: a jobless villager becomes your Shopkeeper.", "", "Paper, a gold nugget and string make Price Tags, to set a price on what you sell."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "aliveworkplace:shop_counter", count: 1},
+			tasks: [{id: "6A8180431591B214", type: "item", item: {id: "aliveworkplace:shop_counter", count: 1}}, {id: "1533938A6F7CB4D6", type: "item", item: {id: "aliveworkplace:price_tag", count: 1}}],
+			rewards: [{id: "73A7E011A5AD5275", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "1D2C25DEC93E1E4A",
+			x: 2.0d,
+			y: 3.0d,
+			title: "Mail and couriers",
+			description: ["Three iron nuggets on top, an iron nugget on each side of a chest and a fence under it make a Mailbox. Paper makes its villager a Postman.", "", "Paper, a feather and an ink sac make a Delivery Note: a postman with no mail hauls things between two of your chests."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "aliveworkplace:mailbox", count: 1},
+			tasks: [{id: "7184FC3C084D6469", type: "item", item: {id: "aliveworkplace:mailbox", count: 1}}, {id: "38A222728DFB30C4", type: "item", item: {id: "aliveworkplace:delivery_note", count: 1}}],
+			rewards: [{id: "3460E64F771BA883", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "2106981A0A658D76",
+			x: 2.0d,
+			y: 4.5d,
+			title: "Travel posts",
+			description: ["Any sign on top, then planks, a boat and planks make a Travel Post. Its villager becomes a Ferryman, who sells tickets between travel posts."],
+			dependencies: ["5FEAB93EEF736663"],
+			icon: {id: "aliveworkplace:travel_post", count: 1},
+			tasks: [{id: "3561F861F9EB6313", type: "item", item: {id: "aliveworkplace:travel_post", count: 1}}],
+			rewards: [{id: "7063436C37A3E7BA", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "1F6C818E31AC5BC3",
+			x: 2.0d,
+			y: 6.0d,
+			title: "Crafters for the builders",
+			description: ["A Carpenter (planks, at a crafting table) crafts the woodwork your builders wait for; a Mason (stonecutter) makes stone, glass and bricks; the dyer (cauldron) anything colored."],
+			dependencies: ["5FEAB93EEF736663"],
+			tasks: [{id: "51787ED7EB380C9E", type: "checkmark", title: "A crafter made something my builder needed"}],
+			rewards: [{id: "271C04CE1E29A624", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "2CFAFFDD9A1F1A55",
+			x: 4.0d,
+			y: 0.8d,
+			shape: "gear",
+			size: 1.5d,
+			title: "A village at work",
+			description: ["Workers level up as they work, and every level makes them faster. Workers within 48 blocks of each other share their chests, so a builder short of stone takes it from the miner's.", "", "Get five different jobs working in one village."],
+			dependencies: ["703E70201DACFC60", "398D9AE65D91997C", "7F72A885171E7D72", "1F6C818E31AC5BC3"],
+			tasks: [{id: "79C7381A03D61867", type: "checkmark", title: "Five different jobs work in my village"}],
+			rewards: [{id: "19D5A206AC85440C", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 10}, {id: "707BAB56F1D6C4A6", type: "xp", xp: 300}]
+		}
+	],
+	quest_links: [],
+	images: []
+}

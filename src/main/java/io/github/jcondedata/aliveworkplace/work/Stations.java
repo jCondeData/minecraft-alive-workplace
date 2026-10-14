@@ -45,7 +45,9 @@ import net.minecraft.world.level.block.Blocks;
  * picks another job by sneak-right-clicking the villager with that job's item; the same switches a villager already
  * working there, and brings back the vanilla job with its own item. A villager with no job, or whose job is at another
  * kind of block, takes the nearest free block of the right kind within {@link #REACH} blocks. Choosing a job doesn't
- * hire the villager: that stays the vanilla jobs' item on a villager who already has the job ({@link Hiring}).
+ * hire the villager: that stays the vanilla jobs' item on a villager who already has the job ({@link Hiring}). A blueprint
+ * by a free Blueprint Table picks the Builder: free for a jobless villager, for a price for one who has a job
+ * ({@link Retraining}, ROADMAP 26.6).
  * <p>
  * The blocks this replaced (the Builder's Bench, the Fruit Basket...) are still registered and still work where
  * they're placed: each profession holds its old point of interest too.
@@ -263,6 +265,20 @@ public final class Stations {
 		if (now == VillagerProfession.SHEPHERD && stack.is(Items.SHEARS)) {
 			return InteractionResult.PASS; // shears hire a shepherd (BuilderEvents), as before: they don't make them a beekeeper
 		}
+		// A Blueprint or a Blank Blueprint by a free Blueprint Table: the Builder (26.6, with workplaceRetraining on; a
+		// jobless villager takes the table by themselves anyway, and a builder handed a blueprint gets on with it).
+		if (Retraining.picksBuilder(stack)) {
+			if (now == ModVillagers.BUILDER || !Retraining.on(level)) {
+				return InteractionResult.PASS;
+			}
+			Optional<BlockPos> table = Retraining.freeTable(level, villager);
+			if (table.isEmpty()) {
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.job.needs_station", name(ModVillagers.BUILDER),
+					ModBlocks.BLUEPRINT_TABLE.getName()).withStyle(ChatFormatting.YELLOW));
+				return InteractionResult.CONSUME;
+			}
+			return take(player, villager, table.get(), ModVillagers.BUILDER);
+		}
 		// (not a far-off one another villager works at: their block broken while they were away and put back, and taken since
 		// (B8), by a loaded villager or one in an unloaded chunk, whom only the break count knows of (B25); the villager
 		// standing by the block is its owner, even if a far-off one still remembers it)
@@ -322,7 +338,7 @@ public final class Stations {
 
 	/** Whether {@code stack} picks any job at all. */
 	public static boolean picksAny(ItemStack stack) {
-		return !stack.isEmpty() && ALL.stream().anyMatch(s -> s.jobFor(stack).isPresent());
+		return !stack.isEmpty() && (ALL.stream().anyMatch(s -> s.jobFor(stack).isPresent()) || Retraining.picksBuilder(stack));
 	}
 
 	/** The nearest block of {@code station}'s kind within {@link #REACH} of {@code near} that nobody works at. */
@@ -416,6 +432,14 @@ public final class Stations {
 			villager.level().playSound(null, villager, net.minecraft.sounds.SoundEvents.VILLAGER_NO, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1f);
 			Chat.chat(player, refusal.copy().withStyle(ChatFormatting.YELLOW));
 			return InteractionResult.CONSUME;
+		}
+		// A villager with a job made a Builder is retrained, for a price (26.6): offered first, paid on a second click.
+		if (Retraining.applies((ServerLevel) villager.level(), villager, station, profession)) {
+			return Retraining.offerOrRetrain(player, villager, station, profession);
+		}
+		// A builder given another job hands their builds back first (26.6): before, the build stayed theirs, unworked.
+		if (villager.getVillagerData().getProfession() == ModVillagers.BUILDER) {
+			Retraining.dropWork((ServerLevel) villager.level(), player, villager);
 		}
 		Component who = villager.getDisplayName(); // before: an unnamed villager is called by their job
 		assign((ServerLevel) villager.level(), villager, station, profession);

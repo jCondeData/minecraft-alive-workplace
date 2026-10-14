@@ -6,6 +6,7 @@ image: https://jcondedata.github.io/minecraft-alive-workplace/stations/still-1.j
 caption: One composter, four jobs
 Jobs: 43
 Picking a job: sneak-right-click the villager with the job's item, within about 4 blocks of the block
+Retraining: a working villager becomes a Builder for 5 to 50 emeralds, by their level
 Supply chests: chests and barrels within 8 blocks of the workstation
 Shared stock: workers within 48 blocks of each other
 Levels: Novice to Master, faster at every level
@@ -28,6 +29,28 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 ("Dara took the Miner job at the Blast Furnace."), or what's missing.
 
 Hold Shift over a workstation in your inventory to see every job it gives and the item for each.
+
+**Retraining a villager who already works.** In a busy village nearly everyone has a job, so there's nobody left to
+make a Builder. Stand any grown villager with a job (a Librarian you've traded with, a Cobblemon nurse, one of ours)
+within about 4 blocks of a free Blueprint Table and **sneak-right-click them holding a Blueprint or a Blank
+Blueprint**. They're offered the Builder's job and you're shown the price first:
+
+| Their level | Price |
+|---|---|
+| Novice | 5 emeralds |
+| Apprentice | 10 emeralds |
+| Journeyman | 20 emeralds |
+| Expert | 35 emeralds |
+| Master | 50 emeralds |
+
+With CobbleDollars installed (the Cobbleverse pack) you pay in CobbleDollars instead, 100 for every emerald.
+Sneak-right-click them again within 5 seconds to pay. Their old job's trades and level are lost, and they start again
+as a Novice Builder. Short of money, you're told how much you're missing and nothing changes. Children and nitwits
+can't be retrained. A jobless villager by the table takes the job for free, as always.
+
+A builder you give another job hands their build back first: what's built stays, and the blueprint comes back to you,
+still placed, so another builder can carry on where they stopped. Server owners can turn retraining off with the game
+rule `workplaceRetraining` (see [Game rules](game-rules.md)).
 
 **Hiring.** Picking a job isn't hiring. A vanilla worker whose job we've extended (an Armorer, a Toolsmith...) is hired
 with that job's item on a villager who already has the job: hired, they work with your own workers; unhired, they work
@@ -52,7 +75,7 @@ makes them faster. Villages keep working while you're away, as long as someone i
 
 | Job | Workstation | Item to pick it | More |
 |---|---|---|---|
-| [Builder](builder.md) | Blueprint Table | (takes it by itself) | [The Builder](builder.md) |
+| [Builder](builder.md) | Blueprint Table | (takes it by itself; a blueprint retrains a working villager) | [The Builder](builder.md) |
 | [Miner](miner.md) | Blast Furnace | a pickaxe | [Jobs on the land](jobs-land.md) |
 | [Lumberjack](lumberjack.md) | Fletching Table | an axe | [Jobs on the land](jobs-land.md) |
 | [Orchard Keeper](orchard-keeper.md) | Composter | sweet berries, glow berries or an apple | [Jobs on the land](jobs-land.md) |

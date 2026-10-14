@@ -50,6 +50,13 @@ public final class ModGameRules {
 	public static final GameRules.Key<GameRules.BooleanValue> VILLAGE_FARMS =
 		Platform.get().booleanRule("workplaceVillageFarms", GameRules.Category.MOBS, true);
 
+	/**
+	 * When true, a villager who already has a job can be retrained as a Builder for a price at a free Blueprint Table,
+	 * sneak-right-clicked with a blueprint (ROADMAP 26.6, work/Retraining). false: the old rule, no Builder by item.
+	 */
+	public static final GameRules.Key<GameRules.BooleanValue> RETRAINING =
+		Platform.get().booleanRule("workplaceRetraining", GameRules.Category.MOBS, true);
+
 	public static void init() {
 	}
 

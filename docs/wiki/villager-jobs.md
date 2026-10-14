@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, B97, B101, B103
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, B97, B101, B103
 
 ## What a player sees
 
@@ -15,6 +15,16 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
 needs Cobblemon, without it) isn't listed.
 
+**Retraining (26.6).** A villager who already has a job (vanilla, ours or another mod's, traded with or not; never a
+child or a nitwit) becomes a Builder at a free Blueprint Table within about 4 blocks, sneak-right-clicked with a
+Blueprint or a Blank Blueprint. The first click shows the price ("Dara (Librarian, Journeyman) can be retrained as a
+Builder for 20 emeralds. Their trades and level are lost: they start again as a Novice."); a second click within 5
+seconds pays and retrains them. The price goes by level: Novice 5, Apprentice 10, Journeyman 20, Expert 35, Master
+50 emeralds (`retrainPrices`), or 100 CobbleDollars an emerald with the Cobbleverse pack. Too little money: "Retraining
+Dara costs 5 emeralds: you're 2 emeralds short. Nothing changed." A jobless villager becomes a Builder the same way
+for free. A builder given another job hands their builds back first: what's built stays, the blueprint comes back to
+its owner still placed, and another builder carries on from there.
+
 Chests and barrels within 8 blocks of the workstation are that worker's supply chests: tools and materials come out
 of them and the work goes into them. A line over a worker's head says what they are doing or waiting for, and
 sneak-right-clicking a worker with an empty hand shows their status, ending with their level in their own job
@@ -22,7 +32,7 @@ sneak-right-clicking a worker with an empty hand shows their status, ending with
 
 | Job | Workstation and item | Class |
 |---|---|---|
-| Builder | Blueprint Table | any |
+| Builder | Blueprint Table (+ a Blueprint or a Blank Blueprint to retrain a working villager) | any |
 | Miner | Blast Furnace + a pickaxe | any |
 | Lumberjack | Fletching Table + an axe | any |
 | Orchard Keeper | Composter + sweet berries, glow berries or an apple | any |
@@ -94,6 +104,16 @@ can't be crafted any more, but ones already placed keep working, so old worlds a
 extends (an Armorer as a smelter, a Toolsmith...) is still that job's item on a villager who already has the job:
 hired, they work with your own workers; unhired, for their village.
 
+**Retraining (26.6).** `work/Retraining` extends the pick (`Stations.choose`, then `Stations.take`), so the owner,
+class and free-block checks are the same. Only the Builder costs: the other jobs' items have switched a working
+villager for free since 21.1a, and their tests rely on it (ROADMAP Notes, 26.6). The offer is kept in memory only, per
+player, for 100 ticks; the second click goes through every check again before it pays (`Money`, so CobbleDollars
+through the `Bank` extension point). Paying sets the villager to level 1 with no experience; changing the profession
+drops vanilla's trades, and the new job's are made afresh. A builder changing job, paid or not, first lets go of
+their work as on death, minus the dropping: queued builds are cancelled (blueprints back), a crew member stops
+helping, a Wonder's part goes on to its crew (`WonderCrews.handOn`), and their own build is cancelled with the
+blueprint returned still placed.
+
 **Villages share.** Workers whose workstations are within `villageRadius` blocks (48) of each other are one
 village: one short of something takes it from another's chests. Only workers who answer to the same people share
 (yours and your friends', or village workers nobody hired).
@@ -143,6 +163,8 @@ list of free workstations finds each kind of workstation's job once.
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
+| `workplaceRetraining` | true | Game rule: a villager who has a job can be retrained as a Builder for a price; false: the old rule |
+| `retrainPrices` | 5, 10, 20, 35, 50 | Emeralds to retrain, Novice to Master (each 0 to 1000; in the file only) |
 | `vintners` | on from 1.0 | The Vintner job |
 | `tailors` | on from 1.0 | The Tailor job |
 | `printers` | on from 1.0 | The Printer job |
@@ -175,7 +197,8 @@ and so on). Status lines and the requests board are not saved: workers post agai
   Note (`aliveworkplace:delivery_note`), Patrol Map (`aliveworkplace:patrol_map`).
 - Texts: `message.aliveworkplace.job.chosen`, `message.aliveworkplace.job.needs_station`,
   `message.aliveworkplace.job.station_taken`, `message.aliveworkplace.job.class_needed`,
-  `tooltip.aliveworkplace.station.hint`.
+  `tooltip.aliveworkplace.station.hint`, `message.aliveworkplace.retrain.offer`, `.confirm`, `.short`, `.done`,
+  `.build_dropped`.
 - Commands: `/workplace friend add|remove|list`, `/workplace mail`, `/workplace strip <height>`.
 
 ## Decisions
@@ -187,6 +210,9 @@ and so on). Status lines and the requests board are not saved: workers post agai
   their record when an old chunk loads.
 - 25.5: every "needs" system has its own switch, because babysitting is the top complaint about big colony mods.
 - 23.6 (owner's call): villages keep working when no player is near.
+- 26.6 (owner's playtest, 2026-10-14): in Cobblemon villages nearly every villager works, so a working villager can
+  be retrained as a Builder for emeralds. Whether the other jobs' switches should cost too is a question in the ROADMAP
+  Notes; for now they stay free.
 
 ## Known limits
 
@@ -200,11 +226,13 @@ and so on). Status lines and the requests board are not saved: workers post agai
 
 GameTests: `StationsGameTests` (12: every item gives its job at its block, a picked job stays, switching at the
 same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTests` (17), `StationsBugGameTests` (12), `StationsFixesGameTests`,
-`StationsRetakeGameTests`, `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+`StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
+for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
+refuse, save and reload, the switch off), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
 `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
 their jobs).
 
-Showcase scenes: `stations` (one composter, four jobs), `staff` (every workstation with its villager), `outfits`
+Showcase scenes: `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,
 `vintner`, `tailor`, `printer`.

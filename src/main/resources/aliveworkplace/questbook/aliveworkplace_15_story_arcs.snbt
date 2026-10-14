@@ -12,7 +12,7 @@
 		{
 			id: "5CB370E9DECBAEBD",
 			x: 0.0d,
-			y: -1.5d,
+			y: -2.0d,
 			title: "A friend in the village",
 			description: ["Every named villager keeps a friendship with you: ten hearts. Look at a villager from up to 6 blocks to see yours. Trade with them, help with their quests and come to their festivals to earn hearts."],
 			dependencies: ["3A0C9323349C9445"],
@@ -21,8 +21,8 @@
 		},
 		{
 			id: "7A7A23F42EF9DBC3",
-			x: 2.0d,
-			y: -2.2d,
+			x: 3.0d,
+			y: -3.0d,
 			title: "A gift",
 			description: ["Paper, string and any dye make four Gift Wrap. A Gift Wrap and any item make a Gift: give it to someone who'll like it."],
 			dependencies: ["5CB370E9DECBAEBD"],
@@ -32,8 +32,8 @@
 		},
 		{
 			id: "76D44BCDE95E9B9A",
-			x: 2.0d,
-			y: -0.8d,
+			x: 3.0d,
+			y: -1.0d,
 			title: "A personal request",
 			description: ["Friends ask favors. You'll find them in the Personal tab of the quest journal."],
 			dependencies: ["5CB370E9DECBAEBD"],
@@ -42,7 +42,7 @@
 		},
 		{
 			id: "1CA40C93F3C0B92B",
-			x: 4.0d,
+			x: 6.0d,
 			y: 0.0d,
 			title: "Ten hearts",
 			description: ["At ten hearts a villager gives you a keepsake."],
@@ -62,8 +62,8 @@
 		},
 		{
 			id: "27B8913460A8C408",
-			x: 2.0d,
-			y: 0.8d,
+			x: 3.0d,
+			y: 1.0d,
 			title: "The end of the tale",
 			description: ["See a story through to its last chapter. The village remembers who helped."],
 			dependencies: ["556D5EF1FCA601A3"],
@@ -73,7 +73,7 @@
 		{
 			id: "74F3046FFA744DEE",
 			x: 0.0d,
-			y: 1.5d,
+			y: 2.0d,
 			title: "The Bounty Board",
 			description: ["A paper between two planks on top, three planks in the middle and a stick in each bottom corner make a Bounty Board. A Village or bigger posts bounties on it."],
 			dependencies: ["256059D7ED1AE149"],
@@ -83,8 +83,8 @@
 		},
 		{
 			id: "10A197038E947563",
-			x: 2.0d,
-			y: 2.2d,
+			x: 3.0d,
+			y: 3.0d,
 			title: "Wanted",
 			description: ["Take a bounty and you're handed a Wanted Poster. Hunt the captain down, take their Captain's Insignia, and right-click the board with it."],
 			dependencies: ["74F3046FFA744DEE"],
@@ -94,7 +94,7 @@
 		},
 		{
 			id: "13958D560632D680",
-			x: 6.0d,
+			x: 9.0d,
 			y: 0.0d,
 			shape: "gear",
 			size: 1.5d,

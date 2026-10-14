@@ -161,6 +161,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			tableScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("table_preview".equals(System.getProperty("aliveworkplace.scene"))) {
+			tablePreviewScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("quarry".equals(System.getProperty("aliveworkplace.scene"))) {
 			quarryScene(mc, mc.getSingleplayerServer());
 			return;
@@ -656,6 +660,77 @@ public class ScreenshotHarness implements ClientModInitializer {
 			});
 		}
 		if (tick == 300) {
+			if (mc.screen == null) {
+				shot(mc, "99_no_screen");
+			}
+			mc.stop();
+		}
+	}
+
+	// --- Blueprint Table: the selected build in 3D (26.9) ---------------------------------------
+
+	private volatile net.minecraft.resources.ResourceLocation largestBuild;
+
+	private void tablePreviewScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.setDayTime(6000);
+				level.setBlockAndUpdate(TABLE, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.setGameMode(GameType.CREATIVE);
+				player.teleportTo(level, 0.5, -60, 0.5, 180, 30);
+				// The biggest build the Table lists (by blocks), for the "large build" still.
+				largestBuild = io.github.jcondedata.aliveworkplace.table.TableServer.listing(server).stream()
+					.max(java.util.Comparator.comparingInt(io.github.jcondedata.aliveworkplace.table.TablePayloads.Entry::blocks))
+					.map(io.github.jcondedata.aliveworkplace.table.TablePayloads.Entry::id).orElse(null);
+			});
+		}
+		if (tick == 80) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.table.TableServer.open(server.getPlayerList().getPlayers().get(0), TABLE));
+		}
+		io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen =
+			mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s : null;
+		if (tick == 110 && screen != null) {
+			screen.select(StarterBlueprints.STARTER_COTTAGE.id());
+		}
+		if (tick == 170) {
+			Showcase.check(screen != null, "the Blueprint Table screen opened");
+			Showcase.check(screen != null && screen.previewCells() > 0, "the starter cottage's 3D preview arrived ("
+				+ (screen == null ? -1 : screen.previewCells()) + " blocks)");
+			shot(mc, "01_preview_house");
+		}
+		if (tick > 175 && tick <= 190 && screen != null) {
+			screen.dragPreview(-8, 3); // a player dragging the build round
+		}
+		if (tick == 195) {
+			shot(mc, "02_preview_dragged");
+			if (screen != null && largestBuild != null) {
+				screen.select(largestBuild);
+			}
+		}
+		if (tick == 260) {
+			Showcase.check(screen != null && largestBuild != null && largestBuild.equals(screen.selected()) && screen.previewCells() > 0,
+				"the largest build's preview arrived (" + largestBuild + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
+			shot(mc, "03_preview_large");
+			if (screen != null) {
+				screen.showFiles();
+				screen.upload();
+			}
+		}
+		if (tick == 360) {
+			net.minecraft.resources.ResourceLocation sel = screen == null ? null : screen.selected();
+			Showcase.check(sel != null && sel.getPath().startsWith("uploads/") && screen.previewCells() > 0,
+				"the uploaded .litematic's preview arrived (" + sel + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
+			shot(mc, "04_preview_imported");
+		}
+		if (tick == 380) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}

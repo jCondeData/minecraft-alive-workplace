@@ -51,6 +51,7 @@ public final class TableServer {
 	public static void init() {
 		Platform.get().clientbound(TablePayloads.Open.TYPE, TablePayloads.Open.CODEC);
 		Platform.get().clientbound(TablePayloads.Details.TYPE, TablePayloads.Details.CODEC);
+		Platform.get().clientbound(TablePayloads.Preview.TYPE, TablePayloads.Preview.CODEC);
 		Platform.get().clientbound(TablePayloads.UploadResult.TYPE, TablePayloads.UploadResult.CODEC);
 
 		Platform.get().serverbound(TablePayloads.RequestDetails.TYPE, TablePayloads.RequestDetails.CODEC, (payload, player) -> details(player, payload.id()));
@@ -98,6 +99,111 @@ public final class TableServer {
 
 	private static void details(ServerPlayer player, ResourceLocation id) {
 		BlueprintLibrary.get(player.level().getServer(), id).ifPresent(bp -> Platform.get().send(player, new TablePayloads.Details(id, materials(bp))));
+		preview(player.level().getServer(), id).ifPresent(p -> Platform.get().send(player, p));
+	}
+
+	// --- 3D preview (26.9) -------------------------------------------------------------------
+
+	/** Most cells a preview sends; bigger builds are drawn in coarser cells until they fit. */
+	public static final int PREVIEW_CAP = 4096;
+	private static final int PREVIEW_MAX_SCALE = 16;
+	private static final int PREVIEW_CACHE_SIZE = 48;
+	private record CachedPreview(Blueprint blueprint, TablePayloads.Preview preview) {
+	}
+	private static final Map<ResourceLocation, CachedPreview> PREVIEWS = java.util.Collections.synchronizedMap(
+		new java.util.LinkedHashMap<>(16, 0.75f, true) {
+			@Override
+			protected boolean removeEldestEntry(Map.Entry<ResourceLocation, CachedPreview> eldest) {
+				return size() > PREVIEW_CACHE_SIZE;
+			}
+		});
+
+	/**
+	 * The 3D preview of a blueprint the Table lists (26.9), or empty for an id it doesn't: unknown, sold by villagers
+	 * only, or of an expansion that isn't open. Worked out once per blueprint and kept.
+	 */
+	public static Optional<TablePayloads.Preview> preview(MinecraftServer server, ResourceLocation id) {
+		if (BlueprintLibrary.soldOnly(id) || !StarterBlueprints.offered(id) || BlueprintLibrary.isWorldgenPiece(id)) {
+			return Optional.empty();
+		}
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(server, id);
+		if (blueprint.isEmpty()) {
+			return Optional.empty();
+		}
+		CachedPreview cached = PREVIEWS.get(id);
+		if (cached != null && cached.blueprint() == blueprint.get()) {
+			return Optional.of(cached.preview());
+		}
+		TablePayloads.Preview preview = buildPreview(id, blueprint.get());
+		PREVIEWS.put(id, new CachedPreview(blueprint.get(), preview));
+		return Optional.of(preview);
+	}
+
+	/** Whether a preview draws this block: not air, nothing invisible (barriers, light, fluids), no structure-block helpers. */
+	public static boolean previewShows(net.minecraft.world.level.block.state.BlockState state) {
+		return !state.isAir() && state.getRenderShape() != net.minecraft.world.level.block.RenderShape.INVISIBLE
+			&& !state.is(net.minecraft.world.level.block.Blocks.JIGSAW) && !state.is(net.minecraft.world.level.block.Blocks.STRUCTURE_BLOCK);
+	}
+
+	/**
+	 * The preview's cells: each cell of {@code scale}³ blocks shows its highest drawn block, and a cell whose six
+	 * neighbours are all solid is left out (no one sees it). The scale grows until the cells fit {@link #PREVIEW_CAP}.
+	 */
+	public static TablePayloads.Preview buildPreview(ResourceLocation id, Blueprint blueprint) {
+		List<Blueprint.Entry> shown = new ArrayList<>();
+		for (Blueprint.Entry e : blueprint.blocks()) {
+			if (previewShows(e.state())) {
+				shown.add(e);
+			}
+		}
+		for (int scale = 1; ; scale++) {
+			Map<Long, Blueprint.Entry> cells = new HashMap<>();
+			for (Blueprint.Entry e : shown) {
+				long key = BlockPos.asLong(e.pos().getX() / scale, e.pos().getY() / scale, e.pos().getZ() / scale);
+				Blueprint.Entry old = cells.get(key);
+				if (old == null || e.pos().getY() > old.pos().getY()) {
+					cells.put(key, e);
+				}
+			}
+			List<Long> visible = new ArrayList<>();
+			for (Map.Entry<Long, Blueprint.Entry> c : cells.entrySet()) {
+				BlockPos cell = BlockPos.of(c.getKey());
+				boolean hidden = true;
+				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+					Blueprint.Entry n = cells.get(cell.relative(d).asLong());
+					if (n == null || !n.state().canOcclude()) {
+						hidden = false;
+						break;
+					}
+				}
+				if (!hidden) {
+					visible.add(c.getKey());
+				}
+			}
+			if (visible.size() <= PREVIEW_CAP || scale >= PREVIEW_MAX_SCALE) {
+				// Sorted bottom-up so the packet (and what the client draws) is the same every time.
+				visible.sort(Comparator.comparingInt((Long k) -> BlockPos.getY(k)).thenComparingInt(k -> BlockPos.getX(k)).thenComparingInt(k -> BlockPos.getZ(k)));
+				int count = Math.min(visible.size(), PREVIEW_CAP);
+				Map<net.minecraft.world.level.block.state.BlockState, Integer> index = new HashMap<>();
+				List<Integer> palette = new ArrayList<>();
+				int[] blocks = new int[count * 4];
+				for (int i = 0; i < count; i++) {
+					long key = visible.get(i);
+					net.minecraft.world.level.block.state.BlockState state = cells.get(key).state();
+					Integer idx = index.get(state);
+					if (idx == null) {
+						idx = palette.size();
+						index.put(state, idx);
+						palette.add(net.minecraft.world.level.block.Block.getId(state));
+					}
+					blocks[i * 4] = BlockPos.getX(key);
+					blocks[i * 4 + 1] = BlockPos.getY(key);
+					blocks[i * 4 + 2] = BlockPos.getZ(key);
+					blocks[i * 4 + 3] = idx;
+				}
+				return new TablePayloads.Preview(id, blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), scale, palette, blocks);
+			}
+		}
 	}
 
 	private static boolean atTable(ServerPlayer player, BlockPos table) {

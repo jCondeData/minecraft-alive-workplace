@@ -22,7 +22,7 @@
 		},
 		{
 			id: "332A4DF4163F1DC7",
-			x: 2.0d,
+			x: 3.0d,
 			y: 0.0d,
 			title: "Pick your starter",
 			description: ["The first time you play, Cobblemon offers you a starter Pokémon. Pick the one you like best: it will be your partner from day one.", "", "Tick this once your starter is in your party."],
@@ -32,8 +32,8 @@
 		},
 		{
 			id: "159764ADE93A64CC",
-			x: 4.0d,
-			y: -0.8d,
+			x: 6.0d,
+			y: -1.0d,
 			title: "Pick apricorns",
 			description: ["Apricorn trees grow in the wild. Right-click a fully grown apricorn to pick it.", "", "Apricorns are what Poké Balls are made of."],
 			dependencies: ["332A4DF4163F1DC7"],
@@ -42,7 +42,7 @@
 		},
 		{
 			id: "50318594A5A93EF7",
-			x: 6.0d,
+			x: 9.0d,
 			y: 0.0d,
 			title: "Poké Balls",
 			description: ["Four of the same apricorn and a copper ingot make a Poké Ball. Make a few: you'll need them.", "", "Later on, a villager Ball Smith can make them for you."],
@@ -53,7 +53,7 @@
 		},
 		{
 			id: "1DDD0AF107DBAFF9",
-			x: 8.0d,
+			x: 12.0d,
 			y: 0.0d,
 			title: "Your first catch",
 			description: ["Weaken a wild Pokémon in a battle, then throw a Poké Ball at it.", "", "The lower its health, the better your chances."],
@@ -63,8 +63,8 @@
 		},
 		{
 			id: "11D5EA57664B469B",
-			x: 10.0d,
-			y: -1.5d,
+			x: 15.0d,
+			y: -2.0d,
 			title: "Win a battle",
 			description: ["Go head to head with another trainer and come out on top."],
 			dependencies: ["1DDD0AF107DBAFF9"],
@@ -73,7 +73,7 @@
 		},
 		{
 			id: "662887917A8D24DD",
-			x: 10.0d,
+			x: 15.0d,
 			y: 0.0d,
 			title: "A Healing Machine",
 			description: ["A Healing Machine heals your whole team. Craft one for your base.", "", "In a village, a Nurse heals your team along with you."],
@@ -84,8 +84,8 @@
 		},
 		{
 			id: "2C1F4612976AA137",
-			x: 10.0d,
-			y: 1.5d,
+			x: 15.0d,
+			y: 2.0d,
 			title: "A PC",
 			description: ["Your party holds six. The PC keeps the rest of your Pokémon safe."],
 			dependencies: ["1DDD0AF107DBAFF9"],
@@ -95,8 +95,8 @@
 		},
 		{
 			id: "5A12D554AE8E620B",
-			x: 12.0d,
-			y: -0.8d,
+			x: 18.0d,
+			y: -1.0d,
 			optional: true,
 			title: "Trainers on the road",
 			description: ["With Radical Cobblemon Trainers, trainers walk the world. Right-click one to battle.", "", "Beat them to raise your level cap: the important trainers set how strong your Pokémon may grow."],
@@ -106,7 +106,7 @@
 		},
 		{
 			id: "50D996F421DF18BA",
-			x: 14.0d,
+			x: 21.0d,
 			y: 0.0d,
 			optional: true,
 			title: "Your first gym leader",
@@ -117,8 +117,8 @@
 		},
 		{
 			id: "5FA27466A742825E",
-			x: 4.0d,
-			y: 0.8d,
+			x: 6.0d,
+			y: 1.0d,
 			optional: true,
 			title: "No village nearby?",
 			description: ["Craft a Settler's Wagon: three white wool over two hay bales and a block of emerald, over a chest between planks.", "", "Right-click open ground and two settlers make camp there, with a wagon of supplies, a Blueprint Table, two blueprints and a Village Hall. The first settler is already a builder."],
@@ -129,8 +129,8 @@
 		},
 		{
 			id: "7FC0018557F30051",
-			x: 12.0d,
-			y: 0.8d,
+			x: 18.0d,
+			y: 1.0d,
 			shape: "gear",
 			size: 1.5d,
 			title: "Villagers with real jobs",

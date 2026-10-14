@@ -12,7 +12,7 @@
 		{
 			id: "6849D55C979ABBA2",
 			x: 0.0d,
-			y: -3.8d,
+			y: -5.0d,
 			title: "The Berry Breeder",
 			description: ["Any Cobblemon berry at a composter makes a Berry Breeder, who grows berries for the village."],
 			dependencies: ["139C96DACEB5F53B"],
@@ -23,7 +23,7 @@
 		{
 			id: "3A6991D869E7750F",
 			x: 0.0d,
-			y: -2.2d,
+			y: -3.0d,
 			title: "The Camp Cook",
 			description: ["Hearty Grains at Cobblemon's campfire pot make a Camp Cook. Put a pot on a campfire first."],
 			dependencies: ["139C96DACEB5F53B"],
@@ -34,7 +34,7 @@
 		{
 			id: "18EFBF484E51CD96",
 			x: 0.0d,
-			y: -0.8d,
+			y: -1.0d,
 			title: "The Habitat Keeper",
 			description: ["A honey bottle at a Pasture Block makes a Habitat Keeper, who looks after the wild Pokémon round the village."],
 			dependencies: ["139C96DACEB5F53B"],
@@ -44,7 +44,7 @@
 		{
 			id: "12BF2103C4713752",
 			x: 0.0d,
-			y: 0.8d,
+			y: 1.0d,
 			title: "The Daycare Keeper",
 			description: ["An egg at a Pasture Block makes a Daycare Keeper."],
 			dependencies: ["139C96DACEB5F53B"],
@@ -54,7 +54,7 @@
 		{
 			id: "1F0D6C31678F0649",
 			x: 0.0d,
-			y: 2.2d,
+			y: 3.0d,
 			title: "The Gem Grower",
 			description: ["An amethyst shard at a stonecutter makes a Gem Grower."],
 			dependencies: ["139C96DACEB5F53B"],
@@ -64,7 +64,7 @@
 		{
 			id: "3A53B23F2B2D0948",
 			x: 0.0d,
-			y: 3.8d,
+			y: 5.0d,
 			title: "The Arena",
 			description: ["A finished Arena, at Village rank or bigger, turns the village's festivals into a Festival Cup. Find its blueprint at the Blueprint Table."],
 			dependencies: ["70ACC128CAB2B990"],
@@ -73,7 +73,7 @@
 		},
 		{
 			id: "4B7D1D3FD47DC9CE",
-			x: 2.0d,
+			x: 3.0d,
 			y: 0.0d,
 			title: "The Festival Cup",
 			description: ["At the festival the Trainer Leaders of the villages you trade with, and any player who signs up, fight a bracket of bouts. Type /workplace cup when you're ready for your bout."],
@@ -83,7 +83,7 @@
 		},
 		{
 			id: "7D43E291C1B68971",
-			x: 4.0d,
+			x: 6.0d,
 			y: 0.0d,
 			shape: "gear",
 			size: 1.5d,

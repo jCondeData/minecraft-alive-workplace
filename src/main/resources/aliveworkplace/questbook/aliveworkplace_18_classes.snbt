@@ -21,8 +21,8 @@
 		},
 		{
 			id: "55193736E4282B24",
-			x: 2.0d,
-			y: -2.2d,
+			x: 3.0d,
+			y: -3.0d,
 			title: "The Vintner",
 			description: ["Sweet berries, glow berries or an apple at a cauldron make a Vintner. A Novice makes Cider from apples, an Apprentice Berry Wine."],
 			dependencies: ["38694EB810F538A6"],
@@ -32,8 +32,8 @@
 		},
 		{
 			id: "1AC1C39CAD2B356B",
-			x: 2.0d,
-			y: -0.8d,
+			x: 3.0d,
+			y: -1.0d,
 			title: "The Tailor",
 			description: ["String at a loom makes a Tailor. A Novice makes Work Clothes, an Apprentice Fine Clothes."],
 			dependencies: ["38694EB810F538A6"],
@@ -43,8 +43,8 @@
 		},
 		{
 			id: "1E14C700A50F3BFA",
-			x: 2.0d,
-			y: 0.8d,
+			x: 3.0d,
+			y: 1.0d,
 			title: "The Printer",
 			description: ["An ink sac at a cartography table makes a Printer, who prints the Village Gazette."],
 			dependencies: ["38694EB810F538A6"],
@@ -54,8 +54,8 @@
 		},
 		{
 			id: "11F3B146D54C5E94",
-			x: 2.0d,
-			y: 2.2d,
+			x: 3.0d,
+			y: 3.0d,
 			title: "The Jeweler",
 			description: ["A gold nugget at a stonecutter makes a Jeweler. A Novice makes Amethyst Rings, an Apprentice Emerald Brooches."],
 			dependencies: ["38694EB810F538A6"],
@@ -65,7 +65,7 @@
 		},
 		{
 			id: "5C029ABB57A3E8B0",
-			x: 4.0d,
+			x: 6.0d,
 			y: 0.0d,
 			title: "Burghers",
 			description: ["Give a household what the next class needs two dawns running and it rises. A Burgher's Townhouse is a grade II home, sold by builders."],
@@ -75,8 +75,8 @@
 		},
 		{
 			id: "28D366A08233E65A",
-			x: 6.0d,
-			y: -0.8d,
+			x: 9.0d,
+			y: -1.0d,
 			title: "The finest things",
 			description: ["Journeymen make the best: Vintage Wine, Noble Robes, the Illuminated Book and the Gold Circlet."],
 			dependencies: ["5C029ABB57A3E8B0"],
@@ -86,7 +86,7 @@
 		},
 		{
 			id: "4E69B3666349C542",
-			x: 8.0d,
+			x: 12.0d,
 			y: 0.0d,
 			shape: "gear",
 			size: 1.5d,
@@ -98,8 +98,8 @@
 		},
 		{
 			id: "19849B548FDCD65B",
-			x: 6.0d,
-			y: 0.8d,
+			x: 9.0d,
+			y: 1.0d,
 			optional: true,
 			title: "The Evergreen Charm",
 			description: ["A totem of undying, a golden apple, 2 emeralds and a heart of the sea make an Evergreen Charm: it keeps a good elder for good."],

@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, B120
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120
 
 ## 1. What a player sees
 
@@ -14,6 +14,8 @@ Above the Builder's head you can see the progress, what it is short of, and wher
 chests run short, the Builder waits and tells you what is missing. Idle Builders walk over and help other Builders'
 builds nearby, and later fix holes in buildings they finished (a creeper's hole, a broken window). Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
+At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
+dragged round, and is scaled to fit, for imported and uploaded builds too.
 
 ## 2. How it works
 
@@ -64,6 +66,14 @@ are left alone. After a build, it can lay a dirt path to the village bell or hal
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.
 Any other harm still hurts him, and a Builder with no build falls like any villager (B120).
+
+**Table preview (26.9).** Selecting a library entry sends `table_request_details`; the server answers with the
+materials and a `table_preview` packet (`TableServer.preview`): a palette of block-state ids and x, y, z, palette
+index per cell. Only blocks a player could see are sent (air, invisible blocks, jigsaw and structure blocks are
+dropped, and a cell whose six neighbours all occlude is left out). If more than `PREVIEW_CAP` (4096) cells remain, the
+build is grouped into 2×2×2 cells (then 3, …), each showing its highest block, until it fits. The result is worked out
+once per blueprint and kept (48 at most); unknown, sold-only, world-generation and closed-expansion ids get nothing.
+The client (`TablePreview`) draws the cells with the block renderer into the screen with a scissor box.
 
 **Stall watch.** If a site with a Builder on shift makes no progress for 600 ticks (30 s), a log line starting
 "Builder stalled" is written. The soak test counts these lines.
@@ -146,6 +156,7 @@ claims and trip counts.
   (the `skipped` count).
 - Upkeep looks only every 1200 ticks and only at buildings within range of the bench.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
+- The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
 - Not tested here: the pack-server soak result of the last run (see the soak scene's pass or fail on the showcase).
 
 ## 8. Proof
@@ -153,9 +164,10 @@ claims and trip counts.
 GameTests (`src/gametest/java/.../test/`): `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
 `BuilderChaosGameTests` (1, stuck recovery), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`,
-`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`.
+`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (5, the table's
+3D preview data).
 
 Showcase scenes (`tools/showcase/scenes.py`): `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the
-missing-materials tooltip and list), `table`, `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
+missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`.

@@ -22,7 +22,7 @@
 		},
 		{
 			id: "46EADBCDAB45B498",
-			x: 2.0d,
+			x: 3.0d,
 			y: 0.0d,
 			title: "Bind it to the hall",
 			description: ["Right-click your Village Hall with the plan: \"The plan is now\" that village's. Its tooltip names the village."],
@@ -32,8 +32,8 @@
 		},
 		{
 			id: "366813F07CC165D5",
-			x: 4.0d,
-			y: -0.8d,
+			x: 6.0d,
+			y: -1.0d,
 			title: "Paint the zones",
 			description: ["Right-click the air to open the plan: the village map under a grid of cells. + New makes a zone: a name, a kind (homes, workshops, farms, the market...) and a building style. Paint where it goes."],
 			dependencies: ["46EADBCDAB45B498"],
@@ -42,8 +42,8 @@
 		},
 		{
 			id: "546704DFD37CB3CB",
-			x: 4.0d,
-			y: 0.8d,
+			x: 6.0d,
+			y: 1.0d,
 			title: "Appoint a Steward",
 			description: ["A Steward is a Builder of Journeyman level or higher. Bring him beside the hall and sneak-right-click him with the hall's City Plan. He changes into a clerk's long coat."],
 			dependencies: ["46EADBCDAB45B498", "62600EB892F1BBD7"],
@@ -52,7 +52,7 @@
 		},
 		{
 			id: "7287E4EEB4FBD170",
-			x: 6.0d,
+			x: 9.0d,
 			y: 0.0d,
 			title: "Approve a proposal",
 			description: ["The hall's What next? page becomes his desk. Each morning he puts up proposals: the building, why (\"3 villagers have no bed\"), where, and what it needs most. Approve one and the builders build it."],
@@ -62,8 +62,8 @@
 		},
 		{
 			id: "14EED4AF802533B5",
-			x: 8.0d,
-			y: -0.8d,
+			x: 12.0d,
+			y: -1.0d,
 			title: "Roads",
 			description: ["Draw streets on the plan: the Steward has them laid, with lamps, steps and bridges where a road meets water."],
 			dependencies: ["7287E4EEB4FBD170"],
@@ -72,8 +72,8 @@
 		},
 		{
 			id: "170E23741A34E4C3",
-			x: 8.0d,
-			y: 0.8d,
+			x: 12.0d,
+			y: 1.0d,
 			title: "A wall when raiders come",
 			description: ["A village that has never been attacked doesn't want a wall. Once raiders come, the Steward proposes one: a palisade for a Hamlet or Village, stone for a Town or City."],
 			dependencies: ["7287E4EEB4FBD170"],
@@ -82,7 +82,7 @@
 		},
 		{
 			id: "124C9E51E212BCE9",
-			x: 10.0d,
+			x: 15.0d,
 			y: 0.0d,
 			shape: "gear",
 			size: 1.5d,

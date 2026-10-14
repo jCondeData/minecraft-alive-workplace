@@ -12,7 +12,7 @@
 		{
 			id: "37F212CD6EA5C1E4",
 			x: 0.0d,
-			y: -2.2d,
+			y: -3.0d,
 			title: "Walls",
 			description: ["Build a wall with a gate: a Palisade Gate holds about 10 seconds, a Gatehouse about a minute. A raid on a walled village becomes a siege."],
 			dependencies: ["4C2F692B0FEC227C"],
@@ -21,7 +21,7 @@
 		},
 		{
 			id: "51AD41AABB022580",
-			x: 2.0d,
+			x: 3.0d,
 			y: 0.0d,
 			title: "Hold the walls",
 			description: ["In a siege the gates shut and the raiders have to break in. Archers take the towers, knights the gate, medics wait behind. Guards throw down ladders within 2 blocks."],
@@ -31,7 +31,7 @@
 		},
 		{
 			id: "3937A1C3784E549D",
-			x: 4.0d,
+			x: 6.0d,
 			y: 0.0d,
 			title: "A Scouting Report",
 			description: ["A guard with a spyglass is a Scout. They bring home a Scouting Report: a map from the village to the raiders' camp."],
@@ -42,7 +42,7 @@
 		},
 		{
 			id: "491C27290EB5CE6D",
-			x: 6.0d,
+			x: 9.0d,
 			y: 0.0d,
 			title: "Take the fight to them",
 			description: ["Raise your Rally Banner and three in four of your guards muster. Break the lair, and the village has 10 days' peace. A Pillager War Camp is a good start."],
@@ -53,7 +53,7 @@
 		{
 			id: "772E3DA1F4A79996",
 			x: 0.0d,
-			y: -0.8d,
+			y: -1.0d,
 			title: "The Firewarden",
 			description: ["A wooden village can catch fire. A water bucket at a grindstone makes a Firewarden, who runs toward the smoke."],
 			dependencies: ["3A0C9323349C9445"],
@@ -63,7 +63,7 @@
 		{
 			id: "7EBF669C88B4152F",
 			x: 0.0d,
-			y: 0.8d,
+			y: 1.0d,
 			title: "The Well Keeper",
 			description: ["When the rain stays away, the Well Keeper carries water to the dry fields. Any shovel at a cauldron makes one, and they warn you of a drought a day ahead."],
 			dependencies: ["3A0C9323349C9445"],
@@ -73,7 +73,7 @@
 		{
 			id: "626B316B941A3DDD",
 			x: 0.0d,
-			y: 2.2d,
+			y: 3.0d,
 			title: "The Physician and the Remedy",
 			description: ["A glistering melon slice at a brewing stand makes a Physician, who goes house to house in a plague.", "", "A glass bottle, a glistering melon slice, a honey bottle and a fermented spider eye make a Remedy."],
 			dependencies: ["3A0C9323349C9445"],
@@ -83,7 +83,7 @@
 		},
 		{
 			id: "36079009526A3848",
-			x: 8.0d,
+			x: 12.0d,
 			y: 0.0d,
 			shape: "gear",
 			size: 1.5d,

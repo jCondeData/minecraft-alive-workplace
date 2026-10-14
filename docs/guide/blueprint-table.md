@@ -33,8 +33,14 @@ build it, block by block, as long as it stands within 48 blocks of the table (a 
 
 ## The library
 
-Right-click the table to browse every blueprint on the server: its size and exactly what it needs.
+Right-click the table to browse every blueprint on the server: its size, exactly what it needs, and a small 3D
+picture of the build itself, so you can see it before you pick it.
 
+![The selected build in 3D](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-1.jpg)
+
+- **The picture** turns slowly by itself; drag it with the mouse to look round it or tilt it. Big builds shrink to
+  fit, and builds you uploaded or scanned get a picture too, drawn from their own blocks. Your game draws it, so it
+  costs the server nothing.
 - **Get Blueprint** gives you a copy for a [Blank Blueprint](blank-blueprint.md).
 - **Upload a File** lists the build files in your `blueprints` folder (`.litematic` or `.schem`) and puts the one you
   pick in the library for everyone. Unless the server allows it with the `workplaceAllowUploads` game rule, only

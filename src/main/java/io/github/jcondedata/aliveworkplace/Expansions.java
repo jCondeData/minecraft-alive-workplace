@@ -12,21 +12,21 @@ package io.github.jcondedata.aliveworkplace;
  */
 public final class Expansions {
 	/** Milestone 27, Villages that build themselves (1.1): {@code steward}, {@code stewardSelfRun}, {@code stewardMaxOpenBuilds}, {@code stewardRoads}, {@code caravanRoads}, {@code stewardWalls}, {@code stewardRenewal}. */
-	public static final boolean M27 = false;
+	public static final boolean M27 = true;
 	/**
 	 * Milestone 28, Pokémon and villagers, together (1.2): {@code partnerShows}, {@code nurseHealingMachine},
 	 * {@code berryBreeders}, {@code campCooks}, {@code habitatKeepers}, {@code habitatSightings}, {@code daycareKeepers},
 	 * {@code gemGrowers}, {@code villageHabitats}, {@code pokemonVillageHouses},
 	 * {@code festivalCup}, {@code cupEveryFestivals}.
 	 */
-	public static final boolean M28 = false;
+	public static final boolean M28 = true;
 	/** Milestone 29, Legends (1.3): {@code legends}, {@code legendNeeds}, {@code legendSites}, {@code strangeMoods}, {@code giftedChance}. */
-	public static final boolean M29 = false;
+	public static final boolean M29 = true;
 	/**
 	 * Milestone 30, Edicts and civic items (1.4): {@code villageEdicts}, {@code edictMinDays}, {@code workHorns},
 	 * {@code villageBanners}, {@code cradles}, {@code harvestIdols}, {@code tonics}.
 	 */
-	public static final boolean M30 = false;
+	public static final boolean M30 = true;
 	/**
 	 * Milestone 31, Quests become stories (1.5). The daily quests ({@code villageQuests}) aren't behind it; the journal's
 	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and so are {@code friendship}
@@ -34,22 +34,22 @@ public final class Expansions {
 	 * tabs, Track and {@code /workplace quests} are (design note M31, "The expansion gate"), and {@code storyArcs},
 	 * {@code arcCooldownDays}, {@code arcsAtOnce} (31.4).
 	 */
-	public static final boolean M31 = false;
+	public static final boolean M31 = true;
 	/**
 	 * Milestone 32, Threats worth building walls for (1.6). While it's closed lairs are today's bandit camps: the chief
 	 * has no name, a raid isn't held to the lair's strength, and the hall's guards icon opens no Defence page (design note
 	 * M32, "The expansion gate"). Its switches: {@code sieges}, {@code siegeDamage} (32.4), {@code firewardens} (32.16), {@code wellKeepers} (32.17), {@code physicians} (32.18).
 	 */
-	public static final boolean M32 = false;
+	public static final boolean M32 = true;
 	/** Milestone 33, From village to realm (1.7): {@code villageEconomy}, {@code visibleCaravans}, {@code colonies}, {@code colonyRank}, {@code colonyCooldownDays}, {@code coloniesPerVillage}, {@code realms}, {@code realmMaxMembers}, {@code realmRelief}, {@code tradePacts}, {@code alliances}, {@code feuds}, {@code feudWars}, {@code realmMap}, {@code weeklyLeaderboard}, {@code leaderboardDay}, {@code leaderboardHour}. */
-	public static final boolean M33 = false;
+	public static final boolean M33 = true;
 	/** Milestone 34, Classes and luxuries (1.8): {@code villageClasses}, {@code classRiseDays}, {@code classFallDays}, {@code classGraceDays}, {@code vintners}, {@code tailors}, {@code printers}, {@code villagerAges}, {@code villagerElderDays}, {@code elderPassing}, {@code agelessElders}, {@code classOutfits}, {@code elderRetirement}, {@code familyNames}. */
-	public static final boolean M34 = false;
+	public static final boolean M34 = true;
 	/**
 	 * Milestone 35, Wonders (2.0): {@code wonders}, {@code wonderCaps}, {@code wonderLegends}, {@code wonderServerLimit},
 	 * {@code disabledWonders} (35.2), {@code wonderCrew} (35.5), {@code builderScaffolding} (35.6), {@code wonderStanding} (35.8).
 	 */
-	public static final boolean M35 = false;
+	public static final boolean M35 = true;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films

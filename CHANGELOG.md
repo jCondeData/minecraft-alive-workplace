@@ -24,6 +24,10 @@ asks for the steps, `latest.log` and any crash report).
   Great Library's Scholarship tooltip no longer covers the second-tier row, and it no longer ends with "A villager's
   workstation: hold Shift for its jobs" (its picture is a lectern). The found-goods showcase now films the Foundation
   Stone above the chat, so the Pathfinder's line no longer shows through the stone's status.
+- **Villagers no longer end up stuck in a wall a builder has just put up** (B132). A builder checked for room for a
+  stair as drawn in the blueprint, but a corner stair whose neighbour isn't built yet goes down straight, a quarter
+  bigger, sometimes onto a porter walking past. It now checks the stair it really puts down, and anyone a new block
+  leaves inside a wall is moved out to the nearest place to stand.
 - **A builder finishing a part of a Wonder now says so properly** (B138). The chat used to read "Odo finished
   building Stage 1 0! The blueprint is back in the supply chest." (no blueprint comes back for a Wonder's part); now it
   says "Odo finished stage 1 of 4 of the Colossus: The Plinth and the Road Arch." or, while other parts of the stage are still

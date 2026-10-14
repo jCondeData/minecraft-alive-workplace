@@ -34,6 +34,10 @@ restartable at any tick for this reason.
 - A step that cannot be done yet is put off once, then skipped (counted in `skipped`).
 - "Done" is checked with `MaterialRules.matches`, which ignores block properties that depend on neighbors
   (a fence's connections, a stair's corner shape). Without that a finished wall could look unfinished forever.
+- Nobody is built into a block: before a block goes down the builder checks there is room for it as it will
+  really stand, shaped by its neighbours (a corner stair whose neighbour isn't up yet goes down straight, a quarter
+  bigger), and a villager or animal that a new block's neighbour left inside a wall is moved to the nearest place to
+  stand (B132, `B132GameTests`).
 
 **Materials.** Each block costs an item (`MaterialRules`; some blocks you cannot hold in survival use their base
 material). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).

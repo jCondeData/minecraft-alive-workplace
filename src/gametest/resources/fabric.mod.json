@@ -110,6 +110,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B120GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ScaffoldingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B92GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B132GameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildReserveGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MaterialListGameTests",

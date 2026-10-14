@@ -362,7 +362,7 @@ SCENES = [
     # Caravans you can see (ROADMAP 33.7): a carter and two pack llamas leave for Ashford, then Ashford's caravan arrives and unloads
     job("caravan", "Realm", "Caravans you can see: one leaves, one arrives",
         "Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
-        "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 110),
+        "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 170),
     # The Colony Charter (ROADMAP 33.8): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
     S("colony_charter", "Realm", "The Colony Charter: choosing where a colony goes",
       "Thornholm, a City, sold its owner a Colony Charter on the hall's Colonies tab (the treasury paid 20 emeralds, the player 12); "

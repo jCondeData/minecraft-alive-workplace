@@ -840,7 +840,8 @@ final class JobScenes {
 			long began = level.getGameTime();
 			BlockPos masthead = new BlockPos(0, -63 + 19, 30 + 2);
 			return l -> {
-				if (l.getGameTime() - began == 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
+				// (asked every 10 frames, so ">=": "==" missed the moment and the captain never fell, B130)
+				if (l.getGameTime() - began >= 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
 					brine.hurt(l.damageSources().fellOutOfWorld(), 1000f); // the captain falls: the ship burns and sinks
 				}
 				return l.getGameTime() - began > 160 && io.github.jcondedata.aliveworkplace.threat.Ships.sinking(l).isEmpty()
@@ -930,7 +931,8 @@ final class JobScenes {
 			level.addFreshEntity(creeper);
 			long began = level.getGameTime();
 			return l -> {
-				if (l.getGameTime() - began == 60 && creeper.isAlive()) {
+				// (asked every 10 frames, so ">=": "==" missed the moment and the creeper never lit, B130)
+				if (l.getGameTime() - began >= 60 && creeper.isAlive() && !creeper.isIgnited()) {
 					creeper.ignite();
 				}
 				if (l.getGameTime() - began < 160 || creeper.isAlive()) {
@@ -1233,16 +1235,20 @@ final class JobScenes {
 			for (int i = 0; i < 4; i++) {
 				guard(level, STATION.offset(-6 + 4 * i, 0, -2), new ItemStack(Items.IRON_SWORD));
 			}
-			player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
-			player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
-			Showcase.check(io.github.jcondedata.aliveworkplace.guard.WarParties.muster(level, hall, player) == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED
-				&& io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size() == 3,
-				"three of the four guards mustered under the raised Rally Banner");
-			io.github.jcondedata.aliveworkplace.guard.WarParties.hire(level, hall, player);
-			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream()
-				.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
-				"the five Siege-breakers were hired");
-			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
+			// The guards take their jobs in a task after this one (picked: vanilla files the grindstones' records first), so
+			// the muster waits for them in a task of its own: mustered here it found no guards (B130).
+			level.getServer().execute(() -> {
+				player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
+				player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
+				Showcase.check(io.github.jcondedata.aliveworkplace.guard.WarParties.muster(level, hall, player) == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED
+					&& io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size() == 3,
+					"three of the four guards mustered under the raised Rally Banner");
+				io.github.jcondedata.aliveworkplace.guard.WarParties.hire(level, hall, player);
+				Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream()
+					.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
+					"the five Siege-breakers were hired");
+				player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
+			});
 			int[] ticks = {0};
 			boolean[] turned = {false};
 			return l -> {
@@ -1488,6 +1494,10 @@ final class JobScenes {
 			}
 			BlockPos post = STATION.offset(4, 0, -13);
 			level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+			// The hall's record now, not in vanilla's next task, and the post's, so the archer finds his village and his post (B130).
+			ScreenshotHarness.fileRecords(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+			io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 			Villager archer = EntityType.VILLAGER.spawn(level, STATION.offset(4, 0, -11), MobSpawnType.COMMAND);
 			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, archer, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
 				io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
@@ -1510,9 +1520,9 @@ final class JobScenes {
 				if (phase[0] == 0 && io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(l, hall)) {
 					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.status(l, hall).open() == 0, "the gates shut at noon");
 					phase[0] = 1;
-				} else if (phase[0] >= 1 && phase[0] < 100) {
-					phase[0]++; // a few seconds with the gates shut in the sun
-				} else if (phase[0] == 100) {
+				} else if (phase[0] >= 1 && phase[0] < 10) {
+					phase[0]++; // a few seconds with the gates shut in the sun (asked every 10 frames: 100 was 50 seconds, B130)
+				} else if (phase[0] == 10) {
 					l.setDayTime(base + io.github.jcondedata.aliveworkplace.guard.VillageRaids.DUSK + 20);
 					phase[0] = 101;
 				}
@@ -2264,6 +2274,10 @@ final class JobScenes {
 				if (t >= 40 && !rolled[0] && legend != null) {
 					rolled[0] = true;
 					place(l, hall, ModBlocks.VILLAGE_HALL); // here, so its own first round doesn't roll the night first
+					// The hall's and the Chapel's records now, not in vanilla's next task, so the round finds the Chapel and its village (B130).
+					ScreenshotHarness.fileRecords(l, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 					io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(l, hall, net.minecraft.util.RandomSource.create(4242L));
 					seer[0] = io.github.jcondedata.aliveworkplace.legend.LegendGuests.guest(l, hall);
 					Showcase.check(seer[0] != null && ModAttachments.LEGEND.get(seer[0]).id().equals(legend.id()), "the Seer came to the Chapel at midnight");
@@ -2747,7 +2761,7 @@ final class JobScenes {
 		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
-			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 3000,
+			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 4800,
 			new Vec3(16, -48, 13), new Vec3(16, -60, -4), (level, player) -> {
 			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 28; // a small village: the whole walk to its edge is in the picture
 			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -2784,7 +2798,7 @@ final class JobScenes {
 			// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still
 			data.sent(STATION, -1);
 			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, STATION, null);
-			int[] act = {0};
+			int[] act = {0, 0};
 			return l -> {
 				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
 				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
@@ -2802,6 +2816,10 @@ final class JobScenes {
 					act[0] = 3; // standing by the Storehouse, unloading
 				} else if (act[0] == 3 && party == null) {
 					act[0] = 4; // and gone again
+				}
+				if (act[0] != act[1]) {
+					act[1] = act[0]; // B132: which part of the trip a timeout stopped at, in the scene's log
+					System.out.println("[showcase] caravan act " + act[0] + " at game tick " + l.getGameTime());
 				}
 				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
 			};
@@ -3882,7 +3900,7 @@ final class JobScenes {
 		// Friendship (ROADMAP 31.5): a trade and a quest done for Dara put hearts on, shown in the action bar while the
 		// player looks at her, with a puff of hearts; the hall's tooltip shows your hearts and her best friends.
 		SCREENS.put("friendship", new Screen("a trade and a quest done for Dara raised the player's hearts in the action bar, and the hall's tooltip shows them",
-			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.6, 1.5), // (aimed from the feet: from the eye the look meets Dara, B130)
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
@@ -4494,7 +4512,7 @@ final class JobScenes {
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
 		// hall's tooltip says when her name day is.
 		SCREENS.put("gifts", new Screen("a Golden Carrot wrapped on the crafting grid and given to Dara: she loved it, her hearts went up, and the hall's tooltip says when her name day is",
-			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.6, 1.5), // (aimed from the feet: from the eye the look meets Dara, B130)
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
@@ -4541,7 +4559,10 @@ final class JobScenes {
 					}
 					boolean signed = io.github.jcondedata.aliveworkplace.story.Gifts.from(gift).equals(player.getGameProfile().getName());
 					player.setItemInHand(InteractionHand.MAIN_HAND, gift);
+					// Given as a player in survival gives it (a creative player keeps the item, B130), then back to the hovering camera.
+					player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 					var result = io.github.jcondedata.aliveworkplace.story.Gifts.give(player, dara, player.getMainHandItem());
+					player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
 					int expected = io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED.points
 						* (result.nameDay() ? io.github.jcondedata.aliveworkplace.story.Gifts.NAME_DAY_FACTOR : 1);
 					Showcase.check(signed && result.outcome() == io.github.jcondedata.aliveworkplace.story.Gifts.Outcome.GIVEN

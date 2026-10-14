@@ -152,7 +152,7 @@ final class RealmEdictsScene {
 	private static void openBook(MinecraftServer server, BlockPos at) {
 		ServerPlayer player = player(server);
 		player.closeContainer();
-		VillageHallScreen.open(player, at);
+		VillageHallScreen.openRemote(player, at); // Ashford is 66 blocks from the camera (open needs 8): as from a Village Ledger (B128)
 		if (player.containerMenu instanceof ChoiceMenu menu) {
 			menu.press(VillageHallScreen.BOOK, player);
 			menu.broadcastChanges();

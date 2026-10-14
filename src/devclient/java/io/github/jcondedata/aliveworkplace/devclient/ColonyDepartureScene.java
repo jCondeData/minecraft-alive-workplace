@@ -49,12 +49,34 @@ final class ColonyDepartureScene {
 	private static final int DX = 433;
 	private static final int DZ = -433;
 	private int tick;
+	private int held;
+	private volatile boolean gathered;
+	private volatile boolean gone;
+	private volatile boolean onRoad;
 	private volatile BlockPos hall;
 	private final List<Villager> settlers = new ArrayList<>();
 
 	void tick(Minecraft mc) {
 		MinecraftServer server = mc.getSingleplayerServer();
 		tick++;
+		// B132: the gathering, the bell and the road follow the server's clock (the muster's 100 ticks, checked every 20,
+		// then the walk to the hall), which a slow GitHub runner's server runs behind the client's. The scene waits at
+		// each of those moments until it has happened, up to 30 seconds in all, rather than read it too early.
+		if (tick > 430 && tick < 1250) {
+			server.execute(() -> {
+				RealmData.Order order = order(server);
+				gathered = order != null && !settlers.isEmpty()
+					&& settlers.stream().allMatch(v -> v.isAlive() && v.distanceToSqr(Vec3.atCenterOf(hall)) <= 5 * 5);
+				gone = order != null && order.gone();
+				onRoad = order != null && order.state().equals(RealmData.ON_ROAD);
+			});
+			boolean waiting = tick == 525 && !gathered || tick == 640 && !gone || tick == 1230 && !onRoad;
+			if (waiting && held < 600) {
+				held++;
+				tick--;
+				return;
+			}
+		}
 		if (tick == 1) {
 			mc.options.renderDistance().set(6);
 			mc.options.cloudStatus().set(CloudStatus.OFF);

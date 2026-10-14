@@ -283,6 +283,8 @@
   "screen.aliveworkplace.table.size": "%s × %s × %s · %s blocks",
   "screen.aliveworkplace.table.materials": "Materials",
   "screen.aliveworkplace.table.loading": "Counting…",
+  "screen.aliveworkplace.table.preview_loading": "Drawing…",
+  "screen.aliveworkplace.table.preview_drag": "Drag to turn",
   "screen.aliveworkplace.table.empty": "No blueprints yet. Upload a .litematic or .schem file to add one.",
   "screen.aliveworkplace.table.uploaded": "uploaded",
   "screen.aliveworkplace.table.files_help": "Download builds from sites like Planet Minecraft or Minecraft-Schematics (.litematic or .schem), put them in this folder (Open Folder), pick one and press Upload. It becomes a blueprint everyone on the server can use.",

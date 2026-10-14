@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **See a build before you pick it** (26.9). The Blueprint Table's library shows the selected build in 3D beside its
+  materials: it turns slowly, you can drag it round, and big builds shrink to fit. Uploaded and scanned builds get one
+  too, drawn from their own blocks; the server sends only the blocks you could see, once per build.
 - **Retrain a villager who already has a job** (26.6). In Cobblemon villages nearly everyone works, so nobody was left
   to become a Builder: now sneak-right-click any grown villager with a job by a free Blueprint Table, holding a Blueprint
   or a Blank Blueprint. You're shown the price first (5 emeralds for a Novice up to 50 for a Master, in CobbleDollars

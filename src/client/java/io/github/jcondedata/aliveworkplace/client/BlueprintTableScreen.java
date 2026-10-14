@@ -43,6 +43,10 @@ public class BlueprintTableScreen extends Screen {
 	private List<TablePayloads.Entry> entries;
 	private boolean canUpload;
 	private final Map<ResourceLocation, List<TablePayloads.Material>> details = new HashMap<>();
+	/** 3D previews by blueprint (26.9), sent with the details; kept while the screen is open. */
+	private final Map<ResourceLocation, TablePreview> previews = new HashMap<>();
+	private int previewX, previewY, previewW, previewH;
+	private boolean draggingPreview;
 	private Mode mode = Mode.LIBRARY;
 	@Nullable
 	private ResourceLocation selectedId;
@@ -70,6 +74,12 @@ public class BlueprintTableScreen extends Screen {
 		return table;
 	}
 
+	/** The selected library entry, if any (for the screenshot harness). */
+	@Nullable
+	public ResourceLocation selected() {
+		return selectedId;
+	}
+
 	// --- packets ---------------------------------------------------------------------------
 
 	public void refresh(TablePayloads.Open open) {
@@ -88,6 +98,24 @@ public class BlueprintTableScreen extends Screen {
 		details.put(payload.id(), payload.materials());
 	}
 
+	public void setPreview(TablePayloads.Preview payload) {
+		previews.put(payload.id(), new TablePreview(payload));
+	}
+
+	/** Cells in the selected build's preview, or -1 while none has arrived (for the screenshot harness). */
+	public int previewCells() {
+		TablePreview preview = selectedId == null ? null : previews.get(selectedId);
+		return preview == null ? -1 : preview.count();
+	}
+
+	/** Turns the selected build's preview as a mouse drag would (for the screenshot harness). */
+	public void dragPreview(double dx, double dy) {
+		TablePreview preview = selectedId == null ? null : previews.get(selectedId);
+		if (preview != null) {
+			preview.drag(dx, dy);
+		}
+	}
+
 	public void onUploadResult(TablePayloads.UploadResult result) {
 		uploading = false;
 		status = result.message();
@@ -103,8 +131,8 @@ public class BlueprintTableScreen extends Screen {
 
 	@Override
 	protected void init() {
-		panelW = Math.min(width - 16, 420);
-		panelH = Math.min(height - 16, 250);
+		panelW = Math.min(width - 16, 440);
+		panelH = Math.min(height - 16, 290);
 		left = (width - panelW) / 2;
 		top = (height - panelH) / 2;
 		int listW = Math.min(180, panelW / 2 - 12);
@@ -277,7 +305,24 @@ public class BlueprintTableScreen extends Screen {
 			x, y, 0xFF9AA8BA, false);
 		y += 10;
 		g.drawString(font, font.plainSubstrByWidth(entry.id().toString(), w), x, y, 0xFF5E6B7C, false);
-		y += 14;
+		y += 12;
+		// The build in 3D (26.9), above its materials; it keeps room for two rows of them.
+		previewX = x;
+		previewY = y;
+		previewW = w;
+		previewH = Math.max(40, Math.min(120, top + panelH - 46 - y - 11 - 40 - 4));
+		g.fill(previewX, previewY, previewX + previewW, previewY + previewH, LIST_BG);
+		TablePreview preview = previews.get(entry.id());
+		if (preview == null) {
+			Component loading = Component.translatable("screen.aliveworkplace.table.preview_loading");
+			g.drawString(font, loading, x + (w - font.width(loading)) / 2, y + previewH / 2 - 4, 0xFF777777, false);
+		} else {
+			preview.render(g, previewX, previewY, previewW, previewH);
+			if (preview.count() > 0) {
+				g.drawString(font, Component.translatable("screen.aliveworkplace.table.preview_drag"), x + 3, y + previewH - 10, 0xFF5E6B7C, false);
+			}
+		}
+		y += previewH + 4;
 		g.drawString(font, Component.translatable("screen.aliveworkplace.table.materials"), x, y, 0xFFFFD66B, false);
 		y += 11;
 
@@ -346,6 +391,37 @@ public class BlueprintTableScreen extends Screen {
 			}
 		}
 		return null;
+	}
+
+	private boolean overPreview(double mx, double my) {
+		return mode == Mode.LIBRARY && previewW > 0 && mx >= previewX && mx < previewX + previewW && my >= previewY && my < previewY + previewH;
+	}
+
+	@Override
+	public boolean mouseClicked(double mx, double my, int button) {
+		if (button == 0 && overPreview(mx, my) && selectedId != null && previews.containsKey(selectedId)) {
+			draggingPreview = true;
+			return true;
+		}
+		return super.mouseClicked(mx, my, button);
+	}
+
+	@Override
+	public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
+		if (draggingPreview) {
+			dragPreview(dx, dy);
+			return true;
+		}
+		return super.mouseDragged(mx, my, button, dx, dy);
+	}
+
+	@Override
+	public boolean mouseReleased(double mx, double my, int button) {
+		if (draggingPreview) {
+			draggingPreview = false;
+			return true;
+		}
+		return super.mouseReleased(mx, my, button);
 	}
 
 	@Override

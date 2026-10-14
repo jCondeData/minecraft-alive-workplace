@@ -80,6 +80,11 @@ SCENES = [
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
     S("table", "Builder", "Blueprint Table", "the table screen opened and a file was uploaded", 60,
       [("10_table_library", "Library"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+    # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
+    S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
+      "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, the largest build scaled to fit, and an uploaded .litematic", 60,
+      [("01_preview_house", "A starter house"), ("02_preview_dragged", "Dragged round"), ("03_preview_large", "A large build, scaled to fit"),
+       ("04_preview_imported", "An uploaded build")]),
     S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
     S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,

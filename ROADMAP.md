@@ -672,7 +672,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     changes nothing; a builder mid-site hands the site back (BuildSite stays restartable); children and nitwits refuse;
     save and reload; the switch off (`workplaceRetraining`) brings back the old rule;
   - the words in en_us.json; the guide's jobs page says how, with the price; scene `retrain`.
-- [ ] **26.7** **A chest that shows what the build still needs** (owner's playtest, 2026-10-14). Put a blueprint (or a
+- [x] **26.7** (dropped for now: owner 2026-10-14) **A chest that shows what the build still needs** (owner's playtest, 2026-10-14). Put a blueprint (or a
   placed build site's plan) into a new slot on a builder's supply chest, or click the chest with the blueprint: the
   chest's screen then shows the build's material list beside it, each line ticked when the chest (and the builder's
   other chests) hold enough, and the short ones first with how many are missing ("Oak Planks: 12 of 64"). Updates as
@@ -692,7 +692,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   chapter's tasks are reachable in a test world; a compat test that every referenced item and entity id exists; the
   guide links to it; scene `questbook` with stills of each chapter.
 
-- [ ] **26.9** **See a build before you pick it** (owner's playtest, 2026-10-14: "you can't see what you're building").
+- [x] **26.9** (review: pending 2026-10-14) **See a build before you pick it** (owner's playtest, 2026-10-14: "you can't see what you're building").
   The Blueprint Table's library shows a picture of the selected build beside its name, size and material count: a
   small 3D view of the blueprint itself, drawn by the client from the blueprint's blocks (so it works for imported and
   uploaded builds too, with no image files to keep), that turns slowly and can be dragged to look round. Large builds

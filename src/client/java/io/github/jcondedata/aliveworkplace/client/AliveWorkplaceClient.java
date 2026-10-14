@@ -75,6 +75,11 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 				screen.setDetails(payload);
 			}
 		});
+		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.Preview.TYPE, (payload, context) -> {
+			if (context.client().screen instanceof BlueprintTableScreen screen) {
+				screen.setPreview(payload);
+			}
+		});
 		ClientPlayNetworking.registerGlobalReceiver(TablePayloads.UploadResult.TYPE, (payload, context) -> {
 			if (context.client().screen instanceof BlueprintTableScreen screen) {
 				screen.onUploadResult(payload);

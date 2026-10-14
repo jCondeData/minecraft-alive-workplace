@@ -89,6 +89,7 @@ class Build:
                     self.blocks.pop((x, y, z), None)
 
     def fill_air(self):
+        seal_slots(self)  # roofs that run in under another's overhang meet at a wall, not a gap
         finish(self)  # stair corners and fence/pane/wall connections, as the game would work them out
         for x in range(self.w):
             for y in range(self.h):
@@ -528,6 +529,36 @@ def roofs(b, *draws):
         for (x, y, z), block in blocks.items():
             if winner[(x, z)] == i:
                 b.blocks[(x, y, z)] = block
+
+
+SLOT_SKIP = ("_stairs", "_slab", "door", "lantern", "ladder", "torch", "_sign", "banner", "button", "lever", "carpet",
+             "potted_", "flower_pot", "bed", "chest", "barrel", "campfire", "bell", "chain", "scaffolding", "leaves")
+
+
+def seal_slots(b):
+    """Closes the slot where a lower roof runs in under a higher one's overhang (a wing under the main roof's eave or
+    gable verge, or the main roof under a taller wing's): the wall behind is carried out to the overhang's edge, block
+    for block (its infill, posts and windows), from the lower roof up to the overhang, so the two roofs meet at a wall
+    instead of leaving a dark gap of open blocks between them (holes.py, "meet"). Run by fill_air."""
+    from holes import scan
+    for _ in range(3):  # an overhang two deep takes two passes
+        cells = {p: blk[0] for p, blk in b.blocks.items()}
+        slots = scan((b.w, b.h, b.d), cells, only_slots=True)
+        if not slots:
+            return
+        for (x, y, z), (dx, dz), down, up in slots:
+            column = range(down + 1, up)
+            if any(b.blocks.get((x, yy, z), ("minecraft:air",))[0] not in ("minecraft:air", "minecraft:cave_air")
+                   for yy in column):
+                continue  # filled already this pass (another cell of the same column)
+            wall = [b.blocks.get((x + dx, yy, z + dz)) for yy in column]
+            usable = [w for w in wall if w and w[0] != "minecraft:air" and not any(t in w[0] for t in SLOT_SKIP)]
+            if not usable:
+                continue
+            plain = [w for w in usable if not any(t in w[0] for t in ("_log", "pane", "glass", "_wood", "_bars"))]
+            fallback = max(set(plain or usable), key=(plain or usable).count)
+            for yy, w in zip(column, wall):
+                b.blocks[(x, yy, z)] = w if w in usable else fallback
 
 
 def chimney(b, x, z, y0, y1, name=STONE_MIX, smoke=True):

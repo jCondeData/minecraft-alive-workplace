@@ -46,6 +46,11 @@ game: blocks held up by nothing, lanterns hanging from nothing or standing on ai
 no wall behind them, doors missing a half, sand and gravel over air. The bottom layer stands on the ground, so pots and
 lamps at y 0 are fine. A clean run prints no CHECK lines.
 
+`fill_air` also closes the slot where a lower roof runs in under a higher one's overhang (`seal_slots`: the wall behind
+is carried out to the overhang's edge), so a wing's roof meets the main one. After `generate.py`, run
+`python3 tools/blueprints/holes.py` for roof holes, gaps between roofs and stray empty blocks; what it still lists is
+on purpose (log-cabin corner notches, tent insides, embrasures, a fountain under an eave).
+
 ## Rules the mod needs (the tests check most of them)
 
 - Front is z = 0 (north); y = 0 sits on the clicked block. Put the door on the front with a stair step at y 0 before it.

@@ -620,7 +620,7 @@ def manor_house(b):
     # Inside walls between the hall and the rooms either side (doorways below and off the gallery above)
     for x in (6, 12):
         for z in range(8, 15):
-            for y in list(range(1, 5)) + list(range(6, 10)):
+            for y in range(1, 10):  # through the floor too, or a slot runs along the wall at floor level
                 b.set(x, y, z, MANOR_WALL.at(x, y, z))
         for y in (1, 2):
             b.set(x, y, 9, "air")

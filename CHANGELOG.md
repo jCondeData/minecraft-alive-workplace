@@ -35,6 +35,16 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **Roofs that meet, and no stray gaps in builds.** Where an upgrade's new room runs its roof in under the old roof's
+  edge (the Starter Cottage III's kitchen, the Inn II, the Library II and III, the Manor II and III, the Supply Shop II
+  and III, the Pokémon Center, the Schoolhouse, the Winery and others), the wall now carries on up to the old roof, so the two roofs meet instead of leaving a
+  row of open blocks between them. The Graveyard II's lych-gate beam runs over its back fence posts (the gap above them
+  is gone), the Manor's inside walls carry on through the upper floor, the Inn's stacked barrel has one under it, the
+  Chapel's string course reaches the tower's corner, and the Fisher's Hut boat shed's back gable is shut. Builds
+  already standing keep their blocks; build or upgrade again to get the new ones. (Dev: `tools/blueprints/holes.py`
+  finds roof holes, gaps between roofs and stray empty blocks in every blueprint: 512 before, 16 left, all on purpose.)
+- **Questbook chapters you haven't edited now update** to the mod's new version (they used to keep the old layout
+  forever). Chapters you edited are kept (delete one to get a fresh copy), and unedited ones you deleted stay deleted.
 - **Small things in the Wonders' looks** (B141). The Stadium's scoreboard reads 2 - 1 from outside the bowl too (from
   behind it read "1 - S"). A festival, a Cup's final and a won siege still make you a Hero of the Village, but no longer
   send its pale-green swirls up past your eyes, where they floated in the sky over the fireworks. A button's tooltip on

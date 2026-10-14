@@ -680,7 +680,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   imported blueprints. Done when: GameTests (the list matches MaterialRules for a starter build and an imported one;
   it updates as items go in; the attached plan survives save and reload; taking the blueprint out removes the list);
   the client screen in a scene `chest_checklist` with stills; guide page updated.
-- [ ] **26.8** **A questbook for the whole pack, start to finish** (owner's playtest, 2026-10-14; owner's choice: FTB
+- [x] **26.8** (review: pending 2026-10-14) **A questbook for the whole pack, start to finish** (owner's playtest, 2026-10-14; owner's choice: FTB
   Quests when the pack has it). Ship FTB Quests chapters (data only, through `compat/`, by item and entity ids, never
   FTB's classes; nothing loads without FTB Quests) that take a player from the first day to the end of everything:
   Cobblemon's start (starter, first catches, Poké Balls, the first gym-style trainers with RCT), every job of this

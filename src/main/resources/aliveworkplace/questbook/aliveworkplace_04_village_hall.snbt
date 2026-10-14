@@ -1,0 +1,162 @@
+{
+	id: "5D0B77E0620A07D8",
+	group: "",
+	order_index: 103,
+	filename: "aliveworkplace_04_village_hall",
+	title: "The Village Hall and its Ranks",
+	subtitle: ["From a Hamlet to a City"],
+	icon: {id: "aliveworkplace:village_hall", count: 1},
+	default_quest_shape: "",
+	default_hide_dependency_lines: false,
+	quests: [
+		{
+			id: "3A0C9323349C9445",
+			x: 0.0d,
+			y: 0.0d,
+			title: "The Village Hall",
+			description: ["Gold, a book and gold over planks, an emerald in the middle. Put it in the middle of your village: everyone within 64 blocks lives there.", "", "Right-click it to see who lives there, what they're doing and what they need. From now on villagers get names, moods and a home they care about."],
+			dependencies: ["694682BB5A92E7B1"],
+			icon: {id: "aliveworkplace:village_hall", count: 1},
+			tasks: [{id: "666C3E0ECAD35D27", type: "item", item: {id: "aliveworkplace:village_hall", count: 1}}],
+			rewards: [{id: "44396A3E73CE6ADC", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "4A890F620FF03956",
+			x: 2.0d,
+			y: -5.2d,
+			title: "The Village Ledger",
+			description: ["A book and an emerald make a Village Ledger: the hall's screen in your pocket, wherever you are nearby."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "aliveworkplace:village_ledger", count: 1},
+			tasks: [{id: "7FA6BD72F4863E9D", type: "item", item: {id: "aliveworkplace:village_ledger", count: 1}}],
+			rewards: [{id: "1B9861E516AB4D60", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "5A16ECE196F90FF0",
+			x: 2.0d,
+			y: -3.8d,
+			title: "A map of the village",
+			description: ["Draw a map of your village at the hall, on an empty map."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "minecraft:filled_map", count: 1},
+			tasks: [{id: "25C048DA6DE51AC2", type: "checkmark", title: "I drew a map of my village at the hall"}],
+			rewards: [{id: "6C7ECB32E4EA9974", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 2}]
+		},
+		{
+			id: "6AE94F8377228EE3",
+			x: 2.0d,
+			y: -2.2d,
+			title: "What next?",
+			description: ["The hall's What next? button (the compass) always lists what your village lacks most, and how to fix it. Food, beds, safety and wellbeing all count."],
+			dependencies: ["3A0C9323349C9445"],
+			tasks: [{id: "6453E17F6C389576", type: "checkmark", title: "I looked at What next?"}],
+			rewards: [{id: "51F0D348055D66DD", type: "xp", xp: 50}]
+		},
+		{
+			id: "18E5C1FF6C3D8D96",
+			x: 2.0d,
+			y: -0.8d,
+			title: "Help the village",
+			description: ["Each morning the village may post a quest on the hall's Quests button (the map icon): bring something, clear out monsters, or beat a trainer. It pays in emeralds, a quarter more for every rank."],
+			dependencies: ["3A0C9323349C9445"],
+			tasks: [{id: "68A90E339C80B180", type: "checkmark", title: "I finished a village quest"}],
+			rewards: [{id: "7AC1F4A63D996A8A", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "4F029472C37A28A4",
+			x: 2.0d,
+			y: 0.8d,
+			title: "The treasury",
+			description: ["A working village earns its keep: about a fifth of an emerald a worker a day. Click the hall's name icon to collect the takings."],
+			dependencies: ["3A0C9323349C9445"],
+			tasks: [{id: "54D6CA4C46EBEA6B", type: "checkmark", title: "I collected the village's takings"}],
+			rewards: [{id: "3E28830B158BBB22", type: "xp", xp: 100}]
+		},
+		{
+			id: "7BFEF992AD1F677A",
+			x: 2.0d,
+			y: 2.2d,
+			title: "A festival",
+			description: ["Villages with a hall and at least six villagers hold a festival every eight days. A cake on the hall's festival button calls one early."],
+			dependencies: ["3A0C9323349C9445"],
+			tasks: [{id: "6556CE391AFE9143", type: "checkmark", title: "My village held a festival"}],
+			rewards: [{id: "5D2640FAF821CB6B", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "12E1C45305508DF2",
+			x: 2.0d,
+			y: 3.8d,
+			title: "Research",
+			description: ["Paper at a lectern makes a villager a Scholar. Sneak-right-click the scholar with an empty hand to pick a topic: every level is a bonus for the whole village."],
+			dependencies: ["3A0C9323349C9445"],
+			tasks: [{id: "638525474362BBDB", type: "checkmark", title: "My scholar finished a level of research"}],
+			rewards: [{id: "563CC39FB807AF22", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "401E7C6CF16F2790",
+			x: 2.0d,
+			y: 5.2d,
+			title: "A guard",
+			description: ["A sword at a grindstone makes a Guard. Raids come at night once a village with a hall has 8 villagers, so get one or two early.", "", "Wool on top, a hay bale with a stick on each side and a stick underneath make a Training Dummy for them to practice on."],
+			dependencies: ["3A0C9323349C9445"],
+			icon: {id: "aliveworkplace:training_dummy", count: 1},
+			tasks: [{id: "16D7BA23F4605456", type: "item", item: {id: "aliveworkplace:training_dummy", count: 1}}],
+			rewards: [{id: "1197C79AB62306CE", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+		},
+		{
+			id: "1FA06D744ED16847",
+			x: 4.0d,
+			y: -1.5d,
+			title: "Patrols and the Rally Banner",
+			description: ["A map and red dye make a Patrol Map: a route for a guard to walk by day.", "", "Any banner and an iron ingot make a Rally Banner: raise it and your guards follow you anywhere."],
+			dependencies: ["401E7C6CF16F2790"],
+			icon: {id: "aliveworkplace:rally_banner", count: 1},
+			tasks: [{id: "79B5420B6CC58495", type: "item", item: {id: "aliveworkplace:patrol_map", count: 1}}, {id: "357750A38CDF6229", type: "item", item: {id: "aliveworkplace:rally_banner", count: 1}}],
+			rewards: [{id: "1A1F5509920A65D1", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "4C2F692B0FEC227C",
+			x: 4.0d,
+			y: 0.0d,
+			title: "Survive a raid",
+			description: ["Zombies, skeletons and spiders gather at night. A raid ends when the raiders are dead, or at dawn. Keep your villagers safe."],
+			dependencies: ["401E7C6CF16F2790"],
+			tasks: [{id: "6F19D26980C8CFF3", type: "checkmark", title: "My village came through a raid"}],
+			rewards: [{id: "27AAB466E9A43A16", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 6}, {id: "7F4CB29EC2F702DF", type: "xp", xp: 200}]
+		},
+		{
+			id: "256059D7ED1AE149",
+			x: 4.0d,
+			y: 1.5d,
+			title: "Village rank",
+			description: ["Every village starts as a Hamlet. With 10 villagers and 5 finished buildings it becomes a Village. Hover over the hall's name icon to see what the next rank still needs."],
+			dependencies: ["18E5C1FF6C3D8D96", "4F029472C37A28A4"],
+			tasks: [{id: "75C981866245E562", type: "checkmark", title: "My village is a Village"}],
+			rewards: [{id: "3AB5D2F594DA736F", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}]
+		},
+		{
+			id: "4D800E67D3416315",
+			x: 6.0d,
+			y: 0.0d,
+			title: "Town rank",
+			description: ["20 villagers, 12 buildings and 3 levels of research make a Town. Every rank makes quests pay more, brings more market traders and gives the village room for ten more villagers."],
+			dependencies: ["256059D7ED1AE149", "12E1C45305508DF2"],
+			tasks: [{id: "40D496EFE9D67256", type: "checkmark", title: "My village is a Town"}],
+			rewards: [{id: "5C3D775E1BCB2439", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}, {id: "5111B90FB33EFBA0", type: "xp", xp: 300}]
+		},
+		{
+			id: "2ED7ABC3CF7686B5",
+			x: 8.0d,
+			y: 0.0d,
+			shape: "gear",
+			size: 1.5d,
+			title: "City rank",
+			description: ["35 villagers, 25 buildings and 7 levels of research make a City. A rank up is celebrated with fireworks over the hall."],
+			dependencies: ["4D800E67D3416315"],
+			tasks: [{id: "6572C4480F335645", type: "checkmark", title: "My village is a City"}],
+			rewards: [{id: "1EF01C1D6947A52C", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 32}, {id: "3FEC7D9A1908EF0D", type: "xp", xp: 500}]
+		}
+	],
+	quest_links: [],
+	images: []
+}

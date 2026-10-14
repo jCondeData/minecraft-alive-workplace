@@ -658,6 +658,39 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   runs green (blocked until they have run). Then the owner's own play session in the pack's client (carried over from
   Milestone 5). Done when: all of these have passed, and the owner has played.
 - [ ] **26.5** (approved: owner 2026-10-13, publish once 26.4 has passed and we feel ready; waits on 26.4) **Publish.** Done when: the pages are live and linked from the README.
+- [ ] **26.6** **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
+  every villager already works, so there's nobody to hire). Sneak-right-click any grown villager who has a job (vanilla,
+  ours or another mod's, traded with or not; never a child or a nitwit) within about 4 blocks of one of our job blocks
+  (the Blueprint Table and every workstation that picks one of our jobs), holding that job's item: the villager is
+  offered the job for a price, and a second click within a few seconds pays and retrains them. Price: emeralds
+  (CobbleDollars with the pack), more for a higher-level villager (Novice 5, Apprentice 10, Journeyman 20, Expert 35,
+  Master 50, a config value), shown before paying. The old job's trades and level are lost (said in the offer); the
+  new job starts at Novice. Not enough money: told how much is short, nothing changes. A villager on a job we run
+  (building, a crew, a Wonder) finishes or drops it safely first. Done when:
+  - GameTests through the player's click: a Cobbleverse-style employed villager (a vanilla Librarian with trades, and a
+    stand-in for another mod's profession) becomes a Builder at the Blueprint Table for the shown price; too little money
+    changes nothing; a builder mid-site hands the site back (BuildSite stays restartable); children and nitwits refuse;
+    save and reload; the switch off (`workplaceRetraining`) brings back the old rule;
+  - the words in en_us.json; the guide's jobs page says how, with the price; scene `retrain`.
+- [ ] **26.7** **A chest that shows what the build still needs** (owner's playtest, 2026-10-14). Put a blueprint (or a
+  placed build site's plan) into a new slot on a builder's supply chest, or click the chest with the blueprint: the
+  chest's screen then shows the build's material list beside it, each line ticked when the chest (and the builder's
+  other chests) hold enough, and the short ones first with how many are missing ("Oak Planks: 12 of 64"). Updates as
+  items go in and as the builder uses them. Works with every container our builders take from (ItemStores), and with
+  imported blueprints. Done when: GameTests (the list matches MaterialRules for a starter build and an imported one;
+  it updates as items go in; the attached plan survives save and reload; taking the blueprint out removes the list);
+  the client screen in a scene `chest_checklist` with stills; guide page updated.
+- [ ] **26.8** **A questbook for the whole pack, start to finish** (owner's playtest, 2026-10-14; owner's choice: FTB
+  Quests when the pack has it). Ship FTB Quests chapters (data only, through `compat/`, by item and entity ids, never
+  FTB's classes; nothing loads without FTB Quests) that take a player from the first day to the end of everything:
+  Cobblemon's start (starter, first catches, Poké Balls, the first gym-style trainers with RCT), every job of this
+  mod and how to hire or retrain (26.6), the Builder and the Blueprint Table, the Steward and city plans, the Village
+  Hall and its ranks, Pokémon jobs (1.2), Legends (1.3), edicts (1.4), story arcs (1.5), threats and walls (1.6), realms
+  (1.7), classes and luxuries (1.8) and every Wonder (2.0), with rewards in emeralds or CobbleDollars. First check
+  which quest mod the owner's server runs (FTB Quests, Heracles or other) and which chapters the pack already has, so
+  ours sit beside them. Done when: the chapters load in FTB Quests on the pack client with no missing items; every
+  chapter's tasks are reachable in a test world; a compat test that every referenced item and entity id exists; the
+  guide links to it; scene `questbook` with stills of each chapter.
 
 ## Milestone 27: Villages that build themselves (1.1)
 
@@ -4459,6 +4492,8 @@ item waits.
 
 ## Design decisions (from the owner)
 
+- **Playtest asks go in 1.0** (2026-10-14): retraining an employed villager for emeralds at our job blocks (26.6), a
+  chest that shows what the build still needs (26.7), and a start-to-finish questbook as FTB Quests chapters (26.8).
 - **Everything ships at once in 1.0** (2026-10-13): every expansion (1.1 to 2.0) is done but 30.22, so 1.0 turns them all
   on together (every `Expansions.M27`..`M35` flag), and the server updates once. Before that: 0.144.0 pre-release
   (2026-10-13, all flags still off), a pass through the wiki, every known bug fixed (the showcase's failing scenes

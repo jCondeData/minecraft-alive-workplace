@@ -12,7 +12,7 @@
 		{
 			id: "139C96DACEB5F53B",
 			x: 0.0d,
-			y: -3.0d,
+			y: -4.0d,
 			title: "Pokémon partners",
 			description: ["Keep Pokémon in a Pasture Block within 16 blocks of a villager's workstation. If their type suits the job, each one makes the work go faster, up to three helpers.", "", "Fighting, Rock and Steel types help builders; Ground, Rock and Steel help miners."],
 			dependencies: ["5FEAB93EEF736663"],
@@ -22,8 +22,8 @@
 		},
 		{
 			id: "6CF27C72B6D8ED96",
-			x: 2.0d,
-			y: -1.5d,
+			x: 3.0d,
+			y: -2.0d,
 			title: "With Machop",
 			description: ["The line over a worker's head says who's helping (\"· with Machop\"). Sneak-right-click the worker to see how much faster they are."],
 			dependencies: ["139C96DACEB5F53B"],
@@ -33,7 +33,7 @@
 		{
 			id: "1DAE643B005B8A9D",
 			x: 0.0d,
-			y: -1.5d,
+			y: -2.0d,
 			title: "The Training Post",
 			description: ["A target block on top of three planks makes a Training Post. A villager without a job takes it and becomes a Trainer."],
 			dependencies: ["5FEAB93EEF736663"],
@@ -43,7 +43,7 @@
 		},
 		{
 			id: "180F138557AFD18D",
-			x: 2.0d,
+			x: 3.0d,
 			y: 0.0d,
 			title: "Battle a villager",
 			description: ["Right-click a Trainer to battle. Every trainer starts as a Novice with two young Pokémon and ranks up as people battle them. Beating one pays, once a day per trainer."],
@@ -53,7 +53,7 @@
 		},
 		{
 			id: "70ACC128CAB2B990",
-			x: 4.0d,
+			x: 6.0d,
 			y: 0.0d,
 			title: "The Trainer Leader",
 			description: ["Sneak-right-click a villager at a Training Post with a block of gold: the village's leader battles at Expert strength, pays three times the prize, and takes one challenge a day from each player."],
@@ -63,8 +63,8 @@
 		},
 		{
 			id: "24EA9FD1EE52F2AE",
-			x: 2.0d,
-			y: 1.5d,
+			x: 3.0d,
+			y: 2.0d,
 			title: "The Move Tutor",
 			description: ["A book at a Training Post makes a Move Tutor. Pick one of your Pokémon and a move it could learn but won't get from leveling. Click once to choose, again to pay and teach."],
 			dependencies: ["1DAE643B005B8A9D"],
@@ -84,7 +84,7 @@
 		{
 			id: "3401FEE33C1F617F",
 			x: 0.0d,
-			y: 1.5d,
+			y: 2.0d,
 			title: "The Pokémon Trader",
 			description: ["A Poké Ball at a Shop Counter makes a Pokémon Trader. Pick one of today's offers and a Pokémon of yours that fits, and click twice to swap. Each player gets one trade per trader a day."],
 			dependencies: ["501B2AAAD169D185"],
@@ -94,7 +94,7 @@
 		{
 			id: "22413FD9C5CB6A1A",
 			x: 0.0d,
-			y: 3.0d,
+			y: 4.0d,
 			title: "The Fossil Scientist",
 			description: ["A fossil at Cobblemon's Fossil Analyzer makes a Fossil Scientist. Right-click them holding a fossil and pay 8 emeralds: the revived Pokémon joins your party when it's done."],
 			dependencies: ["5FEAB93EEF736663"],
@@ -103,7 +103,7 @@
 		},
 		{
 			id: "29E7437AFCE9CE80",
-			x: 6.0d,
+			x: 9.0d,
 			y: 0.0d,
 			shape: "gear",
 			size: 1.5d,

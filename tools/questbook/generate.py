@@ -86,12 +86,21 @@ def layout(quests):
                 raise ValueError("quest %s depends on %s, which comes later or doesn't exist" % (q["key"], d))
         depth[q["key"]] = 1 + max((depth[d] for d in local), default=-1)
     columns = {}
+    deps = {}
     for q in quests:
         columns.setdefault(depth[q["key"]], []).append(q["key"])
+        deps[q["key"]] = [d for d in q.get("deps", []) if ":" not in d]
+    # Wide enough apart that no two nodes or their lines crowd each other (owner, 2026-10-14), and each column ordered
+    # by where its quests' parents sit, so the lines between columns cross as little as possible.
     pos = {}
-    for col, keys in columns.items():
+    for col in sorted(columns):
+        keys = columns[col]
+        def parent_y(key):
+            ys = [pos[d][1] for d in deps[key] if d in pos]
+            return sum(ys) / len(ys) if ys else 0.0
+        keys = sorted(keys, key=lambda k: (parent_y(k), keys.index(k)))
         for i, key in enumerate(keys):
-            pos[key] = (col * 2.0, (i - (len(keys) - 1) / 2.0) * 1.5)
+            pos[key] = (col * 3.0, (i - (len(keys) - 1) / 2.0) * 2.0)
     return pos
 
 

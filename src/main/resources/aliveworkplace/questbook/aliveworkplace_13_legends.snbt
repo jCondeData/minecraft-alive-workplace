@@ -21,8 +21,8 @@
 		},
 		{
 			id: "26F670B76251B2F5",
-			x: 2.0d,
-			y: -0.8d,
+			x: 3.0d,
+			y: -1.0d,
 			title: "A gifted villager",
 			description: ["About one villager in thirty is born with a gift. Look out for them in your village."],
 			dependencies: ["45E85C2098AA6FC6"],
@@ -31,8 +31,8 @@
 		},
 		{
 			id: "280CF58250139F8F",
-			x: 2.0d,
-			y: 0.8d,
+			x: 3.0d,
+			y: 1.0d,
 			title: "A strange mood",
 			description: ["Sometimes a Master is taken by a strange mood: they claim their workstation and ask for three rare materials in a chest by it, within 3 days. Bring them, and they make a Masterwork. Sometimes a Legend is born of it."],
 			dependencies: ["45E85C2098AA6FC6"],
@@ -41,7 +41,7 @@
 		},
 		{
 			id: "132BD9AA632259F4",
-			x: 4.0d,
+			x: 6.0d,
 			y: 0.0d,
 			title: "Your first Legend",
 			description: ["A Legend comes on a visit, is found out in the world, is born, or rises from a strange mood. They are always a Master, with their name in gold over their head."],
@@ -51,8 +51,8 @@
 		},
 		{
 			id: "333BECEEFA065D33",
-			x: 6.0d,
-			y: -0.8d,
+			x: 9.0d,
+			y: -1.0d,
 			title: "The Master Architect",
 			description: ["The builders' Legend. Every Wonder needs one."],
 			dependencies: ["132BD9AA632259F4"],
@@ -61,8 +61,8 @@
 		},
 		{
 			id: "4BAB347AD131C380",
-			x: 6.0d,
-			y: 0.8d,
+			x: 9.0d,
+			y: 1.0d,
 			title: "The Founder's Wagon",
 			description: ["The Founder sends a weekly gift: a Founder's Wagon, a new village in a wagon. Make camp where a new village should stand."],
 			dependencies: ["132BD9AA632259F4"],
@@ -72,7 +72,7 @@
 		},
 		{
 			id: "2B900F41F18A8A81",
-			x: 8.0d,
+			x: 12.0d,
 			y: 0.0d,
 			shape: "gear",
 			size: 1.5d,

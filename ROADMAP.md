@@ -692,6 +692,12 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   chapter's tasks are reachable in a test world; a compat test that every referenced item and entity id exists; the
   guide links to it; scene `questbook` with stills of each chapter.
 
+- [ ] **26.9** **See a build before you pick it** (owner's playtest, 2026-10-14: "you can't see what you're building").
+  The Blueprint Table's library shows a picture of the selected build beside its name, size and material count: a
+  small 3D view of the blueprint itself, drawn by the client from the blueprint's blocks (so it works for imported and
+  uploaded builds too, with no image files to keep), that turns slowly and can be dragged to look round. Large builds
+  scale to fit. Done when: the preview in the table's screen in a scene `table_preview` with stills of a small house, a
+  large build and an imported one; it costs nothing on the server; the guide's Blueprint Table page says so.
 ## Milestone 27: Villages that build themselves (1.1)
 
 Items in Milestones 27–35 sometimes point at another milestone's item by name ("M29's Seer item"): find it there.

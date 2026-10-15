@@ -61,7 +61,7 @@
 			dependencies: ["638D622A34F70944"],
 			icon: {id: "minecraft:map", count: 1},
 			tasks: [{id: "5153B5C4844B46FA", type: "advancement", advancement: "aliveworkplace:village/hall_quest", criterion: ""}],
-			rewards: [{id: "1234BA904F3A82D5", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+			rewards: [{id: "1234BA904F3A82D5", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}, {id: "3C60BACB22E2DC32", type: "command", command: "/workplace unlock {p} aliveworkplace:market_square", elevate_perms: true, silent: true}]
 		},
 		{
 			id: "3C8F7F7EE3EF08EB",

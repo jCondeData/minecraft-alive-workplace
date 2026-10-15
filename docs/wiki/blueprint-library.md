@@ -9,7 +9,7 @@ Roadmap items: 26.10
 
 - **Unlocked builds** show in colour, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
 - **Locked builds** show greyed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
-  trader", "Questbook: The Builder", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a
+  trader", "A questbook reward", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a
   villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is greyed out.
 - **Rare builds** (the builder-only grander homes, the Wonders, and `rare.json`'s Chapel, Market Square, Map Room,
   Bandstand, Guildhall, Nether Gate and Library III) are a dark **???** at the end of the list, with no name, preview or

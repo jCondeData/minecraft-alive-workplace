@@ -18,7 +18,7 @@
 			dependencies: ["259DA8A929FACABE"],
 			icon: {id: "aliveworkplace:village_hall", count: 1},
 			tasks: [{id: "5D89A70FC4EA24ED", type: "advancement", advancement: "aliveworkplace:village/rank_town", criterion: ""}],
-			rewards: [{id: "45BF958E486BC43C", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}, {id: "2D09E907EC3E0310", type: "xp", xp: 300}]
+			rewards: [{id: "45BF958E486BC43C", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}, {id: "2D09E907EC3E0310", type: "xp", xp: 300}, {id: "75B18CF99D4E9E94", type: "command", command: "/workplace unlock {p} aliveworkplace:barracks", elevate_perms: true, silent: true}]
 		},
 		{
 			id: "5F80C395E9618060",
@@ -29,7 +29,7 @@
 			dependencies: ["763B30CC4AA2D061"],
 			icon: {id: "minecraft:grindstone", count: 1},
 			tasks: [{id: "3D2F8DF9389527BD", type: "advancement", advancement: "aliveworkplace:built/barracks", criterion: ""}],
-			rewards: [{id: "3E561C640A808252", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+			rewards: [{id: "3E561C640A808252", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}, {id: "3A58970668DB9D2E", type: "command", command: "/workplace unlock {p} aliveworkplace:gatehouse", elevate_perms: true, silent: true}]
 		},
 		{
 			id: "7ED000369F90D1EA",
@@ -62,7 +62,7 @@
 			dependencies: ["6597AAE5BFDC3678"],
 			icon: {id: "aliveworkplace:guild_charter", count: 1},
 			tasks: [{id: "3A69000FB6889E04", type: "item", item: {id: "aliveworkplace:guild_charter", count: 1}}],
-			rewards: [{id: "7542CAB9AF2ACAAD", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
+			rewards: [{id: "7542CAB9AF2ACAAD", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}, {id: "11ED547FEB6FE9ED", type: "command", command: "/workplace unlock {p} aliveworkplace:guildhall", elevate_perms: true, silent: true}]
 		},
 		{
 			id: "14B8E980F11B2C2B",

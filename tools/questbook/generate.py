@@ -25,6 +25,10 @@ tab, a toast or a chat line. Every aliveworkplace:built/ advancement a chapter a
 And the same for a village's key moments (data/aliveworkplace/advancement/village/): one per MOMENTS entry,
 aliveworkplace:village/<moment>, granted by hall/VillageMoments (a rank reached, the first caravan, festival...).
 
+The main line never asks for a build the player can't get (add_unlocks): a spine quest's built/<X> whose X isn't in
+blueprint_unlocks/starting.json and no earlier quest unlocks gets ("unlock", X) on its spine predecessor, and every
+blueprint a quest unlocks must be in BlueprintUnlocks.QUESTBOOK. Both fail the run (and --check) when they can't hold.
+
 A quest with its own "milestone" or "needs" gets a manifest line under its chapter's, "quest <id> <milestone> <mods>":
 the install hook leaves it out of the chapter while that expansion is off or those mods are missing, and the quests that
 hang on it then hang on what it hung on. The layout is a story: the chapter's spine (its quests that aren't optional, each
@@ -47,6 +51,8 @@ ADV_OUT = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkplace
 BLUEPRINTS = os.path.join(ROOT, "src", "main", "java", "io", "github", "jcondedata", "aliveworkplace", "blueprint",
                           "StarterBlueprints.java")
 LANG = os.path.join(ROOT, "src", "main", "resources", "assets", "aliveworkplace", "lang", "en_us.json")
+STARTING = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkplace", "blueprint_unlocks", "starting.json")
+UNLOCKS_JAVA = os.path.join(ROOT, "src", "main", "java", "io", "github", "jcondedata", "aliveworkplace", "table", "BlueprintUnlocks.java")
 MOMENT_OUT = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkplace", "advancement", "village")
 # hall/VillageMoments grants these (its constants and VillageMoments.rank); titles are lang keys
 # advancements.aliveworkplace.village.<moment>
@@ -303,8 +309,68 @@ def check_advancements(advancements):
                     raise ValueError("%s:%s asks for %s, which isn't one of MOMENTS" % (ch["key"], q["key"], t[1]))
 
 
+def gating(chapter, quest):
+    """The milestones and mods a quest needs to be in the book: its chapter's and its own."""
+    out = set()
+    for thing in (chapter, quest):
+        if thing.get("milestone"):
+            out.add(thing["milestone"])
+        if thing.get("needs", "-") != "-":
+            out.update(thing["needs"].split(","))
+    return out
+
+
+def add_unlocks():
+    """The main line never asks for a build the player can't get (26.10): a spine quest's built/<X> whose X isn't in
+    starting.json and no earlier quest unlocks puts ("unlock", X) on the quest it depends on, its spine predecessor.
+    Raises if a spine build is still out of reach (no predecessor, or one the book can leave out when this quest stays).
+    Returns every blueprint a quest unlocks."""
+    start = set(json.load(open(STARTING, encoding="utf-8"))["blueprints"])
+    quests = {ch["key"] + ":" + q["key"]: (ch, q) for ch in CHAPTERS for q in ch["quests"]}
+    unlocked = {}  # blueprint -> the gating of the quest that unlocks it
+    for ch in CHAPTERS:
+        for q in ch["quests"]:
+            for r in q.get("rewards", []):
+                if r[0] == "unlock":
+                    unlocked.setdefault(r[1], gating(ch, q))
+            if q.get("optional"):
+                continue
+            for t in q["tasks"]:
+                if t[0] != "advancement" or not t[1].startswith("aliveworkplace:built/"):
+                    continue
+                bp = "aliveworkplace:" + t[1][len("aliveworkplace:built/"):]
+                need = gating(ch, q)
+                if bp in start or (bp in unlocked and unlocked[bp] <= need):
+                    continue
+                deps = q.get("deps", [])
+                if not deps:
+                    raise ValueError("%s:%s asks for %s, which is locked, and has no quest before it to unlock it"
+                                     % (ch["key"], q["key"], bp))
+                full = deps[0] if ":" in deps[0] else ch["key"] + ":" + deps[0]
+                pch, pq = quests[full]
+                if not gating(pch, pq) <= need:
+                    raise ValueError("%s:%s asks for %s, which is locked, and the quest before it (%s) can be left out of the book"
+                                     % (ch["key"], q["key"], bp, full))
+                pq["rewards"] = list(pq.get("rewards", [])) + [("unlock", bp)]
+                unlocked[bp] = gating(pch, pq)
+    return set(unlocked)
+
+
+def check_questbook_hints(unlocks):
+    """Every blueprint a quest unlocks is in BlueprintUnlocks.QUESTBOOK, so the Table says it comes from the questbook."""
+    names = dict((path, name) for name, path in re.findall(r'Entry ([A-Z0-9_]+) = new Entry\(AliveWorkplace\.id\("([^"]+)"\)',
+                                                          open(BLUEPRINTS, encoding="utf-8").read()))
+    java = open(UNLOCKS_JAVA, encoding="utf-8").read()
+    block = re.search(r"Set<ResourceLocation> QUESTBOOK = ids\(Stream\.of\((.*?)\)\);", java, re.S)
+    listed = set(re.findall(r"StarterBlueprints\.([A-Z0-9_]+)", block.group(1))) if block else set()
+    missing = sorted(bp for bp in unlocks if names.get(bp.split(":", 1)[1]) not in listed)
+    if missing:
+        raise ValueError("quests unlock %s, which BlueprintUnlocks.QUESTBOOK doesn't list" % ", ".join(missing))
+
+
 def files():
     check_keys()
+    check_questbook_hints(add_unlocks())
     result = {}
     manifest = ["# file milestone mods (written by tools/questbook/generate.py)"]
     for i, ch in enumerate(CHAPTERS):

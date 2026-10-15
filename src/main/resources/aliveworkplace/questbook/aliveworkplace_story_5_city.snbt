@@ -50,7 +50,7 @@
 			description: ["Give a household what the next class needs two dawns running and it rises. Luxuries come from the Vintner, the Tailor, the Printer and the Jeweler (side quests)."],
 			dependencies: ["2111E4C5203EC081"],
 			tasks: [{id: "65D26DE32287122F", type: "checkmark", title: "A household in my village are Burghers"}],
-			rewards: [{id: "1717707CEE51E2E6", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}]
+			rewards: [{id: "1717707CEE51E2E6", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}, {id: "5ED089CBED84FFAA", type: "command", command: "/workplace unlock {p} aliveworkplace:manor", elevate_perms: true, silent: true}]
 		},
 		{
 			id: "65D2BD1D26DB49AE",

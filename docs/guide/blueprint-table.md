@@ -64,7 +64,7 @@ Storehouse, the Smithy, the Mason's Yard, the Kitchen and the like). Those show 
 always.
 
 Everything else starts **locked**. A locked build shows greyed out, with a line saying how to get it, such as "Sold by
-a Journeyman Builder", "A market-day trader", "Questbook: The Builder" or "Found in chests". You can still look round
+a Journeyman Builder", "A market-day trader", "A questbook reward" or "Found in chests". You can still look round
 its picture, dimmed, and see what it needs, but Get Blueprint stays off. A few rare builds (the grander homes only a
 builder sells, the Wonders and some special builds) show as a dark **???** with no name, picture or materials, like a
 hidden achievement, until your village finds them. Unlocked builds come first in the list.

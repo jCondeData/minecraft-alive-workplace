@@ -95,10 +95,16 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 			StarterBlueprints.ARENA, StarterBlueprints.WINERY, StarterBlueprints.TAILORS_SHOP, StarterBlueprints.PRINT_SHOP,
 			StarterBlueprints.JEWELLERS_WORKSHOP),
 		StarterBlueprints.POKEMON_CENTER_LOOKS.stream()).flatMap(s -> s));
-	/** A questbook reward ({@code tools/questbook/chapters.py}, the home and hall quests): {@code /workplace unlock}. */
+	/**
+	 * A questbook reward ({@code tools/questbook/chapters.py}): {@code /workplace unlock}. The home and hall quests unlock
+	 * the next level; generate.py adds the builds the story's main line asks for that start locked, and its check fails
+	 * if a quest unlocks a build missing here.
+	 */
 	public static final Set<ResourceLocation> QUESTBOOK = ids(Stream.of(StarterBlueprints.STARTER_COTTAGE_2, StarterBlueprints.STARTER_COTTAGE_3,
 		StarterBlueprints.STONE_HOUSE_2, StarterBlueprints.STONE_HOUSE_3, StarterBlueprints.TERRACE_2,
-		StarterBlueprints.VILLAGE_HALL_2, StarterBlueprints.VILLAGE_HALL_3));
+		StarterBlueprints.VILLAGE_HALL_2, StarterBlueprints.VILLAGE_HALL_3,
+		StarterBlueprints.MARKET_SQUARE, StarterBlueprints.BARRACKS, StarterBlueprints.GATEHOUSE, StarterBlueprints.GUILDHALL,
+		StarterBlueprints.MANOR));
 	/** The mod's own builds: the only ones that can be locked. */
 	private static final Set<ResourceLocation> MANAGED = ids(Stream.of(StarterBlueprints.ALL, StarterBlueprints.ONE_TIER, StarterBlueprints.WORKPLACES,
 		StarterBlueprints.COBBLEMON_ONLY, StarterBlueprints.COBBLEMON_WORKPLACES, StarterBlueprints.JOB_BUILDS, StarterBlueprints.DEFENCES,
@@ -308,15 +314,16 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		if (WonderBlueprints.wonderOf(base).isPresent()) {
 			return key + "wonder";
 		}
+		// A rare build the questbook's main line unlocks (the Market Square) says so, still as a "???".
+		if (QUESTBOOK.contains(base) && Platform.get().isModLoaded("ftbquests") && !BUILDER_SALES.containsKey(base)) {
+			return key + "questbook";
+		}
 		if (rare(base)) {
 			return key + "rare";
 		}
 		Integer level = BUILDER_SALES.get(base);
 		if (level != null) {
 			return key + "builder." + level;
-		}
-		if (QUESTBOOK.contains(base) && Platform.get().isModLoaded("ftbquests")) {
-			return key + "questbook";
 		}
 		if (BlueprintUpgrades.tier(base) >= 2) {
 			return key + "upgrade";

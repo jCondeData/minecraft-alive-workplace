@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
@@ -129,12 +130,88 @@ public final class TableServer {
 
 	private static void details(ServerPlayer player, ResourceLocation id) {
 		ServerLevel level = Players.level(player);
-		BlueprintUnlocks.State state = BlueprintUnlocks.state(level, BlueprintUnlocks.village(level, player.blockPosition()), id);
+		details(level, BlueprintUnlocks.village(level, player.blockPosition()), id).ifPresent(d -> {
+			Platform.get().send(player, d);
+			preview(level.getServer(), id, BlueprintUnlocks.ENABLED).ifPresent(p -> Platform.get().send(player, p));
+		});
+	}
+
+	/**
+	 * What the Table sends for {@code id} (as drawn, or styled, 26.11) at a Table in the village round {@code hall}: its
+	 * materials and, for an unlocked build, the styles it can be built in. Empty for a "???" (26.10), and for a style the
+	 * build doesn't take or a locked build in a style.
+	 */
+	public static Optional<TablePayloads.Details> details(ServerLevel level, @Nullable BlockPos hall, ResourceLocation id) {
+		ResourceLocation base = BlueprintStyles.base(id);
+		BlueprintUnlocks.State state = BlueprintUnlocks.state(level, hall, base);
 		if (state == BlueprintUnlocks.State.HIDDEN) {
-			return; // a "???" (26.10): no materials, no preview
+			return Optional.empty(); // a "???" (26.10): no materials, no preview
 		}
-		BlueprintLibrary.get(player.level().getServer(), id).ifPresent(bp -> Platform.get().send(player, new TablePayloads.Details(id, materials(bp))));
-		preview(player.level().getServer(), id, BlueprintUnlocks.ENABLED).ifPresent(p -> Platform.get().send(player, p));
+		MinecraftServer server = level.getServer();
+		boolean open = state == BlueprintUnlocks.State.UNLOCKED;
+		if (!id.equals(base) && (!open || !styleTaken(server, id))) {
+			return Optional.empty();
+		}
+		return BlueprintLibrary.get(server, id).map(bp -> new TablePayloads.Details(id, cachedMaterials(id, bp), open ? styles(server, base) : List.of()));
+	}
+
+	// --- styles (26.11) ----------------------------------------------------------------------
+
+	private record CachedStyles(Blueprint blueprint, List<TablePayloads.StyleChoice> styles) {
+	}
+	private static final Map<ResourceLocation, CachedStyles> STYLES = java.util.Collections.synchronizedMap(new HashMap<>());
+	private record CachedMaterials(Blueprint blueprint, List<TablePayloads.Material> materials) {
+	}
+	private static final Map<ResourceLocation, CachedMaterials> MATERIALS = java.util.Collections.synchronizedMap(
+		new java.util.LinkedHashMap<>(16, 0.75f, true) {
+			@Override
+			protected boolean removeEldestEntry(Map.Entry<ResourceLocation, CachedMaterials> eldest) {
+				return size() > PREVIEW_CACHE_SIZE;
+			}
+		});
+
+	/**
+	 * The styles {@code base} can be built in at the Table, in the style screen's order: those that swap any of its
+	 * blocks (Apricorn only with Cobblemon, as {@link BlueprintStyles#all} has it). None for a Wonder, which keeps its own
+	 * palette (as in the style screen), or a build the Table doesn't know. Worked out once per build.
+	 */
+	public static List<TablePayloads.StyleChoice> styles(MinecraftServer server, ResourceLocation base) {
+		if (io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(base).isPresent() || BlueprintStyles.parse(base).isPresent()) {
+			return List.of();
+		}
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(server, base);
+		if (blueprint.isEmpty()) {
+			return List.of();
+		}
+		CachedStyles cached = STYLES.get(base);
+		if (cached != null && cached.blueprint() == blueprint.get()) {
+			return cached.styles();
+		}
+		List<TablePayloads.StyleChoice> out = new ArrayList<>();
+		for (BlueprintStyles.Style style : BlueprintStyles.all()) {
+			if (BlueprintStyles.changes(style, blueprint.get())) {
+				out.add(new TablePayloads.StyleChoice(style.name(), style.title(), BuiltInRegistries.ITEM.getKey(style.iconItem())));
+			}
+		}
+		List<TablePayloads.StyleChoice> styles = List.copyOf(out);
+		STYLES.put(base, new CachedStyles(blueprint.get(), styles));
+		return styles;
+	}
+
+	/** Whether a styled id is its build in a style the Table offers for it (true for an id that isn't styled). */
+	public static boolean styleTaken(MinecraftServer server, ResourceLocation id) {
+		Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
+		return styled.isEmpty() || styles(server, styled.get().base()).stream().anyMatch(s -> s.name().equals(styled.get().style()));
+	}
+
+	private static List<TablePayloads.Material> cachedMaterials(ResourceLocation id, Blueprint blueprint) {
+		CachedMaterials cached = MATERIALS.get(id);
+		if (cached != null && cached.blueprint() == blueprint) {
+			return cached.materials();
+		}
+		List<TablePayloads.Material> materials = List.copyOf(materials(blueprint));
+		MATERIALS.put(id, new CachedMaterials(blueprint, materials));
+		return materials;
 	}
 
 	// --- 3D preview (26.9) -------------------------------------------------------------------
@@ -163,8 +240,10 @@ public final class TableServer {
 
 	/** {@link #preview}, with {@code rare} also of the builder-only homes and the Wonders (listed once unlocked, 26.10). */
 	public static Optional<TablePayloads.Preview> preview(MinecraftServer server, ResourceLocation id, boolean rare) {
-		boolean wonder = rare && io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isPresent();
-		if (!rare && BlueprintLibrary.soldOnly(id) || !StarterBlueprints.offered(id) || BlueprintLibrary.isWorldgenPiece(id) && !wonder) {
+		ResourceLocation base = BlueprintStyles.base(id); // a styled id (26.11) previews its build in that style
+		boolean wonder = rare && io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(base).isPresent();
+		if (!rare && BlueprintLibrary.soldOnly(base) || !StarterBlueprints.offered(base) || BlueprintLibrary.isWorldgenPiece(base) && !wonder
+			|| !styleTaken(server, id)) {
 			return Optional.empty();
 		}
 		Optional<Blueprint> blueprint = BlueprintLibrary.get(server, id);
@@ -252,11 +331,15 @@ public final class TableServer {
 			&& player.position().distanceToSqr(Vec3.atCenterOf(table)) <= MAX_DISTANCE * MAX_DISTANCE;
 	}
 
-	/** Hands out a blueprint. Returns false (and tells the player why) if they can't have it. */
-	public static boolean take(ServerPlayer player, BlockPos table, ResourceLocation id) {
+	/**
+	 * Hands out a blueprint; a styled id (26.11) hands it out set to that style, as the style screen would. Returns false
+	 * (and tells the player why) if they can't have it.
+	 */
+	public static boolean take(ServerPlayer player, BlockPos table, ResourceLocation styledId) {
 		if (!atTable(player, table)) {
 			return false;
 		}
+		ResourceLocation id = BlueprintStyles.base(styledId);
 		Optional<Blueprint> blueprint = BlueprintLibrary.get(player.level().getServer(), id);
 		if (blueprint.isEmpty()) {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()).withStyle(ChatFormatting.RED));
@@ -291,6 +374,10 @@ public final class TableServer {
 			default -> {
 			}
 		}
+		if (!styleTaken(player.level().getServer(), styledId)) {
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.style_unsupported", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
+			return false;
+		}
 		if (!player.getAbilities().instabuild) {
 			Inventory inventory = player.getInventory();
 			int slot = -1;
@@ -306,9 +393,10 @@ public final class TableServer {
 			}
 			inventory.removeItem(slot, 1);
 		}
-		player.getInventory().placeItemBackInInventory(BlueprintItem.create(id, blueprint.get().size()));
+		// The same blueprint the style screen makes: its structure is the styled id.
+		player.getInventory().placeItemBackInInventory(BlueprintItem.create(styledId, blueprint.get().size()));
 		player.level().playSound(null, table, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundSource.BLOCKS, 1f, 1f);
-		Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.took", Blueprints.displayName(id)));
+		Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.took", Blueprints.displayName(styledId)));
 		return true;
 	}
 

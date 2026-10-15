@@ -38,10 +38,16 @@ picture of the build itself, so you can see it before you pick it.
 
 ![The selected build in 3D](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-1.jpg)
 
+![The starter cottage in Sandstone, picked from the style row](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-3.jpg)
+
 - **The picture** turns slowly by itself; drag it with the mouse to look round it or tilt it. Big builds shrink to
   fit, and builds you uploaded or scanned get a picture too, drawn from their own blocks. Your game draws it, so it
   costs the server nothing.
-- **Get Blueprint** gives you a copy for a [Blank Blueprint](blank-blueprint.md).
+- **Styles**: the row of buttons under the picture builds the selected build in another style: as drawn,
+  **Stonework**, **Sandstone**, **Dark Oak**, **Cherry**, **Grand** or, with Cobblemon, **Apricorn**. Only the styles
+  that change something in that build show, and the chosen one is framed in gold. Click one and the picture and the
+  material list change to it. Locked and "???" builds have no style row.
+- **Get Blueprint** gives you a copy for a [Blank Blueprint](blank-blueprint.md), already set to the style you chose.
 - **Upload a File** lists the build files in your `blueprints` folder (`.litematic` or `.schem`) and puts the one you
   pick in the library for everyone. Unless the server allows it with the `workplaceAllowUploads` game rule, only
   operators can upload.

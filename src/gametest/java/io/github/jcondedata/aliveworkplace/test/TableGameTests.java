@@ -3,6 +3,8 @@ package io.github.jcondedata.aliveworkplace.test;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
+import io.github.jcondedata.aliveworkplace.blueprint.StylePicker;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
@@ -18,6 +20,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -184,6 +187,82 @@ public class TableGameTests implements FabricGameTest {
 			byte[] chunk = Arrays.copyOfRange(file, offset, Math.min(file.length, offset + chunkSize));
 			TableServer.upload(player, new TablePayloads.UploadChunk(helper.absolutePos(TABLE), name, file.length, offset, chunk));
 		}
+	}
+
+	/** The style the style screen (sneak-click) sets on a cottage blueprint in hand, as the blueprint id it leaves there. */
+	private static ResourceLocation styleMenuPick(GameTestHelper helper, String style) {
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		try {
+			player.setItemInHand(InteractionHand.MAIN_HAND, BlueprintItem.create(StarterBlueprints.STARTER_COTTAGE.id(), StarterBlueprints.STARTER_COTTAGE.size()));
+			int i = BlueprintStyles.all().stream().map(BlueprintStyles.Style::name).toList().indexOf(style);
+			helper.assertTrue(i >= 0, "no " + style + " style");
+			StylePicker.forTest(player, InteractionHand.MAIN_HAND).press(StylePicker.slot(i + 1), player);
+			return BlueprintItem.data(player.getMainHandItem()).orElseThrow().structure();
+		} finally {
+			leave(helper, player);
+		}
+	}
+
+	/** 26.11: Get Blueprint with a style chosen gives the blueprint the style screen would have made. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void takingAStyledBlueprintGivesItInThatStyle(GameTestHelper helper) {
+		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
+		ResourceLocation menu = styleMenuPick(helper, "stonework");
+		ServerPlayer player = playerAtTable(helper);
+		try {
+			player.getInventory().add(new ItemStack(ModItems.BLANK_BLUEPRINT, 1));
+			ResourceLocation styled = BlueprintStyles.styled(StarterBlueprints.STARTER_COTTAGE.id(), "stonework");
+			helper.assertTrue(TableServer.take(player, helper.absolutePos(TABLE), styled), "could not take the cottage in Stonework");
+			ResourceLocation got = null;
+			for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+				got = BlueprintItem.data(player.getInventory().getItem(i)).map(d -> d.structure()).orElse(got);
+			}
+			helper.assertTrue(menu.equals(got), "the Table gave " + got + ", the style screen sets " + menu);
+		} finally {
+			leave(helper, player);
+		}
+		helper.succeed();
+	}
+
+	/** 26.11: the Table's materials in a style are the style screen's blueprint's; the build offers that style, Apricorn only with Cobblemon. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void styledMaterialsMatchTheStyleScreensBlueprint(GameTestHelper helper) {
+		var level = helper.getLevel();
+		ResourceLocation menu = styleMenuPick(helper, "sandstone");
+		ResourceLocation styled = BlueprintStyles.styled(StarterBlueprints.STARTER_COTTAGE.id(), "sandstone");
+		TablePayloads.Details details = TableServer.details(level, null, styled).orElse(null);
+		helper.assertTrue(details != null && details.id().equals(styled), "no details for the cottage in Sandstone");
+		List<TablePayloads.Material> want = TableServer.materials(BlueprintLibrary.get(level, menu).orElseThrow());
+		helper.assertTrue(details.materials().equals(want), "the Table lists " + details.materials() + ", the style screen's blueprint needs " + want);
+		helper.assertTrue(!want.equals(TableServer.details(level, null, StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().materials()),
+			"Sandstone needs the same as the cottage as drawn");
+		List<String> names = details.styles().stream().map(TablePayloads.StyleChoice::name).toList();
+		helper.assertTrue(names.contains("sandstone") && names.contains("stonework"), "the cottage offers " + names);
+		helper.assertTrue(names.contains("apricorn") == io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon"),
+			"Apricorn offered " + names.contains("apricorn") + " with Cobblemon " + io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon"));
+		helper.assertTrue(TableServer.preview(level.getServer(), styled).map(p -> p.id().equals(styled)).orElse(false), "no Sandstone preview");
+		helper.succeed();
+	}
+
+	/** 26.11: a style the build doesn't take is refused: no details, no preview, no blueprint, the Blank Blueprint kept. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void anUnsupportedStyleIsRefused(GameTestHelper helper) {
+		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
+		ResourceLocation bad = BlueprintStyles.styled(StarterBlueprints.STARTER_COTTAGE.id(), "no_such_style");
+		helper.assertTrue(TableServer.details(helper.getLevel(), null, bad).isEmpty(), "details sent for an unknown style");
+		helper.assertTrue(TableServer.preview(helper.getLevel().getServer(), bad).isEmpty(), "a preview for an unknown style");
+		ServerPlayer player = playerAtTable(helper);
+		try {
+			player.getInventory().add(new ItemStack(ModItems.BLANK_BLUEPRINT, 1));
+			helper.assertTrue(!TableServer.take(player, helper.absolutePos(TABLE), bad), "took the cottage in a style that isn't there");
+			helper.assertTrue(player.getInventory().countItem(ModItems.BLANK_BLUEPRINT) == 1, "the Blank Blueprint was used up");
+		} finally {
+			leave(helper, player);
+		}
+		helper.succeed();
 	}
 
 	private static ServerPlayer playerAtTable(GameTestHelper helper) {

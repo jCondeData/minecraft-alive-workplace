@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Pick a style at the Blueprint Table.** A row of style buttons under the 3D picture (as drawn, Stonework,
+  Sandstone, Dark Oak, Cherry, Grand, and Apricorn with Cobblemon; only those that change the selected build) recolours
+  the picture and the material list, and Get Blueprint hands the blueprint out already in that style. Locked and "???"
+  builds have no style row. Sneak-clicking the air with a blueprint still works too.
 - **The Blueprint Table is a collection.** Each village starts with the basics (18 builds: the Starter Cottage, the
   first Stone House and Terrace, and a first workplace for each everyday job); the rest show greyed out with how to get
   them, and rare builds show as a dark "???". Buying a blueprint from a builder or a market-day trader, a builder's

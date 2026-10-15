@@ -78,7 +78,21 @@ public final class TablePayloads {
 		}
 	}
 
-	/** C2S: what does this blueprint need? */
+	/**
+	 * A style the selected build can be built in (26.11): its name (as in {@code blueprint_styles/}), title and icon item.
+	 */
+	public record StyleChoice(String name, Component title, ResourceLocation icon) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, StyleChoice> CODEC = StreamCodec.composite(
+			ByteBufCodecs.stringUtf8(64), StyleChoice::name,
+			ComponentSerialization.STREAM_CODEC, StyleChoice::title,
+			ResourceLocation.STREAM_CODEC, StyleChoice::icon,
+			StyleChoice::new);
+	}
+
+	/**
+	 * C2S: what does this blueprint need? {@code id} is a listed build, or one in a style (26.11:
+	 * {@link io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles#styled}); the answer comes back under that id.
+	 */
 	public record RequestDetails(ResourceLocation id) implements CustomPacketPayload {
 		public static final Type<RequestDetails> TYPE = new Type<>(AliveWorkplace.id("table_request_details"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, RequestDetails> CODEC = StreamCodec.composite(
@@ -90,13 +104,21 @@ public final class TablePayloads {
 		}
 	}
 
-	/** S2C: the materials list for one blueprint. */
-	public record Details(ResourceLocation id, List<Material> materials) implements CustomPacketPayload {
+	/**
+	 * S2C: the materials list for one blueprint (as drawn or in a style), and the styles its build can be built in (26.11;
+	 * none for a locked build or a Wonder).
+	 */
+	public record Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles) implements CustomPacketPayload {
 		public static final Type<Details> TYPE = new Type<>(AliveWorkplace.id("table_details"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Details> CODEC = StreamCodec.composite(
 			ResourceLocation.STREAM_CODEC, Details::id,
 			Material.CODEC.apply(ByteBufCodecs.list()), Details::materials,
+			StyleChoice.CODEC.apply(ByteBufCodecs.list()), Details::styles,
 			Details::new);
+
+		public Details(ResourceLocation id, List<Material> materials) {
+			this(id, materials, List.of());
+		}
 
 		@Override
 		public Type<? extends CustomPacketPayload> type() {
@@ -136,7 +158,7 @@ public final class TablePayloads {
 		}
 	}
 
-	/** C2S: give me this blueprint (costs a Blank Blueprint in survival). */
+	/** C2S: give me this blueprint (costs a Blank Blueprint in survival); a styled id gives it set to that style (26.11). */
 	public record Take(BlockPos table, ResourceLocation id) implements CustomPacketPayload {
 		public static final Type<Take> TYPE = new Type<>(AliveWorkplace.id("table_take"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Take> CODEC = StreamCodec.composite(

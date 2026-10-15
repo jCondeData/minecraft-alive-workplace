@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.client;
 
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
@@ -46,6 +47,15 @@ public class BlueprintTableScreen extends Screen {
 	/** 3D previews by blueprint (26.9), sent with the details; kept while the screen is open. */
 	private final Map<ResourceLocation, TablePreview> previews = new HashMap<>();
 	private int previewX, previewY, previewW, previewH;
+	/** The styles each build can be built in, by build (26.11), from its details. */
+	private final Map<ResourceLocation, List<TablePayloads.StyleChoice>> styles = new HashMap<>();
+	/** The style chosen for the selected build ("" as drawn). */
+	private String style = "";
+	private static final int STYLE_CELL = 20;
+	/** Where the style row was drawn (its first cell; cells sit side by side), and how many cells: as drawn, then the styles. */
+	private int styleRowX, styleRowY, styleCells;
+	@Nullable
+	private Component hoveredStyle;
 	private boolean draggingPreview;
 	private Mode mode = Mode.LIBRARY;
 	@Nullable
@@ -96,6 +106,36 @@ public class BlueprintTableScreen extends Screen {
 
 	public void setDetails(TablePayloads.Details payload) {
 		details.put(payload.id(), payload.materials());
+		styles.put(BlueprintStyles.base(payload.id()), payload.styles());
+	}
+
+	/** The selected build as shown: in the chosen style, if any. */
+	@Nullable
+	private ResourceLocation shownId() {
+		return selectedId == null ? null : BlueprintStyles.styled(selectedId, style);
+	}
+
+	/** The styles the selected build offers (none for a locked or "???" build, 26.10). */
+	private List<TablePayloads.StyleChoice> selectedStyles() {
+		TablePayloads.Entry entry = selectedEntry();
+		return entry == null || !entry.unlocked() ? List.of() : styles.getOrDefault(entry.id(), List.of());
+	}
+
+	/** Chooses a style for the selected build ("" as drawn) and asks for its preview and materials. Also used by the screenshot harness. */
+	public void chooseStyle(String name) {
+		if (!name.isEmpty() && selectedStyles().stream().noneMatch(s -> s.name().equals(name))) {
+			return;
+		}
+		style = name;
+		ResourceLocation shown = shownId();
+		if (shown != null && !details.containsKey(shown)) {
+			ClientPlayNetworking.send(new TablePayloads.RequestDetails(shown));
+		}
+	}
+
+	/** The chosen style ("" as drawn; for the screenshot harness). */
+	public String style() {
+		return style;
 	}
 
 	public void setPreview(TablePayloads.Preview payload) {
@@ -104,13 +144,13 @@ public class BlueprintTableScreen extends Screen {
 
 	/** Cells in the selected build's preview, or -1 while none has arrived (for the screenshot harness). */
 	public int previewCells() {
-		TablePreview preview = selectedId == null ? null : previews.get(selectedId);
+		TablePreview preview = selectedId == null ? null : previews.get(shownId());
 		return preview == null ? -1 : preview.count();
 	}
 
 	/** Turns the selected build's preview as a mouse drag would (for the screenshot harness). */
 	public void dragPreview(double dx, double dy) {
-		TablePreview preview = selectedId == null ? null : previews.get(selectedId);
+		TablePreview preview = selectedId == null ? null : previews.get(shownId());
 		if (preview != null) {
 			preview.drag(dx, dy);
 		}
@@ -202,6 +242,9 @@ public class BlueprintTableScreen extends Screen {
 
 	/** Selects a library entry and asks the server for its materials. Also used by the screenshot harness. */
 	public void select(ResourceLocation id) {
+		if (!id.equals(selectedId)) {
+			style = "";
+		}
 		selectedId = id;
 		for (LibraryList.Row row : library.children()) {
 			if (row.entry.id().equals(id)) {
@@ -217,7 +260,7 @@ public class BlueprintTableScreen extends Screen {
 
 	private void take() {
 		if (selectedId != null) {
-			ClientPlayNetworking.send(new TablePayloads.Take(table, selectedId));
+			ClientPlayNetworking.send(new TablePayloads.Take(table, shownId()));
 		}
 	}
 
@@ -278,6 +321,10 @@ public class BlueprintTableScreen extends Screen {
 		int dy = top + 24;
 		if (mode == Mode.LIBRARY) {
 			renderDetails(g, dx, dy, dw, mouseX, mouseY);
+			if (hoveredStyle != null) {
+				g.renderTooltip(font, List.of(hoveredStyle.getVisualOrderText(), Component.translatable("screen.aliveworkplace.table.style_hint")
+					.withStyle(net.minecraft.ChatFormatting.GRAY).getVisualOrderText()), mouseX, mouseY);
+			}
 		} else {
 			renderFileHelp(g, dx, dy, dw);
 		}
@@ -298,6 +345,8 @@ public class BlueprintTableScreen extends Screen {
 	}
 
 	private void renderDetails(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
+		styleCells = 0;
+		hoveredStyle = null;
 		TablePayloads.Entry entry = selectedEntry();
 		if (entry == null) {
 			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.empty"), x, y, w, 0xFFAAAAAA);
@@ -332,9 +381,11 @@ public class BlueprintTableScreen extends Screen {
 		previewX = x;
 		previewY = y;
 		previewW = w;
-		previewH = Math.max(40, Math.min(120, top + panelH - 46 - y - 11 - 40 - 4));
+		List<TablePayloads.StyleChoice> choices = selectedStyles();
+		int styleRow = choices.isEmpty() ? 0 : STYLE_CELL + 3;
+		previewH = Math.max(40, Math.min(120, top + panelH - 46 - y - 11 - 40 - 4 - styleRow));
 		g.fill(previewX, previewY, previewX + previewW, previewY + previewH, LIST_BG);
-		TablePreview preview = previews.get(entry.id());
+		TablePreview preview = previews.get(shownId());
 		if (preview == null) {
 			Component loading = Component.translatable("screen.aliveworkplace.table.preview_loading");
 			g.drawString(font, loading, x + (w - font.width(loading)) / 2, y + previewH / 2 - 4, 0xFF777777, false);
@@ -352,10 +403,38 @@ public class BlueprintTableScreen extends Screen {
 			}
 		}
 		y += previewH + 4;
+		if (!choices.isEmpty()) {
+			// The styles (26.11): as drawn, then each style the build takes; the chosen one framed in gold, its name beside.
+			styleRowX = x;
+			styleRowY = y;
+			styleCells = Math.min(choices.size() + 1, Math.max(1, (w - 60) / STYLE_CELL));
+			Component chosen = Component.translatable("style.aliveworkplace.as_drawn");
+			for (int i = 0; i < styleCells; i++) {
+				TablePayloads.StyleChoice choice = i == 0 ? null : choices.get(i - 1);
+				String name = choice == null ? "" : choice.name();
+				Component title = choice == null ? Component.translatable("style.aliveworkplace.as_drawn") : choice.title();
+				int cx = x + i * STYLE_CELL;
+				boolean on = name.equals(style);
+				boolean over = mouseX >= cx && mouseX < cx + STYLE_CELL - 2 && mouseY >= y && mouseY < y + STYLE_CELL - 2;
+				g.fill(cx, y, cx + STYLE_CELL - 2, y + STYLE_CELL - 2, on ? 0xFFFFD66B : over ? 0xFF8A9BB4 : PANEL_EDGE);
+				g.fill(cx + 1, y + 1, cx + STYLE_CELL - 3, y + STYLE_CELL - 3, on ? 0xFF4A3A14 : 0xFF1C2430);
+				ItemStack icon = new ItemStack(choice == null ? net.minecraft.world.item.Items.SPRUCE_LOG : BuiltInRegistries.ITEM.get(choice.icon()));
+				g.renderItem(icon, cx + 1, y + 1);
+				if (on) {
+					chosen = title;
+				}
+				if (over) {
+					hoveredStyle = title;
+				}
+			}
+			int tx = x + styleCells * STYLE_CELL + 2;
+			g.drawString(font, font.plainSubstrByWidth(chosen.getString(), x + w - tx), tx, y + 5, 0xFFFFD66B, false);
+			y += styleRow;
+		}
 		g.drawString(font, Component.translatable("screen.aliveworkplace.table.materials"), x, y, 0xFFFFD66B, false);
 		y += 11;
 
-		List<TablePayloads.Material> materials = details.get(entry.id());
+		List<TablePayloads.Material> materials = details.get(shownId());
 		if (materials == null) {
 			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x, y, 0xFF777777, false);
 			return;
@@ -430,7 +509,18 @@ public class BlueprintTableScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
-		if (button == 0 && overPreview(mx, my) && selectedId != null && previews.containsKey(selectedId)) {
+		if (button == 0 && mode == Mode.LIBRARY && styleCells > 0 && my >= styleRowY && my < styleRowY + STYLE_CELL - 2
+			&& mx >= styleRowX && mx < styleRowX + styleCells * STYLE_CELL) {
+			int i = (int) ((mx - styleRowX) / STYLE_CELL);
+			List<TablePayloads.StyleChoice> choices = selectedStyles();
+			if (i <= choices.size()) {
+				chooseStyle(i == 0 ? "" : choices.get(i - 1).name());
+				minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
+					net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+			}
+			return true;
+		}
+		if (button == 0 && overPreview(mx, my) && selectedId != null && previews.containsKey(shownId())) {
 			draggingPreview = true;
 			return true;
 		}

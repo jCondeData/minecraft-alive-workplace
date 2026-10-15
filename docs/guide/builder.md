@@ -131,9 +131,11 @@ what's new. Once a builder finishes a building that has an upgrade, they sell it
 
 ## Styles
 
-Sneak-right-click the air with a blueprint (before placing it) to pick a style: **Stonework**, **Sandstone**, **Dark
-Oak**, **Cherry** or, with Cobblemon, **Apricorn**. The builder builds it in those blocks and the material list changes
-with it. The **Mirror** button flips the build left to right.
+Pick a style at the [Blueprint Table](blueprint-table.md): the row of buttons under the build's picture shows the
+styles that build takes (**Stonework**, **Sandstone**, **Dark Oak**, **Cherry** or, with Cobblemon, **Apricorn**), the
+picture and materials change as you click, and Get Blueprint hands it out in that style. Or sneak-right-click the air
+with a blueprint (before placing it) to pick one, as before. The builder builds it in those blocks and the material
+list changes with it. In the sneak-click screen the **Mirror** button flips the build left to right.
 
 ![Picking a style](https://jcondedata.github.io/minecraft-alive-workplace/style_menu/still-1.jpg)
 

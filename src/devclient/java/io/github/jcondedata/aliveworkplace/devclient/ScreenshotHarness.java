@@ -711,26 +711,34 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 195) {
 			shot(mc, "02_preview_dragged");
+			if (screen != null) {
+				screen.chooseStyle("sandstone"); // 26.11: a click on the Sandstone button under the preview
+			}
+		}
+		if (tick == 240) {
+			Showcase.check(screen != null && "sandstone".equals(screen.style()) && screen.previewCells() > 0,
+				"the cottage's Sandstone preview arrived (" + (screen == null ? "no screen" : screen.style() + ", " + screen.previewCells() + " blocks") + ")");
+			shot(mc, "03_preview_style");
 			if (screen != null && largestBuild != null) {
 				screen.select(largestBuild);
 			}
 		}
-		if (tick == 260) {
+		if (tick == 300) {
 			Showcase.check(screen != null && largestBuild != null && largestBuild.equals(screen.selected()) && screen.previewCells() > 0,
 				"the largest build's preview arrived (" + largestBuild + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
-			shot(mc, "03_preview_large");
+			shot(mc, "04_preview_large");
 			if (screen != null) {
 				screen.showFiles();
 				screen.upload();
 			}
 		}
-		if (tick == 360) {
+		if (tick == 400) {
 			net.minecraft.resources.ResourceLocation sel = screen == null ? null : screen.selected();
 			Showcase.check(sel != null && sel.getPath().startsWith("uploads/") && screen.previewCells() > 0,
 				"the uploaded .litematic's preview arrived (" + sel + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
-			shot(mc, "04_preview_imported");
+			shot(mc, "05_preview_imported");
 		}
-		if (tick == 380) {
+		if (tick == 420) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}

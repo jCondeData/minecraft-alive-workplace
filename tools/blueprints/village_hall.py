@@ -3,20 +3,27 @@ The Village Hall build: a home for the Village Hall block, in three levels that 
 (front at z = 0), like the homes. Every level keeps the hall block at (6, 1, 10), facing the door, and the bell under
 the porch at (6, 4, 0): an upgrade never moves either, so the village never loses its hall while the builder works.
 
-Design (after the Minecraft Architect review):
-- I, 13 x 13 x 13: a timber hall (x 1-11, z 3-11, walls four high): a cobbled plinth, a spruce frame (posts at x 1, 4,
-  8, 11 and z 3, 7, 11) with birch infill under a deepslate-tile gable (ridge along x, a 1-block overhang with a soffit),
-  the gable ends studded with a king post and a small window. A gabled porch on two log posts over the door, its ridge
-  running up into the main roof, the village bell hung from its front beam and a lantern either side of the door. The
-  notice board (four notices over a shelf) in the west bay, a flower-boxed window, a bench and a lamp on the east,
-  banners on the front corner posts. Inside: the
-  Village Hall at the head of a red runner, two banners behind it, four benches facing it, lanterns on two tie beams.
+Design (after the Minecraft Architect review, and redrawn after the owner built it in game and found the windows and
+logs out of place):
+- I, 13 x 13 x 13: a timber hall (x 1-11, z 3-11, walls four high) on a cobbled plinth with a flared stair skirt round
+  it. A spruce frame: vertical posts at the corners and at even bays (front and back x 1, 4, 8, 11; sides z 3, 6, 8,
+  11), one horizontal top plate at y 5 all round (drawn after the roof, so the gables never cut it). Every window is
+  the same 2 x 2 of panes at y 2-3, filling a 2-wide bay between two posts: flower boxes on the street front, sills on
+  the sides and back. The middle bays stay calm: the door on the front, plain infill behind the hall block at the back,
+  a 1-wide panel between the side windows. The gable ends sit on the plate with two studs carrying the side posts up to
+  the roof and a single attic pane between them. A deepslate-tile gable (ridge along x, a 1-block overhang with a
+  soffit) and a gabled porch on two log posts over the door, its ridge running up into the main roof, the village bell
+  hung from its front beam, a lantern either side of the door and a banner on each porch post. The notice board (four
+  notices over a shelf) fills the west bay of the front as the flower-boxed window fills the east one. Inside: the
+  Village Hall at the head of a red runner, two banners behind it, four benches facing it, lanterns on two tie beams
+  over the side posts.
 - II, 19 x 13 x 13: a meeting room grows out of the east wall (x 11-17, z 4-10, two blocks shallower, so its ridge sits
-  a block lower): a council table with eight seats, bookshelves, its own door between flower boxes and lanterns, a
-  bench out front. The hall's east window becomes the doorway between them.
+  a block lower), framed the same way (posts at x 14 and 17, z 7), its 2 x 2 windows in the same bays front and back
+  and on the east, on the same skirted plinth. The hall's middle side bay opens as the doorway between them; its side
+  windows are walled up. Inside: a council table with eight seats, low bookshelves under the back windows.
 - III, 24 x 24 x 13: a stone bell-and-clock tower (x 18-22, z 5-9) at the end of the meeting room: quoined corners on
-  a stepped stone footing, a door to the street, a clock face on the front and the east, a cornice, an open belfry
-  with the great bell, a steep hipped deepslate cap. Banners on its front, lamp posts at the street.
+  a stepped stone footing, a door to the street between two lamp posts, a clock face on the front and the east, a
+  cornice, an open belfry with the great bell, a steep hipped deepslate cap. Banners on its front.
 
 Blocks are the five build styles' base set (spruce, birch, cobblestone, stone bricks, andesite, deepslate tiles), so
 each style swaps them (data/aliveworkplace/blueprint_styles) and the hall reads right in all of them.
@@ -31,27 +38,26 @@ BANNER = "blue"
 HALL_POS = (6, 1, 10)
 
 
+FRONT_POSTS = (1, 4, 8, 11)  # front and back: 2-wide window bays either side of the 3-wide door bay
+SIDE_POSTS = (3, 6, 8, 11)  # the sides: 2-wide window bays either side of a 1-wide panel
+
+
 def hall_body(b):
     """The hall's walls x 1-11, z 3-11 (four high) with its frame, windows, door and the room inside."""
     plinth(b, 1, 3, 11, 11, STONE_MIX, floor="spruce_planks")
+    skirt(b, 1, 3, 11, 11, COBBLE)
     walls(b, 1, 3, 11, 11, 1, 4, INFILL)
-    posts(b, [(1, 3), (4, 3), (8, 3), (11, 3), (1, 11), (4, 11), (8, 11), (11, 11), (1, 7), (11, 7)], 1, 4, FRAME)
-    beam_ring(b, 1, 3, 11, 11, 5, FRAME)
-    # The door in the middle bay, a lintel over it and a step before it
+    posts(b, [(x, z) for x in FRONT_POSTS for z in (3, 11)] + [(x, z) for x in (1, 11) for z in SIDE_POSTS], 1, 4, FRAME)
+    # The door in the middle bay of the front, a step before it
     door(b, 6, 1, 3, "spruce_door", "south")
-    log(b, 6, 3, 3, FRAME, axis="x")
-    # A window with a flower box in the east bay, the notice board in the west one (no shutters: the banners hang on
-    # the corner posts beside them)
+    # Every window the same: 2 x 2 panes at y 2-3 filling a 2-wide bay. A flower box on the street front (the notice
+    # board fills the west bay), sills on the sides and the back.
     window(b, 9, 2, 3, "north", width=2, height=2, flowers=(TRIM.trapdoor, ["potted_cornflower", "potted_allium"]))
-    for x in (1, 11):
-        b.set(x, 3, 2, f"{BANNER}_wall_banner", facing="north")
-    # Side and back windows, shuttered, on sills
-    for z in (5, 9):
-        window(b, 1, 2, z, "west", height=2, shutters=TRIM.trapdoor, sill=TRIM)
-        window(b, 11, 2, z, "east", height=2, shutters=TRIM.trapdoor, sill=TRIM)
+    for z in (4, 9):
+        window(b, 1, 2, z + 1, "west", width=2, height=2, sill=TRIM)  # runs north from z + 1
+        window(b, 11, 2, z, "east", width=2, height=2, sill=TRIM)
     for x in (2, 9):
-        window(b, x, 2, 11, "south", width=2, height=2, shutters=TRIM.trapdoor, sill=TRIM)
-    pane(b, 6, 3, 11)
+        window(b, x + 1, 2, 11, "south", width=2, height=2, sill=TRIM)  # runs west from x + 1
     # Inside: the Village Hall at the head of a red runner, banners behind it, benches facing it
     b.set(*HALL_POS, "aliveworkplace:village_hall", facing="north")
     for z in range(4, 10):
@@ -65,7 +71,7 @@ def hall_body(b):
     for z in (5, 7):
         for x in (2, 3, 4, 8, 9, 10):
             stairs(b, x, 1, z, TRIM, "north")
-    for z in (6, 9):  # tie beams for the lights
+    for z in (6, 8):  # tie beams over the side posts, for the lights
         for x in range(2, 11):
             log(b, x, 5, z, FRAME, axis="x")
         lantern(b, 3, 4, z, hanging=True)
@@ -73,20 +79,21 @@ def hall_body(b):
 
 
 def hall_roof(b):
-    """The main gable (ridge along x at y 10) with studded gable ends, then the porch's cross gable meeting it."""
+    """The main gable (ridge along x at y 10), the top plate over it, and the gable ends: two studs carrying the side
+    posts up to the roof, an attic pane between them."""
     gable_roof(b, 0, 12, 2, 12, 5, ROOF, axis="x", gable=INFILL, gable_at=(1, 11), eave_trim=TRIM)
+    beam_ring(b, 1, 3, 11, 11, 5, FRAME)
     for x in (1, 11):
-        log(b, x, 6, 7, FRAME)
-        pane(b, x, 7, 7)
-        log(b, x, 8, 7, FRAME)
-        for z in (5, 9):  # studs over the side windows, up to the roof
-            for y in (6, 7):
+        for z in (6, 8):
+            for y in (6, 7, 8):
                 log(b, x, y, z, FRAME)
+        pane(b, x, 7, 7)
 
 
 def hall_porch(b):
     """The porch before the door: log posts on stone, a stone deck, a wide step, beams carrying a cross gable whose ridge
-    runs into the main roof. The bell hangs from the front beam; lanterns hang either side of the door."""
+    runs into the main roof. The bell hangs from the front beam; lanterns hang either side of the door; a banner hangs
+    on the outer face of each post."""
     for x in (4, 8):
         b.set(x, 0, 0, "stone_bricks")
         posts(b, [(x, 0)], 1, 4, FRAME)
@@ -107,6 +114,8 @@ def hall_porch(b):
     b.set(6, 4, 0, "bell", attachment="ceiling", facing="east", powered=False)
     lantern(b, 5, 4, 2, hanging=True)
     lantern(b, 7, 4, 2, hanging=True)
+    b.set(3, 3, 0, f"{BANNER}_wall_banner", facing="west")
+    b.set(9, 3, 0, f"{BANNER}_wall_banner", facing="east")
 
 
 def notice_board(b):
@@ -119,7 +128,7 @@ def notice_board(b):
 
 
 def village_hall():
-    """13 x 13 x 13: the timber hall, its porch with the bell, the notice board, a bench and a lamp out front."""
+    """13 x 13 x 13: the timber hall, its porch with the bell, the notice board and a bench out front."""
     b = Build(13, 13, 13)
     hall_body(b)
     hall_roof(b)
@@ -127,46 +136,42 @@ def village_hall():
     notice_board(b)
     stairs(b, 9, 0, 1, TRIM, "south")
     stairs(b, 10, 0, 1, TRIM, "south")
-    lamp_post(b, 12, 0, 1, "spruce_fence", height=2)
     b.fill_air()
     return b
 
 
 def meeting_room(b):
-    """Hall II's meeting room, x 11-17, z 4-10, through the hall's east wall."""
-    # The hall's east shutters and sills come off; the south-east window becomes the doorway, the other is walled up
+    """Hall II's meeting room, x 11-17, z 4-10, through the hall's east wall, framed like the hall."""
+    # The hall's east sills come off and its windows are walled up; the middle bay (between the posts at z 6 and 8)
+    # opens as the doorway
     b.clear(12, 1, 4, 12, 4, 10)
+    for z in (4, 5, 9, 10):
+        for y in (2, 3):
+            b.set(11, y, z, INFILL)
     for y in (1, 2):
-        b.set(11, y, 5, "air")
-    b.set(11, 3, 5, INFILL)
-    for y in (2, 3):
-        b.set(11, y, 9, INFILL)
+        b.set(11, y, 7, "air")
+    b.set(11, 0, 7, "spruce_planks")
     plinth(b, 11, 4, 17, 10, STONE_MIX, floor="spruce_planks")
-    b.set(11, 0, 5, "spruce_planks")
+    for x in range(12, 18):
+        stairs(b, x, 0, 3, COBBLE, "south")
+        stairs(b, x, 0, 11, COBBLE, "north")
+    for z in range(4, 11):
+        stairs(b, 18, 0, z, COBBLE, "west")
     for y in range(1, 5):
         for x in range(12, 18):
             b.set(x, y, 4, INFILL)
             b.set(x, y, 10, INFILL)
         for z in range(5, 10):
             b.set(17, y, z, INFILL)
-    posts(b, [(17, 4), (17, 10), (17, 7)], 1, 4, FRAME)
-    for x in range(12, 18):
-        log(b, x, 5, 4, FRAME, axis="x")
-        log(b, x, 5, 10, FRAME, axis="x")
-    for z in range(5, 10):
-        log(b, 17, 5, z, FRAME, axis="z")
-    # Its door in the middle of the front between two posts, a lantern hanging from a beam end over each, a lintel and
-    # a step; a window with a flower box either side
-    posts(b, [(13, 4), (15, 4)], 1, 4, FRAME)
-    door(b, 14, 1, 4, "spruce_door", "south")
-    log(b, 14, 3, 4, FRAME, axis="x")
-    stairs(b, 14, 0, 3, COBBLE, "south")
-    window(b, 12, 2, 4, "north", height=2, flowers=(TRIM.trapdoor, ["potted_poppy"]))
-    window(b, 16, 2, 4, "north", height=2, flowers=(TRIM.trapdoor, ["potted_dandelion"]))
-    window(b, 17, 2, 5, "east", width=2, height=2, shutters=TRIM.trapdoor, sill=TRIM)
-    window(b, 17, 2, 8, "east", width=2, height=2, shutters=TRIM.trapdoor, sill=TRIM)
-    window(b, 14, 2, 10, "south", height=2, sill=TRIM)
-    # The council table with eight seats, bookshelves along the back, lights on a tie beam
+    posts(b, [(14, 4), (17, 4), (14, 10), (17, 10), (17, 7)], 1, 4, FRAME)
+    # The same 2 x 2 windows in its bays: flower boxes on the front, sills on the east and the back
+    window(b, 12, 2, 4, "north", width=2, height=2, flowers=(TRIM.trapdoor, ["potted_poppy", "potted_dandelion"]))
+    window(b, 15, 2, 4, "north", width=2, height=2, flowers=(TRIM.trapdoor, ["potted_dandelion", "potted_poppy"]))
+    window(b, 17, 2, 5, "east", width=2, height=2, sill=TRIM)
+    window(b, 17, 2, 8, "east", width=2, height=2, sill=TRIM)
+    for x in (13, 16):
+        window(b, x, 2, 10, "south", width=2, height=2, sill=TRIM)  # runs west from x
+    # The council table with eight seats, low bookshelves under the back windows, lights on a tie beam
     for x in (13, 14, 15):
         slab(b, x, 1, 7, TRIM, top=True)
         stairs(b, x, 1, 6, TRIM, "north")
@@ -174,22 +179,24 @@ def meeting_room(b):
     stairs(b, 12, 1, 7, TRIM, "west")
     stairs(b, 16, 1, 7, TRIM, "east")
     for x in (12, 13, 15, 16):
-        for y in (1, 2):
-            b.set(x, y, 9, "bookshelf")
-    b.set(13, 3, 9, "potted_azure_bluet")
-    b.set(15, 3, 9, "potted_oxeye_daisy")
+        b.set(x, 1, 9, "bookshelf")
+    b.set(13, 2, 9, "potted_azure_bluet")
+    b.set(15, 2, 9, "potted_oxeye_daisy")
     b.set(16, 3, 7, f"{BANNER}_wall_banner", facing="west")
     for x in range(12, 17):
         log(b, x, 5, 7, FRAME, axis="x")
     lantern(b, 13, 4, 7, hanging=True)
     lantern(b, 15, 4, 7, hanging=True)
-    # Its roof, a block lower than the hall's, running east from the hall's gable
+    # Its roof, a block lower than the hall's, running east from the hall's gable; the top plate after it, so the gable
+    # never cuts it; a king post up the gable over the east post
     gable_roof(b, 13, 18, 3, 11, 5, ROOF, axis="x", gable=INFILL, gable_at=(17, 17), eave_trim=TRIM)
-    log(b, 17, 6, 7, FRAME)
-    pane(b, 17, 7, 7)
-    for x in (13, 15):  # beam ends out through the soffit over the door, lanterns hanging from them
-        log(b, x, 4, 3, FRAME, axis="z")
-        lantern(b, x, 3, 3, hanging=True)
+    for x in range(12, 18):
+        log(b, x, 5, 4, FRAME, axis="x")
+        log(b, x, 5, 10, FRAME, axis="x")
+    for z in range(5, 10):
+        log(b, 17, 5, z, FRAME, axis="z")
+    for y in (6, 7, 8):
+        log(b, 17, y, 7, FRAME)
     # A bench before it
     stairs(b, 16, 0, 2, TRIM, "south")
     stairs(b, 17, 0, 2, TRIM, "south")
@@ -290,14 +297,14 @@ def village_hall_3():
         for z in range(5, 10):
             b.blocks.pop((18, y, z), None)
     # The meeting room's east windows would look into the tower: walled up, their shutters and sills off
-    b.clear(18, 1, 4, 18, 4, 10)
+    b.clear(18, 0, 4, 18, 4, 10)
     for z in (5, 6, 8, 9):
         for y in (2, 3):
             b.set(17, y, z, INFILL)
     bell_tower(b)
     for x in (19, 21):
         b.set(x, 7, 4, f"{BANNER}_wall_banner", facing="north")
-    lamp_post(b, 23, 0, 3, "spruce_fence", height=2)
-    lamp_post(b, 18, 0, 2, "spruce_fence", height=2)
+    for x in (18, 22):  # a lamp post either side of the tower's door
+        lamp_post(b, x, 0, 3, "spruce_fence", height=2)
     b.fill_air()
     return b

@@ -1661,6 +1661,10 @@ public class BuilderWork extends Behavior<Villager> {
 		if (state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE)) {
 			io.github.jcondedata.aliveworkplace.store.Porters.onBuilt(level, pos, site);
 		}
+		if (state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL)) { // a Village Hall build's heart
+			boolean players = site.stewardHall() == null;
+			io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.built(level, pos, players ? site.owner() : null, players ? site.ownerName() : "");
+		}
 
 		if (state.getBlock() instanceof LiquidBlock) {
 			level.playSound(null, pos, state.getFluidState().is(net.minecraft.tags.FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY,

@@ -22,9 +22,41 @@
 			rewards: [{id: "5373C57F71A8A938", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 5}, {id: "2D0998A870096EF6", type: "xp", xp: 150}]
 		},
 		{
+			id: "637EED167FA3D0CD",
+			x: 3.0d,
+			y: -7.0d,
+			title: "Build the Village Hall",
+			subtitle: "The heart of your village",
+			description: ["A few houses are only houses until they have a Village Hall. The hall is what makes them a village: it gets a name and a rank (Hamlet, then Village, Town and City), and the hall's screen shows everyone who lives there, what they need and what they're waiting for.", "", "With a hall the village gets quests from its people, caravans and trade routes to other villages, and later a Steward who plans and builds on their own. It's where the village grows: newcomers arrive and families have children. Wonders, the greatest builds of all, come later still.", "", "The Village Hall blueprint is in the Blueprint Table: a timber hall with the Village Hall block inside, a bell under its porch and a notice board. Build it in the middle of your village. Once it's finished it works just like a Village Hall you put down yourself, and it's yours."],
+			dependencies: ["694682BB5A92E7B1"],
+			icon: {id: "aliveworkplace:village_hall", count: 1},
+			tasks: [{id: "2DBF347BF1C05C8B", type: "advancement", advancement: "aliveworkplace:built/village_hall", criterion: ""}],
+			rewards: [{id: "1AB908FB0A230ACC", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 5}, {id: "5441821A22F677F1", type: "xp", xp: 150}]
+		},
+		{
+			id: "55084877FB701EB1",
+			x: 6.0d,
+			y: -6.0d,
+			title: "Village Hall II",
+			description: ["Right-click the finished hall with the Village Hall II blueprint: the builder adds a meeting room on the east, with a council table and bookshelves."],
+			dependencies: ["637EED167FA3D0CD"],
+			tasks: [{id: "550419296E7E2F93", type: "advancement", advancement: "aliveworkplace:built/village_hall_2", criterion: ""}],
+			rewards: [{id: "50CAEF5CFE5834AF", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 4}]
+		},
+		{
+			id: "6837B2CE75F56EF8",
+			x: 9.0d,
+			y: -1.0d,
+			title: "Village Hall III",
+			description: ["The grand civic hall: a stone tower with a clock and a great bell rises at the end of the meeting room. Every village nearby will know where its heart is."],
+			dependencies: ["55084877FB701EB1"],
+			tasks: [{id: "2E648DC2AC9F8ABA", type: "advancement", advancement: "aliveworkplace:built/village_hall_3", criterion: ""}],
+			rewards: [{id: "7CF4BF4CAB7A99EF", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 5}]
+		},
+		{
 			id: "197D0F50A19AD1DB",
 			x: 3.0d,
-			y: -6.0d,
+			y: -5.0d,
 			title: "Starter Cottage II",
 			description: ["Most buildings have a bigger version. Once a builder finishes one, they sell its upgrade (the Blueprint Table has it too).", "", "Right-click the finished cottage with the Starter Cottage II blueprint: it lines up exactly over it, and the builder only builds what's new, an upper story with a second bed. A bed in a tier II building counts as a fine home, which makes the villagers who sleep there happier."],
 			dependencies: ["694682BB5A92E7B1"],
@@ -34,7 +66,7 @@
 		{
 			id: "4BC109ECED52345A",
 			x: 6.0d,
-			y: -5.0d,
+			y: -4.0d,
 			title: "Starter Cottage III",
 			description: ["The last tier: a kitchen wing to the east with a smoker, a cauldron and another barrel, and a roof terrace on top. Its beds count as a grand home."],
 			dependencies: ["197D0F50A19AD1DB"],
@@ -44,7 +76,7 @@
 		{
 			id: "64927DE017998B79",
 			x: 3.0d,
-			y: -4.0d,
+			y: -3.0d,
 			title: "A Stone House",
 			description: ["More homes, more villagers: with a free bed, plenty of food and a fairly happy village, a couple has a baby.", "", "The Stone House is a sturdy stone cottage with a bed downstairs and one in the attic. It's in the Blueprint Table."],
 			dependencies: ["694682BB5A92E7B1"],
@@ -54,7 +86,7 @@
 		{
 			id: "2ABBB95E35DA9E5C",
 			x: 6.0d,
-			y: -3.0d,
+			y: -2.0d,
 			title: "Stone House II",
 			description: ["Upgrade the Stone House with a timber-framed upper story and two more beds: right-click the finished house with the Stone House II blueprint."],
 			dependencies: ["64927DE017998B79"],
@@ -64,7 +96,7 @@
 		{
 			id: "7E3F00F5E04228E4",
 			x: 9.0d,
-			y: 0.0d,
+			y: 1.0d,
 			title: "Stone House III",
 			description: ["A stone wing at the back with two more beds: six in all, in a grand home."],
 			dependencies: ["2ABBB95E35DA9E5C"],
@@ -74,7 +106,7 @@
 		{
 			id: "749D5A57926A1462",
 			x: 3.0d,
-			y: -2.0d,
+			y: -1.0d,
 			title: "A Terrace",
 			description: ["Two row houses of two stories under one roof, with four beds: the quickest way to give a growing village lots of beds. It's in the Blueprint Table."],
 			dependencies: ["694682BB5A92E7B1"],
@@ -84,7 +116,7 @@
 		{
 			id: "48675291D06186EE",
 			x: 6.0d,
-			y: -1.0d,
+			y: 0.0d,
 			title: "Terrace II",
 			description: ["A third home on the east end: six beds."],
 			dependencies: ["749D5A57926A1462"],
@@ -94,7 +126,7 @@
 		{
 			id: "5A0E99E4CAFFCAA2",
 			x: 3.0d,
-			y: 0.0d,
+			y: 1.0d,
 			optional: true,
 			title: "Build with friends",
 			description: ["The first player to hand a builder a blueprint hires them. Add your friends with /workplace friend add <name> and your builders take their orders too."],
@@ -105,7 +137,7 @@
 		{
 			id: "1AD3E816F7516BED",
 			x: 3.0d,
-			y: 2.0d,
+			y: 3.0d,
 			title: "A crew of four",
 			description: ["Up to three builders with nothing to do join a build near their table, so a crew of four finishes in under a third of the time. A Builder's Workshop (next chapter) is a home for one more.", "", "Busy builders also queue up to five more blueprints and build them in order."],
 			dependencies: ["694682BB5A92E7B1"],
@@ -115,7 +147,7 @@
 		{
 			id: "5B85396BC9BD697E",
 			x: 3.0d,
-			y: 4.0d,
+			y: 5.0d,
 			title: "Your own builds: the Scan Tool",
 			description: ["A Blank Blueprint and a spyglass make a Scan Tool. Right-click two opposite corners of something you built, then sneak-right-click the air: you get a blueprint of it, and it's in the Blueprint Table for everyone.", "", "Rename the tool in an anvil first to name the build."],
 			dependencies: ["694682BB5A92E7B1"],
@@ -126,7 +158,7 @@
 		{
 			id: "24310E7CB4B1DCF9",
 			x: 3.0d,
-			y: 6.0d,
+			y: 7.0d,
 			title: "The Shape Planner",
 			description: ["A Blank Blueprint and a compass make a Shape Planner. Pick a box, cylinder, dome, sphere, cone, pyramid or arch, its size and a block you carry, and draw it as a blueprint. Great for walls, towers and domes."],
 			dependencies: ["694682BB5A92E7B1"],
@@ -137,7 +169,7 @@
 		{
 			id: "5159BE625786950E",
 			x: 6.0d,
-			y: 3.0d,
+			y: 4.0d,
 			optional: true,
 			title: "Builds from the internet",
 			description: ["Download a build as a .litematic or .schem file and drop it in your blueprints folder. At the Blueprint Table, Upload a File puts it in the library for everyone.", "", "Only operators can upload, unless the server allows it with the workplaceAllowUploads game rule."],
@@ -148,7 +180,7 @@
 		{
 			id: "5F3953D6E050FA8E",
 			x: 6.0d,
-			y: 5.0d,
+			y: 6.0d,
 			optional: true,
 			title: "Imports for server owners",
 			description: ["Server operators: put .litematic, .schem or .nbt files in the aliveworkplace/import folder inside the world's folder and run /workplace import. Each file becomes a blueprint everyone can use."],
@@ -159,7 +191,7 @@
 		{
 			id: "62600EB892F1BBD7",
 			x: 6.0d,
-			y: 1.0d,
+			y: 2.0d,
 			shape: "gear",
 			size: 1.5d,
 			title: "A Master builder",

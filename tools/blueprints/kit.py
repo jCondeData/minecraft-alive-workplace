@@ -91,6 +91,8 @@ class Build:
     def fill_air(self):
         seal_slots(self)  # roofs that run in under another's overhang meet at a wall, not a gap
         finish(self)  # stair corners and fence/pane/wall connections, as the game would work them out
+        if seal_peeks(self):  # no quarter-block gaps into the attic where roofs meet at a corner
+            finish(self)
         for x in range(self.w):
             for y in range(self.h):
                 for z in range(self.d):
@@ -541,12 +543,15 @@ def seal_slots(b):
     for block (its infill, posts and windows), from the lower roof up to the overhang, so the two roofs meet at a wall
     instead of leaving a dark gap of open blocks between them (holes.py, "meet"). Run by fill_air."""
     from holes import scan
+    keep_open = getattr(b, "open_slots", set())  # columns (x, z) left open on purpose (holes.ALLOW says why)
     for _ in range(3):  # an overhang two deep takes two passes
         cells = {p: blk[0] for p, blk in b.blocks.items()}
         slots = scan((b.w, b.h, b.d), cells, only_slots=True)
         if not slots:
             return
         for (x, y, z), (dx, dz), down, up in slots:
+            if (x, z) in keep_open:
+                continue
             column = range(down + 1, up)
             if any(b.blocks.get((x, yy, z), ("minecraft:air",))[0] not in ("minecraft:air", "minecraft:cave_air")
                    for yy in column):
@@ -559,6 +564,45 @@ def seal_slots(b):
             fallback = max(set(plain or usable), key=(plain or usable).count)
             for yy, w in zip(column, wall):
                 b.blocks[(x, yy, z)] = w if w in usable else fallback
+
+
+def full_of(block_id):
+    """The full block of the family a stair or slab id belongs to (deepslate_tile_stairs -> deepslate_tiles): the kit's
+    families first, then the vanilla naming rules."""
+    name = block_id.split(":")[-1]
+    ns = block_id.split(":")[0] if ":" in block_id else "minecraft"
+    for fam in [v for v in globals().values() if isinstance(v, Family)]:
+        if name in (fam.stairs, fam.slab) and isinstance(fam.full, str):
+            return fam.full if ":" in fam.full else f"{ns}:{fam.full}"
+    base = name[:-len("_stairs")] if name.endswith("_stairs") else name[:-len("_slab")] if name.endswith("_slab") else name
+    if base in ("oak", "spruce", "birch", "jungle", "acacia", "dark_oak", "mangrove", "cherry", "crimson", "warped",
+                "bamboo"):
+        return f"{ns}:{base}_planks"
+    for end in ("brick", "tile"):
+        if base.endswith(end):
+            return f"{ns}:{base}s"
+    if base in ("quartz", "purpur"):
+        return f"{ns}:{base}_block"
+    return f"{ns}:{base}"
+
+
+def seal_peeks(b):
+    """Fills the cells holes.py calls "peek": shut in under a roof, and seen from outside past the open top half of a
+    roof stair beside them, where two roofs meet at a corner or a valley (a wing's roof running into the main one's
+    end, a porch's into the eaves). The game shapes a stair from its neighbours (a stair in the middle of a straight
+    run stays straight even with a cross roof's stair in front of it), so the corner can't close the gap by its shape:
+    a full block of the roof over the cell closes it, as a builder packs the corner of a roof. Run by fill_air after
+    finish (it needs the stairs' shapes). Returns whether it filled any."""
+    from holes import peeks
+    cells = {p: blk[0] for p, blk in b.blocks.items()}
+    states = {p: dict(blk[1]) for p, blk in b.blocks.items()}
+    filled = False
+    for q, cover in peeks((b.w, b.h, b.d), cells, states):
+        if q in b.blocks and b.blocks[q][0] == "minecraft:structure_void":
+            continue  # left as the world has it, on purpose
+        b.blocks[q] = (full_of(cover), ())
+        filled = True
+    return filled
 
 
 def chimney(b, x, z, y0, y1, name=STONE_MIX, smoke=True):

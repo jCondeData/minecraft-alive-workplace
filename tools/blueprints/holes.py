@@ -9,6 +9,10 @@ Finds the holes a player would see in a shipped blueprint (.nbt), without the ga
   stray  a single empty cell wedged in the build: a block above and below it and blocks on both sides along a line
          (a wall, a beam, a fence or wall line), or a post under it and beams on two sides (the corner of a frame),
          so the neighbours say a block belongs there.
+  peek   an empty cell shut in under a roof (a stair or slab right over it, or one above that) and seen from outside
+         over the open top half of a roof stair beside it: where one roof meets another at a corner or a valley and a
+         stair, shaped as the game shapes it, leaves a quarter of a block open into the attic behind (kit.seal_peeks
+         fills them).
 
 Not reported (whitelisted by pattern): chimney tops and anything over the highest block of a column next to it (open
 sky outside), courtyards and yards (an open patch of more than four cells at its level, or any patch below y 3),
@@ -53,18 +57,87 @@ ALLOW = {
     ("camp/settlers_camp", (3, 2, 4)): TENT, ("camp/settlers_camp", (7, 2, 4)): TENT, ("camp/war_camp", (9, 1, 15)): TENT,
     ("camp/coven_hut", (7, 1, 4)): "under the stilted deck, behind its steps: out of sight",
 }
+# Village Hall III's tower rises out of the meeting room's roof: on its west, under the cornice and the cap's eave, the
+# air against the tower wall is open over the meeting room's roof (village_hall.py leaves that column open: closed,
+# it stood out as a stray wall a block off the tower)
+TOWER_EAVE = "open air under the tower's west cornice and eave, over the meeting room's roof"
+ALLOW.update({("village_hall_3", (17, y, z)): TOWER_EAVE for y in range(5, 16) for z in range(4, 11)})
 
 
-def load(path):
-    """(size, cells): cells maps (x, y, z) to a block id, or to None for a structure void (left out of the file)."""
+def load(path, props=False):
+    """(size, cells): cells maps (x, y, z) to a block id, or to None for a structure void (left out of the file).
+    props=True: (size, cells, states), states mapping each cell to its block's properties (a dict)."""
     root = nbtlib.load(path)
     size = tuple(int(v) for v in root["size"])
     palette = [str(p["Name"]) for p in root["palette"]]
-    cells = {}
+    palette_props = [{k: str(v) for k, v in p.get("Properties", {}).items()} for p in root["palette"]]
+    cells, states = {}, {}
     for e in root["blocks"]:
         x, y, z = (int(v) for v in e["pos"])
         cells[(x, y, z)] = palette[int(e["state"])]
-    return size, cells
+        states[(x, y, z)] = palette_props[int(e["state"])]
+    return (size, cells, states) if props else (size, cells)
+
+
+_DIRS = {"north": (0, -1), "south": (0, 1), "west": (-1, 0), "east": (1, 0)}
+_OPP = {"north": "south", "south": "north", "west": "east", "east": "west"}
+_CW = {"north": "east", "east": "south", "south": "west", "west": "north"}
+_CCW = {v: k for k, v in _CW.items()}
+
+
+def _open_sides(facing, shape):
+    """The sides of a (bottom-half) stair where its top half doesn't close the whole face: all but the back, and for
+    an inner corner all but the back and the side its extra quarter is on (an outer corner is open all round)."""
+    if shape == "inner_left":
+        return {_OPP[facing], _CW[facing]}
+    if shape == "inner_right":
+        return {_OPP[facing], _CCW[facing]}
+    if shape in ("outer_left", "outer_right"):
+        return set(_DIRS)
+    return {_OPP[facing], _CW[facing], _CCW[facing]}
+
+
+def peeks(size, cells, states):
+    """[((x, y, z), cover)] the "peek" holes: an empty cell beside a roof stair that is open to the sky, on a side the
+    stair's top half leaves open, shut in under a roof (a stair or a slab right over it, or over the empty cell above
+    it: the cover) and on all four sides (none of them open sky or outside the build: then it's a nook under the eaves,
+    not a hole into the attic), up from y 3, and not by a door, a ladder, a bed or a lantern."""
+    w, h, d = size
+
+    def name(p):
+        return cells.get(p, "minecraft:structure_void") or "minecraft:structure_void"
+
+    def inside(x, y, z):
+        return 0 <= x < w and 0 <= y < h and 0 <= z < d
+
+    top = {}
+    for (x, y, z), b in cells.items():
+        if b not in OPEN and b is not None:
+            top[(x, z)] = max(top.get((x, z), -1), y)
+    found = {}
+    for (x, y, z), b in cells.items():
+        if not b or not b.endswith("_stairs"):
+            continue
+        p = states.get((x, y, z), {})
+        if p.get("half") != "bottom" or top.get((x, z)) != y:
+            continue
+        for side in _open_sides(p.get("facing", "north"), p.get("shape", "straight")):
+            dx, dz = _DIRS[side]
+            q = (x + dx, y, z + dz)
+            if y < 3 or not inside(*q) or name(q) not in OPEN or q in found:
+                continue
+            cover = next((c for c in ((q[0], y + 1, q[2]), (q[0], y + 2, q[2])) if name(c) not in OPEN), None)
+            if cover is None or not (name(cover).endswith("_stairs") or name(cover).endswith("_slab")):
+                continue
+            if any(not inside(q[0] + ex, y, q[2] + ez) or (name((q[0] + ex, y, q[2] + ez)) in OPEN
+                                                           and top.get((q[0] + ex, q[2] + ez), -1) < y)
+                   for ex, ez in _DIRS.values()):
+                continue
+            if any(t in name((q[0] + i, y + j, q[2] + k)) for i in (-1, 0, 1) for j in (-1, 0, 1) for k in (-1, 0, 1)
+                   for t in NEAR_OK):
+                continue
+            found[q] = name(cover)
+    return sorted(found.items())
 
 
 def scan(size, cells, only_slots=False):
@@ -229,12 +302,13 @@ def main(argv):
     summary = "--summary" in argv
     show_all = "--all" in argv
     args = [a for a in argv if not a.startswith("--")]
-    total = {"roof": 0, "meet": 0, "stray": 0}
+    total = {"roof": 0, "meet": 0, "stray": 0, "peek": 0}
     builds = allowed = 0
     for path in blueprints(args):
-        size, cells = load(path)
+        size, cells, states = load(path, props=True)
         name = os.path.relpath(path, STRUCTURES)[:-4]
-        found = scan(size, cells)
+        found = scan(size, cells) + [("peek", q, f"shut in under {cover.split(':')[-1]}, seen past a roof stair's open top")
+                                     for q, cover in peeks(size, cells, states)]
         kept = [f for f in found if (name, f[1]) not in ALLOW]
         allowed += len(found) - len(kept)
         found = found if show_all else kept
@@ -247,7 +321,7 @@ def main(argv):
             if not summary:
                 for kind, pos, why in found:
                     print(f"  {kind} {pos} {why}")
-    print(f"TOTAL {sum(total.values())} ({total['roof']} roof, {total['meet']} meet, {total['stray']} stray) in {builds} blueprints"
+    print(f"TOTAL {sum(total.values())} ({total['roof']} roof, {total['meet']} meet, {total['stray']} stray, {total['peek']} peek) in {builds} blueprints"
           + ("" if show_all else f"; {allowed} more on purpose (ALLOW; --all lists them)"))
     return 1 if any(total.values()) else 0
 

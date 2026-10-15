@@ -998,6 +998,13 @@ SCENES = [
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
+    # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
+    S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
+      "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",
+      90, [("10_village_hall_front", "Village Hall I: a timber hall with the bell under its porch"),
+           ("12_village_hall_east", "Village Hall I from the side: posts at even bays, matching windows"),
+           ("26_village_hall_3_back", "Village Hall III from behind: the meeting room and the bell-and-clock tower"),
+           ("28_sandstone_village_hall_3_front", "Village Hall III in Sandstone")]),
     S("realm_builds", "Realm builds", "The Colony Camp, the Royal Hall and the Royal Hall II, and all three in the five styles",
       "the Colony Camp, the Royal Hall and the Royal Hall II stand as drawn and in the five styles, the camp with its table and chest, each hall with its vault and on the map as a hall",
       200, [("10_colony_camp", "The Colony Camp: two wagons, the Village Hall under a striped awning, the campfire and the Travel Post"),

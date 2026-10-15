@@ -45,7 +45,8 @@ Once a builder finishes the hall, they sell its upgrade's blueprint as well (the
 the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new, and the
 Village Hall block stays where it is the whole time, so your village never loses its hall.
 
-- **Village Hall II** adds a meeting room on the east, with a council table for eight, bookshelves and its own door.
+- **Village Hall II** adds a meeting room on the east, through a doorway from the hall, with a council table for eight
+  and bookshelves.
 - **Village Hall III** adds a stone tower at the end of the meeting room, with a clock on two sides and a great bell in
   its belfry.
 

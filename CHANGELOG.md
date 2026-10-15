@@ -67,6 +67,9 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **The Village Hall build is framed properly.** Its logs now stand as posts at the corners and at even bays with one
+  beam round the top, and every window is the same 2 x 2 at one height, in a bay, with a flower box or a sill; the
+  gables, the meeting room (Hall II, now entered from the hall) and the stray lamp post are tidied to match.
 - JEI, REI and EMI no longer list the 26 retired workstations (the Kitchen Stove, Postal Desk and the other old benches that
   can't be crafted and are kept only so old worlds load); the jobs' real workstations are unchanged.
 - **Questbook updates reach the server.** FTB Quests rewrites every chapter it saves (and moves its text to its lang

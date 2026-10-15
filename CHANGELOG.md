@@ -39,6 +39,8 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- JEI, REI and EMI no longer list the 26 retired workstations (the Kitchen Stove, Postal Desk and the other old benches that
+  can't be crafted and are kept only so old worlds load); the jobs' real workstations are unchanged.
 - **Questbook updates reach the server.** FTB Quests rewrites every chapter it saves (and moves its text to its lang
   file), so every one of our chapters looked edited and kept its old layout and quests for good. Now a new version of
   a chapter replaces the old one on start, and the old text of our quests is taken out of FTB Quests' lang files (the

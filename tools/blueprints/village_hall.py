@@ -245,11 +245,13 @@ def bell_tower(b):
                 b.set(x, top, z, "chiseled_stone_bricks")
             elif b.get(x, top, z) is None or "ladder" not in b.get(x, top, z)[0]:
                 b.set(x, top, z, "spruce_planks")
+    # (all four sides: on the west it runs out over the meeting room's roof, as the cap's eave does above it)
     for x in range(x0, x1 + 1):
         stairs(b, x, top, z0 - 1, STONE_BRICK, "south", top=True)
         stairs(b, x, top, z1 + 1, STONE_BRICK, "north", top=True)
     for z in range(z0 - 1, z1 + 2):
         stairs(b, x1 + 1, top, z, STONE_BRICK, "west", top=True)
+        stairs(b, x0 - 1, top, z, STONE_BRICK, "east", top=True)
     # The belfry: corner piers and an open arch on every side, the great bell in the middle
     for y in (top + 1, top + 2):
         for x in range(x0, x1 + 1):
@@ -294,5 +296,9 @@ def village_hall_3():
         b.set(x, 7, 4, f"{BANNER}_wall_banner", facing="north")
     for x in (18, 22):  # a lamp post either side of the tower's door
         lamp_post(b, x, 0, 3, "spruce_fence", height=2)
+    # The tower rises out of the meeting room's roof: under its cornice and its cap's eave on the west there's open air
+    # against the tower wall, not a slot to close. Closed, it stood out as a stone wall a block west of the tower,
+    # its ends jutting past the tower's front and back and its belfry arch walled up (holes.ALLOW, TOWER_EAVE).
+    b.open_slots = {(17, z) for z in range(4, 11)}  # the column just west of the tower's walls (x 18-22, z 5-9)
     b.fill_air()
     return b

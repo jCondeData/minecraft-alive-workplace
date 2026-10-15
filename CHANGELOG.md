@@ -67,6 +67,11 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **No more gaps where roofs meet at a corner.** Where a wing's or a porch's roof runs into the main roof (the Village
+  Hall, Storehouse, Smithy, Barracks, Ranch, Research Lab, Supply Shop, Healing Center, Townhouse, Physician's House and Fletcher's Lodge), the stairs left a little
+  hole into the attic at each step of the valley; the corner is now packed with a roof block. Village Hall III's tower
+  loses the stray stone wall that stood out a block from its west side (jutting past its front and back and walling up
+  the belfry's west arch), and its cornice now runs round all four sides.
 - **The Village Hall build is framed properly.** Its logs now stand as posts at the corners and at even bays with one
   beam round the top, and every window is the same 2 x 2 at one height, in a bay, with a flower box or a sill; the
   gables, the meeting room (Hall II, now entered from the hall) and the stray lamp post are tidied to match.

@@ -51,6 +51,7 @@ public final class WonderCelebration {
 			.withStyle(ChatFormatting.GOLD), false);
 		Chronicle.atHall(level, site.hall(), Chronicle.Kind.WONDER, Component.translatable("chronicle.aliveworkplace.wonder.finished", name,
 			Math.max(1, day - site.begun() + 1)));
+		io.github.jcondedata.aliveworkplace.hall.VillageMoments.award(level, site.hall(), io.github.jcondedata.aliveworkplace.hall.VillageMoments.WONDER, null); // the questbook's Wonder quest
 		for (GlobalPos other : Wonders.linked(level, site.hall())) {
 			ServerLevel there = level.getServer().getLevel(other.dimension());
 			if (there != null) {

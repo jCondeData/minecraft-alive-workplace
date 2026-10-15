@@ -101,6 +101,9 @@ public final class VillageRanks {
 			entity.setRank(now);
 			if (now.ordinal() > before.ordinal()) {
 				celebrate(level, hall, now);
+				for (int r = before.ordinal() + 1; r <= now.ordinal(); r++) {
+					VillageMoments.award(level, hall, VillageMoments.rank(Rank.values()[r]), null); // the questbook's rank quests
+				}
 			} else {
 				Edicts.fit(level, hall, entity); // a rank lower: the newest edicts lapse until they fit
 			}

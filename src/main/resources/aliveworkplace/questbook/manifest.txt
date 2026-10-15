@@ -1,15 +1,48 @@
 # file milestone mods (written by tools/questbook/generate.py)
-aliveworkplace_01_getting_started.snbt - cobblemon
-aliveworkplace_02_builder.snbt - -
-aliveworkplace_03_jobs.snbt - -
-aliveworkplace_04_village_hall.snbt - -
-aliveworkplace_05_pokemon_village.snbt - cobblemon
-aliveworkplace_11_steward.snbt M27 -
-aliveworkplace_12_pokemon_jobs.snbt M28 cobblemon
-aliveworkplace_13_legends.snbt M29 -
-aliveworkplace_14_edicts.snbt M30 -
-aliveworkplace_15_story_arcs.snbt M31 -
-aliveworkplace_16_threats.snbt M32 -
-aliveworkplace_17_realms.snbt M33 -
-aliveworkplace_18_classes.snbt M34 -
-aliveworkplace_20_wonders.snbt M35 -
+aliveworkplace_story_1_founding.snbt - -
+quest 357F81DBD0D10863 - cobblemon
+quest 15F6BA42DB816CFF - cobblemon
+quest 570A3FB39796CD9F - cobblemon
+quest 7075454B2620A7D4 - cobblemon,rctmod
+aliveworkplace_story_2_hamlet.snbt - -
+quest 53BC08BBFADACF78 - cobblemon
+quest 55456024EADC6E49 - cobblemon
+aliveworkplace_story_3_village.snbt - -
+quest 2AA676DA8A58D35F M27 -
+quest 4536CBF3BF2F6B2A M27 -
+quest 1ABE635551D467C3 M27 -
+quest 6C6E87DCA00BDF65 M27 -
+quest 7D91C0088B4EB222 - cobblemon
+quest 3EB1945969FE8B3F M28 cobblemon
+aliveworkplace_story_4_town.snbt - -
+quest 152E6CF8FF955275 M30 -
+quest 14B8E980F11B2C2B M30 -
+quest 1002E8FA0776B281 M30 -
+quest 1BA03EED4AD56C78 M29 -
+quest 433144F1B36D110D M29 -
+quest 354D4600E7346336 M28 cobblemon
+quest 725D408EFFBB86B3 M28 cobblemon
+quest 58EDFF7DA5FBC6AF M31 -
+quest 7F3FDDCC62CBA7B4 M32 -
+quest 28CD1EE7B6F354D7 M32 -
+quest 3EA37BCAE968E36F M30 -
+quest 1C2AC2FDFD127C66 M30 -
+quest 3C6C1D7D4E2734E1 M29 -
+aliveworkplace_story_5_city.snbt - -
+quest 2111E4C5203EC081 M34 -
+quest 13BCA5AD7D9D18F4 M34 -
+quest 65D2BD1D26DB49AE M34 -
+quest 1E0D668D5B1E3041 M34 -
+quest 4B5E6D68C7EDDF14 M33 -
+quest 339CBA70CF3E3588 M33 -
+quest 4859C324A06258BE M33 -
+quest 21096BAB5BF0E03B M33 -
+quest 787D3A28E1654FED - cobblemon
+quest 10D345A5380A4C05 M34 -
+quest 1A77C2C925347CED M34 -
+quest 45E7830A7FC26D36 M34 -
+quest 77BD93C35A05ED04 M34 -
+quest 499E66E7A5F5EB9C M33 -
+quest 410C0781C61E0E6C M33 -
+aliveworkplace_story_6_wonders.snbt M35 -
+quest 580E5A0E76B41628 - cobblemon

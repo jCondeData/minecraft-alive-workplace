@@ -33,6 +33,11 @@ public final class BlockEntityData {
 	 */
 	@Nullable
 	public static CompoundTag sanitize(ServerLevel level, BlockPos pos, BlockState state, BlockEntity blockEntity, CompoundTag nbt) {
+		if (blockEntity instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) {
+			// A Village Hall from a scanned build starts a village of its own: never another village's name, treasury
+			// or chronicle
+			return null;
+		}
 		if (isStorage(level, pos, state, blockEntity)) {
 			// Containers (chests, barrels, jars, shelves, safes...): only the name, never the contents.
 			if (!Nbt.has(nbt, "CustomName", Tag.TAG_STRING)) {

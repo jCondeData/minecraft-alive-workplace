@@ -82,7 +82,7 @@ public final class VillageMaps {
 			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage",
 				"winery", "tailors_shop", "print_shop", "jewellers_workshop" -> Kind.WORKSHOPS;
 			case "well", "fountain", "gazebo", "chapel", "bandstand" -> Kind.DECORATIONS;
-			case "town_hall", "guildhall", "royal_hall" -> Kind.HALL;
+			case "village_hall", "town_hall", "guildhall", "royal_hall" -> Kind.HALL;
 			case "street_lamp", "park_bench", "palisade", "stone_wall" -> null;
 			default -> Kind.OTHER;
 		});

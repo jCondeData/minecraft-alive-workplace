@@ -2,6 +2,7 @@
   "_comment": "Blueprints every village's Blueprint Table has from the start (ROADMAP 26.10). Every other build of the mod starts locked; see rare.json for those shown as ???. Ids of other datapacks' files in this folder are added to these.",
   "blueprints": [
     "aliveworkplace:starter_cottage",
+    "aliveworkplace:village_hall",
     "aliveworkplace:stone_house",
     "aliveworkplace:terrace",
     "aliveworkplace:farmstead",

@@ -22,6 +22,15 @@ public final class StarterBlueprints {
 	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(11, 16, 11));
 	/** Cottage II with a kitchen wing to the east (a roof terrace on top): an upgrade that grows sideways. */
 	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(17, 16, 11));
+	/**
+	 * A timber hall with the Village Hall block inside (tools/blueprints/village_hall.py): finished, it is a placed Village
+	 * Hall like any other, owned by the player who handed over the blueprint. The bell hangs under its porch.
+	 */
+	public static final Entry VILLAGE_HALL = new Entry(AliveWorkplace.id("village_hall"), new Vec3i(13, 13, 13));
+	/** A meeting room on the east with a council table and bookshelves. */
+	public static final Entry VILLAGE_HALL_2 = new Entry(AliveWorkplace.id("village_hall_2"), new Vec3i(19, 13, 13));
+	/** A stone bell-and-clock tower at the end of the meeting room: the grand civic hall. */
+	public static final Entry VILLAGE_HALL_3 = new Entry(AliveWorkplace.id("village_hall_3"), new Vec3i(24, 24, 13));
 	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(8, 7, 6));
 	/** A second stall alongside, with a Shop Counter. */
 	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(15, 7, 6));
@@ -408,7 +417,7 @@ public final class StarterBlueprints {
 	public static final Entry ROYAL_HALL = new Entry(AliveWorkplace.id("realm/royal_hall"), new Vec3i(19, 16, 25));
 	public static final Entry ROYAL_HALL_2 = new Entry(AliveWorkplace.id("realm/royal_hall_2"), new Vec3i(27, 22, 25));
 
-	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
+	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, VILLAGE_HALL, VILLAGE_HALL_2, VILLAGE_HALL_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
 		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3,

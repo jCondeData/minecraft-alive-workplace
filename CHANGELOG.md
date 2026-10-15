@@ -28,6 +28,11 @@ asks for the steps, `latest.log` and any crash report).
   with a line in chat. Existing villages keep everything they have built or are building, and uploads and scans are
   always unlocked. New operator command `/workplace unlock <player> <blueprint>`; server switch **Blueprint Unlocks**
   (on; off puts every build back in the Table).
+- **A Village Hall to build.** The Blueprint Table has a Village Hall build from the start: a timber hall with the
+  Village Hall block inside, the village bell under its porch, a notice board, benches, banners and lanterns. Finished,
+  it works just like a hall you put down, and it's yours. Hall II adds a meeting room, Hall III a stone tower with a
+  clock and a great bell; it comes in every build style. The questbook's "Build the Village Hall" follows the Starter
+  Cottage and says why it matters.
 - **The questbook says what to build.** The Builder chapter starts with "Build a Starter Cottage" (what it's for and
   how, step by step), then the homes' upgrades I to II to III; the Jobs chapter has a quest per job naming the building
   for it, and the item to use when the job has no table of its own. Build quests tick off by themselves when a builder

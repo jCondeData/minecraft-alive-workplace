@@ -1,0 +1,23 @@
+{
+  "_comment": "Blueprints every village's Blueprint Table has from the start (ROADMAP 26.10). Every other build of the mod starts locked; see rare.json for those shown as ???. Ids of other datapacks' files in this folder are added to these.",
+  "blueprints": [
+    "aliveworkplace:starter_cottage",
+    "aliveworkplace:stone_house",
+    "aliveworkplace:terrace",
+    "aliveworkplace:farmstead",
+    "aliveworkplace:storehouse",
+    "aliveworkplace:smithy",
+    "aliveworkplace:masons_yard",
+    "aliveworkplace:fletchers_lodge",
+    "aliveworkplace:fishers_hut",
+    "aliveworkplace:weavers_cottage",
+    "aliveworkplace:builders_workshop",
+    "aliveworkplace:carpenters_workshop",
+    "aliveworkplace:kitchen",
+    "aliveworkplace:guard_house",
+    "aliveworkplace:clinic",
+    "aliveworkplace:post_office",
+    "aliveworkplace:library",
+    "aliveworkplace:pokemon_center"
+  ]
+}

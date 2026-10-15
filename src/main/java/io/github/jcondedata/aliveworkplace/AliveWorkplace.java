@@ -49,6 +49,7 @@ public final class AliveWorkplace {
 		BuilderEvents.init();
 		io.github.jcondedata.aliveworkplace.shop.ShopLedger.init();
 		TableServer.init();
+		io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.init(); // the Table as a collection (26.10)
 		PreviewNetworking.init();
 		BuilderStatusSync.init();
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.init();

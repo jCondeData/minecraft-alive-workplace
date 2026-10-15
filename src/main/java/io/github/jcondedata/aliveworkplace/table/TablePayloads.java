@@ -21,15 +21,38 @@ public final class TablePayloads {
 	/** Bytes per upload packet (client-to-server custom payloads are limited to 32 KiB). */
 	public static final int UPLOAD_CHUNK = 30_000;
 
-	/** One blueprint in the library listing. */
-	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks) {
-		public static final StreamCodec<FriendlyByteBuf, Entry> CODEC = StreamCodec.composite(
-			ResourceLocation.STREAM_CODEC, Entry::id,
-			ByteBufCodecs.VAR_INT, Entry::sizeX,
-			ByteBufCodecs.VAR_INT, Entry::sizeY,
-			ByteBufCodecs.VAR_INT, Entry::sizeZ,
-			ByteBufCodecs.VAR_INT, Entry::blocks,
-			Entry::new);
+	/**
+	 * One blueprint in the library listing. {@code state} is a {@link BlueprintUnlocks.State} ordinal (26.10); a locked
+	 * build's {@code hint} is the lang key of how to get it. A hidden ("???") entry carries a stand-in id and no size.
+	 */
+	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint) {
+		public static final StreamCodec<FriendlyByteBuf, Entry> CODEC = StreamCodec.of((buf, e) -> {
+			ResourceLocation.STREAM_CODEC.encode(buf, e.id());
+			buf.writeVarInt(e.sizeX());
+			buf.writeVarInt(e.sizeY());
+			buf.writeVarInt(e.sizeZ());
+			buf.writeVarInt(e.blocks());
+			buf.writeVarInt(e.state());
+			buf.writeUtf(e.hint(), 256);
+		}, buf -> new Entry(ResourceLocation.STREAM_CODEC.decode(buf), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
+			buf.readVarInt(), buf.readUtf(256)));
+
+		/** An unlocked entry. */
+		public Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks) {
+			this(id, sizeX, sizeY, sizeZ, blocks, BlueprintUnlocks.State.UNLOCKED.ordinal(), "");
+		}
+
+		public boolean unlocked() {
+			return state == BlueprintUnlocks.State.UNLOCKED.ordinal();
+		}
+
+		public boolean locked() {
+			return state == BlueprintUnlocks.State.LOCKED.ordinal();
+		}
+
+		public boolean hidden() {
+			return state == BlueprintUnlocks.State.HIDDEN.ordinal();
+		}
 	}
 
 	/** An item and how many of it a blueprint needs. */

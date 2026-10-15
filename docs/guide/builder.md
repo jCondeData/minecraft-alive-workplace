@@ -83,13 +83,17 @@ The builder is the village's biggest customer. Almost every other worker ends up
   [Nurse](nurse.md) moves in, a Supply Shop and a [Shopkeeper](shopkeeper.md) does. Homes give the village beds to grow
   into, and decorations near a Village Hall make it happier (see [Village life](village-life.md)).
 - **Trades.** A builder sells blueprints as they level up: the Starter Cottage at Novice, then the Market Stall, the
-  Lookout Tower, the Healing Center and, at Master, the Supply Shop. They also buy cobblestone, oak logs and glass, and
-  sell scaffolding and bricks.
+  Lookout Tower, the Healing Center and, at Master, the Supply Shop. Buying one adds it to the village's Blueprint
+  Table, and each level a builder reaches unlocks a few more builds there. They also buy cobblestone, oak logs and
+  glass, and sell scaffolding and bricks.
 
 ## Blueprints to build
 
 The **Blueprint Table** lists the server's blueprints with its size and exactly what it needs. **Get Blueprint**
-gives you a copy for a Blank Blueprint.
+gives you a copy for a Blank Blueprint. Each village's table is a collection: it starts with the basics (the Starter
+Cottage, the first Stone House and Terrace, and a first workplace for each everyday job), and the rest show greyed out
+with how to get them until the village unlocks them by buying blueprints, builders' level-ups, questbook rewards or a
+blueprint used on the table. See [Blueprint Table](blueprint-table.md#a-collection-that-grows).
 
 - **Starter builds:** the [Starter Cottage](starter-cottage-build.md), [Market Stall](market-stall-build.md),
   [Lookout Tower](lookout-tower-build.md), [Healing Center](healing-center-build.md),
@@ -99,7 +103,7 @@ gives you a copy for a Blank Blueprint.
 - **Homes:** the [Terrace](terrace-build.md), the [Inn](inn-build.md) and the [Stone House](stone-house-build.md), for a
   village that wants to grow.
 - **Sold by builders only:** the [Artisan's House](artisans-house-build.md) and the [Noble's Manor](manor-build.md)
-  aren't in the Table. A builder sells the Artisan's House from Apprentice on, and the Manor once the village has a
+  show in the Table as a dark ??? until your village buys one. A builder sells the Artisan's House from Apprentice on, and the Manor once the village has a
   household of Burghers or higher; their upgrades come from the builder who finishes them.
 - **Workplaces:** a [Schoolhouse](schoolhouse-build.md), [Library](library-build.md), [Ranch](ranch-build.md),
   [Apiary Garden](apiary-garden-build.md), [Flower Shop](flower-shop-build.md), [Graveyard](graveyard-build.md),

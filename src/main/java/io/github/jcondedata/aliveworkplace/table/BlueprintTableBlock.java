@@ -4,9 +4,13 @@ import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -40,6 +44,23 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock {
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
+	}
+
+	/**
+	 * A Blueprint (or a Wonder Plan) used on the Table unlocks its build in the village's library (26.10), then the Table
+	 * opens as usual. Anything else opens it as without an item.
+	 */
+	@Override
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
+											  BlockHitResult hit) {
+		if (!stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT) && !stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.WONDER_PLAN)) {
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		}
+		if (level instanceof ServerLevel server && player instanceof ServerPlayer serverPlayer) {
+			BlueprintUnlocks.useOnTable(server, pos, stack, serverPlayer);
+			TableServer.open(serverPlayer, pos);
+		}
+		return ItemInteractionResult.sidedSuccess(level.isClientSide());
 	}
 
 	@Override

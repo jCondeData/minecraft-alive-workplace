@@ -42,6 +42,20 @@
         { "type": "minecraft:empty", "weight": 9 },
         { "type": "minecraft:item", "name": "minecraft:totem_of_undying", "weight": 1 }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:empty", "weight": 6 },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:chapel" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:market_square" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:bandstand" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:map_room" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:library_3" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:gatehouse" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:wall_tower" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:nether_gate" } } }] }
+      ]
     }
   ]
 }

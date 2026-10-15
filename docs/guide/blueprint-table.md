@@ -47,6 +47,35 @@ picture of the build itself, so you can see it before you pick it.
   operators can upload.
 - Builds you save with a [Scan Tool](scan-tool.md) show up here for everyone too.
 
+## A collection that grows
+
+Each village's table is a collection. A new village starts with the basics, about eighteen builds: the Starter
+Cottage, the first Stone House and Terrace, and a first workplace for each everyday job (the Farmstead, the
+Storehouse, the Smithy, the Mason's Yard, the Kitchen and the like). Those show in colour, and Get Blueprint works as
+always.
+
+Everything else starts **locked**. A locked build shows greyed out, with a line saying how to get it, such as "Sold by
+a Journeyman Builder", "A market-day trader", "Questbook: The Builder" or "Found in chests". You can still look round
+its picture, dimmed, and see what it needs, but Get Blueprint stays off. A few rare builds (the grander homes only a
+builder sells, the Wonders and some special builds) show as a dark **???** with no name, picture or materials, like a
+hidden achievement, until your village finds them. Unlocked builds come first in the list.
+
+Ways to unlock a build for the whole village:
+
+- **Buy its blueprint** from a builder, from another villager who sells one, or from a market-day trader. You keep the
+  blueprint, and the table has it from then on.
+- **Level up your builders.** Each time one of the village's builders reaches a new level, a few more builds unlock.
+- **Questbook rewards.** With FTB Quests, some quests in The Builder chapter unlock the next tier of a home.
+- **Use a blueprint on the table.** Right-click the table holding any blueprint, one found in a chest, a friend's or a
+  bought one, and its build joins the library. Village storehouses, inns and kitchens, and the chests of pirates,
+  bandits and other raiders, hold a blueprint now and then. A Wonder Plan used on the table shows its Wonder there
+  too, though a Wonder is still raised from its plan.
+
+Each unlock says so in chat: "The village's library has a new blueprint: Smithy II". Builds you upload, scan or import
+are always unlocked, and a table far from any Village Hall shares one collection for the whole server. A village that
+was already standing before this came in keeps everything it has built or is building. A server owner can turn it all
+off with **Blueprint Unlocks** in the [Settings](settings.md): then every build is in the table, as before.
+
 ## How it fits in
 
 - **Fed by** the chests round the table, the village's shared chests within 48 blocks and the

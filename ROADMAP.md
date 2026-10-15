@@ -700,6 +700,19 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   uploaded builds too, with no image files to keep), that turns slowly and can be dragged to look round. Large builds
   scale to fit. Done when: the preview in the table's screen in a scene `table_preview` with stills of a small house, a
   large build and an imported one; it costs nothing on the server; the guide's Blueprint Table page says so.
+- [x] **26.10** (review: pending 2026-10-15) **The Blueprint Table is a collection** (owner's playtest, 2026-10-15: builders sell blueprints the Table
+  already gives away, so buying them is pointless). Each village (its Village Hall) keeps the builds its Table has
+  unlocked. The basics start unlocked (about 15 to 20: the Starter Cottage, the first tier of each home, one tier-I
+  workplace per basic job; a data list, `blueprint_unlocks/starting.json`); everything else starts locked and shows
+  greyed out with how to get it ("Sold by a Journeyman Builder", "A market-day trader", "Questbook: The Builder",
+  "Found in chests"), its preview dimmed and Get Blueprint off. Rare builds (Wonders, the builder-only grander homes,
+  `rare.json`) are a dark "???" with no name, preview or materials. Unlocks: buying a Blueprint from a builder or a
+  market-day trader; each level a village builder reaches; questbook command rewards (`/workplace unlock <player>
+  <blueprint>`, operators); a Blueprint found in loot or had any other way, used on the Table. Each says so in chat.
+  Imports, uploads and scans are always unlocked; expansion gates still apply. Old saves: a village unlocks everything
+  it has standing or under construction on first use. Switch `blueprintUnlocks` (default on; off: everything unlocked
+  as before). Done when: GameTests for the starting set, buying, an old save, a refused locked Get Blueprint, a ???
+  sending nothing, the switch off and save and reload; the guide, the wiki and the CHANGELOG say so.
 ## Milestone 27: Villages that build themselves (1.1)
 
 Items in Milestones 27–35 sometimes point at another milestone's item by name ("M29's Seer item"): find it there.
@@ -4500,6 +4513,13 @@ item waits.
 
 ## Design decisions (from the owner)
 
+- **The Blueprint Table is a collection** (2026-10-15, 26.10): unlocked builds in colour (Get Blueprint as before),
+  locked ones greyed out with how to get them, rare ones (Wonders, the builder-only grander homes, other special
+  builds) a hidden "???" until found; the preview still shows a locked build, dimmed. The basics start unlocked (about
+  15 to 20, a data list); unlocks belong to the village; existing villages keep everything standing or being built;
+  imports, uploads and scans are always unlocked; expansion gates still apply. Five ways to unlock: buying from a
+  builder, builder level-ups, questbook rewards, blueprints found in loot (used on the Table), market-day traders. A
+  server switch, `blueprintUnlocks`, default on.
 - **Playtest asks go in 1.0** (2026-10-14): retraining an employed villager for emeralds at our job blocks (26.6), a
   chest that shows what the build still needs (26.7), and a start-to-finish questbook as FTB Quests chapters (26.8).
 - **Everything ships at once in 1.0** (2026-10-13): every expansion (1.1 to 2.0) is done but 30.22, so 1.0 turns them all

@@ -31,6 +31,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -39,6 +40,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 /** Server side of the Blueprint Table: library listing, materials, handing out blueprints, uploads. */
 public final class TableServer {
@@ -62,18 +64,46 @@ public final class TableServer {
 
 	/** Opens (or refreshes) the table screen for {@code player}. */
 	public static void open(ServerPlayer player, BlockPos table) {
-		Platform.get().send(player, new TablePayloads.Open(table, listing(player.level().getServer()), canUpload(player)));
+		ServerLevel level = Players.level(player);
+		Platform.get().send(player, new TablePayloads.Open(table, listing(level, BlueprintUnlocks.village(level, table)), canUpload(player)));
 	}
 
+	/** The listing of a Table far from any village. */
 	public static List<TablePayloads.Entry> listing(MinecraftServer server) {
-		List<TablePayloads.Entry> entries = new ArrayList<>();
-		for (ResourceLocation id : BlueprintLibrary.list(server, false)) {
-			BlueprintLibrary.get(server, id).ifPresent(bp ->
-				entries.add(new TablePayloads.Entry(id, bp.size().getX(), bp.size().getY(), bp.size().getZ(), bp.solidBlockCount())));
+		return listing(server.overworld(), null);
+	}
+
+	/**
+	 * The listing of a Table in the village round {@code hall} (null: none). With {@code blueprintUnlocks} on (26.10) the
+	 * unlocked builds come first, then the locked ones with how to get them, then a "???" for each rare build not unlocked
+	 * yet (a stand-in id, no size: nothing about it is sent).
+	 */
+	public static List<TablePayloads.Entry> listing(ServerLevel level, @Nullable BlockPos hall) {
+		MinecraftServer server = level.getServer();
+		List<ResourceLocation> ids = new ArrayList<>(BlueprintLibrary.list(server, false));
+		if (BlueprintUnlocks.ENABLED) {
+			ids.addAll(BlueprintUnlocks.rareExtras(server));
 		}
-		// Our own blueprints first, then everything else alphabetically.
-		entries.sort(Comparator.comparing((TablePayloads.Entry e) -> !e.id().getNamespace().equals(AliveWorkplace.MOD_ID) || e.id().getPath().contains("/"))
+		List<TablePayloads.Entry> entries = new ArrayList<>();
+		List<String> hidden = new ArrayList<>();
+		for (ResourceLocation id : ids) {
+			BlueprintUnlocks.State state = BlueprintUnlocks.state(level, hall, id);
+			if (state == BlueprintUnlocks.State.HIDDEN) {
+				hidden.add(BlueprintUnlocks.hint(id));
+				continue;
+			}
+			String hint = state == BlueprintUnlocks.State.UNLOCKED ? "" : BlueprintUnlocks.hint(id);
+			BlueprintLibrary.get(server, id).ifPresent(bp -> entries.add(new TablePayloads.Entry(id, bp.size().getX(), bp.size().getY(),
+				bp.size().getZ(), bp.solidBlockCount(), state.ordinal(), hint)));
+		}
+		// Unlocked first (26.10); our own blueprints first, then everything else alphabetically.
+		entries.sort(Comparator.comparing((TablePayloads.Entry e) -> e.locked())
+			.thenComparing(e -> !e.id().getNamespace().equals(AliveWorkplace.MOD_ID) || e.id().getPath().contains("/"))
 			.thenComparing(e -> e.id().toString()));
+		java.util.Collections.sort(hidden);
+		for (int i = 0; i < hidden.size(); i++) {
+			entries.add(new TablePayloads.Entry(AliveWorkplace.id("hidden/" + i), 0, 0, 0, 0, BlueprintUnlocks.State.HIDDEN.ordinal(), hidden.get(i)));
+		}
 		return entries;
 	}
 
@@ -98,8 +128,13 @@ public final class TableServer {
 	}
 
 	private static void details(ServerPlayer player, ResourceLocation id) {
+		ServerLevel level = Players.level(player);
+		BlueprintUnlocks.State state = BlueprintUnlocks.state(level, BlueprintUnlocks.village(level, player.blockPosition()), id);
+		if (state == BlueprintUnlocks.State.HIDDEN) {
+			return; // a "???" (26.10): no materials, no preview
+		}
 		BlueprintLibrary.get(player.level().getServer(), id).ifPresent(bp -> Platform.get().send(player, new TablePayloads.Details(id, materials(bp))));
-		preview(player.level().getServer(), id).ifPresent(p -> Platform.get().send(player, p));
+		preview(player.level().getServer(), id, BlueprintUnlocks.ENABLED).ifPresent(p -> Platform.get().send(player, p));
 	}
 
 	// --- 3D preview (26.9) -------------------------------------------------------------------
@@ -123,7 +158,13 @@ public final class TableServer {
 	 * only, or of an expansion that isn't open. Worked out once per blueprint and kept.
 	 */
 	public static Optional<TablePayloads.Preview> preview(MinecraftServer server, ResourceLocation id) {
-		if (BlueprintLibrary.soldOnly(id) || !StarterBlueprints.offered(id) || BlueprintLibrary.isWorldgenPiece(id)) {
+		return preview(server, id, false);
+	}
+
+	/** {@link #preview}, with {@code rare} also of the builder-only homes and the Wonders (listed once unlocked, 26.10). */
+	public static Optional<TablePayloads.Preview> preview(MinecraftServer server, ResourceLocation id, boolean rare) {
+		boolean wonder = rare && io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isPresent();
+		if (!rare && BlueprintLibrary.soldOnly(id) || !StarterBlueprints.offered(id) || BlueprintLibrary.isWorldgenPiece(id) && !wonder) {
 			return Optional.empty();
 		}
 		Optional<Blueprint> blueprint = BlueprintLibrary.get(server, id);
@@ -221,7 +262,7 @@ public final class TableServer {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()).withStyle(ChatFormatting.RED));
 			return false;
 		}
-		if (BlueprintLibrary.soldOnly(id)) {
+		if (!BlueprintUnlocks.ENABLED && BlueprintLibrary.soldOnly(id)) {
 			// Not listed (34.15a, 34.15b): only a builder sells it, so the Table won't hand it out to a request for it either.
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.sold_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
 			return false;
@@ -230,6 +271,25 @@ public final class TableServer {
 			// Not listed (B119): its expansion isn't open, so a request for it by id is refused as an unknown blueprint.
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()).withStyle(ChatFormatting.RED));
 			return false;
+		}
+		ServerLevel level = Players.level(player);
+		switch (BlueprintUnlocks.state(level, BlueprintUnlocks.village(level, table), id)) {
+			case HIDDEN -> {
+				// A "???" (26.10): refused without its name.
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.locked_hidden").withStyle(ChatFormatting.YELLOW));
+				return false;
+			}
+			case LOCKED -> {
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.locked", Blueprints.displayName(id),
+					Component.translatable(BlueprintUnlocks.hint(id))).withStyle(ChatFormatting.YELLOW));
+				return false;
+			}
+			case VIEW_ONLY -> {
+				Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.wonder_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
+				return false;
+			}
+			default -> {
+			}
 		}
 		if (!player.getAbilities().instabuild) {
 			Inventory inventory = player.getInventory();

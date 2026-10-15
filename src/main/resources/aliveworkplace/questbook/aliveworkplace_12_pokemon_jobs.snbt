@@ -66,7 +66,7 @@
 			x: 0.0d,
 			y: 5.0d,
 			title: "The Arena",
-			description: ["A finished Arena, at Village rank or bigger, turns the village's festivals into a Festival Cup. Find its blueprint at the Blueprint Table."],
+			description: ["A finished Arena, at Village rank or bigger, turns the village's festivals into a Festival Cup. Buy its blueprint from a Leader, and it joins your village's Blueprint Table."],
 			dependencies: ["70ACC128CAB2B990"],
 			tasks: [{id: "6C6EFE1D85024B30", type: "checkmark", title: "My village has a finished Arena"}],
 			rewards: [{id: "7133E17ABB945712", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 6}]

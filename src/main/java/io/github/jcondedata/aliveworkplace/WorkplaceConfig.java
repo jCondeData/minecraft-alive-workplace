@@ -149,6 +149,8 @@ public final class WorkplaceConfig {
 	public boolean villageQuests = true;
 	/** With FTB Quests, keep every questbook chapter file of ours as it is on start (off: a new version of a chapter overwrites it). */
 	public boolean questbookKeepEdits = false;
+	/** The Blueprint Table is a collection (26.10): each village unlocks builds beyond the basics. Off: every build is unlocked, as before. */
+	public boolean blueprintUnlocks = true;
 	/** Named villagers keep a friendship with each player, shown in hearts (ROADMAP 31.5). Off: no points, no hearts shown; saved friendship stays. */
 	public boolean friendship = Expansions.on(Expansions.M31);
 	/** Villagers tell their friends about their lives at 2, 4, 6, 8 and 10 hearts (heart events, 31.7). Off: nobody starts telling; what was told stays. */
@@ -810,6 +812,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.Treasury.ENABLED = villageTreasury && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = villageProtection;
 		io.github.jcondedata.aliveworkplace.story.Stories.ENABLED = villageQuests;
+		// Off in gametests (the Table tests take builds of every kind); the unlock tests turn it on.
+		io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.ENABLED = blueprintUnlocks && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.story.Friendship.ENABLED = friendship && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.HeartEvents.ENABLED = heartEvents && Expansions.on(Expansions.M31);
 		io.github.jcondedata.aliveworkplace.story.PersonalRequests.ENABLED = personalRequests && Expansions.on(Expansions.M31);

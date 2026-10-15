@@ -188,7 +188,8 @@ public class BlueprintTableScreen extends Screen {
 		uploadButton.visible = !lib;
 		folderButton.visible = !lib;
 		backButton.visible = !lib;
-		takeButton.active = selectedId != null;
+		TablePayloads.Entry chosen = selectedEntry();
+		takeButton.active = chosen != null && chosen.unlocked(); // a locked or "???" build isn't handed out (26.10)
 		uploadButton.active = !lib && selectedFile != null && !uploading && canUpload;
 	}
 
@@ -208,7 +209,8 @@ public class BlueprintTableScreen extends Screen {
 				library.scrollTo(row);
 			}
 		}
-		if (!details.containsKey(id)) {
+		TablePayloads.Entry entry = entry(id);
+		if (!details.containsKey(id) && (entry == null || !entry.hidden())) {
 			ClientPlayNetworking.send(new TablePayloads.RequestDetails(id));
 		}
 	}
@@ -264,8 +266,10 @@ public class BlueprintTableScreen extends Screen {
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.render(g, mouseX, mouseY, partialTick);
 		g.drawString(font, title, left + 8, top + 8, 0xFFFFD66B, false);
+		long unlocked = entries.stream().filter(TablePayloads.Entry::unlocked).count();
 		Component sub = mode == Mode.LIBRARY
-			? Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
+			? unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
+				: Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
 			: Component.translatable("screen.aliveworkplace.table.files_title");
 		g.drawString(font, sub, left + panelW - 8 - font.width(sub), top + 8, 0xFF9AA8BA, false);
 
@@ -299,12 +303,30 @@ public class BlueprintTableScreen extends Screen {
 			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.empty"), x, y, w, 0xFFAAAAAA);
 			return;
 		}
-		g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), w), x, y, 0xFFFFFFFF, false);
+		if (entry.hidden()) {
+			// A rare build not unlocked yet (26.10): like a hidden achievement, nothing but how to come by it.
+			g.drawString(font, Component.translatable("screen.aliveworkplace.table.hidden_name"), x, y, 0xFF6A6A6A, false);
+			y += 12;
+			g.drawWordWrap(font, Component.translatable(entry.hint()), x, y, w, 0xFFB08850);
+			y += 9 * font.split(Component.translatable(entry.hint()), w).size() + 4;
+			g.fill(x, y, x + w, y + 60, 0xC0000000);
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.hidden_help"), x + 4, y + 6, w - 8, 0xFF777777);
+			return;
+		}
+		g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), w), x, y, entry.locked() ? 0xFF8A8A8A : 0xFFFFFFFF, false);
 		y += 12;
 		g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
 			x, y, 0xFF9AA8BA, false);
 		y += 10;
-		g.drawString(font, font.plainSubstrByWidth(entry.id().toString(), w), x, y, 0xFF5E6B7C, false);
+		if (!entry.hint().isEmpty()) {
+			// Locked (or a Wonder, raised from its plan): how to get it, where the id goes for the rest.
+			Component how = entry.locked()
+				? Component.translatable("screen.aliveworkplace.table.locked_hint", Component.translatable(entry.hint()))
+				: Component.translatable(entry.hint());
+			g.drawString(font, font.plainSubstrByWidth(how.getString(), w), x, y, 0xFFE0A050, false);
+		} else {
+			g.drawString(font, font.plainSubstrByWidth(entry.id().toString(), w), x, y, 0xFF5E6B7C, false);
+		}
 		y += 12;
 		// The build in 3D (26.9), above its materials; it keeps room for two rows of them.
 		previewX = x;
@@ -318,6 +340,13 @@ public class BlueprintTableScreen extends Screen {
 			g.drawString(font, loading, x + (w - font.width(loading)) / 2, y + previewH / 2 - 4, 0xFF777777, false);
 		} else {
 			preview.render(g, previewX, previewY, previewW, previewH);
+			if (entry.locked()) {
+				// A locked build's preview, dimmed (26.10), over whatever depth the 3D drawing left.
+				g.pose().pushPose();
+				g.pose().translate(0, 0, 400);
+				g.fill(previewX, previewY, previewX + previewW, previewY + previewH, 0x99101010);
+				g.pose().popPose();
+			}
 			if (preview.count() > 0) {
 				g.drawString(font, Component.translatable("screen.aliveworkplace.table.preview_drag"), x + 3, y + previewH - 10, 0xFF5E6B7C, false);
 			}
@@ -382,11 +411,13 @@ public class BlueprintTableScreen extends Screen {
 
 	@Nullable
 	private TablePayloads.Entry selectedEntry() {
-		if (selectedId == null) {
-			return null;
-		}
+		return selectedId == null ? null : entry(selectedId);
+	}
+
+	@Nullable
+	private TablePayloads.Entry entry(ResourceLocation id) {
 		for (TablePayloads.Entry e : entries) {
-			if (e.id().equals(selectedId)) {
+			if (e.id().equals(id)) {
 				return e;
 			}
 		}
@@ -475,6 +506,19 @@ public class BlueprintTableScreen extends Screen {
 
 			@Override
 			public void render(GuiGraphics g, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick) {
+				if (entry.hidden()) {
+					// "???" (26.10): a dark row with no name.
+					g.fill(x, y - 1, x + width - 2, y + height - 1, 0x60000000);
+					g.drawString(font, Component.translatable("screen.aliveworkplace.table.hidden_name"), x + 2, y + 1, 0xFF5A5A5A, false);
+					g.drawString(font, font.plainSubstrByWidth(Component.translatable(entry.hint()).getString(), width - 4), x + 2, y + 10, 0xFF4A4A4A, false);
+					return;
+				}
+				if (entry.locked()) {
+					// Greyed out, with how to get it (26.10).
+					g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), width - 4), x + 2, y + 1, 0xFF8A8A8A, false);
+					g.drawString(font, font.plainSubstrByWidth(Component.translatable(entry.hint()).getString(), width - 4), x + 2, y + 10, 0xFF8C6A3C, false);
+					return;
+				}
 				g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), width - 4), x + 2, y + 1, 0xFFFFFFFF, false);
 				String size = entry.sizeX() + "×" + entry.sizeY() + "×" + entry.sizeZ();
 				String source = entry.id().getPath().startsWith("uploads/") ? " · " + Component.translatable("screen.aliveworkplace.table.uploaded").getString() : "";
@@ -489,7 +533,7 @@ public class BlueprintTableScreen extends Screen {
 
 			@Override
 			public Component getNarration() {
-				return Blueprints.displayName(entry.id());
+				return entry.hidden() ? Component.translatable("screen.aliveworkplace.table.hidden_name") : Blueprints.displayName(entry.id());
 			}
 		}
 	}

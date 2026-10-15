@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Blueprint Table is a collection.** Each village starts with the basics (18 builds: the Starter Cottage, the
+  first Stone House and Terrace, and a first workplace for each everyday job); the rest show greyed out with how to get
+  them, and rare builds show as a dark "???". Buying a blueprint from a builder or a market-day trader, a builder's
+  level-up, a questbook reward or a blueprint found in a chest and used on the Table adds it to the village's library,
+  with a line in chat. Existing villages keep everything they have built or are building, and uploads and scans are
+  always unlocked. New operator command `/workplace unlock <player> <blueprint>`; server switch **Blueprint Unlocks**
+  (on; off puts every build back in the Table).
 - **The questbook says what to build.** The Builder chapter starts with "Build a Starter Cottage" (what it's for and
   how, step by step), then the homes' upgrades I to II to III; the Jobs chapter has a quest per job naming the building
   for it, and the item to use when the job has no table of its own. Build quests tick off by themselves when a builder

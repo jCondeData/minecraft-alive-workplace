@@ -72,6 +72,14 @@ public class BlueprintTableScreen extends Screen {
 	private LibraryList library;
 	private FileList files;
 	private Button takeButton, uploadViewButton, uploadButton, folderButton, backButton;
+	/** The full materials list over the right side: opened by "+N" or "All materials", closed by Esc or Back. */
+	private boolean allMaterials;
+	private Button allMaterialsButton, allBackButton;
+	private int allScroll;
+	/** Rows of the short materials grid scrolled past with the mouse wheel. */
+	private int gridScroll;
+	private int gridX, gridY, gridW, gridH, moreX, moreY, moreW;
+	private static final int ALL_ROW = 18;
 
 	public BlueprintTableScreen(TablePayloads.Open open) {
 		super(Component.translatable("block.aliveworkplace.blueprint_table"));
@@ -125,6 +133,10 @@ public class BlueprintTableScreen extends Screen {
 	public void chooseStyle(String name) {
 		if (!name.isEmpty() && selectedStyles().stream().noneMatch(s -> s.name().equals(name))) {
 			return;
+		}
+		if (!name.equals(style)) {
+			gridScroll = 0; // another style is another list
+			allScroll = 0;
 		}
 		style = name;
 		ResourceLocation shown = shownId();
@@ -209,6 +221,13 @@ public class BlueprintTableScreen extends Screen {
 			mode = Mode.LIBRARY;
 			updateVisibility();
 		}).bounds(left + 24 + 2 * bw3, by, bw3, 20).build());
+		// Placed in render (it sits beside the "Materials" heading, below the preview).
+		Component all = Component.translatable("screen.aliveworkplace.table.all_materials");
+		allMaterialsButton = addRenderableWidget(Button.builder(all, b -> showAllMaterials())
+			.bounds(0, 0, font.width(all) + 10, 12).build());
+		// Drawn after the panel (not with the other widgets) so the panel can't cover it.
+		Component back = Component.translatable("gui.back");
+		allBackButton = addWidget(Button.builder(back, b -> closeAllMaterials()).bounds(0, 0, font.width(back) + 12, 14).build());
 
 		if (selectedId != null) {
 			select(selectedId);
@@ -230,6 +249,13 @@ public class BlueprintTableScreen extends Screen {
 		backButton.visible = !lib;
 		TablePayloads.Entry chosen = selectedEntry();
 		takeButton.active = chosen != null && chosen.unlocked(); // a locked or "???" build isn't handed out (26.10)
+		// The full list is of the build as shown, in the chosen style (26.11).
+		List<TablePayloads.Material> materials = selectedId == null ? null : details.get(shownId());
+		if (allMaterials && (!lib || materials == null)) {
+			allMaterials = false;
+		}
+		allMaterialsButton.visible = lib && !allMaterials && materials != null && !materials.isEmpty();
+		allBackButton.visible = allMaterials;
 		uploadButton.active = !lib && selectedFile != null && !uploading && canUpload;
 	}
 
@@ -244,6 +270,8 @@ public class BlueprintTableScreen extends Screen {
 	public void select(ResourceLocation id) {
 		if (!id.equals(selectedId)) {
 			style = "";
+			gridScroll = 0;
+			allScroll = 0;
 		}
 		selectedId = id;
 		for (LibraryList.Row row : library.children()) {
@@ -256,6 +284,31 @@ public class BlueprintTableScreen extends Screen {
 		if (!details.containsKey(id) && (entry == null || !entry.hidden())) {
 			ClientPlayNetworking.send(new TablePayloads.RequestDetails(id));
 		}
+	}
+
+	/** Opens the full materials list of the selected build (also used by the screenshot harness). */
+	public void showAllMaterials() {
+		if (mode == Mode.LIBRARY && selectedId != null && details.containsKey(shownId())) {
+			allMaterials = true;
+			allScroll = 0;
+			updateVisibility();
+		}
+	}
+
+	public void closeAllMaterials() {
+		allMaterials = false;
+		updateVisibility();
+	}
+
+	/** Whether the full materials list is open (for the screenshot harness). */
+	public boolean allMaterialsOpen() {
+		return allMaterials;
+	}
+
+	/** Materials known for the selected build, or -1 while none has arrived (for the screenshot harness). */
+	public int materialCount() {
+		List<TablePayloads.Material> m = selectedId == null ? null : details.get(shownId());
+		return m == null ? -1 : m.size();
 	}
 
 	private void take() {
@@ -319,7 +372,9 @@ public class BlueprintTableScreen extends Screen {
 		int dx = library.getX() + library.getWidth() + 10;
 		int dw = left + panelW - 8 - dx;
 		int dy = top + 24;
-		if (mode == Mode.LIBRARY) {
+		if (mode == Mode.LIBRARY && allMaterials) {
+			renderAllMaterials(g, dx, top + 22, dw, top + panelH - 34 - (top + 22), mouseX, mouseY, partialTick);
+		} else if (mode == Mode.LIBRARY) {
 			renderDetails(g, dx, dy, dw, mouseX, mouseY);
 			if (hoveredStyle != null) {
 				g.renderTooltip(font, List.of(hoveredStyle.getVisualOrderText(), Component.translatable("screen.aliveworkplace.table.style_hint")
@@ -432,6 +487,7 @@ public class BlueprintTableScreen extends Screen {
 			y += styleRow;
 		}
 		g.drawString(font, Component.translatable("screen.aliveworkplace.table.materials"), x, y, 0xFFFFD66B, false);
+		allMaterialsButton.setPosition(x + w - allMaterialsButton.getWidth(), y - 2);
 		y += 11;
 
 		List<TablePayloads.Material> materials = details.get(shownId());
@@ -449,15 +505,24 @@ public class BlueprintTableScreen extends Screen {
 		int cols = Math.max(1, w / cell);
 		int bottom = top + panelH - 46;
 		int maxRows = Math.max(1, (bottom - y) / 20);
-		int shown = Math.min(materials.size(), cols * maxRows);
-		if (shown < materials.size()) {
+		// The mouse wheel over the grid scrolls it a row at a time; "+N" counts what's after the last cell shown.
+		int totalRows = (materials.size() + cols - 1) / cols;
+		gridScroll = Math.max(0, Math.min(gridScroll, totalRows - maxRows));
+		gridX = x;
+		gridY = y;
+		gridW = w;
+		gridH = maxRows * 20;
+		int first = gridScroll * cols;
+		int shown = Math.min(materials.size() - first, cols * maxRows);
+		if (first + shown < materials.size()) {
 			shown = Math.max(0, shown - 1); // leave room for the "+N more" cell
 		}
+		moreX = -1;
 		ItemStack hovered = null;
-		for (int i = 0; i < shown; i++) {
-			TablePayloads.Material m = materials.get(i);
-			int cx = x + (i % cols) * cell;
-			int cy = y + (i / cols) * 20;
+		for (int k = 0; k < shown; k++) {
+			TablePayloads.Material m = materials.get(first + k);
+			int cx = x + (k % cols) * cell;
+			int cy = y + (k / cols) * 20;
 			ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(m.item()));
 			g.renderItem(stack, cx, cy);
 			g.drawString(font, countText(m.count()), cx + 18, cy + 5, 0xFFE8E8E8, true);
@@ -465,14 +530,95 @@ public class BlueprintTableScreen extends Screen {
 				hovered = stack;
 			}
 		}
-		if (shown < materials.size()) {
+		if (first + shown < materials.size()) {
 			int cx = x + (shown % cols) * cell;
 			int cy = y + (shown / cols) * 20;
-			g.drawString(font, "+" + (materials.size() - shown), cx + 2, cy + 5, 0xFF9AA8BA, false);
+			moreX = cx;
+			moreY = cy;
+			moreW = cell;
+			String more = "+" + (materials.size() - first - shown);
+			boolean over = mouseX >= cx && mouseX < cx + cell && mouseY >= cy && mouseY < cy + 16;
+			g.drawString(font, more, cx + 2, cy + 5, over ? 0xFFFFFFFF : 0xFF9AA8BA, false);
+			if (over) {
+				g.fill(cx + 2, cy + 14, cx + 2 + font.width(more), cy + 15, 0xFFFFFFFF);
+			}
 		}
 		if (hovered != null) {
 			g.renderTooltip(font, hovered, mouseX, mouseY);
 		}
+	}
+
+	/** Every material of the selected build, biggest first: icon, count and name, scrolled with the wheel. */
+	private void renderAllMaterials(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY, float partialTick) {
+		List<TablePayloads.Material> materials = details.get(shownId());
+		g.fill(x - 4, y, x + w + 4, y + h, 0xF0161B22);
+		g.fill(x - 4, y, x + w + 4, y + 1, PANEL_EDGE);
+		g.fill(x - 4, y + h - 1, x + w + 4, y + h, PANEL_EDGE);
+		int total = 0;
+		for (TablePayloads.Material m : materials) {
+			total += m.count();
+		}
+		g.drawString(font, Component.translatable("screen.aliveworkplace.table.all_materials_title", materials.size(), total), x, y + 5, 0xFFFFD66B, false);
+		allBackButton.setPosition(x + w - allBackButton.getWidth(), y + 2);
+		int listY = y + 18;
+		int listH = h - 20;
+		int maxScroll = Math.max(0, materials.size() * ALL_ROW - listH);
+		allScroll = Math.max(0, Math.min(allScroll, maxScroll));
+		int countW = 0;
+		for (TablePayloads.Material m : materials) {
+			countW = Math.max(countW, font.width(String.valueOf(m.count())));
+		}
+		g.enableScissor(x - 4, listY, x + w + 4, listY + listH);
+		for (int i = allScroll / ALL_ROW; i < materials.size(); i++) {
+			int ry = listY + i * ALL_ROW - allScroll;
+			if (ry > listY + listH) {
+				break;
+			}
+			TablePayloads.Material m = materials.get(i);
+			ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(m.item()));
+			if (i % 2 == 1) {
+				g.fill(x - 2, ry, x + w - 6, ry + ALL_ROW, 0x20FFFFFF);
+			}
+			g.renderItem(stack, x, ry + 1);
+			String count = String.valueOf(m.count());
+			g.drawString(font, count, x + 20 + countW - font.width(count), ry + 5, 0xFFE8E8E8, false);
+			int nameX = x + 26 + countW;
+			g.drawString(font, font.plainSubstrByWidth(stack.getHoverName().getString(), x + w - 8 - nameX), nameX, ry + 5, 0xFFCCCCCC, false);
+		}
+		g.disableScissor();
+		if (maxScroll > 0) {
+			int barH = Math.max(10, listH * listH / (materials.size() * ALL_ROW));
+			int barY = listY + (listH - barH) * allScroll / maxScroll;
+			g.fill(x + w - 3, listY, x + w, listY + listH, 0x40000000);
+			g.fill(x + w - 3, barY, x + w, barY + barH, 0xFF8090A8);
+		}
+		allBackButton.render(g, mouseX, mouseY, partialTick);
+	}
+
+	private boolean overGrid(double mx, double my) {
+		return mode == Mode.LIBRARY && !allMaterials && gridW > 0 && mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH;
+	}
+
+	@Override
+	public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+		if (allMaterials && mx >= library.getX() + library.getWidth()) {
+			allScroll -= (int) Math.round(scrollY * ALL_ROW * 2);
+			return true;
+		}
+		if (overGrid(mx, my) && selectedId != null && details.containsKey(shownId())) {
+			gridScroll = Math.max(0, gridScroll - (int) Math.signum(scrollY));
+			return true;
+		}
+		return super.mouseScrolled(mx, my, scrollX, scrollY);
+	}
+
+	@Override
+	public boolean keyPressed(int key, int scanCode, int modifiers) {
+		if (allMaterials && key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE) {
+			closeAllMaterials();
+			return true;
+		}
+		return super.keyPressed(key, scanCode, modifiers);
 	}
 
 	private static String countText(int count) {
@@ -509,7 +655,11 @@ public class BlueprintTableScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
-		if (button == 0 && mode == Mode.LIBRARY && styleCells > 0 && my >= styleRowY && my < styleRowY + STYLE_CELL - 2
+		if (allMaterials && allBackButton.mouseClicked(mx, my, button)) {
+			return true;
+		}
+		// The style row is covered while the full list is open (styleCells keeps the last drawn row).
+		if (button == 0 && mode == Mode.LIBRARY && !allMaterials && styleCells > 0 && my >= styleRowY && my < styleRowY + STYLE_CELL - 2
 			&& mx >= styleRowX && mx < styleRowX + styleCells * STYLE_CELL) {
 			int i = (int) ((mx - styleRowX) / STYLE_CELL);
 			List<TablePayloads.StyleChoice> choices = selectedStyles();
@@ -520,7 +670,11 @@ public class BlueprintTableScreen extends Screen {
 			}
 			return true;
 		}
-		if (button == 0 && overPreview(mx, my) && selectedId != null && previews.containsKey(shownId())) {
+		if (button == 0 && overGrid(mx, my) && moreX >= 0 && mx >= moreX && mx < moreX + moreW && my >= moreY && my < moreY + 16) {
+			showAllMaterials();
+			return true;
+		}
+		if (button == 0 && !allMaterials && overPreview(mx, my) && selectedId != null && previews.containsKey(shownId())) {
 			draggingPreview = true;
 			return true;
 		}

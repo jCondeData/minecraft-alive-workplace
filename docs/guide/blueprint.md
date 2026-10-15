@@ -29,9 +29,11 @@ A Blueprint is a building on paper. Hand one to a Builder and they build it for 
    the air to pick it back up.
 2. **Pick a style** (before placing): sneak-right-click the air for Stonework, Sandstone, Dark Oak, Cherry or, with
    Cobblemon, Apricorn. The **Mirror** button flips it left to right.
-3. **Check the materials.** Hold Shift over it for the full list; once it's placed, its tooltip shows only what the
-   builder's chests are still missing. With a Book and Quill in your other hand, right-click to write the list into
-   the book.
+3. **Check the materials.** Hold Shift over it for the full list, several to a line ("64 Oak Planks · 32 Cobblestone").
+   A very big build lists as many as fit in about 20 lines and then says how many more there are; the
+   [Blueprint Table](blueprint-table.md) shows all of them. Once it's placed, its tooltip shows only what the builder's
+   chests are still missing, the same way. With a Book and Quill in your other hand, right-click to write the list
+   into the book.
 4. **Hand it over.** Right-click a Builder with it. Sneak while you hand it over and they take the building down
    instead, putting the blocks back in the chests.
 

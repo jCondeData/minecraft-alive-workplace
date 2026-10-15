@@ -719,6 +719,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 			Showcase.check(screen != null && "sandstone".equals(screen.style()) && screen.previewCells() > 0,
 				"the cottage's Sandstone preview arrived (" + (screen == null ? "no screen" : screen.style() + ", " + screen.previewCells() + " blocks") + ")");
 			shot(mc, "03_preview_style");
+			// The materials (and the full list behind "+N") are the Sandstone build's, not the cottage's as drawn.
+			Showcase.check(screen != null && screen.materialCount() > 0, "the cottage's Sandstone materials arrived ("
+				+ (screen == null ? -1 : screen.materialCount()) + " materials)");
 			if (screen != null && largestBuild != null) {
 				screen.select(largestBuild);
 			}
@@ -728,17 +731,26 @@ public class ScreenshotHarness implements ClientModInitializer {
 				"the largest build's preview arrived (" + largestBuild + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
 			shot(mc, "04_preview_large");
 			if (screen != null) {
+				screen.showAllMaterials(); // as clicking "+N" or "All materials" does
+			}
+		}
+		if (tick == 315) {
+			Showcase.check(screen != null && screen.allMaterialsOpen() && screen.materialCount() > 0,
+				"the largest build's full materials list opened (" + (screen == null ? -1 : screen.materialCount()) + " materials)");
+			shot(mc, "05_all_materials");
+			if (screen != null) {
+				screen.closeAllMaterials();
 				screen.showFiles();
 				screen.upload();
 			}
 		}
-		if (tick == 400) {
+		if (tick == 415) {
 			net.minecraft.resources.ResourceLocation sel = screen == null ? null : screen.selected();
 			Showcase.check(sel != null && sel.getPath().startsWith("uploads/") && screen.previewCells() > 0,
 				"the uploaded .litematic's preview arrived (" + sel + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
-			shot(mc, "05_preview_imported");
+			shot(mc, "06_preview_imported");
 		}
-		if (tick == 420) {
+		if (tick == 435) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}

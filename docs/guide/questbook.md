@@ -57,7 +57,9 @@ to do first.
 
 ## For server owners
 
-The chapters are added the first time the server starts with FTB Quests. A chapter you haven't edited updates by
-itself when a new version of the mod brings a new one. Change them in FTB Quests' editor as you like: a chapter you
-edited is kept as it is, and to get a fresh copy of it, delete it. A chapter you delete without editing stays deleted. The
-quest text can be translated in FTB Quests like the pack's own.
+The chapters are added the first time the server starts with FTB Quests. When a new version of the mod brings a new
+version of a chapter, it replaces the one on the server on the next start, with its new layout and quests, even after
+FTB Quests has saved the chapter in its own way. A chapter you delete stays deleted. To keep your own edits to our
+chapters, turn on **Keep Questbook Edits** (`questbookKeepEdits` in `config/aliveworkplace.json`): every chapter
+already on the server is then left as it is, and only new chapters come in. The quest text can be translated in FTB
+Quests like the pack's own.

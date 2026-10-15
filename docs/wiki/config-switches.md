@@ -99,6 +99,7 @@ range is in brackets.
 | `villagerCouples` | on |  | Villagers court, marry (a wedding at the bell) and mourn. |
 | `villageTreasury` | on |  | Villages with a Village Hall put by takings every morning for players to collect at the hall. |
 | `villageQuests` | on |  | Village Halls post quests for players. Off: no new quests; open ones can still be finished. |
+| `questbookKeepEdits` | off |  | With FTB Quests: on, the questbook chapters already on the server are kept as they are; off, each start brings the new version of every chapter (a deleted chapter stays deleted). |
 | `friendship` | on | 1.5 | Named villagers keep a friendship with each player, shown in hearts. Off: no points, no hearts shown; saved friendship stays. |
 | `heartEvents` | on | 1.5 | At 2, 4, 6, 8 and 10 hearts a villager walks up when they're off work and tells you something about their life; it becomes part of their life story at the hall. Off: nobody starts telling; what was told stays. See [Heart events](heart-events.md). |
 | `personalRequests` | on | 1.5 | A villager with 3 hearts or more may walk up and ask you for help (a level before the festival, a home, a taste of home, the tools of their trade); helping earns friendship, a missed deadline costs some. Off: nobody asks; requests already accepted can still be finished. See [Personal requests](personal-requests.md). |

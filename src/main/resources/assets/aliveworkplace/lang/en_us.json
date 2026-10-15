@@ -3526,6 +3526,8 @@
   "aliveworkplace.config.villageTreasury.tooltip": "Villages with a Village Hall put by takings every morning for players to collect at the hall.",
   "aliveworkplace.config.villageQuests": "Village Quests",
   "aliveworkplace.config.villageQuests.tooltip": "Village Halls post quests for players each morning. Off: no new quests go up; open ones can still be finished.",
+  "aliveworkplace.config.questbookKeepEdits": "Keep Questbook Edits",
+  "aliveworkplace.config.questbookKeepEdits.tooltip": "With FTB Quests: on, the questbook chapters already on the server are kept as they are when the mod brings new versions (new chapters still come in). Off: each start brings the new version of every chapter; a chapter you deleted stays deleted.",
   "aliveworkplace.config.friendship": "Friendship",
   "aliveworkplace.config.friendship.tooltip": "Named villagers keep a friendship with each player, ten hearts shown when you look at them: trades, quests, help in a fight and weddings raise it, hitting them lowers it. Off: no points and no hearts shown; friendships stay saved.",
   "message.aliveworkplace.friendship.hearts": "%s %s",

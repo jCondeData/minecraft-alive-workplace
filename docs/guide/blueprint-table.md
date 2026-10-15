@@ -41,6 +41,9 @@ picture of the build itself, so you can see it before you pick it.
 - **The picture** turns slowly by itself; drag it with the mouse to look round it or tilt it. Big builds shrink to
   fit, and builds you uploaded or scanned get a picture too, drawn from their own blocks. Your game draws it, so it
   costs the server nothing.
+- **All materials.** The materials under the picture show the biggest first; scroll over them with the mouse wheel,
+  or click **+N** or **All materials** for the whole list, every material with its count and name, biggest first.
+  Esc or **Back** closes it.
 - **Get Blueprint** gives you a copy for a [Blank Blueprint](blank-blueprint.md).
 - **Upload a File** lists the build files in your `blueprints` folder (`.litematic` or `.schem`) and puts the one you
   pick in the library for everyone. Unless the server allows it with the `workplaceAllowUploads` game rule, only

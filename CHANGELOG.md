@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Every material at a glance.** The Blueprint Table's materials scroll with the mouse wheel, and **+N** or the new
+  **All materials** button opens the whole list (icon, count and name, biggest first; Esc or Back closes it). Holding
+  Shift over a blueprint packs its materials several to a line, so a big build shows them all in about 20 lines, and
+  the "still missing" list does the same.
 - **The questbook says what to build.** The Builder chapter starts with "Build a Starter Cottage" (what it's for and
   how, step by step), then the homes' upgrades I to II to III; the Jobs chapter has a quest per job naming the building
   for it, and the item to use when the job has no table of its own. Build quests tick off by themselves when a builder

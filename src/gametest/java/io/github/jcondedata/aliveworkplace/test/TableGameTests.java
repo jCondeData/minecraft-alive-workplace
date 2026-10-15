@@ -74,6 +74,49 @@ public class TableGameTests implements FabricGameTest {
 
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void materialsPayloadOfTheLargestBuildHoldsEveryMaterial(GameTestHelper helper) {
+		// The table's "All materials" list shows what this payload carries, so it must hold every material, uncapped.
+		var server = helper.getLevel().getServer();
+		TablePayloads.Entry largest = TableServer.listing(server).stream()
+			.max(java.util.Comparator.comparingInt(TablePayloads.Entry::blocks)).orElseThrow();
+		var blueprint = BlueprintLibrary.get(server, largest.id()).orElseThrow();
+		java.util.Map<ResourceLocation, Integer> expected = new java.util.HashMap<>();
+		for (var entry : blueprint.blocks()) {
+			if (io.github.jcondedata.aliveworkplace.build.MaterialRules.classify(entry.state(), entry.nbt())
+				!= io.github.jcondedata.aliveworkplace.build.MaterialRules.Kind.SKIP) {
+				for (var r : io.github.jcondedata.aliveworkplace.build.MaterialRules.requirements(entry.state(), entry.nbt())) {
+					expected.merge(BuiltInRegistries.ITEM.getKey(io.github.jcondedata.aliveworkplace.build.MaterialFamilies.key(r.item())), r.count(), Integer::sum);
+				}
+			}
+		}
+		for (var entity : blueprint.entities()) {
+			var cost = io.github.jcondedata.aliveworkplace.blueprint.BlueprintEntities.cost(entity.nbt());
+			if (cost != null && cost != Items.AIR) {
+				expected.merge(BuiltInRegistries.ITEM.getKey(io.github.jcondedata.aliveworkplace.build.MaterialFamilies.key(cost)), 1, Integer::sum);
+			}
+		}
+		helper.assertTrue(expected.size() > 20, largest.id() + " should need more than 20 materials (the table's short list), needs " + expected.size());
+
+		TablePayloads.Details sent = new TablePayloads.Details(largest.id(), TableServer.materials(blueprint));
+		var buf = new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(), helper.getLevel().registryAccess());
+		TablePayloads.Details.CODEC.encode(buf, sent);
+		TablePayloads.Details got = TablePayloads.Details.CODEC.decode(buf);
+		java.util.Map<ResourceLocation, Integer> received = new java.util.HashMap<>();
+		for (TablePayloads.Material m : got.materials()) {
+			helper.assertTrue(received.put(m.item(), m.count()) == null, m.item() + " listed twice");
+		}
+		helper.assertTrue(received.equals(expected), largest.id() + ": the payload's " + received.size() + " materials differ from MaterialRules' "
+			+ expected.size() + ": missing " + com.google.common.collect.Maps.difference(expected, received).entriesOnlyOnLeft().keySet()
+			+ ", extra " + com.google.common.collect.Maps.difference(expected, received).entriesOnlyOnRight().keySet()
+			+ ", counts differ " + com.google.common.collect.Maps.difference(expected, received).entriesDiffering());
+		for (int i = 1; i < got.materials().size(); i++) {
+			helper.assertTrue(got.materials().get(i - 1).count() >= got.materials().get(i).count(), "materials not sorted by count");
+		}
+		helper.succeed();
+	}
+
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void takingABlueprintCostsABlankBlueprint(GameTestHelper helper) {
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
 		ServerPlayer player = playerAtTable(helper);

@@ -720,17 +720,26 @@ public class ScreenshotHarness implements ClientModInitializer {
 				"the largest build's preview arrived (" + largestBuild + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
 			shot(mc, "03_preview_large");
 			if (screen != null) {
+				screen.showAllMaterials(); // as clicking "+N" or "All materials" does
+			}
+		}
+		if (tick == 275) {
+			Showcase.check(screen != null && screen.allMaterialsOpen() && screen.materialCount() > 0,
+				"the largest build's full materials list opened (" + (screen == null ? -1 : screen.materialCount()) + " materials)");
+			shot(mc, "05_all_materials");
+			if (screen != null) {
+				screen.closeAllMaterials();
 				screen.showFiles();
 				screen.upload();
 			}
 		}
-		if (tick == 360) {
+		if (tick == 375) {
 			net.minecraft.resources.ResourceLocation sel = screen == null ? null : screen.selected();
 			Showcase.check(sel != null && sel.getPath().startsWith("uploads/") && screen.previewCells() > 0,
 				"the uploaded .litematic's preview arrived (" + sel + ", " + (screen == null ? -1 : screen.previewCells()) + " blocks)");
 			shot(mc, "04_preview_imported");
 		}
-		if (tick == 380) {
+		if (tick == 395) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}

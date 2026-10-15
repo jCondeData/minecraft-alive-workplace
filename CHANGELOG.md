@@ -39,6 +39,11 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **Questbook updates reach the server.** FTB Quests rewrites every chapter it saves (and moves its text to its lang
+  file), so every one of our chapters looked edited and kept its old layout and quests for good. Now a new version of
+  a chapter replaces the old one on start, and the old text of our quests is taken out of FTB Quests' lang files (the
+  pack's own entries stay). A chapter you deleted stays deleted; the new `questbookKeepEdits` switch keeps every
+  chapter already there as it is.
 - **Roofs that meet, and no stray gaps in builds.** Where an upgrade's new room runs its roof in under the old roof's
   edge (the Starter Cottage III's kitchen, the Inn II, the Library II and III, the Manor II and III, the Supply Shop II
   and III, the Pokémon Center, the Schoolhouse, the Winery and others), the wall now carries on up to the old roof, so the two roofs meet instead of leaving a

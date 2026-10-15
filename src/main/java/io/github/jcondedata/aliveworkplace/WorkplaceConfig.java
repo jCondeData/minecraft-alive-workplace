@@ -147,6 +147,8 @@ public final class WorkplaceConfig {
 	public boolean villageTreasury = true;
 	/** Village Halls post quests for players (the quest engine, 31.2); off: no new quests, open ones can still be finished. */
 	public boolean villageQuests = true;
+	/** With FTB Quests, keep every questbook chapter file of ours as it is on start (off: a new version of a chapter overwrites it). */
+	public boolean questbookKeepEdits = false;
 	/** Named villagers keep a friendship with each player, shown in hearts (ROADMAP 31.5). Off: no points, no hearts shown; saved friendship stays. */
 	public boolean friendship = Expansions.on(Expansions.M31);
 	/** Villagers tell their friends about their lives at 2, 4, 6, 8 and 10 hearts (heart events, 31.7). Off: nobody starts telling; what was told stays. */

@@ -29,6 +29,7 @@ from guildhall import *
 from arena import *
 from answering import *
 from realm import *
+from village_hall import village_hall, village_hall_2, village_hall_3
 from wonders import WONDERS, save_wonder
 from styles import styled
 
@@ -127,6 +128,8 @@ if __name__ == "__main__":
     graveyard().save(MAIN_STRUCTURES, "graveyard")
     graveyard_2().save(MAIN_STRUCTURES, "graveyard_2")
     town_hall().save(os.path.join(MAIN_STRUCTURES, "research"), "town_hall")
+    for name, draw in (("village_hall", village_hall), ("village_hall_2", village_hall_2), ("village_hall_3", village_hall_3)):
+        draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("well", well), ("well_2", well_2), ("street_lamp", street_lamp), ("park_bench", park_bench),
                        ("fountain", fountain), ("gazebo", gazebo), ("market_square", market_square)):
         draw().save(MAIN_STRUCTURES, name)

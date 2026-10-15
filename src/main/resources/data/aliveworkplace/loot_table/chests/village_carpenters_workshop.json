@@ -99,6 +99,29 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:empty", "weight": 12 },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:well" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:well_2" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:street_lamp" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:park_bench" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:fountain" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:gazebo" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:starter_cottage_2" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:stone_house_2" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:terrace_2" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:smithy_2" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:farmstead_2" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:storehouse_2" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:inn" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:schoolhouse" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:ranch" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:market_stall" } } }] },
+        { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "functions": [{ "function": "minecraft:set_components", "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:lookout_tower" } } }] }
+      ]
     }
   ],
   "random_sequence": "aliveworkplace:chests/village_carpenters_workshop"

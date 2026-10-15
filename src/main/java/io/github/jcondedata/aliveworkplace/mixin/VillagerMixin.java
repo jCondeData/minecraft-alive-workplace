@@ -213,6 +213,7 @@ abstract class VillagerMixin {
 	private void aliveworkplace$journeymanBlueprint(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.registry.ModTrades.journeymanBlueprint((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.registry.ModTrades.builderHomes((Villager) (Object) this); // 34.15
+		io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.onLevelUp((Villager) (Object) this); // a builder's level-up unlocks builds (26.10)
 	}
 
 	/** Silver Tongue (29.6): every trade with a player is cheaper, on top of vanilla's special prices. */

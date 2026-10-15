@@ -26,6 +26,9 @@ Craft a **Village Hall** (gold, a book and gold over planks, with an emerald in 
 your village; by the bell is a good spot. Everyone within 64 blocks belongs to it. The village gets a made-up name
 (*Thornholm*, *Ashford*...); use a **Name Tag** on the hall to call it what you like (the tag isn't used up).
 
+Or have your builder build one: the [Village Hall build](village-hall-build.md) is a timber hall with the Village Hall
+block inside, a bell under its porch and a notice board, and it works just like a hall you put down yourself.
+
 **Moving it.** Mine the hall with an axe and it drops itself, keeping a name you gave it. While it's gone, the village
 leaves the caravans' trade routes and its open quests are dropped, so put it back soon.
 

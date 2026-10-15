@@ -103,6 +103,26 @@ public class VillageHallBlock extends BaseEntityBlock {
 		}
 	}
 
+	/**
+	 * A hall a builder has just set down (a Village Hall build): owned by the player who handed over the blueprint (none
+	 * for a Steward's build) and founded, as {@link #setPlacedBy} does for a hall a player puts down, which the game
+	 * doesn't call for a block set by a builder.
+	 */
+	public static void built(net.minecraft.server.level.ServerLevel level, BlockPos pos, @Nullable java.util.UUID owner, String ownerName) {
+		if (!(level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity)) {
+			return;
+		}
+		boolean player = owner != null && !ownerName.isEmpty(); // not the builder standing in for nobody
+		if (entity.owner() == null && player) {
+			entity.setOwner(owner, ownerName);
+		}
+		if (entity.chronicle().isEmpty()) {
+			Chronicle.record(level, pos, Chronicle.Kind.FOUNDED, player
+				? Component.translatable("chronicle.aliveworkplace.founded_by", VillageHalls.name(level, pos), Component.literal(ownerName))
+				: Component.translatable("chronicle.aliveworkplace.founded", VillageHalls.name(level, pos)), true);
+		}
+	}
+
 	@Nullable
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

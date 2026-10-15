@@ -99,6 +99,10 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	private long lastTaxDay = -1;
 	/** The berries the village has found (ROADMAP 28.9, the Berry Breeder's book): none by default. */
 	private final java.util.Set<net.minecraft.resources.ResourceLocation> berriesFound = new java.util.LinkedHashSet<>();
+	/** The builds this village's Blueprint Table has unlocked (26.10, {@code table/BlueprintUnlocks}), by unstyled id. */
+	private final java.util.Set<net.minecraft.resources.ResourceLocation> blueprintUnlocks = new java.util.LinkedHashSet<>();
+	/** Whether the unlocks were seeded with what stands (false in a save from before 26.10: seeded on first use). */
+	private boolean blueprintUnlocksSeeded;
 	/** The day of the last market (see {@link MarketDays}). */
 	private long lastMarketDay = -1;
 	/** What happened in the village, oldest first (see {@link Chronicle}). */
@@ -1055,6 +1059,15 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 				berriesFound.add(id);
 			}
 		}
+		blueprintUnlocks.clear();
+		net.minecraft.nbt.ListTag unlocks = Nbt.getList(tag, "blueprintUnlocks", net.minecraft.nbt.Tag.TAG_STRING);
+		for (int i = 0; i < unlocks.size(); i++) {
+			net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(Nbt.stringAt(unlocks, i));
+			if (id != null) {
+				blueprintUnlocks.add(id);
+			}
+		}
+		blueprintUnlocksSeeded = Nbt.getBoolean(tag, "blueprintUnlocksSeeded");
 		chronicle = new java.util.ArrayList<>();
 		net.minecraft.nbt.ListTag lines = Nbt.getList(tag, "chronicle", net.minecraft.nbt.Tag.TAG_COMPOUND);
 		for (int i = 0; i < lines.size(); i++) {
@@ -1203,6 +1216,35 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		net.minecraft.nbt.ListTag berries = new net.minecraft.nbt.ListTag();
 		berriesFound.forEach(id -> berries.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
 		tag.put("berriesFound", berries);
+		net.minecraft.nbt.ListTag unlocks = new net.minecraft.nbt.ListTag();
+		blueprintUnlocks.forEach(id -> unlocks.add(net.minecraft.nbt.StringTag.valueOf(id.toString())));
+		tag.put("blueprintUnlocks", unlocks);
+		tag.putBoolean("blueprintUnlocksSeeded", blueprintUnlocksSeeded);
+	}
+
+	/** The builds the village's Blueprint Table has unlocked (26.10), seeded or not; {@code table/BlueprintUnlocks} reads them. */
+	public java.util.Set<net.minecraft.resources.ResourceLocation> blueprintUnlocks() {
+		return java.util.Collections.unmodifiableSet(blueprintUnlocks);
+	}
+
+	public boolean blueprintUnlocksSeeded() {
+		return blueprintUnlocksSeeded;
+	}
+
+	/** Unlocks a build in the village's library; whether it's new. */
+	public boolean unlockBlueprint(net.minecraft.resources.ResourceLocation id) {
+		boolean added = blueprintUnlocks.add(id);
+		if (added) {
+			setChanged();
+		}
+		return added;
+	}
+
+	/** The first use of the unlocks (26.10): what already stands, is being built or starts unlocked. */
+	public void seedBlueprintUnlocks(java.util.Collection<net.minecraft.resources.ResourceLocation> ids) {
+		blueprintUnlocks.addAll(ids);
+		blueprintUnlocksSeeded = true;
+		setChanged();
 	}
 
 	/** The berries the village has found (ROADMAP 28.9), in the order found. */

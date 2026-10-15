@@ -15,7 +15,8 @@ chests run short, the Builder waits and tells you what is missing. Idle Builders
 builds nearby, and later fix holes in buildings they finished (a creeper's hole, a broken window). Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
-dragged round, and is scaled to fit, for imported and uploaded builds too.
+dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
+recolours the picture and the materials, and Get Blueprint hands the build out in the chosen style.
 
 ## 2. How it works
 
@@ -74,6 +75,14 @@ dropped, and a cell whose six neighbours all occlude is left out). If more than 
 build is grouped into 2×2×2 cells (then 3, …), each showing its highest block, until it fits. The result is worked out
 once per blueprint and kept (48 at most); unknown, sold-only, world-generation and closed-expansion ids get nothing.
 The client (`TablePreview`) draws the cells with the block renderer into the screen with a scissor box.
+
+**Table styles (26.11).** `table_details` also carries the styles the build takes (`TableServer.styles`: each of
+`BlueprintStyles.all()` whose swaps change at least one of its blocks, via `BlueprintStyles.changes`; none for a Wonder,
+or for a locked build). A style button asks `table_request_details` for the styled id
+(`aliveworkplace:styled/<style>/<ns>/<path>`, the id the sneak-click style screen sets), and the server answers with
+that style's materials and preview, each cached per styled id. `table_take` with a styled id gives `BlueprintItem.create`
+of that id, the same `BLUEPRINT` component the style screen sets. A styled id whose style the build doesn't take, or a
+locked build in a style, is refused (`TableServer.styleTaken`; tests in `TableGameTests`).
 
 **Stall watch.** If a site with a Builder on shift makes no progress for 600 ticks (30 s), a log line starting
 "Builder stalled" is written. The soak test counts these lines.

@@ -17,6 +17,22 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Pick a style at the Blueprint Table.** A row of style buttons under the 3D picture (as drawn, Stonework,
+  Sandstone, Dark Oak, Cherry, Grand, and Apricorn with Cobblemon; only those that change the selected build) recolours
+  the picture and the material list, and Get Blueprint hands the blueprint out already in that style. Locked and "???"
+  builds have no style row. Sneak-clicking the air with a blueprint still works too.
+- **The Blueprint Table is a collection.** Each village starts with the basics (18 builds: the Starter Cottage, the
+  first Stone House and Terrace, and a first workplace for each everyday job); the rest show greyed out with how to get
+  them, and rare builds show as a dark "???". Buying a blueprint from a builder or a market-day trader, a builder's
+  level-up, a questbook reward or a blueprint found in a chest and used on the Table adds it to the village's library,
+  with a line in chat. Existing villages keep everything they have built or are building, and uploads and scans are
+  always unlocked. New operator command `/workplace unlock <player> <blueprint>`; server switch **Blueprint Unlocks**
+  (on; off puts every build back in the Table).
+- **A Village Hall to build.** The Blueprint Table has a Village Hall build from the start: a timber hall with the
+  Village Hall block inside, the village bell under its porch, a notice board, benches, banners and lanterns. Finished,
+  it works just like a hall you put down, and it's yours. Hall II adds a meeting room, Hall III a stone tower with a
+  clock and a great bell; it comes in every build style. The questbook's "Build the Village Hall" follows the Starter
+  Cottage and says why it matters.
 - **The questbook says what to build.** The Builder chapter starts with "Build a Starter Cottage" (what it's for and
   how, step by step), then the homes' upgrades I to II to III; the Jobs chapter has a quest per job naming the building
   for it, and the item to use when the job has no table of its own. Build quests tick off by themselves when a builder
@@ -39,6 +55,8 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- JEI, REI and EMI no longer list the 26 retired workstations (the Kitchen Stove, Postal Desk and the other old benches that
+  can't be crafted and are kept only so old worlds load); the jobs' real workstations are unchanged.
 - **Questbook updates reach the server.** FTB Quests rewrites every chapter it saves (and moves its text to its lang
   file), so every one of our chapters looked edited and kept its old layout and quests for good. Now a new version of
   a chapter replaces the old one on start, and the old text of our quests is taken out of FTB Quests' lang files (the

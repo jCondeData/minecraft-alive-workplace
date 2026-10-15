@@ -8,6 +8,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 **Villagers and their work**
 - [Villager jobs](villager-jobs.md): how a villager gets a job, what every job shares, and the list of all jobs.
 - [Builder](builder.md): the villager who builds blueprints.
+- [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
 - [Scaffolding](scaffolding.md): how builders scaffold up to what has nowhere to stand near it, and take it down (35.6).
 - [Pokémon partners](pokemon-partners.md): pastured Pokémon that help at work, and are seen doing it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).

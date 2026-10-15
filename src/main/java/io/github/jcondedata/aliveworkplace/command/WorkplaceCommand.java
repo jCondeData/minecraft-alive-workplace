@@ -37,6 +37,7 @@ import net.minecraft.world.entity.npc.Villager;
  * /workplace blueprint &lt;id&gt;        — get a blueprint item (ops)
  * /workplace sites                 — your build sites and their status (ops see all)
  * /workplace cancel &lt;site&gt;         — stop a build and get the blueprint back
+ * /workplace unlock &lt;player&gt; &lt;id&gt; — unlock a build in the player's village's Blueprint Table (ops, questbook rewards)
  * /workplace import                — import .litematic/.schem/.nbt files from &lt;world&gt;/aliveworkplace/import (ops)
  * /workplace legend list|make &lt;id&gt;|clear — the Legends loaded; make the nearest villager a Legend, or clear one (ops)
  * /workplace friend add|remove &lt;player&gt;, /workplace friend list — who may give orders to your builders
@@ -65,6 +66,13 @@ public final class WorkplaceCommand {
 					.suggests((ctx, builder) -> SharedSuggestionProvider.suggestResource(
 						BlueprintLibrary.list(ctx.getSource().getServer(), false), builder))
 					.executes(WorkplaceCommand::giveBlueprint)))
+			.then(Commands.literal("unlock") // a build into the player's village's Blueprint Table (26.10): operators and questbook rewards
+				.requires(s -> s.hasPermission(2))
+				.then(Commands.argument("player", net.minecraft.commands.arguments.EntityArgument.player())
+					.then(Commands.argument("blueprint", ResourceLocationArgument.id())
+						.suggests((ctx, builder) -> SharedSuggestionProvider.suggestResource(
+							BlueprintLibrary.list(ctx.getSource().getServer(), false), builder))
+						.executes(WorkplaceCommand::unlockBlueprint))))
 			.then(Commands.literal("import")
 				.requires(s -> s.hasPermission(2))
 				.executes(WorkplaceCommand::importFolder))
@@ -424,6 +432,20 @@ public final class WorkplaceCommand {
 			ctx.getSource().sendSuccess(() -> message, true);
 		}
 		return messages.size();
+	}
+
+	/** {@code /workplace unlock <player> <blueprint>}: unlocks it in the village the player is in (or the server-wide set). */
+	private static int unlockBlueprint(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+		ServerPlayer player = net.minecraft.commands.arguments.EntityArgument.getPlayer(ctx, "player");
+		ResourceLocation id = ResourceLocationArgument.getId(ctx, "blueprint");
+		if (BlueprintLibrary.get(ctx.getSource().getServer(), id).isEmpty()) {
+			ctx.getSource().sendFailure(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()));
+			return 0;
+		}
+		boolean unlocked = io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.unlockAt(Players.level(player), player.blockPosition(), id, player);
+		ctx.getSource().sendSuccess(() -> Component.translatable(unlocked ? "command.aliveworkplace.unlock.done" : "command.aliveworkplace.unlock.already",
+			Blueprints.displayName(id), player.getDisplayName()), false);
+		return unlocked ? 1 : 0;
 	}
 
 	private static int giveBlueprint(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

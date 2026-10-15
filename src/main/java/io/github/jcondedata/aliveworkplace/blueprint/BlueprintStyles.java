@@ -220,6 +220,16 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 		});
 	}
 
+	/** Whether {@code style} swaps any block of {@code base} (one that swaps nothing there is no choice for it). */
+	public static boolean changes(Style style, Blueprint base) {
+		for (Blueprint.Entry e : base.blocks()) {
+			if (apply(style, e.state()) != e.state()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/** {@code state} in {@code style}: the swapped block with as many of the same properties as it has. */
 	public static BlockState apply(Style style, BlockState state) {
 		Block to;

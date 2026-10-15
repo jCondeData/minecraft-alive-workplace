@@ -14,7 +14,7 @@
 			x: 0.0d,
 			y: 0.0d,
 			title: "Pick a job",
-			description: ["Every job below has a building in the Blueprint Table with its workstation inside. Build it and a villager can live and work there; each quest ticks off when its building is finished.", "", "Vanilla jobs work as in vanilla: a villager without a job takes the block by themselves. Most of our jobs share a vanilla block: stand the villager within about 4 blocks of it and sneak-right-click them holding the job's item, a pickaxe at a Blast Furnace for a Miner, an axe at a Fletching Table for a Lumberjack.", "", "Hold Shift over a workstation in your inventory to see every job it gives and the item for each."],
+			description: ["Every job below has a building with its workstation inside: the basic ones are in the Blueprint Table from the start, the rest join it as your builders level up or when you buy their blueprint. Build it and a villager can live and work there; each quest ticks off when its building is finished.", "", "Vanilla jobs work as in vanilla: a villager without a job takes the block by themselves. Most of our jobs share a vanilla block: stand the villager within about 4 blocks of it and sneak-right-click them holding the job's item, a pickaxe at a Blast Furnace for a Miner, an axe at a Fletching Table for a Lumberjack.", "", "Hold Shift over a workstation in your inventory to see every job it gives and the item for each."],
 			dependencies: ["694682BB5A92E7B1"],
 			tasks: [{id: "5706D753AECBB4A3", type: "checkmark", title: "I gave a villager one of the new jobs"}],
 			rewards: [{id: "68FD7B4E92911EFC", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
@@ -253,7 +253,7 @@
 			x: 6.0d,
 			y: -13.0d,
 			title: "The Shopkeeper: a Supply Shop",
-			description: ["Build the Supply Shop, a white shop with a Shop Counter. A villager without a job takes the counter and becomes your Shopkeeper: you set the prices, stock the chests, and other players buy from them while you're away.", "", "Paper, a gold nugget and string make Price Tags, to set a price on what you sell. A Master builder sells this blueprint; it's in the Blueprint Table too."],
+			description: ["Build the Supply Shop, a white shop with a Shop Counter. A villager without a job takes the counter and becomes your Shopkeeper: you set the prices, stock the chests, and other players buy from them while you're away.", "", "Paper, a gold nugget and string make Price Tags, to set a price on what you sell. A Master builder sells this blueprint; buying it adds it to your village's Blueprint Table."],
 			dependencies: ["7F72A885171E7D72"],
 			icon: {id: "aliveworkplace:shop_counter", count: 1},
 			tasks: [{id: "6A8180431591B214", type: "advancement", advancement: "aliveworkplace:built/supply_shop", criterion: ""}],

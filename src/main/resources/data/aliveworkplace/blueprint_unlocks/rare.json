@@ -1,0 +1,14 @@
+{
+  "_comment": "Rare builds (ROADMAP 26.10): shown at the Blueprint Table as a dark ??? entry, with no name, preview or materials, until the village unlocks them. The builder-only grander homes and the Wonders are rare too, without being listed here.",
+  "blueprints": [
+    "aliveworkplace:chapel",
+    "aliveworkplace:market_square",
+    "aliveworkplace:map_room",
+    "aliveworkplace:bandstand",
+    "aliveworkplace:guildhall",
+    "aliveworkplace:guildhall_2",
+    "aliveworkplace:nether_gate",
+    "aliveworkplace:nether_gate_2",
+    "aliveworkplace:library_3"
+  ]
+}

@@ -37,7 +37,7 @@ public class QuestbookCompatTests implements FabricGameTest {
 		"rctmod:trainers/defeat_leader_brock"  // data/rctmod/advancement/trainers/defeat_leader_brock.json
 	);
 	static final Set<String> TASKS = Set.of("item", "checkmark", "advancement", "kill", "observation");
-	static final Set<String> REWARDS = Set.of("item", "xp");
+	static final Set<String> REWARDS = Set.of("item", "xp", "command");
 	static final Pattern ID = Pattern.compile("[1-7][0-9A-F]{15}");
 
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
@@ -124,6 +124,14 @@ public class QuestbookCompatTests implements FabricGameTest {
 					String type = reward.getString("type");
 					if (!REWARDS.contains(type)) {
 						problems.add(q + ": reward type " + type);
+					} else if (type.equals("command")) {
+						// Only our blueprint unlock (26.10), for a blueprint that exists: "/workplace unlock {p} <id>".
+						String[] words = reward.getString("command").trim().split("\\s+");
+						if (words.length != 4 || !words[0].equals("/workplace") || !words[1].equals("unlock")
+							|| net.minecraft.resources.ResourceLocation.tryParse(words[3]) == null
+							|| server.getStructureManager().get(net.minecraft.resources.ResourceLocation.tryParse(words[3])).isEmpty()) {
+							problems.add(q + ": reward command " + reward.getString("command"));
+						}
 					} else if (type.equals("item") && !reward.getCompound("item").getString("id").equals("minecraft:emerald")) {
 						problems.add(q + ": rewards " + reward.getCompound("item").getString("id") + " (emeralds and experience only)");
 					}

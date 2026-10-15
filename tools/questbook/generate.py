@@ -84,6 +84,11 @@ def reward_snbt(chapter, quest, i, reward):
         return "{id: %s, type: \"item\", item: %s, count: %d}" % (rid, stack(item_id), count)
     if kind == "xp":
         return "{id: %s, type: \"xp\", xp: %d}" % (rid, reward[1])
+    if kind == "unlock":
+        # 26.10: the build joins the Blueprint Table of the player's village. FTB Quests runs a reward's command as the
+        # player, with {p} their name; elevate_perms gives it the operator level /workplace unlock needs.
+        command = "/workplace unlock {p} %s" % reward[1]
+        return "{id: %s, type: \"command\", command: %s, elevate_perms: true, silent: true}" % (rid, s(command))
     raise ValueError("unknown reward kind " + kind)
 
 

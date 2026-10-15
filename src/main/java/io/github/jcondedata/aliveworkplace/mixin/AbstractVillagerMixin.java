@@ -37,4 +37,14 @@ abstract class AbstractVillagerMixin {
 			io.github.jcondedata.aliveworkplace.story.Friendship.onTrade(villager);
 		}
 	}
+
+	/** A Blueprint bought from any villager or trader (a builder, a market-day trader) unlocks its build in the village's Table (26.10). */
+	@Inject(method = "notifyTrade", at = @At("HEAD"))
+	private void aliveworkplace$blueprintUnlock(MerchantOffer offer, CallbackInfo ci) {
+		AbstractVillager self = (AbstractVillager) (Object) this;
+		if (self.level() instanceof ServerLevel level) {
+			io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.onSale(level, self.blockPosition(), offer.getResult(),
+				self.getTradingPlayer() instanceof net.minecraft.server.level.ServerPlayer buyer ? buyer : null);
+		}
+	}
 }

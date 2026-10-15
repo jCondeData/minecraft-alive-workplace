@@ -1,0 +1,109 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "aliveworkplace:apiary",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:ball_workbench",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:builders_bench",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:carpenters_bench",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:chopping_block",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:compost_bin",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:feed_trough",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:flower_stand",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:fossil_lab",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:fruit_basket",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:guard_post",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:inn_counter",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:kitchen_stove",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:leaders_podium",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:miners_bench",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:music_stand",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:nether_brazier",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:nurse_station",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:postal_desk",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:scholars_desk",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:sieve",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:teachers_desk",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:tinkers_bench",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:trade_board",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:tutors_desk",
+      "required": false
+    },
+    {
+      "id": "aliveworkplace:undertakers_table",
+      "required": false
+    }
+  ]
+}

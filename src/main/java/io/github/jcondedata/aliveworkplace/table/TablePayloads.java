@@ -21,15 +21,38 @@ public final class TablePayloads {
 	/** Bytes per upload packet (client-to-server custom payloads are limited to 32 KiB). */
 	public static final int UPLOAD_CHUNK = 30_000;
 
-	/** One blueprint in the library listing. */
-	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks) {
-		public static final StreamCodec<FriendlyByteBuf, Entry> CODEC = StreamCodec.composite(
-			ResourceLocation.STREAM_CODEC, Entry::id,
-			ByteBufCodecs.VAR_INT, Entry::sizeX,
-			ByteBufCodecs.VAR_INT, Entry::sizeY,
-			ByteBufCodecs.VAR_INT, Entry::sizeZ,
-			ByteBufCodecs.VAR_INT, Entry::blocks,
-			Entry::new);
+	/**
+	 * One blueprint in the library listing. {@code state} is a {@link BlueprintUnlocks.State} ordinal (26.10); a locked
+	 * build's {@code hint} is the lang key of how to get it. A hidden ("???") entry carries a stand-in id and no size.
+	 */
+	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint) {
+		public static final StreamCodec<FriendlyByteBuf, Entry> CODEC = StreamCodec.of((buf, e) -> {
+			ResourceLocation.STREAM_CODEC.encode(buf, e.id());
+			buf.writeVarInt(e.sizeX());
+			buf.writeVarInt(e.sizeY());
+			buf.writeVarInt(e.sizeZ());
+			buf.writeVarInt(e.blocks());
+			buf.writeVarInt(e.state());
+			buf.writeUtf(e.hint(), 256);
+		}, buf -> new Entry(ResourceLocation.STREAM_CODEC.decode(buf), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
+			buf.readVarInt(), buf.readUtf(256)));
+
+		/** An unlocked entry. */
+		public Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks) {
+			this(id, sizeX, sizeY, sizeZ, blocks, BlueprintUnlocks.State.UNLOCKED.ordinal(), "");
+		}
+
+		public boolean unlocked() {
+			return state == BlueprintUnlocks.State.UNLOCKED.ordinal();
+		}
+
+		public boolean locked() {
+			return state == BlueprintUnlocks.State.LOCKED.ordinal();
+		}
+
+		public boolean hidden() {
+			return state == BlueprintUnlocks.State.HIDDEN.ordinal();
+		}
 	}
 
 	/** An item and how many of it a blueprint needs. */
@@ -55,7 +78,21 @@ public final class TablePayloads {
 		}
 	}
 
-	/** C2S: what does this blueprint need? */
+	/**
+	 * A style the selected build can be built in (26.11): its name (as in {@code blueprint_styles/}), title and icon item.
+	 */
+	public record StyleChoice(String name, Component title, ResourceLocation icon) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, StyleChoice> CODEC = StreamCodec.composite(
+			ByteBufCodecs.stringUtf8(64), StyleChoice::name,
+			ComponentSerialization.STREAM_CODEC, StyleChoice::title,
+			ResourceLocation.STREAM_CODEC, StyleChoice::icon,
+			StyleChoice::new);
+	}
+
+	/**
+	 * C2S: what does this blueprint need? {@code id} is a listed build, or one in a style (26.11:
+	 * {@link io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles#styled}); the answer comes back under that id.
+	 */
 	public record RequestDetails(ResourceLocation id) implements CustomPacketPayload {
 		public static final Type<RequestDetails> TYPE = new Type<>(AliveWorkplace.id("table_request_details"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, RequestDetails> CODEC = StreamCodec.composite(
@@ -67,13 +104,21 @@ public final class TablePayloads {
 		}
 	}
 
-	/** S2C: the materials list for one blueprint. */
-	public record Details(ResourceLocation id, List<Material> materials) implements CustomPacketPayload {
+	/**
+	 * S2C: the materials list for one blueprint (as drawn or in a style), and the styles its build can be built in (26.11;
+	 * none for a locked build or a Wonder).
+	 */
+	public record Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles) implements CustomPacketPayload {
 		public static final Type<Details> TYPE = new Type<>(AliveWorkplace.id("table_details"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Details> CODEC = StreamCodec.composite(
 			ResourceLocation.STREAM_CODEC, Details::id,
 			Material.CODEC.apply(ByteBufCodecs.list()), Details::materials,
+			StyleChoice.CODEC.apply(ByteBufCodecs.list()), Details::styles,
 			Details::new);
+
+		public Details(ResourceLocation id, List<Material> materials) {
+			this(id, materials, List.of());
+		}
 
 		@Override
 		public Type<? extends CustomPacketPayload> type() {
@@ -113,7 +158,7 @@ public final class TablePayloads {
 		}
 	}
 
-	/** C2S: give me this blueprint (costs a Blank Blueprint in survival). */
+	/** C2S: give me this blueprint (costs a Blank Blueprint in survival); a styled id gives it set to that style (26.11). */
 	public record Take(BlockPos table, ResourceLocation id) implements CustomPacketPayload {
 		public static final Type<Take> TYPE = new Type<>(AliveWorkplace.id("table_take"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Take> CODEC = StreamCodec.composite(

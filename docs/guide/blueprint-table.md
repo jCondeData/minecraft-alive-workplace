@@ -47,6 +47,9 @@ picture of the build itself, so you can see it before you pick it.
   **Stonework**, **Sandstone**, **Dark Oak**, **Cherry**, **Grand** or, with Cobblemon, **Apricorn**. Only the styles
   that change something in that build show, and the chosen one is framed in gold. Click one and the picture and the
   material list change to it. Locked and "???" builds have no style row.
+- **All materials.** The materials under the picture show the biggest first; scroll over them with the mouse wheel,
+  or click **+N** or **All materials** for the whole list, every material with its count and name, biggest first,
+  in the style you picked. Esc or **Back** closes it.
 - **Get Blueprint** gives you a copy for a [Blank Blueprint](blank-blueprint.md), already set to the style you chose.
 - **Upload a File** lists the build files in your `blueprints` folder (`.litematic` or `.schem`) and puts the one you
   pick in the library for everyone. Unless the server allows it with the `workplaceAllowUploads` game rule, only
@@ -61,7 +64,7 @@ Storehouse, the Smithy, the Mason's Yard, the Kitchen and the like). Those show 
 always.
 
 Everything else starts **locked**. A locked build shows greyed out, with a line saying how to get it, such as "Sold by
-a Journeyman Builder", "A market-day trader", "Questbook: The Builder" or "Found in chests". You can still look round
+a Journeyman Builder", "A market-day trader", "A questbook reward" or "Found in chests". You can still look round
 its picture, dimmed, and see what it needs, but Get Blueprint stays off. A few rare builds (the grander homes only a
 builder sells, the Wonders and some special builds) show as a dark **???** with no name, picture or materials, like a
 hidden achievement, until your village finds them. Unlocked builds come first in the list.

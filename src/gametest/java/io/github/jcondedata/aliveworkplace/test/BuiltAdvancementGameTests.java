@@ -7,7 +7,13 @@ import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.BuiltAdvancements;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.advancements.AdvancementHolder;
@@ -107,6 +113,50 @@ public class BuiltAdvancementGameTests implements FabricGameTest {
 		// the owner isn't online: the player next to the build gets it
 		BuildSite away = site(helper, UUID.randomUUID(), StarterBlueprints.STARTER_COTTAGE.id());
 		helper.assertTrue(BuiltAdvancements.award(level, away) >= 1 && done(nearby, cottage), "with the owner away, the player beside the build didn't get it");
+		helper.succeed();
+	}
+
+	/**
+	 * A Hamlet that reaches Village rank gives the players in the village the hidden village/rank_village advancement
+	 * (the questbook's rank quest), and not the next rank's.
+	 */
+	//$ gametest_batch AREA '"rankUpMoment"'
+	@GameTest(template = AREA, batch = "rankUpMoment")
+	public void aRankUpAwardsItsAdvancement(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.players(helper);
+		Leftovers.finished(helper);
+		ServerLevel level = helper.getLevel();
+		AdvancementHolder village = level.getServer().getAdvancements().get(AliveWorkplace.id("village/rank_village"));
+		AdvancementHolder town = level.getServer().getAdvancements().get(AliveWorkplace.id("village/rank_town"));
+		helper.assertTrue(village != null && town != null, "no advancement aliveworkplace:village/rank_village or rank_town");
+		helper.assertTrue(village.value().display().map(d -> d.isHidden() && !d.shouldShowToast() && !d.shouldAnnounceChat()).orElse(false),
+			"village/rank_village isn't hidden and quiet");
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		List<BlueprintData.Placement> placed = new ArrayList<>();
+		Leftovers.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			placed.forEach(sites::forgetFinished);
+		});
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(new BlockPos(2, 2, 2));
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		ServerPlayer nearby = player(helper, new BlockPos(6, 2, 6));
+		for (int i = 0; i < 5; i++) {
+			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(),
+				helper.absolutePos(new BlockPos(1 + i * 2, 2, 10)), Rotation.NONE, Mirror.NONE);
+			placed.add(placement);
+			sites.recordFinished(StarterBlueprints.PARK_BENCH.id(), placement, UUID.randomUUID());
+		}
+		helper.assertTrue(entity.rank() == VillageRanks.Rank.HAMLET && !done(nearby, village), "the village started above a Hamlet");
+
+		VillageRanks.round(level, hall, entity, 10);
+
+		helper.assertTrue(entity.rank() == VillageRanks.Rank.VILLAGE, "10 villagers and 5 buildings made a " + entity.rank());
+		helper.assertTrue(done(nearby, village), "the player in the village didn't get village/rank_village");
+		helper.assertTrue(!done(nearby, town), "a Village rank awarded village/rank_town");
 		helper.succeed();
 	}
 }

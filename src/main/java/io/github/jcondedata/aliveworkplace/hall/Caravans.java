@@ -792,6 +792,7 @@ public final class Caravans {
 		}
 		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
 		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
+		VillageMoments.award(level, hall, VillageMoments.CARAVAN, null); // the questbook's first caravan
 		if (!lost) {
 			CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
 		}

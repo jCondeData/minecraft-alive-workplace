@@ -307,6 +307,7 @@ public final class Festivals {
 				fed++;
 			}
 		}
+		VillageMoments.award(level, hall, VillageMoments.FESTIVAL, null); // the questbook's first festival
 		if (ball) {
 			int wine = NobleBalls.serve(level, guests, store);
 			Chronicle.record(level, hall, Chronicle.Kind.FESTIVAL, Component.translatable("chronicle.aliveworkplace.ball", villagers, fed, wine));

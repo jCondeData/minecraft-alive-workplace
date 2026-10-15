@@ -1,0 +1,139 @@
+{
+	id: "388CC07A64C1CD63",
+	group: "",
+	order_index: 105,
+	filename: "aliveworkplace_story_6_wonders",
+	title: "6. Wonders",
+	subtitle: ["A village's life's work"],
+	icon: {id: "aliveworkplace:wonder_plan", count: 1},
+	default_quest_shape: "",
+	default_hide_dependency_lines: false,
+	quests: [
+		{
+			id: "68A2DAE827EDA936",
+			x: 0.0d,
+			y: 0.0d,
+			title: "A Wonder Plan",
+			description: ["A Town with a Legend can raise a Wonder, and a City two. On the hall's Wonders tab, 32 emeralds buy a Wonder Plan, a rolled blueprint with a gold seal.", "", "Each Wonder goes up in four stages, each asking for rare finds from exploring and a workshop's best goods. The side quests say what each Wonder needs."],
+			dependencies: ["5494189D8D643C66"],
+			icon: {id: "aliveworkplace:wonder_plan", count: 1},
+			tasks: [{id: "33C3CCB7DBAC614D", type: "item", item: {id: "aliveworkplace:wonder_plan", count: 1}}],
+			rewards: [{id: "78DD4DB0DDDFA424", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}]
+		},
+		{
+			id: "22CB6180B1FE917C",
+			x: 3.0d,
+			y: 0.0d,
+			title: "Your first Wonder",
+			description: ["Hold the Wonder Plan and right-click the ground to place it, its middle within 64 blocks of the hall. Then right-click one of the village's builders with it: a Foundation Stone goes down by its front corner.", "", "Stock the chests within 8 blocks of the stone; right-click the stone to see what the stage is still short of. When the Wonder is finished the whole server hears of it and the village holds a festival. This ticks off by itself."],
+			dependencies: ["68A2DAE827EDA936"],
+			icon: {id: "minecraft:beacon", count: 1},
+			tasks: [{id: "115BE2820F286487", type: "advancement", advancement: "aliveworkplace:village/wonder", criterion: ""}],
+			rewards: [{id: "13460A4E5E0F5FBD", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 32}, {id: "1D5CD056511B62F9", type: "xp", xp: 500}]
+		},
+		{
+			id: "66E8E9B463AC77AA",
+			x: 15.0d,
+			y: 0.0d,
+			shape: "gear",
+			size: 1.5d,
+			title: "Every Wonder",
+			description: ["A Town raises one, a City two, one of each kind. Across your villages, raise every Wonder."],
+			dependencies: ["22CB6180B1FE917C"],
+			icon: {id: "minecraft:nether_star", count: 1},
+			tasks: [{id: "3CC67B0AF9FDF121", type: "checkmark", title: "My villages raised every Wonder"}],
+			rewards: [{id: "47CE77AE98919313", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 64}, {id: "39A67F886E91A3EB", type: "xp", xp: 1000}]
+		},
+		{
+			id: "5A79478F7F69A725",
+			x: 3.0d,
+			y: -2.0d,
+			optional: true,
+			title: "The Great Cathedral",
+			description: ["Needs the Seer (or a Master Cleric) and 3 finished Chapels. While it stands, undertakers bring the village's dead back by morning and weddings at its altar are blessed."],
+			dependencies: ["22CB6180B1FE917C"],
+			tasks: [{id: "74F7EA3827AA44F7", type: "checkmark", title: "My village raised the Great Cathedral"}],
+			rewards: [{id: "515E03D236892B86", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		},
+		{
+			id: "21C627C2812A5FD1",
+			x: 3.0d,
+			y: 2.0d,
+			optional: true,
+			title: "The Lighthouse",
+			description: ["Needs a Town on the coast and the Merchant Prince (or 3 caravan routes). Caravans go twice as far in half the time, and ferry fares are halved."],
+			dependencies: ["22CB6180B1FE917C"],
+			tasks: [{id: "6D6676FAB0269423", type: "checkmark", title: "My village raised the Lighthouse"}],
+			rewards: [{id: "3CCEA660A95869B6", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		},
+		{
+			id: "64CE55FD11B4E07B",
+			x: 6.0d,
+			y: -2.0d,
+			optional: true,
+			title: "The Great Library",
+			description: ["Needs the Old Sage (or a Master Scholar) and 20 research levels. The scholars open a second tier of research."],
+			dependencies: ["22CB6180B1FE917C"],
+			tasks: [{id: "4CACBCA11510BAAA", type: "checkmark", title: "My village raised the Great Library"}],
+			rewards: [{id: "109D02C5025FB5DC", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		},
+		{
+			id: "61B2F0917D5EB34C",
+			x: 6.0d,
+			y: 2.0d,
+			optional: true,
+			title: "The Great Wall",
+			description: ["Needs a finished Gatehouse and the Golem Smith (or 4 iron golems and a Master Tinkerer). No raid gathers behind it."],
+			dependencies: ["22CB6180B1FE917C"],
+			tasks: [{id: "2E5F633D9CF1C273", type: "checkmark", title: "My village raised the Great Wall"}],
+			rewards: [{id: "4DC5A74B96F5C2B0", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		},
+		{
+			id: "395351613EF05A88",
+			x: 9.0d,
+			y: -2.0d,
+			optional: true,
+			title: "The Observatory",
+			description: ["Needs the Seer (or a Master Cleric). The Seer charts the land around the village: draw the Sky Chart at the hall on a second empty map."],
+			dependencies: ["22CB6180B1FE917C"],
+			icon: {id: "minecraft:filled_map", count: 1},
+			tasks: [{id: "605CDA979E6497E4", type: "checkmark", title: "My village raised the Observatory, and I drew the Sky Chart"}],
+			rewards: [{id: "5C9F99672C2765F3", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		},
+		{
+			id: "1A3F0901DEF3A9D8",
+			x: 9.0d,
+			y: 2.0d,
+			optional: true,
+			title: "The Hanging Gardens",
+			description: ["Needs the Grand Chef (or a Master Chef and 8 kinds of meal in the store). Farmers and orchard keepers across the realm harvest more."],
+			dependencies: ["22CB6180B1FE917C"],
+			tasks: [{id: "50BE62BC33C7D5D3", type: "checkmark", title: "My village raised the Hanging Gardens"}],
+			rewards: [{id: "48C99BF54F99167C", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		},
+		{
+			id: "2F110C620F31D940",
+			x: 12.0d,
+			y: -2.0d,
+			optional: true,
+			title: "The Colossus",
+			description: ["Needs a City and the Founder. The realm is happier while it stands, and travelers come twice as often."],
+			dependencies: ["22CB6180B1FE917C"],
+			tasks: [{id: "16A2777A6EF5227F", type: "checkmark", title: "My village raised the Colossus"}],
+			rewards: [{id: "2DCC40D40A984812", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		},
+		{
+			id: "580E5A0E76B41628",
+			x: 12.0d,
+			y: 2.0d,
+			optional: true,
+			title: "The Stadium",
+			description: ["Needs the Pokémon Professor (or 25 pastured Pokémon of 10 types). Stadium Days every second afternoon, and the Festival Cup is held here."],
+			dependencies: ["22CB6180B1FE917C"],
+			tasks: [{id: "27873A902FE1BBC5", type: "checkmark", title: "My village raised the Stadium"}],
+			rewards: [{id: "3417C990FEF152CA", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}]
+		}
+	],
+	quest_links: [],
+	images: []
+}

@@ -21,6 +21,19 @@ It also writes the hidden advancements the build quests tick off on (data/alivew
 blueprint in StarterBlueprints.java, aliveworkplace:built/<blueprint path>, with an "impossible" criterion that
 build/BuiltAdvancements grants when a build of it finishes. They hang off a root with no display, so they never show a
 tab, a toast or a chat line. Every aliveworkplace:built/ advancement a chapter asks for must be one of them.
+
+And the same for a village's key moments (data/aliveworkplace/advancement/village/): one per MOMENTS entry,
+aliveworkplace:village/<moment>, granted by hall/VillageMoments (a rank reached, the first caravan, festival...).
+
+The main line never asks for a build the player can't get (add_unlocks): a spine quest's built/<X> whose X isn't in
+blueprint_unlocks/starting.json and no earlier quest unlocks gets ("unlock", X) on its spine predecessor, and every
+blueprint a quest unlocks must be in BlueprintUnlocks.QUESTBOOK. Both fail the run (and --check) when they can't hold.
+
+A quest with its own "milestone" or "needs" gets a manifest line under its chapter's, "quest <id> <milestone> <mods>":
+the install hook leaves it out of the chapter while that expansion is off or those mods are missing, and the quests that
+hang on it then hang on what it hung on. The layout is a story: the chapter's spine (its quests that aren't optional, each
+depending on the one before) runs left to right on one row, and each optional side quest sits above or below the spine
+quest it branches off, a chain of them going further out.
 """
 import json
 import re
@@ -38,6 +51,13 @@ ADV_OUT = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkplace
 BLUEPRINTS = os.path.join(ROOT, "src", "main", "java", "io", "github", "jcondedata", "aliveworkplace", "blueprint",
                           "StarterBlueprints.java")
 LANG = os.path.join(ROOT, "src", "main", "resources", "assets", "aliveworkplace", "lang", "en_us.json")
+STARTING = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkplace", "blueprint_unlocks", "starting.json")
+UNLOCKS_JAVA = os.path.join(ROOT, "src", "main", "java", "io", "github", "jcondedata", "aliveworkplace", "table", "BlueprintUnlocks.java")
+MOMENT_OUT = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkplace", "advancement", "village")
+# hall/VillageMoments grants these (its constants and VillageMoments.rank); titles are lang keys
+# advancements.aliveworkplace.village.<moment>
+MOMENTS = ["rank_village", "rank_town", "rank_city", "caravan", "festival", "raid", "hall_quest", "steward", "colony", "wonder"]
+COLUMN, ROW = 3.0, 2.0  # wide enough apart that no two nodes or their lines crowd each other (owner, 2026-10-14)
 
 
 def ident(*parts):
@@ -92,31 +112,52 @@ def reward_snbt(chapter, quest, i, reward):
     raise ValueError("unknown reward kind " + kind)
 
 
-def layout(quests):
-    """Columns by depth along the chapter's own dependencies, rows centered in each column."""
-    depth = {}
+def local_deps(q):
+    return [d for d in q.get("deps", []) if ":" not in d]
+
+
+def layout(chapter, quests):
+    """The spine on row 0, one column each; a spine quest with side quests gets a column for every two of them (one
+    above, one below), and a side quest that hangs on another side quest goes one row further out from it."""
+    spine = [q for q in quests if not q.get("optional")]
+    keys = [q["key"] for q in quests]
+    for i, q in enumerate(quests):
+        for d in local_deps(q):
+            if d not in keys[:i]:
+                raise ValueError("%s:%s depends on %s, which comes later or doesn't exist" % (chapter, q["key"], d))
+    spine_keys = [q["key"] for q in spine]
+    for i, q in enumerate(spine):
+        local = local_deps(q)
+        if any(d not in spine_keys for d in local):
+            raise ValueError("%s:%s is on the spine but hangs on a side quest" % (chapter, q["key"]))
+        if i > 0 and spine_keys[i - 1] not in local:
+            raise ValueError("%s:%s doesn't follow the spine quest before it, %s" % (chapter, q["key"], spine_keys[i - 1]))
+    direct = {k: [] for k in spine_keys}
     for q in quests:
-        local = [d for d in q.get("deps", []) if ":" not in d]
-        for d in local:
-            if d not in depth:
-                raise ValueError("quest %s depends on %s, which comes later or doesn't exist" % (q["key"], d))
-        depth[q["key"]] = 1 + max((depth[d] for d in local), default=-1)
-    columns = {}
-    deps = {}
-    for q in quests:
-        columns.setdefault(depth[q["key"]], []).append(q["key"])
-        deps[q["key"]] = [d for d in q.get("deps", []) if ":" not in d]
-    # Wide enough apart that no two nodes or their lines crowd each other (owner, 2026-10-14), and each column ordered
-    # by where its quests' parents sit, so the lines between columns cross as little as possible.
+        if q.get("optional"):
+            local = local_deps(q)
+            if not local:
+                raise ValueError("%s:%s is a side quest that hangs on nothing in its chapter" % (chapter, q["key"]))
+            if local[0] in direct:
+                direct[local[0]].append(q["key"])
     pos = {}
-    for col in sorted(columns):
-        keys = columns[col]
-        def parent_y(key):
-            ys = [pos[d][1] for d in deps[key] if d in pos]
-            return sum(ys) / len(ys) if ys else 0.0
-        keys = sorted(keys, key=lambda k: (parent_y(k), keys.index(k)))
-        for i, key in enumerate(keys):
-            pos[key] = (col * 3.0, (i - (len(keys) - 1) / 2.0) * 2.0)
+    col = 0
+    for k in spine_keys:
+        pos[k] = (col * COLUMN, 0.0)
+        for j, side in enumerate(direct[k]):
+            pos[side] = ((col + j // 2) * COLUMN, -ROW if j % 2 == 0 else ROW)
+        col += max(1, (len(direct[k]) + 1) // 2)
+    taken = set(pos.values())
+    for q in quests:
+        if q["key"] in pos:
+            continue
+        x, y = pos[local_deps(q)[0]]
+        step = -ROW if y < 0 else ROW
+        y += step
+        while (x, y) in taken:
+            y += step
+        pos[q["key"]] = (x, y)
+        taken.add((x, y))
     return pos
 
 
@@ -133,7 +174,7 @@ def chapter_snbt(index, ch):
     lines.append("\tdefault_quest_shape: \"\",")
     lines.append("\tdefault_hide_dependency_lines: false,")
     lines.append("\tquests: [")
-    pos = layout(ch["quests"])
+    pos = layout(key, ch["quests"])
     out = []
     for q in ch["quests"]:
         qk = q["key"]
@@ -182,13 +223,19 @@ def check_keys():
             if full in seen:
                 raise ValueError("two quests " + full)
             seen.add(full)
+    quests = {ch["key"] + ":" + q["key"]: q for ch in CHAPTERS for q in ch["quests"]}
     for ch in CHAPTERS:
         for q in ch["quests"]:
+            if q.get("milestone") and ch.get("milestone"):
+                raise ValueError("%s:%s has a milestone in a chapter that has one" % (ch["key"], q["key"]))
             for d in q.get("deps", []):
                 if ":" in d and d not in seen:
                     raise ValueError("%s:%s depends on %s, which doesn't exist" % (ch["key"], q["key"], d))
                 if ":" in d and chapters[d.split(":")[0]].get("needs", "-") not in ("-", ch.get("needs", "-")):
                     raise ValueError("%s:%s depends on a chapter that needs mods it doesn't" % (ch["key"], q["key"]))
+                if ":" in d and (quests[d].get("milestone") or quests[d].get("needs")):
+                    # the install hook only reroutes dependencies inside a chapter
+                    raise ValueError("%s:%s depends on %s in another chapter, which can be left out" % (ch["key"], q["key"], d))
 
 
 def blueprint_paths():
@@ -225,6 +272,30 @@ def advancement_files():
     return out
 
 
+def moment_files():
+    """File (relative to MOMENT_OUT) to JSON text of every village moment's advancement and their root."""
+    lang = json.load(open(LANG, encoding="utf-8"))
+    out = {"root.json": json.dumps({"criteria": {"done": {"trigger": "minecraft:impossible"}}}, indent=2) + "\n"}
+    for moment in MOMENTS:
+        key = "advancements.aliveworkplace.village." + moment
+        if key not in lang:
+            raise ValueError("no lang entry " + key)
+        adv = {
+            "parent": "aliveworkplace:village/root",
+            "display": {
+                "icon": {"id": "aliveworkplace:village_hall"},
+                "title": {"translate": key},
+                "description": {"translate": "advancements.aliveworkplace.village.description"},
+                "show_toast": False,
+                "announce_to_chat": False,
+                "hidden": True,
+            },
+            "criteria": {"done": {"trigger": "minecraft:impossible"}},
+        }
+        out[moment + ".json"] = json.dumps(adv, indent=2) + "\n"
+    return out
+
+
 def check_advancements(advancements):
     for ch in CHAPTERS:
         for q in ch["quests"]:
@@ -233,16 +304,82 @@ def check_advancements(advancements):
                         and t[1][len("aliveworkplace:built/"):] + ".json" not in advancements:
                     raise ValueError("%s:%s asks for %s, which no blueprint in StarterBlueprints has"
                                      % (ch["key"], q["key"], t[1]))
+                if t[0] == "advancement" and t[1].startswith("aliveworkplace:village/") \
+                        and t[1][len("aliveworkplace:village/"):] not in MOMENTS:
+                    raise ValueError("%s:%s asks for %s, which isn't one of MOMENTS" % (ch["key"], q["key"], t[1]))
+
+
+def gating(chapter, quest):
+    """The milestones and mods a quest needs to be in the book: its chapter's and its own."""
+    out = set()
+    for thing in (chapter, quest):
+        if thing.get("milestone"):
+            out.add(thing["milestone"])
+        if thing.get("needs", "-") != "-":
+            out.update(thing["needs"].split(","))
+    return out
+
+
+def add_unlocks():
+    """The main line never asks for a build the player can't get (26.10): a spine quest's built/<X> whose X isn't in
+    starting.json and no earlier quest unlocks puts ("unlock", X) on the quest it depends on, its spine predecessor.
+    Raises if a spine build is still out of reach (no predecessor, or one the book can leave out when this quest stays).
+    Returns every blueprint a quest unlocks."""
+    start = set(json.load(open(STARTING, encoding="utf-8"))["blueprints"])
+    quests = {ch["key"] + ":" + q["key"]: (ch, q) for ch in CHAPTERS for q in ch["quests"]}
+    unlocked = {}  # blueprint -> the gating of the quest that unlocks it
+    for ch in CHAPTERS:
+        for q in ch["quests"]:
+            for r in q.get("rewards", []):
+                if r[0] == "unlock":
+                    unlocked.setdefault(r[1], gating(ch, q))
+            if q.get("optional"):
+                continue
+            for t in q["tasks"]:
+                if t[0] != "advancement" or not t[1].startswith("aliveworkplace:built/"):
+                    continue
+                bp = "aliveworkplace:" + t[1][len("aliveworkplace:built/"):]
+                need = gating(ch, q)
+                if bp in start or (bp in unlocked and unlocked[bp] <= need):
+                    continue
+                deps = q.get("deps", [])
+                if not deps:
+                    raise ValueError("%s:%s asks for %s, which is locked, and has no quest before it to unlock it"
+                                     % (ch["key"], q["key"], bp))
+                full = deps[0] if ":" in deps[0] else ch["key"] + ":" + deps[0]
+                pch, pq = quests[full]
+                if not gating(pch, pq) <= need:
+                    raise ValueError("%s:%s asks for %s, which is locked, and the quest before it (%s) can be left out of the book"
+                                     % (ch["key"], q["key"], bp, full))
+                pq["rewards"] = list(pq.get("rewards", [])) + [("unlock", bp)]
+                unlocked[bp] = gating(pch, pq)
+    return set(unlocked)
+
+
+def check_questbook_hints(unlocks):
+    """Every blueprint a quest unlocks is in BlueprintUnlocks.QUESTBOOK, so the Table says it comes from the questbook."""
+    names = dict((path, name) for name, path in re.findall(r'Entry ([A-Z0-9_]+) = new Entry\(AliveWorkplace\.id\("([^"]+)"\)',
+                                                          open(BLUEPRINTS, encoding="utf-8").read()))
+    java = open(UNLOCKS_JAVA, encoding="utf-8").read()
+    block = re.search(r"Set<ResourceLocation> QUESTBOOK = ids\(Stream\.of\((.*?)\)\);", java, re.S)
+    listed = set(re.findall(r"StarterBlueprints\.([A-Z0-9_]+)", block.group(1))) if block else set()
+    missing = sorted(bp for bp in unlocks if names.get(bp.split(":", 1)[1]) not in listed)
+    if missing:
+        raise ValueError("quests unlock %s, which BlueprintUnlocks.QUESTBOOK doesn't list" % ", ".join(missing))
 
 
 def files():
     check_keys()
+    check_questbook_hints(add_unlocks())
     result = {}
     manifest = ["# file milestone mods (written by tools/questbook/generate.py)"]
     for i, ch in enumerate(CHAPTERS):
         name = ch["file"] + ".snbt"
         result[name] = chapter_snbt(i, ch)
         manifest.append("%s %s %s" % (name, ch.get("milestone", "-"), ch.get("needs", "-")))
+        for q in ch["quests"]:
+            if q.get("milestone") or q.get("needs"):
+                manifest.append("quest %s %s %s" % (ident(ch["key"], q["key"]), q.get("milestone", "-"), q.get("needs", "-")))
     result["manifest.txt"] = "\n".join(manifest) + "\n"
     return result
 
@@ -254,22 +391,24 @@ def main():
     check_advancements(advancements)
     os.makedirs(OUT, exist_ok=True)
     stale = []
-    for name, text in advancements.items():
-        path = os.path.join(ADV_OUT, name)
-        old = open(path, encoding="utf-8").read() if os.path.exists(path) else None
-        if old != text:
-            stale.append("advancement/built/" + name)
-            if not check:
-                os.makedirs(os.path.dirname(path), exist_ok=True)
-                with open(path, "w", encoding="utf-8", newline="\n") as f:
-                    f.write(text)
-    for folder, _, names in os.walk(ADV_OUT):
-        for name in names:
-            rel = os.path.relpath(os.path.join(folder, name), ADV_OUT).replace(os.sep, "/")
-            if rel not in advancements:
-                stale.append("advancement/built/" + rel + " (not ours any more)")
+    moments = moment_files()
+    for out_dir, label, files_ in ((ADV_OUT, "advancement/built/", advancements), (MOMENT_OUT, "advancement/village/", moments)):
+        for name, text in files_.items():
+            path = os.path.join(out_dir, name)
+            old = open(path, encoding="utf-8").read() if os.path.exists(path) else None
+            if old != text:
+                stale.append(label + name)
                 if not check:
-                    os.remove(os.path.join(folder, name))
+                    os.makedirs(os.path.dirname(path), exist_ok=True)
+                    with open(path, "w", encoding="utf-8", newline="\n") as f:
+                        f.write(text)
+        for folder, _, names in os.walk(out_dir):
+            for name in names:
+                rel = os.path.relpath(os.path.join(folder, name), out_dir).replace(os.sep, "/")
+                if rel not in files_:
+                    stale.append(label + rel + " (not ours any more)")
+                    if not check:
+                        os.remove(os.path.join(folder, name))
     for name, text in wanted.items():
         path = os.path.join(OUT, name)
         old = open(path, encoding="utf-8").read() if os.path.exists(path) else None
@@ -289,7 +428,8 @@ def main():
     if check and stale:
         print("questbook out of date: " + ", ".join(stale) + " (run python3 tools/questbook/generate.py)")
         sys.exit(1)
-    print("%d chapters, %d quests, %d built advancements%s" % (len(CHAPTERS), quests, len(advancements) - 1, (", wrote " + ", ".join(stale)) if stale and not check else ""))
+    print("%d chapters, %d quests, %d built advancements, %d village moments%s" % (len(CHAPTERS), quests, len(advancements) - 1,
+          len(moments) - 1, (", wrote " + ", ".join(stale)) if stale and not check else ""))
 
 
 if __name__ == "__main__":

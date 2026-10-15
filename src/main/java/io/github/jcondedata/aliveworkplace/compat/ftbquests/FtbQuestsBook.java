@@ -12,12 +12,16 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +41,11 @@ import java.util.stream.Stream;
  * entries of its objects ({@code <type>.<ID>.<field>}, FTB Quests 2101's TranslationManager.makeKey) are removed
  * from every lang file, so the new text in the chapter is the one FTB Quests reads; no other entry is touched. A
  * chapter the owner deleted stays deleted (a line in the marker and no file); with {@code questbookKeepEdits} on, every
- * existing file of ours is left as it is. FTB Quests loads its folder on SERVER_STARTED (FTBQuestsEventHandler,
+ * existing file of ours is left as it is. A quest can wait for an expansion or a mod of its own (the manifest's
+ * {@code quest} lines): it is left out of the file we write while that is off, the quests after it then hang on the ones
+ * before it, and columns left empty close up; switching it on later is a new version of the chapter. A chapter file of
+ * our name that the jar no longer ships (a retired chapter) is deleted, with its lang entries, unless
+ * {@code questbookKeepEdits} is on. FTB Quests loads its folder on SERVER_STARTED (FTBQuestsEventHandler,
  * 1.21.1/main), after this runs on SERVER_STARTING, so what is written here shows up on the same start.
  */
 public final class FtbQuestsBook {
@@ -56,8 +64,21 @@ public final class FtbQuestsBook {
 	/** A lang key: {@code <object type>.<id>.<field>}, such as {@code quest.44C38D2C09D0F61A.quest_desc}. */
 	private static final Pattern LANG_KEY = Pattern.compile("^[a-z_]+\\.([0-9A-F]{16})\\.[a-z_]+$");
 
-	/** One of our chapter files, with the expansion milestone it waits for (or null) and the mods it needs. */
-	public record Chapter(String file, String milestone, List<String> mods) {
+	/** Our chapter files' names: a file of this name that the jar no longer ships is a retired chapter of ours. */
+	private static final Pattern OUR_FILE = Pattern.compile("aliveworkplace_[a-z0-9_]+\\.snbt");
+	/** A quoted FTB Quests id in a list. */
+	private static final Pattern QUOTED_ID = Pattern.compile("\"([0-9A-F]{16})\"");
+	/** How far apart the generator puts a chapter's columns (tools/questbook/generate.py's layout). */
+	static final double COLUMN = 3.0;
+
+	/**
+	 * One of our chapter files, with the expansion milestone it waits for (or null), the mods it needs, and the quests
+	 * that wait for an expansion or mods of their own, by FTB Quests id (each gate a Chapter named by the quest's id).
+	 */
+	public record Chapter(String file, String milestone, List<String> mods, Map<String, Chapter> quests) {
+		public Chapter(String file, String milestone, List<String> mods) {
+			this(file, milestone, mods, Map.of());
+		}
 	}
 
 	public static void init() {
@@ -91,12 +112,10 @@ public final class FtbQuestsBook {
 		int added = 0;
 		int updated = 0;
 		Set<String> ourIds = new HashSet<>();
-		for (Chapter chapter : manifest()) {
+		List<Chapter> shipped = manifest();
+		for (Chapter chapter : shipped) {
 			Path target = chapters.resolve(chapter.file());
-			byte[] ours;
-			try (InputStream in = resource(chapter.file())) {
-				ours = in.readAllBytes();
-			}
+			byte[] ours = content(chapter, on, loaded);
 			String oursHash = sha256(ours);
 			String recorded = installed.get(chapter.file());
 			boolean exists = Files.exists(target);
@@ -123,6 +142,26 @@ public final class FtbQuestsBook {
 			}
 			changed = true;
 		}
+		int retired = 0;
+		if (!keepEdits) {
+			Set<String> names = new HashSet<>();
+			shipped.forEach(c -> names.add(c.file()));
+			if (installed.keySet().removeIf(file -> !names.contains(file))) {
+				changed = true;
+			}
+			if (Files.isDirectory(chapters)) {
+				List<Path> old;
+				try (Stream<Path> s = Files.list(chapters)) {
+					old = s.filter(p -> OUR_FILE.matcher(p.getFileName().toString()).matches() && !names.contains(p.getFileName().toString())
+						&& Files.isRegularFile(p)).sorted().toList();
+				}
+				for (Path file : old) {
+					ourIds.addAll(objectIds(Files.readString(file, StandardCharsets.UTF_8)));
+					Files.delete(file);
+					retired++;
+				}
+			}
+		}
 		int langRemoved = ourIds.isEmpty() ? 0 : removeLangEntries(configDir.resolve("ftbquests").resolve("quests").resolve("lang"), ourIds);
 		if (changed) {
 			Files.createDirectories(marker.getParent());
@@ -131,13 +170,133 @@ public final class FtbQuestsBook {
 			installed.forEach((file, hash) -> lines.add(file + " " + hash));
 			Files.write(marker, lines, StandardCharsets.UTF_8);
 		}
-		AliveWorkplace.LOG.info("Alive Workplace: questbook: {} FTB Quests chapter(s) added, {} updated{}{}", added, updated,
+		AliveWorkplace.LOG.info("Alive Workplace: questbook: {} FTB Quests chapter(s) added, {} updated{}{}{}", added, updated,
+			retired > 0 ? ", " + retired + " retired chapter(s) removed" : "",
 			langRemoved > 0 ? ", " + langRemoved + " old lang entr" + (langRemoved == 1 ? "y" : "ies") + " removed" : "",
 			keepEdits ? " (questbookKeepEdits on: existing files kept)" : "");
 		return added + updated;
 	}
 
-	/** Every FTB Quests object id in a chapter file: the chapter's, its quests', tasks' and rewards'. */
+	/**
+	 * What we write for {@code chapter}: the jar's file without the quests whose own expansion is off or whose mods aren't
+	 * {@code loaded} (byte for byte the jar's file when none is left out).
+	 */
+	public static byte[] content(Chapter chapter, Predicate<Chapter> on, Predicate<String> loaded) throws IOException {
+		byte[] jar;
+		try (InputStream in = resource(chapter.file())) {
+			jar = in.readAllBytes();
+		}
+		Set<String> drop = new HashSet<>();
+		chapter.quests().forEach((id, gate) -> {
+			if (!on.test(gate) || !gate.mods().stream().allMatch(loaded)) {
+				drop.add(id);
+			}
+		});
+		return drop.isEmpty() ? jar : withoutQuests(new String(jar, StandardCharsets.UTF_8), drop).getBytes(StandardCharsets.UTF_8);
+	}
+
+	/**
+	 * A chapter file as the generator writes it (a block a quest, from a line "\t\t{" to "\t\t}") without the quests in
+	 * {@code drop}: a quest that hung on a dropped one hangs on what that one hung on, and columns left empty close up.
+	 * Text in any other shape comes back whole.
+	 */
+	public static String withoutQuests(String text, Set<String> drop) {
+		List<String> lines = List.of(text.split("\n", -1));
+		int start = lines.indexOf("\tquests: [");
+		int end = start < 0 ? -1 : lines.subList(start, lines.size()).indexOf("\t],");
+		if (start < 0 || end < 0) {
+			return text;
+		}
+		end += start;
+		Map<String, List<String>> blocks = new LinkedHashMap<>();
+		Map<String, List<String>> deps = new HashMap<>();
+		List<String> block = null;
+		for (int i = start + 1; i < end; i++) {
+			String line = lines.get(i);
+			if (line.equals("\t\t{")) {
+				block = new ArrayList<>();
+			}
+			if (block == null) {
+				return text;
+			}
+			block.add(line.equals("\t\t},") ? "\t\t}" : line);
+			if (line.startsWith("\t\t}")) {
+				String id = field(block, "id").replace("\"", "");
+				blocks.put(id, block);
+				deps.put(id, quotedIds(field(block, "dependencies")));
+				block = null;
+			}
+		}
+		TreeSet<Double> columns = new TreeSet<>();
+		Map<String, List<String>> kept = new LinkedHashMap<>();
+		for (Map.Entry<String, List<String>> e : blocks.entrySet()) {
+			if (drop.contains(e.getKey())) {
+				continue;
+			}
+			Set<String> resolved = new LinkedHashSet<>();
+			for (String d : deps.get(e.getKey())) {
+				resolve(d, drop, deps, resolved, new HashSet<>());
+			}
+			List<String> b = new ArrayList<>(e.getValue());
+			b.replaceAll(line -> line.startsWith("\t\t\tdependencies: ")
+				? "\t\t\tdependencies: [" + String.join(", ", resolved.stream().map(d -> "\"" + d + "\"").toList()) + "]," : line);
+			kept.put(e.getKey(), b);
+			columns.add(x(b));
+		}
+		List<Double> order = new ArrayList<>(columns);
+		List<String> quests = new ArrayList<>();
+		for (List<String> b : kept.values()) {
+			double x = x(b);
+			b.replaceAll(line -> line.startsWith("\t\t\tx: ")
+				? String.format(Locale.ROOT, "\t\t\tx: %.1fd,", order.indexOf(x) * COLUMN) : line);
+			quests.add(String.join("\n", b));
+		}
+		List<String> out = new ArrayList<>(lines.subList(0, start + 1));
+		if (!quests.isEmpty()) {
+			out.add(String.join(",\n", quests));
+		}
+		out.addAll(lines.subList(end, lines.size()));
+		return String.join("\n", out);
+	}
+
+	/** {@code id}, or when it's dropped what it hung on, and so on. */
+	private static void resolve(String id, Set<String> drop, Map<String, List<String>> deps, Set<String> into, Set<String> seen) {
+		if (!drop.contains(id) || !deps.containsKey(id)) {
+			into.add(id);
+		} else if (seen.add(id)) {
+			for (String d : deps.get(id)) {
+				resolve(d, drop, deps, into, seen);
+			}
+		}
+	}
+
+	private static double x(List<String> block) {
+		String x = field(block, "x");
+		return x.isEmpty() ? 0 : Double.parseDouble(x.replace("d", ""));
+	}
+
+	/** The value on a quest block's line for {@code name} ("\t\t\tx: 3.0d," gives "3.0d"), or "" when it has none. */
+	private static String field(List<String> block, String name) {
+		String prefix = "\t\t\t" + name + ": ";
+		for (String line : block) {
+			if (line.startsWith(prefix)) {
+				String v = line.substring(prefix.length());
+				return v.endsWith(",") ? v.substring(0, v.length() - 1) : v;
+			}
+		}
+		return "";
+	}
+
+	private static List<String> quotedIds(String list) {
+		List<String> ids = new ArrayList<>();
+		Matcher m = QUOTED_ID.matcher(list);
+		while (m.find()) {
+			ids.add(m.group(1));
+		}
+		return ids;
+	}
+
+	/** Every FTB Quests object id in a chapter file:the chapter's, its quests', tasks' and rewards'. */
 	public static Set<String> objectIds(String chapterText) {
 		Set<String> ids = new HashSet<>();
 		Matcher m = OBJECT_ID.matcher(chapterText);
@@ -298,19 +457,28 @@ public final class FtbQuestsBook {
 		try (InputStream in = resource("manifest.txt")) {
 			text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
 		}
+		Map<String, Chapter> quests = null;
 		for (String line : text.split("\n")) {
 			line = line.strip();
 			if (line.isEmpty() || line.startsWith("#")) {
 				continue;
 			}
 			String[] parts = line.split("\\s+");
+			if (parts.length == 4 && parts[0].equals("quest") && quests != null) {
+				quests.put(parts[1], gate(parts[1], parts[2], parts[3], Map.of())); // a quest of the chapter above, with its own gate
+				continue;
+			}
 			if (parts.length != 3) {
 				throw new IOException("bad questbook manifest line: " + line);
 			}
-			result.add(new Chapter(parts[0], parts[1].equals("-") ? null : parts[1],
-				parts[2].equals("-") ? List.of() : List.of(parts[2].split(","))));
+			quests = new LinkedHashMap<>();
+			result.add(gate(parts[0], parts[1], parts[2], quests));
 		}
-		return result;
+		return result.stream().map(c -> new Chapter(c.file(), c.milestone(), c.mods(), Map.copyOf(c.quests()))).toList();
+	}
+
+	private static Chapter gate(String name, String milestone, String mods, Map<String, Chapter> quests) {
+		return new Chapter(name, milestone.equals("-") ? null : milestone, mods.equals("-") ? List.of() : List.of(mods.split(",")), quests);
 	}
 
 	/** One of our questbook files from the jar. */

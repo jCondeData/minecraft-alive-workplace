@@ -7,11 +7,13 @@ Roadmap items: 22.10, 26.8
 
 ## 1. What a player sees
 
-**The questbook (26.8).** On a server with FTB Quests, the quest book gains our chapters, start to finish: Getting
-Started (Cobblemon's starter, first catches, Poké Balls, RCT's first trainers), the Builder and the Blueprint Table,
-Hiring and Retraining, the Village Hall and its Ranks, Pokémon in the Village, and one chapter per expansion (1.1 the
-Steward to 2.0 Wonders). Tasks are item, advancement, kill and checkmark tasks; rewards are emeralds and experience.
-The guide's `questbook.md` explains it.
+**The questbook (26.8).** On a server with FTB Quests, the quest book gains our story, one chapter per village rank:
+1. Founding, 2. The Hamlet Grows, 3. A Village, 4. A Town, 5. A City and 6. Wonders. Each chapter has one spine of
+quests in order, each after the last, with optional side quests off it; Cobblemon's quests and each expansion's are
+left out of a chapter while that mod is missing or that expansion is off. Build quests tick on the hidden
+`aliveworkplace:built/<blueprint>` advancements, story moments (a rank reached, the first caravan, festival, hall quest,
+a raid survived, a Steward, a colony, a Wonder) on `aliveworkplace:village/<moment>` (hall/VillageMoments). Rewards are
+emeralds and experience. The guide's `questbook.md` explains it.
 
 A website, linked from the showcase page, at https://jcondedata.github.io/minecraft-alive-workplace/player-guide/.
 It has an index and 14 pages: getting started, giving jobs, the Builder and blueprints, jobs on the land, crafters

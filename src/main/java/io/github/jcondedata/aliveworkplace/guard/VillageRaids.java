@@ -602,6 +602,7 @@ public final class VillageRaids {
 		if (!fled) {
 			level.playSound(null, hall, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.5f, 1f);
 		}
+		io.github.jcondedata.aliveworkplace.hall.VillageMoments.award(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageMoments.RAID, null); // the questbook's raid survived
 	}
 
 	private static List<ServerPlayer> players(ServerLevel level, BlockPos hall) {

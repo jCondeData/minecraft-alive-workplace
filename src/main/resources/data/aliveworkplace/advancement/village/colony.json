@@ -1,0 +1,22 @@
+{
+  "parent": "aliveworkplace:village/root",
+  "display": {
+    "icon": {
+      "id": "aliveworkplace:village_hall"
+    },
+    "title": {
+      "translate": "advancements.aliveworkplace.village.colony"
+    },
+    "description": {
+      "translate": "advancements.aliveworkplace.village.description"
+    },
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

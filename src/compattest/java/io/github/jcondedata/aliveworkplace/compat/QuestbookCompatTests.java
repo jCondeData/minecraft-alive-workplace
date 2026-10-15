@@ -77,6 +77,15 @@ public class QuestbookCompatTests implements FabricGameTest {
 			if (list.isEmpty()) {
 				problems.add(where + " has no quests");
 			}
+			Set<String> here = new HashSet<>();
+			for (int i = 0; i < list.size(); i++) {
+				here.add(list.getCompound(i).getString("id"));
+			}
+			for (String gated : chapter.quests().keySet()) {
+				if (!here.contains(gated)) {
+					problems.add(where + ": the manifest gates quest " + gated + ", which isn't in the chapter");
+				}
+			}
 			for (int i = 0; i < list.size(); i++) {
 				CompoundTag quest = list.getCompound(i);
 				quests++;
@@ -143,7 +152,7 @@ public class QuestbookCompatTests implements FabricGameTest {
 				problems.add(dep[0] + " depends on " + dep[1] + ", which isn't one of our quests");
 			}
 		}
-		helper.assertTrue(chapters.size() >= 14 && quests >= 100 && lookedUp >= 100,
+		helper.assertTrue(chapters.size() >= 6 && quests >= 90 && lookedUp >= 100,
 			chapters.size() + " chapters, " + quests + " quests, " + lookedUp + " ids looked up: is the questbook all there?");
 		helper.assertTrue(problems.isEmpty(), problems.size() + " questbook problems: "
 			+ String.join("; ", problems.subList(0, Math.min(30, problems.size()))));

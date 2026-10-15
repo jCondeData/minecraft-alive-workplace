@@ -19,9 +19,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Hold Shift over a blueprint to see what it needs (the same list as the Blueprint Table). */
+/**
+ * Hold Shift over a blueprint to see what it needs (the same list as the Blueprint Table), packed several to a line
+ * ("64 Oak Planks · 32 Cobblestone") so even a big build fits in about 20 lines.
+ */
 public final class BlueprintTooltip {
-	private static final int MAX_LINES = 10;
+	/** Lines of packed materials at most; with the heading and the "…and N more" line that's 20. */
+	private static final int MAX_LINES = 18;
+	/** How wide a packed line may get, in GUI pixels. */
+	private static final int MAX_WIDTH = 240;
 	private static final Map<ResourceLocation, List<Map.Entry<Item, Integer>>> CACHE = new HashMap<>();
 
 	public static void init() {
@@ -56,16 +62,48 @@ public final class BlueprintTooltip {
 		}
 		List<Component> lines = new ArrayList<>();
 		lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.materials").withStyle(ChatFormatting.GOLD));
-		for (int i = 0; i < Math.min(MAX_LINES, materials.size()); i++) {
-			Map.Entry<Item, Integer> e = materials.get(i);
-			lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.material", e.getValue(), e.getKey().getDescription())
-				.withStyle(ChatFormatting.GRAY));
+		List<Component> pieces = new ArrayList<>();
+		for (Map.Entry<Item, Integer> e : materials) {
+			pieces.add(piece(e.getValue(), e.getKey()));
 		}
-		if (materials.size() > MAX_LINES) {
-			lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.more", materials.size() - MAX_LINES).withStyle(ChatFormatting.DARK_GRAY));
-		}
+		pack(pieces, lines, "tooltip.aliveworkplace.blueprint.more_at_table");
 		return lines;
 	}
+
+	private static Component piece(int count, Item item) {
+		return Component.translatable("tooltip.aliveworkplace.blueprint.material", count, item.getDescription());
+	}
+
+	/**
+	 * Packs {@code pieces} into lines no wider than {@link #MAX_WIDTH}, joined by " · ", at most {@link #MAX_LINES} of
+	 * them; what doesn't fit is counted in a last {@code moreKey} line.
+	 */
+	public static void pack(List<Component> pieces, List<Component> out, String moreKey) {
+		net.minecraft.client.gui.Font font = net.minecraft.client.Minecraft.getInstance().font;
+		int lines = 0;
+		int i = 0;
+		while (i < pieces.size() && lines < MAX_LINES) {
+			net.minecraft.network.chat.MutableComponent line = Component.empty().append(pieces.get(i));
+			int width = font.width(pieces.get(i));
+			i++;
+			while (i < pieces.size()) {
+				int next = font.width(SEPARATOR) + font.width(pieces.get(i));
+				if (width + next > MAX_WIDTH) {
+					break;
+				}
+				line.append(SEPARATOR).append(pieces.get(i));
+				width += next;
+				i++;
+			}
+			out.add(line.withStyle(ChatFormatting.GRAY));
+			lines++;
+		}
+		if (i < pieces.size()) {
+			out.add(Component.translatable(moreKey, pieces.size() - i).withStyle(ChatFormatting.DARK_GRAY));
+		}
+	}
+
+	private static final Component SEPARATOR = Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY);
 
 	/** A placed blueprint near a Builder's Bench: what the chests there are still short of. */
 	public static List<Component> missingLines(SupplyReport report, boolean detailed) {
@@ -78,14 +116,11 @@ public final class BlueprintTooltip {
 		}
 		List<Component> lines = new ArrayList<>();
 		lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.missing").withStyle(ChatFormatting.YELLOW));
-		for (int i = 0; i < Math.min(MAX_LINES, report.missing().size()); i++) {
-			SupplyReport.Missing m = report.missing().get(i);
-			lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.material", m.count(), m.item().getDescription())
-				.withStyle(ChatFormatting.GRAY));
+		List<Component> pieces = new ArrayList<>();
+		for (SupplyReport.Missing m : report.missing()) {
+			pieces.add(piece(m.count(), m.item()));
 		}
-		if (report.missing().size() > MAX_LINES) {
-			lines.add(Component.translatable("tooltip.aliveworkplace.blueprint.more", report.missing().size() - MAX_LINES).withStyle(ChatFormatting.DARK_GRAY));
-		}
+		pack(pieces, lines, "tooltip.aliveworkplace.blueprint.more_missing");
 		return lines;
 	}
 

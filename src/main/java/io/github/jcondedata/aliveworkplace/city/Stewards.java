@@ -160,6 +160,7 @@ public final class Stewards {
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		Chat.chat(player, Component.translatable("message.aliveworkplace.steward.appointed", who, VillageHalls.name(level, hall))
 			.withStyle(ChatFormatting.GREEN));
+		io.github.jcondedata.aliveworkplace.hall.VillageMoments.award(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageMoments.STEWARD, player); // the questbook's Steward quest
 		return InteractionResult.SUCCESS;
 	}
 

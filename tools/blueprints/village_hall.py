@@ -13,8 +13,8 @@ logs out of place):
   a 1-wide panel between the side windows. The gable ends sit on the plate with two studs carrying the side posts up to
   the roof and a single attic pane between them. A deepslate-tile gable (ridge along x, a 1-block overhang with a
   soffit) and a gabled porch on two log posts over the door, its ridge running up into the main roof, the village bell
-  hung from its front beam, a lantern either side of the door and a banner on each porch post. The notice board (four
-  notices over a shelf) fills the west bay of the front as the flower-boxed window fills the east one. Inside: the
+  hung from its front beam, a lantern either side of the door and a banner on each porch post. A flower-boxed window
+  fills each front bay either side of the door. Inside: the
   Village Hall at the head of a red runner, two banners behind it, four benches facing it, lanterns on two tie beams
   over the side posts.
 - II, 19 x 13 x 13: a meeting room grows out of the east wall (x 11-17, z 4-10, two blocks shallower, so its ridge sits
@@ -50,8 +50,10 @@ def hall_body(b):
     posts(b, [(x, z) for x in FRONT_POSTS for z in (3, 11)] + [(x, z) for x in (1, 11) for z in SIDE_POSTS], 1, 4, FRAME)
     # The door in the middle bay of the front, a step before it
     door(b, 6, 1, 3, "spruce_door", "south")
-    # Every window the same: 2 x 2 panes at y 2-3 filling a 2-wide bay. A flower box on the street front (the notice
-    # board fills the west bay), sills on the sides and the back.
+    # Every window the same: 2 x 2 panes at y 2-3 filling a 2-wide bay. Flower boxes on both front bays either side of
+    # the door (the owner, 2026-10-15: a notice board with blank signs there read as a boarded-up window), sills on the
+    # sides and the back.
+    window(b, 2, 2, 3, "north", width=2, height=2, flowers=(TRIM.trapdoor, ["potted_allium", "potted_cornflower"]))
     window(b, 9, 2, 3, "north", width=2, height=2, flowers=(TRIM.trapdoor, ["potted_cornflower", "potted_allium"]))
     for z in (4, 9):
         window(b, 1, 2, z + 1, "west", width=2, height=2, sill=TRIM)  # runs north from z + 1
@@ -118,24 +120,13 @@ def hall_porch(b):
     b.set(9, 3, 0, f"{BANNER}_wall_banner", facing="east")
 
 
-def notice_board(b):
-    """The west bay of the front (x 2-3): four notices on the wall over a shelf, under the eaves' soffit."""
-    for x in (2, 3):
-        trapdoor(b, x, 1, 2, TRIM.trapdoor, "south", half="top")
-        for y in (2, 3):
-            b.set(x, y, 3, "spruce_planks")  # the board
-            b.set(x, y, 2, "spruce_wall_sign", facing="north", waterlogged=False)
-
 
 def village_hall():
-    """13 x 13 x 13: the timber hall, its porch with the bell, the notice board and a bench out front."""
+    """13 x 13 x 13: the timber hall, its porch with the bell,."""
     b = Build(13, 13, 13)
     hall_body(b)
     hall_roof(b)
     hall_porch(b)
-    notice_board(b)
-    stairs(b, 9, 0, 1, TRIM, "south")
-    stairs(b, 10, 0, 1, TRIM, "south")
     b.fill_air()
     return b
 
@@ -197,9 +188,6 @@ def meeting_room(b):
         log(b, 17, 5, z, FRAME, axis="z")
     for y in (6, 7, 8):
         log(b, 17, y, 7, FRAME)
-    # A bench before it
-    stairs(b, 16, 0, 2, TRIM, "south")
-    stairs(b, 17, 0, 2, TRIM, "south")
 
 
 def village_hall_2():

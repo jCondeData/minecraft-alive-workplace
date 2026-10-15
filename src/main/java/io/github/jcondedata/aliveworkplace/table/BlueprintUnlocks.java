@@ -95,9 +95,10 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 			StarterBlueprints.ARENA, StarterBlueprints.WINERY, StarterBlueprints.TAILORS_SHOP, StarterBlueprints.PRINT_SHOP,
 			StarterBlueprints.JEWELLERS_WORKSHOP),
 		StarterBlueprints.POKEMON_CENTER_LOOKS.stream()).flatMap(s -> s));
-	/** A questbook reward ({@code tools/questbook/chapters.py}, The Builder): {@code /workplace unlock}. */
+	/** A questbook reward ({@code tools/questbook/chapters.py}, the home and hall quests): {@code /workplace unlock}. */
 	public static final Set<ResourceLocation> QUESTBOOK = ids(Stream.of(StarterBlueprints.STARTER_COTTAGE_2, StarterBlueprints.STARTER_COTTAGE_3,
-		StarterBlueprints.STONE_HOUSE_2, StarterBlueprints.STONE_HOUSE_3, StarterBlueprints.TERRACE_2));
+		StarterBlueprints.STONE_HOUSE_2, StarterBlueprints.STONE_HOUSE_3, StarterBlueprints.TERRACE_2,
+		StarterBlueprints.VILLAGE_HALL_2, StarterBlueprints.VILLAGE_HALL_3));
 	/** The mod's own builds: the only ones that can be locked. */
 	private static final Set<ResourceLocation> MANAGED = ids(Stream.of(StarterBlueprints.ALL, StarterBlueprints.ONE_TIER, StarterBlueprints.WORKPLACES,
 		StarterBlueprints.COBBLEMON_ONLY, StarterBlueprints.COBBLEMON_WORKPLACES, StarterBlueprints.JOB_BUILDS, StarterBlueprints.DEFENCES,

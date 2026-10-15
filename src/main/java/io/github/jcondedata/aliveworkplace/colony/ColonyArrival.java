@@ -395,6 +395,7 @@ public final class ColonyArrival {
 		Chronicle.atHall(level, hall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.founded" + blessed, day, motherName, names));
 		Component where = VillageHallScreen.where(motherHall, hall);
 		Chronicle.atHall(level, motherHall, Chronicle.Kind.FOUNDED, Component.translatable("chronicle.aliveworkplace.colony.mother" + blessed, names, colony, where));
+		io.github.jcondedata.aliveworkplace.hall.VillageMoments.award(level, motherHall, io.github.jcondedata.aliveworkplace.hall.VillageMoments.COLONY, null); // the questbook's colony quest
 
 		// The owner hears of it.
 		if (owner != null) {

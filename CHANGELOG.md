@@ -37,6 +37,14 @@ asks for the steps, `latest.log` and any crash report).
   **All materials** button opens the whole list (icon, count and name, biggest first; Esc or Back closes it). Holding
   Shift over a blueprint packs its materials several to a line, so a big build shows them all in about 20 lines, and
   the "still missing" list does the same.
+- **The questbook is one story, by village rank.** Six chapters replace the old ones per topic and per expansion:
+  Founding, The Hamlet Grows, A Village, A Town, A City and Wonders. Each has one line of quests in order, each after
+  the last and saying exactly what to do next, with optional side quests off it. Cobblemon's quests are side quests
+  that appear only with Cobblemon, and an expansion's quests appear only once it's switched on. More quests tick
+  themselves off: a rank reached, the first caravan, festival and hall quest, a raid survived, a Steward appointed, a
+  colony founded and a Wonder finished (hidden advancements, no toasts). The home and hall quests still unlock the
+  next level in the Blueprint Table, and Village Hall II and III are quests of A Village. The old chapters are removed from the server
+  on the next start, unless Keep Questbook Edits is on.
 - **The questbook says what to build.** The Builder chapter starts with "Build a Starter Cottage" (what it's for and
   how, step by step), then the homes' upgrades I to II to III; the Jobs chapter has a quest per job naming the building
   for it, and the item to use when the job has no table of its own. Build quests tick off by themselves when a builder

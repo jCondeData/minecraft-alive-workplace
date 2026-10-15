@@ -210,6 +210,7 @@ public final class VillageQuests {
 		entity.questDone();
 		Chronicle.record(level, hall, Chronicle.Kind.QUEST, Component.translatable("chronicle.aliveworkplace.quest",
 			player != null ? player.getDisplayName() : Component.translatable("chronicle.aliveworkplace.someone"), describe(quest)), true);
+		VillageMoments.award(level, hall, VillageMoments.HALL_QUEST, player); // the questbook's first hall quest
 		if (player != null) {
 			Money.pay(player, (long) quest.reward() * Money.DOLLARS_PER_EMERALD, quest.reward());
 			Chat.chat(player, Component.translatable("message.aliveworkplace.quest.done", describe(quest), Money.describe(

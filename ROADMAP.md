@@ -713,6 +713,9 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   it has standing or under construction on first use. Switch `blueprintUnlocks` (default on; off: everything unlocked
   as before). Done when: GameTests for the starting set, buying, an old save, a refused locked Get Blueprint, a ???
   sending nothing, the switch off and save and reload; the guide, the wiki and the CHANGELOG say so.
+- [ ] **26.11** (blocked: deferred by the owner 2026-10-16, not now) **Give the look-alike workplaces their own designs** (owner's playtest,
+  2026-10-16: the Guard House, Kitchen, Clinic, Builder's Workshop, Carpenter's Workshop and Ball Workshop all look the
+  same). Deferred by the owner: not now.
 ## Milestone 27: Villages that build themselves (1.1)
 
 Items in Milestones 27–35 sometimes point at another milestone's item by name ("M29's Seer item"): find it there.

@@ -301,7 +301,7 @@ def smithy_lean_to(b):
         stairs(b, 11, 4, z, SMITHY_ROOF, "west")
         stairs(b, 12, 3, z, SMITHY_ROOF, "west")
     b.set(10, 1, 5, "grindstone", face="floor", facing="north")
-    lantern(b, 11, 0, 2)
+    lamp_post(b, 11, 1, 1, "spruce_fence", height=2)  # on the apron at the lean-to's corner, not on the floor
 
 
 def smithy_floor(b):

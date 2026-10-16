@@ -67,6 +67,11 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **Every questbook quest now says plainly what to do.** All 107 quests were rewritten: each opens with its goal, gives
+  the steps by the real block, item or hall button ("hover over the bread in the hall's top row"), says why it matters,
+  and ends with how it completes ("completes by itself when the builder finishes it", or "Click the checkmark above
+  once..."). "Food in the store" now explains which chests are the food store and what counts as a meal. A few wrong
+  details are fixed on the way: the Poké Ball recipe, the Cup command (`/workplace cup ready`) and what Nobles need.
 - **Picking another build with the full materials list open no longer crashes the game.** The list shows "Loading" for a moment instead.
 - **The campfire goes on top of a tall chimney.** On houses whose chimney rises well above the upstairs floor (Starter
   Cottage II and III, the Farmstead, the Fisher's Hut, the Smithy, the Noble's Manor and others) the builder had nowhere to

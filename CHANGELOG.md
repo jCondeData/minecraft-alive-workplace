@@ -67,6 +67,7 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **Picking another build with the full materials list open no longer crashes the game.** The list shows "Loading" for a moment instead.
 - **A fisherman's rod lasts as long as yours.** Standing by a hired fisherman (just after hiring him, or in the evening)
   made vanilla's trade display empty his hand, and the rod was gone after a catch or so. Now the rod stays in his hand
   and wears one point a catch, and it takes its enchantments as a player's does: Unbreaking wears it slower, Mending

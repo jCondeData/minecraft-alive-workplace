@@ -31,6 +31,13 @@ public final class BuildSiteManager extends SavedData {
 	/** Most finished buildings remembered per dimension (the oldest are forgotten first). */
 	private static final int MAX_FINISHED = 2000;
 	private final java.util.ArrayDeque<Finished> finished = new java.util.ArrayDeque<>();
+	/**
+	 * Per finished building, the blocks a repair went for and couldn't put back (nowhere to stand within reach of them,
+	 * say): upkeep leaves those be. Else the builder fetched the same block, found it couldn't be done, skipped it and took
+	 * it back to the chest every time it looked, for good (rc.11 playtest: a chimney's campfire). Saved; forgotten when
+	 * the building is built again on its spot (an upgrade) or taken down.
+	 */
+	private final Map<BlueprintData.Placement, java.util.Set<net.minecraft.core.BlockPos>> gaveUp = new java.util.HashMap<>();
 	/** Counts every site or finished building added or removed (not saved): lets a reader tell the list hasn't changed (B85). */
 	private int changes;
 
@@ -45,6 +52,7 @@ public final class BuildSiteManager extends SavedData {
 			return; // road segments are kept on the City Plan (27.15), not with the buildings
 		}
 		finished.removeIf(f -> f.placement().equals(placement));
+		gaveUp.remove(placement);
 		finished.addLast(new Finished(structure, placement, owner));
 		while (finished.size() > MAX_FINISHED) {
 			finished.removeFirst();
@@ -55,10 +63,23 @@ public final class BuildSiteManager extends SavedData {
 
 	/** Forgets the building on this spot (it was taken down). */
 	public void forgetFinished(BlueprintData.Placement placement) {
+		gaveUp.remove(placement);
 		if (finished.removeIf(f -> f.placement().equals(placement))) {
 			changes++;
 			setDirty();
 		}
+	}
+
+	/** A repair of the building at {@code placement} couldn't put back the blocks at {@code positions}: upkeep leaves them be. */
+	public void gaveUp(BlueprintData.Placement placement, java.util.Collection<net.minecraft.core.BlockPos> positions) {
+		if (!positions.isEmpty() && gaveUp.computeIfAbsent(placement, p -> new java.util.HashSet<>()).addAll(positions)) {
+			setDirty();
+		}
+	}
+
+	/** The blocks of the building at {@code placement} a repair couldn't put back (none: empty). */
+	public java.util.Set<net.minecraft.core.BlockPos> gaveUp(BlueprintData.Placement placement) {
+		return Collections.unmodifiableSet(gaveUp.getOrDefault(placement, java.util.Set.of()));
 	}
 
 	/** The finished buildings in {@code level} whose origin is within {@code radius} blocks of {@code pos}. */
@@ -159,6 +180,10 @@ public final class BuildSiteManager extends SavedData {
 			entry.putString("structure", f.structure().toString());
 			entry.put("placement", BlueprintData.Placement.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, f.placement()).getOrThrow());
 			Nbt.putUuid(entry, "owner", f.owner());
+			java.util.Set<net.minecraft.core.BlockPos> left = gaveUp.get(f.placement());
+			if (left != null && !left.isEmpty()) {
+				entry.putLongArray("gave_up", left.stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
+			}
 			done.add(entry);
 		}
 		tag.put("finished", done);
@@ -181,6 +206,13 @@ public final class BuildSiteManager extends SavedData {
 			var placement = BlueprintData.Placement.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, entry.get("placement")).result();
 			if (structure != null && placement.isPresent() && Nbt.hasUuid(entry, "owner")) {
 				manager.finished.addLast(new Finished(structure, placement.get(), Nbt.getUuid(entry, "owner")));
+				if (Nbt.has(entry, "gave_up", Tag.TAG_LONG_ARRAY)) { // (older saves have none)
+					java.util.Set<net.minecraft.core.BlockPos> left = new java.util.HashSet<>();
+					for (long l : Nbt.getLongArray(entry, "gave_up")) {
+						left.add(net.minecraft.core.BlockPos.of(l));
+					}
+					manager.gaveUp.put(placement.get(), left);
+				}
 			}
 		}
 		manager.setDirty(false);

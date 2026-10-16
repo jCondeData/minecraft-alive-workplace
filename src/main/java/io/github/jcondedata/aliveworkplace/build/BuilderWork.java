@@ -861,6 +861,12 @@ public class BuilderWork extends Behavior<Villager> {
 				return false;
 			}
 			BlockPos spot = approachSpot != null ? approachSpot : findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3);
+			if (spot == null) {
+				// rc.11 playtest: nowhere else to stand, as for the campfire on a chimney's top, well above any floor: the roof beside
+				// it will do (a builder on the slope of its stairs). Without it, the campfire was skipped every time, and
+				// every repair came for it again: out of the chest, over to the chimney, back in the chest, for good.
+				spot = findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, true);
+			}
 			if (spot != null) {
 				hop(level, villager, spot);
 			} else if (deferIfImpossible && !helping && plan != null && scaffolds.plan(level, villager, site, plan, target, reach)) {
@@ -909,6 +915,13 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
 									 double maxEyeDistance) {
+		return findStandingSpot(level, plan, target, from, avoid, maxEyeDistance, false);
+	}
+
+	/** ... and, with {@code roofs}, on top of a roof's stairs too (the last resort, rather than skip the block: a chimney's campfire). */
+	@Nullable
+	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
+									 double maxEyeDistance, boolean roofs) {
 		BlockPos best = null;
 		double bestScore = Double.MAX_VALUE;
 		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
@@ -916,7 +929,7 @@ public class BuilderWork extends Behavior<Villager> {
 			for (int dx = -4; dx <= 4; dx++) {
 				for (int dz = -4; dz <= 4; dz++) {
 					p.set(target.getX() + dx, target.getY() + dy, target.getZ() + dz);
-					if (!canStandAt(level, p)) {
+					if (!canStandAt(level, p, roofs)) {
 						continue;
 					}
 					Vec3 eye = new Vec3(p.getX() + 0.5, p.getY() + 1.62, p.getZ() + 0.5);
@@ -942,9 +955,18 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	private static boolean canStandAt(ServerLevel level, BlockPos feet) {
+		return canStandAt(level, feet, false);
+	}
+
+	/**
+	 * With {@code roofs}, the top of a stair counts too (a chimney's campfire, rc.11 playtest): its upper step holds a villager stood in the middle of it
+	 * at the block's top, as on a roof's slope. (A stair upside down has a sturdy top already.)
+	 */
+	private static boolean canStandAt(ServerLevel level, BlockPos feet, boolean roofs) {
 		BlockPos below = feet.below();
 		BlockState under = level.getBlockState(below);
-		return (under.isFaceSturdy(level, below, Direction.UP) || under.is(net.minecraft.world.level.block.Blocks.SCAFFOLDING)) // 35.6: a column's top
+		return (under.isFaceSturdy(level, below, Direction.UP) || under.is(net.minecraft.world.level.block.Blocks.SCAFFOLDING) // 35.6: a column's top
+			|| roofs && under.getBlock() instanceof net.minecraft.world.level.block.StairBlock)
 			&& level.getBlockState(feet).getCollisionShape(level, feet).isEmpty()
 			&& level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty()
 			&& level.getFluidState(feet).isEmpty();
@@ -980,7 +1002,7 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/** Teleports the builder onto {@code spot}, only if there's still room to stand there (B60). */
 	private static void hop(ServerLevel level, Villager villager, BlockPos spot) {
-		if (!canStandAt(level, spot)) {
+		if (!canStandAt(level, spot, true)) { // (a roof's stair too, where the search found only that)
 			return;
 		}
 		level.sendParticles(ParticleTypes.POOF, villager.getX(), villager.getY() + 0.5, villager.getZ(), 6, 0.2, 0.3, 0.2, 0.01);

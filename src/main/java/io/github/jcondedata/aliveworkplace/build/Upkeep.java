@@ -117,7 +117,8 @@ public final class Upkeep {
 					continue;
 				}
 			}
-			int missing = BuildPlan.repair(blueprint.get(), f.placement(), level).size();
+			// (what an earlier repair couldn't put back stays out: it would only be fetched, skipped and taken back again)
+			int missing = BuildPlan.repair(blueprint.get(), f.placement(), level, manager.gaveUp(f.placement())).size();
 			if (missing == 0) {
 				continue;
 			}

@@ -255,12 +255,20 @@ public final class BuildPlan {
 	/**
 	 * A repair of a finished build: only the blocks that are missing now (where the world has air, water, grass or the
 	 * like), in the usual order — nothing is cleared (what players put inside stays), no foundation, no landscaping.
+	 * The crops of a finished field are left out: cutting, trampling and replanting them is the farmer's job, not a hole
+	 * to fill (a field cut bare had its builder sowing wheat seeds again; farmland gone to dirt never counts, dirt being
+	 * no hole).
 	 */
 	public static BuildPlan repair(Blueprint blueprint, BlueprintData.Placement placement, Level level) {
 		BuildPlan build = create(blueprint, placement);
-		List<Step> structure = build.structure.stream().filter(s -> missing(level, s)).toList();
-		List<Step> decoration = build.decoration.stream().filter(s -> missing(level, s)).toList();
+		List<Step> structure = build.structure.stream().filter(s -> !isCrop(s.state()) && missing(level, s)).toList();
+		List<Step> decoration = build.decoration.stream().filter(s -> !isCrop(s.state()) && missing(level, s)).toList();
 		return new BuildPlan(List.of(), List.of(), structure, decoration, List.of(), List.of(), build.bounds);
+	}
+
+	/** A crop a farmer tends (wheat, carrots, stems, ...): planted on the first build, never put back by a repair. */
+	static boolean isCrop(BlockState state) {
+		return state.is(net.minecraft.tags.BlockTags.CROPS) || state.getBlock() instanceof net.minecraft.world.level.block.CropBlock;
 	}
 
 	/** Whether {@code step}'s block is gone: the spot is open (air, water, plants) and not already what it should be. */

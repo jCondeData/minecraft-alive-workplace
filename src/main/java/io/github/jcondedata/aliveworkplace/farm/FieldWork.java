@@ -56,7 +56,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A farmer's shift on the field they were given: harvest what's ripe (and plant the same crop right
  * back), sow empty farmland with seeds from the chests near the composter, till bare dirt with a hoe
- * from those chests, cut sugar cane, cactus, bamboo and kelp down to their last block (and plant them on
+ * from those chests (a gap trampled in the field is worked back without one: {@link #isTrampled}), cut sugar cane, cactus, bamboo and kelp down to their last block (and plant them on
  * sand, by the water, next to more of the same), pick pumpkins and melons, and carry the harvest to the
  * chests. With nothing else to do, seeds piling up in the chests go in the composter for bone meal. When
  * everything is tended the farmer goes back to the vanilla routine until something ripens.
@@ -204,12 +204,12 @@ public class FieldWork extends Behavior<Villager> {
 					boolean doable = switch (t.kind()) {
 						case HARVEST -> true;
 						case PLANT -> hasSeeds;
-						case TILL -> hasSeeds && hasHoe;
+						case TILL -> hasSeeds && (hasHoe || isTrampled(level, t.pos()));
 						case FERTILIZE -> hasBoneMeal;
 					};
 					if (!doable) {
 						wantsSeeds |= (t.kind() == Kind.PLANT || t.kind() == Kind.TILL) && !hasSeeds;
-						wantsHoe |= t.kind() == Kind.TILL && !hasHoe;
+						wantsHoe |= t.kind() == Kind.TILL && !hasHoe && !isTrampled(level, t.pos());
 						wantsBoneMeal |= t.kind() == Kind.FERTILIZE;
 						continue;
 					}
@@ -451,6 +451,22 @@ public class FieldWork extends Behavior<Villager> {
 			bag.remove(Items.BONE_MEAL, 1);
 			level.levelEvent(LevelEvent.PARTICLES_AND_SOUND_PLANT_GROWTH, pos, 15);
 		}
+	}
+
+	/**
+	 * A gap trampled in the field: plain dirt (what farmland turns into) next to farmland. The farmer works it back
+	 * into farmland and sows it even without a hoe, so a field stays whole (only new ground needs the hoe).
+	 */
+	static boolean isTrampled(ServerLevel level, BlockPos pos) {
+		if (!level.getBlockState(pos).is(Blocks.DIRT)) {
+			return false;
+		}
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			if (level.getBlockState(pos.relative(d)).getBlock() instanceof FarmBlock) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean isWeed(BlockState state) {

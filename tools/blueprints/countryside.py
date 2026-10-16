@@ -607,8 +607,8 @@ def weavers_cottage():
     weavers_roofs(b)
     weavers_cottage_inside(b)
     sheep_pen(b)
-    # Wool bales under the west eaves
-    for i, (z, y) in enumerate(((3, 1), (4, 1), (3, 2))):
+    # Wool bales under the west eaves, on the ground behind the window (not over its sill and shutter)
+    for i, (z, y) in enumerate(((6, 0), (7, 0), (7, 1))):
         b.set(0, y, z, WOOL[i + 1])
     b.fill_air()
     return b

@@ -67,6 +67,12 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **Six builds from the owner's playtest look right** (2026-10-16). Starter Cottage II's upstairs back windows sit in
+  their bays over the front ones instead of cutting into the corner post; the Storehouse's west window is centred like
+  the east one; the Terrace loses the bench that hung in the air beside its east door; the Weaver's Cottage's wool
+  bales sit on the ground behind its west window, no longer over its sill and shutter; the Smithy's lean-to lantern
+  stands on a post instead of on the ground; and the Apiary Garden's fence stands on the garden's grass, a block above
+  the flower beds, instead of level with them.
 - **No more gaps where roofs meet at a corner.** Where a wing's or a porch's roof runs into the main roof (the Village
   Hall, Storehouse, Smithy, Barracks, Ranch, Research Lab, Supply Shop, Healing Center, Townhouse, Physician's House and Fletcher's Lodge), the stairs left a little
   hole into the attic at each step of the valley; the corner is now packed with a roof block. Village Hall III's tower

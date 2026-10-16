@@ -1005,6 +1005,13 @@ SCENES = [
            ("12_village_hall_east", "Village Hall I from the side: posts at even bays, matching windows"),
            ("26_village_hall_3_back", "Village Hall III from behind: the meeting room and the bell-and-clock tower"),
            ("28_sandstone_village_hall_3_front", "Village Hall III in Sandstone")]),
+    # The builds fixed after the owner's playtest of 2026-10-16, each from the front, both sides and the back
+    S("build_fixes", "Build families", "Playtest fixes: Starter Cottage II, Storehouse, Terrace, Weaver's Cottage, Smithy, Apiary Garden",
+      "the twelve fixed builds stand finished side by side",
+      70, [("13_starter_cottage_2_back", "Starter Cottage II from behind: the upstairs windows in one row"),
+           ("26_terrace_front", "The Terrace: steps only where they lead somewhere"),
+           ("42_smithy_front", "The Smithy: its lanterns hung or on a post"),
+           ("50_apiary_garden_front", "The Apiary Garden: the beds sit below the fence")]),
     S("realm_builds", "Realm builds", "The Colony Camp, the Royal Hall and the Royal Hall II, and all three in the five styles",
       "the Colony Camp, the Royal Hall and the Royal Hall II stand as drawn and in the five styles, the camp with its table and chest, each hall with its vault and on the map as a hall",
       200, [("10_colony_camp", "The Colony Camp: two wagons, the Village Hall under a striped awning, the campfire and the Travel Post"),

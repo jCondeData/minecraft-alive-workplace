@@ -98,7 +98,8 @@ def cottage_upper_floor(b):
     beam_ring(b, 1, 1, 9, 9, 8, COTTAGE_FRAME)
     for x in (2, 7):
         window(b, x, 6, 1, "north", width=2, height=2, shutters="spruce_trapdoor")
-        window(b, x, 6, 9, "south", width=2, height=2, shutters="spruce_trapdoor")
+        # a window looking south runs west from its x: start at x + 1 so the back pair (x 2-3, 7-8) sits over the front's
+        window(b, x + 1, 6, 9, "south", width=2, height=2, shutters="spruce_trapdoor")
     for z in (2, 8):
         window(b, 9, 6, z, "east", height=2)
     # The ladder up, against the post between the east windows
@@ -840,7 +841,7 @@ def granary(b):
     posts(b, [(1, 2), (7, 2), (1, 7), (7, 7), (4, 7)], 5, 5, STORE_FRAME)
     for x in (2, 6):
         log(b, x, 5, 2, STORE_FRAME)
-    window(b, 1, 2, 4, "west", width=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
+    window(b, 1, 2, 5, "west", width=2, shutters="spruce_trapdoor", sill=STONE_BRICK)  # runs north: z 4-5, as the east one
     window(b, 7, 2, 4, "east", width=2, shutters="spruce_trapdoor", sill=STONE_BRICK)
     window(b, 4, 2, 7, "south", sill=STONE_BRICK)
     b.set(4, 1, 6, "aliveworkplace:storehouse", facing="north")
@@ -1297,11 +1298,10 @@ def terrace():
     terrace_colours(b, 7, 11, "oak_planks")
     for x in (3, 9):  # windows at the back of the kitchens
         window(b, x, 2, 8, "south", height=1, sill=SPRUCE)
-    # Small life: a lantern on each flower box by the doors, a barrel and a bench out front
+    # Small life: a lantern on each flower box by the doors, a barrel out front
     lantern(b, 5, 2, 1)
     lantern(b, 7, 2, 1)
     b.set(1, 1, 1, "barrel", facing="up", open=False)
-    stairs(b, 11, 1, 1, SPRUCE, "south")
     b.fill_air()
     return b
 
@@ -2074,19 +2074,28 @@ def honey_shed(b, x0, z0):
     lantern(b, x0 + 2, 3, z0 + 1, hanging=True)
 
 
+def garden_ground(b, x0, z0, x1, z1):
+    """Grass over the garden at y 0, so its fence (at y 1) stands on the ground, a block above the beds."""
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            b.set(x, 0, z, "grass_block", snowy=False)
+
+
 def apiary_garden():
     """11 x 6 x 11: a beekeeper's garden — a meadow of flowers inside a low fence, four beehives on posts (one over a
-    smouldering campfire), and a honey shed at the back with the beekeeper's hive, a chest and the honey."""
+    smouldering campfire), and a honey shed at the back with the beekeeper's hive, a chest and the honey. The fence
+    stands on the garden's grass (y 0), a block above the beds, not beside them."""
     b = Build(11, 8, 11)
+    garden_ground(b, 0, 0, 10, 10)
     flower_bed(b, 1, 1, 9, 4, 0, FLOWERS)
     for x in range(0, 11):
-        fence(b, x, 0, 0, "oak_fence")
+        fence(b, x, 1, 0, "oak_fence")
     for z in range(0, 7):
-        fence(b, 0, 0, z, "oak_fence")
-        fence(b, 10, 0, z, "oak_fence")
-    b.set(5, 0, 0, "oak_fence_gate", facing="south", open=False, powered=False, in_wall=False)
-    b.set(5, 0, 1, "dirt_path")
-    b.set(5, 0, 2, "dirt_path")
+        fence(b, 0, 1, z, "oak_fence")
+        fence(b, 10, 1, z, "oak_fence")
+    b.set(5, 1, 0, "oak_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+    for z in (0, 1, 2):
+        b.set(5, 0, z, "dirt_path")
     b.set(5, 1, 1, "air")
     b.set(5, 1, 2, "air")
     for (x, z, smoke) in ((2, 2, True), (8, 2, False), (2, 4, False), (8, 4, False)):
@@ -2094,10 +2103,10 @@ def apiary_garden():
         hive_on_post(b, x, z, smoke=smoke)
     honey_shed(b, 3, 6)
     for z in range(7, 11):
-        fence(b, 0, 0, z, "oak_fence")
-        fence(b, 10, 0, z, "oak_fence")
+        fence(b, 0, 1, z, "oak_fence")
+        fence(b, 10, 1, z, "oak_fence")
     for x in range(0, 11):
-        fence(b, x, 0, 10, "oak_fence")
+        fence(b, x, 1, 10, "oak_fence")
     b.fill_air()
     return b
 
@@ -2106,14 +2115,14 @@ def apiary_garden_2():
     """Upgrade of the Apiary Garden (same origin and front): the meadow runs on to the east with four more hives and a
     bench among the flowers. 17 x 6 x 11."""
     b = apiary_garden().grow(17, 8, 11)
-    for z in range(0, 11):
-        b.clear(10, 0, z, 10, 0, z)
+    b.clear(10, 1, 1, 10, 1, 9)  # the old east fence
+    garden_ground(b, 10, 0, 16, 10)
     flower_bed(b, 10, 1, 15, 9, 0, FLOWERS)
     for x in range(10, 17):
-        fence(b, x, 0, 0, "oak_fence")
-        fence(b, x, 0, 10, "oak_fence")
+        fence(b, x, 1, 0, "oak_fence")
+        fence(b, x, 1, 10, "oak_fence")
     for z in range(0, 11):
-        fence(b, 16, 0, z, "oak_fence")
+        fence(b, 16, 1, z, "oak_fence")
     for (x, z, smoke) in ((11, 3, False), (14, 3, True), (11, 7, False), (14, 7, False)):
         b.set(x, 1, z, "air")
         hive_on_post(b, x, z, smoke=smoke)

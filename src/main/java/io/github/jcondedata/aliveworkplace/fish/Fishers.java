@@ -56,6 +56,14 @@ public final class Fishers {
 		return ModAttachments.FISHER_JOB.getOrElse(villager, false);
 	}
 
+	/**
+	 * Whether {@code villager} is a hired fisher with their rod in hand: vanilla's trade display then leaves the hand alone
+	 * (it empties it otherwise, and the rod was lost the first time a player stood by).
+	 */
+	public static boolean holdsTheirRod(Villager villager) {
+		return isHired(villager) && FisherWork.isRod(villager.getItemBySlot(EquipmentSlot.MAINHAND));
+	}
+
 	/** Vanilla fisherman behaviour runs when not hired, or when there is no rod or no water to fish. */
 	public static boolean vanillaMayRun(Villager villager) {
 		return !isHired(villager) || FisherWork.isResting(villager);

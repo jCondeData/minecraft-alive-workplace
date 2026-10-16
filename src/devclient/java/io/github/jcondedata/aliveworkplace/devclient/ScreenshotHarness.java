@@ -113,6 +113,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
 	private final VillageHallBuildScene villageHallBuild = new VillageHallBuildScene();
+	private final BuildFixesScene buildFixes = new BuildFixesScene();
 	private final RealmBuildsScene realmBuilds = new RealmBuildsScene();
 	private final WonderGalleryScene wonderGallery = new WonderGalleryScene();
 	/** SCENE=wonder_finished (ROADMAP 35.8): the folly's time-lapse, ending in its festival's fireworks. */
@@ -288,6 +289,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("village_hall".equals(System.getProperty("aliveworkplace.scene"))) {
 			villageHallBuild.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("build_fixes".equals(System.getProperty("aliveworkplace.scene"))) {
+			buildFixes.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {

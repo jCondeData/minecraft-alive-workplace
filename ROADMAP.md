@@ -720,9 +720,30 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   it has standing or under construction on first use. Switch `blueprintUnlocks` (default on; off: everything unlocked
   as before). Done when: GameTests for the starting set, buying, an old save, a refused locked Get Blueprint, a ???
   sending nothing, the switch off and save and reload; the guide, the wiki and the CHANGELOG say so.
-- [ ] **26.11** (blocked: deferred by the owner 2026-10-16, not now) **Give the look-alike workplaces their own designs** (owner's playtest,
+- [ ] **26.11** **Give the look-alike workplaces their own designs** (unblocked by the owner 2026-10-16 evening: "make new completely different exteriors for all different kinds of workshops and houses, nothing should look identical") (owner's playtest,
   2026-10-16: the Guard House, Kitchen, Clinic, Builder's Workshop, Carpenter's Workshop and Ball Workshop all look the
   same). Deferred by the owner: not now.
+- [ ] **26.12** **Storehouse and Village Hall screens in the Blueprint Table's style** (owner, 2026-10-16: "the storehouse UI
+  and village hall UI can use alot of work, i like the look of the blueprint table"). Done when: both screens use the
+  Blueprint Table's layout and drawing (panel, list, detail pane, the same sprites and fonts), every number and
+  action they show today is still there, screenshots of both in a showcase scene, GameTests for any changed packets.
+- [ ] **26.13** **Cap fishermen per village** (owner, 2026-10-16, chosen over "barrels only hire near water" and "swap
+  storage barrels": storage barrels in builds make most villagers fishermen). Done when: a village takes at most 1
+  fisherman, plus 1 more per 10 villagers (a config switch sets it); a jobless villager skips a barrel when the cap is
+  reached and looks for another workstation; an existing fisherman over the cap keeps his job (no save breaks).
+  GameTests: cap reached, cap grows with the village, config off, save and reload.
+- [ ] **26.14** **More decoration builds** (owner, 2026-10-16: "a wider variety of builds that arent houses, but
+  decorations similar to fountain or lamp"). Done when: at least 12 new small decorations (well, statue, gazebo,
+  market stall, flower planters, signpost, bench nook, lamp variants, pond, archway, hay cart, notice board...), each
+  original, checked in a render against STYLE.md, in the Blueprint Table library and the unlocks list.
+- [ ] **26.15** **Basements: a Level 4 for buildings, and cellars where they fit** (owner, 2026-10-16: "buildings should
+  also get basements in a new Level 4 version, but some buildings should get basements in general at any level, like a
+  butcher maybe has a freezer"). Done when: every upgradable home and workshop gets a Level 4 upgrade that adds a
+  basement under it (stairs or ladder down, lit, furnished for the job), and the jobs that suit one (butcher's
+  ice-lined freezer, brewer/cook's cellar, smith's coal store, storehouse vault) have a cellar from Level 1. The
+  builder digs the basement in FOUNDATION (BuildSite stays restartable). GameTests: an upgrade digs and finishes the
+  basement, save and reload mid-dig.
+
 ## Milestone 27: Villages that build themselves (1.1)
 
 Items in Milestones 27–35 sometimes point at another milestone's item by name ("M29's Seer item"): find it there.

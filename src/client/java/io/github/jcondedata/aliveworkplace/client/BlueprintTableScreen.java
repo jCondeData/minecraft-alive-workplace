@@ -554,6 +554,11 @@ public class BlueprintTableScreen extends Screen {
 		g.fill(x - 4, y, x + w + 4, y + h, 0xF0161B22);
 		g.fill(x - 4, y, x + w + 4, y + 1, PANEL_EDGE);
 		g.fill(x - 4, y + h - 1, x + w + 4, y + h, PANEL_EDGE);
+		if (materials == null) {
+			// Another build was just picked and its list hasn't arrived yet (a click here used to crash the client).
+			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x, y + 5, 0xFF777777, false);
+			return;
+		}
 		int total = 0;
 		for (TablePayloads.Material m : materials) {
 			total += m.count();

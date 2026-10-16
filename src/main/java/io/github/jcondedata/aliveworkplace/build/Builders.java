@@ -689,6 +689,19 @@ public final class Builders {
 		BuildPlan plan = site.isDeconstruction() ? null : site.plan(level);
 		if (site.isRepair()) {
 			// A repair: nothing to hand back, nothing new to sell, the building's already on the books.
+			if (plan != null) {
+				// What it went for and couldn't put back (skipped: nowhere to stand within reach, say) is left be from now
+				// on, or upkeep would send the builder for it again every time it looked (rc.11 playtest: a chimney's campfire).
+				List<BlockPos> left = new java.util.ArrayList<>();
+				for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+					for (BuildPlan.Step s : plan.steps(stage)) {
+						if (BuildPlan.missing(level, s)) {
+							left.add(s.pos());
+						}
+					}
+				}
+				BuildSiteManager.get(level).gaveUp(site.placement(), left);
+			}
 			level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 			if (site.wonder() != null) {

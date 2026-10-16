@@ -324,7 +324,7 @@ public final class WonderUpkeep {
 					continue; // being repaired already
 				}
 				Optional<Blueprint> blueprint = BlueprintLibrary.get(level, part.structure());
-				int holes = blueprint.map(b -> BuildPlan.repair(b, part.placement(), level).size()).orElse(0);
+				int holes = blueprint.map(b -> BuildPlan.repair(b, part.placement(), level, sites.gaveUp(part.placement())).size()).orElse(0);
 				if (holes == 0) {
 					continue;
 				}

@@ -257,9 +257,14 @@ public final class BuildPlan {
 	 * like), in the usual order — nothing is cleared (what players put inside stays), no foundation, no landscaping.
 	 */
 	public static BuildPlan repair(Blueprint blueprint, BlueprintData.Placement placement, Level level) {
+		return repair(blueprint, placement, level, java.util.Set.of());
+	}
+
+	/** ... leaving out the blocks at {@code gaveUp}, which an earlier repair couldn't put back ({@link BuildSiteManager#gaveUp}). */
+	public static BuildPlan repair(Blueprint blueprint, BlueprintData.Placement placement, Level level, java.util.Set<BlockPos> gaveUp) {
 		BuildPlan build = create(blueprint, placement);
-		List<Step> structure = build.structure.stream().filter(s -> missing(level, s)).toList();
-		List<Step> decoration = build.decoration.stream().filter(s -> missing(level, s)).toList();
+		List<Step> structure = build.structure.stream().filter(s -> !gaveUp.contains(s.pos()) && missing(level, s)).toList();
+		List<Step> decoration = build.decoration.stream().filter(s -> !gaveUp.contains(s.pos()) && missing(level, s)).toList();
 		return new BuildPlan(List.of(), List.of(), structure, decoration, List.of(), List.of(), build.bounds);
 	}
 

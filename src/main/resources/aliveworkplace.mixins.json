@@ -17,6 +17,7 @@
 		"PlagueBedMixin",
 		"CaravanPartyMixin",
 		"EntityAccessor",
+		"FarmlandTrampleMixin",
 		"ExplosionMixin",
 		"FireBlockAccessor",
 		"FirePlacedMixin",

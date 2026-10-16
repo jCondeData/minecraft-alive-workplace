@@ -73,6 +73,9 @@ asks for the steps, `latest.log` and any crash report).
   stand to reach its top, so he skipped the campfire, then came back for it on every repair round: out of the chest, over
   to the chimney, "repaired", and back in the chest, over and over. Now he climbs onto the roof beside the chimney to put
   it on, and a block a repair really can't reach is tried once and then left alone.
+- **A farm stays the farmer's.** Villagers no longer trample farmland into dirt; a farmer works a trampled patch of his
+  field back into farmland and sows it, even without a hoe; and builders no longer treat cut or trampled crops of a
+  finished farm as damage to repair with wheat seeds (the first build still plants the field).
 - **A fisherman's rod lasts as long as yours.** Standing by a hired fisherman (just after hiring him, or in the evening)
   made vanilla's trade display empty his hand, and the rod was gone after a catch or so. Now the rod stays in his hand
   and wears one point a catch, and it takes its enchantments as a player's does: Unbreaking wears it slower, Mending

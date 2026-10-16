@@ -29,6 +29,7 @@
 		"PoiManagerMixin",
 		"ScoutUnseenMixin",
 		"ServerLevelMixin",
+		"ShowTradesToPlayerMixin",
 		"StructureTemplateMixin",
 		"StructureTemplatePoolAccessor",
 		"ThreatDoorMixin",

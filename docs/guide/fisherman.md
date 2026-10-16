@@ -20,7 +20,11 @@ The Fisherman is vanilla's fisherman, put to work: hand them a rod and they fish
 ## Getting a fisherman
 
 A villager without a job takes a free **barrel** as a Fisherman, as in vanilla. To set them to work, right-click them
-with a **fishing rod**. Put spare rods in the barrel or a chest next to it: rods wear out.
+with a **fishing rod**. Put spare rods in the barrel or a chest next to it for when one breaks.
+
+**Their rod wears like yours:** one point a catch, so a plain rod lasts 64 catches. Enchant it and the enchantments
+work for them as for you: **Unbreaking** makes it last longer, **Mending** repairs it with the experience of each catch,
+**Luck of the Sea** brings better catches and **Lure** shortens the wait for a bite.
 
 ## What they do
 

@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -33,6 +34,8 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -45,7 +48,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A hired fisherman's shift: walk to water near the barrel, cast, wait for a bite, and reel in a catch
  * from the vanilla fishing loot table (fish and junk; treasure needs open water, so none from the shore).
- * Rods come from the barrel and chests nearby and wear out; the catch goes back there.
+ * Rods come from the barrel and chests nearby and wear as a player's do: a point a catch, with the rod's own enchantments
+ * (Unbreaking, Mending with the catch's experience, Luck of the Sea, Lure, and any other mod's that work through those
+ * vanilla hooks). The catch goes back there.
  *
  * <p>With a boat in those chests (any plain boat or raft), a fisher whose water is big enough rows out: from the
  * shore to a spot in open water (water all round, as a player's bobber needs for treasure) within {@link #BOAT_RADIUS}
@@ -76,6 +81,8 @@ public class FisherWork extends Behavior<Villager> {
 	static final int ROW_STUCK = 200;
 	/** One catch in this many is treasure when fishing open water (5%, a player's chance without Luck of the Sea). */
 	static final int TREASURE_ONE_IN = 20;
+	/** The shortest wait for a bite, in steps of the fisher's delay (however much Lure). */
+	public static final int MIN_BITE = 5;
 
 	enum Phase { FISHING, NEEDS_ROD, NO_WATER, DEPOSITING, ROWING }
 
@@ -341,7 +348,7 @@ public class FisherWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "cast", spot);
 			villager.swing(InteractionHand.MAIN_HAND);
 			level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_THROW, SoundSource.NEUTRAL, 0.5f, 0.4f + level.random.nextFloat() * 0.4f);
-			biteAt = BuilderLevels.delay(level, villager) * (15 + level.random.nextInt(46));
+			biteAt = BuilderLevels.delay(level, villager) * biteWait(level, villager, rod, level.random);
 			level.sendParticles(ParticleTypes.SPLASH, bobber.x, bobber.y, bobber.z, 6, 0.1, 0, 0.1, 0);
 			return;
 		}
@@ -359,6 +366,36 @@ public class FisherWork extends Behavior<Villager> {
 		reelIn(level, villager, bag, rod, bobber, open);
 		waited = 0;
 		catches++;
+	}
+
+	/**
+	 * How many steps of the fisher's delay a bite takes: 15 to 60 (a tenth of a player's 100 to 600 ticks), less the rod's
+	 * Lure as vanilla takes it off (its fishing time reduction in seconds, two steps a second), never under {@link #MIN_BITE}.
+	 */
+	public static int biteWait(ServerLevel level, Villager villager, ItemStack rod, RandomSource random) {
+		int lure = Math.round(EnchantmentHelper.getFishingTimeReduction(level, rod, villager) * 2);
+		return Math.max(MIN_BITE, 15 + random.nextInt(46) - lure);
+	}
+
+	/** The luck a catch is rolled with: the fisher's own (Lucky, research) and the rod's Luck of the Sea, as for a player. */
+	public static float catchLuck(ServerLevel level, Villager villager, ItemStack rod) {
+		return io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(villager) // Lucky (29.7)
+			+ io.github.jcondedata.aliveworkplace.research.TreeEffects.lootLuck(villager) // loot_luck research (29.11)
+			+ EnchantmentHelper.getFishingLuckBonus(level, rod, villager);
+	}
+
+	/**
+	 * Mends {@code rod} with {@code xp} points of experience the way vanilla's Mending does with an orb a player picks up
+	 * (the enchantment's durability from experience: two points a point for Mending); returns the experience left over.
+	 */
+	public static int mendWithXp(ServerLevel level, ItemStack rod, int xp) {
+		if (xp <= 0 || !rod.isDamaged() || !EnchantmentHelper.has(rod, EnchantmentEffectComponents.REPAIR_WITH_XP)) {
+			return xp;
+		}
+		int repair = EnchantmentHelper.modifyDurabilityToRepairFromXp(level, rod, xp);
+		int mended = Math.min(repair, rod.getDamageValue());
+		rod.setDamageValue(rod.getDamageValue() - mended);
+		return mended > 0 ? xp - mended * xp / repair : xp;
 	}
 
 	/**
@@ -539,8 +576,7 @@ public class FisherWork extends Behavior<Villager> {
 			.withParameter(LootContextParams.ORIGIN, bobber)
 			.withParameter(LootContextParams.TOOL, rod)
 			.withParameter(LootContextParams.THIS_ENTITY, villager)
-			.withLuck(io.github.jcondedata.aliveworkplace.legend.Gifted.lootLuck(villager) // Lucky (29.7)
-				+ io.github.jcondedata.aliveworkplace.research.TreeEffects.lootLuck(villager)) // loot_luck research (29.11)
+			.withLuck(catchLuck(level, villager, rod))
 			.create(LootContextParamSets.FISHING);
 		for (ItemStack stack : table.getRandomItems(params)) {
 			ItemStack rest = bag.add(stack);
@@ -552,6 +588,9 @@ public class FisherWork extends Behavior<Villager> {
 		level.sendParticles(ParticleTypes.SPLASH, bobber.x, bobber.y, bobber.z, 12, 0.2, 0, 0.2, 0);
 		level.playSound(null, villager.blockPosition(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 0.8f, 1f);
 		io.github.jcondedata.aliveworkplace.hall.Guilds.hurt(villager, rod, 1, EquipmentSlot.MAINHAND); // the Woodsmen's Guild: half (30.18)
+		// A player's catch drops 1 to 6 experience, which Mending puts into the rod. A fisher's goes straight into a Mending
+		// rod; the rest isn't dropped (no orbs piling up by a fisher nobody watches: that would be an experience farm).
+		mendWithXp(level, rod, 1 + level.random.nextInt(6));
 		int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0) + 1;
 		ModAttachments.FISH_CAUGHT.set(villager, caught);
 		if (caught % CATCHES_PER_XP == 0) {

@@ -67,6 +67,10 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **A fisherman's rod lasts as long as yours.** Standing by a hired fisherman (just after hiring him, or in the evening)
+  made vanilla's trade display empty his hand, and the rod was gone after a catch or so. Now the rod stays in his hand
+  and wears one point a catch, and it takes its enchantments as a player's does: Unbreaking wears it slower, Mending
+  repairs it with each catch's experience, Luck of the Sea brings better catches and Lure shorter waits for a bite.
 - **No more gaps where roofs meet at a corner.** Where a wing's or a porch's roof runs into the main roof (the Village
   Hall, Storehouse, Smithy, Barracks, Ranch, Research Lab, Supply Shop, Healing Center, Townhouse, Physician's House and Fletcher's Lodge), the stairs left a little
   hole into the attic at each step of the valley; the corner is now packed with a roof block. Village Hall III's tower

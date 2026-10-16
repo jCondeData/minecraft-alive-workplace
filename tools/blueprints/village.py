@@ -277,7 +277,7 @@ def kitchen(b, style):
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_kitchen"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "oak_fence", north=False, south=False, east=False, west=False, waterlogged=False)
     b.set(1, 2, 3, "oak_pressure_plate", powered=False)
-    b.set(2, 1, 3, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    chair(b, 2, 1, 3, "oak_stairs", "west")
 
 
 def fossil_lab(b, style):

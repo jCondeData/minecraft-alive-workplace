@@ -67,6 +67,16 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **Chairs face their tables, and every upstairs can be reached.** Stair chairs in the Inn, Library, Terrace,
+  Farmstead, Artisan's House, Townhouse, Map Room, Royal Hall II and the village kitchens sat with their backs to the
+  table; they now face it. The Storehouse's loft (all three tiers) gets a ladder up through a hatch. Other ways up that
+  were missing or a block short are fixed too: the Artisan's House ladder now reaches through its hatch, the Tinker's
+  Workshop II ladder moves to where the loft has headroom, a board joins the Farmstead II ladder to its loft, the
+  Guildhall stair, the Well House steps and the Coven Hut's deck stairs get their last step, the Manor's newel posts no
+  longer block the bedroom doorways, the Pirate Ship has a boarding ladder at the bow, the Observatory's tower door and
+  wing doorways lose the plinth step that made a player's head hit the lintel, and the Stadium's professor's box gets a
+  ladder from the players' tunnel. The blueprint checks now fail on a chair facing away from its table and on a
+  furnished upper floor with no stairs or ladder up to it.
 - **Picking another build with the full materials list open no longer crashes the game.** The list shows "Loading" for a moment instead.
 - **The campfire goes on top of a tall chimney.** On houses whose chimney rises well above the upstairs floor (Starter
   Cottage II and III, the Farmstead, the Fisher's Hut, the Smithy, the Noble's Manor and others) the builder had nowhere to

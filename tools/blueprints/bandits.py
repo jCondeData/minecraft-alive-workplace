@@ -476,6 +476,11 @@ def pirate_ship():
     # the stern rail behind the cabin
     for x in range(C - hw_z(D - 1), C + hw_z(D - 1) + 1):
         fence(b, x, 5, D - 1, "dark_oak_fence")
+    # a boarding ladder up the bow's port side from the water to the forecastle, through a gap in its rail (B149: the
+    # decks had no way up from the sea)
+    for y in range(1, 6):
+        b.set(1, y, 2, "ladder", facing="west", waterlogged=y <= 2)
+    b.set(2, 6, 2, "air")
 
     b.fill_air()
     # Everything but the hold is left out where nothing is drawn: the sea (and the air over it) stays as it is.
@@ -831,6 +836,7 @@ def coven_hut():
         stairs(b, x, 1, 2, "mangrove_stairs", "south")
         b.set(x, 1, 3, "mangrove_planks")
         stairs(b, x, 2, 3, "mangrove_stairs", "south")
+        stairs(b, x, PY, PZ0, "mangrove_stairs", "south")  # the top step in the deck's edge (B149: a block to jump)
         b.set(x, 0, 2, "mud_bricks")
         b.set(x, 0, 3, "mud_bricks")
 

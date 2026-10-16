@@ -223,6 +223,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B148** Player-visible (owner's playtest 2026-10-16): stairs used as chairs at tables are sometimes placed facing away from the table. Expected: every chair stair in a blueprint faces its table (seat open toward the table). Test: a blueprint check over every build listing chair stairs beside a table that face away. (found by chat, 2026-10-16)
 - [ ] **B149** Player-visible (owner's playtest 2026-10-16): the Storehouse has a second floor with no ladder or stairs, so it can't be reached. Expected: every upper floor in every build is reachable by ladder or stairs. Test: a reachability check over every blueprint. (found by chat, 2026-10-16)
 - [ ] **B150** Player-visible (owner's playtest 2026-10-16): questbook quest text is confusing, e.g. 'Food in the store' ('The store is the chests by the village's smokers and Kitchen Stoves, then the chests by its Storehouses...'). Expected: every quest's description says plainly what to do and how to tell it's done, in a player's words. Test: tools/questbook/generate.py --check and langcheck. (found by chat, 2026-10-16)
+- [ ] **B151** main red since 0a935196 (runs 1004, 1005): SiegeGameTests.aGatehouseIITakesLongerThanAGatehouse fails in the full build. Expected: green. Test: the class in runGameTest. (found by chat, 2026-10-16)
 
 ## Milestone 21: Finish 0.138.0
 

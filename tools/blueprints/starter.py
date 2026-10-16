@@ -1301,7 +1301,7 @@ def terrace():
     # Small life: a lantern on each flower box by the doors, a barrel out front
     lantern(b, 5, 2, 1)
     lantern(b, 7, 2, 1)
-    b.set(1, 1, 1, "barrel", facing="up", open=False)
+    b.set(1, 0, 1, "barrel", facing="up", open=False)
     b.fill_air()
     return b
 

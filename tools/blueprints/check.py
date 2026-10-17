@@ -203,7 +203,9 @@ def walk_nodes(blocks, w, h, d, deep=0, drawn=None):
             for y in range(-deep, h + 1):
                 block = blocks.get((x, y, z))
                 if free(x, y, z) and free(x, y + 1, z):
-                    climb = block is not None and any(t in _short(block) for t in CLIMB)
+                    climb = block is not None and (any(t in _short(block) for t in CLIMB)
+                                                   # a hatch over a ladder: opened, the game lets a player climb on through it
+                                                   or _short(block).endswith("trapdoor") and "ladder" in _short(blocks.get((x, y - 1, z))))
                     if climb or support(x, y - 1, z):
                         nodes[(x, z, 2 * y)] = climb
                 s = _short(block)

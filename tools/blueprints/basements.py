@@ -166,11 +166,11 @@ def archive(b, x0, z0, x1, z1, keep=()):
     hang_light(b, ix0 + 1, iz1 - 1)
 
 
-def herb_store(b, x0, z0, x1, z1, ladder):
+def herb_store(b, x0, z0, x1, z1, ladder, hatch="spruce_trapdoor"):
     """A healer's cool store (walls x0..x1, z0..z1): white walls under a birch beam, shelves of potted herbs and
     mushrooms, bunches of drying kelp and moss, chests of remedies; a sorting table and lanterns."""
     cellar(b, x0, z0, x1, z1, wall=Mix((5, "stone_bricks"), (2, "polished_diorite"), (1, "mossy_stone_bricks"), seed=64),
-           floor="polished_diorite", ladder=ladder, beam="stripped_birch_log")
+           floor="polished_diorite", ladder=ladder, beam="stripped_birch_log", hatch=hatch)
     ix0, iz0, ix1, iz1 = x0 + 1, z0 + 1, x1 - 1, z1 - 1
     pots = ["potted_fern", "potted_brown_mushroom", "potted_azure_bluet", "potted_red_mushroom", "potted_lily_of_the_valley"]
     for z in range(iz0, iz1 + 1):
@@ -299,7 +299,7 @@ def healing_center_4():
     ladder in the back room. 11 x 10 x 22, 4 below."""
     from starter import healing_center_3
     b = healing_center_3().grow(11, 10, 22, basement=BASEMENT)
-    herb_store(b, 1, 2, 9, 8, ladder=(2, 7, "east"))
+    herb_store(b, 1, 2, 9, 8, ladder=(2, 7, "east"), hatch=None)  # in the back room's nook behind the brewing stand
     b.fill_air()
     return b
 

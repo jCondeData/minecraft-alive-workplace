@@ -635,12 +635,18 @@ def chimney(b, x, z, y0, y1, name=STONE_MIX, smoke=True):
         b.set(x, y1 + 1, z, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
 
 
-def cellar(b, x0, z0, x1, z1, wall=MOSSY_BRICK_MIX, floor="stone_bricks", ladder=None, depth=None, beam=None):
+def cellar(b, x0, z0, x1, z1, wall=MOSSY_BRICK_MIX, floor="stone_bricks", ladder=None, depth=None, beam=None,
+           hatch="spruce_trapdoor"):
     """A room dug under the build (ROADMAP 26.15; the Build needs basement >= depth): a floor at y = -depth and walls
     x0..x1, z0..z1 up to y = -1, under the ground floor's own floor (its ceiling), the inside emptied (the builder digs it
-    out). ladder=(x, z, facing): a ladder up from the cellar's floor through the ground floor's floor to a block above
-    it, against a wall on its back (facing is the way it faces, away from that wall). beam: a log course under the
-    ceiling round the walls (the top of the walls in logs, axis along each wall)."""
+    out). ladder=(x, z, facing): a ladder up from the cellar's floor to just under the ground floor's floor, against a
+    wall on its back (facing is the way it faces, away from that wall), under a closed hatch in that floor (a trapdoor
+    flush with it, facing as the ladder: open, the game lets a player climb on through it). With the ladder
+    through an open hole and a block up above the floor, villagers walking by climbed it onto the window sill beside it
+    and stuck there (B158: a Chef never got to the Kitchen's smoker); a closed hatch is floor to them. hatch=None: the old
+    ladder through the floor to a block above it, for a ladder in a nook nobody walks into (one you climb out of over
+    the furniture in front of it, which a hatch's top rung is too low for). beam: a log course
+    under the ceiling round the walls (the top of the walls in logs, axis along each wall)."""
     depth = depth or b.basement
     assert 0 < depth <= b.basement, (depth, b.basement)
     box(b, x0, -depth, z0, x1, -depth, z1, floor)
@@ -656,8 +662,10 @@ def cellar(b, x0, z0, x1, z1, wall=MOSSY_BRICK_MIX, floor="stone_bricks", ladder
     b.cellars.append((x0 + 1, z0 + 1, x1 - 1, z1 - 1))
     if ladder:
         x, z, facing = ladder
-        for y in range(-depth + 1, 2):
+        for y in range(-depth + 1, 0 if hatch else 2):
             b.set(x, y, z, "ladder", facing=facing, waterlogged=False)
+        if hatch:
+            trapdoor(b, x, 0, z, hatch, facing, half="top")
 
 
 def cellar_stairs(b, x, z, facing, fam, depth=None, width=1):

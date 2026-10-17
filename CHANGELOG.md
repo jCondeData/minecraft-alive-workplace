@@ -67,6 +67,8 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Fixed
+- **A ram no longer stalls behind a Gatehouse's portcullis.** After breaking the middle bars, a ravager sometimes stood
+  just out of reach of the fence gate behind them and never struck it, so the raiders waited outside all night.
 - **Picking another build with the full materials list open no longer crashes the game.** The list shows "Loading" for a moment instead.
 - **The campfire goes on top of a tall chimney.** On houses whose chimney rises well above the upstairs floor (Starter
   Cottage II and III, the Farmstead, the Fisher's Hut, the Smithy, the Noble's Manor and others) the builder had nowhere to

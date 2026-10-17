@@ -419,7 +419,9 @@ public class SiegeGameTests implements FabricGameTest {
 					helper.assertTrue(siege.portcullis.size() == 12, "twelve bars dropped: " + siege.portcullis.size());
 					helper.assertTrue(siege.breach != null && siege.breach.equals(yard.at(5, 1, 8)), "the breach is the barbican's middle gate: " + siege.breach);
 				} else if (tick > 2600) {
-					helper.fail("the pillager isn't through the Gatehouse within 2600 ticks: it is at " + mobs[1].position());
+					helper.fail("the pillager isn't through the Gatehouse within 2600 ticks: pillager " + state(helper, mobs[1]) + "; ram " + state(helper, mobs[0])
+						+ "; bars " + Sieges.hitPointsLeft(level, first.hall(), first.at(5, 1, 3)) + "/" + Sieges.hitPointsLeft(level, first.hall(), first.at(5, 2, 3))
+						+ ", gate " + Sieges.hitPointsLeft(level, first.hall(), first.at(5, 1, 2)) + "; " + siegeState(level, first));
 				}
 				return;
 			}

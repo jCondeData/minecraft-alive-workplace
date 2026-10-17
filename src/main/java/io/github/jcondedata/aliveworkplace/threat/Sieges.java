@@ -826,11 +826,20 @@ public final class Sieges {
 		return rams.isEmpty() ? raiders.stream().filter(m -> m.getMainHandItem().getItem() instanceof AxeItem).toList() : rams;
 	}
 
+	/** How far from its body a ram strikes a gate block (blocks, sideways). */
+	private static final double REACH = 1.75;
+
+	/**
+	 * Whether {@code mob} can strike the block at {@code pos}: the block is within {@link #REACH} of its body, measured
+	 * from body to block (B151). Measured from its middle to the block's, a ravager in the one-block way it broke through
+	 * a portcullis, held back by the bars either side of it and half a block off the way's middle, stood 2.75 blocks from
+	 * the fence gate behind the bars, past a reach of 2.73, and never struck it: the siege stalled for good.
+	 */
 	private static boolean inReach(Mob mob, BlockPos pos) {
-		double dx = mob.getX() - (pos.getX() + 0.5);
-		double dz = mob.getZ() - (pos.getZ() + 0.5);
-		double reach = mob.getBbWidth() / 2 + 1.75;
-		return dx * dx + dz * dz <= reach * reach && Math.abs(mob.getY() - pos.getY()) <= 4;
+		AABB body = mob.getBoundingBox();
+		double dx = Math.max(0, Math.max(pos.getX() - body.maxX, body.minX - (pos.getX() + 1)));
+		double dz = Math.max(0, Math.max(pos.getZ() - body.maxZ, body.minZ - (pos.getZ() + 1)));
+		return dx * dx + dz * dz <= REACH * REACH && Math.abs(mob.getY() - pos.getY()) <= 4;
 	}
 
 	/** One blow of {@code ram} on {@code gate}: seen and heard always; it costs hit points unless the gates hold. */

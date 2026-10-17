@@ -6,9 +6,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
@@ -30,14 +28,14 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 /**
  * Our village houses as they stand in a village (ROADMAP 23.10a). Every one of them ({@code aliveworkplace:village/
- * <style>_<house>}, see {@link VillageHouses}) is the same 9 x 10 x 10 house: an outside shared by every house of its
- * style (plinth, timber frame, walls, windows, door, roof and chimney) round a room fitted out for its job. So a house can
- * take another style's outside: its outside blueprint ({@link #outsideId}) is that style's house without the room, and a
- * builder builds it over the house like an upgrade, leaving the room (its job block, bed, chests) as it is.
+ * <style>_<house>}, see {@link VillageHouses}) is a building of its own shape (ROADMAP 26.11), drawn in each style's
+ * materials, round a room fitted out for its job at the same spot in every house. So a house can take another style's
+ * outside: its outside blueprint ({@link #outsideId}) is the same house in that style without the room, and a builder
+ * builds it over the house like an upgrade, leaving the room (its job block, bed, chests) as it is.
  *
  * <p>Houses are found by their bed: the house's own bed always stands at the same spot of the room, facing the back wall,
- * so a bed gives where the house would be and which way it faces; the house is there when enough of one style's outside
- * stands round it, and the room says which house it is.
+ * so a bed gives where the house would be and which way it faces; the room says which house it is, and the house is there
+ * when enough of one style's outside of that house stands round it.
  */
 public final class VillagePieces {
 	/** The room (in the template's own coordinates): floor, walls' insides and the tie beam. Everything else is the outside. */
@@ -119,17 +117,38 @@ public final class VillagePieces {
 
 	/**
 	 * The outside of {@code house}: its blocks outside the room, without the jigsaws (they join the street; the game swaps
-	 * them for what's under them) and without air at floor level and below (the ground round a house is left alone).
+	 * them for what's under them), without air at floor level and below (the ground round a house is left alone), and
+	 * without the blocks that hold up something of the room (the wall behind its ladder, the beam its lantern hangs from):
+	 * swapping one would drop the ladder off the wall.
 	 */
 	public static Blueprint outside(Blueprint house, ResourceLocation id) {
+		Set<BlockPos> holding = new HashSet<>();
+		for (Blueprint.Entry e : house.blocks()) {
+			if (inRoom(e.pos())) {
+				holdsOn(e.state()).ifPresent(d -> holding.add(e.pos().relative(d)));
+			}
+		}
 		List<Blueprint.Entry> blocks = new ArrayList<>();
 		for (Blueprint.Entry e : house.blocks()) {
-			if (inRoom(e.pos()) || e.state().is(Blocks.JIGSAW) || e.state().is(Blocks.STRUCTURE_VOID) || e.state().isAir() && e.pos().getY() <= 0) {
+			if (inRoom(e.pos()) || holding.contains(e.pos()) || e.state().is(Blocks.JIGSAW) || e.state().is(Blocks.STRUCTURE_VOID)
+				|| e.state().isAir() && e.pos().getY() <= 0) {
 				continue;
 			}
 			blocks.add(e);
 		}
 		return new Blueprint(id, house.size(), List.copyOf(blocks), List.of());
+	}
+
+	/** Which way the block {@code state} is held up from, for blocks that drop when that neighbour goes. */
+	private static Optional<Direction> holdsOn(BlockState state) {
+		if (state.getBlock() instanceof net.minecraft.world.level.block.LadderBlock
+			|| state.getBlock() instanceof net.minecraft.world.level.block.WallTorchBlock) {
+			return Optional.of(state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING).getOpposite());
+		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.LanternBlock) {
+			return Optional.of(state.getValue(net.minecraft.world.level.block.LanternBlock.HANGING) ? Direction.UP : Direction.DOWN);
+		}
+		return Optional.empty();
 	}
 
 	// ---- finding houses ----------------------------------------------------------------------------------------
@@ -144,10 +163,6 @@ public final class VillagePieces {
 		Optional<BlockPos> bed = bedHead(plains.get());
 		if (bed.isEmpty()) {
 			return List.of();
-		}
-		Map<String, Blueprint> outsides = new LinkedHashMap<>();
-		for (String style : VillageHouses.STYLES) {
-			BlueprintLibrary.get(server, template(style, "builders_workshop")).ifPresent(b -> outsides.put(style, b));
 		}
 		List<BlockPos> beds = level.getPoiManager().getInRange(h -> h.is(PoiTypes.HOME), centre, radius, PoiManager.Occupancy.ANY)
 			.map(PoiRecord::getPos).sorted(java.util.Comparator.comparingDouble(p -> p.distSqr(centre))).toList();
@@ -167,36 +182,17 @@ public final class VillagePieces {
 				continue;
 			}
 			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin, rotation.get(), Mirror.NONE);
-			at(level, placement, outsides).ifPresent(out::add);
+			at(level, placement).ifPresent(out::add);
 		}
 		return out;
 	}
 
 	/** Our house standing at {@code placement}, if one does. */
 	public static Optional<Piece> at(ServerLevel level, BlueprintData.Placement placement) {
-		Map<String, Blueprint> outsides = new LinkedHashMap<>();
-		for (String style : VillageHouses.STYLES) {
-			BlueprintLibrary.get(level.getServer(), template(style, "builders_workshop")).ifPresent(b -> outsides.put(style, b));
-		}
-		return at(level, placement, outsides);
-	}
-
-	private static Optional<Piece> at(ServerLevel level, BlueprintData.Placement placement, Map<String, Blueprint> outsides) {
-		String look = null;
-		float best = OUTSIDE_MATCH;
-		for (Map.Entry<String, Blueprint> e : outsides.entrySet()) {
-			float score = match(level, e.getValue(), placement, false);
-			if (score >= best) {
-				best = score;
-				look = e.getKey();
-			}
-		}
-		if (look == null) {
-			return Optional.empty();
-		}
+		// Which house it is: the room says (its job's fit-out; the room is the same spot in every house)
 		String house = null;
-		String style = look;
-		best = ROOM_MATCH;
+		String style = null;
+		float best = ROOM_MATCH;
 		for (String h : houses()) {
 			for (String s : VillageHouses.STYLES) {
 				Optional<Blueprint> b = BlueprintLibrary.get(level.getServer(), template(s, h));
@@ -211,22 +207,33 @@ public final class VillagePieces {
 				}
 			}
 		}
-		return house == null ? Optional.empty() : Optional.of(new Piece(house, style, look, placement));
+		if (house == null) {
+			return Optional.empty();
+		}
+		// Its look: the style whose outside of that house stands best (every house has its own outside since 26.11)
+		String look = lookOf(level, house, placement);
+		return look == null ? Optional.empty() : Optional.of(new Piece(house, style, look, placement));
 	}
 
-	/** The style whose outside stands best at {@code placement} now (empty if none stands well enough). */
-	public static Optional<String> lookAt(ServerLevel level, BlueprintData.Placement placement) {
+	/** The style whose outside of {@code house} stands best at {@code placement} (null if none stands well enough). */
+	@org.jetbrains.annotations.Nullable
+	private static String lookOf(ServerLevel level, String house, BlueprintData.Placement placement) {
 		String look = null;
 		float best = OUTSIDE_MATCH;
 		for (String style : VillageHouses.STYLES) {
-			Optional<Blueprint> b = BlueprintLibrary.get(level.getServer(), template(style, "builders_workshop"));
+			Optional<Blueprint> b = BlueprintLibrary.get(level.getServer(), template(style, house));
 			float score = b.map(blueprint -> match(level, blueprint, placement, false)).orElse(0f);
 			if (score >= best) {
 				best = score;
 				look = style;
 			}
 		}
-		return Optional.ofNullable(look);
+		return look;
+	}
+
+	/** The style whose outside stands best at {@code placement} now (empty if none stands well enough, or no house of ours is there). */
+	public static Optional<String> lookAt(ServerLevel level, BlueprintData.Placement placement) {
+		return at(level, placement).map(Piece::look);
 	}
 
 	/** Share of the house's solid blocks (in the room, or outside it) that stand in the world as drawn (same block). */

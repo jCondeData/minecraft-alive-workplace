@@ -120,6 +120,10 @@ public class RangerCompatTests implements FabricGameTest {
 	public void rangerComesOnlyWithAnAlphaNear(GameTestHelper helper) {
 		setUp(helper);
 		ServerLevel level = helper.getLevel();
+		// B142: past the morning. The time was whatever earlier tests left; in the morning (1000-6000), a hall round
+		// (every 600 ticks) falling while an Alpha was near rolled for a guest and the Ranger really came, 1 in 3: then
+		// on his week's cooldown, he was no longer a candidate for the marked Eevee
+		level.setDayTime(level.getDayTime() / 24000L * 24000L + 7000L);
 		BlockPos hall = helper.absolutePos(HALL);
 		Legend ranger = legend();
 		helper.assertTrue(ranger.rarity().name().equals("RARE"), "rarity: " + ranger.rarity());

@@ -57,6 +57,10 @@ tests.compat_mods = [
     "maven.modrinth:SszvX85I:Y6di9Ram",         # Mega Showdown 1.8.4 (Mega Evolution for Master trainers)
     "maven.modrinth:jtmvUHXj:Xlt4eWBe",         # Accessories 1.1.0-beta.53 (for Mega Showdown)
     "maven.modrinth:ccKDOlHs:JB1fLQnc",         # owo-lib 0.12.15.4 (for Accessories)
+    # Milestone 38 (Cobblemon depth, 2.2), the pack's versions
+    "maven.modrinth:GebWh45l:Lecb595b",         # Cobblemon Raid Dens 0.11.3 (raid dens near villages)
+    "maven.modrinth:8BmcQJ2H:dnJdtm0u",         # GeckoLib 4.9.2 (for Raid Dens)
+    "maven.modrinth:dlx62Wp3:KQwSroDP",         # Cobblecuisine 2.0.1 (the Chef's dishes, bean farms)
 ]
 # -Pcobblemon18=true: the compat suite, the screenshot harness and the showcase run with Cobblemon 1.8.1 instead of
 # 1.7.3 (the mod still compiles against 1.7.3). "old -> new" swaps a runtime mod; "old -> " leaves it out of that run.
@@ -64,11 +68,13 @@ tests.cobblemon18 = [
     "maven.modrinth:cobblemon:kF7CvxTo -> maven.modrinth:cobblemon:gBW3vLC7",          # Cobblemon 1.8.1
     "maven.modrinth:SszvX85I:Y6di9Ram -> maven.modrinth:SszvX85I:TKdAixuR",            # Mega Showdown 1.2.0 for 1.8.1
     "maven.modrinth:cobbleworkers:qW3KB1li -> maven.modrinth:cobbleworkers:llwrszjl",  # Cobbleworkers 2.0.5 for 1.8.0
+    "maven.modrinth:GebWh45l:Lecb595b -> maven.modrinth:GebWh45l:aFuImAaR",            # Raid Dens 0.13.2 for 1.8
+    # Cobblecuisine has no build for Cobblemon 1.8 (2.0.1 asks for Cobblemon >= 1.7.0), so the 1.8 runs keep it.
 ]
 # The screenshot harness (src/devclient, `runScreenshots`, tools/screenshots/run.sh) is written for this version.
 tests.screenshots = true
 # Extra mods the harness can load: -Pcobblemon=true (Pokémon scenes), -Pmega=true (SCENE=battle).
-tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe"]
+tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe", "maven.modrinth:GebWh45l:Lecb595b", "maven.modrinth:8BmcQJ2H:dnJdtm0u", "maven.modrinth:dlx62Wp3:KQwSroDP"]
 # Cobbleverse's performance stack, the pack's own versions (25.4): Sodium, Lithium, C2ME, FerriteCore, ModernFix,
 # EntityCulling, ImmediatelyFast, Krypton, ScalableLux.
 tests.screenshot_perf = ["maven.modrinth:AANobbMI:KIRFiWG4", "maven.modrinth:gvQqBUqZ:N08Z8wog", "maven.modrinth:VSNURh3q:h8ey5B7D", "maven.modrinth:uXXizFIs:sOzRw3CG", "maven.modrinth:nmDcB62a:NnNX8LBn", "maven.modrinth:NNAgCjsB:hsWvcyFJ", "maven.modrinth:5ZwdcRci:ATB4eNEP", "maven.modrinth:fQEb0iXm:Acz3ttTp", "maven.modrinth:Ps1zyz6x:Yx1tgJMI"]

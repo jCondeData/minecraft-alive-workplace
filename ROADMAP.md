@@ -4790,7 +4790,7 @@ Cobblecuisine 2.0.1: 178 items, 236 plain crafting recipes from vanilla and Cobb
 the `cobblecuisine:bean_crop` block and six colours of beans (`#cobblecuisine:beans`). Depends on: M28 (trainers,
 partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), each with a fallback here.
 
-- [ ] **38.1** **Design note, flag and the mods in the tests.** `docs/design/M38.md`, sent to the owner as a review
+- [x] **38.1** (review: pending 2026-10-17) **Design note, flag and the mods in the tests.** `docs/design/M38.md`, sent to the owner as a review
   package: what the player sees for each mod; the data files (`raid_den_rules`, the Mega Stone and Key Stone recipes,
   the dish lists) with one example each; the config switches (`denWardens`, `denChallenges`, `denChallengeDays`,
   `villageMegas`, `cuisineDishes`, `beanFarms`); every new saved field with its default; the fallbacks. Add Cobblemon

@@ -1,0 +1,7 @@
+{
+  "pieces": {
+    "lamp": {"block": ["beautify:lamp_candelabra_{colour}", "beautify:lamp_candelabra"], "facing": "front", "colour": "black"},
+    "picture": {"block": ["beautify:{wood}_picture_frame", "beautify:oak_picture_frame"], "facing": "front"},
+    "blinds": {"block": ["beautify:{wood}_blinds", "beautify:iron_blinds"], "facing": "front"}
+  }
+}

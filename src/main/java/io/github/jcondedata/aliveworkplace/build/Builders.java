@@ -767,6 +767,7 @@ public final class Builders {
 			io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
 		} else {
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
+			BuildSiteManager.get(level).setFurniture(site.placement(), site.furniture()); // 37.3: upkeep keeps what was built
 			BuiltAdvancements.award(level, site); // the questbook's build quests (none for a Wonder's part or an import)
 			io.github.jcondedata.aliveworkplace.city.Walls.pieceBuilt(level, site, villager); // 27.18: the last piece finishes the wall
 			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, site.placement().origin(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BUILT, Component.translatable("chronicle.aliveworkplace.built",

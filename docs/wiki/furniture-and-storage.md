@@ -5,12 +5,14 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2
+Roadmap items: 37.1, 37.2, 37.3
 
 ## 1. What a player sees
 
-Nothing yet: 37.1 adds the expansion's gate and its three switches, all off for players until 2.1, and 37.2 records
-where every build's furniture is, which changes nothing in the world by itself. When it is
+Nothing yet for players: the expansion's gate stays closed until 2.1. Behind it, a build started on a server with
+Handcrafted gets Handcrafted chairs, tables and fancy beds where the vanilla build had stair chairs, fence tables and
+beds (37.3); the Blueprint Table's preview, its supply report and the material list book show those pieces and cost
+their items, and so does the builder's shopping list. The rooms themselves come with 37.4 and 37.5. When it is
 finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
 blinds, picture frames and candelabras; villagers sit on the chairs and sleep in the fancy beds. Without any of those
@@ -35,6 +37,16 @@ of its own takes the wood most of the build is made of. The game reads the files
 (a datapack can add its own); a file with a mistake is logged with its path and skipped. A styled blueprint's spots are
 its base's, with the style's swaps: a spruce chair in the Dark Oak style is a dark oak chair.
 
+**Furnishing tables (37.3).** `data/aliveworkplace/furnishings/<mod>.json` (`handcrafted`, `cozyhome`,
+`cobblefurnies`, `beautify`; a datapack can add others, named by file) give each kind's block ids, with `{wood}` and
+`{colour}` filled from the spot, how the piece's `facing` relates to the spot's, other states, and the footprint. When a
+build is first planned, each spot becomes the piece of the first mod in `furnitureMods` whose block is in the block
+registry and whose footprint fits inside the spot's cells (its other cells become air); otherwise it stays vanilla.
+The choice is saved on the build site and, once the build is finished, with the finished building, so a restart, a
+changed order or a newly added mod never changes a build going up or standing, and upkeep repairs it as it was built.
+A saved piece whose block no longer exists (the mod was removed) is dropped when it is read, so that spot is built, and
+put back by upkeep, as its vanilla piece. A repair or a taking-down chooses nothing new: it uses what the building was built with.
+
 ## 3. Switches
 
 | Key | Default | What it does |
@@ -48,8 +60,10 @@ With M37's gate closed (every release before 2.1) a config file can't turn `furn
 
 ## 4. Saved data
 
-Only the config file's three keys so far (spots are data files, not saved). Planned (37.3): each build site's chosen pieces, absent meaning vanilla, so
-old saves load unchanged.
+On each build site (`BuildSite.save`): `furniture`, the chosen pieces (per spot: its index, position and kind, the
+mod, and each cell's block state), and `furniture_unchosen` on a new site not yet planned. On each finished building
+(`BuildSiteManager`): `furniture`, the same. Absent, as in every save from before 37.3: vanilla. Spots and tables are
+data files, not saved.
 
 ## 5. Items, blocks, jobs, commands
 
@@ -65,8 +79,11 @@ No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedB
 
 ## 7. Known limits
 
-- Only the gate, the switches and the spots exist so far; the modded furniture, seats and storage networks come with
-  37.3 to 37.10.
+- Our builds' rooms aren't furnished yet beyond their chairs, tables and beds (37.4, 37.5); seats and storage networks
+  come with 37.6 to 37.10.
+- The facing rules in the furnishing tables are checked by eye in 37.4's renders; Cozy Home's are checked by the pack
+  test only.
+- A building finished before 37.3 is repaired as the vanilla build.
 - The generator finds only chairs, tables and beds by itself; couches, shelves, lamps and the rest are spots only where
   a drawing records them (37.4 and 37.5 draw the furnished rooms that way).
 - Lucky's Cozy Home can't load in the dev runtime, so it is tested by the pack test only.
@@ -79,4 +96,10 @@ and a missing list, the list off the screen and in the saved file), `FurnishingC
 `ExpansionGateGameTests` (both switches in its gated lists). 37.2:
 `FurnitureSpotGameTests.starterCottageSpotsAreWhereItsChairsAndTablesAre`,
 `FurnitureSpotGameTests.everyShippedSpotMatchesItsTemplate`, `FurnitureSpotGameTests.aBrokenSpotsFileIsSkipped`,
-`FurnitureSpotGameTests.aStyleCarriesTheSpotsOver`.
+`FurnitureSpotGameTests.aStyleCarriesTheSpotsOver`. 37.3 (no mods, a test table of vanilla blocks):
+`FurnishingTableGameTests.withoutFurnitureModsTheBuildIsVanilla`,
+`FurnishingTableGameTests.theFirstModWithAFittingPieceIsChosen`, `FurnishingTableGameTests.switchedOffTheBuildIsVanilla`,
+`FurnishingTableGameTests.aSiteSavedMidBuildKeepsItsChoice`, `FurnishingTableGameTests.aRemovedModsPieceTurnsBackToVanilla`;
+with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
+`FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
+`FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.

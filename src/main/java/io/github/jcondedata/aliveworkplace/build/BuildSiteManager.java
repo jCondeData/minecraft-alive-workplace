@@ -38,6 +38,8 @@ public final class BuildSiteManager extends SavedData {
 	 * the building is built again on its spot (an upgrade) or taken down.
 	 */
 	private final Map<BlueprintData.Placement, java.util.Set<net.minecraft.core.BlockPos>> gaveUp = new java.util.HashMap<>();
+	/** Per finished building, the modded furniture it was built with (37.3; none: vanilla). Saved; forgotten with the building. */
+	private final Map<BlueprintData.Placement, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice> furniture = new java.util.HashMap<>();
 	/** Counts every site or finished building added or removed (not saved): lets a reader tell the list hasn't changed (B85). */
 	private int changes;
 
@@ -53,6 +55,7 @@ public final class BuildSiteManager extends SavedData {
 		}
 		finished.removeIf(f -> f.placement().equals(placement));
 		gaveUp.remove(placement);
+		furniture.remove(placement);
 		finished.addLast(new Finished(structure, placement, owner));
 		while (finished.size() > MAX_FINISHED) {
 			finished.removeFirst();
@@ -61,9 +64,27 @@ public final class BuildSiteManager extends SavedData {
 		setDirty();
 	}
 
+	/** The modded furniture the finished building on this spot was built with (37.3). */
+	public io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture(BlueprintData.Placement placement) {
+		return furniture.getOrDefault(placement, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.VANILLA);
+	}
+
+	/** Records the furniture the finished building on this spot was built with (after {@link #recordFinished}). */
+	public void setFurniture(BlueprintData.Placement placement, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice choice) {
+		if (choice.isVanilla()) {
+			if (furniture.remove(placement) != null) {
+				setDirty();
+			}
+		} else {
+			furniture.put(placement, choice);
+			setDirty();
+		}
+	}
+
 	/** Forgets the building on this spot (it was taken down). */
 	public void forgetFinished(BlueprintData.Placement placement) {
 		gaveUp.remove(placement);
+		furniture.remove(placement);
 		if (finished.removeIf(f -> f.placement().equals(placement))) {
 			changes++;
 			setDirty();
@@ -184,6 +205,10 @@ public final class BuildSiteManager extends SavedData {
 			if (left != null && !left.isEmpty()) {
 				entry.putLongArray("gave_up", left.stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
 			}
+			io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice chosen = furniture.get(f.placement());
+			if (chosen != null && !chosen.isVanilla()) {
+				entry.put("furniture", chosen.save());
+			}
 			done.add(entry);
 		}
 		tag.put("finished", done);
@@ -212,6 +237,12 @@ public final class BuildSiteManager extends SavedData {
 						left.add(net.minecraft.core.BlockPos.of(l));
 					}
 					manager.gaveUp.put(placement.get(), left);
+				}
+				if (Nbt.has(entry, "furniture", Tag.TAG_LIST)) { // 37.3: older saves have none (vanilla)
+					var chosen = io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.load(Nbt.getList(entry, "furniture", Tag.TAG_COMPOUND));
+					if (!chosen.isVanilla()) {
+						manager.furniture.put(placement.get(), chosen);
+					}
 				}
 			}
 		}

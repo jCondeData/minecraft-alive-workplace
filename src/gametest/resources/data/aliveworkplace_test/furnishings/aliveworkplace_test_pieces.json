@@ -1,0 +1,7 @@
+{
+  "pieces": {
+    "table": {"block": "minecraft:{wood}_planks"},
+    "chair": {"block": ["nosuchmod:{wood}_chair", "minecraft:{wood}_stairs"], "facing": "back", "states": {"half": "top"}},
+    "bed": {"block": "minecraft:{colour}_bed", "facing": "front", "footprint": [{"at": [0, 0, 0], "states": {"part": "foot"}}, {"at": [0, 0, 2], "states": {"part": "head"}}]}
+  }
+}

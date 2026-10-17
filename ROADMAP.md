@@ -4685,7 +4685,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   when: every shipped build with furniture has its spots file (a check in `generate.py`: each spot's blocks are the
   blocks in the template there); a GameTest loads a build's spots and finds them where its chairs and tables are; a
   file with a mistake is logged with its path and skipped.
-- [ ] **37.3** **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
+- [x] **37.3** (approved auto 2026-10-17) **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
   where the mod has them), the modded block id, how its states map (facing, the second half of a two-block piece) and
   its footprint, read by a reload listener (through `Platform`). When a build is planned (`BuildPlan`), each spot
   becomes the piece of the first mod in `furnitureMods` whose block exists in the registry (a registry lookup by id,

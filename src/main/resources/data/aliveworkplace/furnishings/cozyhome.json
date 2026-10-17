@@ -1,0 +1,13 @@
+{
+  "pieces": {
+    "chair": {"block": "cozyhome:{wood}_chair", "facing": "front"},
+    "couch": {"block": ["cozyhome:{wood}_sofa", "cozyhome:{wood}_couch"], "facing": "front"},
+    "table": {"block": "cozyhome:{wood}_table"},
+    "desk": {"block": "cozyhome:{wood}_desk", "facing": "front"},
+    "counter": {"block": "cozyhome:{wood}_counter", "facing": "front"},
+    "cupboard": {"block": "cozyhome:{wood}_storage_counter", "facing": "front"},
+    "drawer": {"block": "cozyhome:{wood}_drawer", "facing": "front"},
+    "lamp": {"block": "cozyhome:{wood}_lamp"},
+    "clock": {"block": ["cozyhome:{wood}_grandfather_clock", "cozyhome:{wood}_wall_clock"], "facing": "front"}
+  }
+}

@@ -19,7 +19,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Added
 - **Furnished homes and modded storage (2.1), begun.** The plan (`docs/design/M37.md`) and its three settings,
   `furnishedBuilds`, `furnitureMods` and `moddedStorageNetworks`, which stay off until 2.1 is finished (37.1), and a furniture spots file beside each of 223 blueprints marking
-  where its chairs, tables and beds are, for the furniture mods to fill in later (37.2).
+  where its chairs, tables and beds are, for the furniture mods to fill in later (37.2). Behind the same gate, a build started with Handcrafted, Cozy Home,
+  CobbleFurnies or Beautify installed gets their chairs, tables and beds in those places, chosen once and kept (37.3).
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

@@ -1233,20 +1233,29 @@ final class JobScenes {
 			for (int i = 0; i < 4; i++) {
 				guard(level, STATION.offset(-6 + 4 * i, 0, -2), new ItemStack(Items.IRON_SWORD));
 			}
+			// B130: the hall's and the guards' records now, not in vanilla's next task: the muster below reads them
+			ScreenshotHarness.fileRecords(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+			io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
 			player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
 			player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
-			Showcase.check(io.github.jcondedata.aliveworkplace.guard.WarParties.muster(level, hall, player) == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED
-				&& io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size() == 3,
-				"three of the four guards mustered under the raised Rally Banner");
-			io.github.jcondedata.aliveworkplace.guard.WarParties.hire(level, hall, player);
-			Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream()
-				.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
-				"the five Siege-breakers were hired");
 			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
 			int[] ticks = {0};
 			boolean[] turned = {false};
 			return l -> {
 				ticks[0]++;
+				if (ticks[0] == 5) {
+					// B130: mustered a few ticks in: the guards take their jobs in a server task after the staging one (picked)
+					var mustered = io.github.jcondedata.aliveworkplace.guard.WarParties.muster(l, hall, player);
+					int rallied = io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size();
+					Showcase.check(mustered == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED && rallied == 3,
+						"three of the four guards mustered under the raised Rally Banner" + (rallied == 3 ? "" : " (" + mustered + ", " + rallied + " on the banner, guards by the hall: "
+							+ l.getEntitiesOfClass(Villager.class, io.github.jcondedata.aliveworkplace.hall.VillageHalls.area(hall),
+								v -> io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(v)).size() + ")"));
+					io.github.jcondedata.aliveworkplace.guard.WarParties.hire(l, hall, player);
+					Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(l, hall).stream()
+						.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
+						"the five Siege-breakers were hired");
+				}
 				var standing = io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall);
 				if (standing.isEmpty()) {
 					return ticks[0] > 40;
@@ -1263,6 +1272,10 @@ final class JobScenes {
 				// The Warlord falls at the front (a scene can't wait out a whole battle).
 				if (ticks[0] == 900 && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
 					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
+				} else if (ticks[0] == 900) {
+					Showcase.check(false, "the Warlord at the front: captain " + l.getEntity(standing.get().captain()) + ", band "
+						+ io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() + ", war party at the camp "
+						+ io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).size());
 				}
 				return false;
 			};
@@ -2348,9 +2361,20 @@ final class JobScenes {
 				if (t >= 40 && !rolled[0] && legend != null) {
 					rolled[0] = true;
 					place(l, hall, ModBlocks.VILLAGE_HALL); // here, so its own first round doesn't roll the night first
+					// B130: the hall's (and the Chapel's) records now, not in vanilla's next task: the round below reads them
+					ScreenshotHarness.fileRecords(l, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+					// B130: a Rare Legend's visit asks for a Friend of the village since 31.12 (the Seer's chapel way): the player is one
+					ServerPlayer friend = l.getServer().getPlayerList().getPlayers().get(0);
+					io.github.jcondedata.aliveworkplace.story.Reputation.add(l, hall, friend, 50 - io.github.jcondedata.aliveworkplace.story.Reputation.points(l, hall, friend.getUUID()));
 					io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(l, hall, net.minecraft.util.RandomSource.create(4242L));
 					seer[0] = io.github.jcondedata.aliveworkplace.legend.LegendGuests.guest(l, hall);
-					Showcase.check(seer[0] != null && ModAttachments.LEGEND.get(seer[0]).id().equals(legend.id()), "the Seer came to the Chapel at midnight");
+					Showcase.check(seer[0] != null && ModAttachments.LEGEND.get(seer[0]).id().equals(legend.id()), "the Seer came to the Chapel at midnight"
+						+ (seer[0] != null ? "" : " (candidates " + io.github.jcondedata.aliveworkplace.legend.LegendGuests.candidates(l, hall, "chapel",
+							io.github.jcondedata.aliveworkplace.hall.Chronicle.day(l)).stream().map(g -> g.id().toString()).toList()
+							+ ", slots " + io.github.jcondedata.aliveworkplace.legend.LegendSlots.whyNot(l, hall, legend, null).map(Component::getString).orElse("free")
+							+ ", ways met " + legend.ways("visit").stream().filter(w -> io.github.jcondedata.aliveworkplace.legend.LegendGuests.wayMet(l, hall, w)).count()
+							+ " of " + legend.ways("visit").size() + ", time " + l.getDayTime() % 24000 + ", moon " + l.getMoonPhase() + ")"));
 					if (seer[0] != null) {
 						seer[0].setNoAi(true);
 						seer[0].moveTo(anchor.getX() + 0.5, anchor.getY(), anchor.getZ() + 1.5, 180f, 0f);

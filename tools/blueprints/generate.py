@@ -15,6 +15,7 @@ from decor import *
 from houses import *
 from defence import *
 from workshops import *
+from workplaces import *
 from countryside import *
 from nether import *
 from yards import *

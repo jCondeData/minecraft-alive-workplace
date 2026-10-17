@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Every workplace has its own building.** The twelve workplaces the Steward asks for no longer share one house: the
+  Builder's Workshop is a saltbox studio with a crane yard, the Carpenter's an open saw shed with log piles, the Kitchen
+  a cookhouse with a domed bread oven and herb beds, the Post Office a jettied townhouse with a dovecote, the Guard House
+  a battlemented stone blockhouse with a watch hut, the Clinic a white pavilion and ward with cross windows, the Ferry
+  House a gambrel boathouse with a landing stage, and with Cobblemon the Trainer's House a veranda dojo with a sparring
+  ring, the Leader's Hall a columned portico, the Ball Workshop a round drying tower under a copper cone, the Trade Hall
+  a market hall on arches and the School a brick U round a courtyard. Ones already standing stay as they are.
 - **Pick a style at the Blueprint Table.** A row of style buttons under the 3D picture (as drawn, Stonework,
   Sandstone, Dark Oak, Cherry, Grand, and Apricorn with Cobblemon; only those that change the selected build) recolours
   the picture and the material list, and Get Blueprint hands the blueprint out already in that style. Locked and "???"

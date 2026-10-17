@@ -738,13 +738,17 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   decorations similar to fountain or lamp"). Done when: at least 12 new small decorations (well, statue, gazebo,
   market stall, flower planters, signpost, bench nook, lamp variants, pond, archway, hay cart, notice board...), each
   original, checked in a render against STYLE.md, in the Blueprint Table library and the unlocks list.
-- [ ] **26.15** **Basements: a Level 4 for buildings, and cellars where they fit** (owner, 2026-10-16: "buildings should
+- [x] **26.15** (review: pending 2026-10-17) **Basements: a Level 4 for buildings, and cellars where they fit** (owner, 2026-10-16: "buildings should
   also get basements in a new Level 4 version, but some buildings should get basements in general at any level, like a
   butcher maybe has a freezer"). Done when: every upgradable home and workshop gets a Level 4 upgrade that adds a
   basement under it (stairs or ladder down, lit, furnished for the job), and the jobs that suit one (butcher's
   ice-lined freezer, brewer/cook's cellar, smith's coal store, storehouse vault) have a cellar from Level 1. The
   builder digs the basement in FOUNDATION (BuildSite stays restartable). GameTests: an upgrade digs and finishes the
   basement, save and reload mid-dig.
+  Note (26.15 lane, 2026-10-17): the basement is dug in CLEAR, not FOUNDATION: CLEAR already digs top down, restartably,
+  everything a blueprint wants empty and never breaks containers (docs/wiki/basements.md, Decisions). Eight Level 4s
+  (the homes and workshops topping at III); the Winery already has a cellar, so the cook's larder under the Kitchen is
+  the fourth Level 1 cellar. Builds topping at II got no Level 3 basement.
 
 ## Milestone 27: Villages that build themselves (1.1)
 

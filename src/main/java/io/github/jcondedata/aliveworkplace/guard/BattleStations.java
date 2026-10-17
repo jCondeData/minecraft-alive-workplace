@@ -187,7 +187,8 @@ public final class BattleStations {
 		if (Sieges.isDefence(structure)) {
 			return true;
 		}
-		Set<ResourceLocation> lookouts = Set.of(StarterBlueprints.LOOKOUT_TOWER.id(), StarterBlueprints.LOOKOUT_TOWER_2.id(), StarterBlueprints.LOOKOUT_TOWER_3.id());
+		Set<ResourceLocation> lookouts = Set.of(StarterBlueprints.LOOKOUT_TOWER.id(), StarterBlueprints.LOOKOUT_TOWER_2.id(), StarterBlueprints.LOOKOUT_TOWER_3.id(),
+			StarterBlueprints.LOOKOUT_TOWER_4.id());
 		ResourceLocation base = BlueprintStyles.base(structure);
 		for (int i = 0; i < 4; i++) {
 			if (lookouts.contains(base)) {

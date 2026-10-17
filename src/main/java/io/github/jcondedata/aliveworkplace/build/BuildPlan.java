@@ -140,8 +140,15 @@ public final class BuildPlan {
 			(kind == MaterialRules.Kind.STRUCTURE ? structure : decoration).add(full);
 		}
 
-		BoundingBox bounds = BlueprintOutline.bounds(placement, blueprint.size());
-		List<Step> foundation = level != null && maxFoundationDepth > 0 ? foundation(level, structure, bounds, maxFoundationDepth) : new ArrayList<>();
+		// 26.15: a basement lies under the build's y = 0 (the ground). The plan's box takes it in (its barrels are the
+		// build's, not supply chests); the landscaping goes by the ground floor, as for any build.
+		BoundingBox above = BlueprintOutline.bounds(placement, blueprint.size());
+		int basement = blueprint.basement();
+		BoundingBox bounds = basement == 0 ? above
+			: new BoundingBox(above.minX(), above.minY() - basement, above.minZ(), above.maxX(), above.maxY(), above.maxZ());
+		List<Step> foundation = level != null && maxFoundationDepth > 0
+			? foundation(level, structure, bounds, maxFoundationDepth, basement == 0 ? Integer.MIN_VALUE : above.minY(), byPos.keySet())
+			: new ArrayList<>();
 		if (Boolean.getBoolean("aliveworkplace.debug") && !foundation.isEmpty()) {
 			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[plan] {} foundation steps for {}, first {} -> {} (ground there: {})", foundation.size(), blueprint.id(),
 				foundation.get(0).pos().toShortString(), foundation.get(0).state(), level.getBlockState(foundation.get(0).pos()));
@@ -150,7 +157,7 @@ public final class BuildPlan {
 		foundation.sort(order(bounds, false));
 		structure.sort(order(bounds, false));
 		decoration.sort(order(bounds, false));
-		List<Step> landscape = level != null && landscapeMargin > 0 ? landscape(level, bounds, landscapeMargin) : List.of();
+		List<Step> landscape = level != null && landscapeMargin > 0 ? landscape(level, above, landscapeMargin) : List.of();
 		BuildPlan plan = new BuildPlan(List.copyOf(clear), List.copyOf(foundation), List.copyOf(structure), List.copyOf(decoration),
 			List.copyOf(landscape), List.of(), bounds);
 		List<EntityStep> entities = new ArrayList<>();
@@ -295,18 +302,21 @@ public final class BuildPlan {
 	 * isn't standing on what is under it, as a jetty's deck over the water isn't (ROADMAP 27.14: only its log
 	 * posts go down to the bed).
 	 */
-	private static List<Step> foundation(Level level, List<Step> structure, BoundingBox bounds, int maxDepth) {
+	private static List<Step> foundation(Level level, List<Step> structure, BoundingBox bounds, int maxDepth, int ground,
+										 java.util.Set<BlockPos> planned) {
 		List<Step> out = new ArrayList<>();
 		int bottom = bounds.minY();
 		for (Step step : structure) {
 			BlockPos top = step.pos();
-			if (top.getY() != bottom || step.state().getCollisionShape(level, top).isEmpty() || inTopHalf(step.state())) {
+			// The bottom layer; with a basement (26.15) also the ground floor where no basement is under it (a porch)
+			if (top.getY() != bottom && top.getY() != ground || step.state().getCollisionShape(level, top).isEmpty() || inTopHalf(step.state())) {
 				continue;
 			}
 			BlockState fill = foundationBlock(level, top, step.state());
 			for (int depth = 1; depth <= maxDepth; depth++) {
 				BlockPos p = top.below(depth);
-				if (p.getY() < level.getMinBuildHeight() || isGround(level, p)) {
+				// Never into the build itself: the dug-out basement under a ground floor is the build's air, not a hole
+				if (p.getY() < level.getMinBuildHeight() || isGround(level, p) || planned.contains(p)) {
 					break;
 				}
 				out.add(new Step(p, fill, null, null, null));

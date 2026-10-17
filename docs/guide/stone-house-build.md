@@ -5,7 +5,7 @@ type: Build
 image: https://jcondedata.github.io/minecraft-alive-workplace/crew/still-3.jpg
 caption: A crew of builders finishing a Stone House
 Size: 11 wide, 9 deep, 11 high (II: 16 high; III: 14 deep, 16 high)
-Tiers: I, II (a timber upper story), III (a stone wing)
+Tiers: I, II (a timber upper story), III (a stone wing), IV (a basement)
 Houses: two beds; three at tier II, five at tier III
 Where to get it: Blueprint Table
 Main materials: cobblestone, deepslate tile stairs, spruce planks, stone, andesite
@@ -29,6 +29,7 @@ Once a builder finishes the Stone House, they sell its upgrade's blueprint as we
 
 - **Stone House II** adds a timber-framed upper story.
 - **Stone House III** adds a stone wing at the back with two more beds and a third chest.
+- **Stone House IV** digs a **wine cellar** under the front of the house, down a ladder by the front door: racks of casks, chests and pots of wine and a tasting table with two chairs. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

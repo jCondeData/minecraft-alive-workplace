@@ -50,7 +50,7 @@ EMBRASURE = "an embrasure between the hoarding's posts"
 ALLOW = {
     ("fletchers_lodge", (8, 2, 8)): LOG_NOTCH, ("fletchers_lodge_2", (8, 2, 2)): LOG_NOTCH,
     ("fletchers_lodge_2", (8, 2, 8)): LOG_NOTCH,
-    ("manor_2", (9, 4, 17)): FOUNTAIN, ("manor_3", (9, 4, 17)): FOUNTAIN,
+    ("manor_2", (9, 4, 17)): FOUNTAIN, ("manor_3", (9, 4, 17)): FOUNTAIN, ("manor_4", (9, 4, 17)): FOUNTAIN,
     ("stone_wall_2", (1, 5, 2)): EMBRASURE, ("stone_wall_2", (5, 5, 2)): EMBRASURE,
     ("camp/bandit_camp", (5, 1, 11)): TENT, ("camp/colony_camp", (2, 2, 5)): TENT, ("camp/colony_camp", (2, 2, 9)): TENT,
     ("camp/colony_camp", (12, 2, 5)): TENT, ("camp/colony_camp", (12, 2, 9)): TENT,
@@ -284,6 +284,17 @@ def scan(size, cells, only_slots=False):
     return found
 
 
+def basements():
+    """{name: depth} of the builds with a basement (26.15), read from StarterBlueprints.java: their files hold the
+    basement at the bottom, so the checks here move them back down (the basement, under y 0, is left out: it has no
+    roof to hole)."""
+    import re
+    java = open(os.path.join(ROOT, "src/main/java/io/github/jcondedata/aliveworkplace/blueprint/StarterBlueprints.java")).read()
+    found = {m.group(1): int(m.group(2)) for m in re.finditer(r'AliveWorkplace\.id\("([^"]+)"\), new Vec3i\([^)]*\), (\d+)\)', java)}
+    found.update({m.group(1): int(m.group(2)) for m in re.finditer(r'workplace\("(\w+)", \d+, \d+, \d+, (\d+)\)', java)})
+    return found
+
+
 def blueprints(args):
     if args:
         for a in args:
@@ -307,9 +318,15 @@ def main(argv):
     args = [a for a in argv if not a.startswith("--")]
     total = {"roof": 0, "meet": 0, "stray": 0, "peek": 0}
     builds = allowed = 0
+    under = basements()
     for path in blueprints(args):
         size, cells, states = load(path, props=True)
         name = os.path.relpath(path, STRUCTURES)[:-4]
+        deep = under.get(name, 0)
+        if deep:
+            size = (size[0], size[1] - deep, size[2])
+            cells = {(x, y - deep, z): c for (x, y, z), c in cells.items() if y >= deep}
+            states = {(x, y - deep, z): c for (x, y, z), c in states.items() if y >= deep}
         found = scan(size, cells) + [("peek", q, f"shut in under {cover.split(':')[-1]}, seen past a roof stair's open top")
                                      for q, cover in peeks(size, cells, states)]
         kept = [f for f in found if (name, f[1]) not in ALLOW]

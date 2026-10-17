@@ -264,8 +264,10 @@ KI_HERBS = ("fern", "allium", "azure_bluet", "lily_of_the_valley", "fern", "oxey
 
 
 def kitchen_build():
-    """11 x 12 x 11: the cookhouse with its bread oven and herb beds."""
-    b = Build(11, 12, 11)
+    """11 x 12 x 11: the cookhouse with its bread oven and herb beds; under it the cold larder (ROADMAP 26.15), down a
+    ladder inside the front door, 4 below."""
+    from basements import cold_larder, BASEMENT
+    b = Build(11, 12, 11, basement=BASEMENT)
     plinth(b, 1, 3, 7, 9, FOUNDATION_MIX, floor=Mix((3, "spruce_planks"), (1, "oak_planks"), seed=322))
     walls(b, 1, 3, 7, 9, 1, 4, KI_PLASTER)
     posts(b, [(1, 3), (7, 3), (1, 9), (4, 9), (7, 9), (1, 6), (7, 6)], 1, 4, KI_FRAME)
@@ -321,6 +323,7 @@ def kitchen_build():
         log(b, x, 5, 6, KI_FRAME, axis="x")
     lantern(b, 3, 4, 6, hanging=True)
     lantern(b, 6, 4, 6, hanging=True)
+    cold_larder(b, 1, 3, 7, 9, ladder=(2, 4, "east"))
     b.fill_air()
     return b
 

@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
+  III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
+  House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply
+  Shop, an archive under the Library, a herb store under the Healing Center and an armoury with a lock-up under the
+  Lookout Tower. The builder digs the room out of the ground himself and leaves the house above as it was.
+- **Cellars from Level 1, and a Butcher's Shop.** A new Butcher's Shop (a striped awning, meat in the windows, the
+  smoker in a brick chimney breast, a pen behind) with an ice-lined freezer under it; the Smithy now has a coal store
+  under the forge, the Kitchen a cold larder and the Storehouse a vault of chests. Ones already standing keep as they
+  are; a new one digs its cellar.
 - **Fourteen new decorations.** Small builds that aren't houses, in the Blueprint Table beside the Fountain and the
   Street Lamp: a Market Cross, a Stag Statue, Flower Planters, a Signpost, a Stone Archway, a Lily Pond, a Hay Cart, a
   Notice Board, a Lantern Pergola, a Fire Pit, a Sundial, a Topiary Garden, a Market Corner and a Footbridge. Each adds

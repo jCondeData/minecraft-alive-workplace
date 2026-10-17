@@ -325,13 +325,15 @@ def smithy():
     """13 x 12 x 10: a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a
     quench trough inside, a blast furnace in a brick chimney breast (Armorer, or Miner with a pickaxe), its stack up the
     west wall with a campfire smoking on top, a smithing table (Toolsmith) at the back, and a lean-to on the east side
-    over a grindstone (Weaponsmith)."""
-    b = Build(13, 12, 10)
+    over a grindstone (Weaponsmith). Under the hall, down a ladder by the forge, the coal store (ROADMAP 26.15), 4 below."""
+    from basements import coal_store, BASEMENT
+    b = Build(13, 12, 10, basement=BASEMENT)
     smithy_hall(b)
     smithy_roof(b)
     smithy_forge(b)
     smithy_lean_to(b)
     smithy_floor(b)
+    coal_store(b, 1, 2, 9, 8, ladder=(2, 3, "east"))
     b.fill_air()
     return b
 

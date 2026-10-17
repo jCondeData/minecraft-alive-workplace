@@ -85,6 +85,18 @@ public record Blueprint(ResourceLocation id, Vec3i size, List<Entry> blocks, Lis
 		return new Blueprint(id, size, List.copyOf(entries), List.copyOf(entities));
 	}
 
+	/**
+	 * How many blocks of the build lie under its y = 0, under the ground (26.15, a basement or a cellar; see
+	 * {@link StarterBlueprints#withBasement}): 0 for a build with nothing below its bottom layer.
+	 */
+	public int basement() {
+		int lowest = 0;
+		for (Entry e : blocks) {
+			lowest = Math.min(lowest, e.pos().getY());
+		}
+		return -lowest;
+	}
+
 	/** Number of non-air blocks — what a player would call the size of the job. */
 	public int solidBlockCount() {
 		int n = 0;

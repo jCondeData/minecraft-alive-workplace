@@ -21,6 +21,8 @@ It's in the **Blueprint Table**: pick it there and press **Get Blueprint**, whic
 
 Hold the blueprint and right-click the ground where its front should go (the gold edge is the front), stock the chests within 8 blocks of your builder's Blueprint Table with what the blueprint lists when you hold Shift over it, and right-click the builder with it. Want it in another look? Sneak-right-click the air before you place it to pick **Stonework**, **Sandstone**, **Dark Oak**, **Cherry** or, with Cobblemon, **Apricorn**. See [The Builder and blueprints](builder.md) for the rest.
 
+Under the forge the Smithy has a **coal store**, down a ladder by the forge: heaps of coal behind boards, raw iron and chests of ore. Your builder digs it out of the ground himself, so give him room to dig: four blocks under the floor.
+
 ## Upgrades
 
 Once a builder finishes the Smithy, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.

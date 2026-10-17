@@ -882,9 +882,13 @@ def granary_gable(b):
 def storehouse():
     """9 x 10 x 9: a granary — stone below with its loading doors open to the street, a birch loft above with a hoist over
     the loft door, a dark oak roof — the Storehouse inside with eight chests along the back (a villager moves in as the
-    porter and fills them with what the village's workers make), hay and barrels by the door."""
-    b = Build(9, 10, 9)
+    porter and fills them with what the village's workers make), hay and barrels by the door. Under the granary, down a
+    ladder beside the loft's, the vault (ROADMAP 26.15): chests round a stone room and a barred strongroom corner, 4
+    below; the upgrades keep it."""
+    from basements import vault, BASEMENT
+    b = Build(9, 10, 9, basement=BASEMENT)
     granary(b)
+    vault(b, 1, 2, 7, 7, ladder=(2, 4, "east"))
     roofs(b, granary_roof)
     granary_gable(b)
     b.set(0, 0, 2, "barrel", facing="up", open=False)

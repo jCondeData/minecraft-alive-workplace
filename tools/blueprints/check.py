@@ -29,9 +29,15 @@ def check(b, only=None, whole=None):
     build is finished, so its upper floors must be reachable (default: when {@code only} is None)."""
     blocks = {p: (n, dict(props)) for p, (n, props) in b.blocks.items() if n not in AIR}
     problems = []
+    # A basement (26.15) is dug into the ground: under y = 0, a cell the drawing leaves out is the earth round it
+    deep = getattr(b, "basement", 0)
+    drawn = {p for p, (n, _) in b.blocks.items() if n != "minecraft:structure_void"}
+
+    def grounded(x, y, z):
+        return y == 0 or y == -deep or (y < 0 and (x, y - 1, z) not in drawn)
     # Floating: flood from the bottom layer through face and edge neighbours (stair roofs meet row to row at an edge).
     steps = [(dx, dy, dz) for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1) if 1 <= abs(dx) + abs(dy) + abs(dz) <= 2]
-    seen = {p for p in blocks if p[1] == 0}
+    seen = {p for p in blocks if p[1] in (0, -deep)}
     todo = list(seen)
     while todo:
         x, y, z = todo.pop()
@@ -56,7 +62,7 @@ def check(b, only=None, whole=None):
                 bad = (above is None and "hangs from nothing") or (not holds_centre(above) and "hangs from " + above[0][10:]
                                                                    + " (the game drops it: nothing under its middle)")
             else:
-                bad = y > 0 and below is None and "stands on air"
+                bad = not grounded(x, y, z) and below is None and "stands on air"
         elif short == "ladder":
             dx, dy, dz = FACING[props["facing"]]
             bad = (x - dx, y, z - dz) not in blocks and "has no wall behind it"
@@ -64,14 +70,14 @@ def check(b, only=None, whole=None):
             other = (x, y + 1, z) if props.get("half") == "lower" else (x, y - 1, z)
             bad = (other not in blocks or blocks[other][0] != name) and "is missing a half"
         elif any(s in short for s in STANDS) and "wall_" not in short:
-            bad = y > 0 and below is None and "stands on air"
+            bad = not grounded(x, y, z) and below is None and "stands on air"
         elif any(name.startswith(g) or g in name for g in GRAVITY):
-            bad = y > 0 and below is None and "will fall"
+            bad = not grounded(x, y, z) and below is None and "will fall"
         if bad:
             problems.append(f"{short}@{x},{y},{z} {bad}")
     problems += chair_problems(blocks, only)
     if (only is None) if whole is None else whole:
-        problems += reach_problems(blocks, b.w, b.h, b.d)
+        problems += reach_problems(blocks, b.w, b.h, b.d, deep, drawn)
     return problems
 
 
@@ -172,13 +178,17 @@ def _thin(block):
     return s.endswith("_fence") or s.endswith("_wall") or any(t in s for t in THIN)
 
 
-def walk_nodes(blocks, w, h, d):
-    """Where a player can stand, as (x, z, feet height in half blocks) -> True when on a ladder (or vine)."""
+def walk_nodes(blocks, w, h, d, deep=0, drawn=None):
+    """Where a player can stand, as (x, z, feet height in half blocks) -> True when on a ladder (or vine). Under y = 0
+    a build with a basement ({@code deep} blocks) is dug into the ground: a cell not {@code drawn} there is earth."""
+    def earth(x, y, z):
+        return y < -deep or y < 0 and (drawn is None or (x, y, z) not in drawn)
+
     def free(x, y, z):
-        return y >= h or passable(blocks.get((x, y, z)))
+        return y >= h or not earth(x, y, z) and passable(blocks.get((x, y, z)))
 
     def support(x, y, z):
-        if y < 0:
+        if earth(x, y, z):
             return True  # the ground the build stands on
         block = blocks.get((x, y, z))
         if block is None or passable(block) or _thin(block):
@@ -188,7 +198,7 @@ def walk_nodes(blocks, w, h, d):
     nodes = {}
     for x in range(-1, w + 1):
         for z in range(-1, d + 1):
-            for y in range(0, h + 1):
+            for y in range(-deep, h + 1):
                 block = blocks.get((x, y, z))
                 if free(x, y, z) and free(x, y + 1, z):
                     climb = block is not None and any(t in _short(block) for t in CLIMB)
@@ -202,16 +212,17 @@ def walk_nodes(blocks, w, h, d):
     return nodes
 
 
-def reach_problems(blocks, w, h, d):
+def reach_problems(blocks, w, h, d, deep=0, drawn=None):
     """Upper floors a player can't get to: places to stand two or more blocks over the ground, under a roof, four or
     more together, that can't be walked, stepped (stairs and slabs) or climbed (ladders) to from the ground floor."""
-    nodes = walk_nodes(blocks, w, h, d)
+    nodes = walk_nodes(blocks, w, h, d, deep, drawn)
     by_col = {}
     for (x, z, L) in nodes:
         by_col.setdefault((x, z), []).append(L)
 
     def clear(x, z, lo, hi):
-        return all(y >= h or passable(blocks.get((x, y, z))) for y in range(max(lo, 0), hi + 1))
+        return all(y >= h or (y >= 0 or drawn is not None and (x, y, z) in drawn) and passable(blocks.get((x, y, z)))
+                   for y in range(max(lo, -deep), hi + 1))
 
     def moves(node):
         x, z, L = node
@@ -224,7 +235,7 @@ def reach_problems(blocks, w, h, d):
                     out.append((x + dx, z + dz, L2))
         return out
 
-    seen = {n for n in nodes if n[2] <= 2}
+    seen = {n for n in nodes if 0 <= n[2] <= 2}  # the ground floor (a basement's floors are below 0)
     todo = list(seen)
     while todo:
         for m in moves(todo.pop()):
@@ -232,7 +243,7 @@ def reach_problems(blocks, w, h, d):
                 seen.add(m)
                 todo.append(m)
     # Places to stand that weren't reached, two or more blocks up, inside the build and under something
-    lost = {n for n in nodes if n not in seen and n[2] >= 6 and 0 <= n[0] < w and 0 <= n[1] < d
+    lost = {n for n in nodes if n not in seen and (n[2] >= 6 or n[2] < 0) and 0 <= n[0] < w and 0 <= n[1] < d
             and any(not passable(blocks.get((n[0], y, n[1]))) for y in range(n[2] // 2 + 2, h))}
     # A floor is furnished: the space over a ceiling, the top of a wall or of a glass case in a tall room, a statue's
     # hollow inside aren't floors anybody means to stand on
@@ -257,6 +268,6 @@ def reach_problems(blocks, w, h, d):
         if any({(x + 1, z), (x, z + 1), (x + 1, z + 1)} <= cols for x, z in cols) \
                 and any(lived_in(*g) for g in group):  # a room, not a beam, a ledge or a sealed hollow
             xs, zs, ys = [g[0] for g in group], [g[1] for g in group], [g[2] // 2 for g in group]
-            problems.append(f"an upper floor at y {min(ys)} (x {min(xs)}-{max(xs)}, z {min(zs)}-{max(zs)}, "
+            problems.append(f"{'a basement' if min(ys) < 0 else 'an upper floor'} at y {min(ys)} (x {min(xs)}-{max(xs)}, z {min(zs)}-{max(zs)}, "
                             f"{len(group)} places to stand) has no stairs or ladder up to it")
     return problems

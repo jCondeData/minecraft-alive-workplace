@@ -596,6 +596,11 @@ public final class BuildSite {
 		return stage == BuildPlan.Stage.DONE;
 	}
 
+	/** Where in the current stage's list the build has got to (tests). */
+	public int cursor() {
+		return cursor;
+	}
+
 	public int skipped() {
 		return skipped;
 	}

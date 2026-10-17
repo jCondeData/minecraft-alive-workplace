@@ -263,7 +263,7 @@ public class StewardRulesGameTests implements net.fabricmc.fabric.api.gametest.v
 		holds(helper, stone, 1);
 		holds(helper, "{\"upgrade_available\": {}}", 1);
 		fails(helper, "{\"upgrade_available\": {\"blueprint\": \"aliveworkplace:storehouse\"}}", 0);
-		sites.recordFinished(StarterBlueprints.STONE_HOUSE_3.id(), placement, UUID.randomUUID()); // the top tier
+		sites.recordFinished(StarterBlueprints.STONE_HOUSE_4.id(), placement, UUID.randomUUID()); // the top tier (IV since 26.15)
 		fails(helper, stone, 0);
 		helper.succeed();
 	}

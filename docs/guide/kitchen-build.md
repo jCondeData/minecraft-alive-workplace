@@ -21,6 +21,8 @@ It's in the **Blueprint Table**: pick it there and press **Get Blueprint**, whic
 
 Hold the blueprint and right-click the ground where its front should go (the gold edge is the front), stock the chests within 8 blocks of your builder's Blueprint Table with what the blueprint lists when you hold Shift over it, and right-click the builder with it. Want it in another look? Sneak-right-click the air before you place it to pick **Stonework**, **Sandstone**, **Dark Oak**, **Cherry** or, with Cobblemon, **Apricorn**. See [The Builder and blueprints](builder.md) for the rest.
 
+Under the cookhouse is a **cold larder**, down a ladder inside the door: a stone counter under hanging meat and pumpkins, a shelf of jars and chests of flour and salt. Your builder digs it out of the ground himself: four blocks under the floor.
+
 ## What it does for the village
 
 Sneak-right-click a villager by the smoker with **raw meat**, **raw fish** or a **potato** and they become the **Chef** (left alone, a jobless villager takes a smoker as a butcher). With the makings in the chest the chef cooks bread, cookies, pies, cake, stews and everything a smoker cooks, a batch at a time, and the food feeds the village. See [Crafters and smiths](jobs-crafts.md) and [Village life](village-life.md).

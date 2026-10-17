@@ -71,7 +71,7 @@ public final class Warnings {
 	public static final List<BiFunction<ServerLevel, BlockPos, Optional<Source>>> SOURCES = new CopyOnWriteArrayList<>();
 
 	private static Set<ResourceLocation> towerIds() {
-		return Set.of(StarterBlueprints.LOOKOUT_TOWER.id(), StarterBlueprints.LOOKOUT_TOWER_2.id(), StarterBlueprints.LOOKOUT_TOWER_3.id(),
+		return Set.of(StarterBlueprints.LOOKOUT_TOWER.id(), StarterBlueprints.LOOKOUT_TOWER_2.id(), StarterBlueprints.LOOKOUT_TOWER_3.id(), StarterBlueprints.LOOKOUT_TOWER_4.id(),
 			StarterBlueprints.WALL_TOWER.id());
 	}
 

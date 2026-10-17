@@ -3370,7 +3370,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 					}
 					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate t =
 						level.getStructureManager().get(all.get(i).id()).orElseThrow();
-					t.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
+					// a basement (26.15) is at the bottom of its file: the file goes that much lower, the house on the ground
+					BlockPos file = origin.below(StarterBlueprints.basement(all.get(i).id()));
+					t.placeInWorld(level, file, file, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
 						level.getRandom(), 2);
 					if (BlockPos.betweenClosedStream(origin, origin.offset(all.get(i).size()).offset(-1, -1, -1))
 						.allMatch(p -> level.getBlockState(p).isAir())) {

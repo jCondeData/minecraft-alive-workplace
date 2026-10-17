@@ -5,7 +5,7 @@ type: Build
 image: https://jcondedata.github.io/minecraft-alive-workplace/grand_houses/still-2.jpg
 caption: The Noble's Manor
 Size: 19 wide, 17 deep, 18 high (II: 24 deep; III: 26 by 24)
-Tiers: I, II (a walled formal garden), III (a gatehouse and a ballroom wing)
+Tiers: I, II (a walled formal garden), III (a gatehouse and a ballroom wing), IV (a basement)
 Houses: three beds, a grand home from the first tier
 Where to get it: sold by builders for 20 emeralds once the village has a Burgher household (not in the Blueprint Table)
 Main materials: stone bricks, deepslate tile stairs, stone, polished andesite, spruce planks, dark oak logs
@@ -29,6 +29,7 @@ Once a builder finishes the Manor, they sell its upgrade's blueprint as well; th
 
 - **Noble's Manor II** adds a walled formal garden behind: clipped hedges, a fountain and gravel walks.
 - **Noble's Manor III** adds a gatehouse on the street and a ballroom wing, with a jukebox.
+- **Manor IV** digs a great **wine cellar** under the hall and the west room, down a stone stair beside the hall's table: casks along both walls, two stone columns, a tasting table. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 13 wide, 12 deep, 15 high (II: 18 by 12; III: 18 by 20)
-Tiers: I, II (a study tower), III (an enchanting room)
+Tiers: I, II (a study tower), III (an enchanting room), IV (a basement)
 Houses: a Scholar at the lectern; two at tier II; a Librarian at tier III's
 Where to get it: Blueprint Table
 Main materials: stone bricks, deepslate tile stairs, dark oak logs, spruce planks, bookshelves
@@ -27,6 +27,7 @@ Once a builder finishes the Library, they sell its upgrade's blueprint as well (
 
 - **Library II** adds a study tower with a second lectern.
 - **Library III** adds an enchanting room behind the hall: an **Enchanting Table** ringed by fifteen bookshelves, and a third lectern.
+- **Library IV** digs an **archive** under the reading room, down a stair along the back of the room: bookshelves all round, chests of old ledgers and a reading table. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

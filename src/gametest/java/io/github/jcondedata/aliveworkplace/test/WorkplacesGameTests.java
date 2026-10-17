@@ -367,6 +367,9 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		worker.setVillagerData(worker.getVillagerData().setProfession(job));
 		worker.setVillagerXp(1);
 		worker.refreshBrain(level); // as when a villager takes a job: its brain looks for that job's blocks
+		// B162: held where it stands while the house goes up (about 3,000 ticks), then let go: a worker left to wander walked
+		// off the test area's open edge and, outside it with night falling, never took the smoker (red main, 2026-10-17)
+		worker.setNoAi(true);
 		BlockPos min = helper.absolutePos(HOUSE);
 		BlockPos max = min.offset(blueprint.size().getX() - 1, blueprint.size().getY() - 1, blueprint.size().getZ() - 1);
 		long[] built = {-1};
@@ -378,6 +381,8 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			helper.assertTrue(worker.isAlive() && worker.getVillagerData().getProfession() == job, "the worker is now " + worker.getVillagerData().getProfession());
 			if (built[0] < 0) {
 				built[0] = helper.getTick();
+				worker.setNoAi(false);
+				helper.setDayTime(2000); // the whole working day ahead of it, whatever the build took
 			}
 			helper.assertTrue(worker.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> g.pos().equals(blocks.get(0))).orElse(false),
 				"the worker works at " + worker.getBrain().getMemory(MemoryModuleType.JOB_SITE) + " (job block " + helper.relativePos(blocks.get(0)).toShortString()

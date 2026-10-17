@@ -87,6 +87,8 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **The Signpost's boards say something.** A finished Signpost names the nearest village each way and how far (or
+  the nearest building, or "Welcome"), and keeps its boards up to date at dawn.
 - **Read a long entry in the Village Hall without clicking it.** Move the mouse from a row into the reading pane and
   it keeps reading that row, so the wheel scrolls it there; Shift and the wheel over a row scroll it too. An arrow
   shows when there's more below, and a long chronicle entry is shown whole. The Storehouse board works the same.

@@ -53,7 +53,9 @@ of thing:
 - **Stag Statue**: a stone stag with spreading antlers on a plinth.
 - **Flower Planters**: a two-tier brick planter full of flowers, a lantern at each end. Every village has this one
   from the start.
-- **Signpost**: a post with four blank fingerboards to write your own directions on, and a lantern on top.
+- **Signpost**: a post with four fingerboards and a lantern on top. When it's finished, each board names what lies
+  that way: the nearest other village and how far, or the nearest building, or your village's name and "Welcome". The
+  boards keep up by themselves when a village is renamed or a new one appears.
 - **Stone Archway**: a mossy stone arch over a path, ivy up its sides and a lantern in the opening.
 - **Lily Pond**: a little pond with lily pads in a grassy bank of ferns, with a stone seat.
 - **Hay Cart**: a cart loaded with hay bales, left by the road.

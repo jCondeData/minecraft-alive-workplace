@@ -3904,6 +3904,7 @@
   "chronicle.aliveworkplace.caravan_road_milestone": "Our road towards %1$s is built; it ends at a milestone, %2$s blocks from there",
   "sign.aliveworkplace.milestone.to": "To",
   "sign.aliveworkplace.milestone.distance": "%s blocks",
+  "sign.aliveworkplace.signpost.welcome": "Welcome",
   "chronicle.aliveworkplace.plans_upgrade": "%1$s planned the upgrade to the %2$s, built by %3$s",
   "message.aliveworkplace.steward.state.resting": "Resting: planning nothing",
   "message.aliveworkplace.steward.desk.new": "New proposals on %1$s's desk in %2$s, %3$s waiting: open What next? at the hall",

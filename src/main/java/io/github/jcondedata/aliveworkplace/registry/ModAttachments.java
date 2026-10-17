@@ -416,6 +416,8 @@ public final class ModAttachments {
 	public static final Attachment<io.github.jcondedata.aliveworkplace.people.Retirement.Teacher> TAUGHT_BY = Attachment.saved("taught_by", io.github.jcondedata.aliveworkplace.people.Retirement.Teacher.CODEC);
 	/** The gold a raider carries off from a village's chest (ROADMAP 32.10, threat/Plunder): dropped if it's killed, taken home at dawn. */
 	public static final Attachment<net.minecraft.world.item.ItemStack> PLUNDER = Attachment.saved("plunder", net.minecraft.world.item.ItemStack.CODEC);
+	/** What a villager held when a fire bell put a water bucket in their hand (B152: a fisher's rod), given back after. Absent: nothing. */
+	public static final Attachment<net.minecraft.world.item.ItemStack> BRIGADE_HELD = Attachment.saved("brigade_held", net.minecraft.world.item.ItemStack.CODEC);
 
 	public static void init() {
 	}

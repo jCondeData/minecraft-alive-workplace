@@ -86,6 +86,12 @@ asks for the steps, `latest.log` and any crash report).
   were: homes already built keep their villagers, and an upgrade builds the new look onto them.
 
 ### Fixed
+- **Fishermen take their cooked fish out of the furnace.** The cooked fish used to sit in the furnace until his next
+  catch came home, and all night once his shift ended; now he comes back for them as soon as they are done (also after
+  a reload mid-cook), and puts them in his barrel like his catch (B147).
+- **A villager called to the bucket brigade gets their tool back.** The water bucket used to replace whatever they
+  held for good (a fisherman's rod, an axe); the same tool is back in their hand once the fire is out, even if the world
+  was saved in between (B152).
 - **The Village Hall's food count matches growth.** "Food in store" now counts only meals, the same number a baby
   waits for, so rotten flesh, spider eyes and golden food in the store no longer make it look full (B153).
 - **A ram no longer stalls behind a Gatehouse's portcullis.** After breaking the middle bars, a ravager sometimes stood

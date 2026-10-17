@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.work;
 
 import com.google.common.collect.ImmutableMap;
+import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.threat.VillageFire;
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +52,33 @@ public class FireBrigade extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return VillageFire.brigadeOf(villager).isPresent() && target(level, villager);
+		boolean called = VillageFire.brigadeOf(villager).isPresent();
+		if (!called && ModAttachments.BRIGADE_HELD.has(villager)) {
+			giveBack(villager); // the world was saved mid-call and the fire was over by the time it loaded
+		}
+		return called && target(level, villager);
+	}
+
+	/**
+	 * Puts what the villager held before the call back in their hand in place of the bucket (a hired fisher's rod, a
+	 * tool: B152). If something else is in their hand by now, the kept item drops at their feet rather than vanish.
+	 */
+	static void giveBack(Villager villager) {
+		ItemStack held = ModAttachments.BRIGADE_HELD.get(villager);
+		ModAttachments.BRIGADE_HELD.remove(villager);
+		ItemStack hand = villager.getMainHandItem();
+		boolean bucket = hand.is(Items.WATER_BUCKET);
+		if (held == null || held.isEmpty()) {
+			if (bucket) {
+				villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			}
+			return;
+		}
+		if (bucket || hand.isEmpty()) {
+			villager.setItemSlot(EquipmentSlot.MAINHAND, held);
+		} else {
+			villager.spawnAtLocation(held);
+		}
 	}
 
 	private static boolean target(ServerLevel level, Villager villager) {
@@ -68,6 +95,11 @@ public class FireBrigade extends Behavior<Villager> {
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
 		if (villager.isSleeping()) {
 			villager.stopSleeping();
+		}
+		ItemStack hand = villager.getMainHandItem();
+		if (!hand.isEmpty() && !(hand.is(Items.WATER_BUCKET) && ModAttachments.BRIGADE_HELD.has(villager))) {
+			// Kept (and saved) to give back when the fire is out: the bucket used to replace it for good (B152).
+			ModAttachments.BRIGADE_HELD.set(villager, hand.copy());
 		}
 		villager.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.WATER_BUCKET));
 	}
@@ -97,9 +129,7 @@ public class FireBrigade extends Behavior<Villager> {
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-		if (villager.getMainHandItem().is(Items.WATER_BUCKET)) {
-			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-		}
+		giveBack(villager);
 		State state = state(villager);
 		state.walker.reset();
 		state.fire = null;

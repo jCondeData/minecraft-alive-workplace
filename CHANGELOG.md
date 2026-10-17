@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Fourteen new decorations.** Small builds that aren't houses, in the Blueprint Table beside the Fountain and the
+  Street Lamp: a Market Cross, a Stag Statue, Flower Planters, a Signpost, a Stone Archway, a Lily Pond, a Hay Cart, a
+  Notice Board, a Lantern Pergola, a Fire Pit, a Sundial, a Topiary Garden, a Market Corner and a Footbridge. Each adds
+  1 to 3 to a village's beauty. The Flower Planters are unlocked from the start; market-day traders sell the rest.
 - **Every workplace has its own building.** The twelve workplaces the Steward asks for no longer share one house: the
   Builder's Workshop is a saltbox studio with a crane yard, the Carpenter's an open saw shed with log piles, the Kitchen
   a cookhouse with a domed bread oven and herb beds, the Post Office a jettied townhouse with a dovecote, the Guard House

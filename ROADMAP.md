@@ -733,7 +733,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   fisherman, plus 1 more per 10 villagers (a config switch sets it); a jobless villager skips a barrel when the cap is
   reached and looks for another workstation; an existing fisherman over the cap keeps his job (no save breaks).
   GameTests: cap reached, cap grows with the village, config off, save and reload.
-- [ ] **26.14** **More decoration builds** (owner, 2026-10-16: "a wider variety of builds that arent houses, but
+- [x] **26.14** (review: pending 2026-10-17) **More decoration builds** (owner, 2026-10-16: "a wider variety of builds that arent houses, but
   decorations similar to fountain or lamp"). Done when: at least 12 new small decorations (well, statue, gazebo,
   market stall, flower planters, signpost, bench nook, lamp variants, pond, archway, hay cart, notice board...), each
   original, checked in a render against STYLE.md, in the Blueprint Table library and the unlocks list.

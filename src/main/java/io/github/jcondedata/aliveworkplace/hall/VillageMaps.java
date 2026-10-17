@@ -81,7 +81,9 @@ public final class VillageMaps {
 			case "lookout_tower", "barracks", "fire_station", "gatehouse", "wall_tower", "palisade_gate", "palisade_tower" -> Kind.DEFENCE;
 			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage",
 				"winery", "tailors_shop", "print_shop", "jewellers_workshop" -> Kind.WORKSHOPS;
-			case "well", "fountain", "gazebo", "chapel", "bandstand" -> Kind.DECORATIONS;
+			case "well", "fountain", "gazebo", "chapel", "bandstand", "market_cross", "stag_statue", "stone_archway", "lily_pond",
+				"lantern_pergola", "fire_pit", "sundial", "topiary_garden", "footbridge" -> Kind.DECORATIONS;
+			case "signpost", "flower_planters", "hay_cart", "notice_board", "market_corner" -> null; // too small to mark (26.14)
 			case "village_hall", "town_hall", "guildhall", "royal_hall" -> Kind.HALL;
 			case "street_lamp", "park_bench", "palisade", "stone_wall" -> null;
 			default -> Kind.OTHER;

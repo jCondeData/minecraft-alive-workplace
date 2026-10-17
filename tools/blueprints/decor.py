@@ -393,3 +393,441 @@ def chapel():
     flower_bed(b, 8, 3, 9, 4, 0, ["poppy", "azure_bluet", "white_tulip", None])
     b.fill_air()
     return b
+
+
+# --- More decorations (ROADMAP 26.14) ---------------------------------------------------------------------------------
+# Small builds that aren't houses, each in the village's family (stone bricks and cobble, spruce and dark oak, lanterns,
+# flowers in their own soil) and each its own kind. No villager's job block in any of them (no barrel, composter,
+# cauldron, lectern, smoker, loom...), and no bell: a bell is where a village meets.
+def stepped_ring(b, x0, z0, x1, z1, y, fam, centre=None):
+    """A step of stairs round the rect (x0, z0)-(x1, z1) at y, climbing inwards, slabs at its corners; the inside is
+    {@code fam}'s full block (or {@code centre})."""
+    for x in range(x0, x1 + 1):
+        for z in range(z0, z1 + 1):
+            if x not in (x0, x1) and z not in (z0, z1):
+                b.set(x, y, z, centre or fam.full)
+            elif x in (x0, x1) and z in (z0, z1):
+                slab(b, x, y, z, fam)
+            else:
+                side = "north" if z == z0 else "south" if z == z1 else "west" if x == x0 else "east"
+                stairs(b, x, y, z, fam, OPP[side])
+
+
+def market_cross():
+    """5 x 8 x 5: a market cross — a stepped plinth of stone bricks (two rings of stairs climbing to a chiseled heart), a
+    shaft of stone brick wall to a chiseled head, dark oak arms either side with a lantern hanging from each and one on
+    top."""
+    b = Build(5, 8, 5)
+    for x in range(5):
+        for z in range(5):
+            b.set(x, 0, z, MOSSY_BRICK_MIX.at(x, 0, z))
+    stepped_ring(b, 0, 0, 4, 4, 1, STONE_BRICK)
+    stepped_ring(b, 1, 1, 3, 3, 2, STONE_BRICK, centre="chiseled_stone_bricks")
+    for y in (3, 4, 5):
+        wall_block(b, 2, y, 2, "stone_brick_wall")
+    b.set(2, 6, 2, "chiseled_stone_bricks")
+    for x in (1, 3):  # the arms, a lantern under each
+        fence(b, x, 6, 2, "dark_oak_fence")
+        lantern(b, x, 5, 2, hanging=True)
+    lantern(b, 2, 7, 2)
+    b.set(0, 2, 0, "potted_red_tulip")
+    b.set(4, 2, 0, "potted_cornflower")
+    b.set(0, 2, 4, "potted_cornflower")
+    b.set(4, 2, 4, "potted_red_tulip")
+    b.fill_air()
+    return b
+
+
+def stag_statue():
+    """7 x 8 x 5: a stone stag on a plinth — legs of andesite wall, a body, neck and head of polished andesite, antlers
+    spreading either side, on a stone brick plinth with chiseled corners and a moulding of stairs, on cobbled paving
+    with a bush and a fern at its feet. The front (north) shows the stag's flank, its head to the east."""
+    b = Build(7, 8, 5)
+    pave(b, [(x, z) for x in range(7) for z in range(5)], border=BORDER)
+    for x in range(1, 6):
+        for z in range(1, 4):
+            corner = x in (1, 5) and z in (1, 3)
+            b.set(x, 1, z, "chiseled_stone_bricks" if corner else "stone_bricks")
+    stepped_ring(b, 1, 1, 5, 3, 2, STONE_BRICK)
+    # The stag
+    for x in (2, 4):
+        wall_block(b, x, 3, 2, "andesite_wall")
+    for x in (2, 3, 4):
+        b.set(x, 4, 2, "polished_andesite")
+    stairs(b, 1, 4, 2, ANDESITE, "east", top=True)  # the rump and tail
+    stairs(b, 5, 4, 2, ANDESITE, "west", top=True)  # the chest
+    b.set(5, 5, 2, "polished_andesite")  # the head, held high
+    stairs(b, 6, 5, 2, ANDESITE, "west")  # the muzzle
+    for z in (1, 3):  # the antlers, branching up and back
+        wall_block(b, 5, 6, z, "andesite_wall")
+        wall_block(b, 5, 7, z, "andesite_wall")
+        wall_block(b, 4, 7, z, "andesite_wall")
+        wall_block(b, 6, 7, z, "andesite_wall")
+    bush(b, 0, 1, 1)
+    bush(b, 6, 1, 3)
+    b.set(0, 1, 3, "potted_fern")
+    b.set(6, 1, 1, "potted_fern")
+    b.fill_air()
+    return b
+
+
+PLANTER_FLOWERS = ["red_tulip", "orange_tulip", "allium", "cornflower", "oxeye_daisy", "azure_bluet", "poppy"]
+
+
+def flower_planters():
+    """7 x 3 x 3: a two-tier brick planter — a low bed at the front and a raised one behind, both full of flowers in their
+    own soil — between brick pillars with a lantern on each."""
+    b = Build(7, 3, 3)
+    for x in range(7):
+        b.set(x, 0, 0, "bricks")
+    for x in (0, 6):
+        for z in range(3):
+            b.set(x, 0, z, "bricks")
+            b.set(x, 1, z, "bricks")
+        lantern(b, x, 2, 1)
+    flower_bed(b, 1, 1, 5, 1, 0, PLANTER_FLOWERS)
+    for x in range(1, 6):
+        b.set(x, 0, 2, "bricks")
+    flower_bed(b, 1, 2, 5, 2, 1, list(reversed(PLANTER_FLOWERS)))
+    b.fill_air()
+    return b
+
+
+def signpost():
+    """3 x 5 x 3: a crossroads signpost — a spruce post on a cobbled foot, fingerboards pointing four ways at two
+    heights, a lantern on top."""
+    b = Build(3, 5, 3)
+    b.set(1, 0, 1, "mossy_cobblestone")
+    for side, (dx, dz) in DIRS.items():
+        stairs(b, 1 + dx, 0, 1 + dz, COBBLE, OPP[side])
+    b.set(0, 0, 0, "potted_dandelion")
+    b.set(2, 0, 2, "potted_blue_orchid")
+    for y in (1, 2, 3):
+        log(b, 1, y, 1, "spruce_log")
+    for side, y in (("west", 3), ("east", 3), ("north", 2), ("south", 2)):
+        dx, dz = DIRS[side]
+        b.set(1 + dx, y, 1 + dz, "spruce_wall_sign", facing=side, waterlogged=False)
+    lantern(b, 1, 4, 1)
+    b.fill_air()
+    return b
+
+
+def stone_archway():
+    """7 x 7 x 3: a stone archway over a path — mossy stone brick piers on stair feet, an arch of upside-down stairs to a
+    chiseled keystone, a coping of slabs, a lantern hanging in the opening, ivy up the piers and lilies at their feet."""
+    b = Build(7, 7, 3)
+    for z in range(3):
+        for x in range(2, 5):
+            b.set(x, 0, z, "polished_andesite" if x == 3 else "cobblestone")
+        for x in (1, 5):
+            for y in range(0, 5):
+                b.set(x, y, z, MOSSY_BRICK_MIX.at(x, y, z))
+        for x in (2, 3, 4):
+            b.set(x, 4, z, BRICK_WALL_MIX.at(x, 4, z))
+        stairs(b, 2, 3, z, STONE_BRICK, "west", top=True)
+        stairs(b, 4, 3, z, STONE_BRICK, "east", top=True)
+        for x in range(1, 6):
+            slab(b, x, 5, z, STONE_BRICK)
+    for x in (1, 5):  # the piers carried up through the coping, capped
+        b.set(x, 5, 1, "stone_bricks")
+        slab(b, x, 6, 1, STONE_BRICK)
+    b.set(3, 4, 0, "chiseled_stone_bricks")
+    b.set(3, 4, 2, "chiseled_stone_bricks")
+    for x, face in ((0, "east"), (6, "west")):  # the piers' feet, and a bed of lilies between them
+        stairs(b, x, 0, 0, STONE_BRICK, face)
+        stairs(b, x, 0, 2, STONE_BRICK, face)
+    flower_bed(b, 0, 1, 0, 1, 0, ["lily_of_the_valley"])
+    flower_bed(b, 6, 1, 6, 1, 0, ["lily_of_the_valley"])
+    lantern(b, 3, 3, 1, hanging=True)
+    for x, side in ((0, "east"), (6, "west")):  # ivy on the piers' outer faces
+        for y, z in ((2, 0), (3, 0), (4, 0), (2, 2), (3, 2), (2, 1), (3, 1)):
+            if (x == 0) == (z == 2):
+                continue
+            b.set(x, y, z, "vine", up=False, north=False, south=False, east=side == "east", west=side == "west")
+    b.fill_air()
+    return b
+
+
+def lily_pond():
+    """9 x 3 x 7: a lily pond — an oval of water on a clay bed in a low kerb of mossy cobbles and stone, lily pads on it,
+    a grassy bank round it with ferns and flowers in its own soil, and a stone seat on the south side."""
+    b = Build(9, 3, 7)
+    outer = [(x, z) for x in range(9) for z in range(7) if ((x - 4) / 4.6) ** 2 + ((z - 3) / 3.6) ** 2 <= 1.0]
+    inner = {(x, z) for x, z in outer if ((x - 4) / 3.6) ** 2 + ((z - 3) / 2.6) ** 2 <= 1.0}
+    kerb = Mix((4, "mossy_cobblestone"), (3, "cobblestone"), (2, "stone"), seed=41)
+    plants = ["fern", "short_grass", None, "azure_bluet", "fern", None, "blue_orchid", "short_grass"]
+    for x, z in outer:
+        if (x, z) not in inner:  # the bank
+            b.set(x, 0, z, "grass_block", snowy=False)
+            p = plants[(x * 3 + z * 5) % len(plants)]
+            if p and z != 6:
+                b.set(x, 1, z, p)
+            continue
+        edge = any((x + dx, z + dz) not in inner for dx, dz in DIRS.values())
+        b.set(x, 0, z, kerb.at(x, 0, z) if edge else "clay")
+        if edge:
+            b.set(x, 1, z, kerb.at(x, 1, z))
+        else:
+            b.set(x, 1, z, "water", level=0)
+    for x, z in ((2, 3), (4, 2), (5, 4), (6, 3), (3, 4)):
+        if b.get(x, 1, z)[0] == "minecraft:water":
+            b.set(x, 2, z, "lily_pad")
+    for x in (3, 4, 5):  # a seat on the south bank
+        b.set(x, 0, 6, "cobblestone")
+        slab(b, x, 1, 6, STONE_BRICK)
+    b.fill_air()
+    return b
+
+
+def hay_cart():
+    """6 x 4 x 5: a hay cart left by the road — a spruce bed on two dark oak wheels, its shafts down on the ground in
+    front, a tailboard at the back, loaded with bales."""
+    b = Build(6, 4, 5)
+    for x in range(0, 4):
+        for z in range(1, 4):
+            slab(b, x, 0, z, SPRUCE, top=True)
+    trapdoor(b, 2, 0, 0, "dark_oak_trapdoor", "north", open_=True)  # the wheels
+    trapdoor(b, 2, 0, 4, "dark_oak_trapdoor", "south", open_=True)
+    for z in (1, 3):  # the shafts
+        fence(b, 4, 0, z, "spruce_fence")
+        fence(b, 5, 0, z, "spruce_fence")
+    for z in (1, 2, 3):
+        fence(b, 0, 1, z, "spruce_fence")  # the tailboard
+    for x, z in ((1, 1), (2, 1), (3, 1), (1, 2), (2, 2), (3, 2), (2, 3), (3, 3)):
+        b.set(x, 1, z, "hay_block", axis="x")
+    for x, z in ((2, 2), (3, 2), (2, 1)):
+        b.set(x, 2, z, "hay_block", axis="z")
+    lamp_post(b, 4, 1, 3, "spruce_fence", height=1)  # a lantern on the front corner, for the road at night
+    b.fill_air()
+    return b
+
+
+def notice_board():
+    """5 x 5 x 3: a village notice board — a spruce board between dark oak posts under a little gabled roof, notices
+    pinned to it (a white banner and birch trapdoors), a lantern hanging behind and flowers at its feet."""
+    b = Build(5, 5, 3)
+    for x in (0, 4):
+        for y in (0, 1, 2):
+            log(b, x, y, 1, "dark_oak_log")
+    for x in (1, 2, 3):
+        b.set(x, 0, 1, "cobblestone")
+        for y in (1, 2):
+            b.set(x, y, 1, "spruce_planks")
+    for x in range(5):
+        log(b, x, 3, 1, "stripped_dark_oak_log", axis="x")
+        stairs(b, x, 3, 0, DARK_OAK, "south")
+        stairs(b, x, 3, 2, DARK_OAK, "north")
+        slab(b, x, 4, 1, DARK_OAK)
+    trapdoor(b, 1, 2, 0, "birch_trapdoor", "north", open_=True)
+    trapdoor(b, 3, 1, 0, "birch_trapdoor", "north", open_=True)
+    trapdoor(b, 3, 2, 0, "birch_trapdoor", "north", open_=True)
+    b.set(2, 2, 0, "white_wall_banner", facing="north")
+    trapdoor(b, 2, 2, 2, "birch_trapdoor", "south", open_=True)
+    lantern(b, 0, 2, 0, hanging=True)
+    lantern(b, 4, 2, 0, hanging=True)
+    b.set(1, 0, 0, "potted_allium")
+    b.set(3, 0, 0, "potted_oxeye_daisy")
+    b.fill_air()
+    return b
+
+
+def lantern_pergola():
+    """5 x 6 x 7: a pergola walk — spruce posts on a paved floor, beams along the sides, slats across with azalea grown
+    over them, lanterns hanging on chains over the path and benches either side."""
+    b = Build(5, 6, 7)
+    for x in range(5):
+        for z in range(7):
+            b.set(x, 0, z, "polished_andesite" if x == 2 else PAVING.at(x, 0, z))
+    for x in (0, 4):
+        for z in (0, 3, 6):
+            posts(b, [(x, z)], 1, 3, "spruce_log")
+        for z in range(7):
+            log(b, x, 4, z, "stripped_spruce_log", axis="z")
+    for z in (0, 2, 4, 6):
+        for x in range(5):
+            slab(b, x, 5, z, SPRUCE)
+    for x, z, leaf in ((1, 1, "flowering_azalea_leaves"), (3, 1, "azalea_leaves"), (0, 3, "azalea_leaves"),
+                       (1, 3, "azalea_leaves"), (4, 5, "flowering_azalea_leaves"), (3, 5, "azalea_leaves"),
+                       (0, 1, "azalea_leaves"), (2, 3, "flowering_azalea_leaves")):
+        bush(b, x, 5, z, leaf)
+    for z in (2, 4):
+        b.set(2, 4, z, "chain", axis="y", waterlogged=False)
+        lantern(b, 2, 3, z, hanging=True)
+        stairs(b, 0, 1, z, SPRUCE, "west")
+        stairs(b, 4, 1, z, SPRUCE, "east")
+    b.set(0, 1, 1, "potted_azalea_bush")
+    b.set(4, 1, 5, "potted_azalea_bush")
+    b.set(0, 1, 5, "potted_flowering_azalea_bush")
+    b.set(4, 1, 1, "potted_flowering_azalea_bush")
+    b.fill_air()
+    return b
+
+
+def fire_pit():
+    """7 x 3 x 7: a fire pit — a campfire in a ring of cobble slabs on a round of gravel and coarse dirt, log seats on
+    three sides, a log pile and a lamp post at the back corners."""
+    b = Build(7, 3, 7)
+    ground = Mix((3, "coarse_dirt"), (2, "gravel"), (2, "cobblestone"), seed=43)
+    for x, z in disc(3, 3, 3.5):
+        b.set(x, 0, z, "cobblestone" if math.hypot(x - 3, z - 3) < 1.5 else ground.at(x, 0, z))
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            if (dx, dz) != (0, 0):
+                slab(b, 3 + dx, 1, 3 + dz, COBBLE)
+    b.set(3, 1, 3, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+    for z in (2, 3, 4):
+        log(b, 0, 1, z, "stripped_spruce_log", axis="z")
+        log(b, 6, 1, z, "stripped_spruce_log", axis="z")
+    for x in (2, 3, 4):
+        log(b, x, 1, 6, "stripped_spruce_log", axis="x")
+    for x, z in ((0, 6), (1, 6), (0, 5)):  # the log pile
+        b.set(x, 0, z, "coarse_dirt")
+        log(b, x, 1, z, "spruce_log", axis="x")
+    log(b, 0, 2, 6, "spruce_log", axis="x")
+    b.set(6, 0, 6, "coarse_dirt")
+    lamp_post(b, 6, 1, 6, "spruce_fence", height=1)
+    b.fill_air()
+    return b
+
+
+def sundial():
+    """7 x 3 x 7: a sundial plaza — a round of smooth stone with hour stones of chiseled stone bricks in a polished
+    andesite border, a dial of slabs on a stone foot in the middle and its gnomon, lamp posts at the back corners."""
+    b = Build(7, 3, 7)
+    cells = disc(3, 3, 3.5)
+    pave(b, cells, name="smooth_stone", border=BORDER)
+    for x, z in ((3, 0), (3, 6), (0, 3), (6, 3), (1, 1), (5, 1), (1, 5), (5, 5)):
+        b.set(x, 0, z, "chiseled_stone_bricks")
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            slab(b, 3 + dx, 1, 3 + dz, "smooth_stone_slab", top=(dx, dz) == (0, 0))
+    b.set(3, 1, 3, "stone_bricks")
+    stairs(b, 3, 2, 3, STONE_BRICK, "south")  # the gnomon, its edge towards the north
+    for x in (0, 6):
+        lamp_post(b, x, 0, 6, "dark_oak_fence", height=2)
+    b.fill_air()
+    return b
+
+
+def topiary_garden():
+    """9 x 5 x 9: a topiary garden in a clipped hedge — gravel walks crossing at an urn of azalea, four beds of lawn
+    with a shape in each (a cone and a tiered cone of spruce, a ball and a cube of oak on short trunks)."""
+    b = Build(9, 5, 9)
+    for x in range(9):
+        for z in range(9):
+            walk = x == 4 or z == 4
+            b.set(x, 0, z, "gravel" if walk else "grass_block", **({} if walk else {"snowy": False}))
+            if (x in (0, 8) or z in (0, 8)) and not (walk and (x, z) != (4, 8)):
+                bush(b, x, 1, z)
+                if x in (0, 8) and z in (0, 8):
+                    bush(b, x, 2, z)
+    bush(b, 4, 1, 8)
+    b.set(4, 0, 4, "stone_bricks")
+    b.set(4, 1, 4, "chiseled_stone_bricks")
+    b.set(4, 2, 4, "potted_flowering_azalea_bush")
+    # NW: a cone of spruce; NE: a ball of oak on a trunk; SW: a cube of oak on a trunk; SE: a tiered spruce cone
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            bush(b, 2 + dx, 1, 2 + dz, "spruce_leaves")
+            if dx == 0 or dz == 0:
+                bush(b, 2 + dx, 2, 2 + dz, "spruce_leaves")
+            bush(b, 2 + dx, 2, 6 + dz, "oak_leaves")
+            bush(b, 2 + dx, 3, 6 + dz, "oak_leaves")
+    bush(b, 2, 3, 2, "spruce_leaves")
+    log(b, 2, 1, 6, "oak_log")
+    log(b, 6, 1, 2, "oak_log")
+    log(b, 6, 2, 2, "oak_log")
+    for dx, dz in DIRS.values():
+        bush(b, 6 + dx, 3, 2 + dz, "oak_leaves")
+    bush(b, 6, 3, 2, "oak_leaves")
+    bush(b, 6, 4, 2, "oak_leaves")
+    for dx in (-1, 0, 1):
+        for dz in (-1, 0, 1):
+            if dx == 0 or dz == 0:
+                bush(b, 6 + dx, 1, 6 + dz, "spruce_leaves")
+    bush(b, 6, 2, 6, "spruce_leaves")
+    bush(b, 6, 3, 6, "spruce_leaves")
+    bush(b, 6, 4, 6, "spruce_leaves")
+    for x in (3, 5):  # stone gateposts with lanterns either side of the way in
+        b.set(x, 0, 0, "stone_bricks")
+        wall_block(b, x, 1, 0, "stone_brick_wall")
+        lantern(b, x, 2, 0)
+    b.fill_air()
+    return b
+
+
+def market_corner():
+    """5 x 5 x 5: a market corner — a striped awning sloping down to the front on dark oak posts (a lantern hanging from
+    its front beam) over an L of goods stacked against the back and the east side: crates of planks with trapdoor lids,
+    sacks of wool, hay, pumpkins and melons."""
+    b = Build(5, 5, 5)
+    for x in range(5):
+        for z in range(5):
+            b.set(x, 0, z, PAVING.at(x, 0, z))
+    for x in (0, 4):
+        for y in (1, 2):
+            fence(b, x, y, 0, "dark_oak_fence")
+        for y in (1, 2, 3):
+            fence(b, x, y, 4, "dark_oak_fence")
+    for x in range(5):  # the awning: a beam at the front, the cloth rising to the back
+        log(b, x, 3, 0, "stripped_dark_oak_log", axis="x")
+        stripe = "green_wool" if x % 2 == 0 else "white_wool"
+        b.set(x, 3, 1, stripe)
+        b.set(x, 4, 2, stripe)
+        b.set(x, 4, 3, stripe)
+        b.set(x, 4, 4, stripe)
+    lantern(b, 2, 2, 0, hanging=True)
+    # Goods along the back (z 3-4) and the east side (x 3)
+    b.set(1, 1, 4, "spruce_planks")  # crates: two stacked, one alone, trapdoor lids
+    b.set(1, 2, 4, "spruce_planks")
+    trapdoor(b, 1, 3, 4, "spruce_trapdoor", "north")
+    b.set(2, 1, 4, "spruce_planks")
+    trapdoor(b, 2, 2, 4, "spruce_trapdoor", "north")
+    b.set(3, 1, 4, "hay_block", axis="y")
+    b.set(3, 2, 4, "hay_block", axis="x")
+    b.set(3, 1, 3, "white_wool")
+    b.set(3, 1, 2, "brown_wool")
+    b.set(3, 2, 3, "pumpkin")
+    b.set(2, 1, 3, "melon")
+    b.set(1, 1, 3, "potted_red_tulip")
+    b.fill_air()
+    return b
+
+
+def footbridge():
+    """7 x 4 x 7: a footbridge over a channel — a stone-kerbed stretch of water with lily pads, a spruce bridge across on
+    stair steps with fence rails, a lantern on a post at each end."""
+    b = Build(7, 4, 7)
+    for x in range(7):
+        for z in range(7):
+            if z in (0, 6):
+                b.set(x, 0, z, PAVING.at(x, 0, z))
+            elif z in (1, 5) or x in (0, 6):
+                b.set(x, 0, z, MOSSY_BRICK_MIX.at(x, 0, z))
+            else:
+                b.set(x, 0, z, "water", level=0)
+    for z in range(1, 6):  # the deck between two beams, rails on the beams
+        b.set(3, 1, z, "spruce_planks")
+        for x in (2, 4):
+            log(b, x, 1, z, "stripped_spruce_log", axis="z")
+            fence(b, x, 2, z, "spruce_fence")
+    stairs(b, 3, 0, 0, SPRUCE, "south")
+    stairs(b, 3, 0, 6, SPRUCE, "north")
+    for x in (2, 4):
+        for z in (0, 6):
+            b.set(x, 0, z, "spruce_planks")
+    for x, z in ((2, 1), (4, 5)):
+        lantern(b, x, 3, z)
+    for x, z in ((1, 2), (5, 4), (0, 0)):
+        if b.get(x, 0, z)[0] == "minecraft:water":
+            b.set(x, 1, z, "lily_pad")
+    b.fill_air()
+    return b
+
+
+# The decorations of 26.14, by blueprint name, in the order the Table and the gallery show them.
+MORE_DECORATIONS = (("market_cross", market_cross), ("stag_statue", stag_statue), ("flower_planters", flower_planters),
+                    ("signpost", signpost), ("stone_archway", stone_archway), ("lily_pond", lily_pond),
+                    ("hay_cart", hay_cart), ("notice_board", notice_board), ("lantern_pergola", lantern_pergola),
+                    ("fire_pit", fire_pit), ("sundial", sundial), ("topiary_garden", topiary_garden),
+                    ("market_corner", market_corner), ("footbridge", footbridge))

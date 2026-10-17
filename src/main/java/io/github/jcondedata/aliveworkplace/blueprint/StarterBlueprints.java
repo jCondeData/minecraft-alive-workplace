@@ -361,6 +361,41 @@ public final class StarterBlueprints {
 	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(11, 16, 16));
 	/** A paved square with a fountain, kiosks, benches and the village bell. */
 	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 5, 13));
+	/*
+	 * More decorations (ROADMAP 26.14; tools/blueprints/decor.py, MORE_DECORATIONS): small builds that aren't houses, none
+	 * with a villager's job block.
+	 */
+	/** A stepped stone plinth with a shaft, its arms hung with lanterns. */
+	public static final Entry MARKET_CROSS = new Entry(AliveWorkplace.id("market_cross"), new Vec3i(5, 8, 5));
+	/** A stone stag on a plinth. */
+	public static final Entry STAG_STATUE = new Entry(AliveWorkplace.id("stag_statue"), new Vec3i(7, 8, 5));
+	/** A two-tier brick planter of flowers between lanterns. */
+	public static final Entry FLOWER_PLANTERS = new Entry(AliveWorkplace.id("flower_planters"), new Vec3i(7, 3, 3));
+	/** A crossroads signpost with four fingerboards and a lantern. */
+	public static final Entry SIGNPOST = new Entry(AliveWorkplace.id("signpost"), new Vec3i(3, 5, 3));
+	/** A mossy stone archway with ivy and a hanging lantern. */
+	public static final Entry STONE_ARCHWAY = new Entry(AliveWorkplace.id("stone_archway"), new Vec3i(7, 7, 3));
+	/** An oval pond with lily pads in a grassy bank. */
+	public static final Entry LILY_POND = new Entry(AliveWorkplace.id("lily_pond"), new Vec3i(9, 3, 7));
+	/** A cart loaded with hay bales. */
+	public static final Entry HAY_CART = new Entry(AliveWorkplace.id("hay_cart"), new Vec3i(6, 4, 5));
+	/** A roofed notice board with notices pinned to it. */
+	public static final Entry NOTICE_BOARD = new Entry(AliveWorkplace.id("notice_board"), new Vec3i(5, 5, 3));
+	/** A pergola walk under azalea with lanterns on chains and benches. */
+	public static final Entry LANTERN_PERGOLA = new Entry(AliveWorkplace.id("lantern_pergola"), new Vec3i(5, 6, 7));
+	/** A campfire in a ring of stones with log seats. */
+	public static final Entry FIRE_PIT = new Entry(AliveWorkplace.id("fire_pit"), new Vec3i(7, 3, 7));
+	/** A round stone plaza with a sundial and hour stones. */
+	public static final Entry SUNDIAL = new Entry(AliveWorkplace.id("sundial"), new Vec3i(7, 3, 7));
+	/** Clipped hedges round four topiary shapes and an urn. */
+	public static final Entry TOPIARY_GARDEN = new Entry(AliveWorkplace.id("topiary_garden"), new Vec3i(9, 5, 9));
+	/** Crates, sacks and produce under a striped awning. */
+	public static final Entry MARKET_CORNER = new Entry(AliveWorkplace.id("market_corner"), new Vec3i(5, 5, 5));
+	/** A plank footbridge over a stone channel of water. */
+	public static final Entry FOOTBRIDGE = new Entry(AliveWorkplace.id("footbridge"), new Vec3i(7, 4, 7));
+	/** The decorations of 26.14, in the order the Table and the gallery show them. */
+	public static final List<Entry> MORE_DECORATIONS = List.of(MARKET_CROSS, STAG_STATUE, FLOWER_PLANTERS, SIGNPOST, STONE_ARCHWAY, LILY_POND,
+		HAY_CART, NOTICE_BOARD, LANTERN_PERGOLA, FIRE_PIT, SUNDIAL, TOPIARY_GARDEN, MARKET_CORNER, FOOTBRIDGE);
 
 	/** Walls and gates: a wooden palisade with a walkway. */
 	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
@@ -451,7 +486,8 @@ public final class StarterBlueprints {
 	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
-	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);
+	public static final List<Entry> DECORATIONS = java.util.stream.Stream.concat(
+		java.util.stream.Stream.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL), MORE_DECORATIONS.stream()).toList();
 
 	/** Walls and gates. */
 	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_2, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, STONE_WALL_2, WALL_TOWER, WALL_TOWER_2,

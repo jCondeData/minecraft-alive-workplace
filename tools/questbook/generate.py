@@ -241,7 +241,7 @@ def check_keys():
 def blueprint_paths():
     """Every blueprint StarterBlueprints ships, by path; looks (looks/<look>/...) count as their blueprint."""
     src = open(BLUEPRINTS, encoding="utf-8").read()
-    paths = re.findall(r'AliveWorkplace\.id\("([^"]+)"\)', src) + re.findall(r'\bworkplace\("([a-z_0-9]+)"\)', src)
+    paths = re.findall(r'AliveWorkplace\.id\("([^"]+)"\)', src) + re.findall(r'\bworkplace\("([a-z_0-9]+)"[,)]', src)
     return sorted(set(p for p in paths if not p.startswith("looks/")))
 
 

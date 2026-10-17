@@ -38,7 +38,9 @@ Right-click the hall. It looks like the Blueprint Table's screen. Under the titl
 village's numbers (its name and rank, villagers, beds, food in store, guards, wellbeing, what the workers are waiting
 for, the buildings going up and quests), then the page buttons. On the left is a list: the hall's page tabs, then
 everyone who lives there, each with their name and job. **Point at anything and the pane on the right tells you all
-about it.** With the mouse elsewhere, the pane shows the village's numbers at a glance.
+about it.** Move the mouse on into the pane and it keeps reading the same thing, so you can scroll a long entry
+there with the mouse wheel without clicking it (or hold Shift and scroll over the row); a little arrow at the bottom
+shows there's more. With the mouse elsewhere, the pane shows the village's numbers at a glance.
 
 Each worker is shown as their workstation, stacked as high as their level, with what they're doing ("Market Stall ·
 45%") and what they're waiting for. **Click a villager to make them glow** for ten seconds so you can find them; they stay in the pane, where the mouse

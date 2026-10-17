@@ -55,6 +55,12 @@ public final class Expansions {
 	 * {@code moddedStorageNetworks} (design note M37).
 	 */
 	public static final boolean M37 = false;
+	/**
+	 * Milestone 38, Cobblemon depth (2.2): raid dens, more Megas and Cobblecuisine (design note M38). Its switches:
+	 * {@code denWardens}, {@code denChallenges}, {@code denChallengeDays}, {@code villageMegas}, {@code cuisineDishes},
+	 * {@code beanFarms}; each comes into the config with the item that builds it (38.3 to 38.10).
+	 */
+	public static final boolean M38 = false;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films
@@ -94,12 +100,13 @@ public final class Expansions {
 			case "M34" -> M34;
 			case "M35" -> M35;
 			case "M37" -> M37;
+			case "M38" -> M38;
 			default -> false;
 		};
 	}
 
 	/** Every milestone with a gate, by name. */
-	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35", "M37");
+	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35", "M37", "M38");
 
 	/** The milestones whose gates are open now ({@link #on}): what a config file written now records (34.23). */
 	static java.util.List<String> open() {
@@ -126,6 +133,7 @@ public final class Expansions {
 			case "wonders", "wonderCaps", "wonderLegends", "wonderServerLimit", "disabledWonders", "wonderCrew", "builderScaffolding",
 				"wonderStanding" -> "M35";
 			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks" -> "M37";
+			case "denWardens", "denChallenges", "denChallengeDays", "villageMegas", "cuisineDishes", "beanFarms" -> "M38";
 			default -> null;
 		};
 	}

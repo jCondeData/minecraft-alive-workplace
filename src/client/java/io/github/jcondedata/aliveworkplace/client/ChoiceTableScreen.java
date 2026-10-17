@@ -22,8 +22,10 @@ import net.minecraft.world.item.component.ItemLore;
  * A server's {@link ChoiceMenu} drawn in the Blueprint Table's style (ROADMAP 26.12): the Village Hall's screen and the
  * Storehouse board. The buttons in the strip rows (the hall's figures and toolbar, the board's top row) sit as framed
  * icon cells under the gold title; every other button is a row of the list on the left, its icon, its name and its
- * first line; the pane on the right reads out whatever is under the mouse (or the last button clicked), name and every
- * line, scrolled with the wheel, and with nothing chosen it shows the strip's first row "at a glance".
+ * first line; the pane on the right reads out whatever is under the mouse, holds it while the mouse moves into the pane
+ * (or shows the last button clicked once the mouse leaves the panel; {@link io.github.jcondedata.aliveworkplace.work.ReadingFocus}),
+ * name and every line, scrolled with the wheel there or with Shift over the list, and with nothing chosen it shows the
+ * strip's first row "at a glance".
  *
  * <p>Nothing here decides anything: a click on a row or a cell is the chest click the server's menu always took (a
  * left click, a right click, a shift-click), the server runs the button and sends the page back. The slots stay the
@@ -52,8 +54,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	private final List<Integer> rows = new ArrayList<>();
 	private int listScroll;
 	private boolean draggingBar;
-	/** The button last clicked, read out while nothing is under the mouse (-1: none), and its name then. */
-	private int pinned = -1;
+	/** What the pane reads out (36.5): hovered, held while the mouse goes into the pane, or the button last clicked. */
+	private final io.github.jcondedata.aliveworkplace.work.ReadingFocus reading = new io.github.jcondedata.aliveworkplace.work.ReadingFocus();
+	/** The pinned button's name when it was clicked (another name there: the button changed). */
 	private String pinnedName = "";
 	private int detailScroll;
 	/** The button the pane read out last frame (its scroll starts again for another). */
@@ -127,9 +130,11 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		paneW = left + panelW - 8 - paneX;
 		paneH = listH;
 		listScroll = Math.max(0, Math.min(listScroll, maxListScroll()));
+		int pinned = reading.pinned();
 		if (pinned >= 0 && (!shown(icon(pinned)) || !icon(pinned).getHoverName().getString().equals(pinnedName))) {
-			pinned = -1; // another page, or the button changed: nothing to read out
+			reading.unpin(); // another page, or the button changed: nothing to read out
 		}
+		reading.keepOnly(slot -> shown(icon(slot)));
 	}
 
 	private ItemStack icon(int slot) {
@@ -180,19 +185,20 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		TableStyle.panel(g, left, top, panelW, panelH);
 		TableStyle.header(g, font, title, subtitle(), left, top, panelW);
 		int hovered = slotAt(mouseX, mouseY);
+		int pinned = reading.pinned();
 		for (int[] cell : cells) {
 			int slot = cell[0];
 			TableStyle.cell(g, cell[1], cell[2], slot == pinned, slot == hovered);
 			drawIcon(g, icon(slot), cell[1] + 1, cell[2] + 1);
 		}
 		renderList(g, mouseX, mouseY, hovered);
-		int focus = hovered >= 0 ? hovered : pinned;
+		int focus = reading.focus(hovered, overReading(mouseX, mouseY));
 		if (focus != lastShown) {
 			detailScroll = 0;
 			lastShown = focus;
 		}
 		if (focus >= 0) {
-			renderDetail(g, focus, focus == pinned && hovered < 0, mouseX, mouseY);
+			renderDetail(g, focus, mouseX, mouseY);
 		} else {
 			renderOverview(g);
 		}
@@ -216,6 +222,7 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	}
 
 	private void renderList(GuiGraphics g, int mouseX, int mouseY, int hovered) {
+		int pinned = reading.pinned();
 		TableStyle.listBackground(g, listX, listY, listW, listH);
 		if (rows.isEmpty()) {
 			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.choice.empty"), listX + 6, listY + 6, listW - 12, TableStyle.LOADING);
@@ -260,17 +267,21 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		}
 	}
 
-	/** The pane on the right reading out button {@code slot}: its icon and name, a rule, then every line of it. */
-	private void renderDetail(GuiGraphics g, int slot, boolean scrollable, int mouseX, int mouseY) {
+	/**
+	 * The pane on the right reading out button {@code slot}: its icon and name, a rule, then every line of it, scrolled
+	 * by the wheel (over the pane, or over the list with Shift), and an arrow at its foot while there's more below.
+	 */
+	private void renderDetail(GuiGraphics g, int slot, int mouseX, int mouseY) {
+		int pinned = reading.pinned();
 		ItemStack stack = icon(slot);
 		int x = paneX;
 		int y = paneY;
 		drawIcon(g, stack, x, y + 1);
 		int nameW = paneW - 22 - (slot == pinned ? 10 : 0);
-		List<FormattedCharSequence> name = font.split(stack.getHoverName(), nameW);
+		List<String> name = pack(stack.getHoverName().getString(), nameW);
 		int ny = y + (name.size() > 1 ? 0 : 5);
 		for (int i = 0; i < Math.min(2, name.size()); i++) {
-			g.drawString(font, name.get(i), x + 20, ny + i * LINE, TableStyle.NAME, false);
+			g.drawString(font, Component.literal(name.get(i)).withStyle(stack.getHoverName().getStyle()), x + 20, ny + i * LINE, TableStyle.NAME, false);
 		}
 		closeX = -1;
 		if (slot == pinned) {
@@ -283,6 +294,12 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		TableStyle.rule(g, x, y, paneW);
 		y += 4;
 		List<FormattedCharSequence> lines = new ArrayList<>();
+		if (name.size() > 2) {
+			// A long name (a chronicle entry, 36.5): what doesn't fit beside the icon starts the reading.
+			for (String part : pack(String.join(" ", name.subList(2, name.size())), paneW - 6)) {
+				lines.add(Component.literal(part).withStyle(stack.getHoverName().getStyle()).getVisualOrderText());
+			}
+		}
 		for (Component line : lore(stack)) {
 			List<FormattedCharSequence> parts = font.split(line, paneW - 6);
 			if (parts.isEmpty()) {
@@ -294,16 +311,6 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		int bodyH = paneY + paneH - y;
 		int content = lines.size() * LINE;
 		detailMax = Math.max(0, content - bodyH);
-		if (!scrollable && detailMax > 0) {
-			// Read out from under the mouse: as much as fits, and how many lines a click would let the wheel show.
-			int fit = Math.max(0, bodyH / LINE - 1);
-			for (int i = 0; i < fit; i++) {
-				g.drawString(font, lines.get(i), x, y + i * LINE, TableStyle.BODY, false);
-			}
-			g.drawString(font, font.plainSubstrByWidth(Component.translatable("screen.aliveworkplace.choice.more", lines.size() - fit).getString(), paneW),
-				x, y + fit * LINE, TableStyle.FAINT, false);
-			return;
-		}
 		detailScroll = Math.max(0, Math.min(detailScroll, detailMax));
 		g.enableScissor(x, y, x + paneW, y + bodyH);
 		for (int i = 0; i < lines.size(); i++) {
@@ -315,6 +322,55 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		}
 		g.disableScissor();
 		TableStyle.thinScrollbar(g, x + paneW - 3, y, bodyH, detailScroll, detailMax, content);
+		if (detailScroll < detailMax) {
+			moreBelow(g, x + paneW - 14, paneY + paneH - 5);
+		}
+	}
+
+	/** {@code text} in lines no wider than {@code width}: whole words where they fit, a word too long for a line cut. */
+	private List<String> pack(String text, int width) {
+		List<String> out = new ArrayList<>();
+		String now = "";
+		for (String word : text.split(" ")) {
+			String tried = now.isEmpty() ? word : now + " " + word;
+			if (font.width(tried) <= width) {
+				now = tried;
+				continue;
+			}
+			if (!now.isEmpty()) {
+				out.add(now);
+			}
+			now = word;
+			while (font.width(now) > width && width > 0) {
+				String head = font.plainSubstrByWidth(now, width);
+				if (head.isEmpty()) {
+					break;
+				}
+				out.add(head);
+				now = now.substring(head.length());
+			}
+		}
+		if (!now.isEmpty()) {
+			out.add(now);
+		}
+		return out;
+	}
+
+	/** The "more below" arrow: a small downward triangle, 7 wide and 4 tall, its tip at {@code tipY}. */
+	private static void moreBelow(GuiGraphics g, int left, int tipY) {
+		for (int row = 0; row < 4; row++) {
+			g.fill(left + row, tipY - 3 + row, left + 7 - row, tipY - 2 + row, TableStyle.NAME);
+		}
+	}
+
+	/** Whether the mouse is over the panel (the strip, the list, the pane and the gaps): where a hovered row stays read out. */
+	private boolean overReading(double mx, double my) {
+		return mx >= left && mx < left + panelW && my >= top && my < top + panelH;
+	}
+
+	/** Whether the mouse is over the reading pane. */
+	private boolean overPane(double mx, double my) {
+		return mx >= paneX && mx < paneX + paneW && my >= paneY && my < paneY + paneH;
 	}
 
 	/** With nothing chosen: the strip's first row read out, name and first line, under "At a glance". */
@@ -437,8 +493,8 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			draggingBar = true;
 			return true;
 		}
-		if (button == 0 && pinned >= 0 && closeX >= 0 && mx >= closeX - 2 && mx < closeX + 8 && my >= closeY - 2 && my < closeY + 10) {
-			pinned = -1;
+		if (button == 0 && reading.pinned() >= 0 && closeX >= 0 && mx >= closeX - 2 && mx < closeX + 8 && my >= closeY - 2 && my < closeY + 10) {
+			reading.unpin();
 			return true;
 		}
 		int slot = slotAt(mx, my);
@@ -453,7 +509,7 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	/** Clicks button {@code slot} as the chest would have (also used by the screenshot harness), and reads it out. */
 	public void press(int slot, int button, boolean shift) {
 		slotClicked(menu.slots.get(slot), slot, button, shift ? ClickType.QUICK_MOVE : ClickType.PICKUP);
-		pinned = slot;
+		reading.pin(slot);
 		pinnedName = icon(slot).getHoverName().getString();
 	}
 
@@ -479,12 +535,14 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	@Override
 	public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
 		layout();
-		if (overList(mx, my)) {
-			listScroll = Math.max(0, Math.min(maxListScroll(), listScroll - (int) Math.round(scrollY * TableStyle.ROW / 2.0)));
+		boolean list = overList(mx, my);
+		boolean pane = overPane(mx, my);
+		if (io.github.jcondedata.aliveworkplace.work.ReadingFocus.wheelReads(list, pane, hasShiftDown())) {
+			scrollReading(scrollY);
 			return true;
 		}
-		if (mx >= paneX && mx < paneX + paneW && my >= paneY && my < paneY + paneH) {
-			detailScroll = Math.max(0, Math.min(detailMax, detailScroll - (int) Math.round(scrollY * LINE * 2)));
+		if (list) {
+			listScroll = Math.max(0, Math.min(maxListScroll(), listScroll - (int) Math.round(scrollY * TableStyle.ROW / 2.0)));
 			return true;
 		}
 		return false;
@@ -492,8 +550,8 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	@Override
 	public boolean keyPressed(int key, int scanCode, int modifiers) {
-		if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && pinned >= 0) {
-			pinned = -1; // as the Table's full materials list: Esc puts it away first
+		if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && reading.pinned() >= 0) {
+			reading.unpin(); // as the Table's full materials list: Esc puts it away first
 			return true;
 		}
 		return super.keyPressed(key, scanCode, modifiers);
@@ -506,7 +564,23 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	/** The button the pane reads out with nothing under the mouse (-1: none; for the screenshot harness and tests). */
 	public int pinned() {
-		return pinned;
+		return reading.pinned();
+	}
+
+	/** The wheel turned over the reading ({@code scrollY} notches, up positive), as over the pane (also the screenshot harness). */
+	public void scrollReading(double scrollY) {
+		detailScroll = Math.max(0, Math.min(detailMax, detailScroll - (int) Math.round(scrollY * LINE * 2)));
+	}
+
+	/** How far the reading is scrolled, and how far it can go (for the screenshot harness). */
+	public int[] readingScroll() {
+		return new int[]{detailScroll, detailMax};
+	}
+
+	/** The button the pane reads out for the mouse at x, y, as a frame would (for the screenshot harness). */
+	public int readingAt(int mouseX, int mouseY) {
+		layout();
+		return reading.focus(slotAt(mouseX, mouseY), overReading(mouseX, mouseY));
 	}
 
 	/** Where button {@code slot}'s middle is on the screen, in GUI pixels (the screenshot harness points at it); a list row is scrolled into view. */
@@ -528,6 +602,12 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		}
 		// Not a button shown: the footer, where nothing is read out.
 		return new int[]{left + panelW / 2, top + panelH - 6};
+	}
+
+	/** The middle of the reading pane, in GUI pixels (the screenshot harness moves the mouse there). */
+	public int[] paneCentre() {
+		layout();
+		return new int[]{paneX + paneW / 2, paneY + paneH / 2};
 	}
 
 	/** Buttons in the list, in order (for the screenshot harness). */

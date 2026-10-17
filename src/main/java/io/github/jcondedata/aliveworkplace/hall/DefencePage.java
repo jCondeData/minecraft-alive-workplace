@@ -67,6 +67,8 @@ public final class DefencePage {
 	public static final int AT_PEACE = 8;
 	/** The last three attacks, newest first. */
 	public static final int[] HISTORY = {46, 48, 50};
+	/** The raid dens the village knows (38.2), nearest first: "Raid den, tier 3, Fire, active". */
+	public static final int[] DENS = {28, 29, 30, 31, 32, 33, 34};
 
 	/** Whether the hall's guards icon opens the page. */
 	public static boolean open() {
@@ -142,6 +144,31 @@ public final class DefencePage {
 		if (past.isEmpty()) {
 			menu.button(HISTORY[1], VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.defence.no_attacks"), ChatFormatting.GRAY,
 				VillageHallScreen.line("screen.aliveworkplace.defence.no_attacks_hint", ChatFormatting.DARK_GRAY)), null);
+		}
+		if (io.github.jcondedata.aliveworkplace.guard.RaidDens.live()) {
+			dens(menu, level, hall);
+		}
+	}
+
+	/** The dens row (38.2): each known den with its tier, type and state, where it is and the day it was found. */
+	private static void dens(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		List<io.github.jcondedata.aliveworkplace.guard.RaidDens.Den> dens = io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, hall);
+		if (dens.isEmpty()) {
+			menu.button(DENS[3], VillageHallScreen.icon(Items.LIGHT_GRAY_STAINED_GLASS_PANE, Component.translatable("screen.aliveworkplace.defence.no_raid_den"),
+				ChatFormatting.GRAY, VillageHallScreen.line("screen.aliveworkplace.defence.no_raid_den_hint", ChatFormatting.DARK_GRAY)), null);
+			return;
+		}
+		Item crystal = BuiltInRegistries.ITEM.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN).orElse(Items.AMETHYST_SHARD);
+		for (int i = 0; i < Math.min(DENS.length, dens.size()); i++) {
+			io.github.jcondedata.aliveworkplace.guard.RaidDens.Den den = dens.get(i);
+			ItemStack icon = VillageHallScreen.icon(crystal, io.github.jcondedata.aliveworkplace.guard.RaidDens.describe(den).copy(),
+				den.active() ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GRAY,
+				VillageHallScreen.line(VillageHallScreen.where(hall, den.pos()), ChatFormatting.WHITE),
+				VillageHallScreen.line(Component.translatable(den.active() ? "screen.aliveworkplace.defence.raid_den_active_hint"
+					: "screen.aliveworkplace.defence.raid_den_resting_hint"), ChatFormatting.GRAY),
+				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.raid_den_found", den.day()), ChatFormatting.DARK_GRAY));
+			icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, den.active());
+			menu.button(DENS[i], icon, null);
 		}
 	}
 

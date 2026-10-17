@@ -11,6 +11,8 @@ import io.github.jcondedata.aliveworkplace.guard.WarParties;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageMoments;
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
@@ -287,6 +289,63 @@ public class WarPartyGameTests implements FabricGameTest {
 		helper.assertTrue(out == WarParties.WAVE && band.size() == WarParties.WAVE, "turned out " + out + ", band " + band.size());
 		helper.assertTrue(band.stream().allMatch(m -> m.getTarget() == guard), "not after the war party");
 		helper.assertTrue(Lairs.turnOut(level, lair, WarParties.WAVE, List.of(guard)) == 0, "more than six at once");
+		helper.succeed();
+	}
+
+	private static boolean campBroken(ServerPlayer player) {
+		var advancement = player.getServer().getAdvancements().get(AliveWorkplace.id(VillageMoments.PREFIX + VillageMoments.CAMP_BROKEN));
+		return advancement != null && player.getAdvancements().getOrStartProgress(advancement).isDone();
+	}
+
+	private static ServerPlayer leading(GameTestHelper helper, BlockPos at, Villager guard) {
+		ServerPlayer player = player(helper);
+		player.moveTo(helper.absolutePos(at).getCenter());
+		ItemStack banner = new ItemStack(ModItems.RALLY_BANNER);
+		banner.set(io.github.jcondedata.aliveworkplace.registry.ModComponents.RALLY, new RallyBannerItem.Rally(List.of(guard.getUUID()), true));
+		player.getInventory().add(banner);
+		return player;
+	}
+
+	/**
+	 * 36.3: two players, each leading a guard of the war party at a lair; the first strikes the captain down. "Take the
+	 * fight to them" completes for both (aliveworkplace:village/camp_broken), and breaking the lair is the only way.
+	 */
+	//$ gametest_batch AREA '"warPartyCampBroken"'
+	@GameTest(template = AREA, batch = "warPartyCampBroken")
+	public void aLairBrokenWithTheWarPartyCompletesTheQuestForEveryPlayerInIt(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		Expansions.openForTests = true;
+		ServerLevel level = helper.getLevel();
+		Lairs.Lair lair = lair(helper, hall);
+		Villager first = guard(helper, new BlockPos(11, 2, 12));
+		Villager second = guard(helper, new BlockPos(12, 2, 11));
+		ServerPlayer striker = leading(helper, new BlockPos(11, 2, 11), first);
+		ServerPlayer friend = leading(helper, new BlockPos(10, 2, 12), second);
+		Escorts.scan(level.getServer());
+		helper.assertTrue(Escorts.isEscorting(first) && Escorts.isEscorting(second), "the war party isn't marching");
+		helper.assertFalse(campBroken(striker) || campBroken(friend), "granted before the camp broke");
+		Mob captain = (Mob) level.getEntity(lair.captain());
+		captain.hurt(level.damageSources().playerAttack(striker), 1000f);
+		helper.assertTrue(Lairs.near(level, hall).isEmpty(), "the lair stands");
+		helper.assertTrue(campBroken(striker), "the player who struck the last blow didn't get camp_broken");
+		helper.assertTrue(campBroken(friend), "the second player in the war party didn't get camp_broken");
+		helper.succeed();
+	}
+
+	/** 36.3: a lair broken by a player alone, with no war party there and no guard kills, completes nothing. */
+	//$ gametest_batch AREA '"warPartyCampAlone"'
+	@GameTest(template = AREA, batch = "warPartyCampAlone")
+	public void aLairBrokenWithNoWarPartyGrantsNothing(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		Expansions.openForTests = true;
+		ServerLevel level = helper.getLevel();
+		Lairs.Lair lair = lair(helper, hall);
+		ServerPlayer player = player(helper);
+		player.moveTo(helper.absolutePos(new BlockPos(11, 2, 11)).getCenter());
+		Mob captain = (Mob) level.getEntity(lair.captain());
+		captain.hurt(level.damageSources().playerAttack(player), 1000f);
+		helper.assertTrue(Lairs.near(level, hall).isEmpty(), "the lair stands");
+		helper.assertFalse(campBroken(player), "camp_broken granted with no war party");
 		helper.succeed();
 	}
 }

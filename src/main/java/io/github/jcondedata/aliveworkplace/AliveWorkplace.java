@@ -64,6 +64,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.guard.GuardPartners.init();
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
 		io.github.jcondedata.aliveworkplace.guard.WarParties.init(); // marching on the lair (32.13)
+		io.github.jcondedata.aliveworkplace.guard.RaidDens.init(); // the raid dens a village knows (38.2)
 		io.github.jcondedata.aliveworkplace.hall.Festivals.init();
 		io.github.jcondedata.aliveworkplace.hall.Banquets.init();
 		io.github.jcondedata.aliveworkplace.hall.Curfew.init();

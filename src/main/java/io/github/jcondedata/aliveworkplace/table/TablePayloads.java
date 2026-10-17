@@ -132,7 +132,12 @@ public final class TablePayloads {
 	 * {@code scale}×{@code scale}×{@code scale} blocks (1 for most builds; bigger builds are drawn coarser so the
 	 * preview stays within {@link TableServer#PREVIEW_CAP} cells). Blocks hidden inside the build are left out.
 	 */
-	public record Preview(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int scale, List<Integer> palette, int[] blocks)
+	/**
+	 * A build's 3D preview: its size above the ground, how many blocks of it lie under the ground ({@code below}, a
+	 * basement's depth, 36.1; 0 for most builds), the cell size and the cells ({@code x, y, z, palette index}, in cells;
+	 * a basement's cells have y below 0).
+	 */
+	public record Preview(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int below, int scale, List<Integer> palette, int[] blocks)
 		implements CustomPacketPayload {
 		public static final Type<Preview> TYPE = new Type<>(AliveWorkplace.id("table_preview"));
 		private static final StreamCodec<? super RegistryFriendlyByteBuf, List<Integer>> PALETTE = ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list());
@@ -141,11 +146,12 @@ public final class TablePayloads {
 			buf.writeVarInt(p.sizeX());
 			buf.writeVarInt(p.sizeY());
 			buf.writeVarInt(p.sizeZ());
+			buf.writeVarInt(p.below());
 			buf.writeVarInt(p.scale());
 			PALETTE.encode(buf, p.palette());
 			buf.writeVarIntArray(p.blocks());
 		}, buf -> new Preview(ResourceLocation.STREAM_CODEC.decode(buf), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
-			PALETTE.decode(buf), buf.readVarIntArray()));
+			buf.readVarInt(), PALETTE.decode(buf), buf.readVarIntArray()));
 
 		/** Cells sent. */
 		public int count() {

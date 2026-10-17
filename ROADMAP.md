@@ -4882,7 +4882,7 @@ depend on the port's internals. As with every mod: block and item ids, tags, rec
 `create:depot`, `create:track_station`, `create:schematic`) are to be confirmed against the port in 39.1. Depends on:
 the owner's port jar; M33's caravans (39.7).
 
-- [ ] **39.1** (blocked: waits on the owner's Create port jar, owner 2026-10-17) **Get the port into the tests and
+- [ ] **39.1** (unblocked 2026-10-17: the owner's port is `libs/create-fabric-6.0.10.0+mc1.21.1.jar`, mod id `create`, MIT, bundles its Porting Lib and other dependencies; checked in it: millstone, mechanical_press, mechanical_mixer, crushing_wheel, water_wheel, windmill_bearing, shaft, cogwheel) **Get the port into the tests and
   confirm its ids.** Put the owner's jar into the compat test runtime (a local file dependency in `tests.compat_mods`'
   place, `modCompileOnly` only if a `compat/create/` class turns out to be needed) and the harness (`-Pcreate=true`);
   a compat GameTest lists every block, item and recipe type this milestone uses and fails naming any that's missing;
@@ -4891,14 +4891,14 @@ the owner's port jar; M33's caravans (39.7).
   `villageTrains`) and saved fields with defaults, the fallbacks. The flag: `Expansions.M39` with `flag()`,
   `MILESTONES` and `milestone()`. Done when: `runCompatGameTest` loads the port, the id test passes, the note is on
   `main` and the package is sent.
-- [ ] **39.2** (blocked: waits on the owner's Create port jar, owner 2026-10-17) **The Mechanic.** A new job whose job
+- [ ] **39.2** **The Mechanic.** A new job whose job
   block is a Create block chosen by id in the design note (its POI registered through `Platform` only when the block
   exists, so without Create there's no Mechanic): they walk the village's machines, refill and empty them (through
   `ItemStores`), put back a broken shaft, cogwheel or belt from the build's blueprint (as `Upkeep` does), and lead the
   crew when builders build a contraption (39.5). Outfit and job icon with the pixel-art skill. Done when: compat
   GameTests: a jobless villager takes the job block; a broken shaft in a finished build is replaced; without Create the
   job isn't registered (a GameTest); scene `mechanic`.
-- [ ] **39.3** (blocked: waits on the owner's Create port jar, owner 2026-10-17) **Villagers work Create machines.**
+- [ ] **39.3** **Villagers work Create machines.**
   `data/aliveworkplace/machine_work/<id>.json`: the machine's block id, where its input goes and its output comes out
   (the machine, its basin or a depot), which job works it, and what the village wants made, e.g. the Miller's
   millstone (wheat to flour), the Smith's mechanical press (ingots to sheets), the Chef's mixer and basin (dough), the
@@ -4907,27 +4907,27 @@ the owner's port jar; M33's caravans (39.7).
   takes the input from the store, feeds the machine, collects the output to the store, and works only while the
   machine turns. Done when: compat GameTests per machine (input fed, output in the store, nothing fed while it's
   stopped, a full store pauses it, a save and reload mid-job finishes it); scene `create_mill`.
-- [ ] **39.4** (blocked: waits on the owner's Create port jar, owner 2026-10-17) **Create-powered builds.** Three new
+- [ ] **39.4** **Create-powered builds.** Three new
   blueprints, listed at the table only when Create is installed: the **Watermill** (a water wheel turning a millstone),
   the **Windmill** (a windmill bearing with sails; find a way to start it that needs no Create classes, or the builder
   leaves a sign telling the player to start it) and the **Workshop** (a belt line between a press and a depot, driven
   by a water wheel). Each is a workplace for 39.3's jobs. Done when: the architect skill reviews their renders; compat
   GameTests: each builds with nothing skipped and its machine turns once built (its speed read from block entity data
   by name); hidden without Create (a GameTest); scene `create_builds`.
-- [ ] **39.5** (blocked: waits on the owner's Create port jar, owner 2026-10-17) **Builders build contraptions.** A
+- [ ] **39.5** **Builders build contraptions.** A
   blueprint holding kinetic blocks is built in an order that keeps it whole (supports, then shafts and gearboxes, then
   cogwheels, then belts), with each block's axis and facing kept and the block-entity data Create needs (belt length
   and part) copied; the builder checks it turns when done and lists what doesn't. Done when: compat GameTests: a
   blueprint of a water wheel, shafts, two cogwheels and a belt is built and turns; a cogwheel broken mid-build is
   rebuilt; a save and reload mid-build finishes it; scene `create_contraption`.
-- [ ] **39.6** (blocked: waits on the owner's Create port jar, owner 2026-10-17) **Create schematics at the Blueprint
+- [ ] **39.6** **Create schematics at the Blueprint
   Table.** A Create schematic is a structure `.nbt`, which `BlueprintImporter` already reads: the table also lists the
   files players uploaded to the server's Create schematics folder (`schematics/uploaded/<player>/`), and a written
   `create:schematic` item right-clicked on the table imports its file (its file name read from the item's data by
   name). Unknown blocks are counted and named as for other imports. Done when: compat GameTests: a schematic file in
   the uploaded folder appears at the table and imports; a written schematic item imports its file; a missing file
   says so; scene `create_schematic`.
-- [ ] **39.7** (blocked: waits on the owner's Create port jar, owner 2026-10-17) **Trains link villages (later item:
+- [ ] **39.7** **Trains link villages (later item:
   after 39.2 to 39.6).** A Train Station build (`create:track_station`), track laid by builders along a caravan road
   (`CaravanRoads`), and caravans (M33) that ride a train between two villages with stations instead of walking.
   Done when: compat GameTests: track is laid along a road between two stations; a caravan between them goes by train

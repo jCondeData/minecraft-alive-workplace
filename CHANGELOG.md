@@ -86,6 +86,8 @@ asks for the steps, `latest.log` and any crash report).
   were: homes already built keep their villagers, and an upgrade builds the new look onto them.
 
 ### Fixed
+- **The Village Hall's food count matches growth.** "Food in store" now counts only meals, the same number a baby
+  waits for, so rotten flesh, spider eyes and golden food in the store no longer make it look full (B153).
 - **A ram no longer stalls behind a Gatehouse's portcullis.** After breaking the middle bars, a ravager sometimes stood
   just out of reach of the fence gate behind them and never struck it, so the raiders waited outside all night.
 - **Chairs face their tables, and every upstairs can be reached.** Stair chairs in the Inn, Library, Terrace,

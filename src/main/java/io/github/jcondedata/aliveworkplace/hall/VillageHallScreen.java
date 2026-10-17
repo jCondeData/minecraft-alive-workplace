@@ -43,7 +43,7 @@ public final class VillageHallScreen {
 	public static final int NAME = 0;
 	static final int PEOPLE = 1;
 	static final int BEDS = 2;
-	static final int FOOD = 3;
+	public static final int FOOD = 3;
 	public static final int GUARDS = 4;
 	static final int WELLBEING = 5;
 	static final int REQUESTS = 6;

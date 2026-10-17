@@ -138,6 +138,38 @@ public class VillageHallGameTests implements net.fabricmc.fabric.api.gametest.v1
 		});
 	}
 
+	/**
+	 * B153: the hall's Food in store counts the meals growth counts, not everything edible: rotten flesh (and golden
+	 * food) in the store never show, so the hall can't read 16 while no baby comes.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"theHallCountsOnlyMeals"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "theHallCountsOnlyMeals")
+	public void theHallCountsOnlyMeals(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = radius);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		helper.setBlock(new BlockPos(17, 2, 17), ModBlocks.STOREHOUSE);
+		helper.setBlock(new BlockPos(17, 2, 19), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(17, 2, 19));
+		chest.setItem(0, new ItemStack(Items.ROTTEN_FLESH, 16));
+		chest.setItem(1, new ItemStack(Items.BREAD, 3));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(5, () -> {
+			BlockPos hall = helper.absolutePos(HALL);
+			long meals = VillageGrowth.meals(level, VillageNeeds.store(level, hall));
+			helper.assertTrue(meals == 3, "growth's meals: " + meals);
+			helper.assertTrue(VillageHalls.food(level, hall) == 3, "hall food: " + VillageHalls.food(level, hall));
+			helper.assertTrue(VillageHalls.census(level, hall).food() == 3, "census food: " + VillageHalls.census(level, hall).food());
+			ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+			String label = menu.icon(VillageHallScreen.FOOD).getHoverName().getString();
+			helper.assertTrue(label.equals("Food in store: 3"), "the hall reads: " + label);
+			helper.succeed();
+		});
+	}
+
 	/** A hungry village with no beds, guards or light works 20% slower; a village without a hall at the usual pace. */
 	//$ gametest_ticks_batch AREA '100' '"aHungryVillageWorksSlower"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "aHungryVillageWorksSlower")

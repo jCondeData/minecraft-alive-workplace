@@ -184,7 +184,7 @@ CHAPTERS = [
                       "",
                       "A village only has babies while the store holds 16 meals or more, and hungry villagers are unhappy and work slower.",
                       "",
-                      done_check("the bread icon on the hall says Food in store: 16 or more (rotten flesh and the like are counted there too, so keep them out)")],
+                      done_check("the bread icon on the hall says Food in store: 16 or more")],
              "tasks": [("check", "The hall shows 16 or more food in store")], "rewards": [em(3)]},
             {"key": "bed", "title": "A bed for a newcomer", "deps": ["food"], "final": True, "icon": "minecraft:red_bed",
              "desc": ["Welcome your village's first baby.",

@@ -726,10 +726,10 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   it has standing or under construction on first use. Switch `blueprintUnlocks` (default on; off: everything unlocked
   as before). Done when: GameTests for the starting set, buying, an old save, a refused locked Get Blueprint, a ???
   sending nothing, the switch off and save and reload; the guide, the wiki and the CHANGELOG say so.
-- [x] **26.11** (review: pending 2026-10-17) **Give the look-alike workplaces their own designs** (unblocked by the owner 2026-10-16 evening: "make new completely different exteriors for all different kinds of workshops and houses, nothing should look identical") (owner's playtest,
+- [x] **26.11** (approved 2026-10-17) **Give the look-alike workplaces their own designs** (unblocked by the owner 2026-10-16 evening: "make new completely different exteriors for all different kinds of workshops and houses, nothing should look identical") (owner's playtest,
   2026-10-16: the Guard House, Kitchen, Clinic, Builder's Workshop, Carpenter's Workshop and Ball Workshop all look the
   same). Deferred by the owner: not now.
-- [x] **26.12** (approved auto 2026-10-17) **Storehouse and Village Hall screens in the Blueprint Table's style** (owner, 2026-10-16: "the storehouse UI
+- [x] **26.12** (approved 2026-10-17) **Storehouse and Village Hall screens in the Blueprint Table's style** (owner, 2026-10-16: "the storehouse UI
   and village hall UI can use alot of work, i like the look of the blueprint table"). Done when: both screens use the
   Blueprint Table's layout and drawing (panel, list, detail pane, the same sprites and fonts), every number and
   action they show today is still there, screenshots of both in a showcase scene, GameTests for any changed packets.
@@ -738,11 +738,11 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   fisherman, plus 1 more per 10 villagers (a config switch sets it); a jobless villager skips a barrel when the cap is
   reached and looks for another workstation; an existing fisherman over the cap keeps his job (no save breaks).
   GameTests: cap reached, cap grows with the village, config off, save and reload.
-- [x] **26.14** (review: pending 2026-10-17) **More decoration builds** (owner, 2026-10-16: "a wider variety of builds that arent houses, but
+- [x] **26.14** (approved 2026-10-17) **More decoration builds** (owner, 2026-10-16: "a wider variety of builds that arent houses, but
   decorations similar to fountain or lamp"). Done when: at least 12 new small decorations (well, statue, gazebo,
   market stall, flower planters, signpost, bench nook, lamp variants, pond, archway, hay cart, notice board...), each
   original, checked in a render against STYLE.md, in the Blueprint Table library and the unlocks list.
-- [x] **26.15** (review: pending 2026-10-17) **Basements: a Level 4 for buildings, and cellars where they fit** (owner, 2026-10-16: "buildings should
+- [x] **26.15** (approved 2026-10-17) **Basements: a Level 4 for buildings, and cellars where they fit** (owner, 2026-10-16: "buildings should
   also get basements in a new Level 4 version, but some buildings should get basements in general at any level, like a
   butcher maybe has a freezer"). Done when: every upgradable home and workshop gets a Level 4 upgrade that adds a
   basement under it (stairs or ladder down, lit, furnished for the job), and the jobs that suit one (butcher's

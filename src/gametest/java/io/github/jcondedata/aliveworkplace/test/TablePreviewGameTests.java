@@ -242,4 +242,69 @@ public class TablePreviewGameTests implements FabricGameTest {
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
 		helper.succeed();
 	}
+
+	/**
+	 * 36.1: Starter Cottage IV's preview carries its cellar: cells below y = 0, the basement's depth in the payload, and
+	 * a fitted height (above the ground and below it) that counts the cellar.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aBasementShowsInThePreviewBelowTheGround(GameTestHelper helper) {
+		MinecraftServer server = helper.getLevel().getServer();
+		ResourceLocation id = StarterBlueprints.STARTER_COTTAGE_4.id();
+		Blueprint bp = BlueprintLibrary.get(server, id).orElseThrow();
+		TablePayloads.Preview preview = TableServer.preview(server, id).orElseThrow();
+		int depth = StarterBlueprints.basement(id);
+		helper.assertTrue(depth > 0, "Starter Cottage IV has no basement listed");
+		helper.assertTrue(cells(preview).keySet().stream().anyMatch(p -> p.getY() < 0), "no cell below y = 0");
+		helper.assertTrue(preview.below() == depth, "the payload's depth is " + preview.below() + ", the basement is " + depth);
+		helper.assertTrue(preview.sizeY() + preview.below() == bp.size().getY() + depth,
+			"fitted height " + (preview.sizeY() + preview.below()) + " doesn't count the cellar (" + bp.size().getY() + " + " + depth + ")");
+		int bytes = packetBytes(server, preview);
+		helper.assertTrue(bytes > 0 && bytes <= MAX_PACKET_BYTES, "the packet: " + bytes + " bytes");
+		helper.succeed();
+	}
+
+	/**
+	 * 36.1: at scale 2 no cellar block shares a cell with a ground-floor block (cells use floor division): a block at
+	 * y = -1 and one at y = 0 above it are two cells; and every cell of Starter Cottage IV at scale 2 shows the top block
+	 * of its own 2-block cube.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void atScaleTwoTheCellarNeverFoldsIntoTheGroundFloor(GameTestHelper helper) {
+		List<Blueprint.Entry> blocks = List.of(
+			new Blueprint.Entry(new BlockPos(0, -1, 0), Blocks.STONE.defaultBlockState(), null),
+			new Blueprint.Entry(new BlockPos(0, 0, 0), Blocks.OAK_PLANKS.defaultBlockState(), null));
+		Blueprint tiny = new Blueprint(AliveWorkplace.id("test/preview_cellar"), new Vec3i(1, 1, 1), blocks);
+		TablePayloads.Preview small = TableServer.buildPreview(tiny.id(), tiny, 2);
+		Map<BlockPos, BlockState> smallCells = cells(small);
+		helper.assertTrue(small.scale() == 2 && small.below() == 1, "scale " + small.scale() + ", below " + small.below());
+		helper.assertTrue(Blocks.STONE.defaultBlockState().equals(smallCells.get(new BlockPos(0, -1, 0)))
+			&& Blocks.OAK_PLANKS.defaultBlockState().equals(smallCells.get(new BlockPos(0, 0, 0))), "the cellar folded into the ground floor: " + smallCells);
+
+		MinecraftServer server = helper.getLevel().getServer();
+		Blueprint bp = BlueprintLibrary.get(server, StarterBlueprints.STARTER_COTTAGE_4.id()).orElseThrow();
+		TablePayloads.Preview coarse = TableServer.buildPreview(bp.id(), bp, 2);
+		Map<BlockPos, Blueprint.Entry> tops = new HashMap<>();
+		for (Blueprint.Entry e : bp.blocks()) {
+			if (TableServer.previewShows(e.state())) {
+				BlockPos cell = new BlockPos(Math.floorDiv(e.pos().getX(), 2), Math.floorDiv(e.pos().getY(), 2), Math.floorDiv(e.pos().getZ(), 2));
+				tops.merge(cell, e, (a, b) -> b.pos().getY() > a.pos().getY() ? b : a);
+			}
+		}
+		List<String> problems = new ArrayList<>();
+		for (Map.Entry<BlockPos, BlockState> c : cells(coarse).entrySet()) {
+			Blueprint.Entry top = tops.get(c.getKey());
+			if (top == null || !top.state().equals(c.getValue())) {
+				problems.add(c.getKey().toShortString() + " shows " + c.getValue() + ", its cube's top is " + (top == null ? "nothing" : top.state() + " at y " + top.pos().getY()));
+			}
+			if (c.getKey().getY() >= 0 && top != null && top.pos().getY() < 0) {
+				problems.add(c.getKey().toShortString() + " is a ground-floor cell drawn from the cellar");
+			}
+		}
+		helper.assertTrue(cells(coarse).keySet().stream().anyMatch(p -> p.getY() < 0), "no cellar cell at scale 2");
+		helper.assertTrue(problems.isEmpty(), problems.size() + " wrong cells: " + String.join("; ", problems.subList(0, Math.min(4, problems.size()))));
+		helper.succeed();
+	}
 }

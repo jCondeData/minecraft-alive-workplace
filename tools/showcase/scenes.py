@@ -85,6 +85,16 @@ SCENES = [
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
       [("01_preview_house", "A starter house"), ("03_preview_style", "Picked in Sandstone"),
        ("04_preview_large", "A large build, scaled to fit"), ("06_preview_imported", "An uploaded build")]),
+    # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
+    S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
+      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; the Storehouse board did the same", 45,
+      [("01_chronicle_hovered", "A long entry hovered"), ("02_chronicle_held", "Held with the mouse in the pane"),
+       ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_last_line", "The Storehouse board, scrolled")]),
+    # 36.1: a build with a basement in the table's 3D preview: the cellar under a faint ground plane, fitted whole
+    S("table_basement", "Builder", "Blueprint Table: basements in the preview",
+      "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
+      [("01_cottage_cellar", "Starter Cottage IV and its cellar"), ("02_cottage_turned", "Turned"),
+       ("03_storehouse_vault", "The Storehouse and its vault"), ("04_storehouse_turned", "Turned")]),
     S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
     S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,
@@ -900,6 +910,11 @@ SCENES = [
       "the hall's guards icon opened the Defense page: the bandit camp, its named chief, its strength and the last attacks", 45,
       [("01_defence_page", "The camp's chief, by name"), ("02_defence_strength", "The camp's strength"),
        ("03_defence_attacks", "The last attacks")]),
+    # Raid dens (ROADMAP 38.2, Cobblemon Raid Dens): the dens a village knows, on the Defense page
+    S("raid_dens", "Village Hall", "Raid dens: the village knows the dens around it",
+      "a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state", 45,
+      [("01_raid_den", "A raid den by the hall"), ("02_raid_den_page", "The Defense page: tier 3, Fire, active"),
+       ("03_raid_den_resting", "A beaten den, resting")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,

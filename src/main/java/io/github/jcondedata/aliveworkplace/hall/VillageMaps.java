@@ -49,7 +49,9 @@ public final class VillageMaps {
 		HALL(DyeColor.RED), HOMES(DyeColor.WHITE), LEARNING(DyeColor.BLUE), CARE(DyeColor.PINK), TRADE(DyeColor.YELLOW),
 		FARMS(DyeColor.LIME), DEFENCE(DyeColor.BLACK), WORKSHOPS(DyeColor.ORANGE), DECORATIONS(DyeColor.LIGHT_BLUE), OTHER(DyeColor.PURPLE),
 		/** A finished Wonder (35.8): a gold banner, named. Its parts aren't marked one by one. */
-		WONDER(DyeColor.YELLOW);
+		WONDER(DyeColor.YELLOW),
+		/** A raid den the village knows (38.2): a magenta banner, "Raid den, tier 3, Fire, active". */
+		RAID_DEN(DyeColor.MAGENTA);
 
 		public final DyeColor color;
 
@@ -282,6 +284,13 @@ public final class VillageMaps {
 		for (io.github.jcondedata.aliveworkplace.wonder.WonderSite w : io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level).in(hall)) {
 			// a finished Wonder of the village (35.8): its gold banner at its middle, with its name
 			io.github.jcondedata.aliveworkplace.wonder.WonderCelebration.mark(level, w, hall, half).ifPresent(out::add);
+		}
+		for (io.github.jcondedata.aliveworkplace.guard.RaidDens.Den den : io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, hall)) {
+			// the raid dens the village knows (38.2), those on the map's square
+			if (Math.abs(den.pos().getX() - hall.getX()) <= half - 1 && Math.abs(den.pos().getZ() - hall.getZ()) <= half - 1) {
+				out.add(new Mark(new BlockPos(den.pos().getX(), hall.getY(), den.pos().getZ()), Kind.RAID_DEN,
+					io.github.jcondedata.aliveworkplace.guard.RaidDens.describe(den)));
+			}
 		}
 		return out;
 	}

@@ -34,7 +34,8 @@ build it, block by block, as long as it stands within 48 blocks of the table (a 
 ## The library
 
 Right-click the table to browse every blueprint on the server: its size, exactly what it needs, and a small 3D
-picture of the build itself, so you can see it before you pick it.
+picture of the build itself, so you can see it before you pick it. A build with a basement shows its cellar too,
+under a faint green line where the ground will be, and its size says how many blocks it goes below ground.
 
 ![The selected build in 3D](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-1.jpg)
 

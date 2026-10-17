@@ -189,6 +189,24 @@ final class JobScenes {
 		((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(ashford)).setTreasury(2000);
 	}
 
+	/** A raid den crystal (38.2) with its states set by name, as Cobblemon Raid Dens saves them. */
+	static net.minecraft.world.level.block.state.BlockState denState(net.minecraft.world.level.block.Block block, String tier, String type, boolean active) {
+		net.minecraft.world.level.block.state.BlockState state = block.defaultBlockState();
+		state = denValue(state, "raid_tier", tier);
+		state = denValue(state, "raid_type", type);
+		return denValue(state, "is_active", Boolean.toString(active));
+	}
+
+	private static net.minecraft.world.level.block.state.BlockState denValue(net.minecraft.world.level.block.state.BlockState state, String name, String value) {
+		net.minecraft.world.level.block.state.properties.Property<?> property = state.getBlock().getStateDefinition().getProperty(name);
+		return property == null ? state : denSet(state, property, value);
+	}
+
+	private static <T extends Comparable<T>> net.minecraft.world.level.block.state.BlockState denSet(net.minecraft.world.level.block.state.BlockState state,
+			net.minecraft.world.level.block.state.properties.Property<T> property, String value) {
+		return property.getValue(value).map(v -> state.setValue(property, v)).orElse(state);
+	}
+
 	record Step(String shot, int slot, int rows, BiConsumer<ServerLevel, ServerPlayer> before, int hold) {
 	}
 
@@ -6382,6 +6400,36 @@ final class JobScenes {
 				new Step("03_defence_attacks", io.github.jcondedata.aliveworkplace.hall.DefencePage.HISTORY[0], 6, null, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU
 				&& m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.LAIR).is(Items.CAMPFIRE)));
+		// Raid dens (38.2, Cobblemon Raid Dens): a glowing den crystal by the hall and a beaten one up the valley; the
+		// Defence page lists both, the village map marks them.
+		SCREENS.put("raid_dens", new Screen("a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				guard(level, new BlockPos(4, -60, -3), new ItemStack(Items.IRON_SWORD));
+				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
+				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
+				BlockPos near = new BlockPos(-3, -60, -2);
+				BlockPos far = new BlockPos(-20, -60, -60);
+				level.setBlockAndUpdate(near, denState(block.get(), "tier_three", "fire", true));
+				level.setBlockAndUpdate(far, denState(block.get(), "tier_five", "water", false));
+				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, near);
+				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, far);
+				Showcase.check(io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, STATION).size() == 2, "the village knows both dens: "
+					+ io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, STATION));
+			},
+			List.of(new Step("01_raid_den", -1, 0, null, 30),
+				new Step("02_raid_den_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.DENS[0], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
+						String den = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.DENS[0]).getHoverName().getString();
+						Showcase.check(den.equals("Raid den, tier 3, Fire, active"), "the Defense page lists the den by the hall: " + den);
+					}
+				}, 30),
+				new Step("03_raid_den_resting", io.github.jcondedata.aliveworkplace.hall.DefencePage.DENS[1], 6, null, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		// At peace (32.21): the owner set the village at peace on the Defence page; the bandit camp by it leaves at the next dawn.
 		SCREENS.put("at_peace", new Screen("the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

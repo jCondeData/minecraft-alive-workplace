@@ -42,7 +42,8 @@ fights at the front. Every kill there earns a guard double experience: Masters a
 
 Kill the captain with your war party there and the loot chest is yours, as always. The chronicle names who led the war
 party and every guard who killed there, the village gets **10 days' peace** from camps instead of the usual 5, and
-every villager is 10 happier for two days: "the warband is broken".
+every villager is 10 happier for two days: "the warband is broken". With the questbook, "Take the fight to them" completes
+then for you and everyone else leading guards in the war party.
 
 ## How it fits in
 

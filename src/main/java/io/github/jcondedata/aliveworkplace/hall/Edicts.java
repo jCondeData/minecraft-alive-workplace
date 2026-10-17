@@ -285,6 +285,7 @@ public final class Edicts implements ResourceManagerReloadListener {
 		level.playSound(null, hall, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 1f, 1f);
 		Component told = Component.translatable("message.aliveworkplace.edict.proclaimed", village, edict.name(), edict.description())
 			.withStyle(ChatFormatting.GOLD);
+		VillageMoments.award(level, hall, VillageMoments.EDICT, by instanceof net.minecraft.server.level.ServerPlayer player ? player : null); // 36.2
 		return new Result(true, told, announce(level, hall, told));
 	}
 

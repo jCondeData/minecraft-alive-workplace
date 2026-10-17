@@ -88,6 +88,9 @@ public interface Platform {
 	/** When an entity is loaded into (or spawned in) a server level. */
 	void onEntityLoad(BiConsumer<Entity, ServerLevel> action);
 
+	/** When a chunk is loaded into a server level (its block entities are in it already): ROADMAP 38.2's raid dens. */
+	void onChunkLoad(BiConsumer<ServerLevel, net.minecraft.world.level.chunk.LevelChunk> action);
+
 	/** When a player's client starts tracking an entity (it comes into their view distance, or they join beside it). */
 	void onStartTracking(BiConsumer<Entity, ServerPlayer> action);
 

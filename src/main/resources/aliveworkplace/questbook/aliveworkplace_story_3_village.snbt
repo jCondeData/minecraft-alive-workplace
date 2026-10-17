@@ -93,10 +93,10 @@
 			shape: "gear",
 			size: 1.5d,
 			title: "Three levels of research",
-			description: ["Get 3 levels of research done.", "", "1. Keep the chest by the scholar's lectern stocked with paper, books and emeralds.", "2. When a topic is finished, sneak-right-click the scholar with an empty hand and pick the next one.", "3. To see how many levels are done, open the Village Hall and hover over the name tag at the top left. In the yellow line, the number in brackets after \"research\" is how many levels are done.", "", "A Town needs 20 villagers, 12 finished buildings and 3 levels of research, so keep building while the scholar works.", "", "Click the checkmark above once the name tag shows 3 or more levels of research done."],
+			description: ["Get 3 levels of research done.", "", "1. Keep the chest by the scholar's lectern stocked with paper, books and emeralds.", "2. When a topic is finished, sneak-right-click the scholar with an empty hand and pick the next one.", "3. To see how many levels are done, open the Village Hall and hover over the name tag at the top left. In the yellow line, the number in brackets after \"research\" is how many levels are done.", "", "A Town needs 20 villagers, 12 finished buildings and 3 levels of research, so keep building while the scholar works.", "", "This quest completes by itself when your scholars finish 3 levels of research."],
 			dependencies: ["527BA8FAFB7389DE"],
 			icon: {id: "minecraft:book", count: 1},
-			tasks: [{id: "295A85D589AB6C24", type: "checkmark", title: "My scholars finished 3 levels of research"}],
+			tasks: [{id: "295A85D589AB6C24", type: "advancement", advancement: "aliveworkplace:village/research_3", criterion: ""}],
 			rewards: [{id: "1E1A898AE5B1A26D", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 10}, {id: "31EC331943445C95", type: "xp", xp: 300}]
 		},
 		{
@@ -105,10 +105,10 @@
 			y: -2.0d,
 			optional: true,
 			title: "The treasury",
-			description: ["Collect your village's takings.", "", "Every morning a working village puts some emeralds by: about a fifth of an emerald for each worker, a quarter more for each rank.", "", "1. Open the Village Hall and hover over the name tag at the top left: it says \"Treasury\" and how much is in it.", "2. Click the name tag to take the emeralds.", "", "The treasury holds only a stack of emeralds per rank, so collect it often.", "", "Click the checkmark above once you've collected the takings."],
+			description: ["Collect your village's takings.", "", "Every morning a working village puts some emeralds by: about a fifth of an emerald for each worker, a quarter more for each rank.", "", "1. Open the Village Hall and hover over the name tag at the top left: it says \"Treasury\" and how much is in it.", "2. Click the name tag to take the emeralds.", "", "The treasury holds only a stack of emeralds per rank, so collect it often.", "", "This quest completes by itself when you collect at least an emerald of takings."],
 			dependencies: ["79EBDD6DE97214DD"],
 			icon: {id: "minecraft:emerald", count: 1},
-			tasks: [{id: "524C458E45CF2C7C", type: "checkmark", title: "I collected the village's takings"}],
+			tasks: [{id: "524C458E45CF2C7C", type: "advancement", advancement: "aliveworkplace:village/treasury", criterion: ""}],
 			rewards: [{id: "2BB9BE247DEC6D5E", type: "xp", xp: 100}]
 		},
 		{

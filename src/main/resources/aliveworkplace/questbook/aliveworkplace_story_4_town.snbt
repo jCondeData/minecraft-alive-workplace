@@ -80,10 +80,10 @@
 			x: 18.0d,
 			y: 0.0d,
 			title: "Proclaim an edict",
-			description: ["Pass a law for your village: an edict.", "", "1. Open the Village Hall and click the lectern (Book of Edicts) at the left of the second row.", "2. Each edict shows its boost in green and its cost in red (Long Shifts, Free Bread, Curfew...).", "3. Click an edict twice to proclaim it.", "", "A Hamlet has room for one edict, a City for four.", "", "Click the checkmark above once you've proclaimed an edict."],
+			description: ["Pass a law for your village: an edict.", "", "1. Open the Village Hall and click the lectern (Book of Edicts) at the left of the second row.", "2. Each edict shows its boost in green and its cost in red (Long Shifts, Free Bread, Curfew...).", "3. Click an edict twice to proclaim it.", "", "A Hamlet has room for one edict, a City for four.", "", "This quest completes by itself when you proclaim an edict."],
 			dependencies: ["14B8E980F11B2C2B"],
 			icon: {id: "minecraft:writable_book", count: 1},
-			tasks: [{id: "4173341C9847FBE8", type: "checkmark", title: "I proclaimed an edict"}],
+			tasks: [{id: "4173341C9847FBE8", type: "advancement", advancement: "aliveworkplace:village/edict", criterion: ""}],
 			rewards: [{id: "41460CFD6B56F63B", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
 		},
 		{
@@ -114,10 +114,10 @@
 			shape: "gear",
 			size: 1.5d,
 			title: "Seven levels of research",
-			description: ["Get 7 levels of research done.", "", "1. Keep your scholars stocked with paper, books and emeralds. Library II (a side quest) has room for a second scholar.", "2. Keep building: a City needs 35 villagers, 25 finished buildings and 7 levels of research.", "3. Open the Village Hall (right-click it) and hover over the name tag at the top left: the yellow line says what the next rank still needs. The number in brackets after \"research\" is how many levels are done.", "", "Every level is a bonus for the whole village.", "", "Click the checkmark above once the name tag shows 7 or more levels of research done."],
+			description: ["Get 7 levels of research done.", "", "1. Keep your scholars stocked with paper, books and emeralds. Library II (a side quest) has room for a second scholar.", "2. Keep building: a City needs 35 villagers, 25 finished buildings and 7 levels of research.", "3. Open the Village Hall (right-click it) and hover over the name tag at the top left: the yellow line says what the next rank still needs. The number in brackets after \"research\" is how many levels are done.", "", "Every level is a bonus for the whole village.", "", "This quest completes by itself when your scholars finish 7 levels of research."],
 			dependencies: ["433144F1B36D110D"],
 			icon: {id: "minecraft:book", count: 1},
-			tasks: [{id: "4E59B832E82934B7", type: "checkmark", title: "My scholars finished 7 levels of research"}],
+			tasks: [{id: "4E59B832E82934B7", type: "advancement", advancement: "aliveworkplace:village/research_7", criterion: ""}],
 			rewards: [{id: "5028DF1AED2F8A18", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}, {id: "16C5D7432BD19B21", type: "xp", xp: 400}]
 		},
 		{
@@ -194,9 +194,9 @@
 			y: -4.0d,
 			optional: true,
 			title: "Take the fight to them",
-			description: ["Defeat 10 pillagers.", "", "1. Sneak-right-click a guard with a spyglass: they become a Scout and bring home a map to the raiders' camp.", "2. Raise your Rally Banner: three in four of your guards gather round you as a war party.", "3. Lead them to the camp. Break it and the village has 10 days of peace.", "", "Pillagers count anywhere: at their camps, outposts and raids.", "", "This quest completes by itself when you have defeated 10 pillagers."],
+			description: ["Break a raiders' camp with your war party.", "", "1. Sneak-right-click a guard with a spyglass: they become a Scout and bring home a map to the raiders' camp.", "2. Raise your Rally Banner: three in four of your guards gather round you as a war party.", "3. Lead them to the camp. Break it and the village has 10 days of peace.", "", "This quest completes by itself when you and your war party break a raiders' camp."],
 			dependencies: ["7F3FDDCC62CBA7B4"],
-			tasks: [{id: "55DE27BB168B8E6C", type: "kill", entity: "minecraft:pillager", value: 10L}],
+			tasks: [{id: "55DE27BB168B8E6C", type: "advancement", advancement: "aliveworkplace:village/camp_broken", criterion: ""}],
 			rewards: [{id: "11B698FE117453D1", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 10}]
 		},
 		{

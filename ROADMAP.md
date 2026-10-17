@@ -234,6 +234,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B160** (approved auto 2026-10-17) The nightly showcase's selftest job fails every run since 2026-10-17 05:58Z: 'every scene shows 2-4 stills' (table_preview 6, porter 6, hall 5, wonder_observatory 5, after 26.12 and the Wonder scenes added stills) and 'each of the README's jobs has a scene' (README's job table says Jeweller, the scene group says Jeweler since the American-spelling pass). Expected: the selftest passes. Test: python3 tools/showcase/test_showcase.py (found by lane-a-1017-1320, 2026-10-17)
 - [x] **B161** (approved auto 2026-10-17) The Mod Menu settings screen cuts off two setting names: 'Villagers per Extra Fisherman: 10' is wider than its button (showcase config scene, nightly 2026-10-17), and 'Gifted Villagers (1 in ...)' is at its top value 1000. Expected: every setting's label fits its button at every value. Test: ConfigGameTests.everySettingsLabelFitsItsButton (found by lane-a-1017-1320, 2026-10-17)
 - [x] **B162** (approved auto 2026-10-17) main is red: WorkplacesGameTests.workplaceBuilt_kitchen failed on CI builds 39036608129 and 39038594531 (2026-10-17 13:27Z, 13:55Z; ROADMAP-only commits): 'the worker works at Optional.empty ... the worker at -14, 0, -14, potential none, activity rest, day time 14001, built at tick 3098'. The Chef wandered off the huge_area's open edge during the 3,000-tick build and, outside it as night fell, never took the smoker. Expected: passes every run. Test: workplaceBuilt_kitchen in the full suite (urgent: red main) (found by lane-a-1017-1320, 2026-10-17)
+- [ ] **B163** FireGameTests.aJourneymanCallsABucketBrigade timed out (1200 ticks) in a local full build on the shared 7 GB box at 14:52Z (commit f4858e6e, M38 raid dens; nothing in that diff touches fire or villagers' walking). Not seen on CI. Expected: the brigade puts the fire out within the timeout. Probably a flake under load; repeat it. Test: FireGameTests.aJourneymanCallsABucketBrigade (found by lane-d-1017-1320, 2026-10-17)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4556,7 +4557,7 @@ as they land: no version of their own and no expansion flag, so each is live the
 `main` after 26.x (the Blueprint Table, the questbook, the decorations, the hall and Storehouse screens, basements).
 Depends on: nothing open.
 
-- [ ] **36.1** **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
+- [x] **36.1** (review: pending 2026-10-17) **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
   (`StarterBlueprints.withBasement` moves them below y = 0), but `TablePreview` sizes and centres the build by
   `blueprint.size()`, which is only the part above the ground, so the cellar hangs out of the bottom of the box; and
   the cell key's `y / scale` rounds towards zero, so at scale 2 or more the first cellar layer folds into the ground
@@ -4568,7 +4569,7 @@ Depends on: nothing open.
   shares a cell with a ground-floor block; a build without a basement sends the same preview as before (the existing
   tests pass unchanged); scene `table_basement` (Starter Cottage IV, then the Storehouse, turning) in the harness and
   `tools/showcase/scenes.py`.
-- [ ] **36.2** **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
+- [x] **36.2** (approved auto 2026-10-17) **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
   once ..." for things the mod already knows (`tools/questbook/chapters.py`: born here, research 3 and 7, an edict, a
   Burgher and a Noble household, a realm, the takings). Add eight moments to `MOMENTS` in
   `tools/questbook/generate.py` (`first_baby`, `research_3`, `research_7`, `edict`, `burghers`, `nobles`, `realm`,
@@ -4583,7 +4584,7 @@ Depends on: nothing open.
   village; a second time doesn't grant it again; an existing village that already qualifies gets it at the next dawn
   round); `generate.py` regenerates with no checkmark left in these eight quests and its own checks pass;
   `QuestbookCompatTests` passes; `langcheck.py`. Nothing new to film: `sessions.py done` without `--review`.
-- [ ] **36.3** **"Take the fight to them" asks for what its story tells.** The quest (`chapters.py`, key `warparty`)
+- [x] **36.3** (approved auto 2026-10-17) **"Take the fight to them" asks for what its story tells.** The quest (`chapters.py`, key `warparty`)
   tells the player to scout a raiders' camp, raise the Rally Banner and break the camp, but its task is "kill 10
   pillagers" anywhere. Its task becomes a new moment, `camp_broken`, awarded in `WarParties.broken` (a lair broken
   with a war party there or guards who killed there) to the player who struck the last blow and every player in the
@@ -4603,7 +4604,7 @@ Depends on: nothing open.
   waxed boards with the expected words; a renamed village is renamed on it at the next dawn; a signpost in another
   style gets words too; a save and reload keeps them; the new lang lines pass `langcheck.py`; scene `signpost` (a
   signpost at a crossroads between two villages, each board up close).
-- [ ] **36.5** **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
+- [x] **36.5** (review: pending 2026-10-17) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
   board) the pane on the right reads out the row under the mouse, but on the way to the pane the mouse crosses other
   rows and then leaves the list, so the pane falls back to the last button clicked: a long entry can only be read by
   clicking it, which also runs it. Three changes: the pane holds the last row hovered while the mouse moves from the
@@ -4793,7 +4794,7 @@ Cobblecuisine 2.0.1: 178 items, 236 plain crafting recipes from vanilla and Cobb
 the `cobblecuisine:bean_crop` block and six colours of beans (`#cobblecuisine:beans`). Depends on: M28 (trainers,
 partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), each with a fallback here.
 
-- [ ] **38.1** **Design note, flag and the mods in the tests.** `docs/design/M38.md`, sent to the owner as a review
+- [x] **38.1** (review: pending 2026-10-17) **Design note, flag and the mods in the tests.** `docs/design/M38.md`, sent to the owner as a review
   package: what the player sees for each mod; the data files (`raid_den_rules`, the Mega Stone and Key Stone recipes,
   the dish lists) with one example each; the config switches (`denWardens`, `denChallenges`, `denChallengeDays`,
   `villageMegas`, `cuisineDishes`, `beanFarms`); every new saved field with its default; the fallbacks. Add Cobblemon
@@ -4802,7 +4803,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   any that's missing. The flag: `Expansions.M38` with `flag()`, `MILESTONES` and `milestone()` for every switch. Done
   when: the note is on `main`, the compat runtime loads both mods, the id test and a gate test pass, and the package
   is sent.
-- [ ] **38.2** **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
+- [x] **38.2** (review: pending 2026-10-17) **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
   id, when its chunk first loads near the village (a chunk-load event through `Platform`, no area scans), with its
   tier, type and whether it's active (read from its block state by property name); a den broken or gone is dropped at
   the next check. The dens show on the village map (`VillageMaps`) and the hall's Defence page ("Raid den, tier 3,

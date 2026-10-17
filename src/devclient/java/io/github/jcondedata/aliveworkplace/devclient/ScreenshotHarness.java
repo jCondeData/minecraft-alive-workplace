@@ -167,6 +167,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 			tablePreviewScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("hall_reading".equals(System.getProperty("aliveworkplace.scene"))) {
+			hallReadingScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("table_basement".equals(System.getProperty("aliveworkplace.scene"))) {
+			tableBasementScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("quarry".equals(System.getProperty("aliveworkplace.scene"))) {
 			quarryScene(mc, mc.getSingleplayerServer());
 			return;
@@ -761,6 +769,220 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "06_preview_imported");
 		}
 		if (tick == 435) {
+			if (mc.screen == null) {
+				shot(mc, "99_no_screen");
+			}
+			mc.stop();
+		}
+	}
+
+	/** The list slot of {@code screen} whose name is longest (the entry with the most to read). */
+	private static int longestRow(io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
+		int best = -1;
+		int length = -1;
+		for (int slot : screen.listSlots()) {
+			int n = screen.getMenu().slots.get(slot).getItem().getHoverName().getString().length();
+			if (n > length) {
+				best = slot;
+				length = n;
+			}
+		}
+		return best;
+	}
+
+	/** Moves the mouse into the middle of {@code screen}'s reading pane, as a player crossing over from the list. */
+	private static void intoPane(Minecraft mc, io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
+		double scale = mc.getWindow().getGuiScale();
+		int[] at = screen.paneCentre();
+		setMouse(mc, at[0] * scale, at[1] * scale);
+	}
+
+	/** Turns the wheel down over the pane until the reading's last line shows (at most 40 notches). */
+	private static void scrollToEnd(io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
+		int[] at = screen.paneCentre();
+		for (int i = 0; i < 40 && screen.readingScroll()[0] < screen.readingScroll()[1]; i++) {
+			screen.mouseScrolled(at[0], at[1], 0, -1);
+		}
+	}
+
+	private int readingSlot = -1;
+
+	/**
+	 * 36.5: reading a long entry without clicking it. In the hall's chronicle a long entry (a war party's victory naming
+	 * every guard) is hovered, the mouse moves into the pane and it stays read out, and the wheel there scrolls to its
+	 * last line; then the Storehouse board does the same with its longest row. Nothing is clicked.
+	 */
+	private void hallReadingScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		BlockPos hall = new BlockPos(0, -60, 3);
+		BlockPos storehouse = new BlockPos(6, -60, 3);
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			// GUI scale 4 on a 1920x1080 window: a short pane, so a long entry has to scroll (as on a small screen).
+			org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080);
+		}
+		if (tick == 10) {
+			mc.options.guiScale().set(4);
+			mc.resizeDisplay();
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+				level.setBlockAndUpdate(storehouse.east(), Blocks.CHEST.defaultBlockState());
+				// A builder with nothing to build with: what they're missing goes on the board, one row each.
+				BlockPos bench = new BlockPos(-4, -60, -6);
+				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				Builders.employ(level, builder, bench);
+				Builders.start(level, builder, null, StarterBlueprints.MARKET_STALL.id(),
+					new BlueprintData.Placement(level.dimension().location(), new BlockPos(-14, -60, -18),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+				// The chronicle's long entry: a war party's victory names every guard who killed at the lair.
+				List<String> guards = new ArrayList<>();
+				for (int i = 0; i < 48; i++) {
+					guards.add(io.github.jcondedata.aliveworkplace.people.Names.name(i).getString());
+				}
+				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.RAID,
+					Component.translatable("chronicle.aliveworkplace.war_party.broken", server.getPlayerList().getPlayers().get(0).getDisplayName(),
+						Component.literal("the Rust Wolves"), String.join(", ", guards)));
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 8.5), 180, 20);
+			});
+		}
+		if (tick == 120) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(server.getPlayerList().getPlayers().get(0), hall));
+		}
+		if (tick == 140) {
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu m) {
+					m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player); // the chronicle page
+				}
+			});
+		}
+		io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen =
+			mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen s ? s : null;
+		if (tick == 170 && screen != null) {
+			readingSlot = longestRow(screen);
+			pointAt(mc, readingSlot);
+		}
+		if (tick == 185) {
+			Showcase.check(screen != null && readingSlot >= 0, "the chronicle page opened with entries (" + (screen == null ? "no screen" : screen.listSlots()) + ")");
+			shot(mc, "01_chronicle_hovered");
+			if (screen != null) {
+				intoPane(mc, screen);
+			}
+		}
+		if (tick == 200) {
+			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
+			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot && screen.pinned() < 0,
+				"the hovered entry stays read out with the mouse in the pane, nothing clicked (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
+			shot(mc, "02_chronicle_held");
+			if (screen != null) {
+				scrollToEnd(screen);
+			}
+		}
+		if (tick == 215) {
+			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
+			Showcase.check(scroll[1] > 0 && scroll[0] == scroll[1], "the wheel in the pane scrolled the long entry to its last line (" + scroll[0] + " of " + scroll[1] + ")");
+			shot(mc, "03_chronicle_last_line");
+			server.execute(() -> io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(server.getPlayerList().getPlayers().get(0), storehouse));
+		}
+		if (tick == 245 && screen != null) {
+			readingSlot = longestRow(screen);
+			pointAt(mc, readingSlot);
+		}
+		if (tick == 260) {
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen && readingSlot >= 0,
+				"the Storehouse board opened with rows (" + mc.screen + ")");
+			shot(mc, "04_board_hovered");
+			if (screen != null) {
+				intoPane(mc, screen);
+			}
+		}
+		if (tick == 275) {
+			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
+			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot,
+				"the board's hovered row stays read out with the mouse in the pane (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
+			if (screen != null) {
+				scrollToEnd(screen);
+			}
+		}
+		if (tick == 290) {
+			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
+			Showcase.check(scroll[0] == scroll[1], "the board's reading scrolled to its last line (" + scroll[0] + " of " + scroll[1] + ")");
+			shot(mc, "05_board_last_line");
+		}
+		if (tick == 305) {
+			mc.stop();
+		}
+	}
+
+	/**
+	 * 36.1: the table's preview of a build with a basement: Starter Cottage IV with its cellar under a faint ground plane,
+	 * fitted whole in the box and turning, then the Storehouse and its vault; the size line says how deep each goes.
+	 */
+	private void tableBasementScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.setDayTime(6000);
+				level.setBlockAndUpdate(TABLE, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.setGameMode(GameType.CREATIVE);
+				player.teleportTo(level, 0.5, -60, 0.5, 180, 30);
+			});
+		}
+		if (tick == 80) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.table.TableServer.open(server.getPlayerList().getPlayers().get(0), TABLE));
+		}
+		io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen =
+			mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s : null;
+		if (tick == 110 && screen != null) {
+			screen.select(StarterBlueprints.STARTER_COTTAGE_4.id());
+		}
+		if (tick == 170) {
+			Showcase.check(screen != null, "the Blueprint Table screen opened");
+			Showcase.check(screen != null && screen.previewCells() > 0 && screen.previewBelow() == StarterBlueprints.STARTER_COTTAGE_4.basement(),
+				"Starter Cottage IV's preview arrived with its cellar (" + (screen == null ? "no screen" : screen.previewCells() + " blocks, "
+					+ screen.previewBelow() + " below ground") + ")");
+			shot(mc, "01_cottage_cellar");
+		}
+		if (tick > 175 && tick <= 195 && screen != null) {
+			screen.dragPreview(-6, -4); // turned and tilted down a little, to look under the ground plane
+		}
+		if (tick == 205) {
+			shot(mc, "02_cottage_turned");
+			if (screen != null) {
+				screen.select(StarterBlueprints.STOREHOUSE.id());
+			}
+		}
+		if (tick == 265) {
+			Showcase.check(screen != null && StarterBlueprints.STOREHOUSE.id().equals(screen.selected()) && screen.previewCells() > 0
+				&& screen.previewBelow() == StarterBlueprints.STOREHOUSE.basement(),
+				"the Storehouse's preview arrived with its vault (" + (screen == null ? "no screen" : screen.previewCells() + " blocks, "
+					+ screen.previewBelow() + " below ground") + ")");
+			shot(mc, "03_storehouse_vault");
+		}
+		if (tick > 270 && tick <= 290 && screen != null) {
+			screen.dragPreview(8, 2);
+		}
+		if (tick == 300) {
+			shot(mc, "04_storehouse_turned");
+		}
+		if (tick == 320) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}

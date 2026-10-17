@@ -279,4 +279,37 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		helper.assertTrue(WorkplaceConfig.optionNames().size() == 126, "every option on the screen in GameTests (26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
+
+	/** M38's six switches (design note M38) belong to its gate: closed for a player until 2.2, open in GameTests. */
+	static final List<String> M38_SWITCHES = List.of("denWardens", "denChallenges", "denChallengeDays", "villageMegas", "cuisineDishes", "beanFarms");
+
+	/** Cobblemon depth (2.2) stays shut for players while it's built: its gate and each of its switches. */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	public void cobblemonDepthIsGated(GameTestHelper helper) {
+		helper.assertTrue(!Expansions.M38, "M38 marked complete: move its switches out of this test");
+		helper.assertTrue(Expansions.isOpen("M38"), "M38's gate should be open in GameTests");
+		List<String> problems = new ArrayList<>();
+		for (String name : M38_SWITCHES) {
+			if (!Expansions.optionLive(name)) {
+				problems.add(name + " hidden in a GameTest");
+			}
+		}
+		asPlayer(() -> {
+			if (Expansions.isOpen("M38")) {
+				problems.add("M38's gate open for a player");
+			}
+			for (String name : M38_SWITCHES) {
+				if (Expansions.optionLive(name)) {
+					problems.add(name + " live for a player before 2.2");
+				}
+			}
+			// The gate is M38's alone: a finished switch stays live.
+			if (!Expansions.optionLive("villageProtection")) {
+				problems.add("villageProtection hidden");
+			}
+		});
+		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+		helper.succeed();
+	}
 }

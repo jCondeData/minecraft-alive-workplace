@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
+  Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
+  and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.
+- **The village knows its raid dens (2.2).** With Cobblemon Raid Dens, the dens within 160 blocks of a Village Hall
+  show on its Defense page ("Raid den, tier 3, Fire, active") and on the village map, found as their chunks load.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply
@@ -87,6 +92,17 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **Read a long entry in the Village Hall without clicking it.** Move the mouse from a row into the reading pane and
+  it keeps reading that row, so the wheel scrolls it there; Shift and the wheel over a row scroll it too. An arrow
+  shows when there's more below, and a long chronicle entry is shown whole. The Storehouse board works the same.
+- **The Blueprint Table's preview shows basements.** A build with a cellar is drawn whole in the 3D preview, cellar and
+  all, with a faint line where the ground will be; its size line says how far it goes below ground.
+- **Eight more village quests complete by themselves.** The questbook no longer asks you to click a checkmark for a
+  baby born in your village, 3 and 7 levels of research, proclaiming an edict, your first Burgher and Noble
+  households, founding a realm or collecting the takings: each quest ticks off when it happens. A village that got
+  there before this update ticks them off at its next dawn.
+- **"Take the fight to them" asks for what its story tells.** The questbook quest now completes when you and your war
+  party break a raiders' camp, not for any 10 pillagers killed anywhere; everyone leading guards in the party gets it.
 - **The Village Hall and the Storehouse board look like the Blueprint Table.** Both screens now use the Table's dark
   panel, gold title, list on the left and reading pane on the right. In the hall, the village's numbers and the toolbar
   sit as icon buttons under the title, and the page tabs and everyone who lives there are a list with each villager's

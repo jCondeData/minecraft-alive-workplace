@@ -224,6 +224,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B150** (approved auto 2026-10-16) Player-visible (owner's playtest 2026-10-16): questbook quest text is confusing, e.g. 'Food in the store' ('The store is the chests by the village's smokers and Kitchen Stoves, then the chests by its Storehouses...'). Expected: every quest's description says plainly what to do and how to tell it's done, in a player's words. Test: tools/questbook/generate.py --check and langcheck. (found by chat, 2026-10-16)
 - [x] **B151** (approved auto 2026-10-17) main red since 0a935196 (runs 1004, 1005): SiegeGameTests.aGatehouseIITakesLongerThanAGatehouse fails in the full build. Expected: green. Test: the class in runGameTest. (found by chat, 2026-10-16)
 - [ ] **B152** Player-visible, not checked (handoff-1016): the Fire Brigade may empty a villager's held tool, like the fisherman's rod bug. Expected: a firefighter's held item is never lost. Test: a GameTest of a fire call with a villager holding a tool. (found by chat, 2026-10-16)
+- [ ] **B153** Player-visible (found while rewriting B150): the Village Hall's 'Food in store' (VillageHalls.food) counts anything edible, rotten flesh included, while growth counts only meals (VillageGrowth.meals / VillageNeeds.isMeal), so the hall can read 16 while no baby comes. Expected: the hall shows the same meal count growth uses. Test: a GameTest with rotten flesh and bread in the store reading the hall's food number. (found by chat, 2026-10-17)
 
 ## Milestone 21: Finish 0.138.0
 

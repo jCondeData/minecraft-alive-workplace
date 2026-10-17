@@ -581,7 +581,9 @@ def seal_slots(b):
             if not usable:
                 continue
             plain = [w for w in usable if not any(t in w[0] for t in ("_log", "pane", "glass", "_wood", "_bars"))]
-            fallback = max(set(plain or usable), key=(plain or usable).count)
+            # The commonest block of the wall; a tie goes to the lowest (dict.fromkeys keeps the wall's order: a set's
+            # order depends on PYTHONHASHSEED, so ties once came out differently run to run, e.g. ranch_2's gable)
+            fallback = max(dict.fromkeys(plain or usable), key=(plain or usable).count)
             for yy, w in zip(column, wall):
                 b.blocks[(x, yy, z)] = w if w in usable else fallback
 

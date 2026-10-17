@@ -442,7 +442,7 @@ What each class gives:
 **Higher jobs need higher classes.** Some jobs can only be taken by a villager of a class or better (the Class column
 in *All the jobs at a glance*): the Tinkerer, Chef, Netherworker, Nurse, Teacher, Shopkeeper, Innkeeper, Printer and,
 with Cobblemon, the Ball Smith, Move Tutor, Pokémon Trader and Fossil Scientist need an Artisan; the Scholar,
-Undertaker, Jeweller and Trainer Leader a Burgher. Vanilla jobs are open to everyone. The rule counts when a job is
+Undertaker, Jeweler and Trainer Leader a Burgher. Vanilla jobs are open to everyone. The rule counts when a job is
 taken: picking it with its item ("Dara is Peasant class; Scholar needs Burgher or better"), the hall's list of free
 workstations (greyed, with the class it needs), a grown child taking up a parent's trade and the Steward's morning
 jobs. A hired traveller arrives with the class of their level (Apprentice: Peasant, Journeyman: Artisan, Expert:
@@ -878,7 +878,7 @@ placed keep working, so old worlds are fine.
 | Camp Cook (with Cobblemon) | Campfire Pot (Cobblemon's campfire with a pot on it) + Hearty Grains | the makings of her dishes (Hearty Grains, Vivichoke, apricorns, milk, honey, berries for seasoning) | nothing (a Storehouse's stock orders for the order-only treats) | any |
 | Habitat Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + a honey bottle | Poké Snacks (or the Camp Cook's), honey bottles, Saccharine saplings | Field Markers for her lure spots (optional) | any |
 | Vintner | Cauldron + sweet berries, glow berries or an apple | apples, sweet or glow berries (with Cobblemon any berry), glass bottles | nothing (keeps the village store in Cider and wines) | any |
-| Jeweller | Stonecutter + a gold nugget | amethyst shards, copper ingots, emeralds, gold nuggets and ingots | nothing (keeps the village store in jewellery) | Burgher |
+| Jeweler | Stonecutter + a gold nugget | amethyst shards, copper ingots, emeralds, gold nuggets and ingots | nothing (keeps the village store in jewellery) | Burgher |
 | Gem Grower | Stonecutter + an amethyst shard | tumblestones or Type Gem Blocks to plant (with Cobblemon), glass and shards for Blank TMs (1.8) | sneak-right-click: pick which gem beds she keeps | any |
 | Daycare Keeper (with Cobblemon) | Pasture Block (Cobblemon's) + an egg | emeralds (or CobbleDollars) to collect eggs | right-click: leave a pair, collect eggs | any |
 | Netherworker | Cartography Table + netherrack | food (a pickaxe, an axe, a sword, a chestplate, fire resistance) | nothing (a Nether portal within 32 blocks) | Artisan |

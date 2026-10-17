@@ -83,9 +83,8 @@ SCENES = [
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
-      [("01_preview_house", "A starter house"), ("02_preview_dragged", "Dragged round"), ("03_preview_style", "Picked in Sandstone"),
-       ("04_preview_large", "A large build, scaled to fit"), ("05_all_materials", "Every material of a large build"),
-       ("06_preview_imported", "An uploaded build")]),
+      [("01_preview_house", "A starter house"), ("03_preview_style", "Picked in Sandstone"),
+       ("04_preview_large", "A large build, scaled to fit"), ("06_preview_imported", "An uploaded build")]),
     S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
     S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,
@@ -195,9 +194,9 @@ SCENES = [
        ("72_ferry_1", "Ferry ride"), ("72_ferry_arrived", "Arrived")]),
     # Porter
     S("porter", "Porter", "Carrying goods to the storehouse", "the porter stocked the storehouse and the board opened", 90,
-      [("*_porter@first", "Start"), ("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
+      [("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
        ("21_request_board", "The Storehouse board in the Blueprint Table's style: requests listed, the store at a glance"),
-       ("22_request_read_out", "A request read out in the pane"), ("23_request_board_scale3", "The board at GUI scale 3")]),
+       ("22_request_read_out", "A request read out in the pane")]),
     job("dropbox", "Porter", "Emptying a Drop Box", "the porter emptied the Drop Box into the store", 120,
         [("04_dropbox_screen", "Drop Box")]),
     # Crafters
@@ -337,7 +336,7 @@ SCENES = [
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),
        ("03_hall_builder", "A builder read out in the pane"), ("08_hall_calendar", "The calendar"),
-       ("09_hall_scale4", "The hall's screen at GUI scale 4"), ("10_hall_pinned_scale3", "A clicked villager kept in the pane, GUI scale 3")]),
+       ("10_hall_pinned_scale3", "A clicked villager kept in the pane, GUI scale 3")]),
     # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
     S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
@@ -877,7 +876,7 @@ SCENES = [
     # The Observatory (ROADMAP 35.18): its time-lapse, then the Sky Chart in hand and the Coming days page
     S("wonder_observatory", "Wonders", "The Observatory: its time-lapse, the Sky Chart and the Coming days",
       "a crew of twelve raised the Observatory stage by stage on a sped-up server, the terrace and courtyard first, then the tower, the copper dome and the great telescope with the orrery; once finished its powers came on and, after the festival's fireworks, the hall's search charted the land round the village: the Sky Chart in hand shows about 6,144 blocks with a marker on every structure found, each named in its tooltip; then the hall's calendar page showed the Coming days, a festival in three days, a wedding tomorrow, a caravan on the road, the market day, the full moon and the night's raid risk", 840,
-      [("11_wonder_observatory_stage_1", "Stage I, the Terrace and the Courtyard, up"), ("frame_*@middle", "The crew at work, the camera going round"),
+      [("11_wonder_observatory_stage_1", "Stage I, the Terrace and the Courtyard, up"),
        ("14_wonder_observatory_stage_4", "The Great Telescope and the Orrery: the Observatory finished"), ("20_wonder_observatory_sky_chart", "The Sky Chart in hand"),
        ("21_wonder_observatory_coming_days", "The hall's calendar with the Coming days")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after

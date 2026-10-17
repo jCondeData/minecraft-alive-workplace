@@ -1524,6 +1524,10 @@ final class JobScenes {
 			return l -> {
 				io.github.jcondedata.aliveworkplace.guard.Gates.round(l, hall, 1);
 				io.github.jcondedata.aliveworkplace.guard.Warnings.round(l, hall, 10, 1);
+				// B130: job scenes freeze the daylight cycle (tick 20), so the morning is run on to noon here, 10 ticks a tick
+				if (phase[0] == 0 && l.getDayTime() % 24000 < io.github.jcondedata.aliveworkplace.guard.Warnings.NOON) {
+					l.setDayTime(Math.min(l.getDayTime() + 10, base + io.github.jcondedata.aliveworkplace.guard.Warnings.NOON));
+				}
 				if (phase[0] == 0 && io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(l, hall)) {
 					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.status(l, hall).open() == 0, "the gates shut at noon");
 					phase[0] = 1;

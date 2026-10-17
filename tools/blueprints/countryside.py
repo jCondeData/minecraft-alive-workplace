@@ -140,8 +140,8 @@ def farmhouse_inside(b):
     b.set(6, 1, 3, "chest", facing="west", type="single", waterlogged=False)
     fence(b, 3, 1, 4, "spruce_fence")
     b.set(3, 2, 4, "spruce_pressure_plate", powered=False)
-    stairs(b, 3, 1, 5, SPRUCE, "north")
-    stairs(b, 2, 1, 4, SPRUCE, "east")
+    chair(b, 3, 1, 5, SPRUCE, "north")
+    chair(b, 2, 1, 4, SPRUCE, "east")
     b.set(2, 1, 6, "brown_carpet")
     b.set(2, 1, 7, "brown_carpet")
     for z in range(3, 8):
@@ -210,6 +210,7 @@ def barn(b):
             b.set(x, 4, z, "spruce_planks")
     for x in range(2, 7):
         log(b, x, 4, 16, BARN_FRAME, axis="x")
+    b.set(6, 4, 15, "spruce_planks")  # a board from the ladder's head over to the loft (B149: a gap to jump)
     for y in range(1, 5):
         b.set(6, y, 13, "ladder", facing="south", waterlogged=False)
     for x, z in ((3, 18), (4, 18), (5, 19), (3, 19), (2, 19)):

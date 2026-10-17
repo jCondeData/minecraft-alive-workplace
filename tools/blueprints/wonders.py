@@ -2246,6 +2246,8 @@ def o_tower(b):
             b.set(x, y, z, "polished_blackstone" if band else O_WALL.at(x, y, z))
     # the plinth round its foot and the pilasters up its height, ending in a cap under the parapet
     for x, z in outline(disc(8.4, OC)) - disc(7.4, OC):
+        if x == OC[0] and z < OC[1] or z == OC[1]:
+            continue  # not before the door or in the wings' doorways: off a step, a player's head hits the lintel
         if b.get(x, 4, z) is None:
             stairs(b, x, 4, z, BLACKSTONE, o_toward(x, z))
     for x, z in o_pilasters():
@@ -4497,10 +4499,14 @@ def s_professor_box(b):
             side = x in (x0, x1) or z == z1
             if side:
                 for y in range(5, 9):
-                    if x in (x0, x1) and z == z0 + 1 and y < 7:
+                    if x in (x0, x1) and z == z0 + 1 and y < 8:
                         continue  # the doorways onto the second tier
                     b.set(x, y, z, "smooth_stone" if y == 8 else S_BODY)
             slab(b, x, 9, z, SPRUCE)
+    for x in (x0, x1):  # a half step in each doorway: the tier is a block over the box's floor (B149)
+        slab(b, x, 5, z0 + 1, SPRUCE)
+    for y in range(1, 5):  # and a ladder up from the players' tunnel through a hatch in the box's floor (B149)
+        b.set(x1 - 1, y, z0 + 1, "ladder", facing="west", waterlogged=False)
     for x in range(x0 + 1, x1):
         fence(b, x, 5, z0, "spruce_fence")
     b.set(SCX, 5, z1 - 1, "lectern", facing="north", has_book=False, powered=False)
@@ -5108,7 +5114,7 @@ def save_wonder(wonder_id, structures=MAIN_STRUCTURES, data=WONDER_DATA):
     before = set()
     for n, s in enumerate(stages, 1):
         mine = {p for p, block in s.blocks.items() if block[0] != "minecraft:air"} - before
-        for problem in check(s, only=mine):
+        for problem in check(s, only=mine, whole=n == len(stages)):
             print(f"  CHECK wonder/{wonder_id} stage {n}: {problem}")
         print(f"wonder/{wonder_id} stage {n}: {len(mine)} blocks")
         before |= mine

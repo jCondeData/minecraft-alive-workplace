@@ -262,11 +262,10 @@ def artisans_house_body(b):
     b.set(6, 2, 3, "potted_fern")
     fence(b, 4, 1, 6, "spruce_fence")
     b.set(4, 2, 6, "spruce_pressure_plate", powered=False)
-    stairs(b, 4, 1, 7, SPRUCE, "north")
+    chair(b, 4, 1, 7, SPRUCE, "north")
     box(b, 3, 1, 4, 5, 1, 5, "brown_carpet")
     for y in range(1, 6):
-        b.set(6, y, 9, "ladder", facing="north", waterlogged=False)
-    b.set(6, 5, 9, "air")  # the hatch through the floor
+        b.set(6, y, 9, "ladder", facing="north", waterlogged=False)  # the top rung in the hatch through the floor
     lantern(b, 4, 4, 4, hanging=True)
     # Upstairs: two beds under the roof, a chest between them, a rug, a lamp
     b.bed(2, 6, 3, "orange", facing="north")
@@ -427,7 +426,7 @@ def townhouse_body(b):
     # Second floor: the second bedroom and a sitting corner
     b.bed(7, 10, 8, "light_gray", facing="south")
     b.set(8, 10, 2, "barrel", facing="up", open=False)
-    stairs(b, 4, 10, 3, SPRUCE, "south")
+    chair(b, 4, 10, 3, SPRUCE, "south")
     fence(b, 4, 10, 4, "dark_oak_fence")
     b.set(4, 11, 4, "dark_oak_pressure_plate", powered=False)
     box(b, 5, 10, 6, 7, 10, 7, "light_gray_carpet")
@@ -636,8 +635,8 @@ def manor_house(b):
             stairs(b, x, i + 1, z, DARK_OAK, "south")
             for y in range(1, i + 1):
                 b.set(x, y, z, "dark_oak_planks")
-    for x in (7, 11):  # newel posts at the stair foot and a rail along the gallery's ends
-        fence(b, x, 6, 13, "dark_oak_fence")
+    for x in (7, 11):  # newel posts at the stair foot (on the gallery they stood in the bedrooms' doorways: B149)
+        fence(b, x, 1, 8, "dark_oak_fence")
     # The front door under a slab hood, a lamp either side of the step
     door(b, 9, 1, 7, "dark_oak_door", "south")
     b.set(9, 3, 7, "chiseled_stone_bricks")

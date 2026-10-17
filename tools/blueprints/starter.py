@@ -1185,13 +1185,13 @@ TERRACE_ROOF = DARK_OAK
 
 def terrace_bay(b, x, flowers):
     """A box bay window two wide (x, x + 1) standing out a block from the front (z 0) on a stone footing: a brick
-    sill wall, two panes high of glass, a brick slab roof; pots of flowers on the sill inside it."""
+    sill wall, two panes high of glass, a brick slab roof (top slabs); pots of flowers on the sill inside it."""
     for i, cx in enumerate((x, x + 1)):
         b.set(cx, 0, 0, TERRACE_TRIM)
         b.set(cx, 1, 0, TERRACE_WALL.at(cx, 1, 0))
         pane(b, cx, 2, 0)
         pane(b, cx, 3, 0)
-        slab(b, cx, 4, 0, BRICK)
+        slab(b, cx, 4, 0, BRICK, top=True)  # a top slab: the lantern on it needs a full top face
         b.set(cx, 2, 1, flowers[i % len(flowers)])  # on the wall's sill, inside the bay
         b.set(cx, 3, 1, "air")
 

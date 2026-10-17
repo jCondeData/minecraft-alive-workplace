@@ -484,36 +484,49 @@ def fishers_hut_2():
 
 
 # --- Weaver's Cottage (ROADMAP 27.14) -----------------------------------------------------------------------------
+# Its own look since ROADMAP 26.11 (it was the Starter Cottage's timber house): a stone workroom with an open drying
+# loft on top, dyed cloth hung between its posts to dry, under a low hipped roof with a flat cap.
 WEAVER_PLINTH = Mix((5, "stone_bricks"), (3, "cobblestone"), (2, "andesite"), seed=101)
 WEAVER_FRAME = "spruce_log"
 WEAVER_BOARDS = Mix((7, "birch_planks"), (1, "stripped_birch_wood"), seed=102)
 WEAVER_ROOF = DARK_OAK
 WOOL = ("white_wool", "light_blue_wool", "yellow_wool", "red_wool", "lime_wool", "purple_wool")
+# The cloth hung in the loft's bays: (side, the bay's x or z) -> colour; the other bays get a rail
+LOFT_CLOTH = {("front", 2): "red_wool", ("front", 6): "yellow_wool", ("back", 2): "light_blue_wool",
+              ("back", 4): "white_wool", ("back", 6): "lime_wool", ("west", 3): "purple_wool", ("west", 7): "yellow_wool",
+              ("east", 3): "light_blue_wool", ("east", 7): "red_wool"}
 
 
 def weavers_cottage_walls(b):
-    """The cottage (walls x 1-7, z 2-8): a stone course, birch boards in a spruce frame (posts at 1, 3, 5, 7 on the front,
-    the door in the middle), shuttered windows with flower boxes at the front."""
+    """The workroom (walls x 1-7, z 2-8): stone walls three high, the door in the middle, shuttered windows; a floor of
+    planks over it on a spruce beam (y 4), and the open drying loft above: posts, a rail between them and dyed cloth
+    (wool) hung in some of the bays."""
     plinth(b, 1, 2, 7, 8, WEAVER_PLINTH, floor=Mix((3, "spruce_planks"), (1, "oak_planks"), seed=103))
-    for y in range(1, 5):
-        for x in range(1, 8):
-            for z in (2, 8):
-                b.set(x, y, z, resolve(WEAVER_PLINTH if y == 1 else WEAVER_BOARDS, x, y, z))
-        for z in range(3, 8):
-            for x in (1, 7):
-                b.set(x, y, z, resolve(WEAVER_PLINTH if y == 1 else WEAVER_BOARDS, x, y, z))
-    posts(b, [(1, 2), (3, 2), (5, 2), (7, 2), (1, 8), (4, 8), (7, 8), (1, 5), (7, 5)], 1, 4, WEAVER_FRAME)
-    beam_ring(b, 1, 2, 7, 8, 5, WEAVER_FRAME)
+    walls(b, 1, 2, 7, 8, 1, 3, WEAVER_PLINTH)
+    posts(b, [(1, 2), (7, 2), (1, 8), (7, 8)], 1, 3, WEAVER_FRAME)
+    beam_ring(b, 1, 2, 7, 8, 4, WEAVER_FRAME)
+    box(b, 2, 4, 3, 6, 4, 7, "spruce_planks")
     door(b, 4, 1, 2, "spruce_door", "north")
     for x in (2, 6):
-        window(b, x, 2, 2, "north", height=2, shutters="spruce_trapdoor",
-               flowers=("spruce_trapdoor", ["potted_cornflower" if x == 2 else "potted_dandelion"]))
-        b.set(x, 0, 1, resolve(WEAVER_PLINTH, x, 0, 1))  # under the flower box: nobody walks in under it and sticks
-    window(b, 1, 2, 4, "west", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+        window(b, x, 2, 2, "north", height=1, shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 1, 2, 4, "west", height=1, shutters="spruce_trapdoor", sill=SPRUCE)
     for z in (4, 6):
-        window(b, 7, 2, z, "east", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+        window(b, 7, 2, z, "east", height=1, shutters="spruce_trapdoor", sill=SPRUCE)
     for x in (2, 6):
-        window(b, x, 2, 8, "south", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
+        window(b, x, 2, 8, "south", height=1, shutters="spruce_trapdoor", sill=SPRUCE)
+    # The loft: posts at the corners and every two blocks, a top beam, a rail; cloth in some bays
+    loft_posts = [(x, z) for x in (1, 3, 5, 7) for z in (2, 8)] + [(1, 5), (7, 5)]
+    posts(b, loft_posts, 5, 6, WEAVER_FRAME)
+    beam_ring(b, 1, 2, 7, 8, 7, WEAVER_FRAME)
+    bays = [("front", x, (x, 2)) for x in (2, 4, 6)] + [("back", x, (x, 8)) for x in (2, 4, 6)]
+    bays += [("west", z, (1, z)) for z in (3, 4, 6, 7)] + [("east", z, (7, z)) for z in (3, 4, 6, 7)]
+    for side, k, (x, z) in bays:
+        cloth = LOFT_CLOTH.get((side, k))
+        if cloth:
+            b.set(x, 5, z, cloth)
+            b.set(x, 6, z, cloth)
+        else:
+            fence(b, x, 5, z, "spruce_fence")
 
 
 def weavers_porch(b):
@@ -523,31 +536,17 @@ def weavers_porch(b):
         fence(b, x, 2, 0, "spruce_fence")
     for x in (3, 4, 5):
         stairs(b, x, 3, 0, WEAVER_ROOF, "south")
-        stairs(b, x, 4, 1, WEAVER_ROOF, "south")
     stairs(b, 4, 0, 0, STONE_BRICK, "south")
     b.set(4, 0, 1, resolve(WEAVER_PLINTH, 4, 0, 1))
-    lantern(b, 4, 3, 1, hanging=True)
+    for x in (3, 4, 5):
+        b.set(x, 3, 1, WEAVER_ROOF.full)
+    lantern(b, 4, 2, 1, hanging=True)
 
 
 def weavers_roofs(b):
-    """The main roof: dark oak, its ridge along the front, eaves to the street, birch gables round a king post."""
-    gable_roof(b, 0, 8, 1, 9, 6, WEAVER_ROOF, axis="x", gable=WEAVER_BOARDS, gable_at=(1, 7), eave_trim=SPRUCE)
-    # A dormer on the front slope over the door: log cheeks, a two-high window, its own little roof running back
-    for y in (6, 7):
-        log(b, 3, y, 2, WEAVER_FRAME)
-        log(b, 5, y, 2, WEAVER_FRAME)
-        pane(b, 4, y, 2)
-    for z in (1, 2, 3):
-        stairs(b, 3, 8, z, WEAVER_ROOF, "east")
-        stairs(b, 5, 8, z, WEAVER_ROOF, "west")
-    b.set(4, 8, 2, "birch_planks")
-    for z in (1, 2, 3, 4):
-        slab(b, 4, 9, z, WEAVER_ROOF)
-    for x in (1, 7):
-        for y in range(6, 9):
-            log(b, x, y, 5, WEAVER_FRAME)
-        pane(b, x, 7, 4)
-        pane(b, x, 7, 6)
+    """A low hipped roof of dark oak over the loft: three rings and a flat cap of slabs."""
+    hip_roof(b, 0, 8, 1, 9, 7, WEAVER_ROOF, rings=3)
+    box(b, 3, 10, 4, 5, 10, 6, WEAVER_ROOF.slab, type="bottom", waterlogged=False)
 
 
 def weavers_cottage_inside(b):
@@ -562,9 +561,7 @@ def weavers_cottage_inside(b):
     stairs(b, 6, 1, 7, SPRUCE, "east")
     b.set(4, 1, 5, "light_blue_carpet")
     b.set(4, 1, 6, "white_carpet")
-    for z in range(3, 8):
-        log(b, 4, 5, z, WEAVER_FRAME, axis="z")
-    lantern(b, 4, 4, 6, hanging=True)
+    lantern(b, 4, 3, 6, hanging=True)
 
 
 def sheep_pen(b):
@@ -599,9 +596,9 @@ def sheep_pen(b):
 
 
 def weavers_cottage():
-    """15 x 11 x 11: a cottage of birch boards in a spruce frame under a dark oak roof, a porch over the door, the loom
-    (Shepherd) at the front window and bales of dyed wool inside and out, and a fenced sheep pen of grass with a gate, a
-    trough, a hay rack and a shelter."""
+    """15 x 11 x 11: a stone workroom with an open drying loft on top, dyed cloth hung in its bays, under a low hipped
+    dark oak roof; a porch over the door, the loom (Shepherd) at the front window and bales of dyed wool inside and out,
+    and a fenced sheep pen of grass with a gate, a trough, a hay rack and a shelter."""
     b = Build(15, 11, 11)
     weavers_cottage_walls(b)
     weavers_porch(b)

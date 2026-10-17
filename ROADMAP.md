@@ -722,7 +722,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   it has standing or under construction on first use. Switch `blueprintUnlocks` (default on; off: everything unlocked
   as before). Done when: GameTests for the starting set, buying, an old save, a refused locked Get Blueprint, a ???
   sending nothing, the switch off and save and reload; the guide, the wiki and the CHANGELOG say so.
-- [ ] **26.11** **Give the look-alike workplaces their own designs** (unblocked by the owner 2026-10-16 evening: "make new completely different exteriors for all different kinds of workshops and houses, nothing should look identical") (owner's playtest,
+- [x] **26.11** (review: pending 2026-10-17) **Give the look-alike workplaces their own designs** (unblocked by the owner 2026-10-16 evening: "make new completely different exteriors for all different kinds of workshops and houses, nothing should look identical") (owner's playtest,
   2026-10-16: the Guard House, Kitchen, Clinic, Builder's Workshop, Carpenter's Workshop and Ball Workshop all look the
   same). Deferred by the owner: not now.
 - [ ] **26.12** **Storehouse and Village Hall screens in the Blueprint Table's style** (owner, 2026-10-16: "the storehouse UI

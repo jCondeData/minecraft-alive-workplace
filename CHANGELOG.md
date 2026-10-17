@@ -84,6 +84,14 @@ asks for the steps, `latest.log` and any crash report).
   hoist beam over a loft door; the Townhouse is warm stucco under a slate mansard with little iron balconies; the
   Manor's roofs are hipped. The Starter Cottage stays the timber-framed one. Beds, chests and rooms are where they
   were: homes already built keep their villagers, and an upgrade builds the new look onto them.
+- **Every job's village house looks different.** The 32 kinds of house our villages grow (one per job) were one
+  timber house per village style with a different room inside; now each job has its own building, in its village's
+  own materials: a Guard House with a battlement and watch hut, a Kitchen with a domed bread oven, a Mortuary chapel
+  with a small graveyard, a Tinker's Shop with a glass monitor roof and a brick smokestack, a Print Shop with
+  crow-stepped gables, a Gem Grotto mound sprouting amethyst, an A-frame Camp Kitchen, a hay-thatched Berry Nursery
+  and more (each one is in the wiki's Workplace looks page). The Weaver's Cottage is now a stone workroom with an
+  open drying loft hung with dyed cloth, and the Inn has its guest storey jettied over the street under twin gables.
+  Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
 - **The Village Hall's food count matches growth.** "Food in store" now counts only meals, the same number a baby

@@ -233,6 +233,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B159** FisherRodGameTests.fisherKeepsHisRodPastTheShift failed once in a local full build (main abc2bead, 2026-10-17 10:22Z): 'after 64 catches his rod is gone; the hand holds 0 minecraft:air at day time 6860': the rod (durability 64) wore out, so one of the success checks (rod in hand, damage == catches, the spare left in the barrel) stayed false for some 4,800 ticks of the next morning; 19 of 19 repeats alone pass. Expected: passes every run. Test: the repeat generator in a full-suite mix; the failure message should say which check held it (test-only, QA lane) (found by chat, 2026-10-17)
 - [ ] **B160** The nightly showcase's selftest job fails every run since 2026-10-17 05:58Z: 'every scene shows 2-4 stills' (table_preview 6, porter 6, hall 5, wonder_observatory 5, after 26.12 and the Wonder scenes added stills) and 'each of the README's jobs has a scene' (README's job table says Jeweller, the scene group says Jeweler since the American-spelling pass). Expected: the selftest passes. Test: python3 tools/showcase/test_showcase.py (found by lane-a-1017-1320, 2026-10-17)
 - [ ] **B161** The Mod Menu settings screen cuts off two setting names: 'Villagers per Extra Fisherman: 10' is wider than its button (showcase config scene, nightly 2026-10-17), and 'Gifted Villagers (1 in ...)' is at its top value 1000. Expected: every setting's label fits its button at every value. Test: ConfigGameTests.everySettingsLabelFitsItsButton (found by lane-a-1017-1320, 2026-10-17)
+- [ ] **B162** main is red: WorkplacesGameTests.workplaceBuilt_kitchen failed on CI builds 39036608129 and 39038594531 (2026-10-17 13:27Z, 13:55Z; ROADMAP-only commits): 'the worker works at Optional.empty ... the worker at -14, 0, -14, potential none, activity rest, day time 14001, built at tick 3098'. The Chef wandered off the huge_area's open edge during the 3,000-tick build and, outside it as night fell, never took the smoker. Expected: passes every run. Test: workplaceBuilt_kitchen in the full suite (urgent: red main) (found by lane-a-1017-1320, 2026-10-17)
+- [ ] **B163** FireGameTests.aJourneymanCallsABucketBrigade timed out (1200 ticks) in a local full build on the shared 7 GB box at 14:52Z (commit f4858e6e, M38 raid dens; nothing in that diff touches fire or villagers' walking). Not seen on CI. Expected: the brigade puts the fire out within the timeout. Probably a flake under load; repeat it. Test: FireGameTests.aJourneymanCallsABucketBrigade (found by lane-d-1017-1320, 2026-10-17)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4792,7 +4794,7 @@ Cobblecuisine 2.0.1: 178 items, 236 plain crafting recipes from vanilla and Cobb
 the `cobblecuisine:bean_crop` block and six colours of beans (`#cobblecuisine:beans`). Depends on: M28 (trainers,
 partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), each with a fallback here.
 
-- [ ] **38.1** **Design note, flag and the mods in the tests.** `docs/design/M38.md`, sent to the owner as a review
+- [x] **38.1** (review: pending 2026-10-17) **Design note, flag and the mods in the tests.** `docs/design/M38.md`, sent to the owner as a review
   package: what the player sees for each mod; the data files (`raid_den_rules`, the Mega Stone and Key Stone recipes,
   the dish lists) with one example each; the config switches (`denWardens`, `denChallenges`, `denChallengeDays`,
   `villageMegas`, `cuisineDishes`, `beanFarms`); every new saved field with its default; the fallbacks. Add Cobblemon
@@ -4801,7 +4803,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   any that's missing. The flag: `Expansions.M38` with `flag()`, `MILESTONES` and `milestone()` for every switch. Done
   when: the note is on `main`, the compat runtime loads both mods, the id test and a gate test pass, and the package
   is sent.
-- [ ] **38.2** **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
+- [x] **38.2** (review: pending 2026-10-17) **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
   id, when its chunk first loads near the village (a chunk-load event through `Platform`, no area scans), with its
   tier, type and whether it's active (read from its block state by property name); a den broken or gone is dropped at
   the next check. The dens show on the village map (`VillageMaps`) and the hall's Defence page ("Raid den, tier 3,

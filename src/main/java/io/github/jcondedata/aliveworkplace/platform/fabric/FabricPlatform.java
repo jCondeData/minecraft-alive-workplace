@@ -169,6 +169,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void onChunkLoad(BiConsumer<ServerLevel, net.minecraft.world.level.chunk.LevelChunk> action) {
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents.CHUNK_LOAD.register(action::accept);
+	}
+
+	@Override
 	public void onStartTracking(BiConsumer<Entity, ServerPlayer> action) {
 		net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents.START_TRACKING.register(action::accept);
 	}

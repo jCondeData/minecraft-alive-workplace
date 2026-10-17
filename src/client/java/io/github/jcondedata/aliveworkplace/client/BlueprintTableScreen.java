@@ -158,6 +158,12 @@ public class BlueprintTableScreen extends Screen {
 		return preview == null ? -1 : preview.count();
 	}
 
+	/** Blocks of the selected build's preview under the ground (a basement's depth, 36.1), or -1 while none has arrived (for the screenshot harness). */
+	public int previewBelow() {
+		TablePreview preview = selectedId == null ? null : previews.get(shownId());
+		return preview == null ? -1 : preview.below();
+	}
+
 	/** Turns the selected build's preview as a mouse drag would (for the screenshot harness). */
 	public void dragPreview(double dx, double dy) {
 		TablePreview preview = selectedId == null ? null : previews.get(shownId());
@@ -415,9 +421,17 @@ public class BlueprintTableScreen extends Screen {
 		}
 		g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), w), x, y, entry.locked() ? 0xFF8A8A8A : 0xFFFFFFFF, false);
 		y += 12;
-		g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
-			x, y, 0xFF9AA8BA, false);
-		y += 10;
+		TablePreview shownPreview = previews.get(shownId());
+		int below = shownPreview == null ? 0 : shownPreview.below();
+		if (below > 0) { // a basement (36.1): wrapped, as "and N below ground" can run past the pane
+			Component size = Component.translatable("screen.aliveworkplace.table.size_below", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks(), below);
+			g.drawWordWrap(font, size, x, y, w, 0xFF9AA8BA);
+			y += 10 * font.split(size, w).size();
+		} else {
+			g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
+				x, y, 0xFF9AA8BA, false);
+			y += 10;
+		}
 		if (!entry.hint().isEmpty()) {
 			// Locked (or a Wonder, raised from its plan): how to get it, where the id goes for the rest.
 			Component how = entry.locked()

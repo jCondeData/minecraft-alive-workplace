@@ -467,13 +467,14 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 	 * Tells the village a household rose or came down in the world (34.6): a chronicle line either way; a rise also gets
 	 * golden sparkles and a chime at their door (where the lead sleeps) and a chat line to players within {@link #TELL_RANGE}.
 	 */
-	static void turned(ServerLevel level, BlockPos hall, Households.Household household, SocialClass now, boolean rose) {
+	public static void turned(ServerLevel level, BlockPos hall, Households.Household household, SocialClass now, boolean rose) {
 		Component who = names(household.members());
 		Chronicle.record(level, hall, Chronicle.Kind.CLASS,
 			Component.translatable(rose ? "chronicle.aliveworkplace.class.rose" : "chronicle.aliveworkplace.class.fell", who, now.name()));
 		if (!rose) {
 			return;
 		}
+		io.github.jcondedata.aliveworkplace.hall.VillageMoments.rose(level, hall, now.id()); // Burghers and Nobles (36.2)
 		Villager lead = household.lead();
 		BlockPos bed = VillageNeeds.bed(level, lead);
 		BlockPos door = bed != null ? bed : lead.blockPosition();

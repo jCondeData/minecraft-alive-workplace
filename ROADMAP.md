@@ -4553,7 +4553,7 @@ as they land: no version of their own and no expansion flag, so each is live the
 `main` after 26.x (the Blueprint Table, the questbook, the decorations, the hall and Storehouse screens, basements).
 Depends on: nothing open.
 
-- [ ] **36.1** **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
+- [x] **36.1** (review: pending 2026-10-17) **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
   (`StarterBlueprints.withBasement` moves them below y = 0), but `TablePreview` sizes and centres the build by
   `blueprint.size()`, which is only the part above the ground, so the cellar hangs out of the bottom of the box; and
   the cell key's `y / scale` rounds towards zero, so at scale 2 or more the first cellar layer folds into the ground
@@ -4565,7 +4565,7 @@ Depends on: nothing open.
   shares a cell with a ground-floor block; a build without a basement sends the same preview as before (the existing
   tests pass unchanged); scene `table_basement` (Starter Cottage IV, then the Storehouse, turning) in the harness and
   `tools/showcase/scenes.py`.
-- [ ] **36.2** **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
+- [x] **36.2** (approved auto 2026-10-17) **Village moments complete their quests.** Eight questbook quests end with "Click the checkmark above
   once ..." for things the mod already knows (`tools/questbook/chapters.py`: born here, research 3 and 7, an edict, a
   Burgher and a Noble household, a realm, the takings). Add eight moments to `MOMENTS` in
   `tools/questbook/generate.py` (`first_baby`, `research_3`, `research_7`, `edict`, `burghers`, `nobles`, `realm`,
@@ -4600,7 +4600,7 @@ Depends on: nothing open.
   waxed boards with the expected words; a renamed village is renamed on it at the next dawn; a signpost in another
   style gets words too; a save and reload keeps them; the new lang lines pass `langcheck.py`; scene `signpost` (a
   signpost at a crossroads between two villages, each board up close).
-- [ ] **36.5** **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
+- [x] **36.5** (review: pending 2026-10-17) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
   board) the pane on the right reads out the row under the mouse, but on the way to the pane the mouse crosses other
   rows and then leaves the list, so the pane falls back to the last button clicked: a long entry can only be read by
   clicking it, which also runs it. Three changes: the pane holds the last row hovered while the mouse moves from the

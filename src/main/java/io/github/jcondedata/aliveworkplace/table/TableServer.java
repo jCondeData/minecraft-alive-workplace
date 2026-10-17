@@ -270,16 +270,24 @@ public final class TableServer {
 	 * neighbours are all solid is left out (no one sees it). The scale grows until the cells fit {@link #PREVIEW_CAP}.
 	 */
 	public static TablePayloads.Preview buildPreview(ResourceLocation id, Blueprint blueprint) {
+		return buildPreview(id, blueprint, 1);
+	}
+
+	/** {@link #buildPreview}, trying cells of {@code fromScale} blocks first (tests check a coarse preview of a small build). */
+	public static TablePayloads.Preview buildPreview(ResourceLocation id, Blueprint blueprint, int fromScale) {
 		List<Blueprint.Entry> shown = new ArrayList<>();
+		int below = 0; // a basement's depth (36.1): StarterBlueprints.withBasement puts its blocks under y = 0
 		for (Blueprint.Entry e : blueprint.blocks()) {
 			if (previewShows(e.state())) {
 				shown.add(e);
+				below = Math.max(below, -e.pos().getY());
 			}
 		}
-		for (int scale = 1; ; scale++) {
+		for (int scale = Math.max(1, fromScale); ; scale++) {
 			Map<Long, Blueprint.Entry> cells = new HashMap<>();
 			for (Blueprint.Entry e : shown) {
-				long key = BlockPos.asLong(e.pos().getX() / scale, e.pos().getY() / scale, e.pos().getZ() / scale);
+				// Floor division, so a cellar's first layer (y = -1) never folds into the ground floor's cell (36.1).
+				long key = BlockPos.asLong(Math.floorDiv(e.pos().getX(), scale), Math.floorDiv(e.pos().getY(), scale), Math.floorDiv(e.pos().getZ(), scale));
 				Blueprint.Entry old = cells.get(key);
 				if (old == null || e.pos().getY() > old.pos().getY()) {
 					cells.put(key, e);
@@ -321,7 +329,7 @@ public final class TableServer {
 					blocks[i * 4 + 2] = BlockPos.getZ(key);
 					blocks[i * 4 + 3] = idx;
 				}
-				return new TablePayloads.Preview(id, blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), scale, palette, blocks);
+				return new TablePayloads.Preview(id, blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), below, scale, palette, blocks);
 			}
 		}
 	}

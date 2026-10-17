@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5
 
 ## What a player sees
 
@@ -16,6 +16,14 @@ their level) with their name and job. The pane on the right reads out whatever i
 with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
 to see the free workstations and give them one. Every page of the hall opens in the same screen.
+
+**Reading without clicking (36.5).** A row or cell hovered stays read out while the mouse moves on into the pane
+(it changes only when another row or cell is hovered, and lets go once the mouse leaves the panel, when the pane goes
+back to the button last clicked), so the wheel there scrolls a long entry with nothing clicked; Shift and the wheel
+over a row scroll that row's reading and leave the list where it is. A small arrow at the pane's foot shows while
+there's more below, and a name too long for its two lines (a long chronicle entry) carries on at the top of the
+reading. The footer says "Hover to read · scroll in the pane or with Shift · click to use". A click in the pane runs
+nothing. The rule lives in `work/ReadingFocus` (no drawing); the Storehouse board shares the screen and the rule.
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
@@ -125,7 +133,9 @@ Not saved: the census (counted again every 600 ticks) and the screen's layout.
 
 GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
-`ProtectionSpecGameTests`, `HallProtectHintGameTests`.
+`ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
+the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
-`hall_treasury` (treasury, protection and the ledger).
+`hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end
+from the pane without a click, then the Storehouse board).

@@ -67,6 +67,9 @@ public final class Families {
 			schooledMaster(mother), schooledMaster(father), mother.getUUID(), father.getUUID()));
 		FamilyBook.born(baby, mother, father); // the family name (34.21)
 		io.github.jcondedata.aliveworkplace.story.FriendPerks.nameBaby(baby, mother, father); // the first name, after a friend of theirs (31.12)
+		if (mother.level() instanceof net.minecraft.server.level.ServerLevel level) {
+			io.github.jcondedata.aliveworkplace.hall.VillageMoments.born(level, mother.blockPosition()); // the questbook's "born here" (36.2)
+		}
 	}
 
 	/** A schooled Master: schooled as a child and now at the top level of a trade (29.7's born Legends and gifts). */

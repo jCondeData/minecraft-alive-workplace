@@ -87,6 +87,15 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **Read a long entry in the Village Hall without clicking it.** Move the mouse from a row into the reading pane and
+  it keeps reading that row, so the wheel scrolls it there; Shift and the wheel over a row scroll it too. An arrow
+  shows when there's more below, and a long chronicle entry is shown whole. The Storehouse board works the same.
+- **The Blueprint Table's preview shows basements.** A build with a cellar is drawn whole in the 3D preview, cellar and
+  all, with a faint line where the ground will be; its size line says how far it goes below ground.
+- **Eight more village quests complete by themselves.** The questbook no longer asks you to click a checkmark for a
+  baby born in your village, 3 and 7 levels of research, proclaiming an edict, your first Burgher and Noble
+  households, founding a realm or collecting the takings: each quest ticks off when it happens. A village that got
+  there before this update ticks them off at its next dawn.
 - **"Take the fight to them" asks for what its story tells.** The questbook quest now completes when you and your war
   party break a raiders' camp, not for any 10 pillagers killed anywhere; everyone leading guards in the party gets it.
 - **The Village Hall and the Storehouse board look like the Blueprint Table.** Both screens now use the Table's dark

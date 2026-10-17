@@ -774,6 +774,8 @@ public final class RealmEdicts {
 			round(level, capitalHall, entity);
 		}
 		io.github.jcondedata.aliveworkplace.people.Moods.forget();
+		io.github.jcondedata.aliveworkplace.hall.VillageMoments.award(level, capitalHall, io.github.jcondedata.aliveworkplace.hall.VillageMoments.EDICT,
+			by instanceof net.minecraft.server.level.ServerPlayer player ? player : null); // the capital's village (36.2)
 		return new Edicts.Result(true, told, told(server, realm));
 	}
 

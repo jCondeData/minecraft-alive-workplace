@@ -86,6 +86,16 @@ SCENES = [
       [("01_preview_house", "A starter house"), ("02_preview_dragged", "Dragged round"), ("03_preview_style", "Picked in Sandstone"),
        ("04_preview_large", "A large build, scaled to fit"), ("05_all_materials", "Every material of a large build"),
        ("06_preview_imported", "An uploaded build")]),
+    # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
+    S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
+      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; the Storehouse board did the same", 45,
+      [("01_chronicle_hovered", "A long entry hovered"), ("02_chronicle_held", "Held with the mouse in the pane"),
+       ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_last_line", "The Storehouse board, scrolled")]),
+    # 36.1: a build with a basement in the table's 3D preview: the cellar under a faint ground plane, fitted whole
+    S("table_basement", "Builder", "Blueprint Table: basements in the preview",
+      "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
+      [("01_cottage_cellar", "Starter Cottage IV and its cellar"), ("02_cottage_turned", "Turned"),
+       ("03_storehouse_vault", "The Storehouse and its vault"), ("04_storehouse_turned", "Turned")]),
     S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
     S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,

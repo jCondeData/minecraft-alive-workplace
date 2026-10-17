@@ -57,10 +57,12 @@ MOMENT_OUT = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkpl
 # hall/VillageMoments grants these (its constants and VillageMoments.rank); titles are lang keys
 # advancements.aliveworkplace.village.<moment>
 MOMENTS = ["rank_village", "rank_town", "rank_city", "caravan", "festival", "raid", "hall_quest", "steward", "colony", "wonder",
-           "camp_broken"]
-# Quests that complete by themselves on a village moment (36.2, 36.3): quest key to its moment. Each must have that
+           "camp_broken", "first_baby", "research_3", "research_7", "edict", "burghers", "nobles", "realm", "treasury"]
+# Quests that complete by themselves on a village moment (36.2, 36.3): "chapter:quest" to its moment. Each must have that
 # moment's advancement as its only task, no checkmark, and say it completes by itself.
-MOMENT_QUESTS = {"warparty": "camp_broken"}
+MOMENT_QUESTS = {"town:warparty": "camp_broken", "founding:bed": "first_baby", "village:research": "research_3",
+                 "village:treasury": "treasury", "town:edict": "edict", "town:research": "research_7",
+                 "city:burghers": "burghers", "city:nobles": "nobles", "city:realm": "realm"}
 COLUMN, ROW = 3.0, 2.0  # wide enough apart that no two nodes or their lines crowd each other (owner, 2026-10-14)
 
 
@@ -317,8 +319,8 @@ def check_moment_quests():
     found = {}
     for ch in CHAPTERS:
         for q in ch["quests"]:
-            if q["key"] in MOMENT_QUESTS:
-                found[q["key"]] = q
+            if ch["key"] + ":" + q["key"] in MOMENT_QUESTS:
+                found[ch["key"] + ":" + q["key"]] = q
     for key, moment in MOMENT_QUESTS.items():
         q = found.get(key)
         if q is None:

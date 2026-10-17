@@ -530,7 +530,7 @@ def weavers_cottage_walls(b):
 
 
 def weavers_porch(b):
-    """A pent hood over the door on two fence posts, a lantern under it, a step."""
+    """A pent hood over the door on two fence posts, lanterns under it either side of the door, a step."""
     for x in (3, 5):
         fence(b, x, 1, 0, "spruce_fence")
         fence(b, x, 2, 0, "spruce_fence")
@@ -540,7 +540,10 @@ def weavers_porch(b):
     b.set(4, 0, 1, resolve(WEAVER_PLINTH, 4, 0, 1))
     for x in (3, 4, 5):
         b.set(x, 3, 1, WEAVER_ROOF.full)
-    lantern(b, 4, 2, 1, hanging=True)
+    # Lanterns hang either side of the walk, not over it: one at (4, 2, 1) left the door one block of headroom and no
+    # villager could get in to the loom
+    for x in (3, 5):
+        lantern(b, x, 2, 1, hanging=True)
 
 
 def weavers_roofs(b):

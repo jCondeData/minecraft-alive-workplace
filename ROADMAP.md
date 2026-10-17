@@ -4580,7 +4580,7 @@ Depends on: nothing open.
   village; a second time doesn't grant it again; an existing village that already qualifies gets it at the next dawn
   round); `generate.py` regenerates with no checkmark left in these eight quests and its own checks pass;
   `QuestbookCompatTests` passes; `langcheck.py`. Nothing new to film: `sessions.py done` without `--review`.
-- [ ] **36.3** **"Take the fight to them" asks for what its story tells.** The quest (`chapters.py`, key `warparty`)
+- [x] **36.3** (approved auto 2026-10-17) **"Take the fight to them" asks for what its story tells.** The quest (`chapters.py`, key `warparty`)
   tells the player to scout a raiders' camp, raise the Rally Banner and break the camp, but its task is "kill 10
   pillagers" anywhere. Its task becomes a new moment, `camp_broken`, awarded in `WarParties.broken` (a lair broken
   with a war party there or guards who killed there) to the player who struck the last blow and every player in the

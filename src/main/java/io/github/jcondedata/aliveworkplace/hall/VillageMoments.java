@@ -28,6 +28,8 @@ public final class VillageMoments {
 	public static final String STEWARD = "steward";
 	public static final String COLONY = "colony";
 	public static final String WONDER = "wonder";
+	/** A raiders' camp broken by a war party (36.3): only to the players who broke it, through {@link #grant}. */
+	public static final String CAMP_BROKEN = "camp_broken";
 
 	/** The moment of reaching {@code rank} ({@code rank_village}, {@code rank_town}, {@code rank_city}); none for a Hamlet. */
 	public static String rank(VillageRanks.Rank rank) {
@@ -56,6 +58,21 @@ public final class VillageMoments {
 		}
 		double r2 = (double) VillageHalls.RADIUS * VillageHalls.RADIUS;
 		players.addAll(level.getPlayers(p -> p.blockPosition().distSqr(hall) <= r2));
+		int awarded = 0;
+		for (ServerPlayer player : players) {
+			if (player.getAdvancements().award(advancement, CRITERION)) {
+				awarded++;
+			}
+		}
+		return awarded;
+	}
+
+	/** {@code moment}'s advancement to exactly {@code players}, no one else. Returns how many got it now. */
+	public static int grant(ServerLevel level, String moment, Iterable<ServerPlayer> players) {
+		AdvancementHolder advancement = level.getServer().getAdvancements().get(AliveWorkplace.id(PREFIX + moment));
+		if (advancement == null) {
+			return 0;
+		}
 		int awarded = 0;
 		for (ServerPlayer player : players) {
 			if (player.getAdvancements().award(advancement, CRITERION)) {

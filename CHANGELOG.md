@@ -87,6 +87,8 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **"Take the fight to them" asks for what its story tells.** The questbook quest now completes when you and your war
+  party break a raiders' camp, not for any 10 pillagers killed anywhere; everyone leading guards in the party gets it.
 - **The Village Hall and the Storehouse board look like the Blueprint Table.** Both screens now use the Table's dark
   panel, gold title, list on the left and reading pane on the right. In the hall, the village's numbers and the toolbar
   sit as icon buttons under the title, and the page tabs and everyone who lives there are a list with each villager's

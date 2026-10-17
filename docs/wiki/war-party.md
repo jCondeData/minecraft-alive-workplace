@@ -4,7 +4,7 @@ ROADMAP 32.13. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 (`Expansions.M32`); GameTests and the showcase run with it on. How a player takes the fight to a lair (see
 [Lairs and the Defense page](lairs.md)) with the village's guards (see [Raids and threats](raids.md)) and hired swords.
 
-Roadmap items: 32.13, B117
+Roadmap items: 32.13, B117, 36.3
 
 ## What a player sees
 
@@ -25,6 +25,8 @@ Roadmap items: 32.13, B117
 - **When the lair breaks** with a war party at it (or guards who killed there): its loot chest is yours as always; the
   chronicle says who led the war party and names **every guard who killed there**; the village has **10 days' peace**
   instead of 5; and every villager is **+10 happier for two days**: "the warband is broken". Chat says so too.
+- **The questbook's "Take the fight to them"** completes by itself then, for the player who struck the last blow and
+  every player leading guards in the war party (36.3; it used to ask for 10 pillagers killed anywhere).
 
 ## How it works
 
@@ -36,8 +38,9 @@ them. Every second, for each loaded lair, the guards marching (on a raised banne
 and their leaders are the war party; `Lairs.turnOut` tops the band up to six (never past its strength at home) and sets
 those without a target on the nearest of them, and at a City frees the captain. A lair mob killed by a guard within 48
 blocks of its lair pays the kill's XP again and puts the guard's name on the list for that village. `Lairs.onBroken`
-gives the rewards: `Lairs.rest(hall, 10)`, the mood until two days on, the chronicle line, and the siege-breakers'
-stay cut to the next dawn.
+gives the rewards: `Lairs.rest(hall, 10)`, the mood until two days on, the chronicle line, the siege-breakers'
+stay cut to the next dawn, and the village moment `camp_broken` (`VillageMoments.grant`: only the striker, when a
+player, and the players in the war party; not the hall's owner or players at home).
 Every villager made a guard on the spot (the hall's mercenaries, the Siege-breakers, `BanditKingStory.ally`, the reform's
 old soldier) gets a fresh brain as it is made, as `Relief` does, so its brain has the guard's CORE package with
 `GuardCombat` and it fights at once instead of after a reload (B117).
@@ -74,9 +77,10 @@ Nothing new: the Rally Banner, guards and mercenaries are the existing ones.
 
 ## Proof
 
-`WarPartyGameTests` (4): the muster enlists three of four guards on the banner and raises it, twelve of twenty, says
+`WarPartyGameTests` (6): the muster enlists three of four guards on the banner and raises it, twelve of twenty, says
 to craft a banner without one, and does nothing with M32 closed; the Siege-breakers are two crossbows, two knights and
 a medic for 30 emeralds, stay to the second dawn (kept through a save and load of one) and leave at the next dawn when
 the lair falls; a lair broken with guards on a raised banner gives 10 days' rest, extra XP for kills there (none with
 M32 closed), a chronicle line naming the player and both guards, and the mood (through a save and load); the band
-turns out six at a time and goes for the war party. Scene `war_party`.
+turns out six at a time and goes for the war party; a lair broken with two players' guards on raised banners grants
+`aliveworkplace:village/camp_broken` to both (36.3), and one broken by a lone player grants nothing. Scene `war_party`.

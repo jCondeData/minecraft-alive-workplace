@@ -56,7 +56,11 @@ UNLOCKS_JAVA = os.path.join(ROOT, "src", "main", "java", "io", "github", "jconde
 MOMENT_OUT = os.path.join(ROOT, "src", "main", "resources", "data", "aliveworkplace", "advancement", "village")
 # hall/VillageMoments grants these (its constants and VillageMoments.rank); titles are lang keys
 # advancements.aliveworkplace.village.<moment>
-MOMENTS = ["rank_village", "rank_town", "rank_city", "caravan", "festival", "raid", "hall_quest", "steward", "colony", "wonder"]
+MOMENTS = ["rank_village", "rank_town", "rank_city", "caravan", "festival", "raid", "hall_quest", "steward", "colony", "wonder",
+           "camp_broken"]
+# Quests that complete by themselves on a village moment (36.2, 36.3): quest key to its moment. Each must have that
+# moment's advancement as its only task, no checkmark, and say it completes by itself.
+MOMENT_QUESTS = {"warparty": "camp_broken"}
 COLUMN, ROW = 3.0, 2.0  # wide enough apart that no two nodes or their lines crowd each other (owner, 2026-10-14)
 
 
@@ -309,6 +313,25 @@ def check_advancements(advancements):
                     raise ValueError("%s:%s asks for %s, which isn't one of MOMENTS" % (ch["key"], q["key"], t[1]))
 
 
+def check_moment_quests():
+    found = {}
+    for ch in CHAPTERS:
+        for q in ch["quests"]:
+            if q["key"] in MOMENT_QUESTS:
+                found[q["key"]] = q
+    for key, moment in MOMENT_QUESTS.items():
+        q = found.get(key)
+        if q is None:
+            raise ValueError("MOMENT_QUESTS names %s, which no chapter has" % key)
+        if moment not in MOMENTS:
+            raise ValueError("%s completes on %s, which isn't one of MOMENTS" % (key, moment))
+        if q["tasks"] != [("advancement", "aliveworkplace:village/" + moment)]:
+            raise ValueError("%s's task should be aliveworkplace:village/%s alone, not %s" % (key, moment, q["tasks"]))
+        text = " ".join(q["desc"])
+        if "checkmark" in text or "completes by itself" not in q["desc"][-1]:
+            raise ValueError("%s's text should end saying it completes by itself, with no checkmark" % key)
+
+
 def gating(chapter, quest):
     """The milestones and mods a quest needs to be in the book: its chapter's and its own."""
     out = set()
@@ -389,6 +412,7 @@ def main():
     wanted = files()
     advancements = advancement_files()
     check_advancements(advancements)
+    check_moment_quests()
     os.makedirs(OUT, exist_ok=True)
     stale = []
     moments = moment_files()

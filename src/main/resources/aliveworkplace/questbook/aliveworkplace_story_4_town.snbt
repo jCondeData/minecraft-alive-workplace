@@ -194,9 +194,9 @@
 			y: -4.0d,
 			optional: true,
 			title: "Take the fight to them",
-			description: ["Defeat 10 pillagers.", "", "1. Sneak-right-click a guard with a spyglass: they become a Scout and bring home a map to the raiders' camp.", "2. Raise your Rally Banner: three in four of your guards gather round you as a war party.", "3. Lead them to the camp. Break it and the village has 10 days of peace.", "", "Pillagers count anywhere: at their camps, outposts and raids.", "", "This quest completes by itself when you have defeated 10 pillagers."],
+			description: ["Break a raiders' camp with your war party.", "", "1. Sneak-right-click a guard with a spyglass: they become a Scout and bring home a map to the raiders' camp.", "2. Raise your Rally Banner: three in four of your guards gather round you as a war party.", "3. Lead them to the camp. Break it and the village has 10 days of peace.", "", "This quest completes by itself when you and your war party break a raiders' camp."],
 			dependencies: ["7F3FDDCC62CBA7B4"],
-			tasks: [{id: "55DE27BB168B8E6C", type: "kill", entity: "minecraft:pillager", value: 10L}],
+			tasks: [{id: "55DE27BB168B8E6C", type: "advancement", advancement: "aliveworkplace:village/camp_broken", criterion: ""}],
 			rewards: [{id: "11B698FE117453D1", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 10}]
 		},
 		{

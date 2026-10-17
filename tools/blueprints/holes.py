@@ -62,6 +62,9 @@ ALLOW = {
 # it stood out as a stray wall a block off the tower)
 TOWER_EAVE = "open air under the tower's west cornice and eave, over the meeting room's roof"
 ALLOW.update({("village_hall_3", (17, y, z)): TOWER_EAVE for y in range(5, 16) for z in range(4, 11)})
+# The Lantern Pergola (26.14) is an open lattice of slats with azalea grown over some of the gaps, not a roof
+ALLOW.update({("lantern_pergola", p): "a pergola's open slats, not a roof"
+              for p in ((2, 5, 1), (1, 5, 5), (2, 5, 5), (3, 5, 3))})
 
 
 def load(path, props=False):

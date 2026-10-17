@@ -14,16 +14,31 @@ import net.minecraft.server.level.ServerLevel;
  */
 public final class Decorations {
 	/** Beauty points per decoration (an upgrade replaces its base on the same spot, so it counts instead of it). */
-	static final Map<ResourceLocation, Integer> POINTS = Map.of(
-		StarterBlueprints.WELL.id(), 2,
-		StarterBlueprints.WELL_2.id(), 3,
-		StarterBlueprints.STREET_LAMP.id(), 1,
-		StarterBlueprints.PARK_BENCH.id(), 1,
-		StarterBlueprints.FOUNTAIN.id(), 3,
-		StarterBlueprints.GAZEBO.id(), 3,
-		StarterBlueprints.MARKET_SQUARE.id(), 5,
-		StarterBlueprints.CHAPEL.id(), 4,
-		StarterBlueprints.BANDSTAND.id(), 3); // the Bard's (ROADMAP 27.14)
+	static final Map<ResourceLocation, Integer> POINTS = Map.ofEntries(
+		Map.entry(StarterBlueprints.WELL.id(), 2),
+		Map.entry(StarterBlueprints.WELL_2.id(), 3),
+		Map.entry(StarterBlueprints.STREET_LAMP.id(), 1),
+		Map.entry(StarterBlueprints.PARK_BENCH.id(), 1),
+		Map.entry(StarterBlueprints.FOUNTAIN.id(), 3),
+		Map.entry(StarterBlueprints.GAZEBO.id(), 3),
+		Map.entry(StarterBlueprints.MARKET_SQUARE.id(), 5),
+		Map.entry(StarterBlueprints.CHAPEL.id(), 4),
+		Map.entry(StarterBlueprints.BANDSTAND.id(), 3), // the Bard's (ROADMAP 27.14)
+		// ROADMAP 26.14: the small ones 1, the rest 2, the Topiary Garden 3
+		Map.entry(StarterBlueprints.SIGNPOST.id(), 1),
+		Map.entry(StarterBlueprints.FLOWER_PLANTERS.id(), 1),
+		Map.entry(StarterBlueprints.HAY_CART.id(), 1),
+		Map.entry(StarterBlueprints.NOTICE_BOARD.id(), 1),
+		Map.entry(StarterBlueprints.MARKET_CORNER.id(), 1),
+		Map.entry(StarterBlueprints.MARKET_CROSS.id(), 2),
+		Map.entry(StarterBlueprints.STAG_STATUE.id(), 2),
+		Map.entry(StarterBlueprints.STONE_ARCHWAY.id(), 2),
+		Map.entry(StarterBlueprints.LILY_POND.id(), 2),
+		Map.entry(StarterBlueprints.LANTERN_PERGOLA.id(), 2),
+		Map.entry(StarterBlueprints.FIRE_PIT.id(), 2),
+		Map.entry(StarterBlueprints.SUNDIAL.id(), 2),
+		Map.entry(StarterBlueprints.FOOTBRIDGE.id(), 2),
+		Map.entry(StarterBlueprints.TOPIARY_GARDEN.id(), 3));
 	/** Wellbeing per point of beauty. */
 	public static final float PER_POINT = 0.01f;
 	/** Most wellbeing decorations add. */

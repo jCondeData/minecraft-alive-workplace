@@ -4,7 +4,7 @@
 type: System
 image: https://jcondedata.github.io/minecraft-alive-workplace/decor/still-1.jpg
 caption: The decorations, side by side
-Beauty: Street Lamp 1, Park Bench 1, Well 2 (Well II 3), Fountain 3, Gazebo 3, Bandstand 3, Chapel 4, Market Square 5
+Beauty: 1 to 5 each (the table below)
 Wellbeing: 1% a point of beauty, up to 10%
 Moods: +5 a point within 16 blocks of a villager's bed, up to +15
 Counts: only builds a builder finished, within the hall's reach
@@ -27,8 +27,46 @@ reach adds to the village's **beauty**.
 | [Bandstand](bandstand-build.md) | 3 |
 | Chapel | 4 |
 | [Market Square](market-square-build.md) | 5 |
+| Signpost | 1 |
+| Flower Planters | 1 |
+| Hay Cart | 1 |
+| Notice Board | 1 |
+| Market Corner | 1 |
+| Market Cross | 2 |
+| Stag Statue | 2 |
+| Stone Archway | 2 |
+| Lily Pond | 2 |
+| Lantern Pergola | 2 |
+| Fire Pit | 2 |
+| Sundial | 2 |
+| Footbridge | 2 |
+| Topiary Garden | 3 |
 
 All of them are in the Blueprint Table. An upgrade counts instead of the build it replaces, not on top of it.
+
+## The small ones
+
+Besides the big pieces there are fourteen small decorations, quick to build and easy to stock, each a different kind
+of thing:
+
+- **Market Cross**: a stepped stone plinth with a tall shaft, lanterns hanging from its arms.
+- **Stag Statue**: a stone stag with spreading antlers on a plinth.
+- **Flower Planters**: a two-tier brick planter full of flowers, a lantern at each end. Every village has this one
+  from the start.
+- **Signpost**: a post with four blank fingerboards to write your own directions on, and a lantern on top.
+- **Stone Archway**: a mossy stone arch over a path, ivy up its sides and a lantern in the opening.
+- **Lily Pond**: a little pond with lily pads in a grassy bank of ferns, with a stone seat.
+- **Hay Cart**: a cart loaded with hay bales, left by the road.
+- **Notice Board**: a roofed board with notices pinned to it.
+- **Lantern Pergola**: a walk under slats grown over with azalea, lanterns hanging over the path, benches either side.
+- **Fire Pit**: a campfire in a ring of stones with log seats round it.
+- **Sundial**: a round stone plaza with hour stones and a sundial in the middle.
+- **Topiary Garden**: clipped hedges round four topiary shapes and an urn of azalea.
+- **Market Corner**: crates, sacks, hay and produce under a striped awning.
+- **Footbridge**: a little plank bridge over a channel of water with lily pads.
+
+The rest start locked at the Blueprint Table: a traveling trader on [market day](market-days.md) may sell any of them,
+and each time one of your builders levels up, the village unlocks a few more builds.
 
 ## What beauty does
 

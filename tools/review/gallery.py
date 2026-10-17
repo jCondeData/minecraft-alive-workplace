@@ -29,7 +29,10 @@ FAMILIES = {
                                             "flower_shop*", "healing_center*", "library*", "schoolhouse*"]),
     "defences": ("Defences", ["palisade", "palisade_gate", "palisade_tower", "stone_wall", "wall_tower", "gatehouse", "barracks*",
                               "lookout_tower*", "camp/bandit_camp", "fire_station", "well_house", "physicians_house"]),
-    "decorations": ("Decorations", ["well*", "street_lamp", "park_bench", "fountain", "gazebo", "market_square", "chapel"]),
+    "decorations": ("Decorations", ["well*", "street_lamp", "park_bench", "fountain", "gazebo", "market_square", "chapel",
+                                    "market_cross", "stag_statue", "flower_planters", "signpost", "stone_archway", "lily_pond",
+                                    "hay_cart", "notice_board", "lantern_pergola", "fire_pit", "sundial", "topiary_garden",
+                                    "market_corner", "footbridge"]),
 }
 for style in STYLES:
     FAMILIES["village_" + style] = (f"Village pieces: {style}", [f"village/{style}_*"])

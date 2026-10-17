@@ -79,8 +79,15 @@ public class NetherworkerGameTests implements FabricGameTest {
 		villager.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(1, 2, 1)));
 		List<ItemStack> bare = Netherworkers.finds(level, villager, 0);
 		helper.assertTrue(!bare.isEmpty() && bare.stream().allMatch(s -> WASTES.contains(s.getItem())), "a bare trip found " + bare);
-		List<ItemStack> armed = Netherworkers.finds(level, villager, Netherworkers.Kit.SWORD | Netherworkers.Kit.ARMOR);
-		helper.assertTrue(armed.stream().anyMatch(s -> FORTRESS_ONLY.contains(s.getItem())), "a sword and armor found no fortress goods: " + armed);
+		// The loot roll uses the level's random, so one trip can miss the fortress goods (B145: a trip of 2-3 rolls whose
+		// entries were all magma cream). Over 40 trips with a sword and armor they must show up; a bare trip never has them.
+		List<ItemStack> armed = new java.util.ArrayList<>();
+		boolean fortress = false;
+		for (int trip = 0; trip < 40 && !fortress; trip++) {
+			armed = Netherworkers.finds(level, villager, Netherworkers.Kit.SWORD | Netherworkers.Kit.ARMOR);
+			fortress = armed.stream().anyMatch(s -> FORTRESS_ONLY.contains(s.getItem()));
+		}
+		helper.assertTrue(fortress, "a sword and armor found no fortress goods in 40 trips, the last: " + armed);
 		BuilderBag bag = new BuilderBag();
 		bag.add(new ItemStack(Items.DIAMOND_PICKAXE));
 		bag.add(new ItemStack(Items.IRON_CHESTPLATE));

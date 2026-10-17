@@ -114,6 +114,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Every seat in the Stadium can be walked to.** Its aisles climbed two blocks a tier on a single stair, so nobody
+  could get past the second row; now each aisle is a proper flight, two stairs to a tier, and the rows round the
+  curved corners join up so you can walk right round every tier. The blueprint check now also looks at open-air
+  stands and terraces, not just upper floors under a roof (B154).
 - **Fishermen take their cooked fish out of the furnace.** The cooked fish used to sit in the furnace until his next
   catch came home, and all night once his shift ended; now he comes back for them as soon as they are done (also after
   a reload mid-cook), and puts them in his barrel like his catch (B147).

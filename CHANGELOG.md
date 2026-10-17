@@ -66,6 +66,14 @@ asks for the steps, `latest.log` and any crash report).
   chapters are added once, on the first start with FTB Quests: a server owner's edits and deletions are kept. The
   guide's new page, The questbook, lists them.
 
+### Changed
+- **No two kinds of home look alike any more.** The Stone House is now a stone croft with crow-stepped gables, a
+  chimney breast and a woodpile, and grows a second storey in stone instead of timber; the Terrace is a brick row with
+  a bay window and a hooded door for each home; the Artisan's House has a red tile gambrel roof, weatherboards and a
+  hoist beam over a loft door; the Townhouse is warm stucco under a slate mansard with little iron balconies; the
+  Manor's roofs are hipped. The Starter Cottage stays the timber-framed one. Beds, chests and rooms are where they
+  were: homes already built keep their villagers, and an upgrade builds the new look onto them.
+
 ### Fixed
 - **A ram no longer stalls behind a Gatehouse's portcullis.** After breaking the middle bars, a ravager sometimes stood
   just out of reach of the fence gate behind them and never struck it, so the raiders waited outside all night.

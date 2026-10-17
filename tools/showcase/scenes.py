@@ -920,7 +920,7 @@ SCENES = [
       [("30_*@spread", "")]),
     S("workshops", "Build families", "Tinker's Workshops and Nether Gates", "every workshop and gate was placed", 60,
       [("30_*@spread", "")]),
-    S("workplaces", "Build families", "A workplace for every worker: the 12 village houses a builder can build",
+    S("workplaces", "Build families", "A workplace for every worker: 12 builds, each with its own look (26.11)",
       "every workplace was placed", 90, [("30_*@spread", "")]),
     S("decor", "Build families", "Decorations", "every decoration was placed", 120, [("30_*@spread", "")]),
     # Sieges I (ROADMAP 32.4): a ravager ram breaks a Palisade Gate, the cracks showing

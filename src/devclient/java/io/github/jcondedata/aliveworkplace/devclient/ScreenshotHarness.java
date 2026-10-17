@@ -3288,7 +3288,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	// --- Gallery: every starter blueprint placed instantly, one shot each -------------------------
 
-	/** The 12 workplaces (ROADMAP 27.11): the village houses a builder can build, Cobblemon's five too. */
+	/** The 12 workplaces (ROADMAP 27.11), each its own build since 26.11, Cobblemon's five too. */
 	private static List<StarterBlueprints.Entry> workplacesGallery() {
 		List<StarterBlueprints.Entry> out = new java.util.ArrayList<>(StarterBlueprints.WORKPLACES);
 		out.addAll(StarterBlueprints.COBBLEMON_WORKPLACES);

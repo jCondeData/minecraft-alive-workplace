@@ -12,6 +12,12 @@ on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges,
   (Milestone 36's quick additions); **c and d, the big-update lanes** (Milestones 37 and up: c prefers 37, d prefers
   38, each takes the other's when its own is empty, and 39 waits on the owner's Create port). `sessions.py next`
   lists each lane's own; lanes b, c and d never take a bug.
+- **Lanes sharing one machine** (2026-10-17: the owner's chat started all four lanes in its own 7 GB container;
+  Java was OOM-killed 3 times and a lane's script ran in another's tree): each lane works in its own git worktree
+  (`/home/claude/lane-<x>`), keeps its scripts in its own folder (not the shared scratchpad), and runs every Gradle or
+  Minecraft command through `flock /home/claude/mc.lock <command>`; a full build there needs
+  `-PcompatHeap=2G "-Dorg.gradle.jvmargs=-Xmx1g -XX:+UseSerialGC"`. Lock waits reached 20-45 minutes with four
+  lanes, so start at most two lanes per machine; four lanes want four chats (each its own machine).
 - **The QA lane** (`--as qa-<MMDD>-<HHMM>`): hourly overnight (11 PM to 6 AM Central) and every 2 hours by day
   (owner, 2026-10-05). It owns the bugs only a test or a showcase scene sees, so build lanes stay on features.
 - **The owner's chat** (`--as chat`) talks with Jesse live and takes any item.

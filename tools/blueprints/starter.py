@@ -825,8 +825,8 @@ def storehouse_chests(b, xs, z, facing, ys=(1, 2)):
 
 
 def granary(b):
-    """The granary (walls x 1-7, z 2-7): stone below with the loading doors, a loft floor, timber above, the Storehouse and
-    chests along the back, hay and sacks by the door."""
+    """The granary (walls x 1-7, z 2-7): stone below with the loading doors, a loft floor with a ladder up to it, timber
+    above, the Storehouse and chests along the back, hay and sacks by the door."""
     plinth(b, 1, 2, 7, 7, FOUNDATION_MIX, floor="spruce_planks")
     walls(b, 1, 2, 7, 7, 1, 3, STONE_MIX)
     for x, z in ((1, 2), (7, 2), (1, 7), (7, 7)):
@@ -847,7 +847,9 @@ def granary(b):
     b.set(4, 1, 6, "aliveworkplace:storehouse", facing="north")
     b.set(4, 2, 6, "lantern", hanging=False, waterlogged=False)
     storehouse_chests(b, (2, 3, 5, 6), 6, "north")
-    b.set(2, 1, 3, "hay_block", axis="y")
+    for y in range(1, 5):  # the ladder up the front wall to the loft, through a hatch in its floor (B149)
+        b.set(2, y, 3, "ladder", facing="south", waterlogged=False)
+    b.set(2, 1, 5, "hay_block", axis="y")
     b.set(6, 1, 3, "barrel", facing="up", open=False)
     b.set(6, 2, 3, "hay_block", axis="z")
     lantern(b, 3, 3, 3, hanging=True)
@@ -1197,7 +1199,7 @@ def terrace_home(b, x0, door_x, window_x, beds, kitchen_west=True, flowers=("pot
     fence(b, table_x, 1, 4, "spruce_fence")
     b.set(table_x, 2, 4, "spruce_pressure_plate", powered=False)
     other = window_x + 1 if window_x + 1 in inner and window_x + 1 != table_x else window_x - 1
-    stairs(b, other, 1, 4, SPRUCE, "east" if other < table_x else "west")
+    chair(b, other, 1, 4, SPRUCE, "east" if other < table_x else "west")
     box(b, inner[0], 1, 5, inner[-1], 1, 6, "brown_carpet")
     # Upstairs: the floor (with the ladder's hole), two beds against the back wall, a chest and a light
     box(b, inner[0], 5, 2, inner[-1], 5, 7, "spruce_planks")
@@ -1385,8 +1387,8 @@ def inn():
     for tx, tz in ((3, 5), (7, 5)):
         fence(b, tx, 1, tz, "spruce_fence")
         b.set(tx, 2, tz, "spruce_pressure_plate", powered=False)
-        stairs(b, tx - 1, 1, tz, SPRUCE, "east")
-        stairs(b, tx + 1, 1, tz, SPRUCE, "west")
+        chair(b, tx - 1, 1, tz, SPRUCE, "east")
+        chair(b, tx + 1, 1, tz, SPRUCE, "west")
     box(b, 2, 1, 7, 8, 1, 7, "red_carpet")
     for y in range(1, 6):
         b.set(10, y, 10, "ladder", facing="west", waterlogged=False)
@@ -1724,7 +1726,7 @@ def library_hall(b):
         for tz in (5, 6):
             slab(b, tx, 1, tz, DARK_OAK, top=True)
         b.set(tx, 2, 5, "lantern", hanging=False, waterlogged=False)
-        stairs(b, tx - 1 if tx == 4 else tx + 1, 1, 6, DARK_OAK, "east" if tx == 4 else "west")
+        chair(b, tx - 1 if tx == 4 else tx + 1, 1, 6, DARK_OAK, "east" if tx == 4 else "west")
     beam_ring(b, 1, 2, 11, 10, 6, "dark_oak_log")
     for x in range(2, 11):
         log(b, x, 6, 6, "dark_oak_log", axis="x")

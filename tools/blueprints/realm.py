@@ -354,7 +354,7 @@ def royal_hall_2():
         b.set(X1 - 1, 1, z, "chest", facing="west", type="single", waterlogged=False)
     for x in (20, 21, 22):
         slab(b, x, 1, 15, ROYAL_WOOD, top=True)
-    stairs(b, 21, 1, 16, ROYAL_WOOD, "north")
+    chair(b, 21, 1, 16, ROYAL_WOOD, "north")
     b.set(20, 2, 15, "candle", candles=3, lit=True, waterlogged=False)
     b.set(22, 2, 15, "potted_fern")
     lantern(b, 21, 2, 15)

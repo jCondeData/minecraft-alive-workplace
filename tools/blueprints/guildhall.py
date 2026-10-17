@@ -178,7 +178,7 @@ def guildhall_rooms(b):
         b.set(x, 1, z, "potted_fern")
     b.set(16, 1, 7, "chest", facing="west", type="single", waterlogged=False)
     # Stairs up the west wall, a rail round the stairwell
-    for i, z in enumerate((10, 9, 8, 7)):
+    for i, z in enumerate((10, 9, 8, 7, 6)):  # the top step in the archive's floor (B149: four left a block to jump)
         stairs(b, 2, 1 + i, z, SPRUCE, "north")
     b.set(2, 1, 11, "spruce_planks")
     for z in (7, 8, 9, 10, 11):

@@ -280,6 +280,13 @@ def stairs(b, x, y, z, fam, facing, top=False):
     b.set(x, y, z, name, facing=facing, half="top" if top else "bottom", shape="straight", waterlogged=False)
 
 
+def chair(b, x, y, z, fam, toward):
+    """A stair as a chair whose sitter faces {@code toward} (where the table is): a stair's facing is the side its
+    backrest is on, so the stair faces the other way (B148: chairs drawn with stairs(..., toward) sat with their backs
+    to the table). check.py fails any chair beside a table that doesn't face it."""
+    stairs(b, x, y, z, fam, OPP[toward])
+
+
 def slab(b, x, y, z, fam, top=False, double=False):
     name = fam.slab if isinstance(fam, Family) else fam
     b.set(x, y, z, name, type="double" if double else ("top" if top else "bottom"), waterlogged=False)

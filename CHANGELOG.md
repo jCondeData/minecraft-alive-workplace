@@ -114,6 +114,9 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **A Great Wall sentry climbing back up gets all the way to its post.** One that went up the wall's face landed a
+  block or two off its post and stood there, with no path for a golem along the narrow walk; it now takes the last
+  steps straight over (B144).
 - **Two builders on one house really take about half the time again.** Near the end, the lead took what it was short of
   from its helper and left the rest of the build's last things (a lantern) in the chests, then walked back for them
   alone at the very end while the helper stood about. It now picks those up while the helper is still busy (B155).

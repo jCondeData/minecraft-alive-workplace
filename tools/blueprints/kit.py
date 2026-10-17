@@ -6,6 +6,9 @@ Conventions for every blueprint (the mod relies on these):
   * x = width, y = height, z = depth; the FRONT of the build is the z = 0 side (north).
   * y = 0 is the floor layer; it sits on top of the block the player clicks.
   * Every position inside the bounds is listed (air included) so builders clear the site.
+  * A basement (ROADMAP 26.15) is drawn below y = 0, down to y = -basement (Build(..., basement=4)): `cellar` digs and
+    walls it. The file holds it at the bottom (shifted up by `basement`); StarterBlueprints.Entry's basement moves it
+    back under the ground. Outside its walls the ground under y = 0 is left out of the file (the world's as it is).
 """
 import os
 import zlib
@@ -21,12 +24,14 @@ DATA_VERSION = 3955  # Minecraft 1.21.1
 
 
 class Build:
-    def __init__(self, w, h, d):
+    def __init__(self, w, h, d, basement=0):
         self.w, self.h, self.d = w, h, d
+        self.basement = basement
+        self.cellars = []  # (x0, z0, x1, z1): the rooms dug under y = 0, emptied by fill_air
         self.blocks = {}
 
     def set(self, x, y, z, name, **props):
-        assert 0 <= x < self.w and 0 <= y < self.h and 0 <= z < self.d, (x, y, z, name)
+        assert 0 <= x < self.w and -self.basement <= y < self.h and 0 <= z < self.d, (x, y, z, name)
         if isinstance(name, Mix):
             name = name.at(x, y, z)
         if ":" not in name:
@@ -72,13 +77,14 @@ class Build:
         self.nbt = getattr(self, "nbt", {})
         self.nbt[(x, y, z)] = nbt
 
-    def grow(self, w, h, d):
-        """A bigger copy of this build (air left out), for an upgrade drawn on top of its base."""
-        b = Build(w, h, d)
+    def grow(self, w, h, d, basement=None):
+        """A bigger copy of this build (air left out), for an upgrade drawn on top of its base; `basement` to dig deeper."""
+        b = Build(w, h, d, max(self.basement, basement or 0))
         for pos, block in self.blocks.items():
             if block[0] != "minecraft:air":
                 b.blocks[pos] = block
         b.nbt = dict(getattr(self, "nbt", {}))
+        b.cellars = list(self.cellars)
         return b
 
     def clear(self, x0, y0, z0, x1, y1, z1):
@@ -97,6 +103,11 @@ class Build:
             for y in range(self.h):
                 for z in range(self.d):
                     self.blocks.setdefault((x, y, z), ("minecraft:air", ()))
+        for x0, z0, x1, z1 in self.cellars:
+            for x in range(x0, x1 + 1):
+                for y in range(-self.basement, 0):
+                    for z in range(z0, z1 + 1):
+                        self.blocks.setdefault((x, y, z), ("minecraft:air", ()))
 
     def door(self, x, y, z, name, facing, hinge="left"):
         self.set(x, y, z, name, facing=facing, half="lower", hinge=hinge, open=False, powered=False)
@@ -109,6 +120,7 @@ class Build:
         self.set(x + dx, y, z + dz, f"{color}_bed", facing=facing, part="head", occupied=False)
 
     def to_nbt(self):
+        assert not (self.basement and getattr(self, "entities", None)), "entities in a build with a basement aren't moved up"
         palette, index, blocks = [], {}, []
         for (x, y, z), key in sorted(self.blocks.items()):
             if key[0] == "minecraft:structure_void":
@@ -122,14 +134,14 @@ class Build:
                 if props:
                     entry["Properties"] = Compound({k: String(v) for k, v in props})
                 palette.append(entry)
-            entry = Compound({"pos": List[Int]([Int(x), Int(y), Int(z)]), "state": Int(index[key])})
+            entry = Compound({"pos": List[Int]([Int(x), Int(y + self.basement), Int(z)]), "state": Int(index[key])})
             extra = getattr(self, "nbt", {}).get((x, y, z))
             if extra is not None:
                 entry["nbt"] = extra
             blocks.append(entry)
         return Compound({
             "DataVersion": Int(DATA_VERSION),
-            "size": List[Int]([Int(self.w), Int(self.h), Int(self.d)]),
+            "size": List[Int]([Int(self.w), Int(self.h + self.basement), Int(self.d)]),
             "palette": List[Compound](palette),
             "blocks": List[Compound](blocks),
             "entities": List[Compound](getattr(self, "entities", [])),
@@ -142,7 +154,8 @@ class Build:
         path = os.path.join(folder, name + ".nbt")
         nbtlib.File(self.to_nbt()).save(path, gzipped=True)
         solid = sum(1 for n, _ in self.blocks.values() if n not in ("minecraft:air", "minecraft:structure_void"))
-        print(f"{name}: {self.w}x{self.h}x{self.d}, {solid} blocks -> {os.path.relpath(path, ROOT)}")
+        under = f" (+{self.basement} below ground)" if self.basement else ""
+        print(f"{name}: {self.w}x{self.h}x{self.d}{under}, {solid} blocks -> {os.path.relpath(path, ROOT)}")
         if checked:
             from check import check
             for problem in check(self):
@@ -278,6 +291,13 @@ def stairs(b, x, y, z, fam, facing, top=False):
     """A stair of {@code fam} (a Family or a stairs id) rising towards {@code facing}; top=True hangs it upside down."""
     name = fam.stairs if isinstance(fam, Family) else fam
     b.set(x, y, z, name, facing=facing, half="top" if top else "bottom", shape="straight", waterlogged=False)
+
+
+def chair(b, x, y, z, fam, toward):
+    """A stair as a chair whose sitter faces {@code toward} (where the table is): a stair's facing is the side its
+    backrest is on, so the stair faces the other way (B148: chairs drawn with stairs(..., toward) sat with their backs
+    to the table). check.py fails any chair beside a table that doesn't face it."""
+    stairs(b, x, y, z, fam, OPP[toward])
 
 
 def slab(b, x, y, z, fam, top=False, double=False):
@@ -561,7 +581,9 @@ def seal_slots(b):
             if not usable:
                 continue
             plain = [w for w in usable if not any(t in w[0] for t in ("_log", "pane", "glass", "_wood", "_bars"))]
-            fallback = max(set(plain or usable), key=(plain or usable).count)
+            # The commonest block of the wall; a tie goes to the lowest (dict.fromkeys keeps the wall's order: a set's
+            # order depends on PYTHONHASHSEED, so ties once came out differently run to run, e.g. ranch_2's gable)
+            fallback = max(dict.fromkeys(plain or usable), key=(plain or usable).count)
             for yy, w in zip(column, wall):
                 b.blocks[(x, yy, z)] = w if w in usable else fallback
 
@@ -611,6 +633,55 @@ def chimney(b, x, z, y0, y1, name=STONE_MIX, smoke=True):
         b.set(x, y, z, resolve(name, x, y, z))
     if smoke:
         b.set(x, y1 + 1, z, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+
+
+def cellar(b, x0, z0, x1, z1, wall=MOSSY_BRICK_MIX, floor="stone_bricks", ladder=None, depth=None, beam=None,
+           hatch="spruce_trapdoor"):
+    """A room dug under the build (ROADMAP 26.15; the Build needs basement >= depth): a floor at y = -depth and walls
+    x0..x1, z0..z1 up to y = -1, under the ground floor's own floor (its ceiling), the inside emptied (the builder digs it
+    out). ladder=(x, z, facing): a ladder up from the cellar's floor to just under the ground floor's floor, against a
+    wall on its back (facing is the way it faces, away from that wall), under a closed hatch in that floor (a trapdoor
+    flush with it, facing as the ladder: open, the game lets a player climb on through it). With the ladder
+    through an open hole and a block up above the floor, villagers walking by climbed it onto the window sill beside it
+    and stuck there (B158: a Chef never got to the Kitchen's smoker); a closed hatch is floor to them. hatch=None: the old
+    ladder through the floor to a block above it, for a ladder in a nook nobody walks into (one you climb out of over
+    the furniture in front of it, which a hatch's top rung is too low for). beam: a log course
+    under the ceiling round the walls (the top of the walls in logs, axis along each wall)."""
+    depth = depth or b.basement
+    assert 0 < depth <= b.basement, (depth, b.basement)
+    box(b, x0, -depth, z0, x1, -depth, z1, floor)
+    for y in range(-depth + 1, 0):
+        b.ring(x0, z0, x1, z1, y, wall)
+    if beam:
+        for x in range(x0, x1 + 1):
+            for z in (z0, z1):
+                log(b, x, -1, z, beam, axis="x")
+        for z in range(z0 + 1, z1):
+            for x in (x0, x1):
+                log(b, x, -1, z, beam, axis="z")
+    b.cellars.append((x0 + 1, z0 + 1, x1 - 1, z1 - 1))
+    if ladder:
+        x, z, facing = ladder
+        for y in range(-depth + 1, 0 if hatch else 2):
+            b.set(x, y, z, "ladder", facing=facing, waterlogged=False)
+        if hatch:
+            trapdoor(b, x, 0, z, hatch, facing, half="top")
+
+
+def cellar_stairs(b, x, z, facing, fam, depth=None, width=1):
+    """A flight down into a cellar: the top step in the ground floor's floor (y = 0) at (x, z), then one a block lower
+    each block `facing` (the way a player walks down), the last on the cellar's floor; the floor over the steps below
+    the top one is opened for the head. width: steps side by side (to the right of `facing`). The run must lie inside
+    the cellar's walls."""
+    depth = depth or b.basement
+    dx, dz = DIRS[facing]
+    rx, rz = DIRS[CW[facing]]
+    for i in range(depth):
+        for j in range(width):
+            px, pz = x + dx * i + rx * j, z + dz * i + rz * j
+            stairs(b, px, -i, pz, fam, OPP[facing])
+            if i >= 1:
+                b.set(px, 0, pz, "air")
 
 
 def lamp_post(b, x, y, z, post="spruce_fence", height=2, hanging=False):

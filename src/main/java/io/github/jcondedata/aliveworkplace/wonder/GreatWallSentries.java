@@ -391,6 +391,13 @@ public final class GreatWallSentries {
 				}
 				return;
 			}
+			if (!below && away < 3 && (sinceBetter > 40 || golem.getNavigation().isDone())) {
+				// B144: up on the wall a block or two off its station with no path there (off the face it climbed, a golem
+				// is wider than the walk into its alcove): the last steps straight over, as up the face
+				golem.getNavigation().stop();
+				golem.getMoveControl().setWantedPosition(target.x, target.y, target.z, 1.0);
+				return;
+			}
 			if (--repath <= 0 || golem.getNavigation().isDone()) {
 				repath = 20;
 				golem.getNavigation().moveTo(target.x, target.y, target.z, 1.0);

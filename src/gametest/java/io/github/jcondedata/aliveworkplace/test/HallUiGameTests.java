@@ -113,4 +113,51 @@ public class HallUiGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabr
 		helper.assertTrue(book.getItem().is(Items.LECTERN) && view.getCarried().isEmpty(), "a click moved the lectern: " + view.getCarried());
 		helper.succeed();
 	}
+
+	/**
+	 * The Storehouse board (26.12) opens on its own menu type, drawn in the Blueprint Table's style, not a chest: the
+	 * same buttons (what's in store, the stock orders), the orders button still opens the orders page in the same
+	 * screen and its arrow comes back; the client's copy has the server's slots in order and clicks change nothing on it.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"storehouseUiOpens"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "storehouseUiOpens")
+	public void storehouseOpensOnItsOwnScreen(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		BlockPos storehouse = helper.absolutePos(HALL);
+		helper.setBlock(HALL, ModBlocks.STOREHOUSE);
+		helper.setBlock(HALL.east(), net.minecraft.world.level.block.Blocks.CHEST);
+		player.teleportTo(storehouse.getX() + 1.5, storehouse.getY(), storehouse.getZ() + 2.5);
+		helper.runAfterDelay(5, () -> {
+			io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(player, storehouse);
+			helper.assertTrue(player.containerMenu instanceof ChoiceMenu, "the board didn't open: " + player.containerMenu);
+			ChoiceMenu menu = (ChoiceMenu) player.containerMenu;
+			helper.assertTrue(menu.getType() == ModBlocks.STOREHOUSE_MENU, "the board opened as " + menu.getType());
+			helper.assertTrue(menu.icon(4).is(Items.WRITABLE_BOOK) && menu.icon(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT).is(Items.WRITABLE_BOOK),
+				"the board's top row is missing: " + menu.icon(4) + ", " + menu.icon(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT));
+			helper.assertTrue(menu.icon(4).getHoverName().getString().equals(Component.translatable("screen.aliveworkplace.storehouse.info").getString()),
+				"the store's button is " + menu.icon(4).getHoverName().getString());
+			menu.clicked(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT, 0, ClickType.PICKUP, player);
+			helper.assertTrue(player.containerMenu == menu && menu.icon(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.BACK_SLOT).is(Items.ARROW),
+				"the orders button didn't open the orders page in the same screen: " + menu.icon(0));
+			menu.clicked(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.BACK_SLOT, 0, ClickType.QUICK_MOVE, player);
+			helper.assertTrue(menu.icon(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT).is(Items.WRITABLE_BOOK)
+				&& menu.icon(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.BACK_SLOT).isEmpty(), "a shift-click on the arrow didn't come back to the requests");
+			player.closeContainer();
+
+			net.minecraft.world.inventory.AbstractContainerMenu view = ModBlocks.STOREHOUSE_MENU.create(2, player.getInventory());
+			helper.assertTrue(view instanceof ChoiceView && view.getType() == ModBlocks.STOREHOUSE_MENU, "the client's copy is " + view);
+			helper.assertTrue(view.slots.size() == menu.slots.size(), view.slots.size() + " slots on the client, " + menu.slots.size() + " on the server");
+			for (int i = 0; i < ChoiceMenu.SIZE; i++) {
+				helper.assertTrue(view.slots.get(i).getContainerSlot() == i, "slot " + i + " shows button " + view.slots.get(i).getContainerSlot());
+			}
+			Slot orders = view.slots.get(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT);
+			orders.set(new ItemStack(Items.WRITABLE_BOOK));
+			view.clicked(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT, 0, ClickType.PICKUP, player);
+			helper.assertTrue(orders.getItem().is(Items.WRITABLE_BOOK) && view.getCarried().isEmpty(), "a click moved the book on the client: " + view.getCarried());
+			helper.succeed();
+		});
+	}
 }

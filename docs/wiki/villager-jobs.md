@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, B97, B101, B103
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103
 
 ## What a player sees
 
@@ -24,6 +24,12 @@ seconds pays and retrains them. The price goes by level: Novice 5, Apprentice 10
 Dara costs 5 emeralds: you're 2 emeralds short. Nothing changed." A jobless villager becomes a Builder the same way
 for free. A builder given another job hands their builds back first: what's built stays, the blueprint comes back to
 its owner still placed, and another builder carries on from there.
+
+**Fishermen per village (26.13).** A barrel is the Fisherman's workstation, and builds are full of storage barrels,
+so a village takes only so many fishermen: 1, plus 1 more for every 10 villagers within the village radius (48 blocks)
+of the barrel. Once a village has its fishermen, a jobless villager passes free barrels by and takes another free
+workstation instead (or stays jobless if there is none). A fisherman the village already has keeps his job when it is
+over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back.
 
 Chests and barrels within 8 blocks of the workstation are that worker's supply chests: tools and materials come out
 of them and the work goes into them. A line over a worker's head says what they are doing or waiting for, and
@@ -123,7 +129,10 @@ village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkP
 mood). The Builder's page has the level table.
 
 **Requests.** What workers are waiting for (materials, a pickaxe, seeds) is posted on the Storehouse's board, where
-players can hand things over; the Village Hall lists it too.
+players can hand things over; the Village Hall lists it too. The board is drawn like the Blueprint Table (26.12): the
+requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
+list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
+over what you have, as before.
 
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages
 keep working when no player is near (`keepVillagesWorking`). Builds and quarries follow the game rule
@@ -158,6 +167,9 @@ list of free workstations finds each kind of workstation's job once.
 | `supplyRadius` | 8 (2 to 32) | Chests this close to a workstation are its supply chests |
 | `villageRadius` | 48 (0 to 128) | Workers this close together share chests; 0: no sharing |
 | `maxWorkersPerVillage` | 0 (0 to 500) | The most workers per village; 0: no limit |
+| `fishermanCap` | on | A village takes only so many fishermen; off: as many as it has free barrels |
+| `fishermenPerVillage` | 1 (1 to 20) | The fishermen every village takes, with the cap on |
+| `villagersPerFisherman` | 10 (1 to 100) | One more fisherman for every this many villagers, with the cap on |
 | `workerPathRange` | 48 (16 to 128) | How far a worker looks for a path in one go |
 | `keepVillagesWorking` | on | Villages keep working while no player is near |
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
@@ -210,6 +222,11 @@ and so on). Status lines and the requests board are not saved: workers post agai
   their record when an old chunk loads.
 - 25.5: every "needs" system has its own switch, because babysitting is the top complaint about big colony mods.
 - 23.6 (owner's call): villages keep working when no player is near.
+- 26.13 (owner, 2026-10-16, chosen over "barrels only hire near water" and "swap storage barrels"): storage barrels in
+  builds made most villagers fishermen, so fishermen are capped per village. The village is every villager within
+  `villageRadius` of the barrel, as for the worker cap; fishermen are counted by their job, so one whose barrel is
+  broken still counts. The cap is off in GameTests (tests side by side would count each other's villagers): its own
+  tests switch it on.
 - 26.6 (owner's playtest, 2026-10-14): in Cobblemon villages nearly every villager works, so a working villager can
   be retrained as a Builder for emeralds. Whether the other jobs' switches should cost too is a question in the ROADMAP
   Notes; for now they stay free.
@@ -217,7 +234,9 @@ and so on). Status lines and the requests board are not saved: workers post agai
 ## Known limits
 
 - A job needs a free block of its kind within about 4 blocks of the villager when it is picked.
-- Jobs given by order (a player's pick, the Steward) aren't held back by the worker cap.
+- Jobs given by order (a player's pick, the Steward) aren't held back by the worker cap or the fisherman cap.
+- A jobless villager checks the fisherman cap when he looks for a workstation and on the way to it: if the village
+  grows later, he looks again by himself, but a fisherman over the cap is never let go to make room.
 - The five Pokémon jobs and the Gem Grower are behind 1.2's gate, the Vintner, the Tailor, the Printer and the Jeweler
   behind 1.8's, and the Firewarden, the Well Keeper and the Physician behind 1.6's; 1.0 opens them all.
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
@@ -229,7 +248,8 @@ same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTes
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
 refuse, save and reload, the switch off), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
-`PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
+`FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
+save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
 their jobs).
 

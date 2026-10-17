@@ -1119,6 +1119,9 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 				return;
 			}
+			if (!helping && !crew && stockUpFirst(level, villager, site, plan, bag, supplies, requirement)) {
+				return;
+			}
 			if (takeFromCrewmate(level, villager, site, plan, bag, requirement.item(), needed)) {
 				return;
 			}
@@ -1383,6 +1386,65 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!landscapeOut.contains(r.item()) || bag.has(r.item(), r.count())) {
 				return false;
 			}
+		}
+		return true;
+	}
+
+	/**
+	 * B155: the lead of a crew, short of something its helpers took, in the build's last stretch (all that is left within
+	 * its look ahead): if the chests still hold something else that stretch needs and nobody of the crew carries, it goes for that
+	 * first (taking all it can for the stretch), then takes the short item from a helper. Taking only the short item from
+	 * a helper close by left the rest (a lantern put off for its support) in the chests, and the lead walked there for it
+	 * at the very end while the helpers stood about: a crew of two took 60% of one builder's time, not half. True while
+	 * it walks to the chests or has just taken from them.
+	 */
+	private boolean stockUpFirst(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, List<BlockPos> supplies,
+								 MaterialRules.Requirement requirement) {
+		if (site.helpers(level.getGameTime()).isEmpty()) {
+			return false;
+		}
+		List<BuildPlan.Step> rest = ahead(site, plan);
+		if (rest.size() >= LOOKAHEAD) {
+			return false; // not the last stretch yet: the lead comes back to the chests for the next one anyway
+		}
+		Map<Item, Integer> short_ = new LinkedHashMap<>();
+		for (BuildPlan.Step s : rest) {
+			if (MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+				continue;
+			}
+			for (MaterialRules.Requirement r : s.requirements()) {
+				if (r.item() != requirement.item()) {
+					short_.merge(r.item(), r.count(), Integer::sum);
+				}
+			}
+		}
+		List<BuilderBag> mates = new java.util.ArrayList<>();
+		for (java.util.UUID id : site.helpers(level.getGameTime())) {
+			if (level.getEntity(id) instanceof Villager mate && mate.isAlive()) {
+				mates.add(ModAttachments.BUILDER_BAG.getOrCreate(mate));
+			}
+		}
+		BlockPos chest = null;
+		for (Map.Entry<Item, Integer> e : short_.entrySet()) {
+			Item item = e.getKey();
+			int carried = bag.count(item);
+			for (BuilderBag mate : mates) {
+				carried += mate.count(item);
+			}
+			// only what nobody of the crew carries enough of: the helpers take for their own share themselves
+			if (carried < e.getValue() && bag.spaceFor(item) > 0) {
+				chest = SupplyContainers.firstMatching(level, supplies, st -> st.is(item));
+				if (chest != null) {
+					break;
+				}
+			}
+		}
+		if (chest == null) {
+			return false;
+		}
+		setStatus(site, BuildSite.Status.FETCHING);
+		if (moveInReach(level, villager, site, plan, chest, CONTAINER_REACH, false)) {
+			takeWanted(level, site, plan, bag, requirement, supplies, chest);
 		}
 		return true;
 	}

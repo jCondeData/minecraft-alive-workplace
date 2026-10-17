@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 11 wide, 10 deep, 10 high (II: 16 deep; III: 22 deep)
-Tiers: I, II (a ward with four beds), III (a berry garden)
+Tiers: I, II (a ward with four beds), III (a berry garden), IV (a basement)
 Houses: a Nurse at the brewing stand; four beds from tier II
 Where to get it: Blueprint Table; an Expert builder sells it for 16 emeralds
 Main materials: red nether brick stairs, white concrete, smooth quartz, stripped dark oak logs
@@ -27,6 +27,7 @@ Once a builder finishes the Healing Center, they sell its upgrade's blueprint as
 
 - **Healing Center II** adds a ward behind the counter with four beds.
 - **Healing Center III** adds a berry garden behind the ward, with a composter and a second chest.
+- **Healing Center IV** digs a cool **store room** under the front, down a ladder in the back room: shelves of potted herbs and fungi, kelp and moss, chests of remedies. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

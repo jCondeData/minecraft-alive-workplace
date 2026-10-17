@@ -47,6 +47,12 @@ public final class WorkplaceConfig {
 	public int postmanRange = 64;
 	/** At most this many workers per village (taken workstations within villageRadius); 0: no cap. */
 	public int maxWorkersPerVillage = 0;
+	/** A village takes only so many fishermen (ROADMAP 26.13: storage barrels made most villagers fishermen). Off: vanilla. */
+	public boolean fishermanCap = true;
+	/** Fishermen every village takes, with the cap on. */
+	public int fishermenPerVillage = 1;
+	/** And one more fisherman for every this many villagers. */
+	public int villagersPerFisherman = 10;
 	/** How far villagers with a job look for a path in one go (vanilla: 48). */
 	public int workerPathRange = 48;
 	/** Workers whose workstations are this close together are one village and share their chests. */
@@ -440,6 +446,8 @@ public final class WorkplaceConfig {
 		"partnerRadius", 4, 48,
 		"postmanRange", 16, 256,
 		"maxWorkersPerVillage", 0, 500,
+		"fishermenPerVillage", 1, 20,
+		"villagersPerFisherman", 1, 100,
 		"workerPathRange", 16, 128,
 		"villageRadius", 0, 128,
 		"villageHallRadius", 16, 160,
@@ -761,6 +769,11 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.MAX_PER_VILLAGE = maxWorkersPerVillage;
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.RADIUS = villageRadius;
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.PATH_RANGE = workerPathRange;
+		// Off in gametests (fishermen in the tests beside one would count against it); the cap's tests turn it on.
+		io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED = fishermanCap && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.fish.FishermanCap.BASE = fishermenPerVillage;
+		io.github.jcondedata.aliveworkplace.fish.FishermanCap.PER_VILLAGERS = villagersPerFisherman;
+		io.github.jcondedata.aliveworkplace.fish.FishermanCap.RADIUS = villageRadius;
 		Money.DOLLARS_PER_EMERALD = dollarsPerEmerald;
 		io.github.jcondedata.aliveworkplace.work.Retraining.prices(retrainPrices);
 		io.github.jcondedata.aliveworkplace.hall.Treasury.CENTS_PER_WORKER = treasuryPerWorker;

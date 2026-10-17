@@ -28,7 +28,12 @@ public class ChoiceView extends AbstractContainerMenu {
 	}
 
 	public ChoiceView(int id, Inventory inventory) {
-		super(ModBlocks.VILLAGE_HALL_MENU, id);
+		this(ModBlocks.VILLAGE_HALL_MENU, id, inventory);
+	}
+
+	/** The same buttons on another screen drawn like the hall's (the Storehouse board's, 26.12). */
+	public ChoiceView(net.minecraft.world.inventory.MenuType<?> type, int id, Inventory inventory) {
+		super(type, id);
 		SimpleContainer icons = new SimpleContainer(ChoiceMenu.SIZE);
 		for (int i = 0; i < ChoiceMenu.SIZE; i++) {
 			addSlot(new Button(icons, i, cellX(i % 9) + 1, ROW_Y[i / 9] + 1));

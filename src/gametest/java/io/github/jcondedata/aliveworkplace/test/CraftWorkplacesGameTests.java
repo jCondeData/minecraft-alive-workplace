@@ -250,7 +250,12 @@ public class CraftWorkplacesGameTests implements net.fabricmc.fabric.api.gametes
 				BlockPos site2 = worker.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).orElse(null);
 				helper.assertTrue(site2 != null && level.getBlockState(site2).is(k.block()) && site2.getX() >= min.getX() && site2.getX() <= max.getX()
 					&& site2.getY() >= min.getY() && site2.getY() <= max.getY() && site2.getZ() >= min.getZ() && site2.getZ() <= max.getZ(),
-					"the " + k.job() + " works at " + site2 + " (" + (helper.getTick() - hiredAt[0]) + " ticks after it was built at tick " + hiredAt[0] + ")");
+					"the " + k.job() + " works at " + site2 + " (" + (helper.getTick() - hiredAt[0]) + " ticks after it was built at tick " + hiredAt[0]
+						+ "; at " + helper.relativePos(worker.blockPosition()).toShortString() + ", potential "
+						+ worker.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("none")
+						+ ", activity " + worker.getBrain().getActiveNonCoreActivity().orElse(null) + ", day time " + level.getDayTime() % 24000
+						+ ", free tickets " + BlockPos.betweenClosedStream(min, max).filter(p -> level.getBlockState(p).is(k.block())).findFirst()
+							.map(p -> helper.relativePos(p).toShortString() + "=" + level.getPoiManager().getFreeTickets(p)).orElse("no job block") + ")");
 				helper.assertTrue(taken.add(site2), "two workers share " + site2);
 			}
 		});

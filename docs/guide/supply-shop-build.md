@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 11 wide, 10 deep, 11 high (II: 16 deep; III: 17 by 16)
-Tiers: I, II (a storeroom and a bedroom), III (a post office annex)
+Tiers: I, II (a storeroom and a bedroom), III (a post office annex), IV (a basement)
 Houses: a Shopkeeper at the Shop Counter; one bed from tier II; a Postman at tier III's Mailbox
 Where to get it: Blueprint Table; a Master builder sells it for 20 emeralds
 Main materials: dark prismarine stairs, white concrete, stripped spruce logs, spruce planks
@@ -27,6 +27,7 @@ Once a builder finishes the Supply Shop, they sell its upgrade's blueprint as we
 
 - **Supply Shop II** adds a storeroom behind and the shopkeeper's bedroom upstairs.
 - **Supply Shop III** adds a post office annex with a **Mailbox**.
+- **Supply Shop IV** digs a **stockroom** under the shop, down a ladder behind the counter: chests two high, bolts of cloth, crates and a packing table. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

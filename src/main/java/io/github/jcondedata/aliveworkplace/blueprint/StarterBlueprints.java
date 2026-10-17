@@ -14,7 +14,17 @@ import net.minecraft.resources.ResourceLocation;
  * {@code tools/blueprints/generate.py}; keep sizes in sync when a build changes (a gametest checks this).
  */
 public final class StarterBlueprints {
-	public record Entry(ResourceLocation id, Vec3i size) {
+	/**
+	 * A build that ships with the mod: its id and its size above the ground. {@code basement} (26.15): how many blocks of
+	 * it lie under the ground, under the block the player clicks (0 for most). The file draws the basement at the bottom
+	 * (its floor at the template's y = 0, the ground floor at y = {@code basement}); {@link #withBasement} moves it down,
+	 * so the build's y = 0 still sits on top of the clicked block and an upgrade with a basement lines up over a tier
+	 * without one.
+	 */
+	public record Entry(ResourceLocation id, Vec3i size, int basement) {
+		public Entry(ResourceLocation id, Vec3i size) {
+			this(id, size, 0);
+		}
 	}
 
 	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(11, 12, 10));
@@ -22,6 +32,8 @@ public final class StarterBlueprints {
 	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(11, 16, 11));
 	/** Cottage II with a kitchen wing to the east (a roof terrace on top): an upgrade that grows sideways. */
 	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(17, 16, 11));
+	/** Cottage III with a root cellar dug under the cottage, down a ladder by the kitchen door (26.15). */
+	public static final Entry STARTER_COTTAGE_4 = new Entry(AliveWorkplace.id("starter_cottage_4"), new Vec3i(17, 16, 11), 4);
 	/**
 	 * A timber hall with the Village Hall block inside (tools/blueprints/village_hall.py): finished, it is a placed Village
 	 * Hall like any other, owned by the player who handed over the blueprint. The bell hangs under its porch.
@@ -41,25 +53,31 @@ public final class StarterBlueprints {
 	public static final Entry LOOKOUT_TOWER_2 = new Entry(AliveWorkplace.id("lookout_tower_2"), new Vec3i(7, 23, 7));
 	/** A guardhouse beside the tower: a second Guard Post and two bunks. */
 	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(14, 23, 7));
+	/** Lookout Tower III with an armoury and a lock-up under the tower and guardroom (26.15). */
+	public static final Entry LOOKOUT_TOWER_4 = new Entry(AliveWorkplace.id("lookout_tower_4"), new Vec3i(14, 23, 7), 4);
 	/** Has a Cobblemon Healing Machine on the counter; without Cobblemon that spot stays empty. */
 	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 10, 10));
 	/** A ward with four beds behind the counter. */
 	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 10, 16));
 	/** A berry garden behind the ward with a Fruit Basket. */
 	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(11, 10, 22));
+	/** Healing Center III with a cool store of herbs and remedies under the front (26.15). */
+	public static final Entry HEALING_CENTER_4 = new Entry(AliveWorkplace.id("healing_center_4"), new Vec3i(11, 10, 22), 4);
 	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 11, 10));
 	/** A storeroom and the shopkeeper's bedroom upstairs. */
 	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(11, 11, 16));
 
 	/** A post office annex with a Postal Desk. */
 	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(17, 11, 16));
+	/** Supply Shop III with a stockroom under the shop, down a ladder behind the counter (26.15). */
+	public static final Entry SUPPLY_SHOP_4 = new Entry(AliveWorkplace.id("supply_shop_4"), new Vec3i(17, 11, 16), 4);
 
 	/** A granary (stone below, a loft with a hoist above) with a Storehouse and eight chests: a porter moves in. */
-	public static final Entry STOREHOUSE = new Entry(AliveWorkplace.id("storehouse"), new Vec3i(9, 10, 9));
+	public static final Entry STOREHOUSE = new Entry(AliveWorkplace.id("storehouse"), new Vec3i(9, 10, 9), 4);
 	/** An open shed on the east with eight more chests. */
-	public static final Entry STOREHOUSE_2 = new Entry(AliveWorkplace.id("storehouse_2"), new Vec3i(16, 10, 9));
+	public static final Entry STOREHOUSE_2 = new Entry(AliveWorkplace.id("storehouse_2"), new Vec3i(16, 10, 9), 4);
 	/** A stone warehouse behind the bays with sixteen more chests. */
-	public static final Entry STOREHOUSE_3 = new Entry(AliveWorkplace.id("storehouse_3"), new Vec3i(16, 10, 16));
+	public static final Entry STOREHOUSE_3 = new Entry(AliveWorkplace.id("storehouse_3"), new Vec3i(16, 10, 16), 4);
 
 	/** A fenced garden of sweet berry bushes with a Fruit Basket: an orchard keeper moves in. */
 	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(11, 5, 9));
@@ -174,6 +192,30 @@ public final class StarterBlueprints {
 		return new Blueprint(blueprint.id(), blueprint.size(), blocks, blueprint.entities());
 	}
 
+	/**
+	 * {@code blueprint} with its basement moved under the ground (26.15): a build whose {@link Entry#basement} isn't 0 is
+	 * drawn with the basement at the bottom of its file, and comes out of the library with every block (and entity)
+	 * {@code basement} lower and its size the part above the ground, so its y = 0 sits on the clicked block like any
+	 * build's and the builder digs the basement out (the blueprint's air there is ground to clear).
+	 */
+	public static Blueprint withBasement(Blueprint blueprint) {
+		int depth = basement(blueprint.id());
+		if (depth <= 0 || blueprint.size().getY() <= depth || blueprint.basement() > 0) {
+			return blueprint;
+		}
+		List<Blueprint.Entry> blocks = blueprint.blocks().stream()
+			.map(e -> new Blueprint.Entry(e.pos().below(depth), e.state(), e.nbt())).toList();
+		List<Blueprint.EntityEntry> entities = blueprint.entities().stream()
+			.map(e -> new Blueprint.EntityEntry(e.pos().subtract(0, depth, 0), e.nbt())).toList();
+		Vec3i size = blueprint.size();
+		return new Blueprint(blueprint.id(), new Vec3i(size.getX(), size.getY() - depth, size.getZ()), blocks, entities);
+	}
+
+	/** How deep the basement of the shipped build {@code id} is (0: none), going by {@link Entry#basement}. */
+	public static int basement(ResourceLocation id) {
+		return BASEMENTS.getOrDefault(id, 0);
+	}
+
 	/** Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. */
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
 	/** A third home on the east end: six beds. */
@@ -193,6 +235,8 @@ public final class StarterBlueprints {
 	public static final Entry LIBRARY_2 = new Entry(AliveWorkplace.id("library_2"), new Vec3i(18, 15, 12));
 	/** An enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a lectern for a librarian. */
 	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 15, 20));
+	/** Library III with an archive of shelves and ledgers under the reading room, down a stair (26.15). */
+	public static final Entry LIBRARY_4 = new Entry(AliveWorkplace.id("library_4"), new Vec3i(18, 15, 20), 4);
 	/** A barn (a hayloft gable over two stable aisles) with a Feed Trough, and a fenced paddock. */
 	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 10, 13));
 	/** The paddock doubled, a stable wing and a brick silo. */
@@ -216,6 +260,8 @@ public final class StarterBlueprints {
 	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(11, 16, 9));
 	/** A stone wing at the back with two more beds. */
 	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(11, 16, 14));
+	/** Stone House III with a wine cellar under the front house, down a ladder by the door (26.15). */
+	public static final Entry STONE_HOUSE_4 = new Entry(AliveWorkplace.id("stone_house_4"), new Vec3i(11, 16, 14), 4);
 
 	/** The Artisan's House (34.15, a grade I home): a narrow timber house, a stone workroom below and two beds above. */
 	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(9, 15, 12));
@@ -227,12 +273,16 @@ public final class StarterBlueprints {
 	public static final Entry TOWNHOUSE_2 = new Entry(AliveWorkplace.id("townhouse_2"), new Vec3i(11, 20, 18));
 	/** A corner tower with a study at the top (grade III). */
 	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(15, 26, 18));
+	/** Townhouse III with a vaulted cellar of casks and coal down a stone stair from the hall (26.15). */
+	public static final Entry TOWNHOUSE_4 = new Entry(AliveWorkplace.id("townhouse_4"), new Vec3i(15, 26, 18), 4);
 	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}): a stone house of two storeys round a hall with a grand stair. */
 	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(19, 18, 17));
 	/** A walled formal garden behind: clipped hedges, a fountain and gravel walks (3 beauty for the people who live there). */
 	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(19, 18, 24));
 	/** A gatehouse on the street and a ballroom wing, where the Noble's Ball is held. */
 	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(26, 18, 24));
+	/** Manor III with a great wine cellar under the hall, down a stone stair beside the table (26.15). */
+	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(26, 18, 24), 4);
 
 	/** A stone barracks with two Guard Posts, bunks and training dummies. */
 	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 10, 11));
@@ -249,9 +299,9 @@ public final class StarterBlueprints {
 	 * builds for its trades. A stone forge under a timber roof, open to the street: a blast furnace (Armorer; Miner with
 	 * a pickaxe), a smithing table (Toolsmith) and a grindstone (Weaponsmith) in a lean-to.
 	 */
-	public static final Entry SMITHY = new Entry(AliveWorkplace.id("smithy"), new Vec3i(13, 12, 10));
+	public static final Entry SMITHY = new Entry(AliveWorkplace.id("smithy"), new Vec3i(13, 12, 10), 4);
 	/** A coal and ore store behind, with a second blast furnace. */
-	public static final Entry SMITHY_2 = new Entry(AliveWorkplace.id("smithy_2"), new Vec3i(13, 12, 13));
+	public static final Entry SMITHY_2 = new Entry(AliveWorkplace.id("smithy_2"), new Vec3i(13, 12, 13), 4);
 	/** A fenced yard of cut stone with a lean-to over a stonecutter (Mason). */
 	public static final Entry MASONS_YARD = new Entry(AliveWorkplace.id("masons_yard"), new Vec3i(11, 9, 11));
 	/** A second stonecutter and a hoist. */
@@ -322,6 +372,11 @@ public final class StarterBlueprints {
 	public static final Entry WELL_HOUSE = new Entry(AliveWorkplace.id("well_house"), new Vec3i(11, 13, 12));
 	/** A white ward with the Physician's brewing stand, four beds behind screens (the quarantine ward) and a herb garden. */
 	public static final Entry PHYSICIANS_HOUSE = new Entry(AliveWorkplace.id("physicians_house"), new Vec3i(13, 12, 13));
+	/**
+	 * A brick-and-plaster Butcher's Shop under a red-and-white awning, the smoker in its chimney breast, a pen behind, and
+	 * under it an ice-lined freezer down a ladder behind the counter (26.15): one tier, a cellar from the first.
+	 */
+	public static final Entry BUTCHERS_SHOP = new Entry(AliveWorkplace.id("butchers_shop"), new Vec3i(13, 11, 13), 4);
 
 	/** The three houses of 32.19, in the order What next? and the scene show them. */
 	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
@@ -361,6 +416,41 @@ public final class StarterBlueprints {
 	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(11, 16, 16));
 	/** A paved square with a fountain, kiosks, benches and the village bell. */
 	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 5, 13));
+	/*
+	 * More decorations (ROADMAP 26.14; tools/blueprints/decor.py, MORE_DECORATIONS): small builds that aren't houses, none
+	 * with a villager's job block.
+	 */
+	/** A stepped stone plinth with a shaft, its arms hung with lanterns. */
+	public static final Entry MARKET_CROSS = new Entry(AliveWorkplace.id("market_cross"), new Vec3i(5, 8, 5));
+	/** A stone stag on a plinth. */
+	public static final Entry STAG_STATUE = new Entry(AliveWorkplace.id("stag_statue"), new Vec3i(7, 8, 5));
+	/** A two-tier brick planter of flowers between lanterns. */
+	public static final Entry FLOWER_PLANTERS = new Entry(AliveWorkplace.id("flower_planters"), new Vec3i(7, 3, 3));
+	/** A crossroads signpost with four fingerboards and a lantern. */
+	public static final Entry SIGNPOST = new Entry(AliveWorkplace.id("signpost"), new Vec3i(3, 5, 3));
+	/** A mossy stone archway with ivy and a hanging lantern. */
+	public static final Entry STONE_ARCHWAY = new Entry(AliveWorkplace.id("stone_archway"), new Vec3i(7, 7, 3));
+	/** An oval pond with lily pads in a grassy bank. */
+	public static final Entry LILY_POND = new Entry(AliveWorkplace.id("lily_pond"), new Vec3i(9, 3, 7));
+	/** A cart loaded with hay bales. */
+	public static final Entry HAY_CART = new Entry(AliveWorkplace.id("hay_cart"), new Vec3i(6, 4, 5));
+	/** A roofed notice board with notices pinned to it. */
+	public static final Entry NOTICE_BOARD = new Entry(AliveWorkplace.id("notice_board"), new Vec3i(5, 5, 3));
+	/** A pergola walk under azalea with lanterns on chains and benches. */
+	public static final Entry LANTERN_PERGOLA = new Entry(AliveWorkplace.id("lantern_pergola"), new Vec3i(5, 6, 7));
+	/** A campfire in a ring of stones with log seats. */
+	public static final Entry FIRE_PIT = new Entry(AliveWorkplace.id("fire_pit"), new Vec3i(7, 3, 7));
+	/** A round stone plaza with a sundial and hour stones. */
+	public static final Entry SUNDIAL = new Entry(AliveWorkplace.id("sundial"), new Vec3i(7, 3, 7));
+	/** Clipped hedges round four topiary shapes and an urn. */
+	public static final Entry TOPIARY_GARDEN = new Entry(AliveWorkplace.id("topiary_garden"), new Vec3i(9, 5, 9));
+	/** Crates, sacks and produce under a striped awning. */
+	public static final Entry MARKET_CORNER = new Entry(AliveWorkplace.id("market_corner"), new Vec3i(5, 5, 5));
+	/** A plank footbridge over a stone channel of water. */
+	public static final Entry FOOTBRIDGE = new Entry(AliveWorkplace.id("footbridge"), new Vec3i(7, 4, 7));
+	/** The decorations of 26.14, in the order the Table and the gallery show them. */
+	public static final List<Entry> MORE_DECORATIONS = List.of(MARKET_CROSS, STAG_STATUE, FLOWER_PLANTERS, SIGNPOST, STONE_ARCHWAY, LILY_POND,
+		HAY_CART, NOTICE_BOARD, LANTERN_PERGOLA, FIRE_PIT, SUNDIAL, TOPIARY_GARDEN, MARKET_CORNER, FOOTBRIDGE);
 
 	/** Walls and gates: a wooden palisade with a walkway. */
 	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
@@ -383,31 +473,45 @@ public final class StarterBlueprints {
 	/** A barbican in front: a second gate and portcullis, murder holes over the gateway. */
 	public static final Entry GATEHOUSE_2 = new Entry(AliveWorkplace.id("gatehouse_2"), new Vec3i(11, 9, 10));
 
-	/**
-	 * Buildable copies of our plains village houses (ROADMAP 27.11), one workplace per job the Steward asks for: the
-	 * house's job block, a bed, no villager (the worker who wants it moves in). Generated by village.py's {@code workplace}.
-	 */
-	public static final Entry BUILDERS_WORKSHOP = workplace("builders_workshop");
-	public static final Entry CARPENTERS_WORKSHOP = workplace("carpenters_workshop");
-	public static final Entry KITCHEN = workplace("kitchen");
-	public static final Entry POST_OFFICE = workplace("post_office");
-	public static final Entry GUARD_HOUSE = workplace("guard_house");
-	public static final Entry CLINIC = workplace("clinic");
-	/** The Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
-	public static final Entry FERRY_HOUSE = workplace("ferry_house");
-	public static final Entry TRAINERS_HOUSE = workplace("trainers_house");
-	public static final Entry LEADERS_HALL = workplace("leaders_hall");
-	public static final Entry BALL_WORKSHOP = workplace("ball_workshop");
-	public static final Entry TRADE_HALL = workplace("trade_hall");
-	public static final Entry SCHOOL = workplace("school");
+	// The workplaces (ROADMAP 27.11), one per job the Steward asks for: the job's block, a bed, no villager (the worker who
+	// wants it moves in). Each its own build since ROADMAP 26.11, drawn by tools/blueprints/workplaces.py.
+	/** A saltbox drawing studio and a fenced yard with a timber crane. */
+	public static final Entry BUILDERS_WORKSHOP = workplace("builders_workshop", 13, 13, 11);
+	/** A long saw shed, half closed workshop, half open trestles, log piles front and back. */
+	public static final Entry CARPENTERS_WORKSHOP = workplace("carpenters_workshop", 13, 11, 11);
+	/** A plastered cookhouse under a hipped roof, a brick bread oven bulging from its side, herb beds. */
+	public static final Entry KITCHEN = workplace("kitchen", 11, 12, 11, 4);
+	/** A narrow house, its upper floor jettied over the street, a dovecote on the ridge. */
+	public static final Entry POST_OFFICE = workplace("post_office", 9, 17, 10);
+	/** A stone blockhouse with a battlemented roof and a watch hut on it. */
+	public static final Entry GUARD_HOUSE = workplace("guard_house", 11, 13, 11);
+	/** A white pavilion with a ward wing across the back and cross-mullioned windows. */
+	public static final Entry CLINIC = workplace("clinic", 13, 11, 12);
+	/** A gambrel-roofed boathouse with a landing stage; the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
+	public static final Entry FERRY_HOUSE = workplace("ferry_house", 9, 10, 10);
+	/** A long low dojo with a deep veranda and a fenced sparring ring. */
+	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 13, 10, 13);
+	/** A stone hall with a columned portico and a pediment. */
+	public static final Entry LEADERS_HALL = workplace("leaders_hall", 13, 14, 14);
+	/** A round apricorn-drying tower under a copper cone and a low workshop wing. */
+	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 14, 17, 11);
+	/** A market hall: an upper storey on a stone arcade, a cupola on the ridge. */
+	public static final Entry TRADE_HALL = workplace("trade_hall", 11, 17, 11);
+	/** A U of brick round a courtyard with the tutor's post in it. */
+	public static final Entry SCHOOL = workplace("school", 17, 11, 13);
 
 	/** The workplaces in the Blueprint Table for everyone. */
 	public static final List<Entry> WORKPLACES = List.of(BUILDERS_WORKSHOP, CARPENTERS_WORKSHOP, KITCHEN, POST_OFFICE, GUARD_HOUSE, CLINIC, FERRY_HOUSE);
 	/** The workplaces of Cobblemon's jobs: in the Blueprint Table (and the creative tab) only with Cobblemon, as {@link #COBBLEMON_ONLY}. */
 	public static final List<Entry> COBBLEMON_WORKPLACES = List.of(TRAINERS_HOUSE, LEADERS_HALL, BALL_WORKSHOP, TRADE_HALL, SCHOOL);
 
-	private static Entry workplace(String name) {
-		return new Entry(AliveWorkplace.id(name), new Vec3i(9, 10, 10));
+	private static Entry workplace(String name, int w, int h, int d) {
+		return new Entry(AliveWorkplace.id(name), new Vec3i(w, h, d));
+	}
+
+	/** A workplace with a cellar {@code basement} deep (26.15). */
+	private static Entry workplace(String name, int w, int h, int d, int basement) {
+		return new Entry(AliveWorkplace.id(name), new Vec3i(w, h, d), basement);
 	}
 
 	/** Drawn up by a village's scholars (Architecture research), not in the Blueprint Table: a stone hall with a bell tower. */
@@ -417,16 +521,16 @@ public final class StarterBlueprints {
 	public static final Entry ROYAL_HALL = new Entry(AliveWorkplace.id("realm/royal_hall"), new Vec3i(19, 16, 25));
 	public static final Entry ROYAL_HALL_2 = new Entry(AliveWorkplace.id("realm/royal_hall_2"), new Vec3i(27, 22, 25));
 
-	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, VILLAGE_HALL, VILLAGE_HALL_2, VILLAGE_HALL_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
-		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3,
+	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, STARTER_COTTAGE_4, VILLAGE_HALL, VILLAGE_HALL_2, VILLAGE_HALL_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
+		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, LOOKOUT_TOWER_4, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, HEALING_CENTER_4, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3, SUPPLY_SHOP_4,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
-		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3,
-		ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, MANOR, MANOR_2, MANOR_3, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
+		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, STONE_HOUSE_4,
+		ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, TOWNHOUSE_4, MANOR, MANOR_2, MANOR_3, MANOR_4, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
 		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,
 		WINERY, WINERY_2, TAILORS_SHOP, TAILORS_SHOP_2, PRINT_SHOP, PRINT_SHOP_2, JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2,
-		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2,
+		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, LIBRARY_4, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2,
 		GUILDHALL, GUILDHALL_2);
 
 	/**
@@ -435,14 +539,15 @@ public final class StarterBlueprints {
 	 * the first tier ({@code ModTrades.builderHomes}) and, once one is finished, its upgrade ({@code UpgradeOffers}); the
 	 * blueprints still load by id, so a blueprint already bought, a build site and the Steward's rules keep working.
 	 */
-	public static final List<Entry> SOLD_ONLY = List.of(ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3,
-		MANOR, MANOR_2, MANOR_3);
+	public static final List<Entry> SOLD_ONLY = List.of(ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, TOWNHOUSE_4,
+		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
-	public static final List<Entry> DECORATIONS = List.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL);
+	public static final List<Entry> DECORATIONS = java.util.stream.Stream.concat(
+		java.util.stream.Stream.of(WELL, WELL_2, STREET_LAMP, PARK_BENCH, FOUNTAIN, GAZEBO, MARKET_SQUARE, CHAPEL), MORE_DECORATIONS.stream()).toList();
 
 	/** Walls and gates. */
 	public static final List<Entry> DEFENCES = List.of(PALISADE, PALISADE_2, PALISADE_GATE, PALISADE_TOWER, STONE_WALL, STONE_WALL_2, WALL_TOWER, WALL_TOWER_2,
@@ -494,4 +599,15 @@ public final class StarterBlueprints {
 
 	private StarterBlueprints() {
 	}
+
+	/** Every shipped build with a basement or a cellar (26.15): the Level 4s and the cellars from Level 1. */
+	public static final List<Entry> WITH_BASEMENTS = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
+		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2, STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN);
+	/** The Level 4s (26.15): each its Level III with a basement under it. */
+	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
+		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);
+
+	/** The builds with a basement (26.15), by id: filled from {@link #WITH_BASEMENTS}. */
+	private static final java.util.Map<ResourceLocation, Integer> BASEMENTS = WITH_BASEMENTS.stream()
+		.collect(java.util.stream.Collectors.toUnmodifiableMap(Entry::id, Entry::basement));
 }

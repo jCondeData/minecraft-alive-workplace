@@ -33,10 +33,8 @@ import org.jetbrains.annotations.Nullable;
  * to take a copy, and an "upload" view listing build files in the player's own blueprints folder.
  */
 public class BlueprintTableScreen extends Screen {
-	private static final int PANEL_BG = 0xE0101418;
-	private static final int PANEL_EDGE = 0xFF3A4C66;
-	private static final int LIST_BG = 0x80000000;
-	private static final int ROW = 22;
+	private static final int LIST_BG = TableStyle.LIST_BG;
+	private static final int ROW = TableStyle.ROW;
 
 	private enum Mode { LIBRARY, FILES }
 
@@ -51,7 +49,7 @@ public class BlueprintTableScreen extends Screen {
 	private final Map<ResourceLocation, List<TablePayloads.StyleChoice>> styles = new HashMap<>();
 	/** The style chosen for the selected build ("" as drawn). */
 	private String style = "";
-	private static final int STYLE_CELL = 20;
+	private static final int STYLE_CELL = TableStyle.CELL;
 	/** Where the style row was drawn (its first cell; cells sit side by side), and how many cells: as drawn, then the styles. */
 	private int styleRowX, styleRowY, styleCells;
 	@Nullable
@@ -183,11 +181,11 @@ public class BlueprintTableScreen extends Screen {
 
 	@Override
 	protected void init() {
-		panelW = Math.min(width - 16, 440);
-		panelH = Math.min(height - 16, 290);
+		panelW = TableStyle.panelWidth(width);
+		panelH = TableStyle.panelHeight(height);
 		left = (width - panelW) / 2;
 		top = (height - panelH) / 2;
-		int listW = Math.min(180, panelW / 2 - 12);
+		int listW = TableStyle.listWidth(panelW);
 		int listTop = top + 22;
 		int listH = panelH - 22 - 34;
 
@@ -361,13 +359,12 @@ public class BlueprintTableScreen extends Screen {
 	@Override
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.render(g, mouseX, mouseY, partialTick);
-		g.drawString(font, title, left + 8, top + 8, 0xFFFFD66B, false);
 		long unlocked = entries.stream().filter(TablePayloads.Entry::unlocked).count();
 		Component sub = mode == Mode.LIBRARY
 			? unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
 				: Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
 			: Component.translatable("screen.aliveworkplace.table.files_title");
-		g.drawString(font, sub, left + panelW - 8 - font.width(sub), top + 8, 0xFF9AA8BA, false);
+		TableStyle.header(g, font, title, sub, left, top, panelW);
 
 		int dx = library.getX() + library.getWidth() + 10;
 		int dw = left + panelW - 8 - dx;
@@ -395,8 +392,7 @@ public class BlueprintTableScreen extends Screen {
 	@Override
 	public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.renderBackground(g, mouseX, mouseY, partialTick);
-		g.fill(left - 1, top - 1, left + panelW + 1, top + panelH + 1, PANEL_EDGE);
-		g.fill(left, top, left + panelW, top + panelH, PANEL_BG);
+		TableStyle.panel(g, left, top, panelW, panelH);
 	}
 
 	private void renderDetails(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
@@ -471,8 +467,7 @@ public class BlueprintTableScreen extends Screen {
 				int cx = x + i * STYLE_CELL;
 				boolean on = name.equals(style);
 				boolean over = mouseX >= cx && mouseX < cx + STYLE_CELL - 2 && mouseY >= y && mouseY < y + STYLE_CELL - 2;
-				g.fill(cx, y, cx + STYLE_CELL - 2, y + STYLE_CELL - 2, on ? 0xFFFFD66B : over ? 0xFF8A9BB4 : PANEL_EDGE);
-				g.fill(cx + 1, y + 1, cx + STYLE_CELL - 3, y + STYLE_CELL - 3, on ? 0xFF4A3A14 : 0xFF1C2430);
+				TableStyle.cell(g, cx, y, on, over);
 				ItemStack icon = new ItemStack(choice == null ? net.minecraft.world.item.Items.SPRUCE_LOG : BuiltInRegistries.ITEM.get(choice.icon()));
 				g.renderItem(icon, cx + 1, y + 1);
 				if (on) {
@@ -483,10 +478,10 @@ public class BlueprintTableScreen extends Screen {
 				}
 			}
 			int tx = x + styleCells * STYLE_CELL + 2;
-			g.drawString(font, font.plainSubstrByWidth(chosen.getString(), x + w - tx), tx, y + 5, 0xFFFFD66B, false);
+			g.drawString(font, font.plainSubstrByWidth(chosen.getString(), x + w - tx), tx, y + 5, TableStyle.TITLE, false);
 			y += styleRow;
 		}
-		g.drawString(font, Component.translatable("screen.aliveworkplace.table.materials"), x, y, 0xFFFFD66B, false);
+		TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.table.materials"), x, y);
 		allMaterialsButton.setPosition(x + w - allMaterialsButton.getWidth(), y - 2);
 		y += 11;
 
@@ -551,9 +546,9 @@ public class BlueprintTableScreen extends Screen {
 	/** Every material of the selected build, biggest first: icon, count and name, scrolled with the wheel. */
 	private void renderAllMaterials(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY, float partialTick) {
 		List<TablePayloads.Material> materials = details.get(shownId());
-		g.fill(x - 4, y, x + w + 4, y + h, 0xF0161B22);
-		g.fill(x - 4, y, x + w + 4, y + 1, PANEL_EDGE);
-		g.fill(x - 4, y + h - 1, x + w + 4, y + h, PANEL_EDGE);
+		g.fill(x - 4, y, x + w + 4, y + h, TableStyle.OVERLAY_BG);
+		TableStyle.rule(g, x - 4, y, w + 8);
+		TableStyle.rule(g, x - 4, y + h - 1, w + 8);
 		if (materials == null) {
 			// Another build was just picked and its list hasn't arrived yet (a click here used to crash the client).
 			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x, y + 5, 0xFF777777, false);
@@ -563,7 +558,7 @@ public class BlueprintTableScreen extends Screen {
 		for (TablePayloads.Material m : materials) {
 			total += m.count();
 		}
-		g.drawString(font, Component.translatable("screen.aliveworkplace.table.all_materials_title", materials.size(), total), x, y + 5, 0xFFFFD66B, false);
+		g.drawString(font, Component.translatable("screen.aliveworkplace.table.all_materials_title", materials.size(), total), x, y + 5, TableStyle.TITLE, false);
 		allBackButton.setPosition(x + w - allBackButton.getWidth(), y + 2);
 		int listY = y + 18;
 		int listH = h - 20;
@@ -591,12 +586,7 @@ public class BlueprintTableScreen extends Screen {
 			g.drawString(font, font.plainSubstrByWidth(stack.getHoverName().getString(), x + w - 8 - nameX), nameX, ry + 5, 0xFFCCCCCC, false);
 		}
 		g.disableScissor();
-		if (maxScroll > 0) {
-			int barH = Math.max(10, listH * listH / (materials.size() * ALL_ROW));
-			int barY = listY + (listH - barH) * allScroll / maxScroll;
-			g.fill(x + w - 3, listY, x + w, listY + listH, 0x40000000);
-			g.fill(x + w - 3, barY, x + w, barY + barH, 0xFF8090A8);
-		}
+		TableStyle.thinScrollbar(g, x + w - 3, listY, listH, allScroll, maxScroll, materials.size() * ALL_ROW);
 		allBackButton.render(g, mouseX, mouseY, partialTick);
 	}
 
@@ -735,7 +725,7 @@ public class BlueprintTableScreen extends Screen {
 
 		@Override
 		protected void renderListBackground(GuiGraphics g) {
-			g.fill(getX(), getY(), getX() + width, getY() + height, LIST_BG);
+			TableStyle.listBackground(g, getX(), getY(), width, height);
 		}
 
 		@Override
@@ -818,7 +808,7 @@ public class BlueprintTableScreen extends Screen {
 
 		@Override
 		protected void renderListBackground(GuiGraphics g) {
-			g.fill(getX(), getY(), getX() + width, getY() + height, LIST_BG);
+			TableStyle.listBackground(g, getX(), getY(), width, height);
 		}
 
 		@Override

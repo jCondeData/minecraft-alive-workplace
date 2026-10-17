@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.work;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.fish.FishermanCap;
 import com.mojang.datafixers.util.Pair;
 import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  *   are most of what villagers cost; a worker whose target is farther walks there in legs, one search at a time.</li>
  * </ul>
  * Both are checked from the villager's own tick (the range once a second), so nothing touches the world from another
- * thread.
+ * thread. The same three steps keep a village to its fishermen ({@link FishermanCap}, ROADMAP 26.13).
  */
 public final class WorkerLimits {
 	/** Workers per village (taken workstations within {@link #RADIUS} of each other); 0: no cap. */
@@ -41,6 +42,8 @@ public final class WorkerLimits {
 	public static int PATH_RANGE = 48;
 	static final ResourceLocation RANGE_ID = AliveWorkplace.id("worker_path_range");
 	private static final int CHECK_EVERY = 20;
+	/** How often a jobless villager walking to a barrel checks the village still has room for a fisherman, in ticks. */
+	private static final int FISHERMEN_EVERY = 10;
 
 	private WorkerLimits() {
 	}
@@ -82,11 +85,20 @@ public final class WorkerLimits {
 	 * pick: the village is full when more than {@link #MAX_PER_VILLAGE} are taken.
 	 */
 	static void holdBack(ServerLevel level, Villager villager) {
-		if (MAX_PER_VILLAGE <= 0 || villager.getVillagerData().getProfession() != VillagerProfession.NONE) {
+		boolean fishermen = FishermanCap.ENABLED && (villager.tickCount + villager.getId()) % FISHERMEN_EVERY == 0;
+		if ((MAX_PER_VILLAGE <= 0 && !fishermen) || villager.getVillagerData().getProfession() != VillagerProfession.NONE) {
 			return;
 		}
 		GlobalPos site = villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).orElse(null);
-		if (site == null || site.dimension() != level.dimension() || !full(level, site, true)) {
+		if (site == null || site.dimension() != level.dimension()) {
+			return;
+		}
+		boolean letGo = MAX_PER_VILLAGE > 0 && full(level, site, true);
+		if (!letGo && fishermen) {
+			// a barrel picked while the village had room for a fisherman, and someone took the last place on the way
+			letGo = level.getPoiManager().getType(site.pos()).map(FishermanCap::barrel).orElse(false) && FishermanCap.full(level, site.pos());
+		}
+		if (!letGo) {
 			return;
 		}
 		villager.releasePoi(MemoryModuleType.POTENTIAL_JOB_SITE);
@@ -118,11 +130,24 @@ public final class WorkerLimits {
 		if (villager != null && io.github.jcondedata.aliveworkplace.people.Retirement.isRetired(villager)) {
 			return found.filter(p -> !JobSiteTickets.workstation(p.getFirst())); // a retired elder looks for no workstation (34.20)
 		}
-		if (MAX_PER_VILLAGE <= 0 || villager == null || !(villager.level() instanceof ServerLevel level)
+		boolean workers = MAX_PER_VILLAGE > 0;
+		boolean fishermen = FishermanCap.ENABLED;
+		if ((!workers && !fishermen) || villager == null || !(villager.level() instanceof ServerLevel level)
 			|| villager.getVillagerData().getProfession() != VillagerProfession.NONE) {
 			return found;
 		}
-		return found.filter(p -> !JobSiteTickets.workstation(p.getFirst()) || !full(level, GlobalPos.of(level.dimension(), p.getSecond()), false));
+		// Barrels are many (storage in every build): the fishermen are counted once per chunk section, not per barrel
+		java.util.Map<Long, Boolean> fishermenFull = new java.util.HashMap<>();
+		return found.filter(p -> {
+			if (!JobSiteTickets.workstation(p.getFirst())) {
+				return true;
+			}
+			if (workers && full(level, GlobalPos.of(level.dimension(), p.getSecond()), false)) {
+				return false;
+			}
+			return !fishermen || !FishermanCap.barrel(p.getFirst())
+				|| !fishermenFull.computeIfAbsent(net.minecraft.core.SectionPos.asLong(p.getSecond()), k -> FishermanCap.full(level, p.getSecond()));
+		});
 	}
 
 	/** Whether {@code villager} is being given a job by order right now (not taking one by themselves). */
@@ -159,13 +184,15 @@ public final class WorkerLimits {
 			villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 			return true;
 		}
-		if (MAX_PER_VILLAGE <= 0 || villager == employing || !(villager.level() instanceof ServerLevel level)
+		boolean fishermen = FishermanCap.ENABLED && FishermanCap.capped(data.getProfession());
+		if ((MAX_PER_VILLAGE <= 0 && !fishermen) || villager == employing || !(villager.level() instanceof ServerLevel level)
 			|| villager.getVillagerData().getProfession() != VillagerProfession.NONE
 			|| data.getProfession() == VillagerProfession.NONE || data.getProfession() == VillagerProfession.NITWIT) {
 			return false;
 		}
 		GlobalPos site = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).orElse(null);
-		if (site == null || site.dimension() != level.dimension() || !full(level, site, true)) {
+		if (site == null || site.dimension() != level.dimension()
+			|| !((MAX_PER_VILLAGE > 0 && full(level, site, true)) || (fishermen && FishermanCap.full(level, site.pos())))) {
 			return false;
 		}
 		villager.releasePoi(MemoryModuleType.JOB_SITE);

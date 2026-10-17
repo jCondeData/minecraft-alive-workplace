@@ -154,15 +154,14 @@ def tinkers_workshop_2():
         for z in range(9, depth):
             b.set(x, 5, z, "spruce_planks")
         fence(b, x, 6, 8, "spruce_fence")
-    b.set(6, 5, 11, "air")
-    for y in range(1, 6):
-        b.set(6, y, 11, "ladder", facing="west", waterlogged=False)
+    for y in range(1, 6):  # up the back wall, where the loft has headroom (by the east wall the roof is a block over it)
+        b.set(5, y, 11, "ladder", facing="north", waterlogged=False)
     # The loft: barrels and chests of stock
     b.set(2, 6, 11, "chest", facing="south", type="single", waterlogged=False)
     for x in (3, 4):
         b.set(x, 6, 11, "barrel", facing="north", open=False)
     b.set(2, 6, 9, "barrel", facing="up", open=False)
-    lantern(b, 5, 6, 11)
+    lantern(b, 6, 6, 11)
     # Under the loft: the cart track in from the back arch to a stop, racks either side
     for z in range(9, depth + 1):
         b.set(4, 1, z, "rail", shape="north_south", waterlogged=False)
@@ -326,13 +325,15 @@ def smithy():
     """13 x 12 x 10: a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a
     quench trough inside, a blast furnace in a brick chimney breast (Armorer, or Miner with a pickaxe), its stack up the
     west wall with a campfire smoking on top, a smithing table (Toolsmith) at the back, and a lean-to on the east side
-    over a grindstone (Weaponsmith)."""
-    b = Build(13, 12, 10)
+    over a grindstone (Weaponsmith). Under the hall, down a ladder by the forge, the coal store (ROADMAP 26.15), 4 below."""
+    from basements import coal_store, BASEMENT
+    b = Build(13, 12, 10, basement=BASEMENT)
     smithy_hall(b)
     smithy_roof(b)
     smithy_forge(b)
     smithy_lean_to(b)
     smithy_floor(b)
+    coal_store(b, 1, 2, 9, 8, ladder=(2, 3, "east"))
     b.fill_air()
     return b
 
@@ -784,7 +785,7 @@ def map_room():
     b.set(2, 6, 5, "bookshelf")
     fence(b, 4, 6, 4, "spruce_fence")
     b.set(4, 7, 4, "spruce_pressure_plate", powered=False)
-    b.set(5, 6, 4, "spruce_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    chair(b, 5, 6, 4, SPRUCE, "west")
     b.set(2, 6, 2, "chest", facing="east", type="single", waterlogged=False)
     lantern(b, 2, 7, 2)
     b.fill_air()

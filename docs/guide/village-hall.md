@@ -34,12 +34,15 @@ leaves the caravans' trade routes and its open quests are dropped, so put it bac
 
 ## The hall's screen
 
-Right-click the hall. Along the top are the village's numbers: its name and rank, villagers, beds, food in store,
-guards, wellbeing, what the workers are waiting for and the buildings going up. Below are the page buttons, and below
-those everyone who lives there.
+Right-click the hall. It looks like the Blueprint Table's screen. Under the title is a row of icon buttons: first the
+village's numbers (its name and rank, villagers, beds, food in store, guards, wellbeing, what the workers are waiting
+for, the buildings going up and quests), then the page buttons. On the left is a list: the hall's page tabs, then
+everyone who lives there, each with their name and job. **Point at anything and the pane on the right tells you all
+about it.** With the mouse elsewhere, the pane shows the village's numbers at a glance.
 
 Each worker is shown as their workstation, stacked as high as their level, with what they're doing ("Market Stall ·
-45%") and what they're waiting for. **Click a villager to make them glow** for ten seconds so you can find them. Click a
+45%") and what they're waiting for. **Click a villager to make them glow** for ten seconds so you can find them; they stay in the pane, where the mouse
+wheel scrolls through everything about them (the × or Esc puts them away). Click a
 villager without a job to see the free workstations, and click one to give them that job.
 
 ![The Village Hall's screen](https://jcondedata.github.io/minecraft-alive-workplace/hall/still-4.jpg)

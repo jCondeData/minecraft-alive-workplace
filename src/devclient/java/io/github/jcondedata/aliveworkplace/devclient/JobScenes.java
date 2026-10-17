@@ -1235,24 +1235,29 @@ final class JobScenes {
 			for (int i = 0; i < 4; i++) {
 				guard(level, STATION.offset(-6 + 4 * i, 0, -2), new ItemStack(Items.IRON_SWORD));
 			}
-			// The guards take their jobs in a task after this one (picked: vanilla files the grindstones' records first), so
-			// the muster waits for them in a task of its own: mustered here it found no guards (B130).
-			level.getServer().execute(() -> {
-				player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
-				player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
-				Showcase.check(io.github.jcondedata.aliveworkplace.guard.WarParties.muster(level, hall, player) == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED
-					&& io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size() == 3,
-					"three of the four guards mustered under the raised Rally Banner");
-				io.github.jcondedata.aliveworkplace.guard.WarParties.hire(level, hall, player);
-				Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(level, hall).stream()
-					.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
-					"the five Siege-breakers were hired");
-				player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
-			});
+			// B130: the hall's and the guards' records now, not in vanilla's next task: the muster below reads them
+			ScreenshotHarness.fileRecords(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+			io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			player.getInventory().add(new ItemStack(io.github.jcondedata.aliveworkplace.registry.ModItems.RALLY_BANNER));
+			player.getInventory().add(new ItemStack(Items.EMERALD, io.github.jcondedata.aliveworkplace.guard.WarParties.PRICE_EMERALDS));
+			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
 			int[] ticks = {0};
 			boolean[] turned = {false};
 			return l -> {
 				ticks[0]++;
+				if (ticks[0] == 5) {
+					// B130: mustered a few ticks in: the guards take their jobs in a server task after the staging one (picked)
+					var mustered = io.github.jcondedata.aliveworkplace.guard.WarParties.muster(l, hall, player);
+					int rallied = io.github.jcondedata.aliveworkplace.guard.RallyBannerItem.rally(io.github.jcondedata.aliveworkplace.guard.WarParties.banner(player)).guards().size();
+					Showcase.check(mustered == io.github.jcondedata.aliveworkplace.guard.WarParties.Muster.MUSTERED && rallied == 3,
+						"three of the four guards mustered under the raised Rally Banner" + (rallied == 3 ? "" : " (" + mustered + ", " + rallied + " on the banner, guards by the hall: "
+							+ l.getEntitiesOfClass(Villager.class, io.github.jcondedata.aliveworkplace.hall.VillageHalls.area(hall),
+								v -> io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(v)).size() + ")"));
+					io.github.jcondedata.aliveworkplace.guard.WarParties.hire(l, hall, player);
+					Showcase.check(io.github.jcondedata.aliveworkplace.guard.Mercenaries.near(l, hall).stream()
+						.filter(io.github.jcondedata.aliveworkplace.guard.WarParties::isSiegeBreaker).count() == io.github.jcondedata.aliveworkplace.guard.WarParties.BAND,
+						"the five Siege-breakers were hired");
+				}
 				var standing = io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall);
 				if (standing.isEmpty()) {
 					return ticks[0] > 40;
@@ -1269,6 +1274,10 @@ final class JobScenes {
 				// The Warlord falls at the front (a scene can't wait out a whole battle).
 				if (ticks[0] == 900 && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
 					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
+				} else if (ticks[0] == 900) {
+					Showcase.check(false, "the Warlord at the front: captain " + l.getEntity(standing.get().captain()) + ", band "
+						+ io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() + ", war party at the camp "
+						+ io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).size());
 				}
 				return false;
 			};
@@ -2146,15 +2155,16 @@ final class JobScenes {
 			new Vec3(5.5, -52, 10.5), new Vec3(-5, -56, -6), (level, player) -> {
 			// ROADMAP 29.12: a finished Stone House the village's builder put up, a builder at his bench with the Grand
 			// style's materials in barrels, and the Master Architect settled beside them. A building's next tier comes
-			// first, so the scene stages the top tier, stone_house_3, which has none: his round hands the builder the
-			// house redrawn in the Grand style, and only the blocks that differ are taken down and placed.
+			// first, so the scene stages the top tier, stone_house_4 (since 26.15), which has none: his round hands the
+			// builder the house redrawn in the Grand style, and only the blocks that differ are taken down and placed.
 			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
-			StarterBlueprints.Entry entry = StarterBlueprints.STONE_HOUSE_3;
+			StarterBlueprints.Entry entry = StarterBlueprints.STONE_HOUSE_4;
 			BlockPos anchor = new BlockPos(-8, -60, -3);
 			Blueprint blueprint = BlueprintLibrary.get(level, entry.id()).orElseThrow();
 			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), blueprint.size(), anchor,
 				BlueprintItem.rotationFacing(Direction.SOUTH));
-			level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, placement.origin(), placement.origin(),
+			BlockPos file = placement.origin().below(entry.basement()); // its wine cellar is at the bottom of its file (26.15)
+			level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, file, file,
 				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation())
 					.setMirror(placement.mirror()), level.getRandom(), 2);
 			BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
@@ -2197,6 +2207,89 @@ final class JobScenes {
 			Showcase.check(site != null && site.structure().equals(grandId), "the Architect handed over the Stone House in the Grand style");
 			java.util.UUID id = site == null ? null : site.id();
 			return l -> built(l, id, 1f);
+		}, null));
+		SCENES.put("basement", new Job("a builder dug a root cellar under a finished Starter Cottage III and built the Level 4 over it, then the camera went down the ladder into it", 16000,
+			new Vec3(9.5, -50, 9.5), new Vec3(0, -56, -7), (level, player) -> {
+			// ROADMAP 26.15: ground raised four blocks over the superflat (its bedrock is too close under the grass for a
+			// cellar), a finished Starter Cottage III on it facing the camera, and a builder at his bench with what
+			// Cottage IV still needs in barrels. He digs the root cellar out of the earth, walls it, puts in the ladder,
+			// the bins and the lights; then the camera climbs down into it.
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000);
+			for (int x = -18; x <= 18; x++) {
+				for (int z = -22; z <= 10; z++) {
+					for (int y = -60; y <= -58; y++) {
+						level.setBlock(new BlockPos(x, y, z), (y == -58 ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState(), 2);
+					}
+				}
+			}
+			StarterBlueprints.Entry three = StarterBlueprints.STARTER_COTTAGE_3;
+			StarterBlueprints.Entry four = StarterBlueprints.STARTER_COTTAGE_4;
+			BlueprintData.Placement placement = BlueprintItem.placementAt(level.dimension().location(), three.size(), new BlockPos(0, -57, -2),
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			level.getStructureManager().get(three.id()).orElseThrow().placeInWorld(level, placement.origin(), placement.origin(),
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(placement.rotation())
+					.setMirror(placement.mirror()), level.getRandom(), 2);
+			BuildSiteManager.get(level).recordFinished(three.id(), placement, player.getUUID());
+			BlockPos bench = new BlockPos(8, -57, 2);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			// all Cottage IV takes (what the cottage already has is left over in the barrels)
+			Map<Item, Integer> stock = new LinkedHashMap<>(BuildPlan.create(BlueprintLibrary.get(level, four.id()).orElseThrow(), placement).materials());
+			List<ItemStack> stacks = new ArrayList<>();
+			stock.forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos barrelPos = bench.offset(1 + b % 3, 0, b / 3);
+				level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(barrelPos);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(2), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			BuildSite site = Builders.start(level, builder, null, four.id(), placement);
+			Showcase.check(site != null && !stacks.isEmpty(), "the builder took on Starter Cottage IV, its materials in the barrels");
+			java.util.UUID id = site == null ? null : site.id();
+			java.util.function.Function<Vec3, Vec3> world = rel -> net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
+				rel, placement.mirror(), placement.rotation(), BlockPos.ZERO).add(Vec3.atLowerCornerOf(placement.origin()));
+			long[] since = {-1};
+			int[] step = {0};
+			return l -> {
+				if (since[0] < 0) {
+					if (!built(l, id, 1f)) {
+						return false;
+					}
+					since[0] = l.getGameTime();
+					BlockPos floor = BlockPos.containing(world.apply(new Vec3(5.5, -4, 5.5)));
+					BlockPos room = BlockPos.containing(world.apply(new Vec3(4.5, -2, 4.5)));
+					BlockPos ladder = BlockPos.containing(world.apply(new Vec3(8.5, -2, 3.5)));
+					Showcase.check(l.getBlockState(floor).is(Blocks.PACKED_MUD) && l.getBlockState(room).isAir() && l.getBlockState(ladder).is(Blocks.LADDER),
+						"the root cellar was dug out under the cottage, floored and laddered");
+					aim(l, player, world.apply(new Vec3(3.5, -3 + 0.1, 4.5)), world.apply(new Vec3(6.5, -2.5, 7.5)));
+					return false;
+				}
+				long t = l.getGameTime() - since[0];
+				// each step once, when its time has come (the check isn't run every tick)
+				if (t >= 40 && step[0] == 0) {
+					step[0]++;
+					SHOTS.add("02_root_cellar");
+				} else if (t >= 70 && step[0] == 1) {
+					step[0]++;
+					aim(l, player, world.apply(new Vec3(7.5, -3 + 0.1, 6.5)), world.apply(new Vec3(8.5, -1, 3.5)));
+				} else if (t >= 110 && step[0] == 2) {
+					step[0]++;
+					SHOTS.add("02_ladder_up");
+				} else if (t >= 140 && step[0] == 3) {
+					step[0]++;
+					aim(l, player, new Vec3(9.5, -50, 9.5), new Vec3(0, -56, -7));
+				}
+				return step[0] == 4 && t >= 180;
+			};
 		}, null));
 		SCENES.put("legend_pathfinder", new Job("the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 1600,
 			new Vec3(9.5, -55, 9.5), new Vec3(0, -59.5, 10), (level, player) -> {
@@ -2274,13 +2367,21 @@ final class JobScenes {
 				if (t >= 40 && !rolled[0] && legend != null) {
 					rolled[0] = true;
 					place(l, hall, ModBlocks.VILLAGE_HALL); // here, so its own first round doesn't roll the night first
-					// The hall's and the Chapel's records now, not in vanilla's next task, so the round finds the Chapel and its village (B130).
+					// B130: the hall's (and the Chapel's) records now, not in vanilla's next task: the round below reads them
 					ScreenshotHarness.fileRecords(l, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
 					io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
 					io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+					// B130: a Rare Legend's visit asks for a Friend of the village since 31.12 (the Seer's chapel way): the player is one
+					ServerPlayer friend = l.getServer().getPlayerList().getPlayers().get(0);
+					io.github.jcondedata.aliveworkplace.story.Reputation.add(l, hall, friend, 50 - io.github.jcondedata.aliveworkplace.story.Reputation.points(l, hall, friend.getUUID()));
 					io.github.jcondedata.aliveworkplace.legend.LegendGuests.round(l, hall, net.minecraft.util.RandomSource.create(4242L));
 					seer[0] = io.github.jcondedata.aliveworkplace.legend.LegendGuests.guest(l, hall);
-					Showcase.check(seer[0] != null && ModAttachments.LEGEND.get(seer[0]).id().equals(legend.id()), "the Seer came to the Chapel at midnight");
+					Showcase.check(seer[0] != null && ModAttachments.LEGEND.get(seer[0]).id().equals(legend.id()), "the Seer came to the Chapel at midnight"
+						+ (seer[0] != null ? "" : " (candidates " + io.github.jcondedata.aliveworkplace.legend.LegendGuests.candidates(l, hall, "chapel",
+							io.github.jcondedata.aliveworkplace.hall.Chronicle.day(l)).stream().map(g -> g.id().toString()).toList()
+							+ ", slots " + io.github.jcondedata.aliveworkplace.legend.LegendSlots.whyNot(l, hall, legend, null).map(Component::getString).orElse("free")
+							+ ", ways met " + legend.ways("visit").stream().filter(w -> io.github.jcondedata.aliveworkplace.legend.LegendGuests.wayMet(l, hall, w)).count()
+							+ " of " + legend.ways("visit").size() + ", time " + l.getDayTime() % 24000 + ", moon " + l.getMoonPhase() + ")"));
 					if (seer[0] != null) {
 						seer[0].setNoAi(true);
 						seer[0].moveTo(anchor.getX() + 0.5, anchor.getY(), anchor.getZ() + 1.5, 180f, 0f);
@@ -3926,7 +4027,9 @@ final class JobScenes {
 		// Friendship (ROADMAP 31.5): a trade and a quest done for Dara put hearts on, shown in the action bar while the
 		// player looks at her, with a puff of hearts; the hall's tooltip shows your hearts and her best friends.
 		SCREENS.put("friendship", new Screen("a trade and a quest done for Dara raised the player's hearts in the action bar, and the hall's tooltip shows them",
-			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.6, 1.5), // (aimed from the feet: from the eye the look meets Dara, B130)
+			// B130: the camera is the player's feet and its pitch is worked out from there, while the hearts line follows the
+			// look from the eyes (1.6 up): aimed at y -58.8 that look passed over Dara's head, so nobody was looked at
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.2, 1.5),
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
@@ -3938,6 +4041,7 @@ final class JobScenes {
 				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
 				dara.setCustomName(Component.literal("Dara"));
 				subject = dara;
+				ScreenshotHarness.fileRecords(level, STATION, 1); // B130: the hall's record now, so Dara's hall is found
 			},
 			List.of(new Step("01_trade_hearts", -1, 0, (level, player) -> {
 					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
@@ -3951,7 +4055,10 @@ final class JobScenes {
 					dara.setTradingPlayer(null);
 					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
 					Showcase.check(io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 260
-						&& line != null && line.getString().equals("Dara ♥♥♡♡♡♡♡♡♡♡"), "a trade with Dara: +5, two hearts in the action bar: " + line);
+						&& line != null && line.getString().equals("Dara ♥♥♡♡♡♡♡♡♡♡"), "a trade with Dara: +5, two hearts in the action bar: " + line
+						+ (line != null ? "" : " (points " + io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) + ", looked at "
+							+ io.github.jcondedata.aliveworkplace.story.Friendship.lookedAt(player) + ", her hall "
+							+ io.github.jcondedata.aliveworkplace.hall.CivicEffects.hallOf(dara) + ", eye " + player.getEyePosition() + ", look " + player.getViewVector(1f) + ")"));
 				}, 40),
 				new Step("02_quest_hearts", -1, 0, (level, player) -> {
 					Villager dara = subject;
@@ -4538,7 +4645,7 @@ final class JobScenes {
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
 		// hall's tooltip says when her name day is.
 		SCREENS.put("gifts", new Screen("a Golden Carrot wrapped on the crafting grid and given to Dara: she loved it, her hearts went up, and the hall's tooltip says when her name day is",
-			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.6, 1.5), // (aimed from the feet: from the eye the look meets Dara, B130)
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.2, 1.5), // B130: aimed from the feet, so the eyes' look meets Dara (friendship)
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
@@ -4551,6 +4658,7 @@ final class JobScenes {
 				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
 				dara.setCustomName(Component.literal("Dara"));
 				subject = dara;
+				ScreenshotHarness.fileRecords(level, STATION, 1); // B130: the hall's record now, so Dara's hall is found
 			},
 			List.of(new Step("01_wrapping", -1, 0, (level, player) -> {
 					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
@@ -4585,16 +4693,23 @@ final class JobScenes {
 					}
 					boolean signed = io.github.jcondedata.aliveworkplace.story.Gifts.from(gift).equals(player.getGameProfile().getName());
 					player.setItemInHand(InteractionHand.MAIN_HAND, gift);
-					// Given as a player in survival gives it (a creative player keeps the item, B130), then back to the hovering camera.
+					// B130: given in survival: the filming camera is a creative player, who keeps what they give (as in vanilla)
+					var mode = player.gameMode.getGameModeForPlayer();
 					player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 					var result = io.github.jcondedata.aliveworkplace.story.Gifts.give(player, dara, player.getMainHandItem());
-					player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+					player.setGameMode(mode);
+					if (mode == net.minecraft.world.level.GameType.CREATIVE) {
+						player.getAbilities().flying = true;
+						player.onUpdateAbilities();
+					}
 					int expected = io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED.points
 						* (result.nameDay() ? io.github.jcondedata.aliveworkplace.story.Gifts.NAME_DAY_FACTOR : 1);
 					Showcase.check(signed && result.outcome() == io.github.jcondedata.aliveworkplace.story.Gifts.Outcome.GIVEN
 						&& result.band() == io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED && result.change() == expected
 						&& player.getMainHandItem().isEmpty() && result.line().getString().contains("Golden Carrot"),
-						"the Gift is from the player, and Dara the farmer loved her Golden Carrot (+" + expected + "): " + result.line().getString());
+						"the Gift is from the player, and Dara the farmer loved her Golden Carrot (+" + expected + "): " + result.line().getString()
+							+ " (signed " + signed + ", " + result.outcome() + ", " + result.band() + ", change " + result.change() + ", name day " + result.nameDay()
+							+ ", hand " + player.getMainHandItem() + ")");
 				}, 40),
 				new Step("03_hearts", -1, 0, (level, player) -> {
 					Villager dara = subject;
@@ -4636,6 +4751,7 @@ final class JobScenes {
 				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARENTS.set(dara,
 					new io.github.jcondedata.aliveworkplace.people.Families.Parents(Component.literal("Mira"), Component.literal("Tomas"), "", "", true));
 				subject = dara;
+				ScreenshotHarness.fileRecords(level, STATION, 1); // B130: the hall's record now, so Dara's hall is found
 			},
 			List.of(new Step("01_walks_up", -1, 0, (level, player) -> {
 					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
@@ -4688,7 +4804,7 @@ final class JobScenes {
 					var event = io.github.jcondedata.aliveworkplace.story.HeartEvents.pending(level, dara, player.getUUID());
 					Showcase.check(event != null && event.hearts() == 10 && !io.github.jcondedata.aliveworkplace.story.Keepsakes.given(dara, player),
 						"at ten hearts Dara has what she dreams of to tell, and her keepsake still to give: " + (event == null ? null : event.id()));
-				}, 230)),
+				}, 320)), // B130: her four lines a LINE_EVERY (60 ticks) apart after she walks up: 230 ended at the third
 			(level, player) -> {
 				if (subject == null) {
 					return false;
@@ -4698,7 +4814,12 @@ final class JobScenes {
 				boolean keepsake = io.github.jcondedata.aliveworkplace.story.Keepsakes.given(subject, player) && seeds.getCount() == 4
 					&& seeds.getHoverName().getString().equals("Dara's Grandmother's Seeds");
 				Showcase.check(keepsake, "her dream told at ten hearts, Dara the farmer gave her keepsake: 4 torchflower seeds named \"Dara's Grandmother's Seeds\" ("
-					+ (seeds.isEmpty() ? "nothing" : seeds.getCount() + " " + seeds.getHoverName().getString()) + ")");
+					+ (seeds.isEmpty() ? "nothing" : seeds.getCount() + " " + seeds.getHoverName().getString()) + ")"
+					+ (keepsake ? "" : "; told " + io.github.jcondedata.aliveworkplace.story.Friendship.of(subject).bond(player.getUUID()).told()
+						+ ", telling " + (io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(subject) == null ? "none"
+							: io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(subject).said + " lines")
+						+ ", pending " + io.github.jcondedata.aliveworkplace.story.HeartEvents.pending(level, subject, player.getUUID())
+						+ ", " + String.format("%.1f", Math.sqrt(subject.distanceToSqr(player))) + " blocks off, noAi " + subject.isNoAi()));
 				return told && keepsake;
 			}));
 		// A personal request (ROADMAP 31.9): at three hearts Dara, a plains farmer, walks up and asks for a taste of home;

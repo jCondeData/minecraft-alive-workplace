@@ -50,7 +50,8 @@ public final class StorehouseBoard {
 		Employer owner = Porters.owner(level, storehouse);
 		Component title = owner == null ? Component.translatable("screen.aliveworkplace.storehouse.village")
 			: Component.translatable("screen.aliveworkplace.storehouse.owned", owner.name());
-		ChoiceMenu.open(player, title,
+		// Drawn in the Blueprint Table's style (26.12) on its own menu type; the buttons and clicks are a chest's.
+		ChoiceMenu.openOn(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE_MENU, player, title,
 			p -> p.isAlive() && level.getBlockState(storehouse).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE)
 				&& p.position().distanceToSqr(Vec3.atCenterOf(storehouse)) <= 64,
 			menu -> render(menu, level, storehouse, player));

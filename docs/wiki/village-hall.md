@@ -3,16 +3,19 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, B37
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37
 
 ## What a player sees
 
-You craft a Village Hall and put it in the middle of your village. Right-click it and a screen of its own opens (drawn
-like vanilla's workstation screens, not a chest): a top row with the village's numbers (name and rank, villagers, beds,
-food in store, guards, wellbeing, requests, buildings going up), a row of page tabs, and below that everyone who lives
-within 64 blocks. Each worker is shown as their workstation, stacked as high as their level, with what they are doing
-and waiting for. Click one and they glow for ten seconds so you can find them. Click a jobless villager to see the free
-workstations and give them one.
+You craft a Village Hall and put it in the middle of your village. Right-click it and a screen of its own opens, drawn
+like the Blueprint Table's (not a chest): under the gold title a strip of icon buttons, the village's numbers (name
+and rank, villagers, beds, food in store, guards, wellbeing, requests, buildings going up, quests) and the toolbar
+(map, the Book of Edicts, the bell, mercenaries, the Chronicle, a festival, trade, "What next?", the bank). On the
+left a list: the page tabs, then everyone who lives within 64 blocks, each as their workstation (stacked as high as
+their level) with their name and job. The pane on the right reads out whatever is under the mouse, every line of it;
+with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
+can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
+to see the free workstations and give them one. Every page of the hall opens in the same screen.
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
@@ -97,6 +100,11 @@ Not saved: the census (counted again every 600 ticks) and the screen's layout.
 
 - 30.4a (owner, 2026-10-05): the hall's screen is a custom UI like vanilla's workstation screens, not a chest of
   icons. The server lays out the buttons and decides every click; the client only draws.
+- 26.12 (owner, 2026-10-16: "i like the look of the blueprint table"): the hall and the Storehouse board are drawn in
+  the Table's style by one client screen (`ChoiceTableScreen`, the look shared through `TableStyle`). The server's
+  menu, buttons and clicks did not change: the top row and the toolbar row are the strip, the rows below are the list,
+  and a click is the chest click it always was (left, right, shift). Tooltips became the pane on the right, so long ones
+  no longer cover the screen.
 - 22.5: page tabs instead of more buttons, because five expansions each needed a page and the screen had no free
   slot. Every button that was there before stayed where players knew it.
 - 22.6: one calendar for the whole world, so the Festival Cup, harvest season and stories agree on the date. The
@@ -116,8 +124,8 @@ Not saved: the census (counted again every 600 ticks) and the screen's layout.
 ## Proof
 
 GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
-`HallUiGameTests`, `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
+`HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`.
 
-Showcase scenes: `hall` (the screen and calendar), `hall_pages` (chronicle and trade routes), `hall_quests`,
+Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger).

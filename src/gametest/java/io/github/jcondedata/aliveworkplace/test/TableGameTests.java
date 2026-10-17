@@ -80,7 +80,9 @@ public class TableGameTests implements FabricGameTest {
 	public void materialsPayloadOfTheLargestBuildHoldsEveryMaterial(GameTestHelper helper) {
 		// The table's "All materials" list shows what this payload carries, so it must hold every material, uncapped.
 		var server = helper.getLevel().getServer();
+		// Not another test's fixture: gametest_corpus/* builds can sit in the listing depending on test order (build 1016 failed on one).
 		TablePayloads.Entry largest = TableServer.listing(server).stream()
+			.filter(e -> !e.id().getPath().startsWith("gametest_corpus/"))
 			.max(java.util.Comparator.comparingInt(TablePayloads.Entry::blocks)).orElseThrow();
 		var blueprint = BlueprintLibrary.get(server, largest.id()).orElseThrow();
 		java.util.Map<ResourceLocation, Integer> expected = new java.util.HashMap<>();

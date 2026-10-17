@@ -9,6 +9,9 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Villager jobs](villager-jobs.md): how a villager gets a job, what every job shares, and the list of all jobs.
 - [Builder](builder.md): the villager who builds blueprints.
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
+- [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).
+- [More decorations](more-decorations.md): fourteen small decorations that aren't houses, from a market cross to a footbridge (26.14).
+- [Basements and cellars](basements.md): the Level 4s with a basement dug under them, and the cellars from Level 1: the Butcher's freezer, the Smith's coal store, the Cook's larder, the Storehouse's vault (26.15).
 - [Scaffolding](scaffolding.md): how builders scaffold up to what has nowhere to stand near it, and take it down (35.6).
 - [Pokémon partners](pokemon-partners.md): pastured Pokémon that help at work, and are seen doing it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).

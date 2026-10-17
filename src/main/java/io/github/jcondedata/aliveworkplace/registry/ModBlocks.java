@@ -48,6 +48,12 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("village_hall"),
 			new net.minecraft.world.inventory.MenuType<>(io.github.jcondedata.aliveworkplace.work.ChoiceView::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
 
+	/** The Storehouse board's screen (ROADMAP 26.12): a ChoiceMenu on the server, drawn by the client in the Blueprint Table's style. */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.work.ChoiceView> STOREHOUSE_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("storehouse"),
+			new net.minecraft.world.inventory.MenuType<>((id, inventory) -> new io.github.jcondedata.aliveworkplace.work.ChoiceView(ModBlocks.STOREHOUSE_MENU, id, inventory),
+				net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+
 	/** The Pokémon Trader's screen (ROADMAP 28.23): a ChoiceMenu on the server, drawn by the client's own trade screen. */
 	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.trader.PokemonTradeView> POKEMON_TRADER_MENU =
 		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("pokemon_trader"),

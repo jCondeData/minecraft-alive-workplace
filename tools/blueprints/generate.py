@@ -15,6 +15,7 @@ from decor import *
 from houses import *
 from defence import *
 from workshops import *
+from workplaces import *
 from countryside import *
 from nether import *
 from yards import *
@@ -32,6 +33,7 @@ from realm import *
 from village_hall import village_hall, village_hall_2, village_hall_3
 from wonders import WONDERS, save_wonder
 from styles import styled
+from basements import LEVEL_4, butchers_shop
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -133,6 +135,8 @@ if __name__ == "__main__":
     for name, draw in (("well", well), ("well_2", well_2), ("street_lamp", street_lamp), ("park_bench", park_bench),
                        ("fountain", fountain), ("gazebo", gazebo), ("market_square", market_square)):
         draw().save(MAIN_STRUCTURES, name)
+    for name, draw in MORE_DECORATIONS:  # ROADMAP 26.14
+        draw().save(MAIN_STRUCTURES, name)
     stone_house().save(MAIN_STRUCTURES, "stone_house")
     stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
@@ -180,6 +184,9 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
     for name, draw in (("fire_station", fire_station), ("well_house", well_house), ("physicians_house", physicians_house)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
+    for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
+        draw().save(MAIN_STRUCTURES, name)
+    butchers_shop().save(MAIN_STRUCTURES, "butchers_shop")  # ROADMAP 26.15: with its freezer
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

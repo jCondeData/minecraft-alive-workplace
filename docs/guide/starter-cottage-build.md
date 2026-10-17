@@ -5,7 +5,7 @@ type: Build
 image: https://jcondedata.github.io/minecraft-alive-workplace/builders/still-3.jpg
 caption: A finished Starter Cottage
 Size: 11 wide, 10 deep, 12 high (II: 11 by 11 by 16; III: 17 by 11 by 16)
-Tiers: I, II (an upper story), III (a kitchen wing)
+Tiers: I, II (an upper story), III (a kitchen wing), IV (a basement)
 Houses: one bed, two from tier II
 Where to get it: Blueprint Table; a Novice builder sells it for 6 emeralds
 Main materials: spruce stairs and logs, birch planks, cobblestone, glass panes
@@ -29,6 +29,7 @@ Once a builder finishes the cottage, they sell its upgrade's blueprint as well (
 
 - **Starter Cottage II** puts an upper story on the same ground floor: a second bed and a second chest.
 - **Starter Cottage III** adds a kitchen wing to the east, with a smoker, a cauldron and another barrel, and a roof terrace on top.
+- **Starter Cottage IV** digs a **root cellar** under the cottage, down a ladder by the kitchen door: bins of pumpkins and melons, hay, sacks, mushrooms on a shelf and a sorting table, lit by two lanterns. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

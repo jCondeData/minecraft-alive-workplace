@@ -11,6 +11,8 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BasementGameTests",
+			"io.github.jcondedata.aliveworkplace.test.MoreDecorationsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ChimneyCampfireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StairCornerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestbookInstallGameTests",
@@ -18,6 +20,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StatusLineJobGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReleaseGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ServerControlsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.FishermanCapGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderBenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderKeepsBenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B46GameTests",

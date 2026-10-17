@@ -160,6 +160,38 @@ public final class Furnaces {
 		return moved;
 	}
 
+	/**
+	 * Whether a furnace near {@code station} wants a worker's visit: something done waits in its output slot (and the
+	 * chests have room for it), or it stands empty while the chests hold {@code goods} it can cook. Workers who only
+	 * tend furnaces when they drop off use it to come back for what's done (B147: a fisher's cooked fish sat in the
+	 * furnace until his next catch came home, and all night once his shift ended).
+	 */
+	public static boolean needsTending(ServerLevel level, BlockPos station, List<BlockPos> supplies, Predicate<Item> goods) {
+		if (supplies.isEmpty()) {
+			return false;
+		}
+		Map<Item, Long> contents = null;
+		for (BlockPos pos : SupplyContainers.furnaces(level, station)) {
+			if (!(level.getBlockEntity(pos) instanceof AbstractFurnaceBlockEntity furnace)) {
+				continue;
+			}
+			if (!furnace.getItem(2).isEmpty() && SupplyContainers.freeSlots(level, supplies) > 0) {
+				return true;
+			}
+			if (furnace.getItem(0).isEmpty()) {
+				if (contents == null) {
+					contents = SupplyContainers.contents(level, supplies);
+				}
+				for (Item item : contents.keySet()) {
+					if (goods.test(item) && smelts(level, furnace, item)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	/** Raw ores and ore blocks (by the common {@code c:} tags, so modded ores count too): what miners smelt. */
 	public static boolean isOre(Item item) {
 		ItemStack stack = new ItemStack(item);

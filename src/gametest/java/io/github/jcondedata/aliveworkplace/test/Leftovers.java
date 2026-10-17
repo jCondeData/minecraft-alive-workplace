@@ -129,6 +129,14 @@ final class Leftovers {
 				sites.remove(site.id());
 			}
 		}
+		// B143: a finished Wonder's parts are no longer finished buildings; placeRefusal checks the Wonder's own record
+		io.github.jcondedata.aliveworkplace.wonder.WonderManager wonders = io.github.jcondedata.aliveworkplace.wonder.WonderManager.get(level);
+		for (io.github.jcondedata.aliveworkplace.wonder.WonderSite w : java.util.List.copyOf(wonders.sites())) {
+			if (w.done() && w.placement().isPresent() && w.placement().get().dimension().equals(dimension)
+				&& w.placement().get().origin().distSqr(hall) <= (double) reach * reach) {
+				wonders.remove(w.id());
+			}
+		}
 	}
 
 	/**

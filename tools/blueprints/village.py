@@ -47,18 +47,26 @@ class Shifted:
         return self.b.get(x + self.dx, y, z + self.dz)
 
 
+def house_name(fit_out):
+    """The village house a fit-out furnishes (its name in VILLAGE_HOUSES, or the builder's workshop)."""
+    if fit_out is workshop_fit_out:
+        return "builders_workshop"
+    return next(name for name, f in VILLAGE_HOUSES.items() if f is fit_out)
+
+
 def village_house(style, fit_out, job=None):
-    """9 x 10 x 10. The street connects at the front (z = 0, left as the ground it lands on); a timber-framed house on a
-    stone plinth (walls x 1-7, z 2-8) with its gable to the street, shuttered windows, a lantern over the door; inside a bed,
-    a villager and {@code fit_out(b, style)}: the job block and what goes with it (drawn for the interior x 1-5,
-    z 2-6 of the first houses, moved in by one). Desert houses have a flat roof with a parapet instead, the roof beams'
-    ends showing under it.
+    """The village house for the job {@code fit_out} furnishes, in {@code style}: each job's house has its own shape
+    (village_looks.py, ROADMAP 26.11) drawn in the style's materials. The street connects at the front (z = 0, left as
+    the ground it lands on) to the door at (4, 1, 2); inside a bed, a villager and {@code fit_out(b, style)}: the job block
+    and what goes with it (drawn for the interior x 1-5, z 2-6 of the first houses, moved in by one).
     The villager: with no {@code job}, a jobless one from the village's worker pool, who takes the job block by
     themselves (the block's own job). With a {@code job} (a job that shares a vanilla block since ROADMAP 21.1a, such as
     the orchard keeper's composter), one who already has that job and takes the house's block for it."""
+    from village_looks import DESIGNS, PALETTES
+    draw, (w, h, d) = DESIGNS[house_name(fit_out)]
     s = VILLAGE_STYLES[style]
-    b = Build(9, 10, 10)
-    for x in range(9):
+    b = Build(w, h, d)
+    for x in range(w):
         b.set(x, 0, 0, "structure_void")
     b.set(4, 1, 0, "jigsaw", orientation="north_up")
     b.set_nbt(4, 1, 0, Compound({
@@ -66,65 +74,9 @@ def village_house(style, fit_out, job=None):
         "pool": String("minecraft:empty"), "final_state": String("minecraft:structure_void"),
         "joint": String("aligned"), "id": String("minecraft:jigsaw"),
         "selection_priority": Int(0), "placement_priority": Int(0)}))
-    plinth(b, 1, 2, 7, 8, s.plinth, floor=s.floor)
-    walls(b, 1, 2, 7, 8, 1, 3, s.infill)
-    frame_axis = {"axis": "y"} if "log" in s.frame else {}
-    for x, z in ((1, 2), (7, 2), (1, 8), (7, 8), (1, 5), (7, 5)):
-        for y in (1, 2, 3):
-            b.set(x, y, z, s.frame, **frame_axis)
-    if "log" in s.frame:
-        beam_ring(b, 1, 2, 7, 8, 4, s.frame)
-    else:
-        walls(b, 1, 2, 7, 8, 4, 4, s.frame)
-    door(b, 4, 1, 2, s.door, "south")
-    stairs(b, 4, 0, 1, s.roof, "south")
-    # The front windows' pots stand on upside-down stair sills, not on trapdoor flower boxes: they sit at head height
-    # beside the steps, and mob pathfinding takes any trapdoor for open ground, so a villager coming along the front
-    # wall to the door walked into a top-half one and stayed stuck there for good (27.11, B69). A stair is a block the
-    # pathfinder walks around.
-    for x, plant in ((2, "potted_red_tulip"), (6, "potted_oxeye_daisy")):
-        window(b, x, 2, 2, "north", shutters=s.trapdoor, sill=s.roof)
-        b.set(x, 2, 1, plant)
-    for z in (4, 6):
-        window(b, 1, 2, z, "west", shutters=s.trapdoor)
-        window(b, 7, 2, z, "east", shutters=s.trapdoor)
-    if s.flat:
-        # A flat roof: a sandstone slab over the walls, a parapet of walls, an awning of wool over the door
-        box(b, 1, 5, 2, 7, 5, 8, s.roof.full)
-        for x in range(1, 8):
-            for z in (2, 8):
-                wall_block(b, x, 6, z, "sandstone_wall")
-        for z in range(3, 8):
-            wall_block(b, 1, 6, z, "sandstone_wall")
-            wall_block(b, 7, 6, z, "sandstone_wall")
-        for x in range(3, 6):
-            b.set(x, 4, 1, "orange_wool" if x != 4 else "white_wool")
-        lantern(b, 3, 3, 1, hanging=True)
-        lantern(b, 5, 3, 1, hanging=True)
-        # The ends of the roof beams stick out of the walls under the parapet
-        for z in (3, 5, 7):
-            log(b, 0, 4, z, "stripped_jungle_log", axis="x")
-            log(b, 8, 4, z, "stripped_jungle_log", axis="x")
-        for x in (2, 4, 6):
-            log(b, x, 4, 9, "stripped_jungle_log", axis="z")
-    else:
-        gable_roof(b, 0, 8, 1, 9, 4, s.roof, axis="z", gable=s.infill, gable_at=(2, 8), eave_trim=s.roof)
-        b.set(4, 5, 2, s.frame, **frame_axis)
-        pane(b, 4, 6, 2)
-        b.set(4, 5, 8, s.frame, **frame_axis)
-        chimney(b, 4, 9, 0, 8, s.plinth)  # up the back gable
-        # A hood over the door
-        stairs(b, 3, 3, 1, s.roof, "west", top=True)
-        stairs(b, 5, 3, 1, s.roof, "east", top=True)
-        slab(b, 4, 4, 1, s.roof)
-    b.set(4, 3, 1, "air")
-    if not s.flat:
-        lantern(b, 4, 3, 1, hanging=True)  # under the hood's slab, over the way in
+    draw(b, PALETTES[style])
     fit_out(Shifted(b, 1, 1), style)
     b.bed(6, 1, 6, s.bed, facing="south")
-    lantern(b, 4, 3, 5, hanging=True)
-    for x in range(2, 7):  # a tie beam across the room, wall to wall, the lantern hanging from it
-        b.set(x, 4, 5, s.frame, **({"axis": "x"} if "log" in s.frame else {}))
     floor_name = s.floor
     if job is None:
         b.set(4, 0, 5, "jigsaw", orientation="up_north")
@@ -277,7 +229,7 @@ def kitchen(b, style):
     b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_kitchen"), "id": String("minecraft:chest")}))
     b.set(1, 1, 3, "oak_fence", north=False, south=False, east=False, west=False, waterlogged=False)
     b.set(1, 2, 3, "oak_pressure_plate", powered=False)
-    b.set(2, 1, 3, "oak_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
+    chair(b, 2, 1, 3, "oak_stairs", "west")
 
 
 def fossil_lab(b, style):
@@ -530,24 +482,17 @@ HOUSE_JOBS = {"guard_house": "guard", "clinic": "nurse", "post_office": "postman
 
 
 
-# --- Buildable copies for the Blueprint Table (ROADMAP 27.11) ---------------------------------------------
-# The plains look of twelve village houses, for a builder to build: one workplace per job the Steward asks for.
+# --- Buildable workplaces for the Blueprint Table (ROADMAP 27.11) ---------------------------------------------
+# One workplace per job the Steward asks for. Each has its own look since ROADMAP 26.11 (workplaces.py); before, they
+# were the plains village house with the job's room inside.
 WORKPLACES = ("builders_workshop", "carpenters_workshop", "kitchen", "post_office", "guard_house", "clinic", "ferry_house")
 # Made of Cobblemon jobs' places: in the Blueprint Table only with Cobblemon (StarterBlueprints.COBBLEMON_WORKPLACES).
 COBBLEMON_WORKPLACES = ("trainers_house", "leaders_hall", "ball_workshop", "trade_hall", "school")
 
 
 def workplace(name):
-    """A village house (plains) made buildable: no jigsaws, structure voids or villager (the worker who wants it moves
-    in), no loot in its chests (builders never fill containers), and white concrete for the calcite (STYLE.md: calcite
-    is for village houses, never paid for). Same 9 x 10 x 10 as the house, its front at z = 0."""
-    fit_out = workshop_fit_out if name == "builders_workshop" else VILLAGE_HOUSES[name]
-    b = village_house("plains", fit_out, "aliveworkplace:builder")
-    b.entities = []
-    b.nbt = {}
-    for pos, (block, props) in list(b.blocks.items()):
-        if block in ("minecraft:jigsaw", "minecraft:structure_void"):
-            b.blocks[pos] = ("minecraft:air", ())
-        elif block == "minecraft:calcite":
-            b.blocks[pos] = ("minecraft:white_concrete", ())
-    return b
+    """The buildable workplace {@code name}, each with its own look (workplaces.py): no jigsaws, structure voids or
+    villager (the worker who wants it moves in), no loot in its chests (builders never fill containers), its front at
+    z = 0. Its size is in StarterBlueprints.java."""
+    from workplaces import WORKPLACE_BUILDS
+    return WORKPLACE_BUILDS[name]()

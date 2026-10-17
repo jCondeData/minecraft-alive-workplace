@@ -101,11 +101,12 @@ def well_house():
                 edge = x in (1, 9) or z in (2, 10)
                 b.set(x, y, z, (MOSSY_BRICK_MIX if y == 0 else BRICK_WALL_MIX).at(x, y, z) if edge else "cobblestone")
             b.set(x, 2, z, "stone_bricks" if x in (1, 9) or z in (2, 10) else "polished_andesite")
-    # Steps up the front: three wide, two flights
+    # Steps up the front: three wide, three steps, the last cut into the platform's edge (B149: two left a block to jump)
     for x in (4, 5, 6):
         stairs(b, x, 0, 0, STONE_BRICK, "south")
         b.set(x, 0, 1, "stone_bricks")
         stairs(b, x, 1, 1, STONE_BRICK, "south")
+        stairs(b, x, 2, 2, STONE_BRICK, "south")
     for x in (3, 7):
         for y in (0, 1):
             b.set(x, y, 1, "stone_bricks")

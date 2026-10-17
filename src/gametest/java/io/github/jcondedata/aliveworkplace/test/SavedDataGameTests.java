@@ -175,6 +175,7 @@ public class SavedDataGameTests implements FabricGameTest {
 			}
 			if (field.getName().equals("BUILDER_BAG")) continue; // checked on its own: BuilderBag has no equals
 			if (field.getName().equals("PLUNDER")) continue; // an ItemStack has no equals: PiglinGameTests saves and loads it (32.10)
+			if (field.getName().equals("BRIGADE_HELD")) continue; // an ItemStack too: FireGameTests saves and loads it (B152)
 			Object value = samples.containsKey(field.getName()) ? samples.get(field.getName())
 				: plain(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0], n);
 			if (value == null) missing.add(field.getName());

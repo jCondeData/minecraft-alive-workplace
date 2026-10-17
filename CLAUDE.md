@@ -24,7 +24,9 @@ a to d (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start; they split milestones and 
 day. A lane coordinates and each
 feature is built by a fresh subagent (sessions.md), which keeps every conversation short and cheap.
 
-**Lanes start by hand** (owner, 2026-10-12: no scheduled routines on this account). When the owner says "get
+**Lanes start by hand** (owner, 2026-10-12: no scheduled routines on this account). **Read
+`docs/agent/handoff-1016.md` first** (2026-10-16): what the playtest chat built, rc.12, and the order to stop any
+scheduled Claude routines still running on any account. When the owner says "get
 started" or types `/get-started [a|b]`, run one lane as `.claude/commands/get-started.md` says: lane A covers
 shares a and c and holds red duty, lane B covers b and d.
 

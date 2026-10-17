@@ -755,6 +755,13 @@ public final class Builders {
 				tell(owner, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.entities_left", entitiesLeft, entitiesLeft), ChatFormatting.YELLOW);
 			}
 		}
+		if (site.wonder() != null) {
+			// B143: a Wonder's part isn't a building: no "built Stage 1 0" in the chronicle (the Wonder's own begun and
+			// finished lines tell it), no record among the village's buildings, no upgrade, no lane or path to its "door"
+			endJob(level, villager, site);
+			BuilderLevels.onFinished(level, villager, site);
+			return;
+		}
 		if (site.isDeconstruction()) {
 			BuildSiteManager.get(level).forgetFinished(site.placement());
 			io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14

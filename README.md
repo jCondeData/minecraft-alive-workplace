@@ -1887,6 +1887,9 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `villageRaids` | true | monsters raid villages with a Village Hall and 8 or more villagers at night now and then |
 | `villageRadius` | 48 | workers whose workstations are this close together share their chests (0 turns sharing off) |
 | `maxWorkersPerVillage` | 0 | jobless villagers stop taking free workstations once this many workstations within `villageRadius` of each other are taken; nobody loses a job they have (0: no limit) |
+| `fishermanCap` | true | a village takes only so many fishermen (storage barrels are a fisherman's workstation); other jobless villagers pass free barrels by for another workstation, and a fisherman a village already has keeps his job |
+| `fishermenPerVillage` | 1 | with `fishermanCap` on, the fishermen every village takes (1 to 20) |
+| `villagersPerFisherman` | 10 | with `fishermanCap` on, one more fisherman for every this many villagers within `villageRadius` (1 to 100) |
 | `workerPathRange` | 48 | how far villagers with a job look for a path in one go, in blocks; lower is lighter on the server, and farther walks are made in legs (vanilla: 48) |
 | `builderRepairs` | true | idle builders repair the buildings they finished when blocks go missing |
 | `banditCamps` | true | bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls |

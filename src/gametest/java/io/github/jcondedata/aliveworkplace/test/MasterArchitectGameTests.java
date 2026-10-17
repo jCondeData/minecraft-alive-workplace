@@ -311,14 +311,14 @@ public class MasterArchitectGameTests implements net.fabricmc.fabric.api.gametes
 		helper.runAfterDelay(2, () -> staged(helper, List.of(), legend -> {
 			ServerLevel level = helper.getLevel();
 			BlockPos hall = helper.absolutePos(HALL);
-			BlueprintData.Placement top = finished(helper, grand(StarterBlueprints.STONE_HOUSE_3.id()), new BlockPos(12, 2, 2), recorded);
+			BlueprintData.Placement top = finished(helper, grand(StarterBlueprints.STONE_HOUSE_4.id()), new BlockPos(12, 2, 2), recorded);
 			helper.assertTrue(GrandRebuild.choose(level, hall, "grand").isEmpty(), "a Grand building with no upgrade picked");
 			BuildSiteManager.get(level).forgetFinished(top);
-			BlueprintData.Placement house = finished(helper, StarterBlueprints.STONE_HOUSE_3.id(), new BlockPos(12, 2, 2), recorded);
+			BlueprintData.Placement house = finished(helper, StarterBlueprints.STONE_HOUSE_4.id(), new BlockPos(12, 2, 2), recorded);
 			builder(helper, new BlockPos(4, 2, 20));
 			Villager arch = architect(helper, legend, new BlockPos(5, 2, 8));
 			BuildSite site = round(helper, arch, legend);
-			helper.assertTrue(site != null && site.structure().equals(grand(StarterBlueprints.STONE_HOUSE_3.id())) && site.placement().equals(house),
+			helper.assertTrue(site != null && site.structure().equals(grand(StarterBlueprints.STONE_HOUSE_4.id())) && site.placement().equals(house),
 				"not the Stone House redrawn: " + (site == null ? null : site.structure()));
 			helper.assertTrue(chronicle(helper).stream().anyMatch(l -> l.contains("redrew the Stone House") && l.contains("in the Grand style")), "chronicle: " + chronicle(helper));
 			helper.succeed();

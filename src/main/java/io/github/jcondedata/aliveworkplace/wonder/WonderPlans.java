@@ -170,6 +170,18 @@ public final class WonderPlans {
 				}
 			}
 		}
+		// A finished Wonder's parts aren't among the village's buildings (B143): its own record says where it stands
+		for (WonderSite done : WonderManager.get(level).sites()) {
+			if (!done.done() || done.placement().isEmpty() || !done.placement().get().dimension().equals(placement.dimension())) {
+				continue;
+			}
+			for (WonderUpkeep.Part part : WonderUpkeep.parts(level, done)) {
+				Optional<BoundingBox> other = BlueprintLibrary.get(level, part.plain()).map(b -> BlueprintOutline.bounds(part.placement(), b.size()));
+				if (other.isPresent() && overlaps(box, other.get())) {
+					return Optional.of(Component.translatable("message.aliveworkplace.wonder_plan.over_wonder"));
+				}
+			}
+		}
 		return Optional.empty();
 	}
 

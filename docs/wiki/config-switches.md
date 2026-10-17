@@ -66,6 +66,9 @@ range is in brackets.
 | `partnerRadius` | 16 (4 to 48) |  | How far from a workstation pastured Pokémon count as partners. |
 | `postmanRange` | 64 (16 to 256) |  | How far from their Mailbox a postman walks to deliver (farther mail arrives at dawn). |
 | `maxWorkersPerVillage` | 0 (0 to 500) |  | At most this many workers per village (taken workstations within the village radius); 0: no cap. Nobody loses a job they have. |
+| `fishermanCap` | on |  | A village takes only so many fishermen: other jobless villagers pass free barrels (storage in builds) by for another workstation. A fisherman a village already has keeps his job. Off: as in vanilla. |
+| `fishermenPerVillage` | 1 (1 to 20) |  | With the fisherman cap on, the fishermen every village takes. |
+| `villagersPerFisherman` | 10 (1 to 100) |  | With the fisherman cap on, one more fisherman for every this many villagers within the village radius. |
 | `workerPathRange` | 48 (16 to 128) |  | How far villagers with a job look for a path in one go (vanilla: 48). |
 | `villageRadius` | 48 (0 to 128) |  | Workers whose workstations are this close together are one village and share their chests. |
 | `villageHallRadius` | 64 (16 to 160) |  | How far from a Village Hall its village reaches. |

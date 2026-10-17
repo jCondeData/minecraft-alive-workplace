@@ -369,14 +369,22 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		worker.refreshBrain(level); // as when a villager takes a job: its brain looks for that job's blocks
 		BlockPos min = helper.absolutePos(HOUSE);
 		BlockPos max = min.offset(blueprint.size().getX() - 1, blueprint.size().getY() - 1, blueprint.size().getZ() - 1);
+		long[] built = {-1};
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage());
 			List<BlockPos> blocks = BlockPos.betweenClosedStream(min, max).filter(p -> level.getBlockState(p).is(w.block()))
 				.map(BlockPos::immutable).toList();
 			helper.assertTrue(blocks.size() == 1, "job blocks built: " + blocks);
 			helper.assertTrue(worker.isAlive() && worker.getVillagerData().getProfession() == job, "the worker is now " + worker.getVillagerData().getProfession());
+			if (built[0] < 0) {
+				built[0] = helper.getTick();
+			}
 			helper.assertTrue(worker.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> g.pos().equals(blocks.get(0))).orElse(false),
-				"the worker works at " + worker.getBrain().getMemory(MemoryModuleType.JOB_SITE));
+				"the worker works at " + worker.getBrain().getMemory(MemoryModuleType.JOB_SITE) + " (job block " + helper.relativePos(blocks.get(0)).toShortString()
+					+ ", its free tickets " + level.getPoiManager().getFreeTickets(blocks.get(0)) + "; the worker at " + helper.relativePos(worker.blockPosition()).toShortString()
+					+ ", potential " + worker.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("none")
+					+ ", activity " + worker.getBrain().getActiveNonCoreActivity().orElse(null) + ", day time " + level.getDayTime() % 24000
+					+ ", built at tick " + built[0] + ")");
 		});
 	}
 }

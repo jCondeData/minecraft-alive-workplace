@@ -17,6 +17,26 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
+  III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
+  House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply
+  Shop, an archive under the Library, a herb store under the Healing Center and an armoury with a lock-up under the
+  Lookout Tower. The builder digs the room out of the ground himself and leaves the house above as it was.
+- **Cellars from Level 1, and a Butcher's Shop.** A new Butcher's Shop (a striped awning, meat in the windows, the
+  smoker in a brick chimney breast, a pen behind) with an ice-lined freezer under it; the Smithy now has a coal store
+  under the forge, the Kitchen a cold larder and the Storehouse a vault of chests. Ones already standing keep as they
+  are; a new one digs its cellar.
+- **Fourteen new decorations.** Small builds that aren't houses, in the Blueprint Table beside the Fountain and the
+  Street Lamp: a Market Cross, a Stag Statue, Flower Planters, a Signpost, a Stone Archway, a Lily Pond, a Hay Cart, a
+  Notice Board, a Lantern Pergola, a Fire Pit, a Sundial, a Topiary Garden, a Market Corner and a Footbridge. Each adds
+  1 to 3 to a village's beauty. The Flower Planters are unlocked from the start; market-day traders sell the rest.
+- **Every workplace has its own building.** The twelve workplaces the Steward asks for no longer share one house: the
+  Builder's Workshop is a saltbox studio with a crane yard, the Carpenter's an open saw shed with log piles, the Kitchen
+  a cookhouse with a domed bread oven and herb beds, the Post Office a jettied townhouse with a dovecote, the Guard House
+  a battlemented stone blockhouse with a watch hut, the Clinic a white pavilion and ward with cross windows, the Ferry
+  House a gambrel boathouse with a landing stage, and with Cobblemon the Trainer's House a veranda dojo with a sparring
+  ring, the Leader's Hall a columned portico, the Ball Workshop a round drying tower under a copper cone, the Trade Hall
+  a market hall on arches and the School a brick U round a courtyard. Ones already standing stay as they are.
 - **Pick a style at the Blueprint Table.** A row of style buttons under the 3D picture (as drawn, Stonework,
   Sandstone, Dark Oak, Cherry, Grand, and Apricorn with Cobblemon; only those that change the selected build) recolours
   the picture and the material list, and Get Blueprint hands the blueprint out already in that style. Locked and "???"
@@ -66,7 +86,75 @@ asks for the steps, `latest.log` and any crash report).
   chapters are added once, on the first start with FTB Quests: a server owner's edits and deletions are kept. The
   guide's new page, The questbook, lists them.
 
+### Changed
+- **The Village Hall and the Storehouse board look like the Blueprint Table.** Both screens now use the Table's dark
+  panel, gold title, list on the left and reading pane on the right. In the hall, the village's numbers and the toolbar
+  sit as icon buttons under the title, and the page tabs and everyone who lives there are a list with each villager's
+  name and job. The Storehouse board lists the requests with what, how many and for whom, and no longer looks like a
+  locked chest. Point at anything and the pane tells you all about it (long tooltips no longer cover the screen); with
+  the mouse elsewhere it shows the village's numbers or the store at a glance. Click a villager to keep them in the
+  pane and scroll. Every button and click works as before.
+- **Fewer fishermen.** Storage barrels in builds made most villagers fishermen: now a village takes one fisherman, plus
+  one more for every ten villagers. After that, jobless villagers pass free barrels by and take another workstation. A
+  fisherman a village already has keeps his job. Settings: Fisherman Cap (on), Fishermen per Village (1) and Villagers
+  per Extra Fisherman (10).
+- **No two kinds of home look alike any more.** The Stone House is now a stone croft with crow-stepped gables, a
+  chimney breast and a woodpile, and grows a second storey in stone instead of timber; the Terrace is a brick row with
+  a bay window and a hooded door for each home; the Artisan's House has a red tile gambrel roof, weatherboards and a
+  hoist beam over a loft door; the Townhouse is warm stucco under a slate mansard with little iron balconies; the
+  Manor's roofs are hipped. The Starter Cottage stays the timber-framed one. Beds, chests and rooms are where they
+  were: homes already built keep their villagers, and an upgrade builds the new look onto them.
+- **Every job's village house looks different.** The 32 kinds of house our villages grow (one per job) were one
+  timber house per village style with a different room inside; now each job has its own building, in its village's
+  own materials: a Guard House with a battlement and watch hut, a Kitchen with a domed bread oven, a Mortuary chapel
+  with a small graveyard, a Tinker's Shop with a glass monitor roof and a brick smokestack, a Print Shop with
+  crow-stepped gables, a Gem Grotto mound sprouting amethyst, an A-frame Camp Kitchen, a hay-thatched Berry Nursery
+  and more (each one is in the wiki's Workplace looks page). The Weaver's Cottage is now a stone workroom with an
+  open drying loft hung with dyed cloth, and the Inn has its guest storey jettied over the street under twin gables.
+  Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
+
 ### Fixed
+- **Cellar ladders no longer trap villagers.** A cellar's ladder came up through an open hole in the floor and a block
+  above it, and villagers walking past climbed it onto the window sill beside it and got stuck (a Chef never reached
+  the Kitchen's smoker). The ladder now ends under a trapdoor hatch in the floor: open it to climb down or up (B158).
+- **A Great Wall sentry climbing back up gets all the way to its post.** One that went up the wall's face landed a
+  block or two off its post and stood there, with no path for a golem along the narrow walk; it now takes the last
+  steps straight over (B144).
+- **Two builders on one house really take about half the time again.** Near the end, the lead took what it was short of
+  from its helper and left the rest of the build's last things (a lantern) in the chests, then walked back for them
+  alone at the very end while the helper stood about. It now picks those up while the helper is still busy (B155).
+- **A Wonder's parts no longer count as buildings.** Each finished part used to write "Odo finished the Stage 1 0" in
+  the village's chronicle, join the village's list of buildings, and get a lane or dirt path to its "door". Now only
+  the Wonder's own lines tell its story, and a new Wonder still can't be drawn over a finished one (B143).
+- **Every seat in the Stadium can be walked to.** Its aisles climbed two blocks a tier on a single stair, so nobody
+  could get past the second row; now each aisle is a proper flight, two stairs to a tier, and the rows round the
+  curved corners join up so you can walk right round every tier. The blueprint check now also looks at open-air
+  stands and terraces, not just upper floors under a roof (B154).
+- **Fishermen take their cooked fish out of the furnace.** The cooked fish used to sit in the furnace until his next
+  catch came home, and all night once his shift ended; now he comes back for them as soon as they are done (also after
+  a reload mid-cook), and puts them in his barrel like his catch (B147).
+- **A villager called to the bucket brigade gets their tool back.** The water bucket used to replace whatever they
+  held for good (a fisherman's rod, an axe); the same tool is back in their hand once the fire is out, even if the world
+  was saved in between (B152).
+- **The Village Hall's food count matches growth.** "Food in store" now counts only meals, the same number a baby
+  waits for, so rotten flesh, spider eyes and golden food in the store no longer make it look full (B153).
+- **A ram no longer stalls behind a Gatehouse's portcullis.** After breaking the middle bars, a ravager sometimes stood
+  just out of reach of the fence gate behind them and never struck it, so the raiders waited outside all night.
+- **Chairs face their tables, and every upstairs can be reached.** Stair chairs in the Inn, Library, Terrace,
+  Farmstead, Artisan's House, Townhouse, Map Room, Royal Hall II and the village kitchens sat with their backs to the
+  table; they now face it. The Storehouse's loft (all three tiers) gets a ladder up through a hatch. Other ways up that
+  were missing or a block short are fixed too: the Artisan's House ladder now reaches through its hatch, the Tinker's
+  Workshop II ladder moves to where the loft has headroom, a board joins the Farmstead II ladder to its loft, the
+  Guildhall stair, the Well House steps and the Coven Hut's deck stairs get their last step, the Manor's newel posts no
+  longer block the bedroom doorways, the Pirate Ship has a boarding ladder at the bow, the Observatory's tower door and
+  wing doorways lose the plinth step that made a player's head hit the lintel, and the Stadium's professor's box gets a
+  ladder from the players' tunnel. The blueprint checks now fail on a chair facing away from its table and on a
+  furnished upper floor with no stairs or ladder up to it.
+- **Every questbook quest now says plainly what to do.** All 107 quests were rewritten: each opens with its goal, gives
+  the steps by the real block, item or hall button ("hover over the bread in the hall's top row"), says why it matters,
+  and ends with how it completes ("completes by itself when the builder finishes it", or "Click the checkmark above
+  once..."). "Food in the store" now explains which chests are the food store and what counts as a meal. A few wrong
+  details are fixed on the way: the Poké Ball recipe, the Cup command (`/workplace cup ready`) and what Nobles need.
 - **Picking another build with the full materials list open no longer crashes the game.** The list shows "Loading" for a moment instead.
 - **The campfire goes on top of a tall chimney.** On houses whose chimney rises well above the upstairs floor (Starter
   Cottage II and III, the Farmstead, the Fisher's Hut, the Smithy, the Noble's Manor and others) the builder had nowhere to

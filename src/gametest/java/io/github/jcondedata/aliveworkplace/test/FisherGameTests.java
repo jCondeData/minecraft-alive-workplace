@@ -158,4 +158,87 @@ public class FisherGameTests implements FabricGameTest {
 			helper.assertTrue(stored(barrel) >= 6, "the catch isn't in the barrel: " + stored(barrel));
 		});
 	}
+
+	/** A hired fisherman by his barrel with a furnace beside it and no water anywhere: he can't fish, only tend. */
+	private static Villager fishermanByAFurnace(GameTestHelper helper, BlockPos furnacePos) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		helper.setBlock(BARREL, Blocks.BARREL);
+		helper.setBlock(furnacePos, Blocks.FURNACE);
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 5));
+		Jobs.employ(level, villager, helper.absolutePos(BARREL), PoiTypes.FISHERMAN, VillagerProfession.FISHERMAN);
+		Fishers.start(level, villager, new ItemStack(Items.FISHING_ROD));
+		return villager;
+	}
+
+	/**
+	 * B147: raw cod in the barrel and a furnace beside it. The fisherman loads the furnace and comes back for what's
+	 * cooked without waiting for a catch (there's no water to fish here): every cooked cod ends up in the barrel and the
+	 * furnace's output slot is empty.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"fishermanCollectsCookedFish"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "fishermanCollectsCookedFish")
+	public void fishermanCollectsTheCookedFish(GameTestHelper helper) {
+		BlockPos furnacePos = new BlockPos(2, 2, 4);
+		fishermanByAFurnace(helper, furnacePos);
+		Container barrel = helper.getBlockEntity(BARREL);
+		barrel.setItem(0, new ItemStack(Items.COD, 3));
+		barrel.setItem(1, new ItemStack(Items.CHARCOAL, 4));
+		helper.succeedWhen(() -> {
+			net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos);
+			helper.assertTrue(barrel.countItem(Items.COOKED_COD) == 3, barrel.countItem(Items.COOKED_COD) + " cooked cod in the barrel");
+			helper.assertTrue(furnace.getItem(2).isEmpty(), "still in the furnace: " + furnace.getItem(2));
+			helper.assertTrue(furnace.getItem(0).isEmpty() && barrel.countItem(Items.COD) == 0, "raw cod left");
+		});
+	}
+
+	/**
+	 * B147: a furnace found mid-cook when the world loads (a partial stack of cooked salmon in its output, raw salmon
+	 * still cooking): a fresh fisherman takes what's done out and comes back for the rest, all of it into the barrel.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"fishermanFindsAFurnaceMidCook"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "fishermanFindsAFurnaceMidCook")
+	public void fishermanEmptiesAFurnaceFoundMidCook(GameTestHelper helper) {
+		BlockPos furnacePos = new BlockPos(2, 2, 4);
+		fishermanByAFurnace(helper, furnacePos);
+		net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos);
+		furnace.setItem(0, new ItemStack(Items.SALMON, 2));
+		furnace.setItem(1, new ItemStack(Items.CHARCOAL, 2));
+		furnace.setItem(2, new ItemStack(Items.COOKED_SALMON, 3));
+		Container barrel = helper.getBlockEntity(BARREL);
+		barrel.setItem(0, new ItemStack(Items.COOKED_SALMON, 62)); // a stack nearly full: the rest goes in the next slot
+		boolean[] early = {false};
+		helper.runAtTickTime(300, () -> early[0] = furnace.getItem(2).isEmpty() && barrel.countItem(Items.COOKED_SALMON) >= 65);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(early[0], "the cooked salmon found in the furnace wasn't collected straight away");
+			helper.assertTrue(barrel.countItem(Items.COOKED_SALMON) == 67, barrel.countItem(Items.COOKED_SALMON) + " cooked salmon in the barrel");
+			helper.assertTrue(furnace.getItem(2).isEmpty() && furnace.getItem(0).isEmpty(), "salmon left in the furnace");
+		});
+	}
+
+	/**
+	 * B147: a player's stone smelting in the furnace. The fisherman moves the finished stone into the barrel (none is
+	 * lost on the way) and leaves the player's cobblestone to the furnace.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"fishermanStoresAPlayersStone"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "fishermanStoresAPlayersStone")
+	public void fishermanStoresAPlayersStone(GameTestHelper helper) {
+		BlockPos furnacePos = new BlockPos(2, 2, 4);
+		fishermanByAFurnace(helper, furnacePos);
+		net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity furnace = helper.getBlockEntity(furnacePos);
+		furnace.setItem(0, new ItemStack(Items.COBBLESTONE, 2));
+		furnace.setItem(2, new ItemStack(Items.STONE, 4)); // no fuel: the cobblestone stays as it is
+		Container barrel = helper.getBlockEntity(BARREL);
+		helper.onEachTick(() -> {
+			int total = barrel.countItem(Items.STONE) + furnace.getItem(2).getCount() + barrel.countItem(Items.COBBLESTONE) + furnace.getItem(0).getCount();
+			helper.assertTrue(total == 6, "stone went missing: " + total + " of 6 left");
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(barrel.countItem(Items.STONE) == 4, barrel.countItem(Items.STONE) + " stone in the barrel");
+			helper.assertTrue(furnace.getItem(2).isEmpty(), "stone left in the furnace's output");
+			helper.assertTrue(furnace.getItem(0).is(Items.COBBLESTONE) && furnace.getItem(0).getCount() == 2, "the player's cobblestone was moved: " + furnace.getItem(0));
+		});
+	}
 }

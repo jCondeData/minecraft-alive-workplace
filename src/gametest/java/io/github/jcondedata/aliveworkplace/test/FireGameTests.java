@@ -382,6 +382,69 @@ public class FireGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B152: villagers called to the brigade carry a water bucket in the hand that held their tool (a hired fisher's rod,
+	 * a worn axe). Once the fire is out the very same tool is back in their hand, wear and all.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"fireBrigadeTools"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "fireBrigadeTools")
+	public void theBrigadeKeepsTheirTools(GameTestHelper helper) {
+		Hut hut = hut(helper, "tools");
+		Villager warden = firewarden(helper, new BlockPos(3, 2, 4));
+		warden.setNoAi(true); // the brigade alone puts this one out
+		warden.setVillagerData(warden.getVillagerData().setLevel(3));
+		Villager a = helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 9));
+		Villager b = helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 8));
+		ItemStack axe = new ItemStack(Items.IRON_AXE);
+		axe.setDamageValue(17);
+		a.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, axe.copy());
+		b.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.FISHING_ROD));
+		boolean[] bucket = {false};
+		helper.runAfterDelay(2, () -> {
+			fire(helper, ROOF_TOP);
+			List<Villager> called = VillageFire.ring(hut.level(), warden, helper.absolutePos(ROOF_TOP));
+			helper.assertTrue(called.contains(a) && called.contains(b), "the brigade isn't the two tool holders: " + called);
+		});
+		helper.onEachTick(() -> {
+			if (a.getMainHandItem().is(Items.WATER_BUCKET)) {
+				bucket[0] = true;
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(bucket[0], "the brigade never carried a bucket");
+			helper.assertTrue(fires(helper) == 0, "still burning");
+			helper.assertTrue(VillageFire.brigadeOf(a).isEmpty() && VillageFire.brigadeOf(b).isEmpty(), "the brigade wasn't sent home");
+			ItemStack held = a.getMainHandItem();
+			helper.assertTrue(held.is(Items.IRON_AXE) && held.getDamageValue() == 17, "the axe wasn't given back: " + held);
+			helper.assertTrue(b.getMainHandItem().is(Items.FISHING_ROD), "the rod wasn't given back: " + b.getMainHandItem());
+			helper.assertTrue(!ModAttachments.BRIGADE_HELD.has(a) && !ModAttachments.BRIGADE_HELD.has(b), "a tool is still kept aside");
+		});
+	}
+
+	/**
+	 * B152: a world saved while a villager was on the brigade (bucket in hand, their axe kept aside) and loaded once the
+	 * fire is over: the axe goes back in their hand.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"fireBrigadeSaved"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "fireBrigadeSaved")
+	public void aBrigadeSavedMidCallGetsTheToolBack(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		VillageFire.forget();
+		Villager before = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 4));
+		before.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.WATER_BUCKET));
+		ModAttachments.BRIGADE_HELD.set(before, new ItemStack(Items.IRON_AXE));
+		CompoundTag tag = before.saveWithoutId(new CompoundTag());
+		before.discard();
+		Villager loaded = EntityType.VILLAGER.create(helper.getLevel());
+		loaded.load(tag);
+		helper.getLevel().addFreshEntity(loaded);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(loaded.getMainHandItem().is(Items.IRON_AXE), "after the load the hand holds " + loaded.getMainHandItem());
+			helper.assertTrue(!ModAttachments.BRIGADE_HELD.has(loaded), "the axe is still kept aside");
+			loaded.discard();
+		});
+	}
+
 	/** Out of water, a Firewarden fills their buckets at the water by the grindstone. */
 	//$ gametest_ticks_batch AREA '600' '"fireRefill"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "fireRefill")

@@ -67,6 +67,8 @@ public class FisherWork extends Behavior<Villager> {
 	static final double REACH = 4.5;
 	private static final float SPEED = 0.55f;
 	private static final int SEARCH_EVERY = 100;
+	/** How often (ticks) a fisher on the shore looks whether a furnace by the barrel wants a visit. */
+	static final int FURNACE_EVERY = 200;
 	private static final int CATCHES_PER_TRIP = 5;
 	private static final int CATCHES_PER_XP = 3;
 	/** How far from the barrel a fisher rows out. */
@@ -94,6 +96,10 @@ public class FisherWork extends Behavior<Villager> {
 	private BlockPos water;
 	private final Set<BlockPos> unreachable = new HashSet<>();
 	private int searchTimer;
+	/** Ticks to the next look at the furnaces by the barrel (for what's cooked, B147). */
+	private int furnaceTimer;
+	/** A furnace by the barrel wants a visit: cooked fish to collect, or raw fish to load. */
+	private boolean furnaceCalls;
 	private int waited;
 	private int biteAt;
 	private int catches;
@@ -153,6 +159,7 @@ public class FisherWork extends Behavior<Villager> {
 		waited = 0;
 		searchTimer = 0;
 		boatSearchTimer = 0;
+		furnaceTimer = 0; // back at work (a new shift, or a reloaded world mid-cook): look at the furnaces first
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
 		if (villager.getVehicle() != null && villager.getVehicle().getTags().contains(BOAT_TAG) && boat == null) {
 			// Back to work in a boat nobody remembers rowing out (the world was saved mid-trip): ashore first.
@@ -193,8 +200,16 @@ public class FisherWork extends Behavior<Villager> {
 			comeAshore(level, villager); // knocked out of it: they swim ashore with it
 		}
 
+		// 0. A furnace by the barrel with cooked fish waiting (or standing empty with raw fish in the barrel) calls the
+		// fisher home from the shore, so what's cooked doesn't wait for the next catch (B147).
+		if (boat == null && --furnaceTimer <= 0) {
+			furnaceTimer = FURNACE_EVERY;
+			furnaceCalls = io.github.jcondedata.aliveworkplace.work.Furnaces.needsTending(level, barrel,
+				SupplyContainers.find(level, barrel, null), io.github.jcondedata.aliveworkplace.work.Furnaces::isFish);
+		}
+
 		// 1. Bring the catch in every few fish, or when the bag fills up (rowing back first).
-		if (catches >= CATCHES_PER_TRIP || bag.freeSlots() < 3) {
+		if (catches >= CATCHES_PER_TRIP || bag.freeSlots() < 3 || furnaceCalls && boat == null) {
 			rest(villager, false);
 			if (boat != null) {
 				reelUp();
@@ -206,6 +221,8 @@ public class FisherWork extends Behavior<Villager> {
 			if (walker.walkTo(level, villager, barrel, 3.0)) {
 				deposit(level, villager, barrel, bag);
 				catches = 0;
+				furnaceCalls = false;
+				furnaceTimer = FURNACE_EVERY;
 			}
 			return;
 		}

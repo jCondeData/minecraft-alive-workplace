@@ -378,6 +378,21 @@ public class WonderFinishedGameTests implements FabricGameTest {
 			+ all.stream().map(Component::getString).toList());
 		helper.assertTrue(!said(all, "message.aliveworkplace.finished"), "a part told as a building with its blueprint back: "
 			+ all.stream().map(Component::getString).toList());
+		// B143: no part is chronicled as a building ("Odo finished the Stage 1 0") nor kept among the village's buildings
+		List<String> built = ((VillageHallBlockEntity) level.getBlockEntity(v.hall())).chronicle().stream()
+			.filter(e -> e.kind() == Chronicle.Kind.BUILT).map(e -> e.text().getString()).toList();
+		helper.assertTrue(built.isEmpty(), "a Wonder part chronicled as a building: " + built);
+		List<String> records = sites.finishedNear(level, v.hall(), 64).stream().map(f -> f.structure().toString())
+			.filter(s -> s.contains("wonder/")).toList();
+		helper.assertTrue(records.isEmpty(), "a Wonder part recorded among the village's buildings: " + records);
+		// ...and a second Wonder still may not go down over the finished one
+		WonderSite finished = manager.site(id).orElseThrow();
+		ItemStack plan = WonderPlanItem.of(level, v.hall(), Wonders.loaded().get(FOLLY), Component.literal("Testholm"));
+		net.minecraft.core.Vec3i size = BlueprintItem.data(plan).get().size().get();
+		Optional<Component> over = io.github.jcondedata.aliveworkplace.wonder.WonderPlans.placeRefusal(level, WonderPlanItem.plan(plan).get(),
+			finished.placement().orElseThrow(), size);
+		helper.assertTrue(over.map(c -> c.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t ? t.getKey() : "").orElse("")
+			.equals("message.aliveworkplace.wonder_plan.over_wonder"), "a plan over the finished Wonder: " + over.map(Component::getString));
 		translated(helper, all);
 		helper.succeed();
 	}

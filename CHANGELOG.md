@@ -114,6 +114,9 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **A Wonder's parts no longer count as buildings.** Each finished part used to write "Odo finished the Stage 1 0" in
+  the village's chronicle, join the village's list of buildings, and get a lane or dirt path to its "door". Now only
+  the Wonder's own lines tell its story, and a new Wonder still can't be drawn over a finished one (B143).
 - **Every seat in the Stadium can be walked to.** Its aisles climbed two blocks a tier on a single stair, so nobody
   could get past the second row; now each aisle is a proper flight, two stairs to a tier, and the rows round the
   curved corners join up so you can walk right round every tier. The blueprint check now also looks at open-air

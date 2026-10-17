@@ -3992,7 +3992,9 @@ final class JobScenes {
 		// Friendship (ROADMAP 31.5): a trade and a quest done for Dara put hearts on, shown in the action bar while the
 		// player looks at her, with a puff of hearts; the hall's tooltip shows your hearts and her best friends.
 		SCREENS.put("friendship", new Screen("a trade and a quest done for Dara raised the player's hearts in the action bar, and the hall's tooltip shows them",
-			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			// B130: the camera is the player's feet and its pitch is worked out from there, while the hearts line follows the
+			// look from the eyes (1.6 up): aimed at y -58.8 that look passed over Dara's head, so nobody was looked at
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.2, 1.5),
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
@@ -4004,6 +4006,7 @@ final class JobScenes {
 				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
 				dara.setCustomName(Component.literal("Dara"));
 				subject = dara;
+				ScreenshotHarness.fileRecords(level, STATION, 1); // B130: the hall's record now, so Dara's hall is found
 			},
 			List.of(new Step("01_trade_hearts", -1, 0, (level, player) -> {
 					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
@@ -4017,7 +4020,10 @@ final class JobScenes {
 					dara.setTradingPlayer(null);
 					Component line = io.github.jcondedata.aliveworkplace.story.Friendship.lookLine(player);
 					Showcase.check(io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) == 260
-						&& line != null && line.getString().equals("Dara ♥♥♡♡♡♡♡♡♡♡"), "a trade with Dara: +5, two hearts in the action bar: " + line);
+						&& line != null && line.getString().equals("Dara ♥♥♡♡♡♡♡♡♡♡"), "a trade with Dara: +5, two hearts in the action bar: " + line
+						+ (line != null ? "" : " (points " + io.github.jcondedata.aliveworkplace.story.Friendship.points(dara, player.getUUID()) + ", looked at "
+							+ io.github.jcondedata.aliveworkplace.story.Friendship.lookedAt(player) + ", her hall "
+							+ io.github.jcondedata.aliveworkplace.hall.CivicEffects.hallOf(dara) + ", eye " + player.getEyePosition() + ", look " + player.getViewVector(1f) + ")"));
 				}, 40),
 				new Step("02_quest_hearts", -1, 0, (level, player) -> {
 					Villager dara = subject;
@@ -4604,7 +4610,7 @@ final class JobScenes {
 		// it (her line over her head and in chat, bits of carrot, hearts), her hearts go up in the action bar, and the
 		// hall's tooltip says when her name day is.
 		SCREENS.put("gifts", new Screen("a Golden Carrot wrapped on the crafting grid and given to Dara: she loved it, her hearts went up, and the hall's tooltip says when her name day is",
-			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -58.8, 1.5),
+			new Vec3(1.5, -60, 4.5), new Vec3(1.5, -60.2, 1.5), // B130: aimed from the feet, so the eyes' look meets Dara (friendship)
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
@@ -4617,6 +4623,7 @@ final class JobScenes {
 				dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.FARMER).setLevel(2));
 				dara.setCustomName(Component.literal("Dara"));
 				subject = dara;
+				ScreenshotHarness.fileRecords(level, STATION, 1); // B130: the hall's record now, so Dara's hall is found
 			},
 			List.of(new Step("01_wrapping", -1, 0, (level, player) -> {
 					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
@@ -4651,13 +4658,23 @@ final class JobScenes {
 					}
 					boolean signed = io.github.jcondedata.aliveworkplace.story.Gifts.from(gift).equals(player.getGameProfile().getName());
 					player.setItemInHand(InteractionHand.MAIN_HAND, gift);
+					// B130: given in survival: the filming camera is a creative player, who keeps what they give (as in vanilla)
+					var mode = player.gameMode.getGameModeForPlayer();
+					player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
 					var result = io.github.jcondedata.aliveworkplace.story.Gifts.give(player, dara, player.getMainHandItem());
+					player.setGameMode(mode);
+					if (mode == net.minecraft.world.level.GameType.CREATIVE) {
+						player.getAbilities().flying = true;
+						player.onUpdateAbilities();
+					}
 					int expected = io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED.points
 						* (result.nameDay() ? io.github.jcondedata.aliveworkplace.story.Gifts.NAME_DAY_FACTOR : 1);
 					Showcase.check(signed && result.outcome() == io.github.jcondedata.aliveworkplace.story.Gifts.Outcome.GIVEN
 						&& result.band() == io.github.jcondedata.aliveworkplace.story.Tastes.Band.LOVED && result.change() == expected
 						&& player.getMainHandItem().isEmpty() && result.line().getString().contains("Golden Carrot"),
-						"the Gift is from the player, and Dara the farmer loved her Golden Carrot (+" + expected + "): " + result.line().getString());
+						"the Gift is from the player, and Dara the farmer loved her Golden Carrot (+" + expected + "): " + result.line().getString()
+							+ " (signed " + signed + ", " + result.outcome() + ", " + result.band() + ", change " + result.change() + ", name day " + result.nameDay()
+							+ ", hand " + player.getMainHandItem() + ")");
 				}, 40),
 				new Step("03_hearts", -1, 0, (level, player) -> {
 					Villager dara = subject;
@@ -4699,6 +4716,7 @@ final class JobScenes {
 				io.github.jcondedata.aliveworkplace.registry.ModAttachments.PARENTS.set(dara,
 					new io.github.jcondedata.aliveworkplace.people.Families.Parents(Component.literal("Mira"), Component.literal("Tomas"), "", "", true));
 				subject = dara;
+				ScreenshotHarness.fileRecords(level, STATION, 1); // B130: the hall's record now, so Dara's hall is found
 			},
 			List.of(new Step("01_walks_up", -1, 0, (level, player) -> {
 					// The hall's POI is only registered after the staging tick: look Dara's hall up again now (B72).
@@ -4751,7 +4769,7 @@ final class JobScenes {
 					var event = io.github.jcondedata.aliveworkplace.story.HeartEvents.pending(level, dara, player.getUUID());
 					Showcase.check(event != null && event.hearts() == 10 && !io.github.jcondedata.aliveworkplace.story.Keepsakes.given(dara, player),
 						"at ten hearts Dara has what she dreams of to tell, and her keepsake still to give: " + (event == null ? null : event.id()));
-				}, 230)),
+				}, 320)), // B130: her four lines a LINE_EVERY (60 ticks) apart after she walks up: 230 ended at the third
 			(level, player) -> {
 				if (subject == null) {
 					return false;
@@ -4761,7 +4779,12 @@ final class JobScenes {
 				boolean keepsake = io.github.jcondedata.aliveworkplace.story.Keepsakes.given(subject, player) && seeds.getCount() == 4
 					&& seeds.getHoverName().getString().equals("Dara's Grandmother's Seeds");
 				Showcase.check(keepsake, "her dream told at ten hearts, Dara the farmer gave her keepsake: 4 torchflower seeds named \"Dara's Grandmother's Seeds\" ("
-					+ (seeds.isEmpty() ? "nothing" : seeds.getCount() + " " + seeds.getHoverName().getString()) + ")");
+					+ (seeds.isEmpty() ? "nothing" : seeds.getCount() + " " + seeds.getHoverName().getString()) + ")"
+					+ (keepsake ? "" : "; told " + io.github.jcondedata.aliveworkplace.story.Friendship.of(subject).bond(player.getUUID()).told()
+						+ ", telling " + (io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(subject) == null ? "none"
+							: io.github.jcondedata.aliveworkplace.story.HeartEvents.telling(subject).said + " lines")
+						+ ", pending " + io.github.jcondedata.aliveworkplace.story.HeartEvents.pending(level, subject, player.getUUID())
+						+ ", " + String.format("%.1f", Math.sqrt(subject.distanceToSqr(player))) + " blocks off, noAi " + subject.isNoAi()));
 				return told && keepsake;
 			}));
 		// A personal request (ROADMAP 31.9): at three hearts Dara, a plains farmer, walks up and asks for a taste of home;

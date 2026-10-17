@@ -114,6 +114,9 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Every setting's name fits its button.** On the settings screen "Villagers per Extra Fisherman" ran past its
+  button; it is now **Extra Fisherman Every**, and "Gifted Villagers (1 in ...)" is **Gifted Villagers, 1 in** so it
+  fits at 1000 too. A test now measures every setting's name at its widest value (B161).
 - **Cellar ladders no longer trap villagers.** A cellar's ladder came up through an open hole in the floor and a block
   above it, and villagers walking past climbed it onto the window sill beside it and got stuck (a Chef never reached
   the Kitchen's smoker). The ladder now ends under a trapdoor hatch in the floor: open it to climb down or up (B158).

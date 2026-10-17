@@ -178,4 +178,81 @@ public class ConfigGameTests implements FabricGameTest {
 		}
 		helper.succeed();
 	}
+
+	/**
+	 * B161: every setting's button label fits its 150-pixel button at its widest ("Name: 100", "Name: OFF", or the
+	 * zero word), measured with the glyph widths of vanilla's default font (the server has no font), so a long name
+	 * like "Villagers per Extra Fisherman: 10" isn't cut off on the settings screen. Every int and switch field is
+	 * checked, the ones of an expansion still switched off included.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everySettingsLabelFitsItsButton(GameTestHelper helper) {
+		com.google.gson.JsonObject lang;
+		try (java.io.InputStream in = Files.newInputStream(net.fabricmc.loader.api.FabricLoader.getInstance()
+				.getModContainer(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID).orElseThrow()
+				.findPath("assets/aliveworkplace/lang/en_us.json").orElseThrow())) {
+			lang = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+		} catch (Exception e) {
+			throw new GameTestAssertException("can't read en_us.json: " + e);
+		}
+		List<String> tooWide = new ArrayList<>();
+		int checked = 0;
+		for (java.lang.reflect.Field field : WorkplaceConfig.class.getDeclaredFields()) {
+			int mods = field.getModifiers();
+			boolean isSwitch = field.getType() == boolean.class;
+			if (!java.lang.reflect.Modifier.isPublic(mods) || java.lang.reflect.Modifier.isStatic(mods) || !(isSwitch || field.getType() == int.class)) {
+				continue;
+			}
+			String name = field.getName();
+			String key = "aliveworkplace.config." + name;
+			if (!lang.has(key)) {
+				tooWide.add(name + " has no English label");
+				continue;
+			}
+			List<String> values = new ArrayList<>();
+			if (isSwitch) {
+				values.add("OFF");
+				values.add("ON");
+			} else {
+				WorkplaceConfig.Range range = WorkplaceConfig.RANGES.get(name);
+				if (range != null) {
+					values.add(String.valueOf(range.min()));
+					values.add(String.valueOf(range.max()));
+					if (range.min() == 0 && lang.has(key + ".zero")) {
+						values.add(lang.get(key + ".zero").getAsString());
+					}
+				} else {
+					values.add("100");
+				}
+			}
+			for (String value : values) {
+				String text = lang.get(key).getAsString() + ": " + value;
+				checked++;
+				if (fontWidth(text) > 150 - 8) {
+					tooWide.add("'" + text + "' (" + fontWidth(text) + " px)");
+				}
+			}
+		}
+		helper.assertTrue(checked > 100, "only " + checked + " labels checked");
+		helper.assertTrue(tooWide.isEmpty(), "wider than the button's 142 px of text: " + tooWide);
+		helper.succeed();
+	}
+
+	/** A line's width in vanilla's default font (each glyph's advance, its 1-pixel gap included). */
+	private static int fontWidth(String text) {
+		int width = 0;
+		for (char c : text.toCharArray()) {
+			width += switch (c) {
+				case '!', '\'', ',', '.', ':', ';', '|', 'i' -> 2;
+				case '`', 'l' -> 3;
+				case ' ', '"', '(', ')', '*', 'I', '[', ']', 't', '{', '}' -> 4;
+				case '<', '>', 'f', 'k' -> 5;
+				case '@', '~' -> 7;
+				case '\u2026' -> 8;
+				default -> 6;
+			};
+		}
+		return width;
+	}
 }

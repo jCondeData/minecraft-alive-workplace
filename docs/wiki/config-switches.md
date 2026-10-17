@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131
+Roadmap items: 25.5, B76, B119, B131, B161
 
 ## What a player sees
 
@@ -12,7 +12,8 @@ it and restart. A value out of range is clamped to the nearest allowed one, a mi
 the file is written back complete, so every option is always listed.
 
 **The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings as sliders and
-on/off buttons, each with a tooltip. Closing the screen saves the file and puts the settings into effect in your own
+on/off buttons, each with a tooltip. Every setting's name fits its 150-pixel button at its widest value
+(`ConfigGameTests.everySettingsLabelFitsItsButton` measures them with vanilla's font widths, B161). Closing the screen saves the file and puts the settings into effect in your own
 worlds. A dedicated server keeps its own file.
 
 **Game rules.** Per-world tuning of builders uses vanilla's `/gamerule`, so it can differ from world to world and be

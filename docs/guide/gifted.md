@@ -8,7 +8,7 @@ caption: Wren, a Night Owl builder, building at midnight
 How many: about one villager in 30
 Where to see it: in gold on the Village Hall's list
 Gifts: Prodigy, Iron Will, Silver Tongue, Night Owl, Lucky, Hardy, Beloved, Born Leader
-Setting: Gifted Villagers (1 in ...)
+Setting: Gifted Villagers, 1 in
 categories: Legends, Village life
 related: legends.md, traits.md, babies-and-growth.md
 ```
@@ -42,4 +42,4 @@ Old Sage's Old Tongues research makes the inn's travelers Gifted twice as often.
 - **What feeds it**: [schooled](teacher.md) Master parents.
 - **What it affects**: work speed, trading, [sickness](sickness.md), [moods](moods.md) and [raids](raids.md), one gift
   at a time. A Gifted villager who becomes a Legend keeps their gift.
-- **Setting**: **Gifted Villagers (1 in ...)** sets how rare gifts are; 0 means nobody is Gifted (nothing is erased).
+- **Setting**: **Gifted Villagers, 1 in** sets how rare gifts are; 0 means nobody is Gifted (nothing is erased).

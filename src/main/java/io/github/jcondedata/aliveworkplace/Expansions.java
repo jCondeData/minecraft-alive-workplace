@@ -50,6 +50,11 @@ public final class Expansions {
 	 * {@code disabledWonders} (35.2), {@code wonderCrew} (35.5), {@code builderScaffolding} (35.6), {@code wonderStanding} (35.8).
 	 */
 	public static final boolean M35 = false;
+	/**
+	 * Milestone 37, Furnished homes and modded storage (2.1): {@code furnishedBuilds}, {@code furnitureMods},
+	 * {@code moddedStorageNetworks} (design note M37).
+	 */
+	public static final boolean M37 = false;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films
@@ -88,12 +93,13 @@ public final class Expansions {
 			case "M33" -> M33;
 			case "M34" -> M34;
 			case "M35" -> M35;
+			case "M37" -> M37;
 			default -> false;
 		};
 	}
 
 	/** Every milestone with a gate, by name. */
-	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35");
+	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35", "M37");
 
 	/** The milestones whose gates are open now ({@link #on}): what a config file written now records (34.23). */
 	static java.util.List<String> open() {
@@ -119,6 +125,7 @@ public final class Expansions {
 				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> "M34";
 			case "wonders", "wonderCaps", "wonderLegends", "wonderServerLimit", "disabledWonders", "wonderCrew", "builderScaffolding",
 				"wonderStanding" -> "M35";
+			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks" -> "M37";
 			default -> null;
 		};
 	}

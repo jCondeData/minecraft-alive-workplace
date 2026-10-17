@@ -1,0 +1,5 @@
+{"spots": [
+  {"kind": "bed", "pos": [3, 1, 4], "facing": "west", "wood": "spruce", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=head]"}]},
+  {"kind": "bed", "pos": [3, 1, 9], "facing": "west", "wood": "spruce", "colour": "light_gray", "blocks": [{"at": [0, 0, 0], "state": "minecraft:light_gray_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:light_gray_bed[facing=west,occupied=false,part=head]"}]},
+  {"kind": "bed", "pos": [3, 1, 14], "facing": "west", "wood": "spruce", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=head]"}]}
+]}

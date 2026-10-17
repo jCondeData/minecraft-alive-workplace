@@ -1,0 +1,7 @@
+{"spots": [
+  {"kind": "bed", "pos": [6, 6, 8], "facing": "south", "wood": "spruce", "colour": "blue", "blocks": [{"at": [0, 0, 0], "state": "minecraft:blue_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:blue_bed[facing=south,occupied=false,part=head]"}]},
+  {"kind": "bed", "pos": [8, 6, 8], "facing": "south", "wood": "spruce", "colour": "blue", "blocks": [{"at": [0, 0, 0], "state": "minecraft:blue_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:blue_bed[facing=south,occupied=false,part=head]"}]},
+  {"kind": "chair", "pos": [4, 10, 3], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}]},
+  {"kind": "table", "pos": [4, 10, 4], "facing": "north", "wood": "dark_oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:dark_oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:dark_oak_pressure_plate[powered=false]"}]},
+  {"kind": "bed", "pos": [7, 10, 8], "facing": "south", "wood": "spruce", "colour": "light_gray", "blocks": [{"at": [0, 0, 0], "state": "minecraft:light_gray_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:light_gray_bed[facing=south,occupied=false,part=head]"}]}
+]}

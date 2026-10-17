@@ -85,6 +85,7 @@ class Build:
                 b.blocks[pos] = block
         b.nbt = dict(getattr(self, "nbt", {}))
         b.cellars = list(self.cellars)
+        b.spots = [dict(s) for s in getattr(self, "spots", [])]
         return b
 
     def clear(self, x0, y0, z0, x1, y1, z1):
@@ -118,6 +119,14 @@ class Build:
         dx, dz = {"north": (0, -1), "south": (0, 1), "east": (1, 0), "west": (-1, 0)}[facing]
         self.set(x, y, z, f"{color}_bed", facing=facing, part="foot", occupied=False)
         self.set(x + dx, y, z + dz, f"{color}_bed", facing=facing, part="head", occupied=False)
+
+    def furniture(self, kind, x, y, z, facing, cells=((0, 0, 0),), wood=None, colour=None):
+        """Records a furniture spot (ROADMAP 37.2, furniture.py) for a piece this drawing just drew at (x, y, z): its kind
+        (furniture.KINDS), the way a person using it faces, the cells it fills relative to (x, y, z), and its wood or
+        colour. Chairs beside tables, tables and beds are found by themselves; record the rest."""
+        self.spots = getattr(self, "spots", [])
+        self.spots.append({"kind": kind, "pos": [x, y, z], "facing": facing, "wood": wood, "colour": colour,
+                           "cells": [(x + dx, y + dy, z + dz) for dx, dy, dz in cells]})
 
     def to_nbt(self):
         assert not (self.basement and getattr(self, "entities", None)), "entities in a build with a basement aren't moved up"
@@ -160,6 +169,12 @@ class Build:
             from check import check
             for problem in check(self):
                 print(f"  CHECK {name}: {problem}")
+            main = os.path.abspath(MAIN_STRUCTURES)
+            if os.path.abspath(folder).startswith(main):  # our blueprints: their furniture spots (37.2)
+                import furniture
+                rel = os.path.relpath(os.path.join(os.path.abspath(folder), name), main)
+                for problem in furniture.write(self, rel):
+                    print(f"  CHECK {name}: {problem}")
 
 
 class StagedBuild(Build):

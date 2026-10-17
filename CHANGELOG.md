@@ -114,6 +114,9 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Two builders on one house really take about half the time again.** Near the end, the lead took what it was short of
+  from its helper and left the rest of the build's last things (a lantern) in the chests, then walked back for them
+  alone at the very end while the helper stood about. It now picks those up while the helper is still busy (B155).
 - **A Wonder's parts no longer count as buildings.** Each finished part used to write "Odo finished the Stage 1 0" in
   the village's chronicle, join the village's list of buildings, and get a lane or dirt path to its "door". Now only
   the Wonder's own lines tell its story, and a new Wonder still can't be drawn over a finished one (B143).

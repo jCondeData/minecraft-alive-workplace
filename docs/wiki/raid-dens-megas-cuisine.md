@@ -3,10 +3,10 @@
 Cobblemon depth brings three of the pack's Pokémon mods into village life: Cobblemon Raid Dens (the village knows the
 dens around it, guards watch them and its trainers challenge them), Mega Showdown (more village trainers Mega Evolve,
 and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchens cook its dishes and farmers grow its
-beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods and the dens
-the village knows (38.2); the full plan is the design note, docs/design/M38.md.
+beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
+the village knows (38.2) and Den Wardens (38.3); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2
+Roadmap items: 38.1, 38.2, 38.3
 
 ## What a player sees
 
@@ -15,7 +15,16 @@ blocks of the hall, nearest first: "Raid den, tier 3, Fire, active" (the icon gl
 beaten and hasn't come back yet, with where it is and the day it was found. With none known it says "No raid den
 known". The village map marks each den on its square with a magenta banner named the same way, and its legend counts
 the raid dens. A den shows up once someone has been near enough for its chunk to load; a broken den drops off the
-list. The rest (wardens, challenges, Megas, Cobblecuisine) comes with 38.3 to 38.10.
+list.
+
+**Den Wardens (38.3).** Under each den on the Defense page, **Post a warden** sends the village's nearest free guard
+there. By day the warden walks to the den and stands watch beside it, nudging wild Pokémon off the crystal; at dusk
+they walk back to their post and their evening goes on as usual; next morning they go back. The slot then reads
+"Warden: <name>", and a click recalls them to normal duty. When a watched den glows again after being beaten, the
+chronicle says so: "The Fire raid den (north, about 40 blocks) glows again". A player who joins a raid (or wins a
+tier) within 16 blocks of a watched den gets the warden's cheer: one Attack, Defense or Heal Cheer, once a raid.
+
+The rest (challenges, Megas, Cobblecuisine) comes with 38.4 to 38.10.
 
 ## How it works
 
@@ -42,12 +51,18 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 
 ## Switches
 
-None yet: the six switches above are mapped to the gate and come into the config with 38.3 to 38.10.
+| Key | Default | What it does |
+|---|---|---|
+| `denWardens` | on (once 2.2 ships) | Guards can be posted to raid dens. Off: no new wardens, and those posted go back to normal duty. |
+
+The other five are mapped to the gate and come into the config with 38.4 to 38.10.
 
 ## Saved data
 
 Each dimension saves its known dens (`aliveworkplace_raid_dens`): a list of `pos`, `tier` (1 to 7), `type`,
-`active` and `firstSeen` (the day). An older save has none, and dens are found again as their chunks load. The
+`active` and `firstSeen` (the day). An older save has none, and dens are found again as their chunks load. The wardens are saved per dimension too
+(`aliveworkplace_den_wardens`): each `guard` (their id) with their `den` and the players `cheered` this raid. An older
+save has no wardens. The
 planned fields of later items are listed in the design note.
 
 ## Items, blocks, jobs, commands
@@ -65,13 +80,18 @@ the design note and checked by `CobblemonDepthCompatTests`.
 - The den list isn't switched: it only records and shows (design note M38). It's behind the 2.2 gate and needs Raid
   Dens (38.2).
 - The Defense page shows up to seven dens, nearest first (38.2).
+- A raid is noticed by Raid Dens' own advancements (`join_raid` and the seven tiers) being granted near a watched den,
+  since players fight raids in the mod's own dimension; "once a raid" means until the den glows again (38.3).
+- A warden stands two blocks off the crystal on the side toward home, and walks a leg of 16 blocks at a time, as
+  scouts do (38.3).
 - In local compat runs on the 7 GB dev box, `-PcompatHeap=2G` is needed now that the runtime holds two more mods
   (38.1); CI keeps the default.
 
 ## Known limits
 
 Only dens within the map's 128-block square get a banner; farther ones (up to 160 blocks) are on the Defense page
-only. A den nobody has been near isn't known. Wardens, challenges, Megas and Cobblecuisine aren't built yet.
+only. A den nobody has been near isn't known. A player who joins a raid from farther than 16 blocks (or whose advancement was granted earlier) gets no cheer. Only
+one warden per den. Challenges, Megas and Cobblecuisine aren't built yet.
 Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 
 ## Proof
@@ -82,5 +102,8 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   six switches.
 - `RaidDenCompatTests`: `aDenNearAHallIsListed` (its states, its line, the Defense page, dropped once broken),
   `aDenTurnedInactiveShowsInactive`, `aDenFarOffIsntListed` (200 blocks), `aReloadKeepsTheList`, `theMapMarksTheDen`.
+- `DenWardenCompatTests`: `aWardenWalksToTheDenAndBackAtDusk`, `aDenGlowingAgainIsWrittenOnce`,
+  `aRaiderByAWatchedDenGetsOneCheer` (one a raid, none 40 blocks off, another next raid),
+  `aRecalledWardenGoesBackToNormalDuty`.
 
-Showcase scenes: `raid_dens`
+Showcase scenes: `raid_dens`, `den_warden`

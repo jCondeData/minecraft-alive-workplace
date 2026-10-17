@@ -22,6 +22,8 @@ asks for the steps, `latest.log` and any crash report).
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.
 - **The village knows its raid dens (2.2).** With Cobblemon Raid Dens, the dens within 160 blocks of a Village Hall
   show on its Defense page ("Raid den, tier 3, Fire, active") and on the village map, found as their chunks load.
+- **Den Wardens (2.2).** Post a guard to a raid den from the Defense page: they stand watch by day, the chronicle
+  says when the den glows again, and a player who joins a raid there gets a cheer. Switch: `denWardens`.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

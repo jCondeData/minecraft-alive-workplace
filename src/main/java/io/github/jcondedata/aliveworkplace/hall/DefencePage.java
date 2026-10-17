@@ -69,6 +69,8 @@ public final class DefencePage {
 	public static final int[] HISTORY = {46, 48, 50};
 	/** The raid dens the village knows (38.2), nearest first: "Raid den, tier 3, Fire, active". */
 	public static final int[] DENS = {28, 29, 30, 31, 32, 33, 34};
+	/** Under each den (38.3): post a guard there as its warden, or recall the warden. */
+	public static final int[] WARDENS = {37, 38, 39, 40, 41, 42, 43};
 
 	/** Whether the hall's guards icon opens the page. */
 	public static boolean open() {
@@ -169,7 +171,32 @@ public final class DefencePage {
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.defence.raid_den_found", den.day()), ChatFormatting.DARK_GRAY));
 			icon.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, den.active());
 			menu.button(DENS[i], icon, null);
+			if (io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED) {
+				menu.button(WARDENS[i], warden(level, den), p -> {
+					Optional<java.util.UUID> posted = io.github.jcondedata.aliveworkplace.guard.DenWardens.wardenOf(level, den.pos());
+					io.github.jcondedata.aliveworkplace.mc.Chat.chat(p, posted.isPresent()
+						? io.github.jcondedata.aliveworkplace.guard.DenWardens.recall(level, den.pos())
+						: io.github.jcondedata.aliveworkplace.guard.DenWardens.post(level, hall, den.pos()));
+					render(menu, level, hall);
+					menu.broadcastChanges();
+				});
+			}
 		}
+	}
+
+	/** A den's warden slot (38.3): who stands watch there (a click recalls them), or "Post a warden". */
+	private static ItemStack warden(ServerLevel level, io.github.jcondedata.aliveworkplace.guard.RaidDens.Den den) {
+		Optional<java.util.UUID> posted = io.github.jcondedata.aliveworkplace.guard.DenWardens.wardenOf(level, den.pos());
+		if (posted.isPresent()) {
+			net.minecraft.world.entity.Entity guard = level.getEntity(posted.get());
+			Component name = guard == null ? Component.translatable("message.aliveworkplace.warden.the_warden") : guard.getDisplayName();
+			return VillageHallScreen.icon(Items.SHIELD, Component.translatable("screen.aliveworkplace.defence.warden", name), ChatFormatting.AQUA,
+				VillageHallScreen.line("screen.aliveworkplace.defence.warden_duty", ChatFormatting.GRAY),
+				VillageHallScreen.line("screen.aliveworkplace.defence.warden_recall", ChatFormatting.YELLOW));
+		}
+		return VillageHallScreen.icon(Items.IRON_SWORD, Component.translatable("screen.aliveworkplace.defence.warden_post"), ChatFormatting.WHITE,
+			VillageHallScreen.line("screen.aliveworkplace.defence.warden_duty", ChatFormatting.GRAY),
+			VillageHallScreen.line("screen.aliveworkplace.defence.warden_cheer", ChatFormatting.LIGHT_PURPLE));
 	}
 
 	private static void lair(ChoiceMenu menu, ServerLevel level, BlockPos hall, Lairs.Lair lair) {

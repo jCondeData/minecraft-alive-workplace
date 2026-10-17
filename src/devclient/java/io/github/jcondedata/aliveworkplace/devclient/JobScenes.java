@@ -6422,6 +6422,33 @@ final class JobScenes {
 				}, 30),
 				new Step("03_raid_den_resting", io.github.jcondedata.aliveworkplace.hall.DefencePage.DENS[1], 6, null, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// Den Wardens (38.3): a guard posted from the Defense page stands watch by the glowing den.
+		SCREENS.put("den_warden", new Screen("a guard posted from the hall's Defense page stands watch by the raid den, by day",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setDayTime(3000);
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				Villager guard = guard(level, new BlockPos(6, -60, -6), new ItemStack(Items.IRON_SWORD));
+				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
+				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
+				BlockPos den = new BlockPos(-4, -60, -4);
+				level.setBlockAndUpdate(den, denState(block.get(), "tier_three", "fire", true));
+				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, den);
+				guard.teleportTo(-2.5, -60, -2.5); // already at the den: the walk there is the compat tests' (DenWardenCompatTests)
+				Component said = io.github.jcondedata.aliveworkplace.guard.DenWardens.post(level, STATION, den);
+				Showcase.check(io.github.jcondedata.aliveworkplace.guard.DenWardens.wardenOf(level, den).isPresent(), "a warden was posted: " + said.getString());
+			},
+			List.of(new Step("01_den_warden", -1, 0, null, 60),
+				new Step("02_den_warden_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.WARDENS[0], 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
+						String slot = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.WARDENS[0]).getHoverName().getString();
+						Showcase.check(slot.startsWith("Warden: "), "the Defense page names the den's warden: " + slot);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
 		// At peace (32.21): the owner set the village at peace on the Defence page; the bandit camp by it leaves at the next dawn.
 		SCREENS.put("at_peace", new Screen("the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

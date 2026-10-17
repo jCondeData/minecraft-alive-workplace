@@ -6594,7 +6594,7 @@
   "aliveworkplace.config.wonderStanding.tooltip": "How much of a finished Wonder must still stand for its powers. Under it, its powers stop and the village's builders repair it.",
   "aliveworkplace.config.furnishedBuilds": "Furnished Builds",
   "aliveworkplace.config.furnishedBuilds.tooltip": "Builders use the furniture mods you have installed (Handcrafted, Lucky's Cozy Home, CobbleFurnies, Beautify) for chairs, tables, beds, lamps and blinds. Off: every build is the plain vanilla build.",
-  "aliveworkplace.config.moddedStorageNetworks": "Modded Storage Networks",
+  "aliveworkplace.config.moddedStorageNetworks": "Storage Mod Networks",
   "aliveworkplace.config.moddedStorageNetworks.tooltip": "A Sophisticated Storage controller or a Tom's Simple Storage connector in the Storehouse counts as one store for every chest it links. Off: each linked chest is its own store.",
   "message.aliveworkplace.wonder.finished_announce": "%s has finished the %s!",
   "chronicle.aliveworkplace.wonder.finished": "The %s was finished, its Foundation Stone laid on day %s",

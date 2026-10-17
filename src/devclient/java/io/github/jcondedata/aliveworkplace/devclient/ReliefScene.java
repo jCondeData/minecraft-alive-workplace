@@ -114,6 +114,9 @@ final class ReliefScene {
 		BlockPos thornholm = hall(level, player, 0, "Thornholm", VillageRanks.Rank.TOWN, 24);
 		ashford = hall(level, player, 70, "Ashford", VillageRanks.Rank.VILLAGE, 12);
 		BlockPos brookfield = hall(level, player, 140, "Brookfield", VillageRanks.Rank.VILLAGE, 14);
+		// B130: the halls' records now, not a task later: Relief counts a village's guards by the hall nearest them
+		ScreenshotHarness.fileRecords(level, ashford, 80);
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		Realms.found(level, thornholm, player);
 		Realms.add(level, thornholm, GlobalPos.of(level.dimension(), ashford), player);
 		Realms.add(level, thornholm, GlobalPos.of(level.dimension(), brookfield), player);

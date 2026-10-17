@@ -138,7 +138,7 @@ final class RealmEdictsScene {
 	/** The realm founded on the capital's Realm tab, Ashford added with a click: the Barony of Thornholm. */
 	private void found(MinecraftServer server) {
 		ServerPlayer player = player(server);
-		VillageHallScreen.open(player, hall);
+		VillageHallScreen.openRemote(player, hall); // the camera stands past the 8 blocks a hall's screen stays open within: opened as from a Village Ledger (B128)
 		if (player.containerMenu instanceof ChoiceMenu menu) {
 			menu.press(VillageHallScreen.ROUTES, player);
 			menu.press(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.REALM.slot(), player);
@@ -152,7 +152,7 @@ final class RealmEdictsScene {
 	private static void openBook(MinecraftServer server, BlockPos at) {
 		ServerPlayer player = player(server);
 		player.closeContainer();
-		VillageHallScreen.open(player, at);
+		VillageHallScreen.openRemote(player, at); // the camera stands past the 8 blocks a hall's screen stays open within: opened as from a Village Ledger (B128)
 		if (player.containerMenu instanceof ChoiceMenu menu) {
 			menu.press(VillageHallScreen.BOOK, player);
 			menu.broadcastChanges();

@@ -88,7 +88,7 @@ final class EldersScene {
 				long noted = hall.chronicle().stream().filter(e -> e.kind() == Chronicle.Kind.LIFE && e.text().getString().equals("Bram is an elder now")).count();
 				Showcase.check(noted == 1, "the chronicle says \"Bram is an elder now\", once (" + noted + ")");
 				Moods.forget();
-				VillageHallScreen.open(player(server), HALL);
+				VillageHallScreen.openRemote(player(server), HALL); // the camera stands past the 8 blocks a hall's screen stays open within: opened as from a Village Ledger (B128)
 			});
 		}
 		if (tick == 80) {

@@ -1241,6 +1241,7 @@ final class JobScenes {
 			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
 			int[] ticks = {0};
 			boolean[] turned = {false};
+			int[] turnedAt = {0};
 			return l -> {
 				ticks[0]++;
 				if (ticks[0] == 5) {
@@ -1267,12 +1268,15 @@ final class JobScenes {
 				if (!turned[0] && io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() > 1
 						&& !io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).isEmpty()) {
 					turned[0] = true;
+					turnedAt[0] = ticks[0];
 					Showcase.check(true, "the band turned out to meet the war party");
 				}
-				// The Warlord falls at the front (a scene can't wait out a whole battle).
-				if (ticks[0] == 900 && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
+				// The Warlord falls at the front (a scene can't wait out a whole battle): 300 ticks after the band turned out,
+				// or at 500 if it never did (B130: at a fixed 900 a slow runner at about 10 ticks a second hit the 80-second limit first).
+				boolean fall = turnedAt[0] > 0 ? ticks[0] == turnedAt[0] + 300 : ticks[0] == 500;
+				if (fall && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
 					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
-				} else if (ticks[0] == 900) {
+				} else if (fall) {
 					Showcase.check(false, "the Warlord at the front: captain " + l.getEntity(standing.get().captain()) + ", band "
 						+ io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() + ", war party at the camp "
 						+ io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).size());

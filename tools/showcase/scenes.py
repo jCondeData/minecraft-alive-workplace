@@ -901,6 +901,11 @@ SCENES = [
       "the hall's guards icon opened the Defense page: the bandit camp, its named chief, its strength and the last attacks", 45,
       [("01_defence_page", "The camp's chief, by name"), ("02_defence_strength", "The camp's strength"),
        ("03_defence_attacks", "The last attacks")]),
+    # Raid dens (ROADMAP 38.2, Cobblemon Raid Dens): the dens a village knows, on the Defense page
+    S("raid_dens", "Village Hall", "Raid dens: the village knows the dens around it",
+      "a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state", 45,
+      [("01_raid_den", "A raid den by the hall"), ("02_raid_den_page", "The Defense page: tier 3, Fire, active"),
+       ("03_raid_den_resting", "A beaten den, resting")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,

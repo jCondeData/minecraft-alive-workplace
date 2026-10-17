@@ -20,6 +20,8 @@ asks for the steps, `latest.log` and any crash report).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.
+- **The village knows its raid dens (2.2).** With Cobblemon Raid Dens, the dens within 160 blocks of a Village Hall
+  show on its Defense page ("Raid den, tier 3, Fire, active") and on the village map, found as their chunks load.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

@@ -4799,7 +4799,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   any that's missing. The flag: `Expansions.M38` with `flag()`, `MILESTONES` and `milestone()` for every switch. Done
   when: the note is on `main`, the compat runtime loads both mods, the id test and a gate test pass, and the package
   is sent.
-- [ ] **38.2** **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
+- [x] **38.2** (review: pending 2026-10-17) **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
   id, when its chunk first loads near the village (a chunk-load event through `Platform`, no area scans), with its
   tier, type and whether it's active (read from its block state by property name); a den broken or gone is dropped at
   the next check. The dens show on the village map (`VillageMaps`) and the hall's Defence page ("Raid den, tier 3,

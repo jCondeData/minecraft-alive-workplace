@@ -1379,7 +1379,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 			server.execute(() -> io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(server.getPlayerList().getPlayers().get(0), new BlockPos(0, -60, 3)));
 		}
 		if (tick == 220) {
-			pointAt(mc, 1);
+			pointAt(mc, 53); // nothing under the mouse: the figures at a glance (26.12)
 		}
 		if (tick == 230) {
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the Village Hall screen opened");
@@ -1442,6 +1442,19 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick == 360) {
 			Showcase.check(mc.getWindow().getGuiScale() == 4, "the hall screen at GUI scale 4 (now " + mc.getWindow().getGuiScale() + ")");
 			shot(mc, "09_hall_scale4");
+			mc.options.guiScale().set(3);
+			mc.resizeDisplay();
+		}
+		if (tick == 370 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen hall) {
+			// 26.12: a click keeps a villager in the pane (and makes them glow); with the mouse away it stays there.
+			hall.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 0, false);
+			pointAt(mc, 53);
+		}
+		if (tick == 385) {
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen hall
+					&& hall.pinned() == io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON,
+				"the clicked villager is kept in the pane: " + mc.screen);
+			shot(mc, "10_hall_pinned_scale3");
 			mc.stop();
 		}
 	}
@@ -1540,9 +1553,35 @@ public class ScreenshotHarness implements ClientModInitializer {
 			mc.options.hideGui = false;
 			server.execute(() -> io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(server.getPlayerList().getPlayers().get(0), new BlockPos(5, -60, 0)));
 		}
+		if (tick == 450) {
+			pointAt(mc, 53); // nothing under the mouse: the board's top row at a glance
+		}
 		if (tick == 470) {
 			shot(mc, "21_request_board");
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the requests board opened");
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen,
+				"the board is drawn in the Blueprint Table's style, not a chest (26.12): " + mc.screen);
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen board) {
+				Showcase.check(!board.listSlots().isEmpty() && board.listSlots().get(0) == io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST,
+					"the requests are the board's list: " + board.listSlots());
+				pointAt(mc, io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST);
+			}
+		}
+		if (tick == 485) {
+			shot(mc, "22_request_read_out");
+			// GUI scale 3 (26.12: nothing runs over at a bigger scale), the stock orders' button read out
+			org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080);
+		}
+		if (tick == 495) {
+			mc.options.guiScale().set(3);
+			mc.resizeDisplay();
+		}
+		if (tick == 500) {
+			pointAt(mc, io.github.jcondedata.aliveworkplace.store.StorehouseBoard.ORDERS_SLOT);
+		}
+		if (tick == 515) {
+			Showcase.check(mc.getWindow().getGuiScale() == 3, "the board at GUI scale 3 (now " + mc.getWindow().getGuiScale() + ")");
+			shot(mc, "23_request_board_scale3");
 			mc.stop();
 		}
 	}
@@ -2727,8 +2766,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 	/** Moves the mouse over slot {@code slot} of an open chest screen with {@code rows} rows. */
 	static void pointAt(Minecraft mc, int slot, int rows) {
 		double scale = mc.getWindow().getGuiScale();
-		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen hall) {
-			// The hall's own screen (ROADMAP 30.4a) puts its buttons where its drawing does, not on a chest's grid.
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen hall) {
+			// The hall's screen and the Storehouse board, drawn like the Blueprint Table (26.12), put their buttons in a
+			// strip and a list, not on a chest's grid.
 			int[] at = hall.centre(slot);
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;

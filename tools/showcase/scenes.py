@@ -196,7 +196,8 @@ SCENES = [
     # Porter
     S("porter", "Porter", "Carrying goods to the storehouse", "the porter stocked the storehouse and the board opened", 90,
       [("*_porter@first", "Start"), ("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
-       ("21_request_board", "Requests board")]),
+       ("21_request_board", "The Storehouse board in the Blueprint Table's style: requests listed, the store at a glance"),
+       ("22_request_read_out", "A request read out in the pane"), ("23_request_board_scale3", "The board at GUI scale 3")]),
     job("dropbox", "Porter", "Emptying a Drop Box", "the porter emptied the Drop Box into the store", 120,
         [("04_dropbox_screen", "Drop Box")]),
     # Crafters
@@ -334,8 +335,9 @@ SCENES = [
         "the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 150, cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
-      [("02_hall_people", "The hall's own screen: figures, toolbar, people"), ("03_hall_builder", "A builder"), ("08_hall_calendar", "The calendar"),
-       ("09_hall_scale4", "The hall's screen at GUI scale 4")]),
+      [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),
+       ("03_hall_builder", "A builder read out in the pane"), ("08_hall_calendar", "The calendar"),
+       ("09_hall_scale4", "The hall's screen at GUI scale 4"), ("10_hall_pinned_scale3", "A clicked villager kept in the pane, GUI scale 3")]),
     # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
     S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),

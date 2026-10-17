@@ -78,6 +78,13 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **The Village Hall and the Storehouse board look like the Blueprint Table.** Both screens now use the Table's dark
+  panel, gold title, list on the left and reading pane on the right. In the hall, the village's numbers and the toolbar
+  sit as icon buttons under the title, and the page tabs and everyone who lives there are a list with each villager's
+  name and job. The Storehouse board lists the requests with what, how many and for whom, and no longer looks like a
+  locked chest. Point at anything and the pane tells you all about it (long tooltips no longer cover the screen); with
+  the mouse elsewhere it shows the village's numbers or the store at a glance. Click a villager to keep them in the
+  pane and scroll. Every button and click works as before.
 - **Fewer fishermen.** Storage barrels in builds made most villagers fishermen: now a village takes one fisherman, plus
   one more for every ten villagers. After that, jobless villagers pass free barrels by and take another workstation. A
   fisherman a village already has keeps his job. Settings: Fisherman Cap (on), Fishermen per Village (1) and Villagers

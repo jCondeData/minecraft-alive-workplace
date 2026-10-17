@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, B97, B101, B103
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103
 
 ## What a player sees
 
@@ -129,7 +129,10 @@ village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkP
 mood). The Builder's page has the level table.
 
 **Requests.** What workers are waiting for (materials, a pickaxe, seeds) is posted on the Storehouse's board, where
-players can hand things over; the Village Hall lists it too.
+players can hand things over; the Village Hall lists it too. The board is drawn like the Blueprint Table (26.12): the
+requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
+list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
+over what you have, as before.
 
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages
 keep working when no player is near (`keepVillagesWorking`). Builds and quarries follow the game rule

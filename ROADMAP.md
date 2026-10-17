@@ -725,7 +725,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
 - [x] **26.11** (review: pending 2026-10-17) **Give the look-alike workplaces their own designs** (unblocked by the owner 2026-10-16 evening: "make new completely different exteriors for all different kinds of workshops and houses, nothing should look identical") (owner's playtest,
   2026-10-16: the Guard House, Kitchen, Clinic, Builder's Workshop, Carpenter's Workshop and Ball Workshop all look the
   same). Deferred by the owner: not now.
-- [ ] **26.12** **Storehouse and Village Hall screens in the Blueprint Table's style** (owner, 2026-10-16: "the storehouse UI
+- [x] **26.12** (approved auto 2026-10-17) **Storehouse and Village Hall screens in the Blueprint Table's style** (owner, 2026-10-16: "the storehouse UI
   and village hall UI can use alot of work, i like the look of the blueprint table"). Done when: both screens use the
   Blueprint Table's layout and drawing (panel, list, detail pane, the same sprites and fonts), every number and
   action they show today is still there, screenshots of both in a showcase scene, GameTests for any changed packets.

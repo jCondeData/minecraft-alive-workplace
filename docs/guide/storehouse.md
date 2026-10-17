@@ -34,8 +34,10 @@ the storehouse owns it: its porter works for them and their friends. A village's
 ## The requests board
 
 Right-click the Storehouse to see what the workers nearby are waiting for (a builder's missing blocks, a miner's
-pickaxe, a farmer's seeds) and how much is already in store. Click one to hand over what you have, straight into that
-worker's chest.
+pickaxe, a farmer's seeds), listed on the left with who wants it and how far away they are. Point at one and the pane
+on the right says how much is already in store and how many you have. Click one to hand over what you have, straight
+into that worker's chest. With the mouse elsewhere the pane shows the store at a glance: how many chests, items and
+empty slots, the Steward's shopping list and your stock orders.
 
 **Stock orders.** Click the book on the board, hold an item and click it to order it (16, 32, 64...): the carpenters,
 masons, tinkerers and chefs keep that many in store, making more when it runs low.

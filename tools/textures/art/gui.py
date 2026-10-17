@@ -1,11 +1,8 @@
-"""GUI textures: the Village Hall's screen (ROADMAP 30.4a), drawn like vanilla's workstation screens.
+"""GUI textures drawn like vanilla's workstation screens (the Pokémon Trader's, the Trade page's marks, the colony map).
 
-One 256x256 sheet, textures/gui/village_hall.png, read by the client's VillageHallMenuScreen:
-- the window (196x160 at 0,0): the vanilla container panel (C6C6C6, black notched border, white top-left and
-  555555 bottom-right bevel), a sunken header plaque for the village's figures (row 0), an etched toolbar band for
-  the page's actions (row 1) and a sunken content panel for the page itself (rows 2-5);
-- the buttons (18x18 at 0,176 and 18,176): a raised vanilla button, plain and hovered, drawn under every icon.
-The layout numbers are VillageHallMenuScreen's: cell x = 8 + 20 * column, rows at y 18, 44, 70, 90, 110, 130.
+The Village Hall's own sheet (textures/gui/village_hall.png, ROADMAP 30.4a) is gone: since 26.12 the hall's screen is
+drawn in the Blueprint Table's style with fills and vanilla's sprites (the client's TableStyle), no texture of its own.
+The helpers below (the vanilla panel, sunken plaques, raised buttons) still draw the Pokémon Trader's screen.
 """
 from artlib import *  # noqa: F401,F403
 from artlib import ASSETS
@@ -66,24 +63,6 @@ def _button(img, ox, oy, hovered):
     _rect(img, ox + 2, oy + 2, ox + 16, oy + 16, fill)
     img.putpixel((ox + 16, oy + 1), fill)
     img.putpixel((ox + 1, oy + 16), fill)
-
-
-def village_hall_gui():
-    img = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
-    _panel(img, 0, 0, W, H)
-    # row 0: the village's figures on a sunken plaque
-    _sunk(img, 6, 16, 190, 38)
-    # row 1: the page's actions between two etched lines
-    _etch(img, 6, 189, 41)
-    _etch(img, 6, 189, 65)
-    # rows 2-5: the page, on a deeper sunken panel
-    _sunk(img, 6, 68, 190, 152, DEEP)
-    _button(img, 0, 176, False)
-    _button(img, 18, 176, True)
-    path = ASSETS / "textures" / "gui" / "village_hall.png"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    img.save(path)
-    return [path]
 
 
 # The Pokémon Trader's screen (ROADMAP 28.23): textures/gui/pokemon_trader.png, read by the client's PokemonTradeScreen.
@@ -312,7 +291,7 @@ def colony_map_gui():
     return [out / "colony_map_marks.png", out / "colony_map_parchment.png", out / "colony_map_ring.png"]
 
 
-DRAW = [village_hall_gui, pokemon_trader_gui, trade_marks_gui, colony_map_gui]
+DRAW = [pokemon_trader_gui, trade_marks_gui, colony_map_gui]
 
 if __name__ == "__main__":
     run(DRAW)

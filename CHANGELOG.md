@@ -78,6 +78,10 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **Fewer fishermen.** Storage barrels in builds made most villagers fishermen: now a village takes one fisherman, plus
+  one more for every ten villagers. After that, jobless villagers pass free barrels by and take another workstation. A
+  fisherman a village already has keeps his job. Settings: Fisherman Cap (on), Fishermen per Village (1) and Villagers
+  per Extra Fisherman (10).
 - **No two kinds of home look alike any more.** The Stone House is now a stone croft with crow-stepped gables, a
   chimney breast and a woodpile, and grows a second storey in stone instead of timber; the Terrace is a brick row with
   a bay window and a hooded door for each home; the Artisan's House has a red tile gambrel roof, weatherboards and a

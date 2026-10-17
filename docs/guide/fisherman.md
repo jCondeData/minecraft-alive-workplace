@@ -19,7 +19,10 @@ The Fisherman is vanilla's fisherman, put to work: hand them a rod and they fish
 
 ## Getting a fisherman
 
-A villager without a job takes a free **barrel** as a Fisherman, as in vanilla. To set them to work, right-click them
+A villager without a job takes a free **barrel** as a Fisherman, as in vanilla. Because builds are full of storage
+barrels, a village takes only one fisherman, plus one more for every ten villagers: after that, jobless villagers pass
+free barrels by and take another workstation (the Fisherman Cap setting, in
+[Worker limits and performance](settings-worker-limits-and-performance.md)). To set them to work, right-click them
 with a **fishing rod**. Put spare rods in the barrel or a chest next to it for when one breaks.
 
 **Their rod wears like yours:** one point a catch, so a plain rod lasts 64 catches. Enchant it and the enchantments

@@ -119,7 +119,10 @@ abstract class VillagerMixin {
 		}
 	}
 
-	/** A jobless villager doesn't take a free workstation in a village that has its workers (25.5, {@code maxWorkersPerVillage}). */
+	/**
+	 * A jobless villager doesn't take a free workstation in a village that has its workers (25.5, {@code maxWorkersPerVillage}),
+	 * nor a barrel in one that has its fishermen (26.13, {@code fishermanCap}).
+	 */
 	@Inject(method = "setVillagerData", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$workerCap(net.minecraft.world.entity.npc.VillagerData data, CallbackInfo ci) {
 		if (io.github.jcondedata.aliveworkplace.work.WorkerLimits.refuse((Villager) (Object) this, data)) {

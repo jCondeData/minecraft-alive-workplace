@@ -48,7 +48,10 @@ lamps at y 0 are fine. It also fails a chair (a stair on a floor) beside a table
 `chair(b, x, y, z, fam, toward)`, `toward` being where the table is, since a stair's facing is its backrest's side — and
 a furnished upper floor a player can't reach from the ground by walking, half-block steps (stairs, slabs) and ladders:
 a flight must end level with the floor it serves (not a block short), a ladder must reach into its hatch, and a step
-in a two-high doorway puts the player's head in the lintel. A clean run prints no CHECK lines.
+in a two-high doorway puts the player's head in the lintel. The same goes for open-air stands and terraces (B154): a
+row of carpet seats on a solid tier, or furniture under the sky, must be reachable too (an awning's carpets or a bare
+roof aren't). Stands that rise two blocks a tier need two stairs per tier in their aisles. A clean run prints no CHECK
+lines.
 
 `fill_air` also closes the slot where a lower roof runs in under a higher one's overhang (`seal_slots`: the wall behind
 is carried out to the overhang's edge), so a wing's roof meets the main one. After `generate.py`, run

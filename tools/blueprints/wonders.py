@@ -4150,7 +4150,8 @@ def colossus_stage(stage=None):
 #   the long sides (north and south), five at the ends (east and west), stepping from seven to five round the curves.
 #   Each tier is two up and one back, a smooth stone tread with a carpet seat on it, red and white in sixteen wedges
 #   round the bowl (the village's own colours once it has a Village Banner). Aisles of stone brick stairs climb the
-#   stands, a half step on each tier, either side of each vomitory.
+#   stands either side of each vomitory, two stairs to a tier, a half step at a time (B154); round the curves the rows
+#   are joined edge to edge so a player can walk right round each tier.
 # - Under the stands, walkable and lit (every passage 3 high under a ceiling at y 4): the concourse, a corridor two
 #   wide running right round inside the back wall under the two top tiers, entered from outside through the arched bays
 #   of the facade; inside it a partition wall; inside that, between the partition and the front tier, the rooms. Eight
@@ -4264,50 +4265,6 @@ def s_tread(n):
 S_TUNNEL_HEIGHT = {0: 8, 1: 8, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 3}  # the gateway's clear height under each row (z)
 
 
-def s_plan():
-    """Each cell of the bowl: 'field', 'apron', 'barrier', ('tier', n) or ('wall', top)."""
-    plan = {}
-    for x in range(SW):
-        for z in range(SD):
-            if s_field(x, z):
-                plan[(x, z)] = "field"
-                continue
-            r = s_ring(x, z)
-            if r == 0:
-                plan[(x, z)] = "apron"
-            elif r == 1:
-                plan[(x, z)] = "barrier"
-            elif r <= s_tiers(x, z) + 1:
-                plan[(x, z)] = ("tier", r - 1)
-    stands = dict(plan)
-    for x in range(SW):
-        for z in range(SD):
-            if (x, z) in stands:
-                continue
-            near = [stands.get((x + dx, z + dz)) for dx in (-1, 0, 1) for dz in (-1, 0, 1)]
-            tiers = [c[1] for c in near if isinstance(c, tuple)]
-            if tiers:
-                plan[(x, z)] = ("wall", s_tread(max(tiers)) + 3)
-    return plan
-
-
-S_PLAN = s_plan()
-
-
-def s_from_top(x, z):
-    """How many tiers below the top a stand cell is (0: the top tier), or None off the stands."""
-    kind = S_PLAN.get((x, z))
-    if not (isinstance(kind, tuple) and kind[0] == "tier"):
-        return None
-    return s_tiers(x, z) - kind[1]
-
-
-def s_concourse(x, z):
-    """The concourse: under the two top tiers, right round (the gateway and the players' tunnel cross it)."""
-    k = s_from_top(x, z)
-    return k is not None and k <= 1 and S_PLAN[(x, z)][1] >= 2
-
-
 # --- the rooms under the stands -------------------------------------------------------------------------------------------
 # Each room: its inside (x0, x1, z0, z1), all in the band between the partition and the front tier, and its doors (the
 # cell in the wall, the way the door faces). The fittings are drawn in stage IV.
@@ -4321,6 +4278,89 @@ S_ROOMS = {
     "referees": ((11, 14, 34, 36), [((12, 37), "north")]),
     "groundsman": ((38, 41, 34, 36), [((40, 37), "north")]),
 }
+def s_over_room(x, z):
+    return any(x0 <= x <= x1 and z0 <= z <= z1 for (x0, x1, z0, z1), _ in S_ROOMS.values())
+
+
+def s_join_rows(plan):
+    """Round the curves a ring of cells can touch the next cell of its row only at a corner, the tier below on one side
+    and the tier above (two up) on the other, so a player walking along the row can't go on (B154). Lower the cell
+    above to the row's tier, until every row is joined edge to edge: the curves come out a little squarer, their
+    upper rows a tier lower. All of a round's changes at once, so the four curves stay mirror images; the straight
+    sides keep their tiers, and a room under the stands keeps two tiers over it."""
+    def tier(c):
+        k = plan.get(c)
+        return k[1] if isinstance(k, tuple) else (0 if k == "barrier" else None)
+
+    while True:
+        lower = {}
+        for (x, z), kind in sorted(plan.items()):
+            if not isinstance(kind, tuple) or s_in_box(x, z):
+                continue
+            n = kind[1]
+            for sx, sz in ((1, 1), (1, -1)):
+                if tier((x + sx, z + sz)) != n or s_in_box(x + sx, z + sz):
+                    continue
+                sides = [(x + sx, z), (x, z + sz)]
+                if sorted(-1 if tier(c) is None else tier(c) for c in sides) != [n - 1, n + 1]:
+                    continue
+                high = next(c for c in sides if tier(c) == n + 1)
+                if 0 not in s_offset(*high) and (n >= 2 or not s_over_room(*high)):
+                    lower[high] = min(lower.get(high, n), n)
+        if not lower:
+            return
+        for c, n in lower.items():
+            plan[c] = ("tier", n)
+
+
+def s_plan(join=True):
+    """Each cell of the bowl: 'field', 'apron', 'barrier', ('tier', n) or ('wall', top). join=False: the tiers by their
+    ring alone, before s_join_rows (the concourse follows those, so it still runs right round under the top two)."""
+    plan = {}
+    for x in range(SW):
+        for z in range(SD):
+            if s_field(x, z):
+                plan[(x, z)] = "field"
+                continue
+            r = s_ring(x, z)
+            if r == 0:
+                plan[(x, z)] = "apron"
+            elif r == 1:
+                plan[(x, z)] = "barrier"
+            elif r <= s_tiers(x, z) + 1:
+                plan[(x, z)] = ("tier", r - 1)
+    stands = dict(plan)  # the back wall stands three over the ring's top tier, joined or not
+    if join:
+        s_join_rows(plan)
+    for x in range(SW):
+        for z in range(SD):
+            if (x, z) in stands:
+                continue
+            near = [stands.get((x + dx, z + dz)) for dx in (-1, 0, 1) for dz in (-1, 0, 1)]
+            tiers = [c[1] for c in near if isinstance(c, tuple)]
+            if tiers:
+                plan[(x, z)] = ("wall", s_tread(max(tiers)) + 3)
+    return plan
+
+
+S_PLAN = s_plan()
+S_RINGS = s_plan(join=False)
+
+
+def s_from_top(x, z):
+    """How many rings below the top a stand cell is (0: the top tier's), or None off the stands."""
+    kind = S_RINGS.get((x, z))
+    if not (isinstance(kind, tuple) and kind[0] == "tier"):
+        return None
+    return s_tiers(x, z) - kind[1]
+
+
+def s_concourse(x, z):
+    """The concourse: under the two top tiers, right round (the gateway and the players' tunnel cross it)."""
+    k = s_from_top(x, z)
+    return k is not None and k <= 1 and S_PLAN[(x, z)][1] >= 2
+
+
 S_HATCHES = {"kiosk_west": (20, 22, 4), "kiosk_east": (30, 32, 4)}  # the serving hatches in the partition: x0, x1, z
 # The vomitories: the cells from the partition inwards, one stair up in each, and the way they climb.
 S_VOMITORIES = ([([(x, z) for z in (4, 5, 6, 7)], "south") for x in (17, 18, 34, 35)]
@@ -4378,24 +4418,30 @@ S_CUTS = s_cuts()
 
 
 def s_aisle(x, z):
-    """The way an aisle cell's stair climbs, or None. The aisles are two wide and zig-zag, a stair in one cell on the odd
-    tiers and in the other on the even ones (a tier is two up: a stair up from the tread, then a jump onto the next
-    tread beside it), straight up the long sides and the ends, none on the top tier."""
+    """An aisle cell's stair, as (the way it climbs, "on" or "in"), or None. A tier is two up and one back, so each
+    climb takes two stairs one behind the other: one standing on the lower tread ("on"), then one in place of the next
+    tier's tread ("in"), whose top is that tier's floor; every step is a half block (B154). The aisles are two wide and
+    the climbs take turns between their cells, the odd tiers' in one and the even tiers' in the other, so a player goes
+    up a flight, steps across onto the next one's first stair and on up. They climb straight out from the field on
+    the long sides and the ends: no "on" stair on the top tier, no "in" on the first."""
     k = s_from_top(x, z)
-    if k is None or k == 0:
+    if k is None:
         return None
     n = S_PLAN[(x, z)][1]
     if z < S_CORE[1] or z > S_CORE[3]:
         side, u = ("north" if z < S_CORE[1] else "south"), x
-        ways = ("west", "east")
     elif x < S_CORE[0] or x > S_CORE[2]:
         side, u = ("west" if x < S_CORE[0] else "east"), z
-        ways = ("north", "south")
     else:
         return None
     for a in S_AISLES[side]:
-        if u == (a if n % 2 else a + 1):
-            return ways[0] if u == a else ways[1]
+        if u not in (a, a + 1):
+            continue
+        odd = (u == a)  # this cell's flights climb from the odd tiers
+        if k > 0 and (n % 2 == 1) == odd:
+            return side, "on"
+        if n >= 2 and (n % 2 == 0) == odd:
+            return side, "in"
     return None
 
 
@@ -4543,6 +4589,7 @@ def s_tier(b, x, z, n):
         y0 = S_TUNNEL_HEIGHT[z] + 1
     top = s_tread(n)
     cut = S_CUTS.get((x, z), {})
+    aisle = s_aisle(x, z)
     for y in range(y0, top + 2):
         if y in cut:
             block = cut[y]
@@ -4556,11 +4603,14 @@ def s_tier(b, x, z, n):
                 s_put(b, x, y, z, block)
         elif y < top:
             s_put(b, x, y, z, S_BODY)
+        elif y == top and aisle and aisle[1] == "in":
+            if b.get(x, y, z) is None:
+                stairs(b, x, y, z, STONE_BRICK, aisle[0])  # the flight's second stair, in place of the tread
         elif y == top:
             s_put(b, x, y, z, "smooth_stone")
-        elif s_aisle(x, z):
-            if b.get(x, y, z) is None:
-                stairs(b, x, y, z, STONE_BRICK, s_aisle(x, z))
+        elif aisle:
+            if aisle[1] == "on" and b.get(x, y, z) is None:
+                stairs(b, x, y, z, STONE_BRICK, aisle[0])  # the flight's first stair, on the tread
         else:
             s_put(b, x, y, z, s_seat(x, z))
 

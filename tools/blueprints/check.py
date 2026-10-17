@@ -3,7 +3,7 @@ Checks a build for the mistakes that show in the game, run on every save (the ru
 Architect building skill): blocks nothing holds up, lanterns hanging from nothing, lanterns, pots, carpets and torches
 standing on air, ladders with no wall behind them, doors missing a half, sand and gravel over air. The bottom layer
 (y = 0) stands on the ground, so it holds itself up. And two the owner met in a playtest (B148, B149): chairs with their
-backs to the table, and upper floors no stairs or ladder lead up to.
+backs to the table, and upper floors no stairs or ladder lead up to; and since B154 open-air stands and terraces too.
 """
 
 AIR = {"minecraft:air", "minecraft:cave_air", "minecraft:structure_void", "minecraft:jigsaw"}
@@ -153,6 +153,8 @@ CLIMB = ("ladder", "vine", "scaffolding")
 FURNITURE = ("_bed", "chest", "barrel", "_carpet", "lantern", "candle", "potted_", "flower_pot", "lectern", "hay_block",
              "crafting_table", "cartography_table", "smithing_table", "fletching_table", "loom", "anvil", "cauldron",
              "composter", "brewing_stand", "_banner", "bell", "furnace", "smoker", "grindstone", "stonecutter")
+SEATING = ("_bed", "chest", "barrel", "lectern", "crafting_table", "cartography_table", "smithing_table",
+           "fletching_table", "loom", "anvil", "brewing_stand", "furnace", "smoker", "grindstone", "stonecutter")
 THIN = ("pane", "_bars", "chain", "candle", "_head", "skull", "end_rod", "lightning_rod", "campfire", "cake", "bell",
         "pointed_dripstone", "amethyst_bud", "amethyst_cluster", "lantern", "flower_pot", "potted_")
 
@@ -231,14 +233,27 @@ def reach_problems(blocks, w, h, d):
             if m not in seen:
                 seen.add(m)
                 todo.append(m)
-    # Places to stand that weren't reached, two or more blocks up, inside the build and under something
-    lost = {n for n in nodes if n not in seen and n[2] >= 6 and 0 <= n[0] < w and 0 <= n[1] < d
-            and any(not passable(blocks.get((n[0], y, n[1]))) for y in range(n[2] // 2 + 2, h))}
+    # Places to stand that weren't reached, two or more blocks up, inside the build: under something (a room) or open
+    # to the sky (a stand, a terrace, a balcony, a wall's walk: B154)
+    def roofed(x, z, L):
+        return any(not passable(blocks.get((x, y, z))) for y in range(L // 2 + 2, h))
+
+    lost = {n for n in nodes if n not in seen and n[2] >= 6 and 0 <= n[0] < w and 0 <= n[1] < d}
     # A floor is furnished: the space over a ceiling, the top of a wall or of a glass case in a tall room, a statue's
     # hollow inside aren't floors anybody means to stand on
     def lived_in(x, z, L):
         y = (L + 1) // 2
         return any(_short(blocks.get(q)).endswith(FURNITURE) or _short(blocks.get(q)) in FURNITURE
+                   for q in ((x, y, z), (x + 1, y, z), (x - 1, y, z), (x, y, z + 1), (x, y, z - 1)))
+
+    # Open to the sky, a place is meant to be stood on when people sit or work there: a seat (a carpet underfoot on a
+    # terrace or a stand, not on an awning or a roof one block thick) or furniture beside it. Lanterns, pots, banners
+    # and bells don't count: they stand on roofs and parapets too.
+    def seated(x, z, L):
+        y = (L + 1) // 2
+        if L % 2 == 0 and _short(blocks.get((x, y, z))).endswith("_carpet") and not passable(blocks.get((x, y - 2, z))):
+            return True
+        return any(_short(blocks.get(q)).endswith(SEATING) or _short(blocks.get(q)) in SEATING
                    for q in ((x, y, z), (x + 1, y, z), (x - 1, y, z), (x, y, z + 1), (x, y, z - 1)))
 
     problems, done = [], set()
@@ -254,9 +269,11 @@ def reach_problems(blocks, w, h, d):
                     todo.append(m)
         done |= group
         cols = {(g[0], g[1]) for g in group}
+        xs, zs, ys = [g[0] for g in group], [g[1] for g in group], [g[2] // 2 for g in group]
+        where = f"at y {min(ys)} (x {min(xs)}-{max(xs)}, z {min(zs)}-{max(zs)}, {len(group)} places to stand)"
         if any({(x + 1, z), (x, z + 1), (x + 1, z + 1)} <= cols for x, z in cols) \
-                and any(lived_in(*g) for g in group):  # a room, not a beam, a ledge or a sealed hollow
-            xs, zs, ys = [g[0] for g in group], [g[1] for g in group], [g[2] // 2 for g in group]
-            problems.append(f"an upper floor at y {min(ys)} (x {min(xs)}-{max(xs)}, z {min(zs)}-{max(zs)}, "
-                            f"{len(group)} places to stand) has no stairs or ladder up to it")
+                and any(roofed(*g) and lived_in(*g) for g in group):  # a room, not a beam, a ledge or a sealed hollow
+            problems.append(f"an upper floor {where} has no stairs or ladder up to it")
+        elif sum(1 for g in group if not roofed(*g) and seated(*g)) >= 4:  # a row of seats under the sky, not a roof
+            problems.append(f"an open stand or terrace {where} has no stairs or ladder up to it")
     return problems

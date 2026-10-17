@@ -6,7 +6,7 @@ autonomously from `ROADMAP.md`, keep `main` green, and explain results in plain 
 
 The goal (owner, 2026-10-03): the public **1.0** with nine expansions up to **2.0** (all built by 2026-10-17). Next
 (owner, 2026-10-17): quick additions (Milestone 36), furnished homes and modded storage (2.1), Cobblemon depth (2.2)
-and Create integration (2.3, waiting on the owner's Create port jar). Speed comes from parallel lanes and lean checks,
+and Create integration (2.3, the owner's port is in `libs/`). Speed comes from parallel lanes and lean checks,
 never from thinner content.
 
 ## Skills (use them; they hold the details this file leaves out)
@@ -23,14 +23,14 @@ Productivity first. The first chat built most of this mod in four days by buildi
 `main`; work the same way (`docs/agent/sessions.md`, "Sprint mode"). Sessions: the owner's chat (`chat`) and four build
 lanes (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start), each with a job since 1.0 (owner, 2026-10-17): **a, the bug
 lane** (Bugs, Milestone 26's release checks, red duty always; the owner gives his bugs to this lane's chat),
-**b, the quick lane** (Milestone 36), **c and d, the big-update lanes** (Milestones 37 and up). `sessions.py next`
+**b, the quick lane** (Milestone 36), **c, d and e, the big-update lanes** (Milestones 37, 38 and 39 (Create), each preferring its own). `sessions.py next`
 gives each lane its own list. A lane coordinates and each feature is built by a fresh subagent (sessions.md), which
 keeps every conversation short and cheap.
 
 **Lanes start by hand** (owner, 2026-10-12: no scheduled routines on this account). **Read
 `docs/agent/handoff-1016.md` first** (2026-10-16): what the playtest chat built, rc.12, and the order to stop any
 scheduled Claude routines still running on any account. When the owner says "get
-started" or types `/get-started <bugs|quick|big|c|d>`, run that lane as `.claude/commands/get-started.md` says.
+started" or types `/get-started <bugs|quick|big|c|d|create>`, run that lane as `.claude/commands/get-started.md` says.
 
 **Start** (one step, about five minutes): `git pull`, `python3 tools/agent/sessions.py next --as <you>`, the latest CI
 run on `main`, Java setup (below). **A red `main` is the bug lane's** (owner, 2026-10-17; sessions.md, "Red main"):

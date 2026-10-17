@@ -549,12 +549,12 @@ def cmd_review(a):
 # Lanes after 1.0 (owner, 2026-10-17): each lane has a job instead of a share of the numbers.
 #   a: the bug lane: every bug in "Bugs" plus Milestone 26's open items (release checks), and red duty always;
 #   b: the quick lane: Milestone 36's quick additions;
-#   c, d: the big-update lanes: Milestones 37 and up, each preferring its own milestone so the two don't collide,
-#         and taking the other's when its own is empty or blocked.
+#   c, d, e: the big-update lanes: Milestones 37 and up, c preferring 37, d 38 and e 39 (Create), each taking the
+#         others' when its own is empty or blocked.
 # The owner hands bugs straight to the bug lane's chat, so b, c and d never take a bug.
 BUG_MILESTONES = (26,)
 QUICK_MILESTONES = (36,)
-BIG_ORDER = {"c": (37, 38, 39), "d": (38, 37, 39)}
+BIG_ORDER = {"c": (37, 38, 39), "d": (38, 37, 39), "e": (39, 37, 38)}
 
 
 def lane_of(who):

@@ -9,9 +9,9 @@ on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges,
   `/get-started <lane>`, about 170 minutes a run. Since 2026-10-17 (owner) each lane has a job, not a share of the
   numbers: **a, the bug lane** (every bug in "Bugs", Milestone 26's release checks, red duty always; the owner hands
   his bugs to this lane's chat, which files each with `sessions.py bug` and fixes it); **b, the quick lane**
-  (Milestone 36's quick additions); **c and d, the big-update lanes** (Milestones 37 and up: c prefers 37, d prefers
-  38, each takes the other's when its own is empty, and 39 waits on the owner's Create port). `sessions.py next`
-  lists each lane's own; lanes b, c and d never take a bug.
+  (Milestone 36's quick additions); **c, d and e, the big-update lanes** (Milestones 37 and up: c prefers 37, d 38,
+  e 39 (Create, the owner's port in `libs/`); each takes the others' when its own is empty). `sessions.py next`
+  lists each lane's own; lanes b to e never take a bug. Each lane runs in its own chat (its own machine).
 - **Lanes sharing one machine** (2026-10-17: the owner's chat started all four lanes in its own 7 GB container;
   Java was OOM-killed 3 times and a lane's script ran in another's tree): each lane works in its own git worktree
   (`/home/claude/lane-<x>`), keeps its scripts in its own folder (not the shared scratchpad), and runs every Gradle or

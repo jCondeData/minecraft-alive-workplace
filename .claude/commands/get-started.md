@@ -1,5 +1,5 @@
 ---
-description: Run one lane (about 3 hours). Argument bugs, quick, big, c or d; no argument picks the big-update lane that ran least recently.
+description: Run one lane (about 3 hours). Argument bugs, quick, big, c, d or create; no argument picks the big-update lane that ran least recently.
 ---
 
 Run one lane for Alive Workplace, Jesse's Minecraft mod (Fabric 1.21.1, for his Cobbleverse friends server). Jesse
@@ -13,10 +13,10 @@ Argument: `$ARGUMENTS`
   what was wrong and what changed (a screenshot or GIF when he'd see it in game). Player-visible bugs come before
   test-only flakes.
 - `quick` (or `b`): you are **lane b, the quick lane**: Milestone 36's quick additions, one subagent each.
-- `big`, `c` or `d`: you are a **big-update lane**, c (prefers Milestone 37) or d (prefers Milestone 38); each takes
-  the other's milestone when its own is empty or blocked, and Milestone 39 (Create) once the owner's port jar is in.
-  `big` alone: look at `git log origin/main --format='%ci %s' -40` and take the one of c and d whose tag
-  (`[lane-c-…]`, `[lane-d-…]`) appeared least recently; if neither, take c.
+- `big`, `c`, `d` or `create` (= `e`): you are a **big-update lane**: c prefers Milestone 37 (furniture and storage),
+  d Milestone 38 (Cobblemon depth), e Milestone 39 (Create, with the owner's port in `libs/`); each takes the others'
+  milestones when its own is empty or blocked. `big` alone: look at `git log origin/main --format='%ci %s' -40` and
+  take the one of c, d and e whose tag (`[lane-c-…]`, …) appeared least recently; if none, take c.
 - empty: as `big`.
 
 Steps:

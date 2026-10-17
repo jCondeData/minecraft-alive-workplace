@@ -17,6 +17,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.PersonalRequestCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.VillageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PackModsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.FurnishedBuildCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",

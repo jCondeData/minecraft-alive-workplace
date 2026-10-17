@@ -1,0 +1,3 @@
+{"spots": [
+  {"kind": "bed", "pos": [9, 1, 10], "facing": "west", "wood": "dark_oak", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:orange_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:orange_bed[facing=west,occupied=false,part=head]"}]}
+]}

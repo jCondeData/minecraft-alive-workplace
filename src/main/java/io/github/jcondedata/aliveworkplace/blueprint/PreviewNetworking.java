@@ -69,7 +69,10 @@ public final class PreviewNetworking {
 		if (last != null && now - last < 100) {
 			return;
 		}
-		BlueprintLibrary.get(player.level().getServer(), id).ifPresent(bp -> Platform.get().send(player, build(bp)));
+		BlueprintLibrary.get(player.level().getServer(), id)
+			// 37.3: the furniture this server would build (the preview and its materials show those pieces)
+			.map(bp -> io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(id).apply(bp, id))
+			.ifPresent(bp -> Platform.get().send(player, build(bp)));
 	}
 
 	public static Data build(Blueprint blueprint) {

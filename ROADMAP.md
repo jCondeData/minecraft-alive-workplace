@@ -4669,7 +4669,7 @@ the dev runtime (its `getItems()` clashes with a Mojang-mapped name), so Cozyhom
 (`tools/packtest/run.sh`, the real pack) only. Depends on: M26 (the builds and their interiors as they stand at 1.0);
 M34's grander homes get furnished too, and simply aren't there until M34 is on.
 
-- [ ] **37.1** **Design note and flag.** `docs/design/M37.md`, sent to the owner as a review package (lanes don't wait
+- [x] **37.1** (review: pending 2026-10-17) **Design note and flag.** `docs/design/M37.md`, sent to the owner as a review package (lanes don't wait
   for his reply): what the player sees with each mod and with none; the furniture spot format (37.2) and the
   furnishing table format (37.3) with one example file each; the list of furniture kinds and, per mod, the block ids
   chosen for each (from the jars in `build/packtest/server/mods`, e.g. `handcrafted:oak_chair`, `handcrafted:oak_table`,
@@ -4680,7 +4680,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   field with its default; how each part falls back without its mod. The flag: `Expansions.M37` with `flag()`,
   `MILESTONES` and `milestone()` for every switch, so `ExpansionGateGameTests` covers it. Done when: the note is on
   `main` with all of these, the flag gates the switches (a gate test), and the package is sent.
-- [ ] **37.2** **Furniture spots in our blueprints.** The generator (`tools/blueprints/`) records each piece of vanilla
+- [x] **37.2** (approved auto 2026-10-17) **Furniture spots in our blueprints.** The generator (`tools/blueprints/`) records each piece of vanilla
   furniture it draws as a furniture spot: its kind (chair, stool, bench, couch, table, side table, desk, counter,
   cupboard, shelf, nightstand, drawer, bed, lamp, clock, picture, blinds, crockery), facing, wood or colour, footprint,
   and the vanilla blocks it's made of. The spots go in a file beside the template,
@@ -4689,7 +4689,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   when: every shipped build with furniture has its spots file (a check in `generate.py`: each spot's blocks are the
   blocks in the template there); a GameTest loads a build's spots and finds them where its chairs and tables are; a
   file with a mistake is logged with its path and skipped.
-- [ ] **37.3** **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
+- [x] **37.3** (approved auto 2026-10-17) **The furnishing table.** `data/aliveworkplace/furnishings/<mod>.json`: for each kind (by wood or colour
   where the mod has them), the modded block id, how its states map (facing, the second half of a two-block piece) and
   its footprint, read by a reload listener (through `Platform`). When a build is planned (`BuildPlan`), each spot
   becomes the piece of the first mod in `furnitureMods` whose block exists in the registry (a registry lookup by id,

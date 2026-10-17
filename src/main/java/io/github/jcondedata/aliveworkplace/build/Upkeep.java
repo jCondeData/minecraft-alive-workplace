@@ -105,7 +105,9 @@ public final class Upkeep {
 			if (io.github.jcondedata.aliveworkplace.threat.VillageFire.nearestFire(level, f.placement().origin(), 16).isPresent()) {
 				continue; // still burning (32.16): what burned goes back once the fire is out
 			}
-			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, f.structure());
+			io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = manager.furniture(f.placement());
+			// 37.3: what it was built with; a piece whose mod is gone was dropped, so its vanilla piece goes back
+			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, f.structure()).map(b -> furniture.apply(b, f.structure()));
 			if (blueprint.isEmpty()) {
 				continue;
 			}
@@ -125,6 +127,7 @@ public final class Upkeep {
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(f.owner());
 			BuildSite site = manager.create(f.owner(), owner != null ? owner.getGameProfile().getName() : "", f.structure(), f.placement());
 			site.setRepair();
+			site.setFurniture(furniture);
 			site.setBuilder(builder.getUUID());
 			site.setBench(bench);
 			ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(site.id()));

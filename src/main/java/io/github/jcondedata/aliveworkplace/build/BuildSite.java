@@ -194,6 +194,13 @@ public final class BuildSite {
 				status = Status.BLUEPRINT_MISSING;
 				return null;
 			}
+			if (furniture == null) {
+				// 37.3: chosen once, for a new build; a repair or a taking-down is of what stands, built with what it was
+				furniture = deconstruct || repair ? BuildSiteManager.get(level).furniture(placement)
+					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure);
+				onChange.run();
+			}
+			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));
 			int depth = foundation ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
 			int margin = levelGround ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
@@ -715,6 +722,25 @@ public final class BuildSite {
 	/** The scaffolding this site's builders have put up and not yet taken down ({@link Scaffolds}). Saved; empty by default. */
 	private final List<BlockPos> scaffolds = new ArrayList<>();
 
+	/**
+	 * Which modded furniture this build gets (37.3): null until its first plan chooses (a new site), then saved, so a
+	 * restart doesn't change a build in progress. A site saved before 37.3 loads with {@link FurnitureChoice#VANILLA}.
+	 */
+	@Nullable
+	private io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture;
+
+	/** The furniture chosen for this build (vanilla until chosen). */
+	public io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture() {
+		return furniture == null ? io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.VANILLA : furniture;
+	}
+
+	/** Sets the furniture (a repair keeps what its building was built with). */
+	public void setFurniture(io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice choice) {
+		this.furniture = choice;
+		plan = null;
+		onChange.run();
+	}
+
 	public List<BlockPos> scaffolds() {
 		return java.util.Collections.unmodifiableList(scaffolds);
 	}
@@ -793,6 +819,11 @@ public final class BuildSite {
 		if (!gaveUp.isEmpty()) {
 			tag.putLongArray("gave_up", gaveUp.stream().mapToLong(BlockPos::asLong).toArray());
 		}
+		if (furniture == null) {
+			tag.putBoolean("furniture_unchosen", true); // 37.3: a new site not yet planned chooses when it is
+		} else if (!furniture.isVanilla()) {
+			tag.put("furniture", furniture.save());
+		}
 		return tag;
 	}
 
@@ -838,6 +869,9 @@ public final class BuildSite {
 		for (long p : Nbt.getLongArray(tag, "gave_up")) { // B139: none in older saves
 			site.gaveUp.add(BlockPos.of(p));
 		}
+		// 37.3: older saves have neither, and build vanilla
+		site.furniture = Nbt.getBoolean(tag, "furniture_unchosen") ? null
+			: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.load(Nbt.getList(tag, "furniture", Tag.TAG_COMPOUND));
 		return site;
 	}
 

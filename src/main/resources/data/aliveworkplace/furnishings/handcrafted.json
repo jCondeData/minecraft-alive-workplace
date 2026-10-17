@@ -1,0 +1,26 @@
+{
+  "pieces": {
+    "chair": {"block": "handcrafted:{wood}_chair", "facing": "front", "states": {"color": "{colour}"}, "colour": "red"},
+    "bench": {"block": ["handcrafted:{wood}_dining_bench", "handcrafted:{wood}_bench"], "facing": "front", "states": {"color": "{colour}"}, "colour": "red"},
+    "couch": {"block": "handcrafted:{wood}_couch", "facing": "front", "states": {"color": "{colour}"}, "colour": "red"},
+    "table": {"block": "handcrafted:{wood}_table", "states": {"color": "{colour}"}, "colour": "white"},
+    "side_table": {"block": "handcrafted:{wood}_side_table", "facing": "front", "states": {"color": "{colour}"}, "colour": "white"},
+    "desk": {"block": "handcrafted:{wood}_desk", "facing": "front"},
+    "counter": {"block": "handcrafted:{wood}_counter", "facing": "front"},
+    "cupboard": {"block": "handcrafted:{wood}_cupboard", "facing": "front"},
+    "shelf": {"block": "handcrafted:{wood}_shelf", "facing": "front"},
+    "nightstand": {"block": "handcrafted:{wood}_nightstand", "facing": "front", "states": {"color": "{colour}"}, "colour": "white"},
+    "drawer": {"block": "handcrafted:{wood}_drawer", "facing": "front"},
+    "bed": {
+      "block": "handcrafted:{wood}_fancy_bed",
+      "facing": "front",
+      "states": {"color": "{colour}"},
+      "colour": "red",
+      "footprint": [
+        {"at": [0, 0, 0], "states": {"part": "foot"}},
+        {"at": [0, 0, 1], "states": {"part": "head"}}
+      ]
+    },
+    "crockery": {"block": ["handcrafted:{colour}_crockery_combo", "handcrafted:white_crockery_combo"], "facing": "front"}
+  }
+}

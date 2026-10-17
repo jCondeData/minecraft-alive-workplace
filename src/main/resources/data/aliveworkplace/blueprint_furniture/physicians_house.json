@@ -1,0 +1,6 @@
+{"spots": [
+  {"kind": "bed", "pos": [3, 1, 5], "facing": "west", "wood": "dark_oak", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=head]"}]},
+  {"kind": "bed", "pos": [9, 1, 5], "facing": "east", "wood": "dark_oak", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=east,occupied=false,part=foot]"}, {"at": [1, 0, 0], "state": "minecraft:white_bed[facing=east,occupied=false,part=head]"}]},
+  {"kind": "bed", "pos": [3, 1, 9], "facing": "west", "wood": "dark_oak", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:white_bed[facing=west,occupied=false,part=head]"}]},
+  {"kind": "bed", "pos": [9, 1, 9], "facing": "east", "wood": "dark_oak", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:white_bed[facing=east,occupied=false,part=foot]"}, {"at": [1, 0, 0], "state": "minecraft:white_bed[facing=east,occupied=false,part=head]"}]}
+]}

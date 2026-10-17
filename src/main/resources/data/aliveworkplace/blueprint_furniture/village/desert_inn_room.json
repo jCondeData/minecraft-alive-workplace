@@ -1,0 +1,6 @@
+{"spots": [
+  {"kind": "bed", "pos": [6, 1, 6], "facing": "south", "wood": "jungle", "colour": "yellow", "blocks": [{"at": [0, 0, 0], "state": "minecraft:yellow_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:yellow_bed[facing=south,occupied=false,part=head]"}]},
+  {"kind": "chair", "pos": [2, 6, 6], "facing": "east", "wood": "jungle", "blocks": [{"at": [0, 0, 0], "state": "minecraft:jungle_stairs[facing=west,half=bottom,shape=straight,waterlogged=false]"}]},
+  {"kind": "table", "pos": [3, 6, 6], "facing": "north", "wood": "jungle", "colour": "white", "blocks": [{"at": [0, 0, 0], "state": "minecraft:jungle_fence[east=false,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:white_carpet"}]},
+  {"kind": "chair", "pos": [4, 6, 6], "facing": "west", "wood": "jungle", "blocks": [{"at": [0, 0, 0], "state": "minecraft:jungle_stairs[facing=east,half=bottom,shape=straight,waterlogged=false]"}]}
+]}

@@ -169,6 +169,9 @@ range is in brackets.
 | `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`); one already finished keeps its blocks and powers. In the file only. |
 | `wonderCrew` | 12 (1 to 32) | 2.0 | The most builders on one Wonder's crew, its lead included; a Wonder's own file may allow fewer. See [Wonders](wonders.md). |
 | `wonderStanding` | 90 (50 to 100) | 2.0 | The share (%) of a finished Wonder that must still stand for its powers; under it the Wonder is damaged, its powers stop and the village's builders repair it. See [Wonders](wonders.md). |
+| `furnishedBuilds` | on from 2.1 | 2.1 | Builds use the furniture mods the server has (Handcrafted, Lucky's Cozy Home, CobbleFurnies, Beautify) for chairs, tables, beds, lamps and blinds. Off: every build is the vanilla build. See [Furniture and storage mods](furniture-and-storage.md). |
+| `furnitureMods` | handcrafted, cozyhome, cobblefurnies, beautify | 2.1 | The order the furniture mods are tried in for each piece; a mod that isn't installed is passed over, an empty list means vanilla. In the file only. |
+| `moddedStorageNetworks` | on from 2.1 | 2.1 | A Sophisticated Storage controller or a Tom's Simple Storage connector in the Storehouse counts as one store for everything it links. Off: each linked chest is its own store. |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |
 | `steward` | on | 1.1 | A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan. Off: no new Stewards, and those appointed stand idle. |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | 1.1 | The most builds a Steward may have open at once, whatever his level and the village's rank. |
@@ -239,7 +242,7 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 ## Known limits
 
 - The file is read at start-up: a change needs a restart (or the settings screen, in your own worlds).
-- Lists (`mythicLegendCap`, `disabledArcs`, `wonderCaps`, `disabledWonders`, `retrainPrices`) can only be edited in the file.
+- Lists (`mythicLegendCap`, `disabledArcs`, `wonderCaps`, `disabledWonders`, `furnitureMods`, `retrainPrices`) can only be edited in the file.
 - A dedicated server's settings don't follow a player's own file.
 - The build delay and the foundation depth have no upper limit; a build delay of 1 is the fastest.
 

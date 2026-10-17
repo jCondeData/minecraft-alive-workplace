@@ -144,6 +144,8 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.init();
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.init();
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
+		io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.init(); // ROADMAP 37.2: furniture spots
+		io.github.jcondedata.aliveworkplace.furnish.FurnishingTable.init(); // ROADMAP 37.3: the furniture mods' pieces
 		io.github.jcondedata.aliveworkplace.city.RoadStyles.init();
 		io.github.jcondedata.aliveworkplace.city.WallKits.init();
 		io.github.jcondedata.aliveworkplace.city.RenewalLists.init();

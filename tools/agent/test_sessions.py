@@ -351,12 +351,15 @@ def run(tmp):
 
     # Sprint mode: next splits the roadmap by number between lanes; done ticks in the working tree; pending
     # lists what waits on the owner and whether its package exists (the digest missed packageless items before).
-    lanes = {"a": 1, "b": 0, "c": 3, "d": 2}
-    for letter, slot in lanes.items():
+    # Lanes after 1.0 (owner, 2026-10-17): a takes the bugs (and M26), b M36, c and d M37 and up; this test
+    # roadmap has bugs and Milestones 21-23 only, so a gets bugs alone and the others get nothing.
+    r = S(C, "next --as lane-a-1003-2300")
+    ids = r.stdout.split()[::2]
+    check("next: the bug lane gets only bugs here", ids and all(i.startswith("B") for i in ids), r.stdout)
+    for letter in "bcd":
         r = S(C, f"next --as lane-{letter}-1003-2300")
-        ids = r.stdout.split()[::2]
-        check(f"next: lane {letter} gets only numbers that are {slot} mod 4",
-              all(int(re.match(r"B?(\d+)", i).group(1)) % 4 == slot for i in ids), r.stdout)
+        check(f"next: lane {letter} never gets a bug or an old milestone", "Nothing open for your lane" in r.stdout,
+              r.stdout)
     sh("git switch -q main 2>/dev/null; git pull -q", C)
     r = S(C, "done 23.1 --review")
     local = open(os.path.join(C, "ROADMAP.md")).read()

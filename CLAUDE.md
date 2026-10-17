@@ -4,8 +4,10 @@ Fabric mod for **Minecraft 1.21.1** (Mojang mappings, Java 21, Fabric API 0.116.
 flagship is the **Builder**, who builds blueprints. The owner (Jesse) doesn't write code. Sessions work
 autonomously from `ROADMAP.md`, keep `main` green, and explain results in plain language, with pictures.
 
-The goal (owner, 2026-10-03): the public **1.0**, then nine expansions up to **2.0**, all released by
-**2026-10-17** (ROADMAP.md). Speed comes from parallel lanes and lean checks, never from thinner content.
+The goal (owner, 2026-10-03): the public **1.0** with nine expansions up to **2.0** (all built by 2026-10-17). Next
+(owner, 2026-10-17): quick additions (Milestone 36), furnished homes and modded storage (2.1), Cobblemon depth (2.2)
+and Create integration (2.3, waiting on the owner's Create port jar). Speed comes from parallel lanes and lean checks,
+never from thinner content.
 
 ## Skills (use them; they hold the details this file leaves out)
 
@@ -18,23 +20,21 @@ The goal (owner, 2026-10-03): the public **1.0**, then nine expansions up to **2
 ## The session loop (sprint mode, owner 2026-10-03)
 
 Productivity first. The first chat built most of this mod in four days by building feature after feature straight on
-`main`; work the same way (`docs/agent/sessions.md`, "Sprint mode"). Sessions: the owner's chat (`chat`), build lanes
-a to d (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start; they split milestones and bugs by number mod 4, see
-`sessions.py next`), the QA lane (`qa-<MMDD>-<HHMM>`, hourly overnight and every 2 hours by day) and two digests a
-day. A lane coordinates and each
-feature is built by a fresh subagent (sessions.md), which keeps every conversation short and cheap.
+`main`; work the same way (`docs/agent/sessions.md`, "Sprint mode"). Sessions: the owner's chat (`chat`) and four build
+lanes (`lane-<letter>-<MMDD>-<HHMM>`, the UTC start), each with a job since 1.0 (owner, 2026-10-17): **a, the bug
+lane** (Bugs, Milestone 26's release checks, red duty always; the owner gives his bugs to this lane's chat),
+**b, the quick lane** (Milestone 36), **c and d, the big-update lanes** (Milestones 37 and up). `sessions.py next`
+gives each lane its own list. A lane coordinates and each feature is built by a fresh subagent (sessions.md), which
+keeps every conversation short and cheap.
 
 **Lanes start by hand** (owner, 2026-10-12: no scheduled routines on this account). **Read
 `docs/agent/handoff-1016.md` first** (2026-10-16): what the playtest chat built, rc.12, and the order to stop any
 scheduled Claude routines still running on any account. When the owner says "get
-started" or types `/get-started [a|b]`, run one lane as `.claude/commands/get-started.md` says: lane A covers
-shares a and c and holds red duty, lane B covers b and d.
+started" or types `/get-started <bugs|quick|big|c|d>`, run that lane as `.claude/commands/get-started.md` says.
 
 **Start** (one step, about five minutes): `git pull`, `python3 tools/agent/sessions.py next --as <you>`, the latest CI
-run on `main`, Java setup (below). **Red `main` has one owner per window** (owner, 2026-10-05: three lanes once fixed
-the same red build at once): the lane on red duty, by the run's UTC start hour, 00/12 lane a, 03/15 lane b, 06/18
-lane c, 09/21 lane d. That lane fixes it first (`sessions.py bug`, then a subagent); the others keep building
-(sessions.md, "Red main"). `sessions.py show <id>` prints an
+run on `main`, Java setup (below). **A red `main` is the bug lane's** (owner, 2026-10-17; sessions.md, "Red main"):
+it fixes it first (`sessions.py bug`, then a subagent); the other lanes keep building. `sessions.py show <id>` prints an
 item; don't read ROADMAP.md whole (it's over 4,000 lines).
 
 **Build, back to back:**
@@ -53,9 +53,8 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
    features, `./gradlew --max-workers=1 build` green, then push to `main`. Push refused: `git pull --no-rebase`, build
    again only if the pull brought in code, push. The commit message says what's done and what's next.
 6. Next item straight away. No claims, landings, handoff or bookkeeping commits.
-7. A bug that only a test or a showcase scene sees (a flake, a scene check, nothing a player would notice) is the
-   QA lane's: skip it in `next`, even when it turns `main` red, unless you are on red duty. On 2026-10-04, 16 of 47 bugs were of this kind and
-   they pulled build lanes off features (digest speed review).
+7. Bugs are the bug lane's: the quick and big-update lanes never take one, even when it turns `main` red (they file
+   it with `sessions.py bug` if nobody has). On 2026-10-04, 16 of 47 bugs pulled build lanes off features.
 
 **End of a run:** at **minute 140, start no new feature** (owner, 2026-10-05: unfinished runs left 5 items on `wip/`
 branches for the next run to merge). Finish the ones in flight, build, and push to `main` by minute 170, never past

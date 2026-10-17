@@ -546,37 +546,59 @@ def cmd_review(a):
     die("Couldn't push to the reviews branch; try again in a minute.")
 
 
-# Four build lanes split the roadmap by number, milestones and bugs alike (owner, 2026-10-04): the residue mod 4
-# each lane owns. Lane b keeps 28 and lane a 25, which they were building when the split went from 2 to 4.
-LANE_SLOTS = {"a": 1, "b": 0, "c": 3, "d": 2}
+# Lanes after 1.0 (owner, 2026-10-17): each lane has a job instead of a share of the numbers.
+#   a: the bug lane: every bug in "Bugs" plus Milestone 26's open items (release checks), and red duty always;
+#   b: the quick lane: Milestone 36's quick additions;
+#   c, d: the big-update lanes: Milestones 37 and up, each preferring its own milestone so the two don't collide,
+#         and taking the other's when its own is empty or blocked.
+# The owner hands bugs straight to the bug lane's chat, so b, c and d never take a bug.
+BUG_MILESTONES = (26,)
+QUICK_MILESTONES = (36,)
+BIG_ORDER = {"c": (37, 38, 39), "d": (38, 37, 39)}
 
 
-def lane_slot(who):
-    """The residue (number mod 4) a build lane owns; None for anyone else (the chat takes any item)."""
+def lane_of(who):
+    """The lane letter of a build lane ("lane-x-..."); None for anyone else (the chat takes any item)."""
     m = re.match(r"lane-([a-z])-", who or "")
-    return None if not m else LANE_SLOTS.get(m.group(1))
+    return m.group(1) if m else None
 
 
 def item_number(it):
     return int(re.match(r"B?(\d+)", it["id"]).group(1))
 
 
+def milestone_of(it):
+    m = re.match(r"M(\d+)$", it["area"] or "")
+    return int(m.group(1)) if m else None
+
+
 def next_items(items, who, held_by_others=()):
-    """The open items for this session, best first: bugs (urgent ones first), then owner changes and vetoes, then milestones in order."""
-    slot = lane_slot(who)
+    """The open items for this session, best first."""
+    lane = lane_of(who)
 
     def mine(it):
-        return slot is None or item_number(it) % 4 == slot
+        if lane is None:
+            return True
+        if lane == "a":
+            return it["area"] == "Bugs" or milestone_of(it) in BUG_MILESTONES
+        if lane == "b":
+            return milestone_of(it) in QUICK_MILESTONES
+        if lane in BIG_ORDER:
+            return milestone_of(it) in BIG_ORDER[lane]
+        return False
 
     open_items = [it for it in items if not it["done"] and not mark(it, "blocked") and it["id"] not in held_by_others
                   and mine(it)]
+
     def rank(it):
         if it["area"] == "Bugs":
-            # "(urgent: <who, why>)" puts a bug at the top of its lane's list (owner's calls).
+            # "(urgent: <who, why>)" puts a bug at the top of the list (owner's calls).
             return (0, 0 if mark(it, "urgent") else 1, item_number(it), it["line"])
+        ms = milestone_of(it) or 0
+        pref = BIG_ORDER[lane].index(ms) if lane in BIG_ORDER and ms in BIG_ORDER[lane] else 0
         if mark(it, "vetoed") or re.search(r"[a-z]$", it["id"]):
-            return (1, int(it["area"][1:]), it["line"])
-        return (2, int(it["area"][1:]), it["line"])
+            return (1, pref, ms, it["line"])
+        return (2, pref, ms, it["line"])
     return sorted(open_items, key=rank)
 
 
@@ -600,7 +622,7 @@ def cmd_next(a):
     held = {c["id"] for c in claims(items) if c["live"] and c["who"] != a.as_}
     todo = next_items(items, a.as_, held)
     if not todo:
-        print("Nothing open for you: help the QA list (Milestone 22) or the other lane's oldest milestone.")
+        print("Nothing open for your lane. Bug lane: run the QA checks (minecraft-mod-tester). Quick lane: ask the owner for more quick additions. Big lanes: the next milestone waits on the owner (or its blocker).")
         return
     for it in todo[:a.count]:
         print(f"{it['id']:7} {it['area']}")

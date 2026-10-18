@@ -189,6 +189,10 @@ final class RealmResearchScene {
 				RealmResearch.get("common_coin").map(t -> t.points() * 2 / 5).orElse(0), true);
 			data.putStudy(data.study(realm.id()).withResearch(realmState));
 		}
+		// The halls' records filed now: the scholar's screen opens this tick and finds its village by the nearest hall (B128).
+		ScreenshotHarness.fileRecords(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+		ScreenshotHarness.fileRecords(level, ashford, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		scholar = scholarAt(level, hall.offset(-2, 0, 2));
 		ashfordScholar = scholarAt(level, ashford.offset(-2, 0, 2));
 	}

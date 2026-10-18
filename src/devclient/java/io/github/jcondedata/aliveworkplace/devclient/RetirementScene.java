@@ -99,7 +99,8 @@ final class RetirementScene {
 					"two days on Bram is retired, and keeps his trades for players");
 				Showcase.check(tom.getVillagerData().getProfession() == VillagerProfession.FARMER && tom.getVillagerData().getLevel() == 3
 					&& tom.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(g -> g.pos().equals(COMPOSTER)).isPresent(),
-					"Tom took Bram's composter and the job one level below his: " + tom.getVillagerData());
+					"Tom took Bram's composter and the job one level below his: " + tom.getVillagerData().getProfession() + " level "
+						+ tom.getVillagerData().getLevel() + ", job site " + tom.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none"));
 				VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
 				List<String> chronicle = hall.chronicle().stream().map(e -> e.text().getString()).toList();
 				Showcase.check(chronicle.stream().anyMatch(l -> l.startsWith("Bram retired from the Farmer trade"))
@@ -146,7 +147,14 @@ final class RetirementScene {
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
 		hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+		// Settled: a hall's first round seeds the classes and starts a week of settling in, when nobody starts retiring
+		// (34.22), so the round at tick 60 never picked Tom (B128). The scene's village is one that settled long ago.
+		hall.setClasses(io.github.jcondedata.aliveworkplace.people.ClassMigration.VERSION, 0);
 		level.setBlockAndUpdate(COMPOSTER, Blocks.COMPOSTER.defaultBlockState());
+		// The hall's and the composter's records filed now, before Bram is employed: unfiled, his claim on the composter
+		// was never taken, so the hall's round gave it to jobless Tom and nobody was left to take over from Bram (B128).
+		ScreenshotHarness.fileRecords(level, HALL, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		long today = Chronicle.day(level);
 		bram = villager(level, "Bram", -1.5, VillagerProfession.NONE);
 		Jobs.employ(level, bram, COMPOSTER, PoiTypes.FARMER, VillagerProfession.FARMER);

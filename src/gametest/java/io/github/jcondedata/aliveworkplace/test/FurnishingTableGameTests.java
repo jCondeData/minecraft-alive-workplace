@@ -176,4 +176,39 @@ public class FurnishingTableGameTests implements FabricGameTest {
 		helper.assertTrue(choice.apply(vanilla, COTTAGE) == vanilla, "the vanilla blueprint was changed");
 		helper.succeed();
 	}
+
+	/**
+	 * B166: a bed spot only takes a piece a villager can claim and sleep in (a bed whose head is a HOME point of
+	 * interest). A table whose "bed" is planks is passed over for the next mod's real bed, and alone it leaves the vanilla bed.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aBedSpotOnlyTakesABedVillagersSleepIn(GameTestHelper helper) {
+		List<FurnitureSpot> spots = BlueprintFurniture.of(COTTAGE);
+		List<Integer> beds = new java.util.ArrayList<>();
+		for (int i = 0; i < spots.size(); i++) {
+			if (spots.get(i).kind() == FurnitureSpot.Kind.BED) {
+				beds.add(i);
+			}
+		}
+		helper.assertTrue(!beds.isEmpty(), "the cottage has no bed spot");
+		FurnitureChoice planks = FurnitureChoice.choose(spots, List.of("aliveworkplace_test_plank_bed"), true);
+		for (int i : beds) {
+			helper.assertTrue(!planks.spots().containsKey(i), "a bed spot became planks: " + planks.spots().get(i));
+		}
+		FurnitureChoice next = FurnitureChoice.choose(spots, List.of("aliveworkplace_test_plank_bed", "aliveworkplace_test_beds"), true);
+		for (int i : beds) {
+			FurnitureChoice.Placed placed = next.spots().get(i);
+			helper.assertTrue(placed != null && placed.mod().equals("aliveworkplace_test_beds"), "a bed spot didn't take the next mod's bed: " + placed);
+			helper.assertTrue(FurnitureChoice.sleepable(placed.cells()), "the vanilla bed piece isn't sleepable");
+		}
+		// A saved choice whose bed isn't one (a mod's bed swapped for a block that isn't) loads without it: the vanilla bed is built
+		BlockPos bedPos = spots.get(beds.get(0)).pos();
+		FurnitureChoice planked = new FurnitureChoice(Map.of(beds.get(0), new FurnitureChoice.Placed(bedPos, FurnitureSpot.Kind.BED, "x",
+			Map.of(BlockPos.ZERO, Blocks.OAK_PLANKS.defaultBlockState()))));
+		helper.assertTrue(FurnitureChoice.load(planked.save()).isVanilla(), "a saved bed that isn't a bed was kept");
+		helper.assertTrue(!FurnitureChoice.sleepable(Map.of(BlockPos.ZERO, Blocks.RED_BED.defaultBlockState())),
+			"a bed's foot alone counted as sleepable");
+		helper.succeed();
+	}
 }

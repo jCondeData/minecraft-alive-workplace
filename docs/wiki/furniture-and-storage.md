@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12
 
 ## 1. What a player sees
 
@@ -110,6 +110,23 @@ switch off, the Spruce style is plain spruce (and isn't offered with the switch 
 Carved Wood's chests and barrels of every wood are supply chests, porters' chests and Storehouse chests (they are
 vanilla chests and barrels underneath).
 
+**Two build libraries** (37.12). Every blueprint as it ships is the **vanilla library**, never changed. The **modded
+library** is a copy of every home and workshop (130 builds: every tier of the homes, workshops, job builds and the
+Cobblemon workplaces; decorations, walls, the arenas and the Create builds have none, and the open-air Habitat Garden
+has nothing to dress) with the same shape, doors, beds, job blocks and furniture spots, dressed with the pack's
+building mods: the plaster and the birch infill of the timber frames are Supplementaries daub, with a brace in a
+panel's bottom corner beside a post; covered wooden floors are Chipped herringbone boards of the same wood; polished
+andesite is Rechiseled andesite tiles and covered cobblestone floors Rechiseled cobblestone brick paving; chests,
+bookshelves and ladders are Carved Wood's in the build's own wood; and Handcrafted puts crockery on every table, stacks
+of books on shelves in the rooms and pots beside barrels. The furniture spots are still furnished from the furniture
+mods as above, so a modded cottage has Handcrafted chairs and beds too. A new build is built from the modded library
+when `moddedLibrary` and `furnishedBuilds` are on and every block of its copy is installed (so the pack uses it); if any
+of those mods is missing, or a switch is off, it is the vanilla build, furnished as before. The choice is made when the
+build is planned and saved with it, so a config change or a removed mod never changes a build going up or standing
+(a copy whose blocks are gone later is built as the vanilla build). The Blueprint Table, the preview and the materials
+list show the library this server would build. Job blocks (lecterns, barrels, beehives, crafting tables) and doors are
+never swapped, and nothing a copy adds holds items, so every job finds exactly the storage of the vanilla build.
+
 ## 2. How it works
 
 Each piece of furniture our builds draw in vanilla blocks becomes a furniture spot (its kind, facing, wood or colour
@@ -202,16 +219,19 @@ needs a wooden one).
 | `furnishedBuilds` | on from 2.1 | Builds use the installed furniture mods. Off: every build is the vanilla build |
 | `furnitureMods` | handcrafted, cozyhome, cobblefurnies, beautify | The order mods are tried in for each piece (file only); trimmed and lower-cased, blanks and repeats dropped, an empty list means vanilla |
 | `moddedStorageNetworks` | on from 2.1 | Controllers and connectors in the Storehouse count as one store. Off: each linked chest is its own store |
+| `moddedLibrary` | on from 2.1 | Homes and workshops are built from the modded library when all its mods are installed and `furnishedBuilds` is on (37.12). Off: the vanilla library |
 
-With M37's gate closed (every release before 2.1) a config file can't turn `furnishedBuilds` or
-`moddedStorageNetworks` on, and the settings screen doesn't list them.
+With M37's gate closed (every release before 2.1) a config file can't turn `furnishedBuilds`, `moddedStorageNetworks`
+or `moddedLibrary` on, and the settings screen doesn't list them.
 
 ## 4. Saved data
 
 On each build site (`BuildSite.save`): `furniture`, the chosen pieces (per spot: its index, position and kind, the
 mod, and each cell's block state), and `furniture_unchosen` on a new site not yet planned. On each finished building
 (`BuildSiteManager`): `furniture`, the same. Absent, as in every save from before 37.3: vanilla. Spots and tables are
-data files, not saved.
+data files, not saved. 37.12: a build from the modded library has `{"library": "modded"}` in its `furniture` list (on
+the site and on the finished building); absent: the vanilla library. A version before 37.12 reads that entry as
+nothing (it has no kind), so the save still loads.
 
 ## 5. Items, blocks, jobs, commands
 
@@ -226,6 +246,16 @@ every entry `"required": false`. Entity `aliveworkplace:furniture_seat` (37.6): 
 rides, which can't be summoned.
 
 ## 6. Decisions
+
+- 37.12: the modded copies are drawn by `tools/blueprints/modded_library.py` from the shipped vanilla templates (one
+  pass over every home and workshop, by position, no randomness), written to `data/aliveworkplace/structure/modded/`,
+  and read by `blueprint/ModdedLibrary` (a reload listener that keeps each file packed and its block ids). A copy keeps
+  its vanilla build's id, spots, upgrades and basement, so nothing else in the mod (upgrades, the Steward's rules,
+  homes, jobs) needs to know which library a building came from; the choice rides on the saved furniture choice.
+  The copies aren't in the Blueprint Table as builds of their own (`modded/` is left out of the library list).
+- 37.12: no Supplementaries doormats: a doormat holds items, so the Library's and the Print Shop's jobs counted it as a
+  chest (the furnished-workplace compat tests caught it). `moddedLibrary` only acts with `furnishedBuilds` on, so
+  turning furnished builds off still gives the plain vanilla build everywhere, as the design note says.
 
 - Support goes by block and item ids, tags and data files only, never the mods' classes, so it is all core code with
   no `compat/` package; a piece is used when the registry has its id (ROADMAP Milestone 37).
@@ -371,3 +401,16 @@ the board's line and Tom's terminal screen.
 gate open and runs `/workplace furnished` at full speed. `tools/packtest/furnished.py` passes it only when the Starter
 Cottage and the Inn both finish with 0 skipped, 0 blocks not as planned, every furniture piece standing, the order in
 effect starting with Cozy Home, and Cozy Home pieces in each (its verdict's own tests: `python3 tools/packtest/test_furnished.py`).
+37.12 (no mods): `ModdedLibraryGameTests.everyHomeAndWorkshopHasAModdedCopy`,
+`ModdedLibraryGameTests.withoutTheModsEveryBuildIsTheVanillaBuild` (every home and workshop exactly its vanilla build,
+the cottage planned with vanilla blocks only), `ModdedLibraryGameTests.theModdedChoiceIsSavedAndRead`,
+`ModdedLibraryGameTests.theCopiesAreNotBlueprintsOfTheirOwn`, `ModdedLibraryGameTests.theSwitchIsReadFromTheConfig`; with
+the mods (compat): `ModdedLibraryCompatTests.everyModdedCopyCanBeBuiltWithThePacksMods` (every block of every copy is a
+real block with the pack's mods, the same size and shape as its vanilla build, its doors, beds, job blocks and furniture
+spots unchanged, and nothing added that holds items), `ModdedLibraryCompatTests.theStarterCottageIsBuiltFromTheModdedLibrary`,
+`ModdedLibraryCompatTests.switchedOffItIsTheVanillaLibrary`, `ModdedLibraryCompatTests.aSavedSiteKeepsItsLibrary`; the
+furnished-workplace compat tests above now build the modded Supply Shop, Library and Print Shop (the modded library is
+the default with the mods), each with nothing skipped and exactly the vanilla build's storage. Showcase scene
+`modded_library` (`-Pfurniture=true`, which now brings Chipped and Supplementaries too): the Starter Cottage II from
+both libraries side by side, and the modded Inn II. Renders of the copies: `tools/blueprints/modded_library.py --out
+<dir> <name>`, then the Minecraft Architect skill's `render.mjs` with the mods' textures added (`mods.mjs add --jar`).

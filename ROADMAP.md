@@ -4810,7 +4810,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   test passes with those checks in its log summary; the wiki page and guide section are on `main` and `wikicheck.py`
   passes.
 
-- [ ] **37.12** **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
+- [x] **37.12** (review: pending 2026-10-18) **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
   vanilla library, unchanged (for players who use the mod in plain vanilla later). Make a second, modded library: a
   copy of each home and workshop beautified with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted
   blocks (used freely: detail blocks, furniture, decor), under its own ids, with the vanilla build as its fallback
@@ -5091,6 +5091,19 @@ the owner's port jar; M33's caravans (39.7).
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-18 (37.12, lane-c-1018-1553, decisions; details in `docs/wiki/furniture-and-storage.md`, "Two build
+  libraries" and "Decisions"): (1) "every home and workshop" is every top-level blueprint but the decorations, walls,
+  arenas, Mega Shrine and Create/train builds: 130 copies (the open-air Habitat Garden has nothing to dress, so it has
+  none and is the same in both libraries); (2) a copy keeps its vanilla build's id, shape, doors, beds, job blocks and
+  furniture spots, so the furniture mods still furnish it and nothing else needs to know the library; the choice rides
+  on the saved furniture choice (`{"library": "modded"}`); (3) `moddedLibrary` only acts with `furnishedBuilds` on (off
+  stays the plain vanilla build everywhere, as the design note says), and "mods installed" means every block id of the
+  copy is in the registry; (4) no Supplementaries doormats (they hold items, so jobs counted them as chests), no Carved
+  Wood job blocks (lecterns, beehives, crafting tables) and no pots on farmland; (5) `-Pfurniture=true` now also brings
+  Chipped, Supplementaries and Moonlight for the `modded_library` scene; (6) PokemonBuildsCompatTests' Habitat Garden II
+  check expects the herringbone floor when the modded library builds it. Owner to judge: the look of the copies (scene
+  `modded_library`); a deeper pass per style (Rechiseled wall panels, more Supplementaries decor) can follow.
 
 - 2026-10-18 (39.5, lane-e-1018-0713, decisions; details in `docs/wiki/create.md`, "Contraptions" and "Decisions"):
   (1) the switch is `createBuilds` (the design note gives it 39.5 too); the order is chosen when a site is made and

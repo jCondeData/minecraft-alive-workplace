@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Two build libraries, vanilla and modded** (2.1, behind its gate). Every build as it ships stays the vanilla
+  library. With Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted installed, all 130 homes and workshops
+  are built from the modded library instead: daub walls with braces, herringbone floors, Carved Wood chests and shelves
+  in the house's wood, crockery on the tables and books on the shelves, with the furniture mods' chairs and beds as
+  before. A missing mod gives the vanilla build; a building keeps the library it was planned with. New setting
+  **Modded Build Library** (`moddedLibrary`, on).
 - **Cellars for eight Level IIs, and for old builds.** The Inn, Winery, Farmstead, Guildhall, Barracks, Research Lab,
   Jeweler's Workshop and Artisan's House get a Level III: their Level II with a furnished, lit cellar dug under it (an ale
   and wine cellar, a barrel vault, a root cellar, a strongroom, an armoury, a lower lab, a vault, a storeroom), down a

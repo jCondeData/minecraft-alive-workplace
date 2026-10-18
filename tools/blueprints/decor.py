@@ -322,7 +322,7 @@ def chapel():
     for z in (7, 9, 11):
         for x in (3, 4, 6, 7):
             stairs(b, x, 1, z, DARK_OAK, "south")
-    for z in range(6, 14):
+    for z in range(7, 14):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(5, 1, z, "red_carpet")
     for x in range(3, 8):
         b.set(x, 1, 13, "polished_andesite" if x != 5 else "chiseled_stone_bricks")

@@ -20,7 +20,7 @@ logs out of place):
 - II, 19 x 13 x 13: a meeting room grows out of the east wall (x 11-17, z 4-10, two blocks shallower, so its ridge sits
   a block lower), framed the same way (posts at x 14 and 17, z 7), its 2 x 2 windows in the same bays front and back
   and on the east, on the same skirted plinth. The hall's middle side bay opens as the doorway between them; its side
-  windows are walled up. Inside: a council table with eight seats, low bookshelves under the back windows.
+  windows are walled up. Inside: a council table with seven seats, low bookshelves under the back windows.
 - III, 24 x 24 x 13: a stone bell-and-clock tower (x 18-22, z 5-9) at the end of the meeting room: quoined corners on
   a stepped stone footing, a door to the street between two lamp posts, a clock face on the front and the east, a
   cornice, an open belfry with the great bell, a steep hipped deepslate cap. Banners on its front.
@@ -62,7 +62,7 @@ def hall_body(b):
         window(b, x + 1, 2, 11, "south", width=2, height=2, sill=TRIM)  # runs west from x + 1
     # Inside: the Village Hall at the head of a red runner, banners behind it, benches facing it
     b.set(*HALL_POS, "aliveworkplace:village_hall", facing="north")
-    for z in range(4, 10):
+    for z in range(5, 10):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(6, 1, z, "red_carpet")
     for x in (4, 8):
         b.set(x, 3, 10, f"{BANNER}_wall_banner", facing="north")
@@ -168,24 +168,24 @@ def meeting_room(b):
     window(b, 17, 2, 8, "east", width=2, height=2, sill=TRIM)
     for x in (13, 16):
         window(b, x, 2, 10, "south", width=2, height=2, sill=TRIM)  # runs west from x
-    # The council table with eight seats, low bookshelves under the back windows, lights on a tie beam
+    # The council table with seven seats, low bookshelves under the back windows, lights on a tie beam
     for x in (13, 14, 15):
         slab(b, x, 1, 7, TRIM, top=True)
         stairs(b, x, 1, 6, TRIM, "north")
         stairs(b, x, 1, 8, TRIM, "south")
-    stairs(b, 12, 1, 7, TRIM, "west")
     stairs(b, 16, 1, 7, TRIM, "east")
     for x in (12, 13, 15, 16):
         b.set(x, 1, 9, "bookshelf")
     b.set(13, 2, 9, "potted_azure_bluet")
     b.set(15, 2, 9, "potted_oxeye_daisy")
     b.set(16, 3, 7, f"{BANNER}_wall_banner", facing="west")
-    # Furnished (37.5): the council table and its eight chairs
+    # Furnished (37.5): the council table and its seven chairs. None at the doorway's end, and the hall's bench stops a
+    # seat short of it (B173): a seat right inside a doorway two blocks high is a step a villager can't take under it.
+    b.set(10, 1, 7, "air")
     for x in (13, 14, 15):
         furnish(b, "table", x, 1, 7, "north", wood="spruce")
         furnish(b, "chair", x, 1, 6, "south", wood="spruce")
         furnish(b, "chair", x, 1, 8, "north", wood="spruce")
-    furnish(b, "chair", 12, 1, 7, "east", wood="spruce")
     furnish(b, "chair", 16, 1, 7, "west", wood="spruce")
     for x in range(12, 17):
         log(b, x, 5, 7, FRAME, axis="x")

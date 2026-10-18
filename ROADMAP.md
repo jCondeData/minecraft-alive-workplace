@@ -4664,7 +4664,7 @@ Depends on: nothing open.
   there. Done when: a GameTest walks every blueprint the table lists and finds its description key in `en_us.json`;
   every description is checked against the build (who works there comes from the job blocks it holds);
   `langcheck.py` passes; the `table` scene's stills show a description.
-  - [ ] **36.6a** Change from the owner (2026-10-18): delete the description lines. The Table shows only what jobs a build brings and its beds, in this format: 'Jobs: Fisherman (1), Butcher/Chef (3)' (a slash means a shared job block, the number is how many of that job block are in the build), plus 'Beds: N' when the build has beds.
+  - [x] **36.6a** (review: pending 2026-10-18) Change from the owner (2026-10-18): delete the description lines. The Table shows only what jobs a build brings and its beds, in this format: 'Jobs: Fisherman (1), Butcher/Chef (3)' (a slash means a shared job block, the number is how many of that job block are in the build), plus 'Beds: N' when the build has beds.
 - [x] **36.7** (approved 2026-10-18) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
   Level II. Eight of them, where a cellar suits the trade, get a Level III that is their Level II with a basement
   under it, named `<name>_3` because upgrades go by name (`BlueprintUpgrades`), drawn in `tools/blueprints/` and
@@ -4691,7 +4691,7 @@ Depends on: nothing open.
   mean and lowest; our houses per village) is in the Notes with the commands that made it; any tuning lands with
   `VillageGameTests` passing and the `village` scene still showing our houses.
 
-- [ ] **36.9** **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
+- [x] **36.9** (review: pending 2026-10-18) **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
   job block is awkward because the villager must walk into a finished home to stand near the block). Done when: the
   Village Hall has a "Free job blocks" page listing every job block in the village with no villager on it (its job,
   the build it's in, the distance; e.g. a Storehouse block), and for each, the villagers without a job; picking one
@@ -5103,6 +5103,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-e-1018-2212, question for the owner): Milestone 39 (Create, 2.3) is built: 39.1-39.7c are ticked (39.6-39.7c waiting on review, 39.7b with a needs-owner-check), no `(lane: e)` bug is open, and `sessions.py next` lists nothing for lanes c, d or e (M37 and M38 are done too). The big-update lanes idle until the owner names the next big milestone (2.4?) or says to turn them to other work; `wip/lane-e` is fully merged into main and can be deleted (deleting it from this session was refused).
 - 2026-10-18 (38.11, lane-d-1018-1608, decisions): (1) the Chef cooks the Campfire Pot recipes at his Kitchen Stove
   like his other dishes (Crafting's KITCHEN kind already planned pot recipes; only the menu was a fixed list), so no pot
   block at his station; (2) no new setting: they ride the `cuisineDishes` switch (behind M38's gate), whose tooltip

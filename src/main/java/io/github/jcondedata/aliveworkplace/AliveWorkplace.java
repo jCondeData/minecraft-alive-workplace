@@ -116,6 +116,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.wonder.WonderStages.init(); // a Wonder's stages, one after another (35.4)
 		io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.init(); // a finished Wonder's daily count and repairs (35.8)
 		io.github.jcondedata.aliveworkplace.wonder.WondersPage.init(); // the hall's Wonders page (35.3)
+		io.github.jcondedata.aliveworkplace.hall.FreeJobsPage.init(); // the hall's Free job blocks page (36.9)
 		io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.init(); // the Lighthouse's powers (35.12)
 		io.github.jcondedata.aliveworkplace.wonder.LibraryPowers.init(); // the Great Library's second research tier (35.14)
 		io.github.jcondedata.aliveworkplace.wonder.ColossusPlaque.init(); // the Colossus's plaque, filled in when finished (35.22)

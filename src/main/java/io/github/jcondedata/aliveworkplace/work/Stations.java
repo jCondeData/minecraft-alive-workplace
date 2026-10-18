@@ -507,7 +507,11 @@ public final class Stations {
 	 * the Vintner {@code vintners}...), and the Pokémon jobs need Cobblemon. A workstation's tooltip names only these.
 	 */
 	public static boolean available(Job job) {
-		VillagerProfession profession = job.profession().get();
+		return available(job.profession().get());
+	}
+
+	/** Whether {@code profession} can be had in this game (as {@link #available(Job)}; the Table's job line, 36.6a). */
+	public static boolean available(VillagerProfession profession) {
 		if (profession == ModVillagers.PHYSICIAN && (!PhysicianWork.ENABLED || !io.github.jcondedata.aliveworkplace.threat.Disasters.live())) {
 			return false; // config physicians off (or disasters closed): the brewing stand's tooltip leaves the Physician out
 		}

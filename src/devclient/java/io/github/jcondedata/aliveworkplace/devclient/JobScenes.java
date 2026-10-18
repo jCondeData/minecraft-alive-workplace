@@ -4025,6 +4025,60 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// Free job blocks (ROADMAP 36.9): the hall's page lists a Storehouse nobody works at in a finished Storehouse and a
+		// bench in the open, with the distance and who could take each; the Storehouse's page lists Dara and Odo, and picking
+		// Dara makes her the Porter, who walks over.
+		SCREENS.put("hall_jobs", new Screen("the hall's Free job blocks page listed the empty Storehouse (in the Storehouse, its distance, two villagers who could take it) and a bench; "
+			+ "Dara was picked from the Storehouse's page and became the Porter",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos store = new BlockPos(-4, -60, -3);
+				place(level, store, ModBlocks.STOREHOUSE);
+				place(level, new BlockPos(4, -60, -3), ModBlocks.BUILDERS_BENCH);
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STOREHOUSE.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-12, -60, -7),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				classPeople.clear();
+				String[] names = {"Dara", "Odo"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = EntityType.VILLAGER.create(level);
+					v.moveTo(-2.5 + i * 4, -60, 3.5, 180, 0);
+					v.setNoAi(true); // jobless villagers would take a free block on their own before the camera sees it
+					v.setCustomName(Component.literal(names[i]));
+					v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.NONE));
+					level.addFreshEntity(v);
+					classPeople.add(v);
+				}
+			},
+			List.of(new Step("01_free_jobs", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.FreeJobsPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(ModBlocks.STOREHOUSE.asItem()),
+							"the empty Storehouse first on the page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_who_takes_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString().startsWith("Odo"),
+							"Dara and Odo could take it: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString());
+					}
+				}, 40),
+				new Step("03_dara_porter", -1, 0, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+					}
+					player.closeContainer();
+					Villager dara = classPeople.get(0);
+					Showcase.check(dara.getVillagerData().getProfession() == ModVillagers.PORTER, "Dara is the Porter: " + dara.getVillagerData().getProfession());
+					dara.setNoAi(false); // and walks to her Storehouse
+				}, 60)),
+			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
+				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

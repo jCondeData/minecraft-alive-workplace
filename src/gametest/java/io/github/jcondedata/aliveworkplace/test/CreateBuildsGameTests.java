@@ -42,7 +42,7 @@ public class CreateBuildsGameTests implements FabricGameTest {
 			helper.assertTrue(BlueprintLibrary.list(helper.getLevel().getServer(), true).contains(entry.id()), entry.id() + " doesn't load by id");
 			helper.assertTrue("createBuilds".equals(StarterBlueprints.expansionSwitch(entry.id())), entry.id() + " isn't behind createBuilds");
 			String path = entry.id().getPath();
-			helper.assertTrue(en.has("blueprint.aliveworkplace." + path) && en.has("blueprint_desc.aliveworkplace." + path), path + "'s text is missing");
+			helper.assertTrue(en.has("blueprint.aliveworkplace." + path), path + "'s text is missing");
 		}
 		helper.assertTrue(CreateBuilds.listed(StarterBlueprints.WELL.id()) && listed.contains(StarterBlueprints.WELL.id()),
 			"a build of no mod is hidden");

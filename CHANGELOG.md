@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Fill empty job blocks from the Village Hall** (36.9). The hall's new Free job blocks tab lists every job block in
+  the village nobody works at (its job, the building it's in, how far away) and the villagers without a job who could
+  take each; pick one and they claim the block and walk over. A block taken meanwhile is refused cleanly. Paid
+  retraining of a working villager at the block stays as it was. The scene `hall_jobs` shows it.
 - **The Chef cooks every Campfire Pot recipe** (2.2, with Cobblemon): the EXP and IV/EV candies, medicines, sweets and
   any pot recipe a mod or data pack adds, found by recipe type, only from makings in the store, 16 kept by his stove.
 - **Real Create trains between villages.** With Create, two villages joined by rail now put their own Create train
@@ -48,9 +52,9 @@ asks for the steps, `latest.log` and any crash report).
   ladder under a hatch, everything above kept. A Smithy, Storehouse or Kitchen finished before it had its cellar is
   offered **Dig the cellar** by the village's builders (and the Village Hall's advice): its builder digs and fits out
   only the cellar.
-- **A line about every blueprint.** The Blueprint Table now says what each build is and who works or lives there,
-  wrapped under its size ("A shore hut with a jetty on log posts out over the water; a Fisherman works at its
-  barrel."), and what each level adds. All 170 builds the table lists have one; imported builds show none.
+- **The Blueprint Table says what a build brings** (36.6, 36.6a). Under a build's size: "Jobs: Fisherman (1),
+  Butcher/Chef/Rancher (3)" (a slash means jobs that share a job block, the number how many of that block the build
+  has) and "Beds: N" when it has beds. Uploaded and imported builds get the lines too, from their own blocks.
 - **Furnished homes and modded storage (2.1), begun.** The plan (`docs/design/M37.md`) and its three settings,
   `furnishedBuilds`, `furnitureMods` and `moddedStorageNetworks`, which stay off until 2.1 is finished (37.1), and a furniture spots file beside each of 223 blueprints marking
   where its chairs, tables and beds are, for the furniture mods to fill in later (37.2). Behind the same gate, a build started with Handcrafted, Cozy Home,

@@ -4616,7 +4616,7 @@ Depends on: nothing open.
   (`EMPTY_STRUCTURE`) if the gametest sources can see it, else by the scene's own check; scene `hall_reading` hovers a
   long chronicle entry, moves into the pane and scrolls to its last line, and the Storehouse board does the same;
   every number and action the screens show today is still there.
-- [ ] **36.6** **A line about every blueprint.** The Blueprint Table's detail pane shows a build's name, size and id,
+- [x] **36.6** (review: pending 2026-10-18) **A line about every blueprint.** The Blueprint Table's detail pane shows a build's name, size and id,
   never what it is (157 `blueprint.aliveworkplace.*` names in `en_us.json` today). Add
   `blueprint_desc.<namespace>.<path>` for every blueprint the table lists, styles and levels included: one plain
   sentence under 110 characters saying what it is and who works or lives there ("A stone smithy with a forge and an

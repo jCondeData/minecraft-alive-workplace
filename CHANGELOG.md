@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A line about every blueprint.** The Blueprint Table now says what each build is and who works or lives there,
+  wrapped under its size ("A shore hut with a jetty on log posts out over the water; a Fisherman works at its
+  barrel."), and what each level adds. All 170 builds the table lists have one; imported builds show none.
 - **Furnished homes and modded storage (2.1), begun.** The plan (`docs/design/M37.md`) and its three settings,
   `furnishedBuilds`, `furnitureMods` and `moddedStorageNetworks`, which stay off until 2.1 is finished (37.1), and a furniture spots file beside each of 223 blueprints marking
   where its chairs, tables and beds are, for the furniture mods to fill in later (37.2). Behind the same gate, a build started with Handcrafted, Cozy Home,

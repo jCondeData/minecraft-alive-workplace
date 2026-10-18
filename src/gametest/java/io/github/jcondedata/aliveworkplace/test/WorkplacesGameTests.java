@@ -297,7 +297,15 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	private static final BlockPos[] CHESTS = {new BlockPos(3, 2, 6), new BlockPos(3, 2, 8), new BlockPos(3, 2, 10)};
 	private static final BlockPos BUILDER = new BlockPos(5, 2, 3);
 	private static final BlockPos HOUSE = new BlockPos(12, 2, 10);
-	private static final BlockPos WORKER = new BlockPos(16, 2, 25);
+	/**
+	 * Where the worker waits: in front of the house (a blueprint's front, with its door, is its z=0 side), off the
+	 * builder's way from the chests, so it walks in by the front door as a villager of the village would. B170: from
+	 * behind the house (16, 2, 25) it wandered round for 1,500 ticks and more and mostly came in by a side of the Leaders'
+	 * Hall's double door, so the hall's real fault showed once in 40 runs; from here it walks straight up the carpet and
+	 * failed 38 of 40 runs before the fix (a carpet just inside a doorway two blocks high: a villager is 1.95 tall, and
+	 * stepping up onto it under the lintel it hit its head, so it stood in the doorway for good).
+	 */
+	private static final BlockPos WORKER = new BlockPos(18, 2, 7);
 
 	/** Each workplace: its worker's job and its job block. */
 	record Workplace(StarterBlueprints.Entry entry, String job, Block block) {

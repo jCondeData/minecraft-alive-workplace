@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8
+Roadmap items: 26.11, 36.8, B170
 
 ## 1. What a player sees
 
@@ -24,7 +24,8 @@ Roadmap items: 26.11, 36.8
 - **Trainer's House** (Cobblemon): a long low dojo with a deep veranda, before it a fenced sand sparring ring with
   targets.
 - **Leader's Hall** (Cobblemon): a stone hall with a portico of four columns under a pediment, steps the whole width,
-  a red carpet inside up to the Training Post.
+  a red carpet inside up to the Training Post (it starts a step in from the door: a carpet right under the door's low
+  lintel stopped villagers, who are taller than players, in the doorway).
 - **Ball Workshop** (Cobblemon): a round tower with an open drying loft of slatted fences (apricorns, as coloured carpets,
   laid out to dry) under a copper cone that greens with the years, and a low workshop beside it.
 - **Trade Hall** (Cobblemon): a market hall, its brick-and-timber upper storey on stone arches over an open trading

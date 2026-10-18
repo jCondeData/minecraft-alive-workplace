@@ -34,6 +34,8 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 			net.minecraft.client.renderer.entity.NoopRenderer::new);
 		net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(io.github.jcondedata.aliveworkplace.registry.ModEntities.STAND_SEAT,
 			net.minecraft.client.renderer.entity.NoopRenderer::new);
+		net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(io.github.jcondedata.aliveworkplace.registry.ModEntities.FURNITURE_SEAT,
+			net.minecraft.client.renderer.entity.NoopRenderer::new);
 		// A villager's class over their job's outfit and an elder's look (34.18), a Legend's outfit over their trade's
 		// (29.4), then guards' armor, drawn on the villager model (not the zombie villager's).
 		net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {

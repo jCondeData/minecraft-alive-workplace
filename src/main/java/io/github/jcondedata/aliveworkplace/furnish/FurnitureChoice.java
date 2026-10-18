@@ -56,12 +56,34 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 	 * the order, when those blocks are in the registry and CobbleFurnies is in the list at all; otherwise those spots follow the order like the rest.
 	 */
 	public static FurnitureChoice choose(List<FurnitureSpot> spots, List<String> mods, boolean enabled, boolean partner) {
+		return choose(spots, mods, enabled, partner, false);
+	}
+
+	/**
+	 * {@link #choose(List, List, boolean, boolean)}, and with {@code pokeBallDesks} (the Healing Center and the
+	 * Schoolhouse, {@link #hasPokeBallDesks}; owner's answer 2026-10-18) every desk spot is CobbleFurnies' Poké Ball desk
+	 * whatever the order, when that block is in the registry and CobbleFurnies is in the list at all.
+	 */
+	public static FurnitureChoice choose(List<FurnitureSpot> spots, List<String> mods, boolean enabled, boolean partner, boolean pokeBallDesks) {
 		if (!enabled || spots.isEmpty()) {
 			return VANILLA;
 		}
 		Map<Integer, Placed> out = new LinkedHashMap<>();
+		if (pokeBallDesks && mods.contains(TRAINER_MOD)) {
+			for (int i = 0; i < spots.size(); i++) {
+				if (spots.get(i).kind() == FurnitureSpot.Kind.DESK) {
+					Map<BlockPos, BlockState> cells = POKE_BALL_DESK.resolve(spots.get(i));
+					if (cells != null) {
+						out.put(i, new Placed(spots.get(i).pos(), spots.get(i).kind(), TRAINER_MOD, Collections.unmodifiableMap(cells)));
+					}
+				}
+			}
+		}
 		if (partner && mods.contains(TRAINER_MOD)) {
 			trainersRoom(spots).forEach((i, piece) -> {
+				if (out.containsKey(i)) {
+					return;
+				}
 				Map<BlockPos, BlockState> cells = piece.resolve(spots.get(i));
 				if (cells != null) {
 					out.put(i, new Placed(spots.get(i).pos(), spots.get(i).kind(), TRAINER_MOD, Collections.unmodifiableMap(cells)));
@@ -88,7 +110,17 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 
 	/** The choice for a new build of {@code blueprint} on this server now (the config's switch and order). */
 	public static FurnitureChoice forNewBuild(ResourceLocation blueprint) {
-		return choose(BlueprintFurniture.of(blueprint), Furnishings.MODS, Furnishings.ENABLED);
+		return choose(BlueprintFurniture.of(blueprint), Furnishings.MODS, Furnishings.ENABLED, false, hasPokeBallDesks(blueprint));
+	}
+
+	/**
+	 * Whether the desks of {@code blueprint} are Poké Ball desks (37.5): the Healing Center's and the Schoolhouse's, at
+	 * every level (our own blueprints only).
+	 */
+	public static boolean hasPokeBallDesks(ResourceLocation blueprint) {
+		String path = blueprint.getPath();
+		return blueprint.getNamespace().equals(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID)
+			&& (path.matches("healing_center(_\\d+)?") || path.matches("schoolhouse(_\\d+)?"));
 	}
 
 	/**
@@ -99,7 +131,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 	public static FurnitureChoice forNewBuild(ResourceLocation blueprint, ServerLevel level, BlockPos origin) {
 		List<FurnitureSpot> spots = BlueprintFurniture.of(blueprint);
 		boolean partner = Furnishings.ENABLED && !trainersRoom(spots).isEmpty() && hasPartner(level, origin);
-		return choose(spots, Furnishings.MODS, Furnishings.ENABLED, partner);
+		return choose(spots, Furnishings.MODS, Furnishings.ENABLED, partner, hasPokeBallDesks(blueprint));
 	}
 
 	/** The mod the Trainer's room pieces come from. */

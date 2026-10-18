@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.8
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.8
 
 ## 1. What a player sees
 
@@ -27,6 +27,31 @@ chairs, tables, nightstands, sofas, lamps and curtains. Cozy Home's clocks and s
 planned with a Pokémon partner (a Pokémon kept in a Pasture Block within 16 blocks of the plot) gets a Trainer's room:
 with CobbleFurnies installed, its first chair becomes the Poké Ball chair and the table beside it the Poké Ball desk,
 whatever the order (the owner's answer); the rest of the house follows the order.
+
+The workplaces are furnished too (37.5), at every level: the Supply Shop's counter boards either side of the Shop
+Counter are counters, with a shelf of cups and a picture on the back wall, pots hanging from chains in the display
+windows and a trellis either side of the door (open trapdoors flat on the wall); the Library's reading tables are
+desks with their chairs, pictures by the door and hanging pots over the desks; the Schoolhouse's rows and the Village
+Hall's are benches, the Healing Center has waiting benches and a nurse's desk, the Schoolhouse a teacher's desk by the
+lectern, the Print Shop a printer's desk by the press and its buyers' counter, Village Hall II a council table with
+eight chairs, and the Kitchen crockery on the worktop (in place of its potted fern). With Handcrafted and Beautify those become
+Handcrafted counters, desks, chairs, benches, shelves and crockery and Beautify picture frames, rose trellises and
+hanging pots of vines. The Healing Center's and Schoolhouse's desks are CobbleFurnies' Poké Ball desks whenever
+CobbleFurnies is in the list (the owner's answer). No piece ever stands on a job block, a bed or a chest: the
+workplaces' beds (the Healing Center's ward, the shopkeeper's, the cook's) stay vanilla beds, and every job still finds
+its block and exactly its own chests and barrels, because the furniture mods' pieces that hold items (Handcrafted's
+counters, desks, shelves, drawers, cupboards, nightstands and side tables, Cozy Home's storage counters, CobbleFurnies'
+cabinets) are never read as chests while furnished builds are on.
+
+Villagers use the furniture (37.6). From supper (time 10500) until bed (12000), a villager who is idle or at the
+evening meeting walks to the nearest free chair, stool, bench, couch or sofa of the furniture mods within 8 blocks and
+sits on it, as spectators sit in the Stadium's stands. They stand up for work, for bed, for danger (hurt, a hostile
+mob near, panicking or a raid), when the seat is broken, or with `furnishedBuilds` off. One seat holds one villager:
+a seat with anyone on it, or that another villager is already walking to, is passed over. Handcrafted's fancy beds are
+real beds: villagers claim and sleep in them, and the house they stand in counts as their home (its grade, the Village
+Hall's list, free beds for a new baby). A home with a furniture mod's seat in it is a furnished home, worth 1 beauty
+to the people who sleep there (the "beauty near home" a Burgher or a Noble needs, M34). Vanilla stair chairs are not
+seats.
 
 When it is finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
@@ -116,7 +141,11 @@ data files, not saved.
 ## 5. Items, blocks, jobs, commands
 
 No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedBuilds`,
-`aliveworkplace.config.moddedStorageNetworks`. Board text: `screen.aliveworkplace.storehouse.room` (37.8).
+`aliveworkplace.config.moddedStorageNetworks`. Board text: `screen.aliveworkplace.storehouse.room` (37.8). Block tag `#aliveworkplace:furniture_storage` (37.5): furniture pieces that hold items, never
+read as a job's storage while `furnishedBuilds` is on. Block tag `#aliveworkplace:villager_seats` (37.6): the furniture
+mods' chairs, stools, benches, dining benches, couches, armchairs and sofas (Handcrafted, Cozy Home, CobbleFurnies),
+every entry `"required": false`. Entity `aliveworkplace:furniture_seat` (37.6): the unseen seat a sitting villager
+rides, which can't be summoned.
 
 ## 6. Decisions
 
@@ -129,15 +158,32 @@ No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedB
   the home's first chair and the table or desk nearest it (within 3 blocks); only in a build with a bed, only when
   CobbleFurnies' Poké Ball chair is in the registry and `cobblefurnies` is in `furnitureMods` at all. The choice is
   saved with the site like every other piece, so a partner leaving later doesn't change a standing home.
+- Workplaces (37.5): a piece is a spot only where it fits around the job: never on a job block (a villager point of
+  interest), a bed or a container, which the generator refuses (`kit.furnish`) and a GameTest checks for every build.
+  A workplace's beds get no bed spot at all, since a Handcrafted fancy bed isn't one the game's villagers claim.
+  Handcrafted's counters and desks hold items, so with furnished builds on the block tag
+  `#aliveworkplace:furniture_storage` keeps every such piece out of the jobs' and the Storehouse's storage (the design
+  note's "decoration only"); with the switch off nothing changes. New kinds `trellis` and `hanging_pot` (Beautify's
+  `{wood}_trellis` with roses and `hanging_pot` with vines); vanilla, two open trapdoors flat on a wall and a potted
+  plant on a chain from a beam. The Kitchen is too small for a bench beside its table, oven, bed and larder hatch, and a
+  block more in it made the chef's job test fail (B168), so its crockery takes the potted fern's place on the worktop.
 - The room in items is a line of its own, shown only where a slot holds more than a stack, so the board with vanilla
   chests doesn't change (37.8). The porter's free stacks count a slot's room for more of what it holds; a load of
   something else that doesn't fit stays in his bag and he waits, as with any full store.
+- Seats (37.6): supper is the Village Hall's banquet hour (10500), and the evening runs till the villagers' schedule
+  turns to rest (12000); vanilla villagers have no other meal hour, so "for meals" is supper. A villager's seat isn't
+  saved: a villager sitting when the world is saved stands up after the load (the design note), so the seat is saved
+  only to carry its passenger and lets them go on its first tick. "A furnished room" is a home whose building holds a
+  seat from `#aliveworkplace:villager_seats` (only the mods' pieces are in it), worth 1 point (`FurnitureSeats.FURNISHED_BEAUTY`)
+  to its people's beauty need; off with `furnishedBuilds`.
 - Lanes don't make review packages (sessions.md, 2026-10-04): the digest sends the design note as 37.1's package.
 
 ## 7. Known limits
 
-- The workplaces aren't furnished yet beyond their chairs, tables and beds (37.5); seats and storage networks come with
-  37.6 to 37.10.
+- The M34 workshops other than the Print Shop (the Tailor's and Jeweler's) and the other workplaces keep their vanilla
+  furniture for now; storage networks come with 37.9 and 37.10.
+- Villagers look for a seat within 8 blocks of where they stand, not only in their own home, and walk to it for at
+  most 30 seconds before choosing again.
 - A vanilla picture is a plain wall banner (a block, so a builder can place it): an item frame or a painting would be
   an entity, which a furniture spot can't hold.
 - The headless blueprint renderer (`tools/blueprints/render`, the architect skill's) can't draw Handcrafted,
@@ -176,6 +222,14 @@ kind), `FurnishedHomesCompatTests.theBuilderWaitsForAMissingCouch`, `FurnishedHo
 (a pastured Pikachu by the plot: the Poké Ball chair and desk with Handcrafted first; far from the pasture, or with
 CobbleFurnies left out of the list, Handcrafted's). Showcase scene `furnished_home` (filmed with `-Pfurniture=true`,
 the pack's furniture mods): Starter Cottage II furnished, room by room, beside the vanilla one.
+37.5 (no mods): `FurnishedWorkplacesGameTests.noSpotCoversAJobBlockABedOrAContainer` (every shipped spot of every build),
+`FurnishedWorkplacesGameTests.everyWorkplaceIsFurnished`, `FurnishedWorkplacesGameTests.withoutCobbleFurniesTheDesksFollowTheOrder`,
+`FurnishedWorkplacesGameTests.aBuilderBuildsTheFurnishedSupplyShopInVanilla` (hanging pots and trellises included,
+nothing skipped); with the mods (compat): `FurnishedWorkplacesCompatTests.theSupplyShopWithHandcraftedAndBeautify`,
+`FurnishedWorkplacesCompatTests.theLibraryWithHandcraftedAndBeautify`, `FurnishedWorkplacesCompatTests.thePrintShopWithHandcraftedAndBeautify`
+(each built with nothing skipped, its job block standing and a job site, and its storage exactly the vanilla chests and
+barrels: before the tag the Print Shop's Handcrafted desk and counters counted as chests),
+`FurnishedWorkplacesCompatTests.theHealingCenterAndSchoolhouseGetPokeBallDesks`. Showcase scene `furnished_workplaces`.
 37.8: `StorageRoomGameTests.vanillaRoomIsCountedAsBefore`,
 `StorageRoomGameTests.aFullVanillaStoreIsFullForPorters` (no mods: the vanilla counts and board unchanged);
 with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierStoresAndGivesItems` (all 36 blocks),
@@ -183,3 +237,11 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,
 `SophisticatedStorageCompatTests.aStackUpgradeShowsItsRealRoomOnTheBoard`, and the older
 `PackModsCompatTests.packStorageWorksAsSupplyChests`.
+
+37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
+`FurnitureSeatsCompatTests.aVillagerSitsOnAHandcraftedChairAtSupperAndGetsUpAtDawn`,
+`FurnitureSeatsCompatTests.aSeatInUseIsntTakenTwice`, `FurnitureSeatsCompatTests.aVillagerStandsUpWhenHurtAndNobodySitsWithTheSwitchOff`,
+`FurnitureSeatsCompatTests.aSeatLoadedFromASaveLetsItsVillagerGo`,
+`FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome` (the fancy bed is a villager home
+point of interest, the villager claims and sleeps in it, the Starter Cottage it stands in is their home, and its chair
+adds the furnished home's beauty). Scene `seats_and_beds` (`-Pfurniture=true`).

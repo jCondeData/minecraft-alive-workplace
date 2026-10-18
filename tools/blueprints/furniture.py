@@ -21,7 +21,7 @@ import re
 from check import AIR, FACING, OPPOSITE, TABLE_LEGS, _open_top, _short, is_table
 
 KINDS = ("chair", "stool", "bench", "couch", "table", "side_table", "desk", "counter", "cupboard", "shelf", "nightstand",
-         "drawer", "bed", "lamp", "clock", "picture", "blinds", "crockery")
+         "drawer", "bed", "lamp", "clock", "picture", "blinds", "crockery", "trellis", "hanging_pot")
 WOODS = ("dark_oak", "oak", "spruce", "birch", "jungle", "acacia", "mangrove", "cherry", "bamboo", "crimson", "warped")
 COLOURS = ("light_blue", "light_gray", "white", "orange", "magenta", "yellow", "lime", "pink", "gray", "cyan", "purple",
            "blue", "brown", "green", "red", "black")
@@ -201,10 +201,17 @@ def problems(b, spots):
     return out
 
 
+# The workplaces furnished in 37.5: their beds are beds a villager needs (the Healing Center's ward, the shopkeeper's
+# and the cook's), read by the game as vanilla beds, so they get no bed spot and are never swapped.
+WORKPLACES = re.compile(r"(supply_shop|library|healing_center|schoolhouse|village_hall|kitchen|print_shop)(_\d+)?$")
+
+
 def write(b, rel):
     """Writes (or removes, when there are none) the spots file of the blueprint at structure path {@code rel}; returns
     the CHECK lines."""
     spots = spots_of(b)
+    if WORKPLACES.match(os.path.basename(rel)):
+        spots = [s for s in spots if s["kind"] != "bed"]
     bad = problems(b, spots)
     path = os.path.normpath(os.path.join(FURNITURE_ROOT, rel + ".json"))
     if bad:

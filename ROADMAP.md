@@ -4718,14 +4718,14 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   compat GameTests build the Starter Cottage and the Inn with Handcrafted and with CobbleFurnies, nothing skipped;
   scene `furnished_home` (`-Pfurniture=true`, a new harness switch that adds the pack's furniture mods; the cottage
   furnished, room by room).
-- [ ] **37.5** **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
+- [x] **37.5** (review: pending 2026-10-18) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
   Kitchen and the M34 trades' workshops get furniture where it fits: desks for the Scribe and Printer, counters and
   shelves in the shops, crockery and benches in the Kitchen, Beautify trellises, hanging pots and picture frames as
   decoration. Never a job block, a bed a villager needs, or a container is swapped: those stay what the job reads.
   Done when: a GameTest checks no spot in any build covers a job block, a bed or a container; compat GameTests build
   three workplaces with Handcrafted and Beautify and each job still finds its block and chests; renders reviewed with
   the architect skill; scene `furnished_workplaces`.
-- [ ] **37.6** **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
+- [x] **37.6** (review: pending 2026-10-18) **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
   (a block tag `aliveworkplace:villager_seats`, its modded entries written with `"required": false`, so the tag loads
   without the mods), where villagers sit for meals and in the evening, as they sit in the Stadium's stands
   (`cup/StandSeat`), and stand up for work, danger or bed. Handcrafted's fancy beds are beds (`FancyBedBlock` extends
@@ -5039,6 +5039,33 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-c-1018-0352, **wip/lane-c holds 37.5 and 37.6**, ticked there but not on `main`): both passed their own tests and the full build before lane d's 38.6/38.7 merge (runGameTest green, runCompatGameTest 270/270 after fix ef8019e7). After merging main at 9f9290da, the full `runGameTest` failed `VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne` ("a hall before the build"; 37.5 furnishes the Village Hall, so check that first) and `LadderGameTests.aSiegeGathersOutsideTheRingOfWalls` (the raiders aren't about: 3). Next lane c run: root-cause those two, full build, merge to `main`.
+- 2026-10-18 (37.6, lane-c-1018-0352, decisions): (1) "For meals and in the evening": vanilla villagers have no meal
+  hour, so villagers sit from supper (the hall's banquet hour, 10500) till their schedule turns to rest (12000), when
+  idle or at the evening meeting; they stand for work, bed, danger (hurt, a hostile near, panic, a raid), a broken
+  seat or `furnishedBuilds` off. (2) They look for the nearest free seat within 8 blocks (not only in their own home)
+  and walk to it for at most 30 s. (3) "A furnished room counts towards M34's beauty need": a home whose building holds
+  a `#aliveworkplace:villager_seats` block is worth 1 beauty (`FurnitureSeats.FURNISHED_BEAUTY`) in
+  `ClassNeeds.beauty`; with the switch off, 0. (4) The seat entity (`aliveworkplace:furniture_seat`) is saved only to
+  carry its villager and lets them go on its first tick after a load (design note: seats aren't saved). (5) Handcrafted's
+  fancy beds ARE villager homes: the compat test `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome`
+  passes (the head is a `minecraft:home` point of interest, a villager claims it and sleeps in it, and its house counts
+  as their home), so B166's worry doesn't hold on Handcrafted 4.0.3; left for the bug lane to close (and 37.5's
+  workplace beds, kept vanilla for that reason, could take fancy beds).
+- 2026-10-18 (37.5, lane-c-1018-0352, decisions): (1) Handcrafted's counters, desks, shelves, drawers, cupboards,
+  nightstands and side tables hold items (its ContainerBlockEntity), so the compat test found the Print Shop's
+  Handcrafted desk and counters counted as the printer's chests. Following the design note ("modded storage furniture is
+  decoration only... no job reads it"), the block tag `#aliveworkplace:furniture_storage` (those, Cozy Home storage
+  counters, CobbleFurnies cabinets; all `required: false`) is skipped as storage by `SupplyContainers` while
+  `furnishedBuilds` is on; off, nothing changes. (2) Workplaces' beds (Healing Center ward, shopkeeper, cook) get no bed
+  spot: a fancy bed isn't a vanilla villager home (homes filed as B166). (3) "Where it fits": the Tailor's and Jeweler's
+  workshops keep their vanilla furniture (the Print Shop is the M34 workshop furnished), and the Kitchen gets crockery in
+  place of its worktop fern but no bench or shelf (no free wall beside its table, oven, bed and larder hatch, and any
+  extra block made `workplaceBuilt_kitchen` fail every run: B168). (4) The Healing Center's and
+  Schoolhouse's desks are Poké Ball desks whenever `cobblefurnies` is in the list (owner's 2026-10-18 answer), partner or
+  not. (5) New kinds `trellis` and `hanging_pot` for Beautify's; a vanilla hanging pot is a potted plant under a chain
+  (`check.py` now accepts a pot hung from a chain: a flower pot needs nothing under it in game, proven by the vanilla
+  Supply Shop build test).
 - 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
   Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
   `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed

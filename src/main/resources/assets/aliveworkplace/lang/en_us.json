@@ -4971,6 +4971,7 @@
   "message.aliveworkplace.cup.theme_picked": "The next Cup will be the %s",
   "entity.aliveworkplace.cup_delegate": "%s of %s",
   "entity.aliveworkplace.stand_seat": "Stand seat",
+  "entity.aliveworkplace.furniture_seat": "Furniture seat",
   "message.aliveworkplace.cup.delegate_busy": "%s is here for the Cup and takes no challenges today",
   "message.aliveworkplace.cup.away": "%s is away at the Cup in %s today and takes no challenges",
   "message.aliveworkplace.cup.no_arena": "%s has no Arena any more: no Cup today, just a plain festival",

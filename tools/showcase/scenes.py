@@ -1024,6 +1024,10 @@ SCENES = [
     job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
         "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
         120, create=True),
+    # Trains link villages (ROADMAP 39.7, with Create): two Train Stations, track between them, a caravan by train
+    job("village_train", "Create", "Trains link villages: a caravan takes the train",
+        "Thornholm's caravan took the train to Ashford, steam and a bell at each station, and its 32 oak logs came in to Ashford's chest",
+        120, create=True),
     # Builders build contraptions (ROADMAP 39.5, with Create): a saved drive put up again, its moving parts last, then checked
     job("create_contraption", "Create", "A contraption from a blueprint: built in order, and it turns",
         "the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",

@@ -4945,7 +4945,7 @@ the owner's port jar; M33's caravans (39.7).
   name). Unknown blocks are counted and named as for other imports. Done when: compat GameTests: a schematic file in
   the uploaded folder appears at the table and imports; a written schematic item imports its file; a missing file
   says so; scene `create_schematic`.
-- [ ] **39.7** **Trains link villages (later item:
+- [x] **39.7** (review: pending 2026-10-18) **Trains link villages (later item:
   after 39.2 to 39.6).** A Train Station build (`create:track_station`), track laid by builders along a caravan road
   (`CaravanRoads`), and caravans (M33) that ride a train between two villages with stations instead of walking.
   Done when: compat GameTests: track is laid along a road between two stations; a caravan between them goes by train

@@ -2,12 +2,12 @@
 
 Create integration brings the Create mod (the owner's Fabric port, in `libs/`) into village life: a Mechanic who keeps
 the machines turning, villagers who feed Create's millstone, press, mixer and crushing wheels, Create-powered builds,
-contraptions built from a blueprint, Create schematics at the Blueprint Table and, later, trains between villages.
+contraptions built from a blueprint, Create schematics at the Blueprint Table and trains between villages.
 Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gate and the port in the test runtime
 (39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
-built from a blueprint (39.5) and Create schematics at the Blueprint Table (39.6); the full plan is the design note, docs/design/M39.md.
+built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6) and trains between villages (39.7); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7
 
 ## What a player sees
 
@@ -63,7 +63,35 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   file is gone says so ("The schematic file hut.nbt isn't among Jesse's uploads on this server. Upload it again at a
   Schematic Table."), a blank one says to write it first, and one naming a file outside the uploads is refused.
 
+- **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (13 x 9 x 8): a Create station
+  on the edge of a platform beside a straight run of Create track, under a timber shelter with benches and lanterns.
+  When two villages with a caravan route both have a Create station within their hall's reach (the Train Station's, or
+  any a player placed) and a village's half of the road between them is built (27.17), one of its idle builders takes
+  a "Railway" site and lays Create track down the middle of that half, from the village's store like any material;
+  the chronicle reads "Bob laid the track along the road to Ashford", and when both halves are tracked, in both
+  villages, "The railway to Ashford is open: caravans go by train". From then on a caravan between them goes by
+  train: a third of the walk on the finished road (at least 400 ticks, never longer than walking), never lost on the
+  way (31.20), and seen as steam and a bell at the station instead of a carter and llamas ("A train left for Ashford
+  with 32 × Oak Log", "A train from Thornholm came in with ..."). Its goods, sale and unloading are a caravan's. If the
+  station at the far end is broken while it's on its way, the caravan gets off at the end of the track and walks the
+  rest ("The station was gone when the train from Thornholm came: its caravan walks the rest of the way"), arriving
+  with all its goods a quarter of the walk later (never sooner than the train would have). With a station at one end
+  only, an unfinished road, or the switch off, caravans walk as before.
+
 ## How it works
+
+**Trains.** `city/CaravanTrains`, by block id only (`create:track_station`, `create:track` with its `shape` state,
+read from the port's block states: `xo`, `zo`, `pd`, `nd`). Each hall's caravan round (`Caravans.round`) notes the
+stations within `VillageHalls.RADIUS` from the loaded chunks' block entities (nearest first, at most 4) on the caravans'
+list. The road tick (`Roads.tick`) opens, every 100 ticks, one track site at a time per village for a half that is due
+(both villages have a station, the half is built, it isn't tracked yet), with any idle builder of the village (as for
+a far road segment). Its blueprint is `aliveworkplace:roads/<hall>/track_<other>_<road key>`, so it is a road segment
+to everything that treats them specially (not a building, not at the table, no blueprint handed back); a track piece
+goes on each node of the half's way at feet height, straight or diagonal by its neighbours, but not where the road
+steps a block (its stairs) or where something already stands (the hall it starts from). The finished site
+(`Roads.segmentBuilt`) marks the half tracked. `Caravans.send` asks `CaravanTrains.rides` (switch, Create, roads on,
+a station at both ends, the road finished, both halves tracked) and saves the answer on the shipment.
+
 
 **Schematics.** Create keeps uploads in the game folder's `schematics/uploaded/<player>/<name>.nbt` (its
 `CreatePaths`; here `MinecraftServer.getServerDirectory()`), vanilla structure files. `table/CreateSchematics.sync`
@@ -165,7 +193,10 @@ showcase catalog).
   Create's schematics alone and a Schematic used on it just opens it; blueprints already imported stay. Off for
   players until 2.3 ships, and does nothing without Create.
 
-villageTrains is mapped to the gate and comes into the config with 39.7.
+- `villageTrains` (39.7): the Train Station at the table and in the creative tab, track laid along caravan roads,
+  caravans by train. Off: no station offered, no track site opened, new caravans walk; a train already on its way
+  still comes in, and stations and track already noted stay on the list. Off for players until 2.3 ships, and does
+  nothing without Create (or with `caravanRoads` off: no road, no track).
 
 ## Saved data
 
@@ -184,6 +215,10 @@ villageTrains is mapped to the gate and comes into the config with 39.7.
   finished building's entry `not_turning` (absent: not checked; empty: everything turned). The design note put
   `notTurning` on the site; the site is gone once the build is done, so it lives with the finished building.
 
+- On the caravans' list (`aliveworkplace_caravans`, 39.7): each village's `stations` (positions) and `tracks` (the
+  villages it has laid track towards), both absent in older saves (none), and a shipment's `byTrain` (absent: false,
+  it walks). A village taken off the list takes its stations and the track towards it with it.
+
 Nothing is saved for schematics (39.6): imports are ordinary blueprints in the world's generated structures, and what's
 been imported is found again from the files' times.
 
@@ -196,6 +231,9 @@ The planned fields of later items, each with its default, are listed in the desi
   with its workstation.
 
 - Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
+
+- Blueprint (39.7): `aliveworkplace:train_station` (13 x 9 x 8), drawn in `tools/blueprints/create_builds.py`,
+  listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
 
 - Blueprints (39.4): `aliveworkplace:watermill` (11 x 11 x 9), `aliveworkplace:windmill` (9 x 17 x 9) and
   `aliveworkplace:workshop` (14 x 10 x 9), drawn in `tools/blueprints/create_builds.py`, unlocked from the start and
@@ -252,14 +290,22 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
   the admin's say. Imports are server-wide, as uploads at the table are. A deleted file's blueprint stays (a build
   under way may use it).
 
+- Trains (39.7, the design note's question 1, decided by the lane while the owner hasn't answered): the train is the
+  caravan's trip, not a Create train assembled from bogeys and controls, which needs Create's classes and a player's
+  assembly screen. Villages lay real Create track and stand at real Create stations, so a player can still run their
+  own trains on it.
+
 ## Known limits
 
 Nothing is built for players yet (the gate). Only one machine of each kind per trip, and a worker
 looks only near their own workstation; a stopped machine shows on the Mechanic's status, not yet in the chronicle.
 Putting back a belt has no test with a real belt yet (shafts and cogwheels do). A part broken after a contraption is
 finished is the Mechanic's to mend, not the builder's; one broken while the ground is levelled is listed by the check.
-Trains (39.7) wait on the
-owner's answer in the design note. A windmill whose bearing can't be started (fewer than 8 sails left, the sails
+Trains (39.7): the track is
+straight pieces node by node, so at a bend or a step of the road Create sees separate pieces, not one line a real
+Create train could run along; the Train Station's station isn't bound to its track (a player re-places it to make a
+real stop); track broken after it's laid isn't noticed (the caravans still ride); and no spur is laid from the
+station to the road. A windmill whose bearing can't be started (fewer than 8 sails left, the sails
 blocked) gets no sign yet: the player starts it with an empty hand (39.4). A schematic still being uploaded when a
 table opens may be read cut short and said so once; it's imported when the upload finishes and the table opens again
 (39.6). Whether Create's client keeps a written Schematic's right-click on the table for itself in a real game is not
@@ -280,6 +326,14 @@ tested (the GameTests use the table as the server does).
   another extension), `anUploadAgainReplacesItsBlueprint` (no `_2`; a broken file said once) and
   `theSwitchOffLeavesThemAlone`. Scene `create_schematic`: the written Schematic used on the table, then a builder puts
   the kiosk up.
+- `VillageTrainCompatTests` (39.7, with Create; two villages 140 blocks apart, the road between them laid):
+  `aBuilderLaysTrackAlongTheRoadBetweenTwoStations` (no track due before the stations; the idle builder takes the
+  site and lays it from a barrel, straight track down the road, nothing skipped; the railway opens in both
+  chronicles), `aCaravanBetweenTwoStationsGoesByTrainAndArrivesWithItsGoods` (a third of the walk, on time, 32 logs in
+  the other chest), `withoutStationsCaravansWalkAsToday` (and with one station), `withVillageTrainsOffCaravansWalkAndNoTrackIsLaid`,
+  `aTrainSavedAndReloadedMidTripStillArrives` and `aStationBrokenMidTripTheCaravanWalksTheRest`; and
+  `aBuilderBuildsTheTrainStation` (exact materials, nothing skipped, the station beside the track). Without Create,
+  `VillageTrainGameTests`: `noTrainsWithoutCreate` and `trainsAreSavedAndOldSavesWalk`. Scene `village_train`.
 - `CreateCompatTests`: `createIsLoaded` (Create and its libraries loaded, its own GameTests left out),
   `createBlockIdsExist`, `createItemIdsExist` and `createRecipeTypesExist` list every id the milestone reads and fail
   naming any that's missing.

@@ -207,6 +207,11 @@ public final class ModItems {
 						output.accept(BlueprintItem.create(entry.id(), entry.size()));
 					}
 				}
+				for (StarterBlueprints.Entry entry : StarterBlueprints.TRAINS_ONLY) { // with Create and villageTrains, once M39 is open (39.7)
+					if (io.github.jcondedata.aliveworkplace.city.CaravanTrains.listed(entry.id()) && StarterBlueprints.offered(entry.id())) {
+						output.accept(BlueprintItem.create(entry.id(), entry.size()));
+					}
+				}
 				for (StarterBlueprints.Entry entry : StarterBlueprints.MEGA_ONLY) { // with Mega Showdown's blocks, once M38 is open (38.7)
 					if (io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.megaOk(entry.id()) && StarterBlueprints.offered(entry.id())) {
 						output.accept(BlueprintItem.create(entry.id(), entry.size()));

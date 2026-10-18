@@ -1132,6 +1132,55 @@ final class JobScenes {
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
 		}, null));
+		// Trains link villages (ROADMAP 39.7, filmed with Create): two Train Stations end to end, Create track laid between
+		// them, a Village Hall behind each (Thornholm west, Ashford east) with a storehouse chest. Ashford waits for oak logs,
+		// Thornholm has plenty: its caravan leaves by train (steam and a bell at its station), and comes in at Ashford's a
+		// third of the walk later, its 32 logs in Ashford's chest.
+		SCENES.put("village_train", new Job("Thornholm's caravan took the train to Ashford, steam and a bell at each station, and its 32 oak logs came in to Ashford's chest",
+			1600, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
+				&& io.github.jcondedata.aliveworkplace.city.CaravanTrains.live(), "Create is loaded and trains run");
+			BlockPos west = STATION.offset(-16, 0, 4);
+			BlockPos east = STATION.offset(8, 0, 4);
+			for (BlockPos at : List.of(west, east)) {
+				level.getStructureManager().get(StarterBlueprints.TRAIN_STATION.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			}
+			BlockState track = level.getBlockState(west.offset(0, 1, 6));
+			for (int x = west.getX() + 13; x < east.getX(); x++) { // the track laid between the two stations
+				level.setBlockAndUpdate(new BlockPos(x, west.getY(), west.getZ() + 6), Blocks.GRAVEL.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(x, west.getY() + 1, west.getZ() + 6), track);
+			}
+			BlockPos thornholm = STATION.offset(-10, 0, -6);
+			BlockPos ashford = STATION.offset(14, 0, -6);
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Data data = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+			for (BlockPos hall : List.of(thornholm, ashford)) {
+				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				level.setBlockAndUpdate(hall.east(3), ModBlocks.STOREHOUSE.defaultBlockState());
+				level.setBlockAndUpdate(hall.east(3).north(2), Blocks.CHEST.defaultBlockState());
+				data.remove(hall);
+			}
+			((Container) level.getBlockEntity(thornholm.east(3).north(2))).setItem(0, new ItemStack(Items.OAK_LOG, 64));
+			data.setWants(thornholm, Component.literal("Thornholm"), List.of());
+			data.setWants(ashford, Component.literal("Ashford"), List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32)));
+			data.toggleRoute(thornholm, ashford);
+			BlockPos meet = STATION.offset(2, 0, -6); // the road between them, built and met in the middle, its track laid
+			data.setHalf(thornholm, ashford, new io.github.jcondedata.aliveworkplace.hall.Caravans.Half(meet, true, false, true));
+			data.setHalf(ashford, thornholm, new io.github.jcondedata.aliveworkplace.hall.Caravans.Half(meet, true, false, true));
+			data.setTracked(thornholm, ashford, true);
+			data.setTracked(ashford, thornholm, true);
+			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, thornholm, null); // the stations noted, the caravan sent
+			io.github.jcondedata.aliveworkplace.hall.Caravans.Shipment train = data.onTheRoad().stream().filter(s -> s.to().equals(ashford)).findFirst().orElse(null);
+			Showcase.check(train != null && train.byTrain(), "Thornholm's caravan left by train");
+			Container chest = (Container) level.getBlockEntity(ashford.east(3).north(2));
+			return l -> {
+				if (train != null && l.getGameTime() >= train.arrives()) {
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, ashford, null); // Ashford's round unloads it
+				}
+				return chest.countItem(Items.OAK_LOG) == 32;
+			};
+		}, null));
 		// Builders build contraptions (ROADMAP 39.5, filmed with Create): a player's own drive (a water wheel under a header
 		// tank, two shafts, a three-block belt and two cogwheels) stands behind the camera, is saved as a blueprint the way a
 		// Structure Block saves it and taken away, and a builder puts it up in front of the camera from the barrels: what

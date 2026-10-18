@@ -486,6 +486,14 @@ public final class StarterBlueprints {
 	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(14, 10, 9));
 	/** Built of Create's blocks: in the Blueprint Table (and the creative tab) only with Create and {@code createBuilds} on (mechanic/CreateBuilds). */
 	public static final List<Entry> CREATE_ONLY = List.of(WATERMILL, WINDMILL, WORKSHOP);
+	/**
+	 * The Train Station (ROADMAP 39.7; tools/blueprints/create_builds.py): a Create station beside a straight run of
+	 * track, a platform and a shelter. A village with one sends its caravans by train to another with one, once track is
+	 * laid along the road between them (city/CaravanTrains).
+	 */
+	public static final Entry TRAIN_STATION = new Entry(AliveWorkplace.id("train_station"), new Vec3i(13, 9, 8));
+	/** Built of Create's blocks for trains: listed only with Create and {@code villageTrains} on (city/CaravanTrains). */
+	public static final List<Entry> TRAINS_ONLY = List.of(TRAIN_STATION);
 
 	/** Walls and gates: a wooden palisade with a walkway. */
 	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
@@ -622,6 +630,7 @@ public final class StarterBlueprints {
 		put.accept("villageMegas", MEGA_ONLY);
 		// M39, Create integration
 		put.accept("createBuilds", CREATE_ONLY);
+		put.accept("villageTrains", TRAINS_ONLY);
 		return java.util.Map.copyOf(map);
 	}
 

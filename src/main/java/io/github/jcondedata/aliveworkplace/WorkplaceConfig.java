@@ -161,6 +161,13 @@ public final class WorkplaceConfig {
 	 * Bracelet. Off: only Masters carry one, as before, and nobody wears a bracelet.
 	 */
 	public boolean villageMegas = Expansions.on(Expansions.M38);
+	/**
+	 * With Create installed, a jobless villager by a Create Toolbox becomes the village's Mechanic (ROADMAP 39.2): they walk
+	 * a round of the village's machines, empty full millstones into the store and refill empty ones, and put back the
+	 * shafts, cogwheels and belts gone from finished builds. Off: no new Mechanics, and those hired stand idle. Without
+	 * Create it does nothing.
+	 */
+	public boolean mechanics = Expansions.on(Expansions.M39);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -844,6 +851,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED = denChallenges && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.EVERY_DAYS = denChallengeDays;
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED = mechanics && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();

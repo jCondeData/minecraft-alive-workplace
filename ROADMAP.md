@@ -4893,7 +4893,7 @@ the owner's port jar; M33's caravans (39.7).
   `villageTrains`) and saved fields with defaults, the fallbacks. The flag: `Expansions.M39` with `flag()`,
   `MILESTONES` and `milestone()`. Done when: `runCompatGameTest` loads the port, the id test passes, the note is on
   `main` and the package is sent.
-- [ ] **39.2** **The Mechanic.** A new job whose job
+- [x] **39.2** (review: pending 2026-10-18) **The Mechanic.** A new job whose job
   block is a Create block chosen by id in the design note (its POI registered through `Platform` only when the block
   exists, so without Create there's no Mechanic): they walk the village's machines, refill and empty them (through
   `ItemStores`), put back a broken shaft, cogwheel or belt from the build's blueprint (as `Upkeep` does), and lead the

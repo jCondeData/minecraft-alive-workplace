@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Mechanic", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -992,6 +992,10 @@ SCENES = [
     # Plague (ROADMAP 32.18): the Physician going house to house with Remedies, then the hall's list of the ill
     job("plague", "Threats", "Plague: the Physician goes house to house with the Remedy",
         "a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed", 150),
+    # The Mechanic (ROADMAP 39.2, with Create): mending a finished drive line from its blueprint and tending a millstone
+    job("mechanic", "Mechanic", "The Mechanic: a shaft and a cogwheel put back, the millstone fed and emptied",
+        "the Mechanic put back the shaft and the cogwheel missing from the finished drive line, fed the turning millstone the store's wheat and brought its flour back to the chest",
+        150, create=True),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),

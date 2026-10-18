@@ -418,6 +418,9 @@ public final class ModAttachments {
 	public static final Attachment<net.minecraft.world.item.ItemStack> PLUNDER = Attachment.saved("plunder", net.minecraft.world.item.ItemStack.CODEC);
 	/** What a villager held when a fire bell put a water bucket in their hand (B152: a fisher's rod), given back after. Absent: nothing. */
 	public static final Attachment<net.minecraft.world.item.ItemStack> BRIGADE_HELD = Attachment.saved("brigade_held", net.minecraft.world.item.ItemStack.CODEC);
+	/** A Mechanic's round of the village's machines and where they are on it (ROADMAP 39.2). Absent: none yet (found again). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.mechanic.MechanicRound> MECHANIC_ROUND = Attachment.saved("mechanic_round",
+		io.github.jcondedata.aliveworkplace.mechanic.MechanicRound.CODEC);
 
 	public static void init() {
 	}

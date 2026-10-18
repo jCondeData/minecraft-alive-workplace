@@ -45,6 +45,12 @@ asks for the steps, `latest.log` and any crash report).
   villagers working Create's millstone, press, mixer and crushing wheels, the Watermill, Windmill and Workshop,
   contraptions and Create schematics at the Blueprint Table, and trains later; its gate stays shut until 2.3 is
   finished. The owner's Create port now loads in the compat tests, which check every Create id the plan uses (39.1).
+- **The Mechanic (2.3, being built).** With Create installed, a jobless villager by a Create Toolbox (any colour)
+  becomes the village's Mechanic, in a grey work apron, brass goggles on the brow and a wrench at the belt. They put
+  back shafts, gearboxes, cogwheels and belts missing from finished builds near the toolbox, from the build's
+  blueprint and with the parts in the chest by the toolbox, and walk a round of the village's millstones: what's
+  milled goes to the chest, and a turning, empty millstone gets wheat. Create's machines, belts and toolboxes are no
+  longer taken for supply chests. Setting `mechanics` (behind the 2.3 gate); no Mechanic without Create (39.2).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

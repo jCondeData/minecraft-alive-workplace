@@ -70,6 +70,9 @@ public class VillageHallBlock extends BaseEntityBlock {
 		super.onPlace(state, level, pos, oldState, movedByPiston);
 		if (!level.isClientSide() && !state.is(oldState.getBlock())) {
 			VillageHalls.forgetNearest();
+			if (level instanceof net.minecraft.server.level.ServerLevel server) {
+				io.github.jcondedata.aliveworkplace.guard.RaidDens.hallPlaced(server, pos); // the raid dens around it are its own (B190)
+			}
 		}
 	}
 

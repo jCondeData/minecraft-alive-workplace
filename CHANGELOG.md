@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Chef cooks every Campfire Pot recipe** (2.2, with Cobblemon): the EXP and IV/EV candies, medicines, sweets and
+  any pot recipe a mod or data pack adds, found by recipe type, only from makings in the store, 16 kept by his stove.
+- **Real Create trains between villages.** With Create, two villages joined by rail now put their own Create train
+  together at a station (a bogey, a carriage with the caravan's chest, controls at both ends and a jobless villager in
+  the seat as driver) and Create runs it on a schedule between the two stations. Caravans wait at the station, ride the
+  train and are unloaded when it stands at the other village's station. The scene `village_train` shows it moving.
 - **Two build libraries, vanilla and modded** (2.1, behind its gate). Every build as it ships stays the vanilla
   library. With Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted installed, all 130 homes and workshops
   are built from the modded library instead: daub walls with braces, herringbone floors, Carved Wood chests and shelves
@@ -220,6 +226,9 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **The Jeweler cuts Mega Stones only from what you put in the Storehouse.** Mega Stones and Key Stones now take their
+  Mega Crystal (or ore), gold and emeralds from the village store alone, never from the Jeweler's own chest or other
+  workers' chests. Short of something, the Jeweler waits and says what to add: "needs 4 × Emerald in the Storehouse".
 - **The Signpost's boards say something.** A finished Signpost names the nearest village each way and how far (or
   the nearest building, or "Welcome"), and keeps its boards up to date at dawn.
 - **Read a long entry in the Village Hall without clicking it.** Move the mouse from a row into the reading pane and
@@ -260,6 +269,16 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **The Mega trainers and the Mega Shrine show again (B191).** The Mega trainers scene asked whether its City's Leader
+  could Mega Evolve before the game had filed the new Village Hall, and let the hall's first count make the test
+  village a Hamlet just before the battle, so the Leader had no Mega Stone and no bracelet; it now asks once the hall
+  stands and keeps the village a City. The Mega Shrine scene called the show by hand instead of holding a festival:
+  now the village's own festival day comes, the hall plans it, and the festival holds the show, as in a real world (a
+  new compat test proves that path).
+- **A raid den by a Village Hall is found in a real world.** Dens were looked for only as their chunk loaded, so a hall
+  set down by a den already in view, or a den set down near a hall, stayed "No raid den known": no warden could be
+  posted and the Leader found no den. Now a crystal set down in a loaded chunk is seen at once, and a new hall looks
+  through the loaded land within 160 blocks for the dens already there (B190).
 - **Tom's storage terminal opens beside the Storehouse.** The showcase placed the terminal backwards (facing away
   from the inventory connector) and clicked it from the overview camera, ten blocks away, so Tom's mod said "Terminal
   out of range". The mod was never at fault: a terminal placed against the connector, as a player places it, opens

@@ -127,6 +127,8 @@ public class MegaStoneGameTests implements FabricGameTest {
 		helper.assertTrue(given.equals("You've beaten every Trainer Leader of the Barony of Oakmere! The hall of Oakmere gives you a Mega Bracelet."), given);
 		String tip = JewellerGameTests.english(Component.translatable("aliveworkplace.config.villageMegas.tooltip"));
 		helper.assertTrue(tip.contains("The Jeweler cuts Mega Stones and Key Stones"), tip);
+		String needs = JewellerGameTests.english(Component.translatable("message.aliveworkplace.luxury.state.needs_store", 4L, Items.EMERALD.getDescription()));
+		helper.assertTrue(needs.equals("needs 4 × Emerald in the Storehouse"), needs);
 		helper.succeed();
 	}
 }

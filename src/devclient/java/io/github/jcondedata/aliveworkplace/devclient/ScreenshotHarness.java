@@ -2993,8 +2993,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
 						io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER_LEADER);
 					trainer.setVillagerData(trainer.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER_LEADER));
-					Showcase.check(io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.canMegaEvolve(trainer), "the City's Trainer Leader can Mega Evolve");
-					io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.refresh(trainer);
+					// B191: the Leader's Mega is checked at tick 60, not here: the game files the new hall's point of interest
+					// in a later task (so no hall is near yet), and the hall's first round counts the test village again
 					player.teleportTo(level, 0.5, -60, 2.5, 0, 12); // close up, for the bracelet
 				} else {
 					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
@@ -3012,6 +3012,23 @@ public class ScreenshotHarness implements ClientModInitializer {
 				}
 			});
 		}
+		if (megaLeader && tick > 40) { // B191: the hall's round (its first on its first tick) counts the test village as a Hamlet
+			server.execute(() -> {
+				if (server.overworld().getBlockEntity(MEGA_HALL) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+				}
+			});
+		}
+		if (megaLeader && tick == 60) { // the hall filed and its first round done: a City's Leader
+			server.execute(() -> {
+				Showcase.check(io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.canMegaEvolve(battleTrainer), "the City's Trainer Leader can Mega Evolve");
+				io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.refresh(battleTrainer);
+				// close up where the Leader stands now (at work by the post, which hid them from the first spot)
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.teleportTo(server.overworld(), battleTrainer.getX() - 2.0, battleTrainer.getY(), battleTrainer.getZ() - 2.0, -45, 10);
+				player.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, battleTrainer.position().add(0, 1.0, 0));
+			});
+		}
 		if (megaLeader && tick == 70) {
 			net.minecraft.world.entity.Entity seen = mc.level == null || battleTrainer == null ? null : mc.level.getEntity(battleTrainer.getId());
 			braceletSeen = seen != null && io.github.jcondedata.aliveworkplace.client.MegaBraceletLayer.wears(seen);
@@ -3020,13 +3037,6 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (megaLeader && tick == 76) {
 			server.execute(() -> server.getPlayerList().getPlayers().get(0).teleportTo(server.overworld(), 0.5, -60, -6.5, 0, 10));
-		}
-		if (megaLeader && tick > 80 && tick % 20 == 0) { // the hall's round would count the test village as a Hamlet
-			server.execute(() -> {
-				if (server.overworld().getBlockEntity(MEGA_HALL) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
-					hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
-				}
-			});
 		}
 		if (tick == 80) {
 			server.execute(() -> io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(server.getPlayerList().getPlayers().get(0), battleTrainer));

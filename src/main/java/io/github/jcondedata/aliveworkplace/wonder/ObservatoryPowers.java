@@ -225,7 +225,9 @@ public final class ObservatoryPowers {
 		for (Caravans.Shipment s : Caravans.Data.get(level).onTheRoad()) {
 			if (s.to().equals(hall) || s.from().equals(hall) && !s.back()) {
 				boolean coming = s.to().equals(hall);
-				long day = today + (timeOfDay + Math.max(0, s.arrives() - now)) / VillageNeeds.DAY;
+				// 39.7a: a caravan waiting for its village's Create train has no time yet: said as about a third of a day away
+				long left = io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives()) ? VillageNeeds.DAY / 3 : Math.max(0, s.arrives() - now);
+				long day = today + (timeOfDay + left) / VillageNeeds.DAY;
 				BlockPos other = coming ? s.from() : s.to();
 				out.add(new Coming(Items.CHEST_MINECART, Component.translatable(coming ? "screen.aliveworkplace.coming.caravan_in" : "screen.aliveworkplace.coming.caravan_out",
 					VillageHalls.name(level, other)), day, Optional.of(other)));

@@ -28,6 +28,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -35,9 +36,11 @@ import net.minecraft.world.level.saveddata.SavedData;
 
 /**
  * The raid dens a village knows (ROADMAP 38.2, design note M38): Cobblemon Raid Dens' crystals within {@link #REACH}
- * blocks of a Village Hall. A den is recorded when its chunk loads (the chunk's block entities are looked at, never an
- * area), with its tier, type and whether it's active, read from its block state by property name, so nothing here
- * needs a Raid Dens class. Every {@link #CHECK_EVERY} ticks the dens whose chunks are loaded are read again: a den that
+ * blocks of a Village Hall. A den is recorded when its chunk loads or its crystal is set down in a loaded chunk (its
+ * block entity comes in), and when a hall is set down, the loaded chunks within reach are looked through for dens that
+ * were there first (B190: before, a den whose chunk was already loaded when the hall came was never found). Each is read
+ * with its tier, type and whether it's active from its block state by property name, so nothing here needs a Raid Dens
+ * class. Every {@link #CHECK_EVERY} ticks the dens whose chunks are loaded are read again: a den that
  * changed is updated, one broken or gone is dropped. Without Raid Dens (no den block) or with M38's gate shut, nothing
  * is recorded. The list shows on the village map and the hall's Defence page.
  */
@@ -56,12 +59,15 @@ public final class RaidDens {
 
 	/** Dens seen in chunks that loaded, to look at on the level's next tick (a chunk load is no place for POI searches). */
 	private static final Map<ResourceKey<Level>, LongSet> PENDING = new HashMap<>();
+	/** Halls set down, whose loaded surroundings are looked through for dens on the level's next tick. */
+	private static final Map<ResourceKey<Level>, LongSet> HALLS = new HashMap<>();
 
 	private RaidDens() {
 	}
 
 	public static void init() {
 		Platform.get().onChunkLoad(RaidDens::chunkLoaded);
+		Platform.get().onBlockEntityLoad(RaidDens::blockEntityLoaded);
 		Platform.get().onLevelTick(RaidDens::tick);
 	}
 
@@ -88,11 +94,56 @@ public final class RaidDens {
 		}
 	}
 
+	/** A block entity came into a loaded chunk (a chunk loading, or a crystal set down): a den's waits for the next tick. */
+	public static void blockEntityLoaded(BlockEntity entity, ServerLevel level) {
+		if (Expansions.isOpen("M38") && block().filter(entity.getBlockState()::is).isPresent()) {
+			PENDING.computeIfAbsent(level.dimension(), k -> new LongLinkedOpenHashSet()).add(entity.getBlockPos().asLong());
+		}
+	}
+
+	/** A Village Hall was set down: on the next tick, the dens already in loaded chunks within {@link #REACH} are its village's. */
+	public static void hallPlaced(ServerLevel level, BlockPos hall) {
+		if (live()) {
+			HALLS.computeIfAbsent(level.dimension(), k -> new LongLinkedOpenHashSet()).add(hall.asLong());
+		}
+	}
+
+	/** Looks through the loaded chunks within {@link #REACH} of a hall for den crystals, and records the new ones. */
+	static void lookAround(ServerLevel level, BlockPos hall) {
+		Optional<Block> den = block();
+		if (den.isEmpty() || !(level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity)) {
+			return;
+		}
+		Sites sites = Sites.get(level);
+		int chunks = (REACH >> 4) + 1;
+		int cx = hall.getX() >> 4;
+		int cz = hall.getZ() >> 4;
+		for (int x = cx - chunks; x <= cx + chunks; x++) {
+			for (int z = cz - chunks; z <= cz + chunks; z++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+				if (chunk == null) {
+					continue;
+				}
+				for (BlockPos pos : List.copyOf(chunk.getBlockEntities().keySet())) {
+					BlockState state = chunk.getBlockState(pos);
+					if (state.is(den.get()) && !sites.dens.containsKey(pos.asLong()) && pos.distSqr(hall) <= (double) REACH * REACH) {
+						sites.dens.put(pos.asLong(), read(state, pos.immutable(), Chronicle.day(level)));
+						sites.setDirty();
+					}
+				}
+			}
+		}
+	}
+
 	/** The level's tick: the dens seen in loaded chunks are looked at, and every {@link #CHECK_EVERY} ticks the known ones read again. */
 	public static void tick(ServerLevel level) {
 		LongSet pending = PENDING.remove(level.dimension());
 		if (pending != null && live()) {
 			pending.forEach((long p) -> seen(level, BlockPos.of(p)));
+		}
+		LongSet halls = HALLS.remove(level.dimension());
+		if (halls != null && live()) {
+			halls.forEach((long p) -> lookAround(level, BlockPos.of(p)));
 		}
 		if (level.getGameTime() % CHECK_EVERY == 0 && live()) {
 			Sites sites = Sites.get(level);

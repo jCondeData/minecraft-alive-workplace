@@ -303,7 +303,7 @@ SCENES = [
       cobblemon=True, mega=True),
     # Mega Stones from the village (ROADMAP 38.6): a Journeyman Jeweller cuts a Mega Stone for the village's Master
     job("mega_jeweller", "Jeweler", "Mega Stones: the Jeweler cuts one for the village's Master",
-        "the jeweler cut a Mega Stone for a Pokémon on the village Master's team from a Mega Crystal, gold and emeralds",
+        "the jeweler cut a Mega Stone for a Pokémon on the village Master's team from a Mega Crystal, gold and emeralds the player put in the Storehouse",
         cobblemon=True, mega=True),
     # The Mega Shrine (ROADMAP 38.7): on a festival day a village trainer Mega Evolves their ace at the shrine's pedestal
     job("mega_shrine", "Trainer", "The Mega Shrine: a festival show",
@@ -372,6 +372,10 @@ SCENES = [
     # Cobblecuisine on the Chef's menu (ROADMAP 38.8): a Journeyman Chef cooks a salad and a curry from their own recipes
     job("cuisine_kitchen", "Chef", "Cobblecuisine: a salad and a curry from the Chef",
         "the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest",
+        cobblemon=True),
+    # Campfire Pot recipes (ROADMAP 38.11): the Chef cooks the pot's candies and sweets, found by recipe type
+    job("campfire_pot", "Chef", "Campfire Pot recipes: candies from the Chef",
+        "the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest",
         cobblemon=True),
     # Bean farms (ROADMAP 38.9): the farmer cuts ripe Cobblecuisine beans, leaves the green ones and sows the bare rows
     job("bean_farm", "Farmer", "Cobblecuisine: beans for the menu",
@@ -1034,10 +1038,10 @@ SCENES = [
     job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
         "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
         120, create=True),
-    # Trains link villages (ROADMAP 39.7, with Create): two Train Stations, track between them, a caravan by train
-    job("village_train", "Create", "Trains link villages: a caravan takes the train",
-        "Thornholm's caravan took the train to Ashford, steam and a bell at each station, and its 32 oak logs came in to Ashford's chest",
-        120, create=True),
+    # Trains link villages (ROADMAP 39.7 and 39.7a, with Create): two Train Stations, track between them, the village's own Create train and a caravan on it
+    job("village_train", "Create", "Trains link villages: the village's own Create train",
+        "Thornholm's caravan rode the village's own Create train to Ashford's station and its 32 oak logs were unloaded there",
+        180, create=True),
     # Builders build contraptions (ROADMAP 39.5, with Create): a saved drive put up again, its moving parts last, then checked
     job("create_contraption", "Create", "A contraption from a blueprint: built in order, and it turns",
         "the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",

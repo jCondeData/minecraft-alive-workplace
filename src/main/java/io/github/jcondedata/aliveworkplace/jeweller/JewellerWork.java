@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.jeweller;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import io.github.jcondedata.aliveworkplace.craft.LuxuryRecipes;
 import io.github.jcondedata.aliveworkplace.craft.LuxuryWork;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.behavior.SetLookAndInteract;
 import net.minecraft.world.entity.ai.behavior.UpdateActivityFromSchedule;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -40,6 +42,16 @@ public class JewellerWork extends LuxuryWork {
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
 		return Jewellers.ENABLED && super.checkExtraStartConditions(level, villager);
+	}
+
+	/**
+	 * Mega Stones and Key Stones (38.6a, the owner): cut only from makings the player puts in the village store, never
+	 * from the Jeweller's own chest or other workers' (the Miner's finds go to the store, so they count once there).
+	 */
+	@Override
+	protected boolean fromStoreOnly(Villager villager, Item good) {
+		return LuxuryRecipes.forJob(villager.getVillagerData().getProfession(), villager.getVillagerData().getLevel()).stream()
+			.anyMatch(r -> MegaStones.SWITCH.equals(r.when()) && r.makes(good));
 	}
 
 	@Override

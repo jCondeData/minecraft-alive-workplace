@@ -5039,8 +5039,8 @@ the owner's port jar; M33's caravans (39.7).
   alone); commit 0ec1567f there narrows the village radius in that test, NOT YET RUN. 38.7 (the Mega Shrine) passed
   its own classes; the full suite wasn't run. Next lane d run: run that test and the full build, then merge to `main`.
   The owner's answers in docs/design/M38.md (2026-10-18): the bracelet stays once per realm (as built); village
-  trainers take raid dens up to tier 3 only, so 38.4's `DenChallenges.MASTER_MAX` must drop from 4 to 3 (with a test
-  and the wiki, guide and CHANGELOG lines) if this run didn't land it.
+  trainers take raid dens up to tier 3 only, so 38.4's `DenChallenges.MASTER_MAX` is now 3 on `main` (test
+  `aTierFourDenIsLeftForPlayers`); when merging wip/lane-d keep main's 3.
 - 2026-10-18 (37.4, lane-c-1018-0053, decision, owner's Trainer's room answer): homes are planned before anyone lives
   in them, so a home "with a Pokémon partner" is judged when its build is planned: a Pokémon kept in a Pasture Block
   within `Partners.RADIUS` (16) of the plot's origin, through `PokemonPartners.pastured` (no Cobblemon class in core).

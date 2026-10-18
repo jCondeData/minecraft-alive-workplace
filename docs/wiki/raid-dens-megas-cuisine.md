@@ -27,7 +27,7 @@ tier) within 16 blocks of a watched den gets the warden's cheer: one Attack, Def
 
 **Den challenges (38.4).** Every 3 days (`denChallengeDays`), by day, a village with a Trainer Leader or a Master
 sends its best one (the highest rank; one who lost lately stays home) against an active den the village knows: up to
-tier 3 for a Leader, tier 4 for a Master, the highest tier first, then the nearest. A den with a player within 8 blocks
+tier 3 for a Leader or a Master (tier 4 and up are for players: owner, 2026-10-18), the highest tier first, then the nearest. A den with a player within 8 blocks
 is theirs, and nobody is sent to it. The challenge is settled at once, like a Stadium bout: 45% at one rank over the
 den's tier, 15% more or less for each rank above or below (never under 10% or over 90%). Players in the village or
 within 32 blocks of the den are told as the trainer sets off and how it ended, so they can walk over and watch the den

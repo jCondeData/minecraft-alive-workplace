@@ -1,7 +1,9 @@
 package io.github.jcondedata.aliveworkplace.trainer;
 
+import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.guard.RaidDenLoot;
 import io.github.jcondedata.aliveworkplace.guard.RaidDens;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
@@ -37,10 +39,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -190,11 +189,12 @@ public final class DenChallenges {
 		}
 		ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE,
 			ResourceLocation.fromNamespaceAndPath(RaidDens.DEN.getNamespace(), "raid/tier/" + RaidDens.TIERS.get(den.tier() - 1)));
-		LootTable table = level.getServer().reloadableRegistries().getLootTable(key);
-		LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(den.pos())).create(LootContextParamSets.CHEST);
-		List<ItemStack> out = new ArrayList<>();
-		table.getRandomItems(params, random.nextLong(), out::add);
-		return out;
+		try {
+			return RaidDenLoot.EXTENSION.call(l -> l.roll(level, key, random), List.<ItemStack>of());
+		} catch (RuntimeException e) { // a newer Raid Dens whose tables read something else: no loot, but no crash
+			AliveWorkplace.LOG.warn("Alive Workplace: can't roll {} for a den challenge: {}", key.location(), e.toString());
+			return List.of();
+		}
 	}
 
 	/** The den goes quiet: {@code is_active} false (its own reset cycle brings it back; {@code can_reset} untouched). */

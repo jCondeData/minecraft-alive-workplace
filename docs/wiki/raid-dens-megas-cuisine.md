@@ -4,9 +4,9 @@ Cobblemon depth brings three of the pack's Pokémon mods into village life: Cobb
 dens around it, guards watch them and its trainers challenge them), Mega Showdown (more village trainers Mega Evolve,
 and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchens cook its dishes and farmers grow its
 beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
-the village knows (38.2) and Den Wardens (38.3); the full plan is the design note, docs/design/M38.md.
+the village knows (38.2), Den Wardens (38.3) and the village's den challenges (38.4); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3
+Roadmap items: 38.1, 38.2, 38.3, 38.4
 
 ## What a player sees
 
@@ -21,10 +21,22 @@ list.
 there. By day the warden walks to the den and stands watch beside it, nudging wild Pokémon off the crystal; at dusk
 they walk back to their post and their evening goes on as usual; next morning they go back. The slot then reads
 "Warden: <name>", and a click recalls them to normal duty. When a watched den glows again after being beaten, the
-chronicle says so: "The Fire raid den (north, about 40 blocks) glows again". A player who joins a raid (or wins a
+chronicle says so: "The Fire raid den (40 blocks north) glows again". A player who joins a raid (or wins a
 tier) within 16 blocks of a watched den gets the warden's cheer: one Attack, Defense or Heal Cheer, once a raid.
 
-The rest (challenges, Megas, Cobblecuisine) comes with 38.4 to 38.10.
+**Den challenges (38.4).** Every 3 days (`denChallengeDays`), by day, a village with a Trainer Leader or a Master
+sends its best one (the highest rank; one who lost lately stays home) against an active den the village knows: up to
+tier 3 for a Leader, tier 4 for a Master, the highest tier first, then the nearest. A den with a player within 8 blocks
+is theirs, and nobody is sent to it. The challenge is settled at once, like a Stadium bout: 45% at one rank over the
+den's tier, 15% more or less for each rank above or below (never under 10% or over 90%). Players in the village or
+within 32 blocks of the den are told as the trainer sets off and how it ended, so they can walk over and watch the den
+go dark. A win rolls the den's own tier loot (`cobblemonraiddens:raid/tier/<tier>`, as a Raid Pouch of that tier
+would) into the village store, turns the den inactive (`is_active` false; Raid Dens' own reset brings it back,
+`can_reset` untouched) and writes the chronicle: "<the trainer> beat the tier 3 Fire raid den and brought home 5
+things". A loss leaves the den glowing, sends the trainer home tired for a day and writes "... lost to the tier
+4 Fire raid den". Each try counts as a battle for the trainer and earns experience (more for a win).
+
+The rest (Megas, Cobblecuisine) comes with 38.5 to 38.10.
 
 ## How it works
 
@@ -54,16 +66,19 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | Key | Default | What it does |
 |---|---|---|
 | `denWardens` | on (once 2.2 ships) | Guards can be posted to raid dens. Off: no new wardens, and those posted go back to normal duty. |
+| `denChallenges` | on (once 2.2 ships) | Village trainers challenge active dens. Off: no challenges. |
+| `denChallengeDays` | 3 (1 to 30) | Days between a village's challenges. |
 
-The other five are mapped to the gate and come into the config with 38.4 to 38.10.
+The other three are mapped to the gate and come into the config with 38.5 to 38.10.
 
 ## Saved data
 
 Each dimension saves its known dens (`aliveworkplace_raid_dens`): a list of `pos`, `tier` (1 to 7), `type`,
 `active` and `firstSeen` (the day). An older save has none, and dens are found again as their chunks load. The wardens are saved per dimension too
 (`aliveworkplace_den_wardens`): each `guard` (their id) with their `den` and the players `cheered` this raid. An older
-save has no wardens. The
-planned fields of later items are listed in the design note.
+save has no wardens. The den challenges are saved per dimension (`aliveworkplace_den_challenges`): each hall's
+`lastDenChallenge` (the day) and each tired trainer's `tiredUntil` (game time). An older save has none: every village
+may challenge at once. The planned fields of later items are listed in the design note.
 
 ## Items, blocks, jobs, commands
 
@@ -84,6 +99,13 @@ the design note and checked by `CobblemonDepthCompatTests`.
   since players fight raids in the mod's own dimension; "once a raid" means until the den glows again (38.3).
 - A warden stands two blocks off the crystal on the side toward home, and walks a leg of 16 blocks at a time, as
   scouts do (38.3).
+- A Raid Dens tier table can't be rolled with a plain chest context: its pools check the Raid Pouch being opened, a
+  loot parameter only Raid Dens holds. `compat/raiddens` reads its three public fields (`RaidLootContexts.RAID_POUCH`,
+  `BONUS_LOOT`, `RAID_POUCH_USE`) by name and fills `RaidDenLoot`; Raid Dens stays off the compile classpath. If the
+  fields are gone in a later Raid Dens, a won challenge still turns the den dark but brings no loot, with a line in the
+  log (38.4).
+- The challenge is looked at every 30 seconds by day; a village that tried (won or lost) waits `denChallengeDays`
+  days, and a village with no free Leader or Master, or no den in reach, tries again next look (38.4).
 - In local compat runs on the 7 GB dev box, `-PcompatHeap=2G` is needed now that the runtime holds two more mods
   (38.1); CI keeps the default.
 
@@ -91,7 +113,9 @@ the design note and checked by `CobblemonDepthCompatTests`.
 
 Only dens within the map's 128-block square get a banner; farther ones (up to 160 blocks) are on the Defense page
 only. A den nobody has been near isn't known. A player who joins a raid from farther than 16 blocks (or whose advancement was granted earlier) gets no cheer. Only
-one warden per den. Challenges, Megas and Cobblecuisine aren't built yet.
+one warden per den. A challenge is settled at once: there's no battle to watch, only the den going dark. A won
+challenge gives no Raid Dens Pokémon, only the loot. On Cobblemon 1.8 (Raid Dens 0.13.2) the loot fields are untested.
+Megas and Cobblecuisine aren't built yet.
 Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 
 ## Proof
@@ -104,6 +128,9 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `aDenTurnedInactiveShowsInactive`, `aDenFarOffIsntListed` (200 blocks), `aReloadKeepsTheList`, `theMapMarksTheDen`.
 - `DenWardenCompatTests`: `aWardenWalksToTheDenAndBackAtDusk`, `aDenGlowingAgainIsWrittenOnce`,
   `aRaiderByAWatchedDenGetsOneCheer` (one a raid, none 40 blocks off, another next raid),
-  `aRecalledWardenGoesBackToNormalDuty`.
+  `aRecalledWardenGoesBackToNormalDuty`, `aWardenOfAGoneDenOrSwitchedOffIsFree`, `wardensSurviveASave`.
+- `DenChallengeCompatTests`: `aWinBringsTheLootHomeAndTheDenRests` (the tier's loot in the store, the den inactive, the
+  chronicle line), `aLossLeavesTheDenActive` (and the trainer tired, not sent again), `aTierSixDenIsNeverChallenged`,
+  `aDenInUseByAPlayerIsntChallenged`, `aBrokenDenIsntChallenged`, `tiredTrainersSurviveASave`.
 
-Showcase scenes: `raid_dens`, `den_warden`
+Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`

@@ -6457,6 +6457,40 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
+		// Den challenges (38.4): the village's Trainer Leader beat the tier 3 den; it has gone dark, its loot is in the
+		// store and the chronicle tells it.
+		SCREENS.put("den_challenge", new Screen("the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setDayTime(3000);
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(new BlockPos(4, -60, -1), Blocks.SMOKER.defaultBlockState());
+				chest(level, new BlockPos(5, -60, -1));
+				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
+				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
+				BlockPos den = new BlockPos(-4, -60, -4);
+				level.setBlockAndUpdate(den, denState(block.get(), "tier_three", "fire", true));
+				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, den);
+				subject = picked(level, player, new BlockPos(1, -60, -5), ModBlocks.TRAINING_POST, Items.GOLD_BLOCK);
+			},
+			List.of(new Step("01_den_challenge", -1, 0, (level, player) -> {
+					// the job is the Leader's by now (picked hands it over in a task after staging); the scene's player is
+					// far enough off the den that it isn't theirs
+					subject.teleportTo(-2.5, -60, -1.5);
+					var result = io.github.jcondedata.aliveworkplace.trainer.DenChallenges.challenge(level, STATION, 0f, net.minecraft.util.RandomSource.create(38));
+					Showcase.check(result == io.github.jcondedata.aliveworkplace.trainer.DenChallenges.Result.WON, "the Leader won the challenge: " + result);
+				}, 60),
+				new Step("02_den_challenge_chronicle", -1, 6, (level, player) -> {
+					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
+					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getString().contains("beat the tier 3 Fire raid den")),
+						"the chronicle has the challenge's line");
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+					}
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof ChoiceMenu));
 		// At peace (32.21): the owner set the village at peace on the Defence page; the bandit camp by it leaves at the next dawn.
 		SCREENS.put("at_peace", new Screen("the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

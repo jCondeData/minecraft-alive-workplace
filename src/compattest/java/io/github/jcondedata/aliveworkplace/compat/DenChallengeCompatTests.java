@@ -32,6 +32,7 @@ public class DenChallengeCompatTests implements FabricGameTest {
 
 	/** A hall with a store (a smoker and its chest), a Master trainer and a den; returns {hall, den}. */
 	static BlockPos[] village(GameTestHelper helper, String tier) {
+		DenWardenCompatTests.clearAround(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(SMOKER, Blocks.SMOKER);
@@ -130,6 +131,38 @@ public class DenChallengeCompatTests implements FabricGameTest {
 		} finally {
 			helper.getLevel().getServer().getPlayerList().remove(player);
 		}
+		cleanUp(helper, at[0], at[1]);
+		helper.succeed();
+	}
+
+	/** A den broken before the trainer sets off is not challenged. */
+	//$ gametest_batch 'CompatGameTests.AREA' '"denChallengeGone"'
+	@GameTest(template = CompatGameTests.AREA, batch = "denChallengeGone")
+	public void aBrokenDenIsntChallenged(GameTestHelper helper) {
+		BlockPos[] at = village(helper, "tier_two");
+		master(helper);
+		RaidDenCompatTests.clear(helper, at[0], at[1]);
+		DenChallenges.Result result = DenChallenges.challenge(helper.getLevel(), at[0], 0f, RandomSource.create(38));
+		helper.assertTrue(result == DenChallenges.Result.NO_DEN, "a broken den: " + result);
+		helper.assertTrue(stored(helper) == 0, "loot from a broken den");
+		helper.succeed();
+	}
+
+	/** A tired trainer stays tired through a save: the challenge data is read back as it was. */
+	//$ gametest_batch 'CompatGameTests.AREA' '"denChallengeSave"'
+	@GameTest(template = CompatGameTests.AREA, batch = "denChallengeSave")
+	public void tiredTrainersSurviveASave(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos[] at = village(helper, "tier_four");
+		Villager trainer = master(helper);
+		helper.assertTrue(DenChallenges.challenge(level, at[0], 0.99f, RandomSource.create(38)) == DenChallenges.Result.LOST, "the challenge should be lost");
+		net.minecraft.nbt.CompoundTag saved = DenChallenges.Data.get(level).save(new net.minecraft.nbt.CompoundTag(), level.registryAccess());
+		helper.assertTrue(saved.toString().contains("tiredUntil"), "the save: " + saved);
+		net.minecraft.nbt.CompoundTag again = DenChallenges.Data.load(saved.copy(), level.registryAccess()).save(new net.minecraft.nbt.CompoundTag(), level.registryAccess());
+		helper.assertTrue(again.equals(saved), "read back: " + again + " saved: " + saved);
+		DenChallenges.Data empty = DenChallenges.Data.load(new net.minecraft.nbt.CompoundTag(), level.registryAccess());
+		helper.assertTrue(empty.last(at[0]) == -1, "an old save without challenges: never challenged");
+		helper.assertTrue(DenChallenges.tired(level, trainer.getUUID()), "the loser isn't tired");
 		cleanUp(helper, at[0], at[1]);
 		helper.succeed();
 	}

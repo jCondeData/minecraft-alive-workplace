@@ -919,6 +919,10 @@ SCENES = [
     S("den_warden", "Village Hall", "Den Wardens: a guard stands watch at the raid den",
       "a guard posted from the hall's Defense page stands watch by the raid den, by day", 45,
       [("01_den_warden", "The warden by the glowing den"), ("02_den_warden_page", "The Defense page: the den's warden")], cobblemon=True),
+    # Den challenges (ROADMAP 38.4, Cobblemon Raid Dens): the village's Trainer Leader beats a den
+    S("den_challenge", "Village Hall", "Den challenges: the village's trainer beats a raid den",
+      "the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it", 45,
+      [("01_den_challenge", "The beaten den, dark, and the Leader by it"), ("02_den_challenge_chronicle", "The chronicle: the Leader beat the tier 3 Fire den")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,

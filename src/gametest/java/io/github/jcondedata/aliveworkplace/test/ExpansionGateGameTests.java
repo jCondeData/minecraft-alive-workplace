@@ -181,8 +181,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 128 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (128 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 131 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (131 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -263,7 +263,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 				}
 			});
 			// Written with the gates open (34.23): the file's false is the player's choice, kept.
-			StringBuilder json = new StringBuilder("{\"giftedChance\": 0, \"expansionsOpen\": [\"M27\", \"M28\", \"M29\", \"M30\", \"M31\", \"M32\", \"M33\", \"M34\", \"M35\", \"M37\"]");
+			StringBuilder json = new StringBuilder("{\"giftedChance\": 0, \"expansionsOpen\": [\"M27\", \"M28\", \"M29\", \"M30\", \"M31\", \"M32\", \"M33\", \"M34\", \"M35\", \"M37\", \"M38\"]");
 			for (String name : GATED_SWITCHES) {
 				json.append(", \"").append(name).append("\": false");
 			}

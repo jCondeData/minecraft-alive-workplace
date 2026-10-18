@@ -32,8 +32,45 @@ public class DenWardenCompatTests implements FabricGameTest {
 	static final BlockPos POST = new BlockPos(3, 2, 5);
 	static final BlockPos DEN = new BlockPos(14, 2, 14);
 
+	/**
+	 * What earlier batches left round this spot, taken away: villagers that wandered out of their area (a Master or a
+	 * guard there would be sent instead of this test's), mock players, Village Halls, and raid dens (a den a failed test
+	 * left glowing would be challenged instead of this one). Only for tests alone in their batch.
+	 */
+	static void clearAround(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.world.phys.AABB around = helper.getBounds().inflate(48);
+		for (net.minecraft.world.entity.Entity e : level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, around,
+				e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
+			e.discard();
+		}
+		var list = level.getServer().getPlayerList();
+		for (ServerPlayer p : java.util.List.copyOf(level.players())) {
+			if (around.contains(p.position())) {
+				list.remove(p);
+			}
+		}
+		BlockPos center = BlockPos.containing(helper.getBounds().getCenter());
+		for (RaidDens.Den den : RaidDens.near(level, center)) {
+			level.setBlockAndUpdate(den.pos(), Blocks.AIR.defaultBlockState());
+		}
+		RaidDens.near(level, center);
+		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + 32;
+		for (BlockPos hall : level.getPoiManager().findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> true, center, reach,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+			level.removeBlock(hall, false);
+		}
+	}
+
+	/** Sets the time of day and the sky's darkness with it (isNight reads the darkness, updated once a tick). */
+	static void time(ServerLevel level, long time) {
+		level.setDayTime(time);
+		level.updateSkyBrightness();
+	}
+
 	/** A hall, a guard post with its guard, and a known den; returns {hall, den, guard's place}. */
 	static BlockPos[] village(GameTestHelper helper, boolean active) {
+		clearAround(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(POST, ModBlocks.GUARD_POST);
@@ -57,7 +94,7 @@ public class DenWardenCompatTests implements FabricGameTest {
 		DenWardens.wardenOf(level, den).ifPresent(w -> DenWardens.recall(level, den));
 		level.setBlockAndUpdate(den, Blocks.AIR.defaultBlockState());
 		RaidDens.near(level, helper.absolutePos(HALL));
-		level.setDayTime(time);
+		time(level, time);
 	}
 
 	static double flat(Villager v, BlockPos p) {
@@ -72,7 +109,7 @@ public class DenWardenCompatTests implements FabricGameTest {
 	public void aWardenWalksToTheDenAndBackAtDusk(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		long time = level.getDayTime();
-		level.setDayTime(1000);
+		time(level, 1000);
 		BlockPos[] at = village(helper, true);
 		Villager guard = guard(helper);
 		String said = DenWardens.post(level, at[0], at[1]).getString();
@@ -81,10 +118,10 @@ public class DenWardenCompatTests implements FabricGameTest {
 		BlockPos post = helper.absolutePos(POST);
 		helper.startSequence()
 			.thenWaitUntil(() -> helper.assertTrue(flat(guard, at[1]) <= 3.5, "the warden is " + Math.round(flat(guard, at[1])) + " blocks from the den"))
-			.thenExecute(() -> level.setDayTime(13000))
-			.thenWaitUntil(() -> helper.assertTrue(flat(guard, post) <= 4, "at dusk the warden is " + Math.round(flat(guard, post)) + " blocks from the post"))
+			.thenExecute(() -> time(level, 13000))
+			.thenWaitUntil(() -> helper.assertTrue(flat(guard, post) <= 4 && !DenWardens.busy(guard),
+				"at dusk the warden is " + Math.round(flat(guard, post)) + " blocks from the post, still the den's: " + DenWardens.busy(guard)))
 			.thenExecute(() -> {
-				helper.assertFalse(DenWardens.busy(guard), "home at night, the guard's own evening takes over");
 				helper.assertTrue(DenWardens.wardenOf(level, at[1]).isPresent(), "still the den's warden for tomorrow");
 				cleanUp(helper, at[1], time);
 			})
@@ -106,7 +143,7 @@ public class DenWardenCompatTests implements FabricGameTest {
 		RaidDens.near(level, at[0]);
 		RaidDens.near(level, at[0]);
 		helper.assertTrue(glows(hall) == before + 1, "glow lines: " + (glows(hall) - before) + "; last: " + last(hall));
-		helper.assertTrue(last(hall).matches("The Fire raid den \\((north|south|east|west|north-east|north-west|south-east|south-west), about \\d+ blocks\\) glows again"),
+		helper.assertTrue(last(hall).matches("The Fire raid den \\(\\d+ blocks (north|south|east|west|north-east|north-west|south-east|south-west)\\) glows again"),
 			"the line: " + last(hall));
 		cleanUp(helper, at[1], time);
 		helper.succeed();
@@ -198,7 +235,7 @@ public class DenWardenCompatTests implements FabricGameTest {
 	public void aRecalledWardenGoesBackToNormalDuty(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		long time = level.getDayTime();
-		level.setDayTime(1000);
+		time(level, 1000);
 		BlockPos[] at = village(helper, true);
 		Villager guard = guard(helper);
 		DenWardens.post(level, at[0], at[1]);
@@ -209,6 +246,59 @@ public class DenWardenCompatTests implements FabricGameTest {
 			"the guard is still the den's");
 		helper.assertTrue(DenWardens.recall(level, at[1]).getString().contains("no warden"), "a second recall");
 		cleanUp(helper, at[1], time);
+		helper.succeed();
+	}
+
+	/** The den broken: its warden goes back to normal duty at their next look; with the switch off, a posted guard isn't the den's. */
+	//$ gametest_batch 'CompatGameTests.AREA' '"denWardenGone"'
+	@GameTest(template = CompatGameTests.AREA, batch = "denWardenGone")
+	public void aWardenOfAGoneDenOrSwitchedOffIsFree(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		long time = level.getDayTime();
+		time(level, 1000);
+		BlockPos[] at = village(helper, true);
+		Villager guard = guard(helper);
+		DenWardens.post(level, at[0], at[1]);
+		boolean was = DenWardens.ENABLED;
+		try {
+			DenWardens.ENABLED = false;
+			helper.assertFalse(DenWardens.busy(guard), "with denWardens off, the guard's own day should take over");
+		} finally {
+			DenWardens.ENABLED = was;
+		}
+		helper.assertTrue(DenWardens.busy(guard), "switched back on, the warden is the den's again");
+		level.setBlockAndUpdate(at[1], Blocks.AIR.defaultBlockState());
+		DenWardens.tick(level, guard, at[1]);
+		helper.assertTrue(DenWardens.postOf(level, guard.getUUID()).isEmpty() && !DenWardens.busy(guard), "the warden of a broken den is still posted");
+		cleanUp(helper, at[1], time);
+		helper.succeed();
+	}
+
+	/** The wardens and who had a den's cheer are saved and read back as they were. */
+	//$ gametest_batch 'CompatGameTests.AREA' '"denWardenSave"'
+	@GameTest(template = CompatGameTests.AREA, batch = "denWardenSave")
+	public void wardensSurviveASave(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		long time = level.getDayTime();
+		BlockPos[] at = village(helper, true);
+		Villager guard = guard(helper);
+		DenWardens.post(level, at[0], at[1]);
+		ServerPlayer near = helper.makeMockServerPlayerInLevel();
+		near.teleportTo(at[1].getX() + 3.5, at[1].getY(), at[1].getZ() + 0.5);
+		try {
+			grant(helper, near, "join_raid");
+			net.minecraft.nbt.CompoundTag saved = DenWardens.Data.get(level).save(new net.minecraft.nbt.CompoundTag(), level.registryAccess());
+			String text = saved.toString();
+			helper.assertTrue(text.contains(Long.toString(at[1].asLong())) && text.contains(near.getUUID().toString()), "the save: " + text);
+			net.minecraft.nbt.CompoundTag again = DenWardens.Data.load(saved.copy(), level.registryAccess()).save(new net.minecraft.nbt.CompoundTag(), level.registryAccess());
+			helper.assertTrue(again.equals(saved), "read back: " + again + " saved: " + saved);
+			helper.assertTrue(DenWardens.Data.load(new net.minecraft.nbt.CompoundTag(), level.registryAccess()).save(new net.minecraft.nbt.CompoundTag(), level.registryAccess())
+				.toString().equals("{wardens:[]}"), "an old save without wardens");
+			helper.assertTrue(DenWardens.postOf(level, guard.getUUID()).equals(java.util.Optional.of(at[1])), "the guard's post");
+		} finally {
+			level.getServer().getPlayerList().remove(near);
+			cleanUp(helper, at[1], time);
+		}
 		helper.succeed();
 	}
 }

@@ -5935,7 +5935,7 @@
   "aliveworkplace.config.denWardens.tooltip": "Post a guard from the hall's Defense page to a raid den the village knows: they stand watch by day, and a player who joins a raid there gets a cheer. Needs Cobblemon Raid Dens. Off: no new wardens, and those posted go back to normal duty.",
   "aliveworkplace.config.denChallenges": "Raid Den Challenges",
   "aliveworkplace.config.denChallenges.tooltip": "A village's best trainer (a Trainer Leader or a Master) challenges an active raid den it knows: a win brings that tier's raid loot to the store. Needs Cobblemon Raid Dens. Off: no challenges.",
-  "aliveworkplace.config.denChallengeDays": "Days between den challenges",
+  "aliveworkplace.config.denChallengeDays": "Den Challenge Days",
   "aliveworkplace.config.denChallengeDays.tooltip": "How many days a village waits between raid den challenges.",
   "message.aliveworkplace.well_keeper.title_full": "Well Keeper · bucket full",
   "message.aliveworkplace.well_keeper.title_empty": "Well Keeper · bucket empty",

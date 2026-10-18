@@ -4810,14 +4810,14 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   the next check. The dens show on the village map (`VillageMaps`) and the hall's Defence page ("Raid den, tier 3,
   Fire, active"). Done when: compat GameTests: a den placed with known states near a hall is listed with them; a den
   turned inactive shows inactive; a den 200 blocks off isn't listed; a reload keeps the list; the map marks it.
-- [ ] **38.3** **Den Wardens.** A guard (`guard/`) can be posted to a known den from the Defence page: they stand watch
+- [x] **38.3** (review: pending 2026-10-18) **Den Wardens.** A guard (`guard/`) can be posted to a known den from the Defence page: they stand watch
   by day, keep wild Pokémon from crowding it, and tell the chronicle when it turns active again ("The Fire den by the
   river glows again"). A player who joins a raid at a watched den (the `cobblemonraiddens:join_raid` advancement, or a
   tier advancement, granted while near it) gets the warden's cheer: one of the mod's cheer items. Done when: compat
   GameTests: a posted guard walks to the den and back at dusk; a den that turns active writes the chronicle line once;
   a player granted the join advancement near a watched den gets one cheer item, once per raid; a warden recalled goes
   back to normal duty.
-- [ ] **38.4** **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
+- [x] **38.4** (review: pending 2026-10-18) **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
   Leaders, Masters) may send its best one to an active den the village knows. The server can't play a raid with no
   player in it, so the challenge is settled like the Stadium's bouts: the trainer's rank and team against the den's
   tier (a fixed random in tests), at most tier 4 for a Master. A win rolls the den's own tier loot table

@@ -26,6 +26,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaTrainerCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonDepthCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.CreateCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenWardenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenChallengeCompatTests",
@@ -77,6 +78,7 @@
 		"toms_storage": "*",
 		"cobbleworkers": "*",
 		"cobblemonraiddens": "*",
-		"cobblecuisine": "*"
+		"cobblecuisine": "*",
+		"create": "*"
 	}
 }

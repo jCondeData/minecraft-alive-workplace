@@ -61,6 +61,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).
 - [Wonders](wonders.md): the eight Wonders, what each needs and gives; the data files, requirements, the Wonders page, the Wonder Plan, the Foundation Stone, crews, goods and dedication, a finished Wonder's celebration, upkeep and powers, and each Wonder's design and powers (2.0, 35.1 to 35.24).
 - [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md): Cobblemon depth, three of the pack's Pokémon mods in village life: raid dens, more Mega trainers and Mega Stones, Cobblecuisine dishes and bean farms (2.2, 38.1 to 38.10).
+- [Create](create.md): Create integration: the Mechanic, villagers working Create's machines, Create-powered builds, contraptions, Create schematics at the table and trains (2.3, being built: 39.1).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 - [Lairs and the Defense page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's

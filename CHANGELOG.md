@@ -41,6 +41,10 @@ asks for the steps, `latest.log` and any crash report).
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
   real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
   A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
+- **Create integration (2.3), the plan.** The design note (`docs/design/M39.md`): the Mechanic and their Toolbox,
+  villagers working Create's millstone, press, mixer and crushing wheels, the Watermill, Windmill and Workshop,
+  contraptions and Create schematics at the Blueprint Table, and trains later; its gate stays shut until 2.3 is
+  finished. The owner's Create port now loads in the compat tests, which check every Create id the plan uses (39.1).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

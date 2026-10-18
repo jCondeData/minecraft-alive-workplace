@@ -317,4 +317,37 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
 		helper.succeed();
 	}
+
+	/** M39's five switches (design note M39) belong to its gate: closed for a player until 2.3, open in GameTests. */
+	static final List<String> M39_SWITCHES = List.of("mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains");
+
+	/** Create integration (2.3) stays shut for players while it's built: its gate and each of its switches. */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	public void createIntegrationIsGated(GameTestHelper helper) {
+		helper.assertTrue(!Expansions.M39, "M39 marked complete: move its switches out of this test");
+		helper.assertTrue(Expansions.isOpen("M39"), "M39's gate should be open in GameTests");
+		List<String> problems = new ArrayList<>();
+		for (String name : M39_SWITCHES) {
+			if (!Expansions.optionLive(name)) {
+				problems.add(name + " hidden in a GameTest");
+			}
+		}
+		asPlayer(() -> {
+			if (Expansions.isOpen("M39")) {
+				problems.add("M39's gate open for a player");
+			}
+			for (String name : M39_SWITCHES) {
+				if (Expansions.optionLive(name)) {
+					problems.add(name + " live for a player before 2.3");
+				}
+			}
+			// The gate is M39's alone: a finished switch stays live.
+			if (!Expansions.optionLive("villageProtection")) {
+				problems.add("villageProtection hidden");
+			}
+		});
+		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+		helper.succeed();
+	}
 }

@@ -61,6 +61,13 @@ public final class Expansions {
 	 * {@code beanFarms}; each comes into the config with the item that builds it (38.3 to 38.10).
 	 */
 	public static final boolean M38 = false;
+	/**
+	 * Milestone 39, Create integration (2.3): the Mechanic, villagers working Create's machines, Create-powered builds,
+	 * Create schematics at the Blueprint Table and trains between villages (design note M39), all only with Create
+	 * installed. Its switches: {@code mechanics}, {@code machineWork}, {@code createBuilds}, {@code createSchematics},
+	 * {@code villageTrains}; each comes into the config with the item that builds it (39.2 to 39.7).
+	 */
+	public static final boolean M39 = false;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films
@@ -101,12 +108,13 @@ public final class Expansions {
 			case "M35" -> M35;
 			case "M37" -> M37;
 			case "M38" -> M38;
+			case "M39" -> M39;
 			default -> false;
 		};
 	}
 
 	/** Every milestone with a gate, by name. */
-	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35", "M37", "M38");
+	static final java.util.List<String> MILESTONES = java.util.List.of("M27", "M28", "M29", "M30", "M31", "M32", "M33", "M34", "M35", "M37", "M38", "M39");
 
 	/** The milestones whose gates are open now ({@link #on}): what a config file written now records (34.23). */
 	static java.util.List<String> open() {
@@ -134,6 +142,7 @@ public final class Expansions {
 				"wonderStanding" -> "M35";
 			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks" -> "M37";
 			case "denWardens", "denChallenges", "denChallengeDays", "villageMegas", "cuisineDishes", "beanFarms" -> "M38";
+			case "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains" -> "M39";
 			default -> null;
 		};
 	}

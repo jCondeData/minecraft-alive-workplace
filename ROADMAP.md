@@ -4738,7 +4738,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Library in the new spruce style has Carved Wood shelves and its Librarian still takes the lectern; a Carved Wood
   chest is a supply chest; the Grand style with Rechiseled builds with nothing skipped; renders reviewed; scene
   `carved_styles`.
-- [ ] **37.8** **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
+- [x] **37.8** (review: pending 2026-10-18) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
   (`sophisticatedstorage:chest`, `iron_chest` ... `netherite_barrel`, `limited_barrel_1` ... `4`) works as a supply
   chest, a porter's chest and a Storehouse chest; builders treat them as containers (never broken while clearing, never
   copied; they're in `#c:chests` and `#c:barrels`); and the Storehouse measures free room in items where a stack

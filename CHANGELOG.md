@@ -36,6 +36,17 @@ asks for the steps, `latest.log` and any crash report).
   CobbleFurnies, Cozy Home) turn into their own pieces. A home planned beside a pasture with a Pokémon in it gets a
   Trainer's room: CobbleFurnies' Poké Ball chair and desk in place of its first chair and the table by it, even with
   Handcrafted first (37.4).
+- **Furnished workplaces (2.1, behind its gate).** The Supply Shop, Library, Healing Center, Schoolhouse, Village Hall,
+  Kitchen and Print Shop get furniture at every level: counters, a shelf of cups, a picture, hanging pots and rose
+  trellises in the shop, reading desks in the Library, benches in the schoolroom, the Village Hall and the Healing
+  Center's waiting room, the teacher's, nurse's and printer's desks, the council table, crockery on the Kitchen's worktop. Their
+  job blocks, beds and chests are never swapped; with the pack's mods they become Handcrafted counters, desks and
+  benches and Beautify trellises, hanging pots and picture frames, and the Healing Center's and Schoolhouse's desks are
+  CobbleFurnies' Poké Ball desks. A furniture mod's desk, counter or cabinet is never taken for a job's chest (37.5).
+- **Villagers use the furniture (2.1, behind its gate).** At supper and in the evening villagers sit on the furniture
+  mods' chairs, stools, benches, couches and sofas (Handcrafted, Cozy Home, CobbleFurnies), one villager to a seat, and
+  get up for work, danger or bed; they claim and sleep in Handcrafted's fancy beds, whose house counts as their home,
+  and a home with a seat in it is worth 1 beauty to its people (37.6).
 - **Sophisticated Storage as village storage (2.1, behind its gate).** Its chests, barrels and limited barrels of every
   tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
@@ -68,6 +79,11 @@ asks for the steps, `latest.log` and any crash report).
   pulleys in the new place. A part broken before the build is done is put back first, and once it's finished the
   owner is told whether every part turns, or which don't and where ("1 part doesn't turn: Shaft at 12 64 -30"). The
   parts list is a data file (`kinetic_parts`). Setting `createBuilds` (behind the 2.3 gate) (39.5).
+- **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
+  in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
+  and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break
+  the controller and they are separate stores again. A "Sophisticated" style builds the Storehouse with the mod's
+  chests and barrels and a controller on top of the Storehouse block.
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

@@ -300,7 +300,8 @@ public final class ClassNeeds {
 
 	/**
 	 * The beauty near {@code villager}'s home: the points of the decorations finished within {@link #BEAUTY_RANGE} of their
-	 * bed, and their home's own garden ({@link HomeGrades#gardenBeauty}: the Manor II's counts 3, 34.16).
+	 * bed, their home's own garden ({@link HomeGrades#gardenBeauty}: the Manor II's counts 3, 34.16), and its furniture
+	 * (a home with a furniture mod's seat in it counts {@link io.github.jcondedata.aliveworkplace.furnish.FurnitureSeats#FURNISHED_BEAUTY}, 37.6).
 	 */
 	public static int beauty(ServerLevel level, Villager villager) {
 		BlockPos bed = VillageNeeds.bed(level, villager);
@@ -311,6 +312,7 @@ public final class ClassNeeds {
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, bed, BEAUTY_RANGE)) {
 			points += Decorations.points(f.structure());
 		}
+		points += io.github.jcondedata.aliveworkplace.furnish.FurnitureSeats.homeBeauty(level, villager); // a furnished home (37.6)
 		return points + Homes.of(level, villager).map(h -> HomeGrades.gardenBeauty(h.structure())).orElse(0); // their own garden (34.16)
 	}
 

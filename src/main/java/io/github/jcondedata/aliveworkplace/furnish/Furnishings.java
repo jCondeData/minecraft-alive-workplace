@@ -12,6 +12,13 @@ import java.util.Locale;
  * {@link Expansions#M37}; with the switch off, or none of the mods installed, every build is the plain vanilla build.
  */
 public final class Furnishings {
+	/**
+	 * The furniture mods' pieces that hold items (Handcrafted's counters, desks, shelves..., Cozy Home's storage counters,
+	 * CobbleFurnies' cabinets): with furnished builds on they are decoration, so no job reads them as chests (37.5).
+	 */
+	public static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> FURNITURE_STORAGE =
+		net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BLOCK, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("furniture_storage"));
+
 	/** The order the furniture mods are tried in when a piece is chosen (owner's default, M37 design note). */
 	public static final List<String> DEFAULT_MODS = List.of("handcrafted", "cozyhome", "cobblefurnies", "beautify");
 

@@ -247,6 +247,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B173** Other blueprints may have B170's doorway trap: a carpet or slab on the floor right under a two-high lintel, so a villager (1.95 tall) stepping onto it hits its head and can't get through (found by lane-a-1018-0623 while fixing B170 in leaders_hall; not checked elsewhere). Expected: every blueprint's doorways leave 2 blocks of headroom above the step-up. Test: a check in tools/blueprints/check.py over every blueprint, and a GameTest walking a villager through one fixed door (found by lane-a-1018-0623, 2026-10-18)
 - [ ] **B174** MegaStoneCompatTests (38.6) flake in local runCompatGameTest on main 60c64a01 + B159 (test-only FisherRodGameTests change), 2026-10-18 08:35Z and 08:38Z, a different test each run: ajewellercutsamegastoneforthevillagestrainers ('stones made [], the Master's team wants [mega_showdown:abomasite]; ... the chest holds 1 crystal, 2 gold, 4 emeralds; the Jeweller is alive') then onlythestonesthestorelacks ('stones now [mega_showdown:aerodactylite]'); the 08:17Z compat run on d3a314a7 passed 293/293. Also main CI build 39110906311 (d3a314a7) failed one runGameTest test whose name the log doesn't print (gametest-report artifact), and passed on the next commit with the same code. Expected: passes every run. Test: MegaStoneCompatTests repeated under runCompatGameTest (found by lane-a-1018-0623) (found by lane-a-1018-0623, 2026-10-18)
 - [ ] **B175** SiegeGameTests.aGatehouseTakesThreeTimesAsLong flaked once in a local full build on 2026-10-18 (main + 39.2-39.4 merge): the pillager wandered to (0.5, 2, 19.8) with the Gatehouse's way open (bars 0/0, gate 0) and wasn't through after 2800 ticks; passed in the two runs after. Expected: the pillager walks through the open gateway. Test: SiegeGameTests.aGatehouseTakesThreeTimesAsLong (found by lane-e-1018-0713, 2026-10-18)
+- [ ] **B176** Flaky GameTest LadderGameTests.aSiegeGathersOutsideTheRingOfWalls: in lane-c-1018-0352's full runGameTest at 9f9290da it failed "the raiders aren't about: 3" (VillageRaids.raiders found fewer than the raid started); it passed in lane-c-1018-0652's reruns at 700ea3cd (the same code) and at 6b2fcfd7. Likely cause (not proven): the raiders scatter up to 3 blocks round a gathering point moved out past the ring (Sieges.outside), only the point itself is checked with isLoaded, so a raider placed in a chunk not loaded at that moment isn't found in the same tick; which chunks east of the area are still loaded depends on the batches before it. Expected: every raider started is about, or the test loads the ground it spawns on. Test: LadderGameTests.aSiegeGathersOutsideTheRingOfWalls (found by lane-c-1018-0652, 2026-10-18)
+- [ ] **B177** PartnersForgeCompatTests.aPidgeyTakesTheAirmailUpAndLandsBackEmptyHanded flaked once in a local full build on 2026-10-18 (main + 39.5): 'the Pidgey only climbed 0.0 blocks'; passed in the full compat run right after (329/329). Expected: the Pidgey climbs with the airmail every run. Test: PartnersForgeCompatTests.aPidgeyTakesTheAirmailUpAndLandsBackEmptyHanded (found by lane-e-1018-0713, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4722,14 +4724,14 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   compat GameTests build the Starter Cottage and the Inn with Handcrafted and with CobbleFurnies, nothing skipped;
   scene `furnished_home` (`-Pfurniture=true`, a new harness switch that adds the pack's furniture mods; the cottage
   furnished, room by room).
-- [ ] **37.5** **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
+- [x] **37.5** (review: pending 2026-10-18) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
   Kitchen and the M34 trades' workshops get furniture where it fits: desks for the Scribe and Printer, counters and
   shelves in the shops, crockery and benches in the Kitchen, Beautify trellises, hanging pots and picture frames as
   decoration. Never a job block, a bed a villager needs, or a container is swapped: those stay what the job reads.
   Done when: a GameTest checks no spot in any build covers a job block, a bed or a container; compat GameTests build
   three workplaces with Handcrafted and Beautify and each job still finds its block and chests; renders reviewed with
   the architect skill; scene `furnished_workplaces`.
-- [ ] **37.6** **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
+- [x] **37.6** (review: pending 2026-10-18) **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
   (a block tag `aliveworkplace:villager_seats`, its modded entries written with `"required": false`, so the tag loads
   without the mods), where villagers sit for meals and in the evening, as they sit in the Stadium's stands
   (`cup/StandSeat`), and stand up for work, danger or bed. Handcrafted's fancy beds are beds (`FancyBedBlock` extends
@@ -4757,7 +4759,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   tier takes and gives items through porters and builders; a chest with a stack upgrade (its upgrade item in its
   upgrade slot) shows its real free room on the Storehouse board; a builder clearing a site leaves a Sophisticated
   chest in place with its contents; the existing barrel test still passes.
-- [ ] **37.9** **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
+- [x] **37.9** (review: pending 2026-10-18) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
   Storehouse's area makes the storage blocks linked to it (touching storage blocks and `storage_link`s, found by walking
   block ids within the controller's reach) one store, read and filled through the controller's own item storage; the
   linked blocks drop out of the store list, so nothing counts twice. First check the controller exposes item storage
@@ -5066,6 +5068,38 @@ the owner's port jar; M33's caravans (39.7).
   per-dimension `machines` record wasn't needed (workers find machines near their workstation in loaded chunks); only
   the worker's `machine_job` attachment is saved. A worker looks for machine work every 5 s whatever their job's own
   behaviour is doing (most never stop running, e.g. the armorer's smelting), and that work waits during a trip.
+- 2026-10-18 (37.6, lane-c-1018-0352, decisions): (1) "For meals and in the evening": vanilla villagers have no meal
+  hour, so villagers sit from supper (the hall's banquet hour, 10500) till their schedule turns to rest (12000), when
+  idle or at the evening meeting; they stand for work, bed, danger (hurt, a hostile near, panic, a raid), a broken
+  seat or `furnishedBuilds` off. (2) They look for the nearest free seat within 8 blocks (not only in their own home)
+  and walk to it for at most 30 s. (3) "A furnished room counts towards M34's beauty need": a home whose building holds
+  a `#aliveworkplace:villager_seats` block is worth 1 beauty (`FurnitureSeats.FURNISHED_BEAUTY`) in
+  `ClassNeeds.beauty`; with the switch off, 0. (4) The seat entity (`aliveworkplace:furniture_seat`) is saved only to
+  carry its villager and lets them go on its first tick after a load (design note: seats aren't saved). (5) Handcrafted's
+  fancy beds ARE villager homes: the compat test `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome`
+  passes (the head is a `minecraft:home` point of interest, a villager claims it and sleeps in it, and its house counts
+  as their home), so B166's worry doesn't hold on Handcrafted 4.0.3; left for the bug lane to close (and 37.5's
+  workplace beds, kept vanilla for that reason, could take fancy beds).
+- 2026-10-18 (37.5, lane-c-1018-0352, decisions): (1) Handcrafted's counters, desks, shelves, drawers, cupboards,
+  nightstands and side tables hold items (its ContainerBlockEntity), so the compat test found the Print Shop's
+  Handcrafted desk and counters counted as the printer's chests. Following the design note ("modded storage furniture is
+  decoration only... no job reads it"), the block tag `#aliveworkplace:furniture_storage` (those, Cozy Home storage
+  counters, CobbleFurnies cabinets; all `required: false`) is skipped as storage by `SupplyContainers` while
+  `furnishedBuilds` is on; off, nothing changes. (2) Workplaces' beds (Healing Center ward, shopkeeper, cook) get no bed
+  spot: a fancy bed isn't a vanilla villager home (homes filed as B166). (3) "Where it fits": the Tailor's and Jeweler's
+  workshops keep their vanilla furniture (the Print Shop is the M34 workshop furnished), and the Kitchen gets crockery in
+  place of its worktop fern but no bench or shelf (no free wall beside its table, oven, bed and larder hatch, and any
+  extra block made `workplaceBuilt_kitchen` fail every run: B168). (4) The Healing Center's and
+  Schoolhouse's desks are Poké Ball desks whenever `cobblefurnies` is in the list (owner's 2026-10-18 answer), partner or
+  not. (5) New kinds `trellis` and `hanging_pot` for Beautify's; a vanilla hanging pot is a potted plant under a chain
+  (`check.py` now accepts a pot hung from a chain: a flower pot needs nothing under it in game, proven by the vanilla
+  Supply Shop build test).
+- 2026-10-18 (lane-e-1018-0413, wip): 39.2, 39.3 and 39.4 are built and ticked on `wip/lane-e`, not on `main`: the
+  run's last full build (06:53 UTC, merged with main at 3b33d43c) passed the compat suite (305/305 in a separate run)
+  but failed one main GameTest, `VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne` ("a hall before
+  the build": a Village Hall already stands near the test's builder; green on main's CI, so most likely a leftover
+  hall from a test that the new 39.x test classes moved into its spot). Next lane-e run: find what leaves the hall
+  (try `batch`/`Leftovers.clear` in that test or the new tests), full build, merge to main.
 - 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
   Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
   `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed

@@ -317,7 +317,8 @@ def kitchen_build():
     b.set(6, 1, 4, "chest", facing="west", type="single", waterlogged=False)
     b.set(6, 1, 8, "smooth_stone_slab", type="double", waterlogged=False)
     b.set(5, 1, 8, "smooth_stone_slab", type="double", waterlogged=False)
-    b.set(5, 2, 8, "potted_fern")
+    b.set(5, 2, 8, "flower_pot")  # crockery on the worktop (37.5; it was a potted fern)
+    furnish(b, "crockery", 5, 2, 8, "north", wood="spruce", colour="white")
     b.bed(3, 1, 8, "yellow", facing="west")
     for x in range(2, 7):
         log(b, x, 5, 6, KI_FRAME, axis="x")

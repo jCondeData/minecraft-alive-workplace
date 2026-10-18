@@ -78,6 +78,12 @@ def hall_body(b):
             log(b, x, 5, z, FRAME, axis="x")
         lantern(b, 3, 4, z, hanging=True)
         lantern(b, 9, 4, z, hanging=True)
+    # Furnished (37.5): the rows are benches facing the hall block, pots hanging over the runner
+    for z in (5, 7):
+        for x in (2, 3, 4, 8, 9, 10):
+            furnish(b, "bench", x, 1, z, "south", wood="spruce")
+    for x in (5, 7):
+        hanging_pot(b, x, 4, 8, "potted_blue_orchid", "spruce")
 
 
 def hall_roof(b):
@@ -174,6 +180,13 @@ def meeting_room(b):
     b.set(13, 2, 9, "potted_azure_bluet")
     b.set(15, 2, 9, "potted_oxeye_daisy")
     b.set(16, 3, 7, f"{BANNER}_wall_banner", facing="west")
+    # Furnished (37.5): the council table and its eight chairs
+    for x in (13, 14, 15):
+        furnish(b, "table", x, 1, 7, "north", wood="spruce")
+        furnish(b, "chair", x, 1, 6, "south", wood="spruce")
+        furnish(b, "chair", x, 1, 8, "north", wood="spruce")
+    furnish(b, "chair", 12, 1, 7, "east", wood="spruce")
+    furnish(b, "chair", 16, 1, 7, "west", wood="spruce")
     for x in range(12, 17):
         log(b, x, 5, 7, FRAME, axis="x")
     lantern(b, 13, 4, 7, hanging=True)

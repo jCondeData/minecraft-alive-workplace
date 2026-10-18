@@ -527,6 +527,14 @@ def clinic_hall(b):
         for z in range(3, 8):
             log(b, x, 4, z, CLINIC_FRAME, axis="z")
         lantern(b, x, 3, 4, hanging=True)
+    # Furnished (37.5): the waiting benches, the nurse's desk in the corner behind the counter, pictures on the side
+    # posts
+    for z in (3, 4):
+        furnish(b, "bench", 2, 1, z, "east", wood="birch")
+        furnish(b, "bench", 8, 1, z, "west", wood="birch")
+    desk(b, 2, 1, 7, "east", "birch")
+    picture(b, 2, 3, 5, "east", "red", "birch")
+    picture(b, 8, 3, 5, "west", "pink", "birch")
 
 
 def clinic_roof(b, back=9):
@@ -709,6 +717,17 @@ def shop_hall(b):
             log(b, x, 5, z, SHOP_FRAME_LOG, axis="x")
     lantern(b, 5, 4, 3, hanging=True)
     lantern(b, 5, 4, 7, hanging=True)
+    # Furnished (37.5): the counter's boards are a counter either side of the Shop Counter, a shelf of cups and a
+    # picture on the back wall behind the shopkeeper, pots hanging in the display windows, trellises by the door
+    for x in (4, 6, 7):
+        furnish(b, "counter", x, 1, 6, "north", cells=((0, 0, 0), (0, 1, 0)), wood="spruce")
+    furnish(b, "counter", 3, 1, 6, "north", wood="spruce")  # the lamp stands on this one
+    shelf(b, 6, 3, 7, "north", "spruce")
+    picture(b, 4, 3, 7, "north", "blue", "spruce")
+    for x in (3, 7):
+        hanging_pot(b, x, 4, 3, "potted_red_tulip" if x == 3 else "potted_oxeye_daisy", "spruce")
+    for x in (4, 6):
+        trellis(b, x, 1, 1, "south", "spruce")
 
 
 def shop_roof(b):
@@ -1683,6 +1702,14 @@ def schoolhouse_room(b):
     box(b, 2, 5, 3, 8, 5, 9, "spruce_planks")  # the loft floor (the lights hang from it)
     lantern(b, 3, 4, 6, hanging=True)
     lantern(b, 7, 4, 6, hanging=True)
+    # Furnished (37.5): the rows are benches facing the blackboard, the teacher's desk beside the lectern, pictures on
+    # the side posts between the windows
+    for z in (4, 5, 6):
+        for x in (3, 4, 6, 7):
+            furnish(b, "bench", x, 1, z, "south", wood="spruce")
+    desk(b, 7, 1, 8, "south", "spruce")
+    picture(b, 2, 3, 6, "east", "yellow", "spruce")
+    picture(b, 8, 3, 6, "west", "light_blue", "spruce")
 
 
 def school_roof(b):
@@ -1800,6 +1827,17 @@ def library_hall(b):
     for x in range(2, 11):
         log(b, x, 6, 6, "dark_oak_log", axis="x")
     lantern(b, 6, 5, 6, hanging=True)
+    # Furnished (37.5): the reading tables are the scholars' desks, each with its chair; pictures either side of the
+    # door, pots hanging from the tie beam over the desks
+    for tx, side in ((4, "west"), (8, "east")):
+        for tz in (5, 6):
+            furnish(b, "desk", tx, 1, tz, side, wood="dark_oak")
+        cx = tx - 1 if tx == 4 else tx + 1
+        furnish(b, "chair", cx, 1, 6, "east" if tx == 4 else "west", wood="dark_oak")
+    for x, colour in ((5, "green"), (7, "brown")):
+        picture(b, x, 3, 3, "south", colour, "dark_oak")
+    for x in (4, 8):
+        hanging_pot(b, x, 5, 6, "potted_fern", "dark_oak")
 
 
 def library():

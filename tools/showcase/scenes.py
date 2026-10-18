@@ -915,6 +915,10 @@ SCENES = [
       "a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state", 45,
       [("01_raid_den", "A raid den by the hall"), ("02_raid_den_page", "The Defense page: tier 3, Fire, active"),
        ("03_raid_den_resting", "A beaten den, resting")], cobblemon=True),
+    # Den Wardens (ROADMAP 38.3, Cobblemon Raid Dens): a guard stands watch by the den
+    S("den_warden", "Village Hall", "Den Wardens: a guard stands watch at the raid den",
+      "a guard posted from the hall's Defense page stands watch by the raid den, by day", 45,
+      [("01_den_warden", "The warden by the glowing den"), ("02_den_warden_page", "The Defense page: the den's warden")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,

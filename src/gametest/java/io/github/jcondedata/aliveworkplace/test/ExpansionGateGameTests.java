@@ -44,11 +44,11 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "tradePacts", "alliances", "feuds", "feudWars", "realmMap", "weeklyLeaderboard", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
 		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends", "builderScaffolding",
-		"furnishedBuilds", "moddedStorageNetworks");
+		"furnishedBuilds", "moddedStorageNetworks", "denWardens", "denChallenges");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
-		"coloniesPerVillage", "realmMaxMembers", "leaderboardHour", "wonderServerLimit", "wonderCrew", "wonderStanding");
+		"coloniesPerVillage", "realmMaxMembers", "leaderboardHour", "wonderServerLimit", "wonderCrew", "wonderStanding", "denChallengeDays");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -79,6 +79,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("VillageHouses.POKEMON_JOBS", () -> io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS);
 		map.put("Legends", () -> Legends.ENABLED);
 		map.put("LegendSites", () -> LegendSites.ENABLED);
+		map.put("DenWardens", () -> io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED);
+		map.put("DenChallenges", () -> io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED);
 		map.put("Gifted.CHANCE", () -> Gifted.CHANCE > 0);
 		map.put("Edicts", () -> Edicts.ENABLED);
 		map.put("WorkHorn", () -> WorkHorn.ENABLED);
@@ -279,7 +281,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 128, "every option on the screen in GameTests (37.1 furnishedBuilds and moddedStorageNetworks, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 131, "every option on the screen in GameTests (37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 

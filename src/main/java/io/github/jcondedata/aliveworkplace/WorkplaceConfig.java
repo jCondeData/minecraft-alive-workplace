@@ -143,6 +143,18 @@ public final class WorkplaceConfig {
 	 * hired stand idle.
 	 */
 	public boolean physicians = Expansions.on(Expansions.M32);
+	/**
+	 * Guards can be posted to the raid dens the village knows (ROADMAP 38.3, Cobblemon Raid Dens): they stand watch by
+	 * day, and a player who joins a raid there gets a cheer. Off: no new wardens, and those posted go back to normal duty.
+	 */
+	public boolean denWardens = Expansions.on(Expansions.M38);
+	/**
+	 * A village's best trainer (a Trainer Leader or a Master) challenges an active raid den it knows every
+	 * {@link #denChallengeDays} days (ROADMAP 38.4): a win brings that tier's raid loot to the store. Off: no challenges.
+	 */
+	public boolean denChallenges = Expansions.on(Expansions.M38);
+	/** Days between a village's raid den challenges (38.4). */
+	public int denChallengeDays = 3;
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -482,7 +494,8 @@ public final class WorkplaceConfig {
 		"leaderboardHour", 0, 23,
 		"wonderServerLimit", 0, 64,
 		"wonderCrew", 1, 32,
-		"wonderStanding", 50, 100);
+		"wonderStanding", 50, 100,
+		"denChallengeDays", 1, 30);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -821,6 +834,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = firewardens && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = wellKeepers && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED = denWardens && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED = denChallenges && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.EVERY_DAYS = denChallengeDays;
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();

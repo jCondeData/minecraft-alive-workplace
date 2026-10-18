@@ -126,6 +126,10 @@ public class GuardPatrol extends Behavior<Villager> {
 			waypoint = null; // out scouting (32.12): Scouts walks them
 			return;
 		}
+		if (DenWardens.busy(villager)) {
+			waypoint = null; // a den's warden (38.3): DenWardens walks them
+			return;
+		}
 		BlockPos post = Builders.benchPos(villager).orElse(null);
 		if (post == null) {
 			return;

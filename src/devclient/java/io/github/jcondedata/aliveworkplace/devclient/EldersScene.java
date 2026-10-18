@@ -51,6 +51,8 @@ final class EldersScene {
 	private int bramSlot = -1;
 	private double bramFrom;
 	private double tomFrom;
+	private int bramRetry;
+	private int tomRetry;
 
 	void tick(Minecraft mc) {
 		MinecraftServer server = mc.getSingleplayerServer();
@@ -131,14 +133,20 @@ final class EldersScene {
 			server.execute(() -> {
 				bram.moveTo(-6.5, -60, 1.5, -90f, 0f);
 				tom.moveTo(-6.5, -60, 3.5, -90f, 0f);
-				bram.setNoAi(false);
-				tom.setNoAi(false);
+				for (Villager v : List.of(bram, tom)) {
+					// A fresh start for both: no walk or failed path left from before they were moved (B187).
+					v.getNavigation().stop();
+					v.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+					v.getBrain().eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+					v.setNoAi(false);
+				}
 			});
 		}
 		if (tick >= 220 && tick < WALK_FROM + 75) {
 			server.execute(() -> {
-				Walker.requestWalk(bram, new BlockPos(10, -60, 1), 0.5f, 0, 0);
-				Walker.requestWalk(tom, new BlockPos(10, -60, 3), 0.5f, 0, 0);
+				// Asked the way every worker asks: with its own retry counter (B187: Tom once had no walk target at all).
+				bramRetry = Walker.requestWalk(bram, new BlockPos(10, -60, 1), 0.5f, 1, bramRetry);
+				tomRetry = Walker.requestWalk(tom, new BlockPos(10, -60, 3), 0.5f, 1, tomRetry);
 			});
 		}
 		if (tick == WALK_FROM) {
@@ -147,7 +155,8 @@ final class EldersScene {
 				tomFrom = tom.getX();
 				float elder = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(0f);
 				float young = tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(0f);
-				Showcase.check(young == 0.5f && Math.abs(elder - 0.5f * LifeStages.ELDER_WALK) < 0.001f, "the elder's walk is set slower: " + elder + " against " + young);
+				Showcase.check(young == 0.5f && Math.abs(elder - 0.5f * LifeStages.ELDER_WALK) < 0.001f, "the elder's walk is set slower: " + elder + " against " + young
+					+ (tom.getBrain().hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) ? " (Tom's last path failed)" : ""));
 			});
 		}
 		if (tick == WALK_FROM + 60) {

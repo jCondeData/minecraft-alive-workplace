@@ -7,7 +7,7 @@ with every other expansion. It covers: ages, the slower walk, the "quiet old age
 Families, the Family page and the Printer's family tree (34.21), and the seeding of everyone's age when classes switch
 on (34.22, [Classes](classes.md)).
 
-Roadmap items: 34.19, 34.19a, 34.20, 34.21, B95, B99, B102
+Roadmap items: 34.19, 34.19a, 34.20, 34.21, B95, B99, B102, B187
 
 <!-- Lanes: add each id to the line above in the commit that builds it (34.19, 34.20), and put the new config keys,
      saved fields, tests and scenes in backticks so wikicheck.py checks them. -->
@@ -96,6 +96,10 @@ everyone of the family, generation by generation, two to a page.
   dropped for a moment (a path that failed), vanilla walks to that same block at its own pace (0.5). So when Walker finds
   its block already set at another pace, it sets it again at its own and changes the pace of the walk under way
   (B99); before, the elder then walked the rest of the way at full speed, and a nimble villager lost the faster walk.
+  After a path that failed, a walk is asked again a second later (`Walker.RETRY_TICKS`), counted on the villager's own
+  clock as well as by the caller, so a caller that keeps no counter (a successor following the elder, a mentor going to
+  the hall) is never dropped for good (B187: vanilla keeps the "can't reach" note until a path gets there, so one failed
+  path used to stop every later walk; in the showcase Tom stopped after two blocks and Bram looked the faster).
 - **The mood.** `Moods` adds 5 for an elder who is fed (ate within their day) and has a bed. Because it lifts the mood,
   it also helps an elder towards the 20 happy days below.
 - **The talk.** `Chatter` has the topic `elder` (four lines), as likely as any village news.
@@ -263,7 +267,9 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
   target every worker gets, an ageless elder's too, and two villagers walking side by side for 60 ticks, the elder
   covering 80 to 90% of the ground (`anElderWalksSlower`); a walk the game took over at its own pace asked again at the
   elder's (`b95AnElderIsAskedAgainWhenVanillaTakesTheWalkOver`) and a walk the game had already started slowing to 80 to
-  90% (`b95AnElderSlowsAWalkVanillaStarted`); the mood 5 higher than a younger villager's same day, first on
+  90% (`b95AnElderSlowsAWalkVanillaStarted`); the same walk asked tick after tick with no retry counter, 0.461 against
+  0.5 and 74 to 90% of the ground (`b187AnElderAskedWithoutACounterStillWalksSlower`), and a walk after a failed path
+  asked again within 25 ticks (`b187AWalkAfterAFailedPathIsTriedAgain`); the mood 5 higher than a younger villager's same day, first on
   the card, gone when hungry or without a bed, and the four lines word for word (`aFedAndHousedElderHasAQuietOldAge`);
   a reload, an older save's villager, an elder made ageless before this version (`aReloadKeepsTheDay`); a child grown up
   in the hall's own round, and an elder noted by it (`aChildGrowingUpIsGrownFromToday`); `villagerAges` off and on again

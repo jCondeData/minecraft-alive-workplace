@@ -254,6 +254,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **A villager whose path failed once walks again.** A walk asked for after a failed path waited for a retry that
+  never came when the job asking kept no count (a successor following the elder, a retired mentor going to the hall):
+  the villager stood still from then on. It is now tried again a second later; the elders' showcase, where young Tom
+  stopped after two blocks and Bram looked the faster, walks them side by side again (B187).
 - **A Signpost no longer names the same place on two boards, or its own village.** A village standing exactly on a
   diagonal from the post was written on both boards beside it, hiding the village one of them should have named, and a
   village hall placed only a moment before could be taken for a neighbour. Each place now goes on one board only, and

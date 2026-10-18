@@ -1559,6 +1559,8 @@
   "chronicle.aliveworkplace.train_left": "A train left for %s with %s",
   "chronicle.aliveworkplace.train_came": "A train from %s came in with %s",
   "chronicle.aliveworkplace.train_walked": "The station was gone when the train from %s came: its caravan walks the rest of the way",
+  "train.aliveworkplace.caravan": "%s - %s Caravan Train",
+  "chronicle.aliveworkplace.train_assembled": "%s took the seat of the village's new train at the station: it runs to %s and back",
   "chronicle.aliveworkplace.train_track_laid": "%s laid the track along the road to %s",
   "chronicle.aliveworkplace.railway_open": "The railway to %s is open: caravans go by train",
   "entity.aliveworkplace.caravan_carter": "%s's caravan",

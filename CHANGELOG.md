@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Real Create trains between villages.** With Create, two villages joined by rail now put their own Create train
+  together at a station (a bogey, a carriage with the caravan's chest, controls at both ends and a jobless villager in
+  the seat as driver) and Create runs it on a schedule between the two stations. Caravans wait at the station, ride the
+  train and are unloaded when it stands at the other village's station. The scene `village_train` shows it moving.
 - **Cellars for eight Level IIs, and for old builds.** The Inn, Winery, Farmstead, Guildhall, Barracks, Research Lab,
   Jeweler's Workshop and Artisan's House get a Level III: their Level II with a furnished, lit cellar dug under it (an ale
   and wine cellar, a barrel vault, a root cellar, a strongroom, an armoury, a lower lab, a vault, a storeroom), down a

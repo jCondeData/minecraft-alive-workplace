@@ -5039,6 +5039,12 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-e-1018-0413, wip): 39.2, 39.3 and 39.4 are built and ticked on `wip/lane-e`, not on `main`: the
+  run's last full build (06:53 UTC, merged with main at 3b33d43c) passed the compat suite (305/305 in a separate run)
+  but failed one main GameTest, `VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne` ("a hall before
+  the build": a Village Hall already stands near the test's builder; green on main's CI, so most likely a leftover
+  hall from a test that the new 39.x test classes moved into its spot). Next lane-e run: find what leaves the hall
+  (try `batch`/`Leftovers.clear` in that test or the new tests), full build, merge to main.
 - 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
   Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
   `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed

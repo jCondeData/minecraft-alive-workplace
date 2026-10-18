@@ -4778,7 +4778,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   a cable counts each item once, takes a porter's delivery and gives the builder what's asked; a chest unplugged from
   the network becomes its own store again; the existing no-double-count test still passes; scene `modded_storehouse`
   part two (the terminal showing the store).
-- [ ] **37.11** **The pack test and the guide.** The pack test (`tools/packtest/run.sh`) builds a Starter Cottage and
+- [x] **37.11** (approved auto 2026-10-18) **The pack test and the guide.** The pack test (`tools/packtest/run.sh`) builds a Starter Cottage and
   an Inn on the real pack, where Cozyhome is installed, with `furnitureMods` set to Cozyhome first, and checks they
   finish with Cozyhome pieces and nothing skipped; `docs/wiki/` gets a "Furniture and storage mods" page (which mods,
   what each changes, the config switches, how it falls back) and the player guide a short section. Done when: the pack

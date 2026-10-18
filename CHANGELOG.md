@@ -373,6 +373,12 @@ asks for the steps, `latest.log` and any crash report).
   them or from your hand, only eases the cough for a day, as the story says, and a villager a Remedy is keeping well
   doesn't catch it. With **Physicians** off, Doctor Wren comes as before.
 
+### Dev
+- **The pack test builds furnished homes** (37.11). `FURNISHED=true tools/packtest/run.sh` boots Cobbleverse with
+  `furnitureMods` set to Cozy Home first and has two builders build the Starter Cottage and the Inn; it passes only when
+  both finish with nothing skipped, every block and furniture piece in place and Cozy Home pieces in each. The nightly
+  run does it too. The wiki's "Furniture and storage mods" page gains a table of each mod, and the player guide a page.
+
 ## 0.144.0 — 2026-10-13
 
 ### Added

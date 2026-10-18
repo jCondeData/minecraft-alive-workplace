@@ -53,13 +53,54 @@ public final class Chefs {
 	/**
 	 * What {@code chef} cooks: {@link #menu(ServerLevel)}, then the other mods' dishes ({@link CuisineDishes}, ROADMAP 38.8:
 	 * Cobblecuisine's salads and sandwiches from level 1, curries from 3, cakes from 4) of the chef's level and below.
-	 * Without those mods, or with {@code cuisineDishes} off, it's the same menu.
+	 * Then every Campfire Pot recipe's dish ({@link #potDishes}, 38.11). Without those mods, or with {@code cuisineDishes}
+	 * off, it's the same menu.
 	 */
 	public static List<Item> menu(ServerLevel level, Villager chef) {
 		Set<Item> out = new LinkedHashSet<>(menu(level));
 		out.addAll(CuisineDishes.upTo(io.github.jcondedata.aliveworkplace.build.BuilderLevels.level(chef)));
+		out.addAll(potDishes(level));
 		return new ArrayList<>(out);
 	}
+
+	/**
+	 * Every Campfire Pot recipe's dish (ROADMAP 38.11): the results of the recipes of Cobblemon's pot types
+	 * ({@code cobblemon:cooking_pot} and {@code cobblemon:cooking_pot_shapeless}, found by type, so another mod's or a data
+	 * pack's come too), such as the EXP Candies, the IV and EV candies, medicines and sweets. A result with its own
+	 * components (a potion's contents) is left out: the chef cooks plain items. The chef cooks one only from makings the
+	 * chests hold ({@link Crafting#plan}). Empty without Cobblemon, and while {@code cuisineDishes} (behind M38's gate)
+	 * is off.
+	 */
+	public static List<Item> potDishes(ServerLevel level) {
+		if (!CuisineDishes.ENABLED) {
+			return List.of();
+		}
+		net.minecraft.world.item.crafting.RecipeManager manager = Recipes.manager(level);
+		synchronized (Chefs.class) {
+			if (manager == potManager) {
+				return potCache; // read once per recipe load
+			}
+		}
+		Set<Item> out = new LinkedHashSet<>();
+		for (RecipeHolder<?> holder : Recipes.all(manager)) {
+			if (!Crafting.isCookingPot(holder.value().getType())) {
+				continue;
+			}
+			ItemStack result = Recipes.result(holder.value(), level.registryAccess());
+			if (!result.isEmpty() && result.getComponentsPatch().isEmpty()) {
+				out.add(result.getItem());
+			}
+		}
+		List<Item> dishes = List.copyOf(out);
+		synchronized (Chefs.class) {
+			potManager = manager;
+			potCache = dishes;
+		}
+		return dishes;
+	}
+
+	private static net.minecraft.world.item.crafting.RecipeManager potManager;
+	private static List<Item> potCache = List.of();
 
 	private Chefs() {
 	}

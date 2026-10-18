@@ -373,6 +373,10 @@ SCENES = [
     job("cuisine_kitchen", "Chef", "Cobblecuisine: a salad and a curry from the Chef",
         "the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest",
         cobblemon=True),
+    # Campfire Pot recipes (ROADMAP 38.11): the Chef cooks the pot's candies and sweets, found by recipe type
+    job("campfire_pot", "Chef", "Campfire Pot recipes: candies from the Chef",
+        "the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest",
+        cobblemon=True),
     # Bean farms (ROADMAP 38.9): the farmer cuts ripe Cobblecuisine beans, leaves the green ones and sows the bare rows
     job("bean_farm", "Farmer", "Cobblecuisine: beans for the menu",
         "the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows",

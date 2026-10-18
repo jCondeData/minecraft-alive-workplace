@@ -131,6 +131,17 @@ public final class Crafting {
 		return new Plan(target, makes.getOrDefault(target, 0), steps, new LinkedHashMap<>(pool.takes), makes);
 	}
 
+	/**
+	 * Whether this tick's planning is used up ({@link #TICK_TRIALS}): a plan now would come back null whatever the
+	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11).
+	 */
+	public static boolean planningSpent(ServerLevel level) {
+		synchronized (TICK_USE) {
+			long[] tick = TICK_USE.get(level);
+			return tick != null && tick[0] == level.getGameTime() && tick[1] >= TICK_TRIALS;
+		}
+	}
+
 	/** How many recipes every plan so far has tried (tests compare it before and after). */
 	public static long trials() {
 		return trials;

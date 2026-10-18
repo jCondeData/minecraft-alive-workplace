@@ -8,7 +8,7 @@ the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9, 38.10, B190, B191
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9, 38.10, 38.11, B190, B191
 
 ## What a player sees
 
@@ -125,6 +125,19 @@ the **Clodsire Eclair** for Nobles every 8. They are wants, not needs, like the 
 had one lately pays its 10% more tax, and the hall's Classes page lists them. As with every luxury, a household takes
 one from the store at dawn when it is due, and a household also takes the class above's (an Artisan
 may take a Deluxe Shake, a Burgher an éclair). Without Cobblecuisine the two luxury files are skipped quietly and the Classes page doesn't list them.
+
+**Campfire Pot recipes (38.11).** With Cobblemon (Cobblecuisine not needed), the Chef's menu also has every Campfire
+Pot recipe's dish: the results of every recipe of the pot's two recipe types (`cobblemon:cooking_pot` and
+`cobblemon:cooking_pot_shapeless`), read from the loaded recipes by type, so another mod's or a data pack's pot recipes
+come too. With Cobblemon 1.7.3 and Mega Showdown that is about 90 dishes: the EXP Candies (XS to XL), the IV and EV candies (Health,
+Mighty, Tough, Smart, Courage, Quick and their opposites), the medicines (Potions, Revives, the status heals, X items),
+the sweets, mochi and teas. A result with its own components (a potion's contents) is left out. He cooks them like his
+other dishes, at his Kitchen Stove (no pot needed there), only when the chests by the stove and the porters' and
+butcher's spare hold every making, and keeps 16 of each in the chests by the stove, which are the village store's
+kitchen: players take them from there and the partners' treats and the hall read the same store. With the makings
+short (sculk and no honeycomb for an EXP Candy XS) nothing is cooked or taken. Switch: `cuisineDishes` (behind M38's
+gate); off, the pot dishes leave the menu except the ones it always had (Poké Bait, Snacks, Cakes, candied apples,
+Aprijuice). Scene `campfire_pot`.
 
 ## How it works
 

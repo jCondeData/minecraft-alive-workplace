@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Chef cooks every Campfire Pot recipe** (2.2, with Cobblemon): the EXP and IV/EV candies, medicines, sweets and
+  any pot recipe a mod or data pack adds, found by recipe type, only from makings in the store, 16 kept by his stove.
 - **Cellars for eight Level IIs, and for old builds.** The Inn, Winery, Farmstead, Guildhall, Barracks, Research Lab,
   Jeweler's Workshop and Artisan's House get a Level III: their Level II with a furnished, lit cellar dug under it (an ale
   and wine cellar, a barrel vault, a root cellar, a strongroom, an armoury, a lower lab, a vault, a storeroom), down a

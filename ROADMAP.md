@@ -4921,7 +4921,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   (a GameTest); the wiki gets a "Raid dens, Megas and Cobblecuisine" page and the player guide a section, and
   `wikicheck.py` passes.
 
-- [ ] **38.11** **Campfire pot recipes** (owner, 2026-10-18). The Chef (or the cook's job) also cooks Cobblemon's
+- [x] **38.11** (review: pending 2026-10-18) **Campfire pot recipes** (owner, 2026-10-18). The Chef (or the cook's job) also cooks Cobblemon's
   campfire pot recipes, such as the candies (Rare Candy, EXP Candies and the IV/EV candies the pack's mods add),
   from the store's ingredients, and stocks them for trainers and players. Done when: every campfire pot recipe the
   installed mods register can be cooked (found by recipe type, not a fixed list), the cook only makes what the
@@ -5096,6 +5096,13 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (38.11, lane-d-1018-1608, decisions): (1) the Chef cooks the Campfire Pot recipes at his Kitchen Stove
+  like his other dishes (Crafting's KITCHEN kind already planned pot recipes; only the menu was a fixed list), so no pot
+  block at his station; (2) no new setting: they ride the `cuisineDishes` switch (behind M38's gate), whose tooltip
+  now says so, to keep the settings screen's count; (3) "stocked for trainers and players": 16 of each in the chests by
+  the stove, which are the store's kitchen (players take them, partner treats and the hall read them); trainers don't
+  yet use candies on their teams (a follow-up if wanted); (4) every level of Chef cooks all of them (the spec gives no
+  levels); a result with components (potion contents) is skipped.
 - 2026-10-18 (39.5, lane-e-1018-0713, decisions; details in `docs/wiki/create.md`, "Contraptions" and "Decisions"):
   (1) the switch is `createBuilds` (the design note gives it 39.5 too); the order is chosen when a site is made and
   saved (`kinetic_order`, false for older saves), so flipping it mid-build never moves the cursor; (2) the parts' groups

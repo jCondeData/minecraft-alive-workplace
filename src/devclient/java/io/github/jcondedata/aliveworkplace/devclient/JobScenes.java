@@ -3300,6 +3300,17 @@ final class JobScenes {
 				new ItemStack(Items.COOKED_CHICKEN, 2));
 			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 1 && c.countItem(cc.apply("beanburger_curry")) >= 1;
 		}));
+		SCENES.put("campfire_pot", job("the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest", 2400, (level, player) -> {
+			// ROADMAP 38.11 (Cobblemon): a Chef at a Kitchen Stove, and in the chest beside it the makings of two of the
+			// Campfire Pot's recipes, found by recipe type: EXP Candy XS (sculk and honeycomb) and the Berry Sweet (blue
+			// dye, a honey bottle and sugar). He cooks both into the chest, with no pot of his own.
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.Chefs.potDishes(level).contains(cobblemonItem("exp_candy_xs")),
+				"the Campfire Pot's recipes are on the Chef's menu (Cobblemon, cuisineDishes)");
+			worker(level, STATION, ModBlocks.KITCHEN_STOVE, ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
+			Container c = chest(level, chestPos(), new ItemStack(Items.SCULK, 4), new ItemStack(Items.HONEYCOMB, 4),
+				new ItemStack(Items.BLUE_DYE, 2), new ItemStack(Items.HONEY_BOTTLE, 2), new ItemStack(Items.SUGAR, 2));
+			return l -> c.countItem(cobblemonItem("exp_candy_xs")) >= 1 && c.countItem(cobblemonItem("berry_sweet")) >= 1;
+		}));
 		SCENES.put("bean_farm", job("the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows", 2400, (level, player) -> {
 			// ROADMAP 38.9 (Cobblemon and Cobblecuisine): a farmer's 5x3 field by her composter, watered down the middle,
 			// a row of ripe beans, a row still green and a row of bare farmland; bean seeds in the chest and no beans, so

@@ -21,6 +21,7 @@
 		"FarmlandTrampleMixin",
 		"ExplosionMixin",
 		"FireBlockAccessor",
+		"GoToPotentialJobSiteMixin",
 		"FirePlacedMixin",
 		"IronGolemRolesMixin",
 		"IronPactMixin",

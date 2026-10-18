@@ -317,7 +317,7 @@ def builders_workshop(b, P):
         win(b, P, 1, 2, z, "west")
     win(b, P, 7, 2, 4, "east", shut=False)
     win(b, P, 4, 2, 8, "south")
-    door(b, 7, 1, 6, P.door, "west")
+    door(b, 7, 1, 5, P.door, "west")  # not beside the bed at (6, 6): a villager walked over it into the lintel (B178)
     # the yard
     box(b, 8, 0, 1, 12, 0, 10, P.yard)
     for x in range(8, 13):
@@ -383,7 +383,7 @@ def carpenters_workshop(b, P):
     for z in (4, 6):
         win(b, P, 1, 2, z, "west")
     win(b, P, 4, 2, 8, "south")
-    door(b, 7, 1, 6, P.door, "east")
+    door(b, 7, 1, 4, P.door, "east")  # not beside the bed at (6, 6): a villager walked over it into the lintel (B178)
     tie(b, P, 4)
     # in the shed: a log on two trestles, a plank bench, boards stood on end
     for z in (4, 6):

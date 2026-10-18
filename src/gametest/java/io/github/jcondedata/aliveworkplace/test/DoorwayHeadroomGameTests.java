@@ -80,4 +80,55 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		// template (9, 1, 3) is the gravel walk in front; (9, 1, 8) the stair's first step, just inside the door
 		walkIn(helper, new BlockPos(14, 2, 9), new BlockPos(14, 2, 14), 14, 0.45);
 	}
+
+	/**
+	 * B178: the War Camp's tents. Each canvas tent is two high only down its middle, under the ridge, and a fence pole
+	 * stood right in that middle at the tent's mouth, so nobody got in to the bed at the back; the Warlord's tent had
+	 * red carpet under its two-high sides (1/16 up: 1.94 under the black wool), where a villager stood at the carpet's
+	 * edge for good. The camp is placed from its own file and three villagers are walked from the yard (vanilla's walk
+	 * target): two up to the beds of the first two tents, one into the Warlord's tent up to its barrel.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"b178WarCamp"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "b178WarCamp")
+	public void villagersWalkIntoTheWarCampsTents(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		BlockPos camp = new BlockPos(3, 1, 3);
+		place(helper, "camp/war_camp", camp);
+		// template cells (y = 1 stands on the ground layer): a start in the yard and a goal inside a tent
+		int[][] walks = {
+			{8, 4, 4, 4},    // the first white tent: its bed's foot is (3, 4), the goal the cell in front of it
+			{8, 9, 4, 9},    // the light grey tent: bed foot (3, 9)
+			{8, 10, 10, 15}, // the Warlord's tent: beside the barrel (9, 16), on what was red carpet under the black wool
+		};
+		java.util.List<Villager> villagers = new java.util.ArrayList<>();
+		java.util.List<BlockPos> goals = new java.util.ArrayList<>();
+		for (int[] w : walks) {
+			Villager villager = helper.spawn(EntityType.VILLAGER, camp.offset(w[0], 1, w[1]));
+			villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NITWIT));
+			villagers.add(villager);
+			goals.add(helper.absolutePos(camp.offset(w[2], 1, w[3])));
+		}
+		helper.onEachTick(() -> {
+			for (int i = 0; i < villagers.size(); i++) {
+				villagers.get(i).getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(goals.get(i)));
+				villagers.get(i).getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(goals.get(i), 0.6f, 0));
+			}
+		});
+		String[] tents = {"the white tent's bed", "the grey tent's bed", "the Warlord's barrel"};
+		helper.succeedWhen(() -> {
+			StringBuilder out = new StringBuilder();
+			for (int i = 0; i < villagers.size(); i++) {
+				BlockPos at = villagers.get(i).blockPosition();
+				if (at.getX() != goals.get(i).getX() || at.getZ() != goals.get(i).getZ()) {
+					BlockPos rel = at.subtract(helper.absolutePos(camp));
+					out.append(out.isEmpty() ? "" : "; ").append("not up to ").append(tents[i]).append(" (camp cell ")
+						.append(walks[i][2]).append(",").append(walks[i][3]).append("): at camp cell ")
+						.append(rel.getX()).append(",").append(rel.getZ()).append(" (")
+						.append(villagers.get(i).position()).append(")");
+				}
+			}
+			helper.assertTrue(out.isEmpty(), out.toString());
+		});
+	}
 }

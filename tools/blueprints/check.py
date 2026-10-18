@@ -143,18 +143,20 @@ def chair_problems(blocks, only=None):
     return problems
 
 
-# --- Doorways a villager fits through (B170, B173) ----------------------------------------------------------------
+# --- Doorways a villager fits through (B170, B173, B178) ----------------------------------------------------------
 # A villager is 1.95 blocks tall. Under a lintel two blocks up it fits with 0.05 to spare, so any step up in or beside
 # the doorway (a carpet is 1/16, a slab half a block) puts its head into the lintel: it stands in the doorway for good.
 VILLAGER_HEIGHT = 1.95
 
 
 def raise_of(block):
-    """How far standing in the cell with {@code block} lifts the feet above the cell's floor (0: not a step up). Beds
-    don't count: nobody walks over one, a villager sleeps in it from beside it."""
+    """How far standing in the cell with {@code block} lifts the feet above the cell's floor (0: not a step up). A bed
+    counts (B178): it is 9/16 high, under a villager's 0.6 step, so a villager's path runs over one like a slab."""
     if block is None:
         return 0
     s, props = _short(block), block[1]
+    if s.endswith("_bed"):
+        return 9 / 16
     if s.endswith("_carpet"):
         return 1 / 16
     if s.endswith("_stairs") and props.get("half") == "bottom":

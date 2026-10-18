@@ -297,6 +297,13 @@ asks for the steps, `latest.log` and any crash report).
   Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
   room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
   keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
+- **Villagers get into the War Camp's tents, and past the workshop beds.** A lamp pole stood in the middle of each
+  canvas tent's mouth, the only place a tent is two blocks high, so nobody reached the bed inside; the Warlord's tent
+  had red carpet under its low sides, where a villager stood at the carpet's edge for good. The poles now stand beside
+  the mouths and the carpet is a runner down the middle. A villager also walks over a bed (it is lower than its step),
+  so a bed right inside a door trapped it under the lintel: the Carpenter's Workshop's bed turns its head to the wall,
+  and the builder's and carpenter's village workshops have their side door a block or two along. Camps and workshops
+  already standing keep theirs (B178).
 - **Chefs take the Kitchen's smoker, however it's decorated.** A villager walking to a workstation built in under
   solid blocks (the smoker in the Kitchen's brick oven) climbed onto the nearest chest or worktop instead, a step too far
   to take it, and stood there; it now walks to the floor in front of the workstation and takes it (B168).

@@ -254,6 +254,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Raiders beside or behind a besieged village's walls go round to the open gateway.** Sent straight for the way in,
+  a raider a fight had taken beside the walls could be led to the outside spot nearest the yard, behind the back wall,
+  and stand there for the rest of the siege with the gate broken open; now it goes round to the front of the breach
+  first, and in from there (B175).
 - **A villager whose path failed once walks again.** A walk asked for after a failed path waited for a retry that
   never came when the job asking kept no count (a successor following the elder, a retired mentor going to the hall):
   the villager stood still from then on. It is now tried again a second later; the elders' showcase, where young Tom

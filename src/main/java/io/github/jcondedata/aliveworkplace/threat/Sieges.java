@@ -50,6 +50,7 @@ import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -724,8 +725,18 @@ public final class Sieges {
 					continue;
 				}
 				if (open) {
+					// Straight for the way in, if a path gets it there. From beside or behind the walls (where a fight took it)
+					// the pathfinder's best try ends at the outside point nearest the way in, often behind the back wall, and
+					// the raider stood there for the rest of the siege with the way open (B175): then it goes round to the
+					// front of the breach first, and in from there.
 					mob.getNavigation().moveTo(within.x, within.y, within.z, 1.0);
 					paths++;
+					Path path = mob.getNavigation().getPath();
+					Vec3 front = gate.add(siege.out.getStepX() * 3, 0, siege.out.getStepZ() * 3);
+					if ((path == null || !path.canReach()) && mob.position().distanceToSqr(front) > 4 && paths < MAX_PATHS) {
+						mob.getNavigation().moveTo(front.x, front.y, front.z, 1.0);
+						paths++;
+					}
 				} else {
 					// Five blocks out from the gate, spread along the wall so they don't stand in one heap.
 					double along = (index % 5 - 2) * 1.5;

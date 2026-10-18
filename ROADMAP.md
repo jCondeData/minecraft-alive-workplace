@@ -4967,6 +4967,7 @@ the owner's port jar; M33's caravans (39.7).
   Done when: compat GameTests: track is laid along a road between two stations; a caravan between them goes by train
   and arrives with its goods; without stations caravans walk as today; scene `village_train`; the wiki gets a "Create"
   page and the player guide a section.
+  - [ ] **39.7a** Change from the owner (2026-10-18): real Create trains, assembled and run the way Create intends (track, stations, a train with bogeys and controls, schedules), not a caravan that only takes the train in name.
 
 ## Later (not in this plan)
 

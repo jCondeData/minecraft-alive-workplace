@@ -79,8 +79,8 @@ public class VillageHallBuildGameTests implements FabricGameTest {
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "village_hall_build")
 	public void aFinishedVillageHallWorksLikeAPlacedOne(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		// a hall an earlier batch's test left outside its own area (never cleared) stood within reach of this builder
-		// once the 39.x test classes shifted the batches' spots: "a hall before the build"
+		// B172: a hall an earlier batch's test left outside its own area (never cleared) is within 64 of this builder,
+		// and "a hall before the build" failed on CI 39106052539 the tick the batch started
 		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);

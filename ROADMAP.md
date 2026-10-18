@@ -260,12 +260,12 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B186** The Signpost's boards repeat a village and leave one out (player-visible, if it reproduces in game): in showcase run 39117119761 (main 0a9e86e, 2026-10-18 11:59Z) the signpost scene read its boards as [Oakbrook 7 blocks, Oakbrook 7 blocks, Millford 40 blocks, Well 9 blocks] where it expects Millford east and Ashford west (also failing in the 04:48Z and 06:18Z runs; new since 2026-10-18). Expected: each board names a different place, the neighbouring villages by direction, or the scene's staging is fixed if the mod is right. Test: SCENE=signpost tools/screenshots/run.sh and a GameTest on the board texts with two neighbour villages (found by lane-a-1018-1222 from issue #1) (found by lane-a-1018-1222, 2026-10-18) FIXED (lane-a-1018-1222): two causes. The scene placed its halls inside one server task, where vanilla files a block's point-of-interest record only a moment later, so the post didn't find its own hall (Oakbrook) and named it as a neighbour; and Oakbrook stood exactly on the diagonal, which `Signposts.that` gave to both the north and the west board (the west board then lost Ashford). The mod now takes the post's own hall as the nearest by its record or by the caravans' list (a hall really there), and gives a place exactly on a diagonal to the north or south board only; the scene files its halls' records (`fileRecords`); SignpostGameTests.theOwnHallOnTheDiagonalIsNeverNamed and aVillageOnTheDiagonalIsNamedOnOneBoard (both failed without the fix; all 6 signpost tests pass).
 - [x] **B187** Elders walk faster than younger villagers (player-visible, if it reproduces): in showcase run 39117119761 (main 0a9e86e, 2026-10-18 11:59Z) the elders scene says 'the elder's walk is set slower: 0.461 against 0.0' and 'in the same 3 seconds Bram walked 324% as far as Tom (6.88 and 2.12 blocks)'; the elder should be slower. Expected: an elder's walking speed is below a grown villager's and he covers less ground; or, if the mod is right, the scene compares the right numbers. Test: SCENE=elders tools/screenshots/run.sh and the elder speed GameTest (found by lane-a-1018-1222 from issue #1) (found by lane-a-1018-1222, 2026-10-18) FIXED (lane-a-1018-1222): the mod sets the elder's walk right (0.461); Tom had no walk target at all. After a failed or partial path vanilla keeps its "can't reach" note until a path gets there, and `Walker.requestWalk` waited out a retry counter the caller passes back; the scene (and the mod's own successor and mentor walks in `Retirement`) passed a constant 0, so after one failed path every later request was dropped and the villager stood still. `requestWalk` now also counts the wait on the villager's own clock, so a request is tried again after `RETRY_TICKS` whatever the caller passes; the scene keeps real retry counters, asks with closeEnough 1 and clears any old walk and failed path when it moves the two; LifeStageGameTests.b187AnElderAskedWithoutACounterStillWalksSlower and b187AWalkAfterAFailedPathIsTriedAgain (both failed without the fix; LifeStageGameTests and PeopleGameTests, 22 tests, pass).
 - [x] **B188** Two newer showcase scenes fail on GitHub: hall_reading ('the wheel in the pane scrolled the long entry to its last line (0 of 0)': the long entry had no lines to scroll) and classes ('the couple rose to Artisan at dawn: []'), plus cellars ('blank picture: 02_smithy_cellar') in showcase run 39117119761 (main 0a9e86e, 2026-10-18 11:59Z). Expected: each scene passes, or a mod fault behind it is fixed. Test: SCENE=hall_reading, SCENE=classes, SCENE=cellars tools/screenshots/run.sh (found by lane-a-1018-1222 from issue #1) (found by lane-a-1018-1222, 2026-10-18) FIXED (lane-a-1018-1222): all three were the scenes, not the mod. classes: the hall's own dawn round could count the couple on the day before the scene's two dawns (a slow machine runs it between setup and the step), and a household counted that day is rightly skipped, so it had one met dawn, not two; the scene now re-seeds the couple as fresh Peasants before its two checks. hall_reading: the long entry went in through Chronicle.record, which finds the hall by its point of interest, added a tick after the block is placed, so it was dropped (the GitHub still shows only the classes line); it is now written with Chronicle.atHall, and names 64 guards with family names (48 first names fitted the pane at scale 4). cellars: the camera stood at the cellar's average height plus 0.6, its eye in the Smithy's floor; it now stands on the cellar floor with night vision for the shot. Filmed locally: classes 4/4 checks, hall_reading 6/6 (scrolled 26 of 26), cellars 4/4 with 02_smithy_cellar showing the lit store. Left: hall_reading's window sometimes stays at GUI scale 2 instead of 4 (seen locally); the scene passes either way.
-- [x] **B189** (approved auto 2026-10-18) [urgent: owner] Player-visible crash (39.6, found by the review package of 2026-10-18): the create_schematic showcase scene crashes the game inside Create's schematic code ('SchematicHandler.getBounds() is null') when the Blueprint Table lists Create schematics. A player using the Table with Create installed may hit it. Expected: the Table lists uploaded Create schematics and nothing crashes. Test: SCENE=create_schematic tools/screenshots/run.sh, and a compat GameTest for the listing path. (found by chat, 2026-10-18) Status (lane-a-1018-1222): fix parked on `wip/lane-a-B189` (360367e1): the scene's hand-made Schematic lacked Create's create:schematic_bounds (Create's client handler reads it every tick while a written Schematic is held); CreateSchematics.written/complete now set every component Create's table sets, also after a Blueprint Table import. Compiles; its compat test CreateSchematicCompatTests.aListedSchematicInHandHasItsBounds has NOT run (OOM while another build ran). Done (lane-a-1018-1522): merged; the compat suite passes with it (365 tests), runGameTest (2289), and SCENE=create_schematic ran locally with no crash and every check PASS.
-- [ ] **B190** [urgent: owner] Player-visible, 2.2 Raid Dens (38.2-38.4): scenes raid_dens, den_warden and den_challenge fail on GitHub: a glowing den crystal by the hall stays 'No raid den known' on the Defense page, 'No guard of the village is free to stand watch', and the Leader 'found no den'. The compat GameTests pass, so either the scenes stage the den differently from a real world (chunk-load detection) or detection breaks outside tests. Expected: a den within 160 blocks of a hall is listed in a real world, and wardens and challenges work. Test: the three scenes, plus a GameTest that places a den after the hall's chunk is already loaded. (found by chat, 2026-10-18)
-- [ ] **B191** [urgent: owner] Player-visible, 2.2 Megas (38.5, 38.7): scene mega_trainers fails ('the Leader couldn't Mega Evolve and no bracelet was drawn', the battle ran) and mega_shrine's festival ceremony never happens. Expected: a City Leader with a Mega Stone Mega Evolves in battle and wears the bracelet; the shrine's ceremony runs on a festival day. Test: SCENE=mega_trainers and SCENE=mega_shrine. (found by chat, 2026-10-18)
-- [ ] **B192** Player-visible, 2.1 Tom's Simple Storage (37.10): scene modded_storehouse fails: right-clicking Tom's storage terminal says 'Terminal out of range' instead of opening Tom's screen, with the Storehouse linked through an inventory connector. Expected: Tom's terminal works as normal next to our Storehouse. Test: SCENE=modded_storehouse. (found by chat, 2026-10-18)
-- [ ] **B193** Player-visible, 2.3 trains (39.7): scene village_train fails: the caravan never takes the train (no steam, bell or logs arriving) within the scene's time. Expected: a caravan between two villages with linked Train Stations travels by train and arrives. Test: SCENE=village_train (check the scene's wait against a slow GitHub runner too). (found by chat, 2026-10-18)
-- [ ] **B194** Showcase-only (37.5): scene furnished_workplaces's fourth still (the clinic benches) comes out black, so the scene fails; same black-still pattern as B188's cellars. Expected: all four stills show the build. Test: SCENE=furnished_workplaces. (found by chat, 2026-10-18)
+- [x] **B189** (lane: e) (approved auto 2026-10-18) [urgent: owner] Player-visible crash (39.6, found by the review package of 2026-10-18): the create_schematic showcase scene crashes the game inside Create's schematic code ('SchematicHandler.getBounds() is null') when the Blueprint Table lists Create schematics. A player using the Table with Create installed may hit it. Expected: the Table lists uploaded Create schematics and nothing crashes. Test: SCENE=create_schematic tools/screenshots/run.sh, and a compat GameTest for the listing path. (found by chat, 2026-10-18) Status (lane-a-1018-1222): fix parked on `wip/lane-a-B189` (360367e1): the scene's hand-made Schematic lacked Create's create:schematic_bounds (Create's client handler reads it every tick while a written Schematic is held); CreateSchematics.written/complete now set every component Create's table sets, also after a Blueprint Table import. Compiles; its compat test CreateSchematicCompatTests.aListedSchematicInHandHasItsBounds has NOT run (OOM while another build ran). Done (lane-a-1018-1522): merged; the compat suite passes with it (365 tests), runGameTest (2289), and SCENE=create_schematic ran locally with no crash and every check PASS.
+- [ ] **B190** (lane: d) (urgent: owner) Player-visible, 2.2 Raid Dens (38.2-38.4): scenes raid_dens, den_warden and den_challenge fail on GitHub: a glowing den crystal by the hall stays 'No raid den known' on the Defense page, 'No guard of the village is free to stand watch', and the Leader 'found no den'. The compat GameTests pass, so either the scenes stage the den differently from a real world (chunk-load detection) or detection breaks outside tests. Expected: a den within 160 blocks of a hall is listed in a real world, and wardens and challenges work. Test: the three scenes, plus a GameTest that places a den after the hall's chunk is already loaded. (found by chat, 2026-10-18)
+- [ ] **B191** (lane: d) (urgent: owner) Player-visible, 2.2 Megas (38.5, 38.7): scene mega_trainers fails ('the Leader couldn't Mega Evolve and no bracelet was drawn', the battle ran) and mega_shrine's festival ceremony never happens. Expected: a City Leader with a Mega Stone Mega Evolves in battle and wears the bracelet; the shrine's ceremony runs on a festival day. Test: SCENE=mega_trainers and SCENE=mega_shrine. (found by chat, 2026-10-18)
+- [ ] **B192** (lane: c) Player-visible, 2.1 Tom's Simple Storage (37.10): scene modded_storehouse fails: right-clicking Tom's storage terminal says 'Terminal out of range' instead of opening Tom's screen, with the Storehouse linked through an inventory connector. Expected: Tom's terminal works as normal next to our Storehouse. Test: SCENE=modded_storehouse. (found by chat, 2026-10-18)
+- [ ] **B193** (lane: e) Player-visible, 2.3 trains (39.7): scene village_train fails: the caravan never takes the train (no steam, bell or logs arriving) within the scene's time. Expected: a caravan between two villages with linked Train Stations travels by train and arrives. Test: SCENE=village_train (check the scene's wait against a slow GitHub runner too). (found by chat, 2026-10-18)
+- [ ] **B194** (lane: c) Showcase-only (37.5): scene furnished_workplaces's fourth still (the clinic benches) comes out black, so the scene fails; same black-still pattern as B188's cellars. Expected: all four stills show the build. Test: SCENE=furnished_workplaces. (found by chat, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -730,7 +730,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   imported blueprints. Done when: GameTests (the list matches MaterialRules for a starter build and an imported one;
   it updates as items go in; the attached plan survives save and reload; taking the blueprint out removes the list);
   the client screen in a scene `chest_checklist` with stills; guide page updated.
-- [x] **26.8** (review: pending 2026-10-14) **A questbook for the whole pack, start to finish** (owner's playtest, 2026-10-14; owner's choice: FTB
+- [x] **26.8** (approved 2026-10-18) **A questbook for the whole pack, start to finish** (owner's playtest, 2026-10-14; owner's choice: FTB
   Quests when the pack has it). Ship FTB Quests chapters (data only, through `compat/`, by item and entity ids, never
   FTB's classes; nothing loads without FTB Quests) that take a player from the first day to the end of everything:
   Cobblemon's start (starter, first catches, Poké Balls, the first gym-style trainers with RCT), every job of this
@@ -742,13 +742,13 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   chapter's tasks are reachable in a test world; a compat test that every referenced item and entity id exists; the
   guide links to it; scene `questbook` with stills of each chapter.
 
-- [x] **26.9** (review: pending 2026-10-14) **See a build before you pick it** (owner's playtest, 2026-10-14: "you can't see what you're building").
+- [x] **26.9** (approved 2026-10-18) **See a build before you pick it** (owner's playtest, 2026-10-14: "you can't see what you're building").
   The Blueprint Table's library shows a picture of the selected build beside its name, size and material count: a
   small 3D view of the blueprint itself, drawn by the client from the blueprint's blocks (so it works for imported and
   uploaded builds too, with no image files to keep), that turns slowly and can be dragged to look round. Large builds
   scale to fit. Done when: the preview in the table's screen in a scene `table_preview` with stills of a small house, a
   large build and an imported one; it costs nothing on the server; the guide's Blueprint Table page says so.
-- [x] **26.10** (review: pending 2026-10-15) **The Blueprint Table is a collection** (owner's playtest, 2026-10-15: builders sell blueprints the Table
+- [x] **26.10** (approved 2026-10-18) **The Blueprint Table is a collection** (owner's playtest, 2026-10-15: builders sell blueprints the Table
   already gives away, so buying them is pointless). Each village (its Village Hall) keeps the builds its Table has
   unlocked. The basics start unlocked (about 15 to 20: the Starter Cottage, the first tier of each home, one tier-I
   workplace per basic job; a data list, `blueprint_unlocks/starting.json`); everything else starts locked and shows
@@ -4588,7 +4588,7 @@ as they land: no version of their own and no expansion flag, so each is live the
 `main` after 26.x (the Blueprint Table, the questbook, the decorations, the hall and Storehouse screens, basements).
 Depends on: nothing open.
 
-- [x] **36.1** (review: pending 2026-10-17) **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
+- [x] **36.1** (approved 2026-10-18) **The Table's preview shows basements.** Today `TableServer.buildPreview` does send a basement's cells
   (`StarterBlueprints.withBasement` moves them below y = 0), but `TablePreview` sizes and centres the build by
   `blueprint.size()`, which is only the part above the ground, so the cellar hangs out of the bottom of the box; and
   the cell key's `y / scale` rounds towards zero, so at scale 2 or more the first cellar layer folds into the ground
@@ -4655,7 +4655,8 @@ Depends on: nothing open.
   there. Done when: a GameTest walks every blueprint the table lists and finds its description key in `en_us.json`;
   every description is checked against the build (who works there comes from the job blocks it holds);
   `langcheck.py` passes; the `table` scene's stills show a description.
-- [x] **36.7** (review: pending 2026-10-18) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
+  - [ ] **36.6a** Change from the owner (2026-10-18): delete the description lines. The Table shows only what jobs a build brings and its beds, in this format: 'Jobs: Fisherman (1), Butcher/Chef (3)' (a slash means a shared job block, the number is how many of that job block are in the build), plus 'Beds: N' when the build has beds.
+- [x] **36.7** (approved 2026-10-18) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
   Level II. Eight of them, where a cellar suits the trade, get a Level III that is their Level II with a basement
   under it, named `<name>_3` because upgrades go by name (`BlueprintUpgrades`), drawn in `tools/blueprints/` and
   listed with its depth like the Level 4s (26.15, `StarterBlueprints.WITH_BASEMENTS`): the **Inn** (an ale and wine
@@ -4681,6 +4682,14 @@ Depends on: nothing open.
   mean and lowest; our houses per village) is in the Notes with the commands that made it; any tuning lands with
   `VillageGameTests` passing and the `village` scene still showing our houses.
 
+- [ ] **36.9** **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
+  job block is awkward because the villager must walk into a finished home to stand near the block). Done when: the
+  Village Hall has a "Free job blocks" page listing every job block in the village with no villager on it (its job,
+  the build it's in, the distance; e.g. a Storehouse block), and for each, the villagers without a job; picking one
+  assigns that block to them (they claim the POI and walk to it). Paid retraining of a working villager (26.6) stays.
+  GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
+  `hall_jobs`.
+
 ## Milestone 37: Furnished homes and modded storage (2.1)
 
 Builds use the pack's furniture mods when they're installed: Handcrafted chairs round a Handcrafted table, Lucky's
@@ -4700,7 +4709,7 @@ the dev runtime (its `getItems()` clashes with a Mojang-mapped name), so Cozyhom
 (`tools/packtest/run.sh`, the real pack) only. Depends on: M26 (the builds and their interiors as they stand at 1.0);
 M34's grander homes get furnished too, and simply aren't there until M34 is on.
 
-- [x] **37.1** (review: pending 2026-10-17) **Design note and flag.** `docs/design/M37.md`, sent to the owner as a review package (lanes don't wait
+- [x] **37.1** (approved 2026-10-18) **Design note and flag.** `docs/design/M37.md`, sent to the owner as a review package (lanes don't wait
   for his reply): what the player sees with each mod and with none; the furniture spot format (37.2) and the
   furnishing table format (37.3) with one example file each; the list of furniture kinds and, per mod, the block ids
   chosen for each (from the jars in `build/packtest/server/mods`, e.g. `handcrafted:oak_chair`, `handcrafted:oak_table`,
@@ -4732,7 +4741,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Handcrafted present gets Handcrafted chairs, table and bed and costs their items; with `furnitureMods` set to
   CobbleFurnies first it gets CobbleFurnies pieces; with `furnishedBuilds` off it's the vanilla build; a GameTest
   (no mods) builds the vanilla build unchanged; a site saved mid-build keeps its choice after a reload.
-- [x] **37.4** (review: pending 2026-10-18) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
+- [x] **37.4** (approved 2026-10-18) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
   in every style, the M34 grander homes when M34 is on) and the Inn get rooms that read as rooms with each mod: a
   dining set round a table, a bedroom with nightstands and a lamp, a sitting corner with a couch or sofa, shelves of
   crockery, clocks and pictures on the walls, blinds at the windows. Each room is drawn as vanilla furniture spots that
@@ -4741,14 +4750,14 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   compat GameTests build the Starter Cottage and the Inn with Handcrafted and with CobbleFurnies, nothing skipped;
   scene `furnished_home` (`-Pfurniture=true`, a new harness switch that adds the pack's furniture mods; the cottage
   furnished, room by room).
-- [x] **37.5** (review: pending 2026-10-18) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
+- [x] **37.5** (approved 2026-10-18) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
   Kitchen and the M34 trades' workshops get furniture where it fits: desks for the Scribe and Printer, counters and
   shelves in the shops, crockery and benches in the Kitchen, Beautify trellises, hanging pots and picture frames as
   decoration. Never a job block, a bed a villager needs, or a container is swapped: those stay what the job reads.
   Done when: a GameTest checks no spot in any build covers a job block, a bed or a container; compat GameTests build
   three workplaces with Handcrafted and Beautify and each job still finds its block and chests; renders reviewed with
   the architect skill; scene `furnished_workplaces`.
-- [x] **37.6** (review: pending 2026-10-18) **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
+- [x] **37.6** (approved 2026-10-18) **Villagers use the furniture.** The chairs, stools, benches, couches and sofas of these mods are seats
   (a block tag `aliveworkplace:villager_seats`, its modded entries written with `"required": false`, so the tag loads
   without the mods), where villagers sit for meals and in the evening, as they sit in the Stadium's stands
   (`cup/StandSeat`), and stand up for work, danger or bed. Handcrafted's fancy beds are beds (`FancyBedBlock` extends
@@ -4757,7 +4766,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   counts towards M34's beauty need. Done when: compat GameTests: a villager sits on a Handcrafted chair at supper and
   gets up at dawn; a villager claims and sleeps in a Handcrafted fancy bed and its house counts as their home; a seat
   in use isn't taken twice; with the tag's mods absent the tag still loads (a GameTest); scene `seats_and_beds`.
-- [x] **37.7** (review: pending 2026-10-18) **Carved Wood and Rechiseled in the styles.** New blueprint styles (`blueprint_styles/`) that use Carved
+- [x] **37.7** (approved 2026-10-18) **Carved Wood and Rechiseled in the styles.** New blueprint styles (`blueprint_styles/`) that use Carved
   Wood's wooden versions of vanilla blocks (each wood's `carved_wood:<wood>_chest`, `_barrel`, `_bookshelf`,
   `_lectern`, `_crafting_table`, `_ladder`, `_lantern`...) so a spruce build's chests and shelves are spruce, and
   Rechiseled's patterned planks and bricks (`rechiseled:<wood>_planks_<pattern>`, about 3,600 blocks) for the Grand
@@ -4768,7 +4777,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Library in the new spruce style has Carved Wood shelves and its Librarian still takes the lectern; a Carved Wood
   chest is a supply chest; the Grand style with Rechiseled builds with nothing skipped; renders reviewed; scene
   `carved_styles`.
-- [x] **37.8** (review: pending 2026-10-18) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
+- [x] **37.8** (approved 2026-10-18) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
   (`sophisticatedstorage:chest`, `iron_chest` ... `netherite_barrel`, `limited_barrel_1` ... `4`) works as a supply
   chest, a porter's chest and a Storehouse chest; builders treat them as containers (never broken while clearing, never
   copied; they're in `#c:chests` and `#c:barrels`); and the Storehouse measures free room in items where a stack
@@ -4776,7 +4785,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   tier takes and gives items through porters and builders; a chest with a stack upgrade (its upgrade item in its
   upgrade slot) shows its real free room on the Storehouse board; a builder clearing a site leaves a Sophisticated
   chest in place with its contents; the existing barrel test still passes.
-- [x] **37.9** (review: pending 2026-10-18) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
+- [x] **37.9** (approved 2026-10-18) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
   Storehouse's area makes the storage blocks linked to it (touching storage blocks and `storage_link`s, found by walking
   block ids within the controller's reach) one store, read and filled through the controller's own item storage; the
   linked blocks drop out of the store list, so nothing counts twice. First check the controller exposes item storage
@@ -4800,6 +4809,15 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   what each changes, the config switches, how it falls back) and the player guide a short section. Done when: the pack
   test passes with those checks in its log summary; the wiki page and guide section are on `main` and `wikicheck.py`
   passes.
+
+- [ ] **37.12** **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
+  vanilla library, unchanged (for players who use the mod in plain vanilla later). Make a second, modded library: a
+  copy of each home and workshop beautified with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted
+  blocks (used freely: detail blocks, furniture, decor), under its own ids, with the vanilla build as its fallback
+  when a mod is missing. The pack uses the modded library; which library a server uses is a config switch
+  (default: modded when the mods are installed). Choosing what ships in which release is the owner's later. Done
+  when: the modded copies exist for every home and workshop, renders checked against STYLE.md, the switch works,
+  vanilla builds untouched; compat GameTests; scene `modded_library`.
 
 ## Milestone 38: Cobblemon depth (2.2)
 
@@ -4871,13 +4889,14 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   Leader of a realm once gets a Mega Bracelet from the capital's hall. Done when: compat GameTests: a Jeweller with a
   crystal and the makings in the store makes the stone; a Miner's find goes to the store, not the dump; the bracelet
   is given once; with M34 off the recipes simply don't run; scene `mega_jeweller`.
+  - [ ] **38.6a** Change from the owner (2026-10-18): the Jeweler cuts Mega Stones only from materials the player provides through the Storehouse storage, never on his own initiative from nothing.
 - [x] **38.7** (review: pending 2026-10-18) **The Mega Shrine.** A new decoration blueprint, the Mega Shrine (a `mega_showdown:pedestal` on a dais
   of `mega_meteorid` bricks and blocks), listed at the Blueprint Table only when its blocks exist. A village with a
   finished shrine holds a partner show there on festival days (M28's partner shows): a village trainer Mega Evolves
   their ace by the pedestal, villagers off work gather and get +3 mood. Done when: the architect skill reviews its
   render against STYLE.md; GameTests: hidden at the table without Mega Showdown, listed with it; compat GameTest: the
   festival show happens at a finished shrine and the watchers get the mood; scene `mega_shrine`.
-- [x] **38.8** (review: pending 2026-10-18) **Cobblecuisine on the Chef's menu.** With Cobblecuisine installed, `Chefs.menu` adds its dishes by id
+- [x] **38.8** (approved 2026-10-18) **Cobblecuisine on the Chef's menu.** With Cobblecuisine installed, `Chefs.menu` adds its dishes by id
   (the way it adds Cobblemon's Poké snacks): a data list of dishes by job level (salads and sandwiches first, curries
   and cakes higher up), each cooked from its own crafting recipe through the recipe manager, with the makings from the
   store and the stashes as the Chef cooks today. `Diet` counts the dishes as varied food (each its food group), the
@@ -4885,7 +4904,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   coffee, fruit punch). Done when: compat GameTests: a Chef with the makings cooks a level-1 dish and keeps 16; a
   level-1 Chef never cooks a level-4 dish; a villager who ate three kinds counts as a varied diet; the Camp Cook makes
   a curry; without Cobblecuisine the menu is today's (a GameTest); scene `cuisine_kitchen`.
-- [x] **38.9** (review: pending 2026-10-18) **Bean farms.** Farmers plant Cobblecuisine's beans on their fields when the store holds fewer than 16
+- [x] **38.9** (approved 2026-10-18) **Bean farms.** Farmers plant Cobblecuisine's beans on their fields when the store holds fewer than 16
   of a colour a dish on the menu needs, and harvest `cobblecuisine:bean_crop` when it's fully grown (its age property,
   read by name); the harvest goes to the store like other crops. Done when: compat GameTests: a farmer plants beans
   when the menu wants them, harvests only ripe ones, and puts them in the store; no beans are planted when nothing
@@ -4897,6 +4916,12 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   the store; a Burgher household takes a deluxe shake when due; without the mod the luxury files are skipped quietly
   (a GameTest); the wiki gets a "Raid dens, Megas and Cobblecuisine" page and the player guide a section, and
   `wikicheck.py` passes.
+
+- [ ] **38.11** **Campfire pot recipes** (owner, 2026-10-18). The Chef (or the cook's job) also cooks Cobblemon's
+  campfire pot recipes, such as the candies (Rare Candy, EXP Candies and the IV/EV candies the pack's mods add),
+  from the store's ingredients, and stocks them for trainers and players. Done when: every campfire pot recipe the
+  installed mods register can be cooked (found by recipe type, not a fixed list), the cook only makes what the
+  store has ingredients for, compat GameTests, scene `campfire_pot`.
 
 ## Milestone 39: Create integration (2.3)
 
@@ -4922,14 +4947,14 @@ the owner's port jar; M33's caravans (39.7).
   `villageTrains`) and saved fields with defaults, the fallbacks. The flag: `Expansions.M39` with `flag()`,
   `MILESTONES` and `milestone()`. Done when: `runCompatGameTest` loads the port, the id test passes, the note is on
   `main` and the package is sent.
-- [x] **39.2** (review: pending 2026-10-18) **The Mechanic.** A new job whose job
+- [x] **39.2** (approved 2026-10-18) **The Mechanic.** A new job whose job
   block is a Create block chosen by id in the design note (its POI registered through `Platform` only when the block
   exists, so without Create there's no Mechanic): they walk the village's machines, refill and empty them (through
   `ItemStores`), put back a broken shaft, cogwheel or belt from the build's blueprint (as `Upkeep` does), and lead the
   crew when builders build a contraption (39.5). Outfit and job icon with the pixel-art skill. Done when: compat
   GameTests: a jobless villager takes the job block; a broken shaft in a finished build is replaced; without Create the
   job isn't registered (a GameTest); scene `mechanic`.
-- [x] **39.3** (review: pending 2026-10-18) **Villagers work Create machines.**
+- [x] **39.3** (approved 2026-10-18) **Villagers work Create machines.**
   `data/aliveworkplace/machine_work/<id>.json`: the machine's block id, where its input goes and its output comes out
   (the machine, its basin or a depot), which job works it, and what the village wants made, e.g. the Miller's
   millstone (wheat to flour), the Smith's mechanical press (ingots to sheets), the Chef's mixer and basin (dough), the
@@ -4938,14 +4963,14 @@ the owner's port jar; M33's caravans (39.7).
   takes the input from the store, feeds the machine, collects the output to the store, and works only while the
   machine turns. Done when: compat GameTests per machine (input fed, output in the store, nothing fed while it's
   stopped, a full store pauses it, a save and reload mid-job finishes it); scene `create_mill`.
-- [x] **39.4** (review: pending 2026-10-18) **Create-powered builds.** Three new
+- [x] **39.4** (approved 2026-10-18) **Create-powered builds.** Three new
   blueprints, listed at the table only when Create is installed: the **Watermill** (a water wheel turning a millstone),
   the **Windmill** (a windmill bearing with sails; find a way to start it that needs no Create classes, or the builder
   leaves a sign telling the player to start it) and the **Workshop** (a belt line between a press and a depot, driven
   by a water wheel). Each is a workplace for 39.3's jobs. Done when: the architect skill reviews their renders; compat
   GameTests: each builds with nothing skipped and its machine turns once built (its speed read from block entity data
   by name); hidden without Create (a GameTest); scene `create_builds`.
-- [x] **39.5** (review: pending 2026-10-18) **Builders build contraptions.** A
+- [x] **39.5** (approved 2026-10-18) **Builders build contraptions.** A
   blueprint holding kinetic blocks is built in an order that keeps it whole (supports, then shafts and gearboxes, then
   cogwheels, then belts), with each block's axis and facing kept and the block-entity data Create needs (belt length
   and part) copied; the builder checks it turns when done and lists what doesn't. Done when: compat GameTests: a
@@ -4964,6 +4989,7 @@ the owner's port jar; M33's caravans (39.7).
   Done when: compat GameTests: track is laid along a road between two stations; a caravan between them goes by train
   and arrives with its goods; without stations caravans walk as today; scene `village_train`; the wiki gets a "Create"
   page and the player guide a section.
+  - [ ] **39.7a** Change from the owner (2026-10-18): real Create trains, assembled and run the way Create intends (track, stations, a train with bogeys and controls, schedules), not a caravan that only takes the train in name.
 
 ## Later (not in this plan)
 
@@ -4972,6 +4998,10 @@ the owner's port jar; M33's caravans (39.7).
 ---
 
 ## Design decisions (from the owner)
+
+- **Create** (2026-10-18): real trains, the way Create intends (39.7a); the Mechanic never fixes players' own Create
+  machines, only the village's. **Builds** (2026-10-18): two libraries, vanilla and modded (37.12); the old builds
+  are kept, not deleted. **Table** (2026-10-18): no description lines, only "Jobs: …" and "Beds: N" (36.6a).
 
 - **Post-1.0 answers** (2026-10-18): Raid Dens of tier 4 and up are for players only (village trainers up to tier 3,
   38.4); the Mega Bracelet is given once per player per realm (38.5); furniture defaults to Handcrafted first, then

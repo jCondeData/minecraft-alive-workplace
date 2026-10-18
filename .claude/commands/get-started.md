@@ -29,11 +29,15 @@ Steps:
    locally; every 2-3 items run the full build and push to main when green. Don't film scenes locally and don't make
    review packages: GitHub films the scenes. Sonnet subagents only for translations and routine tests.
 4. Red main: the bug lane checks the latest CI run on main at the start and before each push and fixes a red main
-   first. The quick and big lanes never take a bug: they file one they find (`sessions.py bug`) and keep building;
+   first. The quick and big lanes never take a bug, except one marked `(lane: <your letter>)` (a failure in your own feature, owner 2026-10-18), which `next` lists first: they file one they find (`sessions.py bug`) and keep building;
    when only tests that also fail on main's latest CI run fail, they may push and name them in the commit message.
 5. At minute 140 start no new item: finish what's in flight, run the full build and push to main by about minute 170
    (never past 175). Only an item that truly can't be finished goes to wip/lane-x with a message saying what's left.
 6. Never publish to Modrinth or CurseForge, change the license, bump the version, force-push, or delete anything on
    GitHub other than your own wip branch.
-7. Quick and big lanes don't message Jesse; end the run with a two-line summary (what landed, what's next). The bug
+7. Keep working on anything that fails (its scene, its compat test, a bug filed against it). When a failure can only be
+   settled by Jesse playing it in game (you have tried and can't reproduce or check it here), add
+   `(needs owner check: <what to try in game>)` to the item's or bug's entry and take the next one: the digest builds
+   a release-candidate jar with every expansion on and sends it to him with that list (owner, 2026-10-18).
+8. Quick and big lanes don't message Jesse; end the run with a two-line summary (what landed, what's next). The bug
    lane answers him about each bug he raised.

@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.table;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFormatException;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
@@ -19,13 +20,19 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -148,11 +155,62 @@ public final class CreateSchematics {
 		return importFile(server, owner, file, path);
 	}
 
-	/** A written Schematic used on a table: its file imported, the player told how it went (then the table opens). */
+	/**
+	 * A written Schematic used on a table: its file imported, the player told how it went (then the table opens). A
+	 * Schematic written without its size (by a command or another mod, not by Create's table) gets the rest of what
+	 * Create's table writes ({@link #complete}): Create's own client code reads the size of the Schematic in hand and
+	 * crashes the game without it (B189).
+	 */
 	public static Result useOnTable(ServerPlayer player, ItemStack stack) {
-		Result result = importItem(io.github.jcondedata.aliveworkplace.mc.Players.level(player).getServer(), stack);
+		MinecraftServer server = io.github.jcondedata.aliveworkplace.mc.Players.level(player).getServer();
+		Result result = importItem(server, stack);
+		if (result.imported()) {
+			BlueprintLibrary.get(server, result.id()).ifPresent(blueprint -> complete(stack, blueprint.size()));
+		}
 		player.sendSystemMessage(result.message());
 		return result;
+	}
+
+	/**
+	 * A written Schematic naming {@code owner}'s uploaded {@code fileName}, {@code size} big, as Create's Schematic Table
+	 * hands it back (Create's {@code SchematicItem.create}): every data component set, by id. Empty without Create.
+	 */
+	public static ItemStack written(String owner, String fileName, Vec3i size) {
+		Item item = Lookup.value(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath(CREATE, "schematic"));
+		if (item == null || item == Items.AIR) {
+			return ItemStack.EMPTY;
+		}
+		ItemStack stack = new ItemStack(item);
+		setIfAbsent(stack, "schematic_owner", owner);
+		setIfAbsent(stack, "schematic_file", fileName);
+		complete(stack, size);
+		return stack;
+	}
+
+	/**
+	 * Fills in what Create's Schematic Table writes on a Schematic and {@code stack} lacks: not deployed, anchored at the
+	 * origin, not turned or mirrored, and {@code size} as its bounds. Create's client handler reads the bounds of a written
+	 * Schematic in hand every tick and crashes when they are missing ({@code SchematicHandler.getBounds()} is null).
+	 * Components already there are kept.
+	 */
+	public static void complete(ItemStack stack, Vec3i size) {
+		if (!isSchematic(stack) || text(stack, "schematic_file") == null) {
+			return;
+		}
+		setIfAbsent(stack, "schematic_deployed", Boolean.FALSE);
+		setIfAbsent(stack, "schematic_anchor", BlockPos.ZERO);
+		setIfAbsent(stack, "schematic_rotation", Rotation.NONE);
+		setIfAbsent(stack, "schematic_mirror", Mirror.NONE);
+		setIfAbsent(stack, "schematic_bounds", new Vec3i(size.getX(), size.getY(), size.getZ()));
+	}
+
+	/** Sets Create's data component {@code component} on {@code stack} to {@code value} when it isn't set, by id. */
+	@SuppressWarnings("unchecked")
+	private static <T> void setIfAbsent(ItemStack stack, String component, T value) {
+		DataComponentType<?> type = Lookup.value(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath(CREATE, component));
+		if (type != null && !stack.has(type)) {
+			stack.set((DataComponentType<T>) type, value);
+		}
 	}
 
 	/** Imports {@code path} as {@link #idFor}, replacing an older import of it. */

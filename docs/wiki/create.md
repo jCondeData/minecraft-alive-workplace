@@ -7,7 +7,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 (39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6) and trains between villages (39.7); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, B189
 
 ## What a player sees
 
@@ -62,6 +62,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   steamworks:brass_gauge."). A schematic uploaded again under the same name replaces its blueprint. A Schematic whose
   file is gone says so ("The schematic file hut.nbt isn't among Jesse's uploads on this server. Upload it again at a
   Schematic Table."), a blank one says to write it first, and one naming a file outside the uploads is refused.
+  A Schematic written without its size (by a command or another mod) gets it from its file when it is used on the
+  table, so holding it afterwards can't crash Create (B189).
 
 - **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (13 x 9 x 8): a Create station
   on the edge of a platform beside a straight run of Create track, under a timber shelter with benches and lanterns.
@@ -102,7 +104,12 @@ remembered by the file's time; after a restart a file is current when its saved 
 that won't import is said once and tried again only when it changes. A written `create:schematic` used on the table
 (`BlueprintTableBlock.useItemOn`, before the Blueprint unlock) is read by component id, `create:schematic_file` and
 `create:schematic_owner` (strings, as the port's `SchematicItem.loadSchematic` reads them, checked in the jar), and
-imports `uploaded/<owner>/<file>` the same way. As in Create, the file must end in `.nbt` and the path must stay in
+imports `uploaded/<owner>/<file>` the same way. After a good import, `CreateSchematics.complete` fills in whatever
+of Create's Schematic Table components the item lacks (`schematic_deployed` false, `schematic_anchor` 0 0 0,
+`schematic_rotation`/`schematic_mirror` none, `schematic_bounds` the blueprint's size), keeping those already set:
+Create's client `SchematicHandler` reads the bounds of a written Schematic in hand every tick and crashed the game
+("getBounds() is null") on an item with only its file and owner, as the showcase scene used to make one (B189).
+`CreateSchematics.written` makes a whole one, as the port's `SchematicItem.create` does. As in Create, the file must end in `.nbt` and the path must stay in
 the uploaded folder; we also refuse any name with a slash, a backslash, a colon or a leading dot. Files over the
 importer's 8 MB limit are refused before they're read.
 

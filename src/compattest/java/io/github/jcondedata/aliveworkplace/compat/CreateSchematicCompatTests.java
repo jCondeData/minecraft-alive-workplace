@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
@@ -34,6 +35,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -238,6 +241,58 @@ public class CreateSchematicCompatTests implements FabricGameTest {
 			clear(server, owner, id);
 		}
 		helper.succeed();
+	}
+
+	/**
+	 * B189: Create's client code reads the bounds of the written Schematic in hand every tick and crashed the game when
+	 * they were missing. A Schematic written without them (here: only its file and uploader) used on the table is listed
+	 * and leaves with everything Create's Schematic Table writes, its bounds the file's size; a Schematic made as Create's
+	 * table makes one has them all and keeps its own.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aListedSchematicInHandHasItsBounds(GameTestHelper helper) {
+		MinecraftServer server = helper.getLevel().getServer();
+		String owner = "gametest_bounds";
+		ResourceLocation id = CreateSchematics.idFor(owner, "bounded.nbt");
+		clear(server, owner, id);
+		ServerPlayer player = playerAtTable(helper);
+		try {
+			write(server, owner, "bounded.nbt", structure(3, false));
+			ItemStack bare = schematic("bounded.nbt", owner);
+			helper.assertTrue(component(bare, "schematic_bounds") == null, "the bare Schematic already had bounds");
+			player.setItemInHand(InteractionHand.MAIN_HAND, bare);
+			helper.useBlock(TABLE, player);
+			helper.assertTrue(TableServer.listing(server).stream().anyMatch(e -> e.id().equals(id)), "the schematic isn't at the table");
+			ItemStack held = player.getMainHandItem();
+			helper.assertTrue(new Vec3i(3, 1, 3).equals(component(held, "schematic_bounds")),
+				"the Schematic in hand has no bounds for Create's client: " + component(held, "schematic_bounds"));
+			helper.assertTrue(BlockPos.ZERO.equals(component(held, "schematic_anchor")) && Rotation.NONE == component(held, "schematic_rotation")
+				&& Mirror.NONE == component(held, "schematic_mirror") && Boolean.FALSE.equals(component(held, "schematic_deployed")),
+				"the Schematic lacks what Create's table writes: " + held.getComponents());
+			helper.assertTrue("bounded.nbt".equals(component(held, "schematic_file")) && owner.equals(component(held, "schematic_owner")),
+				"the Schematic's names changed: " + held.getComponents());
+			// A Schematic as Create's table makes one: every component, its own bounds kept, and it imports
+			ItemStack made = CreateSchematics.written(owner, "bounded.nbt", new Vec3i(7, 2, 7));
+			helper.assertTrue(new Vec3i(7, 2, 7).equals(component(made, "schematic_bounds")) && Mirror.NONE == component(made, "schematic_mirror"),
+				"written() left components out: " + made.getComponents());
+			CreateSchematics.complete(made, new Vec3i(3, 1, 3));
+			helper.assertTrue(new Vec3i(7, 2, 7).equals(component(made, "schematic_bounds")), "complete() replaced the Schematic's own bounds");
+			helper.assertTrue(CreateSchematics.importItem(server, made).imported(), "the made Schematic doesn't import");
+			// A blank Schematic gets nothing: Create's client leaves an unwritten one alone
+			ItemStack blank = new ItemStack(Lookup.value(BuiltInRegistries.ITEM, ResourceLocation.fromNamespaceAndPath("create", "schematic")));
+			CreateSchematics.complete(blank, new Vec3i(3, 1, 3));
+			helper.assertTrue(component(blank, "schematic_bounds") == null, "a blank Schematic was given bounds");
+		} finally {
+			leave(helper, player);
+			clear(server, owner, id);
+		}
+		helper.succeed();
+	}
+
+	private static Object component(ItemStack stack, String name) {
+		DataComponentType<?> type = Lookup.value(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath("create", name));
+		return type == null ? null : stack.get(type);
 	}
 
 	// --- helpers -----------------------------------------------------------------------------------------------------

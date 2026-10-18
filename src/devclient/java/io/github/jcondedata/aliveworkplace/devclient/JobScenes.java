@@ -1366,18 +1366,12 @@ final class JobScenes {
 			} catch (java.io.IOException e) {
 				throw new java.io.UncheckedIOException(e);
 			}
-			// The written Schematic, as Create's Schematic Table hands it back, used on the Blueprint Table
+			// The written Schematic, as Create's Schematic Table hands it back (every component, its bounds too: Create's
+			// client reads them while it is in hand, B189), used on the Blueprint Table
 			BlockPos table = STATION.offset(3, 0, 1);
 			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
-			ItemStack schematic = new ItemStack(io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM,
-				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", "schematic")));
-			for (String[] component : new String[][] {{"schematic_file", "Riverside Kiosk.nbt"}, {"schematic_owner", owner}}) {
-				@SuppressWarnings("unchecked")
-				net.minecraft.core.component.DataComponentType<String> type = (net.minecraft.core.component.DataComponentType<String>)
-					io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.DATA_COMPONENT_TYPE,
-						net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", component[0]));
-				schematic.set(type, component[1]);
-			}
+			ItemStack schematic = io.github.jcondedata.aliveworkplace.table.CreateSchematics.written(owner, "Riverside Kiosk.nbt",
+				new net.minecraft.core.Vec3i(5, 5, 5));
 			player.setItemInHand(InteractionHand.MAIN_HAND, schematic);
 			level.getBlockState(table).useItemOn(schematic, level, player, InteractionHand.MAIN_HAND,
 				new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(table), Direction.UP, table, false));

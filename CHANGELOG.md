@@ -29,6 +29,13 @@ asks for the steps, `latest.log` and any crash report).
   casing, two train controls, a seat and a chest) before the station puts it on the rails, and the caravan's goods ride
   in the carriage's chest: loaded at one station, unloaded at the other. A train broken up on the way keeps them in
   its chest, never paid out twice.
+- **Village trains reach every station and every road** (39.7c, with Create). A Train Station built away from the
+  caravan road gets a curved spur from its own track to the road's, joining it towards the other village, so the train
+  runs out of it and back in. Roads that dip a block and climb back out, step up right on a turn, or run diagonally in
+  zig-zags now get unbroken track (sloped curves, a climbing turn, one long S-bend), so no road leaves a gap. The
+  village's train is now a drawn carriage: a bogey, train casing and the chest below, controls at both ends and the
+  driver's seat on the deck, spruce posts and a slab canopy with a lantern over it (the builder also needs three spruce
+  fences, four spruce slabs and a lantern).
 - **Two build libraries, vanilla and modded** (2.1, behind its gate). Every build as it ships stays the vanilla
   library. With Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted installed, all 130 homes and workshops
   are built from the modded library instead: daub walls with braces, herringbone floors, Carved Wood chests and shelves

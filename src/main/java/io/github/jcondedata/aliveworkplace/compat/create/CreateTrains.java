@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
@@ -85,7 +85,11 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			// Facing the other station: trains coming from there stop here, and the village train is put together on
 			// that side of it (found by trying both in CreateTrainCompatTests: facing away, no path is ever found)
 			Vec3 toward = Vec3.atLowerCornerOf(other.subtract(station));
-			tag.putBoolean("TargetDirection", axes.get(0).dot(toward) > 0);
+			// 39.7c: a station on a spur (its track ends on one side, runs on by a curve on the other) faces the way out
+			Direction plus = Direction.getNearest(axes.get(0).x, 0, axes.get(0).z);
+			boolean onPlus = runsOn(level, track, plus);
+			boolean onMinus = runsOn(level, track, plus.getOpposite());
+			tag.putBoolean("TargetDirection", onPlus != onMinus ? onPlus : axes.get(0).dot(toward) > 0);
 			be.loadWithComponents(tag, level.registryAccess());
 			be.setChanged();
 			be.notifyUpdate();
@@ -93,6 +97,24 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return false;
 		}
 		return false;
+	}
+
+	/** Whether the straight track from {@code track} towards {@code way} runs on (a curve at its end, or 64 blocks of it) rather than ending (39.7c). */
+	private static boolean runsOn(ServerLevel level, BlockPos track, Direction way) {
+		BlockState shape = level.getBlockState(track);
+		if (!(shape.getBlock() instanceof TrackBlock)) {
+			return false;
+		}
+		BlockPos end = track;
+		for (int i = 0; i < 64; i++) {
+			BlockPos next = end.relative(way);
+			BlockState there = level.getBlockState(next);
+			if (!(there.getBlock() instanceof TrackBlock) || there.getValue(TrackBlock.SHAPE) != shape.getValue(TrackBlock.SHAPE)) {
+				return level.getBlockEntity(end) instanceof TrackBlockEntity be && !be.getConnections().isEmpty();
+			}
+			end = next;
+		}
+		return true;
 	}
 
 	/** Where the track a station looks at may be: beside it, or a step further (the Train Station build's platform edge), nearest first. */
@@ -149,30 +171,43 @@ public final class CreateTrains implements CaravanTrains.Railway {
 		BlockPos target = be.edgePoint.getGlobalPosition();
 		BlockState trackState = be.edgePoint.getTrackBlockState();
 		ITrackBlock track = be.edgePoint.getTrack();
+		List<io.github.jcondedata.aliveworkplace.blueprint.Blueprint.Entry> drawn = CaravanTrains.trainBlocks(level);
+		if (drawn.isEmpty()) {
+			return null;
+		}
+		// 39.7c: the drawn train (running east from its bogey) turned to run along the track past the station
+		Rotation turn = switch (along) {
+			case SOUTH -> Rotation.CLOCKWISE_90;
+			case WEST -> Rotation.CLOCKWISE_180;
+			case NORTH -> Rotation.COUNTERCLOCKWISE_90;
+			default -> Rotation.NONE;
+		};
 		BlockPos bogey = target.above().relative(along);
-		BlockPos seat = bogey.above().relative(along);
 		Map<BlockPos, BlockState> parts = new java.util.LinkedHashMap<>();
-		parts.put(bogey, with(block("small_bogey"), "axis", along.getAxis().getSerializedName()));
-		parts.put(bogey.relative(along), block("railway_casing"));
-		parts.put(bogey.relative(along, 2), with(Blocks.CHEST.defaultBlockState(), "facing", along.getClockWise().getSerializedName()));
-		parts.put(bogey.above(), with(block("controls"), "facing", along.getSerializedName()));
-		parts.put(seat, block("brown_seat"));
-		parts.put(seat.relative(along), with(block("controls"), "facing", along.getOpposite().getSerializedName()));
-		for (int i = 1; i <= 3; i++) {
-			BlockPos rail = target.relative(along, i);
-			boolean room = track.trackEquals(trackState, level.getBlockState(rail));
-			for (int up = 1; up <= 2 && room; up++) {
-				BlockState there = level.getBlockState(rail.above(up));
-				BlockState part = parts.get(rail.above(up));
-				room = there.canBeReplaced() || part != null && there.is(part.getBlock());
+		int length = 0;
+		for (io.github.jcondedata.aliveworkplace.blueprint.Blueprint.Entry e : drawn) {
+			BlockPos at = bogey.relative(along, e.pos().getX()).above(e.pos().getY()).relative(along.getClockWise(), e.pos().getZ());
+			BlockState state = e.state().rotate(turn);
+			if (BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath().endsWith("bogey")) {
+				state = with(state, "axis", along.getAxis().getSerializedName());
 			}
-			if (!room) {
-				if (!quiet) {
-					AliveWorkplace.LOG.info("Alive Workplace: no room for the village train at the station at {} (the track past it, {} blocks, must be straight and clear)",
-						stationPos.toShortString(), 3);
-				}
-				return null;
+			parts.put(at, state);
+			length = Math.max(length, e.pos().getX() + 1);
+		}
+		boolean room = true;
+		for (int i = 1; i <= length && room; i++) {
+			room = track.trackEquals(trackState, level.getBlockState(target.relative(along, i)));
+		}
+		for (Map.Entry<BlockPos, BlockState> part : parts.entrySet()) {
+			BlockState there = level.getBlockState(part.getKey());
+			room &= there.canBeReplaced() || there.is(part.getValue().getBlock());
+		}
+		if (!room) {
+			if (!quiet) {
+				AliveWorkplace.LOG.info("Alive Workplace: no room for the village train at the station at {} (the track past it, {} blocks, must be straight and clear)",
+					stationPos.toShortString(), length);
 			}
+			return null;
 		}
 		return parts;
 	}
@@ -202,10 +237,14 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			AliveWorkplace.LOG.info("Alive Workplace: the village train at {} isn't built yet", stationPos.toShortString());
 			return null;
 		}
-		Direction along = be.getAssemblyDirection();
-		BlockPos bogey = be.edgePoint.getGlobalPosition().above().relative(along);
-		BlockPos seat = bogey.above().relative(along);
-		SuperGlueEntity glue = new SuperGlueEntity(level, AABB.encapsulatingFullBlocks(bogey, seat.relative(along)));
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = net.minecraft.world.level.levelgen.structure.BoundingBox.encapsulatingPositions(parts.keySet()).orElseThrow();
+		BlockPos seat = parts.entrySet().stream().filter(e -> e.getValue().getBlock() instanceof SeatBlock).map(Map.Entry::getKey).findFirst().orElse(null);
+		if (seat == null) {
+			AliveWorkplace.LOG.warn("Alive Workplace: the village train's drawing has no seat");
+			return null;
+		}
+		SuperGlueEntity glue = new SuperGlueEntity(level, AABB.encapsulatingFullBlocks(new BlockPos(box.minX(), box.minY(), box.minZ()),
+			new BlockPos(box.maxX(), box.maxY(), box.maxZ())));
 		level.addFreshEntity(glue);
 		SeatBlock.sitDown(level, seat, conductor);
 		be.enterAssemblyMode(null);
@@ -394,6 +433,7 @@ public final class CreateTrains implements CaravanTrains.Railway {
 			return false;
 		}
 		TrackPropagator.onRailAdded(level, a, sa);
+		TrackPropagator.onRailAdded(level, b, sb); // 39.7c: b may be a junction (a spur joining the road's track), its node rebuilt too
 		return true;
 	}
 

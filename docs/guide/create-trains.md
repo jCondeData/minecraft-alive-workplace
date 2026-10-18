@@ -23,7 +23,9 @@ villages' caravans take the train instead of walking.
    road to each other as they always do.
 2. **A Train Station in each village.** It's at the Blueprint Table: a short run of Create track with a Create
    station beside it, a platform with benches and a timber shelter. Any Create station near the Village Hall counts, so
-   one you placed yourself works too.
+   one you placed yourself works too. It doesn't have to stand by the road: when the track along the road is laid, the
+   builders join the station's own track to it with a curved spur (up to about thirty blocks away), heading towards
+   the other village.
 3. **Track along the road.** When both villages have a station and a village's half of the road is finished, one of
    its builders walks out and lays Create track down the middle of the road, sloped where the road steps up or down and
    curving round its turns. Keep Create track in the builder's
@@ -36,16 +38,19 @@ villages' caravans take the train instead of walking.
 
 Once Create's railway knows both stations on one stretch of track, one of the villages puts a real Create train
 together at its station, just as you would: a bogey on the track, a small carriage of train casing with the caravan's
-chest, train controls at both ends, and one of its villagers without a job in the seat between them as the driver. The
+chest, train controls at both ends, a seat on the deck under a little spruce canopy with a lantern, and one of its
+villagers without a job in the seat as the driver. The
 chronicle says who took the seat. The train gets a Create schedule, to the other village's station and back with a short
 wait at each, and Create runs it from then on: you can watch it come and go, and see it on Create's maps.
 
 - **Keep a villager free.** The driver is a villager without a job near the station. Until there is one, the
   caravans still go by train, as a quicker trip without a train you can see.
 - **A builder builds it.** One of the village's builders builds the train on the track just past the station, from
-  the chests by the bench like any build: keep two train casings, two train controls, a seat and a chest there. The
+  the chests by the bench like any build: keep three train casings, two train controls, a seat, a chest, three spruce
+  fences, four spruce slabs and a lantern there. The
   chronicle says who built it, and the station then puts it on the rails.
-- **Room at the station.** Leave three blocks of straight track clear just past the station for it.
+- **Room at the station.** Leave four blocks of straight track just past the station, and four blocks of air above
+  it, for the train.
 - **The village's train is its own.** Nothing of the mod ever touches trains you put together yourself.
 
 ## Riding the train
@@ -73,8 +78,9 @@ A caravan between two villages joined by rail goes by train:
 - **You break the village's train up:** caravans waiting for it take the quicker trip instead, and the village builds a
   new train when it can. Goods that were riding in its chest stay in that chest: the caravan doesn't bring them a second
   time.
-- **Where the track has a gap** (a dip of a single block, a step right on a turn, or a turn too tight for a curve), the
-  two stations aren't joined and caravans take the quicker trip. Smooth the road there and the builders' next track
-  joins it.
+- **Dips, steps on turns and diagonal roads** all get unbroken track: a slope down into a dip and back up, one curve
+  that turns and climbs, one long S-bend along a road that zig-zags. Only a spot the curve can't reach (a gap of more
+  than about twenty blocks with nowhere to rest a piece of track halfway, or a turn back on itself) stays a gap; then
+  the two stations aren't joined and caravans take the quicker trip.
 - With the **Village trains** setting off, the Train Station isn't at the table, no track is laid and caravans walk;
   a train already on its way still comes in.

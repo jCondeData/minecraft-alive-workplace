@@ -113,7 +113,8 @@ public class CreateTrainCompatTests implements FabricGameTest {
 				if (aimed && r.linked(level, a, b)) {
 					helper.assertTrue(r.assemble(level, a, b, owner, driver) == null, "the station assembled a train nobody built");
 					java.util.Map<BlockPos, BlockState> parts = r.train(level, a, b);
-					helper.assertTrue(parts != null && parts.size() == 6, "no room for the train's blocks past the station: " + parts);
+					helper.assertTrue(parts != null && parts.size() == CaravanTrains.trainBlocks(level).size() && parts.size() > 6,
+							"no room for the drawn train's blocks past the station: " + parts); // 39.7c: the architect's drawing, not six blocks
 					parts.forEach((pos, state) -> level.setBlockAndUpdate(pos, state)); // as the village's builder puts them up (39.7b)
 					helper.assertTrue(r.built(level, a, b), "the train's blocks put up don't count as built");
 					helper.assertTrue(r.assemble(level, a, b, owner, driver) != null, "the station didn't assemble the village train");
@@ -322,7 +323,10 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		helper.setBlock(new BlockPos(13, 2, 20), Blocks.BARREL);
 		if (parts) {
 			Container barrel = helper.getBlockEntity(new BlockPos(13, 2, 20));
-			barrel.setItem(0, new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("create", "railway_casing")), 2));
+			barrel.setItem(0, new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("create", "railway_casing")), 3));
+			barrel.setItem(4, new ItemStack(Items.SPRUCE_FENCE, 3)); // 39.7c: the drawn train's posts, canopy and lantern
+			barrel.setItem(5, new ItemStack(Items.SPRUCE_SLAB, 4));
+			barrel.setItem(6, new ItemStack(Items.LANTERN, 1));
 			barrel.setItem(1, new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("create", "controls")), 2));
 			barrel.setItem(2, new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("create", "brown_seat")), 1));
 			barrel.setItem(3, new ItemStack(Items.CHEST, 1));

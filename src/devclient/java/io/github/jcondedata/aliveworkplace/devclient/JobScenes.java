@@ -1203,7 +1203,10 @@ final class JobScenes {
 			Container parts = (Container) level.getBlockEntity(bench.west());
 			java.util.function.Function<String, net.minecraft.world.item.Item> create = path -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
-			parts.setItem(0, new ItemStack(create.apply("railway_casing"), 2));
+			parts.setItem(0, new ItemStack(create.apply("railway_casing"), 3));
+			parts.setItem(4, new ItemStack(Items.SPRUCE_FENCE, 3)); // 39.7c: the drawn train's posts, canopy and lantern
+			parts.setItem(5, new ItemStack(Items.SPRUCE_SLAB, 4));
+			parts.setItem(6, new ItemStack(Items.LANTERN, 1));
 			parts.setItem(1, new ItemStack(create.apply("controls"), 2));
 			parts.setItem(2, new ItemStack(create.apply("brown_seat"), 1));
 			parts.setItem(3, new ItemStack(Items.CHEST, 1));

@@ -150,4 +150,63 @@ public class VillageTrainGameTests implements FabricGameTest {
 		}
 		helper.succeed();
 	}
+
+	/**
+	 * 39.7c, the track's plan (no Create needed): a one-block dip gets a sloped curve down into it and one up out of it; a
+	 * step on a turn is one curve that turns and climbs; a zig-zag (a diagonal road in single steps) is one S-bend with no
+	 * straight bits left in it; a gap longer than one curve gets a straight piece halfway and two curves.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void theTrackPlanJoinsDipsTurnStepsAndZigZags(GameTestHelper helper) {
+		java.util.List<BlockPos> dip = new java.util.ArrayList<>();
+		for (int x = 0; x <= 20; x++) {
+			dip.add(new BlockPos(x, x == 10 ? -1 : 0, 0));
+		}
+		CaravanTrains.TrackPlan dipped = CaravanTrains.plan(dip, p -> true);
+		helper.assertTrue(dipped.curves().size() == 2 && dipped.curves().get(0).b().equals(new BlockPos(10, -1, 0)) && dipped.curves().get(1).a().equals(new BlockPos(10, -1, 0)),
+			"not a slope into the dip and one out of it: " + dipped.curves());
+		java.util.List<BlockPos> turn = new java.util.ArrayList<>();
+		for (int x = 0; x <= 8; x++) {
+			turn.add(new BlockPos(x, 0, 0));
+		}
+		for (int z = 1; z <= 8; z++) {
+			turn.add(new BlockPos(8, 1, z)); // south from the turn, a block up straight away
+		}
+		CaravanTrains.TrackPlan turned = CaravanTrains.plan(turn, p -> true);
+		helper.assertTrue(turned.curves().stream().anyMatch(c -> c.a().getZ() == 0 && c.a().getY() == 0 && c.b().getX() == 8 && c.b().getY() == 1
+			&& c.outA() == net.minecraft.core.Direction.EAST && c.outB() == net.minecraft.core.Direction.NORTH), "no curve turning and climbing at the step: " + turned.curves());
+		java.util.List<BlockPos> zig = new java.util.ArrayList<>();
+		for (int x = 0; x <= 6; x++) {
+			zig.add(new BlockPos(x, 0, 0));
+		}
+		int x = 6;
+		int z = 0;
+		while (z < 6) {
+			zig.add(new BlockPos(++x, 0, z));
+			zig.add(new BlockPos(x, 0, ++z));
+		}
+		for (x = 13; x <= 20; x++) {
+			zig.add(new BlockPos(x, 0, 6));
+		}
+		CaravanTrains.TrackPlan zigged = CaravanTrains.plan(zig, p -> true);
+		helper.assertTrue(zigged.curves().equals(List.of(new CaravanTrains.Curve(new BlockPos(6, 0, 0), net.minecraft.core.Direction.EAST, new BlockPos(13, 0, 6),
+			net.minecraft.core.Direction.WEST))), "the zig-zag isn't one S-bend: " + zigged.curves());
+		helper.assertTrue(zigged.shapes().keySet().stream().noneMatch(p -> p.getZ() > 0 && p.getZ() < 6), "straight bits left in the zig-zag: " + zigged.shapes().keySet());
+		java.util.List<BlockPos> longZig = new java.util.ArrayList<>();
+		longZig.add(new BlockPos(0, 0, 0));
+		longZig.add(new BlockPos(1, 0, 0));
+		x = 1;
+		z = 0;
+		while (z < 20) {
+			longZig.add(new BlockPos(++x, 0, z));
+			longZig.add(new BlockPos(x, 0, ++z));
+		}
+		longZig.add(new BlockPos(22, 0, 20));
+		longZig.add(new BlockPos(23, 0, 20));
+		CaravanTrains.TrackPlan longer = CaravanTrains.plan(longZig, p -> true);
+		helper.assertTrue(longer.curves().size() == 2 && longer.curves().get(0).b().equals(longer.curves().get(1).a()),
+			"a long zig-zag isn't two S-bends meeting on a piece halfway: " + longer.curves());
+		helper.succeed();
+	}
 }

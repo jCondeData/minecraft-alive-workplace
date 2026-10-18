@@ -237,5 +237,30 @@ def train_station():
     return b
 
 
+def village_train():
+    """4 x 4 x 1: the village train (ROADMAP 39.7c), the carriage a village's builder puts on the track past its Train
+    Station for Create's station to assemble. Drawn running east (+x, away from the station; the mod turns it to the
+    track): on the bottom row a small bogey (Create's, set on the track, built with railway casing), a railway casing
+    hull and the caravan's chest, casing again at the tail; on the deck a driver's controls at the front facing the way
+    out, the conductor's brown seat behind them and the controls facing back behind the seat (Create's conductor sits
+    between them, so it drives both ways), a spruce rail at the tail; spruce posts at both ends hold a slab canopy, with a lantern hung under it over the chest. One wide, so it
+    clears the station's platform; four high, so the conductor sits under the canopy."""
+    b = Build(4, 4, 1)
+    b.set(0, 0, 0, CREATE + "small_bogey", axis="x", waterlogged=False)
+    b.set(1, 0, 0, CREATE + "railway_casing")
+    b.set(2, 0, 0, "chest", facing="south", type="single", waterlogged=False)
+    b.set(3, 0, 0, CREATE + "railway_casing")
+    b.set(0, 1, 0, CREATE + "controls", facing="east", open=False, virtual=False, waterlogged=False)
+    b.set(1, 1, 0, CREATE + "brown_seat", waterlogged=False)
+    b.set(2, 1, 0, CREATE + "controls", facing="west", open=False, virtual=False, waterlogged=False)
+    fence(b, 3, 1, 0, "spruce_fence")  # a rail at the tail
+    for x in (0, 3):
+        fence(b, x, 2, 0, "spruce_fence")
+    lantern(b, 2, 2, 0, hanging=True)
+    for x in range(4):
+        b.set(x, 3, 0, "spruce_slab", type="bottom", waterlogged=False)
+    return b
+
+
 CREATE_BUILDS = (("watermill", watermill), ("windmill", windmill), ("workshop", workshop))
 TRAIN_STATION = (("train_station", train_station),)  # ROADMAP 39.7: listed only with Create and villageTrains

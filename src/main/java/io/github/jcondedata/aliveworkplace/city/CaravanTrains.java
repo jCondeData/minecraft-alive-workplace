@@ -77,6 +77,10 @@ import org.jetbrains.annotations.Nullable;
  * loaded at the departing station, taken out at the arriving one (only what is still there is delivered), and taken
  * back out of a derailed train for the timed trip; a train broken up while they're aboard leaves them in its chest, never
  * a second time with the caravan.
+ * <p>
+ * <b>39.7c.</b> No real road leaves a gap: what the plan's first pass leaves unjoined gets a curve ({@link #join}), and a
+ * Train Station standing off the road gets a spur from its own track to the road's ({@link #spur}). The train is the
+ * architect's drawing ({@link #TRAIN}), turned to the track past the station.
  */
 public final class CaravanTrains {
 	/** Config {@code villageTrains} (and M39 open). */
@@ -273,6 +277,10 @@ public final class CaravanTrains {
 		}
 		String us = ourName;
 		String them = theirName;
+		if (level.isLoaded(station)) {
+			spurFor(level, hall, other, station); // 39.7c: a Train Station off the road joined to the road's track first
+			spurFor(level, other, hall, far);
+		}
 		if (!level.isLoaded(station) || !RAILWAY.call(r -> r.aim(level, station, far, us) & r.aim(level, far, station, them) && r.linked(level, station, far), false)) {
 			return null;
 		}
@@ -423,6 +431,132 @@ public final class CaravanTrains {
 		level.playSound(null, at, SoundEvents.BELL_BLOCK, SoundSource.NEUTRAL, 1f, 1.4f);
 	}
 
+	// ---- 39.7c: spurs to Train Stations off the road, the drawn train ----------------------------------------------
+
+	/** The village train as drawn (39.7c, {@code tools/blueprints/create_builds.py}): running east from x = 0, the bogey at y = 0. */
+	public static final ResourceLocation TRAIN = AliveWorkplace.id("train/village_train");
+
+	/** The drawn train's blocks (no air), running east from the bogey at the origin; empty if the drawing is missing. */
+	public static List<Blueprint.Entry> trainBlocks(ServerLevel level) {
+		return level.getStructureManager().get(TRAIN)
+			.map(t -> Blueprint.fromTemplate(TRAIN, t, Lookup.lookup(BuiltInRegistries.BLOCK)).blocks().stream().filter(e -> !e.state().isAir()).toList())
+			.orElse(List.of());
+	}
+
+	/** Where the track a station looks at may be: beside it, or a step further (the Train Station build's platform edge), nearest first. */
+	private static final List<BlockPos> NEAR = List.of(new BlockPos(1, 0, 0), new BlockPos(-1, 0, 0), new BlockPos(0, 0, 1), new BlockPos(0, 0, -1),
+		new BlockPos(2, 0, 0), new BlockPos(-2, 0, 0), new BlockPos(0, 0, 2), new BlockPos(0, 0, -2));
+
+	/** The straight track beside the station at {@code station} (along it, not ending at it), or null. */
+	@Nullable
+	public static BlockPos stationTrack(ServerLevel level, BlockPos station) {
+		for (BlockPos offset : NEAR) {
+			BlockPos p = station.offset(offset);
+			String shape = shapeOf(level.getBlockState(p));
+			if ("xo".equals(shape) && offset.getX() == 0 || "zo".equals(shape) && offset.getZ() == 0) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	/** A Create track's straight shape ({@code xo}, {@code zo}, ...), or null for anything else. */
+	@Nullable
+	static String shapeOf(BlockState state) {
+		if (!isTrack(state)) {
+			return null;
+		}
+		Property<?> property = state.getBlock().getStateDefinition().getProperty("shape");
+		return property == null ? null : nameOf(state, property);
+	}
+
+	private static <T extends Comparable<T>> String nameOf(BlockState state, Property<T> property) {
+		return property.getName(state.getValue(property));
+	}
+
+	/**
+	 * The spur of a Train Station standing off the road (39.7c): its own straight track joined to the road's by one Create
+	 * curve, from an end of the station's track to a straight piece of the road's ({@code plan}, along {@code way}, which
+	 * runs from this village towards the other), joining it heading towards the other village. So a train leaving the
+	 * station runs on towards the other village, and one coming back takes the spur at that piece. True when the station
+	 * is on the road's track or the spur is there now; false when no curve fits ({@link #MAX_SPUR} blocks at most).
+	 */
+	public static boolean spur(ServerLevel level, BlockPos station, List<BlockPos> way, TrackPlan plan) {
+		BlockPos track = stationTrack(level, station);
+		if (track == null) {
+			return false;
+		}
+		if (plan.shapes().containsKey(track)) {
+			return true; // beside the road's own track
+		}
+		String shape = shapeOf(level.getBlockState(track));
+		Direction plus = "xo".equals(shape) ? Direction.EAST : Direction.SOUTH;
+		BlockPos[] ends = new BlockPos[2];
+		Direction[] outs = {plus, plus.getOpposite()};
+		for (int side = 0; side < 2; side++) {
+			BlockPos end = track;
+			for (int i = 0; i < 64 && shape.equals(shapeOf(level.getBlockState(end.relative(outs[side])))); i++) {
+				end = end.relative(outs[side]);
+			}
+			ends[side] = end;
+		}
+		BlockPos bestA = null;
+		Direction bestOutA = null;
+		BlockPos bestB = null;
+		Direction bestOutB = null;
+		double best = Double.MAX_VALUE;
+		for (int side = 0; side < 2; side++) {
+			for (int j = 0; j < way.size(); j++) {
+				BlockPos node = way.get(j);
+				String piece = plan.shapes().get(node);
+				BlockPos from = j + 1 < way.size() ? node : j > 0 ? way.get(j - 1) : null;
+				BlockPos to = j + 1 < way.size() ? way.get(j + 1) : node;
+				if (piece == null || from == null) {
+					continue;
+				}
+				Direction travel = out(from, piece, to);
+				if (travel == null || Math.abs(to.getX() - from.getX()) + Math.abs(to.getZ() - from.getZ()) != 1) {
+					continue;
+				}
+				Direction outB = travel.getOpposite();
+				if (out(ends[side], shape, node) != outs[side] || out(node, piece, ends[side]) != outB || !curveOk(ends[side], outs[side], node, outB, MAX_SPUR)) {
+					continue;
+				}
+				boolean used = plan.curves().stream().anyMatch(c -> c.a().equals(node) && c.outA() == outB || c.b().equals(node) && c.outB() == outB);
+				double d = ends[side].distSqr(node);
+				if (!used && d < best) {
+					best = d;
+					bestA = ends[side];
+					bestOutA = outs[side];
+					bestB = node;
+					bestOutB = outB;
+				}
+			}
+		}
+		if (bestA == null) {
+			return false;
+		}
+		AliveWorkplace.LOG.debug("Alive Workplace: the spur of the station at {}: from {} ({}) to {} ({})", station.toShortString(), bestA.toShortString(), bestOutA,
+			bestB.toShortString(), bestOutB);
+		BlockPos a = bestA;
+		Direction outA = bestOutA;
+		BlockPos b = bestB;
+		Direction outB = bestOutB;
+		return level.isLoaded(a) && level.isLoaded(b) && RAILWAY.call(r -> r.curve(level, a, outA, b, outB), false);
+	}
+
+	/** The spur of the station of {@code hall}'s village off the road to {@code other}, when its track is laid (39.7c). */
+	static void spurFor(ServerLevel level, BlockPos hall, BlockPos other, BlockPos station) {
+		if (!level.isLoaded(hall) || !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) || !Caravans.Data.get(level).tracked(hall, other)) {
+			return;
+		}
+		CityPlan.Road road = CaravanRoads.roadTo(entity.plan(), hall, other);
+		if (road != null && road.routed() && !road.route().isEmpty()) {
+			List<BlockPos> way = way(hall, road);
+			spur(level, station, way, plan(way, p -> free(level, p)));
+		}
+	}
+
 	// ---- laying track ---------------------------------------------------------------------------------------------
 
 	/** From the hall's road tick: every {@link #CHECK_EVERY} ticks, a track site opens where one is due. */
@@ -511,8 +645,9 @@ public final class CaravanTrains {
 	 * either side, a curve joins the straight pieces that far from the turn. On each straight stretch, each run of steps
 	 * the same way (up, or down) becomes one sloped curve from a level node before it to one after it, two nodes out where
 	 * there's room (at least two blocks along for every block up). Nothing is laid on the nodes a curve passes over. Every
-	 * other node with {@code free} gets a straight piece along the way ({@code xo}, {@code zo}). Turns with no room for a
-	 * curve, steps on a turn, slopes steeper than that and nodes not {@code free} stay gaps.
+	 * other node with {@code free} gets a straight piece along the way ({@code xo}, {@code zo}). What that leaves unjoined
+	 * (a turn with no room, a step on a turn, a zig-zag of a diagonal road, a node not {@code free}) is joined by
+	 * {@link #join} (39.7c); only a gap no curve can span stays one.
 	 */
 	public static TrackPlan plan(List<BlockPos> route, java.util.function.Predicate<BlockPos> free) {
 		int n = route.size();
@@ -571,6 +706,7 @@ public final class CaravanTrains {
 				shape[j] = straight(along);
 			}
 		}
+		join(route, dir, shape, between, curves, free); // 39.7c: what's left unjoined (dips, steps on turns, zig-zags)
 		Map<BlockPos, String> shapes = new LinkedHashMap<>();
 		for (int j = 0; j < n; j++) {
 			if (shape[j] != null) {
@@ -578,6 +714,231 @@ public final class CaravanTrains {
 			}
 		}
 		return new TrackPlan(shapes, List.copyOf(curves));
+	}
+
+	/** The longest curve (blocks, level) that joins two pieces of track the plan couldn't join (39.7c); longer gaps get a piece between. */
+	static final int MAX_JOIN = 20;
+	/** The longest spur (blocks, level) from a Train Station's own track to the road's (39.7c). */
+	static final int MAX_SPUR = 32;
+
+	/**
+	 * 39.7c: what {@link #plan}'s first pass left unjoined is joined. Its straight pieces and curves make lines (pieces
+	 * that meet straight, or a curve's two ends); short lines of one or two pieces between gaps (the straight bits of a
+	 * zig-zag) are taken out, and each gap between two lines gets one Create curve from the last piece of one to the first
+	 * of the next (a turn, an S-bend sideways, a slope, or all of them), leaving each straight along its own axis, the
+	 * lines shortened by up to {@link #JOIN_BACK} pieces where the curve needs the room. A gap longer than
+	 * {@link #MAX_JOIN} gets a straight piece on a node about halfway (along the way's main axis) and is joined in two.
+	 */
+	private static void join(List<BlockPos> route, Direction[] dir, String[] shape, boolean[] between, List<Curve> curves,
+			java.util.function.Predicate<BlockPos> free) {
+		int n = route.size();
+		Map<BlockPos, Integer> index = new java.util.HashMap<>();
+		for (int j = n - 1; j >= 0; j--) {
+			index.put(route.get(j), j);
+		}
+		// the short lines between gaps (not at the way's ends)
+		List<int[]> lines = lines(route, dir, shape, curves, index);
+		for (int i = 1; i + 1 < lines.size(); i++) {
+			int[] line = lines.get(i);
+			if (line[1] - line[0] < 2 && !line(line, curves, index)) {
+				for (int j = line[0]; j <= line[1]; j++) {
+					shape[j] = null;
+				}
+			}
+		}
+		for (int guard = 0; guard < 2 * n; guard++) {
+			lines = lines(route, dir, shape, curves, index);
+			boolean progress = false;
+			for (int i = 0; i + 1 < lines.size() && !progress; i++) {
+				progress = joinLines(route, dir, shape, between, curves, index, lines.get(i), lines.get(i + 1))
+					|| split(route, shape, between, free, lines.get(i)[1], lines.get(i + 1)[0]);
+			}
+			if (!progress) {
+				return;
+			}
+		}
+	}
+
+	/** How many pieces a line may lose at its end to give a joining curve room (39.7c). */
+	static final int JOIN_BACK = 4;
+
+	/** Whether the line {@code line} (first, last index) has a curve's end in it. */
+	private static boolean line(int[] line, List<Curve> curves, Map<BlockPos, Integer> index) {
+		for (Curve c : curves) {
+			int a = index.getOrDefault(c.a(), -1);
+			int b = index.getOrDefault(c.b(), -1);
+			if (a >= line[0] && a <= line[1] || b >= line[0] && b <= line[1]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** The lines of track the plan has (first and last index along the way), in order: pieces meeting straight or by a curve. */
+	private static List<int[]> lines(List<BlockPos> route, Direction[] dir, String[] shape, List<Curve> curves, Map<BlockPos, Integer> index) {
+		int n = route.size();
+		int[] next = new int[n];
+		java.util.Arrays.fill(next, -1);
+		for (int j = 0; j + 1 < n; j++) {
+			if (shape[j] != null && shape[j].equals(shape[j + 1]) && dir[j] != null && straight(dir[j]).equals(shape[j])
+				&& route.get(j).getY() == route.get(j + 1).getY()) {
+				next[j] = j + 1;
+			}
+		}
+		for (Curve c : curves) {
+			int a = index.getOrDefault(c.a(), -1);
+			int b = index.getOrDefault(c.b(), -1);
+			if (a >= 0 && b > a) {
+				next[a] = Math.max(next[a], b);
+			}
+		}
+		List<int[]> out = new ArrayList<>();
+		int j = 0;
+		while (j < n) {
+			if (shape[j] == null) {
+				j++;
+				continue;
+			}
+			int first = j;
+			while (next[j] > j) {
+				j = next[j];
+			}
+			out.add(new int[] {first, j});
+			j++;
+		}
+		return out;
+	}
+
+	/** The side of node {@code j} a curve or a neighbouring piece already leaves from, if any of {@code side}. */
+	private static boolean taken(List<BlockPos> route, Direction[] dir, String[] shape, List<Curve> curves, int j, Direction side) {
+		int n = route.size();
+		if (j > 0 && shape[j - 1] != null && shape[j - 1].equals(shape[j]) && dir[j - 1] != null && dir[j - 1].getOpposite() == side
+			&& route.get(j - 1).getY() == route.get(j).getY()) {
+			return true;
+		}
+		if (j + 1 < n && shape[j + 1] != null && shape[j + 1].equals(shape[j]) && dir[j] == side && route.get(j + 1).getY() == route.get(j).getY()) {
+			return true;
+		}
+		for (Curve c : curves) {
+			if (c.a().equals(route.get(j)) && c.outA() == side || c.b().equals(route.get(j)) && c.outB() == side) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * The way out of a straight piece at {@code from} along its axis ({@code shape}) towards {@code to}: null when {@code to}
+	 * isn't ahead on that axis.
+	 */
+	@Nullable
+	static Direction out(BlockPos from, String shape, BlockPos to) {
+		int d = "xo".equals(shape) ? to.getX() - from.getX() : to.getZ() - from.getZ();
+		if (d == 0) {
+			return null;
+		}
+		return "xo".equals(shape) ? (d > 0 ? Direction.EAST : Direction.WEST) : (d > 0 ? Direction.SOUTH : Direction.NORTH);
+	}
+
+	/**
+	 * Whether a Create curve can join a straight piece at {@code a} (leaving {@code outA}) to one at {@code b} (leaving
+	 * {@code outB}): not doubling back, at least two blocks along for every block up, not longer than {@code max}, a turn
+	 * with legs of one length and an S-bend Create draws smooth (see below).
+	 */
+	static boolean curveOk(BlockPos a, Direction outA, BlockPos b, Direction outB, int max) {
+		if (outA == null || outB == null || outA == outB) {
+			return false;
+		}
+		int dx = b.getX() - a.getX();
+		int dz = b.getZ() - a.getZ();
+		double h = Math.sqrt(dx * dx + dz * dz);
+		int dy = Math.abs(b.getY() - a.getY());
+		if (h < 2 || h < 2 * dy + 1 || h > max) {
+			return false;
+		}
+		int along = Math.abs(outA.getAxis() == Direction.Axis.X ? dx : dz);
+		int across = Math.abs(outA.getAxis() == Direction.Axis.X ? dz : dx);
+		if (outA.getAxis() != outB.getAxis()) {
+			return along > 0 && along == across; // a quarter circle, as Create's own track makes a turn
+		}
+		// An S-bend starts and ends at the blocks' faces, a block less along. Create's curve is smooth there only with as
+		// much way along as across, the same or half as much again (in between its handles come out short and the ends
+		// kink, so trains never pass them; found in CreateTrackCompatTests)
+		int faces = along - 1;
+		return across <= 1 || faces == across || 2 * faces >= 3 * across;
+	}
+
+	/** Joins two lines (first, last index) with a curve, shortening their facing ends where it needs the room; false if no curve fits. */
+	private static boolean joinLines(List<BlockPos> route, Direction[] dir, String[] shape, boolean[] between, List<Curve> curves,
+			Map<BlockPos, Integer> index, int[] first, int[] second) {
+		for (int drop = 0; drop <= 2 * JOIN_BACK; drop++) {
+			for (int back = Math.max(0, drop - JOIN_BACK); back <= Math.min(drop, JOIN_BACK); back++) {
+				int e = first[1] - back;
+				int s = second[0] + (drop - back);
+				if (e < first[0] || s > second[1] || !shortens(route, dir, shape, curves, index, first[1], e) || !shortens(route, dir, shape, curves, index, second[0], s)) {
+					continue;
+				}
+				BlockPos a = route.get(e);
+				BlockPos b = route.get(s);
+				Direction outA = out(a, shape[e], b);
+				Direction outB = out(b, shape[s], a);
+				if (!curveOk(a, outA, b, outB, MAX_JOIN)) {
+					continue;
+				}
+				String[] trial = shape.clone();
+				for (int k = e + 1; k < s; k++) {
+					trial[k] = null;
+				}
+				if (taken(route, dir, trial, curves, e, outA) || taken(route, dir, trial, curves, s, outB)) {
+					continue;
+				}
+				for (int k = e + 1; k < s; k++) {
+					shape[k] = null;
+					between[k] = true;
+				}
+				curves.add(new Curve(a, outA, b, outB));
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Whether a line may lose its pieces from {@code end} to {@code to} (exclusive of {@code to}): straight pieces only, no curve's end among them. */
+	private static boolean shortens(List<BlockPos> route, Direction[] dir, String[] shape, List<Curve> curves, Map<BlockPos, Integer> index, int end, int to) {
+		for (int k = Math.min(end, to); k <= Math.max(end, to); k++) {
+			if (k == to) {
+				continue;
+			}
+			for (Curve c : curves) {
+				if (c.a().equals(route.get(k)) || c.b().equals(route.get(k))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/** A gap too long for one curve, between the pieces at {@code e} and {@code s}: a straight piece on a free node about halfway; false if none. */
+	private static boolean split(List<BlockPos> route, String[] shape, boolean[] between, java.util.function.Predicate<BlockPos> free, int e, int s) {
+		BlockPos a = route.get(e);
+		BlockPos b = route.get(s);
+		int dx = b.getX() - a.getX();
+		int dz = b.getZ() - a.getZ();
+		if (dx * dx + dz * dz <= MAX_JOIN * MAX_JOIN || s - e < 3) {
+			return false;
+		}
+		String axis = Math.abs(dx) > Math.abs(dz) ? "xo" : Math.abs(dz) > Math.abs(dx) ? "zo" : shape[e];
+		int mid = (e + s) / 2;
+		for (int off = 0; off < (s - e) / 2; off++) {
+			for (int m : new int[] {mid - off, mid + off}) {
+				if (m > e + 1 && m < s - 1 && shape[m] == null && free.test(route.get(m))) {
+					shape[m] = axis;
+					between[m] = false;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/** The slopes of the straight stretch {@code r0..r1} running {@code d}: each run of steps the same way, a curve between level landings. */
@@ -736,6 +1097,11 @@ public final class CaravanTrains {
 				for (Curve curve : plan(way(hall, road), p -> free(level, p)).curves()) {
 					if (level.isLoaded(curve.a()) && level.isLoaded(curve.b())) {
 						RAILWAY.call(r -> r.curve(level, curve.a(), curve.outA(), curve.b(), curve.outB()), false);
+					}
+				}
+				for (BlockPos station : data.stations(hall)) { // 39.7c: a Train Station off the road gets its spur
+					if (level.isLoaded(station)) {
+						spur(level, station, way(hall, road), plan(way(hall, road), p -> free(level, p)));
 					}
 				}
 				Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");

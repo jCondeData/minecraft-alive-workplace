@@ -109,6 +109,7 @@ public final class BlueprintLibrary {
 			|| id.getPath().startsWith(ModdedLibrary.PREFIX) // modded/: the modded library's copies, built in place of their vanilla build (37.12)
 			|| id.getPath().startsWith("legend/") // legend/: a found Legend's camp, set down at once (29.9)
 			|| id.getPath().startsWith("story/") // story/: set down by a story arc (31.15's Bandit King's fort)
+			|| id.getPath().startsWith("train/") // train/: the village's Create train, built by a village at its station (39.7c)
 			|| id.getPath().startsWith("wonder/")); // wonder/: a Wonder's stage parts, raised from its Wonder Plan (35.3)
 	}
 

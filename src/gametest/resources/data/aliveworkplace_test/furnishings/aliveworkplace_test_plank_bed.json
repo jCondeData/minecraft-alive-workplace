@@ -1,0 +1,5 @@
+{
+  "pieces": {
+    "bed": {"block": "minecraft:{wood}_planks", "footprint": [{"at": [0, 0, 0]}, {"at": [0, 0, 1]}]}
+  }
+}

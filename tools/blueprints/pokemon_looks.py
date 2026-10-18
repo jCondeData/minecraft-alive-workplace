@@ -75,7 +75,7 @@ def lg_hall(b):
     for z in (3, 4, 5):
         stairs(b, 2, 1, z, "spruce_stairs", "west")
         stairs(b, 10, 1, z, "spruce_stairs", "east")
-    for z in range(3, 7):
+    for z in range(4, 7):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(6, 1, z, "red_carpet")
     for z in (4, 8):  # tie beams for the lanterns, and for the builder to reach the roof from
         for x in range(2, 11):
@@ -331,7 +331,7 @@ def pz_hall(b):
     for z in (3, 4, 5):
         stairs(b, 2, 1, z, "birch_stairs", "west")
         stairs(b, 10, 1, z, "birch_stairs", "east")
-    for z in range(3, 7):
+    for z in range(4, 7):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(6, 1, z, "red_carpet")
     for x, z in ((3, 4), (9, 4), (3, 8), (9, 8)):
         lantern(b, x, 4, z, hanging=True)

@@ -3221,7 +3221,8 @@ final class JobScenes {
 		SCENES.put("cuisine_kitchen", job("the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest", 2400, (level, player) -> {
 			// ROADMAP 38.8 (Cobblemon and Cobblecuisine): a Journeyman Chef at a Kitchen Stove, and in the chest beside it
 			// the makings of a Mixed Vegetable Salad (a level-1 dish) and of a Beanburger Curry (level 3). He cooks both
-			// from their crafting recipes and puts them in the chest.
+			// from their crafting recipes and puts them in the chest. A sack of potatoes (B180): the menu's baked potatoes come
+			// first and take up to a batch of 8, and the salads' vegetable may be a potato, so 2 left none for the curry.
 			java.util.function.Function<String, Item> cc = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", id));
 			Showcase.check(io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(cc.apply("beanburger_curry")) != null,
@@ -3231,7 +3232,7 @@ final class JobScenes {
 			chef.setVillagerXp(150);
 			Container c = chest(level, chestPos(), new ItemStack(cc.apply("salad_mix"), 4), new ItemStack(cobblemonItem("bold_mint"), 4),
 				new ItemStack(cc.apply("green_bean"), 4), new ItemStack(Items.CARROT, 4), new ItemStack(cc.apply("red_bean"), 2),
-				new ItemStack(Items.BREAD, 2), new ItemStack(Items.POTATO, 2), new ItemStack(cobblemonItem("charti_berry"), 2),
+				new ItemStack(Items.BREAD, 2), new ItemStack(Items.POTATO, 16), new ItemStack(cobblemonItem("charti_berry"), 2),
 				new ItemStack(Items.COOKED_CHICKEN, 2));
 			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 1 && c.countItem(cc.apply("beanburger_curry")) >= 1;
 		}));

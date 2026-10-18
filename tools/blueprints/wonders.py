@@ -2195,7 +2195,7 @@ def o_chart_room(b, x0, x1):
     cartography table, a lectern with the star book, shelves of charts and a map on the wall."""
     colours = {"b": "black_carpet", "y": "yellow_carpet", "p": "purple_carpet", ".": "white_carpet"}
     for i, x in enumerate(range(x0 + 1, x1)):
-        for j, z in enumerate(range(16, 25)):
+        for j, z in enumerate(range(17, 25)):  # a block in from the doorway: under its lintel a carpet is a step too high (B173)
             b.set(x, 4, z, colours[O_SKY[j % len(O_SKY)][i % 9]])
     mid = (x0 + x1) // 2
     b.set(mid, 4, 20, "cartography_table")
@@ -3562,7 +3562,8 @@ def h_arbor_cell(b, x, s, z, post, r, light, beam=True):
             lantern(b, x, s + 2, z, hanging=True)
         elif r % 10 < 7:
             h_glow(b, x, s + 2, z)
-        b.set(x, s + 1, z, ("fern", "moss_carpet", "short_grass", "lily_of_the_valley", "fern")[r % 5])
+        # no moss carpet: under the beam two blocks up, a villager stepping onto one hits its head (B173)
+        b.set(x, s + 1, z, ("fern", "short_grass", "short_grass", "lily_of_the_valley", "fern")[r % 5])
     if beam:
         slab(b, x, s + 3, z, "oak_slab")
 

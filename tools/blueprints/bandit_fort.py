@@ -273,7 +273,7 @@ def bandit_fort_3():
     b.set(6, 1, 22, "barrel", facing="up", open=False)
     b.set(7, 1, 22, "barrel", facing="up", open=False)
     # inside: a red runner to the throne on its dais, war banners either side, the treasure chest by it
-    for z in range(z0 + 1, z1 - 2):
+    for z in range(z0 + 2, z1 - 2):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(14, 1, z, "red_carpet")
     for x in range(12, 17):
         slab(b, x, 1, 23, SPRUCE)

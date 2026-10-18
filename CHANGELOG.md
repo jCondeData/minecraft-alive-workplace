@@ -240,6 +240,15 @@ asks for the steps, `latest.log` and any crash report).
   door, under its low lintel, and a villager stepping up onto it there hit its head, so a leader coming in by the middle
   of the door stood in the doorway for good. The carpet now starts a step further in. A Leader's Hall already built
   keeps its carpet: take up the first piece by the door if your leader is stuck there (B170).
+- **Villagers no longer get stuck in doorways.** A villager is taller than a player, and a carpet, a seat or a stair
+  step right inside a door two blocks high made it hit its head on the lintel and stand in the doorway for good. Every
+  blueprint is now checked for it, and these were fixed: the Healing Center (front and ward doors), Supply Shop (its
+  rug, and the shopkeeper's seat moved aside of the back door), Village Hall and its meeting room (one bench seat and
+  the chair at the doorway's end of the council table taken out), Town Hall, Manor (a fanlight over the front door in place
+  of its lintel, since the grand stair starts right inside; the parlour rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
+  Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
+  room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
+  keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
 - **Chefs take the Kitchen's smoker, however it's decorated.** A villager walking to a workstation built in under
   solid blocks (the smoker in the Kitchen's brick oven) climbed onto the nearest chest or worktop instead, a step too far
   to take it, and stood there; it now walks to the floor in front of the workstation and takes it (B168).

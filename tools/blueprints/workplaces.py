@@ -756,8 +756,10 @@ def leaders_hall_build():
     window(b, 6, 4, 12, "south", height=3)
     for x in (4, 8):
         lantern(b, x, 6, 2, hanging=True)
-    # Inside: a red carpet from the door to the Training Post (the leader's) on a dais, banners, the leader's bed
-    for z in range(5, 11):
+    # Inside: a red carpet from the door to the Training Post (the leader's) on a dais, banners, the leader's bed. It
+    # starts a block in from the door (B170): the doorway is two blocks high, and a villager (1.95 tall) stepping up onto
+    # a carpet while its head is still under the lintel hits it, so the leader stood in the doorway for good.
+    for z in range(6, 11):
         b.set(6, 1, z, "red_carpet")
     for x in (5, 6, 7):
         slab(b, x, 1, 11, STONE_BRICK)

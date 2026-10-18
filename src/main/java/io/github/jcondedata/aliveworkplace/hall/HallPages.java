@@ -18,14 +18,14 @@ import net.minecraft.world.item.ItemStack;
  *
  * <p>Every page from {@link #register} is sure of a tab: the row takes {@link #ROW} of them, which leaves six for other
  * features and add-ons besides the mod's first three (the calendar, Legends, the Cup). The mod's later pages (the
- * Classes page, 34.6, and the Wonders page, 35.3) come in through {@link #registerSpare}: their tab sits in the row while it has room and gives way,
+ * Classes page, 34.6, the Wonders page, 35.3, and the Free job blocks page, 36.9) come in through {@link #registerSpare}: their tab sits in the row while it has room and gives way,
  * newest first, to pages from {@link #register} when it hasn't, so the six tabs kept for others are never taken.
  */
 public final class HallPages {
 	/** Tabs in the page row, and the pages {@link #register} takes at most. */
 	public static final int ROW = 9;
 	/** Pages {@link #registerSpare} takes at most. */
-	public static final int SPARES = 2;
+	public static final int SPARES = 3;
 	/** Pages the hall takes at most: a tab each for {@link #ROW}, and the spare pages that give way when the row is full. */
 	public static final int MAX = ROW + SPARES;
 

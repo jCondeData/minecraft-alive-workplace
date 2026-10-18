@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Fill empty job blocks from the Village Hall** (36.9). The hall's new Free job blocks tab lists every job block in
+  the village nobody works at (its job, the building it's in, how far away) and the villagers without a job who could
+  take each; pick one and they claim the block and walk over. A block taken meanwhile is refused cleanly. Paid
+  retraining of a working villager at the block stays as it was. The scene `hall_jobs` shows it.
 - **The Chef cooks every Campfire Pot recipe** (2.2, with Cobblemon): the EXP and IV/EV candies, medicines, sweets and
   any pot recipe a mod or data pack adds, found by recipe type, only from makings in the store, 16 kept by his stove.
 - **Real Create trains between villages.** With Create, two villages joined by rail now put their own Create train

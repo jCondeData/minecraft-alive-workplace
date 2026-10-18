@@ -4689,7 +4689,7 @@ Depends on: nothing open.
   mean and lowest; our houses per village) is in the Notes with the commands that made it; any tuning lands with
   `VillageGameTests` passing and the `village` scene still showing our houses.
 
-- [ ] **36.9** **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
+- [x] **36.9** (review: pending 2026-10-18) **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
   job block is awkward because the villager must walk into a finished home to stand near the block). Done when: the
   Village Hall has a "Free job blocks" page listing every job block in the village with no villager on it (its job,
   the build it's in, the distance; e.g. a Storehouse block), and for each, the villagers without a job; picking one

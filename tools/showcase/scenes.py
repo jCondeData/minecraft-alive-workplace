@@ -405,6 +405,11 @@ SCENES = [
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
+    # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one
+    S("hall_jobs", "Village Hall", "Free job blocks: filling an empty Storehouse from the hall",
+      "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
+      [("01_free_jobs", "The Free job blocks page: the Storehouse and a bench"), ("02_who_takes_it", "Who could take the Storehouse"),
+       ("03_dara_porter", "Dara picked: now the Porter, walking over")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

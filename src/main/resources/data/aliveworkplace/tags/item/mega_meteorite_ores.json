@@ -1,0 +1,45 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "mega_showdown:mega_meteorid_dawn_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_dusk_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_fire_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_ice_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_leaf_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_moon_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_shiny_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_sun_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_thunder_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_meteorid_water_ore",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "mega_showdown:keystone_ore",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:keystone",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_stone_crystal",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:mega_stone",
+      "required": false
+    },
+    {
+      "id": "#aliveworkplace:mega_meteorite_ores",
+      "required": false
+    }
+  ]
+}

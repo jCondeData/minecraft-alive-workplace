@@ -5032,6 +5032,9 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-b-1018-0038, **owner question: Milestone 36 is empty**): the quick lane finished 36.4, 36.6, 36.7
+  and 36.8 and has nothing left. Owner: which quick additions next? Until then the quick lane's runs have no items.
+  Also from 36.8: should our village houses get higher pool weights (desert villages grow ours in 14 of 50)?
 - 2026-10-18 (36.8, lane-b-1018-0038, **village density: no tuning needed**): 26.11's bigger village houses don't
   leave villages sparse. 50 village starts per type (fixed seeds and chunks, plain run without Cobblemon, so its 11
   houses aren't in the pools), counting each start's house pieces; "ours" = our village houses, "with" = villages with

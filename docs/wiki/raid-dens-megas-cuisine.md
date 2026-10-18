@@ -16,8 +16,8 @@ With Cobblemon Raid Dens installed (and once 2.2 ships), the hall's Defense page
 blocks of the hall, nearest first: "Raid den, tier 3, Fire, active" (the icon glows), or "resting" once it has been
 beaten and hasn't come back yet, with where it is and the day it was found. With none known it says "No raid den
 known". The village map marks each den on its square with a magenta banner named the same way, and its legend counts
-the raid dens. A den shows up once someone has been near enough for its chunk to load; a broken den drops off the
-list.
+the raid dens. A den shows up once someone has been near enough for its chunk to load, the moment a crystal is set
+down in a loaded chunk, and when a hall is set down by dens that were there first; a broken den drops off the list.
 
 **Den Wardens (38.3).** Under each den on the Defense page, **Post a warden** sends the village's nearest free guard
 there. By day the warden walks to the den and stands watch beside it, nudging wild Pokémon off the crystal; at dusk

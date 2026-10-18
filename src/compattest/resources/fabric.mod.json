@@ -46,6 +46,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenWardenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenChallengeCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.RaidDenFoundCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StationsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ArenaCompatTests",

@@ -197,6 +197,14 @@ final class JobScenes {
 		return denValue(state, "is_active", Boolean.toString(active));
 	}
 
+	/**
+	 * A glowing den's raid as the scene shows it: Cobblemon Raid Dens rolls an active crystal's raid (its tier and type) on
+	 * the crystal's first tick, so it's set once that's done, keeping the crystal and the raid it rolled.
+	 */
+	static void denRolled(ServerLevel level, BlockPos pos, String tier, String type) {
+		level.setBlockAndUpdate(pos, denState(level.getBlockState(pos).getBlock(), tier, type, true));
+	}
+
 	private static net.minecraft.world.level.block.state.BlockState denValue(net.minecraft.world.level.block.state.BlockState state, String name, String value) {
 		net.minecraft.world.level.block.state.properties.Property<?> property = state.getBlock().getStateDefinition().getProperty(name);
 		return property == null ? state : denSet(state, property, value);
@@ -7093,14 +7101,15 @@ final class JobScenes {
 				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
 				BlockPos near = new BlockPos(-3, -60, -2);
 				BlockPos far = new BlockPos(-20, -60, -60);
+				// set down in loaded chunks after the hall, as in a real world: the game finds them by itself (B190)
 				level.setBlockAndUpdate(near, denState(block.get(), "tier_three", "fire", true));
 				level.setBlockAndUpdate(far, denState(block.get(), "tier_five", "water", false));
-				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, near);
-				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, far);
-				Showcase.check(io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, STATION).size() == 2, "the village knows both dens: "
-					+ io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, STATION));
 			},
-			List.of(new Step("01_raid_den", -1, 0, null, 30),
+			List.of(new Step("01_raid_den", -1, 0, (level, player) -> {
+					denRolled(level, new BlockPos(-3, -60, -2), "tier_three", "fire");
+					Showcase.check(io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, STATION).size() == 2,
+						"the village knows both dens: " + io.github.jcondedata.aliveworkplace.guard.RaidDens.near(level, STATION));
+				}, 30),
 				new Step("02_raid_den_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.DENS[0], 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
@@ -7118,17 +7127,20 @@ final class JobScenes {
 				level.setDayTime(3000);
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				Villager guard = guard(level, new BlockPos(6, -60, -6), new ItemStack(Items.IRON_SWORD));
+				subject = guard(level, new BlockPos(6, -60, -6), new ItemStack(Items.IRON_SWORD));
 				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
 				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
-				BlockPos den = new BlockPos(-4, -60, -4);
-				level.setBlockAndUpdate(den, denState(block.get(), "tier_three", "fire", true));
-				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, den);
-				guard.teleportTo(-2.5, -60, -2.5); // already at the den: the walk there is the compat tests' (DenWardenCompatTests)
-				Component said = io.github.jcondedata.aliveworkplace.guard.DenWardens.post(level, STATION, den);
-				Showcase.check(io.github.jcondedata.aliveworkplace.guard.DenWardens.wardenOf(level, den).isPresent(), "a warden was posted: " + said.getString());
+				// set down in a loaded chunk after the hall, as in a real world: the game finds it by itself (B190)
+				level.setBlockAndUpdate(new BlockPos(-4, -60, -4), denState(block.get(), "tier_three", "fire", true));
 			},
-			List.of(new Step("01_den_warden", -1, 0, null, 60),
+			List.of(new Step("01_den_warden", -1, 0, (level, player) -> {
+					// the guard has their job by now (picked hands it over in a task after staging), so they can be posted
+					BlockPos den = new BlockPos(-4, -60, -4);
+					denRolled(level, den, "tier_three", "fire");
+					subject.teleportTo(-2.5, -60, -2.5); // already at the den: the walk there is the compat tests' (DenWardenCompatTests)
+					Component said = io.github.jcondedata.aliveworkplace.guard.DenWardens.post(level, STATION, den);
+					Showcase.check(io.github.jcondedata.aliveworkplace.guard.DenWardens.wardenOf(level, den).isPresent(), "a warden was posted: " + said.getString());
+				}, 60),
 				new Step("02_den_warden_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.WARDENS[0], 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
@@ -7150,15 +7162,15 @@ final class JobScenes {
 				chest(level, new BlockPos(5, -60, -1));
 				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
 				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
-				BlockPos den = new BlockPos(-4, -60, -4);
-				level.setBlockAndUpdate(den, denState(block.get(), "tier_three", "fire", true));
-				io.github.jcondedata.aliveworkplace.guard.RaidDens.seen(level, den);
+				// set down in a loaded chunk after the hall, as in a real world: the game finds it by itself (B190)
+				level.setBlockAndUpdate(new BlockPos(-4, -60, -4), denState(block.get(), "tier_three", "fire", true));
 				subject = picked(level, player, new BlockPos(1, -60, -5), ModBlocks.TRAINING_POST, Items.GOLD_BLOCK);
 			},
 			List.of(new Step("01_den_challenge", -1, 0, (level, player) -> {
 					// the job is the Leader's by now (picked hands it over in a task after staging); the scene's player is
 					// far enough off the den that it isn't theirs
 					subject.teleportTo(-2.5, -60, -1.5);
+					denRolled(level, new BlockPos(-4, -60, -4), "tier_three", "fire"); // a den a Leader takes on (up to tier 3)
 					var result = io.github.jcondedata.aliveworkplace.trainer.DenChallenges.challenge(level, STATION, 0f, net.minecraft.util.RandomSource.create(38));
 					Showcase.check(result == io.github.jcondedata.aliveworkplace.trainer.DenChallenges.Result.WON, "the Leader won the challenge: " + result);
 				}, 60),

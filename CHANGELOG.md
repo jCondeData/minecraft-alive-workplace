@@ -254,6 +254,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **A raid den by a Village Hall is found in a real world.** Dens were looked for only as their chunk loaded, so a hall
+  set down by a den already in view, or a den set down near a hall, stayed "No raid den known": no warden could be
+  posted and the Leader found no den. Now a crystal set down in a loaded chunk is seen at once, and a new hall looks
+  through the loaded land within 160 blocks for the dens already there (B190).
 - **Raiders beside or behind a besieged village's walls go round to the open gateway.** Sent straight for the way in,
   a raider a fight had taken beside the walls could be led to the outside spot nearest the yard, behind the back wall,
   and stand there for the rest of the siege with the gate broken open; now it goes round to the front of the breach

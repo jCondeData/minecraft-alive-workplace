@@ -17,8 +17,9 @@ player who beats all its Trainer Leaders with a Mega Bracelet.
 
 ## What the Jeweler cuts
 
-Once your [Jeweler](jeweler.md) is a Journeyman, they cut these at their stonecutter, from what is in their chest, the
-village store and the other workers' chests:
+Once your [Jeweler](jeweler.md) is a Journeyman, they cut these at their stonecutter, but only from what **you put in
+the Storehouse** (the village store). They never use their own chest or other workers' chests, and never cut a stone
+from nothing:
 
 | Put in | Out comes |
 |---|---|
@@ -29,7 +30,8 @@ village store and the other workers' chests:
 The Mega Stone is always one for a Pokémon your village's own trainers use: the Jeweler looks at the teams of the
 [trainers](trainer.md) near the hall, nearest first, and cuts the stone of the first Pokémon whose stone the store
 doesn't have yet. So a village with a Master who fields a Gengar gets a Gengarite, then the next one. They keep one of
-each stone and two Key Stones in the store. Anything missing goes on the requests board.
+each stone and two Key Stones in the store. The cut uses up the makings in the Storehouse. If something is missing,
+the Jeweler waits, and the line above their head tells you what to add: "needs 4 × Emerald in the Storehouse".
 
 ## What the Miner keeps
 

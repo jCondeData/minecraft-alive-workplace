@@ -179,6 +179,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void onBlockEntityLoad(BiConsumer<net.minecraft.world.level.block.entity.BlockEntity, ServerLevel> action) {
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register(action::accept);
+	}
+
+	@Override
 	public void onStartTracking(BiConsumer<Entity, ServerPlayer> action) {
 		net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents.START_TRACKING.register(action::accept);
 	}

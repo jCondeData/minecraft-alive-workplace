@@ -63,6 +63,9 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	private static final BlockPos CHEST = new BlockPos(4, 2, 4);
 	private static final BlockPos STANDING = new BlockPos(5, 2, 3);
 	private static final BlockPos TRAINER = new BlockPos(9, 2, 9);
+	/** The village store: a Storehouse in the hall's reach, its chest out of the stonecutter's (8 blocks), and the other way round. */
+	private static final BlockPos SHOP_STOREHOUSE = new BlockPos(13, 2, 11);
+	private static final BlockPos SHOP_STORE = new BlockPos(15, 2, 11);
 	private static final TagKey<Item> STONES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone"));
 
 	static Item ms(String path) {
@@ -78,7 +81,9 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	}
 
 	/**
-	 * A Village Hall at {@code at}, the nearest to everything in the test, and a stonecutter with a chest by it. The village
+	 * A Village Hall, the nearest to everything in the test, a stonecutter with the Jeweller's own chest by it (the store's
+	 * rings, brooches and circlets already made, so the gold and emeralds go into the Mega Stone) and a Storehouse with a
+	 * chest holding {@code stock} (38.6a: the Mega makings count only there). The village
 	 * is shrunk to this test's area while it runs (restored when it ends, passed or failed): with the usual 64-block hall
 	 * reach, and the store orders' 48, the trainers, storehouses, kitchens, stock orders and Wonders left by earlier
 	 * batches beyond {@code clearAround}'s 48-block sweep count as this village's, and the Jeweller cuts for them or
@@ -101,16 +106,39 @@ public class MegaStoneCompatTests implements FabricGameTest {
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(CUTTER, Blocks.STONECUTTER);
 		helper.setBlock(CHEST, Blocks.CHEST);
+		helper.setBlock(SHOP_STOREHOUSE, ModBlocks.STOREHOUSE);
+		helper.setBlock(SHOP_STORE, Blocks.CHEST);
 		Container c = helper.getBlockEntity(CHEST);
-		List<ItemStack> all = new ArrayList<>(List.of(stock));
-		// The store already holds its other goods, so the gold and emeralds go into the Mega Stone.
-		all.add(new ItemStack(ModItems.AMETHYST_RING, LuxuryWork.KEEP));
-		all.add(new ItemStack(ModItems.EMERALD_BROOCH, LuxuryWork.KEEP));
-		all.add(new ItemStack(ModItems.GOLD_CIRCLET, LuxuryWork.KEEP));
-		for (int i = 0; i < all.size(); i++) {
-			c.setItem(i, all.get(i));
+		c.setItem(0, new ItemStack(ModItems.AMETHYST_RING, LuxuryWork.KEEP));
+		c.setItem(1, new ItemStack(ModItems.EMERALD_BROOCH, LuxuryWork.KEEP));
+		c.setItem(2, new ItemStack(ModItems.GOLD_CIRCLET, LuxuryWork.KEEP));
+		Container store = store(helper);
+		for (int i = 0; i < stock.length; i++) {
+			store.setItem(i, stock[i]);
 		}
 		return c;
+	}
+
+	/** The village store's chest (by the Storehouse). */
+	static Container store(GameTestHelper helper) {
+		return helper.getBlockEntity(SHOP_STORE);
+	}
+
+	/** The Jeweller's line above the head, as a key and its arguments. */
+	static String line(GameTestHelper helper, Villager v) {
+		io.github.jcondedata.aliveworkplace.work.WorkerStatus.Entry e = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(v, helper.getLevel().getGameTime());
+		if (e == null || !(e.line().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t)) {
+			return "no status";
+		}
+		StringBuilder out = new StringBuilder(t.getKey());
+		for (Object arg : t.getArgs()) {
+			out.append(" | ").append(arg instanceof net.minecraft.network.chat.Component c ? c.getString() : String.valueOf(arg));
+		}
+		return out.toString();
+	}
+
+	static boolean noMakingsTaken(Container c, int crystals, int gold, int emeralds) {
+		return c.countItem(ms("mega_stone_crystal")) == crystals && c.countItem(Items.GOLD_INGOT) == gold && c.countItem(Items.EMERALD) == emeralds;
 	}
 
 	static Villager villager(GameTestHelper helper, BlockPos at, net.minecraft.world.entity.npc.VillagerProfession job, int level) {
@@ -189,8 +217,8 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	}
 
 	/**
-	 * The Done when: a Journeyman Jeweller with a Mega Stone Crystal, 2 gold ingots and 4 emeralds in the chest cuts the
-	 * Mega Stone of a Pokémon on the village Master's team, and only one.
+	 * The Done when: a Journeyman Jeweller with a Mega Stone Crystal, 2 gold ingots and 4 emeralds in the village store cuts
+	 * the Mega Stone of a Pokémon on the village Master's team, and only one, into his chest; the makings leave the store.
 	 */
 	//$ gametest_ticks_batch AREA '1600' '"megaJewellerStone"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "megaJewellerStone")
@@ -204,31 +232,35 @@ public class MegaStoneCompatTests implements FabricGameTest {
 		List<Item> village = MegaStones.forVillageOf(v);
 		helper.assertTrue(!village.isEmpty() && wanted.contains(village.get(0)), "the Jeweller would cut " + village + " for the village's trainers "
 			+ MegaStones.trainers(helper.getLevel(), v.blockPosition()).size() + ", but the Master's team wants " + wanted);
+		Container store = store(helper);
 		work(helper, v);
 		helper.succeedWhen(() -> {
 			List<Item> made = stonesIn(c);
 			helper.assertTrue(made.size() == 1 && wanted.contains(made.get(0)), "stones made " + made + ", the Master's team wants " + wanted
-				+ "; the village's trainers want " + MegaStones.forVillageOf(v) + "; the chest holds " + c.countItem(ms("mega_stone_crystal")) + " crystal, "
-				+ c.countItem(Items.GOLD_INGOT) + " gold, " + c.countItem(Items.EMERALD) + " emeralds; the Jeweller is " + (v.isAlive() ? "alive" : "gone"));
-			helper.assertTrue(c.countItem(ms("mega_stone_crystal")) == 0 && c.countItem(Items.GOLD_INGOT) == 0 && c.countItem(Items.EMERALD) == 0,
-				"makings left: " + c.countItem(ms("mega_stone_crystal")) + " crystal, " + c.countItem(Items.GOLD_INGOT) + " gold, "
-					+ c.countItem(Items.EMERALD) + " emeralds");
+				+ "; the village's trainers want " + MegaStones.forVillageOf(v) + "; the store holds " + store.countItem(ms("mega_stone_crystal")) + " crystal, "
+				+ store.countItem(Items.GOLD_INGOT) + " gold, " + store.countItem(Items.EMERALD) + " emeralds; the Jeweller is " + (v.isAlive() ? "alive" : "gone")
+				+ ", says " + line(helper, v));
+			helper.assertTrue(noMakingsTaken(store, 0, 0, 0) && noMakingsTaken(c, 0, 0, 0),
+				"makings left: " + store.countItem(ms("mega_stone_crystal")) + " crystal, " + store.countItem(Items.GOLD_INGOT) + " gold, "
+					+ store.countItem(Items.EMERALD) + " emeralds");
 			helper.assertTrue(c.countItem(ModItems.EMERALD_BROOCH) == LuxuryWork.KEEP && c.countItem(ModItems.GOLD_CIRCLET) == LuxuryWork.KEEP,
 				"the gold went into other goods: " + c.countItem(ModItems.EMERALD_BROOCH) + " brooches, " + c.countItem(ModItems.GOLD_CIRCLET)
 					+ " circlets, expected " + LuxuryWork.KEEP + " each");
 		});
 	}
 
-	/** Key Stone ore with 2 gold ingots and 4 emeralds becomes a Key Stone. */
+	/** Key Stone ore with 2 gold ingots and 4 emeralds from the village store becomes a Key Stone. */
 	//$ gametest_ticks_batch AREA '1600' '"megaJewellerKey"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "megaJewellerKey")
 	public void aJewellerCutsAKeyStone(GameTestHelper helper) {
 		Container c = shop(helper, new ItemStack(ms("keystone_ore")), new ItemStack(Items.GOLD_INGOT, 2), new ItemStack(Items.EMERALD, 4));
+		Container store = store(helper);
 		Villager v = jeweller(helper, 3);
 		work(helper, v);
 		helper.succeedWhen(() -> {
-			helper.assertTrue(c.countItem(ms("keystone")) == 1, c.countItem(ms("keystone")) + " Key Stones, expected 1");
-			helper.assertTrue(c.countItem(ms("keystone_ore")) == 0 && c.countItem(Items.GOLD_INGOT) == 0 && c.countItem(Items.EMERALD) == 0, "makings left");
+			helper.assertTrue(c.countItem(ms("keystone")) + store.countItem(ms("keystone")) == 1, c.countItem(ms("keystone")) + " Key Stones, expected 1; says "
+				+ line(helper, v));
+			helper.assertTrue(store.countItem(ms("keystone_ore")) == 0 && store.countItem(Items.GOLD_INGOT) == 0 && store.countItem(Items.EMERALD) == 0, "makings left");
 		});
 	}
 
@@ -248,13 +280,77 @@ public class MegaStoneCompatTests implements FabricGameTest {
 		Villager v = jeweller(helper, 3);
 		work(helper, v);
 		helper.runAfterDelay(300, () -> {
-			helper.assertTrue(c.countItem(ms("mega_stone_crystal")) == 1 && c.countItem(Items.GOLD_INGOT) == 2 && c.countItem(Items.EMERALD) == 4,
-				"the crystal was cut though the store holds " + wanted);
+			helper.assertTrue(noMakingsTaken(store(helper), 1, 2, 4), "the crystal was cut though the store holds " + wanted);
 			helper.assertTrue(stonesIn(c).size() == wanted.size(), "stones now " + stonesIn(c));
 			master.discard();
 			MegaStones.forget();
 			helper.assertTrue(MegaStones.forVillageOf(v).isEmpty(), "no trainer left, but the Jeweller would cut " + MegaStones.forVillageOf(v));
 			helper.succeed();
+		});
+	}
+
+	/**
+	 * 38.6a: never from the Jeweller's own chest. With the full makings in his chest and none in the village store he cuts
+	 * nothing, takes nothing, posts nothing on the requests board (a hand-over would go to his own chest), and his line
+	 * says what the Storehouse should hold.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"megaJewellerEmptyStore"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "megaJewellerEmptyStore")
+	public void notFromAnEmptyStore(GameTestHelper helper) {
+		Container c = shop(helper);
+		c.setItem(5, new ItemStack(ms("mega_stone_crystal")));
+		c.setItem(6, new ItemStack(Items.GOLD_INGOT, 2));
+		c.setItem(7, new ItemStack(Items.EMERALD, 4));
+		Villager master = villager(helper, TRAINER, ModVillagers.TRAINER, 5);
+		helper.assertTrue(!MegaStones.stonesOf(master).isEmpty(), "the Master's team has no Mega Stone to cut");
+		Villager v = jeweller(helper, 3);
+		work(helper, v);
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(stonesIn(c).isEmpty() && stonesIn(store(helper)).isEmpty(), "cut " + stonesIn(c) + " from nothing in the store");
+			helper.assertTrue(noMakingsTaken(c, 1, 2, 4), "makings taken from his own chest: " + c.countItem(ms("mega_stone_crystal")) + " crystal, "
+				+ c.countItem(Items.GOLD_INGOT) + " gold, " + c.countItem(Items.EMERALD) + " emeralds left");
+			// (the Key Stone is short too, so the line may ask for its ore first: either way one stone's first making)
+			String says = line(helper, v);
+			String needs = "message.aliveworkplace.luxury.state.needs_store | 1 | ";
+			helper.assertTrue(says.equals(needs + ms("mega_stone_crystal").getDescription().getString())
+				|| says.equals(needs + ms("keystone_ore").getDescription().getString()), "says " + says + ", expected it to ask the Storehouse for a crystal or ore");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.work.Requests.of(helper.getLevel(), v).isEmpty(),
+				"a request posted for a making his own chest would get");
+			master.discard();
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * 38.6a: partial makings wait. The store holds the crystal and the gold but the emeralds are in his own chest: nothing
+	 * is cut and his line asks the Storehouse for 4 emeralds (the stone closest to done, not the Key Stone with no ore); once the player puts them in the store he cuts the stone
+	 * from the store's makings and his own emeralds stay put.
+	 */
+	//$ gametest_ticks_batch AREA '2000' '"megaJewellerPartial"'
+	@GameTest(template = AREA, timeoutTicks = 2000, batch = "megaJewellerPartial")
+	public void partialMakingsWaitForTheStore(GameTestHelper helper) {
+		Container c = shop(helper, new ItemStack(ms("mega_stone_crystal")), new ItemStack(Items.GOLD_INGOT, 2));
+		c.setItem(7, new ItemStack(Items.EMERALD, 4));
+		Container store = store(helper);
+		Villager master = villager(helper, TRAINER, ModVillagers.TRAINER, 5);
+		List<Item> wanted = MegaStones.stonesOf(master);
+		Villager v = jeweller(helper, 3);
+		work(helper, v);
+		boolean[] stocked = {false};
+		helper.runAfterDelay(300, () -> {
+			helper.assertTrue(stonesIn(c).isEmpty(), "cut " + stonesIn(c) + " without the store's emeralds");
+			helper.assertTrue(noMakingsTaken(store, 1, 2, 0) && c.countItem(Items.EMERALD) == 4, "makings taken while short");
+			String expected = "message.aliveworkplace.luxury.state.needs_store | 4 | " + Items.EMERALD.getDescription().getString();
+			helper.assertTrue(line(helper, v).equals(expected), "says " + line(helper, v) + ", expected " + expected);
+			store.setItem(5, new ItemStack(Items.EMERALD, 4)); // the player stocks the Storehouse
+			stocked[0] = true;
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(stocked[0], "not yet stocked");
+			List<Item> made = stonesIn(c);
+			helper.assertTrue(made.size() == 1 && wanted.contains(made.get(0)), "stones made " + made + ", wanted " + wanted + "; says " + line(helper, v));
+			helper.assertTrue(noMakingsTaken(store, 0, 0, 0), "store makings left");
+			helper.assertTrue(c.countItem(Items.EMERALD) == 4, "his own emeralds were used: " + c.countItem(Items.EMERALD) + " left");
 		});
 	}
 

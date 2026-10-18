@@ -356,6 +356,21 @@ dependencies {
     // Optional integrations: compiled against for compat/<modid>, never a runtime dependency.
     compatMods.values.forEach { modCompileOnly(it) }
     compatCompile.forEach { compileOnly(it) }
+    // Local mod jars compat/<mod>/ compiles against (tests.compat_compile_files: Create, 39.7a), never loaded by the mod.
+    // Their nested libraries (Create's Ponder and Porting Lib) too: Create's classes extend theirs.
+    tomlList("tests", "compat_compile_files").forEach { path ->
+        val jar = rootProject.file(path)
+        modCompileOnly(files(jar))
+        val out = layout.buildDirectory.dir("compat-compile-nested").get().asFile
+        zipTree(jar).matching { include("META-INF/jars/*.jar") }.forEach { nested ->
+            val target = File(out, nested.name)
+            if (!target.exists()) {
+                out.mkdirs()
+                target.writeBytes(nested.readBytes())
+            }
+            modCompileOnly(files(target))
+        }
+    }
 
     // Only loaded by runCompatGameTest.
     if (compattest != null) {

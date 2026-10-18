@@ -33,6 +33,14 @@ Fill a chest by his stove with beans, Salad Mix, mints, berries and the other ma
 
 ![The Chef at work on the dishes](https://jcondedata.github.io/minecraft-alive-workplace/cuisine_kitchen/still-2.jpg)
 
+## Candies and medicines from the Campfire Pot's recipes
+
+With Cobblemon on the server, the Chef also cooks **every Campfire Pot recipe**: the EXP Candies, the IV and EV candies
+(Health, Mighty, Tough and the rest), Potions, Revives, status heals, X items, sweets and mochi, and any pot recipe
+another mod or data pack adds. He only cooks one when the chests hold all its makings (sculk and honeycomb for an EXP
+Candy XS, say) and keeps 16 of each in the chests by his stove, where you can take them. This needs only Cobblemon, and
+the **Cobblecuisine Dishes** setting turns it off with the rest.
+
 ## A more varied diet
 
 Villagers eat the dishes from the store like any meal, and each counts as its own kind of food: a salad, a sandwich and

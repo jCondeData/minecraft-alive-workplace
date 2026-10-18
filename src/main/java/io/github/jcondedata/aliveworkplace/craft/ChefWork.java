@@ -62,6 +62,12 @@ public class ChefWork extends CrafterWork {
 			if (have >= Chefs.KEEP) {
 				continue;
 			}
+			if (Crafting.planningSpent(level)) {
+				// A long menu (38.11: every Campfire Pot recipe) used up this tick's planning: carry on from this dish next
+				// time, or the dishes after it would never get their turn.
+				next = (next + i) % menu.size();
+				return null;
+			}
 			// As many as there are makings for, up to a batch.
 			for (int count = (int) Math.min(Chefs.BATCH, Chefs.KEEP - have); count >= 1; count /= 2) {
 				Crafting.Plan plan = Crafting.plan(level, kind, dish, count, stock);
@@ -69,6 +75,11 @@ public class ChefWork extends CrafterWork {
 					next = (next + i + 1) % menu.size();
 					return new Job(station, null, plan, "", sources);
 				}
+			}
+			if (Crafting.planningSpent(level)) {
+				// This dish used up the rest (it had its go): the next one goes first next time, so none is skipped for good.
+				next = (next + i + 1) % menu.size();
+				return null;
 			}
 		}
 		// After the menu, the chef's tonics (ROADMAP 30.15): one short of its keep in the chests by the stove.

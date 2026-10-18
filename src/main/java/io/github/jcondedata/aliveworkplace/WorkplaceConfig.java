@@ -166,7 +166,8 @@ public final class WorkplaceConfig {
 	/**
 	 * Cobblecuisine's dishes on the menus (ROADMAP 38.8): the Chef cooks them from their own recipes by his level, each
 	 * counts as its food group for the villagers' diet, the Camp Cook adds its curries and the Innkeeper serves its
-	 * drinks. Off: the menus and the diet are as they were.
+	 * drinks. 38.11: with Cobblemon, the Chef also cooks every Campfire Pot recipe (candies, medicines, sweets) from the
+	 * store's makings. Off: the menus and the diet are as they were.
 	 */
 	public boolean cuisineDishes = Expansions.on(Expansions.M38);
 	/**

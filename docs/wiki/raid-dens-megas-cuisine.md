@@ -8,7 +8,7 @@ the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9, 38.10
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.9, 38.10, 38.11, B190, B191
 
 ## What a player sees
 
@@ -16,8 +16,8 @@ With Cobblemon Raid Dens installed (and once 2.2 ships), the hall's Defense page
 blocks of the hall, nearest first: "Raid den, tier 3, Fire, active" (the icon glows), or "resting" once it has been
 beaten and hasn't come back yet, with where it is and the day it was found. With none known it says "No raid den
 known". The village map marks each den on its square with a magenta banner named the same way, and its legend counts
-the raid dens. A den shows up once someone has been near enough for its chunk to load; a broken den drops off the
-list.
+the raid dens. A den shows up once someone has been near enough for its chunk to load, the moment a crystal is set
+down in a loaded chunk, and when a hall is set down by dens that were there first; a broken den drops off the list.
 
 **Den Wardens (38.3).** Under each den on the Defense page, **Post a warden** sends the village's nearest free guard
 there. By day the warden walks to the den and stands watch beside it, nudging wild Pokémon off the crystal; at dusk
@@ -50,7 +50,9 @@ set in it (`textures/entity/villager/mega_bracelet.png`, drawn by `tools/texture
 Showdown there are no extra stones, no bracelets and nothing is sent.
 
 **Mega Stones and Key Stones from the village (38.6).** With Mega Showdown, a Journeyman Jeweller (level 3) cuts, at the
-stonecutter, from the makings in their own chest, the village store and the workers' chests:
+stonecutter, only from makings in the **village store** (the hall's storehouses and kitchens, or without a hall the
+storehouses near the stonecutter; 38.6a, the owner: never from their own chest or other workers' chests, and never from
+nothing):
 
 | Makings | Makes | Level | Kept in the store |
 |---|---|---|---|
@@ -63,7 +65,10 @@ stonecutter, from the makings in their own chest, the village store and the work
 Village Hall, or within 48 blocks without one; visitors and Cup delegates left out), nearest first, and at the Pokémon
 on each one's home team, and cuts the Mega Stone of the first such Pokémon whose stone the store doesn't hold yet
 (both Charizardites for a Charizard). A village whose trainers have no Pokémon with a Mega Evolution gets no stones;
-the Jeweller never floods the store with all 46. Missing makings go on the requests board, as for their other goods.
+the Jeweller never floods the store with all 46. Makings in the store are used up by the cut. While the store lacks
+them the Jeweller cuts nothing and the line above their head says what the Storehouse should hold ("needs 4 × Emerald
+in the Storehouse", for the stone closest to done); these aren't posted on the requests board, since a hand-over there
+goes to the Jeweller's own chest, which doesn't count.
 
 A **Miner** drops off what they dig of Key Stone ore (a Key Stone, or the ore itself with a silk-touch pickaxe), Mega
 Stone Crystals (a Mega Stone, or the crystal) and Mega meteorite ores (silk-touched; without silk touch they drop
@@ -86,7 +91,8 @@ Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ac
 chord, and "<trainer> Mega Evolves their ace at the Mega Shrine, and the village cheers!" in chat for the players near.
 Every villager within 12 blocks is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
 festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
-fireworks.
+fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
+festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
 
 **Cobblecuisine on the menus (38.8).** With Cobblecuisine, the Chef cooks its dishes after the plain menu, each from
 its own crafting recipe with the makings from the chests by the stove, the porters' and the butcher's spare (as he
@@ -119,6 +125,19 @@ the **Clodsire Eclair** for Nobles every 8. They are wants, not needs, like the 
 had one lately pays its 10% more tax, and the hall's Classes page lists them. As with every luxury, a household takes
 one from the store at dawn when it is due, and a household also takes the class above's (an Artisan
 may take a Deluxe Shake, a Burgher an éclair). Without Cobblecuisine the two luxury files are skipped quietly and the Classes page doesn't list them.
+
+**Campfire Pot recipes (38.11).** With Cobblemon (Cobblecuisine not needed), the Chef's menu also has every Campfire
+Pot recipe's dish: the results of every recipe of the pot's two recipe types (`cobblemon:cooking_pot` and
+`cobblemon:cooking_pot_shapeless`), read from the loaded recipes by type, so another mod's or a data pack's pot recipes
+come too. With Cobblemon 1.7.3 and Mega Showdown that is about 90 dishes: the EXP Candies (XS to XL), the IV and EV candies (Health,
+Mighty, Tough, Smart, Courage, Quick and their opposites), the medicines (Potions, Revives, the status heals, X items),
+the sweets, mochi and teas. A result with its own components (a potion's contents) is left out. He cooks them like his
+other dishes, at his Kitchen Stove (no pot needed there), only when the chests by the stove and the porters' and
+butcher's spare hold every making, and keeps 16 of each in the chests by the stove, which are the village store's
+kitchen: players take them from there and the partners' treats and the hall read the same store. With the makings
+short (sculk and no honeycomb for an EXP Candy XS) nothing is cooked or taken. Switch: `cuisineDishes` (behind M38's
+gate); off, the pot dishes leave the menu except the ones it always had (Poké Bait, Snacks, Cakes, candied apples,
+Aprijuice). Scene `campfire_pot`.
 
 ## How it works
 

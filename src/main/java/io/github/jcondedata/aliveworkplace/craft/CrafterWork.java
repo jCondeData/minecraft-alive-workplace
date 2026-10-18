@@ -679,12 +679,19 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 	}
 
+	/** The line shown while there's nothing to make, in place of the usual one (null: the usual). */
+	@Nullable
+	protected Component idleLine(Villager villager) {
+		return null;
+	}
+
 	private void status(Villager villager, Phase phase) {
 		if (phase == Phase.IDLE && !alwaysShowStatus) {
 			return;
 		}
 		Component title = Component.translatable("message.aliveworkplace." + who + ".title", ModAttachments.ITEMS_CRAFTED.getOrElse(villager, 0));
-		Component line = job != null && phase != Phase.TIDYING
+		Component idle = phase == Phase.IDLE && job == null ? idleLine(villager) : null;
+		Component line = idle != null ? idle : job != null && phase != Phase.TIDYING
 			? Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase(), job.plan().count(),
 				job.plan().target().getDescription())
 			: Component.translatable("message.aliveworkplace." + lines + ".state." + phase.name().toLowerCase());

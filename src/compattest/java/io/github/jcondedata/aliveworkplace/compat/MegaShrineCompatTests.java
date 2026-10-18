@@ -107,6 +107,58 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B191: the show comes with the festival itself, as in a real world. A village of six with a hall and a finished
+	 * shrine, on the morning of its festival day: the hall's round plans the festival, and once its hours come the
+	 * festival's own tick ({@code Festivals}, not the show's tick called by hand) holds the show and the watchers are happier.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"mega_shrine_festival"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "mega_shrine_festival")
+	public void theShowComesWithTheVillagesFestivalDay(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
+		BuildSiteManager.get(level).recordFinished(StarterBlueprints.MEGA_SHRINE.id(), placement, UUID.randomUUID());
+		int radius = VillageHalls.RADIUS;
+		int every = io.github.jcondedata.aliveworkplace.hall.VillageNeeds.CHECK_EVERY;
+		long time = level.getDayTime();
+		boolean festivals = Festivals.ENABLED;
+		Festivals.ENABLED = true; // festivals are off in GameTest runs (the config): on for this test only
+		VillageHalls.RADIUS = 16;
+		io.github.jcondedata.aliveworkplace.hall.VillageNeeds.CHECK_EVERY = 100; // the hall's rounds come quicker than every 600 ticks
+		PartnerShowsCompatTests.after(helper, () -> {
+			BuildSiteManager.get(level).forgetFinished(placement);
+			VillageHalls.RADIUS = radius;
+			io.github.jcondedata.aliveworkplace.hall.VillageNeeds.CHECK_EVERY = every;
+			Festivals.ENABLED = festivals;
+			MegaBracelets.ENABLED = true;
+			Festivals.forget();
+			MegaShrines.forget();
+			level.setDayTime(time);
+			for (Villager v : level.getEntitiesOfClass(Villager.class, helper.getBounds().inflate(4))) {
+				v.discard();
+			}
+		});
+		helper.setBlock(HALL, io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		var entity = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall);
+		long festival = Festivals.nextDay(level, hall, entity);
+		level.setDayTime((festival - 1) * 24000L + Festivals.START - 200); // the festival day's morning
+		villager(helper, new BlockPos(5, 4, 7), true);
+		List<Villager> watchers = new java.util.ArrayList<>();
+		for (int i = 0; i < 5; i++) {
+			watchers.add(villager(helper, new BlockPos(2 + i, 2, 2), false));
+		}
+		helper.assertTrue(!Festivals.isOn(level, hall) && watchers.stream().allMatch(v -> MegaShrines.mood(level, v) == 0), "a show before the festival");
+		helper.succeedWhen(() -> {
+			if (entity.festivalDay() == festival && Math.floorMod(level.getDayTime(), 24000L) < Festivals.START) {
+				level.setDayTime((festival - 1) * 24000L + Festivals.START + 20); // planned: the afternoon comes, the festival begins
+			}
+			helper.assertTrue(entity.festivalDay() == festival, "the hall's round didn't plan the festival for day " + festival + ": " + entity.festivalDay());
+			helper.assertTrue(Festivals.isOn(level, hall), "the festival isn't on");
+			helper.assertTrue(watchers.stream().allMatch(v -> MegaShrines.mood(level, v) == MegaShrines.MOOD), "the festival held no show at the shrine");
+		});
+	}
+
 	/** {@code villageMegas} off, no trainer, or past the show's hours: no show and nobody gets its mood. */
 	//$ gametest_batch AREA '"mega_shrine_off"'
 	@GameTest(template = AREA, batch = "mega_shrine_off")

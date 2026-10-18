@@ -2971,6 +2971,35 @@ final class JobScenes {
 				return got >= 4;
 			};
 		}));
+		SCENES.put("partner_treats", job("the builder's Machop ate a Poké Puff from the storehouse chest as its treat of the day", 600, (level, player) -> {
+			// ROADMAP 38.10 (Cobblemon and Cobblecuisine): a builder at his bench with a Machop in the Pasture Block beside
+			// it, and a storehouse chest holding four Sweet Poké Puffs. When the builder's day at work is counted, the
+			// Machop eats one puff from the store (hearts, more friendship): three are left, and no more that day.
+			Item puff = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", "sweet_pokepuff"));
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED && puff != Items.AIR,
+				"Cobblecuisine's puffs and cuisineDishes on");
+			Villager builder = worker(level, STATION, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER);
+			builder.setNoAi(true);
+			BlockPos pasture = STATION.east(3);
+			level.setBlockAndUpdate(pasture, ScreenshotHarness.with(ScreenshotHarness.with(ScreenshotHarness.cobblemonBlock("pasture"), "waterlogged", false),
+				"part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.BOTTOM));
+			level.setBlockAndUpdate(pasture.above(), ScreenshotHarness.with(ScreenshotHarness.with(ScreenshotHarness.cobblemonBlock("pasture"), "waterlogged", false),
+				"part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.TOP));
+			var machop = com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse("machop level=20", " ", "=").create();
+			com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getPC(player).add(machop);
+			if (level.getBlockEntity(pasture) instanceof com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity pen) {
+				pen.tether(player, machop, Direction.SOUTH);
+			}
+			level.setBlockAndUpdate(chestPos().west(), io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE.defaultBlockState());
+			Container c = chest(level, chestPos(), new ItemStack(puff, 4));
+			return l -> {
+				builder.getBrain().setActiveActivityIfPossible(net.minecraft.world.entity.schedule.Activity.WORK);
+				io.github.jcondedata.aliveworkplace.work.Partners.countDay(builder); // the Workers' Cup's count, once a day
+				return c.countItem(puff) == 3;
+			};
+		}));
 		SCENES.put("gem_grower", job("the gem grower picked the ripe amethyst cluster and left the budding amethyst", 2400, (level, player) -> {
 			// ROADMAP 28.11 (no Cobblemon needed): a stonecutter picked with an amethyst shard; behind it a budding amethyst
 			// with a full cluster on top and a small bud on its side. She finds the bed, picks the full cluster (its shards

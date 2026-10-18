@@ -164,6 +164,31 @@ public class CobblemonDepthCompatTests implements FabricGameTest {
 				.filter(item -> !new ItemStack(item).has(DataComponents.FOOD))
 				.ifPresent(item -> missing.add(food + " isn't food (the villagers' diet needs it to be)"));
 		}
+		// The partner treats and dish luxuries (38.10): every Poké Puff and shake the treat tag lists, the six deluxe
+		// shakes and the éclair, each an item the tags then hold.
+		List<String> treats = new ArrayList<>();
+		for (String puff : List.of("sweet", "mint", "citrus", "mocha", "spice")) {
+			treats.add(puff + "_pokepuff");
+		}
+		for (String strength : List.of("low", "medium", "high")) {
+			for (String colour : List.of("green", "red", "blue", "purple", "yellow", "pink")) {
+				treats.add(strength + "_" + colour + "_shake");
+			}
+		}
+		for (String treat : treats) {
+			net.minecraft.world.item.Item item = item(CUISINE, treat, missing);
+			if (item != null && !io.github.jcondedata.aliveworkplace.work.PartnerTreats.isTreat(new ItemStack(item))) {
+				missing.add(treat + " isn't a partner treat");
+			}
+		}
+		TagKey<net.minecraft.world.item.Item> deluxeTag = TagKey.create(Registries.ITEM, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("deluxe_shakes"));
+		for (String shake : List.of("jewel", "earthy", "violet", "verdant", "coral", "bb")) {
+			net.minecraft.world.item.Item item = item(CUISINE, "deluxe_" + shake + "_shake", missing);
+			if (item != null && !new ItemStack(item).is(deluxeTag)) {
+				missing.add("deluxe_" + shake + "_shake isn't in #aliveworkplace:deluxe_shakes");
+			}
+		}
+		item(CUISINE, "eclair", missing);
 		helper.assertTrue(missing.isEmpty(), "Cobblecuisine ids missing: " + missing);
 		helper.succeed();
 	}

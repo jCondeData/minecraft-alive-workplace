@@ -4865,7 +4865,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   read by name); the harvest goes to the store like other crops. Done when: compat GameTests: a farmer plants beans
   when the menu wants them, harvests only ripe ones, and puts them in the store; no beans are planted when nothing
   wants them; scene `bean_farm`.
-- [ ] **38.10** **Dishes for partners and luxuries.** Partner Pokémon (`CobblemonPartners`) are fed Cobblecuisine's
+- [x] **38.10** (review: pending 2026-10-18) **Dishes for partners and luxuries.** Partner Pokémon (`CobblemonPartners`) are fed Cobblecuisine's
   Poké Puffs and shakes from the store once a day, which counts as their treat (the partners' mood); and two dishes
   become luxuries (`luxuries` files: the deluxe shakes for Burghers every 4 days, the éclair for Nobles every 8),
   wanted only when Cobblecuisine is installed. Done when: compat GameTests: a partner is fed once a day and only from

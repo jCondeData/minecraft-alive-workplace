@@ -6,10 +6,10 @@ expansion: M38
 image: https://jcondedata.github.io/minecraft-alive-workplace/cuisine_kitchen/still-3.jpg
 caption: A Journeyman Chef's salad and curry in the chest by the stove
 Needs: Cobblemon and Cobblecuisine on the server
-Who: the Chef, the Camp Cook, the Innkeeper and the Farmer
+Who: the Chef, the Camp Cook, the Innkeeper, the Farmer, partner Pokémon, Burghers and Nobles
 Kept: 16 of each dish in the chests by the stove
 categories: Pokémon, Jobs
-related: chef.md, camp-cook.md, innkeeper.md, farmer.md, food-and-diet.md, settings.md
+related: chef.md, camp-cook.md, innkeeper.md, farmer.md, food-and-diet.md, partners-at-work.md, classes.md, settings.md
 ```
 
 With **Cobblecuisine** on the server, your village's cooks make its salads, sandwiches, curries, cakes and drinks, and
@@ -56,7 +56,21 @@ cuts the beans only when they're fully grown and takes them to the store with th
 each bean is Cobblecuisine's choice, so a field brings a mix. Once the store has 16 of every colour the menu wants,
 she plants no more, and the seeds stay in the chest. Put a few bean seeds in her chest to start.
 
+## Treats for partner Pokémon
+
+Pokémon in a Pasture Block that help a villager at work (see [Partners at work](partners-at-work.md)) get a treat once a
+day: a **Poké Puff** or a **shake** from the village store, the chests of your hall's kitchens and storehouses. Each
+treat makes the Pokémon a little friendlier, with hearts. Keep a stack of Poké Puffs or shakes in a storehouse chest
+and your partners will eat one each a day; with none in the store, they go without.
+
+## New luxuries
+
+Two of Cobblecuisine's dishes become luxuries (see [Classes](classes.md)): **Burghers** like a **Deluxe
+Shake** (any of the six) every 4 days, and **Nobles** a **Clodsire Eclair** every 8. They're wants, not needs: a
+household that has had one lately pays a little more tax. A household takes one from the store at dawn when it's due,
+so keep some in a storehouse chest.
+
 ## Settings
 
 On the settings screen, **Cobblecuisine Dishes** turns this on or off. Off, the cooks make what they made before and
-the dishes count for the diet like any other food. Without Cobblecuisine nothing changes at all. **Bean Farms** turns the farmers' beans on or off: off, they never sow beans.
+the dishes count for the diet like any other food; partners get no treats and the two dish luxuries aren't wanted. Without Cobblecuisine nothing changes at all. **Bean Farms** turns the farmers' beans on or off: off, they never sow beans.

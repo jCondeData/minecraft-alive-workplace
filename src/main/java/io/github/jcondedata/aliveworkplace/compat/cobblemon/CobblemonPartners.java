@@ -70,6 +70,39 @@ public final class CobblemonPartners {
 		return true;
 	}
 
+	// The partner treat (ROADMAP 38.10): the last game day the Pokémon was fed a Poké Puff or shake from the village
+	// store, in its own persistent data (Cobblemon saves it with the Pokémon); absent means never (-1).
+	public static final String TREAT_DAY = "aliveworkplace_treat_day";
+
+	// The pastured Pokémon helping at {@code center} as {@link #countPartnerDay} counts them, nearest first.
+	public static List<net.minecraft.world.entity.Entity> helping(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
+		AABB box = new AABB(center).inflate(radius);
+		Vec3 middle = Vec3.atCenterOf(center);
+		return level.getEntitiesOfClass(PokemonEntity.class, box, e -> e.isAlive() && e.getTethering() != null && fits(e.getPokemon(), types))
+			.stream()
+			.sorted(Comparator.comparingDouble(e -> e.distanceToSqr(middle)))
+			.limit(max)
+			.map(e -> (net.minecraft.world.entity.Entity) e)
+			.toList();
+	}
+
+	// The day the Pokémon last had its treat, -1 if never (or not a Pokémon).
+	public static long treatDay(net.minecraft.world.entity.Entity entity) {
+		if (!(entity instanceof PokemonEntity pokemon)) {
+			return -1;
+		}
+		net.minecraft.nbt.CompoundTag data = pokemon.getPokemon().getPersistentData();
+		return data.contains(TREAT_DAY) ? io.github.jcondedata.aliveworkplace.mc.Nbt.getLong(data, TREAT_DAY) : -1;
+	}
+
+	// Notes {@code day} as the day the Pokémon had its treat.
+	public static void setTreatDay(net.minecraft.world.entity.Entity entity, long day) {
+		if (entity instanceof PokemonEntity pokemon) {
+			pokemon.getPokemon().getPersistentData().putLong(TREAT_DAY, day);
+			pokemon.getPokemon().onChange(null); // its store saves the change
+		}
+	}
+
 	// How many days the Pokémon has helped a villager at work.
 	public static int partnerDays(Pokemon pokemon) {
 		return io.github.jcondedata.aliveworkplace.mc.Nbt.getInt(pokemon.getPersistentData(), PARTNER_DAYS);

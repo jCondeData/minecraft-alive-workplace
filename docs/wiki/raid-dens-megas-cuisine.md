@@ -6,9 +6,9 @@ and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchen
 beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
 the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4), more Mega trainers with their
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
-Shrine with its festival show (38.7) and Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8); the full plan is the design note, docs/design/M38.md.
+Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9, 38.10
 
 ## What a player sees
 
@@ -100,7 +100,7 @@ Camp Cook's menu has three curries (Beanburger, Mild Honey, Spicy Potato): the p
 cooks them by their own recipe over the fire, makings out of the chests and the curry into her bag in one go, and
 takes them to the chests by the pot (16 kept). The Innkeeper serves each guest one of the three drinks once a stay,
 from the chests by her counter or else the village store; it counts in the guest's diet, and her status says "served
-a guest Bouncy Brionne Soda". The partners' treats come with 38.10.
+a guest Bouncy Brionne Soda".
 
 A farmer with Cobblecuisine grows beans for those dishes (38.9): while the store (her chests and the village's stashes)
 holds fewer than 16 of a bean colour a dish on the menu needs, she takes bean seeds from the chests and sows her
@@ -108,6 +108,17 @@ field's empty farmland with them, cuts a bean plant only once it's fully grown, 
 the rest of the harvest. Which colour comes up is Cobblecuisine's own loot (one of the seven at random), so a short
 colour brings a field of mixed beans. With 16 of every wanted colour, or no bean dish on the menu, she sows none and
 the seeds stay in the chest; the ripe beans already growing are still cut, but not sown again.
+
+**Treats for partners and dish luxuries (38.10).** A partner Pokémon (one in a Pasture Block helping a villager at
+work) gets one treat a day from the village store: when its worker's day is counted at work, it eats a Poké Puff (any
+of the five) or a shake (Low, Medium or High, any colour) out of the store (the nearest hall's kitchens and
+storehouses, or without a hall the storehouses near the workstation), with hearts and 6 more friendship, the same as
+the Rancher's berry treat. Once a day however many workers it helps; with nothing in the store, no treat. Two dishes
+become luxuries, wanted only with Cobblecuisine: a **Deluxe Shake** (any of the six) for Burghers every 4 days, and
+the **Clodsire Eclair** for Nobles every 8. They are wants, not needs, like the Amethyst Ring: a household that has
+had one lately pays its 10% more tax, and the hall's Classes page lists them. As with every luxury, a household takes
+one from the store at dawn when it is due, and a household also takes the class above's (an Artisan
+may take a Deluxe Shake, a Burgher an éclair). Without Cobblecuisine the two luxury files are skipped quietly and the Classes page doesn't list them.
 
 ## How it works
 
@@ -188,7 +199,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `denChallengeDays` | 3 (1 to 30) | Days between a village's challenges. |
 | `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
-| `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes on the Chef's menu by his level, counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8). Off: the menus and the diet are as before. |
+| `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes on the Chef's menu by his level, counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8), the partners' daily treat and the Deluxe Shake and Clodsire Eclair luxuries (38.10). Off: the menus and the diet are as before, no treats, and the two luxuries are neither wanted nor taken. |
 | `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a colour a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
 
 ## Saved data
@@ -203,7 +214,10 @@ known to have a Trainer Leader (`leaderHalls`) and, per player, the villages who
 realms whose bracelet they had (`megaBracelet`). An older save has none: nobody has a bracelet yet. A villager who
 watched a Mega Shrine's show keeps the day on them (`mega_show_day`, 38.7); an older save has none. Cobblecuisine's
 dishes (38.8) save nothing new: the dishes go in chests and the meals in the villagers' `recent_meals`. Bean farms
-(38.9) save nothing new either: whether beans are wanted is worked out again at each look over the field. The planned fields
+(38.9) save nothing new either: whether beans are wanted is worked out again at each look over the field. A partner's treat day (38.10) is kept in the Pokémon's own saved data
+(`aliveworkplace_treat_day` in its persistent data, which Cobblemon saves with it); a Pokémon from an older save has
+none and gets its treat the first day it helps. The dish luxuries are noted in the villagers' `luxuries_had` like any
+luxury. The planned fields
 of later items are listed in the design note.
 
 ## Items, blocks, jobs, commands
@@ -211,7 +225,9 @@ of later items are listed in the design note.
 None of our own yet; 38.6 adds four Jeweller recipes (`mega_keystone`, `mega_stone`, `mega_stone_cut`,
 `mega_stone_meteorite`) and two item tags (`jeweller_finds`, `mega_meteorite_ores`); 38.7 adds the decoration
 blueprint `aliveworkplace:mega_shrine` (tools/blueprints/decor.py, `mega_shrine`); 38.8 adds the dish lists
-`data/aliveworkplace/cuisine_dishes/` and three `camp_menu` files. The ids the milestone reads from the three mods (the den block `cobblemonraiddens:raid_crystal_block`
+`data/aliveworkplace/cuisine_dishes/` and three `camp_menu` files; 38.10 adds the luxuries `deluxe_shake` and `clodsire_eclair` (with
+`fabric:load_conditions` on Cobblecuisine and `"switch": "cuisineDishes"`, a new optional luxury field) and the item
+tags `partner_treats` and `deluxe_shakes` (optional entries). The ids the milestone reads from the three mods (the den block `cobblemonraiddens:raid_crystal_block`
 and its states, the cheers, `mega_showdown:keystone`, `cobblecuisine:bean_crop`, the beans and the dishes) are listed in
 the design note and checked by `CobblemonDepthCompatTests`.
 
@@ -226,6 +242,17 @@ the design note and checked by `CobblemonDepthCompatTests`.
   own recipes ask for, found by result as the Chef finds them (38.9).
 - The store counted is the farmer's chests and her village-mates' stashes. A colour can't be chosen: the crop's loot
   picks it, so any short colour sows the field with seeds (38.9).
+- The partners' treats and the dish luxuries share `cuisineDishes`, as the design note's switch table assigns them
+  (no new switch); a luxury file can now name a switch (`"switch"`), and while it is off the luxury is not loaded
+  for anyone (38.10).
+- The design's "existing treat field" doesn't exist: partners had no treat or mood of their own. The treat is the
+  Rancher's (6 friendship with hearts), and its day is a new field in the Pokémon's own saved data, beside the Workers'
+  Cup counter (38.10).
+- A partner is fed when its worker's day is counted at work (`Partners.countDay`, the Workers' Cup's hook), so a store
+  empty at that moment means no treat until the next day's count. Puffs and shakes are fed for friendship only: the
+  shakes' EVs are Cobblecuisine's own feeding and aren't given (38.10).
+- The dish luxuries are wants, not needs: a Burgher or Noble without Cobblecuisine must still rise and stay, so a need
+  that can't exist there would break the ladder (38.10).
 - A Cobblecuisine dish is found by the recipe whose result it is, not by the recipe's id: some differ
   (`cake_honey_fruit` makes `fruit_honey_cake`) (38.1).
 - Dens are recorded when their chunk loads near a village, never by scanning (38.2's spec).
@@ -334,6 +361,15 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `noBeansPlantedWhenTheStoreHasEnough`, `noBeansWithTheSwitchOff`, `farmerHarvestsOnlyRipeBeansIntoTheStore` (no
   seeds in the store to start with; the green half left, the beans in the chest, the cut half sown again);
   `CobblemonDepthCompatTests.cuisineIdsExist` checks the crop and seed ids `farm/BeanFarms` reads.
+- `CuisineTreatsCompatTests` (38.10, the real Cobblecuisine): `aPartnerIsFedOnceADayFromTheStore` (nothing from an
+  empty store; a puff taken and 6 friendship; not twice a day; a shake the next day; the day through a save and load
+  of the Pokémon), `theSwitchOffFeedsNothing` (no treat, the luxuries not loaded or wanted), `aBurgherTakesADeluxeShakeWhenDue`
+  (both files load, all six shakes count, one taken on day 10, none on day 12, one on day 14);
+  `CobblemonDepthCompatTests.cuisineIdsExist` checks every puff, shake, deluxe shake and the éclair.
+- `CuisineGameTests.withoutCobblecuisineTheDishLuxuriesAreSkipped` (38.10, without the mod): the files ship, are read
+  as nothing, aren't loaded, no class takes them, the Classes page doesn't list them and the treat tag is empty;
+  `theText` checks the switch tooltip and the luxuries' names. `ClassGameTests` now expects the two new wants.
+- Scene `partner_treats` (38.10): a Machop at a builder's pasture eats a Poké Puff from the storehouse chest.
 - Scene `bean_farm` (38.9): a row ripe, a row green, a row bare; the ripe row cut into the chest and the bare rows sown.
 
-Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`, `mega_trainers`, `mega_jeweller`, `cuisine_kitchen`
+Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`, `mega_trainers`, `mega_jeweller`, `cuisine_kitchen`, `bean_farm`, `partner_treats`

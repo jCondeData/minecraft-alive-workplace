@@ -365,6 +365,10 @@ SCENES = [
     job("bean_farm", "Farmer", "Cobblecuisine: beans for the menu",
         "the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows",
         cobblemon=True),
+    # Partner treats (ROADMAP 38.10): a builder's pastured Machop eats a Poké Puff from the store, once a day
+    job("partner_treats", "Builder", "Cobblecuisine: a partner's treat of the day",
+        "the builder's Machop ate a Poké Puff from the storehouse chest as its treat of the day",
+        cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
     job("jeweller", "Jeweler", "Making amethyst rings at the stonecutter", "the jeweler made amethyst rings at the stonecutter"),

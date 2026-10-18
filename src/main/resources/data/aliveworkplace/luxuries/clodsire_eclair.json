@@ -1,0 +1,14 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblecuisine"
+      ]
+    }
+  ],
+  "item": "cobblecuisine:eclair",
+  "every_days": 8,
+  "enabled": true,
+  "switch": "cuisineDishes"
+}

@@ -51,6 +51,21 @@ public final class CobblemonCompat {
 			}
 
 			@Override
+			public List<Entity> helping(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
+				return CobblemonPartners.helping(level, center, radius, types, max);
+			}
+
+			@Override
+			public long treatDay(Entity entity) {
+				return CobblemonPartners.treatDay(entity);
+			}
+
+			@Override
+			public void setTreatDay(Entity entity, long day) {
+				CobblemonPartners.setTreatDay(entity, day);
+			}
+
+			@Override
 			public void useMove(ServerLevel level, LivingEntity pokemon, LivingEntity target, String type) {
 				CobblemonPartners.useMove(level, pokemon, target, type);
 			}

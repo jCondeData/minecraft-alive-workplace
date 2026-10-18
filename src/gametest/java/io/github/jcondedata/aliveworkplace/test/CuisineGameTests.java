@@ -66,6 +66,45 @@ public class CuisineGameTests implements FabricGameTest {
 		helper.assertTrue(name.equals("Cobblecuisine Dishes"), name);
 		String tip = JewellerGameTests.english(net.minecraft.network.chat.Component.translatable("aliveworkplace.config.cuisineDishes.tooltip"));
 		helper.assertTrue(tip.contains("curries at Journeyman, cakes at Expert") && tip.contains("Needs Cobblecuisine"), tip);
+		helper.assertTrue(tip.contains("a Poké Puff or shake from the store once a day") && tip.contains("Deluxe Shake every 4 days")
+			&& tip.contains("Clodsire Eclair every 8"), tip);
+		for (String luxury : List.of("deluxe_shake", "clodsire_eclair")) {
+			String text = JewellerGameTests.english(net.minecraft.network.chat.Component.translatable("luxury.aliveworkplace." + luxury));
+			helper.assertTrue(text.equals(luxury.equals("deluxe_shake") ? "Deluxe Shake" : "Clodsire Eclair"), luxury + " reads " + text);
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * 38.10 without Cobblecuisine: the two dish luxury files ship but are skipped quietly (their load condition fails, so
+	 * reading one gives nothing and throws nothing), no class wants them on the hall's page, and the partner treat tag is
+	 * empty, so no Pokémon is fed.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void withoutCobblecuisineTheDishLuxuriesAreSkipped(GameTestHelper helper) {
+		helper.assertTrue(!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("cobblecuisine"), "Cobblecuisine is installed in plain GameTests");
+		var files = io.github.jcondedata.aliveworkplace.people.Luxuries.files(helper.getLevel().getServer().getResourceManager());
+		for (String luxury : List.of("deluxe_shake", "clodsire_eclair")) {
+			ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id(luxury);
+			helper.assertTrue(files.containsKey(id), "the " + luxury + " file doesn't ship");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Luxuries.read(id, files.get(id)) == null, luxury + " was read without its mod");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Luxuries.get(id) == null, luxury + " is loaded without its mod");
+		}
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Luxuries.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("berry_wine")) != null,
+			"the other luxuries still load");
+		var burgher = io.github.jcondedata.aliveworkplace.people.SocialClasses.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("burgher"));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.people.Luxuries.of(burgher).stream().noneMatch(l -> l.id().getPath().equals("deluxe_shake")),
+			"a Burgher takes a deluxe shake without Cobblecuisine");
+		var page = io.github.jcondedata.aliveworkplace.hall.ClassesPage.survey(helper.getLevel(), helper.absolutePos(BlockPos.ZERO));
+		for (var row : page) {
+			for (var count : row.counts()) {
+				helper.assertTrue(!(count.need() instanceof io.github.jcondedata.aliveworkplace.people.ClassNeeds.Luxury l)
+					|| !(l.id().getPath().equals("deluxe_shake") || l.id().getPath().equals("clodsire_eclair")), "the hall's page wants " + count.need());
+			}
+		}
+		int treats = net.minecraft.core.registries.BuiltInRegistries.ITEM.getTag(io.github.jcondedata.aliveworkplace.work.PartnerTreats.TREATS).map(t -> t.size()).orElse(0);
+		helper.assertTrue(treats == 0, "the partner treat tag holds " + treats + " items without Cobblecuisine");
 		helper.succeed();
 	}
 

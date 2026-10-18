@@ -30,6 +30,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonDepthCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CuisineCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BeanFarmCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.CuisineTreatsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenWardenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenChallengeCompatTests",

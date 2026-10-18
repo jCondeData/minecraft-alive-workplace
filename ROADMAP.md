@@ -722,7 +722,6 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     changes nothing; a builder mid-site hands the site back (BuildSite stays restartable); children and nitwits refuse;
     save and reload; the switch off (`workplaceRetraining`) brings back the old rule;
   - the words in en_us.json; the guide's jobs page says how, with the price; scene `retrain`.
-  - [ ] **26.6a** Change from the owner (2026-10-18): retraining at a job block is awkward because the villager must walk into a finished home to be near the block. Instead the Village Hall lists every job block in the village with no villager assigned (e.g. a Storehouse block), and for each lets you pick from the villagers without a job to assign it. Keep paid retraining of a working villager as is.
 - [x] **26.7** (dropped for now: owner 2026-10-14) **A chest that shows what the build still needs** (owner's playtest, 2026-10-14). Put a blueprint (or a
   placed build site's plan) into a new slot on a builder's supply chest, or click the chest with the blueprint: the
   chest's screen then shows the build's material list beside it, each line ticked when the chest (and the builder's
@@ -4683,6 +4682,14 @@ Depends on: nothing open.
   mean and lowest; our houses per village) is in the Notes with the commands that made it; any tuning lands with
   `VillageGameTests` passing and the `village` scene still showing our houses.
 
+- [ ] **36.9** **Fill empty job blocks from the Village Hall** (owner, 2026-10-18, change to 26.6: retraining at a
+  job block is awkward because the villager must walk into a finished home to stand near the block). Done when: the
+  Village Hall has a "Free job blocks" page listing every job block in the village with no villager on it (its job,
+  the build it's in, the distance; e.g. a Storehouse block), and for each, the villagers without a job; picking one
+  assigns that block to them (they claim the POI and walk to it). Paid retraining of a working villager (26.6) stays.
+  GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
+  `hall_jobs`.
+
 ## Milestone 37: Furnished homes and modded storage (2.1)
 
 Builds use the pack's furniture mods when they're installed: Handcrafted chairs round a Handcrafted table, Lucky's
@@ -4803,6 +4810,15 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   test passes with those checks in its log summary; the wiki page and guide section are on `main` and `wikicheck.py`
   passes.
 
+- [ ] **37.12** **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
+  vanilla library, unchanged (for players who use the mod in plain vanilla later). Make a second, modded library: a
+  copy of each home and workshop beautified with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted
+  blocks (used freely: detail blocks, furniture, decor), under its own ids, with the vanilla build as its fallback
+  when a mod is missing. The pack uses the modded library; which library a server uses is a config switch
+  (default: modded when the mods are installed). Choosing what ships in which release is the owner's later. Done
+  when: the modded copies exist for every home and workshop, renders checked against STYLE.md, the switch works,
+  vanilla builds untouched; compat GameTests; scene `modded_library`.
+
 ## Milestone 38: Cobblemon depth (2.2)
 
 Three of the pack's Pokémon mods come into village life. **Raid Dens** (Cobblemon Raid Dens): the village knows the
@@ -4901,6 +4917,12 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   (a GameTest); the wiki gets a "Raid dens, Megas and Cobblecuisine" page and the player guide a section, and
   `wikicheck.py` passes.
 
+- [ ] **38.11** **Campfire pot recipes** (owner, 2026-10-18). The Chef (or the cook's job) also cooks Cobblemon's
+  campfire pot recipes, such as the candies (Rare Candy, EXP Candies and the IV/EV candies the pack's mods add),
+  from the store's ingredients, and stocks them for trainers and players. Done when: every campfire pot recipe the
+  installed mods register can be cooked (found by recipe type, not a fixed list), the cook only makes what the
+  store has ingredients for, compat GameTests, scene `campfire_pot`.
+
 ## Milestone 39: Create integration (2.3)
 
 Villages go mechanical with Create: a Mechanic villager keeps the machines turning, villagers feed millstones,
@@ -4976,6 +4998,10 @@ the owner's port jar; M33's caravans (39.7).
 ---
 
 ## Design decisions (from the owner)
+
+- **Create** (2026-10-18): real trains, the way Create intends (39.7a); the Mechanic never fixes players' own Create
+  machines, only the village's. **Builds** (2026-10-18): two libraries, vanilla and modded (37.12); the old builds
+  are kept, not deleted. **Table** (2026-10-18): no description lines, only "Jobs: …" and "Beds: N" (36.6a).
 
 - **Post-1.0 answers** (2026-10-18): Raid Dens of tier 4 and up are for players only (village trainers up to tier 3,
   38.4); the Mega Bracelet is given once per player per realm (38.5); furniture defaults to Handcrafted first, then

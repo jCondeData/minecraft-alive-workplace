@@ -160,6 +160,68 @@ public class CobblemonDepthCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * 38.8: every dish the shipped dish lists ({@code cuisine_dishes}) and the Camp Cook's curries ({@code camp_menu})
+	 * name is a Cobblecuisine item with a recipe that makes it, and every ingredient of one such recipe matches some item
+	 * (a recipe asking for a tag nobody fills, as Cobblecuisine's {@code #cobblemon:mint_leaf} is on Cobblemon 1.7.3,
+	 * could never be cooked).
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void cuisineDishListIdsExist(GameTestHelper helper) {
+		List<String> missing = new ArrayList<>();
+		MinecraftServer server = helper.getLevel().getServer();
+		net.minecraft.server.packs.resources.ResourceManager resources = server.getResourceManager();
+		List<ResourceLocation> ids = new ArrayList<>();
+		resources.listResources("cuisine_dishes", p -> p.getNamespace().equals("aliveworkplace") && p.getPath().endsWith(".json")).forEach((file, res) -> {
+			try (java.io.Reader reader = res.openAsReader()) {
+				com.google.gson.JsonObject json = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+				io.github.jcondedata.aliveworkplace.craft.CuisineDishes.parse(json, FabricLoader.getInstance()::isModLoaded).forEach(e -> ids.add(e.id()));
+			} catch (Exception ex) {
+				missing.add(file + " doesn't read: " + ex.getMessage());
+			}
+		});
+		resources.listResources("camp_menu", p -> p.getNamespace().equals("aliveworkplace") && p.getPath().contains("cobblecuisine")).forEach((file, res) -> {
+			try (java.io.Reader reader = res.openAsReader()) {
+				ids.add(ResourceLocation.parse(com.google.gson.JsonParser.parseReader(reader).getAsJsonObject().get("dish").getAsString()));
+			} catch (Exception ex) {
+				missing.add(file + " doesn't read: " + ex.getMessage());
+			}
+		});
+		if (ids.size() < 25) {
+			missing.add("only " + ids.size() + " dishes listed");
+		}
+		for (ResourceLocation id : ids) {
+			net.minecraft.world.item.Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+			if (item == null) {
+				missing.add("item " + id);
+				continue;
+			}
+			boolean cookable = false;
+			boolean anyRecipe = false;
+			for (net.minecraft.world.item.crafting.RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+				if (holder.value().getType() != net.minecraft.world.item.crafting.RecipeType.CRAFTING
+					|| !holder.value().getResultItem(server.registryAccess()).is(item)) {
+					continue;
+				}
+				anyRecipe = true;
+				// (an empty tag shows as a named barrier, which isn't a plain item: Crafting.options leaves it out)
+				cookable |= holder.value().getIngredients().stream()
+					.allMatch(ing -> ing.isEmpty() || !io.github.jcondedata.aliveworkplace.craft.Crafting.options(helper.getLevel(), ing).isEmpty());
+			}
+			if (!anyRecipe) {
+				missing.add("a crafting recipe making " + id);
+			} else if (!cookable) {
+				missing.add(id + ": every recipe asks for something no item is");
+			}
+			if (io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(item) == null) {
+				missing.add(id + " isn't on the loaded dish lists");
+			}
+		}
+		helper.assertTrue(missing.isEmpty(), "Cobblecuisine dish list ids missing: " + missing);
+		helper.succeed();
+	}
+
 	static Block block(String namespace, String path, List<String> missing) {
 		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace, path);
 		Block block = BuiltInRegistries.BLOCK.getOptional(id).orElse(null);

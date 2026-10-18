@@ -1,0 +1,11 @@
+{
+  "requires": "cobblecuisine",
+  "dishes": [
+    {"id": "cobblecuisine:mixed_vegetable_salad", "level": 1, "group": "salad"},
+    {"id": "cobblecuisine:spore_mushroom_salad", "level": 1, "group": "salad"},
+    {"id": "cobblecuisine:pumpkin_pie_salad", "level": 1, "group": "salad"},
+    {"id": "cobblecuisine:fancy_apple_salad", "level": 2, "group": "salad"},
+    {"id": "cobblecuisine:calm_mind_fruit_salad", "level": 2, "group": "salad"},
+    {"id": "cobblecuisine:bean_ham_salad", "level": 2, "group": "salad"}
+  ]
+}

@@ -4851,7 +4851,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   their ace by the pedestal, villagers off work gather and get +3 mood. Done when: the architect skill reviews its
   render against STYLE.md; GameTests: hidden at the table without Mega Showdown, listed with it; compat GameTest: the
   festival show happens at a finished shrine and the watchers get the mood; scene `mega_shrine`.
-- [ ] **38.8** **Cobblecuisine on the Chef's menu.** With Cobblecuisine installed, `Chefs.menu` adds its dishes by id
+- [x] **38.8** (review: pending 2026-10-18) **Cobblecuisine on the Chef's menu.** With Cobblecuisine installed, `Chefs.menu` adds its dishes by id
   (the way it adds Cobblemon's Poké snacks): a data list of dishes by job level (salads and sandwiches first, curries
   and cakes higher up), each cooked from its own crafting recipe through the recipe manager, with the makings from the
   store and the stashes as the Chef cooks today. `Diet` counts the dishes as varied food (each its food group), the

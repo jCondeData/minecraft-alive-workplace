@@ -65,6 +65,11 @@ asks for the steps, `latest.log` and any crash report).
   dais of Mega meteorite bricks, with amethyst-crowned posts and soul lanterns. On festival days a village with a
   finished shrine holds a show there first: a village trainer climbs to the pedestal and Mega Evolves their ace, and
   the villagers who gather to watch get +3 mood. Switch: `villageMegas`.
+- **Cobblecuisine on the menus (2.2).** With Cobblecuisine, the Chef cooks its dishes from their own recipes with the
+  makings from the store: salads and sandwiches from Novice, the drinks from Apprentice, curries from Journeyman, cakes
+  from Expert, keeping 16 of each. Each dish counts as its kind of food (a salad, a sandwich, a curry...), so villagers
+  eating them have a more varied diet; the Camp Cook cooks three of its curries, and the Innkeeper serves each guest a
+  Bouncy Brionne Soda, Teddiursa Iced Coffee or Fruit Punch. Switch: `cuisineDishes`.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

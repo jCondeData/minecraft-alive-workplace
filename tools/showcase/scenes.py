@@ -357,6 +357,10 @@ SCENES = [
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
         cobblemon=True),
+    # Cobblecuisine on the Chef's menu (ROADMAP 38.8): a Journeyman Chef cooks a salad and a curry from their own recipes
+    job("cuisine_kitchen", "Chef", "Cobblecuisine: a salad and a curry from the Chef",
+        "the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest",
+        cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
     job("jeweller", "Jeweler", "Making amethyst rings at the stonecutter", "the jeweler made amethyst rings at the stonecutter"),

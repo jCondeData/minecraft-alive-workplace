@@ -37,8 +37,9 @@ public final class Crafting {
 		/** The stonecutter's: one block in, one or more out. */
 		STONECUTTING,
 		/**
-		 * A cook's: the smoker's (cooked meat and fish, baked potatoes), the crafting table's (bread, pies, stews...) and,
-		 * with Cobblemon, its Campfire Pot's (Poké Snacks, Aprijuice, candies...), found by recipe type id.
+		 * A cook's: the smoker's (cooked meat and fish, baked potatoes), the crafting table's (bread, pies, stews...),
+		 * with Cobblemon its Campfire Pot's (Poké Snacks, Aprijuice, candies...), found by recipe type id, and the
+		 * campfire's (roasted berries).
 		 */
 		KITCHEN,
 		/**
@@ -525,6 +526,8 @@ public final class Crafting {
 					}
 					all.addAll(Recipes.all(manager, RecipeType.SMOKING));
 					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+					// Last, the campfire's (38.8: Cobblecuisine's sandwiches want roasted berries); the smoker's come first.
+					all.addAll(Recipes.all(manager, RecipeType.CAMPFIRE_COOKING));
 				}
 				case KILN -> {
 					for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.SMELTING)) {

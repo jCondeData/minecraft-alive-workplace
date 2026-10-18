@@ -52,6 +52,11 @@ asks for the steps, `latest.log` and any crash report).
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
   real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
   A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
+- **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
+  in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
+  and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break
+  the controller and they are separate stores again. A "Sophisticated" style builds the Storehouse with the mod's
+  chests and barrels and a controller on top of the Storehouse block.
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

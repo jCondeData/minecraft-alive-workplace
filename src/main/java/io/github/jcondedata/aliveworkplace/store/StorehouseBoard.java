@@ -64,7 +64,8 @@ public final class StorehouseBoard {
 
 	private static void render(ChoiceMenu menu, ServerLevel level, BlockPos storehouse, ServerPlayer viewer) {
 		menu.clearButtons();
-		List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+		StorageNetworks.Folded networks = SupplyContainers.networks(level, storehouse);
+		List<BlockPos> store = networks.stores();
 		long items = SupplyContainers.contents(level, store).values().stream().mapToLong(Long::longValue).sum();
 		List<Requests.Request> requests = new ArrayList<>(Requests.near(level, storehouse, Porters.owner(level, storehouse)));
 		requests.addAll(io.github.jcondedata.aliveworkplace.colony.Settlers.requests(level, storehouse)); // 33.9: the settlers' missing supplies
@@ -74,6 +75,9 @@ public final class StorehouseBoard {
 		List<Component> lore = new ArrayList<>();
 		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.stock", store.size(), items, SupplyContainers.freeSlots(level, store)), ChatFormatting.GRAY));
 		roomLine(level, store).ifPresent(lore::add);
+		if (networks.linked() > 0) { // 37.9: a Sophisticated Storage controller's blocks are one store
+			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.linked", networks.linked()), ChatFormatting.GRAY));
+		}
 		lore.add(plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
 			ChatFormatting.GRAY));
 		info.set(DataComponents.LORE, new ItemLore(lore));

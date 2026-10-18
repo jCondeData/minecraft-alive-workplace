@@ -4755,7 +4755,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   tier takes and gives items through porters and builders; a chest with a stack upgrade (its upgrade item in its
   upgrade slot) shows its real free room on the Storehouse board; a builder clearing a site leaves a Sophisticated
   chest in place with its contents; the existing barrel test still passes.
-- [ ] **37.9** **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
+- [x] **37.9** (review: pending 2026-10-18) **A Sophisticated controller as the Storehouse's store.** A `sophisticatedstorage:controller` in the
   Storehouse's area makes the storage blocks linked to it (touching storage blocks and `storage_link`s, found by walking
   block ids within the controller's reach) one store, read and filled through the controller's own item storage; the
   linked blocks drop out of the store list, so nothing counts twice. First check the controller exposes item storage

@@ -1,0 +1,12 @@
+{
+  "order": 40,
+  "icon": "sophisticatedstorage:controller",
+  "requires": ["sophisticatedstorage"],
+  "requires_switch": "moddedStorageNetworks",
+  "blueprints": "aliveworkplace:storehouse(_[23])?",
+  "replace": [
+    {"from": "minecraft:lantern", "to": "sophisticatedstorage:controller", "near": "aliveworkplace:storehouse"},
+    {"from": "minecraft:chest", "to": "sophisticatedstorage:chest"},
+    {"from": "minecraft:barrel", "to": "sophisticatedstorage:barrel"}
+  ]
+}

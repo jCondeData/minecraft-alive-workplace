@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.8
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.8, 37.9
 
 ## 1. What a player sees
 
@@ -67,6 +67,14 @@ gate (37.8): where a slot holds more than a stack, a stack upgrade or a limited 
 porters keep filling such a store while any of its slots has room for another stack, even when no slot is empty. With
 only vanilla chests the board and the porters are exactly as before.
 
+A Sophisticated Storage controller (37.9, behind the gate and `moddedStorageNetworks`): put one in the Storehouse's area
+touching your Sophisticated barrels and chests, and the Storehouse treats everything it links as one store. The board
+counts their goods once and adds "Linked through a storage controller: 3 blocks"; porters put deliveries in through the
+controller, which files them into the linked blocks, and builders take what they need through it. Break the controller
+and the blocks are separate stores again, with everything still in them. A "Sophisticated" style for the Storehouse
+(I, II and III; offered only with the mod and the switch on) builds Sophisticated chests and barrels in place of the
+vanilla ones and a controller on top of the Storehouse block, touching the chests on both sides.
+
 ## 2. How it works
 
 Each piece of furniture our builds draw in vanilla blocks becomes a furniture spot (its kind, facing, wood or colour
@@ -119,6 +127,21 @@ stack. An empty slot's room is tried with cobblestone and undone where the slot 
 Sophisticated Storage reports a stack-upgraded empty slot at four times what it really takes. With M37's gate open the board shows the items line when a slot holds more than a stack, and `PorterWork` reads
 the free stacks instead of the empty slots, so a limited barrel whose one slot holds some iron still takes the porter's
 iron.
+
+**Sophisticated controllers (37.9).** The mod's jar registers Fabric's `ItemStorage.SIDED` for the controller's block
+entity, so the controller is one item storage over everything it links (checked in Sophisticated Storage 1.3.7.9 before
+building). `store/StorageNetworks` goes by block ids only: from a `sophisticatedstorage:controller` it walks through
+touching storage blocks (chests, barrels, limited barrels and shulker boxes of every tier) and `storage_link`s, within
+the controller's reach (15 blocks each way, the mod's `SEARCH_RANGE`). `SupplyContainers.find` around a Storehouse
+block, with the switch on, folds those blocks into the controller: they leave the list and the controller joins it, so
+the board, porters, builders and every job that reads the Storehouse see one store. Around any other workstation the
+blocks are read one by one as before (the controller stays out of those lists, `ModdedBlocks.STORAGE_NETWORK`). The mod
+links a controller's storage when a player places it; a builder sets blocks without that, so after a
+builder places a controller, or a storage block or link joining one's network, `MaterialRules.afterPlaced` has the
+controller look again (the block's vanilla placing hook) so it links. Styles gained three optional fields for it:
+`"blueprints"` (a regex on the base blueprint ids the style is for), `"requires_switch"` (a config switch it is offered
+under) and a rule's `"near"` (the rule applies only to a block touching that block in the blueprint: the lantern on the
+Storehouse becomes the controller).
 
 ## 3. Switches
 
@@ -195,6 +218,9 @@ rides, which can't be summoned.
   a drawing records them (the homes' rooms since 37.4; the workplaces with 37.5).
 - Lucky's Cozy Home can't load in the dev runtime, so it is tested by the pack test only.
 - Sophisticated shulker boxes are stores too (they have item storage), but 37.8 tests only the chests and barrels.
+- The Storehouse finds what a controller links by walking block ids, not by asking the mod: a block the walk reaches
+  that the controller hasn't linked (placed by a command with no placing) drops out of the store list without being
+  read through the controller. Placed by a player or a builder, the two agree.
 
 ## 8. Proof
 
@@ -237,6 +263,11 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,
 `SophisticatedStorageCompatTests.aStackUpgradeShowsItsRealRoomOnTheBoard`, and the older
 `PackModsCompatTests.packStorageWorksAsSupplyChests`.
+37.9 (compat, Sophisticated Storage): `SophisticatedControllerCompatTests.aControllerMakesThreeBarrelsOneStore` (counted
+once, a delivery put away and a builder's take through the controller, the board's line, three stores again once it
+breaks), `SophisticatedControllerCompatTests.aPorterDeliversThroughTheController`,
+`SophisticatedControllerCompatTests.switchOffKeepsThreeStores`, `SophisticatedControllerCompatTests.theSophisticatedStyleAddsAController`.
+Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, which now brings Sophisticated Storage).
 
 37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
 `FurnitureSeatsCompatTests.aVillagerSitsOnAHandcraftedChairAtSupperAndGetsUpAtDawn`,

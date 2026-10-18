@@ -31,6 +31,34 @@ public final class SupplyContainers {
 	 * storage (anything could end up in their input slot); miners tend them on purpose, see {@link #furnaces}.
 	 */
 	public static List<BlockPos> find(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
+		List<BlockPos> found = stores(level, bench, exclude);
+		return isStorehouseWithNetworks(level, bench) ? folded(level, bench, found, exclude).stores() : found;
+	}
+
+	/**
+	 * 37.9: around a Storehouse, with {@code moddedStorageNetworks} on, a Sophisticated Storage controller stands for the
+	 * storage blocks it links (one store, read and filled through the controller), which leave the list. Every other
+	 * worker's chests are read one by one, as before.
+	 */
+	public static io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded networks(ServerLevel level, BlockPos storehouse) {
+		List<BlockPos> found = stores(level, storehouse, null);
+		return isStorehouseWithNetworks(level, storehouse) ? folded(level, storehouse, found, null)
+			: new io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded(found, 0);
+	}
+
+	private static boolean isStorehouseWithNetworks(ServerLevel level, BlockPos at) {
+		return io.github.jcondedata.aliveworkplace.store.StorageNetworks.ENABLED && level.isLoaded(at)
+			&& level.getBlockState(at).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE);
+	}
+
+	private static io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded folded(ServerLevel level, BlockPos storehouse, List<BlockPos> found,
+		@Nullable BoundingBox exclude) {
+		List<BlockPos> controllers = near(level, storehouse, be -> io.github.jcondedata.aliveworkplace.store.StorageNetworks.isController(be.getBlockState())
+			&& STORES.isStore(level, be.getBlockPos()));
+		return io.github.jcondedata.aliveworkplace.store.StorageNetworks.fold(level, storehouse, found, controllers, exclude);
+	}
+
+	private static List<BlockPos> stores(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
 		return near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
 			&& !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
 			&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity)

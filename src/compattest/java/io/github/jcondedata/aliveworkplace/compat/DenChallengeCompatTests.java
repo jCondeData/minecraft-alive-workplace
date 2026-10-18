@@ -87,12 +87,13 @@ public class DenChallengeCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** A lost challenge leaves the den glowing and the trainer tired, so nobody is sent the next time. */
+	/** A Master's lost challenge at a tier 3 den leaves the den glowing and the trainer tired, so nobody is sent the next time. */
 	//$ gametest_batch 'CompatGameTests.AREA' '"denChallengeLoss"'
 	@GameTest(template = CompatGameTests.AREA, batch = "denChallengeLoss")
 	public void aLossLeavesTheDenActive(GameTestHelper helper) {
-		BlockPos[] at = village(helper, "tier_four");
+		BlockPos[] at = village(helper, "tier_three"); // the highest a Master takes on; a 0.99 roll is over the Master's 60%
 		Villager trainer = master(helper);
+		helper.assertTrue(0.99f >= DenChallenges.chance(5, 3), "a 0.99 roll would win at tier 3");
 		DenChallenges.Result result = DenChallenges.challenge(helper.getLevel(), at[0], 0.99f, RandomSource.create(38));
 		helper.assertTrue(result == DenChallenges.Result.LOST, "the challenge: " + result);
 		helper.assertTrue(stored(helper) == 0, "loot after a loss");
@@ -166,7 +167,7 @@ public class DenChallengeCompatTests implements FabricGameTest {
 	@GameTest(template = CompatGameTests.AREA, batch = "denChallengeSave")
 	public void tiredTrainersSurviveASave(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		BlockPos[] at = village(helper, "tier_four");
+		BlockPos[] at = village(helper, "tier_three");
 		Villager trainer = master(helper);
 		helper.assertTrue(DenChallenges.challenge(level, at[0], 0.99f, RandomSource.create(38)) == DenChallenges.Result.LOST, "the challenge should be lost");
 		net.minecraft.nbt.CompoundTag saved = DenChallenges.Data.get(level).save(new net.minecraft.nbt.CompoundTag(), level.registryAccess());

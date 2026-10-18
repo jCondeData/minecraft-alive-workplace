@@ -135,7 +135,7 @@
 			title: "Your first catch",
 			description: ["Catch a wild Pokémon.", "", "1. Craft Poké Balls: a copper ingot in the middle with a red apricorn above, below, left and right of it. That makes four.", "2. Battle a wild Pokémon with your partner to weaken it.", "3. Throw a Poké Ball at it. The lower its health, the better your chances.", "", "Each Pokémon you catch can become a helper for your villagers.", "", "This quest completes by itself when you catch your first Pokémon."],
 			dependencies: ["357F81DBD0D10863"],
-			tasks: [{id: "16D5ECBDFFBAF87E", type: "advancement", advancement: "cobblemon:first_catch", criterion: ""}],
+			tasks: [{id: "16D5ECBDFFBAF87E", type: "advancement", advancement: "aliveworkplace:pokemon/first_catch", criterion: ""}],
 			rewards: [{id: "43459A9F1D31F801", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
 		},
 		{

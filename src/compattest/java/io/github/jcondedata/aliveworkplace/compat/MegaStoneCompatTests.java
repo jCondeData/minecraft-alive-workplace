@@ -16,6 +16,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.store.StockOrders;
 import io.github.jcondedata.aliveworkplace.trainer.LeaderBracelets;
 import io.github.jcondedata.aliveworkplace.trainer.MegaBracelets;
 import io.github.jcondedata.aliveworkplace.trainer.Trainers;
@@ -76,9 +77,25 @@ public class MegaStoneCompatTests implements FabricGameTest {
 		return BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath("mega_showdown", path));
 	}
 
-	/** A Village Hall at {@code at}, the nearest to everything in the test, and a stonecutter with a chest by it. */
+	/**
+	 * A Village Hall at {@code at}, the nearest to everything in the test, and a stonecutter with a chest by it. The village
+	 * is shrunk to this test's area while it runs (restored when it ends, passed or failed): with the usual 64-block hall
+	 * reach, and the store orders' 48, the trainers, storehouses, kitchens, stock orders and Wonders left by earlier
+	 * batches beyond {@code clearAround}'s 48-block sweep count as this village's, and the Jeweller cuts for them or
+	 * spends the gold on them (the Mega Stone test passed alone but failed in the full compat suite).
+	 */
 	static Container shop(GameTestHelper helper, ItemStack... stock) {
 		DenWardenCompatTests.clearAround(helper);
+		int radius = VillageHalls.RADIUS;
+		int range = StockOrders.RANGE;
+		VillageHalls.RADIUS = 16;
+		StockOrders.RANGE = 16;
+		PartnerShowsCompatTests.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			StockOrders.RANGE = range;
+			VillageHalls.forgetNearest();
+			MegaStones.forget();
+		});
 		VillageHalls.forgetNearest();
 		MegaStones.forget();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
@@ -184,14 +201,21 @@ public class MegaStoneCompatTests implements FabricGameTest {
 		List<Item> wanted = MegaStones.stonesOf(master);
 		helper.assertTrue(!wanted.isEmpty(), "the Master's team has no Mega Stone to cut");
 		Villager v = jeweller(helper, 3);
+		List<Item> village = MegaStones.forVillageOf(v);
+		helper.assertTrue(!village.isEmpty() && wanted.contains(village.get(0)), "the Jeweller would cut " + village + " for the village's trainers "
+			+ MegaStones.trainers(helper.getLevel(), v.blockPosition()).size() + ", but the Master's team wants " + wanted);
 		work(helper, v);
 		helper.succeedWhen(() -> {
 			List<Item> made = stonesIn(c);
-			helper.assertTrue(made.size() == 1 && wanted.contains(made.get(0)), "stones made " + made + ", the Master's team wants " + wanted);
+			helper.assertTrue(made.size() == 1 && wanted.contains(made.get(0)), "stones made " + made + ", the Master's team wants " + wanted
+				+ "; the village's trainers want " + MegaStones.forVillageOf(v) + "; the chest holds " + c.countItem(ms("mega_stone_crystal")) + " crystal, "
+				+ c.countItem(Items.GOLD_INGOT) + " gold, " + c.countItem(Items.EMERALD) + " emeralds; the Jeweller is " + (v.isAlive() ? "alive" : "gone"));
 			helper.assertTrue(c.countItem(ms("mega_stone_crystal")) == 0 && c.countItem(Items.GOLD_INGOT) == 0 && c.countItem(Items.EMERALD) == 0,
-				"makings left: " + c.countItem(Items.GOLD_INGOT) + " gold, " + c.countItem(Items.EMERALD) + " emeralds");
+				"makings left: " + c.countItem(ms("mega_stone_crystal")) + " crystal, " + c.countItem(Items.GOLD_INGOT) + " gold, "
+					+ c.countItem(Items.EMERALD) + " emeralds");
 			helper.assertTrue(c.countItem(ModItems.EMERALD_BROOCH) == LuxuryWork.KEEP && c.countItem(ModItems.GOLD_CIRCLET) == LuxuryWork.KEEP,
-				"the gold went into other goods");
+				"the gold went into other goods: " + c.countItem(ModItems.EMERALD_BROOCH) + " brooches, " + c.countItem(ModItems.GOLD_CIRCLET)
+					+ " circlets, expected " + LuxuryWork.KEEP + " each");
 		});
 	}
 

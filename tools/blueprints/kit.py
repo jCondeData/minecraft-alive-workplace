@@ -125,8 +125,12 @@ class Build:
         (furniture.KINDS), the way a person using it faces, the cells it fills relative to (x, y, z), and its wood or
         colour. Chairs beside tables, tables and beds are found by themselves; record the rest."""
         self.spots = getattr(self, "spots", [])
+        cells = [(x + dx, y + dy, z + dz) for dx, dy, dz in cells]
+        # What each cell held when the piece was drawn: an upgrade that later builds over the piece drops its spot
+        # (furniture.spots_of) instead of leaving a spot on blocks that are no longer there.
+        drawn = [self.blocks.get(c, ("minecraft:air", ()))[0] for c in cells]
         self.spots.append({"kind": kind, "pos": [x, y, z], "facing": facing, "wood": wood, "colour": colour,
-                           "cells": [(x + dx, y + dy, z + dz) for dx, dy, dz in cells]})
+                           "cells": cells, "drawn": drawn})
 
     def to_nbt(self):
         assert not (self.basement and getattr(self, "entities", None)), "entities in a build with a basement aren't moved up"
@@ -877,3 +881,88 @@ def wonder_stages(namespace, wonder, stages, folders, part=WONDER_PART):
         out.append(parts)
         before = dict(stage.blocks)
     return out
+
+
+# --- Furnished rooms (ROADMAP 37.4): vanilla pieces that read as furniture, each recorded as a furniture spot ---------
+# Every helper draws the piece in vanilla blocks and records it with Build.furniture, so a server with a furniture mod
+# builds that mod's piece there (37.3's tables) and one without builds these blocks. `facing` is the way a person
+# using the piece faces: into the room for anything standing against a wall. Each refuses a cell already drawn, so a
+# piece never lands on a bed, a job block or a chest by accident.
+
+def _free(b, *cells):
+    for c in cells:
+        got = b.blocks.get(c)
+        assert got is None or got[0] == "minecraft:air", f"furniture over {got} at {c}"
+
+
+def nightstand(b, x, y, z, facing, wood):
+    """A bedside table: an upside-down slab beside the bed's head."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{wood}_slab", type="top", waterlogged=False)
+    b.furniture("nightstand", x, y, z, facing, wood=wood)
+
+
+def floor_lamp(b, x, y, z, wood, facing="north"):
+    """A standing lamp: a lantern on a fence post."""
+    _free(b, (x, y, z), (x, y + 1, z))
+    b.set(x, y, z, f"{wood}_fence")
+    lantern(b, x, y + 1, z)
+    b.furniture("lamp", x, y, z, facing, cells=((0, 0, 0), (0, 1, 0)), wood=wood)
+
+
+def couch(b, x, y, z, facing, wood, colour, length=2, arms=True):
+    """A couch of `length` seats along the wall behind it, the sitters facing `facing`: stair seats with their backs to
+    the wall and, with `arms`, an open trapdoor at each end. Each seat is a couch spot (an arm goes with its end seat)."""
+    along = CW[facing]
+    ax, az = DIRS[along]
+    seats = [(x + ax * i, z + az * i) for i in range(length)]
+    for i, (sx, sz) in enumerate(seats):
+        _free(b, (sx, y, sz))
+        stairs(b, sx, y, sz, wood_family(wood), OPP[facing])
+        cells = [(0, 0, 0)]
+        if arms and i in (0, length - 1):
+            for end, d in ((0, -1), (length - 1, 1)):
+                if i == end:
+                    arm = (sx + ax * d, sz + az * d)
+                    _free(b, (arm[0], y, arm[1]))
+                    trapdoor(b, arm[0], y, arm[1], f"{wood}_trapdoor", along if d < 0 else OPP[along], open_=True)
+                    cells.append((arm[0] - sx, 0, arm[1] - sz))
+        b.furniture("couch", sx, y, sz, facing, cells=cells, wood=wood, colour=colour)
+
+
+def wood_family(wood):
+    return wood if isinstance(wood, Family) else globals().get(wood.upper()) or Family(f"{wood}_planks", f"{wood}_stairs", f"{wood}_slab")
+
+
+def shelf(b, x, y, z, facing, wood, crockery="flower_pot"):
+    """A wall shelf at head height: an upside-down slab on the wall, crockery (a flower pot, the vanilla cup) on it."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{wood}_slab", type="top", waterlogged=False)
+    b.furniture("shelf", x, y, z, facing, wood=wood)
+    if crockery:
+        _free(b, (x, y + 1, z))
+        b.set(x, y + 1, z, crockery)
+        b.furniture("crockery", x, y + 1, z, facing, wood=wood, colour="white")
+
+
+def picture(b, x, y, z, facing, colour, wood):
+    """A picture on the wall behind (x, y, z): a wall banner, the plain cloth of the vanilla build."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{colour}_wall_banner", facing=facing)
+    b.furniture("picture", x, y, z, facing, wood=wood, colour=colour)
+
+
+def blinds(b, x, y, z, facing, wood):
+    """Blinds rolled up at the top of a window, inside: a closed upper trapdoor against the window head. `facing`: into
+    the room."""
+    _free(b, (x, y, z))
+    trapdoor(b, x, y, z, f"{wood}_trapdoor", facing, half="top")
+    b.furniture("blinds", x, y, z, facing, wood=wood)
+
+
+def clock(b, x, y, z, facing, wood):
+    """A grandfather clock against a wall: a stripped log case under a trapdoor hood."""
+    _free(b, (x, y, z), (x, y + 1, z))
+    log(b, x, y, z, f"stripped_{wood}_log")
+    trapdoor(b, x, y + 1, z, f"{wood}_trapdoor", facing, half="bottom")
+    b.furniture("clock", x, y, z, facing, cells=((0, 0, 0), (0, 1, 0)), wood=wood)

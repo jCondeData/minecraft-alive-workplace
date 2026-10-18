@@ -112,6 +112,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final PokemonBuildsScene pokemonBuilds = new PokemonBuildsScene();
 	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
+	private final FurnishedHomeScene furnishedHome = new FurnishedHomeScene();
 	private final VillageHallBuildScene villageHallBuild = new VillageHallBuildScene();
 	private final BuildFixesScene buildFixes = new BuildFixesScene();
 	private final RealmBuildsScene realmBuilds = new RealmBuildsScene();
@@ -165,6 +166,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("table_preview".equals(System.getProperty("aliveworkplace.scene"))) {
 			tablePreviewScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("signpost".equals(System.getProperty("aliveworkplace.scene"))) {
+			signpostScene(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("hall_reading".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -305,6 +310,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {
 			grandHouses.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("furnished_home".equals(System.getProperty("aliveworkplace.scene"))) {
+			furnishedHome.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("village_habitat".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -659,6 +668,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 160) {
 			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen, "the Blueprint Table screen opened");
+			// 36.6: the Starter Cottage's line about it, wrapped under its size
+			String description = mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s.selectedDescription() : "";
+			Showcase.check(!description.isEmpty(), "the Starter Cottage's description shows under its size (\"" + description + "\")");
 			shot(mc, "10_table_library");
 			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
 				screen.showFiles();
@@ -672,6 +684,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 280) {
 			shot(mc, "12_table_uploaded");
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen && screen.selected() != null) {
+				// 36.6: the uploaded build is selected, and an imported build has no description
+				Showcase.check(screen.selectedDescription().isEmpty(), "the uploaded build " + screen.selected() + " shows no description");
+			}
 			server.execute(() -> {
 				int now = BlueprintLibrary.list(server, false).size();
 				Showcase.check(now > libraryBefore, "a .litematic file uploaded into the library (" + libraryBefore + " -> " + now + " blueprints)");
@@ -772,6 +788,108 @@ public class ScreenshotHarness implements ClientModInitializer {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}
+			mc.stop();
+		}
+	}
+
+	/**
+	 * 36.4: a Signpost at a crossroads between two villages, its boards written when it's finished: each board up close,
+	 * the village east and west, a Well south, and "Welcome" where nothing lies.
+	 */
+	private void signpostScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		BlockPos origin = new BlockPos(0, -60, 0);
+		BlockPos post = origin.offset(1, 0, 1);
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(3000);
+				// The crossroads: gravel paths four ways.
+				for (int i = -14; i <= 14; i++) {
+					for (int w = 0; w < 3; w++) {
+						level.setBlockAndUpdate(new BlockPos(post.getX() + i, -61, post.getZ() - 1 + w), Blocks.DIRT_PATH.defaultBlockState());
+						level.setBlockAndUpdate(new BlockPos(post.getX() - 1 + w, -61, post.getZ() + i), Blocks.DIRT_PATH.defaultBlockState());
+					}
+				}
+				// Our hall by the crossroads, a village 40 blocks east, one 180 west (on the caravans' list), a Well south.
+				BlockPos own = post.offset(-5, 0, -5);
+				BlockPos east = post.east(40);
+				BlockPos west = post.west(180);
+				level.setBlockAndUpdate(own, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				level.setBlockAndUpdate(east, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				if (level.getBlockEntity(own) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setCustomName(Component.literal("Oakbrook"));
+				}
+				if (level.getBlockEntity(east) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setCustomName(Component.literal("Millford"));
+				}
+				io.github.jcondedata.aliveworkplace.hall.Caravans.Data caravans = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+				caravans.setWants(own, Component.literal("Oakbrook"), List.of());
+				caravans.setWants(east, Component.literal("Millford"), List.of());
+				caravans.setWants(west, Component.literal("Ashford"), List.of());
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+				BlueprintData.Placement well = new BlueprintData.Placement(level.dimension().location(), post.offset(-3, 0, 9),
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				Blueprint wellBp = BlueprintLibrary.get(level, StarterBlueprints.WELL.id()).orElseThrow();
+				for (Blueprint.Entry e : wellBp.blocks()) {
+					level.setBlock(well.origin().offset(e.pos()), e.state(), 2);
+				}
+				sites.recordFinished(StarterBlueprints.WELL.id(), well, server.getPlayerList().getPlayers().get(0).getUUID());
+				// The signpost as its builder leaves it, then finished: its boards are written.
+				Blueprint sign = BlueprintLibrary.get(level, StarterBlueprints.SIGNPOST.id()).orElseThrow();
+				for (Blueprint.Entry e : sign.blocks()) {
+					level.setBlock(origin.offset(e.pos()), e.state(), 2);
+				}
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				sites.recordFinished(StarterBlueprints.SIGNPOST.id(), placement, server.getPlayerList().getPlayers().get(0).getUUID());
+				int written = io.github.jcondedata.aliveworkplace.city.Signposts.finished(level, StarterBlueprints.SIGNPOST.id(), placement);
+				Showcase.check(written == 4, "the finished signpost's four boards were written (" + written + ")");
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(post.getX() + 6.5, -58.5, post.getZ() + 7.5), 135, 18);
+			});
+		}
+		// Each board up close, the camera in front of it at its height (eyes 1.62 above the feet).
+		double[][] views = {
+			{post.getX() + 3.6, -57 + 0.5 - 1.62, post.getZ() + 0.5, 90}, // the east board, from the east
+			{post.getX() - 2.6, -57 + 0.5 - 1.62, post.getZ() + 0.5, -90}, // the west board
+			{post.getX() + 0.5, -58 + 0.5 - 1.62, post.getZ() + 3.6, 180}, // the south board
+			{post.getX() + 0.5, -58 + 0.5 - 1.62, post.getZ() - 2.6, 0}, // the north board
+		};
+		String[] names = {"02_board_east", "03_board_west", "04_board_south", "05_board_north"};
+		if (tick == 120) {
+			shot(mc, "01_signpost_crossroads");
+		}
+		for (int i = 0; i < views.length; i++) {
+			double[] v = views[i];
+			if (tick == 130 + i * 30) {
+				server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(v[0], v[1], v[2]), (float) v[3], 0));
+			}
+			if (tick == 150 + i * 30) {
+				shot(mc, names[i]);
+			}
+		}
+		if (tick == 260) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				List<String> said = new ArrayList<>();
+				for (BlockPos p : io.github.jcondedata.aliveworkplace.city.Signposts.boards(level, origin)) {
+					if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.SignBlockEntity s) {
+						said.add(s.getFrontText().getMessage(1, false).getString() + " " + s.getFrontText().getMessage(2, false).getString()
+							+ (s.isWaxed() ? "" : " (not waxed)"));
+					}
+				}
+				Showcase.check(said.stream().anyMatch(t -> t.startsWith("Millford 40 blocks")) && said.stream().anyMatch(t -> t.startsWith("Ashford 180 blocks"))
+					&& said.stream().noneMatch(t -> t.contains("not waxed")), "the boards name Millford east and Ashford west, waxed: " + said);
+			});
+		}
+		if (tick == 280) {
 			mc.stop();
 		}
 	}

@@ -36,11 +36,13 @@ GROUPS = [
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
 
 
-def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False):
+def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, furniture=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
-    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14)."""
+    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
+    furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
-            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18}
+            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
+            "furniture": furniture}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -78,13 +80,18 @@ SCENES = [
     S("missing", "Builder", "What a build is still missing, and its material list", "the blueprint's tooltip lists what the chests are short of, and a Book and Quill becomes the list", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip"),
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
-    S("table", "Builder", "Blueprint Table", "the table screen opened and a file was uploaded", 60,
+    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's description under its size, and a file was uploaded (an imported build has no description)", 60,
       [("10_table_library", "Library"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
       [("01_preview_house", "A starter house"), ("03_preview_style", "Picked in Sandstone"),
        ("04_preview_large", "A large build, scaled to fit"), ("06_preview_imported", "An uploaded build")]),
+    # 36.4: the Signpost's boards name the villages and builds each way
+    S("signpost", "Builder", "The Signpost's boards say where things are",
+      "a Signpost at a crossroads between two villages had its four boards written as it was finished: Millford east, Ashford west, the Well south, Welcome north", 40,
+      [("01_signpost_crossroads", "The signpost at the crossroads"), ("02_board_east", "East: the next village"),
+       ("03_board_west", "West: a village further off"), ("04_board_south", "South: the Well")]),
     # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
     S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
       "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; the Storehouse board did the same", 45,
@@ -558,6 +565,11 @@ SCENES = [
     S("basement", "Builder", "Level 4: a root cellar dug under the cottage",
       "a builder dug a root cellar under a finished Starter Cottage III and built the Level 4 over it, then the camera went down the ladder into it",
       420, [START, ("02_root_cellar", "In the root cellar: bins, sacks, a shelf, the lights"), ("02_ladder_up", "The ladder up to the cottage"), DONE]),
+    # Cellars (ROADMAP 36.7): the Inn III cut away to its ale and wine cellar; an old Smithy, finished before it had a
+    # cellar, gets its coal store dug by its builder ("Dig the cellar")
+    S("cellars", "Builder", "Level III cellars, and digging an old build's cellar",
+      "the Inn III stood cut away to its ale and wine cellar, and a builder dug the cellar under an old Smithy built before it had one",
+      300, [START, ("02_inn_cellar", "The Inn III cut away: its ale and wine cellar"), ("02_smithy_cellar", "The old Smithy's coal store, dug"), DONE]),
     # The Pathfinder (ROADMAP 29.13): an expedition with the player through a forest to a staged Stronghold
     job("legend_pathfinder", "Legends", "The Pathfinder leads the player through a forest",
         "the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 120),
@@ -1019,6 +1031,13 @@ SCENES = [
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
+    # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
+    S("furnished_home", "Build families", "A furnished Starter Cottage, room by room (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods",
+      80, [("02_dining", "The dining corner: a Handcrafted table and chairs, a shelf of crockery, a Beautify picture"),
+           ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
+           ("05_sitting", "Upstairs: the sitting corner's couch, blinds and a picture"),
+           ("06_vanilla_dining", "The same corner without furniture mods: the vanilla pieces")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",
@@ -1287,7 +1306,8 @@ def changed(base, head="HEAD", root="."):
 
 def env(scene):
     s = BY_NAME[scene]
-    out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false"}
+    out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false",
+           "FURNITURE": "true" if s.get("furniture") else "false"}
     if s["cobblemon18"]:
         out["COBBLEMON18"] = "true"
     out.update(s["env"])

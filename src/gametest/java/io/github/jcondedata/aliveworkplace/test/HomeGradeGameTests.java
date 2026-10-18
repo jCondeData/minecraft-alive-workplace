@@ -324,7 +324,7 @@ public class HomeGradeGameTests implements FabricGameTest {
 		List<ResourceLocation> table = io.github.jcondedata.aliveworkplace.table.TableServer.listing(server).stream()
 			.map(io.github.jcondedata.aliveworkplace.table.TablePayloads.Entry::id).toList();
 		List<ResourceLocation> everything = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.list(server, true);
-		helper.assertTrue(StarterBlueprints.SOLD_ONLY.size() == 10, "every tier of the three grander homes (with the Level 4s, 26.15): " + StarterBlueprints.SOLD_ONLY);
+		helper.assertTrue(StarterBlueprints.SOLD_ONLY.size() == 11, "every tier of the three grander homes (with the Level 4s, 26.15, and the Artisan's House III, 36.7): " + StarterBlueprints.SOLD_ONLY);
 		for (StarterBlueprints.Entry e : StarterBlueprints.SOLD_ONLY) {
 			helper.assertFalse(table.contains(e.id()), e.id() + " is in the Blueprint Table");
 			helper.assertTrue(everything.contains(e.id()), e.id() + " should still load for operators");

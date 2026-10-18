@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 15 wide, 13 deep, 12 high (II: 22 deep)
-Tiers: I, II (a barn and a second field)
+Tiers: I, II (a barn and a second field), III (a root cellar)
 Houses: a Farmer at the composter, with a bed; two composters at tier II
 Where to get it: Blueprint Table
 Main materials: oak logs, brick stairs, farmland, white concrete, cobblestone
@@ -26,6 +26,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 Once a builder finishes the Farmstead, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
 - **Farmstead II** adds a barn behind the house and a second field behind the first, with a second composter.
+- **Farmstead III** digs a **root cellar** under the farmhouse, down a ladder under a hatch by the kitchen: bins of pumpkins and melons, hay, sacks and potted mushrooms. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

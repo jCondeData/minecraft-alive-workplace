@@ -23,6 +23,8 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Under the cookhouse is a **cold larder**, down a ladder inside the door: a stone counter under hanging meat and pumpkins, a shelf of jars and chests of flour and salt. Your builder digs it out of the ground himself: four blocks under the floor.
 
+A Kitchen finished before it had its cold larder can still get it: any builder of the village sells **Dig the cellar** for it (a blueprint already lined up over the building), and the Village Hall's **What next?** page reminds you. Give it back to the builder and they dig and fit out only the cold larder, leaving the rest as it stands. Upgrading such a Kitchen digs its cold larder too.
+
 ## What it does for the village
 
 Sneak-right-click a villager by the smoker with **raw meat**, **raw fish** or a **potato** and they become the **Chef** (left alone, a jobless villager takes a smoker as a butcher). With the makings in the chest the chef cooks bread, cookies, pies, cake, stews and everything a smoker cooks, a batch at a time, and the food feeds the village. See [Crafters and smiths](jobs-crafts.md) and [Village life](village-life.md).

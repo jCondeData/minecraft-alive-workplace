@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +22,9 @@ import org.jetbrains.annotations.Nullable;
 
 /** {@link ItemStores} through Fabric's transfer API. */
 final class FabricItemStores implements ItemStores {
+	/** How often one store is asked in a single take or put (an infinity or void upgrade never runs dry or full). */
+	private static final int MAX_ASKS = 256;
+
 	@Nullable
 	private static Storage<ItemVariant> storage(Level level, BlockPos pos) {
 		return ItemStorage.SIDED.find(level, pos, null);
@@ -54,6 +58,104 @@ final class FabricItemStores implements ItemStores {
 	}
 
 	@Override
+	public Room room(Level level, List<BlockPos> stores) {
+		int freeSlots = 0;
+		int freeStacks = 0;
+		long freeItems = 0;
+		boolean bigSlots = false;
+		ItemVariant probe = ItemVariant.of(Items.COBBLESTONE);
+		for (BlockPos p : stores) {
+			Storage<ItemVariant> s = storage(level, p);
+			if (s == null) {
+				continue;
+			}
+			int blanks = 0;
+			long blankCapacity = 0;
+			boolean bigBlank = false;
+			long probeRoom = 0; // the room for more cobblestone in slots already holding some
+			for (var view : s) {
+				long capacity = view.getCapacity();
+				if (view.isResourceBlank()) {
+					blanks++;
+					blankCapacity += Math.max(0, capacity);
+					bigBlank |= capacity > 64;
+				} else {
+					long stack = Math.max(1, view.getResource().getItem().getDefaultMaxStackSize());
+					long left = Math.max(0, capacity - view.getAmount());
+					freeStacks += (int) Math.min(Integer.MAX_VALUE / 2, left / stack);
+					freeItems += left;
+					bigSlots |= capacity > stack;
+					if (view.getResource().equals(probe)) {
+						probeRoom += left;
+					}
+				}
+			}
+			freeSlots += blanks;
+			if (blanks == 0) {
+				continue;
+			}
+			if (!bigBlank) {
+				freeStacks += blanks; // vanilla: an empty slot is a stack
+				freeItems += blankCapacity;
+				continue;
+			}
+			// An empty slot's capacity isn't its room everywhere: Sophisticated Storage reports a stack-upgraded empty
+			// slot at four times what it takes of cobblestone, and putting into one slot fills others too. So the empty
+			// slots' room is what the store would take of a plain stackable item (tried and undone), less the room for
+			// it in the slots already holding some. A store that refuses it (a filter) counts a stack an empty slot.
+			long room;
+			try (Transaction tx = Transaction.openOuter()) {
+				room = s.insert(probe, Integer.MAX_VALUE, tx) - probeRoom;
+			}
+			if (room <= 0) {
+				room = 64L * blanks;
+			}
+			freeStacks += (int) Math.min(Integer.MAX_VALUE / 2, Math.max(blanks, room / 64));
+			freeItems += room;
+			bigSlots |= room > 64L * blanks;
+		}
+		return new Room(freeSlots, freeStacks, freeItems, bigSlots);
+	}
+
+	/**
+	 * Takes up to {@code max} out of {@code s}, each ask its own committed transaction, asking again while it gives:
+	 * Sophisticated Storage gives at most a stack from a slot each time it's asked (a limited barrel's slot of 110 raw
+	 * iron gave 64), and asking twice inside one transaction gives the same stack twice, so every ask is committed.
+	 */
+	private static long drain(Storage<ItemVariant> s, ItemVariant variant, long max) {
+		long taken = 0;
+		for (int asks = 0; asks < MAX_ASKS && taken < max; asks++) {
+			long got;
+			try (Transaction tx = Transaction.openOuter()) {
+				got = s.extract(variant, Math.min(max - taken, Integer.MAX_VALUE), tx);
+				tx.commit();
+			}
+			if (got <= 0) {
+				break;
+			}
+			taken += got;
+		}
+		return taken;
+	}
+
+	/** Puts up to {@code amount} into {@code s}, asking again while it takes (as {@link #drain}). */
+	private static long fill(Storage<ItemVariant> s, ItemVariant variant, long amount) {
+		long put = 0;
+		for (int asks = 0; asks < MAX_ASKS && put < amount; asks++) {
+			long got;
+			try (Transaction tx = Transaction.openOuter()) {
+				got = s.insert(variant, Math.min(amount - put, Integer.MAX_VALUE), tx);
+				tx.commit();
+			}
+			if (got <= 0) {
+				break;
+			}
+			put += got;
+		}
+		return put;
+	}
+
+	@Override
 	public int slots(Level level, List<BlockPos> stores) {
 		int slots = 0;
 		for (BlockPos p : stores) {
@@ -75,8 +177,12 @@ final class FabricItemStores implements ItemStores {
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s != null) {
-				// Integer.MAX_VALUE, not Long.MAX_VALUE: some storages (Sophisticated Storage) turn the amount into an int.
-				total += StorageUtil.simulateExtract(s, variant, Integer.MAX_VALUE, null);
+				// The slots' amounts, not a simulated take: Sophisticated Storage gives at most a stack a slot each time.
+				for (var view : s.nonEmptyViews()) {
+					if (view.getResource().equals(variant)) {
+						total += view.getAmount();
+					}
+				}
 			}
 		}
 		return total;
@@ -125,10 +231,7 @@ final class FabricItemStores implements ItemStores {
 			if (s == null) {
 				continue;
 			}
-			try (Transaction tx = Transaction.openOuter()) {
-				taken += (int) s.extract(variant, max - taken, tx);
-				tx.commit();
-			}
+			taken += (int) drain(s, variant, max - taken);
 		}
 		return taken;
 	}
@@ -203,10 +306,7 @@ final class FabricItemStores implements ItemStores {
 			if (s == null) {
 				continue;
 			}
-			try (Transaction tx = Transaction.openOuter()) {
-				taken += (int) s.extract(variant, max - taken, tx);
-				tx.commit();
-			}
+			taken += (int) drain(s, variant, max - taken);
 		}
 		return taken;
 	}
@@ -283,10 +383,7 @@ final class FabricItemStores implements ItemStores {
 			if (s == null) {
 				continue;
 			}
-			try (Transaction tx = Transaction.openOuter()) {
-				remaining -= s.insert(variant, remaining, tx);
-				tx.commit();
-			}
+			remaining -= fill(s, variant, remaining);
 		}
 		return remaining <= 0 ? ItemStack.EMPTY : stack.copyWithCount((int) remaining);
 	}

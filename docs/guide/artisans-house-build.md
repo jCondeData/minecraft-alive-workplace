@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 9 wide, 12 deep, 15 high (II: 18 deep)
-Tiers: I, II (a stone workshop wing)
+Tiers: I, II (a stone workshop wing), III (a storeroom)
 Houses: two beds; three at tier II
 Where to get it: sold by builders from Apprentice on, for 10 emeralds (not in the Blueprint Table)
 Main materials: dark oak stairs, spruce logs and planks, birch planks, cobblestone
@@ -26,6 +26,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 Once a builder finishes the Artisan's House, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
 - **Artisan's House II** adds a stone workshop wing at the back, with a loom, a third bed and another chest.
+- **Artisan's House III** digs a **storeroom** under the house, down a ladder under a hatch in the back of the hall: chests, bolts of cloth, crates and a packing table. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

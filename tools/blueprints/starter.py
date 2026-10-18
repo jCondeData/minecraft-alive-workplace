@@ -39,6 +39,20 @@ def cottage_ground_floor(b):
     b.set(3, 2, 4, "spruce_pressure_plate", powered=False)
     stairs(b, 3, 1, 3, SPRUCE, "north")
     box(b, 4, 1, 5, 6, 1, 6, "brown_carpet")
+    # Furnished (37.4): a second seat at the table, a nightstand and a lamp by the bed, a little couch against the back
+    # wall facing the rug, a shelf of cups over the kitchen corner, a clock by the door, a picture on the chimney wall,
+    # blinds at the front and back windows
+    stairs(b, 3, 1, 5, SPRUCE, "south")
+    nightstand(b, 8, 1, 7, "north", "spruce")
+    floor_lamp(b, 6, 1, 7, "spruce")
+    couch(b, 4, 1, 7, "north", "spruce", "green", length=2, arms=False)
+    shelf(b, 2, 2, 6, "east", "spruce")
+    clock(b, 6, 1, 3, "south", "spruce")
+    picture(b, 2, 3, 4, "east", "green", "spruce")
+    for x in (2, 3, 7, 8):
+        blinds(b, x, 3, 3, "south", "spruce")
+    for x in (3, 7):
+        blinds(b, x, 3, 7, "north", "spruce")
 
 
 def cottage_porch(b):
@@ -112,6 +126,12 @@ def cottage_upper_floor(b):
     b.set(2, 7, 2, "potted_fern")
     b.set(4, 6, 8, "chest", facing="north", type="single", waterlogged=False)
     box(b, 4, 6, 4, 6, 6, 6, "light_blue_carpet")
+    # Furnished (37.4): a nightstand and a lamp by the bed, a couch with arms in the sitting corner over the porch,
+    # a picture over the bed
+    nightstand(b, 3, 6, 8, "north", "spruce")
+    floor_lamp(b, 5, 6, 8, "spruce")
+    couch(b, 6, 6, 2, "south", "spruce", "light_blue", length=2)
+    picture(b, 8, 7, 7, "west", "light_blue", "spruce")
 
 
 def starter_cottage_2():
@@ -1409,6 +1429,15 @@ def inn():
     box(b, 2, 1, 7, 8, 1, 7, "red_carpet")
     for y in range(1, 6):
         b.set(10, y, 10, "ladder", facing="west", waterlogged=False)
+    # Furnished (37.4): shelves of cups behind the bar, a clock by the door, a picture, blinds over the windows
+    for x in (2, 3, 7):
+        shelf(b, x, 3, 10, "north", "spruce")
+    clock(b, 4, 1, 3, "south", "spruce")
+    picture(b, 2, 3, 6, "east", "red", "spruce")
+    for x in (2, 3, 9, 10):
+        blinds(b, x, 4, 3, "south", "spruce")
+    for z in (5, 8):
+        blinds(b, 2, 4, z, "east", "spruce")
     # Timber storey, y 6-8, jettied a block out over the street (its front wall at z 1) on stair brackets
     beam_ring(b, 1, 1, 11, 11, 5, INN_FRAME)
     box(b, 2, 5, 2, 10, 5, 10, "spruce_planks")
@@ -1438,6 +1467,19 @@ def inn():
         b.set(x, 6, 6, "air")  # the rooms open onto the landing
     b.set(4, 6, 7, "cauldron")
     b.set(2, 6, 10, "barrel", facing="up", open=False)
+    # Furnished (37.4): a nightstand in each guest room and a lamp, a picture over the beds, blinds over the windows; a
+    # couch with a lamp on the landing under its back window
+    for x in (2, 5, 10):
+        nightstand(b, x, 6, 5, "north", "spruce")
+    for x in (3, 7, 9):
+        floor_lamp(b, x, 6, 2 if x != 7 else 5, "spruce")
+    picture(b, 3, 8, 3, "west", "red", "spruce")
+    picture(b, 6, 8, 2, "south", "green", "spruce")
+    picture(b, 9, 8, 3, "east", "blue", "spruce")
+    for x in (2, 5, 7, 10):
+        blinds(b, x, 8, 2, "south", "spruce")
+    couch(b, 5, 6, 10, "north", "spruce", "red", length=2)
+    floor_lamp(b, 8, 6, 10, "spruce")
     for x in range(2, 11):  # a tie beam over the landing for its light
         log(b, x, 9, 8, INN_FRAME, axis="x")
     lantern(b, 6, 8, 8, hanging=True)

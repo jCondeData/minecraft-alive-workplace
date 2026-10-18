@@ -2311,6 +2311,134 @@ final class JobScenes {
 				return step[0] == 4 && t >= 180;
 			};
 		}, null));
+		SCENES.put("cellars", new Job("the Inn III stood cut away to its ale and wine cellar, and a builder dug the cellar under an old Smithy built before it had one", 16000,
+			new Vec3(0.5, -48, 14.5), new Vec3(0, -58, -6), (level, player) -> {
+			// ROADMAP 36.7: ground raised four blocks over the superflat (as for "basement"). On the left the Inn III,
+			// finished and cut away down the middle, ground and all, so its cellar shows in section; on the right a Smithy
+			// as it stood before 26.15 (its coal store still earth), its builder at his bench. He offers "Dig the cellar"
+			// (a blueprint of the Smithy lined up over it); given back to him, he digs and fits out only the cellar.
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, level.getServer());
+			level.setDayTime(3000);
+			for (int x = -24; x <= 24; x++) {
+				for (int z = -24; z <= 12; z++) {
+					for (int y = -60; y <= -58; y++) {
+						level.setBlock(new BlockPos(x, y, z), (y == -58 ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState(), 2);
+					}
+				}
+			}
+			// The Inn III, whole, then its front half taken away down to its cellar's floor
+			StarterBlueprints.Entry inn = StarterBlueprints.INN_3;
+			BlueprintData.Placement innAt = BlueprintItem.placementAt(level.dimension().location(), inn.size(), new BlockPos(-11, -57, -4),
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			BlockPos innFile = innAt.origin().below(inn.basement());
+			level.getStructureManager().get(inn.id()).orElseThrow().placeInWorld(level, innFile, innFile,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(innAt.rotation())
+					.setMirror(innAt.mirror()), level.getRandom(), 2);
+			for (int x = 0; x < inn.size().getX(); x++) {
+				for (int z = -6; z < 6; z++) {
+					for (int y = -inn.basement(); y < inn.size().getY(); y++) {
+						BlockPos p = innAt.origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
+							new BlockPos(x, y, z), innAt.mirror(), innAt.rotation(), BlockPos.ZERO));
+						level.removeBlockEntity(p);
+						level.setBlock(p, Blocks.AIR.defaultBlockState(), 2 | 16);
+					}
+				}
+			}
+			// The old Smithy: as drawn above the ground, earth where its coal store goes, a floor block over the hatch
+			StarterBlueprints.Entry smithy = StarterBlueprints.SMITHY;
+			BlueprintData.Placement smithyAt = BlueprintItem.placementAt(level.dimension().location(), smithy.size(), new BlockPos(11, -57, -4),
+				BlueprintItem.rotationFacing(Direction.SOUTH));
+			BlockPos smithyFile = smithyAt.origin().below(smithy.basement());
+			level.getStructureManager().get(smithy.id()).orElseThrow().placeInWorld(level, smithyFile, smithyFile,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings().setRotation(smithyAt.rotation())
+					.setMirror(smithyAt.mirror()), level.getRandom(), 2);
+			Blueprint smithyPrint = BlueprintLibrary.get(level, smithy.id()).orElseThrow();
+			java.util.function.Function<BlockPos, BlockPos> atSmithy = rel -> smithyAt.origin().offset(
+				net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(rel, smithyAt.mirror(), smithyAt.rotation(), BlockPos.ZERO));
+			java.util.Set<Long> columns = new java.util.HashSet<>();
+			smithyPrint.blocks().stream().filter(e -> e.pos().getY() < 0).forEach(e -> columns.add(BlockPos.asLong(e.pos().getX(), 0, e.pos().getZ())));
+			double[] cellar = new double[4];
+			for (Blueprint.Entry e : smithyPrint.blocks()) {
+				BlockPos p = atSmithy.apply(e.pos());
+				if (e.pos().getY() < 0) {
+					level.removeBlockEntity(p);
+					level.setBlock(p, (e.pos().getY() >= -2 ? Blocks.DIRT : Blocks.STONE).defaultBlockState(), 2 | 16);
+					if (e.state().isAir()) {
+						cellar[0] += p.getX() + 0.5;
+						cellar[1] += p.getY();
+						cellar[2] += p.getZ() + 0.5;
+						cellar[3]++;
+					}
+				} else if (e.pos().getY() == 0 && columns.contains(BlockPos.asLong(e.pos().getX(), 0, e.pos().getZ()))
+						&& (e.state().is(net.minecraft.tags.BlockTags.TRAPDOORS) || e.state().is(Blocks.LADDER) || e.state().isAir())) {
+					level.setBlock(p, Blocks.COBBLESTONE.defaultBlockState(), 2 | 16);
+				}
+			}
+			BuildSiteManager.get(level).recordFinished(smithy.id(), smithyAt, player.getUUID());
+			BuildSiteManager.get(level).recordFinished(inn.id(), innAt, player.getUUID());
+			BlockPos bench = new BlockPos(4, -57, 6);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Map<Item, Integer> stock = new LinkedHashMap<>(BuildPlan.create(io.github.jcondedata.aliveworkplace.build.Cellars.cellarOnly(smithyPrint), smithyAt).materials());
+			List<ItemStack> stacks = new ArrayList<>();
+			stock.forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos barrelPos = bench.offset(1 + b, 0, 0);
+				level.setBlockAndUpdate(barrelPos, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(barrelPos);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(2), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			List<BuildSiteManager.Finished> offered = io.github.jcondedata.aliveworkplace.build.Cellars.offer(level, builder);
+			Showcase.check(offered.size() == 1 && offered.get(0).structure().equals(smithy.id()), "the builder offers \"Dig the cellar\" for the old Smithy alone: " + offered);
+			ItemStack job = builder.getOffers().stream().map(o -> o.getResult())
+				.filter(r -> BlueprintItem.data(r).map(d -> d.structure().equals(smithy.id()) && d.placement().isPresent()).orElse(false))
+				.findFirst().orElse(ItemStack.EMPTY);
+			BlueprintData data = BlueprintItem.data(job).orElse(null);
+			BuildSite site = data == null ? null : Builders.start(level, builder, null, data.structure(), data.placement().orElseThrow());
+			Showcase.check(site != null && site.isCellarOnly(), "the job's blueprint, given back to the builder, started a cellar dig");
+			java.util.UUID id = site == null ? null : site.id();
+			Vec3 middle = cellar[3] == 0 ? Vec3.atCenterOf(smithyAt.origin()) : new Vec3(cellar[0] / cellar[3], cellar[1] / cellar[3], cellar[2] / cellar[3]);
+			long[] since = {-1};
+			int[] step = {0};
+			return l -> {
+				long t = l.getGameTime();
+				if (step[0] == 0 && since[0] < 0) {
+					since[0] = t;
+				}
+				if (step[0] == 0 && t - since[0] >= 40) {
+					step[0]++;
+					aim(l, player, Vec3.atCenterOf(innAt.origin()).add(-6, 2, 9), Vec3.atCenterOf(innAt.origin()).add(-6, -3, -4));
+				} else if (step[0] == 1 && t - since[0] >= 80) {
+					step[0]++;
+					SHOTS.add("02_inn_cellar");
+				} else if (step[0] == 2 && t - since[0] >= 110) {
+					step[0]++;
+					aim(l, player, new Vec3(0.5, -48, 14.5), new Vec3(0, -58, -6));
+				} else if (step[0] == 3 && built(l, id, 1f)) {
+					step[0]++;
+					since[0] = t;
+					BlockPos floor = BlockPos.containing(middle.x, middle.y - 0.5, middle.z);
+					Showcase.check(!io.github.jcondedata.aliveworkplace.build.Cellars.needsDigging(l, smithy.id(), smithyAt) && l.getBlockState(BlockPos.containing(middle)).isAir(),
+						"the coal store was dug out under the old Smithy and fitted out (floor " + l.getBlockState(floor) + ")");
+					aim(l, player, middle.add(-1.5, 0.6, -1.5), middle.add(1.5, -0.8, 1.5));
+				} else if (step[0] == 4 && t - since[0] >= 40) {
+					step[0]++;
+					SHOTS.add("02_smithy_cellar");
+				} else if (step[0] == 5 && t - since[0] >= 70) {
+					step[0]++;
+					aim(l, player, new Vec3(0.5, -48, 14.5), new Vec3(0, -58, -6));
+				}
+				return step[0] == 6 && t - since[0] >= 110;
+			};
+		}, null));
 		SCENES.put("legend_pathfinder", new Job("the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 1600,
 			new Vec3(9.5, -55, 9.5), new Vec3(0, -59.5, 10), (level, player) -> {
 			// ROADMAP 29.13: the Pathfinder settled at a cartography table with 8 bread in the chest, between rows of oaks.

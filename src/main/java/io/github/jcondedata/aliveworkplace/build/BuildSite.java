@@ -59,6 +59,8 @@ public final class BuildSite {
 	private boolean deconstruct;
 	/** Putting back what's missing from a finished build (see {@link BuildPlan#repair}). */
 	private boolean repair;
+	/** 36.7: works only the cellar of a build finished before its blueprint had one ({@link Cellars}). */
+	private boolean cellarOnly;
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
 	@Nullable
 	private BlockPos bench;
@@ -196,13 +198,16 @@ public final class BuildSite {
 			}
 			if (furniture == null) {
 				// 37.3: chosen once, for a new build; a repair or a taking-down is of what stands, built with what it was
-				furniture = deconstruct || repair ? BuildSiteManager.get(level).furniture(placement)
-					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure);
+				furniture = deconstruct || repair || cellarOnly ? BuildSiteManager.get(level).furniture(placement)
+					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure, level, placement.origin()); // 37.4: a partner's Trainer's room
 				onChange.run();
 			}
 			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));
-			int depth = foundation ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
-			int margin = levelGround ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
+			if (cellarOnly) {
+				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
+			}
+			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
+			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
@@ -670,6 +675,18 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	/** Whether this site digs and fits out only the cellar of the finished build on its spot (36.7). */
+	public boolean isCellarOnly() {
+		return cellarOnly;
+	}
+
+	/** Turns a new site into a cellar dig (call right after creating it): only the basement and the way down are worked. */
+	public void setCellarOnly() {
+		cellarOnly = true;
+		plan = null;
+		onChange.run();
+	}
+
 	/** Turns a new site into a deconstruction job (call right after creating it). */
 	public void setDeconstruction() {
 		deconstruct = true;
@@ -791,6 +808,9 @@ public final class BuildSite {
 		if (repair) {
 			tag.putBoolean("repair", true);
 		}
+		if (cellarOnly) {
+			tag.putBoolean("cellar_only", true);
+		}
 		if (!levelGround) {
 			tag.putBoolean("no_level_ground", true);
 		}
@@ -856,6 +876,7 @@ public final class BuildSite {
 		site.queued = Nbt.getBoolean(tag, "queued");
 		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");
 		site.repair = Nbt.getBoolean(tag, "repair");
+		site.cellarOnly = Nbt.getBoolean(tag, "cellar_only"); // 36.7: none in older saves
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
 		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;

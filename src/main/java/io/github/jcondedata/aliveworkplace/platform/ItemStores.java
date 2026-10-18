@@ -26,6 +26,18 @@ public interface ItemStores {
 	/** Empty slots across the stores. */
 	int freeSlots(Level level, List<BlockPos> stores);
 
+	/**
+	 * Free room across the stores (ROADMAP 37.8), read slot by slot: what {@link #freeSlots} counts, the stacks that still
+	 * fit, the items that still fit and whether any slot holds more than a stack (a Sophisticated Storage stack upgrade,
+	 * a limited barrel). For vanilla chests {@code freeStacks} is {@code freeSlots}: an empty slot is one stack and a
+	 * slot holding something has room for less than a stack.
+	 */
+	Room room(Level level, List<BlockPos> stores);
+
+	/** See {@link #room}. */
+	record Room(int freeSlots, int freeStacks, long freeItems, boolean bigSlots) {
+	}
+
 	/** All slots across the stores, empty or not. */
 	int slots(Level level, List<BlockPos> stores);
 

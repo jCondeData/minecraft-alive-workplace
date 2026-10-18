@@ -236,6 +236,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B162** (approved auto 2026-10-17) main is red: WorkplacesGameTests.workplaceBuilt_kitchen failed on CI builds 39036608129 and 39038594531 (2026-10-17 13:27Z, 13:55Z; ROADMAP-only commits): 'the worker works at Optional.empty ... the worker at -14, 0, -14, potential none, activity rest, day time 14001, built at tick 3098'. The Chef wandered off the huge_area's open edge during the 3,000-tick build and, outside it as night fell, never took the smoker. Expected: passes every run. Test: workplaceBuilt_kitchen in the full suite (urgent: red main) (found by lane-a-1017-1320, 2026-10-17)
 - [ ] **B163** FireGameTests.aJourneymanCallsABucketBrigade timed out (1200 ticks) in a local full build on the shared 7 GB box at 14:52Z (commit f4858e6e, M38 raid dens; nothing in that diff touches fire or villagers' walking). Not seen on CI. Expected: the brigade puts the fire out within the timeout. Probably a flake under load; repeat it. Test: FireGameTests.aJourneymanCallsABucketBrigade (found by lane-d-1017-1320, 2026-10-17)
 - [x] **B164** (approved auto 2026-10-18) The nightly's compat-cobblemon18 job (compat GameTests with -Pcobblemon18=true) failed on nightly 21 (run 39015121229, main 20721c8, 2026-10-17), and nightlies 19 and 20 also ended red; it holds back 26.4's three green nightlies. The nightly-tests issue comment only shows cloth-config 'duplicate input class' noise, not the failing test. Expected: the job passes and the issue shows the real failure. Test: runCompatGameTest -Pcobblemon18=true (found by red duty) (found by lane-a-1018-0022, 2026-10-18)
+- [ ] **B165** PartnersAllCompatTests.aCombeeCirclesTheHive failed on main CI build 1049 (bcaaeacd, docs-only commit, 2026-10-18 02:21Z), its only failure (compat 231/232), and passed in builds 1050-1052: B110's flake is back (B110 closed 2026-10-12). The CI log prints only the name; the message is in that run's gametest-report artifact. Expected: passes every run. Test: the test repeated under runCompatGameTest with the repeat generator (test-only; turned main red once) (found by lane-a-1018-0322, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4594,7 +4595,7 @@ Depends on: nothing open.
   `aliveworkplace:village/camp_broken` to that player and to a second player in the party; a lair broken with no war
   party and no guard kills grants nothing; the generated quest's task is the advancement (a check in `generate.py`);
   `QuestbookCompatTests` passes. Nothing new to film.
-- [ ] **36.4** **The Signpost's boards say something.** The Signpost decoration (`tools/blueprints/decor.py`
+- [x] **36.4** (review: pending 2026-10-17) **The Signpost's boards say something.** The Signpost decoration (`tools/blueprints/decor.py`
   `signpost()`, four spruce wall signs) is built with blank boards. When a builder finishes one (any style), each board
   gets words, waxed so a passer-by can't edit them, the way the caravan road milestones are written
   (`CaravanRoads.signText`): the board facing a direction names the nearest other village whose hall lies that way
@@ -4616,7 +4617,7 @@ Depends on: nothing open.
   (`EMPTY_STRUCTURE`) if the gametest sources can see it, else by the scene's own check; scene `hall_reading` hovers a
   long chronicle entry, moves into the pane and scrolls to its last line, and the Storehouse board does the same;
   every number and action the screens show today is still there.
-- [ ] **36.6** **A line about every blueprint.** The Blueprint Table's detail pane shows a build's name, size and id,
+- [x] **36.6** (review: pending 2026-10-18) **A line about every blueprint.** The Blueprint Table's detail pane shows a build's name, size and id,
   never what it is (157 `blueprint.aliveworkplace.*` names in `en_us.json` today). Add
   `blueprint_desc.<namespace>.<path>` for every blueprint the table lists, styles and levels included: one plain
   sentence under 110 characters saying what it is and who works or lives there ("A stone smithy with a forge and an
@@ -4625,7 +4626,7 @@ Depends on: nothing open.
   there. Done when: a GameTest walks every blueprint the table lists and finds its description key in `en_us.json`;
   every description is checked against the build (who works there comes from the job blocks it holds);
   `langcheck.py` passes; the `table` scene's stills show a description.
-- [ ] **36.7** **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
+- [x] **36.7** (review: pending 2026-10-18) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
   Level II. Eight of them, where a cellar suits the trade, get a Level III that is their Level II with a basement
   under it, named `<name>_3` because upgrades go by name (`BlueprintUpgrades`), drawn in `tools/blueprints/` and
   listed with its depth like the Level 4s (26.15, `StarterBlueprints.WITH_BASEMENTS`): the **Inn** (an ale and wine
@@ -4640,7 +4641,7 @@ Depends on: nothing open.
   (a data check for all eight, a full build for three in `huge_area`), a Smithy with its cellar filled in offers "Dig
   the cellar" and the builder digs only the cellar, the offer isn't there when the cellar is, a save and reload
   mid-dig finishes it; scene `cellars` (the Inn III cut away to its cellar; an old Smithy getting its cellar).
-- [ ] **36.8** **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
+- [x] **36.8** (approved auto 2026-10-18) **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
   (from 9×10×10), and a jigsaw village only fits pieces that don't collide, so bigger houses may crowd out houses.
   Measure it: a measurement run (outside `build`: a GameTest class switched on by a system property, or a script on
   the pack test server) places 50 villages of each of the five types at fixed seeds and spots, and counts each
@@ -4702,7 +4703,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Handcrafted present gets Handcrafted chairs, table and bed and costs their items; with `furnitureMods` set to
   CobbleFurnies first it gets CobbleFurnies pieces; with `furnishedBuilds` off it's the vanilla build; a GameTest
   (no mods) builds the vanilla build unchanged; a site saved mid-build keeps its choice after a reload.
-- [ ] **37.4** **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
+- [x] **37.4** (review: pending 2026-10-18) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
   in every style, the M34 grander homes when M34 is on) and the Inn get rooms that read as rooms with each mod: a
   dining set round a table, a bedroom with nightstands and a lamp, a sitting corner with a couch or sofa, shelves of
   crockery, clocks and pictures on the walls, blinds at the windows. Each room is drawn as vanilla furniture spots that
@@ -4738,7 +4739,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Library in the new spruce style has Carved Wood shelves and its Librarian still takes the lectern; a Carved Wood
   chest is a supply chest; the Grand style with Rechiseled builds with nothing skipped; renders reviewed; scene
   `carved_styles`.
-- [ ] **37.8** **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
+- [x] **37.8** (review: pending 2026-10-18) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
   (`sophisticatedstorage:chest`, `iron_chest` ... `netherite_barrel`, `limited_barrel_1` ... `4`) works as a supply
   chest, a porter's chest and a Storehouse chest; builders treat them as containers (never broken while clearing, never
   copied; they're in `#c:chests` and `#c:barrels`); and the Storehouse measures free room in items where a stack
@@ -4820,11 +4821,11 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
 - [ ] **38.4** **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
   Leaders, Masters) may send its best one to an active den the village knows. The server can't play a raid with no
   player in it, so the challenge is settled like the Stadium's bouts: the trainer's rank and team against the den's
-  tier (a fixed random in tests), at most tier 4 for a Master. A win rolls the den's own tier loot table
+  tier (a fixed random in tests), at most tier 3 for Leaders and Masters alike (tier 4 and up are for players only: owner, 2026-10-18). A win rolls the den's own tier loot table
   (`cobblemonraiddens:raid/tier/<tier>`) into the village store, sets the den inactive (`is_active` false; its own
   reset cycle brings it back, `can_reset` untouched), and writes the chronicle; a loss sends the trainer home tired
   for a day. A player nearby can come along and watch. Done when: compat GameTests: a win puts that tier's loot in the
-  store and turns the den inactive; a loss leaves it active; a tier 6 den is never challenged; a den in use by a
+  store and turns the den inactive; a loss leaves it active; a tier 4 or higher den is never challenged; a den in use by a
   player (a player within 8 blocks) isn't challenged; scene `den_challenge` (`-Pcobblemon=true`).
 - [ ] **38.5** **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
   (`CobblemonMegas.megaAce`). Add: Trainer Leaders of a City-rank village, the Festival Cup's final round and the
@@ -4943,6 +4944,10 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Design decisions (from the owner)
 
+- **Post-1.0 answers** (2026-10-18): Raid Dens of tier 4 and up are for players only (village trainers up to tier 3,
+  38.4); the Mega Bracelet is given once per player per realm (38.5); furniture defaults to Handcrafted first, then
+  Cozy Home, CobbleFurnies, Beautify (37.3); homes with a Pokémon partner get CobbleFurnies' Poké Ball chair and desk
+  (37.4).
 - **The Blueprint Table is a collection** (2026-10-15, 26.10): unlocked builds in colour (Get Blueprint as before),
   locked ones greyed out with how to get them, rare ones (Wonders, the builder-only grander homes, other special
   builds) a hidden "???" until found; the preview still shows a locked build, dimmed. The basics start unlocked (about
@@ -5027,6 +5032,46 @@ the owner's port jar; M33's caravans (39.7).
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-18 (37.4, lane-c-1018-0053, decision, owner's Trainer's room answer): homes are planned before anyone lives
+  in them, so a home "with a Pokémon partner" is judged when its build is planned: a Pokémon kept in a Pasture Block
+  within `Partners.RADIUS` (16) of the plot's origin, through `PokemonPartners.pastured` (no Cobblemon class in core).
+  Its Trainer's room is the first chair spot and the nearest table/desk spot (within 3 blocks), in builds with a bed
+  spot; they get `cobblefurnies:poke_ball_chair` / `poke_ball_desk` whatever the order, when those blocks exist and
+  `cobblefurnies` is in `furnitureMods`. Saved with the site's choice like the rest (no new saved field); not redone
+  when a partner arrives later at a standing home (an upkeep refurnish would be a separate item if wanted).
+
+- 2026-10-18 (37.4, lane-c-1018-0053, decision): the item asks for architect-skill renders of the furnished homes with
+  none, Handcrafted, CobbleFurnies and Beautify. Neither headless renderer (`tools/blueprints/render`, the architect
+  skill's `render.mjs` with the mods' textures added) can draw those mods' pieces: they come out empty. So the rooms were
+  reviewed in vanilla renders (Starter Cottage II, Stone House II, Manor, the Inn's tavern and guest floor), and the
+  modded look is judged in the real client, in scene `furnished_home` (filmed on GitHub with `-Pfurniture=true`; a local
+  film didn't get past resource loading in 15 minutes on the shared machine). The compat GameTests prove every piece is
+  placed with each mod, nothing skipped. CobbleFurnies sofas and curtains take `type`, `horizontal_part`,
+  `vertical_part` and `hinge` from their neighbours, so `MaterialRules.matches` ignores those on CobbleFurnies blocks
+  (by namespace) when judging a step done.
+- 2026-10-18 (lane-b-1018-0038, **owner question: Milestone 36 is empty**): the quick lane finished 36.4, 36.6, 36.7
+  and 36.8 and has nothing left. Owner: which quick additions next? Until then the quick lane's runs have no items.
+  Also from 36.8: should our village houses get higher pool weights (desert villages grow ours in 14 of 50)?
+- 2026-10-18 (36.8, lane-b-1018-0038, **village density: no tuning needed**): 26.11's bigger village houses don't
+  leave villages sparse. 50 village starts per type (fixed seeds and chunks, plain run without Cobblemon, so its 11
+  houses aren't in the pools), counting each start's house pieces; "ours" = our village houses, "with" = villages with
+  at least one of ours. Total houses moved by at most 1% for every type (limit 10%), so nothing was tuned:
+
+  | type | houses mean before → after | lowest before → after | ours mean before → after | with ours before → after | footprint m² before → after |
+  |---|---|---|---|---|---|
+  | plains | 17.32 → 17.20 (-0.7%) | 5 → 5 | 4.00 → 2.24 | 46 → 42 /50 | 23425 → 23194 |
+  | desert | 16.14 → 16.18 (+0.2%) | 2 → 2 | 0.60 → 0.38 | 20 → 14 /50 | 13415 → 13450 |
+  | savanna | 14.96 → 14.90 (-0.4%) | 7 → 7 | 2.96 → 2.22 | 47 → 46 /50 | 23871 → 23808 |
+  | snowy | 18.80 → 18.94 (+0.7%) | 4 → 4 | 3.12 → 2.20 | 48 → 44 /50 | 20594 → 20632 |
+  | taiga | 14.90 → 14.88 (-0.1%) | 2 → 2 | 3.06 → 2.48 | 47 → 46 /50 | 19257 → 20049 |
+
+  What did change: the bigger looks are placed less often (our houses per village fell 19-44%) and vanilla houses
+  fill the room, so villages stay as full but grow fewer of ours. Desert villages grew ours in under half of them
+  before 26.11 too (20/50, now 14/50). If the owner wants more of ours per village, raise their weights in
+  `world/VillageHouses` (a design choice, not a density problem). Commands: `tools/modtest/village_density.sh` on
+  `main` (5d8652a1) and, for "before", the same script and `VillageDensityMeasure.java` copied into
+  `git worktree add <dir> ac8dc522^`. The measurement is registered in no entrypoint, so `build` never runs it.
 
 - 2026-10-17 (planning, **Lanes after 1.0**): the bug lane takes Bugs and M26's open items; the quick lane takes M36
   (Quick additions); the big-update lanes take M37 (2.1, furniture and storage mods), then M38 (2.2, Raid Dens, Megas,

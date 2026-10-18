@@ -55,7 +55,7 @@ public final class BlueprintSupplies {
 			return Optional.empty();
 		}
 		BlueprintData.Placement placement = data.placement().get();
-		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, data.structure()).map(b -> furnished(b, data.structure()));
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, data.structure()).map(b -> furnished(b, level, data));
 		if (blueprint.isEmpty() || blueprint.get().blocks().size() > MAX_STEPS) {
 			return Optional.empty();
 		}
@@ -129,7 +129,7 @@ public final class BlueprintSupplies {
 	}
 
 	public static Optional<Checklist> checklist(ServerLevel level, BlueprintData data) {
-		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, data.structure()).map(b -> furnished(b, data.structure()));
+		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, data.structure()).map(b -> furnished(b, level, data));
 		if (blueprint.isEmpty() || blueprint.get().blocks().size() > MAX_STEPS) {
 			return Optional.empty();
 		}
@@ -175,5 +175,14 @@ public final class BlueprintSupplies {
 	/** 37.3: the blueprint with the furniture this server would build in it now (the materials it lists are those pieces). */
 	static Blueprint furnished(Blueprint base, net.minecraft.resources.ResourceLocation id) {
 		return io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(id).apply(base, id);
+	}
+
+	/** {@link #furnished(Blueprint, net.minecraft.resources.ResourceLocation)} where it is placed (37.4: a partner's Trainer's room counts too). */
+	static Blueprint furnished(Blueprint base, ServerLevel level, BlueprintData data) {
+		net.minecraft.resources.ResourceLocation id = data.structure();
+		if (data.placement().isEmpty() || !data.placement().get().dimension().equals(Ids.of(level.dimension()))) {
+			return furnished(base, id);
+		}
+		return io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(id, level, data.placement().get().origin()).apply(base, id);
 	}
 }

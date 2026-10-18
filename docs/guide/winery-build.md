@@ -6,7 +6,7 @@ expansion: M34
 image: https://jcondedata.github.io/minecraft-alive-workplace/luxury_workshops/still-1.jpg
 caption: The Winery: the stair up to the press room, the cellar door under it
 Size: 13 wide, 12 deep, 14 high (II: 20 deep)
-Tiers: I, II (a tasting porch and terraced berry gardens)
+Tiers: I, II (a tasting porch and terraced berry gardens), III (a barrel vault)
 Workstation: a cauldron, the [Vintner](vintner.md)'s vat
 Where to get it: Blueprint Table, or a Journeyman Vintner for 12 emeralds
 Main materials: spruce logs, brick stairs, stone bricks, cobblestone, grass, spruce planks
@@ -31,6 +31,8 @@ hand it to the builder. See [The Builder and blueprints](builder.md).
 
 **Winery II** adds a back door onto a tasting porch (a table, stools, a cask) under a lean-to roof, then two terraces of
 sweet berry rows stepping down to a pergola hung with glow berries. The builder only builds what's new.
+
+**Winery III** digs a **barrel vault** under the barrel cellar, down a ladder under a hatch in its corner: casks two high under a vault of stone, a tasting table and a chest of bottles. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

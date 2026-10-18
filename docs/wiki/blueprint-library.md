@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10
+Roadmap items: 26.10, 36.6
 
 ## 1. What a player sees
 
@@ -15,6 +15,11 @@ Roadmap items: 26.10
   Bandstand, Guildhall, Nether Gate and Library III) are a dark **???** at the end of the list, with no name, preview or
   materials, until the village unlocks one.
 - The header reads "<unlocked> of <listed> unlocked" while anything is locked.
+- **A line about every build** (36.6): under the size line, wrapped, one plain sentence saying what the build is and
+  who works or lives there ("A stone forge with an ore cellar; an Armorer or Miner, a Toolsmith and a Weaponsmith work
+  here."); a level says what it adds ("Adds a coal and ore store behind, with a second blast furnace."). Every build
+  the Table lists has one: the levels, the Cobblemon builds and looks, the builder-only homes and the Wonders. A style
+  shows its base's line. An imported, uploaded or scanned build has none, and nothing shows there.
 - Each unlock says in chat: "The village's library has a new blueprint: Smithy II" (to the buyer, the player using a
   blueprint on the Table, or, for a builder's level-up, every player in the village).
 
@@ -54,6 +59,11 @@ Ways to unlock, all for the village round the nearest hall:
   questbook's command rewards run with elevated permissions. Found blueprints: a pool added to eleven of the mod's chest
   loot tables. Using a Blueprint or a Wonder Plan on the Table: `BlueprintTableBlock.useItemOn`, then the Table opens.
 - Expansion gates (`StarterBlueprints.offered`) still apply first.
+- Descriptions (36.6): `Blueprints.descriptionKey(id)` is `blueprint_desc.<namespace>.<path>` (slashes as dots, a
+  style's base, null for a village house's outside or a road segment); `Blueprints.description(id, has)` is that line
+  or null when the language lacks the key, which is how an import shows nothing. The screen asks the client's
+  `Language`. Each line was written against its template's job blocks (a grindstone is a Guard's or Weaponsmith's, a
+  smoker a Butcher's, Chef's or Rancher's, and so on, by `work/Stations`), under `Blueprints.DESCRIPTION_MAX` (110).
 
 ## 3. Switches
 
@@ -73,7 +83,8 @@ Ways to unlock, all for the village round the nearest hall:
 - Using a Blueprint or a Wonder Plan on the Blueprint Table unlocks its build.
 - Lang: `message.aliveworkplace.blueprint_unlocks.new`, `message.aliveworkplace.table.locked`,
   `message.aliveworkplace.table.locked_hidden`, `message.aliveworkplace.table.wonder_only`, the
-  `screen.aliveworkplace.table.hint.*` lines, `screen.aliveworkplace.table.unlocked_count`.
+  `screen.aliveworkplace.table.hint.*` lines, `screen.aliveworkplace.table.unlocked_count`, and 170
+  `blueprint_desc.aliveworkplace.*` lines such as `blueprint_desc.aliveworkplace.smithy` (36.6).
 
 ## 6. Decisions
 
@@ -81,6 +92,8 @@ The owner's choices (ROADMAP Design decisions, 2026-10-15): the Table is a colle
 start unlocked; unlocks belong to the village; existing villages keep what they have standing or building; imports
 are always unlocked; five ways to unlock (buying, level-ups, questbook, loot, market traders); a rare build is a
 hidden "???"; a server switch, default on. Sorted unlocked first rather than a filter toggle (one less button).
+Descriptions (36.6) name the job by what the build's job block takes (a Mailbox's Postman, not an old block's name) and
+skip numbers the build doesn't bear out; a Wonder's line is a short form of its Wonders page text.
 
 ## 7. Known limits
 
@@ -90,6 +103,8 @@ hidden "???"; a server switch, default on. Sorted unlocked first rather than a f
   tier below stands" without it.
 - A Table between two villages uses the nearer hall.
 - Only the mod's own chest loot tables hold blueprints; vanilla villages' chests don't.
+- Descriptions are English only until the translations catch up (other languages show the English line). Another
+  mod's or a datapack's build has a line only if its own lang file adds the `blueprint_desc` key.
 
 ## 8. Proof
 
@@ -101,7 +116,11 @@ stand-in ids and no size, and no rare id in the encoded packet), `BlueprintUnloc
 used on the Table through the player's own click, and blueprints in a storehouse chest's loot),
 `BlueprintUnlocksGameTests.anOldSaveUnlocksWhatStands`, `BlueprintUnlocksGameTests.unlocksSurviveSaveAndReload`,
 `BlueprintUnlocksGameTests.theSwitchOffUnlocksEverything`. `TableGameTests` and `TablePreviewGameTests` pass unchanged
-with the switch off.
+with the switch off. `BlueprintDescriptionGameTests` (3, 36.6): `BlueprintDescriptionGameTests.everyListedBlueprintHasADescription`
+(every build the Table can list, whatever is installed or open, finds its key in en_us.json, and no line is left over),
+`BlueprintDescriptionGameTests.descriptionsAreOneShortSentence` (under 110 characters, one sentence),
+`BlueprintDescriptionGameTests.thePaneShowsTheRightLineOrNone` (a level's "Adds", a style's base, none for an import).
 
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
-starting set unlocked and the rest locked or ???).
+starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's description shows and the uploaded
+build's doesn't).

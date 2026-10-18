@@ -87,6 +87,8 @@ public final class StarterBlueprints {
 	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(11, 9, 11));
 	/** A museum hall beside it with a big skeleton on show. */
 	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(18, 10, 11));
+	/** A lower lab dug under the lab (36.7). */
+	public static final Entry RESEARCH_LAB_3 = new Entry(AliveWorkplace.id("research_lab_3"), new Vec3i(18, 10, 11), 4);
 
 	/**
 	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): a bright hall with a glass front under a red
@@ -224,6 +226,8 @@ public final class StarterBlueprints {
 	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(13, 16, 13));
 	/** A stable on the side with a Feed Trough: a rancher moves in. */
 	public static final Entry INN_2 = new Entry(AliveWorkplace.id("inn_2"), new Vec3i(19, 16, 13));
+	/** An ale and wine cellar dug under the inn (36.7). */
+	public static final Entry INN_3 = new Entry(AliveWorkplace.id("inn_3"), new Vec3i(19, 16, 13), 4);
 
 	/** A one-room school with a Teacher's Desk and the school bell under the porch. */
 	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 14, 12));
@@ -267,6 +271,8 @@ public final class StarterBlueprints {
 	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(9, 15, 12));
 	/** A stone workshop wing at the back with a third bed (grade II). */
 	public static final Entry ARTISANS_HOUSE_2 = new Entry(AliveWorkplace.id("artisans_house_2"), new Vec3i(9, 15, 18));
+	/** A storeroom dug under the house (36.7). */
+	public static final Entry ARTISANS_HOUSE_3 = new Entry(AliveWorkplace.id("artisans_house_3"), new Vec3i(9, 15, 18), 4);
 	/** The Burgher's Townhouse (34.15, a grade II home: {@code homes/townhouse.json}): three storeys of brick and timber, a shop window, two bedrooms. */
 	public static final Entry TOWNHOUSE = new Entry(AliveWorkplace.id("townhouse"), new Vec3i(11, 20, 12));
 	/** A walled courtyard garden and a third bedroom in the loft (grade III). */
@@ -288,6 +294,8 @@ public final class StarterBlueprints {
 	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 10, 11));
 	/** A wing with two more Guard Posts. */
 	public static final Entry BARRACKS_2 = new Entry(AliveWorkplace.id("barracks_2"), new Vec3i(19, 10, 11));
+	/** An armoury and lock-up dug under the barracks (36.7). */
+	public static final Entry BARRACKS_3 = new Entry(AliveWorkplace.id("barracks_3"), new Vec3i(19, 10, 11), 4);
 
 	/** A brick workshop with a forge and a smoking chimney, and a Tinker's Bench inside. */
 	public static final Entry TINKERS_WORKSHOP = new Entry(AliveWorkplace.id("tinkers_workshop"), new Vec3i(12, 11, 10));
@@ -321,6 +329,8 @@ public final class StarterBlueprints {
 	public static final Entry WINERY = new Entry(AliveWorkplace.id("winery"), new Vec3i(13, 14, 12));
 	/** A tasting porch off a back door, and behind it two terraces of sweet berry rows down to a pergola of glow berries. */
 	public static final Entry WINERY_2 = new Entry(AliveWorkplace.id("winery_2"), new Vec3i(13, 14, 20));
+	/** A barrel vault dug under the barrel cellar (36.7). */
+	public static final Entry WINERY_3 = new Entry(AliveWorkplace.id("winery_3"), new Vec3i(13, 14, 20), 4);
 	/** A timber shop with a bay window of dress forms, the loom (Tailor), bolts of coloured wool, a fitting room behind. */
 	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(11, 11, 12));
 	/** A cutting-room storey above, with bolts of cloth on racks, and a drying loft for dyed wool in the roof. */
@@ -339,6 +349,8 @@ public final class StarterBlueprints {
 	public static final Entry JEWELLERS_WORKSHOP = new Entry(AliveWorkplace.id("jewellers_workshop"), new Vec3i(9, 10, 9));
 	/** A strong room behind: a vault of ten chests behind iron bars. */
 	public static final Entry JEWELLERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("jewellers_workshop_2"), new Vec3i(9, 10, 14));
+	/** A vault dug under the shop (36.7). */
+	public static final Entry JEWELLERS_WORKSHOP_3 = new Entry(AliveWorkplace.id("jewellers_workshop_3"), new Vec3i(9, 10, 14), 4);
 
 	/**
 	 * The country workplaces of ROADMAP 27.14 (tools/blueprints/countryside.py), each the building a {@code workplace_*}
@@ -348,6 +360,8 @@ public final class StarterBlueprints {
 	public static final Entry FARMSTEAD = new Entry(AliveWorkplace.id("farmstead"), new Vec3i(15, 12, 13));
 	/** A barn behind the house and a second field behind the first, with a second composter. */
 	public static final Entry FARMSTEAD_2 = new Entry(AliveWorkplace.id("farmstead_2"), new Vec3i(15, 12, 22));
+	/** A root cellar dug under the farmhouse (36.7). */
+	public static final Entry FARMSTEAD_3 = new Entry(AliveWorkplace.id("farmstead_3"), new Vec3i(15, 12, 22), 4);
 	/**
 	 * A shore hut with a jetty 5 blocks into the water on log posts and a barrel (Fisherman). Its plot must be on a shore:
 	 * water within 4 blocks of its front, no more than 3 deep under the jetty (city/Plots).
@@ -399,6 +413,8 @@ public final class StarterBlueprints {
 	public static final Entry GUILDHALL = new Entry(AliveWorkplace.id("guildhall"), new Vec3i(19, 15, 14));
 	/** A stone tower wing with a meeting room, a chart room and the guild bell in an open belfry. */
 	public static final Entry GUILDHALL_2 = new Entry(AliveWorkplace.id("guildhall_2"), new Vec3i(26, 20, 14));
+	/** A strongroom dug under the hall's west end (36.7). */
+	public static final Entry GUILDHALL_3 = new Entry(AliveWorkplace.id("guildhall_3"), new Vec3i(26, 20, 14), 4);
 
 	/** Decorations: a well with a lantern on a chain over the water. */
 	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 5, 7));
@@ -523,15 +539,15 @@ public final class StarterBlueprints {
 
 	public static final List<Entry> ALL = List.of(STARTER_COTTAGE, STARTER_COTTAGE_2, STARTER_COTTAGE_3, STARTER_COTTAGE_4, VILLAGE_HALL, VILLAGE_HALL_2, VILLAGE_HALL_3, MARKET_STALL, MARKET_STALL_2, MARKET_STALL_3,
 		LOOKOUT_TOWER, LOOKOUT_TOWER_2, LOOKOUT_TOWER_3, LOOKOUT_TOWER_4, HEALING_CENTER, HEALING_CENTER_2, HEALING_CENTER_3, HEALING_CENTER_4, SUPPLY_SHOP, SUPPLY_SHOP_2, SUPPLY_SHOP_3, SUPPLY_SHOP_4,
-		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2,
-		TERRACE, TERRACE_2, INN, INN_2, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, STONE_HOUSE_4,
-		ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, TOWNHOUSE_4, MANOR, MANOR_2, MANOR_3, MANOR_4, BARRACKS, BARRACKS_2, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
+		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, BERRY_FARM, BERRY_FARM_2, RESEARCH_LAB, RESEARCH_LAB_2, RESEARCH_LAB_3,
+		TERRACE, TERRACE_2, INN, INN_2, INN_3, STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, STONE_HOUSE_4,
+		ARTISANS_HOUSE, ARTISANS_HOUSE_2, ARTISANS_HOUSE_3, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, TOWNHOUSE_4, MANOR, MANOR_2, MANOR_3, MANOR_4, BARRACKS, BARRACKS_2, BARRACKS_3, TINKERS_WORKSHOP, TINKERS_WORKSHOP_2, NETHER_GATE, NETHER_GATE_2,
 		COMPOST_YARD, COMPOST_YARD_2, SIFTING_SHED, SIFTING_SHED_2,
 		SMITHY, SMITHY_2, MASONS_YARD, MASONS_YARD_2, FLETCHERS_LODGE, FLETCHERS_LODGE_2,
-		FARMSTEAD, FARMSTEAD_2, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,
-		WINERY, WINERY_2, TAILORS_SHOP, TAILORS_SHOP_2, PRINT_SHOP, PRINT_SHOP_2, JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2,
+		FARMSTEAD, FARMSTEAD_2, FARMSTEAD_3, FISHERS_HUT, FISHERS_HUT_2, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2,
+		WINERY, WINERY_2, WINERY_3, TAILORS_SHOP, TAILORS_SHOP_2, PRINT_SHOP, PRINT_SHOP_2, JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2, JEWELLERS_WORKSHOP_3,
 		SCHOOLHOUSE, SCHOOLHOUSE_2, LIBRARY, LIBRARY_2, LIBRARY_3, LIBRARY_4, RANCH, RANCH_2, APIARY_GARDEN, APIARY_GARDEN_2, FLOWER_SHOP, FLOWER_SHOP_2, GRAVEYARD, GRAVEYARD_2,
-		GUILDHALL, GUILDHALL_2);
+		GUILDHALL, GUILDHALL_2, GUILDHALL_3);
 
 	/**
 	 * Sold by villagers only, not in the Blueprint Table (ROADMAP 34.15a, the owner's change of 2026-10-12): every tier
@@ -539,7 +555,7 @@ public final class StarterBlueprints {
 	 * the first tier ({@code ModTrades.builderHomes}) and, once one is finished, its upgrade ({@code UpgradeOffers}); the
 	 * blueprints still load by id, so a blueprint already bought, a build site and the Steward's rules keep working.
 	 */
-	public static final List<Entry> SOLD_ONLY = List.of(ARTISANS_HOUSE, ARTISANS_HOUSE_2, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, TOWNHOUSE_4,
+	public static final List<Entry> SOLD_ONLY = List.of(ARTISANS_HOUSE, ARTISANS_HOUSE_2, ARTISANS_HOUSE_3, TOWNHOUSE, TOWNHOUSE_2, TOWNHOUSE_3, TOWNHOUSE_4,
 		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
@@ -573,16 +589,16 @@ public final class StarterBlueprints {
 		put.accept("habitatKeepers", List.of(HABITAT_GARDEN, HABITAT_GARDEN_2));
 		put.accept("gemGrowers", List.of(GEM_GROTTO, GEM_GROTTO_2));
 		// M30, Edicts and civic items
-		put.accept("guilds", List.of(GUILDHALL, GUILDHALL_2));
+		put.accept("guilds", List.of(GUILDHALL, GUILDHALL_2, GUILDHALL_3));
 		// M32, Threats worth building walls for
 		put.accept("firewardens", List.of(FIRE_STATION));
 		put.accept("wellKeepers", List.of(WELL_HOUSE));
 		put.accept("physicians", List.of(PHYSICIANS_HOUSE));
 		// M34, Classes and luxuries
-		put.accept("vintners", List.of(WINERY, WINERY_2));
+		put.accept("vintners", List.of(WINERY, WINERY_2, WINERY_3));
 		put.accept("tailors", List.of(TAILORS_SHOP, TAILORS_SHOP_2));
 		put.accept("printers", List.of(PRINT_SHOP, PRINT_SHOP_2));
-		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2));
+		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2, JEWELLERS_WORKSHOP_3));
 		return java.util.Map.copyOf(map);
 	}
 
@@ -602,10 +618,14 @@ public final class StarterBlueprints {
 
 	/** Every shipped build with a basement or a cellar (26.15): the Level 4s and the cellars from Level 1. */
 	public static final List<Entry> WITH_BASEMENTS = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
-		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2, STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN);
+		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2, STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN,
+		INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3, JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3);
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);
+	/** The cellared Level IIIs (36.7): each a build that stopped at Level II, its Level II with a basement under it. */
+	public static final List<Entry> LEVEL_3_CELLARS = List.of(INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
+		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3);
 
 	/** The builds with a basement (26.15), by id: filled from {@link #WITH_BASEMENTS}. */
 	private static final java.util.Map<ResourceLocation, Integer> BASEMENTS = WITH_BASEMENTS.stream()

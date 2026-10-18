@@ -130,6 +130,20 @@ public class BlueprintItem extends Item {
 			return InteractionResult.CONSUME;
 		}
 
+		// 36.7: the build itself clicked onto one of its own finished before its blueprint had a cellar, still without one,
+		// lines up over it to dig the cellar ("Dig the cellar", Cellars)
+		Optional<io.github.jcondedata.aliveworkplace.build.BuildSiteManager.Finished> cellarless = player.isShiftKeyDown() ? Optional.empty()
+			: io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).finishedAt(level, current.structure(), context.getClickedPos())
+				.filter(f -> io.github.jcondedata.aliveworkplace.build.Cellars.needsDigging(level, f));
+		if (cellarless.isPresent()) {
+			BlueprintData.Placement over = cellarless.get().placement();
+			context.getItemInHand().set(ModComponents.BLUEPRINT, current.withSize(size).withPlacement(Optional.of(over)));
+			Chat.actionBar(player, Component.translatable("message.aliveworkplace.blueprint.cellar",
+				Blueprints.displayName(cellarless.get().structure())).withStyle(ChatFormatting.GREEN));
+			BlueprintOutline.show(level, player, over, size);
+			return InteractionResult.CONSUME;
+		}
+
 		BlueprintData.Placement placement;
 		if (player.isShiftKeyDown() && current.placement().isPresent() && current.placement().get().dimension().equals(dimension)) {
 			BlueprintData.Placement old = current.placement().get();

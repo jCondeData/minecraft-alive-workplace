@@ -823,7 +823,7 @@ final class JobScenes {
 		// Drowned pirates (ROADMAP 32.8): a Town on the beach at dusk, the Pirate Ship at anchor out on the sea with its bow to
 		// the village; its drowned crew wades ashore at the beach nearest it; then Captain Silas Brine falls in his cabin and
 		// the ship burns and sinks, top down, its loot chest left on a log raft.
-		SCENES.put("pirates", new Job("the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 520,
+		SCENES.put("pirates", new Job("the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 900, // (done at 510 of 520 locally: room for a slower runner, B130)
 			new Vec3(25.5, -50.0, 0.5), new Vec3(0.5, -58.0, 20.0), (level, player) -> {
 			BlockPos hall = STATION.north(6);
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
@@ -866,7 +866,8 @@ final class JobScenes {
 			long began = level.getGameTime();
 			BlockPos masthead = new BlockPos(0, -63 + 19, 30 + 2);
 			return l -> {
-				if (l.getGameTime() - began == 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
+				// (asked every 10 frames, so ">=": "==" missed the moment and the captain never fell, B130)
+				if (l.getGameTime() - began >= 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
 					brine.hurt(l.damageSources().fellOutOfWorld(), 1000f); // the captain falls: the ship burns and sinks
 				}
 				return l.getGameTime() - began > 160 && io.github.jcondedata.aliveworkplace.threat.Ships.sinking(l).isEmpty()
@@ -956,7 +957,8 @@ final class JobScenes {
 			level.addFreshEntity(creeper);
 			long began = level.getGameTime();
 			return l -> {
-				if (l.getGameTime() - began == 60 && creeper.isAlive()) {
+				// (asked every 10 frames, so ">=": "==" missed the moment and the creeper never lit, B130)
+				if (l.getGameTime() - began >= 60 && creeper.isAlive() && !creeper.isIgnited()) {
 					creeper.ignite();
 				}
 				if (l.getGameTime() - began < 160 || creeper.isAlive()) {
@@ -1374,18 +1376,12 @@ final class JobScenes {
 			} catch (java.io.IOException e) {
 				throw new java.io.UncheckedIOException(e);
 			}
-			// The written Schematic, as Create's Schematic Table hands it back, used on the Blueprint Table
+			// The written Schematic, as Create's Schematic Table hands it back (every component, its bounds too: Create's
+			// client reads them while it is in hand, B189), used on the Blueprint Table
 			BlockPos table = STATION.offset(3, 0, 1);
 			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
-			ItemStack schematic = new ItemStack(io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM,
-				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", "schematic")));
-			for (String[] component : new String[][] {{"schematic_file", "Riverside Kiosk.nbt"}, {"schematic_owner", owner}}) {
-				@SuppressWarnings("unchecked")
-				net.minecraft.core.component.DataComponentType<String> type = (net.minecraft.core.component.DataComponentType<String>)
-					io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.DATA_COMPONENT_TYPE,
-						net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", component[0]));
-				schematic.set(type, component[1]);
-			}
+			ItemStack schematic = io.github.jcondedata.aliveworkplace.table.CreateSchematics.written(owner, "Riverside Kiosk.nbt",
+				new net.minecraft.core.Vec3i(5, 5, 5));
 			player.setItemInHand(InteractionHand.MAIN_HAND, schematic);
 			level.getBlockState(table).useItemOn(schematic, level, player, InteractionHand.MAIN_HAND,
 				new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(table), Direction.UP, table, false));
@@ -1903,6 +1899,10 @@ final class JobScenes {
 			}
 			BlockPos post = STATION.offset(4, 0, -13);
 			level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+			// The hall's and the post's records now, not in vanilla's next task, so the archer finds his village and his post (B130).
+			ScreenshotHarness.fileRecords(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+			io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 			Villager archer = EntityType.VILLAGER.spawn(level, STATION.offset(4, 0, -11), MobSpawnType.COMMAND);
 			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, archer, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
 				io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
@@ -1929,9 +1929,9 @@ final class JobScenes {
 				if (phase[0] == 0 && io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(l, hall)) {
 					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.status(l, hall).open() == 0, "the gates shut at noon");
 					phase[0] = 1;
-				} else if (phase[0] >= 1 && phase[0] < 100) {
-					phase[0]++; // a few seconds with the gates shut in the sun
-				} else if (phase[0] == 100) {
+				} else if (phase[0] >= 1 && phase[0] < 10) {
+					phase[0]++; // a few seconds with the gates shut in the sun (asked every 10 frames: 100 was 50 seconds, B130)
+				} else if (phase[0] == 10) {
 					l.setDayTime(base + io.github.jcondedata.aliveworkplace.guard.VillageRaids.DUSK + 20);
 					phase[0] = 101;
 				}
@@ -3569,7 +3569,7 @@ final class JobScenes {
 		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
-			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 3000,
+			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 4800,
 			new Vec3(16, -48, 13), new Vec3(16, -60, -4), (level, player) -> {
 			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 28; // a small village: the whole walk to its edge is in the picture
 			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -3606,7 +3606,7 @@ final class JobScenes {
 			// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still
 			data.sent(STATION, -1);
 			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, STATION, null);
-			int[] act = {0};
+			int[] act = {0, 0};
 			return l -> {
 				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
 				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
@@ -3624,6 +3624,10 @@ final class JobScenes {
 					act[0] = 3; // standing by the Storehouse, unloading
 				} else if (act[0] == 3 && party == null) {
 					act[0] = 4; // and gone again
+				}
+				if (act[0] != act[1]) {
+					act[1] = act[0]; // B132: which part of the trip a timeout stopped at, in the scene's log
+					System.out.println("[showcase] caravan act " + act[0] + " at game tick " + l.getGameTime());
 				}
 				return act[0] == 4 && ours.countItem(Items.OAK_LOG) == 32 && ours.countItem(Items.BREAD) == 24;
 			};

@@ -35,5 +35,9 @@ Steps:
    (never past 175). Only an item that truly can't be finished goes to wip/lane-x with a message saying what's left.
 6. Never publish to Modrinth or CurseForge, change the license, bump the version, force-push, or delete anything on
    GitHub other than your own wip branch.
-7. Quick and big lanes don't message Jesse; end the run with a two-line summary (what landed, what's next). The bug
+7. Keep working on anything that fails (its scene, its compat test, a bug filed against it). When a failure can only be
+   settled by Jesse playing it in game (you have tried and can't reproduce or check it here), add
+   `(needs owner check: <what to try in game>)` to the item's or bug's entry and take the next one: the digest builds
+   a release-candidate jar with every expansion on and sends it to him with that list (owner, 2026-10-18).
+8. Quick and big lanes don't message Jesse; end the run with a two-line summary (what landed, what's next). The bug
    lane answers him about each bug he raised.

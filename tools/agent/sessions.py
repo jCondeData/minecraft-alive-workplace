@@ -596,9 +596,11 @@ def next_items(items, who, held_by_others=()):
             return (0, 0 if mark(it, "urgent") else 1, item_number(it), it["line"])
         ms = milestone_of(it) or 0
         pref = BIG_ORDER[lane].index(ms) if lane in BIG_ORDER and ms in BIG_ORDER[lane] else 0
+        # A big-update lane takes its own milestone first (owner changes "Na" first within it), so lanes c, d and e
+        # don't all reach for the same change item.
         if mark(it, "vetoed") or re.search(r"[a-z]$", it["id"]):
-            return (1, pref, ms, it["line"])
-        return (2, pref, ms, it["line"])
+            return (1, pref, 0, ms, it["line"])
+        return (1 if lane in BIG_ORDER else 2, pref, 1, ms, it["line"])
     return sorted(open_items, key=rank)
 
 

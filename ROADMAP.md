@@ -4769,7 +4769,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   mod's there. Done when: compat GameTests: a controller with three linked barrels counts their contents once, takes
   a porter's delivery and gives the builder what's asked; breaking the controller turns them back into three stores;
   the Storehouse board says "linked through a storage controller: N blocks"; scene `modded_storehouse` part one.
-- [ ] **37.10** **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
+- [x] **37.10** (review: pending 2026-10-18) **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
   Storehouse's area is one store for everything it connects (the inventories touching it and those on its
   `inventory_cable`, `inventory_cable_connector` and framed cables, found by walking block ids), read and filled
   through the connector's item storage; the connected inventories drop out of the list. A `storage_terminal` or

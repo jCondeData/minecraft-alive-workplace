@@ -149,13 +149,29 @@ public final class Village {
 	 * too (near their own workstation) or inside {@code exclude} (a build site).
 	 */
 	public static List<Stash> stashes(ServerLevel level, Villager villager, BlockPos station, @Nullable BoundingBox exclude) {
-		Set<BlockPos> seen = new HashSet<>(SupplyContainers.find(level, station, exclude));
+		Set<BlockPos> seen = new HashSet<>();
+		for (BlockPos own : SupplyContainers.find(level, station, exclude)) {
+			seen.add(own);
+			seen.addAll(io.github.jcondedata.aliveworkplace.store.StorageNetworks.members(level, own));
+		}
 		List<Stash> out = new ArrayList<>();
 		for (Mate mate : mates(level, villager, station)) {
 			List<BlockPos> chests = new ArrayList<>();
 			for (BlockPos chest : SupplyContainers.find(level, mate.station(), exclude)) {
-				if (seen.add(chest)) {
-					chests.add(chest);
+				// 37.10: a Storehouse's network head stands for the chests it joins; listed in another stash already, those
+				// chests are taken one by one instead, so nothing counts twice
+				Set<BlockPos> joined = io.github.jcondedata.aliveworkplace.store.StorageNetworks.members(level, chest);
+				if (joined.isEmpty() || joined.stream().noneMatch(seen::contains)) {
+					if (seen.add(chest)) {
+						chests.add(chest);
+						seen.addAll(joined);
+					}
+				} else {
+					for (BlockPos member : joined) {
+						if (seen.add(member)) {
+							chests.add(member);
+						}
+					}
 				}
 			}
 			if (!chests.isEmpty()) {

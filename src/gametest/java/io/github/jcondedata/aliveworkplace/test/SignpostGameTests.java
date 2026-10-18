@@ -217,4 +217,73 @@ public class SignpostGameTests implements FabricGameTest {
 		helper.assertTrue(said(b.get(Direction.WEST)).equals("To|Westford|" + WEST + " blocks|"), "west: " + said(b.get(Direction.WEST)));
 		helper.succeed();
 	}
+
+	/** The board texts that send somewhere ("To", a name, a distance), by the facing of their board. */
+	private static Map<Direction, String> destinations(Scene s) {
+		Map<Direction, String> out = new HashMap<>();
+		boards(s).forEach((facing, sign) -> {
+			if (sign.getFrontText().getMessage(0, false).getString().equals("To")) {
+				out.put(facing, sign.getFrontText().getMessage(1, false).getString());
+			}
+		});
+		return out;
+	}
+
+	/** Whether any place is named on two boards. */
+	private static boolean anyNamedTwice(Map<Direction, String> destinations) {
+		return destinations.values().stream().distinct().count() < destinations.size();
+	}
+
+	/**
+	 * B186: the post's own hall exactly on the diagonal, its point-of-interest record not filed (as when it was placed
+	 * inside a server task): the village is still taken for the post's own, never named as somewhere to go, and west
+	 * still names the village west.
+	 */
+	//$ gametest_batch AREA '"signpostOwnDiagonal"'
+	@GameTest(template = AREA, batch = "signpostOwnDiagonal")
+	public void theOwnHallOnTheDiagonalIsNeverNamed(GameTestHelper helper) {
+		Scene s = scene(helper, StarterBlueprints.SIGNPOST.id());
+		ServerLevel level = s.level();
+		// Our hall moved to the exact north-west diagonal of the post, its record left unfiled.
+		BlockPos diagonal = s.post().offset(-3, 0, -3);
+		level.removeBlock(s.ownHall(), false);
+		level.setBlockAndUpdate(diagonal, ModBlocks.VILLAGE_HALL.defaultBlockState());
+		level.getPoiManager().remove(diagonal);
+		VillageHalls.forgetNearest();
+		Caravans.Data data = Caravans.Data.get(level);
+		data.remove(s.ownHall());
+		data.setWants(diagonal, Component.literal("Homestead"), List.of());
+		Leftovers.after(helper, () -> data.remove(diagonal));
+		helper.assertTrue(level.getBlockEntity(diagonal) instanceof VillageHallBlockEntity, "the hall on the diagonal isn't there");
+		helper.assertTrue(VillageHalls.nearest(level, s.post()).isEmpty() || !VillageHalls.nearest(level, s.post()).get().equals(diagonal),
+			"the hall's record was filed: the test doesn't stage a missing record");
+		helper.assertTrue(Signposts.finished(level, StarterBlueprints.SIGNPOST.id(), s.placement()) == 4, "the boards weren't written");
+		Map<Direction, String> to = destinations(s);
+		String own = VillageHalls.name(level, diagonal).getString();
+		helper.assertFalse(to.containsValue(own), "the post's own village is named as somewhere to go: " + to);
+		helper.assertTrue("Westford".equals(to.get(Direction.WEST)), "west: " + to.get(Direction.WEST));
+		helper.assertFalse(anyNamedTwice(to), "a place is named on two boards: " + to);
+		helper.succeed();
+	}
+
+	/**
+	 * B186: another village exactly on the north-east diagonal, nearer than the village east: it is named on one board
+	 * only (the north one), and the east board still names the village east.
+	 */
+	//$ gametest_batch AREA '"signpostDiagonal"'
+	@GameTest(template = AREA, batch = "signpostDiagonal")
+	public void aVillageOnTheDiagonalIsNamedOnOneBoard(GameTestHelper helper) {
+		Scene s = scene(helper, StarterBlueprints.SIGNPOST.id());
+		ServerLevel level = s.level();
+		BlockPos diagonal = s.post().offset(8, 0, -8);
+		Caravans.Data data = Caravans.Data.get(level);
+		data.setWants(diagonal, Component.literal("Crossfield"), List.of());
+		Leftovers.after(helper, () -> data.remove(diagonal));
+		helper.assertTrue(Signposts.finished(level, StarterBlueprints.SIGNPOST.id(), s.placement()) == 4, "the boards weren't written");
+		Map<Direction, String> to = destinations(s);
+		helper.assertFalse(anyNamedTwice(to), "a place is named on two boards: " + to);
+		helper.assertTrue("Crossfield".equals(to.get(Direction.NORTH)), "north: " + to.get(Direction.NORTH));
+		helper.assertTrue(VillageHalls.name(level, s.eastHall()).getString().equals(to.get(Direction.EAST)), "east: " + to.get(Direction.EAST));
+		helper.succeed();
+	}
 }

@@ -876,6 +876,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 				if (level.getBlockEntity(east) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
 					hall.setCustomName(Component.literal("Millford"));
 				}
+				// Inside a server task, as here, vanilla files a placed block's point-of-interest record a moment later; file the
+				// halls' records now, as for halls placed long before the signpost is finished (B186).
+				fileRecords(level, own, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+				fileRecords(level, east, 16);
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 				io.github.jcondedata.aliveworkplace.hall.Caravans.Data caravans = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
 				caravans.setWants(own, Component.literal("Oakbrook"), List.of());
 				caravans.setWants(east, Component.literal("Millford"), List.of());

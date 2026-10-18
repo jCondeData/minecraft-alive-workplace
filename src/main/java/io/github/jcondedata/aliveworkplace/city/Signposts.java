@@ -12,7 +12,6 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -108,12 +107,12 @@ public final class Signposts {
 		cx /= boards.size();
 		cz /= boards.size();
 		BlockPos post = BlockPos.containing(cx, origin.getY(), cz);
-		Optional<BlockPos> own = VillageHalls.nearest(level, post);
+		BlockPos own = ownHall(level, post);
 		int written = 0;
 		for (BlockPos board : boards) {
 			BlockState state = level.getBlockState(board);
 			Direction facing = state.getValue(WallSignBlock.FACING);
-			SignText text = text(level, post, own.orElse(null), facing, origin);
+			SignText text = text(level, post, own, facing, origin);
 			SignBlockEntity sign = (SignBlockEntity) level.getBlockEntity(board);
 			if (sign.isWaxed() && same(sign.getFrontText(), text)) {
 				continue;
@@ -125,6 +124,25 @@ public final class Signposts {
 			written++;
 		}
 		return written;
+	}
+
+	/**
+	 * The village the post stands in: the nearest hall within {@link VillageHalls#RADIUS}, by its point-of-interest record
+	 * or, for a hall whose record isn't filed yet (B186: placed inside a server task, vanilla files it a moment later),
+	 * by the caravans' list, where the hall is really there. Its own village is never named on a board as somewhere to go.
+	 */
+	@Nullable
+	static BlockPos ownHall(ServerLevel level, BlockPos post) {
+		BlockPos best = VillageHalls.nearest(level, post).orElse(null);
+		double bestSq = best != null ? best.distSqr(post) : (double) VillageHalls.RADIUS * VillageHalls.RADIUS;
+		for (Caravans.Village v : Caravans.Data.get(level).villages()) {
+			double d = v.hall().distSqr(post);
+			if (d < bestSq && level.isLoaded(v.hall()) && level.getBlockEntity(v.hall()) instanceof VillageHallBlockEntity) {
+				bestSq = d;
+				best = v.hall();
+			}
+		}
+		return best;
 	}
 
 	/** What the board facing {@code facing} at the post {@code post} says. */
@@ -170,13 +188,16 @@ public final class Signposts {
 		return board(Component.empty(), home, Component.translatable("sign.aliveworkplace.signpost.welcome"));
 	}
 
-	/** Whether {@code target} lies the way {@code facing} points from {@code post}: within 45° of it. */
+	/**
+	 * Whether {@code target} lies the way {@code facing} points from {@code post}: within 45° of it. A target exactly
+	 * on the diagonal goes to the north or south board only (B186), so no place is named on two boards.
+	 */
 	static boolean that(BlockPos post, BlockPos target, Direction facing) {
 		int dx = target.getX() - post.getX();
 		int dz = target.getZ() - post.getZ();
 		int along = dx * facing.getStepX() + dz * facing.getStepZ();
 		int across = Math.abs(dx * facing.getStepZ()) + Math.abs(dz * facing.getStepX());
-		return along > 0 && along >= across;
+		return along > 0 && (along > across || along == across && facing.getAxis() == Direction.Axis.Z);
 	}
 
 	private static double horizontal(BlockPos a, BlockPos b) {

@@ -4,7 +4,7 @@ Fourteen new small builds that aren't houses, to sit beside the Well, Street Lam
 village with more than lamps and benches (the owner, 2026-10-16: "there should be a wider variety of builds that arent
 houses, but decorations similar to fountain or lamp").
 
-Roadmap items: 26.14, 36.4
+Roadmap items: 26.14, 36.4, B186
 
 ## 1. What a player sees
 
@@ -48,6 +48,9 @@ unlocks locked builds too.
   and distance; not another signpost), else the village's own name and "Welcome". The hall's round, once a day,
   writes the boards of its village's finished signposts again where the words changed (a village renamed, a new
   neighbour, a build pulled down); unchanged boards aren't touched.
+  The post's own village is the nearest hall by its point-of-interest record or, where that record isn't filed yet,
+  by the caravans' list (where the hall really stands), and is never named as somewhere to go. A place exactly on a
+  diagonal goes to the north or south board only, so no place is named on two boards (B186).
 
 ## 3. Switches
 
@@ -88,7 +91,8 @@ GameTests: `MoreDecorationsGameTests` (each built by a builder from its plan's m
 block in any; each a decoration with beauty and a name; the Flower Planters start unlocked, the rest come from market
 day), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `SignpostGameTests` (36.4: four
 waxed boards naming the village east, a village west and a Well south, kept through a save and load; a renamed
-village renamed at the next dawn; a Dark Oak signpost gets words too).
+village renamed at the next dawn; a Dark Oak signpost gets words too; B186: the own hall on an exact diagonal with
+its record unfiled is never named, and a village on the diagonal is named on one board only).
 
 Showcase scenes: `decor` (every decoration placed side by side), `signpost` (a signpost at a crossroads between two
 villages, each board up close).

@@ -247,6 +247,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **A Signpost no longer names the same place on two boards, or its own village.** A village standing exactly on a
+  diagonal from the post was written on both boards beside it, hiding the village one of them should have named, and a
+  village hall placed only a moment before could be taken for a neighbour. Each place now goes on one board only, and
+  the post's own village is always recognised (B186).
 - **Villagers are never left stuck inside a block.** In a growing village a baby could play in a nook too small for a
   grown villager (under a roof's stair, beside a lantern on a fence) and grow up inside the block, and a villager
   standing in a doorway could have the door shut on it. Such a villager now opens the door it is shut in, or steps out

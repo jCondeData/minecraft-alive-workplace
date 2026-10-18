@@ -47,6 +47,16 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(id));
 	}
 
+	/**
+	 * Sets the day time for a test and returns how to put the clock back where it would be without the test: later batches
+	 * (a miner's partner at work, for one) run at the time of day the suite reached, not at this test's supper or night.
+	 */
+	private static Runnable clock(ServerLevel level) {
+		long day = level.getDayTime();
+		long game = level.getGameTime();
+		return () -> level.setDayTime(day + level.getGameTime() - game);
+	}
+
 	/** Day time {@code time} today (a later time of day) or tomorrow (an earlier one). */
 	private static void setTime(ServerLevel level, long time) {
 		long day = level.getDayTime() / 24000;
@@ -76,6 +86,7 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		BlockPos chair = chair(helper);
 		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.south());
+		Runnable restore = clock(level);
 		setTime(level, FurnitureSeats.SUPPER + 300);
 		boolean[] dawn = {false};
 		helper.onEachTick(() -> {
@@ -90,6 +101,7 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 			helper.assertFalse(v.isPassenger(), "the villager is still sitting at dawn");
 			helper.assertTrue(seats(helper, chair).isEmpty(), "the seat stayed after the villager got up");
 			v.discard();
+			restore.run();
 		});
 	}
 
@@ -100,8 +112,10 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		BlockPos chair = chair(helper);
 		Villager a = helper.spawn(EntityType.VILLAGER, CHAIR.south());
 		Villager b = helper.spawn(EntityType.VILLAGER, CHAIR.east());
+		Runnable restore = clock(level);
 		setTime(level, FurnitureSeats.SUPPER + 600);
 		helper.runAfterDelay(300, () -> {
+			restore.run();
 			int seated = (seatOf(a) != null ? 1 : 0) + (seatOf(b) != null ? 1 : 0);
 			helper.assertTrue(seated == 1, seated + " villagers seated on one chair");
 			helper.assertTrue(seats(helper, chair).size() == 1, seats(helper, chair).size() + " seats on one chair");
@@ -118,6 +132,7 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		chair(helper);
 		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.south());
+		Runnable restore = clock(level);
 		setTime(level, FurnitureSeats.SUPPER + 600);
 		int[] step = {0};
 		helper.onEachTick(() -> {
@@ -131,6 +146,7 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 					boolean sat = v.isPassenger();
 					Furnishings.ENABLED = true;
 					v.discard();
+					restore.run();
 					helper.assertFalse(sat, "a villager sat down with furnished builds off");
 					helper.succeed();
 				});
@@ -174,6 +190,7 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 			Rotation.NONE, Mirror.NONE);
 		sites.recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, UUID.randomUUID());
 		Villager v = helper.spawn(EntityType.VILLAGER, foot.south(2));
+		Runnable restore = clock(level);
 		setTime(level, 13000);
 		helper.succeedWhen(() -> {
 			BlockPos bed = VillageNeeds.bed(level, v);
@@ -190,6 +207,7 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 				+ (beauty - FurnitureSeats.FURNISHED_BEAUTY));
 			sites.forgetFinished(placement);
 			v.discard();
+			restore.run();
 		});
 	}
 }

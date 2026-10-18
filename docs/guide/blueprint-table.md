@@ -33,14 +33,17 @@ build it, block by block, as long as it stands within 48 blocks of the table (a 
 
 ## The library
 
-Right-click the table to browse every blueprint on the server: its size, exactly what it needs, and a small 3D
-picture of the build itself, so you can see it before you pick it. A build with a basement shows its cellar too,
+Right-click the table to browse every blueprint on the server: its size, a line saying what it is and who works or
+lives there, exactly what it needs, and a small 3D picture of the build itself, so you can see it before you pick it. A build with a basement shows its cellar too,
 under a faint green line where the ground will be, and its size says how many blocks it goes below ground.
 
 ![The selected build in 3D](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-1.jpg)
 
 ![The starter cottage in Sandstone, picked from the style row](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-3.jpg)
 
+- **What it is.** Under the size, one sentence says what the build is for: "A shore hut with a jetty on log posts out
+  over the water; a Fisherman works at its barrel." A level of a build says what it adds, such as "Adds a second
+  paddock, a stable wing and a brick silo." Builds you upload, scan or import have no line.
 - **The picture** turns slowly by itself; drag it with the mouse to look round it or tilt it. Big builds shrink to
   fit, and builds you uploaded or scanned get a picture too, drawn from their own blocks. Your game draws it, so it
   costs the server nothing.

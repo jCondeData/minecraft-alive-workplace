@@ -113,6 +113,11 @@ public final class VillageAdvice {
 			tips.add(new Tip("upgrade", ModItems.BLUEPRINT, Blueprints.displayName(f.structure()),
 				Blueprints.displayName(BlueprintUpgrades.upgradeOf(f.structure()))));
 		}
+		// 36.7: an old build whose blueprint has a cellar now, still ground down there
+		for (BuildSiteManager.Finished f : io.github.jcondedata.aliveworkplace.build.Cellars.toDig(level, hall, VillageHalls.RADIUS).stream()
+				.limit(MAX_UPGRADES).toList()) {
+			tips.add(new Tip("cellar", ModItems.BLUEPRINT, Blueprints.displayName(f.structure())));
+		}
 		// Better homes: most grown-ups sleep in first-tier buildings, or in none a builder put up
 		HomeCount homes = homes(level, hall);
 		if (homes.grown() >= MIN_FOR_HOMES && homes.plain() * 2L > homes.grown()) {

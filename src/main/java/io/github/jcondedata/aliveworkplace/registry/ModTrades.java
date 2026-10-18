@@ -950,6 +950,7 @@ public final class ModTrades {
 				&& hasClass(level, villager.blockPosition(), BURGHER)) {
 			villager.getOffers().add(blueprint(StarterBlueprints.MANOR, MANOR_PRICE)); // 34.16
 		}
+		io.github.jcondedata.aliveworkplace.build.Cellars.offer(level, villager); // 36.7: "Dig the cellar" for the village's old builds
 	}
 
 	/** Whether the village round the hall nearest {@code pos} has a household of Artisans or a higher class. */

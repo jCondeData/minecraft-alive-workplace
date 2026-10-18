@@ -212,6 +212,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.people.FamilyBook.round(server, pos, hall); // family names and the Book of Families (34.21)
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
 			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
+			io.github.jcondedata.aliveworkplace.city.Signposts.round(server, pos, hall); // the signposts' boards brought up to date (36.4)
 			VillageMoments.catchUp(server, pos, hall, java.util.stream.Stream.concat(census.workers().stream(), census.jobless().stream()).toList()); // moments passed before they were moments (36.2)
 			if (Treasury.ENABLED) {
 				Treasury.round(server, pos, hall, census.workers(), census.jobless()); // by class (34.7)

@@ -6,7 +6,7 @@ expansion: M30
 image: https://jcondedata.github.io/minecraft-alive-workplace/guildhall/still-1.jpg
 caption: The Guildhall II: the hall and its tower wing with the bell
 Size: Guildhall 19 wide, 14 deep, 15 high; Guildhall II 26 wide, 14 deep, 20 high
-Tiers: two
+Tiers: three
 Houses: one chartered [guild](guilds.md)
 Where to get it: Blueprint Table
 Main materials: stone bricks, spruce logs, white plaster, deepslate tiles, glass panes
@@ -23,6 +23,7 @@ and an archive upstairs.
 - **Guildhall**: the hall itself, with its long table, hearth and archive.
 - **Guildhall II**: adds a stone tower wing: a meeting room with a round table, a chart room, and an open belfry with
   the guild bell.
+- **Guildhall III** digs a **strongroom** under the hall, down a ladder under a hatch by the west wall: the guild's gold, emeralds and lapis caged behind iron bars, its ledgers in chests and a counting table. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does
 

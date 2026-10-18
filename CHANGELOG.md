@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Cellars for eight Level IIs, and for old builds.** The Inn, Winery, Farmstead, Guildhall, Barracks, Research Lab,
+  Jeweler's Workshop and Artisan's House get a Level III: their Level II with a furnished, lit cellar dug under it (an ale
+  and wine cellar, a barrel vault, a root cellar, a strongroom, an armoury, a lower lab, a vault, a storeroom), down a
+  ladder under a hatch, everything above kept. A Smithy, Storehouse or Kitchen finished before it had its cellar is
+  offered **Dig the cellar** by the village's builders (and the Village Hall's advice): its builder digs and fits out
+  only the cellar.
+- **A line about every blueprint.** The Blueprint Table now says what each build is and who works or lives there,
+  wrapped under its size ("A shore hut with a jetty on log posts out over the water; a Fisherman works at its
+  barrel."), and what each level adds. All 170 builds the table lists have one; imported builds show none.
 - **Furnished homes and modded storage (2.1), begun.** The plan (`docs/design/M37.md`) and its three settings,
   `furnishedBuilds`, `furnitureMods` and `moddedStorageNetworks`, which stay off until 2.1 is finished (37.1), and a furniture spots file beside each of 223 blueprints marking
   where its chairs, tables and beds are, for the furniture mods to fill in later (37.2). Behind the same gate, a build started with Handcrafted, Cozy Home,
@@ -100,6 +109,8 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **The Signpost's boards say something.** A finished Signpost names the nearest village each way and how far (or
+  the nearest building, or "Welcome"), and keeps its boards up to date at dawn.
 - **Read a long entry in the Village Hall without clicking it.** Move the mouse from a row into the reading pane and
   it keeps reading that row, so the wheel scrolls it there; Shift and the wheel over a row scroll it too. An arrow
   shows when there's more below, and a long chronicle entry is shown whole. The Storehouse board works the same.

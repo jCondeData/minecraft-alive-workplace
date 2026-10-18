@@ -315,6 +315,12 @@ public class BlueprintTableScreen extends Screen {
 		return m == null ? -1 : m.size();
 	}
 
+	/** The selected build's description as the pane shows it, or "" when it has none (36.6; for the screenshot harness). */
+	public String selectedDescription() {
+		Component description = selectedId == null ? null : Blueprints.description(selectedId, net.minecraft.locale.Language.getInstance()::has);
+		return description == null ? "" : description.getString();
+	}
+
 	private void take() {
 		if (selectedId != null) {
 			ClientPlayNetworking.send(new TablePayloads.Take(table, shownId()));
@@ -431,6 +437,13 @@ public class BlueprintTableScreen extends Screen {
 			g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
 				x, y, 0xFF9AA8BA, false);
 			y += 10;
+		}
+		// What it is and who works or lives there (36.6), wrapped; an imported build has none and the line is left out.
+		Component description = Blueprints.description(entry.id(), net.minecraft.locale.Language.getInstance()::has);
+		if (description != null) {
+			y += 1;
+			g.drawWordWrap(font, description, x, y, w, 0xFFC8C0A8);
+			y += 9 * font.split(description, w).size() + 2;
 		}
 		if (!entry.hint().isEmpty()) {
 			// Locked (or a Wonder, raised from its plan): how to get it, where the id goes for the rest.

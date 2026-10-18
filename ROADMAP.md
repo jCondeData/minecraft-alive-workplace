@@ -5032,6 +5032,14 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
+  Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
+  `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed
+  alone); commit 0ec1567f there narrows the village radius in that test, NOT YET RUN. 38.7 (the Mega Shrine) passed
+  its own classes; the full suite wasn't run. Next lane d run: run that test and the full build, then merge to `main`.
+  The owner's answers in docs/design/M38.md (2026-10-18): the bracelet stays once per realm (as built); village
+  trainers take raid dens up to tier 3 only, so 38.4's `DenChallenges.MASTER_MAX` must drop from 4 to 3 (with a test
+  and the wiki, guide and CHANGELOG lines) if this run didn't land it.
 - 2026-10-18 (lane-b-1018-0038, **owner question: Milestone 36 is empty**): the quick lane finished 36.4, 36.6, 36.7
   and 36.8 and has nothing left. Owner: which quick additions next? Until then the quick lane's runs have no items.
   Also from 36.8: should our village houses get higher pool weights (desert villages grow ours in 14 of 50)?

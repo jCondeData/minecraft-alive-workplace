@@ -120,6 +120,24 @@ public final class SupplyContainers {
 		return STORES.freeSlots(level, containers);
 	}
 
+	/**
+	 * Free room across the containers counted slot by slot (ROADMAP 37.8): empty slots, stacks and items that still fit,
+	 * and whether a slot holds more than a stack (Sophisticated Storage's stack upgrades and limited barrels).
+	 */
+	public static ItemStores.Room room(ServerLevel level, List<BlockPos> containers) {
+		return STORES.room(level, containers);
+	}
+
+	/**
+	 * Stacks that still fit across the containers: {@link #freeSlots} for vanilla chests; with M37's modded storage
+	 * (ROADMAP 37.8), a slot that holds several stacks counts each stack still free in it, so a porter keeps filling a
+	 * stack-upgraded chest or a limited barrel whose slots all hold something.
+	 */
+	public static int freeStacks(ServerLevel level, List<BlockPos> containers) {
+		return io.github.jcondedata.aliveworkplace.Expansions.on(io.github.jcondedata.aliveworkplace.Expansions.M37)
+			? STORES.room(level, containers).freeStacks() : STORES.freeSlots(level, containers);
+	}
+
 	/** All slots across the containers, empty or not. */
 	public static int slots(ServerLevel level, List<BlockPos> containers) {
 		return STORES.slots(level, containers);

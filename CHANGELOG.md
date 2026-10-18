@@ -34,6 +34,11 @@ asks for the steps, `latest.log` and any crash report).
   Inn get furnished rooms at every level: a dining corner, a bedroom with a nightstand and a lamp, a couch, a shelf of
   cups, a clock, pictures and blinds, in plain vanilla blocks that the pack's furniture mods (Handcrafted, Beautify,
   CobbleFurnies, Cozy Home) turn into their own pieces (37.4).
+- **Sophisticated Storage as village storage (2.1, behind its gate).** Its chests, barrels and limited barrels of every
+  tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
+  contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
+  real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
+  A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

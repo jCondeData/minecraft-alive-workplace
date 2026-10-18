@@ -141,7 +141,7 @@ public class PorterWork extends Behavior<Villager> {
 				walker.reset();
 				return; // a Wonder's goods before anything else (35.7)
 			}
-			if (SupplyContainers.freeSlots(level, store) == 0) {
+			if (SupplyContainers.freeStacks(level, store) == 0) {
 				phase = Phase.FULL;
 				return;
 			}
@@ -156,7 +156,7 @@ public class PorterWork extends Behavior<Villager> {
 		if (!walker.walkTo(level, villager, target.chests().get(0), REACH)) {
 			return;
 		}
-		int room = Math.min(capacity(villager), SupplyContainers.freeSlots(level, store));
+		int room = Math.min(capacity(villager), SupplyContainers.freeStacks(level, store));
 		int taken = collect(level, target, bag, room);
 		if (taken > 0) {
 			villager.swing(InteractionHand.MAIN_HAND);

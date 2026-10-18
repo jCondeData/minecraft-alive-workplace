@@ -722,6 +722,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
     changes nothing; a builder mid-site hands the site back (BuildSite stays restartable); children and nitwits refuse;
     save and reload; the switch off (`workplaceRetraining`) brings back the old rule;
   - the words in en_us.json; the guide's jobs page says how, with the price; scene `retrain`.
+  - [ ] **26.6a** Change from the owner (2026-10-18): retraining at a job block is awkward because the villager must walk into a finished home to be near the block. Instead the Village Hall lists every job block in the village with no villager assigned (e.g. a Storehouse block), and for each lets you pick from the villagers without a job to assign it. Keep paid retraining of a working villager as is.
 - [x] **26.7** (dropped for now: owner 2026-10-14) **A chest that shows what the build still needs** (owner's playtest, 2026-10-14). Put a blueprint (or a
   placed build site's plan) into a new slot on a builder's supply chest, or click the chest with the blueprint: the
   chest's screen then shows the build's material list beside it, each line ticked when the chest (and the builder's

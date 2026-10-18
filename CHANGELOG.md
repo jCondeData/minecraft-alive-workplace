@@ -79,6 +79,12 @@ asks for the steps, `latest.log` and any crash report).
   pulleys in the new place. A part broken before the build is done is put back first, and once it's finished the
   owner is told whether every part turns, or which don't and where ("1 part doesn't turn: Shaft at 12 64 -30"). The
   parts list is a data file (`kinetic_parts`). Setting `createBuilds` (behind the 2.3 gate) (39.5).
+- **Create schematics at the Blueprint Table (2.3, being built).** With Create installed, the schematics players
+  upload with Create's Schematic Table (`schematics/uploaded/<player>/`) are at the Blueprint Table the next time it
+  opens, as blueprints builders can build, and a written Schematic right-clicked on the table imports its own file
+  there and then. Blocks of mods the server doesn't have are counted and named, an upload under the same name replaces
+  its blueprint, and a Schematic whose file is gone says so; names that point outside the uploads are refused.
+  Setting `createSchematics` (behind the 2.3 gate) (39.6).
 - **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
   in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
   and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break

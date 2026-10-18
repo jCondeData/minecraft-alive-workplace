@@ -107,4 +107,36 @@ public class CreateBuildsGameTests implements FabricGameTest {
 		}
 		helper.succeed();
 	}
+
+	/**
+	 * 39.6 without Create: a file in Create's uploaded schematics folder stays out of the library when a table opens, and
+	 * the Schematic isn't taken for anything (there's no such item).
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void noSchematicsWithoutCreate(GameTestHelper helper) throws java.io.IOException {
+		net.minecraft.server.MinecraftServer server = helper.getLevel().getServer();
+		java.nio.file.Path dir = io.github.jcondedata.aliveworkplace.table.CreateSchematics.uploadedFolder(server).resolve("gametest_no_create");
+		ResourceLocation id = io.github.jcondedata.aliveworkplace.table.CreateSchematics.idFor("gametest_no_create", "hut.nbt");
+		java.nio.file.Files.createDirectories(dir);
+		java.nio.file.Path file = dir.resolve("hut.nbt");
+		CompoundTag tag = io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles.toStructureNbt(new io.github.jcondedata.aliveworkplace.blueprint.Blueprint(
+			id, new net.minecraft.core.Vec3i(1, 1, 1), List.of(new io.github.jcondedata.aliveworkplace.blueprint.Blueprint.Entry(BlockPos.ZERO,
+				net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), null)), List.of()));
+		net.minecraft.nbt.NbtIo.writeCompressed(tag, file);
+		net.minecraft.server.level.ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		try {
+			helper.assertTrue(!io.github.jcondedata.aliveworkplace.table.CreateSchematics.active(), "Create's schematics are taken without Create");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.table.CreateSchematics.sync(server).isEmpty(), "a schematic was imported without Create");
+			io.github.jcondedata.aliveworkplace.table.TableServer.open(player, helper.absolutePos(new BlockPos(1, 1, 1)));
+			helper.assertTrue(BlueprintLibrary.get(server, id).isEmpty(), "the table imported a schematic without Create");
+			helper.assertTrue(!io.github.jcondedata.aliveworkplace.table.CreateSchematics.isSchematic(new net.minecraft.world.item.ItemStack(
+				net.minecraft.world.item.Items.PAPER)), "paper taken for a Schematic");
+		} finally {
+			server.getPlayerList().remove(player);
+			java.nio.file.Files.deleteIfExists(file);
+			java.nio.file.Files.deleteIfExists(dir);
+		}
+		helper.succeed();
+	}
 }

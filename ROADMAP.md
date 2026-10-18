@@ -4935,7 +4935,7 @@ the owner's port jar; M33's caravans (39.7).
   and part) copied; the builder checks it turns when done and lists what doesn't. Done when: compat GameTests: a
   blueprint of a water wheel, shafts, two cogwheels and a belt is built and turns; a cogwheel broken mid-build is
   rebuilt; a save and reload mid-build finishes it; scene `create_contraption`.
-- [ ] **39.6** **Create schematics at the Blueprint
+- [x] **39.6** (review: pending 2026-10-18) **Create schematics at the Blueprint
   Table.** A Create schematic is a structure `.nbt`, which `BlueprintImporter` already reads: the table also lists the
   files players uploaded to the server's Create schematics folder (`schematics/uploaded/<player>/`), and a written
   `create:schematic` item right-clicked on the table imports its file (its file name read from the item's data by

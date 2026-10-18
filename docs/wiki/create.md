@@ -4,10 +4,10 @@ Create integration brings the Create mod (the owner's Fabric port, in `libs/`) i
 the machines turning, villagers who feed Create's millstone, press, mixer and crushing wheels, Create-powered builds,
 contraptions built from a blueprint, Create schematics at the Blueprint Table and, later, trains between villages.
 Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gate and the port in the test runtime
-(39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4) and contraptions
-built from a blueprint (39.5); the full plan is the design note, docs/design/M39.md.
+(39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
+built from a blueprint (39.5) and Create schematics at the Blueprint Table (39.6); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6
 
 ## What a player sees
 
@@ -53,9 +53,30 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   Drive Line: 1 part doesn't turn: Shaft at 12 64 -30." (up to four parts named, then "and 3 more"). With a Mechanic
   near the build the line names the Mechanic, who leads on contraptions.
 
-Later in 2.3, schematics uploaded with Create's Schematic Table show up at the table.
+- **Create schematics at the Blueprint Table** (39.6). A schematic a player uploaded with Create's Schematic Table is
+  at the Blueprint Table the next time anyone opens it, under its file name, ready to take as a blueprint and hand to a
+  builder; whoever opens the table reads a line for each new one: "Create schematic Riverside Kiosk.nbt (uploaded by
+  Jesse): Imported aliveworkplace:create_schematics/jesse/riverside_kiosk (5 × 5 × 5)". A written Schematic used on
+  the table imports its own file there and then (the same line), then the table opens. Blocks of mods the server
+  doesn't have are counted and named, as for every import ("... 1 block from a mod that isn't installed became air:
+  steamworks:brass_gauge."). A schematic uploaded again under the same name replaces its blueprint. A Schematic whose
+  file is gone says so ("The schematic file hut.nbt isn't among Jesse's uploads on this server. Upload it again at a
+  Schematic Table."), a blank one says to write it first, and one naming a file outside the uploads is refused.
 
 ## How it works
+
+**Schematics.** Create keeps uploads in the game folder's `schematics/uploaded/<player>/<name>.nbt` (its
+`CreatePaths`; here `MinecraftServer.getServerDirectory()`), vanilla structure files. `table/CreateSchematics.sync`
+runs whenever a table opens (`TableServer.open`): every `.nbt` there that isn't a blueprint yet, or changed since,
+goes through `BlueprintImporter.importAs` as `aliveworkplace:create_schematics/<player>/<name>` (names cleaned as
+uploads are), replacing an older import of it, at most 16 at one opening. What was imported since the start is
+remembered by the file's time; after a restart a file is current when its saved blueprint is at least as new. A file
+that won't import is said once and tried again only when it changes. A written `create:schematic` used on the table
+(`BlueprintTableBlock.useItemOn`, before the Blueprint unlock) is read by component id, `create:schematic_file` and
+`create:schematic_owner` (strings, as the port's `SchematicItem.loadSchematic` reads them, checked in the jar), and
+imports `uploaded/<owner>/<file>` the same way. As in Create, the file must end in `.nbt` and the path must stay in
+the uploaded folder; we also refuse any name with a slash, a backslash, a colon or a leading dot. Files over the
+importer's 8 MB limit are refused before they're read.
 
 **The Mechanic.** The profession `aliveworkplace:mechanic` is registered at start-up only when Create is loaded, so
 without Create there's no such job at all. Its workstation is a point of interest of ours, `aliveworkplace:toolbox`,
@@ -140,7 +161,11 @@ showcase catalog).
   builds go up layer by layer, unchecked; a blueprint already handed out and a site already started still build, in the
   order the site was made with. Off for players until 2.3 ships, and does nothing without Create.
 
-createSchematics and villageTrains are mapped to the gate and come into the config with 39.6 and 39.7.
+- `createSchematics` (39.6): the table lists the uploaded schematics and imports written ones. Off: the table leaves
+  Create's schematics alone and a Schematic used on it just opens it; blueprints already imported stay. Off for
+  players until 2.3 ships, and does nothing without Create.
+
+villageTrains is mapped to the gate and comes into the config with 39.7.
 
 ## Saved data
 
@@ -159,6 +184,9 @@ createSchematics and villageTrains are mapped to the gate and come into the conf
   finished building's entry `not_turning` (absent: not checked; empty: everything turned). The design note put
   `notTurning` on the site; the site is gone once the build is done, so it lives with the finished building.
 
+Nothing is saved for schematics (39.6): imports are ordinary blueprints in the world's generated structures, and what's
+been imported is found again from the files' times.
+
 The planned fields of later items, each with its default, are listed in the design note.
 
 ## Items, blocks, jobs, commands
@@ -166,6 +194,8 @@ The planned fields of later items, each with its default, are listed in the desi
 - Job: the **Mechanic** (`aliveworkplace:mechanic`, only with Create), at a Create Toolbox of any colour (POI
   `aliveworkplace:toolbox`). In the Village Hall's list a Mechanic shows with the toolbox's own item, as every job shows
   with its workstation.
+
+- Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
 
 - Blueprints (39.4): `aliveworkplace:watermill` (11 x 11 x 9), `aliveworkplace:windmill` (9 x 17 x 9) and
   `aliveworkplace:workshop` (14 x 10 x 9), drawn in `tools/blueprints/create_builds.py`, unlocked from the start and
@@ -216,6 +246,11 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
   out the sail plane (39.4).
 - The port's jar runs from the test server's `mods/` folder, without its own GameTests; Porting Lib's clash with
   owo-lib, which happens only in the Mojang-named dev runtime, is fixed in the test copy, not in the mod (39.1).
+- Schematics (39.6): "the table lists the files" means each file becomes a blueprint when a table opens, so it has a
+  preview, materials and styles like any build, rather than a second kind of entry. Create's own upload rules already
+  decided who may upload, so the Table's `workplaceAllowUploads` rule doesn't apply; the `createSchematics` switch is
+  the admin's say. Imports are server-wide, as uploads at the table are. A deleted file's blueprint stays (a build
+  under way may use it).
 
 ## Known limits
 
@@ -225,7 +260,10 @@ Putting back a belt has no test with a real belt yet (shafts and cogwheels do). 
 finished is the Mechanic's to mend, not the builder's; one broken while the ground is levelled is listed by the check.
 Trains (39.7) wait on the
 owner's answer in the design note. A windmill whose bearing can't be started (fewer than 8 sails left, the sails
-blocked) gets no sign yet: the player starts it with an empty hand (39.4).
+blocked) gets no sign yet: the player starts it with an empty hand (39.4). A schematic still being uploaded when a
+table opens may be read cut short and said so once; it's imported when the upload finishes and the table opens again
+(39.6). Whether Create's client keeps a written Schematic's right-click on the table for itself in a real game is not
+tested (the GameTests use the table as the server does).
 
 ## Proof
 
@@ -233,7 +271,15 @@ blocked) gets no sign yet: the player starts it with an empty hand (39.4).
   `aBuilderBuildsTheWatermillAndItTurns`, `aBuilderBuildsTheWindmillAndStartsIt` and
   `aBuilderBuildsTheWorkshopAndItTurns`: built from barrels holding exactly their materials, nothing skipped, the job
   block a job site, and the millstone or press turning (its `Speed` read from its block entity data by name).
-- `CreateBuildsGameTests` (39.4, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`.
+- `CreateBuildsGameTests` (39.4, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
+  `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
+- `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
+  listed and built as drawn, not imported again), `aWrittenSchematicImportsItsFile` (the item used on the table; the
+  line names the file, the uploader and the unknown block), `aMissingFileSaysSo` (and a blank Schematic; every line
+  has text), `namesOutsideTheUploadsAreRefused` (eight names with `..`, slashes, backslashes, an absolute path or
+  another extension), `anUploadAgainReplacesItsBlueprint` (no `_2`; a broken file said once) and
+  `theSwitchOffLeavesThemAlone`. Scene `create_schematic`: the written Schematic used on the table, then a builder puts
+  the kiosk up.
 - `CreateCompatTests`: `createIsLoaded` (Create and its libraries loaded, its own GameTests left out),
   `createBlockIdsExist`, `createItemIdsExist` and `createRecipeTypesExist` list every id the milestone reads and fail
   naming any that's missing.

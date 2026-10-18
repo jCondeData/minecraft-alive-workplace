@@ -1028,6 +1028,10 @@ SCENES = [
     job("create_contraption", "Create", "A contraption from a blueprint: built in order, and it turns",
         "the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",
         200, create=True),
+    # Create schematics at the Blueprint Table (ROADMAP 39.6, with Create): an uploaded schematic imported by its written Schematic, then built
+    job("create_schematic", "Create", "A Create schematic at the Blueprint Table, built",
+        "the written Schematic used on the Blueprint Table imported its uploaded file, and the builder put the schematic's kiosk up",
+        150, create=True),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),

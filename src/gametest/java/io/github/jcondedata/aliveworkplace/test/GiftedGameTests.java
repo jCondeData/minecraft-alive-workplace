@@ -208,23 +208,27 @@ public class GiftedGameTests implements FabricGameTest {
 		ServerPlayer[] player = new ServerPlayer[1];
 		helper.runAfterDelay(5, () -> level.getPoiManager().take(h -> h.is(PoiTypes.MEETING), (h, p) -> true, helper.absolutePos(bell), 2)
 			.orElseThrow(() -> new GameTestAssertException("the bell isn't a meeting point")));
-		helper.runAfterDelay(30, () -> {
-			helper.assertTrue(level.isVillage(helper.absolutePos(bell)), "the test area isn't a village");
-			player[0] = helper.makeMockServerPlayerInLevel();
-			raid[0] = level.getRaids().createOrExtendRaid(player[0], helper.absolutePos(bell));
-			helper.assertTrue(raid[0] != null, "no raid");
-			raid[0].setRaidOmenLevel(1);
-		});
-		helper.runAfterDelay(120, () -> ((BellBlock) Blocks.BELL).attemptToRing(level, helper.absolutePos(bell), Direction.NORTH));
+		// The bell and the hurt come before the raid (B183). Vanilla's ReactToBell only hides a villager when no raid is
+		// at its spot, and SetRaidStatus, which runs after VillagerPanicTrigger in the same tick, switches to RAID or
+		// PRE_RAID on a 1-in-20 roll; with the raid already on, that roll could swallow the one-tick panic before the
+		// end-of-tick check saw it (CI build 1086).
+		helper.runAfterDelay(10, () -> ((BellBlock) Blocks.BELL).attemptToRing(level, helper.absolutePos(bell), Direction.NORTH));
 		// Vanilla's HurtBySensor erases HURT_BY on its own tick when the villager has no real last damage, so a memory
 		// set once can vanish before the panic trigger sees it (CI run 37262922450). Hold it for 20 ticks, for both.
-		for (int t = 200; t < 220; t++) {
+		for (int t = 15; t < 35; t++) {
 			helper.runAfterDelay(t, () -> {
 				for (Villager v : List.of(iron, plain)) {
 					v.getBrain().setMemory(MemoryModuleType.HURT_BY, level.damageSources().generic());
 				}
 			});
 		}
+		helper.runAfterDelay(60, () -> {
+			helper.assertTrue(level.isVillage(helper.absolutePos(bell)), "the test area isn't a village");
+			player[0] = helper.makeMockServerPlayerInLevel();
+			raid[0] = level.getRaids().createOrExtendRaid(player[0], helper.absolutePos(bell));
+			helper.assertTrue(raid[0] != null, "no raid");
+			raid[0].setRaidOmenLevel(1);
+		});
 		helper.onEachTick(() -> {
 			for (Activity a : List.of(Activity.PANIC, Activity.HIDE, Activity.RAID, Activity.PRE_RAID)) {
 				if (iron.getBrain().isActive(a) && !ironDid.contains(a.getName())) {

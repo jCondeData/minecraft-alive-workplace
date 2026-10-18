@@ -88,6 +88,7 @@ tests.screenshot_create = ["libs/create-fabric-6.0.10.0+mc1.21.1.jar"]
 tests.screenshot_mega = ["maven.modrinth:SszvX85I:Y6di9Ram", "maven.modrinth:jtmvUHXj:Xlt4eWBe", "maven.modrinth:ccKDOlHs:JB1fLQnc", "maven.modrinth:lhGA9TYQ:Wto0RchG"]
 # The pack's furniture mods for -Pfurniture=true (ROADMAP 37.4, scene furnished_home): Handcrafted with Resourceful Lib,
 # Beautify with Cloth Config, CobbleFurnies with Architectury and Athena (CobbleFurnies also needs Cobblemon, -Pcobblemon),
-# Sophisticated Storage with its Core and Forge Config API Port (ROADMAP 37.9), and the pack's Tom's Simple Storage 2.3.0
-# (ROADMAP 37.10; both in scene modded_storehouse).
-tests.screenshot_furniture = ["maven.modrinth:XZNI4Cpy:GwLz79tK", "maven.modrinth:pJmCFF0p:f0pKpUWd", "maven.modrinth:resourceful-lib:Hf91FuVF", "maven.modrinth:DhSSvaxs:ZyaUkJxq", "maven.modrinth:9s6osm5g:HpMb5wGb", "maven.modrinth:AXY1OO9m:54k31lEX", "maven.modrinth:lhGA9TYQ:Wto0RchG", "maven.modrinth:athena-ctm:JfyYsWKP", "maven.modrinth:iHtpVwJL:kjNlOByJ", "maven.modrinth:9jxwkYQL:ZLVrtF0Q", "maven.modrinth:ohNO6lps:N5qzq0XV"]
+# Sophisticated Storage with its Core and Forge Config API Port (ROADMAP 37.9), the pack's Tom's Simple Storage 2.3.0
+# (ROADMAP 37.10; both in scene modded_storehouse), Carved Wood and Rechiseled with its two libraries and Fusion
+# (ROADMAP 37.7, scene carved_styles).
+tests.screenshot_furniture = ["maven.modrinth:XZNI4Cpy:GwLz79tK", "maven.modrinth:pJmCFF0p:f0pKpUWd", "maven.modrinth:resourceful-lib:Hf91FuVF", "maven.modrinth:DhSSvaxs:ZyaUkJxq", "maven.modrinth:9s6osm5g:HpMb5wGb", "maven.modrinth:AXY1OO9m:54k31lEX", "maven.modrinth:lhGA9TYQ:Wto0RchG", "maven.modrinth:athena-ctm:JfyYsWKP", "maven.modrinth:iHtpVwJL:kjNlOByJ", "maven.modrinth:9jxwkYQL:ZLVrtF0Q", "maven.modrinth:ohNO6lps:N5qzq0XV", "maven.modrinth:WuwijfrW:h1wI9HyK", "maven.modrinth:rechiseled:Whwd5n82", "maven.modrinth:supermartijn642s-core-lib:blDCgrqh", "maven.modrinth:supermartijn642s-config-lib:euSlaAtA", "maven.modrinth:fusion-connected-textures:6fQXv7Yl"]

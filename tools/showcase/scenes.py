@@ -1120,6 +1120,13 @@ SCENES = [
       "two villagers sit on the furniture mod's chairs at supper, then get up at bedtime and sleep in its fancy beds",
       60, [("01_supper", "Supper: two villagers seated on Handcrafted chairs at the table"),
            ("02_bedtime", "Bedtime: the same two asleep in Handcrafted fancy beds")], cobblemon=True, furniture=True),
+    # Carved Wood and Rechiseled in the styles (ROADMAP 37.7): the Library in Spruce, the Starter Cottage in Grand
+    S("carved_styles", "Build families", "The Spruce style's Carved Wood shelves and lectern, and the Grand style's Rechiseled floors",
+      "the spruce Library's bookshelves are all Carved Wood's and its lectern a Carved Wood lectern that is a Librarian's job site, and the Grand cottage stands with Rechiseled blocks",
+      40, [("01_library_front", "The Library in the Spruce style"),
+           ("02_library_shelves", "Inside: Carved Wood spruce bookshelves round the spruce lectern"),
+           ("03_grand_cottage", "The Starter Cottage in the Grand style"),
+           ("04_grand_cottage_floor", "Inside the Grand cottage: Rechiseled dark oak flooring and andesite wall panels")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",

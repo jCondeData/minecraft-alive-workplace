@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.8, 37.9, 37.10, 37.11
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11
 
 ## 1. What a player sees
 
@@ -97,6 +97,18 @@ cable connector) and it is a store of its own again at once. A storage or crafti
 own: a player opens it and sees, and takes, the village's goods. With `moddedStorageNetworks` off, every chest on the
 network is its own store and the connector is passed over, as before.
 
+Carved Wood and Rechiseled (37.7, behind the gate and `furnishedBuilds`): the Blueprint Table offers a **Spruce** style
+for every build. It builds the timber in spruce (oak and dark oak logs, planks, stairs, slabs, fences, doors and
+trapdoors; birch infill becomes stripped spruce wood), and with Carved Wood installed its chests, trapped chests,
+bookshelves, chiseled bookshelves, lecterns, crafting tables, ladders, lanterns and beehives are Carved Wood's spruce
+ones, so a spruce Library has spruce shelves and a spruce lectern its Librarian works at. Carved Wood has no spruce
+barrel (the vanilla barrel is spruce already), so barrels stay. With Rechiseled installed the **Grand** style's floors
+(spruce and oak planks) are `rechiseled:dark_oak_planks_flooring`, its wall panels (birch infill, white terracotta)
+`rechiseled:andesite_squares` and its polished andesite `rechiseled:andesite_tiles`. Without the mods, or with the
+switch off, the Spruce style is plain spruce (and isn't offered with the switch off) and Grand is exactly today's Grand.
+Carved Wood's chests and barrels of every wood are supply chests, porters' chests and Storehouse chests (they are
+vanilla chests and barrels underneath).
+
 ## 2. How it works
 
 Each piece of furniture our builds draw in vanilla blocks becomes a furniture spot (its kind, facing, wood or colour
@@ -174,6 +186,14 @@ every lookup. `Village.stashes` treats a connector as all its inventories: a che
 builder's own chests) turns the connector into its remaining chests one by one, so nothing counts twice across stashes.
 Every other job's lists still pass over Tom's blocks (`ModdedBlocks.STORAGE_NETWORK`) and read the chests themselves.
 
+A style rule can also carry `"requires_switch"` (37.7): it applies only while that switch is on, as if its block didn't
+exist otherwise, so Grand's Rechiseled rules sit in front of its vanilla ones under `furnishedBuilds`. The swaps are
+cached per style and per state of its rules' switches. Job blocks: Carved Wood adds its lecterns to the Librarian's
+point of interest, its barrels to the Fisherman's and its beehives to the beehive's (checked in the 1.9.7-B jar, class
+`CWPoi`, which puts their block states into the vanilla point-of-interest table), so those are swapped; its crafting
+tables are no job site, as the vanilla one isn't. Its campfires are left out (a campfire cooks; nothing in our builds
+needs a wooden one).
+
 ## 3. Switches
 
 | Key | Default | What it does |
@@ -233,6 +253,10 @@ rides, which can't be summoned.
   only to carry its passenger and lets them go on its first tick. "A furnished room" is a home whose building holds a
   seat from `#aliveworkplace:villager_seats` (only the mods' pieces are in it), worth 1 point (`FurnitureSeats.FURNISHED_BEAUTY`)
   to its people's beauty need; off with `furnishedBuilds`.
+- The Grand style keeps its name and gains the Rechiseled rules rather than a new style, as the roadmap item names it
+  (37.7); the rules are behind `furnishedBuilds`, so Grand on servers before 2.1 is unchanged. A Grand building half
+  built when 2.1 turns the switch on gets its remaining floors and panels in Rechiseled
+  (not tested: whether a repair of a finished Grand building then swaps its floors).
 - A Tom's network is read through its connector only at the Storehouse (design note M37, rule 4): a worker's own
   chests on a network stay separate stores, as at 2.0 (37.10).
 - Lanes don't make review packages (sessions.md, 2026-10-04): the digest sends the design note as 37.1's package.
@@ -263,6 +287,10 @@ rides, which can't be summoned.
 - The Storehouse finds what a controller links by walking block ids, not by asking the mod: a block the walk reaches
   that the controller hasn't linked (placed by a command with no placing) drops out of the store list without being
   read through the controller. Placed by a player or a builder, the two agree.
+
+- The headless renderer draws Carved Wood and Rechiseled (the architect skill's `mods.mjs add carved-wood rechiseled`),
+  but its render of a hanging Carved Wood lantern is flagged as standing on air, which the game's block doesn't do (it
+  keeps `hanging=true`).
 
 ## 8. Proof
 
@@ -318,6 +346,16 @@ Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, whi
 `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome` (the fancy bed is a villager home
 point of interest, the villager claims and sleeps in it, the Starter Cottage it stands in is their home, and its chair
 adds the furnished home's beauty). Scene `seats_and_beds` (`-Pfurniture=true`).
+
+37.7 (compat, with Carved Wood and Rechiseled): `CarvedStylesCompatTests.theStylesUseCarvedWoodAndRechiseled` (each
+swap, the Carved Wood lectern the Librarian's job site and barrel the Fisherman's, a hanging lantern still hanging; with
+the switch off no Spruce style and Grand as before), `CarvedStylesCompatTests.aCarvedWoodChestIsASupplyChest` (a
+builder builds from a Carved Wood chest; a Carved Wood barrel is listed and filled),
+`CarvedStylesCompatTests.aSpruceLibraryHasCarvedShelvesAndALibrarian` (built with nothing skipped, every shelf Carved
+Wood's, and a villager without a job takes the Carved Wood lectern and becomes the Librarian),
+`CarvedStylesCompatTests.theGrandStyleWithRechiseledBuildsWithNothingSkipped` (the Grand Starter Cottage). No mods:
+`StyleGameTests.stylesLoadAndIdsRoundTrip` lists Spruce. Scene `carved_styles` (`-Pfurniture=true`, which now brings
+Carved Wood and Rechiseled).
 37.10: with Tom's Simple Storage (compat): `TomsStorageCompatTests.aConnectorIsOneStoreForItsChestsAndCabinet` (two
 chests and a filing cabinet on the connector and its cable count once, the board line, in and out through the
 connector, the switch off), `TomsStorageCompatTests.aChestUnpluggedIsItsOwnStoreAgain`,

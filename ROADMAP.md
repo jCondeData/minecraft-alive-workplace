@@ -265,6 +265,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B191** [urgent: owner] Player-visible, 2.2 Megas (38.5, 38.7): scene mega_trainers fails ('the Leader couldn't Mega Evolve and no bracelet was drawn', the battle ran) and mega_shrine's festival ceremony never happens. Expected: a City Leader with a Mega Stone Mega Evolves in battle and wears the bracelet; the shrine's ceremony runs on a festival day. Test: SCENE=mega_trainers and SCENE=mega_shrine. (found by chat, 2026-10-18)
 - [ ] **B192** Player-visible, 2.1 Tom's Simple Storage (37.10): scene modded_storehouse fails: right-clicking Tom's storage terminal says 'Terminal out of range' instead of opening Tom's screen, with the Storehouse linked through an inventory connector. Expected: Tom's terminal works as normal next to our Storehouse. Test: SCENE=modded_storehouse. (found by chat, 2026-10-18)
 - [ ] **B193** Player-visible, 2.3 trains (39.7): scene village_train fails: the caravan never takes the train (no steam, bell or logs arriving) within the scene's time. Expected: a caravan between two villages with linked Train Stations travels by train and arrives. Test: SCENE=village_train (check the scene's wait against a slow GitHub runner too). (found by chat, 2026-10-18)
+- [ ] **B194** Showcase-only (37.5): scene furnished_workplaces's fourth still (the clinic benches) comes out black, so the scene fails; same black-still pattern as B188's cellars. Expected: all four stills show the build. Test: SCENE=furnished_workplaces. (found by chat, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 

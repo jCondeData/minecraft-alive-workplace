@@ -43,6 +43,10 @@ asks for the steps, `latest.log` and any crash report).
   job blocks, beds and chests are never swapped; with the pack's mods they become Handcrafted counters, desks and
   benches and Beautify trellises, hanging pots and picture frames, and the Healing Center's and Schoolhouse's desks are
   CobbleFurnies' Poké Ball desks. A furniture mod's desk, counter or cabinet is never taken for a job's chest (37.5).
+- **Villagers use the furniture (2.1, behind its gate).** At supper and in the evening villagers sit on the furniture
+  mods' chairs, stools, benches, couches and sofas (Handcrafted, Cozy Home, CobbleFurnies), one villager to a seat, and
+  get up for work, danger or bed; they claim and sleep in Handcrafted's fancy beds, whose house counts as their home,
+  and a home with a seat in it is worth 1 beauty to its people (37.6).
 - **Sophisticated Storage as village storage (2.1, behind its gate).** Its chests, barrels and limited barrels of every
   tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the

@@ -245,6 +245,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FurnishingTableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedHomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedWorkplacesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.FurnitureSeatsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderStageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderSiteGameTests",

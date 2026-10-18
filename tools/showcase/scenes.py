@@ -1060,6 +1060,11 @@ SCENES = [
            ("03_library_desks", "The Library's reading desks and chairs under hanging pots, the scholar's lectern beyond"),
            ("04_schoolroom", "The schoolroom's benches facing the blackboard and the teacher's Poké Ball desk"),
            ("05_clinic_benches", "The Healing Center's waiting benches, pictures and the nurse's Poké Ball desk")], cobblemon=True, furniture=True),
+    # Villagers use the furniture (ROADMAP 37.6): Handcrafted chairs at supper, Handcrafted fancy beds at bedtime
+    S("seats_and_beds", "Build families", "Villagers sit on Handcrafted chairs at supper and sleep in its fancy beds",
+      "two villagers sit on the furniture mod's chairs at supper, then get up at bedtime and sleep in its fancy beds",
+      60, [("01_supper", "Supper: two villagers seated on Handcrafted chairs at the table"),
+           ("02_bedtime", "Bedtime: the same two asleep in Handcrafted fancy beds")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",

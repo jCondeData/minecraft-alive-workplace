@@ -114,6 +114,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
 	private final FurnishedHomeScene furnishedHome = new FurnishedHomeScene();
 	private final FurnishedWorkplacesScene furnishedWorkplaces = new FurnishedWorkplacesScene();
+	private final SeatsAndBedsScene seatsAndBeds = new SeatsAndBedsScene();
 	private final VillageHallBuildScene villageHallBuild = new VillageHallBuildScene();
 	private final BuildFixesScene buildFixes = new BuildFixesScene();
 	private final RealmBuildsScene realmBuilds = new RealmBuildsScene();
@@ -319,6 +320,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("furnished_workplaces".equals(System.getProperty("aliveworkplace.scene"))) {
 			furnishedWorkplaces.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("seats_and_beds".equals(System.getProperty("aliveworkplace.scene"))) {
+			seatsAndBeds.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("village_habitat".equals(System.getProperty("aliveworkplace.scene"))) {

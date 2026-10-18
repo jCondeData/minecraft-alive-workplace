@@ -108,6 +108,10 @@ abstract class VillagerGoalPackagesMixin {
 				v -> net.minecraft.network.chat.Component.translatable("message.aliveworkplace.pokemon_trader.state",
 					io.github.jcondedata.aliveworkplace.registry.ModAttachments.POKEMON_TRADE_COUNT.getOrElse(v, 0))));
 		}
+		if (cir.isCancelled()) {
+			// villagers work Create's machines (39.3) as their machine-work files say, around their own work
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.mechanic.MachineWork.packages(profession, cir.getReturnValue()));
+		}
 	}
 
 	/** In a pillager raid guards don't hide: they keep patrolling (and fight, from CORE). */
@@ -211,5 +215,7 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));
 		}
+		// villagers work Create's machines (39.3) as their machine-work files say, around their own work
+		cir.setReturnValue(io.github.jcondedata.aliveworkplace.mechanic.MachineWork.packages(profession, cir.getReturnValue()));
 	}
 }

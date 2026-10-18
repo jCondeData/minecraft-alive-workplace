@@ -191,6 +191,7 @@ list of free workstations finds each kind of workstation's job once.
 | `wellKeepers` | on from 1.0 | The Well Keeper job |
 | `physicians` | on from 1.0 | The Physician job |
 | `mechanics` | on from 2.3 | The Mechanic job (only with Create) |
+| `machineWork` | on from 2.3 | Farmers, armorers, chefs and miners feed Create's machines (only with Create) |
 
 ## Saved data
 

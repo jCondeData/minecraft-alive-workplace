@@ -1,0 +1,11 @@
+{
+  "requires": "create",
+  "machine": "create:crushing_wheel_controller",
+  "job": "aliveworkplace:miner",
+  "recipe_type": "create:crushing",
+  "feed": {"at": [0, 0, 0], "drop": true},
+  "collect": {"at": [0, -1, 0], "drop": true},
+  "makes": [{"item": "create:crushed_raw_iron", "keep": 64}, {"item": "create:crushed_raw_copper", "keep": 64}, {"item": "create:crushed_raw_gold", "keep": 64}],
+  "batch": 16,
+  "min_speed": 0.02
+}

@@ -15,8 +15,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * <ul>
  * <li>The drive train ({@link #DRIVE_PARTS}): shafts, gearboxes, cogwheels and belts, put back from a finished build's
  * blueprint in that order (what a cogwheel sits on before the cogwheel, the pulleys' shafts before the belt).</li>
- * <li>The machines on the round ({@link #MACHINES}): what each is refilled with when it's empty. Their outputs go to the
- * store.</li>
+ * <li>The machines on the round: those the machine-work files name ({@link MachineWorkFiles}, 39.3), fed and emptied as
+ * their files say.</li>
  * <li>Blocks that keep their own items ({@link #keepsOwnItems}): the machines, the depot, the basin, the belt and the
  * toolbox. They're never anyone's supply chest, so no worker puts the store's goods into a mill or takes a player's
  * tools out of a toolbox.</li>
@@ -30,10 +30,6 @@ public final class Kinetics {
 		"shaft", 0, "gearbox", 0,
 		"cogwheel", 1, "large_cogwheel", 1,
 		"belt", 2);
-
-	/** The machines on a Mechanic's round, each with what it's refilled with (39.3's machine files feed the rest). */
-	static final Map<String, List<Item>> MACHINES = Map.of(
-		"millstone", List.of(Items.WHEAT));
 
 	/** Create's blocks that hold items for their own work, never as storage. */
 	private static final List<String> OWN_ITEMS = List.of("millstone", "mechanical_press", "mechanical_mixer", "basin", "depot",
@@ -66,16 +62,9 @@ public final class Kinetics {
 		return "belt".equals(createId(state));
 	}
 
-	/** Whether {@code state} is a machine on the Mechanic's round. */
+	/** Whether {@code state} is a machine on the Mechanic's round: one a machine-work file (39.3) is about. */
 	public static boolean isMachine(BlockState state) {
-		String id = createId(state);
-		return id != null && MACHINES.containsKey(id);
-	}
-
-	/** What a machine on the round is refilled with. */
-	static List<Item> feed(BlockState state) {
-		String id = createId(state);
-		return id == null ? List.of() : MACHINES.getOrDefault(id, List.of());
+		return createId(state) != null && MachineWorkFiles.forMachine(state) != null;
 	}
 
 	/** Whether {@code state} is a toolbox, the Mechanic's job block. */

@@ -51,6 +51,12 @@ asks for the steps, `latest.log` and any crash report).
   blueprint and with the parts in the chest by the toolbox, and walk a round of the village's millstones: what's
   milled goes to the chest, and a turning, empty millstone gets wheat. Create's machines, belts and toolboxes are no
   longer taken for supply chests. Setting `mechanics` (behind the 2.3 gate); no Mechanic without Create (39.2).
+- **Villagers work Create's machines (2.3, being built).** With Create installed, the farmer carries wheat from the
+  store to a turning millstone and brings back flour, the armorer presses ingots into sheets on the depot under a
+  mechanical press, the chef mixes dough in the basin under a mechanical mixer, and the miner drops raw ore between
+  crushing wheels and gathers the crushed ore. Only while the machine turns and the store has room; what each machine
+  makes comes from Create's own recipes, and each machine is a data file (`machine_work`) a datapack can change. The
+  Mechanic's round covers the new machines too. Setting `machineWork` (behind the 2.3 gate) (39.3).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

@@ -168,6 +168,13 @@ public final class WorkplaceConfig {
 	 * Create it does nothing.
 	 */
 	public boolean mechanics = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, villagers work Create's machines (ROADMAP 39.3): the farmer mills wheat into flour, the
+	 * armorer presses ingots into sheets, the chef mixes dough and the miner crushes raw ore, taking the input from the
+	 * store and bringing what's made back, only while the machine turns and the store has room. Off: nobody feeds a
+	 * machine. Without Create it does nothing.
+	 */
+	public boolean machineWork = Expansions.on(Expansions.M39);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -852,6 +859,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.EVERY_DAYS = denChallengeDays;
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED = mechanics && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.ENABLED = machineWork && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();

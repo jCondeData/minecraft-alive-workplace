@@ -421,6 +421,9 @@ public final class ModAttachments {
 	/** A Mechanic's round of the village's machines and where they are on it (ROADMAP 39.2). Absent: none yet (found again). */
 	public static final Attachment<io.github.jcondedata.aliveworkplace.mechanic.MechanicRound> MECHANIC_ROUND = Attachment.saved("mechanic_round",
 		io.github.jcondedata.aliveworkplace.mechanic.MechanicRound.CODEC);
+	/** A worker's trip to a Create machine (39.3): which machine, how far along and what they carry. None: no trip. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.mechanic.MachineJob> MACHINE_JOB = Attachment.saved("machine_job",
+		io.github.jcondedata.aliveworkplace.mechanic.MachineJob.CODEC);
 
 	public static void init() {
 	}

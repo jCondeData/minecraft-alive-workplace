@@ -1,0 +1,11 @@
+{
+  "requires": "create",
+  "machine": "create:millstone",
+  "job": "minecraft:farmer",
+  "recipe_type": "create:milling",
+  "feed": {"at": [0, 0, 0]},
+  "collect": {"at": [0, 0, 0]},
+  "makes": [{"item": "create:wheat_flour", "keep": 64}],
+  "batch": 16,
+  "min_speed": 1
+}

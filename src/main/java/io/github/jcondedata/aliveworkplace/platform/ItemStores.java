@@ -77,4 +77,10 @@ public interface ItemStores {
 
 	/** Puts a stack into the stores; returns what didn't fit. */
 	ItemStack insert(Level level, List<BlockPos> stores, ItemStack stack);
+
+	/** How much of {@code fluid} the tank at {@code pos} (a Create basin, say) holds, in millibuckets; 0 without a tank. */
+	long fluidMb(Level level, BlockPos pos, net.minecraft.world.level.material.Fluid fluid);
+
+	/** Pours up to {@code mb} millibuckets of {@code fluid} into the tank at {@code pos}; returns how much went in. */
+	long pourFluid(Level level, BlockPos pos, net.minecraft.world.level.material.Fluid fluid, long mb);
 }

@@ -4904,7 +4904,7 @@ the owner's port jar; M33's caravans (39.7).
   crew when builders build a contraption (39.5). Outfit and job icon with the pixel-art skill. Done when: compat
   GameTests: a jobless villager takes the job block; a broken shaft in a finished build is replaced; without Create the
   job isn't registered (a GameTest); scene `mechanic`.
-- [ ] **39.3** **Villagers work Create machines.**
+- [x] **39.3** (review: pending 2026-10-18) **Villagers work Create machines.**
   `data/aliveworkplace/machine_work/<id>.json`: the machine's block id, where its input goes and its output comes out
   (the machine, its basin or a depot), which job works it, and what the village wants made, e.g. the Miller's
   millstone (wheat to flour), the Smith's mechanical press (ingots to sheets), the Chef's mixer and basin (dough), the
@@ -5037,6 +5037,14 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-e-1018-0413, 39.3 decisions): the chef's mixer water is poured straight into the basin's tank
+  (1000 mB, through Fabric's fluid transfer, which the port exposes), not taken from a water bucket in the store: the
+  dough recipe takes a bucket's worth and villages need no bucket supply. Read from the port: the mechanical mixer has
+  no shaft (it's driven as a cogwheel) and works from medium speed, so `mixer.json`'s `min_speed` is 30; the crushing
+  wheels' gap block saves the wheels' RPM / 50 as `Speed`, so `crushing.json`'s is 0.02 (1 RPM). The design note's
+  per-dimension `machines` record wasn't needed (workers find machines near their workstation in loaded chunks); only
+  the worker's `machine_job` attachment is saved. A worker looks for machine work every 5 s whatever their job's own
+  behaviour is doing (most never stop running, e.g. the armorer's smelting), and that work waits during a trip.
 - 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
   Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
   `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed

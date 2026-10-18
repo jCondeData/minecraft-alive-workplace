@@ -70,8 +70,9 @@ import org.jetbrains.annotations.Nullable;
  * carried there and placed with the blueprint's axis and facing. Parts go back in their order ({@link Kinetics#group}):
  * shafts before the cogwheels that sit on them, both before belts. A build a builder is repairing is left to them; a
  * part whose item isn't in the store waits, and the Mechanic says what's needed.</li>
- * <li>Otherwise they walk their <b>round</b> of the village's machines ({@link MechanicRound}, saved): a millstone
- * with something milled in it is emptied into the store, and one that's turning and empty is refilled with wheat. A
+ * <li>Otherwise they walk their <b>round</b> of the village's machines ({@link MechanicRound}, saved): each machine a
+ * machine-work file names (39.3, {@link MachineWork#tend}) has what it made emptied into the store, and one that's
+ * turning and holds nothing to work on gets its next batch from the store (a millstone wheat). A
  * machine that has stopped turning is reported on their status, never fed.</li>
  * </ul>
  * Restartable at any tick: only the round is saved; a part in hand when the work stops goes back to the store, and the
@@ -90,8 +91,6 @@ public class MechanicWork extends Behavior<Villager> {
 	public static int MACHINE_EVERY = 200;
 	/** Ticks spent putting a part back or seeing to a machine. */
 	static final int WORK_TICKS = 20;
-	/** The most a millstone is refilled with at a time. */
-	static final int BATCH = 16;
 	/** A machine counts as turning at this many RPM or more (design note M39, {@code min_speed}). */
 	static final float MIN_SPEED = 1f;
 	public static final int XP_PER_PART = 3;
@@ -369,51 +368,22 @@ public class MechanicWork extends Behavior<Villager> {
 		/** Not turning: nothing fed. */
 		STOPPED,
 		/** It isn't a machine any more. */
-		GONE
+		GONE,
+		/** The store is full: nothing taken out, nothing put in. */
+		FULL
 	}
 
 	/**
-	 * Sees to the machine at {@code machine} with the store by {@code post}: what it made goes to the store (as much as
-	 * fits), and if it turns and holds nothing to work on it gets up to {@link #BATCH} of what it's fed with from the store.
+	 * Sees to the machine at {@code machine} with the store by {@code post}, as its machine-work file says (39.3,
+	 * {@link MachineWork#tend}): what it made goes to the store (as much as fits), and if it turns and holds nothing to
+	 * work on it gets its next batch from the store.
 	 */
 	public static Tended tend(ServerLevel level, BlockPos post, BlockPos machine) {
-		BlockState state = level.getBlockState(machine);
-		if (!Kinetics.isMachine(state)) {
+		MachineWorkFiles.Machine file = MachineWorkFiles.forMachine(level.getBlockState(machine));
+		if (file == null) {
 			return Tended.GONE;
 		}
-		List<Item> feed = Kinetics.feed(state);
-		List<BlockPos> chests = SupplyContainers.find(level, post, null);
-		boolean worked = false;
-		if (!chests.isEmpty() && SupplyContainers.freeSlots(level, chests) > 0) {
-			for (ItemStack made : STORES.takeMatching(level, machine, s -> !feed.contains(s.getItem()), 9)) {
-				ItemStack rest = SupplyContainers.insert(level, chests, made);
-				if (!rest.isEmpty()) {
-					drop(level, post, rest);
-				}
-				worked = true;
-			}
-		}
-		boolean turning = turning(level, machine);
-		if (turning && STORES.peekMatching(level, machine, s -> feed.contains(s.getItem())).isEmpty()) {
-			for (Item item : feed) {
-				int taken = SupplyContainers.extract(level, chests, item, BATCH);
-				if (taken <= 0) {
-					continue;
-				}
-				ItemStack rest = STORES.insert(level, List.of(machine), new ItemStack(item, taken));
-				if (!rest.isEmpty()) {
-					rest = SupplyContainers.insert(level, chests, rest);
-					if (!rest.isEmpty()) {
-						drop(level, post, rest);
-					}
-				}
-				if (rest.getCount() < taken) {
-					worked = true;
-					break;
-				}
-			}
-		}
-		return worked ? Tended.WORKED : turning ? Tended.FINE : Tended.STOPPED;
+		return MachineWork.tend(level, SupplyContainers.find(level, post, null), machine, file, post);
 	}
 
 	private static void drop(ServerLevel level, BlockPos pos, ItemStack stack) {

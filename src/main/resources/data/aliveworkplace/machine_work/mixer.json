@@ -1,0 +1,11 @@
+{
+  "requires": "create",
+  "machine": "create:mechanical_mixer",
+  "job": "aliveworkplace:chef",
+  "recipe_type": "create:mixing",
+  "feed": {"at": [0, -2, 0], "block": "create:basin", "fluid": "minecraft:water", "fluid_mb": 1000},
+  "collect": {"at": [0, -2, 0], "block": "create:basin"},
+  "makes": [{"item": "create:dough", "keep": 32}],
+  "batch": 1,
+  "min_speed": 30
+}

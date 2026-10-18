@@ -1090,6 +1090,25 @@ final class JobScenes {
 			return l -> l.getBlockState(gap).is(create.apply("shaft")) && l.getBlockState(cogAt).is(create.apply("cogwheel"))
 				&& c.countItem(createItem.apply("wheat_flour")) > 0 && mechanic.isAlive();
 		}));
+		// Villagers work Create's machines (ROADMAP 39.3, filmed with Create): a Farmer at a composter, the store chest beside
+		// it with wheat, and a millstone on a creative motor a few steps away. The farmer takes wheat from the chest, pours it
+		// into the turning millstone and brings the flour it grinds back to the chest.
+		SCENES.put("create_mill", job("the Farmer took wheat from the chest to the turning millstone and brought the flour it ground back to the chest",
+			2400, (level, player) -> {
+			level.setDayTime(2000);
+			java.util.function.Function<String, Block> create = path -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
+			java.util.function.Function<String, Item> createItem = path -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
+			Showcase.check(!io.github.jcondedata.aliveworkplace.mechanic.MachineWorkFiles.all().isEmpty(), "Create is loaded and the machine-work files are read");
+			Container c = chest(level, chestPos(), new ItemStack(Items.WHEAT, 32));
+			Villager farmer = worker(level, STATION, Blocks.COMPOSTER, net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER,
+				net.minecraft.world.entity.npc.VillagerProfession.FARMER);
+			BlockPos mill = STATION.offset(3, 1, -2);
+			level.setBlockAndUpdate(mill.below(), create.apply("creative_motor").defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
+			level.setBlockAndUpdate(mill, create.apply("millstone").defaultBlockState());
+			return l -> c.countItem(createItem.apply("wheat_flour")) > 0 && farmer.isAlive();
+		}));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks

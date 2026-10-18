@@ -177,6 +177,9 @@ public final class ModAttachments {
 	/** The last day a villager came to a festival (see {@code hall/Festivals}). */
 	public static final Attachment<Long> FESTIVAL_DAY = Attachment.saved("festival_day", com.mojang.serialization.Codec.LONG);
 
+	/** The last day a villager watched a Mega Shrine's festival show (see {@code trainer/MegaShrines}, 38.7). */
+	public static final Attachment<Long> MEGA_SHOW_DAY = Attachment.saved("mega_show_day", com.mojang.serialization.Codec.LONG);
+
 	/** The last day a villager came to a festival under the village's banner (see {@code hall/Festivals}, 30.13). */
 	public static final Attachment<Long> FESTIVAL_BANNER_DAY = Attachment.saved("festival_banner_day", com.mojang.serialization.Codec.LONG);
 
@@ -418,6 +421,12 @@ public final class ModAttachments {
 	public static final Attachment<net.minecraft.world.item.ItemStack> PLUNDER = Attachment.saved("plunder", net.minecraft.world.item.ItemStack.CODEC);
 	/** What a villager held when a fire bell put a water bucket in their hand (B152: a fisher's rod), given back after. Absent: nothing. */
 	public static final Attachment<net.minecraft.world.item.ItemStack> BRIGADE_HELD = Attachment.saved("brigade_held", net.minecraft.world.item.ItemStack.CODEC);
+	/** A Mechanic's round of the village's machines and where they are on it (ROADMAP 39.2). Absent: none yet (found again). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.mechanic.MechanicRound> MECHANIC_ROUND = Attachment.saved("mechanic_round",
+		io.github.jcondedata.aliveworkplace.mechanic.MechanicRound.CODEC);
+	/** A worker's trip to a Create machine (39.3): which machine, how far along and what they carry. None: no trip. */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.mechanic.MachineJob> MACHINE_JOB = Attachment.saved("machine_job",
+		io.github.jcondedata.aliveworkplace.mechanic.MachineJob.CODEC);
 
 	public static void init() {
 	}

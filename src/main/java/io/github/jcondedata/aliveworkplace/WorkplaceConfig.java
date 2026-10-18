@@ -143,6 +143,71 @@ public final class WorkplaceConfig {
 	 * hired stand idle.
 	 */
 	public boolean physicians = Expansions.on(Expansions.M32);
+	/**
+	 * Guards can be posted to the raid dens the village knows (ROADMAP 38.3, Cobblemon Raid Dens): they stand watch by
+	 * day, and a player who joins a raid there gets a cheer. Off: no new wardens, and those posted go back to normal duty.
+	 */
+	public boolean denWardens = Expansions.on(Expansions.M38);
+	/**
+	 * A village's best trainer (a Trainer Leader or a Master) challenges an active raid den it knows every
+	 * {@link #denChallengeDays} days (ROADMAP 38.4): a win brings that tier's raid loot to the store. Off: no challenges.
+	 */
+	public boolean denChallenges = Expansions.on(Expansions.M38);
+	/** Days between a village's raid den challenges (38.4). */
+	public int denChallengeDays = 3;
+	/**
+	 * More village trainers Mega Evolve (ROADMAP 38.5, Mega Showdown): a City's Trainer Leaders, the Festival Cup's
+	 * finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega
+	 * Bracelet. 38.6: the Jeweller cuts Mega Stones and Key Stones, Miners take the Mega finds to the store, and a player
+	 * who beats every Trainer Leader of a realm gets a Mega Bracelet. Off: only Masters carry one, as before, nobody wears
+	 * a bracelet and the village makes no Mega Stones.
+	 */
+	public boolean villageMegas = Expansions.on(Expansions.M38);
+	/**
+	 * Cobblecuisine's dishes on the menus (ROADMAP 38.8): the Chef cooks them from their own recipes by his level, each
+	 * counts as its food group for the villagers' diet, the Camp Cook adds its curries and the Innkeeper serves its
+	 * drinks. 38.11: with Cobblemon, the Chef also cooks every Campfire Pot recipe (candies, medicines, sweets) from the
+	 * store's makings. Off: the menus and the diet are as they were.
+	 */
+	public boolean cuisineDishes = Expansions.on(Expansions.M38);
+	/**
+	 * Bean farms (ROADMAP 38.9): with Cobblecuisine, farmers sow its beans when the store holds fewer than 16 of a colour
+	 * a dish on the menu needs, and cut them when ripe, into the store. Off: farmers never sow beans.
+	 */
+	public boolean beanFarms = Expansions.on(Expansions.M38);
+	/**
+	 * With Create installed, a jobless villager by a Create Toolbox becomes the village's Mechanic (ROADMAP 39.2): they walk
+	 * a round of the village's machines, empty full millstones into the store and refill empty ones, and put back the
+	 * shafts, cogwheels and belts gone from finished builds. Off: no new Mechanics, and those hired stand idle. Without
+	 * Create it does nothing.
+	 */
+	public boolean mechanics = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, villagers work Create's machines (ROADMAP 39.3): the farmer mills wheat into flour, the
+	 * armorer presses ingots into sheets, the chef mixes dough and the miner crushes raw ore, taking the input from the
+	 * store and bringing what's made back, only while the machine turns and the store has room. Off: nobody feeds a
+	 * machine. Without Create it does nothing.
+	 */
+	public boolean machineWork = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, the Blueprint Table offers the Watermill, the Windmill and the Workshop (ROADMAP 39.4),
+	 * workplaces whose machines turn as soon as they're built. Off: they aren't offered (sites already started still
+	 * finish). Without Create it does nothing.
+	 */
+	public boolean createBuilds = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, the Blueprint Table lists the schematics players uploaded with Create's Schematic Table, and
+	 * a written Schematic used on the table imports its file (ROADMAP 39.6). Off: the table leaves Create's schematics
+	 * alone (those already imported stay). Without Create it does nothing.
+	 */
+	public boolean createSchematics = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, the Blueprint Table offers the Train Station (ROADMAP 39.7); two villages with a caravan
+	 * route and a station each get Create track laid along the road between them by their builders, and their caravans go
+	 * by train: a third of the trip, never lost. Off: no station at the table, no track laid, caravans walk (a train
+	 * already on its way still comes in). Without Create it does nothing.
+	 */
+	public boolean villageTrains = Expansions.on(Expansions.M39);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -325,6 +390,14 @@ public final class WorkplaceConfig {
 	public int wonderCrew = 12;
 	/** The share (%) of a finished Wonder that must stand for its powers (35.8); under it, the builders repair it. */
 	public int wonderStanding = 90;
+	/** Builds use the pack's furniture mods for their chairs, tables, beds and lamps when installed (M37). Off: every build is the vanilla build. */
+	public boolean furnishedBuilds = Expansions.on(Expansions.M37);
+	/** The furniture mods tried in order for each piece (M37); a mod that isn't installed is passed over. File only. */
+	public List<String> furnitureMods = new ArrayList<>(io.github.jcondedata.aliveworkplace.furnish.Furnishings.DEFAULT_MODS);
+	/** A Sophisticated Storage controller or Tom's Simple Storage connector in the Storehouse counts as one store for all it links (M37). Off: each linked chest is its own store. */
+	public boolean moddedStorageNetworks = Expansions.on(Expansions.M37);
+	/** Homes and workshops are built from the modded library (dressed with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted) when every one of its blocks is installed and furnished builds are on (M37, 37.12). Off: the vanilla library. */
+	public boolean moddedLibrary = Expansions.on(Expansions.M37);
 	/** Wonder ids that can't be started ({@code great_cathedral} or {@code pack:id}); one already finished keeps its blocks and powers. File only. */
 	public List<String> disabledWonders = new ArrayList<>();
 	/** Which of a host's festivals are Cups: every one (1), every second (2), ... (owner, 28.1a: every festival). */
@@ -476,7 +549,8 @@ public final class WorkplaceConfig {
 		"leaderboardHour", 0, 23,
 		"wonderServerLimit", 0, 64,
 		"wonderCrew", 1, 32,
-		"wonderStanding", 50, 100);
+		"wonderStanding", 50, 100,
+		"denChallengeDays", 1, 30);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -509,6 +583,7 @@ public final class WorkplaceConfig {
 		if (disabledWonders == null) {
 			disabledWonders = new ArrayList<>();
 		}
+		furnitureMods = io.github.jcondedata.aliveworkplace.furnish.Furnishings.cleanMods(furnitureMods);
 		colonyRank = colonyRank(colonyRank).name().toLowerCase(java.util.Locale.ROOT);
 		leaderboardDay = leaderboardDay(leaderboardDay).name().toLowerCase(java.util.Locale.ROOT);
 		if (disabledArcs == null) {
@@ -814,6 +889,17 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = firewardens && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = wellKeepers && Expansions.on(Expansions.M32);
+		io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED = denWardens && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED = denChallenges && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.EVERY_DAYS = denChallengeDays;
+		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED = cuisineDishes && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED = beanFarms && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED = mechanics && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.ENABLED = machineWork && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.ENABLED = createBuilds && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.table.CreateSchematics.ENABLED = createSchematics && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.city.CaravanTrains.ENABLED = villageTrains && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();
@@ -859,6 +945,11 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.STANDING = wonderStanding;
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.DISABLED = wonderIds(disabledWonders);
 		io.github.jcondedata.aliveworkplace.build.Scaffolds.ENABLED = builderScaffolding && Expansions.on(Expansions.M35);
+		// Furnished homes and modded storage (M37), behind its gate.
+		io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED = furnishedBuilds && Expansions.on(Expansions.M37);
+		io.github.jcondedata.aliveworkplace.furnish.Furnishings.MODS = java.util.List.copyOf(io.github.jcondedata.aliveworkplace.furnish.Furnishings.cleanMods(furnitureMods));
+		io.github.jcondedata.aliveworkplace.store.StorageNetworks.ENABLED = moddedStorageNetworks && Expansions.on(Expansions.M37);
+		io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.ENABLED = moddedLibrary && Expansions.on(Expansions.M37); // 37.12
 		// Off in gametests (tickets around every test's workers would keep the test areas loaded); KeepLoaded's tests turn it on.
 		io.github.jcondedata.aliveworkplace.work.KeepLoaded.VILLAGES = keepVillagesWorking && System.getProperty("fabric-api.gametest") == null;
 		// Off in gametests (a partner walking off mid-test would move the numbers); the show tests turn them on.

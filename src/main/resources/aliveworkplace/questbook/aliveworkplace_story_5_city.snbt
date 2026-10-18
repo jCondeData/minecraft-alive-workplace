@@ -47,9 +47,9 @@
 			x: 9.0d,
 			y: 0.0d,
 			title: "Burghers",
-			description: ["Raise a household to Burgher.", "", "1. On the Classes tab, click Burgher to see what they need: among other things a tier II home, a varied diet, a school, a Market Square, Fine Clothes, Berry Wine and the Gazette.", "2. Give a household all of it two dawns running and it rises.", "3. The luxuries come from the Vintner, the Tailor and the Printer (side quests).", "", "Burghers pay more tax, and your builders then sell the Manor.", "", "Click the checkmark above once a household in your village is Burghers."],
+			description: ["Raise a household to Burgher.", "", "1. On the Classes tab, click Burgher to see what they need: among other things a tier II home, a varied diet, a school, a Market Square, Fine Clothes, Berry Wine and the Gazette.", "2. Give a household all of it two dawns running and it rises.", "3. The luxuries come from the Vintner, the Tailor and the Printer (side quests).", "", "Burghers pay more tax, and your builders then sell the Manor.", "", "This quest completes by itself when a household in your village rises to Burgher."],
 			dependencies: ["2111E4C5203EC081"],
-			tasks: [{id: "65D26DE32287122F", type: "checkmark", title: "A household in my village rose to Burgher"}],
+			tasks: [{id: "65D26DE32287122F", type: "advancement", advancement: "aliveworkplace:village/burghers", criterion: ""}],
 			rewards: [{id: "1717707CEE51E2E6", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}, {id: "5ED089CBED84FFAA", type: "command", command: "/workplace unlock {p} aliveworkplace:manor", elevate_perms: true, silent: true}]
 		},
 		{
@@ -68,10 +68,10 @@
 			x: 15.0d,
 			y: 0.0d,
 			title: "Nobles",
-			description: ["Raise a household all the way to Noble.", "", "1. On the Classes tab, click Noble to see what they need: among other things a tier III home, Noble Robes, Vintage Wine and an Emerald Brooch.", "2. Journeyman Tailors make Noble Robes and Journeyman Vintners Vintage Wine; Apprentice Jewelers make the Emerald Brooch.", "3. Give a Burgher household all of it two dawns running and it rises.", "", "Nobles pay four times the tax and make the whole village happier.", "", "Click the checkmark above once a household in your village is Nobles."],
+			description: ["Raise a household all the way to Noble.", "", "1. On the Classes tab, click Noble to see what they need: among other things a tier III home, Noble Robes, Vintage Wine and an Emerald Brooch.", "2. Journeyman Tailors make Noble Robes and Journeyman Vintners Vintage Wine; Apprentice Jewelers make the Emerald Brooch.", "3. Give a Burgher household all of it two dawns running and it rises.", "", "Nobles pay four times the tax and make the whole village happier.", "", "This quest completes by itself when a household in your village rises to Noble."],
 			dependencies: ["65D2BD1D26DB49AE"],
 			icon: {id: "aliveworkplace:noble_robes", count: 1},
-			tasks: [{id: "6D4055538520C47C", type: "checkmark", title: "A household in my village rose to Noble"}],
+			tasks: [{id: "6D4055538520C47C", type: "advancement", advancement: "aliveworkplace:village/nobles", criterion: ""}],
 			rewards: [{id: "192D5F8502D1A4A5", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 16}, {id: "7406F2B63046E70F", type: "xp", xp: 300}]
 		},
 		{
@@ -79,10 +79,10 @@
 			x: 18.0d,
 			y: 0.0d,
 			title: "Found a realm",
-			description: ["Found a realm with your village as its capital.", "", "1. Open the Village Hall of a Town or City and click the minecart (Trade routes) in the second row.", "2. Click the Realm tab, then Found a realm.", "", "A realm starts as a Barony. Its villages share a treasury and research, and send riders when one is raided.", "", "Click the checkmark above once you've founded a realm."],
+			description: ["Found a realm with your village as its capital.", "", "1. Open the Village Hall of a Town or City and click the minecart (Trade routes) in the second row.", "2. Click the Realm tab, then Found a realm.", "", "A realm starts as a Barony. Its villages share a treasury and research, and send riders when one is raided.", "", "This quest completes by itself when you found a realm."],
 			dependencies: ["1E0D668D5B1E3041"],
 			icon: {id: "minecraft:filled_map", count: 1},
-			tasks: [{id: "76E935D5FF22E65B", type: "checkmark", title: "I founded a realm"}],
+			tasks: [{id: "76E935D5FF22E65B", type: "advancement", advancement: "aliveworkplace:village/realm", criterion: ""}],
 			rewards: [{id: "2A41066C700B43AA", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 8}]
 		},
 		{

@@ -69,6 +69,9 @@ public final class BlueprintLibrary {
 		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
 		return server.getStructureManager().listTemplates()
 			.filter(id -> everything || cobblemonOk(id))
+			.filter(id -> everything || megaOk(id)) // the Mega Shrine: Mega Showdown's blocks (38.7)
+			.filter(id -> everything || io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.listed(id)) // Create's builds (39.4)
+			.filter(id -> everything || io.github.jcondedata.aliveworkplace.city.CaravanTrains.listed(id)) // the Train Station (39.7)
 			.filter(id -> everything || !soldOnly(id)) // sold by villagers only (34.15a, 34.15b)
 			.filter(id -> everything || StarterBlueprints.offered(id)) // an expansion's build, only once it's open (B119)
 			.filter(id -> everything || !io.github.jcondedata.aliveworkplace.city.Roads.isSegment(id)) // a Steward's road segments (27.15)
@@ -85,6 +88,12 @@ public final class BlueprintLibrary {
 			&& StarterBlueprints.COBBLEMON_WORKPLACES.stream().noneMatch(e -> e.id().equals(id));
 	}
 
+	/** Blueprints of Mega Showdown's blocks ({@link StarterBlueprints#MEGA_ONLY}) are listed only while those blocks exist and {@code villageMegas} is on. */
+	public static boolean megaOk(ResourceLocation id) {
+		return StarterBlueprints.MEGA_ONLY.stream().noneMatch(e -> e.id().equals(BlueprintStyles.base(id)))
+			|| io.github.jcondedata.aliveworkplace.trainer.MegaShrines.listed();
+	}
+
 	/** Blueprints villagers sell and the Blueprint Table doesn't list ({@link StarterBlueprints#SOLD_ONLY}); they still load by id. */
 	public static boolean soldOnly(ResourceLocation id) {
 		ResourceLocation base = BlueprintStyles.base(id);
@@ -97,8 +106,10 @@ public final class BlueprintLibrary {
 			|| id.getPath().startsWith("research/") // research/: drawn up by a village's scholars (see research/Research)
 			|| id.getPath().startsWith("realm/") // realm/: drawn on a realm capital's Realm tab (33.14, see realm/RoyalHalls)
 			|| id.getPath().startsWith("camp/") // camp/: set up at once by a Settler's Wagon
+			|| id.getPath().startsWith(ModdedLibrary.PREFIX) // modded/: the modded library's copies, built in place of their vanilla build (37.12)
 			|| id.getPath().startsWith("legend/") // legend/: a found Legend's camp, set down at once (29.9)
 			|| id.getPath().startsWith("story/") // story/: set down by a story arc (31.15's Bandit King's fort)
+			|| id.getPath().startsWith("train/") // train/: the village's Create train, built by a village at its station (39.7c)
 			|| id.getPath().startsWith("wonder/")); // wonder/: a Wonder's stage parts, raised from its Wonder Plan (35.3)
 	}
 

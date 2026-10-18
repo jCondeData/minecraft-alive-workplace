@@ -78,6 +78,7 @@ final class ModdedBlocks {
 
 	/** Finishes a block a builder has just placed: puts the pot on a Campfire Pot (its cost included it). */
 	static void afterPlaced(ServerLevel level, BlockPos pos, BlockState state) {
+		io.github.jcondedata.aliveworkplace.store.StorageNetworks.afterBuilt(level, pos, state); // 37.9: a built controller links its storage
 		if (BuiltInRegistries.BLOCK.getKey(state.getBlock()).equals(CAMPFIRE_POT)) {
 			BuiltInRegistries.ITEM.getOptional(CAMPFIRE_POT_ITEM).ifPresent(pot ->
 				CampCooks.Pot.EXTENSION.run(p -> p.fitPot(level, pos, new ItemStack(pot))));

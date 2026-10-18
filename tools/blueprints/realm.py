@@ -227,7 +227,7 @@ def royal_hall_shell(b):
 def royal_hall_inside(b):
     """The runner, the dais and seat of state, banners down the walls, the gallery, the beams and lanterns, the vault."""
     # A red runner from the door to the dais
-    for z in range(4, 15):
+    for z in range(5, 15):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(9, 1, z, "red_carpet")
     # The dais: two steps up across the back of the hall
     for x in range(4, 15):
@@ -404,6 +404,8 @@ def royal_hall_2():
     for y in range(2, 6):
         b.set(HALL_X1, y, 5, ROYAL_STONE.at(HALL_X1, y, 5))
     door(b, HALL_X1, 1, 5, "dark_oak_door", "east")
+    for z in (5, 13):  # the bench seats inside the new doors come off: a step a villager can't take under a lintel (B173)
+        b.set(HALL_X1 - 1, 1, z, "air")
     b.set(T0, 1, 5, "air")
     b.set(T0, 2, 5, "air")
     door(b, 21, 1, U0, "dark_oak_door", "north")

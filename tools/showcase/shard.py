@@ -25,10 +25,29 @@ import process  # noqa: E402
 RUN = os.path.join(ROOT, "versions", "1.21.1", "run", "screenshots")
 
 
+def dump_threads(path):
+    """Where a scene that ran over its time is waiting (B169): a thread dump of the game client, before it is killed."""
+    try:
+        pids = subprocess.run(["pgrep", "-f", "aliveworkplace.shots=true"], capture_output=True, text=True).stdout.split()
+        java_home = os.environ.get("JAVA_HOME")
+        jstack = shutil.which("jstack") or (java_home and os.path.join(java_home, "bin", "jstack"))
+        if not pids or not jstack:
+            return
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            for pid in pids:
+                f.write(f"== pid {pid}\n")
+                f.flush()
+                subprocess.run([jstack, pid], stdout=f, stderr=subprocess.STDOUT, timeout=60)
+        print(f"thread dump of the stuck client: {path}", flush=True)
+    except (OSError, subprocess.SubprocessError) as e:
+        print(f"no thread dump: {e}", flush=True)
+
+
 def run_scene(name, out, limit):
     env = dict(os.environ)
     env.update(scenes.env(name))
-    for stale in ("showcase.json", "client.log"):
+    for stale in ("showcase.json", "client.log", "jstack.txt"):
         path = os.path.join(RUN, stale)
         if os.path.exists(path):
             os.remove(path)
@@ -40,6 +59,7 @@ def run_scene(name, out, limit):
         code = proc.wait(timeout=limit)
     except subprocess.TimeoutExpired:
         code = "timeout"
+        dump_threads(os.path.join(RUN, "jstack.txt"))
         for sig in (signal.SIGTERM, signal.SIGKILL):
             try:
                 os.killpg(proc.pid, sig)
@@ -70,6 +90,8 @@ def run_scene(name, out, limit):
         result["log"] = "client-log.txt"
         with open(os.path.join(out, name, "result.json"), "w") as f:
             json.dump(result, f, indent=1)
+    if os.path.exists(os.path.join(RUN, "jstack.txt")):
+        shutil.copy(os.path.join(RUN, "jstack.txt"), os.path.join(out, name, "jstack.txt"))
     shutil.rmtree(raw, ignore_errors=True)  # the frames are in the GIF now; keep the artifact small
     mark = "PASS" if result["pass"] else "FAIL"
     print(f"{mark} {name} ({seconds}s): " + "; ".join(result["reasons"] or [c["what"] for c in result["checks"]]), flush=True)

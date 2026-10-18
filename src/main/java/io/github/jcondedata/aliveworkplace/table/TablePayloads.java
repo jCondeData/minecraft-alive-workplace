@@ -63,6 +63,17 @@ public final class TablePayloads {
 			Material::new);
 	}
 
+	/**
+	 * A kind of job block in a build (36.6a): the jobs that share it (profession ids, the one a jobless villager takes by
+	 * itself first) and how many of it the build holds.
+	 */
+	public record JobBlock(List<ResourceLocation> jobs, int count) {
+		public static final StreamCodec<FriendlyByteBuf, JobBlock> CODEC = StreamCodec.composite(
+			ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list(32)), JobBlock::jobs,
+			ByteBufCodecs.VAR_INT, JobBlock::count,
+			JobBlock::new);
+	}
+
 	/** S2C: open (or refresh) the table screen with the server's library. */
 	public record Open(BlockPos table, List<Entry> entries, boolean canUpload) implements CustomPacketPayload {
 		public static final Type<Open> TYPE = new Type<>(AliveWorkplace.id("table_open"));
@@ -105,16 +116,23 @@ public final class TablePayloads {
 	}
 
 	/**
-	 * S2C: the materials list for one blueprint (as drawn or in a style), and the styles its build can be built in (26.11;
-	 * none for a locked build or a Wonder).
+	 * S2C: the materials list for one blueprint (as drawn or in a style), the styles its build can be built in (26.11;
+	 * none for a locked build or a Wonder), and its job blocks and beds (36.6a, {@link BuildJobs}).
 	 */
-	public record Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles) implements CustomPacketPayload {
+	public record Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles, List<JobBlock> jobs, int beds)
+		implements CustomPacketPayload {
 		public static final Type<Details> TYPE = new Type<>(AliveWorkplace.id("table_details"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Details> CODEC = StreamCodec.composite(
 			ResourceLocation.STREAM_CODEC, Details::id,
 			Material.CODEC.apply(ByteBufCodecs.list()), Details::materials,
 			StyleChoice.CODEC.apply(ByteBufCodecs.list()), Details::styles,
+			JobBlock.CODEC.apply(ByteBufCodecs.list()), Details::jobs,
+			ByteBufCodecs.VAR_INT, Details::beds,
 			Details::new);
+
+		public Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles) {
+			this(id, materials, styles, List.of(), 0);
+		}
 
 		public Details(ResourceLocation id, List<Material> materials) {
 			this(id, materials, List.of());
@@ -132,7 +150,12 @@ public final class TablePayloads {
 	 * {@code scale}×{@code scale}×{@code scale} blocks (1 for most builds; bigger builds are drawn coarser so the
 	 * preview stays within {@link TableServer#PREVIEW_CAP} cells). Blocks hidden inside the build are left out.
 	 */
-	public record Preview(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int scale, List<Integer> palette, int[] blocks)
+	/**
+	 * A build's 3D preview: its size above the ground, how many blocks of it lie under the ground ({@code below}, a
+	 * basement's depth, 36.1; 0 for most builds), the cell size and the cells ({@code x, y, z, palette index}, in cells;
+	 * a basement's cells have y below 0).
+	 */
+	public record Preview(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int below, int scale, List<Integer> palette, int[] blocks)
 		implements CustomPacketPayload {
 		public static final Type<Preview> TYPE = new Type<>(AliveWorkplace.id("table_preview"));
 		private static final StreamCodec<? super RegistryFriendlyByteBuf, List<Integer>> PALETTE = ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list());
@@ -141,11 +164,12 @@ public final class TablePayloads {
 			buf.writeVarInt(p.sizeX());
 			buf.writeVarInt(p.sizeY());
 			buf.writeVarInt(p.sizeZ());
+			buf.writeVarInt(p.below());
 			buf.writeVarInt(p.scale());
 			PALETTE.encode(buf, p.palette());
 			buf.writeVarIntArray(p.blocks());
 		}, buf -> new Preview(ResourceLocation.STREAM_CODEC.decode(buf), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
-			PALETTE.decode(buf), buf.readVarIntArray()));
+			buf.readVarInt(), PALETTE.decode(buf), buf.readVarIntArray()));
 
 		/** Cells sent. */
 		public int count() {

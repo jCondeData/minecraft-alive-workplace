@@ -78,7 +78,7 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   the crew laid that then changes by itself (farmland drying out to dirt before its water comes) is left as it is,
   not laid again, and a crop due on dried-out farmland is planted once the builder has tilled it again.
 - Crews add hands, not speed: each builder keeps their own pace. Eight builders raise the folly in about 2,500 to
-  2,900 ticks against about 12,150 for one alone (at one block a second): under a quarter of the time.
+  3,100 ticks against about 12,150 for one alone (at one block a second): about a quarter of the time.
 - The crew fetches from the chests round the stone and the village's stores, and passes materials to each other. In
   one trip each member takes for the rest of its column and a share of the stage, dealt round the crew like cards (each
   block's materials to half of the crew), plus a little of the stages after it (the decoration's lanterns and doors), so

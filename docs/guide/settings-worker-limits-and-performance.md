@@ -7,7 +7,7 @@ caption: The settings screen's numbers
 Workers per Village: 0, no limit (0 to 500)
 Fisherman Cap: on
 Fishermen per Village: 1 (1 to 20)
-Villagers per Extra Fisherman: 10 (1 to 100)
+Extra Fisherman Every: 10 (1 to 100)
 Worker Path Range: 48 blocks (16 to 128)
 Villages Work Unseen: on
 categories: Settings
@@ -26,8 +26,8 @@ in their village are taken. Nobody loses a job they already have. Use it to keep
 
 Normally **on**. A barrel is a fisherman's workstation, and builds are full of storage barrels, so without a cap most of
 a village's jobless villagers would turn fisherman. With it on, a village takes **Fishermen per Village** fishermen
-(normally 1), plus one more for every **Villagers per Extra Fisherman** villagers (normally 10) within the village's
-reach of the barrel. After that, jobless villagers pass free barrels by and take another free workstation. A fisherman
+(normally 1), plus one more for every so many villagers within the village's reach of the barrel, set by
+**Extra Fisherman Every** (normally 10). After that, jobless villagers pass free barrels by and take another free workstation. A fisherman
 the village already has keeps his job, and a job you give at the hall isn't held back. Off: as in vanilla.
 
 ## Worker Path Range

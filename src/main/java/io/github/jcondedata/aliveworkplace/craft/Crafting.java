@@ -37,8 +37,9 @@ public final class Crafting {
 		/** The stonecutter's: one block in, one or more out. */
 		STONECUTTING,
 		/**
-		 * A cook's: the smoker's (cooked meat and fish, baked potatoes), the crafting table's (bread, pies, stews...) and,
-		 * with Cobblemon, its Campfire Pot's (Poké Snacks, Aprijuice, candies...), found by recipe type id.
+		 * A cook's: the smoker's (cooked meat and fish, baked potatoes), the crafting table's (bread, pies, stews...),
+		 * with Cobblemon its Campfire Pot's (Poké Snacks, Aprijuice, candies...), found by recipe type id, and the
+		 * campfire's (roasted berries).
 		 */
 		KITCHEN,
 		/**
@@ -128,6 +129,17 @@ public final class Crafting {
 			}
 		});
 		return new Plan(target, makes.getOrDefault(target, 0), steps, new LinkedHashMap<>(pool.takes), makes);
+	}
+
+	/**
+	 * Whether this tick's planning is used up ({@link #TICK_TRIALS}): a plan now would come back null whatever the
+	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11).
+	 */
+	public static boolean planningSpent(ServerLevel level) {
+		synchronized (TICK_USE) {
+			long[] tick = TICK_USE.get(level);
+			return tick != null && tick[0] == level.getGameTime() && tick[1] >= TICK_TRIALS;
+		}
 	}
 
 	/** How many recipes every plan so far has tried (tests compare it before and after). */
@@ -525,6 +537,8 @@ public final class Crafting {
 					}
 					all.addAll(Recipes.all(manager, RecipeType.SMOKING));
 					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
+					// Last, the campfire's (38.8: Cobblecuisine's sandwiches want roasted berries); the smoker's come first.
+					all.addAll(Recipes.all(manager, RecipeType.CAMPFIRE_COOKING));
 				}
 				case KILN -> {
 					for (RecipeHolder<?> holder : Recipes.all(manager, RecipeType.SMELTING)) {

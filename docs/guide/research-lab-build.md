@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 11 by 11, 9 high (II: 18 by 11, 10 high)
-Tiers: I, II (a museum hall)
+Tiers: I, II (a museum hall), III (a lower lab)
 Houses: a Fossil Scientist at the Fossil Analyzer (with Cobblemon)
 Where to get it: Blueprint Table; a Journeyman fossil scientist sells it for 12 emeralds
 Main materials: polished andesite, cut copper stairs, stone bricks, glass
@@ -26,6 +26,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 Once a builder finishes the Research Lab, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
 - **Research Lab II** adds a museum hall beside the lab, with a big skeleton of bone blocks on show.
+- **Research Lab III** digs a **lower lab** under the lab, down a ladder under a hatch by the front wall: bookshelves, a stone bench of specimens (amethyst, tinted jars, bone), chests of samples and a work table. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

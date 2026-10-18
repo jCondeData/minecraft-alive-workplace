@@ -12,7 +12,9 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).
 - [More decorations](more-decorations.md): fourteen small decorations that aren't houses, from a market cross to a footbridge (26.14).
 - [Basements and cellars](basements.md): the Level 4s with a basement dug under them, and the cellars from Level 1: the Butcher's freezer, the Smith's coal store, the Cook's larder, the Storehouse's vault (26.15).
+- [Cellars for the Level IIs and for old builds](cellars.md): eight Level IIIs, each its Level II with a cellar dug under it, and "Dig the cellar" for a Smithy, Storehouse or Kitchen built before it had one (36.7).
 - [Scaffolding](scaffolding.md): how builders scaffold up to what has nowhere to stand near it, and take it down (35.6).
+- [Furniture and storage mods](furniture-and-storage.md): builds furnished with Handcrafted, Lucky's Cozy Home, CobbleFurnies and Beautify, and Sophisticated Storage and Tom's Simple Storage in the Storehouse (2.1, being built: 37.1 to 37.11).
 - [Pokémon partners](pokemon-partners.md): pastured Pokémon that help at work, and are seen doing it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).
 - [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
@@ -58,6 +60,8 @@ How everything in the mod works, in plain words: written for the owner first, th
   rules (1.8).
 - [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).
 - [Wonders](wonders.md): the eight Wonders, what each needs and gives; the data files, requirements, the Wonders page, the Wonder Plan, the Foundation Stone, crews, goods and dedication, a finished Wonder's celebration, upkeep and powers, and each Wonder's design and powers (2.0, 35.1 to 35.24).
+- [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md): Cobblemon depth, three of the pack's Pokémon mods in village life: raid dens, more Mega trainers and Mega Stones, Cobblecuisine dishes and bean farms (2.2, 38.1 to 38.10).
+- [Create](create.md): Create integration: the Mechanic, villagers working Create's machines, Create-powered builds, contraptions, Create schematics at the table and trains (2.3, being built: 39.1, 39.2).
 - [The Festival Cup](festival-cup.md): its champions, the Cup banner and the holders' pride (Cobblemon, 1.2).
 - [Raids and threats](raids.md): raider cultures as data, the threat clock, raids that survive a restart (32.2).
 - [Lairs and the Defense page](lairs.md): a camp for every culture, named captains, the camp's strength, the hall's

@@ -1,0 +1,15 @@
+{
+  "pieces": {
+    "chair": {"block": ["cobblefurnies:{wood}_chair", "cobblefurnies:{colour}_chair"], "facing": "front"},
+    "stool": {"block": "cobblefurnies:{colour}_stool"},
+    "couch": {"block": ["cobblefurnies:{colour}_sofa", "cobblefurnies:{colour}_armchair"], "facing": "front", "states": {"type": "single"}},
+    "table": {"block": ["cobblefurnies:{wood}_table", "cobblefurnies:{colour}_table"]},
+    "desk": {"block": "cobblefurnies:poke_ball_desk", "facing": "front"},
+    "counter": {"block": "cobblefurnies:{colour}_cabinetry", "facing": "front"},
+    "cupboard": {"block": "cobblefurnies:{wood}_cabinet", "facing": "front"},
+    "nightstand": {"block": "cobblefurnies:{wood}_nightstand", "facing": "front"},
+    "drawer": {"block": "cobblefurnies:{colour}_drawer", "facing": "front"},
+    "lamp": {"block": "cobblefurnies:{colour}_lamp"},
+    "blinds": {"block": "cobblefurnies:{colour}_curtain", "facing": "front"}
+  }
+}

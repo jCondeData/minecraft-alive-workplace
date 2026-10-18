@@ -36,6 +36,8 @@ public class FisherRodGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos BARREL = new BlockPos(2, 2, 2);
 	private static final String NAME = "Old Faithful";
+	/** The barrel's spare has its own name: a catch can be a junk fishing rod, which goes into the barrel too (B159). */
+	private static final String SPARE = "Spare";
 
 	private static Villager fisherman(GameTestHelper helper, long dayTime) {
 		ServerLevel level = helper.getLevel();
@@ -66,6 +68,26 @@ public class FisherRodGameTests implements FabricGameTest {
 			&& NAME.equals(stack.get(DataComponents.CUSTOM_NAME).getString());
 	}
 
+	/** The named spare rod for the barrel. */
+	private static ItemStack spare() {
+		ItemStack rod = new ItemStack(Items.FISHING_ROD);
+		rod.set(DataComponents.CUSTOM_NAME, Component.literal(SPARE));
+		return rod;
+	}
+
+	/** How many named spares are in {@code barrel} (junk rods from the catch don't count). */
+	private static int spares(Container barrel) {
+		int n = 0;
+		for (int i = 0; i < barrel.getContainerSize(); i++) {
+			ItemStack stack = barrel.getItem(i);
+			if (stack.is(Items.FISHING_ROD) && stack.has(DataComponents.CUSTOM_NAME)
+				&& SPARE.equals(stack.get(DataComponents.CUSTOM_NAME).getString())) {
+				n += stack.getCount();
+			}
+		}
+		return n;
+	}
+
 	/** His named rod, in his hand or put away in his bag; EMPTY when it's gone. */
 	private static ItemStack hisRod(Villager villager) {
 		ItemStack hand = villager.getItemBySlot(EquipmentSlot.MAINHAND);
@@ -77,12 +99,18 @@ public class FisherRodGameTests implements FabricGameTest {
 
 	/** Fails the test the first tick the named rod is nowhere on him. */
 	private static void watchRod(GameTestHelper helper, Villager villager) {
+		watchRod(helper, villager, new String[] {null});
+	}
+
+	/** As above; {@code held[0]} is the success check that last failed, named in the message. */
+	private static void watchRod(GameTestHelper helper, Villager villager, String[] held) {
 		boolean[] failed = {false};
 		helper.onEachTick(() -> {
 			if (!failed[0] && hisRod(villager).isEmpty()) {
 				failed[0] = true;
 				helper.fail("after " + ModAttachments.FISH_CAUGHT.getOrElse(villager, 0) + " catches his rod is gone; the hand holds "
-					+ villager.getItemBySlot(EquipmentSlot.MAINHAND) + " at day time " + helper.getLevel().getDayTime() % 24000);
+					+ villager.getItemBySlot(EquipmentSlot.MAINHAND) + " at day time " + helper.getLevel().getDayTime() % 24000
+					+ (held[0] == null ? "" : "; the success check held by: " + held[0]));
 			}
 		});
 	}
@@ -99,11 +127,12 @@ public class FisherRodGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		Villager villager = fisherman(helper, 10500);
 		Container barrel = helper.getBlockEntity(BARREL);
-		barrel.setItem(0, new ItemStack(Items.FISHING_ROD));
+		barrel.setItem(0, spare());
 		Fishers.start(level, villager, rod(level, null, 0));
 		ServerPlayer owner = helper.makeMockServerPlayerInLevel();
 		owner.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-		watchRod(helper, villager);
+		String[] held = {null};
+		watchRod(helper, villager, held);
 		int[] tick = {0};
 		int[] caughtByEvening = {-1};
 		helper.onEachTick(() -> {
@@ -115,15 +144,24 @@ public class FisherRodGameTests implements FabricGameTest {
 			}
 		});
 		helper.succeedWhen(() -> {
-			helper.assertTrue(caughtByEvening[0] >= 0, "the evening isn't over");
-			helper.assertTrue(level.getDayTime() % 24000 < 11000, "still evening");
-			int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0);
-			helper.assertTrue(caught >= caughtByEvening[0] + 3, "only " + (caught - caughtByEvening[0]) + " caught next morning");
-			ItemStack hand = villager.getItemBySlot(EquipmentSlot.MAINHAND);
-			helper.assertTrue(isHisRod(hand), "his rod isn't in his hand: " + hand);
-			helper.assertTrue(hand.getDamageValue() == caught, "rod damage " + hand.getDamageValue() + " after " + caught + " catches");
-			helper.assertTrue(barrel.countItem(Items.FISHING_ROD) == 1, "he took the spare rod");
+			try {
+				check(helper, level, villager, barrel, caughtByEvening[0]);
+			} catch (RuntimeException e) {
+				held[0] = e.getMessage();
+				throw e;
+			}
 		});
+	}
+
+	private static void check(GameTestHelper helper, ServerLevel level, Villager villager, Container barrel, int caughtByEvening) {
+		helper.assertTrue(caughtByEvening >= 0, "the evening isn't over");
+		helper.assertTrue(level.getDayTime() % 24000 < 11000, "still evening");
+		int caught = ModAttachments.FISH_CAUGHT.getOrElse(villager, 0);
+		helper.assertTrue(caught >= caughtByEvening + 3, "only " + (caught - caughtByEvening) + " caught next morning");
+		ItemStack hand = villager.getItemBySlot(EquipmentSlot.MAINHAND);
+		helper.assertTrue(isHisRod(hand), "his rod isn't in his hand: " + hand);
+		helper.assertTrue(hand.getDamageValue() == caught, "rod damage " + hand.getDamageValue() + " after " + caught + " catches");
+		helper.assertTrue(spares(barrel) == 1, "he took the spare rod");
 	}
 
 	/** Eight catches in a row (past a trip to the barrel) on one rod: one point of wear a catch, the spare left alone. */
@@ -133,7 +171,7 @@ public class FisherRodGameTests implements FabricGameTest {
 		ServerLevel level = helper.getLevel();
 		Villager villager = fisherman(helper, 2000);
 		Container barrel = helper.getBlockEntity(BARREL);
-		barrel.setItem(0, new ItemStack(Items.FISHING_ROD));
+		barrel.setItem(0, spare());
 		Fishers.start(level, villager, rod(level, null, 0));
 		watchRod(helper, villager);
 		helper.succeedWhen(() -> {
@@ -141,7 +179,7 @@ public class FisherRodGameTests implements FabricGameTest {
 			helper.assertTrue(caught >= 8, "only " + caught + " caught");
 			ItemStack rod = hisRod(villager);
 			helper.assertTrue(rod.getDamageValue() == caught, "rod damage " + rod.getDamageValue() + " after " + caught + " catches");
-			helper.assertTrue(barrel.countItem(Items.FISHING_ROD) == 1, "he took the spare rod");
+			helper.assertTrue(spares(barrel) == 1, "he took the spare rod");
 		});
 	}
 

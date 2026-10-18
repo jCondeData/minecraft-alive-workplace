@@ -159,7 +159,7 @@ final class RealmScene {
 
 	private void openTab(MinecraftServer server) {
 		ServerPlayer player = player(server);
-		VillageHallScreen.openRemote(player, hall); // at tick 580 the camera stands 12 blocks off (open needs 8): as from a Village Ledger (B128)
+		VillageHallScreen.openRemote(player, hall); // the camera stands past the 8 blocks a hall's screen stays open within: opened as from a Village Ledger (B128)
 		if (player.containerMenu instanceof ChoiceMenu menu) {
 			menu.press(VillageHallScreen.ROUTES, player);
 			menu.press(TradePage.Tab.REALM.slot(), player);

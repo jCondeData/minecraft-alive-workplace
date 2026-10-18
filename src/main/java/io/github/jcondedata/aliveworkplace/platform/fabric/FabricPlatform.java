@@ -87,6 +87,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public net.minecraft.world.entity.player.Player fakePlayer(net.minecraft.server.level.ServerLevel level) {
+		return net.fabricmc.fabric.api.entity.FakePlayer.get(level);
+	}
+
+	@Override
 	@Nullable
 	public String modVersion(String modId) {
 		return FabricLoader.getInstance().getModContainer(modId)
@@ -166,6 +171,16 @@ public final class FabricPlatform implements Platform {
 	@Override
 	public void onEntityLoad(BiConsumer<Entity, ServerLevel> action) {
 		ServerEntityEvents.ENTITY_LOAD.register(action::accept);
+	}
+
+	@Override
+	public void onChunkLoad(BiConsumer<ServerLevel, net.minecraft.world.level.chunk.LevelChunk> action) {
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents.CHUNK_LOAD.register(action::accept);
+	}
+
+	@Override
+	public void onBlockEntityLoad(BiConsumer<net.minecraft.world.level.block.entity.BlockEntity, ServerLevel> action) {
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register(action::accept);
 	}
 
 	@Override

@@ -69,6 +69,8 @@ def check(b, only=None, whole=None):
         elif short.endswith("_door"):
             other = (x, y + 1, z) if props.get("half") == "lower" else (x, y - 1, z)
             bad = (other not in blocks or blocks[other][0] != name) and "is missing a half"
+        elif short.startswith("potted_") and above is not None and above[0] == "minecraft:chain":
+            pass  # a hanging pot (37.5): a flower pot needs nothing under it in game, the chain holds it to the beam
         elif any(s in short for s in STANDS) and "wall_" not in short:
             bad = not grounded(x, y, z) and below is None and "stands on air"
         elif any(name.startswith(g) or g in name for g in GRAVITY):
@@ -76,6 +78,7 @@ def check(b, only=None, whole=None):
         if bad:
             problems.append(f"{short}@{x},{y},{z} {bad}")
     problems += chair_problems(blocks, only)
+    problems += doorway_problems(blocks, only)
     if (only is None) if whole is None else whole:
         problems += reach_problems(blocks, b.w, b.h, b.d, deep, drawn)
     return problems
@@ -137,6 +140,90 @@ def chair_problems(blocks, only=None):
             continue
         problems.append(f"chair {s}@{x},{y},{z} faces {props['facing']}, its back to the table on its "
                         f"{'/'.join(tables)} side (to face it: facing={OPPOSITE[tables[0]]})")
+    return problems
+
+
+# --- Doorways a villager fits through (B170, B173) ----------------------------------------------------------------
+# A villager is 1.95 blocks tall. Under a lintel two blocks up it fits with 0.05 to spare, so any step up in or beside
+# the doorway (a carpet is 1/16, a slab half a block) puts its head into the lintel: it stands in the doorway for good.
+VILLAGER_HEIGHT = 1.95
+
+
+def raise_of(block):
+    """How far standing in the cell with {@code block} lifts the feet above the cell's floor (0: not a step up). Beds
+    don't count: nobody walks over one, a villager sleeps in it from beside it."""
+    if block is None:
+        return 0
+    s, props = _short(block), block[1]
+    if s.endswith("_carpet"):
+        return 1 / 16
+    if s.endswith("_stairs") and props.get("half") == "bottom":
+        return 1  # its back half: a villager's 0.6 is still half in the doorway when it climbs onto that (B173, the Manor)
+    if s.endswith("_slab") and props.get("type") == "bottom":
+        return 0.5
+    if s.endswith("trapdoor") and props.get("half") == "bottom" and props.get("open") != "true":
+        return 3 / 16
+    if s == "snow":
+        return (int(props.get("layers", "1")) - 1) / 8
+    return 0
+
+
+def doorway_problems(blocks, only=None):
+    """Doorways (doors, and open gaps up to three wide under a lintel) where a step up in the doorway or right in front
+    of or behind it leaves a villager less than its height under the lintel."""
+    def open_at(x, y, z):
+        return passable(blocks.get((x, y, z)))
+
+    def lintel(x, y, z):
+        """Room from the floor at y to the lintel over the doorway cell, or None when there is no lintel two up."""
+        top = blocks.get((x, y + 2, z))
+        if open_at(x, y + 2, z):
+            return None
+        return 2.5 if _short(top).endswith("_slab") and top[1].get("type") == "top" else 2
+
+    def opening(x, y, z):
+        return open_at(x, y, z) and open_at(x, y + 1, z) and lintel(x, y, z) is not None
+
+    doorways = {}  # (x, y, z) -> the axis people walk through it along
+    for (x, y, z), block in blocks.items():
+        if only is not None and (x, y, z) not in only:
+            continue
+        s, props = _short(block), block[1]
+        if s.endswith("_door") and props.get("half") == "lower" and opening(x, y, z):
+            doorways[(x, y, z)] = (0, 1) if props["facing"] in ("north", "south") else (1, 0)
+    # Open gaps (and the gap between a double door's leaves): a run of openings across a wall, walls at both ends
+    for (x, y0, z), floor in list(blocks.items()):
+        c = (x, y0 + 1, z)
+        if passable(floor) or _thin(floor) or raise_of(floor) or _short(floor).endswith("_slab") or c in doorways or only is not None and c not in only or not opening(*c):
+            continue
+        y = c[1]
+        for ax, az in ((0, 1), (1, 0)):
+            sx, sz = az, ax  # across the doorway
+            run = [c]
+            for d in (1, -1):
+                q = (x + d * sx, y, z + d * sz)
+                while run is not None and opening(*q) and len(run) <= 3:
+                    run.append(q)
+                    q = (q[0] + d * sx, y, q[2] + d * sz)
+                if run is None or opening(*q) or open_at(q[0], y + 1, q[2]) or _thin(blocks[(q[0], y + 1, q[2])]):
+                    run = None  # too wide, or no wall at the end (a post isn't one: an arbor's): not a doorway
+            if run is None or len(run) > 3:
+                continue
+            # People walk through it: open (or a step) on both sides, at head height too, and taller on one side at
+            # least (a doorway is lower than the rooms it joins: not the top of a crate under a cellar's ceiling)
+            sides = [(x + d * ax, y, z + d * az) for d in (1, -1)]
+            if all((open_at(*q) or raise_of(blocks.get(q))) and open_at(q[0], y + 1, q[2]) for q in sides) \
+                    and any(open_at(q[0], y + 2, q[2]) for q in sides):
+                doorways.setdefault(c, (ax, az))
+    problems = []
+    for (x, y, z), (ax, az) in sorted(doorways.items()):
+        room = lintel(x, y, z)
+        for cell in ((x, y, z), (x + ax, y, z + az), (x - ax, y, z - az)):
+            lift = raise_of(blocks.get(cell))
+            if lift and open_at(cell[0], y + 1, cell[2]) and room - lift < VILLAGER_HEIGHT:
+                where = "in" if cell == (x, y, z) else "beside"
+                problems.append(f"doorway@{x},{y},{z}: {_short(blocks.get(cell))}@{cell[0]},{y},{cell[2]} {where} it "
+                                f"leaves {room - lift:.2f} under the lintel, a villager needs {VILLAGER_HEIGHT}")
     return problems
 
 

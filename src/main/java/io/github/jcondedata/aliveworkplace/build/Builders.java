@@ -306,6 +306,9 @@ public final class Builders {
 	public static BuildSite start(ServerLevel level, Villager villager, java.util.UUID owner, String ownerName,
 								  net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
 		BuildSite site = BuildSiteManager.get(level).create(owner, ownerName, structure, placement);
+		if (Cellars.isCellarDig(level, structure, placement)) {
+			site.setCellarOnly(); // 36.7: the build itself lined up over it, its cellar still ground: dig only the cellar
+		}
 		if (isHelping(villager)) {
 			stopHelping(level, villager);
 		}
@@ -326,6 +329,9 @@ public final class Builders {
 	public static BuildSite enqueue(ServerLevel level, Villager villager, java.util.UUID owner, String ownerName,
 									net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
 		BuildSite site = BuildSiteManager.get(level).create(owner, ownerName, structure, placement);
+		if (Cellars.isCellarDig(level, structure, placement)) {
+			site.setCellarOnly(); // 36.7: the build itself lined up over it, its cellar still ground: dig only the cellar
+		}
 		site.setBuilder(villager.getUUID());
 		site.setBench(benchPos(villager).orElse(null));
 		site.setQueued(true);
@@ -735,7 +741,8 @@ public final class Builders {
 			io.github.jcondedata.aliveworkplace.hall.VillageBanners.hangOverDoor(level, plan.bounds(), supplies);
 		}
 		if (!io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())
-			&& !io.github.jcondedata.aliveworkplace.city.Renewals.isScan(site.structure())) { // (nor an old house's scan, 27.21)
+			&& !io.github.jcondedata.aliveworkplace.city.Renewals.isScan(site.structure()) // (nor an old house's scan, 27.21)
+			&& !site.isCellarOnly()) { // (nor a cellar dig's, 36.7: the build's own blueprint was the job, not a new one)
 			returnBlueprint(level, site, bench, supplies); // (a house's new outside, 23.10a, came from no blueprint)
 		}
 
@@ -748,7 +755,8 @@ public final class Builders {
 				io.github.jcondedata.aliveworkplace.wonder.WonderStages.partFinishedLine(level, site, villager.getDisplayName())
 					.ifPresent(line -> tell(owner, line, ChatFormatting.GREEN));
 			} else {
-				tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct" : "message.aliveworkplace.finished",
+				tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct"
+						: site.isCellarOnly() ? "message.aliveworkplace.cellar_dug" : "message.aliveworkplace.finished",
 					villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
 			}
 			if (entitiesLeft > 0) {
@@ -769,6 +777,10 @@ public final class Builders {
 			// (B143: a Wonder's part is no building of its own: no "X was built" line with the part's name, nothing on the
 			// books, no upgrade, no lane; the Wonder's own begun, dedicated and finished lines tell it, 35.4/35.7/35.8)
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
+			BuildSiteManager.get(level).setFurniture(site.placement(), site.furniture()); // 37.3: upkeep keeps what was built
+			io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, site.structure(), site.placement(), villager); // 39.4: start a windmill
+			io.github.jcondedata.aliveworkplace.mechanic.Contraptions.finished(level, site, plan, villager); // 39.5: does it turn?
+			io.github.jcondedata.aliveworkplace.city.Signposts.finished(level, site.structure(), site.placement()); // a Signpost's boards (36.4)
 			BuiltAdvancements.award(level, site); // the questbook's build quests (none for a Wonder's part or an import)
 			io.github.jcondedata.aliveworkplace.city.Walls.pieceBuilt(level, site, villager); // 27.18: the last piece finishes the wall
 			io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, site.placement().origin(), io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.BUILT, Component.translatable("chronicle.aliveworkplace.built",

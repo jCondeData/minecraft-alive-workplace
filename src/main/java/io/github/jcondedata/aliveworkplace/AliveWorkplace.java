@@ -64,6 +64,12 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.guard.GuardPartners.init();
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
 		io.github.jcondedata.aliveworkplace.guard.WarParties.init(); // marching on the lair (32.13)
+		io.github.jcondedata.aliveworkplace.guard.RaidDens.init(); // the raid dens a village knows (38.2)
+		io.github.jcondedata.aliveworkplace.guard.DenWardens.init(); // guards posted at the dens (38.3)
+		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.init(); // village trainers challenge the dens (38.4)
+		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.init(); // more Mega trainers, and their bracelets (38.5)
+		io.github.jcondedata.aliveworkplace.jeweller.MegaStones.init(); // the Jeweller's Mega Stones and Key Stones (38.6)
+		io.github.jcondedata.aliveworkplace.trainer.LeaderBracelets.init(); // a Mega Bracelet for beating a realm's Leaders (38.6)
 		io.github.jcondedata.aliveworkplace.hall.Festivals.init();
 		io.github.jcondedata.aliveworkplace.hall.Banquets.init();
 		io.github.jcondedata.aliveworkplace.hall.Curfew.init();
@@ -103,11 +109,14 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.people.LifeStages.init(); // the Evergreen Charm (34.19a)
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWorkFiles.init();
+		io.github.jcondedata.aliveworkplace.mechanic.Contraptions.init(); // contraptions from a blueprint (39.5)
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.init(); // Wonders as data (35.2)
 		io.github.jcondedata.aliveworkplace.wonder.WonderStages.init(); // a Wonder's stages, one after another (35.4)
 		io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.init(); // a finished Wonder's daily count and repairs (35.8)
 		io.github.jcondedata.aliveworkplace.wonder.WondersPage.init(); // the hall's Wonders page (35.3)
+		io.github.jcondedata.aliveworkplace.hall.FreeJobsPage.init(); // the hall's Free job blocks page (36.9)
 		io.github.jcondedata.aliveworkplace.wonder.LighthousePowers.init(); // the Lighthouse's powers (35.12)
 		io.github.jcondedata.aliveworkplace.wonder.LibraryPowers.init(); // the Great Library's second research tier (35.14)
 		io.github.jcondedata.aliveworkplace.wonder.ColossusPlaque.init(); // the Colossus's plaque, filled in when finished (35.22)
@@ -140,9 +149,13 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.research.ResearchTrees.init();
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.init();
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.init();
+		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.init(); // Cobblecuisine's dishes on the menus (38.8)
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.init();
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.init();
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
+		io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.init(); // ROADMAP 37.2: furniture spots
+		io.github.jcondedata.aliveworkplace.furnish.FurnishingTable.init(); // ROADMAP 37.3: the furniture mods' pieces
+		io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.init(); // ROADMAP 37.12: the modded build library
 		io.github.jcondedata.aliveworkplace.city.RoadStyles.init();
 		io.github.jcondedata.aliveworkplace.city.WallKits.init();
 		io.github.jcondedata.aliveworkplace.city.RenewalLists.init();
@@ -156,6 +169,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.command.CitySoak.init(); // 27.22
 		io.github.jcondedata.aliveworkplace.command.SeasonSoak.init(); // 30.22
 		io.github.jcondedata.aliveworkplace.command.Rehearsal.init(); // 34.23
+		io.github.jcondedata.aliveworkplace.command.FurnishedPackTest.init(); // 37.11
 		Platform.get().onServerStarting(server -> ClassWarmup.start()); // B103: no class loading stalls on day 1
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}

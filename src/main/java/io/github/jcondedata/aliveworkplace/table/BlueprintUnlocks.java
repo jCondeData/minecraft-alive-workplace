@@ -108,7 +108,7 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 	/** The mod's own builds: the only ones that can be locked. */
 	private static final Set<ResourceLocation> MANAGED = ids(Stream.of(StarterBlueprints.ALL, StarterBlueprints.ONE_TIER, StarterBlueprints.WORKPLACES,
 		StarterBlueprints.COBBLEMON_ONLY, StarterBlueprints.COBBLEMON_WORKPLACES, StarterBlueprints.JOB_BUILDS, StarterBlueprints.DEFENCES,
-		StarterBlueprints.DECORATIONS, StarterBlueprints.SOLD_ONLY).flatMap(List::stream));
+		StarterBlueprints.DECORATIONS, StarterBlueprints.MEGA_ONLY, StarterBlueprints.SOLD_ONLY).flatMap(List::stream));
 
 	private static Set<ResourceLocation> ids(Stream<StarterBlueprints.Entry> entries) {
 		return entries.map(StarterBlueprints.Entry::id).collect(java.util.stream.Collectors.toUnmodifiableSet());

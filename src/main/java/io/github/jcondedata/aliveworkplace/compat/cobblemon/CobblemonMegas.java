@@ -62,6 +62,24 @@ public final class CobblemonMegas {
 		return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("mega_showdown", stones.get(random.nextInt(stones.size()))));
 	}
 
+	// The Mega Stones (item ids) of the Pokémon on a village trainer's team at home, both of Charizard's (38.6: the
+	// Jeweller cuts these). Empty without Mega Showdown.
+	public static List<ResourceLocation> teamStones(net.minecraft.world.entity.npc.Villager trainer) {
+		if (!ENABLED) {
+			return List.of();
+		}
+		List<ResourceLocation> out = new java.util.ArrayList<>();
+		for (Pokemon pokemon : CobblemonTrainers.teamOf(trainer)) {
+			for (String stone : STONES.getOrDefault(pokemon.getSpecies().getResourceIdentifier().getPath(), List.of())) {
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath("mega_showdown", stone);
+				if (!out.contains(id)) {
+					out.add(id);
+				}
+			}
+		}
+		return out;
+	}
+
 	// True if this Pokémon holds the Mega Stone for its species.
 	public static boolean holdsItsStone(Pokemon pokemon) {
 		List<String> stones = STONES.get(pokemon.getSpecies().getResourceIdentifier().getPath());
@@ -69,9 +87,10 @@ public final class CobblemonMegas {
 		return stones != null && held.getNamespace().equals("mega_showdown") && stones.contains(held.getPath());
 	}
 
-	// Gives a Master's team its Mega Evolution: the first Pokémon that has one holds its stone; if none has, the last is
-	// swapped for one that does (picked with {@code random}, same level, trained the same way).
-	static void megaAce(List<Pokemon> team, int t, Random random) {
+	// Gives a team its Mega Evolution (a Master's; 38.5: a City's Leader, a Cup finalist, a Stadium visitor): the first
+	// Pokémon that has one holds its stone; if none has, the last is swapped for one that does and that {@code allowed}
+	// lets in (picked with {@code random}, same level, trained the same way). None allowed: the team stays as it is.
+	static void megaAce(List<Pokemon> team, int t, Random random, java.util.function.Predicate<Species> allowed) {
 		if (!ENABLED || team.isEmpty()) {
 			return;
 		}
@@ -85,7 +104,7 @@ public final class CobblemonMegas {
 		List<String> names = STONES.keySet().stream().sorted().toList();
 		for (int tries = 0; tries < names.size(); tries++) {
 			Species species = PokemonSpecies.getByName(names.get(random.nextInt(names.size())));
-			if (species == null || !species.getImplemented() || team.stream().anyMatch(p -> p.getSpecies() == species)) {
+			if (species == null || !species.getImplemented() || !allowed.test(species) || team.stream().anyMatch(p -> p.getSpecies() == species)) {
 				continue;
 			}
 			Optional<Item> stone = stoneFor(species, random);

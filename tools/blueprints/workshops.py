@@ -1078,9 +1078,8 @@ def tailors_wing(b):
     for x in range(3, 8):
         log(b, x, 4, 9, TAILOR_FRAME, axis="x")
     lantern(b, 5, 3, 9, hanging=True)
-    for x in (4, 5, 6):
-        for z in (8, 9):
-            b.set(x, 1, z, "red_carpet")
+    for x in (4, 5, 6):  # along the back: on a carpet by the door's lintel a villager hits its head (B173)
+        b.set(x, 1, 9, "red_carpet")
     dress_form(b, 7, 1, 9, "purple_wool")
     stairs(b, 3, 1, 9, DARK_OAK, "west")
 
@@ -1261,6 +1260,8 @@ def print_shop_ground(b):
     # The counter for buyers, east of the door, and the shelves of paper and ink behind it
     for x in (6, 7, 8):
         slab(b, x, 1, 3, DARK_OAK, top=True)
+        furnish(b, "counter", x, 1, 3, "north", wood="dark_oak")  # 37.5
+    desk(b, 2, 1, 4, "east", "spruce")  # the printer's desk by the press (37.5)
     for i, (x, z) in enumerate(((8, 5), (8, 6), (7, 6), (6, 6))):
         shelf(b, x, 1, z, "paper" if i % 2 == 0 else "ink")
         shelf(b, x, 3, z, "ink" if i % 2 == 0 else "paper")
@@ -1455,6 +1456,7 @@ def jewellers_workshop_2():
     # The way in, where the shop's back window was: an iron door, a button either side of the wall
     b.set(4, 3, 7, resolve(JEWEL_STONE, 4, 3, 7))
     iron_door(b, 4, 1, 7, "north")
+    b.set(4, 1, 6, "air")  # the rug's end in front of it comes up: under the lintel a villager hits its head (B173)
     button(b, 3, 2, 6, "north")
     button(b, 3, 2, 8, "south")
     # The vault: bars across the room with an iron door in them, ten chests behind

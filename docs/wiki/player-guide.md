@@ -3,7 +3,7 @@
 A second, separate site for players: plain pages a friend can read with no GitHub knowledge, published with the
 showcase. This wiki stays the builders' and QA's reference (Safety net).
 
-Roadmap items: 22.10, 26.8
+Roadmap items: 22.10, 26.8, 36.2, 36.3
 
 ## 1. What a player sees
 
@@ -12,7 +12,11 @@ Roadmap items: 22.10, 26.8
 quests in order, each after the last, with optional side quests off it; Cobblemon's quests and each expansion's are
 left out of a chapter while that mod is missing or that expansion is off. Build quests tick on the hidden
 `aliveworkplace:built/<blueprint>` advancements, story moments (a rank reached, the first caravan, festival, hall quest,
-a raid survived, a Steward, a colony, a Wonder) on `aliveworkplace:village/<moment>` (hall/VillageMoments). Rewards are
+a raid survived, a Steward, a colony, a Wonder) on `aliveworkplace:village/<moment>` (hall/VillageMoments). Since 36.2
+and 36.3 nine more quests complete by themselves instead of asking for a checkmark: a baby born in the village
+(`first_baby`), 3 and 7 levels of research (`research_3`, `research_7`), an edict proclaimed (`edict`, a realm edict
+for its capital), the first Burgher and Noble household (`burghers`, `nobles`), a realm founded (`realm`), the takings
+collected (`treasury`, at least one emerald) and a raiders' camp broken by a war party (`camp_broken`). Rewards are
 emeralds and experience. The guide's `questbook.md` explains it.
 
 A website, linked from the showcase page, at https://jcondedata.github.io/minecraft-alive-workplace/player-guide/.
@@ -68,7 +72,12 @@ The guide only goes live with the next full nightly showcase run. When an expans
 be added by the lane that ships it.
 
 The questbook has not been seen in FTB Quests' screen yet: FTB Quests isn't in the compat-test pack or in the pack test.
-Many quests are checkmarks, because villages' events can't be detected by FTB Quests without its classes.
+Some quests are still checkmarks (a road built, a bout fought, a page opened). The village's own events now complete
+theirs through `VillageMoments`: each is granted where it happens (`VillageMoments.award`: the hall's owner when
+online, the player who did it, and every player within the village's reach), and once a day the hall's round
+(`VillageMoments.catchUp`) grants the ones a village passed before they existed (births counted, research levels,
+edicts in force, a Burgher or Noble living there, a realm's capital), so no quest is left that can't complete. The
+takings can't be caught up (nothing remembers a past collection): the next collection grants it.
 
 ## 8. Proof
 
@@ -76,4 +85,7 @@ Many quests are checkmarks, because villages' events can't be detected by FTB Qu
 
 The questbook: `QuestbookCompatTests` (every item, entity, block and advancement id in the chapters exists, ids valid
 and unique, dependencies ours, emeralds-only rewards) and `QuestbookInstallGameTests` (copies once, never overwrites,
-waits for expansions and mods). `python3 tools/questbook/generate.py --check` says whether the chapters are up to date.
+waits for expansions and mods). `VillageMomentGameTests` (7): each of 36.2's moments granted by its event (and
+not by a refused edict, an empty treasury, an Artisan's rise or a fall), never twice, and a village that already
+qualifies caught up by the hall's round. `generate.py` checks that every quest in its `MOMENT_QUESTS` has that
+moment's advancement as its only task and says it completes by itself. `python3 tools/questbook/generate.py --check` says whether the chapters are up to date.

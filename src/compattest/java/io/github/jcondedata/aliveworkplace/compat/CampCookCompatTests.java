@@ -240,7 +240,11 @@ public class CampCookCompatTests implements FabricGameTest {
 		for (CampCooks.Dish dish : CampCooks.menu()) {
 			Item it = BuiltInRegistries.ITEM.getOptional(dish.item()).orElse(null);
 			helper.assertTrue(it != null && it != Items.AIR, dish.name() + ": no item " + dish.item());
-			helper.assertTrue(!CampCooks.pot().recipes(helper.getLevel(), it).isEmpty(), dish.name() + ": the pot has no recipe for it");
+			// Cobblecuisine's curries (38.8) are cooked by their own crafting recipe over the fire; every other dish in the pot.
+			boolean byHand = io.github.jcondedata.aliveworkplace.craft.CuisineDishes.isDish(new ItemStack(it))
+				&& !io.github.jcondedata.aliveworkplace.craft.Crafting.recipesFor(helper.getLevel().getRecipeManager(), helper.getLevel().registryAccess(),
+					io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.KITCHEN, it).isEmpty();
+			helper.assertTrue(byHand || !CampCooks.pot().recipes(helper.getLevel(), it).isEmpty(), dish.name() + ": the pot has no recipe for it");
 		}
 		helper.succeed();
 	}

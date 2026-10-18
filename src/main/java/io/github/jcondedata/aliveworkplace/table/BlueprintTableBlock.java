@@ -48,11 +48,19 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock {
 
 	/**
 	 * A Blueprint (or a Wonder Plan) used on the Table unlocks its build in the village's library (26.10), then the Table
-	 * opens as usual. Anything else opens it as without an item.
+	 * opens as usual. With Create, a written Schematic imports its uploaded file (39.6), then the Table opens. Anything else
+	 * opens it as without an item.
 	 */
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
 											  BlockHitResult hit) {
+		if (CreateSchematics.isSchematic(stack) && CreateSchematics.active()) {
+			if (level instanceof ServerLevel && player instanceof ServerPlayer serverPlayer) {
+				CreateSchematics.useOnTable(serverPlayer, stack);
+				TableServer.open(serverPlayer, pos);
+			}
+			return ItemInteractionResult.sidedSuccess(level.isClientSide());
+		}
 		if (!stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.BLUEPRINT) && !stack.is(io.github.jcondedata.aliveworkplace.registry.ModItems.WONDER_PLAN)) {
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}

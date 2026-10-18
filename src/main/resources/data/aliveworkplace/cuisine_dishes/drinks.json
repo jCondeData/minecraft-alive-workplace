@@ -1,0 +1,9 @@
+{
+  "requires": "cobblecuisine",
+  "dishes": [
+    {"id": "cobblecuisine:lemon_soda", "level": 2, "group": "drink", "inn": true},
+    {"id": "cobblecuisine:coffee", "level": 2, "group": "drink", "inn": true},
+    {"id": "cobblecuisine:fruit_punch", "level": 2, "group": "drink", "inn": true},
+    {"id": "cobblecuisine:miltank_mix_au_lait", "level": 5, "group": "drink"}
+  ]
+}

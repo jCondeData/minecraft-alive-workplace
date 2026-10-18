@@ -29,6 +29,10 @@
 #                                              # for a night job; its costs aren't judged (nothing to compare with)
 #   SOAK=true SOAK_SPLIT=true ...              # 23.5: each builder's materials split between at most 3 chests by its
 #                                              # bench and the village storehouses (with porters) it must find itself
+#   FURNISHED=true tools/packtest/run.sh       # 37.11: a builder builds the Starter Cottage and another the Inn with the
+#                                              # pack's furniture mods, furnitureMods set to Cozy Home first (FURNITURE_MODS
+#                                              # to change it); passes when both finish, nothing skipped or wrong, with
+#                                              # Cozy Home pieces standing in each ("Furnished result:", "Furnished passed.")
 # Needs ~6 GB of RAM and ~1 GB of disk; takes ~5 minutes. Output: build/packtest/server/server.log
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -72,6 +76,18 @@ cp "$JAR" "$SERVER/mods/"
 echo "eula=true" > "$SERVER/eula.txt"
 printf 'online-mode=false\nview-distance=6\nsimulation-distance=5\nmax-tick-time=-1\nlevel-seed=alive\n' > "$SERVER/server.properties"
 if [ "${KEEP_WORLD:-false}" != "true" ]; then rm -rf "$SERVER/world"; fi
+# Furnished mode (37.11): the config's furnitureMods with Cozy Home first; the file as it was is put back afterwards.
+CONFIG_FILE="$SERVER/config/aliveworkplace.json"
+if [ "${FURNISHED:-false}" = "true" ]; then
+  if [ -f "$CONFIG_FILE" ]; then cp "$CONFIG_FILE" "$CONFIG_FILE.before-furnished"; else rm -f "$CONFIG_FILE.before-furnished"; fi
+  python3 tools/packtest/furnished.py --config "$CONFIG_FILE" "${FURNITURE_MODS:-cozyhome,handcrafted,cobblefurnies,beautify}"
+  # However the run ends, the config file as it was before it, so the other modes keep the default order.
+  CONFIG_ABS="$PWD/$CONFIG_FILE"
+  restore_config() {
+    if [ -f "$CONFIG_ABS.before-furnished" ]; then mv "$CONFIG_ABS.before-furnished" "$CONFIG_ABS"; else rm -f "$CONFIG_ABS"; fi
+  }
+  trap restore_config EXIT
+fi
 
 # 2. Boot it with a console we can type into.
 cd "$SERVER"
@@ -82,6 +98,8 @@ JAVA_OPTS=""
 if [ "${PERF:-false}" = "true" ] || [ "${SOAK:-false}" = "true" ] || [ "${CITY:-false}" = "true" ] || [ "${SEASON:-false}" = "true" ] || [ -n "${REHEARSAL:-}" ]; then JAVA_OPTS="-Daliveworkplace.benchmark=true"; fi
 # The rehearsal's second half runs as 1.8 will ship: every expansion's gate open (the flags in Expansions.java).
 if [ "${REHEARSAL:-}" = "new" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.shots=true"; fi
+# The furnished builds (37.11) need the measuring commands, and Milestone 37's gate (closed until 2.1) open.
+if [ "${FURNISHED:-false}" = "true" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.benchmark=true -Daliveworkplace.shots=true"; fi
 # DEBUG=true: the builders log what they are doing every 2 seconds ([builder N] lines), to look into a stall.
 if [ "${DEBUG:-false}" = "true" ]; then JAVA_OPTS="$JAVA_OPTS -Daliveworkplace.debug=true"; fi
 java -Xmx5G -Xms1G $JAVA_OPTS -jar fabric-server-launch.jar nogui < console > server.log 2>&1 &
@@ -367,6 +385,29 @@ else:
 print("Season passed." if ok else "The season run did not pass.")
 sys.exit(0 if ok else 1)
 EOF
+  exit $?
+fi
+
+# Furnished mode (37.11): on flat ground, a builder builds the Starter Cottage and another the Inn from barrels of exactly
+# their materials, the furniture chosen from the pack's mods in the config's order (Cozy Home first), at full speed (/tick
+# sprint) for at most FURNISHED_DAYS (4) in-game days. Passes only when both finish with nothing skipped, every block as
+# planned, every furniture piece standing, the order in effect starting with Cozy Home, and Cozy Home pieces in each.
+if [ "${FURNISHED:-false}" = "true" ]; then
+  say "forceload add 980 980 1090 1040" 60
+  say "execute positioned 1000 80 1000 run workplace furnished ${FURNISHED_DAYS:-4}" 20
+  say "tick sprint $(( ${FURNISHED_DAYS:-4} * 24000 ))" 5
+  for _ in $(seq 1 $(( ${FURNISHED_MINUTES:-30} * 4 ))); do
+    sleep 15
+    grep -q "Furnished result:" server.log && break
+    kill -0 $PID 2>/dev/null || break
+  done
+  say "tick sprint stop" 3
+  say "stop" 30
+  kill $KEEP 2>/dev/null || true
+  wait $PID 2>/dev/null || true
+  echo "--- furnished builds (full log: $SERVER/server.log)"
+  grep -E "Furnished: |Furnished result:|Builder stalled|Sprint completed|Crash|Exception" server.log | grep -v "No data fixer\|Error loading class" | cut -c1-2000 || true
+  python3 ../../../tools/packtest/furnished.py server.log
   exit $?
 fi
 

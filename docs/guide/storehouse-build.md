@@ -23,6 +23,8 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Under the granary is a **vault**, down a ladder beside the loft's: chests two high round a stone room and a barred strongroom corner. Your builder digs it out of the ground himself: four blocks under the floor.
 
+A Storehouse finished before it had its vault can still get it: any builder of the village sells **Dig the cellar** for it (a blueprint already lined up over the building), and the Village Hall's **What next?** page reminds you. Give it back to the builder and they dig and fit out only the vault, leaving the rest as it stands. Upgrading such a Storehouse digs its vault too.
+
 ## Upgrades
 
 Once a builder finishes the Storehouse Shed, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.

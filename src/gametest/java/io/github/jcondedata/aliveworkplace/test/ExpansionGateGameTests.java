@@ -36,18 +36,19 @@ import net.minecraft.gametest.framework.GameTestHelper;
  * moment (synchronously, so no other test sees it) and put the defaults back after.
  */
 public class ExpansionGateGameTests implements FabricGameTest {
-	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M31 friendship; M32 sieges; M33 the economy; M34 classes). */
+	/** Every switch of an unfinished expansion (M27 steward; M28 Pokémon jobs and shows; M29 Legends; M30 civic items; M31 friendship; M32 sieges; M33 the economy; M34 classes; M35 Wonders; M37 furniture and storage). */
 	static final List<String> GATED_SWITCHES = List.of("steward", "stewardSelfRun", "stewardRoads", "caravanRoads", "stewardWalls", "stewardRenewal",
 		"partnerShows", "nurseHealingMachine", "berryBreeders", "campCooks", "habitatKeepers", "habitatSightings",
 		"daycareKeepers", "gemGrowers", "jewellers", "villageHabitats", "pokemonVillageHouses", "festivalCup",
 		"legends", "legendNeeds", "legendSites", "strangeMoods",
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "tradePacts", "alliances", "feuds", "feudWars", "realmMap", "weeklyLeaderboard", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
-		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends", "builderScaffolding");
+		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends", "builderScaffolding",
+		"furnishedBuilds", "moddedStorageNetworks", "moddedLibrary", "denWardens", "denChallenges", "villageMegas", "cuisineDishes", "beanFarms", "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
-		"coloniesPerVillage", "realmMaxMembers", "leaderboardHour", "wonderServerLimit", "wonderCrew", "wonderStanding");
+		"coloniesPerVillage", "realmMaxMembers", "leaderboardHour", "wonderServerLimit", "wonderCrew", "wonderStanding", "denChallengeDays");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -78,6 +79,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("VillageHouses.POKEMON_JOBS", () -> io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS);
 		map.put("Legends", () -> Legends.ENABLED);
 		map.put("LegendSites", () -> LegendSites.ENABLED);
+		map.put("DenWardens", () -> io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED);
+		map.put("DenChallenges", () -> io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED);
 		map.put("Gifted.CHANCE", () -> Gifted.CHANCE > 0);
 		map.put("Edicts", () -> Edicts.ENABLED);
 		map.put("WorkHorn", () -> WorkHorn.ENABLED);
@@ -106,6 +109,9 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("PhysicianWork", () -> io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED);
 		map.put("Wonders", () -> io.github.jcondedata.aliveworkplace.wonder.Wonders.ENABLED);
 		map.put("Wonders.LEGENDS", () -> io.github.jcondedata.aliveworkplace.wonder.Wonders.LEGENDS);
+		map.put("Furnishings", () -> io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED);
+		map.put("StorageNetworks", () -> io.github.jcondedata.aliveworkplace.store.StorageNetworks.ENABLED);
+		map.put("BeanFarms", () -> io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED);
 		return map;
 	}
 
@@ -137,7 +143,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			});
 			protection[0] = VillageProtection.ENABLED;
 		});
-		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M31 && !Expansions.M33 && !Expansions.M34 && !Expansions.M35,
+		helper.assertTrue(!Expansions.M27 && !Expansions.M28 && !Expansions.M29 && !Expansions.M30 && !Expansions.M31 && !Expansions.M33 && !Expansions.M34 && !Expansions.M35 && !Expansions.M37,
 			"a milestone was marked complete: move its switches out of this test");
 		helper.assertTrue(on.isEmpty(), "a 0.139.0 config turned on unfinished expansions: " + on);
 		helper.assertTrue(protection[0], "a finished feature's switch (villageProtection) should still work");
@@ -176,8 +182,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 126 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (126 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 140 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (140 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -258,7 +264,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 				}
 			});
 			// Written with the gates open (34.23): the file's false is the player's choice, kept.
-			StringBuilder json = new StringBuilder("{\"giftedChance\": 0, \"expansionsOpen\": [\"M27\", \"M28\", \"M29\", \"M30\", \"M31\", \"M32\", \"M33\", \"M34\", \"M35\"]");
+			StringBuilder json = new StringBuilder("{\"giftedChance\": 0, \"expansionsOpen\": [\"M27\", \"M28\", \"M29\", \"M30\", \"M31\", \"M32\", \"M33\", \"M34\", \"M35\", \"M37\", \"M38\"]");
 			for (String name : GATED_SWITCHES) {
 				json.append(", \"").append(name).append("\": false");
 			}
@@ -276,7 +282,73 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 126, "every option on the screen in GameTests (26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 140, "every option on the screen in GameTests (37.12 moddedLibrary, 39.7 villageTrains, 39.6 createSchematics, 39.4 createBuilds, 39.3 machineWork, 39.2 mechanics, 38.9 beanFarms, 38.8 cuisineDishes, 38.5 villageMegas, 37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.succeed();
+	}
+
+	/** M38's six switches (design note M38) belong to its gate: closed for a player until 2.2, open in GameTests. */
+	static final List<String> M38_SWITCHES = List.of("denWardens", "denChallenges", "denChallengeDays", "villageMegas", "cuisineDishes", "beanFarms");
+
+	/** Cobblemon depth (2.2) stays shut for players while it's built: its gate and each of its switches. */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	public void cobblemonDepthIsGated(GameTestHelper helper) {
+		helper.assertTrue(!Expansions.M38, "M38 marked complete: move its switches out of this test");
+		helper.assertTrue(Expansions.isOpen("M38"), "M38's gate should be open in GameTests");
+		List<String> problems = new ArrayList<>();
+		for (String name : M38_SWITCHES) {
+			if (!Expansions.optionLive(name)) {
+				problems.add(name + " hidden in a GameTest");
+			}
+		}
+		asPlayer(() -> {
+			if (Expansions.isOpen("M38")) {
+				problems.add("M38's gate open for a player");
+			}
+			for (String name : M38_SWITCHES) {
+				if (Expansions.optionLive(name)) {
+					problems.add(name + " live for a player before 2.2");
+				}
+			}
+			// The gate is M38's alone: a finished switch stays live.
+			if (!Expansions.optionLive("villageProtection")) {
+				problems.add("villageProtection hidden");
+			}
+		});
+		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+		helper.succeed();
+	}
+
+	/** M39's five switches (design note M39) belong to its gate: closed for a player until 2.3, open in GameTests. */
+	static final List<String> M39_SWITCHES = List.of("mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains");
+
+	/** Create integration (2.3) stays shut for players while it's built: its gate and each of its switches. */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	public void createIntegrationIsGated(GameTestHelper helper) {
+		helper.assertTrue(!Expansions.M39, "M39 marked complete: move its switches out of this test");
+		helper.assertTrue(Expansions.isOpen("M39"), "M39's gate should be open in GameTests");
+		List<String> problems = new ArrayList<>();
+		for (String name : M39_SWITCHES) {
+			if (!Expansions.optionLive(name)) {
+				problems.add(name + " hidden in a GameTest");
+			}
+		}
+		asPlayer(() -> {
+			if (Expansions.isOpen("M39")) {
+				problems.add("M39's gate open for a player");
+			}
+			for (String name : M39_SWITCHES) {
+				if (Expansions.optionLive(name)) {
+					problems.add(name + " live for a player before 2.3");
+				}
+			}
+			// The gate is M39's alone: a finished switch stays live.
+			if (!Expansions.optionLive("villageProtection")) {
+				problems.add("villageProtection hidden");
+			}
+		});
+		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
 		helper.succeed();
 	}
 }

@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B185, B132
 
 ## 1. What a player sees
 
@@ -75,6 +75,14 @@ dropped, and a cell whose six neighbours all occlude is left out). If more than 
 build is grouped into 2×2×2 cells (then 3, …), each showing its highest block, until it fits. The result is worked out
 once per blueprint and kept (48 at most); unknown, sold-only, world-generation and closed-expansion ids get nothing.
 The client (`TablePreview`) draws the cells with the block renderer into the screen with a scissor box.
+**Basements in the preview (36.1).** A build with a basement comes out of the library with its cellar under y = 0
+(`StarterBlueprints.withBasement`); the packet carries `below`, how many blocks lie under the ground (0 for most), and
+cells are keyed with floor division, so at scale 2 or more the first cellar layer (y = -1) never folds into the ground
+floor's cell. The client fits and centres the build by its whole height (`sizeY + below`), and for a build with a
+basement draws a faint green ground plane at y = 0 after the blocks: the footprint and a little past it, with a
+brighter rim, so the part under it reads as underground. The detail pane's size line then reads "17 × 12 × 11 · N
+blocks, and 4 below ground" (`screen.aliveworkplace.table.size_below`, wrapped). A build without a basement sends the
+same packet as before (plus `below` = 0) and draws as before.
 
 **Table styles (26.11).** `table_details` also carries the styles the build takes (`TableServer.styles`: each of
 `BlueprintStyles.all()` whose swaps change at least one of its blocks, via `BlueprintStyles.changes`; none for a Wonder,
@@ -159,6 +167,18 @@ claims and trip counts.
 - An upgrade is a whole new blueprint on the same spot. Where its new room's roof runs in under the old roof's edge,
   the wall is carried up to that edge, so the roofs meet with no open blocks between them; `tools/blueprints/holes.py`
   checks every blueprint for roof holes, gaps between roofs and stray empty blocks (owner's report, 2026-10-14).
+- Every doorway a build leaves lets a villager through: a villager is 1.95 tall, so under a lintel two blocks up nothing
+  in the doorway or just inside or outside it may raise the floor (a carpet, a slab, a stair or seat, a closed
+  trapdoor). Carpets start a block in from the door, seats stand aside, and where a stair must start right inside (the
+  Manor's) the door has a fanlight (an open trapdoor flat on the outside face) in place of a lintel: a stair's back half
+  is a full block up, and a villager climbing onto it still has its back in the doorway. `tools/blueprints/check.py` refuses every blueprint
+  that breaks it (B170, B173).
+- No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
+  (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
+  the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbour walking
+  through. Twice a second every villager looks whether its body is inside a block; found there twice in a row, it opens
+  the wooden door it is shut in or else steps (with a puff) to the nearest spot within four blocks with a floor and
+  room to stand. A villager only pressed against walls is never moved (B185).
 
 ## 7. Known limits
 
@@ -174,12 +194,16 @@ claims and trip counts.
 ## 8. Proof
 
 GameTests (`src/gametest/java/.../test/`): `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
-`BuilderChaosGameTests` (1, stuck recovery), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
+`BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`,
-`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (5, the table's
-3D preview data).
+`TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (7, the table's
+3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
+at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (2, B173: a villager
+walks in by the Healing Center's front door onto its carpet, and by the Manor's front door onto the stair right inside:
+`DoorwayHeadroomGameTests.aVillagerWalksInByTheHealingCentersFrontDoor`,
+`DoorwayHeadroomGameTests.aVillagerWalksInByTheManorsFrontDoorOntoItsStair`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the
-missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
+missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`.

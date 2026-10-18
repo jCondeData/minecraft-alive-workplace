@@ -41,6 +41,7 @@ public final class ModTrades {
 		firewardenTrades();
 		wellKeeperTrades();
 		physicianTrades();
+		mechanicTrades();
 		gemGrowerTrades();
 		vintnerTrades();
 		tailorTrades();
@@ -254,6 +255,33 @@ public final class ModTrades {
 				net.minecraft.world.item.alchemy.Potions.HEALING), 6, 15, 0.05f)));
 		Platform.get().addTrades(ModVillagers.PHYSICIAN, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(Items.GOLDEN_APPLE), 4, 30, 0.05f)));
+	}
+
+	/** The Mechanic's trades (39.2): Create's parts and tools, looked up by id when offered (only with Create, like the job). */
+	private static void mechanicTrades() {
+		if (ModVillagers.MECHANIC == null) {
+			return;
+		}
+		Platform.get().addTrades(ModVillagers.MECHANIC, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(create("andesite_alloy"), 6), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(create("shaft"), 8), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.MECHANIC, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COPPER_INGOT, 8), new ItemStack(Items.EMERALD), 12, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(create("cogwheel"), 4), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.MECHANIC, 3, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(create("wrench")), 6, 10, 0.05f)));
+		Platform.get().addTrades(ModVillagers.MECHANIC, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(create("goggles")), 6, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.MECHANIC, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(create("belt_connector"), 4), 4, 30, 0.05f)));
+	}
+
+	/** Create's item {@code path}, looked up when a trade is made. */
+	private static net.minecraft.world.item.Item create(String path) {
+		return io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM,
+			net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
 	}
 
 	private static void guardTrades() {
@@ -950,6 +978,7 @@ public final class ModTrades {
 				&& hasClass(level, villager.blockPosition(), BURGHER)) {
 			villager.getOffers().add(blueprint(StarterBlueprints.MANOR, MANOR_PRICE)); // 34.16
 		}
+		io.github.jcondedata.aliveworkplace.build.Cellars.offer(level, villager); // 36.7: "Dig the cellar" for the village's old builds
 	}
 
 	/** Whether the village round the hall nearest {@code pos} has a household of Artisans or a higher class. */

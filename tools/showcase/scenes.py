@@ -30,17 +30,21 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
 
 
-def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False):
+def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, furniture=False,
+      create=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
-    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14)."""
+    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
+    furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4).
+    create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
-            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18}
+            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
+            "furniture": furniture, "create": create}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -78,14 +82,28 @@ SCENES = [
     S("missing", "Builder", "What a build is still missing, and its material list", "the blueprint's tooltip lists what the chests are short of, and a Book and Quill becomes the list", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip"),
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
-    S("table", "Builder", "Blueprint Table", "the table screen opened and a file was uploaded", 60,
+    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, and a file was uploaded", 60,
       [("10_table_library", "Library"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
-      [("01_preview_house", "A starter house"), ("02_preview_dragged", "Dragged round"), ("03_preview_style", "Picked in Sandstone"),
-       ("04_preview_large", "A large build, scaled to fit"), ("05_all_materials", "Every material of a large build"),
-       ("06_preview_imported", "An uploaded build")]),
+      [("01_preview_house", "A starter house"), ("03_preview_style", "Picked in Sandstone"),
+       ("04_preview_large", "A large build, scaled to fit"), ("06_preview_imported", "An uploaded build")]),
+    # 36.4: the Signpost's boards name the villages and builds each way
+    S("signpost", "Builder", "The Signpost's boards say where things are",
+      "a Signpost at a crossroads between two villages had its four boards written as it was finished: Millford east, Ashford west, the Well south, Welcome north", 40,
+      [("01_signpost_crossroads", "The signpost at the crossroads"), ("02_board_east", "East: the next village"),
+       ("03_board_west", "West: a village further off"), ("04_board_south", "South: the Well")]),
+    # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
+    S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
+      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; the Storehouse board did the same", 45,
+      [("01_chronicle_hovered", "A long entry hovered"), ("02_chronicle_held", "Held with the mouse in the pane"),
+       ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_last_line", "The Storehouse board, scrolled")]),
+    # 36.1: a build with a basement in the table's 3D preview: the cellar under a faint ground plane, fitted whole
+    S("table_basement", "Builder", "Blueprint Table: basements in the preview",
+      "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
+      [("01_cottage_cellar", "Starter Cottage IV and its cellar"), ("02_cottage_turned", "Turned"),
+       ("03_storehouse_vault", "The Storehouse and its vault"), ("04_storehouse_turned", "Turned")]),
     S("shapes", "Builder", "Shape Planner", "the Shape Planner screen opened with its materials", 45,
       [("01_shapes_screen", "Shape Planner"), ("02_shapes_info", "Size and blocks")]),
     S("scan", "Builder", "The Scan Tool: your own build as a blueprint", "a hut was marked with the Scan Tool and saved as a blueprint", 30,
@@ -195,9 +213,18 @@ SCENES = [
        ("72_ferry_1", "Ferry ride"), ("72_ferry_arrived", "Arrived")]),
     # Porter
     S("porter", "Porter", "Carrying goods to the storehouse", "the porter stocked the storehouse and the board opened", 90,
-      [("*_porter@first", "Start"), ("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
+      [("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
        ("21_request_board", "The Storehouse board in the Blueprint Table's style: requests listed, the store at a glance"),
-       ("22_request_read_out", "A request read out in the pane"), ("23_request_board_scale3", "The board at GUI scale 3")]),
+       ("22_request_read_out", "A request read out in the pane")]),
+    # Modded storage networks in the Storehouse: part one (ROADMAP 37.9) a Sophisticated Storage controller and its linked
+    # barrels and chests, part two (37.10) a Tom's Simple Storage inventory connector and its network, each one store
+    S("modded_storehouse", "Porter", "The Storehouse reads a Sophisticated controller and a Tom's Simple Storage network each as one store",
+      "the Storehouse's store is the controller alone, its five linked blocks counted once, with the board's 'Linked through a storage controller: 5 blocks'; "
+      "then a Storehouse's store is the inventory connector, each item counted once, the board names the 3 linked blocks and the terminal opens",
+      100, [("01_storehouse", "The Storehouse with a Sophisticated controller on its linked barrels and chests"),
+            ("02_board", "The Storehouse board: one store, and the line 'Linked through a storage controller: 5 blocks'"),
+            ("04_board", "The Storehouse board: linked through an inventory connector, 3 blocks"),
+            ("05_terminal", "The village's goods in Tom's own terminal screen")], cobblemon=True, furniture=True),
     job("dropbox", "Porter", "Emptying a Drop Box", "the porter emptied the Drop Box into the store", 120,
         [("04_dropbox_screen", "Drop Box")]),
     # Crafters
@@ -262,7 +289,7 @@ SCENES = [
        ("03_healing", "In the Healing Machine")], cobblemon=True),
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
-      [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
+      [("01_shop_menu", "Shop screen"), ("01_shop_counter", "The counter")], cobblemon=True),
     S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
       [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
     # Ferryman
@@ -272,6 +299,19 @@ SCENES = [
     # Cobblemon
     S("battle", "Trainer", "A battle with a Master trainer", "the battle ran to the end and a Mega Evolution happened", 420,
       [("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
+      cobblemon=True, mega=True),
+    # Mega Stones from the village (ROADMAP 38.6): a Journeyman Jeweller cuts a Mega Stone for the village's Master
+    job("mega_jeweller", "Jeweler", "Mega Stones: the Jeweler cuts one for the village's Master",
+        "the jeweler cut a Mega Stone for a Pokémon on the village Master's team from a Mega Crystal, gold and emeralds the player put in the Storehouse",
+        cobblemon=True, mega=True),
+    # The Mega Shrine (ROADMAP 38.7): on a festival day a village trainer Mega Evolves their ace at the shrine's pedestal
+    job("mega_shrine", "Trainer", "The Mega Shrine: a festival show",
+        "the village trainer walked up to the Mega Shrine's pedestal and Mega Evolved their ace, and the villagers watching got +3 mood",
+        cobblemon=True, mega=True),
+    # More Mega trainers (ROADMAP 38.5): a City's Trainer Leader wears the Mega Bracelet and Mega Evolves against the player
+    S("mega_trainers", "Trainer Leader", "Mega trainers: a City's Leader Mega Evolves",
+      "the City's Trainer Leader wears the Mega Bracelet and their lead Mega Evolved in a battle against the player", 420,
+      [("01_mega_leader", "The Leader's Mega Bracelet"), ("mega_battle_*@middle", "Mid-battle"), ("99_mega_battle_end", "Battle over")],
       cobblemon=True, mega=True),
     S("arena", "Trainer Leader", "The Arena, three tiers",
       "every tier's ring center, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
@@ -328,6 +368,22 @@ SCENES = [
         [("04_berry_book", "The berry book")], cobblemon=True),
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
         cobblemon=True),
+    # Cobblecuisine on the Chef's menu (ROADMAP 38.8): a Journeyman Chef cooks a salad and a curry from their own recipes
+    job("cuisine_kitchen", "Chef", "Cobblecuisine: a salad and a curry from the Chef",
+        "the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest",
+        cobblemon=True),
+    # Campfire Pot recipes (ROADMAP 38.11): the Chef cooks the pot's candies and sweets, found by recipe type
+    job("campfire_pot", "Chef", "Campfire Pot recipes: candies from the Chef",
+        "the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest",
+        cobblemon=True),
+    # Bean farms (ROADMAP 38.9): the farmer cuts ripe Cobblecuisine beans, leaves the green ones and sows the bare rows
+    job("bean_farm", "Farmer", "Cobblecuisine: beans for the menu",
+        "the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows",
+        cobblemon=True),
+    # Partner treats (ROADMAP 38.10): a builder's pastured Machop eats a Poké Puff from the store, once a day
+    job("partner_treats", "Builder", "Cobblecuisine: a partner's treat of the day",
+        "the builder's Machop ate a Poké Puff from the storehouse chest as its treat of the day",
+        cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
     job("jeweller", "Jeweler", "Making amethyst rings at the stonecutter", "the jeweler made amethyst rings at the stonecutter"),
@@ -337,7 +393,7 @@ SCENES = [
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),
        ("03_hall_builder", "A builder read out in the pane"), ("08_hall_calendar", "The calendar"),
-       ("09_hall_scale4", "The hall's screen at GUI scale 4"), ("10_hall_pinned_scale3", "A clicked villager kept in the pane, GUI scale 3")]),
+       ("10_hall_pinned_scale3", "A clicked villager kept in the pane, GUI scale 3")]),
     # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
     S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
@@ -348,6 +404,11 @@ SCENES = [
        ("03_city_plan_framed", "The plan on the hall's map, framed")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
       [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
+    # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one
+    S("hall_jobs", "Village Hall", "Free job blocks: filling an empty Storehouse from the hall",
+      "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
+      [("01_free_jobs", "The Free job blocks page: the Storehouse and a bench"), ("02_who_takes_it", "Who could take the Storehouse"),
+       ("03_dara_porter", "Dara picked: now the Porter, walking over")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "
@@ -549,6 +610,11 @@ SCENES = [
     S("basement", "Builder", "Level 4: a root cellar dug under the cottage",
       "a builder dug a root cellar under a finished Starter Cottage III and built the Level 4 over it, then the camera went down the ladder into it",
       420, [START, ("02_root_cellar", "In the root cellar: bins, sacks, a shelf, the lights"), ("02_ladder_up", "The ladder up to the cottage"), DONE]),
+    # Cellars (ROADMAP 36.7): the Inn III cut away to its ale and wine cellar; an old Smithy, finished before it had a
+    # cellar, gets its coal store dug by its builder ("Dig the cellar")
+    S("cellars", "Builder", "Level III cellars, and digging an old build's cellar",
+      "the Inn III stood cut away to its ale and wine cellar, and a builder dug the cellar under an old Smithy built before it had one",
+      300, [START, ("02_inn_cellar", "The Inn III cut away: its ale and wine cellar"), ("02_smithy_cellar", "The old Smithy's coal store, dug"), DONE]),
     # The Pathfinder (ROADMAP 29.13): an expedition with the player through a forest to a staged Stronghold
     job("legend_pathfinder", "Legends", "The Pathfinder leads the player through a forest",
         "the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 120),
@@ -877,7 +943,7 @@ SCENES = [
     # The Observatory (ROADMAP 35.18): its time-lapse, then the Sky Chart in hand and the Coming days page
     S("wonder_observatory", "Wonders", "The Observatory: its time-lapse, the Sky Chart and the Coming days",
       "a crew of twelve raised the Observatory stage by stage on a sped-up server, the terrace and courtyard first, then the tower, the copper dome and the great telescope with the orrery; once finished its powers came on and, after the festival's fireworks, the hall's search charted the land round the village: the Sky Chart in hand shows about 6,144 blocks with a marker on every structure found, each named in its tooltip; then the hall's calendar page showed the Coming days, a festival in three days, a wedding tomorrow, a caravan on the road, the market day, the full moon and the night's raid risk", 840,
-      [("11_wonder_observatory_stage_1", "Stage I, the Terrace and the Courtyard, up"), ("frame_*@middle", "The crew at work, the camera going round"),
+      [("11_wonder_observatory_stage_1", "Stage I, the Terrace and the Courtyard, up"),
        ("14_wonder_observatory_stage_4", "The Great Telescope and the Orrery: the Observatory finished"), ("20_wonder_observatory_sky_chart", "The Sky Chart in hand"),
        ("21_wonder_observatory_coming_days", "The hall's calendar with the Coming days")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
@@ -901,6 +967,19 @@ SCENES = [
       "the hall's guards icon opened the Defense page: the bandit camp, its named chief, its strength and the last attacks", 45,
       [("01_defence_page", "The camp's chief, by name"), ("02_defence_strength", "The camp's strength"),
        ("03_defence_attacks", "The last attacks")]),
+    # Raid dens (ROADMAP 38.2, Cobblemon Raid Dens): the dens a village knows, on the Defense page
+    S("raid_dens", "Village Hall", "Raid dens: the village knows the dens around it",
+      "a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state", 45,
+      [("01_raid_den", "A raid den by the hall"), ("02_raid_den_page", "The Defense page: tier 3, Fire, active"),
+       ("03_raid_den_resting", "A beaten den, resting")], cobblemon=True),
+    # Den Wardens (ROADMAP 38.3, Cobblemon Raid Dens): a guard stands watch by the den
+    S("den_warden", "Village Hall", "Den Wardens: a guard stands watch at the raid den",
+      "a guard posted from the hall's Defense page stands watch by the raid den, by day", 45,
+      [("01_den_warden", "The warden by the glowing den"), ("02_den_warden_page", "The Defense page: the den's warden")], cobblemon=True),
+    # Den challenges (ROADMAP 38.4, Cobblemon Raid Dens): the village's Trainer Leader beats a den
+    S("den_challenge", "Village Hall", "Den challenges: the village's trainer beats a raid den",
+      "the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it", 45,
+      [("01_den_challenge", "The beaten den, dark, and the Leader by it"), ("02_den_challenge_chronicle", "The chronicle: the Leader beat the tier 3 Fire den")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,
@@ -951,6 +1030,30 @@ SCENES = [
     # Plague (ROADMAP 32.18): the Physician going house to house with Remedies, then the hall's list of the ill
     job("plague", "Threats", "Plague: the Physician goes house to house with the Remedy",
         "a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed", 150),
+    # The Mechanic (ROADMAP 39.2, with Create): mending a finished drive line from its blueprint and tending a millstone
+    job("mechanic", "Mechanic", "The Mechanic: a shaft and a cogwheel put back, the millstone fed and emptied",
+        "the Mechanic put back the shaft and the cogwheel missing from the finished drive line, fed the turning millstone the store's wheat and brought its flour back to the chest",
+        150, create=True),
+    # Villagers work Create's machines (ROADMAP 39.3, with Create): the farmer feeds a turning millstone from the store
+    job("create_mill", "Create", "The farmer works the millstone: wheat in, flour back to the store",
+        "the Farmer took wheat from the chest to the turning millstone and brought the flour it ground back to the chest",
+        150, create=True),
+    # The Create-powered builds (ROADMAP 39.4, with Create): the Watermill, the Windmill and the Workshop, every machine turning
+    job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
+        "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
+        120, create=True),
+    # Trains link villages (ROADMAP 39.7, 39.7a and 39.7b, with Create): two Train Stations, track between them, the train built by a builder and the caravan's goods in its chest
+    job("village_train", "Create", "Trains link villages: the builder's train, the goods in its chest",
+        "Thornholm's builder built the train, the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
+        240, create=True),
+    # Builders build contraptions (ROADMAP 39.5, with Create): a saved drive put up again, its moving parts last, then checked
+    job("create_contraption", "Create", "A contraption from a blueprint: built in order, and it turns",
+        "the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",
+        200, create=True),
+    # Create schematics at the Blueprint Table (ROADMAP 39.6, with Create): an uploaded schematic imported by its written Schematic, then built
+    job("create_schematic", "Create", "A Create schematic at the Blueprint Table, built",
+        "the written Schematic used on the Blueprint Table imported its uploaded file, and the builder put the schematic's kiosk up",
+        150, create=True),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),
@@ -1005,6 +1108,40 @@ SCENES = [
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
+    # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
+    S("furnished_home", "Build families", "A furnished Starter Cottage, room by room (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods",
+      80, [("02_dining", "The dining corner: a Handcrafted table and chairs, a shelf of crockery, a Beautify picture"),
+           ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
+           ("05_sitting", "Upstairs: the sitting corner's couch, blinds and a picture"),
+           ("06_vanilla_dining", "The same corner without furniture mods: the vanilla pieces")], cobblemon=True, furniture=True),
+    # Furnished workplaces (ROADMAP 37.5): the Supply Shop, Library, Schoolhouse and Healing Center as a server with the
+    # pack's furniture mods builds them
+    S("furnished_workplaces", "Build families", "Furnished workplaces: shop counters, Library desks, school benches (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of the four workplaces holds the piece this server chose, pieces of at least two mods, and each keeps only its own chests and barrels as storage",
+      80, [("01_shop_counter", "Inside the shop: Handcrafted counters either side of the Shop Counter, a shelf of cups, a picture, hanging pots"),
+           ("02_library_desks", "The Library's reading desks and chairs under hanging pots, the scholar's lectern beyond"),
+           ("03_schoolroom", "The schoolroom's benches facing the blackboard and the teacher's Poké Ball desk"),
+           ("04_clinic_benches", "The Healing Center's waiting benches, pictures and the nurse's Poké Ball desk")], cobblemon=True, furniture=True),
+    # Villagers use the furniture (ROADMAP 37.6): Handcrafted chairs at supper, Handcrafted fancy beds at bedtime
+    S("seats_and_beds", "Build families", "Villagers sit on Handcrafted chairs at supper and sleep in its fancy beds",
+      "two villagers sit on the furniture mod's chairs at supper, then get up at bedtime and sleep in its fancy beds",
+      60, [("01_supper", "Supper: two villagers seated on Handcrafted chairs at the table"),
+           ("02_bedtime", "Bedtime: the same two asleep in Handcrafted fancy beds")], cobblemon=True, furniture=True),
+    # Carved Wood and Rechiseled in the styles (ROADMAP 37.7): the Library in Spruce, the Starter Cottage in Grand
+    S("carved_styles", "Build families", "The Spruce style's Carved Wood shelves and lectern, and the Grand style's Rechiseled floors",
+      "the spruce Library's bookshelves are all Carved Wood's and its lectern a Carved Wood lectern that is a Librarian's job site, and the Grand cottage stands with Rechiseled blocks",
+      40, [("01_library_front", "The Library in the Spruce style"),
+           ("02_library_shelves", "Inside: Carved Wood spruce bookshelves round the spruce lectern"),
+           ("03_grand_cottage", "The Starter Cottage in the Grand style"),
+           ("04_grand_cottage_floor", "Inside the Grand cottage: Rechiseled dark oak flooring and andesite wall panels")], cobblemon=True, furniture=True),
+    # The two build libraries (ROADMAP 37.12): the Starter Cottage II from the vanilla and the modded library, the modded Inn II
+    S("modded_library", "Build families", "The modded build library: the same cottage in vanilla blocks and dressed with the pack's building mods",
+      "the vanilla Starter Cottage II stands beside its modded copy (daub walls with braces, herringbone floors, Carved Wood chests, crockery on the table) and the modded Inn II, built from the modded library because its mods are installed",
+      40, [("01_both_cottages", "The Starter Cottage II from the vanilla library (left) and the modded library (right)"),
+           ("02_modded_cottage", "The modded cottage: Supplementaries daub for the plaster, braced beside the posts"),
+           ("04_modded_cottage_inside", "Inside: Chipped herringbone floors, Handcrafted furniture and crockery, Carved Wood chests"),
+           ("05_modded_inn", "The Inn II from the modded library")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",
@@ -1273,9 +1410,11 @@ def changed(base, head="HEAD", root="."):
 
 def env(scene):
     s = BY_NAME[scene]
-    out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false"}
+    out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false",
+           "FURNITURE": "true" if s.get("furniture") else "false"}
     if s["cobblemon18"]:
         out["COBBLEMON18"] = "true"
+    out["CREATE"] = "true" if s.get("create") else "false"
     out.update(s["env"])
     return out
 

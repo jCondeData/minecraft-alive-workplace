@@ -172,7 +172,7 @@ def guildhall_rooms(b):
     # Banners either side of the hearth; a red runner from the door to the table
     guild_banner(b, 7, 4, 11, "north")
     guild_banner(b, 11, 4, 11, "north")
-    for z in (2, 3, 4, 5):
+    for z in (3, 4, 5):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(9, 1, z, "red_carpet")
     for x, z in ((16, 5), (16, 11), (2, 5)):
         b.set(x, 1, z, "potted_fern")

@@ -85,6 +85,24 @@ public final class MaterialRules {
 		Blocks.DIRT_PATH, Items.DIRT
 	);
 
+	/**
+	 * Blocks of other mods with no item of their own, placed with another item, by id (no class of theirs): Create's belt
+	 * is laid with a belt connector (ROADMAP 39.4's Workshop). A builder lays a belt segment by segment, one connector each.
+	 */
+	private static final Map<String, String> PLACED_WITH = Map.of("create:belt", "create:belt_connector",
+		"create:small_bogey", "create:railway_casing"); // 39.7b: a bogey is train casing used on the track
+
+	/** Whether {@code state} is laid in one piece with its neighbours of the same block (Create's belt): see BuilderWork. */
+	public static boolean laidWhole(BlockState state) {
+		return "create:belt".equals(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+	}
+
+	private static Item placedByAnotherItem(Block block) {
+		String with = PLACED_WITH.get(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block).toString());
+		return with == null ? Items.AIR
+			: io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM, net.minecraft.resources.ResourceLocation.parse(with));
+	}
+
 	/** Properties that depend on neighbours or change on their own; ignored when checking if a spot is done. */
 	private static final Set<String> VOLATILE_PROPERTY_NAMES = Set.of(
 		"north", "east", "south", "west", "up", "down", "shape", "waterlogged", "powered", "open", "lit",
@@ -97,6 +115,15 @@ public final class MaterialRules {
 		// Cobblemon (ROADMAP 28.13): a Campfire Pot's lid, which its cook shuts and opens
 		"lid"
 	);
+
+	/**
+	 * Properties a furniture mod's piece takes from its neighbours when it's placed (ROADMAP 37.4), so they're no part
+	 * of whether the piece is built: CobbleFurnies sofas join up (`type` single, left, middle, right) and its curtains
+	 * pair up and hang down (`horizontal_part`, `vertical_part`, `hinge`). By namespace, as M37 goes by ids only: the
+	 * same names on other blocks (a slab's `type`, a door's `hinge`) still count.
+	 */
+	private static final Map<String, Set<String>> CONNECTED_BY_MOD = Map.of(
+		"cobblefurnies", Set.of("type", "horizontal_part", "vertical_part", "hinge"));
 
 	public static Kind classify(BlockState state) {
 		return classify(state, null);
@@ -234,6 +261,9 @@ public final class MaterialRules {
 		}
 		Item item = SUBSTITUTES.getOrDefault(block, block.asItem());
 		if (item == Items.AIR) {
+			item = placedByAnotherItem(block);
+		}
+		if (item == Items.AIR) {
 			return Optional.empty();
 		}
 		int count = 1;
@@ -283,7 +313,7 @@ public final class MaterialRules {
 			return false;
 		}
 		for (Property<?> property : wanted.getProperties()) {
-			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE) {
+			if (VOLATILE_PROPERTY_NAMES.contains(property.getName()) || property == BlockStateProperties.CHEST_TYPE || connected(wanted, property)) {
 				continue;
 			}
 			if (!actual.hasProperty(property)) {
@@ -294,6 +324,17 @@ public final class MaterialRules {
 			}
 		}
 		return true;
+	}
+
+	/** Whether {@code property} of {@code state} is one its mod's piece takes from its neighbours ({@link #CONNECTED_BY_MOD}). */
+	private static boolean connected(BlockState state, Property<?> property) {
+		for (Map.Entry<String, Set<String>> e : CONNECTED_BY_MOD.entrySet()) {
+			if (e.getValue().contains(property.getName())
+				&& e.getKey().equals(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

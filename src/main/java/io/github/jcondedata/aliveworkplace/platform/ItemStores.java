@@ -26,6 +26,18 @@ public interface ItemStores {
 	/** Empty slots across the stores. */
 	int freeSlots(Level level, List<BlockPos> stores);
 
+	/**
+	 * Free room across the stores (ROADMAP 37.8), read slot by slot: what {@link #freeSlots} counts, the stacks that still
+	 * fit, the items that still fit and whether any slot holds more than a stack (a Sophisticated Storage stack upgrade,
+	 * a limited barrel). For vanilla chests {@code freeStacks} is {@code freeSlots}: an empty slot is one stack and a
+	 * slot holding something has room for less than a stack.
+	 */
+	Room room(Level level, List<BlockPos> stores);
+
+	/** See {@link #room}. */
+	record Room(int freeSlots, int freeStacks, long freeItems, boolean bigSlots) {
+	}
+
 	/** All slots across the stores, empty or not. */
 	int slots(Level level, List<BlockPos> stores);
 
@@ -65,4 +77,10 @@ public interface ItemStores {
 
 	/** Puts a stack into the stores; returns what didn't fit. */
 	ItemStack insert(Level level, List<BlockPos> stores, ItemStack stack);
+
+	/** How much of {@code fluid} the tank at {@code pos} (a Create basin, say) holds, in millibuckets; 0 without a tank. */
+	long fluidMb(Level level, BlockPos pos, net.minecraft.world.level.material.Fluid fluid);
+
+	/** Pours up to {@code mb} millibuckets of {@code fluid} into the tank at {@code pos}; returns how much went in. */
+	long pourFluid(Level level, BlockPos pos, net.minecraft.world.level.material.Fluid fluid, long mb);
 }

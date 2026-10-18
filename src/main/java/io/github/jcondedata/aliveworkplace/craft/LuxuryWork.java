@@ -32,6 +32,8 @@ import org.jetbrains.annotations.Nullable;
  * the village store and their own chests hold fewer than {@link #KEEP} of, from their own chests, the store and the
  * village's stashes (not the builders'). Aged makings are only taken once old enough; goods that age get the day they
  * were made ({@code made_day}). When nothing short can be made, the first missing making goes on the requests board.
+ * Goods a maker makes only from the village store ({@link #fromStoreOnly}) take their makings from the store alone, and
+ * while it lacks them the maker's line says what it should hold (38.6a).
  */
 public class LuxuryWork extends CrafterWork {
 	/** The store is kept in this many of each good. */
@@ -40,6 +42,9 @@ public class LuxuryWork extends CrafterWork {
 	/** Whose recipes the plans use (the villager whose shift this is). */
 	@Nullable
 	private Villager maker;
+	/** What a store-only good waits for in the village store, shown above the maker's head (null: nothing). */
+	@Nullable
+	private net.minecraft.network.chat.Component waitingFor;
 
 	public LuxuryWork() {
 		this("luxury");
@@ -54,6 +59,7 @@ public class LuxuryWork extends CrafterWork {
 	@Override
 	protected Job choose(ServerLevel level, Villager villager, BlockPos station) {
 		maker = villager;
+		waitingFor = null;
 		Job order = chooseOrder(level, villager, station);
 		if (order != null) {
 			Requests.clear(villager);
@@ -76,32 +82,96 @@ public class LuxuryWork extends CrafterWork {
 		counted.addAll(own);
 		Map<Item, Long> held = held(level, new ArrayList<>(counted));
 		Map<Item, Long> usable = usableIn(level, sources);
+		Map<Item, Long> inStore = null; // worked out the first time a good wants it
 		List<Item> goods = goods(villager);
 		LuxuryRecipes.Recipe firstShort = null;
+		Map<Item, Long> shortUsable = usable;
+		int closest = -1; // of the store-only goods short, the most makings the store already holds for one
 		for (int i = 0; i < goods.size(); i++) {
 			Item good = goods.get((next + i) % goods.size());
 			long have = held.getOrDefault(good, 0L);
-			if (have >= KEEP || !stocks(level, villager, station, good)) {
+			int keep = keep(villager, good);
+			if (have >= keep || !stocks(level, villager, station, good)) {
 				continue;
 			}
-			for (int count = (int) (KEEP - have); count >= 1; count /= 2) {
-				Crafting.Plan plan = planFor(level, good, count, usable);
+			boolean storeOnly = fromStoreOnly(villager, good);
+			if (storeOnly && inStore == null) {
+				inStore = usableIn(level, store);
+			}
+			Map<Item, Long> from = storeOnly ? inStore : usable;
+			for (int count = (int) (keep - have); count >= 1; count /= 2) {
+				Crafting.Plan plan = planFor(level, good, count, from);
 				if (fits(plan)) {
 					next = (next + i + 1) % goods.size();
 					Requests.clear(villager);
-					return new Job(station, null, plan, "", sources);
+					return new Job(station, null, plan, "", storeOnly ? store : sources);
 				}
 			}
-			if (firstShort == null) {
-				firstShort = allowed(villager).stream().filter(r -> r.output() == good).findFirst().orElse(null);
+			if (storeOnly) {
+				for (LuxuryRecipes.Recipe r : allowed(villager)) {
+					int had = r.makes(good) ? had(r, inStore) : -1;
+					if (had > closest) {
+						closest = had;
+						waitingFor = missing(level, r, inStore);
+					}
+				}
+			} else if (firstShort == null) {
+				firstShort = allowed(villager).stream().filter(r -> r.makes(good)).findFirst().orElse(null);
+				shortUsable = from;
 			}
 		}
 		if (firstShort != null) {
-			ask(level, villager, firstShort, usable, sources);
+			ask(level, villager, firstShort, shortUsable, sources);
 		} else {
-			Requests.clear(villager);
+			Requests.clear(villager); // (what only the store's makings make isn't asked for: a hand-over goes to our own chests)
 		}
 		return null;
+	}
+
+	/**
+	 * Whether {@code good}'s makings come only from the village store (the hall's storehouses and kitchens, or the
+	 * storehouses near the workstation), never the maker's own chests or other workers' (no, by default; the Jeweller's
+	 * Mega Stones and Key Stones, 38.6a).
+	 */
+	protected boolean fromStoreOnly(Villager villager, Item good) {
+		return false;
+	}
+
+	/** How many of {@code recipe}'s makings {@code usable} holds enough of. */
+	private static int had(LuxuryRecipes.Recipe recipe, Map<Item, Long> usable) {
+		int n = 0;
+		for (LuxuryRecipes.Input input : recipe.inputs()) {
+			long have = 0;
+			for (Item option : input.options()) {
+				have += usable.getOrDefault(option, 0L);
+			}
+			n += have >= input.count() ? 1 : 0;
+		}
+		return n;
+	}
+
+	/** What a store-only good is waiting for: the first making of {@code recipe} the store is short of, with how many. */
+	@Nullable
+	private static net.minecraft.network.chat.Component missing(ServerLevel level, LuxuryRecipes.Recipe recipe, Map<Item, Long> usable) {
+		for (LuxuryRecipes.Input input : recipe.inputs()) {
+			List<Item> options = input.options();
+			long have = 0;
+			for (Item option : options) {
+				have += usable.getOrDefault(option, 0L);
+			}
+			if (have < input.count() && !options.isEmpty()) {
+				return net.minecraft.network.chat.Component.translatable("message.aliveworkplace.luxury.state.needs_store", input.count() - have,
+					options.get(0).getDescription());
+			}
+		}
+		return null;
+	}
+
+	/** While a store-only good waits for its makings, the line says what the store should hold. */
+	@Nullable
+	@Override
+	protected net.minecraft.network.chat.Component idleLine(Villager villager) {
+		return waitingFor;
 	}
 
 	/** Whether {@code good} is kept in stock just now (always, by default; the store's orders are filled either way). */
@@ -128,7 +198,7 @@ public class LuxuryWork extends CrafterWork {
 	}
 
 	/** The village store: its hall's (kitchens and storehouses), or without a hall the storehouses near the workstation. */
-	static List<BlockPos> store(ServerLevel level, BlockPos station) {
+	public static List<BlockPos> store(ServerLevel level, BlockPos station) {
 		Optional<BlockPos> hall = VillageHalls.nearest(level, station);
 		if (hall.isPresent()) {
 			return VillageNeeds.store(level, hall.get());
@@ -149,11 +219,24 @@ public class LuxuryWork extends CrafterWork {
 	static List<Item> goods(Villager villager) {
 		List<Item> out = new ArrayList<>();
 		for (LuxuryRecipes.Recipe r : allowed(villager)) {
-			if (!out.contains(r.output())) {
-				out.add(r.output());
+			for (Item good : r.goods(villager)) {
+				if (!out.contains(good)) {
+					out.add(good);
+				}
 			}
 		}
 		return out;
+	}
+
+	/** How many of {@code good} the store is kept in: {@link #KEEP}, or less where its recipe says (a Mega Stone: one, 38.6). */
+	static int keep(Villager villager, Item good) {
+		int keep = KEEP;
+		for (LuxuryRecipes.Recipe r : allowed(villager)) {
+			if (r.makes(good)) {
+				keep = Math.min(keep, r.keepOr(KEEP));
+			}
+		}
+		return keep;
 	}
 
 	@Override
@@ -209,7 +292,7 @@ public class LuxuryWork extends CrafterWork {
 		for (Crafting.Step step : plan.steps()) {
 			int each = CRAFT_TICKS;
 			for (LuxuryRecipes.Recipe r : allowed(villager)) {
-				if (r.output() == step.out().getItem()) {
+				if (r.makes(step.out().getItem())) {
 					each = r.ticks();
 					break;
 				}

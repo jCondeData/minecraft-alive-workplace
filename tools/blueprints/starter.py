@@ -39,6 +39,20 @@ def cottage_ground_floor(b):
     b.set(3, 2, 4, "spruce_pressure_plate", powered=False)
     stairs(b, 3, 1, 3, SPRUCE, "north")
     box(b, 4, 1, 5, 6, 1, 6, "brown_carpet")
+    # Furnished (37.4): a second seat at the table, a nightstand and a lamp by the bed, a little couch against the back
+    # wall facing the rug, a shelf of cups over the kitchen corner, a clock by the door, a picture on the chimney wall,
+    # blinds at the front and back windows
+    stairs(b, 3, 1, 5, SPRUCE, "south")
+    nightstand(b, 8, 1, 7, "north", "spruce")
+    floor_lamp(b, 6, 1, 7, "spruce")
+    couch(b, 4, 1, 7, "north", "spruce", "green", length=2, arms=False)
+    shelf(b, 2, 2, 6, "east", "spruce")
+    clock(b, 6, 1, 3, "south", "spruce")
+    picture(b, 2, 3, 4, "east", "green", "spruce")
+    for x in (2, 3, 7, 8):
+        blinds(b, x, 3, 3, "south", "spruce")
+    for x in (3, 7):
+        blinds(b, x, 3, 7, "north", "spruce")
 
 
 def cottage_porch(b):
@@ -112,6 +126,12 @@ def cottage_upper_floor(b):
     b.set(2, 7, 2, "potted_fern")
     b.set(4, 6, 8, "chest", facing="north", type="single", waterlogged=False)
     box(b, 4, 6, 4, 6, 6, 6, "light_blue_carpet")
+    # Furnished (37.4): a nightstand and a lamp by the bed, a couch with arms in the sitting corner over the porch,
+    # a picture over the bed
+    nightstand(b, 3, 6, 8, "north", "spruce")
+    floor_lamp(b, 5, 6, 8, "spruce")
+    couch(b, 6, 6, 2, "south", "spruce", "light_blue", length=2)
+    picture(b, 8, 7, 7, "west", "light_blue", "spruce")
 
 
 def starter_cottage_2():
@@ -501,12 +521,20 @@ def clinic_hall(b):
         stairs(b, 8, 1, z, "birch_stairs", "east")
     b.set(2, 1, 5, "potted_azalea_bush")
     b.set(8, 1, 5, "potted_azalea_bush")
-    for z in range(3, 6):
+    for z in range(4, 6):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(5, 1, z, "red_carpet")
     for x in (3, 7):
         for z in range(3, 8):
             log(b, x, 4, z, CLINIC_FRAME, axis="z")
         lantern(b, x, 3, 4, hanging=True)
+    # Furnished (37.5): the waiting benches, the nurse's desk in the corner behind the counter, pictures on the side
+    # posts
+    for z in (3, 4):
+        furnish(b, "bench", 2, 1, z, "east", wood="birch")
+        furnish(b, "bench", 8, 1, z, "west", wood="birch")
+    desk(b, 2, 1, 7, "east", "birch")
+    picture(b, 2, 3, 5, "east", "red", "birch")
+    picture(b, 8, 3, 5, "west", "pink", "birch")
 
 
 def clinic_roof(b, back=9):
@@ -584,7 +612,7 @@ def clinic_ward(b):
     for x in (4, 6):
         b.bed(x, 1, 9, "white", facing="south")
         b.bed(x, 1, 12, "white", facing="south")
-    for z in range(9, 14):
+    for z in range(10, 13):  # clear of the doors at both ends (B173): on a carpet under a lintel a villager hits its head
         b.set(5, 1, z, "red_carpet")
     lantern(b, 5, 3, 11, hanging=True)
     gable_roof(b, 2, 8, 9, 15, 4, CLINIC_ROOF, axis="z", gable=CLINIC_WALL, gable_at=(14,), eave_trim=CLINIC_TRIM)
@@ -682,13 +710,23 @@ def shop_hall(b):
     b.set(5, 1, 6, "aliveworkplace:shop_counter", facing="south")
     b.set(3, 2, 6, "lantern", hanging=False, waterlogged=False)
     stairs(b, 5, 1, 7, SPRUCE, "south")  # the shopkeeper's seat
-    b.set(5, 1, 3, "light_blue_carpet")
-    b.set(5, 1, 4, "light_blue_carpet")
+    b.set(5, 1, 4, "light_blue_carpet")  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
     for z in (3, 7):
         for x in range(2, 9):
             log(b, x, 5, z, SHOP_FRAME_LOG, axis="x")
     lantern(b, 5, 4, 3, hanging=True)
     lantern(b, 5, 4, 7, hanging=True)
+    # Furnished (37.5): the counter's boards are a counter either side of the Shop Counter, a shelf of cups and a
+    # picture on the back wall behind the shopkeeper, pots hanging in the display windows, trellises by the door
+    for x in (4, 6, 7):
+        furnish(b, "counter", x, 1, 6, "north", cells=((0, 0, 0), (0, 1, 0)), wood="spruce")
+    furnish(b, "counter", 3, 1, 6, "north", wood="spruce")  # the lamp stands on this one
+    shelf(b, 6, 3, 7, "north", "spruce")
+    picture(b, 4, 3, 7, "north", "blue", "spruce")
+    for x in (3, 7):
+        hanging_pot(b, x, 4, 3, "potted_red_tulip" if x == 3 else "potted_oxeye_daisy", "spruce")
+    for x in (4, 6):
+        trellis(b, x, 1, 1, "south", "spruce")
 
 
 def shop_roof(b):
@@ -739,7 +777,8 @@ def shop_house(b):
         log(b, x, 4, 11, SHOP_FRAME_LOG, axis="x")
     b.set(5, 2, 8, "air")
     door(b, 5, 1, 8, "spruce_door", "south")
-    stairs(b, 5, 1, 7, SPRUCE, "west")  # the seat turned, so the door opens
+    b.set(5, 1, 7, "air")
+    stairs(b, 6, 1, 7, SPRUCE, "south")  # the seat moved aside: a step in front of the door kept the shopkeeper out (B173)
     window(b, 2, 2, 12, "west", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 8, 2, 12, "east", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 3, 2, 14, "south", sill=SPRUCE)
@@ -1409,6 +1448,15 @@ def inn():
     box(b, 2, 1, 7, 8, 1, 7, "red_carpet")
     for y in range(1, 6):
         b.set(10, y, 10, "ladder", facing="west", waterlogged=False)
+    # Furnished (37.4): shelves of cups behind the bar, a clock by the door, a picture, blinds over the windows
+    for x in (2, 3, 7):
+        shelf(b, x, 3, 10, "north", "spruce")
+    clock(b, 4, 1, 3, "south", "spruce")
+    picture(b, 2, 3, 6, "east", "red", "spruce")
+    for x in (2, 3, 9, 10):
+        blinds(b, x, 4, 3, "south", "spruce")
+    for z in (5, 8):
+        blinds(b, 2, 4, z, "east", "spruce")
     # Timber storey, y 6-8, jettied a block out over the street (its front wall at z 1) on stair brackets
     beam_ring(b, 1, 1, 11, 11, 5, INN_FRAME)
     box(b, 2, 5, 2, 10, 5, 10, "spruce_planks")
@@ -1438,6 +1486,19 @@ def inn():
         b.set(x, 6, 6, "air")  # the rooms open onto the landing
     b.set(4, 6, 7, "cauldron")
     b.set(2, 6, 10, "barrel", facing="up", open=False)
+    # Furnished (37.4): a nightstand in each guest room and a lamp, a picture over the beds, blinds over the windows; a
+    # couch with a lamp on the landing under its back window
+    for x in (2, 5, 10):
+        nightstand(b, x, 6, 5, "north", "spruce")
+    for x in (3, 7, 9):
+        floor_lamp(b, x, 6, 2 if x != 7 else 5, "spruce")
+    picture(b, 3, 8, 3, "west", "red", "spruce")
+    picture(b, 6, 8, 2, "south", "green", "spruce")
+    picture(b, 9, 8, 3, "east", "blue", "spruce")
+    for x in (2, 5, 7, 10):
+        blinds(b, x, 8, 2, "south", "spruce")
+    couch(b, 5, 6, 10, "north", "spruce", "red", length=2)
+    floor_lamp(b, 8, 6, 10, "spruce")
     for x in range(2, 11):  # a tie beam over the landing for its light
         log(b, x, 9, 8, INN_FRAME, axis="x")
     lantern(b, 6, 8, 8, hanging=True)
@@ -1556,7 +1617,8 @@ def town_hall():
     for x in (2, 3, 9, 10):
         for y in (1, 2, 3):
             b.set(x, y, 10, "bookshelf")
-    box(b, 4, 1, 4, 8, 1, 4, "red_carpet")
+    for x0, x1 in ((4, 5), (7, 8)):  # parted at the doorway: on a carpet under its lintel a villager hits its head (B173)
+        box(b, x0, 1, 4, x1, 1, 4, "red_carpet")
     # The hipped slate roof
     hip_roof(b, 0, 12, 2, 12, 6, HALL_ROOF)
     # The tower in front: x 5-7, z 1-3, through the hall's front wall; the door at its foot, the belfry at the top
@@ -1641,6 +1703,14 @@ def schoolhouse_room(b):
     box(b, 2, 5, 3, 8, 5, 9, "spruce_planks")  # the loft floor (the lights hang from it)
     lantern(b, 3, 4, 6, hanging=True)
     lantern(b, 7, 4, 6, hanging=True)
+    # Furnished (37.5): the rows are benches facing the blackboard, the teacher's desk beside the lectern, pictures on
+    # the side posts between the windows
+    for z in (4, 5, 6):
+        for x in (3, 4, 6, 7):
+            furnish(b, "bench", x, 1, z, "south", wood="spruce")
+    desk(b, 7, 1, 8, "south", "spruce")
+    picture(b, 2, 3, 6, "east", "yellow", "spruce")
+    picture(b, 8, 3, 6, "west", "light_blue", "spruce")
 
 
 def school_roof(b):
@@ -1758,6 +1828,17 @@ def library_hall(b):
     for x in range(2, 11):
         log(b, x, 6, 6, "dark_oak_log", axis="x")
     lantern(b, 6, 5, 6, hanging=True)
+    # Furnished (37.5): the reading tables are the scholars' desks, each with its chair; pictures either side of the
+    # door, pots hanging from the tie beam over the desks
+    for tx, side in ((4, "west"), (8, "east")):
+        for tz in (5, 6):
+            furnish(b, "desk", tx, 1, tz, side, wood="dark_oak")
+        cx = tx - 1 if tx == 4 else tx + 1
+        furnish(b, "chair", cx, 1, 6, "east" if tx == 4 else "west", wood="dark_oak")
+    for x, colour in ((5, "green"), (7, "brown")):
+        picture(b, x, 3, 3, "south", colour, "dark_oak")
+    for x in (4, 8):
+        hanging_pot(b, x, 5, 6, "potted_fern", "dark_oak")
 
 
 def library():

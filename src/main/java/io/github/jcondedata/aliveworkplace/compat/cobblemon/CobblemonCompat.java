@@ -51,6 +51,21 @@ public final class CobblemonCompat {
 			}
 
 			@Override
+			public List<Entity> helping(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
+				return CobblemonPartners.helping(level, center, radius, types, max);
+			}
+
+			@Override
+			public long treatDay(Entity entity) {
+				return CobblemonPartners.treatDay(entity);
+			}
+
+			@Override
+			public void setTreatDay(Entity entity, long day) {
+				CobblemonPartners.setTreatDay(entity, day);
+			}
+
+			@Override
 			public void useMove(ServerLevel level, LivingEntity pokemon, LivingEntity target, String type) {
 				CobblemonPartners.useMove(level, pokemon, target, type);
 			}
@@ -217,6 +232,9 @@ public final class CobblemonCompat {
 		CobblemonRogues.init();
 		io.github.jcondedata.aliveworkplace.story.ProfessorsThesis.Party.EXTENSION.register("cobblemon", new CobblemonThesis()); // 31.21
 		CobblemonThesis.init();
+		if (CobblemonMegas.ENABLED) {
+			io.github.jcondedata.aliveworkplace.jeweller.MegaStones.TeamStones.EXTENSION.register("cobblemon", CobblemonMegas::teamStones); // 38.6
+		}
 	}
 
 	private CobblemonCompat() {

@@ -66,6 +66,8 @@ public final class TableServer {
 	/** Opens (or refreshes) the table screen for {@code player}. */
 	public static void open(ServerPlayer player, BlockPos table) {
 		ServerLevel level = Players.level(player);
+		// Create's uploaded schematics join the library first (39.6), and the player hears what came of each new one.
+		CreateSchematics.sync(level.getServer()).forEach(player::sendSystemMessage);
 		Platform.get().send(player, new TablePayloads.Open(table, listing(level, BlueprintUnlocks.village(level, table)), canUpload(player)));
 	}
 
@@ -152,7 +154,10 @@ public final class TableServer {
 		if (!id.equals(base) && (!open || !styleTaken(server, id))) {
 			return Optional.empty();
 		}
-		return BlueprintLibrary.get(server, id).map(bp -> new TablePayloads.Details(id, cachedMaterials(id, bp), open ? styles(server, base) : List.of()));
+		return BlueprintLibrary.get(server, id).map(bp -> {
+			CachedMaterials cached = cachedMaterials(id, bp);
+			return new TablePayloads.Details(id, cached.materials(), open ? styles(server, base) : List.of(), cached.jobs().jobs(), cached.jobs().beds());
+		});
 	}
 
 	// --- styles (26.11) ----------------------------------------------------------------------
@@ -160,7 +165,7 @@ public final class TableServer {
 	private record CachedStyles(Blueprint blueprint, List<TablePayloads.StyleChoice> styles) {
 	}
 	private static final Map<ResourceLocation, CachedStyles> STYLES = java.util.Collections.synchronizedMap(new HashMap<>());
-	private record CachedMaterials(Blueprint blueprint, List<TablePayloads.Material> materials) {
+	private record CachedMaterials(Blueprint blueprint, List<TablePayloads.Material> materials, BuildJobs.Summary jobs) {
 	}
 	private static final Map<ResourceLocation, CachedMaterials> MATERIALS = java.util.Collections.synchronizedMap(
 		new java.util.LinkedHashMap<>(16, 0.75f, true) {
@@ -204,14 +209,15 @@ public final class TableServer {
 		return styled.isEmpty() || styles(server, styled.get().base()).stream().anyMatch(s -> s.name().equals(styled.get().style()));
 	}
 
-	private static List<TablePayloads.Material> cachedMaterials(ResourceLocation id, Blueprint blueprint) {
+	/** A build's materials and its job blocks and beds (36.6a), worked out once per build. */
+	private static CachedMaterials cachedMaterials(ResourceLocation id, Blueprint blueprint) {
 		CachedMaterials cached = MATERIALS.get(id);
 		if (cached != null && cached.blueprint() == blueprint) {
-			return cached.materials();
+			return cached;
 		}
-		List<TablePayloads.Material> materials = List.copyOf(materials(blueprint));
-		MATERIALS.put(id, new CachedMaterials(blueprint, materials));
-		return materials;
+		cached = new CachedMaterials(blueprint, List.copyOf(materials(blueprint)), BuildJobs.of(blueprint));
+		MATERIALS.put(id, cached);
+		return cached;
 	}
 
 	// --- 3D preview (26.9) -------------------------------------------------------------------
@@ -270,16 +276,24 @@ public final class TableServer {
 	 * neighbours are all solid is left out (no one sees it). The scale grows until the cells fit {@link #PREVIEW_CAP}.
 	 */
 	public static TablePayloads.Preview buildPreview(ResourceLocation id, Blueprint blueprint) {
+		return buildPreview(id, blueprint, 1);
+	}
+
+	/** {@link #buildPreview}, trying cells of {@code fromScale} blocks first (tests check a coarse preview of a small build). */
+	public static TablePayloads.Preview buildPreview(ResourceLocation id, Blueprint blueprint, int fromScale) {
 		List<Blueprint.Entry> shown = new ArrayList<>();
+		int below = 0; // a basement's depth (36.1): StarterBlueprints.withBasement puts its blocks under y = 0
 		for (Blueprint.Entry e : blueprint.blocks()) {
 			if (previewShows(e.state())) {
 				shown.add(e);
+				below = Math.max(below, -e.pos().getY());
 			}
 		}
-		for (int scale = 1; ; scale++) {
+		for (int scale = Math.max(1, fromScale); ; scale++) {
 			Map<Long, Blueprint.Entry> cells = new HashMap<>();
 			for (Blueprint.Entry e : shown) {
-				long key = BlockPos.asLong(e.pos().getX() / scale, e.pos().getY() / scale, e.pos().getZ() / scale);
+				// Floor division, so a cellar's first layer (y = -1) never folds into the ground floor's cell (36.1).
+				long key = BlockPos.asLong(Math.floorDiv(e.pos().getX(), scale), Math.floorDiv(e.pos().getY(), scale), Math.floorDiv(e.pos().getZ(), scale));
 				Blueprint.Entry old = cells.get(key);
 				if (old == null || e.pos().getY() > old.pos().getY()) {
 					cells.put(key, e);
@@ -321,7 +335,7 @@ public final class TableServer {
 					blocks[i * 4 + 2] = BlockPos.getZ(key);
 					blocks[i * 4 + 3] = idx;
 				}
-				return new TablePayloads.Preview(id, blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), scale, palette, blocks);
+				return new TablePayloads.Preview(id, blueprint.size().getX(), blueprint.size().getY(), blueprint.size().getZ(), below, scale, palette, blocks);
 			}
 		}
 	}

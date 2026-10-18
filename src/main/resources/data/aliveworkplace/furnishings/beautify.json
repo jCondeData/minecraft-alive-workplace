@@ -1,0 +1,14 @@
+{
+  "pieces": {
+    "lamp": {"block": ["beautify:lamp_candelabra_{colour}", "beautify:lamp_candelabra"], "facing": "front", "colour": "black"},
+    "picture": {"block": ["beautify:{wood}_picture_frame", "beautify:oak_picture_frame"], "facing": "front"},
+    "blinds": {"block": ["beautify:{wood}_blinds", "beautify:iron_blinds"], "facing": "front"},
+    "trellis": {
+      "block": ["beautify:{wood}_trellis", "beautify:oak_trellis"],
+      "facing": "front",
+      "states": {"ceilling": "false", "flowers": "1"},
+      "footprint": [{"at": [0, 0, 0]}, {"at": [0, 1, 0]}]
+    },
+    "hanging_pot": {"block": "beautify:hanging_pot", "states": {"hanging": "true", "grown": "true", "potflower": "4"}}
+  }
+}

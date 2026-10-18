@@ -66,6 +66,15 @@ public interface Platform {
 	/** Whether a loaded mod's version is in a Fabric-style range such as {@code ">=1.7.3 <1.8"}; false if not loaded. */
 	boolean isModLoaded(String modId, String versionRange);
 
+	/**
+	 * A stand-in player in {@code level} for using a block the way a player would (ROADMAP 39.4: starting a windmill
+	 * bearing with an empty hand), or null where the loader has none.
+	 */
+	@Nullable
+	default net.minecraft.world.entity.player.Player fakePlayer(net.minecraft.server.level.ServerLevel level) {
+		return null;
+	}
+
 	Path configDir();
 
 	/** The roots (a jar's root, or class folders in a dev run) this mod's own files are loaded from; empty if unknown. */
@@ -87,6 +96,15 @@ public interface Platform {
 
 	/** When an entity is loaded into (or spawned in) a server level. */
 	void onEntityLoad(BiConsumer<Entity, ServerLevel> action);
+
+	/** When a chunk is loaded into a server level (its block entities are in it already): ROADMAP 38.2's raid dens. */
+	void onChunkLoad(BiConsumer<ServerLevel, net.minecraft.world.level.chunk.LevelChunk> action);
+
+	/**
+	 * When a block entity is put into a loaded chunk of a server level: a chunk loading, and a block with one placed in a
+	 * chunk already loaded (B190: a raid den set down after its chunk loaded).
+	 */
+	void onBlockEntityLoad(BiConsumer<net.minecraft.world.level.block.entity.BlockEntity, ServerLevel> action);
 
 	/** When a player's client starts tracking an entity (it comes into their view distance, or they join beside it). */
 	void onStartTracking(BiConsumer<Entity, ServerPlayer> action);

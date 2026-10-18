@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131
+Roadmap items: 25.5, B76, B119, B131, B161
 
 ## What a player sees
 
@@ -12,7 +12,8 @@ it and restart. A value out of range is clamped to the nearest allowed one, a mi
 the file is written back complete, so every option is always listed.
 
 **The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings as sliders and
-on/off buttons, each with a tooltip. Closing the screen saves the file and puts the settings into effect in your own
+on/off buttons, each with a tooltip. Every setting's name fits its 150-pixel button at its widest value
+(`ConfigGameTests.everySettingsLabelFitsItsButton` measures them with vanilla's font widths, B161). Closing the screen saves the file and puts the settings into effect in your own
 worlds. A dedicated server keeps its own file.
 
 **Game rules.** Per-world tuning of builders uses vanilla's `/gamerule`, so it can differ from world to world and be
@@ -168,6 +169,21 @@ range is in brackets.
 | `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`); one already finished keeps its blocks and powers. In the file only. |
 | `wonderCrew` | 12 (1 to 32) | 2.0 | The most builders on one Wonder's crew, its lead included; a Wonder's own file may allow fewer. See [Wonders](wonders.md). |
 | `wonderStanding` | 90 (50 to 100) | 2.0 | The share (%) of a finished Wonder that must still stand for its powers; under it the Wonder is damaged, its powers stop and the village's builders repair it. See [Wonders](wonders.md). |
+| `furnishedBuilds` | on from 2.1 | 2.1 | Builds use the furniture mods the server has (Handcrafted, Lucky's Cozy Home, CobbleFurnies, Beautify) for chairs, tables, beds, lamps and blinds. Off: every build is the vanilla build. See [Furniture and storage mods](furniture-and-storage.md). |
+| `furnitureMods` | handcrafted, cozyhome, cobblefurnies, beautify | 2.1 | The order the furniture mods are tried in for each piece; a mod that isn't installed is passed over, an empty list means vanilla. In the file only. |
+| `moddedStorageNetworks` | on from 2.1 | 2.1 | A Sophisticated Storage controller or a Tom's Simple Storage connector in the Storehouse counts as one store for everything it links. Off: each linked chest is its own store. |
+| `moddedLibrary` | on from 2.1 | 2.1 | Homes and workshops are built from the modded library (the same builds dressed with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted blocks) when all of those mods are installed and `furnishedBuilds` is on; a build keeps the library it was planned with. Off, or a mod missing: the vanilla library. See [Furniture and storage mods](furniture-and-storage.md). |
+| `denWardens` | on | 2.2 | Guards can be posted from the hall's Defense page to a raid den the village knows (Cobblemon Raid Dens): they stand watch by day, and a player who joins a raid there gets a cheer. Off: no new wardens, and those posted go back to normal duty. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `denChallenges` | on | 2.2 | A village's best trainer (a Trainer Leader or a Master) challenges an active raid den it knows; a win brings that tier's raid loot to the store and the den goes quiet. Off: no challenges. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `denChallengeDays` | 3 (1 to 30) | 2.2 | Days between a village's raid den challenges. |
+| `villageMegas` | on | 2.2 | With Mega Showdown, a City's Trainer Leaders, the Festival Cup's finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega Bracelet; the Jeweller cuts Mega Stones and Key Stones, Miners take Key Stone ore and Mega Stone Crystals to the store, and beating every Trainer Leader of a realm earns a Mega Bracelet (38.6); the Mega Shrine is at the Blueprint Table and holds a festival show (38.7). Off: only Masters Mega Evolve, nobody wears a bracelet, the village makes no Mega Stones and the Mega Shrine isn't listed. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `cuisineDishes` | on | 2.2 | With Cobblecuisine, the Chef cooks its dishes from their own recipes by his level (salads and sandwiches first, drinks, curries, cakes), each counts as its food group for the villagers' diet, the Camp Cook cooks three of its curries and the Innkeeper serves its drinks. Off: the menus and the diet are as before. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `beanFarms` | on | 2.2 | With Cobblecuisine, farmers sow its beans when the store holds fewer than 16 of a colour a dish on the menu needs, and harvest them when fully grown, into the store. Off: farmers never sow beans. See [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md). |
+| `mechanics` | on from 2.3 | 2.3 | With Create installed, a jobless villager by a Create Toolbox becomes the village's Mechanic: they put back shafts, cogwheels and belts missing from finished builds and keep the millstones fed and emptied. Off: no Mechanic job, and Mechanics already hired stand idle. Without Create it does nothing. See [Create](create.md). |
+| `machineWork` | on from 2.3 | 2.3 | With Create installed, villagers work Create's machines: the farmer mills wheat into flour, the armorer presses ingots into sheets, the chef mixes dough and the miner crushes raw ore, taking the input from the store and bringing back what's made, only while the machine turns and the store has room. Off: nobody feeds a machine. Without Create it does nothing. See [Create](create.md). |
+| `createBuilds` | on from 2.3 | 2.3 | With Create installed, the Blueprint Table offers the Watermill, the Windmill and the Workshop, workplaces whose machines turn as soon as they're built. Off: they aren't offered (sites already started still finish). Without Create it does nothing. See [Create](create.md). |
+| `createSchematics` | on from 2.3 | 2.3 | With Create installed, the Blueprint Table lists the schematics players uploaded with Create's Schematic Table (each becomes a blueprint when a table opens), and a written Schematic used on the table imports its file; blocks of mods that aren't installed are counted and named. Off: the table leaves Create's schematics alone (those already imported stay). Without Create it does nothing. See [Create](create.md). |
+| `villageTrains` | on from 2.3 | 2.3 | With Create installed, the Blueprint Table offers the Train Station; two villages with a caravan route and a Create station each get Create track laid along the road between them by their builders, and their caravans go by train (a third of the trip, never lost). Off: no station at the table, no track laid, caravans walk (a train already on its way still comes in). Without Create, or with `caravanRoads` off, it does nothing. See [Create](create.md). |
 | `berryBreeders` | on | 1.2 | Villagers at a composter can be made Berry Breeders with a Cobblemon berry. Off: no Berry Breeder job. |
 | `steward` | on | 1.1 | A Journeyman Builder (or higher) by a Village Hall can be made its Steward with the hall's City Plan. Off: no new Stewards, and those appointed stand idle. |
 | `stewardMaxOpenBuilds` | 4 (1 to 8) | 1.1 | The most builds a Steward may have open at once, whatever his level and the village's rank. |
@@ -238,7 +254,7 @@ None. The texts of the settings screen are in the lang file as `aliveworkplace.c
 ## Known limits
 
 - The file is read at start-up: a change needs a restart (or the settings screen, in your own worlds).
-- Lists (`mythicLegendCap`, `disabledArcs`, `wonderCaps`, `disabledWonders`, `retrainPrices`) can only be edited in the file.
+- Lists (`mythicLegendCap`, `disabledArcs`, `wonderCaps`, `disabledWonders`, `furnitureMods`, `retrainPrices`) can only be edited in the file.
 - A dedicated server's settings don't follow a player's own file.
 - The build delay and the foundation depth have no upper limit; a build delay of 1 is the fastest.
 

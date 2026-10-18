@@ -378,8 +378,10 @@ public final class Festivals {
 				continue;
 			}
 			BlockPos square = square(level, hall);
-			for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
-				gather(level, villager, square);
+			if (!io.github.jcondedata.aliveworkplace.trainer.MegaShrines.tick(level, hall)) { // the Mega Shrine's show first (38.7)
+				for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
+					gather(level, villager, square);
+				}
 			}
 			io.github.jcondedata.aliveworkplace.story.Reputation.onFestival(level, hall); // coming to it is remembered (31.11)
 			if (timeOfDay(level) >= FIREWORKS && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
@@ -465,6 +467,7 @@ public final class Festivals {
 	/** Forgets which festivals are on (tests). */
 	public static void forget() {
 		ON.clear();
+		io.github.jcondedata.aliveworkplace.trainer.MegaShrines.forget();
 	}
 
 	private Festivals() {

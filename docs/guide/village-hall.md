@@ -38,12 +38,24 @@ Right-click the hall. It looks like the Blueprint Table's screen. Under the titl
 village's numbers (its name and rank, villagers, beds, food in store, guards, wellbeing, what the workers are waiting
 for, the buildings going up and quests), then the page buttons. On the left is a list: the hall's page tabs, then
 everyone who lives there, each with their name and job. **Point at anything and the pane on the right tells you all
-about it.** With the mouse elsewhere, the pane shows the village's numbers at a glance.
+about it.** Move the mouse on into the pane and it keeps reading the same thing, so you can scroll a long entry
+there with the mouse wheel without clicking it (or hold Shift and scroll over the row); a little arrow at the bottom
+shows there's more. With the mouse elsewhere, the pane shows the village's numbers at a glance.
 
 Each worker is shown as their workstation, stacked as high as their level, with what they're doing ("Market Stall ·
 45%") and what they're waiting for. **Click a villager to make them glow** for ten seconds so you can find them; they stay in the pane, where the mouse
 wheel scrolls through everything about them (the × or Esc puts them away). Click a
 villager without a job to see the free workstations, and click one to give them that job.
+
+**Filling empty job blocks.** The **Free job blocks** tab (the crafting table) lists every job block in your village
+that nobody works at, nearest the hall first: the job it gives, the building it's in (say, "In the Storehouse") and how
+far away it is, with how many villagers without a job could take it. Click a block to see those villagers, then click
+one: they take the job and walk over to their new block. It's the easy way to fill a lectern or a Storehouse inside a
+finished house, with no need to lead anyone indoors. If someone else got the block first, you're told and nothing
+changes. Villagers who already have a job aren't on the list: to give one of them a new job, [retrain them at the
+block](jobs.md) for a few emeralds.
+
+![The Free job blocks page](https://jcondedata.github.io/minecraft-alive-workplace/hall_jobs/still-1.jpg)
 
 ![The Village Hall's screen](https://jcondedata.github.io/minecraft-alive-workplace/hall/still-4.jpg)
 
@@ -61,6 +73,7 @@ The **bell** in the middle calls everyone home: villagers who wandered off are b
   it is.
 - **The calendar**: the season, the day, and when the next festival is.
 - **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defense](defence.md).
+- **Free job blocks** (the crafting table tab): the job blocks nobody works at, and who could take each.
 
 ![The chronicle](https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-1.jpg)
 

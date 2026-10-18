@@ -75,7 +75,7 @@ final class FamilyTreeScene {
 		}
 		if (tick == 60) {
 			server.execute(() -> {
-				VillageHallScreen.openRemote(player(server), HALL); // the camera stands 9.5 blocks off (open needs 8): as from a Village Ledger (B128)
+				VillageHallScreen.openRemote(player(server), HALL); // the camera stands past the 8 blocks a hall's screen stays open within: opened as from a Village Ledger (B128)
 				if (player(server).containerMenu instanceof ChoiceMenu m) {
 					for (int s = VillageHallScreen.FIRST_PERSON; s < ChoiceMenu.SIZE; s++) {
 						if (m.icon(s).getHoverName().getString().startsWith("Dara")) {
@@ -192,6 +192,9 @@ final class FamilyTreeScene {
 		level.setBlockAndUpdate(HALL, ModBlocks.VILLAGE_HALL.defaultBlockState().setValue(VillageHallBlock.FACING, Direction.SOUTH));
 		VillageHallBlockEntity hall = (VillageHallBlockEntity) level.getBlockEntity(HALL);
 		hall.setOwner(player.getUUID(), player.getGameProfile().getName());
+		// The hall's record filed now: Bram dies this tick, and his death finds the Book of Families by the nearest hall (B128).
+		ScreenshotHarness.fileRecords(level, HALL, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		long today = Chronicle.day(level);
 		bram = villager(level, "Bram", -3.5, 2.5);
 		ilse = villager(level, "Ilse", -2.5, 2.5);

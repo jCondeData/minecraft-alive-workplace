@@ -1,0 +1,290 @@
+package io.github.jcondedata.aliveworkplace.compat;
+
+import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
+import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.store.Porters;
+import io.github.jcondedata.aliveworkplace.store.StorageNetworks;
+import io.github.jcondedata.aliveworkplace.store.StorehouseBoard;
+import io.github.jcondedata.aliveworkplace.work.Village;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+
+/**
+ * ROADMAP 37.9: a Sophisticated Storage controller in the Storehouse's area makes the storage blocks it links one store,
+ * read and filled through the controller's own item storage (Fabric's transfer API), so nothing counts twice; breaking
+ * the controller turns them back into stores of their own. The "Sophisticated" Storehouse style builds Sophisticated
+ * chests and barrels and a controller on the Storehouse.
+ */
+public class SophisticatedControllerCompatTests implements FabricGameTest {
+	private static final String AREA = CompatGameTests.AREA;
+	private static final String MOD = "sophisticatedstorage";
+	private static final String LINKED = "screen.aliveworkplace.storehouse.linked";
+
+	/**
+	 * A Storehouse, a controller and three barrels in a row from it, 10 cobblestone in each, the controller placed the
+	 * way a player places it: the Storehouse lists only the controller and counts 30 cobblestone, not 60; it takes 50
+	 * raw iron the way a porter puts a delivery away and gives 25 cobblestone the way a builder takes them, out of the
+	 * barrels; the board says 3 blocks are linked. Broken, the controller leaves three stores with what they hold.
+	 */
+	//$ gametest_batch AREA '"sophisticated_controller"'
+	@GameTest(template = AREA, batch = "sophisticated_controller")
+	public void aControllerMakesThreeBarrelsOneStore(GameTestHelper helper) {
+		boolean was = StorageNetworks.ENABLED;
+		StorageNetworks.ENABLED = true;
+		try {
+			aControllerMakesThreeBarrelsOneStoreBody(helper);
+		} finally {
+			StorageNetworks.ENABLED = was;
+		}
+	}
+
+	private void aControllerMakesThreeBarrelsOneStoreBody(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos storehouse = new BlockPos(2, 2, 2);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		List<BlockPos> barrels = List.of(helper.absolutePos(new BlockPos(4, 2, 4)), helper.absolutePos(new BlockPos(5, 2, 4)),
+			helper.absolutePos(new BlockPos(6, 2, 4)));
+		for (BlockPos barrel : barrels) {
+			level.setBlockAndUpdate(barrel, block("barrel").defaultBlockState());
+			helper.assertTrue(SupplyContainers.insert(level, List.of(barrel), new ItemStack(Items.COBBLESTONE, 10)).isEmpty(), "a barrel took nothing");
+		}
+		BlockPos at = storehouse(helper, storehouse);
+		helper.assertTrue(SupplyContainers.find(level, at, null).size() == 3, "three barrels, no controller: " + SupplyContainers.find(level, at, null));
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		player.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 1.5);
+		helper.assertTrue(linkedLine(player, storehouse, helper) == null, "a linked line without a controller");
+
+		BlockPos controller = helper.absolutePos(new BlockPos(3, 2, 4));
+		placeAsPlayer(level, controller, block("controller"), player);
+		List<BlockPos> store = SupplyContainers.find(level, at, null);
+		helper.assertTrue(store.equals(List.of(controller)), "the Storehouse's stores with a controller: " + store);
+		long counted = SupplyContainers.count(level, store, Items.COBBLESTONE);
+		helper.assertTrue(counted == 30, "the Storehouse counts " + counted + " cobblestone, not 30");
+		Component line = linkedLine(player, storehouse, helper);
+		helper.assertTrue(line != null && arg(line).equals("3"), "the board's linked line: " + line);
+
+		helper.assertTrue(SupplyContainers.insert(level, store, new ItemStack(Items.RAW_IRON, 50)).isEmpty(), "the controller took no raw iron");
+		helper.assertTrue(SupplyContainers.count(level, barrels, Items.RAW_IRON) == 50, "the raw iron isn't in the barrels");
+		int taken = SupplyContainers.extract(level, store, Items.COBBLESTONE, 25);
+		helper.assertTrue(taken == 25 && SupplyContainers.count(level, barrels, Items.COBBLESTONE) == 5,
+			"a builder took " + taken + " of 25; the barrels hold " + SupplyContainers.count(level, barrels, Items.COBBLESTONE));
+
+		level.destroyBlock(controller, false);
+		List<BlockPos> after = SupplyContainers.find(level, at, null);
+		helper.assertTrue(after.size() == 3 && after.containsAll(barrels), "after the controller broke: " + after);
+		helper.assertTrue(SupplyContainers.count(level, after, Items.COBBLESTONE) == 5 && SupplyContainers.count(level, after, Items.RAW_IRON) == 50,
+			"the barrels lost their goods");
+		helper.assertTrue(linkedLine(player, storehouse, helper) == null, "a linked line with the controller gone");
+		helper.succeed();
+	}
+
+	/** With {@code moddedStorageNetworks} off (as on main until M37 ships), the barrels stay three stores. */
+	//$ gametest_batch AREA '"sophisticated_controller"'
+	@GameTest(template = AREA, batch = "sophisticated_controller")
+	public void switchOffKeepsThreeStores(GameTestHelper helper) {
+		boolean was = StorageNetworks.ENABLED;
+		StorageNetworks.ENABLED = false;
+		try {
+			switchOffKeepsThreeStoresBody(helper);
+		} finally {
+			StorageNetworks.ENABLED = was;
+		}
+	}
+
+	private void switchOffKeepsThreeStoresBody(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos storehouse = new BlockPos(2, 2, 2);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		for (int x = 4; x <= 6; x++) {
+			helper.setBlock(new BlockPos(x, 2, 4), block("barrel"));
+		}
+		BlockPos controller = helper.absolutePos(new BlockPos(3, 2, 4));
+		placeAsPlayer(level, controller, block("controller"), null);
+		List<BlockPos> store = SupplyContainers.find(level, storehouse(helper, storehouse), null);
+		helper.assertTrue(store.size() == 3 && !store.contains(controller), "switch off: " + store);
+		helper.succeed();
+	}
+
+	/**
+	 * A porter carries a miner's 100 raw iron into a Storehouse whose store is a controller with three barrels: it all
+	 * ends in the barrels, through the controller.
+	 */
+	//$ gametest_ticks_batch AREA '1600' '"sophisticated_controller_porter"'
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "sophisticated_controller_porter")
+	public void aPorterDeliversThroughTheController(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		networks(helper, true);
+		Village.RADIUS = 48;
+		PartnerShowsCompatTests.after(helper, () -> Village.RADIUS = 0);
+		helper.setDayTime(2000); // work hours
+		ServerLevel level = helper.getLevel();
+		BlockPos minersBench = new BlockPos(2, 2, 2);
+		BlockPos minersBarrel = new BlockPos(2, 2, 4);
+		helper.setBlock(minersBench, ModBlocks.MINERS_BENCH);
+		helper.setBlock(minersBarrel, block("iron_barrel"));
+		List<BlockPos> source = List.of(helper.absolutePos(minersBarrel));
+		helper.assertTrue(SupplyContainers.insert(level, source, new ItemStack(Items.RAW_IRON, 64)).isEmpty()
+			&& SupplyContainers.insert(level, source, new ItemStack(Items.RAW_IRON, 36)).isEmpty(), "the miner's barrel took no raw iron");
+		Villager miner = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, miner, helper.absolutePos(minersBench));
+
+		BlockPos storehouse = new BlockPos(13, 2, 13);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		List<BlockPos> barrels = List.of(helper.absolutePos(new BlockPos(12, 2, 11)), helper.absolutePos(new BlockPos(14, 2, 11)),
+			helper.absolutePos(new BlockPos(13, 3, 11)));
+		for (BlockPos barrel : barrels) {
+			level.setBlockAndUpdate(barrel, block("barrel").defaultBlockState());
+		}
+		BlockPos controller = helper.absolutePos(new BlockPos(13, 2, 11));
+		placeAsPlayer(level, controller, block("controller"), null);
+		List<BlockPos> store = SupplyContainers.find(level, helper.absolutePos(storehouse), null);
+		helper.assertTrue(store.equals(List.of(controller)), "the Storehouse's stores: " + store);
+		Villager porter = helper.spawn(EntityType.VILLAGER, new BlockPos(12, 2, 12));
+		Porters.employ(level, porter, helper.absolutePos(storehouse));
+		helper.succeedWhen(() -> {
+			long stored = SupplyContainers.count(level, barrels, Items.RAW_IRON);
+			long left = SupplyContainers.count(level, source, Items.RAW_IRON);
+			helper.assertTrue(stored == 100 && left == 0, "raw iron: " + stored + " in the barrels, " + left + " left with the miner");
+			helper.assertTrue(miner.isAlive() && porter.isAlive(), "a worker is gone");
+		});
+	}
+
+	/**
+	 * The "Sophisticated" style, offered for the Storehouse only while the switch is on: its chests and barrels become
+	 * Sophisticated ones and the lantern on the Storehouse a controller, which touches the chests on both sides; other
+	 * builds aren't changed by it.
+	 */
+	//$ gametest_batch AREA '"sophisticated_controller"'
+	@GameTest(template = AREA, batch = "sophisticated_controller")
+	public void theSophisticatedStyleAddsAController(GameTestHelper helper) {
+		boolean was = StorageNetworks.ENABLED;
+		StorageNetworks.ENABLED = true;
+		try {
+			theSophisticatedStyleAddsAControllerBody(helper);
+		} finally {
+			StorageNetworks.ENABLED = was;
+		}
+	}
+
+	private void theSophisticatedStyleAddsAControllerBody(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlueprintStyles.Style style = BlueprintStyles.get("sophisticated").orElseThrow(() -> new GameTestAssertException("no sophisticated style"));
+		helper.assertTrue(BlueprintStyles.all().contains(style), "the style isn't offered with the switch on");
+		for (String name : List.of("storehouse", "storehouse_2", "storehouse_3")) {
+			ResourceLocation baseId = ResourceLocation.fromNamespaceAndPath("aliveworkplace", name);
+			Blueprint base = BlueprintLibrary.get(level, baseId).orElseThrow(() -> new GameTestAssertException("no blueprint " + name));
+			helper.assertTrue(BlueprintStyles.changes(style, base), name + ": the style changes nothing");
+			Blueprint styled = BlueprintLibrary.get(level, BlueprintStyles.styled(baseId, "sophisticated"))
+				.orElseThrow(() -> new GameTestAssertException("no styled " + name));
+			Map<BlockPos, BlockState> at = styled.blocks().stream().collect(Collectors.toMap(Blueprint.Entry::pos, Blueprint.Entry::state, (a, b) -> a));
+			List<BlockPos> controllers = at.entrySet().stream().filter(e -> StorageNetworks.isController(e.getValue())).map(Map.Entry::getKey).toList();
+			helper.assertTrue(controllers.size() == 1, name + ": controllers " + controllers);
+			BlockPos c = controllers.get(0);
+			helper.assertTrue(at.getOrDefault(c.below(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()).is(ModBlocks.STOREHOUSE),
+				name + ": the controller isn't on the Storehouse");
+			long beside = java.util.Arrays.stream(net.minecraft.core.Direction.values())
+				.filter(d -> StorageNetworks.isSophisticatedStorage(at.getOrDefault(c.relative(d), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState()))).count();
+			helper.assertTrue(beside >= 2, name + ": the controller touches " + beside + " Sophisticated chests");
+			boolean vanillaChestLeft = at.values().stream().anyMatch(s -> s.is(net.minecraft.world.level.block.Blocks.CHEST) || s.is(net.minecraft.world.level.block.Blocks.BARREL));
+			helper.assertTrue(!vanillaChestLeft, name + ": a vanilla chest or barrel is left");
+		}
+		Blueprint house = BlueprintLibrary.get(level, ResourceLocation.fromNamespaceAndPath("aliveworkplace", "storehouse")).orElseThrow();
+		helper.assertTrue(house.blocks().stream().noneMatch(e -> StorageNetworks.isController(e.state())), "the plain Storehouse has a controller");
+		helper.assertTrue(BlueprintLibrary.get(level, ResourceLocation.fromNamespaceAndPath("aliveworkplace", "kitchen"))
+			.map(b -> !BlueprintStyles.changes(style, b)).orElse(true), "the style changes a Kitchen");
+		StorageNetworks.ENABLED = false;
+		helper.assertTrue(!BlueprintStyles.all().contains(style), "the style is offered with the switch off");
+		helper.succeed();
+	}
+
+	/**
+	 * A builder builds a controller between Sophisticated barrels (a builder sets blocks without the placing that links a
+	 * controller): once it stands, the controller has linked them, so a Storehouse beside it lists the controller and what
+	 * goes in through it lands in the barrels.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"sophisticated_controller_builder"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "sophisticated_controller_builder")
+	public void aBuiltControllerLinksItsBarrels(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		networks(helper, true);
+		ServerLevel level = helper.getLevel();
+		Map<BlockPos, BlockState> design = new java.util.HashMap<>();
+		design.put(new BlockPos(0, 0, 0), block("barrel").defaultBlockState());
+		design.put(new BlockPos(1, 0, 0), block("controller").defaultBlockState());
+		design.put(new BlockPos(2, 0, 0), block("barrel").defaultBlockState());
+		design.put(new BlockPos(1, 1, 0), block("barrel").defaultBlockState());
+		for (Map.Entry<BlockPos, BlockState> e : design.entrySet()) {
+			helper.setBlock(CompatGameTests.ORIGIN.offset(e.getKey()), e.getValue());
+		}
+		ResourceLocation id = CompatGameTests.blueprintFrom(helper, "sophisticated_controller", design, Map.of());
+		CompatGameTests.Setup s = CompatGameTests.setup(helper, id, new ItemStack(block("barrel").asItem(), 3), new ItemStack(block("controller").asItem()));
+		BlockPos storehouse = new BlockPos(6, 2, 10);
+		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		helper.succeedWhen(() -> {
+			CompatGameTests.assertBuilt(helper, s);
+			BlockPos controller = s.at(new BlockPos(1, 0, 0));
+			List<BlockPos> barrels = List.of(s.at(new BlockPos(0, 0, 0)), s.at(new BlockPos(2, 0, 0)), s.at(new BlockPos(1, 1, 0)));
+			List<BlockPos> store = SupplyContainers.find(level, helper.absolutePos(storehouse), null);
+			helper.assertTrue(store.contains(controller) && barrels.stream().noneMatch(store::contains), "the Storehouse's stores: " + store);
+			helper.assertTrue(SupplyContainers.insert(level, List.of(controller), new ItemStack(Items.COBBLESTONE, 20)).isEmpty()
+				&& SupplyContainers.count(level, barrels, Items.COBBLESTONE) == 20, "the built controller didn't link its barrels");
+		});
+	}
+
+	/** Sets {@code moddedStorageNetworks} for this test and puts it back afterwards. */
+	private static void networks(GameTestHelper helper, boolean on) {
+		boolean was = StorageNetworks.ENABLED;
+		StorageNetworks.ENABLED = on;
+		PartnerShowsCompatTests.after(helper, () -> StorageNetworks.ENABLED = was);
+	}
+
+	private static BlockPos storehouse(GameTestHelper helper, BlockPos rel) {
+		return helper.absolutePos(rel);
+	}
+
+	/** Sets the block and lets it react as to a player's placing it (the controller links its storage then). */
+	static void placeAsPlayer(ServerLevel level, BlockPos pos, Block block, net.minecraft.world.entity.LivingEntity placer) {
+		level.setBlockAndUpdate(pos, block.defaultBlockState());
+		BlockState state = level.getBlockState(pos);
+		block.setPlacedBy(level, pos, state, placer, new ItemStack(block.asItem()));
+	}
+
+	private static Component linkedLine(ServerPlayer player, BlockPos storehouse, GameTestHelper helper) {
+		ItemLore lore = StorehouseBoard.boardForTest(player, helper.absolutePos(storehouse)).icon(StorehouseBoard.INFO_SLOT).get(DataComponents.LORE);
+		helper.assertTrue(lore != null, "the board's info has no text");
+		return lore.lines().stream().filter(l -> l.getContents() instanceof TranslatableContents t && t.getKey().equals(LINKED)).findFirst().orElse(null);
+	}
+
+	private static String arg(Component line) {
+		return String.valueOf(((TranslatableContents) line.getContents()).getArgs()[0]);
+	}
+
+	static Block block(String id) {
+		return BuiltInRegistries.BLOCK.getOptional(ResourceLocation.fromNamespaceAndPath(MOD, id))
+			.orElseThrow(() -> new GameTestAssertException("no block " + MOD + ":" + id));
+	}
+}

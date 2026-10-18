@@ -190,6 +190,84 @@ public class LifeStageGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B187: the same walk asked the way a mentor's follow (Retirement) and the elders scene ask it, with a constant retry
+	 * wait of 0, tick after tick: the elder's target is 0.461 against 0.5, and he covers less ground.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"lifeStageWalkConstant"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "lifeStageWalkConstant")
+	public void b187AnElderAskedWithoutACounterStillWalksSlower(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.after(helper, () -> LifeStages.AGES = true);
+		LifeStages.AGES = true;
+		long today = Chronicle.day(helper.getLevel());
+		Villager bram = walker(helper, new BlockPos(4, 2, 2), "Bram");
+		Villager tom = walker(helper, new BlockPos(10, 2, 2), "Tom");
+		LifeStages.setAdultSince(bram, today - 130);
+		LifeStages.setAdultSince(tom, today - 30);
+		Leftovers.after(helper, () -> {
+			bram.discard();
+			tom.discard();
+		});
+		BlockPos bramGoal = helper.absolutePos(new BlockPos(4, 2, 20));
+		BlockPos tomGoal = helper.absolutePos(new BlockPos(10, 2, 20));
+		int[] ticks = new int[1];
+		double[] from = new double[2];
+		float[] asked = {-1f, -1f};
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			if (ticks[0] <= 100) {
+				Walker.requestWalk(bram, bramGoal, 0.5f, 1, 0);
+				Walker.requestWalk(tom, tomGoal, 0.5f, 1, 0);
+			}
+			if (ticks[0] == 40) {
+				from[0] = bram.getZ();
+				from[1] = tom.getZ();
+				asked[0] = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f);
+				asked[1] = tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f);
+			}
+		});
+		helper.runAfterDelay(100, () -> {
+			double elder = bram.getZ() - from[0];
+			double young = tom.getZ() - from[1];
+			String went = "walk targets " + asked[0] + " and " + asked[1] + "; in 60 ticks the elder went " + elder + " blocks, the younger villager " + young;
+			helper.assertTrue(Math.abs(asked[0] - 0.5f * LifeStages.ELDER_WALK) < 0.001f && Math.abs(asked[1] - 0.5f) < 0.001f, "the walk targets: " + went);
+			helper.assertTrue(young > 3, "the younger villager hardly walked: " + went);
+			helper.assertTrue(elder < young * 0.90 && elder > young * 0.74, "the elder isn't about 15% slower: " + went);
+			helper.succeed();
+		});
+	}
+
+	/** B187: after a failed path a request is tried again within a second, even from a caller whose retry counter is always 0. */
+	//$ gametest_ticks_batch AREA '80' '"walkRetry"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "walkRetry")
+	public void b187AWalkAfterAFailedPathIsTriedAgain(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager tom = walker(helper, new BlockPos(4, 2, 2), "Tom");
+		tom.setNoAi(true); // his brain stands still: the failed path stays remembered, as it does until a path reaches
+		Leftovers.after(helper, tom::discard);
+		BlockPos goal = helper.absolutePos(new BlockPos(4, 2, 12));
+		tom.getBrain().setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, helper.getLevel().getGameTime());
+		tom.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+		Walker.requestWalk(tom, goal, 0.5f, 1, 0);
+		helper.assertFalse(tom.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET), "asked again at once, with no wait after the failed path");
+		int[] ticks = new int[1];
+		int[] got = {-1};
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			if (got[0] < 0) {
+				Walker.requestWalk(tom, goal, 0.5f, 1, 0);
+				if (tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).filter(t -> t.getTarget().currentBlockPosition().equals(goal)).isPresent()) {
+					got[0] = ticks[0];
+				}
+			}
+		});
+		helper.runAfterDelay(40, () -> {
+			helper.assertTrue(got[0] > 0 && got[0] <= 25, "the walk after a failed path was asked again on tick " + got[0] + " (never: -1)");
+			helper.succeed();
+		});
+	}
+
+	/**
 	 * B95: vanilla takes a worker's walk over at its own pace. Walker also sets the look target, and when the walk target is
 	 * dropped for a tick (no path yet), vanilla's SetWalkTargetFromLookTarget walks the villager to that same block at 0.5.
 	 * Walker must ask again at the elder's pace (CI builds 763 and 766: "[tick 1: 0.461] [tick 2: -1.0] [tick 3: 0.5]", 100%).

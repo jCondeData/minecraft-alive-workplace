@@ -1963,7 +1963,7 @@ public class BuilderGameTests implements FabricGameTest {
 			long kept = base.blocks().stream().filter(e -> !e.state().isAir() && e.state().equals(up.get(e.pos()))).count();
 			helper.assertTrue(kept >= solid * 0.6, entry.id() + " keeps only " + kept + " of " + baseId.get() + "'s " + solid + " blocks");
 		}
-		helper.assertTrue(upgrades == 56, "expected 56 starter upgrades (48, and the eight Level 4s of 26.15), found " + upgrades);
+		helper.assertTrue(upgrades == 64, "expected 64 starter upgrades (48, the eight Level 4s of 26.15 and the eight cellared Level IIIs of 36.7), found " + upgrades);
 		helper.succeed();
 	}
 

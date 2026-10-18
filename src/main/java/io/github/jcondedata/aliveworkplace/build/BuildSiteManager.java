@@ -38,6 +38,52 @@ public final class BuildSiteManager extends SavedData {
 	 * the building is built again on its spot (an upgrade) or taken down.
 	 */
 	private final Map<BlueprintData.Placement, java.util.Set<net.minecraft.core.BlockPos>> gaveUp = new java.util.HashMap<>();
+	/** Per finished building, the modded furniture it was built with (37.3; none: vanilla). Saved; forgotten with the building. */
+	private final Map<BlueprintData.Placement, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice> furniture = new java.util.HashMap<>();
+	/**
+	 * 39.5: a finished contraption's turning check, due at game time {@code due}: its kinetic parts' positions, who built it
+	 * (for the line the owner reads) and how often it has looked (a wheel's water takes a moment to fall). Saved.
+	 */
+	public record TurnCheck(ResourceLocation structure, BlueprintData.Placement placement, UUID owner, String builder,
+							List<net.minecraft.core.BlockPos> parts, long due, int tries) {
+	}
+
+	private final List<TurnCheck> turnChecks = new java.util.ArrayList<>();
+	/** 39.5: per finished contraption, the parts its last check found not turning (empty: all turn). Saved with the building. */
+	private final Map<BlueprintData.Placement, List<net.minecraft.core.BlockPos>> notTurning = new java.util.HashMap<>();
+
+	/** Schedules a turning check (39.5), replacing one for the same spot. */
+	public void scheduleTurnCheck(TurnCheck check) {
+		turnChecks.removeIf(c -> c.placement().equals(check.placement()));
+		turnChecks.add(check);
+		setDirty();
+	}
+
+	/** Takes the turning checks due by {@code gameTime} off the list (39.5). */
+	public List<TurnCheck> dueTurnChecks(long gameTime) {
+		List<TurnCheck> due = turnChecks.stream().filter(c -> c.due() <= gameTime).toList();
+		if (!due.isEmpty()) {
+			turnChecks.removeAll(due);
+			setDirty();
+		}
+		return due;
+	}
+
+	/** The turning checks still to come (39.5). */
+	public List<TurnCheck> turnChecks() {
+		return List.copyOf(turnChecks);
+	}
+
+	/** What the turning check found at {@code placement} (39.5): the parts that don't turn; empty if not checked. */
+	public java.util.Optional<List<net.minecraft.core.BlockPos>> notTurning(BlueprintData.Placement placement) {
+		return java.util.Optional.ofNullable(notTurning.get(placement));
+	}
+
+	public void setNotTurning(BlueprintData.Placement placement, List<net.minecraft.core.BlockPos> parts) {
+		notTurning.put(placement, List.copyOf(parts));
+		setDirty();
+	}
+
 	/** Counts every site or finished building added or removed (not saved): lets a reader tell the list hasn't changed (B85). */
 	private int changes;
 
@@ -53,6 +99,8 @@ public final class BuildSiteManager extends SavedData {
 		}
 		finished.removeIf(f -> f.placement().equals(placement));
 		gaveUp.remove(placement);
+		furniture.remove(placement);
+		notTurning.remove(placement);
 		finished.addLast(new Finished(structure, placement, owner));
 		while (finished.size() > MAX_FINISHED) {
 			finished.removeFirst();
@@ -61,9 +109,29 @@ public final class BuildSiteManager extends SavedData {
 		setDirty();
 	}
 
+	/** The modded furniture the finished building on this spot was built with (37.3). */
+	public io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture(BlueprintData.Placement placement) {
+		return furniture.getOrDefault(placement, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.VANILLA);
+	}
+
+	/** Records the furniture the finished building on this spot was built with (after {@link #recordFinished}). */
+	public void setFurniture(BlueprintData.Placement placement, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice choice) {
+		if (choice.isVanilla()) {
+			if (furniture.remove(placement) != null) {
+				setDirty();
+			}
+		} else {
+			furniture.put(placement, choice);
+			setDirty();
+		}
+	}
+
 	/** Forgets the building on this spot (it was taken down). */
 	public void forgetFinished(BlueprintData.Placement placement) {
 		gaveUp.remove(placement);
+		furniture.remove(placement);
+		notTurning.remove(placement);
+		turnChecks.removeIf(c -> c.placement().equals(placement));
 		if (finished.removeIf(f -> f.placement().equals(placement))) {
 			changes++;
 			setDirty();
@@ -184,9 +252,32 @@ public final class BuildSiteManager extends SavedData {
 			if (left != null && !left.isEmpty()) {
 				entry.putLongArray("gave_up", left.stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
 			}
+			io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice chosen = furniture.get(f.placement());
+			if (chosen != null && !chosen.isVanilla()) {
+				entry.put("furniture", chosen.save());
+			}
+			List<net.minecraft.core.BlockPos> stuck = notTurning.get(f.placement());
+			if (stuck != null) { // 39.5: checked (an empty list: everything turned)
+				entry.putLongArray("not_turning", stuck.stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
+			}
 			done.add(entry);
 		}
 		tag.put("finished", done);
+		if (!turnChecks.isEmpty()) { // 39.5
+			ListTag checks = new ListTag();
+			for (TurnCheck c : turnChecks) {
+				CompoundTag entry = new CompoundTag();
+				entry.putString("structure", c.structure().toString());
+				entry.put("placement", BlueprintData.Placement.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, c.placement()).getOrThrow());
+				Nbt.putUuid(entry, "owner", c.owner());
+				entry.putString("builder", c.builder());
+				entry.putLongArray("parts", c.parts().stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
+				entry.putLong("due", c.due());
+				entry.putInt("tries", c.tries());
+				checks.add(entry);
+			}
+			tag.put("turn_checks", checks);
+		}
 		return tag;
 	}
 
@@ -213,6 +304,27 @@ public final class BuildSiteManager extends SavedData {
 					}
 					manager.gaveUp.put(placement.get(), left);
 				}
+				if (Nbt.has(entry, "furniture", Tag.TAG_LIST)) { // 37.3: older saves have none (vanilla)
+					var chosen = io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.load(Nbt.getList(entry, "furniture", Tag.TAG_COMPOUND));
+					if (!chosen.isVanilla()) {
+						manager.furniture.put(placement.get(), chosen);
+					}
+				}
+				if (Nbt.has(entry, "not_turning", Tag.TAG_LONG_ARRAY)) { // 39.5: older saves have none (not checked)
+					manager.notTurning.put(placement.get(), java.util.Arrays.stream(Nbt.getLongArray(entry, "not_turning"))
+						.mapToObj(net.minecraft.core.BlockPos::of).toList());
+				}
+			}
+		}
+		ListTag checks = Nbt.getList(tag, "turn_checks", Tag.TAG_COMPOUND); // 39.5: older saves have none
+		for (int i = 0; i < checks.size(); i++) {
+			CompoundTag entry = Nbt.compoundAt(checks, i);
+			ResourceLocation structure = ResourceLocation.tryParse(Nbt.getString(entry, "structure"));
+			var placement = BlueprintData.Placement.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, entry.get("placement")).result();
+			if (structure != null && placement.isPresent() && Nbt.hasUuid(entry, "owner")) {
+				manager.turnChecks.add(new TurnCheck(structure, placement.get(), Nbt.getUuid(entry, "owner"), Nbt.getString(entry, "builder"),
+					java.util.Arrays.stream(Nbt.getLongArray(entry, "parts")).mapToObj(net.minecraft.core.BlockPos::of).toList(),
+					Nbt.getLong(entry, "due"), Nbt.getInt(entry, "tries")));
 			}
 		}
 		manager.setDirty(false);

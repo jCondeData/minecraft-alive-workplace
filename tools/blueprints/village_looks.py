@@ -723,8 +723,7 @@ def leaders_hall(b, P):
         win(b, P, 7, 2, z, "east", h=3, shut=False)
     lantern(b, 4, 5, 1, hanging=True)
     tie(b, P, 6, z=6)
-    b.set(4, 1, 3, "red_carpet")
-    b.set(4, 1, 4, "red_carpet")
+    b.set(4, 1, 4, "red_carpet")  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
 
 
 def round_cells(cx, cz):

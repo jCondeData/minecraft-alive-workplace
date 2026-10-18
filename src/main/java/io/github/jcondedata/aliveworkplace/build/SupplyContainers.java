@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.store.StorageNetworks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +19,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The builder's supply stash: every storage block near the Builder's Bench. Goes through the loader's item storage
  * ({@link ItemStores}: Fabric's transfer API), so modded storage (Sophisticated Storage chests and barrels, Tom's filing cabinets...)
- * works too; storage-network access points are skipped so nothing is counted twice.
+ * works too; storage-network access points are skipped so nothing is counted twice, except that the Storehouse reads a
+ * Sophisticated Storage controller (ROADMAP 37.9) or a Tom's Simple Storage inventory connector (37.10) as one store for
+ * the inventories it links ({@link StorageNetworks}).
  */
 public final class SupplyContainers {
 	/** Horizontal search radius around the bench. */
@@ -31,6 +34,40 @@ public final class SupplyContainers {
 	 * storage (anything could end up in their input slot); miners tend them on purpose, see {@link #furnaces}.
 	 */
 	public static List<BlockPos> find(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
+		List<BlockPos> found = stores(level, bench, exclude);
+		return isStorehouseWithNetworks(level, bench) ? folded(level, bench, found, exclude).stores() : found;
+	}
+
+	/**
+	 * 37.9 and 37.10: around a Storehouse, with {@code moddedStorageNetworks} on, a Sophisticated Storage controller
+	 * stands for the storage blocks it links and a Tom's Simple Storage inventory connector for the inventories it joins
+	 * (each one store, read and filled through the controller or connector), which leave the list. Every other worker's
+	 * chests are read one by one, as before. {@code linked()} counts the controllers' blocks only.
+	 */
+	public static io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded networks(ServerLevel level, BlockPos storehouse) {
+		List<BlockPos> found = stores(level, storehouse, null);
+		return isStorehouseWithNetworks(level, storehouse) ? folded(level, storehouse, found, null)
+			: new io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded(found, 0);
+	}
+
+	private static boolean isStorehouseWithNetworks(ServerLevel level, BlockPos at) {
+		return io.github.jcondedata.aliveworkplace.store.StorageNetworks.ENABLED && level.isLoaded(at)
+			&& level.getBlockState(at).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE);
+	}
+
+	private static io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded folded(ServerLevel level, BlockPos storehouse, List<BlockPos> found,
+		@Nullable BoundingBox exclude) {
+		// 37.10: a storage network's head (a Tom's inventory connector) stands for the inventories it joins
+		List<BlockPos> heads = near(level, storehouse, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
+			&& StorageNetworks.isHead(level, be.getBlockPos()) && STORES.isStore(level, be.getBlockPos()));
+		found = StorageNetworks.asStorehouse(level, storehouse, found, heads);
+		// 37.9: a Sophisticated Storage controller stands for the storage blocks it links
+		List<BlockPos> controllers = near(level, storehouse, be -> io.github.jcondedata.aliveworkplace.store.StorageNetworks.isController(be.getBlockState())
+			&& STORES.isStore(level, be.getBlockPos()));
+		return io.github.jcondedata.aliveworkplace.store.StorageNetworks.fold(level, storehouse, found, controllers, exclude);
+	}
+
+	private static List<BlockPos> stores(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
 		return near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
 			&& !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
 			&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity)
@@ -63,15 +100,21 @@ public final class SupplyContainers {
 
 	/**
 	 * Blocks that hold items for their own work, not as storage: a brewing stand's bottles, a jukebox's disc, a lectern's
-	 * book, a crafter's grid, a Cobblemon Pasture Block's eggs (Cobbreeding makes it a container for the eggs it lays,
+	 * book, a crafter's grid, Create's machines and toolboxes (39.2), a Cobblemon Pasture Block's eggs (Cobbreeding makes it a container for the eggs it lays,
 	 * so a keeper putting things away would fill her own pasture instead of her chest).
 	 */
 	static boolean isMachine(BlockEntity be) {
 		return io.github.jcondedata.aliveworkplace.work.Pastures.isPasture(be.getBlockState())
+			// 37.5: with furnished builds on, a furniture mod's desk, counter, shelf or cabinet holds items but is furniture
+			// (design note M37, "decoration only"): no job takes it for a chest
+			|| io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED
+			&& be.getBlockState().is(io.github.jcondedata.aliveworkplace.furnish.Furnishings.FURNITURE_STORAGE)
 			|| be instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.LecternBlockEntity
-			|| be instanceof net.minecraft.world.level.block.entity.CrafterBlockEntity;
+			|| be instanceof net.minecraft.world.level.block.entity.CrafterBlockEntity
+			// Create's machines, belts and toolboxes (39.2): a mill's wheat and a player's tools are nobody's supplies
+			|| io.github.jcondedata.aliveworkplace.mechanic.Kinetics.keepsOwnItems(be.getBlockState());
 	}
 
 	/** Furnaces, blast furnaces and smokers near {@code bench}, nearest first. */
@@ -118,6 +161,24 @@ public final class SupplyContainers {
 	/** Empty slots across the containers (a rough measure of room: stacks that are there can still grow). */
 	public static int freeSlots(ServerLevel level, List<BlockPos> containers) {
 		return STORES.freeSlots(level, containers);
+	}
+
+	/**
+	 * Free room across the containers counted slot by slot (ROADMAP 37.8): empty slots, stacks and items that still fit,
+	 * and whether a slot holds more than a stack (Sophisticated Storage's stack upgrades and limited barrels).
+	 */
+	public static ItemStores.Room room(ServerLevel level, List<BlockPos> containers) {
+		return STORES.room(level, containers);
+	}
+
+	/**
+	 * Stacks that still fit across the containers: {@link #freeSlots} for vanilla chests; with M37's modded storage
+	 * (ROADMAP 37.8), a slot that holds several stacks counts each stack still free in it, so a porter keeps filling a
+	 * stack-upgraded chest or a limited barrel whose slots all hold something.
+	 */
+	public static int freeStacks(ServerLevel level, List<BlockPos> containers) {
+		return io.github.jcondedata.aliveworkplace.Expansions.on(io.github.jcondedata.aliveworkplace.Expansions.M37)
+			? STORES.room(level, containers).freeStacks() : STORES.freeSlots(level, containers);
 	}
 
 	/** All slots across the containers, empty or not. */

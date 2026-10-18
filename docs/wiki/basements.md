@@ -104,7 +104,8 @@ as `blueprint.aliveworkplace.butchers_shop`).
 - On a slope the basement is dug from the ground floor down like the rest; where the ground falls away its walls show.
 - The outline drawn in the world while placing shows only the part above the ground. The Blueprint Table's 3D preview
   draws the basement under the house, centred on the house alone; that view isn't tested.
-- A Smithy, Kitchen or Storehouse finished before the update keeps no cellar (see Saved data).
+- A Smithy, Kitchen or Storehouse finished before the update keeps no cellar until a builder is asked to dig it ("Dig
+  the cellar", [Cellars](cellars.md), 36.7).
 
 ## 8. Proof
 

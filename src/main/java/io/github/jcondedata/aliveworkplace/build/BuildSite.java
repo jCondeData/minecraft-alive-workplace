@@ -59,6 +59,8 @@ public final class BuildSite {
 	private boolean deconstruct;
 	/** Putting back what's missing from a finished build (see {@link BuildPlan#repair}). */
 	private boolean repair;
+	/** 36.7: works only the cellar of a build finished before its blueprint had one ({@link Cellars}). */
+	private boolean cellarOnly;
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
 	@Nullable
 	private BlockPos bench;
@@ -97,6 +99,42 @@ public final class BuildSite {
 		this.ownerName = ownerName;
 		this.structure = structure;
 		this.placement = placement;
+		this.kineticOrder = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.active(); // 39.5: a new site (a load sets it from its save)
+	}
+
+	/**
+	 * 39.5: the structure list goes in a contraption's order (kinetic parts after what holds them up, by group), chosen
+	 * when the site is made, so a switch flipped mid-build never moves the saved cursor onto other steps. A site saved
+	 * before 39.5 builds in today's order.
+	 */
+	private boolean kineticOrder;
+	/** 39.5: how often the builder went back over the kinetic parts for one broken mid-build (at most twice). Saved. */
+	private int kineticPasses;
+
+	/** Whether this site builds in a contraption's order (39.5). */
+	public boolean kineticOrder() {
+		return kineticOrder;
+	}
+
+	/** How often the builder went back over the kinetic parts (39.5). */
+	public int kineticPasses() {
+		return kineticPasses;
+	}
+
+	/**
+	 * 39.5: back to the structure list at {@code index} (the first kinetic part), to put back one broken since it was
+	 * placed; what's still in place is passed straight over.
+	 */
+	public void backToKineticParts(int index) {
+		kineticPasses++;
+		stage = BuildPlan.Stage.STRUCTURE;
+		cursor = index;
+		retrying = false;
+		deferred.clear();
+		gaveUp.clear();
+		placedThisStage.clear();
+		placedStage = null;
+		onChange.run();
 	}
 
 	/** Whether the ground around the build gets levelled (the blueprint's switch; the gamerule sets how wide). */
@@ -194,11 +232,24 @@ public final class BuildSite {
 				status = Status.BLUEPRINT_MISSING;
 				return null;
 			}
-			int depth = foundation ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
-			int margin = levelGround ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
+			if (furniture == null) {
+				// 37.3: chosen once, for a new build; a repair or a taking-down is of what stands, built with what it was
+				furniture = deconstruct || repair || cellarOnly ? BuildSiteManager.get(level).furniture(placement)
+					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure, level, placement.origin()); // 37.4: a partner's Trainer's room
+				onChange.run();
+			}
+			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));
+			if (cellarOnly) {
+				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
+			}
+			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
+			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
+			if (kineticOrder && !deconstruct && !repair) {
+				plan = plan.kineticOrdered(); // 39.5: supports, then shafts and gearboxes, cogwheels, belts
+			}
 			if (progressFromCursor) {
 				progressFromCursor = false;
 				shownProgress = Math.max(shownProgress, oldSaveProgress(plan));
@@ -294,7 +345,14 @@ public final class BuildSite {
 			}
 			return out;
 		}
-		for (int i = cursor + 1; i < list.size() && out.size() < max; i++) {
+		int end = list.size();
+		for (int g = 0; stage == BuildPlan.Stage.STRUCTURE && plan.kineticStart(g) >= 0; g++) {
+			if (plan.kineticStart(g) > cursor) {
+				end = plan.kineticStart(g); // 39.5: helpers stay in the lead's group, so no part goes in before what it sits on
+				break;
+			}
+		}
+		for (int i = cursor + 1; i < end && out.size() < max; i++) {
 			out.add(list.get(i));
 		}
 		return out;
@@ -663,6 +721,18 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	/** Whether this site digs and fits out only the cellar of the finished build on its spot (36.7). */
+	public boolean isCellarOnly() {
+		return cellarOnly;
+	}
+
+	/** Turns a new site into a cellar dig (call right after creating it): only the basement and the way down are worked. */
+	public void setCellarOnly() {
+		cellarOnly = true;
+		plan = null;
+		onChange.run();
+	}
+
 	/** Turns a new site into a deconstruction job (call right after creating it). */
 	public void setDeconstruction() {
 		deconstruct = true;
@@ -715,6 +785,25 @@ public final class BuildSite {
 	/** The scaffolding this site's builders have put up and not yet taken down ({@link Scaffolds}). Saved; empty by default. */
 	private final List<BlockPos> scaffolds = new ArrayList<>();
 
+	/**
+	 * Which modded furniture this build gets (37.3): null until its first plan chooses (a new site), then saved, so a
+	 * restart doesn't change a build in progress. A site saved before 37.3 loads with {@link FurnitureChoice#VANILLA}.
+	 */
+	@Nullable
+	private io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture;
+
+	/** The furniture chosen for this build (vanilla until chosen). */
+	public io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture() {
+		return furniture == null ? io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.VANILLA : furniture;
+	}
+
+	/** Sets the furniture (a repair keeps what its building was built with). */
+	public void setFurniture(io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice choice) {
+		this.furniture = choice;
+		plan = null;
+		onChange.run();
+	}
+
 	public List<BlockPos> scaffolds() {
 		return java.util.Collections.unmodifiableList(scaffolds);
 	}
@@ -765,6 +854,9 @@ public final class BuildSite {
 		if (repair) {
 			tag.putBoolean("repair", true);
 		}
+		if (cellarOnly) {
+			tag.putBoolean("cellar_only", true);
+		}
 		if (!levelGround) {
 			tag.putBoolean("no_level_ground", true);
 		}
@@ -792,6 +884,17 @@ public final class BuildSite {
 		}
 		if (!gaveUp.isEmpty()) {
 			tag.putLongArray("gave_up", gaveUp.stream().mapToLong(BlockPos::asLong).toArray());
+		}
+		if (kineticOrder) {
+			tag.putBoolean("kinetic_order", true); // 39.5
+		}
+		if (kineticPasses > 0) {
+			tag.putInt("kinetic_passes", kineticPasses);
+		}
+		if (furniture == null) {
+			tag.putBoolean("furniture_unchosen", true); // 37.3: a new site not yet planned chooses when it is
+		} else if (!furniture.isVanilla()) {
+			tag.put("furniture", furniture.save());
 		}
 		return tag;
 	}
@@ -825,6 +928,7 @@ public final class BuildSite {
 		site.queued = Nbt.getBoolean(tag, "queued");
 		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");
 		site.repair = Nbt.getBoolean(tag, "repair");
+		site.cellarOnly = Nbt.getBoolean(tag, "cellar_only"); // 36.7: none in older saves
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;
 		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;
@@ -838,6 +942,11 @@ public final class BuildSite {
 		for (long p : Nbt.getLongArray(tag, "gave_up")) { // B139: none in older saves
 			site.gaveUp.add(BlockPos.of(p));
 		}
+		site.kineticOrder = Nbt.getBoolean(tag, "kinetic_order"); // 39.5: older saves build in today's order
+		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
+		// 37.3: older saves have neither, and build vanilla
+		site.furniture = Nbt.getBoolean(tag, "furniture_unchosen") ? null
+			: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.load(Nbt.getList(tag, "furniture", Tag.TAG_COMPOUND));
 		return site;
 	}
 

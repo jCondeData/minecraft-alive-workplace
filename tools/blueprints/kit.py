@@ -13,7 +13,7 @@ Conventions for every blueprint (the mod relies on these):
 import os
 import zlib
 import nbtlib
-from nbtlib import Compound, List, Int, String
+from nbtlib import Compound, List, Int, String, Double
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 MAIN_STRUCTURES = os.path.join(ROOT, "src/main/resources/data/aliveworkplace/structure")
@@ -85,6 +85,7 @@ class Build:
                 b.blocks[pos] = block
         b.nbt = dict(getattr(self, "nbt", {}))
         b.cellars = list(self.cellars)
+        b.spots = [dict(s) for s in getattr(self, "spots", [])]
         return b
 
     def clear(self, x0, y0, z0, x1, y1, z1):
@@ -119,8 +120,22 @@ class Build:
         self.set(x, y, z, f"{color}_bed", facing=facing, part="foot", occupied=False)
         self.set(x + dx, y, z + dz, f"{color}_bed", facing=facing, part="head", occupied=False)
 
+    def furniture(self, kind, x, y, z, facing, cells=((0, 0, 0),), wood=None, colour=None):
+        """Records a furniture spot (ROADMAP 37.2, furniture.py) for a piece this drawing just drew at (x, y, z): its kind
+        (furniture.KINDS), the way a person using it faces, the cells it fills relative to (x, y, z), and its wood or
+        colour. Chairs beside tables, tables and beds are found by themselves; record the rest."""
+        self.spots = getattr(self, "spots", [])
+        cells = [(x + dx, y + dy, z + dz) for dx, dy, dz in cells]
+        # What each cell held when the piece was drawn: an upgrade that later builds over the piece drops its spot
+        # (furniture.spots_of) instead of leaving a spot on blocks that are no longer there.
+        drawn = [self.blocks.get(c, ("minecraft:air", ()))[0] for c in cells]
+        self.spots.append({"kind": kind, "pos": [x, y, z], "facing": facing, "wood": wood, "colour": colour,
+                           "cells": cells, "drawn": drawn})
+
     def to_nbt(self):
-        assert not (self.basement and getattr(self, "entities", None)), "entities in a build with a basement aren't moved up"
+        entities = getattr(self, "entities", [])
+        if self.basement and entities:  # 36.7: moved up with the blocks (StarterBlueprints.withBasement moves them back)
+            entities = [moved_up(e, self.basement) for e in entities]
         palette, index, blocks = [], {}, []
         for (x, y, z), key in sorted(self.blocks.items()):
             if key[0] == "minecraft:structure_void":
@@ -144,7 +159,7 @@ class Build:
             "size": List[Int]([Int(self.w), Int(self.h + self.basement), Int(self.d)]),
             "palette": List[Compound](palette),
             "blocks": List[Compound](blocks),
-            "entities": List[Compound](getattr(self, "entities", [])),
+            "entities": List[Compound](entities),
         })
 
     def save(self, folder, name, checked=True):
@@ -160,6 +175,12 @@ class Build:
             from check import check
             for problem in check(self):
                 print(f"  CHECK {name}: {problem}")
+            main = os.path.abspath(MAIN_STRUCTURES)
+            if os.path.abspath(folder).startswith(main):  # our blueprints: their furniture spots (37.2)
+                import furniture
+                rel = os.path.relpath(os.path.join(os.path.abspath(folder), name), main)
+                for problem in furniture.write(self, rel):
+                    print(f"  CHECK {name}: {problem}")
 
 
 class StagedBuild(Build):
@@ -635,6 +656,18 @@ def chimney(b, x, z, y0, y1, name=STONE_MIX, smoke=True):
         b.set(x, y1 + 1, z, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
 
 
+def moved_up(entity, dy):
+    """A copy of a build's entity entry (pos, blockPos, nbt) {@code dy} higher, for a file that holds a basement under it."""
+    out = Compound(dict(entity))
+    out["pos"] = List[Double]([Double(float(v) + (dy if i == 1 else 0)) for i, v in enumerate(entity["pos"])])
+    out["blockPos"] = List[Int]([Int(int(v) + (dy if i == 1 else 0)) for i, v in enumerate(entity["blockPos"])])
+    nbt = Compound(dict(entity["nbt"]))
+    if "TileY" in nbt:
+        nbt["TileY"] = Int(int(nbt["TileY"]) + dy)
+    out["nbt"] = nbt
+    return out
+
+
 def cellar(b, x0, z0, x1, z1, wall=MOSSY_BRICK_MIX, floor="stone_bricks", ladder=None, depth=None, beam=None,
            hatch="spruce_trapdoor"):
     """A room dug under the build (ROADMAP 26.15; the Build needs basement >= depth): a floor at y = -depth and walls
@@ -862,3 +895,145 @@ def wonder_stages(namespace, wonder, stages, folders, part=WONDER_PART):
         out.append(parts)
         before = dict(stage.blocks)
     return out
+
+
+# --- Furnished rooms (ROADMAP 37.4): vanilla pieces that read as furniture, each recorded as a furniture spot ---------
+# Every helper draws the piece in vanilla blocks and records it with Build.furniture, so a server with a furniture mod
+# builds that mod's piece there (37.3's tables) and one without builds these blocks. `facing` is the way a person
+# using the piece faces: into the room for anything standing against a wall. Each refuses a cell already drawn, so a
+# piece never lands on a bed, a job block or a chest by accident.
+
+def _free(b, *cells):
+    for c in cells:
+        got = b.blocks.get(c)
+        assert got is None or got[0] == "minecraft:air", f"furniture over {got} at {c}"
+
+
+def nightstand(b, x, y, z, facing, wood):
+    """A bedside table: an upside-down slab beside the bed's head."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{wood}_slab", type="top", waterlogged=False)
+    b.furniture("nightstand", x, y, z, facing, wood=wood)
+
+
+def floor_lamp(b, x, y, z, wood, facing="north"):
+    """A standing lamp: a lantern on a fence post."""
+    _free(b, (x, y, z), (x, y + 1, z))
+    b.set(x, y, z, f"{wood}_fence")
+    lantern(b, x, y + 1, z)
+    b.furniture("lamp", x, y, z, facing, cells=((0, 0, 0), (0, 1, 0)), wood=wood)
+
+
+def couch(b, x, y, z, facing, wood, colour, length=2, arms=True):
+    """A couch of `length` seats along the wall behind it, the sitters facing `facing`: stair seats with their backs to
+    the wall and, with `arms`, an open trapdoor at each end. Each seat is a couch spot (an arm goes with its end seat)."""
+    along = CW[facing]
+    ax, az = DIRS[along]
+    seats = [(x + ax * i, z + az * i) for i in range(length)]
+    for i, (sx, sz) in enumerate(seats):
+        _free(b, (sx, y, sz))
+        stairs(b, sx, y, sz, wood_family(wood), OPP[facing])
+        cells = [(0, 0, 0)]
+        if arms and i in (0, length - 1):
+            for end, d in ((0, -1), (length - 1, 1)):
+                if i == end:
+                    arm = (sx + ax * d, sz + az * d)
+                    _free(b, (arm[0], y, arm[1]))
+                    trapdoor(b, arm[0], y, arm[1], f"{wood}_trapdoor", along if d < 0 else OPP[along], open_=True)
+                    cells.append((arm[0] - sx, 0, arm[1] - sz))
+        b.furniture("couch", sx, y, sz, facing, cells=cells, wood=wood, colour=colour)
+
+
+def wood_family(wood):
+    return wood if isinstance(wood, Family) else globals().get(wood.upper()) or Family(f"{wood}_planks", f"{wood}_stairs", f"{wood}_slab")
+
+
+def shelf(b, x, y, z, facing, wood, crockery="flower_pot"):
+    """A wall shelf at head height: an upside-down slab on the wall, crockery (a flower pot, the vanilla cup) on it."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{wood}_slab", type="top", waterlogged=False)
+    b.furniture("shelf", x, y, z, facing, wood=wood)
+    if crockery:
+        _free(b, (x, y + 1, z))
+        b.set(x, y + 1, z, crockery)
+        b.furniture("crockery", x, y + 1, z, facing, wood=wood, colour="white")
+
+
+def picture(b, x, y, z, facing, colour, wood):
+    """A picture on the wall behind (x, y, z): a wall banner, the plain cloth of the vanilla build."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{colour}_wall_banner", facing=facing)
+    b.furniture("picture", x, y, z, facing, wood=wood, colour=colour)
+
+
+def blinds(b, x, y, z, facing, wood):
+    """Blinds rolled up at the top of a window, inside: a closed upper trapdoor against the window head. `facing`: into
+    the room."""
+    _free(b, (x, y, z))
+    trapdoor(b, x, y, z, f"{wood}_trapdoor", facing, half="top")
+    b.furniture("blinds", x, y, z, facing, wood=wood)
+
+
+def clock(b, x, y, z, facing, wood):
+    """A grandfather clock against a wall: a stripped log case under a trapdoor hood."""
+    _free(b, (x, y, z), (x, y + 1, z))
+    log(b, x, y, z, f"stripped_{wood}_log")
+    trapdoor(b, x, y + 1, z, f"{wood}_trapdoor", facing, half="bottom")
+    b.furniture("clock", x, y, z, facing, cells=((0, 0, 0), (0, 1, 0)), wood=wood)
+
+
+# --- Furnished workplaces (ROADMAP 37.5): desks, benches, counters and decorations in the workplaces ------------------
+# The same rule as the homes: every piece is vanilla blocks recorded as a furniture spot. A job block, a bed or a
+# container is never part of a spot (FurnishedWorkplacesGameTests checks every shipped spot), so a furniture mod's piece
+# can never stand where a job reads its block or its chest.
+NOT_FURNITURE = ("chest", "barrel", "_shulker_box", "lectern", "_bed", "smoker", "furnace", "brewing_stand", "composter",
+                 "cartography_table", "crafting_table", "loom", "fletching_table", "smithing_table", "stonecutter",
+                 "grindstone", "cauldron", "anvil", "bell", "hopper", "dispenser", "dropper", "aliveworkplace:",
+                 "cobblemon:")
+
+
+def _job_free(b, cells):
+    for c in cells:
+        got = b.blocks.get(c)
+        assert got is not None and got[0] != "minecraft:air", f"furniture spot on nothing at {c}"
+        assert not any(n in got[0] for n in NOT_FURNITURE), f"furniture spot over a job block, bed or container {got} at {c}"
+
+
+def furnish(b, kind, x, y, z, facing, cells=((0, 0, 0),), wood=None, colour=None):
+    """Records a piece already drawn at (x, y, z) (a counter of planks under a slab, a row of stair benches) as a
+    furniture spot, refusing one that would cover a job block, a bed or a container."""
+    _job_free(b, [(x + dx, y + dy, z + dz) for dx, dy, dz in cells])
+    b.furniture(kind, x, y, z, facing, cells=cells, wood=wood, colour=colour)
+
+
+def desk(b, x, y, z, facing, wood):
+    """A writing desk: an upside-down slab, the person at it facing `facing`."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{wood}_slab", type="top", waterlogged=False)
+    b.furniture("desk", x, y, z, facing, wood=wood)
+
+
+def bench_seat(b, x, y, z, facing, wood):
+    """One seat of a bench: a stair whose sitter faces `facing` (its back the other way)."""
+    _free(b, (x, y, z))
+    stairs(b, x, y, z, wood_family(wood), OPP[facing])
+    b.furniture("bench", x, y, z, facing, wood=wood)
+
+
+def trellis(b, x, y, z, facing, wood, height=2):
+    """A trellis on a wall: open trapdoors flat against the wall behind, `height` high, a lattice for climbers.
+    `facing`: away from the wall."""
+    cells = [(x, y + i, z) for i in range(height)]
+    _free(b, *cells)
+    for c in cells:
+        trapdoor(b, *c, f"{wood}_trapdoor", facing, open_=True)
+    b.furniture("trellis", x, y, z, facing, cells=tuple((0, i, 0) for i in range(height)), wood=wood)
+
+
+def hanging_pot(b, x, y, z, plant="potted_fern", wood="oak"):
+    """A hanging pot: a chain from the beam above (x, y + 1, z) holding a potted plant under it at y - 1. The spot is the
+    chain's cell (a modded hanging pot hangs from the beam there)."""
+    _free(b, (x, y, z), (x, y - 1, z))
+    b.set(x, y, z, "chain", axis="y", waterlogged=False)
+    b.set(x, y - 1, z, plant)
+    b.furniture("hanging_pot", x, y, z, "north", cells=((0, 0, 0), (0, -1, 0)), wood=wood)

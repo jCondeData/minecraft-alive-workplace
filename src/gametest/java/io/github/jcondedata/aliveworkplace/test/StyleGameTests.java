@@ -33,12 +33,15 @@ public class StyleGameTests implements FabricGameTest {
 		return blueprint.blocks().stream().map(e -> BuiltInRegistries.BLOCK.getKey(e.state().getBlock()).toString()).collect(Collectors.toSet());
 	}
 
-	/** The styles that ship load (Apricorn only with Cobblemon), and a styled id takes apart into its style and base. */
+	/**
+	 * The styles that ship load (Apricorn only with Cobblemon; Spruce, 37.7, only with {@code furnishedBuilds}, which the
+	 * tests' open M37 gate turns on), and a styled id takes apart into its style and base.
+	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void stylesLoadAndIdsRoundTrip(GameTestHelper helper) {
 		List<String> names = BlueprintStyles.all().stream().map(BlueprintStyles.Style::name).toList();
-		helper.assertTrue(names.equals(List.of("stonework", "sandstone", "dark_oak", "cherry", "grand")), "styles: " + names);
+		helper.assertTrue(names.equals(List.of("stonework", "sandstone", "dark_oak", "cherry", "grand", "spruce")), "styles: " + names);
 		ResourceLocation base = StarterBlueprints.STONE_HOUSE.id();
 		ResourceLocation dark = BlueprintStyles.styled(base, "dark_oak");
 		helper.assertTrue(dark.toString().equals("aliveworkplace:styled/dark_oak/aliveworkplace/stone_house"), "styled id: " + dark);

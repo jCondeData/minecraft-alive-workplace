@@ -1,0 +1,11 @@
+{
+  "requires": "cobblecuisine",
+  "dishes": [
+    {"id": "cobblecuisine:fruit_honey_cake", "level": 4, "group": "cake"},
+    {"id": "cobblecuisine:vegetable_honey_cake", "level": 4, "group": "cake"},
+    {"id": "cobblecuisine:berry_grain_cake", "level": 4, "group": "cake"},
+    {"id": "cobblecuisine:twin_mushroom_cake", "level": 4, "group": "cake"},
+    {"id": "cobblecuisine:red_bean_cake", "level": 4, "group": "cake"},
+    {"id": "cobblecuisine:fruity_flan", "level": 5, "group": "dessert"}
+  ]
+}

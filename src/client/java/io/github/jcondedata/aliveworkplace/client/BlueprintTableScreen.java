@@ -42,6 +42,8 @@ public class BlueprintTableScreen extends Screen {
 	private List<TablePayloads.Entry> entries;
 	private boolean canUpload;
 	private final Map<ResourceLocation, List<TablePayloads.Material>> details = new HashMap<>();
+	/** What each build brings, "Jobs: ..." and "Beds: N" (36.6a), from its details; by blueprint as shown. */
+	private final Map<ResourceLocation, List<Component>> facts = new HashMap<>();
 	/** 3D previews by blueprint (26.9), sent with the details; kept while the screen is open. */
 	private final Map<ResourceLocation, TablePreview> previews = new HashMap<>();
 	private int previewX, previewY, previewW, previewH;
@@ -112,6 +114,7 @@ public class BlueprintTableScreen extends Screen {
 
 	public void setDetails(TablePayloads.Details payload) {
 		details.put(payload.id(), payload.materials());
+		facts.put(payload.id(), io.github.jcondedata.aliveworkplace.table.BuildJobs.lines(payload.jobs(), payload.beds()));
 		styles.put(BlueprintStyles.base(payload.id()), payload.styles());
 	}
 
@@ -156,6 +159,12 @@ public class BlueprintTableScreen extends Screen {
 	public int previewCells() {
 		TablePreview preview = selectedId == null ? null : previews.get(shownId());
 		return preview == null ? -1 : preview.count();
+	}
+
+	/** Blocks of the selected build's preview under the ground (a basement's depth, 36.1), or -1 while none has arrived (for the screenshot harness). */
+	public int previewBelow() {
+		TablePreview preview = selectedId == null ? null : previews.get(shownId());
+		return preview == null ? -1 : preview.below();
 	}
 
 	/** Turns the selected build's preview as a mouse drag would (for the screenshot harness). */
@@ -309,6 +318,12 @@ public class BlueprintTableScreen extends Screen {
 		return m == null ? -1 : m.size();
 	}
 
+	/** The selected build's job and bed lines as the pane shows them, one per line, or "" when it has neither (36.6a; for the screenshot harness). */
+	public String selectedFacts() {
+		List<Component> lines = selectedId == null ? null : facts.get(shownId());
+		return lines == null ? "" : String.join("\n", lines.stream().map(Component::getString).toList());
+	}
+
 	private void take() {
 		if (selectedId != null) {
 			ClientPlayNetworking.send(new TablePayloads.Take(table, shownId()));
@@ -415,9 +430,27 @@ public class BlueprintTableScreen extends Screen {
 		}
 		g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), w), x, y, entry.locked() ? 0xFF8A8A8A : 0xFFFFFFFF, false);
 		y += 12;
-		g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
-			x, y, 0xFF9AA8BA, false);
-		y += 10;
+		TablePreview shownPreview = previews.get(shownId());
+		int below = shownPreview == null ? 0 : shownPreview.below();
+		if (below > 0) { // a basement (36.1): wrapped, as "and N below ground" can run past the pane
+			Component size = Component.translatable("screen.aliveworkplace.table.size_below", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks(), below);
+			g.drawWordWrap(font, size, x, y, w, 0xFF9AA8BA);
+			y += 10 * font.split(size, w).size();
+		} else {
+			g.drawString(font, Component.translatable("screen.aliveworkplace.table.size", entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
+				x, y, 0xFF9AA8BA, false);
+			y += 10;
+		}
+		// What jobs it brings and its beds (36.6a), wrapped; a build with neither shows nothing here.
+		List<Component> lines = facts.getOrDefault(shownId(), List.of());
+		if (!lines.isEmpty()) {
+			y += 1;
+			for (Component line : lines) {
+				g.drawWordWrap(font, line, x, y, w, 0xFFC8C0A8);
+				y += 9 * font.split(line, w).size();
+			}
+			y += 2;
+		}
 		if (!entry.hint().isEmpty()) {
 			// Locked (or a Wonder, raised from its plan): how to get it, where the id goes for the rest.
 			Component how = entry.locked()

@@ -66,6 +66,26 @@ public class ScreenshotHarness implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
 	}
 
+	/**
+	 * A mod that adds a dimension through data (Cobblemon Raid Dens) makes vanilla call the world's settings
+	 * "experimental" and ask about a backup before opening it, and nobody clicks in a headless run (B169: every
+	 * Cobblemon scene waited there until the showcase killed it). The harness answers "continue without a backup".
+	 */
+	private static void skipBackupQuestion(Minecraft mc) {
+		if (!(mc.screen instanceof net.minecraft.client.gui.screens.BackupConfirmScreen screen)) {
+			return;
+		}
+		for (var child : screen.children()) {
+			if (child instanceof net.minecraft.client.gui.components.Button button
+				&& button.getMessage().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents key
+				&& "selectWorld.backupJoinSkipButton".equals(key.getKey())) {
+				System.out.println("[aliveworkplace-shots] Skipped the backup question: " + screen.getTitle().getString());
+				button.onPress();
+				return;
+			}
+		}
+	}
+
 	private final JobScenes jobScenes = new JobScenes();
 	private final WordsScene words = new WordsScene();
 	private final CityPlanScene cityPlan = new CityPlanScene();
@@ -112,6 +132,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final PokemonBuildsScene pokemonBuilds = new PokemonBuildsScene();
 	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
+	private final FurnishedHomeScene furnishedHome = new FurnishedHomeScene();
+	private final FurnishedWorkplacesScene furnishedWorkplaces = new FurnishedWorkplacesScene();
+	private final SeatsAndBedsScene seatsAndBeds = new SeatsAndBedsScene();
+	private final ModdedStorehouseScene moddedStorehouse = new ModdedStorehouseScene();
+	private final CarvedStylesScene carvedStyles = new CarvedStylesScene();
+	private final ModdedLibraryScene moddedLibrary = new ModdedLibraryScene();
 	private final VillageHallBuildScene villageHallBuild = new VillageHallBuildScene();
 	private final BuildFixesScene buildFixes = new BuildFixesScene();
 	private final RealmBuildsScene realmBuilds = new RealmBuildsScene();
@@ -152,6 +178,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final PieceLookScene pieceLook = new PieceLookScene();
 
 	private void onTick(Minecraft mc) {
+		skipBackupQuestion(mc);
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
 			return;
 		}
@@ -165,6 +192,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("table_preview".equals(System.getProperty("aliveworkplace.scene"))) {
 			tablePreviewScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("signpost".equals(System.getProperty("aliveworkplace.scene"))) {
+			signpostScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("hall_reading".equals(System.getProperty("aliveworkplace.scene"))) {
+			hallReadingScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("table_basement".equals(System.getProperty("aliveworkplace.scene"))) {
+			tableBasementScene(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("quarry".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -297,6 +336,30 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {
 			grandHouses.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("furnished_home".equals(System.getProperty("aliveworkplace.scene"))) {
+			furnishedHome.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("furnished_workplaces".equals(System.getProperty("aliveworkplace.scene"))) {
+			furnishedWorkplaces.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("seats_and_beds".equals(System.getProperty("aliveworkplace.scene"))) {
+			seatsAndBeds.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("modded_storehouse".equals(System.getProperty("aliveworkplace.scene"))) {
+			moddedStorehouse.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("carved_styles".equals(System.getProperty("aliveworkplace.scene"))) {
+			carvedStyles.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("modded_library".equals(System.getProperty("aliveworkplace.scene"))) {
+			moddedLibrary.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("village_habitat".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -499,6 +562,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 			battleScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("mega_trainers".equals(System.getProperty("aliveworkplace.scene"))) {
+			megaLeader = true; // 38.5: the same battle against a City's Trainer Leader, who wears the Mega Bracelet
+			battleScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("smith".equals(System.getProperty("aliveworkplace.scene"))) {
 			smithScene(mc, mc.getSingleplayerServer());
 			return;
@@ -651,6 +719,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 160) {
 			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen, "the Blueprint Table screen opened");
+			// 36.6a: the Starter Cottage's beds (and any jobs) under its size, no description
+			String facts = mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s.selectedFacts() : "";
+			Showcase.check(facts.contains("Beds: "), "the Starter Cottage's beds show under its size (\"" + facts.replace('\n', ' ') + "\")");
 			shot(mc, "10_table_library");
 			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
 				screen.showFiles();
@@ -761,6 +832,331 @@ public class ScreenshotHarness implements ClientModInitializer {
 			shot(mc, "06_preview_imported");
 		}
 		if (tick == 435) {
+			if (mc.screen == null) {
+				shot(mc, "99_no_screen");
+			}
+			mc.stop();
+		}
+	}
+
+	/**
+	 * 36.4: a Signpost at a crossroads between two villages, its boards written when it's finished: each board up close,
+	 * the village east and west, a Well south, and "Welcome" where nothing lies.
+	 */
+	private void signpostScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		BlockPos origin = new BlockPos(0, -60, 0);
+		BlockPos post = origin.offset(1, 0, 1);
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.hideGui = true;
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(3000);
+				// The crossroads: gravel paths four ways.
+				for (int i = -14; i <= 14; i++) {
+					for (int w = 0; w < 3; w++) {
+						level.setBlockAndUpdate(new BlockPos(post.getX() + i, -61, post.getZ() - 1 + w), Blocks.DIRT_PATH.defaultBlockState());
+						level.setBlockAndUpdate(new BlockPos(post.getX() - 1 + w, -61, post.getZ() + i), Blocks.DIRT_PATH.defaultBlockState());
+					}
+				}
+				// Our hall by the crossroads, a village 40 blocks east, one 180 west (on the caravans' list), a Well south.
+				BlockPos own = post.offset(-5, 0, -5);
+				BlockPos east = post.east(40);
+				BlockPos west = post.west(180);
+				level.setBlockAndUpdate(own, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				level.setBlockAndUpdate(east, ModBlocks.VILLAGE_HALL.defaultBlockState());
+				if (level.getBlockEntity(own) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setCustomName(Component.literal("Oakbrook"));
+				}
+				if (level.getBlockEntity(east) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setCustomName(Component.literal("Millford"));
+				}
+				// Inside a server task, as here, vanilla files a placed block's point-of-interest record a moment later; file the
+				// halls' records now, as for halls placed long before the signpost is finished (B186).
+				fileRecords(level, own, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+				fileRecords(level, east, 16);
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
+				io.github.jcondedata.aliveworkplace.hall.Caravans.Data caravans = io.github.jcondedata.aliveworkplace.hall.Caravans.Data.get(level);
+				caravans.setWants(own, Component.literal("Oakbrook"), List.of());
+				caravans.setWants(east, Component.literal("Millford"), List.of());
+				caravans.setWants(west, Component.literal("Ashford"), List.of());
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+				BlueprintData.Placement well = new BlueprintData.Placement(level.dimension().location(), post.offset(-3, 0, 9),
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				Blueprint wellBp = BlueprintLibrary.get(level, StarterBlueprints.WELL.id()).orElseThrow();
+				for (Blueprint.Entry e : wellBp.blocks()) {
+					level.setBlock(well.origin().offset(e.pos()), e.state(), 2);
+				}
+				sites.recordFinished(StarterBlueprints.WELL.id(), well, server.getPlayerList().getPlayers().get(0).getUUID());
+				// The signpost as its builder leaves it, then finished: its boards are written.
+				Blueprint sign = BlueprintLibrary.get(level, StarterBlueprints.SIGNPOST.id()).orElseThrow();
+				for (Blueprint.Entry e : sign.blocks()) {
+					level.setBlock(origin.offset(e.pos()), e.state(), 2);
+				}
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				sites.recordFinished(StarterBlueprints.SIGNPOST.id(), placement, server.getPlayerList().getPlayers().get(0).getUUID());
+				int written = io.github.jcondedata.aliveworkplace.city.Signposts.finished(level, StarterBlueprints.SIGNPOST.id(), placement);
+				Showcase.check(written == 4, "the finished signpost's four boards were written (" + written + ")");
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(post.getX() + 6.5, -58.5, post.getZ() + 7.5), 135, 18);
+			});
+		}
+		// Each board up close, the camera in front of it at its height (eyes 1.62 above the feet).
+		double[][] views = {
+			{post.getX() + 3.6, -57 + 0.5 - 1.62, post.getZ() + 0.5, 90}, // the east board, from the east
+			{post.getX() - 2.6, -57 + 0.5 - 1.62, post.getZ() + 0.5, -90}, // the west board
+			{post.getX() + 0.5, -58 + 0.5 - 1.62, post.getZ() + 3.6, 180}, // the south board
+			{post.getX() + 0.5, -58 + 0.5 - 1.62, post.getZ() - 2.6, 0}, // the north board
+		};
+		String[] names = {"02_board_east", "03_board_west", "04_board_south", "05_board_north"};
+		if (tick == 120) {
+			shot(mc, "01_signpost_crossroads");
+		}
+		for (int i = 0; i < views.length; i++) {
+			double[] v = views[i];
+			if (tick == 130 + i * 30) {
+				server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(v[0], v[1], v[2]), (float) v[3], 0));
+			}
+			if (tick == 150 + i * 30) {
+				shot(mc, names[i]);
+			}
+		}
+		if (tick == 260) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				List<String> said = new ArrayList<>();
+				for (BlockPos p : io.github.jcondedata.aliveworkplace.city.Signposts.boards(level, origin)) {
+					if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.SignBlockEntity s) {
+						said.add(s.getFrontText().getMessage(1, false).getString() + " " + s.getFrontText().getMessage(2, false).getString()
+							+ (s.isWaxed() ? "" : " (not waxed)"));
+					}
+				}
+				Showcase.check(said.stream().anyMatch(t -> t.startsWith("Millford 40 blocks")) && said.stream().anyMatch(t -> t.startsWith("Ashford 180 blocks"))
+					&& said.stream().noneMatch(t -> t.contains("not waxed")), "the boards name Millford east and Ashford west, waxed: " + said);
+			});
+		}
+		if (tick == 280) {
+			mc.stop();
+		}
+	}
+
+	/** The list slot of {@code screen} whose name is longest (the entry with the most to read). */
+	private static int longestRow(io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
+		int best = -1;
+		int length = -1;
+		for (int slot : screen.listSlots()) {
+			int n = screen.getMenu().slots.get(slot).getItem().getHoverName().getString().length();
+			if (n > length) {
+				best = slot;
+				length = n;
+			}
+		}
+		return best;
+	}
+
+	/** Moves the mouse into the middle of {@code screen}'s reading pane, as a player crossing over from the list. */
+	private static void intoPane(Minecraft mc, io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
+		double scale = mc.getWindow().getGuiScale();
+		int[] at = screen.paneCentre();
+		setMouse(mc, at[0] * scale, at[1] * scale);
+	}
+
+	/** Turns the wheel down over the pane until the reading's last line shows (at most 40 notches). */
+	private static void scrollToEnd(io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
+		int[] at = screen.paneCentre();
+		for (int i = 0; i < 40 && screen.readingScroll()[0] < screen.readingScroll()[1]; i++) {
+			screen.mouseScrolled(at[0], at[1], 0, -1);
+		}
+	}
+
+	private int readingSlot = -1;
+
+	/**
+	 * 36.5: reading a long entry without clicking it. In the hall's chronicle a long entry (a war party's victory naming
+	 * every guard) is hovered, the mouse moves into the pane and it stays read out, and the wheel there scrolls to its
+	 * last line; then the Storehouse board does the same with its longest row. Nothing is clicked.
+	 */
+	private void hallReadingScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		BlockPos hall = new BlockPos(0, -60, 3);
+		BlockPos storehouse = new BlockPos(6, -60, 3);
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+			// GUI scale 4 on a 1920x1080 window: a short pane, so a long entry has to scroll (as on a small screen).
+			org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080);
+		}
+		if (tick == 10) {
+			mc.options.guiScale().set(4);
+			mc.resizeDisplay();
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+				level.setBlockAndUpdate(storehouse.east(), Blocks.CHEST.defaultBlockState());
+				// A builder with nothing to build with: what they're missing goes on the board, one row each.
+				BlockPos bench = new BlockPos(-4, -60, -6);
+				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				Builders.employ(level, builder, bench);
+				Builders.start(level, builder, null, StarterBlueprints.MARKET_STALL.id(),
+					new BlueprintData.Placement(level.dimension().location(), new BlockPos(-14, -60, -18),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+				// The chronicle's long entry: a war party's victory names every guard who killed at the lair.
+				// Written at the hall itself (B188): Chronicle.record finds the nearest hall by its point of interest, which the game
+				// adds a tick after the block is placed, so the entry was dropped. 64 guards with their family names: 48 first names
+				// alone fitted the pane at 1920x1080, scale 4, and there was nothing to scroll.
+				List<String> guards = new ArrayList<>();
+				for (int i = 0; i < 64; i++) {
+					guards.add(Component.translatable("family.aliveworkplace.full_name", io.github.jcondedata.aliveworkplace.people.Names.name(i),
+						io.github.jcondedata.aliveworkplace.people.FamilyBook.familyName(i % io.github.jcondedata.aliveworkplace.people.FamilyBook.NAMES_COUNT + 1)).getString());
+				}
+				io.github.jcondedata.aliveworkplace.hall.Chronicle.atHall(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.RAID,
+					Component.translatable("chronicle.aliveworkplace.war_party.broken", server.getPlayerList().getPlayers().get(0).getDisplayName(),
+						Component.literal("the Rust Wolves"), String.join(", ", guards)));
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 8.5), 180, 20);
+			});
+		}
+		if (tick == 120) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(server.getPlayerList().getPlayers().get(0), hall));
+		}
+		if (tick == 140) {
+			server.execute(() -> {
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu m) {
+					m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player); // the chronicle page
+				}
+			});
+		}
+		io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen =
+			mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen s ? s : null;
+		if (tick == 170 && screen != null) {
+			readingSlot = longestRow(screen);
+			pointAt(mc, readingSlot);
+		}
+		if (tick == 185) {
+			Showcase.check(screen != null && readingSlot >= 0, "the chronicle page opened with entries (" + (screen == null ? "no screen" : screen.listSlots()) + ")");
+			shot(mc, "01_chronicle_hovered");
+			if (screen != null) {
+				intoPane(mc, screen);
+			}
+		}
+		if (tick == 200) {
+			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
+			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot && screen.pinned() < 0,
+				"the hovered entry stays read out with the mouse in the pane, nothing clicked (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
+			shot(mc, "02_chronicle_held");
+			if (screen != null) {
+				scrollToEnd(screen);
+			}
+		}
+		if (tick == 215) {
+			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
+			Showcase.check(scroll[1] > 0 && scroll[0] == scroll[1], "the wheel in the pane scrolled the long entry to its last line (" + scroll[0] + " of " + scroll[1] + ")");
+			shot(mc, "03_chronicle_last_line");
+			server.execute(() -> io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(server.getPlayerList().getPlayers().get(0), storehouse));
+		}
+		if (tick == 245 && screen != null) {
+			readingSlot = longestRow(screen);
+			pointAt(mc, readingSlot);
+		}
+		if (tick == 260) {
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen && readingSlot >= 0,
+				"the Storehouse board opened with rows (" + mc.screen + ")");
+			shot(mc, "04_board_hovered");
+			if (screen != null) {
+				intoPane(mc, screen);
+			}
+		}
+		if (tick == 275) {
+			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
+			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot,
+				"the board's hovered row stays read out with the mouse in the pane (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
+			if (screen != null) {
+				scrollToEnd(screen);
+			}
+		}
+		if (tick == 290) {
+			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
+			Showcase.check(scroll[0] == scroll[1], "the board's reading scrolled to its last line (" + scroll[0] + " of " + scroll[1] + ")");
+			shot(mc, "05_board_last_line");
+		}
+		if (tick == 305) {
+			mc.stop();
+		}
+	}
+
+	/**
+	 * 36.1: the table's preview of a build with a basement: Starter Cottage IV with its cellar under a faint ground plane,
+	 * fitted whole in the box and turning, then the Storehouse and its vault; the size line says how deep each goes.
+	 */
+	private void tableBasementScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(4);
+			mc.options.hideGui = true;
+		}
+		if (tick == 20) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.setDayTime(6000);
+				level.setBlockAndUpdate(TABLE, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.setGameMode(GameType.CREATIVE);
+				player.teleportTo(level, 0.5, -60, 0.5, 180, 30);
+			});
+		}
+		if (tick == 80) {
+			server.execute(() -> io.github.jcondedata.aliveworkplace.table.TableServer.open(server.getPlayerList().getPlayers().get(0), TABLE));
+		}
+		io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen =
+			mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s : null;
+		if (tick == 110 && screen != null) {
+			screen.select(StarterBlueprints.STARTER_COTTAGE_4.id());
+		}
+		if (tick == 170) {
+			Showcase.check(screen != null, "the Blueprint Table screen opened");
+			Showcase.check(screen != null && screen.previewCells() > 0 && screen.previewBelow() == StarterBlueprints.STARTER_COTTAGE_4.basement(),
+				"Starter Cottage IV's preview arrived with its cellar (" + (screen == null ? "no screen" : screen.previewCells() + " blocks, "
+					+ screen.previewBelow() + " below ground") + ")");
+			shot(mc, "01_cottage_cellar");
+		}
+		if (tick > 175 && tick <= 195 && screen != null) {
+			screen.dragPreview(-6, -4); // turned and tilted down a little, to look under the ground plane
+		}
+		if (tick == 205) {
+			shot(mc, "02_cottage_turned");
+			if (screen != null) {
+				screen.select(StarterBlueprints.STOREHOUSE.id());
+			}
+		}
+		if (tick == 265) {
+			Showcase.check(screen != null && StarterBlueprints.STOREHOUSE.id().equals(screen.selected()) && screen.previewCells() > 0
+				&& screen.previewBelow() == StarterBlueprints.STOREHOUSE.basement(),
+				"the Storehouse's preview arrived with its vault (" + (screen == null ? "no screen" : screen.previewCells() + " blocks, "
+					+ screen.previewBelow() + " below ground") + ")");
+			shot(mc, "03_storehouse_vault");
+		}
+		if (tick > 270 && tick <= 290 && screen != null) {
+			screen.dragPreview(8, 2);
+		}
+		if (tick == 300) {
+			shot(mc, "04_storehouse_turned");
+		}
+		if (tick == 320) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}
@@ -2513,6 +2909,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 	// --- Trader: the Pokémon Trader's offers (needs Cobblemon too) ------------------------------------
 
 	private Villager battleTrainer;
+	/** SCENE=mega_trainers (38.5): the trainer is a City's Trainer Leader, not a Master. */
+	private boolean megaLeader;
+	private boolean braceletSeen;
+	private static final BlockPos MEGA_HALL = new BlockPos(0, -60, 10);
 	private final AtomicBoolean megaSeen = new AtomicBoolean(false);
 	private final AtomicBoolean battleOver = new AtomicBoolean(false);
 	private final AtomicBoolean battleStarted = new AtomicBoolean(false);
@@ -2569,7 +2969,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 				java.util.UUID id = null;
 				for (int i = 0; i < 500 && id == null; i++) {
 					java.util.UUID u = new java.util.UUID(0xba771eL, i);
-					var team = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(u, 5);
+					var team = megaLeader ? io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(u, 4, true)
+						: io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(u, 5);
 					if (!team.isEmpty() && io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonMegas.holdsItsStone(team.get(0))) {
 						id = u;
 					}
@@ -2581,17 +2982,57 @@ public class ScreenshotHarness implements ClientModInitializer {
 				trainer.setUUID(id);
 				trainer.moveTo(0.5, -60, 5.5, 180, 0);
 				level.addFreshEntity(trainer);
-				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER);
-				trainer.setVillagerData(trainer.getVillagerData().setLevel(5));
+				if (megaLeader) { // a Trainer Leader (an Expert) of a City: their team holds a Mega Stone and they wear the bracelet
+					level.setBlockAndUpdate(MEGA_HALL, ModBlocks.VILLAGE_HALL.defaultBlockState());
+					((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(MEGA_HALL))
+						.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
+						io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER_LEADER);
+					trainer.setVillagerData(trainer.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER_LEADER));
+					// B191: the Leader's Mega is checked at tick 60, not here: the game files the new hall's point of interest
+					// in a later task (so no hall is near yet), and the hall's first round counts the test village again
+					player.teleportTo(level, 0.5, -60, 2.5, 0, 12); // close up, for the bracelet
+				} else {
+					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
+						io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER);
+					trainer.setVillagerData(trainer.getVillagerData().setLevel(5));
+				}
 				battleTrainer = trainer;
 				var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
 				for (String p : List.of("snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100", "garchomp level=100")) {
 					party.add(com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(p, " ", "=").create());
 				}
 				player.setGameMode(GameType.SURVIVAL);
-				player.teleportTo(level, 0.5, -60, -6.5, 0, 10);
+				if (!megaLeader) {
+					player.teleportTo(level, 0.5, -60, -6.5, 0, 10);
+				}
 			});
+		}
+		if (megaLeader && tick > 40) { // B191: the hall's round (its first on its first tick) counts the test village as a Hamlet
+			server.execute(() -> {
+				if (server.overworld().getBlockEntity(MEGA_HALL) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+				}
+			});
+		}
+		if (megaLeader && tick == 60) { // the hall filed and its first round done: a City's Leader
+			server.execute(() -> {
+				Showcase.check(io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.canMegaEvolve(battleTrainer), "the City's Trainer Leader can Mega Evolve");
+				io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.refresh(battleTrainer);
+				// close up where the Leader stands now (at work by the post, which hid them from the first spot)
+				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				player.teleportTo(server.overworld(), battleTrainer.getX() - 2.0, battleTrainer.getY(), battleTrainer.getZ() - 2.0, -45, 10);
+				player.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, battleTrainer.position().add(0, 1.0, 0));
+			});
+		}
+		if (megaLeader && tick == 70) {
+			net.minecraft.world.entity.Entity seen = mc.level == null || battleTrainer == null ? null : mc.level.getEntity(battleTrainer.getId());
+			braceletSeen = seen != null && io.github.jcondedata.aliveworkplace.client.MegaBraceletLayer.wears(seen);
+			Showcase.check(braceletSeen, "the client draws the Leader's Mega Bracelet");
+			shot(mc, "01_mega_leader");
+		}
+		if (megaLeader && tick == 76) {
+			server.execute(() -> server.getPlayerList().getPlayers().get(0).teleportTo(server.overworld(), 0.5, -60, -6.5, 0, 10));
 		}
 		if (tick == 80) {
 			server.execute(() -> io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(server.getPlayerList().getPlayers().get(0), battleTrainer));
@@ -2661,14 +3102,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
 				player.teleportTo(server.overworld(), 8.5, -58.2, 2.5, 72, 14);
 			});
-			shot(mc, String.format("battle_%03d", battleShots++));
+			shot(mc, String.format(megaLeader ? "mega_battle_%03d" : "battle_%03d", battleShots++));
 		}
 		if ((battleOver.get() || tick >= 8000) && tick % 20 == 0) {
 			System.out.println("[battle scene] over at tick " + tick + ", mega " + megaSeen.get());
-			Showcase.check(battleStarted.get(), "the Master trainer took the challenge");
-			Showcase.check(megaSeen.get(), "the Master's lead Mega Evolved");
+			Showcase.check(battleStarted.get(), megaLeader ? "the City's Trainer Leader took the challenge" : "the Master trainer took the challenge");
+			Showcase.check(megaSeen.get(), megaLeader ? "the Leader's lead Mega Evolved" : "the Master's lead Mega Evolved");
 			Showcase.check(battleOver.get() && tick < 8000, "the battle ran to the end");
-			shot(mc, "99_battle_end");
+			shot(mc, megaLeader ? "99_mega_battle_end" : "99_battle_end");
 			mc.stop();
 		}
 	}

@@ -4,7 +4,7 @@ Fourteen new small builds that aren't houses, to sit beside the Well, Street Lam
 village with more than lamps and benches (the owner, 2026-10-16: "there should be a wider variety of builds that arent
 houses, but decorations similar to fountain or lamp").
 
-Roadmap items: 26.14
+Roadmap items: 26.14, 36.4, B186
 
 ## 1. What a player sees
 
@@ -13,7 +13,7 @@ Roadmap items: 26.14
 | Market Cross | 5 x 8 x 5 | 2 | a stepped stone plinth, a shaft of stone brick wall to a chiseled head, dark oak arms with a lantern hanging from each, one on top |
 | Stag Statue | 7 x 8 x 5 | 2 | a stag of polished andesite with spreading antlers on a stone brick plinth, a bush and a fern at its feet |
 | Flower Planters | 7 x 3 x 3 | 1 | a two-tier brick planter of flowers in their own soil between two lanterns |
-| Signpost | 3 x 5 x 3 | 1 | a spruce post on a cobbled foot, four fingerboards (blank signs a player can write on) at two heights, a lantern on top |
+| Signpost | 3 x 5 x 3 | 1 | a spruce post on a cobbled foot, four fingerboards at two heights that name what lies each way (36.4), a lantern on top |
 | Stone Archway | 7 x 7 x 3 | 2 | mossy stone brick piers, an arch of stairs to a chiseled keystone, ivy, a hanging lantern, lilies at its feet |
 | Lily Pond | 9 x 3 x 7 | 2 | an oval of water in a low mossy kerb with lily pads, a grassy bank of ferns and flowers, a stone seat |
 | Hay Cart | 6 x 4 x 5 | 1 | a spruce cart on dark oak wheels loaded with bales, its shafts down, a lantern on the corner |
@@ -40,6 +40,17 @@ unlocks locked builds too.
 - None holds a block a villager takes a job or a meeting from (no barrel, composter, cauldron, lectern, smoker, loom,
   bell...): a decoration never hands out a job. Plants stand in their own soil; water and lily pads go in after the kerbs.
 - Each has a hidden `aliveworkplace:built/<name>` advancement (written by `tools/questbook/generate.py`) for quests.
+- **The Signpost's boards (36.4, `city/Signposts`).** When a builder finishes a Signpost in any style
+  (`Builders` calls `Signposts.finished` after recording it), each wall sign within its few blocks is written and
+  waxed, as the caravan road milestones are (`CaravanRoads.signText`). The board facing a way names the nearest other
+  village whose hall lies within 45° of that way and 1,000 blocks ("To", its name, "N blocks", from the caravans' list
+  of villages, by the live name when its hall is loaded), else the nearest finished build that way (its display name
+  and distance; not another signpost), else the village's own name and "Welcome". The hall's round, once a day,
+  writes the boards of its village's finished signposts again where the words changed (a village renamed, a new
+  neighbour, a build pulled down); unchanged boards aren't touched.
+  The post's own village is the nearest hall by its point-of-interest record or, where that record isn't filed yet,
+  by the caravans' list (where the hall really stands), and is never named as somewhere to go. A place exactly on a
+  diagonal goes to the north or south board only, so no place is named on two boards (B186).
 
 ## 3. Switches
 
@@ -47,7 +58,8 @@ None. `blueprintUnlocks` decides, as for every build, whether they start locked.
 
 ## 4. Saved data
 
-None new. The ids are new, so no save changes.
+None new. The ids are new, so no save changes. A Signpost's words live in its signs, saved with the world as any
+sign's are; one finished before 36.4 gets them at its village's next dawn.
 
 ## 5. Items, blocks, jobs, commands
 
@@ -69,13 +81,18 @@ Blueprints `aliveworkplace:market_cross`, `aliveworkplace:stag_statue`, `alivewo
 
 ## 7. Known limits
 
-- The Signpost's fingerboards are blank: a player writes the directions on them.
+- The Signpost's boards are waxed, so a player can't write on them, and a sign put back on the post is written again at dawn. A village
+  not yet on the caravans' list (its hall has never had a round) isn't named until it has.
 - No upgrades: each is one tier.
 
 ## 8. Proof
 
 GameTests: `MoreDecorationsGameTests` (each built by a builder from its plan's materials and finished; no villager POI
 block in any; each a decoration with beauty and a name; the Flower Planters start unlocked, the rest come from market
-day), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`.
+day), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `SignpostGameTests` (36.4: four
+waxed boards naming the village east, a village west and a Well south, kept through a save and load; a renamed
+village renamed at the next dawn; a Dark Oak signpost gets words too; B186: the own hall on an exact diagonal with
+its record unfiled is never named, and a village on the diagonal is named on one board only).
 
-Showcase scenes: `decor` (every decoration placed side by side).
+Showcase scenes: `decor` (every decoration placed side by side), `signpost` (a signpost at a crossroads between two
+villages, each board up close).

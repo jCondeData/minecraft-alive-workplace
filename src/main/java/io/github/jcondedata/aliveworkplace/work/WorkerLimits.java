@@ -130,6 +130,11 @@ public final class WorkerLimits {
 		if (villager != null && io.github.jcondedata.aliveworkplace.people.Retirement.isRetired(villager)) {
 			return found.filter(p -> !JobSiteTickets.workstation(p.getFirst())); // a retired elder looks for no workstation (34.20)
 		}
+		if (!io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED && villager != null
+			&& villager.getVillagerData().getProfession() == VillagerProfession.NONE) {
+			// config mechanics off (39.2): a jobless villager doesn't see Create's toolboxes as workstations
+			found = found.filter(p -> !p.getFirst().is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TOOLBOX_POI));
+		}
 		boolean workers = MAX_PER_VILLAGE > 0;
 		boolean fishermen = FishermanCap.ENABLED;
 		if ((!workers && !fishermen) || villager == null || !(villager.level() instanceof ServerLevel level)

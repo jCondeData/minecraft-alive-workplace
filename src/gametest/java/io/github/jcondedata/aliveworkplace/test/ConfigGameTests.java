@@ -133,7 +133,7 @@ public class ConfigGameTests implements FabricGameTest {
 				problems.add("range for " + name + ", which isn't a number setting");
 			}
 		}
-		helper.assertTrue(names.size() == 126, "expected 126 settings on the screen (26.13 added fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 added blueprintUnlocks, questbookKeepEdits added for the questbook updates, 35.8 added wonderStanding, 35.6 added builderScaffolding, 35.5 added wonderCrew, 33.21 added realmMap, 35.2 added wonders, wonderLegends and wonderServerLimit, 33.20 added feuds and feudWars, 33.19 added weeklyLeaderboard and leaderboardHour, 33.18 added tradePacts and alliances, 33.17 added realmRelief, 32.21 added threatLevel, 31.20 added lostCaravanChance, 32.18 added physicians, 32.17 added wellKeepers, 32.16 added firewardens, 34.22 added classGraceDays, 34.21 added familyNames, 34.18 added classOutfits, 34.20 added elderRetirement, 31.14 added rogueBounties, 31.13 added bountyBoard, 33.11 added realms and realmMaxMembers, 32.4 added sieges and siegeDamage, 33.8 added colonies, colonyCooldownDays and coloniesPerVillage, 33.7 added visibleCaravans, 31.11 added reputation and titlesInChat, 31.9 added personalRequests, 31.7 added heartEvents, 33.2 added villageEconomy, 34.12 added jewellers, 34.11 added printers, 34.10 added tailors, 34.19a added villagerAges, villagerElderDays, elderPassing and agelessElders, 34.9 added vintners, 31.5 added friendship, 31.4 added storyArcs, arcCooldownDays and arcsAtOnce, 31.2 added villageQuests, 28.17 added festivalCup and cupEveryFestivals, 28.15 added pokemonVillageHouses, 27.21 added stewardRenewal, 34.2 added villageClasses, classRiseDays and classFallDays, 30.17 added guilds and guildsPerRank, 27.18 added stewardWalls, 27.17 added caravanRoads and caravanRoadReach, 27.15 added stewardRoads, 28.14 added villageHabitats, 30.14 added harvestIdols, 29.10 added strangeMoods, 28.12 added daycareKeepers, 30.15 added tonics, 30.13 added villageBanners, 29.9 added legendSites, 30.12 added cradles, 30.11 added workHorns, 29.6 added giftedChance, 29.5 legendNeeds, 27.8 stewardSelfRun, 28.11 gemGrowers, 28.10 habitatKeepers and habitatSightings, 30.3 villageEdicts and edictMinDays, 30.2 maxWorkPace, 29.2 legends, 28.9 berryBreeders, 28.8 campCooks, 27.5 steward and stewardMaxOpenBuilds;"
+		helper.assertTrue(names.size() == 140, "expected 140 settings on the screen (37.12 added moddedLibrary, 39.7 added villageTrains, 39.6 added createSchematics, 39.4 added createBuilds, 39.3 added machineWork, 39.2 added mechanics, 38.9 added beanFarms, 38.8 added cuisineDishes, 38.5 added villageMegas, 38.3 added denWardens, 38.4 added denChallenges and denChallengeDays, 37.1 added furnishedBuilds and moddedStorageNetworks, 26.13 added fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 added blueprintUnlocks, questbookKeepEdits added for the questbook updates, 35.8 added wonderStanding, 35.6 added builderScaffolding, 35.5 added wonderCrew, 33.21 added realmMap, 35.2 added wonders, wonderLegends and wonderServerLimit, 33.20 added feuds and feudWars, 33.19 added weeklyLeaderboard and leaderboardHour, 33.18 added tradePacts and alliances, 33.17 added realmRelief, 32.21 added threatLevel, 31.20 added lostCaravanChance, 32.18 added physicians, 32.17 added wellKeepers, 32.16 added firewardens, 34.22 added classGraceDays, 34.21 added familyNames, 34.18 added classOutfits, 34.20 added elderRetirement, 31.14 added rogueBounties, 31.13 added bountyBoard, 33.11 added realms and realmMaxMembers, 32.4 added sieges and siegeDamage, 33.8 added colonies, colonyCooldownDays and coloniesPerVillage, 33.7 added visibleCaravans, 31.11 added reputation and titlesInChat, 31.9 added personalRequests, 31.7 added heartEvents, 33.2 added villageEconomy, 34.12 added jewellers, 34.11 added printers, 34.10 added tailors, 34.19a added villagerAges, villagerElderDays, elderPassing and agelessElders, 34.9 added vintners, 31.5 added friendship, 31.4 added storyArcs, arcCooldownDays and arcsAtOnce, 31.2 added villageQuests, 28.17 added festivalCup and cupEveryFestivals, 28.15 added pokemonVillageHouses, 27.21 added stewardRenewal, 34.2 added villageClasses, classRiseDays and classFallDays, 30.17 added guilds and guildsPerRank, 27.18 added stewardWalls, 27.17 added caravanRoads and caravanRoadReach, 27.15 added stewardRoads, 28.14 added villageHabitats, 30.14 added harvestIdols, 29.10 added strangeMoods, 28.12 added daycareKeepers, 30.15 added tonics, 30.13 added villageBanners, 29.9 added legendSites, 30.12 added cradles, 30.11 added workHorns, 29.6 added giftedChance, 29.5 legendNeeds, 27.8 stewardSelfRun, 28.11 gemGrowers, 28.10 habitatKeepers and habitatSightings, 30.3 villageEdicts and edictMinDays, 30.2 maxWorkPace, 29.2 legends, 28.9 berryBreeders, 28.8 campCooks, 27.5 steward and stewardMaxOpenBuilds;"
 			+ " 29.3's mythicLegendCap and 31.4's disabledArcs and 35.2's wonderCaps and disabledWonders lists are in the file only), found " + names.size() + ": " + names);
 		helper.assertTrue(!names.contains("mythicLegendCap"), "a list on the settings screen");
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
@@ -177,5 +177,82 @@ public class ConfigGameTests implements FabricGameTest {
 			throw new GameTestAssertException("file trouble: " + e);
 		}
 		helper.succeed();
+	}
+
+	/**
+	 * B161: every setting's button label fits its 150-pixel button at its widest ("Name: 100", "Name: OFF", or the
+	 * zero word), measured with the glyph widths of vanilla's default font (the server has no font), so a long name
+	 * like "Villagers per Extra Fisherman: 10" isn't cut off on the settings screen. Every int and switch field is
+	 * checked, the ones of an expansion still switched off included.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void everySettingsLabelFitsItsButton(GameTestHelper helper) {
+		com.google.gson.JsonObject lang;
+		try (java.io.InputStream in = Files.newInputStream(net.fabricmc.loader.api.FabricLoader.getInstance()
+				.getModContainer(io.github.jcondedata.aliveworkplace.AliveWorkplace.MOD_ID).orElseThrow()
+				.findPath("assets/aliveworkplace/lang/en_us.json").orElseThrow())) {
+			lang = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+		} catch (Exception e) {
+			throw new GameTestAssertException("can't read en_us.json: " + e);
+		}
+		List<String> tooWide = new ArrayList<>();
+		int checked = 0;
+		for (java.lang.reflect.Field field : WorkplaceConfig.class.getDeclaredFields()) {
+			int mods = field.getModifiers();
+			boolean isSwitch = field.getType() == boolean.class;
+			if (!java.lang.reflect.Modifier.isPublic(mods) || java.lang.reflect.Modifier.isStatic(mods) || !(isSwitch || field.getType() == int.class)) {
+				continue;
+			}
+			String name = field.getName();
+			String key = "aliveworkplace.config." + name;
+			if (!lang.has(key)) {
+				tooWide.add(name + " has no English label");
+				continue;
+			}
+			List<String> values = new ArrayList<>();
+			if (isSwitch) {
+				values.add("OFF");
+				values.add("ON");
+			} else {
+				WorkplaceConfig.Range range = WorkplaceConfig.RANGES.get(name);
+				if (range != null) {
+					values.add(String.valueOf(range.min()));
+					values.add(String.valueOf(range.max()));
+					if (range.min() == 0 && lang.has(key + ".zero")) {
+						values.add(lang.get(key + ".zero").getAsString());
+					}
+				} else {
+					values.add("100");
+				}
+			}
+			for (String value : values) {
+				String text = lang.get(key).getAsString() + ": " + value;
+				checked++;
+				if (fontWidth(text) > 150 - 8) {
+					tooWide.add("'" + text + "' (" + fontWidth(text) + " px)");
+				}
+			}
+		}
+		helper.assertTrue(checked > 100, "only " + checked + " labels checked");
+		helper.assertTrue(tooWide.isEmpty(), "wider than the button's 142 px of text: " + tooWide);
+		helper.succeed();
+	}
+
+	/** A line's width in vanilla's default font (each glyph's advance, its 1-pixel gap included). */
+	private static int fontWidth(String text) {
+		int width = 0;
+		for (char c : text.toCharArray()) {
+			width += switch (c) {
+				case '!', '\'', ',', '.', ':', ';', '|', 'i' -> 2;
+				case '`', 'l' -> 3;
+				case ' ', '"', '(', ')', '*', 'I', '[', ']', 't', '{', '}' -> 4;
+				case '<', '>', 'f', 'k' -> 5;
+				case '@', '~' -> 7;
+				case '\u2026' -> 8;
+				default -> 6;
+			};
+		}
+		return width;
 	}
 }

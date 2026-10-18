@@ -122,10 +122,13 @@ public final class BuildPlan {
 	public static BuildPlan create(Blueprint blueprint, BlueprintData.Placement placement, @Nullable Level level, int maxFoundationDepth,
 								   int landscapeMargin) {
 		Map<BlockPos, Step> byPos = new HashMap<>();
+		// 39.5: a kinetic block's data as Create needs it here (a belt's controller moved with the build, no stale speed)
+		BlockPos savedAt = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.savedOrigin(blueprint);
 		for (Blueprint.Entry entry : blueprint.blocks()) {
 			BlockPos world = placement.origin().offset(StructureTemplate.transform(entry.pos(), placement.mirror(), placement.rotation(), BlockPos.ZERO));
 			BlockState state = MaterialRules.forPlacement(entry.state().mirror(placement.mirror()).rotate(placement.rotation()));
-			byPos.put(world, new Step(world, state, entry.nbt(), null, null));
+			CompoundTag nbt = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.blockData(state, entry.nbt(), savedAt, placement);
+			byPos.put(world, new Step(world, state, nbt, null, null));
 		}
 
 		List<Step> clear = new ArrayList<>(byPos.values());
@@ -176,6 +179,45 @@ public final class BuildPlan {
 	/** Entities to put up when the build is finished. */
 	public List<EntityStep> entities() {
 		return entities;
+	}
+
+	/**
+	 * Where each kinetic group starts in the structure list once {@link #kineticOrdered} sorted it (39.5); empty for a
+	 * plan in today's order.
+	 */
+	private int[] kineticStarts = new int[0];
+
+	/**
+	 * This plan with its structure list in a contraption's order (ROADMAP 39.5): what holds it up first, then the
+	 * kinetic parts by group ({@link io.github.jcondedata.aliveworkplace.mechanic.KineticParts}: shafts and gearboxes,
+	 * cogwheels, belts), each still layer by layer. The same plan when it has no kinetic parts.
+	 */
+	public BuildPlan kineticOrdered() {
+		List<Step> sorted = new ArrayList<>(structure);
+		sorted.sort(Comparator.comparingInt(s -> io.github.jcondedata.aliveworkplace.mechanic.KineticParts.group(s.state())));
+		int groups = sorted.isEmpty() ? 0 : io.github.jcondedata.aliveworkplace.mechanic.KineticParts.group(sorted.get(sorted.size() - 1).state()) + 1;
+		if (groups <= 0) {
+			return this;
+		}
+		BuildPlan out = new BuildPlan(clear, foundation, List.copyOf(sorted), decoration, landscape, deconstruct, bounds);
+		out.entities = entities;
+		out.kineticStarts = new int[groups];
+		java.util.Arrays.fill(out.kineticStarts, sorted.size());
+		for (int i = sorted.size() - 1; i >= 0; i--) {
+			int g = io.github.jcondedata.aliveworkplace.mechanic.KineticParts.group(sorted.get(i).state());
+			if (g >= 0) {
+				out.kineticStarts[g] = i;
+			}
+		}
+		for (int g = groups - 2; g >= 0; g--) { // a group with no parts starts where the next one does
+			out.kineticStarts[g] = Math.min(out.kineticStarts[g], out.kineticStarts[g + 1]);
+		}
+		return out;
+	}
+
+	/** Where kinetic group {@code group}'s steps start in the structure list (39.5), or -1 in a plan in today's order. */
+	public int kineticStart(int group) {
+		return group >= 0 && group < kineticStarts.length ? kineticStarts[group] : -1;
 	}
 
 	/**

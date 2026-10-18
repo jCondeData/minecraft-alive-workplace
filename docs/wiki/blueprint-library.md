@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10
+Roadmap items: 26.10, 36.6, 36.6a
 
 ## 1. What a player sees
 
@@ -15,6 +15,11 @@ Roadmap items: 26.10
   Bandstand, Guildhall, Nether Gate and Library III) are a dark **???** at the end of the list, with no name, preview or
   materials, until the village unlocks one.
 - The header reads "<unlocked> of <listed> unlocked" while anything is locked.
+- **What a build brings** (36.6a, the owner's change to 36.6, whose description lines are gone): under the size line,
+  wrapped, "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)" (one entry per kind of job block in the build, the jobs that
+  share it joined by a slash with the one a jobless villager takes by itself first, and how many of that block the build
+  holds), then "Beds: 2" when it has beds. A build with neither shows nothing there. Uploaded, scanned and imported
+  builds get the lines too, from their own blocks; a build in a style shows its styled blocks'.
 - Each unlock says in chat: "The village's library has a new blueprint: Smithy II" (to the buyer, the player using a
   blueprint on the Table, or, for a builder's level-up, every player in the village).
 
@@ -54,6 +59,12 @@ Ways to unlock, all for the village round the nearest hall:
   questbook's command rewards run with elevated permissions. Found blueprints: a pool added to eleven of the mod's chest
   loot tables. Using a Blueprint or a Wonder Plan on the Table: `BlueprintTableBlock.useItemOn`, then the Table opens.
 - Expansion gates (`StarterBlueprints.offered`) still apply first.
+- Jobs and beds (36.6a): `BuildJobs.of(blueprint)` walks the build's blocks once (cached with its materials): a bed
+  counts by its head; any other block's point of interest (`PoiTypes.forState`) is a shared workstation of
+  `work/Stations` (its jobs that `Stations.available` allows, so a switched-off job such as the Tailor is left out) or
+  another job block (the professions whose job site it is, such as a barrel's Fisherman). Kinds with the same jobs are
+  counted together. `TableServer.details` sends them in `TablePayloads.Details` (`jobs`, `beds`), and
+  `BuildJobs.lines` makes the pane's lines.
 
 ## 3. Switches
 
@@ -73,7 +84,8 @@ Ways to unlock, all for the village round the nearest hall:
 - Using a Blueprint or a Wonder Plan on the Blueprint Table unlocks its build.
 - Lang: `message.aliveworkplace.blueprint_unlocks.new`, `message.aliveworkplace.table.locked`,
   `message.aliveworkplace.table.locked_hidden`, `message.aliveworkplace.table.wonder_only`, the
-  `screen.aliveworkplace.table.hint.*` lines, `screen.aliveworkplace.table.unlocked_count`.
+  `screen.aliveworkplace.table.hint.*` lines, `screen.aliveworkplace.table.unlocked_count`, and (36.6a)
+  `screen.aliveworkplace.table.jobs`, `.job_block`, `.jobs_separator` and `.beds`.
 
 ## 6. Decisions
 
@@ -81,6 +93,7 @@ The owner's choices (ROADMAP Design decisions, 2026-10-15): the Table is a colle
 start unlocked; unlocks belong to the village; existing villages keep what they have standing or building; imports
 are always unlocked; five ways to unlock (buying, level-ups, questbook, loot, market traders); a rare build is a
 hidden "???"; a server switch, default on. Sorted unlocked first rather than a filter toggle (one less button).
+The owner (2026-10-18, 36.6a): no description lines; the Table says only what jobs a build brings and its beds.
 
 ## 7. Known limits
 
@@ -90,6 +103,7 @@ hidden "???"; a server switch, default on. Sorted unlocked first rather than a f
   tier below stands" without it.
 - A Table between two villages uses the nearer hall.
 - Only the mod's own chest loot tables hold blueprints; vanilla villages' chests don't.
+- The job line counts job blocks, not workers: a build with two smokers shows "(2)" even if one villager works there.
 
 ## 8. Proof
 
@@ -101,7 +115,10 @@ stand-in ids and no size, and no rare id in the encoded packet), `BlueprintUnloc
 used on the Table through the player's own click, and blueprints in a storehouse chest's loot),
 `BlueprintUnlocksGameTests.anOldSaveUnlocksWhatStands`, `BlueprintUnlocksGameTests.unlocksSurviveSaveAndReload`,
 `BlueprintUnlocksGameTests.theSwitchOffUnlocksEverything`. `TableGameTests` and `TablePreviewGameTests` pass unchanged
-with the switch off.
+with the switch off. `TableJobsGameTests` (5, 36.6a): `TableJobsGameTests.sharedJobBlocksAreCountedAndJoined` (the owner's example:
+"Jobs: Fisherman (1), Butcher/Chef/Rancher (3)", "Beds: 2"), `TableJobsGameTests.bedsOnlyAndNeither`,
+`TableJobsGameTests.aSwitchedOffJobIsLeftOut` (config tailors off), `TableJobsGameTests.theTableSendsAShippedBuildsJobsAndBeds`
+(the Fishers' Hut and the Starter Cottage through `TableServer.details` and over the wire), `TableJobsGameTests.theLinesAreInEnglish`.
 
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
-starting set unlocked and the rest locked or ???).
+starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows).

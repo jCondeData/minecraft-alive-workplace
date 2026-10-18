@@ -5,10 +5,19 @@ features, a release every hour) in four days by building feature after feature s
 followed (claims, item branches, `land`, an hourly QA lane, a review package per item) spent its runs on bookkeeping:
 on 2026-10-03, 40 runs made 311 commits, 211 of them bookkeeping and 125 merges, and built one feature. So:
 
-- **Build lanes a, b, c and d** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start): a fresh run every 3 hours,
-  working about 170 minutes. They split milestones and bugs by number mod 4 (owner, 2026-10-04): lane a 1 (21, 25,
-  29, 33), lane b 0 (24, 28, 32), lane c 3 (23, 27, 31, 35), lane d 2 (22, 26, 30, 34). `sessions.py next` lists
-  each lane's own.
+- **Build lanes a, b, c and d** (`--as lane-<letter>-<MMDD>-<HHMM>`, the UTC start), started by hand with
+  `/get-started <lane>`, about 170 minutes a run. Since 2026-10-17 (owner) each lane has a job, not a share of the
+  numbers: **a, the bug lane** (every bug in "Bugs", Milestone 26's release checks, red duty always; the owner hands
+  his bugs to this lane's chat, which files each with `sessions.py bug` and fixes it); **b, the quick lane**
+  (Milestone 36's quick additions); **c, d and e, the big-update lanes** (Milestones 37 and up: c prefers 37, d 38,
+  e 39 (Create, the owner's port in `libs/`); each takes the others' when its own is empty). `sessions.py next`
+  lists each lane's own; lanes b to e never take a bug. Each lane runs in its own chat (its own machine).
+- **Lanes sharing one machine** (2026-10-17: the owner's chat started all four lanes in its own 7 GB container;
+  Java was OOM-killed 3 times and a lane's script ran in another's tree): each lane works in its own git worktree
+  (`/home/claude/lane-<x>`), keeps its scripts in its own folder (not the shared scratchpad), and runs every Gradle or
+  Minecraft command through `flock /home/claude/mc.lock <command>`; a full build there needs
+  `-PcompatHeap=2G "-Dorg.gradle.jvmargs=-Xmx1g -XX:+UseSerialGC"`. Lock waits reached 20-45 minutes with four
+  lanes, so start at most two lanes per machine; four lanes want four chats (each its own machine).
 - **The QA lane** (`--as qa-<MMDD>-<HHMM>`): hourly overnight (11 PM to 6 AM Central) and every 2 hours by day
   (owner, 2026-10-05). It owns the bugs only a test or a showcase scene sees, so build lanes stay on features.
 - **The owner's chat** (`--as chat`) talks with Jesse live and takes any item.
@@ -73,13 +82,12 @@ Owner, 2026-10-05. On 2026-10-04/05, 27 of 90 builds on `main` were red, three l
 same time, and 9 of the 13 bugs the lanes closed were test-only or showcase-only. So a red `main` has **one owner per
 window**:
 
-- **Red duty** goes by the run's UTC start hour: 00 and 12 lane a, 03 and 15 lane b, 06 and 18 lane c, 09 and 21
-  lane d. At the start, and again before each push, the lane on red duty checks the latest CI run on `main`; red, it
-  files the bug (`sessions.py bug`, if nobody has) and hands it to a fresh subagent before its own items. A failure
-  that comes back on the next green-then-red cycle is still its own until the window ends.
+- **Red duty** is the bug lane's (lane a), always (owner, 2026-10-17). At the start, and again before each push, it
+  checks the latest CI run on `main`; red, it files the bug (`sessions.py bug`, if nobody has) and hands it to a fresh
+  subagent before its other bugs.
 - **Every other lane keeps building** and doesn't touch the red, even when it sees the failing test locally (step 3
-  says when to push anyway). If the red lasts more than an hour and the duty lane's run has ended or stalled, the next
-  lane to start takes it.
+  says when to push anyway). If the red lasts more than an hour and no bug lane is running, the next lane to start
+  takes it.
 - **Test-only and showcase-only bugs** (a flake, a scene check, nothing a player would notice; CLAUDE.md rule 7) go to
   the QA lane, which now also runs by day. The red-duty lane takes one only when it is what turns `main` red.
 

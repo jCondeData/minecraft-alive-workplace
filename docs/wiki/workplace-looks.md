@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11
+Roadmap items: 26.11, 36.8, B170
 
 ## 1. What a player sees
 
@@ -24,7 +24,8 @@ Roadmap items: 26.11
 - **Trainer's House** (Cobblemon): a long low dojo with a deep veranda, before it a fenced sand sparring ring with
   targets.
 - **Leader's Hall** (Cobblemon): a stone hall with a portico of four columns under a pediment, steps the whole width,
-  a red carpet inside up to the Training Post.
+  a red carpet inside up to the Training Post (it starts a step in from the door: a carpet right under the door's low
+  lintel stopped villagers, who are taller than players, in the doorway).
 - **Ball Workshop** (Cobblemon): a round tower with an open drying loft of slatted fences (apricorns, as coloured carpets,
   laid out to dry) under a copper cone that greens with the years, and a low workshop beside it.
 - **Trade Hall** (Cobblemon): a market hall, its brick-and-timber upper storey on stone arches over an open trading
@@ -107,7 +108,9 @@ trade. The Ferry House kept its plot size so the shore rule and its tests stay a
 - Builds already standing keep their old look; only new ones are built the new way. A workplace half built when the
   update arrives is finished from the new drawing over what the old one put up.
 - Village houses already grown keep the old look; new chunks grow the new ones. The larger houses fit a village's
-  street a little less often than the old small one.
+  street a little less often than the old small one. Measured (36.8, 50 villages of each type): villages stay as
+  full as before (houses per village moved by at most 1% for every type), but vanilla houses take the room, so a
+  village grows fewer of ours (2.2 to 2.5 per village, from 3 to 4; desert villages about 0.4, in 14 of 50).
 
 ## 8. Proof
 
@@ -117,3 +120,7 @@ taken by its worker), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizes
 `VillageGameTests.everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor`, `CountryWorkplacesGameTests`.
 
 Showcase scenes: `workplaces` (all twelve placed side by side).
+
+Measurement (not part of `build`): `tools/modtest/village_density.sh` runs `VillageDensityMeasure` alone, 50 village
+starts per type at fixed seeds, and prints houses per village (mean, lowest, vanilla, ours) and footprint per type; the
+before and after table is in the ROADMAP Notes (2026-10-18, 36.8).

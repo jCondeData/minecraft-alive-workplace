@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9
 
 ## What a player sees
 
@@ -16,6 +16,22 @@ their level) with their name and job. The pane on the right reads out whatever i
 with nothing there it shows the village's numbers "at a glance". Click a villager and they glow for ten seconds so you
 can find them, and stay in the pane (the wheel scrolls a long one; × or Esc puts them away). Click a jobless villager
 to see the free workstations and give them one. Every page of the hall opens in the same screen.
+
+**Reading without clicking (36.5).** A row or cell hovered stays read out while the mouse moves on into the pane
+(it changes only when another row or cell is hovered, and lets go once the mouse leaves the panel, when the pane goes
+back to the button last clicked), so the wheel there scrolls a long entry with nothing clicked; Shift and the wheel
+over a row scroll that row's reading and leave the list where it is. A small arrow at the pane's foot shows while
+there's more below, and a name too long for its two lines (a long chronicle entry) carries on at the top of the
+reading. The footer says "Hover to read · scroll in the pane or with Shift · click to use". A click in the pane runs
+nothing. The rule lives in `work/ReadingFocus` (no drawing); the Storehouse board shares the screen and the rule.
+
+**Free job blocks (36.9).** A tab with a crafting table opens the "Free job blocks" page: every job block in the
+village nobody works at, nearest the hall first. Each shows the block, the job it gives, the building it stands in
+("In the Storehouse", or "Not in a building"), how far and which way from the hall, and how many villagers without a
+job could take it. Click a block and its page lists those villagers; click one and they get the block: they claim it
+and walk over to it. So an empty Storehouse or a lectern left in a finished home can be filled from the hall, without
+leading anyone into the house. A villager who already works isn't listed; they are retrained at the block itself, for
+a price (26.6, see [Villager jobs](villager-jobs.md)).
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
@@ -53,7 +69,17 @@ icon. Then only the owner, their friends and operators may break or place blocks
 hall's area. Anyone may still walk in, open doors, trade and ring the bell.
 
 **Page tabs (22.5).** The third row holds 9 tabs. Any feature adds a page with one registration call
-(`docs/agent/layout.md`); the mod's own later pages give way to pages added by others when the row is full.
+(`docs/agent/layout.md`); the mod's own later pages (Classes, Wonders, Free job blocks) give way to pages added by
+others when the row is full, newest first.
+
+**Free job blocks (36.9).** The page is read when it's drawn: the village's points of interest that give a job and
+have room (the same list a jobless villager's own page shows), each matched to the building whose outline holds it
+(finished builds, and builds going up). Who could take a block: a grown villager in the village without a job, not a
+nitwit or a Legend. One who has never worked takes any block; one who still has an old job's trades but lost the block
+is offered only a block of that same job, because changing job is paid retraining (26.6). A job above a villager's
+class (34.8) is greyed with the class it needs. The pick is checked again on the click: if someone took the block
+meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
+shows up to 36 blocks; past that, the last slot says how many more there are further away.
 
 ## Switches
 
@@ -85,7 +111,9 @@ empty unless a default is given here:
   and `steward_desk`, `services`, `piece_looks`, `bannerBase` and `bannerPatterns` (the village's colors).
 
 The calendar keeps the last day it fired for with the overworld. Friends are saved in `aliveworkplace_friends`.
-Not saved: the census (counted again every 600 ticks) and the screen's layout.
+Not saved: the census (counted again every 600 ticks) and the screen's layout. The Free job blocks page saves
+nothing of its own: a block given from it is the villager's job like any other (their job-site memory and the block's
+point of interest, saved by Minecraft).
 
 ## Items, blocks, jobs, commands
 
@@ -109,6 +137,10 @@ Not saved: the census (counted again every 600 ticks) and the screen's layout.
   slot. Every button that was there before stayed where players knew it.
 - 22.6: one calendar for the whole world, so the Festival Cup, harvest season and stories agree on the date. The
   seasons grew from 8 to 16 days (owner, 2026-10-04); a config written before that reads 8 as "the old default".
+- 36.9 (owner, 2026-10-18): filling empty job blocks moved to the hall, block first, because retraining at a block
+  meant walking a villager into a finished home. Paid retraining of a working villager (26.6) stays at the block.
+  The page is a spare tab (`HallPages.SPARES` went from 2 to 3), so the six tabs kept for other mods stay free. The
+  tab is a vanilla crafting table, no new art.
 - B37: the name icon's tooltip only offers "protect the village" to the player who may do it.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
@@ -120,12 +152,20 @@ Not saved: the census (counted again every 600 ticks) and the screen's layout.
 - The hall's numbers are up to 600 ticks (30 seconds) old.
 - Nothing in the mod changes with the seasons except festivals, the Festival Cup and the Harvest Idol.
 - A hall placed by a machine has no owner until a player turns its protection on.
+- Free job blocks: a villager given a block walks there with the usual brain; at night or in a festival their
+  schedule may take them elsewhere first. Blocks past the 36th aren't clickable until nearer ones fill. Only grown
+  villagers in the hall's circle are offered.
 
 ## Proof
 
 GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
-`ProtectionSpecGameTests`, `HallProtectHintGameTests`.
+`ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
+the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),
+`FreeJobsPageGameTests` (36.9: the listing with job, building and distance, `aPickTakesTheFreeBlock`, a block claimed
+meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockSurvivesAReload`).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
-`hall_treasury` (treasury, protection and the ledger).
+`hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end
+from the pane without a click, then the Storehouse board), `hall_jobs` (the Free job blocks page, the Storehouse's
+takers, Dara picked as its Porter).

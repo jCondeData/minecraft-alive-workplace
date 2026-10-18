@@ -21,6 +21,11 @@ public final class ModEntities {
 		EntityType.Builder.<io.github.jcondedata.aliveworkplace.cup.StandSeat>of(io.github.jcondedata.aliveworkplace.cup.StandSeat::new, MobCategory.MISC)
 			.noSummon().sized(0.5f, 0.2f).clientTrackingRange(8).updateInterval(20));
 
+	/** What a villager sits on on a furniture mod's chair, bench, couch or sofa (37.6); saved, so the villager is saved with it. */
+	public static final EntityType<io.github.jcondedata.aliveworkplace.furnish.FurnitureSeat> FURNITURE_SEAT = Reg.entity("furniture_seat",
+		EntityType.Builder.<io.github.jcondedata.aliveworkplace.furnish.FurnitureSeat>of(io.github.jcondedata.aliveworkplace.furnish.FurnitureSeat::new, MobCategory.MISC)
+			.noSummon().sized(0.5f, 0.2f).clientTrackingRange(8).updateInterval(20));
+
 	public static void init() {
 		// Loading the class registers the entities.
 	}

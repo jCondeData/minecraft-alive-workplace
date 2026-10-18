@@ -1,0 +1,11 @@
+{
+  "requires": "cobblecuisine",
+  "dishes": [
+    {"id": "cobblecuisine:beanburger_curry", "level": 3, "group": "curry"},
+    {"id": "cobblecuisine:mild_honey_curry", "level": 3, "group": "curry"},
+    {"id": "cobblecuisine:spicy_potato_curry", "level": 3, "group": "curry"},
+    {"id": "cobblecuisine:sweet_apple_curry", "level": 3, "group": "curry"},
+    {"id": "cobblecuisine:salty_boiled_egg_curry", "level": 3, "group": "curry"},
+    {"id": "cobblecuisine:dry_frozen_curry", "level": 3, "group": "curry"}
+  ]
+}

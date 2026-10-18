@@ -129,6 +129,7 @@ public final class Roads {
 			return;
 		}
 		CaravanRoads.tick(level, hall, entity); // 27.17
+		CaravanTrains.tick(level, hall, entity); // 39.7: track along the roads to villages with stations
 		if (entity.plan().roads().isEmpty()) {
 			return;
 		}
@@ -1013,6 +1014,9 @@ public final class Roads {
 	 * the chronicle notes a road finished.
 	 */
 	public static void segmentBuilt(ServerLevel level, BuildSite site, @Nullable Villager builder) {
+		if (CaravanTrains.trackBuilt(level, site, builder)) {
+			return; // track laid along a road to another village (39.7)
+		}
 		String path = site.structure().getPath();
 		for (BlockPos hall : hallsOf(level, site)) {
 			if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) || !path.startsWith(FOLDER + hallKey(hall) + "/")) {
@@ -1048,7 +1052,7 @@ public final class Roads {
 		}
 	}
 
-	private static List<BlockPos> hallsOf(ServerLevel level, BuildSite site) {
+	static List<BlockPos> hallsOf(ServerLevel level, BuildSite site) {
 		String[] parts = site.structure().getPath().substring(FOLDER.length()).split("/", 2)[0].split("_");
 		if (parts.length == 3) {
 			try {

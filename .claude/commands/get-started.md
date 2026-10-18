@@ -1,37 +1,43 @@
 ---
-description: Run one build lane (about 3 hours). Optional argument a or b; no argument picks the lane that ran least recently.
+description: Run one lane (about 3 hours). Argument bugs, quick, big, c, d or create; no argument picks the big-update lane that ran least recently.
 ---
 
-Build lane X for Alive Workplace, Jesse's Minecraft mod (Fabric 1.21.1, for his Cobbleverse friends server). The goal
-is every expansion released by 2026-10-17. Speed comes from building feature after feature straight on main without
-ever thinning the content. Jesse has given you full control: work on your own and don't wait for him.
-
-Lanes start by hand now (no scheduled routines): Jesse opens a chat and says "get started" or `/get-started`. Two lanes
-exist. Lane A owns lane a's and lane c's shares of the roadmap; lane B owns lane b's and lane d's.
+Run one lane for Alive Workplace, Jesse's Minecraft mod (Fabric 1.21.1, for his Cobbleverse friends server). Jesse
+has given you full control: work on your own and don't wait for him. Lanes run every 3 hours as scheduled tasks (owner, 2026-10-18), or by hand with `/get-started`.
 
 Argument: `$ARGUMENTS`
-- `a` or `b`: you are that lane.
-- empty: look at `git log origin/main --format='%ci %s' -40` and take the lane whose tag (`[lane-a-…]`/`[lane-c-…]`
-  for A, `[lane-b-…]`/`[lane-d-…]` for B) appeared least recently; if neither appears, take A.
+- `bugs` (or `a`): you are **lane a, the bug lane**. You own every bug in ROADMAP "Bugs", Milestone 26's open items
+  (the release checks) and red duty. Jesse talks to this lane's chat directly: when he describes a bug, file it at once
+  with `python3 tools/agent/sessions.py bug "what, when, expected; Test: name" --as lane-a-<time>` (add
+  `(urgent: owner)` if he says it's urgent), fix it with a fresh subagent, push, and reply to him in plain words with
+  what was wrong and what changed (a screenshot or GIF when he'd see it in game). Player-visible bugs come before
+  test-only flakes.
+- `quick` (or `b`): you are **lane b, the quick lane**: Milestone 36's quick additions, one subagent each.
+- `big`, `c`, `d` or `create` (= `e`): you are a **big-update lane**: c prefers Milestone 37 (furniture and storage),
+  d Milestone 38 (Cobblemon depth), e Milestone 39 (Create, with the owner's port in `libs/`); each takes the others'
+  milestones when its own is empty or blocked. `big` alone: look at `git log origin/main --format='%ci %s' -40` and
+  take the one of c, d and e whose tag (`[lane-c-…]`, …) appeared least recently; if none, take c.
+- empty: as `big`.
 
-Below, x is your lane's letter (a or b) and y its second share (c for lane A, d for lane B).
-
+Steps:
 1. Make sure the repo jCondeData/minecraft-alive-workplace is attached with push access (add_repo, access "push") and
-   cloned. Work on `main`. Run `date -u +%m%d-%H%M` and call yourself lane-x-<that>.
+   cloned. Work on `main`. Run `date -u +%m%d-%H%M` and call yourself lane-x-<that> (x your lane's letter).
 2. Read CLAUDE.md, then "Sprint mode: a build lane's run" and "Red main" in docs/agent/sessions.md, and follow them.
-   You own TWO of the four shares of the roadmap (items split by number mod 4): your own, listed by
-   `python3 tools/agent/sessions.py next --as lane-x-<time>`, and lane y's, listed by
-   `python3 tools/agent/sessions.py next --as lane-y-<time>`. Do your own list first and take lane y's items when it
-   is empty or blocked. Check wip/lane-x and wip/lane-y branches for unfinished work first.
-3. You are the coordinator: build each feature with a fresh subagent (one per feature, as sessions.md says). Commit
-   each feature locally; every 2-3 features run the full build and push to main when green. Don't film scenes locally
-   and don't make review packages: GitHub films the scenes. Sonnet subagents only for translations and routine tests.
-4. Red main: lane A is on red duty. Check the latest CI run on main at the start and before each push; lane A fixes a
-   red main first. Lane B leaves a red main to lane A (both lanes may run at once) unless it has been red for over an
-   hour with no fix on main, as in sessions.md "Red main". Test-only and showcase-only bugs can wait.
-5. At minute 140 start no new feature: finish what's in flight, run the full build and push to main by about minute
-   170 (never past 175). Only a feature that truly can't be finished goes to wip/lane-x with a message saying what's
-   left.
+   `python3 tools/agent/sessions.py next --as lane-x-<time>` lists your lane's items, best first. Check `wip/lane-x`
+   for unfinished work first. A big-update lane starting a milestone reads its intro and design note first.
+3. You are the coordinator: build each item with a fresh subagent (one per item, as sessions.md says). Commit each
+   locally; every 2-3 items run the full build and push to main when green. Don't film scenes locally and don't make
+   review packages: GitHub films the scenes. Sonnet subagents only for translations and routine tests.
+4. Red main: the bug lane checks the latest CI run on main at the start and before each push and fixes a red main
+   first. The quick and big lanes never take a bug, except one marked `(lane: <your letter>)` (a failure in your own feature, owner 2026-10-18), which `next` lists first: they file one they find (`sessions.py bug`) and keep building;
+   when only tests that also fail on main's latest CI run fail, they may push and name them in the commit message.
+5. At minute 140 start no new item: finish what's in flight, run the full build and push to main by about minute 170
+   (never past 175). Only an item that truly can't be finished goes to wip/lane-x with a message saying what's left.
 6. Never publish to Modrinth or CurseForge, change the license, bump the version, force-push, or delete anything on
    GitHub other than your own wip branch.
-7. Don't message Jesse. End the run with a two-line summary (what landed, what's next).
+7. Keep working on anything that fails (its scene, its compat test, a bug filed against it). When a failure can only be
+   settled by Jesse playing it in game (you have tried and can't reproduce or check it here), add
+   `(needs owner check: <what to try in game>)` to the item's or bug's entry and take the next one: the digest builds
+   a release-candidate jar with every expansion on and sends it to him with that list (owner, 2026-10-18).
+8. Quick and big lanes don't message Jesse; end the run with a two-line summary (what landed, what's next). The bug
+   lane answers him about each bug he raised.

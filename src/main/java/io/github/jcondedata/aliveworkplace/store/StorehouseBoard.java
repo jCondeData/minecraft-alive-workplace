@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
  * village's own for a village storehouse).
  */
 public final class StorehouseBoard {
-	static final int INFO_SLOT = 4;
+	public static final int INFO_SLOT = 4;
 	/** The stock orders (and, on their page, adding the item in hand). */
 	public static final int ORDERS_SLOT = 8;
 	/** The Steward's shopping list (27.19). */
@@ -64,17 +64,27 @@ public final class StorehouseBoard {
 
 	private static void render(ChoiceMenu menu, ServerLevel level, BlockPos storehouse, ServerPlayer viewer) {
 		menu.clearButtons();
-		List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+		StorageNetworks.Folded networks = SupplyContainers.networks(level, storehouse);
+		List<BlockPos> store = networks.stores();
 		long items = SupplyContainers.contents(level, store).values().stream().mapToLong(Long::longValue).sum();
 		List<Requests.Request> requests = new ArrayList<>(Requests.near(level, storehouse, Porters.owner(level, storehouse)));
 		requests.addAll(io.github.jcondedata.aliveworkplace.colony.Settlers.requests(level, storehouse)); // 33.9: the settlers' missing supplies
 		requests.addAll(Requests.atBlocks(level, storehouse, BLOCK_RANGE)); // 35.7: a Wonder's goods, posted by its Foundation Stone
 		ItemStack info = new ItemStack(Items.WRITABLE_BOOK);
 		info.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.info"), ChatFormatting.GOLD));
-		info.set(DataComponents.LORE, new ItemLore(List.of(
-			plain(Component.translatable("screen.aliveworkplace.storehouse.stock", store.size(), items, SupplyContainers.freeSlots(level, store)), ChatFormatting.GRAY),
-			plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
-				ChatFormatting.GRAY))));
+		List<Component> lore = new ArrayList<>();
+		lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.stock", store.size(), items, SupplyContainers.freeSlots(level, store)), ChatFormatting.GRAY));
+		roomLine(level, store).ifPresent(lore::add);
+		if (networks.linked() > 0) { // 37.9: a Sophisticated Storage controller's blocks are one store
+			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.linked", networks.linked()), ChatFormatting.GRAY));
+		}
+		int joined = StorageNetworks.joinedCount(level, store);
+		if (joined > 0) { // 37.10: a Tom's Simple Storage inventory connector in the Storehouse
+			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.connector", joined), ChatFormatting.GRAY));
+		}
+		lore.add(plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
+			ChatFormatting.GRAY));
+		info.set(DataComponents.LORE, new ItemLore(lore));
 		menu.button(INFO_SLOT, info, null);
 		shoppingList(menu, level, storehouse);
 		ItemStack ordersIcon = new ItemStack(Items.WRITABLE_BOOK);
@@ -103,6 +113,20 @@ public final class StorehouseBoard {
 				menu.broadcastChanges();
 			});
 		}
+	}
+
+	/**
+	 * 37.8: where a slot holds more than a stack (a Sophisticated Storage stack upgrade, a limited barrel), empty slots
+	 * undersell the room, so the board adds the room counted in items. Vanilla chests: no line, the board as before.
+	 */
+	static java.util.Optional<Component> roomLine(ServerLevel level, List<BlockPos> store) {
+		if (!io.github.jcondedata.aliveworkplace.Expansions.on(io.github.jcondedata.aliveworkplace.Expansions.M37)) {
+			return java.util.Optional.empty();
+		}
+		io.github.jcondedata.aliveworkplace.platform.ItemStores.Room room = SupplyContainers.room(level, store);
+		return room.bigSlots()
+			? java.util.Optional.of(plain(Component.translatable("screen.aliveworkplace.storehouse.room", room.freeItems()), ChatFormatting.GRAY))
+			: java.util.Optional.empty();
 	}
 
 	/** 27.19: the Steward's one shopping list for all his builds waiting for materials, by the info. */

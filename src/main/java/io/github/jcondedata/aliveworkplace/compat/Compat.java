@@ -25,6 +25,15 @@ public final class Compat {
 				io.github.jcondedata.aliveworkplace.compat.cobbledollars.CobbleDollarsCompat::init);
 		}
 		//?}
+		// Create's trains for the villages (39.7a): the owner's port in libs/, compiled against, never required.
+		if (Platform.get().isModLoaded("create")) {
+			enable("create", io.github.jcondedata.aliveworkplace.compat.create.CreateCompat.TESTED,
+				io.github.jcondedata.aliveworkplace.compat.create.CreateCompat::init);
+		}
+		// Raid Dens' tier loot tables, for village den challenges (38.4): its loot parameters read by name, not its classes.
+		if (Platform.get().isModLoaded("cobblemonraiddens")) {
+			io.github.jcondedata.aliveworkplace.compat.raiddens.RaidDensLoot.init();
+		}
 		// The questbook: our chapters copied into FTB Quests' config folder (data only, never FTB Quests' classes).
 		if (Platform.get().isModLoaded("ftbquests")) {
 			io.github.jcondedata.aliveworkplace.compat.ftbquests.FtbQuestsBook.init();

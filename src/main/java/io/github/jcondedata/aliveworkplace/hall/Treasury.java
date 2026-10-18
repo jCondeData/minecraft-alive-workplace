@@ -169,6 +169,7 @@ public final class Treasury {
 		}
 		entity.setTreasury(entity.treasury() - emeralds * 100);
 		Money.pay(player, (long) emeralds * Money.DOLLARS_PER_EMERALD, emeralds);
+		VillageMoments.award(level, hall, VillageMoments.TREASURY, player); // the questbook's "The treasury" (36.2)
 		level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.8f, 1.2f);
 		return Component.translatable("message.aliveworkplace.treasury.collected",
 			Money.describe((long) emeralds * Money.DOLLARS_PER_EMERALD, emeralds), VillageHalls.name(level, hall)).withStyle(ChatFormatting.GREEN);

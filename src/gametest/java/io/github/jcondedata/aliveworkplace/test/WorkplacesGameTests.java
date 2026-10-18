@@ -297,7 +297,15 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	private static final BlockPos[] CHESTS = {new BlockPos(3, 2, 6), new BlockPos(3, 2, 8), new BlockPos(3, 2, 10)};
 	private static final BlockPos BUILDER = new BlockPos(5, 2, 3);
 	private static final BlockPos HOUSE = new BlockPos(12, 2, 10);
-	private static final BlockPos WORKER = new BlockPos(16, 2, 25);
+	/**
+	 * Where the worker waits: in front of the house (a blueprint's front, with its door, is its z=0 side), off the
+	 * builder's way from the chests, so it walks in by the front door as a villager of the village would. B170: from
+	 * behind the house (16, 2, 25) it wandered round for 1,500 ticks and more and mostly came in by a side of the Leaders'
+	 * Hall's double door, so the hall's real fault showed once in 40 runs; from here it walks straight up the carpet and
+	 * failed 38 of 40 runs before the fix (a carpet just inside a doorway two blocks high: a villager is 1.95 tall, and
+	 * stepping up onto it under the lintel it hit its head, so it stood in the doorway for good).
+	 */
+	private static final BlockPos WORKER = new BlockPos(18, 2, 7);
 
 	/** Each workplace: its worker's job and its job block. */
 	record Workplace(StarterBlueprints.Entry entry, String job, Block block) {
@@ -367,6 +375,9 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		worker.setVillagerData(worker.getVillagerData().setProfession(job));
 		worker.setVillagerXp(1);
 		worker.refreshBrain(level); // as when a villager takes a job: its brain looks for that job's blocks
+		// B162: held where it stands while the house goes up (about 3,000 ticks), then let go: a worker left to wander walked
+		// off the test area's open edge and, outside it with night falling, never took the smoker (red main, 2026-10-17)
+		worker.setNoAi(true);
 		BlockPos min = helper.absolutePos(HOUSE);
 		BlockPos max = min.offset(blueprint.size().getX() - 1, blueprint.size().getY() - 1, blueprint.size().getZ() - 1);
 		long[] built = {-1};
@@ -378,6 +389,8 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 			helper.assertTrue(worker.isAlive() && worker.getVillagerData().getProfession() == job, "the worker is now " + worker.getVillagerData().getProfession());
 			if (built[0] < 0) {
 				built[0] = helper.getTick();
+				worker.setNoAi(false);
+				helper.setDayTime(2000); // the whole working day ahead of it, whatever the build took
 			}
 			helper.assertTrue(worker.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> g.pos().equals(blocks.get(0))).orElse(false),
 				"the worker works at " + worker.getBrain().getMemory(MemoryModuleType.JOB_SITE) + " (job block " + helper.relativePos(blocks.get(0)).toShortString()

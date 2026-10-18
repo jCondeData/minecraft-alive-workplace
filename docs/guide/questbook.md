@@ -61,11 +61,16 @@ Most quests tick themselves off:
   if they're not online, every player within the village's reach (64 blocks). An upgrade (II, III) counts as a
   building of its own; a build of your own (scanned, uploaded or imported) and a Wonder's parts don't.
 - **Your village's big days:** reaching Village, Town and City rank, the first caravan sent, the first festival held,
-  a raid survived, the first hall quest finished, a Steward appointed, a colony founded and a Wonder finished. These
-  go to the village's owner and to every player in the village at the time (and to the player who did it).
+  a raid survived, the first hall quest finished, a Steward appointed, a colony founded, a Wonder finished, a baby
+  born in the village, 3 and 7 levels of research, an edict proclaimed, the first Burgher and Noble households, a
+  realm founded and the takings collected. These go to the village's owner and to every player in the village at the
+  time (and to the player who did it). A village that got there before you had the quest ticks it off at its next
+  dawn.
+- **Breaking a raiders' camp:** "Take the fight to them" ticks off for the player who strikes the last blow and
+  everyone leading guards in the war party.
 
-A few things the quest book can't see, like three levels of research, have a box to tick yourself, with a sentence
-that says exactly what to do first.
+A few things the quest book can't see, like a fought bout or a road built, have a box to tick yourself, with a
+sentence that says exactly what to do first.
 
 ## For server owners
 

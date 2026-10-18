@@ -33,13 +33,18 @@ build it, block by block, as long as it stands within 48 blocks of the table (a 
 
 ## The library
 
-Right-click the table to browse every blueprint on the server: its size, exactly what it needs, and a small 3D
-picture of the build itself, so you can see it before you pick it.
+Right-click the table to browse every blueprint on the server: its size, the jobs and beds it brings, exactly what it
+needs, and a small 3D picture of the build itself, so you can see it before you pick it. A build with a basement shows its cellar too,
+under a faint green line where the ground will be, and its size says how many blocks it goes below ground.
 
 ![The selected build in 3D](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-1.jpg)
 
 ![The starter cottage in Sandstone, picked from the style row](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-3.jpg)
 
+- **Jobs and beds.** Under the size, the build says what work it brings: "Jobs: Fisherman (1), Butcher/Chef/Rancher
+  (3)". Each entry is one kind of job block; a slash means the jobs share that block (any one of them can work there),
+  and the number is how many of that block the build has. "Beds: 2" follows when it has beds. A build with no job block
+  and no bed shows neither, and builds you upload, scan or import get the lines too.
 - **The picture** turns slowly by itself; drag it with the mouse to look round it or tilt it. Big builds shrink to
   fit, and builds you uploaded or scanned get a picture too, drawn from their own blocks. Your game draws it, so it
   costs the server nothing.

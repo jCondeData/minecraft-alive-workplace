@@ -16,7 +16,165 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.145.0 — 2026-10-18
+
 ### Added
+- **Fill empty job blocks from the Village Hall** (36.9). The hall's new Free job blocks tab lists every job block in
+  the village nobody works at (its job, the building it's in, how far away) and the villagers without a job who could
+  take each; pick one and they claim the block and walk over. A block taken meanwhile is refused cleanly. Paid
+  retraining of a working villager at the block stays as it was. The scene `hall_jobs` shows it.
+- **The Chef cooks every Campfire Pot recipe** (2.2, with Cobblemon): the EXP and IV/EV candies, medicines, sweets and
+  any pot recipe a mod or data pack adds, found by recipe type, only from makings in the store, 16 kept by his stove.
+- **Real Create trains between villages.** With Create, two villages joined by rail now put their own Create train
+  together at a station (a bogey, a carriage with the caravan's chest, controls at both ends and a jobless villager in
+  the seat as driver) and Create runs it on a schedule between the two stations. Caravans wait at the station, ride the
+  train and are unloaded when it stands at the other village's station. The scene `village_train` shows it moving.
+- **Village trains climb, turn and carry the goods** (39.7b, with Create). The track along a caravan road is now one
+  line Create's railway accepts: sloped track where the road steps up or down and Create curves round its turns, so both
+  villages' stations join one network. A builder builds the train from its blueprint out of the bench's chests (train
+  casing, two train controls, a seat and a chest) before the station puts it on the rails, and the caravan's goods ride
+  in the carriage's chest: loaded at one station, unloaded at the other. A train broken up on the way keeps them in
+  its chest, never paid out twice.
+- **Village trains reach every station and every road** (39.7c, with Create). A Train Station built away from the
+  caravan road gets a curved spur from its own track to the road's, joining it towards the other village, so the train
+  runs out of it and back in. Roads that dip a block and climb back out, step up right on a turn, or run diagonally in
+  zig-zags now get unbroken track (sloped curves, a climbing turn, one long S-bend), so no road leaves a gap. The
+  village's train is now a drawn carriage: a bogey, train casing and the chest below, controls at both ends and the
+  driver's seat on the deck, spruce posts and a slab canopy with a lantern over it (the builder also needs three spruce
+  fences, four spruce slabs and a lantern).
+- **Two build libraries, vanilla and modded** (2.1, behind its gate). Every build as it ships stays the vanilla
+  library. With Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted installed, all 130 homes and workshops
+  are built from the modded library instead: daub walls with braces, herringbone floors, Carved Wood chests and shelves
+  in the house's wood, crockery on the tables and books on the shelves, with the furniture mods' chairs and beds as
+  before. A missing mod gives the vanilla build; a building keeps the library it was planned with. New setting
+  **Modded Build Library** (`moddedLibrary`, on).
+- **Cellars for eight Level IIs, and for old builds.** The Inn, Winery, Farmstead, Guildhall, Barracks, Research Lab,
+  Jeweler's Workshop and Artisan's House get a Level III: their Level II with a furnished, lit cellar dug under it (an ale
+  and wine cellar, a barrel vault, a root cellar, a strongroom, an armoury, a lower lab, a vault, a storeroom), down a
+  ladder under a hatch, everything above kept. A Smithy, Storehouse or Kitchen finished before it had its cellar is
+  offered **Dig the cellar** by the village's builders (and the Village Hall's advice): its builder digs and fits out
+  only the cellar.
+- **The Blueprint Table says what a build brings** (36.6, 36.6a). Under a build's size: "Jobs: Fisherman (1),
+  Butcher/Chef/Rancher (3)" (a slash means jobs that share a job block, the number how many of that block the build
+  has) and "Beds: N" when it has beds. Uploaded and imported builds get the lines too, from their own blocks.
+- **Furnished homes and modded storage (2.1), begun.** The plan (`docs/design/M37.md`) and its three settings,
+  `furnishedBuilds`, `furnitureMods` and `moddedStorageNetworks`, which stay off until 2.1 is finished (37.1), and a furniture spots file beside each of 223 blueprints marking
+  where its chairs, tables and beds are, for the furniture mods to fill in later (37.2). Behind the same gate, a build started with Handcrafted, Cozy Home,
+  CobbleFurnies or Beautify installed gets their chairs, tables and beds in those places, chosen once and kept (37.3).
+- **Furnished homes (2.1, behind its gate).** The Starter Cottage, Stone House, Townhouse, Manor, Artisan's House and the
+  Inn get furnished rooms at every level: a dining corner, a bedroom with a nightstand and a lamp, a couch, a shelf of
+  cups, a clock, pictures and blinds, in plain vanilla blocks that the pack's furniture mods (Handcrafted, Beautify,
+  CobbleFurnies, Cozy Home) turn into their own pieces. A home planned beside a pasture with a Pokémon in it gets a
+  Trainer's room: CobbleFurnies' Poké Ball chair and desk in place of its first chair and the table by it, even with
+  Handcrafted first (37.4).
+- **Furnished workplaces (2.1, behind its gate).** The Supply Shop, Library, Healing Center, Schoolhouse, Village Hall,
+  Kitchen and Print Shop get furniture at every level: counters, a shelf of cups, a picture, hanging pots and rose
+  trellises in the shop, reading desks in the Library, benches in the schoolroom, the Village Hall and the Healing
+  Center's waiting room, the teacher's, nurse's and printer's desks, the council table, crockery on the Kitchen's worktop. Their
+  job blocks, beds and chests are never swapped; with the pack's mods they become Handcrafted counters, desks and
+  benches and Beautify trellises, hanging pots and picture frames, and the Healing Center's and Schoolhouse's desks are
+  CobbleFurnies' Poké Ball desks. A furniture mod's desk, counter or cabinet is never taken for a job's chest (37.5).
+- **Villagers use the furniture (2.1, behind its gate).** At supper and in the evening villagers sit on the furniture
+  mods' chairs, stools, benches, couches and sofas (Handcrafted, Cozy Home, CobbleFurnies), one villager to a seat, and
+  get up for work, danger or bed; they claim and sleep in Handcrafted's fancy beds, whose house counts as their home,
+  and a home with a seat in it is worth 1 beauty to its people (37.6).
+- **Sophisticated Storage as village storage (2.1, behind its gate).** Its chests, barrels and limited barrels of every
+  tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
+  contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
+  real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
+- **Tom's Simple Storage as the Storehouse's store (2.1, behind its gate).** An inventory connector by the Storehouse
+  is one store for every chest, barrel and filing cabinet it joins (touching it, or on its cables through a cable
+  connector), so each item counts once; porters fill it and builders take from it through the connector, and a chest
+  unplugged from the network is its own store again. The board says "Linked through an inventory connector: 3 blocks",
+  and a storage terminal on the connector shows the village's goods in Tom's own screen (37.10).
+  A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
+- **Create integration (2.3), the plan.** The design note (`docs/design/M39.md`): the Mechanic and their Toolbox,
+  villagers working Create's millstone, press, mixer and crushing wheels, the Watermill, Windmill and Workshop,
+  contraptions and Create schematics at the Blueprint Table, and trains later; its gate stays shut until 2.3 is
+  finished. The owner's Create port now loads in the compat tests, which check every Create id the plan uses (39.1).
+- **The Mechanic (2.3, being built).** With Create installed, a jobless villager by a Create Toolbox (any colour)
+  becomes the village's Mechanic, in a grey work apron, brass goggles on the brow and a wrench at the belt. They put
+  back shafts, gearboxes, cogwheels and belts missing from finished builds near the toolbox, from the build's
+  blueprint and with the parts in the chest by the toolbox, and walk a round of the village's millstones: what's
+  milled goes to the chest, and a turning, empty millstone gets wheat. Create's machines, belts and toolboxes are no
+  longer taken for supply chests. Setting `mechanics` (behind the 2.3 gate); no Mechanic without Create (39.2).
+- **Villagers work Create's machines (2.3, being built).** With Create installed, the farmer carries wheat from the
+  store to a turning millstone and brings back flour, the armorer presses ingots into sheets on the depot under a
+  mechanical press, the chef mixes dough in the basin under a mechanical mixer, and the miner drops raw ore between
+  crushing wheels and gathers the crushed ore. Only while the machine turns and the store has room; what each machine
+  makes comes from Create's own recipes, and each machine is a data file (`machine_work`) a datapack can change. The
+  Mechanic's round covers the new machines too. Setting `machineWork` (behind the 2.3 gate) (39.3).
+- **Create-powered builds.** With Create installed, the Blueprint Table offers the Watermill (a water wheel turned by
+  water falling from a header tank, driving a millstone), the Windmill (a stone tower with a windmill bearing and 24
+  sails over a millstone; the builder starts it when it's done) and the Workshop (a water wheel driving a belt to a
+  depot under a mechanical press): workplaces for the farmer's millstone and the armorer's press, turning as soon as
+  they're built. Setting `createBuilds` (behind the 2.3 gate) (39.4).
+- **Builders build contraptions (2.3, being built).** With Create installed, a blueprint with Create's moving parts in
+  it (one of ours or a machine you saved yourself) goes up in an order that keeps it whole: what holds it up, then
+  shafts and gearboxes, then cogwheels, then belts, each part facing and turning as drawn and a belt finding its
+  pulleys in the new place. A part broken before the build is done is put back first, and once it's finished the
+  owner is told whether every part turns, or which don't and where ("1 part doesn't turn: Shaft at 12 64 -30"). The
+  parts list is a data file (`kinetic_parts`). Setting `createBuilds` (behind the 2.3 gate) (39.5).
+- **Create schematics at the Blueprint Table (2.3, being built).** With Create installed, the schematics players
+  upload with Create's Schematic Table (`schematics/uploaded/<player>/`) are at the Blueprint Table the next time it
+  opens, as blueprints builders can build, and a written Schematic right-clicked on the table imports its own file
+  there and then. Blocks of mods the server doesn't have are counted and named, an upload under the same name replaces
+  its blueprint, and a Schematic whose file is gone says so; names that point outside the uploads are refused.
+  Setting `createSchematics` (behind the 2.3 gate) (39.6).
+- **Trains between villages (2.3, being built).** With Create installed, the Blueprint Table offers a Train Station (a
+  Create station beside a run of track, a platform and a timber shelter). When two villages with a trade route both
+  have a station and the road between them is built, their builders lay Create track down the middle of the road, and
+  from then on their caravans take the train: a third of the trip, never lost on the way, with steam and a bell at the
+  stations ("A train from Thornholm came in with 32 × Oak Log"). A station broken while a train is on its way leaves
+  the caravan to walk the rest, goods and all; without stations caravans walk as before. Setting `villageTrains`
+  (behind the 2.3 gate) (39.7).
+- **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
+  in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
+  and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break
+  the controller and they are separate stores again. A "Sophisticated" style builds the Storehouse with the mod's
+  chests and barrels and a controller on top of the Storehouse block.
+- **Carved Wood and Rechiseled in the styles (2.1, behind its gate).** A new **Spruce** style builds any blueprint in
+  spruce, and with Carved Wood its chests, bookshelves, lecterns, crafting tables, ladders, lanterns and beehives are
+  Carved Wood's spruce ones: a Library in Spruce has spruce shelves, and its Librarian still takes the spruce lectern
+  (Carved Wood registers it as the same job site). With Rechiseled, the **Grand** style's floors are patterned dark oak
+  flooring and its wall panels andesite squares. Without the mods both look as before; Carved Wood chests and barrels
+  are supply chests like any chest.
+- **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
+  Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
+  and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.
+- **The village knows its raid dens (2.2).** With Cobblemon Raid Dens, the dens within 160 blocks of a Village Hall
+  show on its Defense page ("Raid den, tier 3, Fire, active") and on the village map, found as their chunks load.
+- **Den Wardens (2.2).** Post a guard to a raid den from the Defense page: they stand watch by day, the chronicle
+  says when the den glows again, and a player who joins a raid there gets a cheer. Switch: `denWardens`.
+- **Village trainers challenge the raid dens (2.2).** Every 3 days a village's Trainer Leader or Master takes on an
+  active den nearby (up to tier 3, never one a player is at; tier 4 and up are for players). A win brings that
+  tier's raid loot home to the village store and the den goes dark until it resets; a loss sends the trainer home
+  tired for a day. Players nearby are told, so they can go and watch. Switches: `denChallenges`, `denChallengeDays`.
+- **More village trainers Mega Evolve (2.2).** With Mega Showdown, a City's Trainer Leaders, the Festival Cup's
+  finalists and the Stadium Day's visiting trainers carry a Mega Stone like Masters do, and Mega Evolve in battle
+  against you. Every village trainer who can wears a Mega Bracelet (a gold band with the rainbow Key Stone) on their
+  wrist, so you can tell before you challenge them. Switch: `villageMegas`.
+- **Mega Stones and Key Stones from the village (2.2).** With Mega Showdown, a Journeyman Jeweler cuts Key Stone Ore
+  into a Key Stone, and a Mega Crystal (or 4 Mega Meteoroid ores, for a Master) into the Mega Stone of a Pokémon your
+  village's own trainers use, each with 2 gold ingots and 4 emeralds. Miners take the Key Stones, Mega Stones and ores
+  they dig to the village store for the Jeweler. Beat the Trainer Leader of every village of a realm and the capital's
+  hall gives you a Mega Bracelet, once per realm. Switch: `villageMegas`.
+- **The Mega Shrine (2.2).** With Mega Showdown, the Blueprint Table has a new decoration: Mega Showdown's pedestal on a
+  dais of Mega meteorite bricks, with amethyst-crowned posts and soul lanterns. On festival days a village with a
+  finished shrine holds a show there first: a village trainer climbs to the pedestal and Mega Evolves their ace, and
+  the villagers who gather to watch get +3 mood. Switch: `villageMegas`.
+- **Cobblecuisine on the menus (2.2).** With Cobblecuisine, the Chef cooks its dishes from their own recipes with the
+  makings from the store: salads and sandwiches from Novice, the drinks from Apprentice, curries from Journeyman, cakes
+  from Expert, keeping 16 of each. Each dish counts as its kind of food (a salad, a sandwich, a curry...), so villagers
+  eating them have a more varied diet; the Camp Cook cooks three of its curries, and the Innkeeper serves each guest a
+  Bouncy Brionne Soda, Teddiursa Iced Coffee or Fruit Punch. Switch: `cuisineDishes`.
+- **Bean farms (2.2).** With Cobblecuisine, farmers sow its bean seeds on their fields when the store holds fewer than
+  16 of a bean colour a dish on the menu needs, cut the beans only when fully grown, and take them to the store like
+  any crop. With enough beans of every colour, or no bean dish on the menu, they plant none. Switch: `beanFarms`.
+- **Treats for partners and dish luxuries (2.2).** With Cobblecuisine, partner Pokémon helping villagers at work eat
+  a Poké Puff or a shake from the village store once a day as their treat (more friendship, with hearts), and two
+  dishes become luxuries: a Deluxe Shake for Burghers every 4 days and the Clodsire Eclair for Nobles every 8. Without
+  Cobblecuisine they aren't wanted. Switch: `cuisineDishes`.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply
@@ -87,6 +245,22 @@ asks for the steps, `latest.log` and any crash report).
   guide's new page, The questbook, lists them.
 
 ### Changed
+- **The Jeweler cuts Mega Stones only from what you put in the Storehouse.** Mega Stones and Key Stones now take their
+  Mega Crystal (or ore), gold and emeralds from the village store alone, never from the Jeweler's own chest or other
+  workers' chests. Short of something, the Jeweler waits and says what to add: "needs 4 × Emerald in the Storehouse".
+- **The Signpost's boards say something.** A finished Signpost names the nearest village each way and how far (or
+  the nearest building, or "Welcome"), and keeps its boards up to date at dawn.
+- **Read a long entry in the Village Hall without clicking it.** Move the mouse from a row into the reading pane and
+  it keeps reading that row, so the wheel scrolls it there; Shift and the wheel over a row scroll it too. An arrow
+  shows when there's more below, and a long chronicle entry is shown whole. The Storehouse board works the same.
+- **The Blueprint Table's preview shows basements.** A build with a cellar is drawn whole in the 3D preview, cellar and
+  all, with a faint line where the ground will be; its size line says how far it goes below ground.
+- **Eight more village quests complete by themselves.** The questbook no longer asks you to click a checkmark for a
+  baby born in your village, 3 and 7 levels of research, proclaiming an edict, your first Burgher and Noble
+  households, founding a realm or collecting the takings: each quest ticks off when it happens. A village that got
+  there before this update ticks them off at its next dawn.
+- **"Take the fight to them" asks for what its story tells.** The questbook quest now completes when you and your war
+  party break a raiders' camp, not for any 10 pillagers killed anywhere; everyone leading guards in the party gets it.
 - **The Village Hall and the Storehouse board look like the Blueprint Table.** Both screens now use the Table's dark
   panel, gold title, list on the left and reading pane on the right. In the hall, the village's numbers and the toolbar
   sit as icon buttons under the title, and the page tabs and everyone who lives there are a list with each villager's
@@ -114,6 +288,65 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **The Mega trainers and the Mega Shrine show again (B191).** The Mega trainers scene asked whether its City's Leader
+  could Mega Evolve before the game had filed the new Village Hall, and let the hall's first count make the test
+  village a Hamlet just before the battle, so the Leader had no Mega Stone and no bracelet; it now asks once the hall
+  stands and keeps the village a City. The Mega Shrine scene called the show by hand instead of holding a festival:
+  now the village's own festival day comes, the hall plans it, and the festival holds the show, as in a real world (a
+  new compat test proves that path).
+- **A raid den by a Village Hall is found in a real world.** Dens were looked for only as their chunk loaded, so a hall
+  set down by a den already in view, or a den set down near a hall, stayed "No raid den known": no warden could be
+  posted and the Leader found no den. Now a crystal set down in a loaded chunk is seen at once, and a new hall looks
+  through the loaded land within 160 blocks for the dens already there (B190).
+- **Tom's storage terminal opens beside the Storehouse.** The showcase placed the terminal backwards (facing away
+  from the inventory connector) and clicked it from the overview camera, ten blocks away, so Tom's mod said "Terminal
+  out of range". The mod was never at fault: a terminal placed against the connector, as a player places it, opens
+  Tom's screen with the village's goods, now proven by a compat test (B192).
+- **Holding a Create Schematic after using it on the Blueprint Table no longer crashes the game.** A written Schematic
+  without its size (made by a command or another mod) crashed Create's own schematic code when held ("getBounds() is
+  null"); the table now fills in what Create's Schematic Table writes, its size read from the file, and still lists
+  and imports it (B189).
+- **Raiders beside or behind a besieged village's walls go round to the open gateway.** Sent straight for the way in,
+  a raider a fight had taken beside the walls could be led to the outside spot nearest the yard, behind the back wall,
+  and stand there for the rest of the siege with the gate broken open; now it goes round to the front of the breach
+  first, and in from there (B175).
+- **A villager whose path failed once walks again.** A walk asked for after a failed path waited for a retry that
+  never came when the job asking kept no count (a successor following the elder, a retired mentor going to the hall):
+  the villager stood still from then on. It is now tried again a second later; the elders' showcase, where young Tom
+  stopped after two blocks and Bram looked the faster, walks them side by side again (B187).
+- **A Signpost no longer names the same place on two boards, or its own village.** A village standing exactly on a
+  diagonal from the post was written on both boards beside it, hiding the village one of them should have named, and a
+  village hall placed only a moment before could be taken for a neighbour. Each place now goes on one board only, and
+  the post's own village is always recognised (B186).
+- **Villagers are never left stuck inside a block.** In a growing village a baby could play in a nook too small for a
+  grown villager (under a roof's stair, beside a lantern on a fence) and grow up inside the block, and a villager
+  standing in a doorway could have the door shut on it. Such a villager now opens the door it is shut in, or steps out
+  to the nearest free spot, within a second (B185).
+- **The Trainer Leader gets to the Leader's Hall's Training Post.** The red carpet started right inside the double
+  door, under its low lintel, and a villager stepping up onto it there hit its head, so a leader coming in by the middle
+  of the door stood in the doorway for good. The carpet now starts a step further in. A Leader's Hall already built
+  keeps its carpet: take up the first piece by the door if your leader is stuck there (B170).
+- **Villagers no longer get stuck in doorways.** A villager is taller than a player, and a carpet, a seat or a stair
+  step right inside a door two blocks high made it hit its head on the lintel and stand in the doorway for good. Every
+  blueprint is now checked for it, and these were fixed: the Healing Center (front and ward doors), Supply Shop (its
+  rug, and the shopkeeper's seat moved aside of the back door), Village Hall and its meeting room (one bench seat and
+  the chair at the doorway's end of the council table taken out), Town Hall, Manor (a fanlight over the front door in place
+  of its lintel, since the grand stair starts right inside; the parlour rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
+  Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
+  room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
+  keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
+- **Chefs take the Kitchen's smoker, however it's decorated.** A villager walking to a workstation built in under
+  solid blocks (the smoker in the Kitchen's brick oven) climbed onto the nearest chest or worktop instead, a step too far
+  to take it, and stood there; it now walks to the floor in front of the workstation and takes it (B168).
+- **Villagers sleep in furnished homes' beds.** A furnished home's fancy beds are now checked to be beds villagers
+  claim as their home and sleep in (Handcrafted's are), and a furniture mod's bed that isn't one leaves the vanilla
+  bed in its place, so every bed of a furnished home is a villager's bed (B166).
+- **"Your first catch" completes on Cobblemon 1.8 too.** The quest waited for Cobblemon's `first_catch` advancement,
+  which Cobblemon 1.8 moved to `catching/first_catch`, so it never ticked off there; it now uses the mod's own
+  advancement on Cobblemon's catch trigger, which works on 1.7 and 1.8 (B164).
+- **Every setting's name fits its button.** On the settings screen "Villagers per Extra Fisherman" ran past its
+  button; it is now **Extra Fisherman Every**, and "Gifted Villagers (1 in ...)" is **Gifted Villagers, 1 in** so it
+  fits at 1000 too. A test now measures every setting's name at its widest value (B161).
 - **Cellar ladders no longer trap villagers.** A cellar's ladder came up through an open hole in the floor and a block
   above it, and villagers walking past climbed it onto the window sill beside it and got stuck (a Chef never reached
   the Kitchen's smoker). The ladder now ends under a trapdoor hatch in the floor: open it to climb down or up (B158).
@@ -243,6 +476,12 @@ asks for the steps, `latest.log` and any crash report).
   brew the Three-Herb Tonic at their brewing stand and take it round, with no traveling doctor sent for. A Remedy, from
   them or from your hand, only eases the cough for a day, as the story says, and a villager a Remedy is keeping well
   doesn't catch it. With **Physicians** off, Doctor Wren comes as before.
+
+### Dev
+- **The pack test builds furnished homes** (37.11). `FURNISHED=true tools/packtest/run.sh` boots Cobbleverse with
+  `furnitureMods` set to Cozy Home first and has two builders build the Starter Cottage and the Inn; it passes only when
+  both finish with nothing skipped, every block and furniture piece in place and Cozy Home pieces in each. The nightly
+  run does it too. The wiki's "Furniture and storage mods" page gains a table of each mod, and the player guide a page.
 
 ## 0.144.0 — 2026-10-13
 

@@ -5,7 +5,7 @@
 mod.id = "aliveworkplace"
 mod.name = "Alive Workplace"
 # Bump this to release (CI tags v<version> and attaches alive-workplace-<version>+<minecraft>.jar for each node).
-mod.version = "1.0.0-rc.13"
+mod.version = "0.145.0"
 mod.archives = "alive-workplace"
 mod.group = "io.github.jcondedata"
 
@@ -57,6 +57,18 @@ tests.compat_mods = [
     "maven.modrinth:SszvX85I:Y6di9Ram",         # Mega Showdown 1.8.4 (Mega Evolution for Master trainers)
     "maven.modrinth:jtmvUHXj:Xlt4eWBe",         # Accessories 1.1.0-beta.53 (for Mega Showdown)
     "maven.modrinth:ccKDOlHs:JB1fLQnc",         # owo-lib 0.12.15.4 (for Accessories)
+    # Milestone 38 (Cobblemon depth, 2.2), the pack's versions
+    "maven.modrinth:GebWh45l:Lecb595b",         # Cobblemon Raid Dens 0.11.3 (raid dens near villages)
+    "maven.modrinth:8BmcQJ2H:dnJdtm0u",         # GeckoLib 4.9.2 (for Raid Dens)
+    "maven.modrinth:dlx62Wp3:KQwSroDP",         # Cobblecuisine 2.0.1 (the Chef's dishes, bean farms)
+]
+# Local mod jars (files in the repo, not on a maven) the compat suite runs with. They go into the run's mods/ folder,
+# where Fabric Loader treats them as in a real install (build.gradle.kts, localModsInto), without their own GameTests.
+# Local mod jars the mod compiles against for compat/<mod>/ (modCompileOnly: never a runtime dependency or in the jar).
+# The owner's Create port: compat/create/ drives Create's own trains (ROADMAP 39.7a).
+tests.compat_compile_files = ["libs/create-fabric-6.0.10.0+mc1.21.1.jar"]
+tests.compat_files = [
+    "libs/create-fabric-6.0.10.0+mc1.21.1.jar", # Milestone 39 (Create, 2.3): the owner's Fabric port of Create 6.0.10 (libs/README.md)
 ]
 # -Pcobblemon18=true: the compat suite, the screenshot harness and the showcase run with Cobblemon 1.8.1 instead of
 # 1.7.3 (the mod still compiles against 1.7.3). "old -> new" swaps a runtime mod; "old -> " leaves it out of that run.
@@ -64,12 +76,22 @@ tests.cobblemon18 = [
     "maven.modrinth:cobblemon:kF7CvxTo -> maven.modrinth:cobblemon:gBW3vLC7",          # Cobblemon 1.8.1
     "maven.modrinth:SszvX85I:Y6di9Ram -> maven.modrinth:SszvX85I:TKdAixuR",            # Mega Showdown 1.2.0 for 1.8.1
     "maven.modrinth:cobbleworkers:qW3KB1li -> maven.modrinth:cobbleworkers:llwrszjl",  # Cobbleworkers 2.0.5 for 1.8.0
+    "maven.modrinth:GebWh45l:Lecb595b -> maven.modrinth:GebWh45l:aFuImAaR",            # Raid Dens 0.13.2 for 1.8
+    # Cobblecuisine has no build for Cobblemon 1.8 (2.0.1 asks for Cobblemon >= 1.7.0), so the 1.8 runs keep it.
 ]
 # The screenshot harness (src/devclient, `runScreenshots`, tools/screenshots/run.sh) is written for this version.
 tests.screenshots = true
 # Extra mods the harness can load: -Pcobblemon=true (Pokémon scenes), -Pmega=true (SCENE=battle).
-tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe"]
+tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrinth:cobbledollars:cqsHXSXe", "maven.modrinth:GebWh45l:Lecb595b", "maven.modrinth:8BmcQJ2H:dnJdtm0u", "maven.modrinth:dlx62Wp3:KQwSroDP"]
 # Cobbleverse's performance stack, the pack's own versions (25.4): Sodium, Lithium, C2ME, FerriteCore, ModernFix,
 # EntityCulling, ImmediatelyFast, Krypton, ScalableLux.
 tests.screenshot_perf = ["maven.modrinth:AANobbMI:KIRFiWG4", "maven.modrinth:gvQqBUqZ:N08Z8wog", "maven.modrinth:VSNURh3q:h8ey5B7D", "maven.modrinth:uXXizFIs:sOzRw3CG", "maven.modrinth:nmDcB62a:NnNX8LBn", "maven.modrinth:NNAgCjsB:hsWvcyFJ", "maven.modrinth:5ZwdcRci:ATB4eNEP", "maven.modrinth:fQEb0iXm:Acz3ttTp", "maven.modrinth:Ps1zyz6x:Yx1tgJMI"]
+# -Pcreate=true (CREATE=true, a scene's create=True in tools/showcase/scenes.py): the owner's Create port too (M39).
+tests.screenshot_create = ["libs/create-fabric-6.0.10.0+mc1.21.1.jar"]
 tests.screenshot_mega = ["maven.modrinth:SszvX85I:Y6di9Ram", "maven.modrinth:jtmvUHXj:Xlt4eWBe", "maven.modrinth:ccKDOlHs:JB1fLQnc", "maven.modrinth:lhGA9TYQ:Wto0RchG"]
+# The pack's furniture mods for -Pfurniture=true (ROADMAP 37.4, scene furnished_home): Handcrafted with Resourceful Lib,
+# Beautify with Cloth Config, CobbleFurnies with Architectury and Athena (CobbleFurnies also needs Cobblemon, -Pcobblemon),
+# Sophisticated Storage with its Core and Forge Config API Port (ROADMAP 37.9), the pack's Tom's Simple Storage 2.3.0
+# (ROADMAP 37.10; both in scene modded_storehouse), Carved Wood and Rechiseled with its two libraries and Fusion
+# (ROADMAP 37.7, scene carved_styles), Chipped and Supplementaries with Moonlight (ROADMAP 37.12, scene modded_library).
+tests.screenshot_furniture = ["maven.modrinth:XZNI4Cpy:GwLz79tK", "maven.modrinth:pJmCFF0p:f0pKpUWd", "maven.modrinth:resourceful-lib:Hf91FuVF", "maven.modrinth:DhSSvaxs:ZyaUkJxq", "maven.modrinth:9s6osm5g:HpMb5wGb", "maven.modrinth:AXY1OO9m:54k31lEX", "maven.modrinth:lhGA9TYQ:Wto0RchG", "maven.modrinth:athena-ctm:JfyYsWKP", "maven.modrinth:iHtpVwJL:kjNlOByJ", "maven.modrinth:9jxwkYQL:ZLVrtF0Q", "maven.modrinth:ohNO6lps:N5qzq0XV", "maven.modrinth:WuwijfrW:h1wI9HyK", "maven.modrinth:rechiseled:Whwd5n82", "maven.modrinth:supermartijn642s-core-lib:blDCgrqh", "maven.modrinth:supermartijn642s-config-lib:euSlaAtA", "maven.modrinth:fusion-connected-textures:6fQXv7Yl", "maven.modrinth:chipped:6h2mVZcb", "maven.modrinth:supplementaries:h8FyJ2as", "maven.modrinth:moonlight:lje3uEuU"]

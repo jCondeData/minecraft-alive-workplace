@@ -85,10 +85,10 @@
 			shape: "gear",
 			size: 1.5d,
 			title: "A bed for a newcomer",
-			description: ["Welcome your village's first baby.", "", "A couple has a baby, at most once a day, when all of these are true at once:", "- there's a free bed: a bed within 64 blocks of the hall that no villager has claimed;", "- the food store holds 16 meals or more (the last quest);", "- at least two grown villagers live there;", "- the village's wellbeing is at least half (the hall shows it as a percentage).", "", "1. Place a spare bed in one of your houses, or build another house.", "2. Open the Village Hall. In its top row, hover over the red bed (Beds) to see how many are free, and over the cake for the wellbeing.", "3. Hover over the emerald (Villagers) in the top row. Its last line says what's still missing, such as \"To grow: a free bed\", or \"A baby is on the way\".", "", "Babies are how your village grows, and more villagers bring the next rank.", "", "Click the checkmark above once the emerald on the hall says Born here: 1 or more. Then turn the page: the Hamlet grows."],
+			description: ["Welcome your village's first baby.", "", "A couple has a baby, at most once a day, when all of these are true at once:", "- there's a free bed: a bed within 64 blocks of the hall that no villager has claimed;", "- the food store holds 16 meals or more (the last quest);", "- at least two grown villagers live there;", "- the village's wellbeing is at least half (the hall shows it as a percentage).", "", "1. Place a spare bed in one of your houses, or build another house.", "2. Open the Village Hall. In its top row, hover over the red bed (Beds) to see how many are free, and over the cake for the wellbeing.", "3. Hover over the emerald (Villagers) in the top row. Its last line says what's still missing, such as \"To grow: a free bed\", or \"A baby is on the way\".", "", "Babies are how your village grows, and more villagers bring the next rank.", "", "This quest completes by itself when a baby is born in your village. Then turn the page: the Hamlet grows."],
 			dependencies: ["1A00E14DF6D87643"],
 			icon: {id: "minecraft:red_bed", count: 1},
-			tasks: [{id: "148C4F6E80741491", type: "checkmark", title: "A baby was born in my village"}],
+			tasks: [{id: "148C4F6E80741491", type: "advancement", advancement: "aliveworkplace:village/first_baby", criterion: ""}],
 			rewards: [{id: "44230518AC237E80", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 6}, {id: "4AD8FB9949014FA5", type: "xp", xp: 200}]
 		},
 		{
@@ -135,7 +135,7 @@
 			title: "Your first catch",
 			description: ["Catch a wild Pokémon.", "", "1. Craft Poké Balls: a copper ingot in the middle with a red apricorn above, below, left and right of it. That makes four.", "2. Battle a wild Pokémon with your partner to weaken it.", "3. Throw a Poké Ball at it. The lower its health, the better your chances.", "", "Each Pokémon you catch can become a helper for your villagers.", "", "This quest completes by itself when you catch your first Pokémon."],
 			dependencies: ["357F81DBD0D10863"],
-			tasks: [{id: "16D5ECBDFFBAF87E", type: "advancement", advancement: "cobblemon:first_catch", criterion: ""}],
+			tasks: [{id: "16D5ECBDFFBAF87E", type: "advancement", advancement: "aliveworkplace:pokemon/first_catch", criterion: ""}],
 			rewards: [{id: "43459A9F1D31F801", type: "item", item: {id: "minecraft:emerald", count: 1}, count: 3}]
 		},
 		{

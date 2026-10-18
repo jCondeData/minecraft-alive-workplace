@@ -67,14 +67,31 @@ public final class Walker {
 					villager.getNavigation().setSpeedModifier(pace);
 				}
 			}
+			FAILED_SEEN.remove(villager);
 			return 0;
 		}
-		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) && retryWait + 1 < RETRY_TICKS) {
-			return retryWait + 1;
+		if (brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
+			// The wait is counted twice: by the caller's counter, and by the villager's own clock (from when we first saw this
+			// failure), so a caller that passes a constant 0 (a scene, a mentor's follow) gets a fresh try after RETRY_TICKS
+			// too. Vanilla keeps CANT_REACH_WALK_TARGET_SINCE until a path reaches, and only looks for a path while there is a
+			// walk target: with the caller's counter alone, one failed (or partial) path dropped every later request (B187).
+			long now = villager.level().getGameTime();
+			Long seen = FAILED_SEEN.get(villager);
+			if (seen == null || now < seen) {
+				FAILED_SEEN.put(villager, now);
+				seen = now;
+			}
+			if (retryWait + 1 < RETRY_TICKS && now - seen < RETRY_TICKS) {
+				return retryWait + 1;
+			}
 		}
+		FAILED_SEEN.remove(villager);
 		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
 		return 0;
 	}
+
+	/** When {@link #requestWalk} first saw a villager's failed path, since its last request (weak: never keeps a villager loaded). */
+	private static final java.util.Map<Villager, Long> FAILED_SEEN = new java.util.WeakHashMap<>();
 
 	/** Lets the worker reach targets up to {@code blocks} above where it stands (default 2). */
 	public Walker reachingUp(int blocks) {

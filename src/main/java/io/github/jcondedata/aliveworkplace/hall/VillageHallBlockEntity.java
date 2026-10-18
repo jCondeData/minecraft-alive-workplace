@@ -193,6 +193,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			VillageRanks.round(server, pos, hall, census.villagers());
 			Guilds.round(server, pos, hall);
 			io.github.jcondedata.aliveworkplace.realm.Realms.round(server, pos, hall, census.villagers()); // what the realm's tab shows of it, and the realm's rank (33.11)
+			io.github.jcondedata.aliveworkplace.trainer.LeaderBracelets.round(server, pos, census.workers()); // has it a Trainer Leader (38.6)
 			io.github.jcondedata.aliveworkplace.realm.Leaderboard.round(server, pos, hall, census); // the week's wellbeing, Legends and Masters (33.19)
 			Caravans.round(server, pos, census);
 			io.github.jcondedata.aliveworkplace.trade.Economy.round(server, pos, census); // known for, short of, prices (33.2): after the caravans' list is up to date
@@ -212,6 +213,8 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			io.github.jcondedata.aliveworkplace.people.FamilyBook.round(server, pos, hall); // family names and the Book of Families (34.21)
 			Services.round(server, pos, hall, census.workers()); // the day's service list (34.3), before the class check reads it
 			io.github.jcondedata.aliveworkplace.people.SocialClasses.round(server, pos, hall); // the dawn class check (34.2)
+			io.github.jcondedata.aliveworkplace.city.Signposts.round(server, pos, hall); // the signposts' boards brought up to date (36.4)
+			VillageMoments.catchUp(server, pos, hall, java.util.stream.Stream.concat(census.workers().stream(), census.jobless().stream()).toList()); // moments passed before they were moments (36.2)
 			if (Treasury.ENABLED) {
 				Treasury.round(server, pos, hall, census.workers(), census.jobless()); // by class (34.7)
 			}
@@ -352,7 +355,11 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	public void setResearch(io.github.jcondedata.aliveworkplace.research.Research.State research) {
+		int before = this.research.totalLevels();
 		this.research = research;
+		if (level instanceof net.minecraft.server.level.ServerLevel server) {
+			VillageMoments.researched(server, worldPosition, before, research.totalLevels()); // 3 and 7 levels done (36.2)
+		}
 		setChanged();
 	}
 

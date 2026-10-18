@@ -6,7 +6,7 @@ expansion: M34
 image: https://jcondedata.github.io/minecraft-alive-workplace/luxury_workshops/still-4.jpg
 caption: Jeweler's Workshop II: the strong room behind
 Size: 9 wide, 9 deep, 10 high (II: 14 deep)
-Tiers: I, II (a strong room with a vault of ten chests)
+Tiers: I, II (a strong room with a vault of ten chests), III (a vault)
 Workstation: a stonecutter, the [Jeweler](jeweler.md)'s bench
 Where to get it: Blueprint Table, or a Journeyman Jeweler for 12 emeralds
 Main materials: deepslate tile stairs, stone bricks, polished andesite, stripped spruce logs, iron trapdoors
@@ -31,6 +31,8 @@ hand it to the builder. See [The Builder and blueprints](builder.md).
 
 **Jeweler's Workshop II** adds a strong room behind, lower and windowless, through a second iron door: a vault of ten
 chests behind iron bars.
+
+**Jeweler's Workshop III** digs a **vault** under the shop, down a ladder under a hatch in its corner: gold, amethyst and emerald caged behind bars, chests of stones and a sorting table. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

@@ -378,7 +378,7 @@ def pokemon_center_room(b, style):
     b.set(3, 1, 6, "smooth_quartz")
     b.set(3, 2, 6, "potted_allium")
     b.set(2, 1, 5, "white_carpet")
-    for z in (2, 3, 4, 5):
+    for z in (3, 4, 5):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(3, 1, z, "red_carpet")
     for z in (3, 4):  # the waiting bench, its back to the west wall
         b.set(1, 1, z, "quartz_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)

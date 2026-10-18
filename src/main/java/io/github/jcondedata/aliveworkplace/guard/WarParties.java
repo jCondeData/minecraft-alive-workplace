@@ -361,11 +361,18 @@ public final class WarParties {
 			: Component.translatable("chronicle.aliveworkplace.war_party.broken", leader, cultureName, String.join(", ", killers)));
 		Component peace = Component.translatable("message.aliveworkplace.war_party.broken", VillageHalls.name(level, lair.hall()), REST_DAYS)
 			.withStyle(ChatFormatting.GREEN);
+		java.util.Set<ServerPlayer> breakers = new java.util.LinkedHashSet<>();
+		if (by instanceof ServerPlayer striker) {
+			breakers.add(striker);
+		}
 		for (LivingEntity member : party) {
 			if (member instanceof ServerPlayer player) {
 				io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, peace);
+				breakers.add(player);
 			}
 		}
+		// 36.3: the questbook's "Take the fight to them" completes for the player who struck the last blow and the party.
+		io.github.jcondedata.aliveworkplace.hall.VillageMoments.grant(level, io.github.jcondedata.aliveworkplace.hall.VillageMoments.CAMP_BROKEN, breakers);
 	}
 
 	/** Who led the war party: the player who struck the last blow, else whoever the banner or the siege-breakers follow. */

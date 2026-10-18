@@ -1,0 +1,14 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblecuisine"
+      ]
+    }
+  ],
+  "item": "#aliveworkplace:deluxe_shakes",
+  "every_days": 4,
+  "enabled": true,
+  "switch": "cuisineDishes"
+}

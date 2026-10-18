@@ -45,7 +45,9 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Legends.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Gifted.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.tick((Villager) (Object) this); // who wears a Mega Bracelet (38.5)
 		io.github.jcondedata.aliveworkplace.people.Retirement.tick((Villager) (Object) this); // shadows and mentors (34.20)
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureSeats.tick((Villager) (Object) this); // sitting on the furniture (37.6)
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;
@@ -66,6 +68,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking(null);
 		io.github.jcondedata.aliveworkplace.work.BedLadders.tick((Villager) (Object) this); // up a ladder to a bed upstairs (B79)
 		io.github.jcondedata.aliveworkplace.legend.Pathfinder.hold((Villager) (Object) this); // after the brain: waiting stays put
+		io.github.jcondedata.aliveworkplace.work.StuckVillagers.tick((Villager) (Object) this); // never left inside a block (B185)
 	}
 
 	/** A villager placed by a structure template gets room to stand (B6). */

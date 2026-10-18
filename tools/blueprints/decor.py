@@ -322,7 +322,7 @@ def chapel():
     for z in (7, 9, 11):
         for x in (3, 4, 6, 7):
             stairs(b, x, 1, z, DARK_OAK, "south")
-    for z in range(6, 14):
+    for z in range(7, 14):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(5, 1, z, "red_carpet")
     for x in range(3, 8):
         b.set(x, 1, 13, "polished_andesite" if x != 5 else "chiseled_stone_bricks")
@@ -831,3 +831,47 @@ MORE_DECORATIONS = (("market_cross", market_cross), ("stag_statue", stag_statue)
                     ("hay_cart", hay_cart), ("notice_board", notice_board), ("lantern_pergola", lantern_pergola),
                     ("fire_pit", fire_pit), ("sundial", sundial), ("topiary_garden", topiary_garden),
                     ("market_corner", market_corner), ("footbridge", footbridge))
+
+
+# ROADMAP 38.7: the Mega Shrine, with Mega Showdown only (StarterBlueprints.MEGA_ONLY; listed when its blocks exist).
+MEGA = "mega_showdown:"
+
+
+def mega_shrine():
+    """7 x 6 x 7: the Mega Shrine — Mega Showdown's pedestal on a two-step dais of Mega meteorite bricks: a base course
+    of meteorite bricks with chiseled corners, edged with deepslate brick stairs (the meteorite has no stairs of its
+    own), a polished meteorite top with a chiseled meteorite plinth under the pedestal; four corner posts of deepslate
+    brick wall crowned with chiseled meteorite and an amethyst cluster, soul lanterns hung between, and steps up the
+    front (north)."""
+    b = Build(7, 6, 7)
+    pave(b, [(x, z) for x in range(7) for z in range(7)], name="polished_deepslate", border="deepslate_tiles")
+    for x in range(1, 6):  # the first step: meteorite bricks, chiseled at its corners
+        for z in range(1, 6):
+            corner = x in (1, 5) and z in (1, 5)
+            b.set(x, 1, z, MEGA + ("chiseled_mega_meteorid_brick" if corner else "mega_meteorid_brick"))
+    for x in range(2, 5):  # the top: polished meteorite round the plinth
+        for z in range(2, 5):
+            b.set(x, 2, z, MEGA + "polished_mega_meteorid_block")
+    b.set(3, 2, 3, MEGA + "chiseled_mega_meteorid_block")
+    b.set(3, 3, 3, MEGA + "pedestal", facing="north")
+    for x in (2, 3, 4):  # the steps up the front
+        stairs(b, x, 1, 0, DEEPSLATE_BRICK, "south")
+    stairs(b, 3, 2, 1, DEEPSLATE_BRICK, "south")
+    for x, z in ((2, 1), (4, 1)):
+        slab(b, x, 2, z, DEEPSLATE_BRICK)
+    for z in range(1, 6):  # the sides' moulding
+        stairs(b, 0, 1, z, DEEPSLATE_BRICK, "east")
+        stairs(b, 6, 1, z, DEEPSLATE_BRICK, "west")
+    for x in range(1, 6):
+        stairs(b, x, 1, 6, DEEPSLATE_BRICK, "north")
+    for x, z in ((1, 1), (5, 1), (1, 5), (5, 5)):  # the corner posts
+        wall_block(b, x, 2, z, "deepslate_brick_wall")
+        wall_block(b, x, 3, z, "deepslate_brick_wall")
+        b.set(x, 4, z, MEGA + "chiseled_mega_meteorid_brick")
+        b.set(x, 5, z, "amethyst_cluster", facing="up")
+    for x, z in ((1, 3), (5, 3), (3, 5)):  # soul lanterns on the sides and back of the top step
+        lantern(b, x, 2, z, soul=True)
+    b.set(0, 1, 0, "potted_allium")
+    b.set(6, 1, 0, "potted_allium")
+    b.fill_air()
+    return b

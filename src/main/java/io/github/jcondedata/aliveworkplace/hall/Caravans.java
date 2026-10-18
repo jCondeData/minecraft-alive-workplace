@@ -98,11 +98,17 @@ public final class Caravans {
 	/**
 	 * Goods on the road: {@code goods} are for the village at {@code to} to keep; {@code sale} (33.6) it pays for at its
 	 * board's price when they arrive. {@code back}: a caravan bringing home what {@code from} couldn't pay for, or
-	 * couldn't buy.
+	 * couldn't buy. {@code byTrain} (39.7): it rides the train between two villages with stations
+	 * ({@link io.github.jcondedata.aliveworkplace.city.CaravanTrains}); saved, false (it walks) in older saves.
 	 */
-	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back) {
+	public record Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back, boolean byTrain) {
 		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives) {
 			this(from, to, goods, arrives, List.of(), false);
+		}
+
+		/** A caravan that walks (39.7: {@code byTrain} false). */
+		public Shipment(BlockPos from, BlockPos to, List<ItemStack> goods, long arrives, List<Lot> sale, boolean back) {
+			this(from, to, goods, arrives, sale, back, false);
 		}
 	}
 
@@ -137,6 +143,10 @@ public final class Caravans {
 		 * only what the other waits for (free, nothing for sale) and doesn't count toward the cap on trade routes.
 		 */
 		final Map<BlockPos, Set<BlockPos>> sisters = new LinkedHashMap<>();
+		/** Each village's Create stations (39.7) as its hall's last round found them; none in older saves. */
+		final Map<BlockPos, List<BlockPos>> stations = new LinkedHashMap<>();
+		/** The villages each village has laid track towards along its half of the road (39.7); none in older saves. */
+		final Map<BlockPos, Set<BlockPos>> tracks = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -218,9 +228,9 @@ public final class Caravans {
 				if (villages.containsKey(s.from())) {
 					List<ItemStack> goods = new ArrayList<>();
 					s.sale().forEach(lot -> goods.addAll(lot.stacks()));
-					home.add(new Shipment(hall, s.from(), goods, s.arrives(), List.of(), true));
+					home.add(new Shipment(hall, s.from(), goods, s.arrives(), List.of(), true, s.byTrain()));
 				}
-				return new Shipment(s.from(), s.to(), s.goods(), s.arrives(), List.of(), s.back());
+				return new Shipment(s.from(), s.to(), s.goods(), s.arrives(), List.of(), s.back(), s.byTrain());
 			});
 			onTheRoad.removeIf(s -> s.goods().isEmpty() && s.sale().isEmpty());
 			onTheRoad.addAll(home);
@@ -231,7 +241,40 @@ public final class Caravans {
 			leaders.remove(hall);
 			markets.remove(hall);
 			colours.remove(hall);
+			stations.remove(hall);
+			tracks.remove(hall);
+			tracks.values().forEach(to -> to.remove(hall));
 			setDirty();
+		}
+
+		/** The village's Create stations (39.7) as its hall's last round found them; empty without. */
+		public List<BlockPos> stations(BlockPos hall) {
+			return stations.getOrDefault(hall, List.of());
+		}
+
+		/** Notes the village's stations (39.7); a village not on the list keeps none. */
+		public void setStations(BlockPos hall, List<BlockPos> found) {
+			if (!villages.containsKey(hall)) {
+				return;
+			}
+			List<BlockPos> old = found.isEmpty() ? stations.remove(hall) : stations.put(hall.immutable(), List.copyOf(found));
+			if (!found.equals(old == null ? List.of() : old)) {
+				setDirty();
+			}
+		}
+
+		/** Whether {@code hall} has laid track along its half of the road to {@code other} (39.7). */
+		public boolean tracked(BlockPos hall, BlockPos other) {
+			return tracks.getOrDefault(hall, Set.of()).contains(other);
+		}
+
+		/** Notes (or forgets) the track along {@code hall}'s half of the road to {@code other} (39.7). */
+		public void setTracked(BlockPos hall, BlockPos other, boolean laid) {
+			boolean changed = laid ? tracks.computeIfAbsent(hall.immutable(), k -> new LinkedHashSet<>()).add(other.immutable())
+				: tracks.getOrDefault(hall, new LinkedHashSet<>()).remove(other);
+			if (changed) {
+				setDirty();
+			}
 		}
 
 		/** The village's Village Banner base colour as its hall's last round wrote it (33.7), or null without one. */
@@ -374,8 +417,122 @@ public final class Caravans {
 
 		/** Brings the caravans on the road to {@code hall} in now (tests: one waiting for room tries again at once). */
 		public void hurry(BlockPos hall) {
-			onTheRoad.replaceAll(s -> s.to().equals(hall) ? new Shipment(s.from(), s.to(), s.goods(), 0, s.sale(), s.back()) : s);
+			onTheRoad.replaceAll(s -> s.to().equals(hall) ? new Shipment(s.from(), s.to(), s.goods(), 0, s.sale(), s.back(), s.byTrain()) : s);
 			setDirty();
+		}
+
+		/**
+		 * Trains coming in to {@code hall} with no station there now (39.7: broken while they were on their way): each
+		 * caravan gets off where the track ends and walks the rest, arriving no sooner than {@code walk} ticks from
+		 * {@code now} (nor sooner than the train would have). Returns where they came from.
+		 */
+		List<BlockPos> walkTheRest(BlockPos hall, long now, java.util.function.ToLongFunction<Shipment> walk) {
+			List<BlockPos> from = new ArrayList<>();
+			onTheRoad.replaceAll(s -> {
+				if (!s.to().equals(hall) || !s.byTrain() || s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST) {
+					return s; // 39.7b: goods in the train's chest come back out of it first (CaravanTrains.serve), never twice
+				}
+				from.add(s.from());
+				long arrives = io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives()) ? now + walk.applyAsLong(s) // 39.7a: never boarded
+					: Math.max(s.arrives(), now + walk.applyAsLong(s));
+				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), false);
+			});
+			if (!from.isEmpty()) {
+				setDirty();
+			}
+			return from;
+		}
+
+		/**
+		 * 39.7a: the caravans from {@code from} to {@code to} whose arrival is {@code was} (a stage of the trip by the
+		 * village's Create train, {@link io.github.jcondedata.aliveworkplace.city.CaravanTrains#BOARDING}) get {@code arrives}
+		 * instead. Returns how many.
+		 */
+		public int retime(BlockPos from, BlockPos to, long was, long arrives) {
+			int[] n = {0};
+			onTheRoad.replaceAll(s -> {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != was) {
+					return s;
+				}
+				n[0]++;
+				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), s.byTrain());
+			});
+			if (n[0] > 0) {
+				setDirty();
+			}
+			return n[0];
+		}
+
+		/**
+		 * 39.7b: the caravans from {@code from} to {@code to} waiting at the station board the train standing there: with
+		 * {@code load} putting their goods in its chest they ride {@link io.github.jcondedata.aliveworkplace.city.CaravanTrains#IN_CHEST},
+		 * else (no room) as the caravan's record ({@code ABOARD}). Returns how many boarded.
+		 */
+		public int board(BlockPos from, BlockPos to, java.util.function.Predicate<List<ItemStack>> load) {
+			int[] n = {0};
+			onTheRoad.replaceAll(s -> {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != io.github.jcondedata.aliveworkplace.city.CaravanTrains.BOARDING) {
+					return s;
+				}
+				n[0]++;
+				long stage = load.test(s.goods()) ? io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST
+					: io.github.jcondedata.aliveworkplace.city.CaravanTrains.ABOARD;
+				return new Shipment(s.from(), s.to(), s.goods(), stage, s.sale(), s.back(), s.byTrain());
+			});
+			if (n[0] > 0) {
+				setDirty();
+			}
+			return n[0];
+		}
+
+		/**
+		 * 39.7b: the train brought the caravans from {@code from} in at {@code to}'s station: each one's goods come out of
+		 * its chest ({@code unload} gives what was still there) and it arrives {@code now} with those. Returns how many.
+		 */
+		public int unload(BlockPos from, BlockPos to, long now, java.util.function.UnaryOperator<List<ItemStack>> unload) {
+			int[] n = {0};
+			onTheRoad.replaceAll(s -> {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST) {
+					return s;
+				}
+				n[0]++;
+				return new Shipment(s.from(), s.to(), List.copyOf(unload.apply(s.goods())), now, s.sale(), s.back(), s.byTrain());
+			});
+			if (n[0] > 0) {
+				setDirty();
+			}
+			return n[0];
+		}
+
+		/**
+		 * 39.7b: the train with the goods of the caravans from {@code from} to {@code to} in its chest is gone or can't come
+		 * in: what {@code unload} still finds in the chest (a derailed train keeps it) goes on with the caravan, arriving
+		 * {@code arrives}; a caravan with nothing left there (the train broken up: its chest has them) is taken off the
+		 * road. Returns how many were taken off.
+		 */
+		public int recover(BlockPos from, BlockPos to, long arrives, java.util.function.UnaryOperator<List<ItemStack>> unload) {
+			int[] gone = {0};
+			boolean[] changed = {false};
+			List<Shipment> next = new ArrayList<>();
+			for (Shipment s : onTheRoad) {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST) {
+					next.add(s);
+					continue;
+				}
+				changed[0] = true;
+				List<ItemStack> back = unload.apply(s.goods());
+				if (back.isEmpty()) {
+					gone[0]++;
+				} else {
+					next.add(new Shipment(s.from(), s.to(), List.copyOf(back), arrives, s.sale(), s.back(), s.byTrain()));
+				}
+			}
+			if (changed[0]) {
+				onTheRoad.clear();
+				onTheRoad.addAll(next);
+				setDirty();
+			}
+			return gone[0];
 		}
 
 		/** Takes every caravan to or from {@code hall} off the road (tests clean up after themselves). */
@@ -477,6 +634,14 @@ public final class Caravans {
 				if (colour != null) { // 33.7
 					t.putString("colour", colour.getName());
 				}
+				List<BlockPos> stationsHere = stations.getOrDefault(v.hall(), List.of());
+				if (!stationsHere.isEmpty()) { // 39.7
+					t.putLongArray("stations", stationsHere.stream().mapToLong(BlockPos::asLong).toArray());
+				}
+				Set<BlockPos> tracked = tracks.getOrDefault(v.hall(), Set.of());
+				if (!tracked.isEmpty()) { // 39.7
+					t.putLongArray("tracks", tracked.stream().mapToLong(BlockPos::asLong).toArray());
+				}
 				list.add(t);
 			}
 			tag.put("villages", list);
@@ -511,6 +676,9 @@ public final class Caravans {
 				}
 				if (s.back()) {
 					t.putBoolean("back", true);
+				}
+				if (s.byTrain()) { // 39.7
+					t.putBoolean("byTrain", true);
 				}
 				road.add(t);
 			}
@@ -590,6 +758,13 @@ public final class Caravans {
 				if (colour != null) {
 					data.colours.put(hall, colour);
 				}
+				long[] stationsHere = t.getLongArray("stations"); // 39.7; older saves have none
+				if (stationsHere.length > 0) {
+					data.stations.put(hall, java.util.Arrays.stream(stationsHere).mapToObj(BlockPos::of).toList());
+				}
+				for (long other : t.getLongArray("tracks")) { // 39.7; older saves have none
+					data.tracks.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(other));
+				}
 			}
 			ListTag road = Nbt.getList(tag, "road", Tag.TAG_COMPOUND);
 			for (int i = 0; i < road.size(); i++) {
@@ -614,7 +789,7 @@ public final class Caravans {
 					}
 				}
 				data.onTheRoad.add(new Shipment(BlockPos.of(Nbt.getLong(t, "from")), BlockPos.of(Nbt.getLong(t, "to")), goods, Nbt.getLong(t, "arrives"),
-					sale, Nbt.getBoolean(t, "back")));
+					sale, Nbt.getBoolean(t, "back"), Nbt.getBoolean(t, "byTrain"))); // byTrain: 39.7, false in older saves
 			}
 			ListTag sold = Nbt.getList(tag, "sales", Tag.TAG_COMPOUND); // 33.6; older saves have none
 			for (int i = 0; i < sold.size(); i++) {
@@ -729,6 +904,15 @@ public final class Caravans {
 			VillageBanners.Colours colours = VillageBanners.of(level, hall); // 33.7: its caravans' carpets, known where it isn't loaded
 			data.setColour(hall, colours == null ? null : colours.base());
 		}
+		io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, hall, data); // 39.7
+		if (data.stations(hall).isEmpty()) {
+			// 39.7: trains coming in to a village whose station is gone: the caravans get off and walk the rest
+			for (BlockPos from : data.walkTheRest(hall, level.getGameTime(), s -> trip(level, s.from(), s.to(), data) / 4)) {
+				Village them = data.village(from);
+				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_walked",
+					them == null ? Component.translatable("chronicle.aliveworkplace.someone") : them.name()), true);
+			}
+		}
 		unload(level, hall, data);
 		io.github.jcondedata.aliveworkplace.trade.CaravanTrade.book(level, hall, data); // 33.6: what our caravans sold
 		long day = Chronicle.day(level);
@@ -780,23 +964,37 @@ public final class Caravans {
 		if (goods.isEmpty() && sale.isEmpty()) {
 			return null;
 		}
-		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods),
-			level.getGameTime() + trip(level, hall, to, data), sale, false);
+		// 39.7: between two villages with stations and track along the road, the caravan rides the train
+		boolean train = io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, hall, to);
+		long ticks = trip(level, hall, to, data);
+		// 39.7a: with the village's own Create train on the line, the goods wait at the station to be loaded onto it
+		long arrives = train && io.github.jcondedata.aliveworkplace.city.CaravanTrains.realTrain(level, hall, to)
+			? io.github.jcondedata.aliveworkplace.city.CaravanTrains.BOARDING
+			: level.getGameTime() + (train ? io.github.jcondedata.aliveworkplace.city.CaravanTrains.trainTrip(ticks) : ticks);
+		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), arrives, sale, false, train);
 		List<ItemStack> all = new ArrayList<>(goods);
 		sale.forEach(lot -> all.addAll(lot.stacks()));
-		// 31.20: on a long road, one caravan in lostCaravanChance goes missing; the Lost Caravan's arc holds its goods
-		boolean lost = io.github.jcondedata.aliveworkplace.story.LostCaravanStory.lose(level, hall, to, all, level.random);
+		// 31.20: on a long road, one caravan in lostCaravanChance goes missing; the Lost Caravan's arc holds its goods (never a train's)
+		boolean lost = !train && io.github.jcondedata.aliveworkplace.story.LostCaravanStory.lose(level, hall, to, all, level.random);
 		if (!lost) {
 			data.ship(shipment);
 			io.github.jcondedata.aliveworkplace.realm.RealmEdicts.caravanSent(level, hall, to); // a realm reform's count (33.22)
 		}
 		level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1f);
-		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
+		Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable(train ? "chronicle.aliveworkplace.train_left"
+			: "chronicle.aliveworkplace.caravan_left", them.name(), describe(all)), true);
 		VillageMoments.award(level, hall, VillageMoments.CARAVAN, null); // the questbook's first caravan
-		if (!lost) {
+		if (train) {
+			io.github.jcondedata.aliveworkplace.city.CaravanTrains.whistle(level, hall, data); // 39.7: steam and a bell at the station
+		} else if (!lost) {
 			CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
 		}
 		return shipment;
+	}
+
+	/** 39.7a: the village's Create train came in at {@code hall}'s station: the caravans it brought are unloaded now. */
+	public static void trainIn(ServerLevel level, BlockPos hall) {
+		unload(level, hall, Data.get(level));
 	}
 
 	/** Unloads the caravans that have come to {@code hall} into its Storehouses' chests (what doesn't fit stays on the road). */
@@ -839,7 +1037,11 @@ public final class Caravans {
 			}
 			// 33.7: a caravan that came in (not one still waiting on the road for room) is seen coming, when someone is there
 			if (count(left) + sold.waiting().stream().mapToInt(Lot::count).sum() < count(s.goods()) + s.sale().stream().mapToInt(Lot::count).sum()) {
-				CaravanSights.come(level, hall, s, data);
+				if (s.byTrain()) {
+					io.github.jcondedata.aliveworkplace.city.CaravanTrains.whistle(level, hall, data); // 39.7: the train comes in
+				} else {
+					CaravanSights.come(level, hall, s, data);
+				}
 			}
 			if (!sold.home().isEmpty()) {
 				List<ItemStack> home = new ArrayList<>();
@@ -862,7 +1064,7 @@ public final class Caravans {
 			}
 			if (left.size() < s.goods().size() || left.stream().mapToInt(ItemStack::getCount).sum() < s.goods().stream().mapToInt(ItemStack::getCount).sum()) {
 				Village from = data.village(s.from());
-				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.caravan_came",
+				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable(s.byTrain() ? "chronicle.aliveworkplace.train_came" : "chronicle.aliveworkplace.caravan_came",
 					from == null ? Component.translatable("chronicle.aliveworkplace.someone") : from.name(), describe(s.goods())), true);
 				level.playSound(null, hall, SoundEvents.LLAMA_CHEST, SoundSource.NEUTRAL, 1f, 1.2f);
 			}

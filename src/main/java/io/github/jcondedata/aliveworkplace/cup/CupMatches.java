@@ -287,7 +287,9 @@ public final class CupMatches {
 				trainer.teleportTo(box.x, box.y, box.z);
 				trainer.getNavigation().stop();
 			}
-			battle = CupBattles.EXTENSION.call(b -> b.versusVillager(players[ps], trainer, who[vs].display(), Math.max(1, who[vs].tier()), who[vs].id(), theme), null);
+			boolean mega = CupDays.finalNext(cup) && io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.extraMegas(); // 38.5
+			battle = CupBattles.EXTENSION.call(b -> b.versusVillager(players[ps], trainer, who[vs].display(), Math.max(1, who[vs].tier()), who[vs].id(), theme, mega),
+				null);
 		}
 		if (battle == null) { // a player already in a battle, or Cobblemon said no: ready again, in a new window
 			for (ServerPlayer p : players) {

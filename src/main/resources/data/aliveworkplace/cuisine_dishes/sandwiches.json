@@ -1,0 +1,10 @@
+{
+  "requires": "cobblecuisine",
+  "dishes": [
+    {"id": "cobblecuisine:sweet_jam_sandwich", "level": 1, "group": "sandwich"},
+    {"id": "cobblecuisine:salty_egg_sandwich", "level": 1, "group": "sandwich"},
+    {"id": "cobblecuisine:salty_vegetable_sandwich", "level": 1, "group": "sandwich"},
+    {"id": "cobblecuisine:sweet_fruit_sandwich", "level": 2, "group": "sandwich"},
+    {"id": "cobblecuisine:spicy_noodle_sandwich", "level": 2, "group": "sandwich"}
+  ]
+}

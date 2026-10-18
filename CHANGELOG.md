@@ -51,6 +51,11 @@ asks for the steps, `latest.log` and any crash report).
   tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
   real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
+- **Tom's Simple Storage as the Storehouse's store (2.1, behind its gate).** An inventory connector by the Storehouse
+  is one store for every chest, barrel and filing cabinet it joins (touching it, or on its cables through a cable
+  connector), so each item counts once; porters fill it and builders take from it through the connector, and a chest
+  unplugged from the network is its own store again. The board says "Linked through an inventory connector: 3 blocks",
+  and a storage terminal on the connector shows the village's goods in Tom's own screen (37.10).
   A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
 - **Create integration (2.3), the plan.** The design note (`docs/design/M39.md`): the Mechanic and their Toolbox,
   villagers working Create's millstone, press, mixer and crushing wheels, the Watermill, Windmill and Workshop,
@@ -79,6 +84,12 @@ asks for the steps, `latest.log` and any crash report).
   pulleys in the new place. A part broken before the build is done is put back first, and once it's finished the
   owner is told whether every part turns, or which don't and where ("1 part doesn't turn: Shaft at 12 64 -30"). The
   parts list is a data file (`kinetic_parts`). Setting `createBuilds` (behind the 2.3 gate) (39.5).
+- **Create schematics at the Blueprint Table (2.3, being built).** With Create installed, the schematics players
+  upload with Create's Schematic Table (`schematics/uploaded/<player>/`) are at the Blueprint Table the next time it
+  opens, as blueprints builders can build, and a written Schematic right-clicked on the table imports its own file
+  there and then. Blocks of mods the server doesn't have are counted and named, an upload under the same name replaces
+  its blueprint, and a Schematic whose file is gone says so; names that point outside the uploads are refused.
+  Setting `createSchematics` (behind the 2.3 gate) (39.6).
 - **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
   in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
   and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break
@@ -376,6 +387,12 @@ asks for the steps, `latest.log` and any crash report).
   brew the Three-Herb Tonic at their brewing stand and take it round, with no traveling doctor sent for. A Remedy, from
   them or from your hand, only eases the cough for a day, as the story says, and a villager a Remedy is keeping well
   doesn't catch it. With **Physicians** off, Doctor Wren comes as before.
+
+### Dev
+- **The pack test builds furnished homes** (37.11). `FURNISHED=true tools/packtest/run.sh` boots Cobbleverse with
+  `furnitureMods` set to Cozy Home first and has two builders build the Starter Cottage and the Inn; it passes only when
+  both finish with nothing skipped, every block and furniture piece in place and Cozy Home pieces in each. The nightly
+  run does it too. The wiki's "Furniture and storage mods" page gains a table of each mod, and the player guide a page.
 
 ## 0.144.0 — 2026-10-13
 

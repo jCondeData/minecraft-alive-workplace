@@ -100,6 +100,8 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Quests](quests.md): the jobs the village posts for you, and what they pay.
 - [Festivals and market days](festivals-and-markets.md): feasts, fireworks, the calendar and traveling traders.
 - [Trade and caravans](trade-and-caravans.md): villages that supply each other, and selling from your own shop.
+- [Furniture and storage mods](furniture-mods.md): builds furnished with Handcrafted, Cozy Home, CobbleFurnies and
+  Beautify, and Sophisticated and Tom's storage in the Storehouse.
 - [Threats and defense](defence.md): guards, raids, bandit camps, walls, and how to fight back.
 - [Lairs and sieges](lairs-and-sieges.md): raiders' camps and their named captains, scouts, and sieges at the walls.
 - [Drought and the Well Keeper](drought.md): when the rain stays away, and the villager who carries water to your fields.
@@ -218,6 +220,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   down after.
 - [Contraptions from a blueprint](create-contraptions.md): with Create, builders put a machine's moving parts in last,
   in order, and check it turns.
+- [Create schematics at the Blueprint Table](create-schematics.md): with Create, the schematics you upload at its
+  Schematic Table are blueprints your builders can build.
 
 ### Legends and guilds
 

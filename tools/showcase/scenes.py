@@ -216,6 +216,16 @@ SCENES = [
       [("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
        ("21_request_board", "The Storehouse board in the Blueprint Table's style: requests listed, the store at a glance"),
        ("22_request_read_out", "A request read out in the pane")]),
+    # Modded storage networks in the Storehouse: part one (ROADMAP 37.9) a Sophisticated Storage controller and its linked
+    # barrels and chests, part two (37.10) a Tom's Simple Storage inventory connector and its network, each one store
+    S("modded_storehouse", "Porter", "The Storehouse reads a Sophisticated controller and a Tom's Simple Storage network each as one store",
+      "the Storehouse's store is the controller alone, its five linked blocks counted once, with the board's 'Linked through a storage controller: 5 blocks'; "
+      "then a Storehouse's store is the inventory connector, each item counted once, the board names the 3 linked blocks and the terminal opens",
+      100, [("01_storehouse", "The Storehouse with a Sophisticated controller on its linked barrels and chests"),
+            ("02_board", "The Storehouse board: one store, and the line 'Linked through a storage controller: 5 blocks'"),
+            ("03_network", "The connector, a chest touching it, a cable to a second chest and a filing cabinet, the terminal"),
+            ("04_board", "The Storehouse board: linked through an inventory connector, 3 blocks"),
+            ("05_terminal", "The village's goods in Tom's own terminal screen")], cobblemon=True, furniture=True),
     job("dropbox", "Porter", "Emptying a Drop Box", "the porter emptied the Drop Box into the store", 120,
         [("04_dropbox_screen", "Drop Box")]),
     # Crafters
@@ -1028,6 +1038,10 @@ SCENES = [
     job("create_contraption", "Create", "A contraption from a blueprint: built in order, and it turns",
         "the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",
         200, create=True),
+    # Create schematics at the Blueprint Table (ROADMAP 39.6, with Create): an uploaded schematic imported by its written Schematic, then built
+    job("create_schematic", "Create", "A Create schematic at the Blueprint Table, built",
+        "the written Schematic used on the Blueprint Table imported its uploaded file, and the builder put the schematic's kiosk up",
+        150, create=True),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),
@@ -1102,12 +1116,6 @@ SCENES = [
       "two villagers sit on the furniture mod's chairs at supper, then get up at bedtime and sleep in its fancy beds",
       60, [("01_supper", "Supper: two villagers seated on Handcrafted chairs at the table"),
            ("02_bedtime", "Bedtime: the same two asleep in Handcrafted fancy beds")], cobblemon=True, furniture=True),
-    # Modded storage networks in the Storehouse (ROADMAP 37.9, part one): a Sophisticated Storage controller and its linked
-    # barrels and chests are one store
-    S("modded_storehouse", "Build families", "The Storehouse reads a Sophisticated Storage controller and its linked blocks as one store",
-      "the Storehouse's store is the controller alone, its five linked blocks' goods counted once, and the board says 'Linked through a storage controller: 5 blocks'",
-      40, [("01_storehouse", "The Storehouse with a Sophisticated controller on its linked barrels and chests"),
-           ("02_board", "The Storehouse board: one store, and the line 'Linked through a storage controller: 5 blocks'")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",

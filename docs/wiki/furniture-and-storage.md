@@ -5,9 +5,23 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.8, 37.9
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.8, 37.9, 37.10, 37.11
 
 ## 1. What a player sees
+
+Each mod at a glance (every one optional; the player guide's page is `docs/guide/furniture-mods.md`):
+
+| Mod | What it changes | Switch | Without it |
+|---|---|---|---|
+| Handcrafted | Chairs, tables, fancy beds (villagers sleep in them), nightstands, couches, shelves, crockery; the workplaces' counters and desks | `furnishedBuilds` | The next mod in `furnitureMods` with that kind, else the vanilla piece |
+| Lucky's Cozy Home | Sofas, chairs, tables, desks, counters, lamps, grandfather clocks | `furnishedBuilds` | The same |
+| CobbleFurnies | Chairs, tables, nightstands, sofas, lamps, curtains; the Poké Ball chair and desk (a Trainer's room, the Healing Center's and Schoolhouse's desks) | `furnishedBuilds` | The same; no Trainer's room, the desks follow the order |
+| Beautify | Picture frames, blinds, candelabras, rose trellises, hanging pots | `furnishedBuilds` | The same |
+| Sophisticated Storage | Its chests and barrels are stores (always); the board's room line; a controller is one store for what it links | `moddedStorageNetworks` (the controller) | Vanilla chests only; off, each linked block is its own store |
+| Tom's Simple Storage | An inventory connector in the Storehouse is one store for its network; its terminal shows the village's goods | `moddedStorageNetworks` | Off, each chest on the network is its own store |
+
+With none of them installed, or `furnishedBuilds` off, every build is exactly the vanilla build; a building keeps the
+pieces it was built with whatever changes later, and a removed mod's pieces come back as vanilla pieces under upkeep.
 
 Nothing yet for players: the expansion's gate stays closed until 2.1. Behind it, a build started on a server with
 Handcrafted gets Handcrafted chairs, tables and fancy beds where the vanilla build had stair chairs, fence tables and
@@ -74,6 +88,14 @@ controller, which files them into the linked blocks, and builders take what they
 and the blocks are separate stores again, with everything still in them. A "Sophisticated" style for the Storehouse
 (I, II and III; offered only with the mod and the switch on) builds Sophisticated chests and barrels in place of the
 vanilla ones and a controller on top of the Storehouse block, touching the chests on both sides.
+Behind the gate (37.10), a Tom's Simple Storage inventory connector within the Storehouse's 8 blocks is one store for
+every inventory it joins: the chests, barrels and filing cabinets touching it (and touching those), and the one each
+cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says
+"Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
+they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
+cable connector) and it is a store of its own again at once. A storage or crafting terminal on the network is Tom's
+own: a player opens it and sees, and takes, the village's goods. With `moddedStorageNetworks` off, every chest on the
+network is its own store and the connector is passed over, as before.
 
 ## 2. How it works
 
@@ -142,6 +164,15 @@ controller look again (the block's vanilla placing hook) so it links. Styles gai
 `"blueprints"` (a regex on the base blueprint ids the style is for), `"requires_switch"` (a config switch it is offered
 under) and a rule's `"near"` (the rule applies only to a block touching that block in the blueprint: the lantern on the
 Storehouse becomes the controller).
+**Tom's Simple Storage (37.10).** `store/StorageNetworks` finds a connector's inventories by block ids the way Tom's
+connector does (read from its 2.3.0 jar): from the connector through the inventories touching it, its trims and its
+inventory interface, within 16 blocks (Tom's connector scan range); and along its cable blocks (cables, framed
+cables, cable connectors, terminals, hoppers, level emitters, other connectors; at most 2048), the block each cable
+connector faces (`facing`). The connector exposes all of them through Fabric's transfer API, so `SupplyContainers.find`
+around the Storehouse block lists the connector and drops its inventories; nothing is saved, the walk is done again on
+every lookup. `Village.stashes` treats a connector as all its inventories: a chest of it listed in an earlier stash (a
+builder's own chests) turns the connector into its remaining chests one by one, so nothing counts twice across stashes.
+Every other job's lists still pass over Tom's blocks (`ModdedBlocks.STORAGE_NETWORK`) and read the chests themselves.
 
 ## 3. Switches
 
@@ -163,8 +194,11 @@ data files, not saved.
 
 ## 5. Items, blocks, jobs, commands
 
-No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedBuilds`,
-`aliveworkplace.config.moddedStorageNetworks`. Board text: `screen.aliveworkplace.storehouse.room` (37.8). Block tag `#aliveworkplace:furniture_storage` (37.5): furniture pieces that hold items, never
+No new items or blocks. The pack test's `/workplace furnished [days]` (37.11; only with `-Daliveworkplace.benchmark=true`,
+never on a normal server) lays flat ground, a builder on the Starter Cottage and another on the Inn, barrels of exactly
+their materials, and logs a `Furnished:` line per build and one `Furnished result:` line. Config text: `aliveworkplace.config.furnishedBuilds`,
+`aliveworkplace.config.moddedStorageNetworks`. Board text: `screen.aliveworkplace.storehouse.room` (37.8),
+`screen.aliveworkplace.storehouse.linked` (37.9), `screen.aliveworkplace.storehouse.connector` (37.10). Block tag `#aliveworkplace:furniture_storage` (37.5): furniture pieces that hold items, never
 read as a job's storage while `furnishedBuilds` is on. Block tag `#aliveworkplace:villager_seats` (37.6): the furniture
 mods' chairs, stools, benches, dining benches, couches, armchairs and sofas (Handcrafted, Cozy Home, CobbleFurnies),
 every entry `"required": false`. Entity `aliveworkplace:furniture_seat` (37.6): the unseen seat a sitting villager
@@ -199,24 +233,32 @@ rides, which can't be summoned.
   only to carry its passenger and lets them go on its first tick. "A furnished room" is a home whose building holds a
   seat from `#aliveworkplace:villager_seats` (only the mods' pieces are in it), worth 1 point (`FurnitureSeats.FURNISHED_BEAUTY`)
   to its people's beauty need; off with `furnishedBuilds`.
+- A Tom's network is read through its connector only at the Storehouse (design note M37, rule 4): a worker's own
+  chests on a network stay separate stores, as at 2.0 (37.10).
 - Lanes don't make review packages (sessions.md, 2026-10-04): the digest sends the design note as 37.1's package.
+- The pack test's furnished builds (37.11) are a mode of their own (`FURNISHED=true`), not part of the plain pack boot:
+  they need M37's gate open (`-Daliveworkplace.shots=true`, which opens every gate) and take minutes of building, and
+  the plain boot checks the pack as players get it. The nightly workflow runs both. The order is set in the config
+  file before the boot, as a server owner would, and the file is put back afterwards.
 
 ## 7. Known limits
 
 - The M34 workshops other than the Print Shop (the Tailor's and Jeweler's) and the other workplaces keep their vanilla
-  furniture for now; storage networks come with 37.9 and 37.10.
+  furniture for now.
 - Villagers look for a seat within 8 blocks of where they stand, not only in their own home, and walk to it for at
   most 30 seconds before choosing again.
 - A vanilla picture is a plain wall banner (a block, so a builder can place it): an item frame or a painting would be
   an entity, which a furniture spot can't hold.
 - The headless blueprint renderer (`tools/blueprints/render`, the architect skill's) can't draw Handcrafted,
   CobbleFurnies or Beautify pieces (they come out empty), so 37.4's renders reviewed the rooms in vanilla and the
-  modded look is judged in the real client, in the `furnished_home` scene; Cozy Home's facing is checked by the pack
-  test only.
+  modded look is judged in the real client, in the `furnished_home` scene; Cozy Home's pieces (facing included, through the plan's
+  block check) are checked by the pack test only.
 - A building finished before 37.3 is repaired as the vanilla build.
 - The generator finds only chairs, tables and beds by itself; couches, shelves, lamps and the rest are spots only where
   a drawing records them (the homes' rooms since 37.4; the workplaces with 37.5).
-- Lucky's Cozy Home can't load in the dev runtime, so it is tested by the pack test only.
+- Lucky's Cozy Home can't load in the dev runtime, so it is tested by the pack test only (`FURNISHED=true`).
+- Tom's connector's range, cable limit and blocked-block list are its config's defaults (16, 2048, none): a server that
+  changes them in Tom's config isn't followed (37.10). Tom's inventory proxies and remote links are not walked.
 - Sophisticated shulker boxes are stores too (they have item storage), but 37.8 tests only the chests and barrels.
 - The Storehouse finds what a controller links by walking block ids, not by asking the mod: a block the walk reaches
   that the controller hasn't linked (placed by a command with no placing) drops out of the store list without being
@@ -276,3 +318,15 @@ Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, whi
 `FurnitureSeatsCompatTests.aVillagerClaimsAndSleepsInAFancyBedAndTheHouseIsTheirHome` (the fancy bed is a villager home
 point of interest, the villager claims and sleeps in it, the Starter Cottage it stands in is their home, and its chair
 adds the furnished home's beauty). Scene `seats_and_beds` (`-Pfurniture=true`).
+37.10: with Tom's Simple Storage (compat): `TomsStorageCompatTests.aConnectorIsOneStoreForItsChestsAndCabinet` (two
+chests and a filing cabinet on the connector and its cable count once, the board line, in and out through the
+connector, the switch off), `TomsStorageCompatTests.aChestUnpluggedIsItsOwnStoreAgain`,
+`TomsStorageCompatTests.aPorterDeliversIntoTheNetwork`, `TomsStorageCompatTests.theBuilderTakesWhatItNeedsThroughTheConnector`,
+and `PackModsCompatTests.packStorageWorksAsSupplyChests` (a connector by a builder's chest still doesn't count it twice).
+Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
+the board's line and Tom's terminal screen.
+37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and
+`furnitureMods` as cozyhome, handcrafted, cobblefurnies, beautify into the server's config, boots Cobbleverse with M37's
+gate open and runs `/workplace furnished` at full speed. `tools/packtest/furnished.py` passes it only when the Starter
+Cottage and the Inn both finish with 0 skipped, 0 blocks not as planned, every furniture piece standing, the order in
+effect starting with Cozy Home, and Cozy Home pieces in each (its verdict's own tests: `python3 tools/packtest/test_furnished.py`).

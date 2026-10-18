@@ -4702,7 +4702,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Handcrafted present gets Handcrafted chairs, table and bed and costs their items; with `furnitureMods` set to
   CobbleFurnies first it gets CobbleFurnies pieces; with `furnishedBuilds` off it's the vanilla build; a GameTest
   (no mods) builds the vanilla build unchanged; a site saved mid-build keeps its choice after a reload.
-- [ ] **37.4** **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
+- [x] **37.4** (review: pending 2026-10-18) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
   in every style, the M34 grander homes when M34 is on) and the Inn get rooms that read as rooms with each mod: a
   dining set round a table, a bedroom with nightstands and a lamp, a sitting corner with a couch or sofa, shelves of
   crockery, clocks and pictures on the walls, blinds at the windows. Each room is drawn as vanilla furniture spots that
@@ -5031,6 +5031,16 @@ the owner's port jar; M33's caravans (39.7).
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-18 (37.4, lane-c-1018-0053, decision): the item asks for architect-skill renders of the furnished homes with
+  none, Handcrafted, CobbleFurnies and Beautify. Neither headless renderer (`tools/blueprints/render`, the architect
+  skill's `render.mjs` with the mods' textures added) can draw those mods' pieces: they come out empty. So the rooms were
+  reviewed in vanilla renders (Starter Cottage II, Stone House II, Manor, the Inn's tavern and guest floor), and the
+  modded look is judged in the real client, in scene `furnished_home` (filmed on GitHub with `-Pfurniture=true`; a local
+  film didn't get past resource loading in 15 minutes on the shared machine). The compat GameTests prove every piece is
+  placed with each mod, nothing skipped. CobbleFurnies sofas and curtains take `type`, `horizontal_part`,
+  `vertical_part` and `hinge` from their neighbours, so `MaterialRules.matches` ignores those on CobbleFurnies blocks
+  (by namespace) when judging a step done.
 
 - 2026-10-17 (planning, **Lanes after 1.0**): the bug lane takes Bugs and M26's open items; the quick lane takes M36
   (Quick additions); the big-update lanes take M37 (2.1, furniture and storage mods), then M38 (2.2, Raid Dens, Megas,

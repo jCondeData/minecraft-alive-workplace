@@ -36,11 +36,13 @@ GROUPS = [
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
 
 
-def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False):
+def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, furniture=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
-    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14)."""
+    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
+    furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
-            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18}
+            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
+            "furniture": furniture}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -1029,6 +1031,13 @@ SCENES = [
            ("20_manor", "The Noble's Manor: a stone house round a hall with a grand stair, slate roof and dormers"),
            ("23_manor_2_back", "Manor II: the walled formal garden, its hedges, fountain and gravel walks"),
            ("24_manor_3", "Manor III: the gatehouse on the street and the ballroom wing")]),
+    # Furnished homes (ROADMAP 37.4): Starter Cottage II as a server with the pack's furniture mods builds it, room by room
+    S("furnished_home", "Build families", "A furnished Starter Cottage, room by room (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods",
+      80, [("02_dining", "The dining corner: a Handcrafted table and chairs, a shelf of crockery, a Beautify picture"),
+           ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
+           ("05_sitting", "Upstairs: the sitting corner's couch, blinds and a picture"),
+           ("06_vanilla_dining", "The same corner without furniture mods: the vanilla pieces")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",
@@ -1297,7 +1306,8 @@ def changed(base, head="HEAD", root="."):
 
 def env(scene):
     s = BY_NAME[scene]
-    out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false"}
+    out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false",
+           "FURNITURE": "true" if s.get("furniture") else "false"}
     if s["cobblemon18"]:
         out["COBBLEMON18"] = "true"
     out.update(s["env"])

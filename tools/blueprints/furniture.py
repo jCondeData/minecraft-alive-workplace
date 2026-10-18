@@ -162,8 +162,11 @@ def detect(b):
 
 
 def spots_of(b):
-    """Detected spots plus those the drawing recorded (Build.furniture), absolute cells."""
-    return detect(b) + [dict(s) for s in getattr(b, "spots", [])]
+    """Detected spots plus those the drawing recorded (Build.furniture), absolute cells. A recorded piece an upgrade has
+    since built over (a cell no longer holds the block it was drawn with) has no spot: it isn't there any more."""
+    def still_there(s):
+        return all(b.blocks.get(tuple(c), ("minecraft:air",))[0] == d for c, d in zip(s["cells"], s.get("drawn", ())))
+    return detect(b) + [dict(s) for s in getattr(b, "spots", []) if still_there(s)]
 
 
 def to_json(b, spots):

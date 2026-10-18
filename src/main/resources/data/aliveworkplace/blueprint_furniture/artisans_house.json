@@ -1,6 +1,10 @@
 {"spots": [
   {"kind": "table", "pos": [4, 1, 6], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_fence[east=false,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:spruce_pressure_plate[powered=false]"}]},
   {"kind": "chair", "pos": [4, 1, 7], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]"}]},
+  {"kind": "nightstand", "pos": [3, 6, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_slab[type=top,waterlogged=false]"}]},
+  {"kind": "lamp", "pos": [5, 6, 2], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_fence[east=false,north=true,south=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:lantern[hanging=false,waterlogged=false]"}]},
   {"kind": "bed", "pos": [2, 6, 3], "facing": "north", "wood": "dark_oak", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:orange_bed[facing=north,occupied=false,part=foot]"}, {"at": [0, 0, -1], "state": "minecraft:orange_bed[facing=north,occupied=false,part=head]"}]},
-  {"kind": "bed", "pos": [6, 6, 3], "facing": "north", "wood": "dark_oak", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:orange_bed[facing=north,occupied=false,part=foot]"}, {"at": [0, 0, -1], "state": "minecraft:orange_bed[facing=north,occupied=false,part=head]"}]}
+  {"kind": "bed", "pos": [6, 6, 3], "facing": "north", "wood": "dark_oak", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:orange_bed[facing=north,occupied=false,part=foot]"}, {"at": [0, 0, -1], "state": "minecraft:orange_bed[facing=north,occupied=false,part=head]"}]},
+  {"kind": "couch", "pos": [3, 6, 9], "facing": "north", "wood": "spruce", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]"}]},
+  {"kind": "couch", "pos": [4, 6, 9], "facing": "north", "wood": "spruce", "colour": "orange", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]"}]}
 ]}

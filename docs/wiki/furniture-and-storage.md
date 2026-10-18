@@ -5,15 +5,27 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3
+Roadmap items: 37.1, 37.2, 37.3, 37.4
 
 ## 1. What a player sees
 
 Nothing yet for players: the expansion's gate stays closed until 2.1. Behind it, a build started on a server with
 Handcrafted gets Handcrafted chairs, tables and fancy beds where the vanilla build had stair chairs, fence tables and
 beds (37.3); the Blueprint Table's preview, its supply report and the material list book show those pieces and cost
-their items, and so does the builder's shopping list. The rooms themselves come with 37.4 and 37.5. When it is
-finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
+their items, and so does the builder's shopping list.
+
+The homes are furnished room by room (37.4): the Starter Cottage, Stone House, Townhouse and Manor at every level and
+in every style, the Artisan's House and the Inn. In plain vanilla the rooms read as rooms already: a dining corner (a
+fence-and-plate table with two stair chairs), a bedroom (a slab nightstand at the bed's head, a standing lamp of a
+lantern on a fence post), a sitting corner (a couch of stair seats against the wall, some with trapdoor arms), a shelf
+of cups (an upside-down slab with a flower pot on it), a grandfather clock (a stripped log case under a trapdoor
+hood), pictures (plain wall banners) and blinds rolled up over the windows (closed trapdoors at the window head). The
+Inn has shelves of cups behind the bar, a clock by the door, a nightstand, lamp and picture in each guest room, and a
+couch and lamp on the landing. With Handcrafted those become Handcrafted chairs, tables, fancy beds, nightstands,
+couches, shelves and crockery; Beautify adds its candelabras, picture frames and blinds; with CobbleFurnies first its
+chairs, tables, nightstands, sofas, lamps and curtains. Cozy Home's clocks and sofas come in on the real pack.
+
+When it is finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
 blinds, picture frames and candelabras; villagers sit on the chairs and sleep in the fancy beds. Without any of those
 mods every build is exactly today's vanilla build. The Storehouse also reads Sophisticated chests and barrels of every
@@ -36,6 +48,14 @@ slab on a lone post) and beds in every finished drawing, and a drawing records o
 of its own takes the wood most of the build is made of. The game reads the files at start-up and on `/reload`
 (a datapack can add its own); a file with a mistake is logged with its path and skipped. A styled blueprint's spots are
 its base's, with the style's swaps: a spruce chair in the Dark Oak style is a dark oak chair.
+
+**Furnished rooms (37.4).** The drawings (`tools/blueprints/starter.py`, `houses.py`) draw each piece with a helper
+in `tools/blueprints/kit.py` (`nightstand`, `floor_lamp`, `couch`, `shelf`, `picture`, `blinds`, `clock`) that places
+the vanilla blocks and records the spot, refusing a cell already drawn, so no piece lands on a bed, a job block or a
+chest. A piece an upgrade builds over later (a cell no longer holds what the piece was drawn with) loses its spot in
+that upgrade's file. Every piece stays clear of doorways, ladders and the paths to them, including the doorways the
+upgrades cut (the Manor's ballroom door, the Cottage's kitchen wing). Facing: a piece against a wall faces into the
+room; a couch's sitters face away from the wall it stands on.
 
 **Furnishing tables (37.3).** `data/aliveworkplace/furnishings/<mod>.json` (`handcrafted`, `cozyhome`,
 `cobblefurnies`, `beautify`; a datapack can add others, named by file) give each kind's block ids, with `{wood}` and
@@ -79,13 +99,17 @@ No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedB
 
 ## 7. Known limits
 
-- Our builds' rooms aren't furnished yet beyond their chairs, tables and beds (37.4, 37.5); seats and storage networks
-  come with 37.6 to 37.10.
-- The facing rules in the furnishing tables are checked by eye in 37.4's renders; Cozy Home's are checked by the pack
+- The workplaces aren't furnished yet beyond their chairs, tables and beds (37.5); seats and storage networks come with
+  37.6 to 37.10.
+- A vanilla picture is a plain wall banner (a block, so a builder can place it): an item frame or a painting would be
+  an entity, which a furniture spot can't hold.
+- The headless blueprint renderer (`tools/blueprints/render`, the architect skill's) can't draw Handcrafted,
+  CobbleFurnies or Beautify pieces (they come out empty), so 37.4's renders reviewed the rooms in vanilla and the
+  modded look is judged in the real client, in the `furnished_home` scene; Cozy Home's facing is checked by the pack
   test only.
 - A building finished before 37.3 is repaired as the vanilla build.
 - The generator finds only chairs, tables and beds by itself; couches, shelves, lamps and the rest are spots only where
-  a drawing records them (37.4 and 37.5 draw the furnished rooms that way).
+  a drawing records them (the homes' rooms since 37.4; the workplaces with 37.5).
 - Lucky's Cozy Home can't load in the dev runtime, so it is tested by the pack test only.
 
 ## 8. Proof
@@ -103,3 +127,12 @@ and a missing list, the list off the screen and in the saved file), `FurnishingC
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.
+37.4 (no mods): `FurnishedHomesGameTests.everyHomeHasItsFurnishedRooms`,
+`FurnishedHomesGameTests.withoutFurnitureModsEveryHomeIsVanilla`, `FurnishedHomesGameTests.aBuilderBuildsTheFurnishedInnInVanilla`,
+`FurnishedHomesGameTests.theBuilderWaitsForAMissingPicture`; with the mods (compat):
+`FurnishedHomesCompatTests.aBuilderBuildsTheCottageWithHandcrafted`, `FurnishedHomesCompatTests.aBuilderBuildsTheCottageWithCobbleFurnies`,
+`FurnishedHomesCompatTests.aBuilderBuildsTheInnWithHandcrafted`, `FurnishedHomesCompatTests.aBuilderBuildsTheInnWithCobbleFurnies`
+(each built from chests of exactly its materials, nothing skipped, each spot the piece of the mod the order picks for its
+kind), `FurnishedHomesCompatTests.theBuilderWaitsForAMissingCouch`, `FurnishedHomesCompatTests.aSavedFurnishedSiteKeepsEveryPiece`,
+`FurnishedHomesCompatTests.switchedOffTheRoomsAreVanilla`. Showcase scene `furnished_home` (filmed with `-Pfurniture=true`,
+the pack's furniture mods): Starter Cottage II furnished, room by room, beside the vanilla one.

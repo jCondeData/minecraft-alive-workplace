@@ -30,6 +30,10 @@ asks for the steps, `latest.log` and any crash report).
   `furnishedBuilds`, `furnitureMods` and `moddedStorageNetworks`, which stay off until 2.1 is finished (37.1), and a furniture spots file beside each of 223 blueprints marking
   where its chairs, tables and beds are, for the furniture mods to fill in later (37.2). Behind the same gate, a build started with Handcrafted, Cozy Home,
   CobbleFurnies or Beautify installed gets their chairs, tables and beds in those places, chosen once and kept (37.3).
+- **Furnished homes (2.1, behind its gate).** The Starter Cottage, Stone House, Townhouse, Manor, Artisan's House and the
+  Inn get furnished rooms at every level: a dining corner, a bedroom with a nightstand and a lamp, a couch, a shelf of
+  cups, a clock, pictures and blinds, in plain vanilla blocks that the pack's furniture mods (Handcrafted, Beautify,
+  CobbleFurnies, Cozy Home) turn into their own pieces (37.4).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

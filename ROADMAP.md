@@ -266,6 +266,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B192** (lane: c) Player-visible, 2.1 Tom's Simple Storage (37.10): scene modded_storehouse fails: right-clicking Tom's storage terminal says 'Terminal out of range' instead of opening Tom's screen, with the Storehouse linked through an inventory connector. Expected: Tom's terminal works as normal next to our Storehouse. Test: SCENE=modded_storehouse. (found by chat, 2026-10-18)
 - [ ] **B193** (lane: e) Player-visible, 2.3 trains (39.7): scene village_train fails: the caravan never takes the train (no steam, bell or logs arriving) within the scene's time. Expected: a caravan between two villages with linked Train Stations travels by train and arrives. Test: SCENE=village_train (check the scene's wait against a slow GitHub runner too). (found by chat, 2026-10-18)
 - [ ] **B194** (lane: c) Showcase-only (37.5): scene furnished_workplaces's fourth still (the clinic benches) comes out black, so the scene fails; same black-still pattern as B188's cellars. Expected: all four stills show the build. Test: SCENE=furnished_workplaces. (found by chat, 2026-10-18)
+- [ ] **B195** B185GameTests grown-under-stair failed once in a full build with B132's fix (lane-a-1018-1522); Expected: passes every run. Test: B185GameTests repeated 10x (found by lane-a-1018-1522, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 

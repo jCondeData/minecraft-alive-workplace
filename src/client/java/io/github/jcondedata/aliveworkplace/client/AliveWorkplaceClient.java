@@ -18,6 +18,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		LegendLookLayer.init();
 		ClassLookLayer.init();
 		GolemRoleLayer.init();
+		MegaBraceletLayer.init();
 		// The far herbs (31.17) are cut out like vanilla's flowers.
 		io.github.jcondedata.aliveworkplace.herb.Herbs.all().forEach(herb -> net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE
 			.putBlock(herb, net.minecraft.client.renderer.RenderType.cutout()));
@@ -40,6 +41,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 				helper.register(new ClassLookLayer(villagers));
 				helper.register(new ClassLookLayer.Elder(villagers));
 				helper.register(new LegendLookLayer(villagers));
+				helper.register(new MegaBraceletLayer(villagers)); // a Mega trainer's bracelet (38.5)
 				helper.register(new GuardArmorLayer(villagers, context.getModelSet()));
 			}
 			// A Golem Smith's golem wears its role (29.15).

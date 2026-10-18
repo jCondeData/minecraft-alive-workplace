@@ -48,7 +48,7 @@ public final class RaidDens {
 	public static final int REACH = 160;
 	/** Known dens are read again this often (10 s). */
 	static final int CHECK_EVERY = 200;
-	static final List<String> TIERS = List.of("tier_one", "tier_two", "tier_three", "tier_four", "tier_five", "tier_six", "tier_seven");
+	public static final List<String> TIERS = List.of("tier_one", "tier_two", "tier_three", "tier_four", "tier_five", "tier_six", "tier_seven");
 
 	/** A known den: where, its tier (1 to 7), its type ("fire"), whether it's active, and the day it was first seen. */
 	public record Den(BlockPos pos, int tier, String type, boolean active, long day) {
@@ -137,6 +137,9 @@ public final class RaidDens {
 		if (!now.equals(known)) {
 			sites.dens.put(pos.asLong(), now);
 			sites.setDirty();
+			if (now.active() && !known.active()) {
+				DenWardens.glowed(level, now); // a watched den glows again (38.3)
+			}
 		}
 	}
 
@@ -172,7 +175,8 @@ public final class RaidDens {
 		return Component.translatableWithFallback("cobblemon.type." + type, plain);
 	}
 
-	static Optional<BlockPos> hallNear(ServerLevel level, BlockPos pos) {
+	/** The nearest Village Hall within {@link #REACH} of a den. */
+	public static Optional<BlockPos> hallNear(ServerLevel level, BlockPos pos) {
 		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, REACH, PoiManager.Occupancy.ANY);
 	}
 

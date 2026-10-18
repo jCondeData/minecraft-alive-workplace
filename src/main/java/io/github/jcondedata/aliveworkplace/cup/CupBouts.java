@@ -203,13 +203,20 @@ public final class CupBouts {
 			CupMatches.call(level, host, cup, pairing, a.ring(), a.boxes().get(0), a.boxes().get(1));
 			return;
 		}
-		begin(level, host, cup, new CupBout(pairing.a().id(), pairing.b().id(), team(pairing.a(), theme), team(pairing.b(), theme), pairing.round(),
+		boolean isFinal = CupDays.finalNext(cup);
+		begin(level, host, cup, new CupBout(pairing.a().id(), pairing.b().id(), team(pairing.a(), theme, isFinal), team(pairing.b(), theme, isFinal), pairing.round(),
 			CupBout.seed(host, cup.day, pairing.round(), pairing.a().id(), pairing.b().id()), a.ring(), a.boxes().get(0), a.boxes().get(1)));
 	}
 
 	/** The entrant's team for this theme (none without Cobblemon). */
 	public static List<CupBout.Fighter> team(CupData.Entrant entrant, CupThemes.Theme theme) {
-		return CupBattlers.EXTENSION.call(b -> b.team(entrant.id(), Math.max(1, entrant.tier()), theme), List.of());
+		return team(entrant, theme, false);
+	}
+
+	/** The same; in the final ({@code isFinal}, with the village's Megas on) one of them holds its Mega Stone (38.5). */
+	public static List<CupBout.Fighter> team(CupData.Entrant entrant, CupThemes.Theme theme, boolean isFinal) {
+		boolean mega = isFinal && io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.extraMegas();
+		return CupBattlers.EXTENSION.call(b -> b.team(entrant.id(), Math.max(1, entrant.tier()), theme, mega), List.of());
 	}
 
 	/** Puts {@code bout} in the ring: the trainers to their boxes, and everyone at the Arena told. */

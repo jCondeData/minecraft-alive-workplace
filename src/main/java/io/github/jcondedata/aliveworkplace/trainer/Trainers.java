@@ -158,6 +158,7 @@ public final class Trainers {
 				ModAttachments.TRAINER_REWARDS.set(trainer, Map.copyOf(paid));
 				pay(server, player, tierBefore, trainer);
 			}
+			LeaderBracelets.beaten((ServerLevel) trainer.level(), trainer, player); // every Leader of a realm: a Mega Bracelet (38.6)
 		}
 		if (tier(trainer) > tierBefore) {
 			player.sendSystemMessage(Component.translatable("message.aliveworkplace.trainer.ranked_up", trainer.getDisplayName(),

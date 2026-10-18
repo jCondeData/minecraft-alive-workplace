@@ -36,3 +36,6 @@ Stone set in it. Look at their crossed arms before you challenge them: no bracel
 
 On the settings screen, **Village Megas** turns this on or off. Off, only Masters Mega Evolve and nobody wears a
 bracelet. Without Mega Showdown nothing changes at all.
+
+Your village can cut its own Mega Stones, and a realm gives a Mega Bracelet to whoever beats all its Leaders: see
+[Mega Stones from the village](mega-stones.md).

@@ -282,6 +282,10 @@ SCENES = [
     S("battle", "Trainer", "A battle with a Master trainer", "the battle ran to the end and a Mega Evolution happened", 420,
       [("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
       cobblemon=True, mega=True),
+    # Mega Stones from the village (ROADMAP 38.6): a Journeyman Jeweller cuts a Mega Stone for the village's Master
+    job("mega_jeweller", "Jeweler", "Mega Stones: the Jeweler cuts one for the village's Master",
+        "the jeweler cut a Mega Stone for a Pokémon on the village Master's team from a Mega Crystal, gold and emeralds",
+        cobblemon=True, mega=True),
     # More Mega trainers (ROADMAP 38.5): a City's Trainer Leader wears the Mega Bracelet and Mega Evolves against the player
     S("mega_trainers", "Trainer Leader", "Mega trainers: a City's Leader Mega Evolves",
       "the City's Trainer Leader wears the Mega Bracelet and their lead Mega Evolved in a battle against the player", 420,

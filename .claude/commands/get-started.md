@@ -3,7 +3,7 @@ description: Run one lane (about 3 hours). Argument bugs, quick, big, c, d or cr
 ---
 
 Run one lane for Alive Workplace, Jesse's Minecraft mod (Fabric 1.21.1, for his Cobbleverse friends server). Jesse
-has given you full control: work on your own and don't wait for him. Lanes start by hand (no scheduled routines).
+has given you full control: work on your own and don't wait for him. Lanes run every 3 hours as scheduled tasks (owner, 2026-10-18), or by hand with `/get-started`.
 
 Argument: `$ARGUMENTS`
 - `bugs` (or `a`): you are **lane a, the bug lane**. You own every bug in ROADMAP "Bugs", Milestone 26's open items

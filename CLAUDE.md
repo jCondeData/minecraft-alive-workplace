@@ -27,9 +27,10 @@ lane** (Bugs, Milestone 26's release checks, red duty always; the owner gives hi
 gives each lane its own list. A lane coordinates and each feature is built by a fresh subagent (sessions.md), which
 keeps every conversation short and cheap.
 
-**Lanes start by hand** (owner, 2026-10-12: no scheduled routines on this account). **Read
-`docs/agent/handoff-1016.md` first** (2026-10-16): what the playtest chat built, rc.12, and the order to stop any
-scheduled Claude routines still running on any account. When the owner says "get
+**Lanes run on a schedule again** (owner, 2026-10-18): scheduled tasks on the owner's account start each lane every
+3 hours in its own cloud session (a at :22, b at :37, c at :52, d at :07 and e at :12, staggered so pushes rarely
+collide). The handoff note's "stop scheduled routines" (`docs/agent/handoff-1016.md`) is superseded; the old QA lane
+and digest tasks stay off. When the owner says "get
 started" or types `/get-started <bugs|quick|big|c|d|create>`, run that lane as `.claude/commands/get-started.md` says.
 
 **Start** (one step, about five minutes): `git pull`, `python3 tools/agent/sessions.py next --as <you>`, the latest CI

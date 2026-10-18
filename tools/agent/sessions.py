@@ -579,6 +579,9 @@ def next_items(items, who, held_by_others=()):
     def mine(it):
         if lane is None:
             return True
+        owner_lane = mark(it, "lane")  # "(lane: d)": a bug in a lane's own feature goes back to that lane (owner, 2026-10-18)
+        if it["area"] == "Bugs" and owner_lane:
+            return owner_lane.split(":", 1)[1].strip().lower() == lane
         if lane == "a":
             return it["area"] == "Bugs" or milestone_of(it) in BUG_MILESTONES
         if lane == "b":

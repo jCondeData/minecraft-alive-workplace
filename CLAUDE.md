@@ -55,7 +55,8 @@ item; don't read ROADMAP.md whole (it's over 4,000 lines).
    again only if the pull brought in code, push. The commit message says what's done and what's next.
 6. Next item straight away. No claims, landings, handoff or bookkeeping commits.
 7. Bugs are the bug lane's: the quick and big-update lanes never take one, even when it turns `main` red (they file
-   it with `sessions.py bug` if nobody has). On 2026-10-04, 16 of 47 bugs pulled build lanes off features.
+   it with `sessions.py bug` if nobody has), except a bug marked `(lane: x)`, a failure in lane x's own feature,
+   which that lane fixes first (owner, 2026-10-18). On 2026-10-04, 16 of 47 bugs pulled build lanes off features.
 
 **End of a run:** at **minute 140, start no new feature** (owner, 2026-10-05: unfinished runs left 5 items on `wip/`
 branches for the next run to merge). Finish the ones in flight, build, and push to `main` by minute 170, never past

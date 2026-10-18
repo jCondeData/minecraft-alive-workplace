@@ -29,7 +29,7 @@ Steps:
    locally; every 2-3 items run the full build and push to main when green. Don't film scenes locally and don't make
    review packages: GitHub films the scenes. Sonnet subagents only for translations and routine tests.
 4. Red main: the bug lane checks the latest CI run on main at the start and before each push and fixes a red main
-   first. The quick and big lanes never take a bug: they file one they find (`sessions.py bug`) and keep building;
+   first. The quick and big lanes never take a bug, except one marked `(lane: <your letter>)` (a failure in your own feature, owner 2026-10-18), which `next` lists first: they file one they find (`sessions.py bug`) and keep building;
    when only tests that also fail on main's latest CI run fail, they may push and name them in the commit message.
 5. At minute 140 start no new item: finish what's in flight, run the full build and push to main by about minute 170
    (never past 175). Only an item that truly can't be finished goes to wip/lane-x with a message saying what's left.

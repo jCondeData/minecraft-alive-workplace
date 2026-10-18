@@ -155,6 +155,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   smiths, traders and fossils.
 - [Raid dens](raid-dens.md): the dens your village knows, the guards who watch them and the trainers who beat them.
 - [Mega trainers](mega-trainers.md): which village trainers Mega Evolve, and the bracelet that shows it.
+- [Mega Stones from the village](mega-stones.md): the Jeweler's Mega Stones and Key Stones, and a Mega Bracelet for beating a realm's Leaders.
+- [Mega Shrine](mega-shrine.md): a decoration with Mega Showdown's pedestal, where a trainer Mega Evolves on festival days.
 
 ## For server owners
 

@@ -68,6 +68,8 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.guard.DenWardens.init(); // guards posted at the dens (38.3)
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.init(); // village trainers challenge the dens (38.4)
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.init(); // more Mega trainers, and their bracelets (38.5)
+		io.github.jcondedata.aliveworkplace.jeweller.MegaStones.init(); // the Jeweller's Mega Stones and Key Stones (38.6)
+		io.github.jcondedata.aliveworkplace.trainer.LeaderBracelets.init(); // a Mega Bracelet for beating a realm's Leaders (38.6)
 		io.github.jcondedata.aliveworkplace.hall.Festivals.init();
 		io.github.jcondedata.aliveworkplace.hall.Banquets.init();
 		io.github.jcondedata.aliveworkplace.hall.Curfew.init();

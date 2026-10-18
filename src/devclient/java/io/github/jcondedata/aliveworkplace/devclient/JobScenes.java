@@ -2917,6 +2917,69 @@ final class JobScenes {
 			Container c = chest(level, chestPos(), new ItemStack(Items.AMETHYST_SHARD, 6), new ItemStack(Items.COPPER_INGOT, 6));
 			return l -> c.countItem(io.github.jcondedata.aliveworkplace.registry.ModItems.AMETHYST_RING) >= 2;
 		}));
+		SCENES.put("mega_jeweller", job("the jeweller cut a Mega Stone for the village's Master from a Mega Crystal, gold and emeralds", 2400, (level, player) -> {
+			// ROADMAP 38.6 (Cobblemon and Mega Showdown): a Journeyman Jeweller with a Mega Crystal, 2 gold ingots and 4
+			// emeralds in the chest (and the store's rings, brooches and circlets already made), and a Master trainer of
+			// the village beside the stonecutter. The Jeweller cuts the Mega Stone of a Pokémon on the Master's team.
+			Villager jeweller = picked(level, player, STATION, Blocks.STONECUTTER, Items.GOLD_NUGGET);
+			jeweller.setVillagerData(jeweller.getVillagerData().setLevel(3));
+			jeweller.setVillagerXp(150);
+			Villager master = EntityType.VILLAGER.create(level);
+			if (master != null) {
+				master.moveTo(STATION.getX() + 2.5, STATION.getY(), STATION.getZ() - 1.5, 200f, 0f);
+				master.setVillagerData(master.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER).setLevel(5));
+				master.setNoAi(true);
+				level.addFreshEntity(master);
+			}
+			Showcase.check(io.github.jcondedata.aliveworkplace.jeweller.MegaStones.on(), "the village's Mega Stones are on (Mega Showdown, villageMegas, Jewelers)");
+			Showcase.check(master != null && !io.github.jcondedata.aliveworkplace.jeweller.MegaStones.stonesOf(master).isEmpty(), "the Master's team has a Mega Stone to cut");
+			net.minecraft.tags.TagKey<net.minecraft.world.item.Item> stones = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone"));
+			Container c = chest(level, chestPos(), new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+					net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone_crystal"))),
+				new ItemStack(Items.GOLD_INGOT, 2), new ItemStack(Items.EMERALD, 4), new ItemStack(ModItems.AMETHYST_RING, 8),
+				new ItemStack(ModItems.EMERALD_BROOCH, 8), new ItemStack(ModItems.GOLD_CIRCLET, 8));
+			return l -> {
+				for (int i = 0; i < c.getContainerSize(); i++) {
+					if (c.getItem(i).is(stones)) {
+						return true;
+					}
+				}
+				return false;
+			};
+		}));
+		SCENES.put("mega_shrine", new Job("on a festival day the village trainer walked up to the Mega Shrine's pedestal and Mega Evolved their ace, and the villagers watching cheered (+3 mood)", 1600,
+			new Vec3(4.5, -55.0, -17.5), new Vec3(0.5, -57.5, -5.5), (level, player) -> {
+			// ROADMAP 38.7 (Mega Showdown): a finished Mega Shrine north of the station and a Village Hall south of it; the
+			// festival's hours (its start); a Trainer below the dais and three villagers off work. The trainer climbs to the
+			// pedestal for the show, the others gather in front to watch.
+			BlockPos hall = STATION.offset(0, 0, 6);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos origin = STATION.offset(-3, 0, -8);
+			level.getStructureManager().get(StarterBlueprints.MEGA_SHRINE.id()).orElseThrow().placeInWorld(level, origin, origin,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.MEGA_SHRINE.id(), new BlueprintData.Placement(level.dimension().location(),
+				origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			level.setDayTime((io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) - 1) * 24000L + io.github.jcondedata.aliveworkplace.hall.Festivals.START + 50);
+			Showcase.check(io.github.jcondedata.aliveworkplace.trainer.MegaShrines.live(), "the shrine's show is on (Mega Showdown, villageMegas)");
+			Villager trainer = EntityType.VILLAGER.create(level);
+			trainer.moveTo(STATION.getX() + 3.5, STATION.getY(), STATION.getZ() - 11.5, 0f, 0f);
+			trainer.setVillagerData(trainer.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER).setLevel(5));
+			level.addFreshEntity(trainer);
+			List<Villager> watchers = new java.util.ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				Villager v = EntityType.VILLAGER.create(level);
+				v.moveTo(STATION.getX() - 2.5 + 2 * i, STATION.getY(), STATION.getZ() - 13.5, 180f, 0f);
+				level.addFreshEntity(v);
+				watchers.add(v);
+			}
+			return l -> {
+				if (l.getGameTime() % 20 == 0) {
+					io.github.jcondedata.aliveworkplace.trainer.MegaShrines.tick(l, hall);
+				}
+				return watchers.stream().allMatch(v -> io.github.jcondedata.aliveworkplace.trainer.MegaShrines.mood(l, v) == io.github.jcondedata.aliveworkplace.trainer.MegaShrines.MOOD);
+			};
+		}, null));
 		SCENES.put("habitat_keeper", job("the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 2400, (level, player) -> {
 			// ROADMAP 28.10: Cobblemon's Pasture Block picked with a honey bottle; Poké Snacks and a honey bottle in the
 			// chest; a lure spot marked behind the pasture, a Saccharine log beside it, and a shiny wild Eevee nearby. She

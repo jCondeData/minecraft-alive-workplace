@@ -58,7 +58,7 @@ public final class DenChallenges {
 	/** Days between a village's challenges ({@code denChallengeDays}). */
 	public static int EVERY_DAYS = 3;
 	public static final int LEADER_MAX = 3;
-	public static final int MASTER_MAX = 4;
+	public static final int MASTER_MAX = 3; // tier 4 and up are for players (owner, 2026-10-18)
 	public static final double PLAYER_NEAR = 8;
 	/** A lost challenge leaves the trainer tired this long. */
 	public static final long TIRED = 24000;

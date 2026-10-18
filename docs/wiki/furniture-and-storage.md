@@ -55,7 +55,8 @@ seats.
 
 When it is finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
-blinds, picture frames and candelabras; villagers sit on the chairs and sleep in the fancy beds. Without any of those
+blinds, picture frames and candelabras; villagers sit on the chairs and claim and sleep in the fancy beds (a bed spot only takes a mod's bed when villagers can
+sleep in it, as Handcrafted's; any other stays a vanilla bed). Without any of those
 mods every build is exactly today's vanilla build. The Storehouse also reads Sophisticated chests and barrels of every
 tier, and a Sophisticated controller or a Tom's inventory connector as one store for everything it links.
 

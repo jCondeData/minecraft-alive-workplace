@@ -199,7 +199,7 @@ public final class BuildSite {
 			if (furniture == null) {
 				// 37.3: chosen once, for a new build; a repair or a taking-down is of what stands, built with what it was
 				furniture = deconstruct || repair || cellarOnly ? BuildSiteManager.get(level).furniture(placement)
-					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure);
+					: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.forNewBuild(structure, level, placement.origin()); // 37.4: a partner's Trainer's room
 				onChange.run();
 			}
 			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));

@@ -221,7 +221,9 @@ dependencies {
         // Screenshots of Cobblemon features (SCENE=tutor): ./gradlew runScreenshots -Pcobblemon=true
         // SCENE=battle: Mega Showdown too (-Pmega=true), for a Master trainer's Mega Evolution.
         // PERF_STACK=true (-PperfStack=true): the pack's performance mods too (ROADMAP 25.4).
-        listOf("cobblemon" to "screenshot_cobblemon", "mega" to "screenshot_mega", "perfStack" to "screenshot_perf").forEach { (flag, key) ->
+        // FURNITURE=true (-Pfurniture=true): the pack's furniture mods (ROADMAP 37.4, scene furnished_home).
+        listOf("cobblemon" to "screenshot_cobblemon", "mega" to "screenshot_mega", "perfStack" to "screenshot_perf",
+            "furniture" to "screenshot_furniture").forEach { (flag, key) ->
             if (findProperty(flag) == "true") {
                 val mods = forCobblemon(tomlList("tests", key))
                 mods.forEach { "modDevclientRuntimeOnly"(it) }

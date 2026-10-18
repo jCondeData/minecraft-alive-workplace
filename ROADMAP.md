@@ -236,6 +236,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B162** (approved auto 2026-10-17) main is red: WorkplacesGameTests.workplaceBuilt_kitchen failed on CI builds 39036608129 and 39038594531 (2026-10-17 13:27Z, 13:55Z; ROADMAP-only commits): 'the worker works at Optional.empty ... the worker at -14, 0, -14, potential none, activity rest, day time 14001, built at tick 3098'. The Chef wandered off the huge_area's open edge during the 3,000-tick build and, outside it as night fell, never took the smoker. Expected: passes every run. Test: workplaceBuilt_kitchen in the full suite (urgent: red main) (found by lane-a-1017-1320, 2026-10-17)
 - [ ] **B163** FireGameTests.aJourneymanCallsABucketBrigade timed out (1200 ticks) in a local full build on the shared 7 GB box at 14:52Z (commit f4858e6e, M38 raid dens; nothing in that diff touches fire or villagers' walking). Not seen on CI. Expected: the brigade puts the fire out within the timeout. Probably a flake under load; repeat it. Test: FireGameTests.aJourneymanCallsABucketBrigade (found by lane-d-1017-1320, 2026-10-17)
 - [ ] **B164** The nightly's compat-cobblemon18 job (compat GameTests with -Pcobblemon18=true) failed on nightly 21 (run 39015121229, main 20721c8, 2026-10-17), and nightlies 19 and 20 also ended red; it holds back 26.4's three green nightlies. The nightly-tests issue comment only shows cloth-config 'duplicate input class' noise, not the failing test. Expected: the job passes and the issue shows the real failure. Test: runCompatGameTest -Pcobblemon18=true (found by red duty) (found by lane-a-1018-0022, 2026-10-18)
+- [ ] **B165** PartnersAllCompatTests.aCombeeCirclesTheHive failed on main CI build 1049 (bcaaeacd, docs-only commit, 2026-10-18 02:21Z), its only failure (compat 231/232), and passed in builds 1050-1052: B110's flake is back (B110 closed 2026-10-12). The CI log prints only the name; the message is in that run's gametest-report artifact. Expected: passes every run. Test: the test repeated under runCompatGameTest with the repeat generator (test-only; turned main red once) (found by lane-a-1018-0322, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4702,7 +4703,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Handcrafted present gets Handcrafted chairs, table and bed and costs their items; with `furnitureMods` set to
   CobbleFurnies first it gets CobbleFurnies pieces; with `furnishedBuilds` off it's the vanilla build; a GameTest
   (no mods) builds the vanilla build unchanged; a site saved mid-build keeps its choice after a reload.
-- [ ] **37.4** **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
+- [x] **37.4** (review: pending 2026-10-18) **Furnished homes.** The homes (the Starter Cottage, Stone House, Townhouse and Manor at every level and
   in every style, the M34 grander homes when M34 is on) and the Inn get rooms that read as rooms with each mod: a
   dining set round a table, a bedroom with nightstands and a lamp, a sitting corner with a couch or sofa, shelves of
   crockery, clocks and pictures on the walls, blinds at the windows. Each room is drawn as vanilla furniture spots that
@@ -4738,7 +4739,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   Library in the new spruce style has Carved Wood shelves and its Librarian still takes the lectern; a Carved Wood
   chest is a supply chest; the Grand style with Rechiseled builds with nothing skipped; renders reviewed; scene
   `carved_styles`.
-- [ ] **37.8** **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
+- [x] **37.8** (review: pending 2026-10-18) **Sophisticated Storage as village storage.** Every Sophisticated chest, barrel and limited barrel tier
   (`sophisticatedstorage:chest`, `iron_chest` ... `netherite_barrel`, `limited_barrel_1` ... `4`) works as a supply
   chest, a porter's chest and a Storehouse chest; builders treat them as containers (never broken while clearing, never
   copied; they're in `#c:chests` and `#c:barrels`); and the Storehouse measures free room in items where a stack
@@ -5040,6 +5041,23 @@ the owner's port jar; M33's caravans (39.7).
   The owner's answers in docs/design/M38.md (2026-10-18): the bracelet stays once per realm (as built); village
   trainers take raid dens up to tier 3 only, so 38.4's `DenChallenges.MASTER_MAX` must drop from 4 to 3 (with a test
   and the wiki, guide and CHANGELOG lines) if this run didn't land it.
+- 2026-10-18 (37.4, lane-c-1018-0053, decision, owner's Trainer's room answer): homes are planned before anyone lives
+  in them, so a home "with a Pokémon partner" is judged when its build is planned: a Pokémon kept in a Pasture Block
+  within `Partners.RADIUS` (16) of the plot's origin, through `PokemonPartners.pastured` (no Cobblemon class in core).
+  Its Trainer's room is the first chair spot and the nearest table/desk spot (within 3 blocks), in builds with a bed
+  spot; they get `cobblefurnies:poke_ball_chair` / `poke_ball_desk` whatever the order, when those blocks exist and
+  `cobblefurnies` is in `furnitureMods`. Saved with the site's choice like the rest (no new saved field); not redone
+  when a partner arrives later at a standing home (an upkeep refurnish would be a separate item if wanted).
+
+- 2026-10-18 (37.4, lane-c-1018-0053, decision): the item asks for architect-skill renders of the furnished homes with
+  none, Handcrafted, CobbleFurnies and Beautify. Neither headless renderer (`tools/blueprints/render`, the architect
+  skill's `render.mjs` with the mods' textures added) can draw those mods' pieces: they come out empty. So the rooms were
+  reviewed in vanilla renders (Starter Cottage II, Stone House II, Manor, the Inn's tavern and guest floor), and the
+  modded look is judged in the real client, in scene `furnished_home` (filmed on GitHub with `-Pfurniture=true`; a local
+  film didn't get past resource loading in 15 minutes on the shared machine). The compat GameTests prove every piece is
+  placed with each mod, nothing skipped. CobbleFurnies sofas and curtains take `type`, `horizontal_part`,
+  `vertical_part` and `hinge` from their neighbours, so `MaterialRules.matches` ignores those on CobbleFurnies blocks
+  (by namespace) when judging a step done.
 - 2026-10-18 (lane-b-1018-0038, **owner question: Milestone 36 is empty**): the quick lane finished 36.4, 36.6, 36.7
   and 36.8 and has nothing left. Owner: which quick additions next? Until then the quick lane's runs have no items.
   Also from 36.8: should our village houses get higher pool weights (desert villages grow ours in 14 of 50)?

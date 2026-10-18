@@ -66,6 +66,8 @@ public final class TableServer {
 	/** Opens (or refreshes) the table screen for {@code player}. */
 	public static void open(ServerPlayer player, BlockPos table) {
 		ServerLevel level = Players.level(player);
+		// Create's uploaded schematics join the library first (39.6), and the player hears what came of each new one.
+		CreateSchematics.sync(level.getServer()).forEach(player::sendSystemMessage);
 		Platform.get().send(player, new TablePayloads.Open(table, listing(level, BlueprintUnlocks.village(level, table)), canUpload(player)));
 	}
 

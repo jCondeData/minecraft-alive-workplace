@@ -1235,6 +1235,144 @@ final class JobScenes {
 				return true;
 			};
 		}, null));
+		// Create schematics at the Blueprint Table (ROADMAP 39.6, filmed with Create): the player's own kiosk, uploaded with
+		// Create's Schematic Table (its file in the server's schematics/uploaded/<player>/, one block in it from a mod that
+		// isn't installed), and the written Schematic in hand used on the Blueprint Table: the file is imported (the odd
+		// block counted and named), and a builder puts the kiosk up from the barrels in front of the camera.
+		SCENES.put("create_schematic", new Job("the written Schematic used on the Blueprint Table imported its uploaded file, and the builder put the schematic's kiosk up",
+			6000, new Vec3(4.5, -55.5, 6.5), new Vec3(-1.0, -59.0, -4.0), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
+				&& io.github.jcondedata.aliveworkplace.table.CreateSchematics.active(), "Create is loaded and the table takes its schematics");
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(3, level.getServer());
+			java.util.function.Function<String, BlockState> block = text -> {
+				try {
+					return net.minecraft.commands.arguments.blocks.BlockStateParser.parseForBlock(
+						io.github.jcondedata.aliveworkplace.mc.Lookup.lookup(net.minecraft.core.registries.BuiltInRegistries.BLOCK), text, false).blockState();
+				} catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+					throw new IllegalStateException(text, e);
+				}
+			};
+			// The kiosk, 5 × 5 × 5: a stone brick floor, spruce corners and planks, a window each side, a millstone and a
+			// cogwheel inside, a slab roof; the doorway in the front (z = 0)
+			Map<BlockPos, BlockState> kiosk = new LinkedHashMap<>();
+			for (int x = 0; x < 5; x++) {
+				for (int z = 0; z < 5; z++) {
+					kiosk.put(new BlockPos(x, 0, z), Blocks.STONE_BRICKS.defaultBlockState());
+					kiosk.put(new BlockPos(x, 4, z), block.apply("minecraft:spruce_slab[type=bottom]"));
+					boolean corner = (x == 0 || x == 4) && (z == 0 || z == 4);
+					boolean wall = x == 0 || x == 4 || z == 0 || z == 4;
+					for (int y = 1; y <= 3; y++) {
+						if (corner) {
+							kiosk.put(new BlockPos(x, y, z), Blocks.SPRUCE_LOG.defaultBlockState());
+						} else if (wall && !(z == 0 && x == 2 && y <= 2)) {
+							boolean window = y == 2 && (x == 2 || z == 2);
+							kiosk.put(new BlockPos(x, y, z), window ? block.apply(x == 2 ? "minecraft:glass_pane[east=true,west=true]"
+								: "minecraft:glass_pane[north=true,south=true]") : Blocks.SPRUCE_PLANKS.defaultBlockState());
+						}
+					}
+				}
+			}
+			kiosk.put(new BlockPos(2, 1, 3), block.apply("create:millstone"));
+			kiosk.put(new BlockPos(1, 1, 3), block.apply("create:andesite_casing"));
+			kiosk.put(new BlockPos(1, 2, 3), block.apply("create:cogwheel[axis=y]"));
+			kiosk.put(new BlockPos(3, 1, 3), block.apply("minecraft:barrel[facing=up]"));
+			net.minecraft.nbt.CompoundTag file = new net.minecraft.nbt.CompoundTag();
+			net.minecraft.nbt.ListTag size = new net.minecraft.nbt.ListTag();
+			for (int v : new int[] {5, 5, 5}) {
+				size.add(net.minecraft.nbt.IntTag.valueOf(v));
+			}
+			file.put("size", size);
+			net.minecraft.nbt.ListTag palette = new net.minecraft.nbt.ListTag();
+			net.minecraft.nbt.ListTag blocks = new net.minecraft.nbt.ListTag();
+			Map<BlockState, Integer> index = new java.util.HashMap<>();
+			java.util.function.BiConsumer<BlockPos, Integer> add = (pos, state) -> {
+				net.minecraft.nbt.CompoundTag b = new net.minecraft.nbt.CompoundTag();
+				net.minecraft.nbt.ListTag at = new net.minecraft.nbt.ListTag();
+				at.add(net.minecraft.nbt.IntTag.valueOf(pos.getX()));
+				at.add(net.minecraft.nbt.IntTag.valueOf(pos.getY()));
+				at.add(net.minecraft.nbt.IntTag.valueOf(pos.getZ()));
+				b.put("pos", at);
+				b.putInt("state", state);
+				blocks.add(b);
+			};
+			kiosk.forEach((pos, state) -> add.accept(pos, index.computeIfAbsent(state, s -> {
+				palette.add(net.minecraft.nbt.NbtUtils.writeBlockState(s));
+				return palette.size() - 1;
+			})));
+			net.minecraft.nbt.CompoundTag gizmo = new net.minecraft.nbt.CompoundTag(); // a block of a mod the server doesn't have
+			gizmo.putString("Name", "steamworks:brass_gauge");
+			palette.add(gizmo);
+			add.accept(new BlockPos(3, 2, 3), palette.size() - 1);
+			file.put("palette", palette);
+			file.put("blocks", blocks);
+			file.put("entities", new net.minecraft.nbt.ListTag());
+			file.putInt("DataVersion", net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+			String owner = player.getGameProfile().getName();
+			java.nio.file.Path path = io.github.jcondedata.aliveworkplace.table.CreateSchematics.uploadedFolder(level.getServer()).resolve(owner)
+				.resolve("Riverside Kiosk.nbt");
+			try {
+				java.nio.file.Files.createDirectories(path.getParent());
+				net.minecraft.nbt.NbtIo.writeCompressed(file, path);
+			} catch (java.io.IOException e) {
+				throw new java.io.UncheckedIOException(e);
+			}
+			// The written Schematic, as Create's Schematic Table hands it back, used on the Blueprint Table
+			BlockPos table = STATION.offset(3, 0, 1);
+			level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			ItemStack schematic = new ItemStack(io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM,
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", "schematic")));
+			for (String[] component : new String[][] {{"schematic_file", "Riverside Kiosk.nbt"}, {"schematic_owner", owner}}) {
+				@SuppressWarnings("unchecked")
+				net.minecraft.core.component.DataComponentType<String> type = (net.minecraft.core.component.DataComponentType<String>)
+					io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.DATA_COMPONENT_TYPE,
+						net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", component[0]));
+				schematic.set(type, component[1]);
+			}
+			player.setItemInHand(InteractionHand.MAIN_HAND, schematic);
+			level.getBlockState(table).useItemOn(schematic, level, player, InteractionHand.MAIN_HAND,
+				new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(table), Direction.UP, table, false));
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.table.CreateSchematics.idFor(owner, "Riverside Kiosk.nbt");
+			Showcase.check(BlueprintLibrary.get(level.getServer(), id).isPresent()
+				&& io.github.jcondedata.aliveworkplace.table.TableServer.listing(level.getServer()).stream().anyMatch(e -> e.id().equals(id)),
+				"the written Schematic imported its file, and the table lists it (" + id + ")");
+			// A builder puts it up in front of the camera
+			BlockPos bench = STATION.offset(5, 0, 1);
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			Builders.employ(level, builder, bench);
+			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), STATION.offset(-3, 0, -7),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			BuildSite site = Builders.start(level, builder, null, id, placement);
+			Showcase.check(site != null, "the builder took the imported schematic on");
+			if (site == null) {
+				return l -> false;
+			}
+			BuildPlan plan = site.plan(level);
+			List<ItemStack> stacks = new ArrayList<>();
+			plan.materials().forEach((item, total) -> {
+				for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+					stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+				}
+			});
+			for (int b = 0; b * 27 < stacks.size(); b++) {
+				BlockPos at = bench.offset(1, 0, b);
+				level.setBlockAndUpdate(at, Blocks.BARREL.defaultBlockState());
+				Container barrel = (Container) level.getBlockEntity(at);
+				for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+					barrel.setItem(slot, stacks.get(b * 27 + slot));
+				}
+			}
+			return l -> {
+				if (BuildSiteManager.get(l).get(site.id()) != null) {
+					return false;
+				}
+				Showcase.check(plan.unfinished(l).isEmpty(), "the kiosk stands as the schematic has it");
+				Showcase.check(l.getBlockState(placement.origin().offset(2, 1, 3)).is(block.apply("create:millstone").getBlock()),
+					"the schematic's millstone stands in the kiosk");
+				return true;
+			};
+		}, null));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks
@@ -3083,7 +3221,8 @@ final class JobScenes {
 		SCENES.put("cuisine_kitchen", job("the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest", 2400, (level, player) -> {
 			// ROADMAP 38.8 (Cobblemon and Cobblecuisine): a Journeyman Chef at a Kitchen Stove, and in the chest beside it
 			// the makings of a Mixed Vegetable Salad (a level-1 dish) and of a Beanburger Curry (level 3). He cooks both
-			// from their crafting recipes and puts them in the chest.
+			// from their crafting recipes and puts them in the chest. A sack of potatoes (B180): the menu's baked potatoes come
+			// first and take up to a batch of 8, and the salads' vegetable may be a potato, so 2 left none for the curry.
 			java.util.function.Function<String, Item> cc = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", id));
 			Showcase.check(io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(cc.apply("beanburger_curry")) != null,
@@ -3093,7 +3232,7 @@ final class JobScenes {
 			chef.setVillagerXp(150);
 			Container c = chest(level, chestPos(), new ItemStack(cc.apply("salad_mix"), 4), new ItemStack(cobblemonItem("bold_mint"), 4),
 				new ItemStack(cc.apply("green_bean"), 4), new ItemStack(Items.CARROT, 4), new ItemStack(cc.apply("red_bean"), 2),
-				new ItemStack(Items.BREAD, 2), new ItemStack(Items.POTATO, 2), new ItemStack(cobblemonItem("charti_berry"), 2),
+				new ItemStack(Items.BREAD, 2), new ItemStack(Items.POTATO, 16), new ItemStack(cobblemonItem("charti_berry"), 2),
 				new ItemStack(Items.COOKED_CHICKEN, 2));
 			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 1 && c.countItem(cc.apply("beanburger_curry")) >= 1;
 		}));

@@ -220,6 +220,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   down after.
 - [Contraptions from a blueprint](create-contraptions.md): with Create, builders put a machine's moving parts in last,
   in order, and check it turns.
+- [Create schematics at the Blueprint Table](create-schematics.md): with Create, the schematics you upload at its
+  Schematic Table are blueprints your builders can build.
 
 ### Legends and guilds
 

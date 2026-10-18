@@ -47,8 +47,15 @@ public final class BlueprintImporter {
 	 * "uploads/&lt;player&gt;" for uploads); the file name becomes the blueprint's name.
 	 */
 	public static Imported importBytes(MinecraftServer server, String folder, String fileName, byte[] bytes) throws BlueprintFormatException {
+		return importAs(server, uniqueId(server.getStructureManager(), folder, fileName), bytes);
+	}
+
+	/**
+	 * Imports one file as {@code id}, replacing any blueprint of that id (a Create schematic uploaded again under its
+	 * name, 39.6). A file that won't import leaves the old blueprint as it was.
+	 */
+	public static Imported importAs(MinecraftServer server, ResourceLocation id, byte[] bytes) throws BlueprintFormatException {
 		StructureTemplateManager manager = server.getStructureManager();
-		ResourceLocation id = uniqueId(manager, folder, fileName);
 		BlueprintFiles.Result result = BlueprintFiles.read(id, bytes, server.getFixerUpper(), BlueprintFiles.DEFAULT_MAX_VOLUME);
 		if (result.blueprint().solidBlockCount() == 0) {
 			if (result.unknownBlocks() > 0) {
@@ -56,6 +63,7 @@ public final class BlueprintImporter {
 			}
 			throw new BlueprintFormatException("empty");
 		}
+		manager.remove(id); // a fresh template, so nothing keeps showing the old build
 		StructureTemplate template = manager.getOrCreate(id);
 		template.load(Lookup.lookup(BuiltInRegistries.BLOCK), BlueprintFiles.toStructureNbt(result.blueprint()));
 		if (!manager.save(id)) {

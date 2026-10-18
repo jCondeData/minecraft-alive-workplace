@@ -4640,7 +4640,7 @@ Depends on: nothing open.
   (a data check for all eight, a full build for three in `huge_area`), a Smithy with its cellar filled in offers "Dig
   the cellar" and the builder digs only the cellar, the offer isn't there when the cellar is, a save and reload
   mid-dig finishes it; scene `cellars` (the Inn III cut away to its cellar; an old Smithy getting its cellar).
-- [ ] **36.8** **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
+- [x] **36.8** (approved auto 2026-10-18) **Do the bigger village houses leave villages sparse?** 26.11 made our village houses up to 13×17×13
   (from 9×10×10), and a jigsaw village only fits pieces that don't collide, so bigger houses may crowd out houses.
   Measure it: a measurement run (outside `build`: a GameTest class switched on by a system property, or a script on
   the pack test server) places 50 villages of each of the five types at fixed seeds and spots, and counts each
@@ -5049,6 +5049,28 @@ the owner's port jar; M33's caravans (39.7).
   placed with each mod, nothing skipped. CobbleFurnies sofas and curtains take `type`, `horizontal_part`,
   `vertical_part` and `hinge` from their neighbours, so `MaterialRules.matches` ignores those on CobbleFurnies blocks
   (by namespace) when judging a step done.
+- 2026-10-18 (lane-b-1018-0038, **owner question: Milestone 36 is empty**): the quick lane finished 36.4, 36.6, 36.7
+  and 36.8 and has nothing left. Owner: which quick additions next? Until then the quick lane's runs have no items.
+  Also from 36.8: should our village houses get higher pool weights (desert villages grow ours in 14 of 50)?
+- 2026-10-18 (36.8, lane-b-1018-0038, **village density: no tuning needed**): 26.11's bigger village houses don't
+  leave villages sparse. 50 village starts per type (fixed seeds and chunks, plain run without Cobblemon, so its 11
+  houses aren't in the pools), counting each start's house pieces; "ours" = our village houses, "with" = villages with
+  at least one of ours. Total houses moved by at most 1% for every type (limit 10%), so nothing was tuned:
+
+  | type | houses mean before → after | lowest before → after | ours mean before → after | with ours before → after | footprint m² before → after |
+  |---|---|---|---|---|---|
+  | plains | 17.32 → 17.20 (-0.7%) | 5 → 5 | 4.00 → 2.24 | 46 → 42 /50 | 23425 → 23194 |
+  | desert | 16.14 → 16.18 (+0.2%) | 2 → 2 | 0.60 → 0.38 | 20 → 14 /50 | 13415 → 13450 |
+  | savanna | 14.96 → 14.90 (-0.4%) | 7 → 7 | 2.96 → 2.22 | 47 → 46 /50 | 23871 → 23808 |
+  | snowy | 18.80 → 18.94 (+0.7%) | 4 → 4 | 3.12 → 2.20 | 48 → 44 /50 | 20594 → 20632 |
+  | taiga | 14.90 → 14.88 (-0.1%) | 2 → 2 | 3.06 → 2.48 | 47 → 46 /50 | 19257 → 20049 |
+
+  What did change: the bigger looks are placed less often (our houses per village fell 19-44%) and vanilla houses
+  fill the room, so villages stay as full but grow fewer of ours. Desert villages grew ours in under half of them
+  before 26.11 too (20/50, now 14/50). If the owner wants more of ours per village, raise their weights in
+  `world/VillageHouses` (a design choice, not a density problem). Commands: `tools/modtest/village_density.sh` on
+  `main` (5d8652a1) and, for "before", the same script and `VillageDensityMeasure.java` copied into
+  `git worktree add <dir> ac8dc522^`. The measurement is registered in no entrypoint, so `build` never runs it.
 
 - 2026-10-17 (planning, **Lanes after 1.0**): the bug lane takes Bugs and M26's open items; the quick lane takes M36
   (Quick additions); the big-update lanes take M37 (2.1, furniture and storage mods), then M38 (2.2, Raid Dens, Megas,

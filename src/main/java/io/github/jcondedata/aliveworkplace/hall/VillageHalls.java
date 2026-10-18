@@ -157,6 +157,12 @@ public final class VillageHalls {
 		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(old -> !old.equals(target))
 			.ifPresent(old -> io.github.jcondedata.aliveworkplace.work.Stations.releaseOld(level, villager, old));
+		// A block they were walking to on their own is held for them on the way (vanilla's AcquirePoi takes its place);
+		// vanilla only lets it go while the memory is still there, so it's let go of here before the memory goes, or it
+		// stays held for nobody and drops off the village's free blocks.
+		villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE)
+			.filter(walking -> !walking.equals(target))
+			.ifPresent(walking -> villager.releasePoi(MemoryModuleType.POTENTIAL_JOB_SITE));
 		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), station.pos()));
 		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.hold(level, villager);

@@ -286,6 +286,9 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **A job block a villager was walking to is let go when the hall gives them another.** A jobless villager on the way
+  to a job block they picked on their own and given a different one from the Village Hall kept the first one held for
+  nobody: it dropped off the Free job blocks list and no other villager could take it.
 - **The Mega trainers and the Mega Shrine show again (B191).** The Mega trainers scene asked whether its City's Leader
   could Mega Evolve before the game had filed the new Village Hall, and let the hall's first count make the test
   village a Hamlet just before the battle, so the Leader had no Mega Stone and no bracelet; it now asks once the hall

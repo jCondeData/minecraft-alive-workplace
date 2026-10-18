@@ -270,6 +270,7 @@ stay in the list, ticked, so their numbers stay unique.
   - Status: not B132 (no builder in the test, so freeBystanders never runs). The test measured the villager's distance
     at tick 120, 80 ticks after StuckVillagers let it out 2.0 blocks away, so its own wandering counted (7.41 in the
     failed full build; 6.21 in one of 10 isolated runs). It now checks where it was let out to.
+- [ ] **B196** Showcase-only: in several recent GitHub showcase runs many Cobblemon scenes (raid_dens, den_warden, den_challenge, mega_*, arena, legend_professor, village_habitat, cup_page, tutor and others) end with 'left no showcase.json' / ran over the 620 s time limit without starting, while the same scenes pass locally (lane-d-1018-1608 ran raid_dens, den_warden, den_challenge, mega_shrine, mega_trainers locally: they start and pass). Expected: Cobblemon scenes start on GitHub within their time. Check the jstack.txt shard.py saves on timeout (B169) for a new dialog or a slow world load on the runner. Test: the next showcase run's Cobblemon shard (found by lane-d-1018-1608, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 

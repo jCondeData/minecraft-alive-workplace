@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.QuartPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -18,6 +19,7 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.ChunkPos;
@@ -201,6 +203,30 @@ public class SkyChartGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** On an idle box {@link #load} times its 16,384 biome samples at about 8 ms (7 to 9 in a dozen runs, 2026-10-18). */
+	private static final long IDLE_SAMPLES_NANOS = 10_000_000L;
+
+	/**
+	 * How many times slower than idle the machine is right now (1 to 20): the 16,384 biome samples a chart takes, taken
+	 * on another 6,144-block square (so the chart's own aren't warmed) and timed against {@link #IDLE_SAMPLES_NANOS}.
+	 * Only the game's own code runs in it, so the cost limits below stretch with a loaded machine (B167: the chart took
+	 * 564 ms against a fixed 250 ms on a busy shared box) and never with a slower chart or search.
+	 */
+	private static double load(ServerLevel level, SkyChart.Area area) {
+		int bpp = area.blocksPerPixel();
+		int y = QuartPos.fromBlock(level.getSeaLevel());
+		int west = area.minX() + 2 * area.blocksAcross();
+		long start = System.nanoTime();
+		for (int pz = 0; pz < 128; pz++) {
+			for (int px = 0; px < 128; px++) {
+				level.getNoiseBiome(QuartPos.fromBlock(west + px * bpp + bpp / 2), y, QuartPos.fromBlock(area.minZ() + pz * bpp + bpp / 2))
+					.is(BiomeTags.WATER_ON_MAP_OUTLINES);
+			}
+		}
+		long took = System.nanoTime() - start;
+		return Math.round(Math.min(20.0, Math.max(1.0, (double) took / IDLE_SAMPLES_NANOS)) * 10) / 10.0;
+	}
+
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void aStepAndTheChartAreCheap(GameTestHelper helper) {
@@ -208,6 +234,8 @@ public class SkyChartGameTests implements FabricGameTest {
 		SkyChart.Area area = area();
 		// The world's own finder over every region of every kind this world places (or the villages where it places none).
 		List<ResourceLocation> kinds = SkyChart.kinds(level).isEmpty() ? List.of(VILLAGES) : SkyChart.kinds(level);
+		load(level, area); // the first, cold, warms the samples up
+		double stepLoad = load(level, area);
 		long worst = 0;
 		long total = 0;
 		int steps = 0;
@@ -223,23 +251,29 @@ public class SkyChartGameTests implements FabricGameTest {
 			}
 		}
 		long average = total / steps;
-		helper.assertTrue(average < 5_000_000L, "a search step takes " + average / 1_000 + " µs on average (worst " + worst / 1_000 + " µs)");
+		helper.assertTrue(average < 5_000_000L * stepLoad, "a search step takes " + average / 1_000 + " µs on average (worst " + worst / 1_000
+			+ " µs; the machine " + stepLoad + " times slower than idle)");
 		// A thousand structures already found: the per-step bookkeeping stays small.
 		List<SkyChart.Found> starts = new ArrayList<>();
 		for (int i = 0; i < 1_000; i++) {
 			starts.add(new SkyChart.Found(VILLAGES, PLAINS, new BlockPos(area.minX() + (i * 37) % 6_144, 64, area.minZ() + (i * 91) % 6_144)));
 		}
 		SkyChart.Search search = new SkyChart.Search();
+		double kindLoad = load(level, area);
 		long started = System.nanoTime();
 		run(helper, search, new Stub(starts), 0, 1_000);
 		long kindNanos = System.nanoTime() - started;
 		helper.assertTrue(search.found().size() == 1_000, search.found().size() + " of 1,000 found");
-		helper.assertTrue(kindNanos / 144 < 2_000_000L, "a step with 1,000 found takes " + kindNanos / 144 / 1_000 + " µs");
-		// The chart: 16,384 biome samples, like a vanilla explorer map, whatever its size.
+		helper.assertTrue(kindNanos / 144 < 2_000_000L * kindLoad, "a step with 1,000 found takes " + kindNanos / 144 / 1_000 + " µs (the machine "
+			+ kindLoad + " times slower than idle)");
+		// The chart: 16,384 biome samples, like a vanilla explorer map, whatever its size (about 40 ms idle; sampled per
+		// block, 37 million, it would cost thousands of times that).
+		double chartLoad = load(level, area);
 		long drawStart = System.nanoTime();
 		SkyChart.chart(level, area, search.found());
 		long draw = System.nanoTime() - drawStart;
-		helper.assertTrue(draw < 250_000_000L, "drawing the chart takes " + draw / 1_000_000 + " ms");
+		helper.assertTrue(draw < 250_000_000L * chartLoad, "drawing the chart takes " + draw / 1_000_000 + " ms (the machine " + chartLoad
+			+ " times slower than idle)");
 		helper.succeed();
 	}
 }

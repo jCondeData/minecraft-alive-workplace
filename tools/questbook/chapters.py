@@ -243,7 +243,7 @@ CHAPTERS = [
                       "Each Pokémon you catch can become a helper for your villagers.",
                       "",
                       "This quest completes by itself when you catch your first Pokémon."],
-             "tasks": [("advancement", "cobblemon:first_catch")], "rewards": [em(3)]},
+             "tasks": [("advancement", "aliveworkplace:pokemon/first_catch")], "rewards": [em(3)]},
             {"key": "heal", "title": "A Healing Machine", "deps": ["catch"], "optional": True, "needs": C, "icon": "cobblemon:healing_machine",
              "desc": ["Craft a Healing Machine for your base.",
                       "",

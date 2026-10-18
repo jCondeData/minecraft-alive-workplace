@@ -134,6 +134,9 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **"Your first catch" completes on Cobblemon 1.8 too.** The quest waited for Cobblemon's `first_catch` advancement,
+  which Cobblemon 1.8 moved to `catching/first_catch`, so it never ticked off there; it now uses the mod's own
+  advancement on Cobblemon's catch trigger, which works on 1.7 and 1.8 (B164).
 - **Every setting's name fits its button.** On the settings screen "Villagers per Extra Fisherman" ran past its
   button; it is now **Extra Fisherman Every**, and "Gifted Villagers (1 in ...)" is **Gifted Villagers, 1 in** so it
   fits at 1000 too. A test now measures every setting's name at its widest value (B161).

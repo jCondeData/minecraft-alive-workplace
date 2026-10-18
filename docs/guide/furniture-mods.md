@@ -47,6 +47,16 @@ and they claim and sleep in Handcrafted's fancy beds.
 
 ![Supper on Handcrafted chairs](https://jcondedata.github.io/minecraft-alive-workplace/seats_and_beds/still-1.jpg)
 
+## The modded build library
+
+With **Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted** all installed (as in the pack), homes and
+workshops come from the **modded library**: the same buildings, dressed with those mods. Plaster walls become
+Supplementaries daub with wooden braces, wooden floors become herringbone boards, chests and bookshelves are Carved
+Wood's in the house's own wood, and there is crockery on the tables and books on the shelves. The Blueprint Table and the
+builder's shopping list show those blocks. If one of those mods is missing, you get the plain build instead.
+
+![The Starter Cottage from the vanilla and the modded library](https://jcondedata.github.io/minecraft-alive-workplace/modded_library/still-1.jpg)
+
 ## Without the mods
 
 Nothing changes: every build is the plain build, with its stair chairs, fence tables, banner pictures and trapdoor
@@ -65,5 +75,7 @@ builders take what they need through it, and Tom's terminal shows the village's 
 ## Settings
 
 - **Furnished Builds** (on): builders use the furniture mods you have. Off: every build is the plain build.
+- **Modded Build Library** (on): homes and workshops are built from the modded library when all its mods are
+  installed (needs Furnished Builds on). Off: the plain builds.
 - **Storage Mod Networks** (on): a storage controller or an inventory connector in the Storehouse counts as one store.
   Off: each linked chest is its own store.

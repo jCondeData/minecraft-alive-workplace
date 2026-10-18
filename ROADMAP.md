@@ -263,9 +263,9 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B189** (lane: e) (approved auto 2026-10-18) [urgent: owner] Player-visible crash (39.6, found by the review package of 2026-10-18): the create_schematic showcase scene crashes the game inside Create's schematic code ('SchematicHandler.getBounds() is null') when the Blueprint Table lists Create schematics. A player using the Table with Create installed may hit it. Expected: the Table lists uploaded Create schematics and nothing crashes. Test: SCENE=create_schematic tools/screenshots/run.sh, and a compat GameTest for the listing path. (found by chat, 2026-10-18) Status (lane-a-1018-1222): fix parked on `wip/lane-a-B189` (360367e1): the scene's hand-made Schematic lacked Create's create:schematic_bounds (Create's client handler reads it every tick while a written Schematic is held); CreateSchematics.written/complete now set every component Create's table sets, also after a Blueprint Table import. Compiles; its compat test CreateSchematicCompatTests.aListedSchematicInHandHasItsBounds has NOT run (OOM while another build ran). Done (lane-a-1018-1522): merged; the compat suite passes with it (365 tests), runGameTest (2289), and SCENE=create_schematic ran locally with no crash and every check PASS.
 - [ ] **B190** (lane: d) (urgent: owner) Player-visible, 2.2 Raid Dens (38.2-38.4): scenes raid_dens, den_warden and den_challenge fail on GitHub: a glowing den crystal by the hall stays 'No raid den known' on the Defense page, 'No guard of the village is free to stand watch', and the Leader 'found no den'. The compat GameTests pass, so either the scenes stage the den differently from a real world (chunk-load detection) or detection breaks outside tests. Expected: a den within 160 blocks of a hall is listed in a real world, and wardens and challenges work. Test: the three scenes, plus a GameTest that places a den after the hall's chunk is already loaded. (found by chat, 2026-10-18)
 - [ ] **B191** (lane: d) (urgent: owner) Player-visible, 2.2 Megas (38.5, 38.7): scene mega_trainers fails ('the Leader couldn't Mega Evolve and no bracelet was drawn', the battle ran) and mega_shrine's festival ceremony never happens. Expected: a City Leader with a Mega Stone Mega Evolves in battle and wears the bracelet; the shrine's ceremony runs on a festival day. Test: SCENE=mega_trainers and SCENE=mega_shrine. (found by chat, 2026-10-18)
-- [ ] **B192** (lane: c) Player-visible, 2.1 Tom's Simple Storage (37.10): scene modded_storehouse fails: right-clicking Tom's storage terminal says 'Terminal out of range' instead of opening Tom's screen, with the Storehouse linked through an inventory connector. Expected: Tom's terminal works as normal next to our Storehouse. Test: SCENE=modded_storehouse. (found by chat, 2026-10-18)
 - [x] **B193** (lane: e) (approved auto 2026-10-18) Player-visible, 2.3 trains (39.7): scene village_train fails: the caravan never takes the train (no steam, bell or logs arriving) within the scene's time. Expected: a caravan between two villages with linked Train Stations travels by train and arrives. Test: SCENE=village_train (check the scene's wait against a slow GitHub runner too). (found by chat, 2026-10-18)
-- [ ] **B194** (lane: c) Showcase-only (37.5): scene furnished_workplaces's fourth still (the clinic benches) comes out black, so the scene fails; same black-still pattern as B188's cellars. Expected: all four stills show the build. Test: SCENE=furnished_workplaces. (found by chat, 2026-10-18)
+- [x] **B192** (lane: c) (approved auto 2026-10-18) Player-visible, 2.1 Tom's Simple Storage (37.10): scene modded_storehouse fails: right-clicking Tom's storage terminal says 'Terminal out of range' instead of opening Tom's screen, with the Storehouse linked through an inventory connector. Expected: Tom's terminal works as normal next to our Storehouse. Test: SCENE=modded_storehouse. (found by chat, 2026-10-18)
+- [x] **B194** (lane: c) (approved auto 2026-10-18) Showcase-only (37.5): scene furnished_workplaces's fourth still (the clinic benches) comes out black, so the scene fails; same black-still pattern as B188's cellars. Expected: all four stills show the build. Test: SCENE=furnished_workplaces. (found by chat, 2026-10-18) FIXED (lane-c-1018-1553): the scene, not the mod. The camera's feet stood at y 2.7 in the hall, so its eye (1.62 higher) sat in the tie-beam log at (7, 4, 3) over the east benches: a black still. It now stands on the clinic floor (eye at 2.62, under the beams and lanterns) looking west across both rows of benches, with night vision for the shot (as B188's cellars). Fixed, not filmed locally: the client ran out of memory loading Cobblemon's animations here (also with a 3 GB heap), so the fix is checked against the Healing Center's geometry in tools/blueprints/starter.py and needs GitHub's showcase run to confirm.
 - [x] **B195** (approved auto 2026-10-18) B185GameTests grown-under-stair failed once in a full build with B132's fix (lane-a-1018-1522); Expected: passes every run. Test: B185GameTests repeated 10x (found by lane-a-1018-1522, 2026-10-18)
   - Status: not B132 (no builder in the test, so freeBystanders never runs). The test measured the villager's distance
     at tick 120, 80 ticks after StuckVillagers let it out 2.0 blocks away, so its own wandering counted (7.41 in the
@@ -4815,7 +4815,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   test passes with those checks in its log summary; the wiki page and guide section are on `main` and `wikicheck.py`
   passes.
 
-- [ ] **37.12** **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
+- [x] **37.12** (review: pending 2026-10-18) **Two build libraries: vanilla and modded** (owner, 2026-10-18). Keep every current blueprint as the
   vanilla library, unchanged (for players who use the mod in plain vanilla later). Make a second, modded library: a
   copy of each home and workshop beautified with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted
   blocks (used freely: detail blocks, furniture, decor), under its own ids, with the vanilla build as its fallback
@@ -5097,6 +5097,19 @@ the owner's port jar; M33's caravans (39.7).
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-18 (37.12, lane-c-1018-1553, decisions; details in `docs/wiki/furniture-and-storage.md`, "Two build
+  libraries" and "Decisions"): (1) "every home and workshop" is every top-level blueprint but the decorations, walls,
+  arenas, Mega Shrine and Create/train builds: 130 copies (the open-air Habitat Garden has nothing to dress, so it has
+  none and is the same in both libraries); (2) a copy keeps its vanilla build's id, shape, doors, beds, job blocks and
+  furniture spots, so the furniture mods still furnish it and nothing else needs to know the library; the choice rides
+  on the saved furniture choice (`{"library": "modded"}`); (3) `moddedLibrary` only acts with `furnishedBuilds` on (off
+  stays the plain vanilla build everywhere, as the design note says), and "mods installed" means every block id of the
+  copy is in the registry; (4) no Supplementaries doormats (they hold items, so jobs counted them as chests), no Carved
+  Wood job blocks (lecterns, beehives, crafting tables) and no pots on farmland; (5) `-Pfurniture=true` now also brings
+  Chipped, Supplementaries and Moonlight for the `modded_library` scene; (6) PokemonBuildsCompatTests' Habitat Garden II
+  check expects the herringbone floor when the modded library builds it. Owner to judge: the look of the copies (scene
+  `modded_library`); a deeper pass per style (Rechiseled wall panels, more Supplementaries decor) can follow.
 
 - 2026-10-18 (39.5, lane-e-1018-0713, decisions; details in `docs/wiki/create.md`, "Contraptions" and "Decisions"):
   (1) the switch is `createBuilds` (the design note gives it 39.5 too); the order is chosen when a site is made and

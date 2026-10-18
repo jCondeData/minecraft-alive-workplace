@@ -21,6 +21,12 @@ asks for the steps, `latest.log` and any crash report).
   together at a station (a bogey, a carriage with the caravan's chest, controls at both ends and a jobless villager in
   the seat as driver) and Create runs it on a schedule between the two stations. Caravans wait at the station, ride the
   train and are unloaded when it stands at the other village's station. The scene `village_train` shows it moving.
+- **Two build libraries, vanilla and modded** (2.1, behind its gate). Every build as it ships stays the vanilla
+  library. With Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted installed, all 130 homes and workshops
+  are built from the modded library instead: daub walls with braces, herringbone floors, Carved Wood chests and shelves
+  in the house's wood, crockery on the tables and books on the shelves, with the furniture mods' chairs and beds as
+  before. A missing mod gives the vanilla build; a building keeps the library it was planned with. New setting
+  **Modded Build Library** (`moddedLibrary`, on).
 - **Cellars for eight Level IIs, and for old builds.** The Inn, Winery, Farmstead, Guildhall, Barracks, Research Lab,
   Jeweler's Workshop and Artisan's House get a Level III: their Level II with a furnished, lit cellar dug under it (an ale
   and wine cellar, a barrel vault, a root cellar, a strongroom, an armoury, a lower lab, a vault, a storeroom), down a
@@ -258,6 +264,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Tom's storage terminal opens beside the Storehouse.** The showcase placed the terminal backwards (facing away
+  from the inventory connector) and clicked it from the overview camera, ten blocks away, so Tom's mod said "Terminal
+  out of range". The mod was never at fault: a terminal placed against the connector, as a player places it, opens
+  Tom's screen with the village's goods, now proven by a compat test (B192).
 - **Holding a Create Schematic after using it on the Blueprint Table no longer crashes the game.** A written Schematic
   without its size (made by a command or another mod) crashed Create's own schematic code when held ("getBounds() is
   null"); the table now fills in what Create's Schematic Table writes, its size read from the file, and still lists

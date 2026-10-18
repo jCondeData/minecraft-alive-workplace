@@ -70,7 +70,8 @@ public class TomsStorageCompatTests implements FabricGameTest {
 		helper.setBlock(CHEST_2, Blocks.CHEST);
 		helper.setBlock(CABLE_CONNECTOR_2, facing(block("inventory_cable_connector").defaultBlockState(), Direction.NORTH));
 		helper.setBlock(CABINET, block("filing_cabinet"));
-		helper.setBlock(TERMINAL, facing(block("storage_terminal").defaultBlockState(), Direction.WEST));
+		// Tom's terminal faces the block it reads (its screen on the far side): east, at the connector.
+		helper.setBlock(TERMINAL, facing(block("storage_terminal").defaultBlockState(), Direction.EAST));
 		if (loneChest) {
 			helper.setBlock(LONE_CHEST, Blocks.CHEST);
 		}
@@ -144,6 +145,61 @@ public class TomsStorageCompatTests implements FabricGameTest {
 			}
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * B192: with the Storehouse reading the connector, a player who right-clicks the storage terminal's screen gets Tom's
+	 * own terminal menu (not "Terminal out of range"), and the terminal lists the network's goods, each once.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_terminal"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_terminal")
+	public void aPlayerOpensTheTerminalBesideTheStorehouse(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		network(helper, false);
+		put(helper, CHEST_1, new ItemStack(Items.COBBLESTONE, 10));
+		put(helper, CHEST_2, new ItemStack(Items.OAK_PLANKS, 20));
+		put(helper, CABINET, new ItemStack(Items.IRON_SWORD));
+		BlockPos terminal = helper.absolutePos(TERMINAL);
+		helper.runAfterDelay(40, () -> {
+			List<BlockPos> store = SupplyContainers.find(level, helper.absolutePos(STOREHOUSE), null);
+			helper.assertTrue(store.equals(List.of(helper.absolutePos(CONNECTOR))), "the store: " + rel(helper, store));
+			ServerPlayer player = helper.makeMockServerPlayerInLevel();
+			PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+			player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+			// Standing two blocks in front of the screen (the terminal's west side), as a player would.
+			player.teleportTo(terminal.getX() - 1.5, terminal.getY(), terminal.getZ() + 0.5);
+			player.gameMode.useItemOn(player, level, ItemStack.EMPTY, net.minecraft.world.InteractionHand.MAIN_HAND,
+				new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(terminal).relative(Direction.WEST, 0.5),
+					Direction.WEST, terminal, false));
+			String menu = player.containerMenu.getClass().getName();
+			helper.assertTrue(menu.contains("StorageTerminalMenu"), "right-clicking the terminal opened " + menu + ", not Tom's terminal");
+			stacks(helper, terminal); // asks the terminal to list its network on its next tick
+			helper.runAfterDelay(20, () -> {
+				Map<Item, Long> listed = stacks(helper, terminal);
+				helper.assertTrue(listed.getOrDefault(Items.COBBLESTONE, 0L) == 10 && listed.getOrDefault(Items.OAK_PLANKS, 0L) == 20
+					&& listed.getOrDefault(Items.IRON_SWORD, 0L) == 1, "the terminal lists " + listed + ", wanted 10 cobblestone, 20 planks, 1 sword");
+				helper.succeed();
+			});
+		});
+	}
+
+	/** What Tom's terminal lists, by item (read by reflection: the test never compiles against Tom's classes). */
+	private static Map<Item, Long> stacks(GameTestHelper helper, BlockPos terminal) {
+		Map<Item, Long> out = new HashMap<>();
+		try {
+			Object be = helper.getLevel().getBlockEntity(terminal);
+			helper.assertTrue(be != null, "the terminal has no block entity");
+			Map<?, ?> stacks = (Map<?, ?>) be.getClass().getMethod("getStacks").invoke(be);
+			for (Object stored : stacks.values()) {
+				ItemStack stack = (ItemStack) stored.getClass().getMethod("getStack").invoke(stored);
+				long n = (Long) stored.getClass().getMethod("getQuantity").invoke(stored);
+				out.merge(stack.getItem(), n, Long::sum);
+			}
+		} catch (ReflectiveOperationException e) {
+			throw new GameTestAssertException("can't read Tom's terminal: " + e);
+		}
+		return out;
 	}
 
 	/** A chest unplugged from the network (its cable connector broken) is its own store again; nothing counts twice. */

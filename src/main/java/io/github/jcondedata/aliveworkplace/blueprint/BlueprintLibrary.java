@@ -106,6 +106,7 @@ public final class BlueprintLibrary {
 			|| id.getPath().startsWith("research/") // research/: drawn up by a village's scholars (see research/Research)
 			|| id.getPath().startsWith("realm/") // realm/: drawn on a realm capital's Realm tab (33.14, see realm/RoyalHalls)
 			|| id.getPath().startsWith("camp/") // camp/: set up at once by a Settler's Wagon
+			|| id.getPath().startsWith(ModdedLibrary.PREFIX) // modded/: the modded library's copies, built in place of their vanilla build (37.12)
 			|| id.getPath().startsWith("legend/") // legend/: a found Legend's camp, set down at once (29.9)
 			|| id.getPath().startsWith("story/") // story/: set down by a story arc (31.15's Bandit King's fort)
 			|| id.getPath().startsWith("wonder/")); // wonder/: a Wonder's stage parts, raised from its Wonder Plan (35.3)

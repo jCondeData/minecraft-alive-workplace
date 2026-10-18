@@ -22,6 +22,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.PaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonDepthCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.CreateCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StationsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",
@@ -71,6 +72,7 @@
 		"toms_storage": "*",
 		"cobbleworkers": "*",
 		"cobblemonraiddens": "*",
-		"cobblecuisine": "*"
+		"cobblecuisine": "*",
+		"create": "*"
 	}
 }

@@ -1,4 +1,8 @@
 import java.time.Duration
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.io.ByteArrayOutputStream
+import java.util.zip.ZipOutputStream
 
 // The build of one Minecraft version node (versions/<mc>/), shared by all of them. Stonecutter writes the sources for
 // each node from src/ (see stonecutter.gradle.kts); per-node values come from stonecutter.properties.toml. Branch on
@@ -170,11 +174,62 @@ loom.runs.matching { it.name == "gameTest" }.configureEach {
     vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory.get().asFile}/junit.xml")
 }
 
-/** Unpacks the jars nested in mods (META-INF/jars, recursively) into build/compat-nested: Loom drops them in dev. */
-fun nestedJars(mods: List<String>): List<File> {
+/** A jar's Fabric mod id and version (from its fabric.mod.json), or null for a plain library. */
+fun modIdOf(bytes: ByteArray): Pair<String, String>? {
+    ZipInputStream(bytes.inputStream()).use { zin ->
+        while (true) {
+            val entry = zin.nextEntry ?: return null
+            if (entry.name == "fabric.mod.json") {
+                @Suppress("UNCHECKED_CAST")
+                val json = groovy.json.JsonSlurper().parseText(zin.readBytes().toString(Charsets.UTF_8)) as Map<String, Any?>
+                return json["id"].toString() to json["version"].toString()
+            }
+        }
+    }
+}
+
+/** Every mod nested in a jar, at any depth, with the newest version of each. */
+fun nestedModVersions(bytes: ByteArray, into: MutableMap<String, String> = mutableMapOf()): MutableMap<String, String> {
+    ZipInputStream(bytes.inputStream()).use { zin ->
+        while (true) {
+            val entry = zin.nextEntry ?: break
+            if (!entry.name.startsWith("META-INF/jars/") || !entry.name.endsWith(".jar")) continue
+            val inner = zin.readBytes()
+            modIdOf(inner)?.let { (id, version) ->
+                if (into[id]?.let { compareVersions(it, version) >= 0 } != true) into[id] = version
+            }
+            nestedModVersions(inner, into)
+        }
+    }
+    return into
+}
+
+/** Compares two mod versions the way semantic versions compare ("3.1.0-beta.90" after "3.1.0-beta.47"; build metadata after "+" ignored). */
+fun compareVersions(a: String, b: String): Int {
+    fun parts(v: String) = v.substringBefore('+').split('.', '-', '_')
+    val x = parts(a)
+    val y = parts(b)
+    for (i in 0 until maxOf(x.size, y.size)) {
+        val p = x.getOrNull(i) ?: return -1
+        val q = y.getOrNull(i) ?: return 1
+        val c = if (p.toIntOrNull() != null && q.toIntOrNull() != null) p.toInt().compareTo(q.toInt()) else p.compareTo(q)
+        if (c != 0) return c
+    }
+    return 0
+}
+
+/**
+ * Unpacks the jars nested in mods (META-INF/jars, recursively) into build/compat-nested: Loom drops them in dev.
+ * [local] are the local mod jars the same run loads from its mods/ folder (localModsInto): a library they nest at the
+ * same or a newer version isn't flattened here, because a flattened jar is a root mod and the loader would take it over
+ * theirs. Sophisticated Core nests Porting Lib 3.1.0-beta.47, which Create's port can't run on (it needs beta.90).
+ */
+fun nestedJars(mods: List<String>, local: List<String> = emptyList()): List<File> {
     val out = layout.buildDirectory.dir("compat-nested").get().asFile
     val resolved = configurations.detachedConfiguration(*mods.map { dependencies.create(it) }.toTypedArray())
     resolved.isTransitive = false
+    val localNested = mutableMapOf<String, String>()
+    local.forEach { nestedModVersions(rootProject.file(it).readBytes(), localNested) }
     val jars = mutableListOf<File>()
     fun unpack(mod: File) {
         zipTree(mod).matching { include("META-INF/jars/*.jar") }.forEach { nested ->
@@ -184,6 +239,10 @@ fun nestedJars(mods: List<String>): List<File> {
             // leaves both nested modules out of a real install (the pack test's mod list); flattened here, they would
             // stop the game (25.4).
             if (nested.name.startsWith("c2me-fabric-opts-natives-math") || nested.name.startsWith("c2me-fabric-opts-dfc")) return@forEach
+            if (localNested.isNotEmpty()) {
+                val id = modIdOf(nested.readBytes())
+                if (id != null && localNested[id.first]?.let { compareVersions(it, id.second) >= 0 } == true) return@forEach
+            }
             val target = File(out, nested.name)
             if (!target.exists()) {
                 out.mkdirs()
@@ -196,6 +255,94 @@ fun nestedJars(mods: List<String>): List<File> {
     }
     resolved.resolve().forEach { unpack(it) }
     return jars
+}
+
+/** Every local mod jar a run may load (tests.compat_files, tests.screenshot_create): the files localModsInto manages. */
+val localModFiles: List<String> = (tomlList("tests", "compat_files") + tomlList("tests", "screenshot_create")).distinct()
+
+/**
+ * Puts local mod jars (files in the repo, such as the owner's Create port in libs/) into a run's mods/ folder, and takes
+ * out the managed ones that run doesn't ask for. Not on the classpath like the maven mods above: Fabric Loader remaps a
+ * mods/ jar itself and picks one version of each library it nests, as in a real install. Create nests three versions of
+ * Porting Lib's core and two of Flywheel, which flattening (nestedJars) would load side by side. Each copy:
+ * - leaves out its own GameTests (the "fabric-gametest" entrypoints of the jar and the jars it nests: Create's own
+ *   suite and Porting Lib's test need their own test structures, and are theirs to run), so our suites hold only our tests;
+ * - keeps vanilla's methods in Porting Lib's ItemStackMixin (devIntrinsics below). It soft-implements set, remove and
+ *   applyComponents with @Intrinsic(displace = true): harmless in a real install, where vanilla's methods are
+ *   method_57379 and so on, but in our Mojang-named dev runtime the names meet, so vanilla's methods are displaced, and
+ *   owo-lib's injection into applyComponents (owo is in the compat runtime for Mega Showdown) finds nothing to inject
+ *   into and stops the game. With displace = false the vanilla method, which has the same name and signature in dev,
+ *   is kept as the interface's method, which is what the soft implementation does in a real install.
+ */
+fun localModsInto(runDir: File, wanted: List<String>) {
+    val mods = File(runDir, "mods")
+    mods.mkdirs()
+    localModFiles.filter { it !in wanted }.forEach { File(mods, File(it).name).delete() }
+    wanted.forEach { path ->
+        val source = rootProject.file(path)
+        val target = File(mods, source.name)
+        if (target.exists() && target.lastModified() >= maxOf(source.lastModified(), buildFile.lastModified())) return@forEach
+        target.writeBytes(rewriteJar(source.readBytes()))
+    }
+}
+
+/** Mixin classes whose @Intrinsic(displace = true) methods keep vanilla's in dev runs (localModsInto): nested jar prefix to class. */
+val devIntrinsics = mapOf("META-INF/jars/base-" to "io/github/fabricators_of_create/porting_lib/mixin/common/ItemStackMixin.class")
+
+/** A class with every @Intrinsic(displace = true) turned into displace = false. */
+fun keepIntrinsicTargets(bytes: ByteArray): ByteArray {
+    val api = org.objectweb.asm.Opcodes.ASM9
+    val reader = org.objectweb.asm.ClassReader(bytes)
+    val writer = org.objectweb.asm.ClassWriter(0)
+    reader.accept(object : org.objectweb.asm.ClassVisitor(api, writer) {
+        override fun visitMethod(access: Int, name: String?, descriptor: String?, signature: String?, exceptions: Array<out String>?): org.objectweb.asm.MethodVisitor {
+            val method = super.visitMethod(access, name, descriptor, signature, exceptions)
+            return object : org.objectweb.asm.MethodVisitor(api, method) {
+                override fun visitAnnotation(desc: String?, visible: Boolean): org.objectweb.asm.AnnotationVisitor? {
+                    val annotation = super.visitAnnotation(desc, visible)
+                    if (desc != "Lorg/spongepowered/asm/mixin/Intrinsic;" || annotation == null) return annotation
+                    return object : org.objectweb.asm.AnnotationVisitor(api, annotation) {
+                        override fun visit(key: String?, value: Any?) = super.visit(key, if (key == "displace") false else value)
+                    }
+                }
+            }
+        }
+    }, 0)
+    return writer.toByteArray()
+}
+
+@Suppress("UNCHECKED_CAST")
+fun rewriteJar(bytes: ByteArray, intrinsics: String? = null): ByteArray {
+    val entries = linkedMapOf<String, ByteArray>()
+    ZipInputStream(bytes.inputStream()).use { zin ->
+        while (true) {
+            val entry = zin.nextEntry ?: break
+            if (!entry.isDirectory) entries[entry.name] = zin.readBytes()
+        }
+    }
+    entries["fabric.mod.json"]?.let { b ->
+        val json = groovy.json.JsonSlurper().parseText(b.toString(Charsets.UTF_8)) as MutableMap<String, Any?>
+        if ((json["entrypoints"] as? MutableMap<String, Any?>)?.remove("fabric-gametest") != null) {
+            entries["fabric.mod.json"] = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)).toByteArray()
+        }
+    }
+    if (intrinsics != null) {
+        entries[intrinsics]?.let { entries[intrinsics] = keepIntrinsicTargets(it) }
+    }
+    for (name in entries.keys.toList()) {
+        if (!name.startsWith("META-INF/jars/") || !name.endsWith(".jar")) continue
+        val target = devIntrinsics.entries.firstOrNull { name.startsWith(it.key) }?.value
+        entries[name] = rewriteJar(entries.getValue(name), intrinsics = target)
+    }
+    val out = ByteArrayOutputStream()
+    ZipOutputStream(out).use { zip ->
+        entries.forEach { (name, data) ->
+            zip.putNextEntry(ZipEntry(name))
+            zip.write(data)
+            zip.closeEntry()
+        }
+    }
+    return out.toByteArray()
 }
 
 dependencies {
@@ -214,7 +361,7 @@ dependencies {
     if (compattest != null) {
         compatTestMods.forEach { "modCompattestRuntimeOnly"(it) }
         // Loom drops the libraries these mods bundle inside themselves, so add those back.
-        "modCompattestRuntimeOnly"(files(nestedJars(compatTestMods)))
+        "modCompattestRuntimeOnly"(files(nestedJars(compatTestMods, tomlList("tests", "compat_files"))))
     }
 
     if (devclient != null) {
@@ -225,7 +372,8 @@ dependencies {
             if (findProperty(flag) == "true") {
                 val mods = forCobblemon(tomlList("tests", key))
                 mods.forEach { "modDevclientRuntimeOnly"(it) }
-                "modDevclientRuntimeOnly"(files(nestedJars(mods)))
+                val local = if (findProperty("create") == "true") tomlList("tests", "screenshot_create") else emptyList()
+                "modDevclientRuntimeOnly"(files(nestedJars(mods, local)))
             }
         }
     }
@@ -322,10 +470,18 @@ tasks {
     // The compat test server needs an accepted EULA in its run directory, like runGameTest; `build` runs it.
     matching { it.name == "runCompatGameTest" }.configureEach {
         val dir = layout.buildDirectory.dir("run/compatGameTest").get().asFile
+        val wanted = tomlList("tests", "compat_files")
         doFirst {
             dir.mkdirs()
             File(dir, "eula.txt").writeText("eula=true\n")
+            localModsInto(dir, wanted)
         }
+    }
+    // -Pcreate=true: the screenshot client loads the owner's Create port (tests.screenshot_create); without it, not.
+    matching { it.name == "runScreenshots" }.configureEach {
+        val dir = file("run/screenshots")
+        val wanted = if (findProperty("create") == "true") tomlList("tests", "screenshot_create") else emptyList()
+        doFirst { localModsInto(dir, wanted) }
     }
     if (compattest != null) {
         named("build") { dependsOn("runCompatGameTest") }

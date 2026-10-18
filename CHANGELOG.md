@@ -21,6 +21,10 @@ asks for the steps, `latest.log` and any crash report).
   `furnishedBuilds`, `furnitureMods` and `moddedStorageNetworks`, which stay off until 2.1 is finished (37.1), and a furniture spots file beside each of 223 blueprints marking
   where its chairs, tables and beds are, for the furniture mods to fill in later (37.2). Behind the same gate, a build started with Handcrafted, Cozy Home,
   CobbleFurnies or Beautify installed gets their chairs, tables and beds in those places, chosen once and kept (37.3).
+- **Create integration (2.3), the plan.** The design note (`docs/design/M39.md`): the Mechanic and their Toolbox,
+  villagers working Create's millstone, press, mixer and crushing wheels, the Watermill, Windmill and Workshop,
+  contraptions and Create schematics at the Blueprint Table, and trains later; its gate stays shut until 2.3 is
+  finished. The owner's Create port now loads in the compat tests, which check every Create id the plan uses (39.1).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

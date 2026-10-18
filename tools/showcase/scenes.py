@@ -36,11 +36,13 @@ GROUPS = [
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
 
 
-def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False):
+def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, create=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
-    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14)."""
+    cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
+    create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
-            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18}
+            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
+            "create": create}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -1290,6 +1292,7 @@ def env(scene):
     out = {"SCENE": scene, "COBBLEMON": "true" if s["cobblemon"] else "false", "MEGA": "true" if s["mega"] else "false"}
     if s["cobblemon18"]:
         out["COBBLEMON18"] = "true"
+    out["CREATE"] = "true" if s.get("create") else "false"
     out.update(s["env"])
     return out
 

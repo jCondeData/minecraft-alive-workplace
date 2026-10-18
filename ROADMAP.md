@@ -4883,7 +4883,7 @@ depend on the port's internals. As with every mod: block and item ids, tags, rec
 `create:depot`, `create:track_station`, `create:schematic`) are to be confirmed against the port in 39.1. Depends on:
 the owner's port jar; M33's caravans (39.7).
 
-- [ ] **39.1** (unblocked 2026-10-17: the owner's port is `libs/create-fabric-6.0.10.0+mc1.21.1.jar`, mod id `create`, MIT, bundles its Porting Lib and other dependencies; checked in it: millstone, mechanical_press, mechanical_mixer, crushing_wheel, water_wheel, windmill_bearing, shaft, cogwheel) **Get the port into the tests and
+- [x] **39.1** (unblocked 2026-10-17: the owner's port is `libs/create-fabric-6.0.10.0+mc1.21.1.jar`, mod id `create`, MIT, bundles its Porting Lib and other dependencies; checked in it: millstone, mechanical_press, mechanical_mixer, crushing_wheel, water_wheel, windmill_bearing, shaft, cogwheel) (review: pending 2026-10-18) **Get the port into the tests and
   confirm its ids.** Put the owner's jar into the compat test runtime (a local file dependency in `tests.compat_mods`'
   place, `modCompileOnly` only if a `compat/create/` class turns out to be needed) and the harness (`-Pcreate=true`);
   a compat GameTest lists every block, item and recipe type this milestone uses and fails naming any that's missing;

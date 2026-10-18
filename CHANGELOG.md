@@ -196,6 +196,9 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Villagers sleep in furnished homes' beds.** A furnished home's fancy beds are now checked to be beds villagers
+  claim as their home and sleep in (Handcrafted's are), and a furniture mod's bed that isn't one leaves the vanilla
+  bed in its place, so every bed of a furnished home is a villager's bed (B166).
 - **"Your first catch" completes on Cobblemon 1.8 too.** The quest waited for Cobblemon's `first_catch` advancement,
   which Cobblemon 1.8 moved to `catching/first_catch`, so it never ticked off there; it now uses the mod's own
   advancement on Cobblemon's catch trigger, which works on 1.7 and 1.8 (B164).

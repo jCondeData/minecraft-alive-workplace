@@ -1,0 +1,5 @@
+{
+  "pieces": {
+    "bed": {"block": "minecraft:{colour}_bed", "facing": "front", "colour": "lime", "footprint": [{"at": [0, 0, 0], "states": {"part": "foot"}}, {"at": [0, 0, 1], "states": {"part": "head"}}]}
+  }
+}

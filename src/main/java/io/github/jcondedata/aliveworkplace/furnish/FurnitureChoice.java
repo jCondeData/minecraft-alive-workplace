@@ -17,7 +17,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BedPart;
 
 /**
  * Which modded piece each furniture spot of a build became (ROADMAP 37.3), chosen once when the build is planned and
@@ -73,7 +77,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 				FurnishingTable table = FurnishingTable.of(mod).orElse(null);
 				FurnishingTable.Piece piece = table == null ? null : table.pieces().get(spot.kind());
 				Map<BlockPos, BlockState> cells = piece == null ? null : piece.resolve(spot);
-				if (cells != null) {
+				if (cells != null && (spot.kind() != FurnitureSpot.Kind.BED || sleepable(cells))) {
 					out.put(i, new Placed(spot.pos(), spot.kind(), mod, Collections.unmodifiableMap(cells)));
 					break;
 				}
@@ -233,11 +237,28 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 					cells.put(BlockPos.of(Nbt.getLong(cell, "at")), state);
 				}
 			}
-			if (whole && !cells.isEmpty()) {
+			if (whole && !cells.isEmpty() && (kind != FurnitureSpot.Kind.BED || sleepable(cells))) {
 				out.put(Nbt.getInt(tag, "spot"), new Placed(BlockPos.of(Nbt.getLong(tag, "pos")), kind, Nbt.getString(tag, "mod"), Collections.unmodifiableMap(cells)));
 			}
 		}
 		return out.isEmpty() ? VANILLA : new FurnitureChoice(Collections.unmodifiableMap(out));
+	}
+
+	/**
+	 * Whether a bed piece's cells hold a bed a villager can claim and sleep in (B166): a bed block (a {@link BedBlock} in
+	 * {@code #minecraft:beds}) whose head is one of the HOME point of interest's states. Handcrafted adds its fancy beds'
+	 * heads to HOME itself; a furniture mod whose bed isn't a HOME keeps the spot's vanilla bed, so every bed of a
+	 * furnished home stays a home for a villager.
+	 */
+	public static boolean sleepable(Map<BlockPos, BlockState> cells) {
+		for (BlockState state : cells.values()) {
+			if (state.getBlock() instanceof BedBlock && state.is(BlockTags.BEDS) && state.hasProperty(BedBlock.PART)
+				&& state.getValue(BedBlock.PART) == BedPart.HEAD
+				&& PoiTypes.forState(state).map(h -> h.is(PoiTypes.HOME)).orElse(false)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static BlockState parse(String text) {

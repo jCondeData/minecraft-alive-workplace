@@ -5040,12 +5040,9 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
-- 2026-10-18 (lane-e-1018-0413, wip): 39.2, 39.3 and 39.4 are built and ticked on `wip/lane-e`, not on `main`: the
-  run's last full build (06:53 UTC, merged with main at 3b33d43c) passed the compat suite (305/305 in a separate run)
-  but failed one main GameTest, `VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne` ("a hall before
-  the build": a Village Hall already stands near the test's builder; green on main's CI, so most likely a leftover
-  hall from a test that the new 39.x test classes moved into its spot). Next lane-e run: find what leaves the hall
-  (try `batch`/`Leftovers.clear` in that test or the new tests), full build, merge to main.
+- 2026-10-18 (lane-e-1018-0713): 39.2-39.4 merged from `wip/lane-e` to `main` (full build 2264/2264, compat
+  324/324). The hall test's leftover hall: `aFinishedVillageHallWorksLikeAPlacedOne` now also calls
+  `Leftovers.halls(helper)`; which earlier test leaves the hall wasn't pinned down.
 - 2026-10-18 (lane-e-1018-0413, 39.3 decisions): the chef's mixer water is poured straight into the basin's tank
   (1000 mB, through Fabric's fluid transfer, which the port exposes), not taken from a water bucket in the store: the
   dough recipe takes a bucket's worth and villages need no bucket supply. Read from the port: the mechanical mixer has

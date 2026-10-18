@@ -1673,6 +1673,38 @@ public class BuilderWork extends Behavior<Villager> {
 		BuilderLevels.onPlaced(level, villager, site);
 	}
 
+	/**
+	 * A block laid as one piece (Create's belt, ROADMAP 39.4): a segment alone breaks itself on its next tick, so the
+	 * rest of it (the plan's steps of the same block in a line with it, along its facing, on its level) goes down now
+	 * too, each segment's connector taken from the bag when it's there.
+	 */
+	private void layTheRest(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step first, boolean free) {
+		BlockState state = first.state();
+		if (!state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING)) {
+			return;
+		}
+		net.minecraft.core.Direction along = state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING);
+		java.util.Map<BlockPos, BuildPlan.Step> line = new java.util.HashMap<>();
+		for (BuildPlan.Step s : plan.steps(BuildPlan.Stage.STRUCTURE)) {
+			if (s.state().getBlock() == state.getBlock() && s.pos().getY() == first.pos().getY()) {
+				line.put(s.pos(), s);
+			}
+		}
+		for (net.minecraft.core.Direction way : new net.minecraft.core.Direction[] {along, along.getOpposite()}) {
+			for (BlockPos at = first.pos().relative(way); line.containsKey(at); at = at.relative(way)) {
+				BuildPlan.Step next = line.get(at);
+				if (MaterialRules.matches(level.getBlockState(at), next.state()) || !level.getBlockState(at).canBeReplaced()) {
+					continue;
+				}
+				if (!free) {
+					MaterialRules.requirement(next.state()).ifPresent(r -> MaterialLedger.used(r.item(), bag.remove(r.item(), r.count())));
+				}
+				level.setBlock(at, next.state(), Block.UPDATE_ALL);
+				site.placedNow(at);
+			}
+		}
+	}
+
 	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,
 					   List<MaterialRules.Requirement> requirements, boolean free) {
 		BlockPos pos = step.pos();
@@ -1742,6 +1774,9 @@ public class BuilderWork extends Behavior<Villager> {
 		applyBlockEntityData(level, pos, state, step.nbt());
 		site.placedNow(pos);
 		MaterialRules.afterPlaced(level, pos, state);
+		if (MaterialRules.laidWhole(state)) {
+			layTheRest(level, site, plan, bag, step, free);
+		}
 		if (state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE)) {
 			io.github.jcondedata.aliveworkplace.store.Porters.onBuilt(level, pos, site);
 		}

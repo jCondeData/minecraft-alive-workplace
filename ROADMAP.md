@@ -4891,7 +4891,7 @@ depend on the port's internals. As with every mod: block and item ids, tags, rec
 `create:depot`, `create:track_station`, `create:schematic`) are to be confirmed against the port in 39.1. Depends on:
 the owner's port jar; M33's caravans (39.7).
 
-- [ ] **39.1** (unblocked 2026-10-17: the owner's port is `libs/create-fabric-6.0.10.0+mc1.21.1.jar`, mod id `create`, MIT, bundles its Porting Lib and other dependencies; checked in it: millstone, mechanical_press, mechanical_mixer, crushing_wheel, water_wheel, windmill_bearing, shaft, cogwheel) **Get the port into the tests and
+- [x] **39.1** (unblocked 2026-10-17: the owner's port is `libs/create-fabric-6.0.10.0+mc1.21.1.jar`, mod id `create`, MIT, bundles its Porting Lib and other dependencies; checked in it: millstone, mechanical_press, mechanical_mixer, crushing_wheel, water_wheel, windmill_bearing, shaft, cogwheel) (review: pending 2026-10-18) **Get the port into the tests and
   confirm its ids.** Put the owner's jar into the compat test runtime (a local file dependency in `tests.compat_mods`'
   place, `modCompileOnly` only if a `compat/create/` class turns out to be needed) and the harness (`-Pcreate=true`);
   a compat GameTest lists every block, item and recipe type this milestone uses and fails naming any that's missing;
@@ -4900,14 +4900,14 @@ the owner's port jar; M33's caravans (39.7).
   `villageTrains`) and saved fields with defaults, the fallbacks. The flag: `Expansions.M39` with `flag()`,
   `MILESTONES` and `milestone()`. Done when: `runCompatGameTest` loads the port, the id test passes, the note is on
   `main` and the package is sent.
-- [ ] **39.2** **The Mechanic.** A new job whose job
+- [x] **39.2** (review: pending 2026-10-18) **The Mechanic.** A new job whose job
   block is a Create block chosen by id in the design note (its POI registered through `Platform` only when the block
   exists, so without Create there's no Mechanic): they walk the village's machines, refill and empty them (through
   `ItemStores`), put back a broken shaft, cogwheel or belt from the build's blueprint (as `Upkeep` does), and lead the
   crew when builders build a contraption (39.5). Outfit and job icon with the pixel-art skill. Done when: compat
   GameTests: a jobless villager takes the job block; a broken shaft in a finished build is replaced; without Create the
   job isn't registered (a GameTest); scene `mechanic`.
-- [ ] **39.3** **Villagers work Create machines.**
+- [x] **39.3** (review: pending 2026-10-18) **Villagers work Create machines.**
   `data/aliveworkplace/machine_work/<id>.json`: the machine's block id, where its input goes and its output comes out
   (the machine, its basin or a depot), which job works it, and what the village wants made, e.g. the Miller's
   millstone (wheat to flour), the Smith's mechanical press (ingots to sheets), the Chef's mixer and basin (dough), the
@@ -4916,7 +4916,7 @@ the owner's port jar; M33's caravans (39.7).
   takes the input from the store, feeds the machine, collects the output to the store, and works only while the
   machine turns. Done when: compat GameTests per machine (input fed, output in the store, nothing fed while it's
   stopped, a full store pauses it, a save and reload mid-job finishes it); scene `create_mill`.
-- [ ] **39.4** **Create-powered builds.** Three new
+- [x] **39.4** (review: pending 2026-10-18) **Create-powered builds.** Three new
   blueprints, listed at the table only when Create is installed: the **Watermill** (a water wheel turning a millstone),
   the **Windmill** (a windmill bearing with sails; find a way to start it that needs no Create classes, or the builder
   leaves a sign telling the player to start it) and the **Workshop** (a belt line between a press and a depot, driven
@@ -5046,6 +5046,14 @@ the owner's port jar; M33's caravans (39.7).
   the build": a Village Hall already stands near the test's builder; green on main's CI, so most likely a leftover
   hall from a test that the new 39.x test classes moved into its spot). Next lane-e run: find what leaves the hall
   (try `batch`/`Leftovers.clear` in that test or the new tests), full build, merge to main.
+- 2026-10-18 (lane-e-1018-0413, 39.3 decisions): the chef's mixer water is poured straight into the basin's tank
+  (1000 mB, through Fabric's fluid transfer, which the port exposes), not taken from a water bucket in the store: the
+  dough recipe takes a bucket's worth and villages need no bucket supply. Read from the port: the mechanical mixer has
+  no shaft (it's driven as a cogwheel) and works from medium speed, so `mixer.json`'s `min_speed` is 30; the crushing
+  wheels' gap block saves the wheels' RPM / 50 as `Speed`, so `crushing.json`'s is 0.02 (1 RPM). The design note's
+  per-dimension `machines` record wasn't needed (workers find machines near their workstation in loaded chunks); only
+  the worker's `machine_job` attachment is saved. A worker looks for machine work every 5 s whatever their job's own
+  behaviour is doing (most never stop running, e.g. the armorer's smelting), and that work waits during a trip.
 - 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
   Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
   `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed

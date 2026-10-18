@@ -60,6 +60,14 @@ public class DenWardenCompatTests implements FabricGameTest {
 				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
 			level.removeBlock(hall, false);
 		}
+		// Other tests' kitchens and storehouses within a hall's reach make their chests this village's store, and loot or
+		// finds put away there never reach this test's chest (seen when the batch order changed with 39.3's tests)
+		net.minecraft.world.phys.AABB own = helper.getBounds();
+		for (BlockPos store : level.getPoiManager().findAll(h -> h.is(ModVillagers.KITCHEN_STOVE_POI) || h.is(ModVillagers.STOREHOUSE_POI)
+				|| h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER), p -> !own.contains(p.getCenter()), center, reach,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+			level.removeBlock(store, false);
+		}
 	}
 
 	/** Sets the time of day and the sky's darkness with it (isNight reads the darkness, updated once a tick). */

@@ -387,4 +387,35 @@ final class FabricItemStores implements ItemStores {
 		}
 		return remaining <= 0 ? ItemStack.EMPTY : stack.copyWithCount((int) remaining);
 	}
+
+	/** Fabric counts fluids in droplets: 81 to the millibucket. */
+	private static final long DROPLETS_PER_MB = net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET / 1000;
+
+	@Override
+	public long fluidMb(Level level, BlockPos pos, net.minecraft.world.level.material.Fluid fluid) {
+		Storage<net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant> s = net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.SIDED.find(level, pos, null);
+		if (s == null) {
+			return 0;
+		}
+		long droplets = 0;
+		for (var view : s) {
+			if (!view.isResourceBlank() && view.getResource().isOf(fluid)) {
+				droplets += view.getAmount();
+			}
+		}
+		return droplets / DROPLETS_PER_MB;
+	}
+
+	@Override
+	public long pourFluid(Level level, BlockPos pos, net.minecraft.world.level.material.Fluid fluid, long mb) {
+		Storage<net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant> s = net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage.SIDED.find(level, pos, null);
+		if (s == null || mb <= 0) {
+			return 0;
+		}
+		try (Transaction tx = Transaction.openOuter()) {
+			long got = s.insert(net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant.of(fluid), mb * DROPLETS_PER_MB, tx);
+			tx.commit();
+			return got / DROPLETS_PER_MB;
+		}
+	}
 }

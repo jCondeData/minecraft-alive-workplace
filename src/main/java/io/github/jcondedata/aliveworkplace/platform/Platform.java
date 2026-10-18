@@ -66,6 +66,15 @@ public interface Platform {
 	/** Whether a loaded mod's version is in a Fabric-style range such as {@code ">=1.7.3 <1.8"}; false if not loaded. */
 	boolean isModLoaded(String modId, String versionRange);
 
+	/**
+	 * A stand-in player in {@code level} for using a block the way a player would (ROADMAP 39.4: starting a windmill
+	 * bearing with an empty hand), or null where the loader has none.
+	 */
+	@Nullable
+	default net.minecraft.world.entity.player.Player fakePlayer(net.minecraft.server.level.ServerLevel level) {
+		return null;
+	}
+
 	Path configDir();
 
 	/** The roots (a jar's root, or class folders in a dev run) this mod's own files are loaded from; empty if unknown. */

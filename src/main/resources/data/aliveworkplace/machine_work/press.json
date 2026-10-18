@@ -1,0 +1,11 @@
+{
+  "requires": "create",
+  "machine": "create:mechanical_press",
+  "job": "minecraft:armorer",
+  "recipe_type": "create:pressing",
+  "feed": {"at": [0, -2, 0], "block": "create:depot"},
+  "collect": {"at": [0, -2, 0], "block": "create:depot"},
+  "makes": [{"item": "create:iron_sheet", "keep": 64}, {"item": "create:copper_sheet", "keep": 64}],
+  "batch": 16,
+  "min_speed": 1
+}

@@ -1681,6 +1681,47 @@ def physician():
     return t.save_profession(ASSETS, "physician", hat="full")
 
 
+def mechanic():
+    """The village's Mechanic (ROADMAP 39.2, Create): goggles in a brass frame with amber lenses pushed up on the
+    forehead, over a slate-blue work shirt; a heavy canvas work apron the grey of andesite casing, with brass rivets at
+    the bib's corners and a cogwheel stitched on the skirt; a leather tool belt with a brass-headed wrench
+    hanging at the right hip; rolled sleeves and leather work gloves. The goggles sit over the biome's hat line (no
+    full headwear), as the Tinkerer's do; the brass and amber against grey keep the two apart."""
+    t = vg.VillagerTexture()
+    shirt = vg.cloth("#3f5468", spread=0.22)
+    canvas = vg.cloth("#76766e", spread=0.16)
+    leather = vg.cloth("#6a4224", n=4)
+    amber = ("#f0b23a", "#c47a1c")
+    hf = t.face("hat", "front")
+    for x0 in (0, 4):                                    # two round amber lenses in brass rims, high on the brow
+        paint(hf, ((x0 + 1, 1), (x0 + 2, 1)), BRASS[3])
+        paint(hf, ((x0, 2), (x0 + 3, 2)), BRASS[2])
+        paint(hf, ((x0 + 1, 3), (x0 + 2, 3)), BRASS[1])
+        hf.put(x0 + 1, 2, amber[0])
+        hf.put(x0 + 2, 2, amber[1])
+    for side in ("west", "back", "east"):                # the goggles' strap round the head
+        t.face("hat", side).fill("#2e2a26", rows=[2])
+    vg.vest(t, shirt, length=18, open_front=False, noise=0.03)
+    vg.apron(t, canvas, top=2, bottom=18, left=1, right=6, ties=True)
+    apron_back(t, canvas)
+    f = t.face("jacket", "front")
+    paint(f, ((1, 2), (6, 2)), BRASS[3])                 # rivets at the bib's corners
+    for x, y, c in ((4, 14, STEEL[3]), (5, 14, STEEL[2]),  # the stitched cogwheel on the skirt, under the badge:
+                    (3, 15, STEEL[3]), (4, 15, "#5a3c22"), (5, 15, "#5a3c22"), (6, 15, STEEL[1]),  # teeth round a dark hub
+                    (3, 16, STEEL[2]), (4, 16, "#5a3c22"), (5, 16, "#5a3c22"), (6, 16, STEEL[0]),
+                    (4, 17, STEEL[1]), (5, 17, STEEL[0])):
+        f.put(x, y, c)
+    vg.belt(t, leather, row=10, buckle=BRASS[3])
+    for x, y, c in ((1, 11, BRASS[3]), (2, 11, BRASS[2]), (1, 12, BRASS[1]),       # the wrench at the right hip:
+                    (1, 13, "#8a8a80"), (1, 14, "#6e6e66"), (1, 15, "#5a5a54")):    # brass jaw, andesite handle
+        f.put(x, y, c)
+    west = t.face("jacket", "west")                      # a pouch of bolts on the right side
+    paint(west, ((1, 11), (2, 11), (1, 12), (2, 12)), leather[1])
+    west.put(2, 11, leather[2])
+    vg.sleeves(t, shirt, cuff=canvas[2], gloves=vg.cloth("#7a4a26", n=4))
+    return t.save_profession(ASSETS, "mechanic", hat=None)
+
+
 DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
@@ -1688,6 +1729,7 @@ DRAW += [jeweller]   # 34.12
 DRAW += [firewarden]   # 32.16
 DRAW += [well_keeper]   # 32.17
 DRAW += [physician]   # 32.18
+DRAW += [mechanic]   # 39.2
 
 if __name__ == "__main__":
     run(DRAW)

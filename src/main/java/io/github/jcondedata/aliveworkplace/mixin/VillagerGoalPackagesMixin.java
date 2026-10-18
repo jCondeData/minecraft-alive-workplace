@@ -47,6 +47,8 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.tinkerer(speed));
 		} else if (profession == ModVillagers.STEWARD) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.city.StewardWork.packages(speed));
+		} else if (ModVillagers.isMechanic(profession)) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.packages(speed));
 		} else if (profession == ModVillagers.PHYSICIAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.PhysicianWork.packages(speed));
 		} else if (profession == ModVillagers.WELL_KEEPER) {
@@ -105,6 +107,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.DeskPackages.work(speed, io.github.jcondedata.aliveworkplace.trader.PokemonTraders::title,
 				v -> net.minecraft.network.chat.Component.translatable("message.aliveworkplace.pokemon_trader.state",
 					io.github.jcondedata.aliveworkplace.registry.ModAttachments.POKEMON_TRADE_COUNT.getOrElse(v, 0))));
+		}
+		if (cir.isCancelled()) {
+			// villagers work Create's machines (39.3) as their machine-work files say, around their own work
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.mechanic.MachineWork.packages(profession, cir.getReturnValue()));
 		}
 	}
 
@@ -209,5 +215,7 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.fish.FisherWork(), io.github.jcondedata.aliveworkplace.fish.Fishers::vanillaMayRun));
 		}
+		// villagers work Create's machines (39.3) as their machine-work files say, around their own work
+		cir.setReturnValue(io.github.jcondedata.aliveworkplace.mechanic.MachineWork.packages(profession, cir.getReturnValue()));
 	}
 }

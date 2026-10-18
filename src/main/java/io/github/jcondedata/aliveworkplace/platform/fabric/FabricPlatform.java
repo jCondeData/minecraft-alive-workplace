@@ -87,6 +87,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public net.minecraft.world.entity.player.Player fakePlayer(net.minecraft.server.level.ServerLevel level) {
+		return net.fabricmc.fabric.api.entity.FakePlayer.get(level);
+	}
+
+	@Override
 	@Nullable
 	public String modVersion(String modId) {
 		return FabricLoader.getInstance().getModContainer(modId)

@@ -31,6 +31,10 @@
     "aliveworkplace:sieve",
     "aliveworkplace:tinkers_bench",
     "aliveworkplace:nether_brazier",
-    "aliveworkplace:compost_bin"
+    "aliveworkplace:compost_bin",
+    {
+      "id": "aliveworkplace:toolbox",
+      "required": false
+    }
   ]
 }

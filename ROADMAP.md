@@ -5038,6 +5038,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-c-1018-0352, **wip/lane-c holds 37.5 and 37.6**, ticked there but not on `main`): both passed their own tests and the full build before lane d's 38.6/38.7 merge (runGameTest green, runCompatGameTest 270/270 after fix ef8019e7). After merging main at 9f9290da, the full `runGameTest` failed `VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne` ("a hall before the build"; 37.5 furnishes the Village Hall, so check that first) and `LadderGameTests.aSiegeGathersOutsideTheRingOfWalls` (the raiders aren't about: 3). Next lane c run: root-cause those two, full build, merge to `main`.
 - 2026-10-18 (37.6, lane-c-1018-0352, decisions): (1) "For meals and in the evening": vanilla villagers have no meal
   hour, so villagers sit from supper (the hall's banquet hour, 10500) till their schedule turns to rest (12000), when
   idle or at the evening meeting; they stand for work, bed, danger (hurt, a hostile near, panic, a raid), a broken

@@ -247,6 +247,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Villagers are never left stuck inside a block.** In a growing village a baby could play in a nook too small for a
+  grown villager (under a roof's stair, beside a lantern on a fence) and grow up inside the block, and a villager
+  standing in a doorway could have the door shut on it. Such a villager now opens the door it is shut in, or steps out
+  to the nearest free spot, within a second (B185).
 - **The Trainer Leader gets to the Leader's Hall's Training Post.** The red carpet started right inside the double
   door, under its low lintel, and a villager stepping up onto it there hit its head, so a leader coming in by the middle
   of the door stood in the doorway for good. The carpet now starts a step further in. A Leader's Hall already built

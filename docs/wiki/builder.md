@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B185
 
 ## 1. What a player sees
 
@@ -169,6 +169,12 @@ claims and trip counts.
   Manor's) the door has a fanlight (an open trapdoor flat on the outside face) in place of a lintel: a stair's back half
   is a full block up, and a villager climbing onto it still has its back in the doorway. `tools/blueprints/check.py` refuses every blueprint
   that breaks it (B170, B173).
+- No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
+  (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
+  the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbour walking
+  through. Twice a second every villager looks whether its body is inside a block; found there twice in a row, it opens
+  the wooden door it is shut in or else steps (with a puff) to the nearest spot within four blocks with a floor and
+  room to stand. A villager only pressed against walls is never moved (B185).
 
 ## 7. Known limits
 
@@ -184,7 +190,7 @@ claims and trip counts.
 ## 8. Proof
 
 GameTests (`src/gametest/java/.../test/`): `BuilderGameTests` (108 tests), `BuilderCrewGameTests` (3),
-`BuilderChaosGameTests` (1, stuck recovery), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
+`BuilderChaosGameTests` (1, stuck recovery), `B185GameTests` (6, villagers let out of a block), `BuildSiteSaveGameTests` (2), `BuilderBenchGameTests` (2),
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`,
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (7, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and

@@ -30,19 +30,21 @@ GROUPS = [
     "Carpenter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
 
 
-def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, furniture=False):
+def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=False, cobblemon18=False, furniture=False,
+      create=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
     cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
-    furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4)."""
+    furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4).
+    create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
             "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
-            "furniture": furniture}
+            "furniture": furniture, "create": create}
 
 
 def job(name, group, title, what, est=150, extra=(), **kw):
@@ -1010,6 +1012,22 @@ SCENES = [
     # Plague (ROADMAP 32.18): the Physician going house to house with Remedies, then the hall's list of the ill
     job("plague", "Threats", "Plague: the Physician goes house to house with the Remedy",
         "a plague broke out; the Physician took Remedies from the chest and went house to house: two of the ill were cured, the third was seen and sent home to bed, as the hall's list showed", 150),
+    # The Mechanic (ROADMAP 39.2, with Create): mending a finished drive line from its blueprint and tending a millstone
+    job("mechanic", "Mechanic", "The Mechanic: a shaft and a cogwheel put back, the millstone fed and emptied",
+        "the Mechanic put back the shaft and the cogwheel missing from the finished drive line, fed the turning millstone the store's wheat and brought its flour back to the chest",
+        150, create=True),
+    # Villagers work Create's machines (ROADMAP 39.3, with Create): the farmer feeds a turning millstone from the store
+    job("create_mill", "Create", "The farmer works the millstone: wheat in, flour back to the store",
+        "the Farmer took wheat from the chest to the turning millstone and brought the flour it ground back to the chest",
+        150, create=True),
+    # The Create-powered builds (ROADMAP 39.4, with Create): the Watermill, the Windmill and the Workshop, every machine turning
+    job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
+        "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
+        120, create=True),
+    # Builders build contraptions (ROADMAP 39.5, with Create): a saved drive put up again, its moving parts last, then checked
+    job("create_contraption", "Create", "A contraption from a blueprint: built in order, and it turns",
+        "the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",
+        200, create=True),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),
@@ -1363,6 +1381,7 @@ def env(scene):
            "FURNITURE": "true" if s.get("furniture") else "false"}
     if s["cobblemon18"]:
         out["COBBLEMON18"] = "true"
+    out["CREATE"] = "true" if s.get("create") else "false"
     out.update(s["env"])
     return out
 

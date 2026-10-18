@@ -109,6 +109,8 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.people.LifeStages.init(); // the Evergreen Charm (34.19a)
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWorkFiles.init();
+		io.github.jcondedata.aliveworkplace.mechanic.Contraptions.init(); // contraptions from a blueprint (39.5)
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.init(); // Wonders as data (35.2)
 		io.github.jcondedata.aliveworkplace.wonder.WonderStages.init(); // a Wonder's stages, one after another (35.4)

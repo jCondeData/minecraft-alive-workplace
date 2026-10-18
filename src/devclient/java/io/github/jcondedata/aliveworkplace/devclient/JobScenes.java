@@ -1050,6 +1050,191 @@ final class JobScenes {
 			ScreenshotHarness.hover(player, Vec3.atCenterOf(STATION.offset(0, 0, -24)), 180, 10);
 			io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION.offset(0, 0, -26));
 		}, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 6)));
+		// The Mechanic (ROADMAP 39.2, filmed with Create): a Mechanic at a Create Toolbox, the store chest beside it with
+		// shafts, a cogwheel and wheat. Behind them a finished drive line (a stone-brick footing, shafts and a cogwheel)
+		// has lost a shaft and its cogwheel, and a creative motor turns a millstone. The Mechanic fetches the parts and puts
+		// them back from the build's blueprint, shaft first, then fills the turning millstone with wheat and brings its flour
+		// back to the chest.
+		SCENES.put("mechanic", job("the Mechanic put back the shaft and the cogwheel missing from the finished drive line, fed the turning millstone the store's wheat and brought its flour back to the chest",
+			2400, (level, player) -> {
+			level.setDayTime(2000);
+			java.util.function.Function<String, Block> create = path -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
+			java.util.function.Function<String, Item> createItem = path -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
+			Showcase.check(ModVillagers.MECHANIC != null, "Create is loaded and the Mechanic is a job");
+			if (ModVillagers.MECHANIC == null) {
+				return l -> true;
+			}
+			Container c = chest(level, chestPos(), new ItemStack(createItem.apply("shaft"), 2), new ItemStack(createItem.apply("cogwheel"), 1),
+				new ItemStack(Items.WHEAT, 16));
+			Villager mechanic = worker(level, STATION, create.apply("brown_toolbox"), ModVillagers.TOOLBOX_POI, ModVillagers.MECHANIC);
+			BlockPos line = STATION.offset(-2, 0, -5);
+			BlockState shaft = create.apply("shaft").defaultBlockState().setValue(BlockStateProperties.AXIS, Direction.Axis.X);
+			BlockState cog = create.apply("cogwheel").defaultBlockState().setValue(BlockStateProperties.AXIS, Direction.Axis.X);
+			for (int x = 0; x < 5; x++) {
+				level.setBlockAndUpdate(line.offset(x, 0, 0), Blocks.STONE_BRICKS.defaultBlockState());
+				level.setBlockAndUpdate(line.offset(x, 1, 0), x < 4 ? shaft : cog);
+			}
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase/mechanic_line");
+			level.getStructureManager().getOrCreate(id).fillFromWorld(level, line, new net.minecraft.core.Vec3i(5, 2, 1), false, Blocks.STRUCTURE_VOID);
+			BuildSiteManager.get(level).recordFinished(id, new BlueprintData.Placement(level.dimension().location(), line,
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			BlockPos gap = line.offset(1, 1, 0);
+			BlockPos cogAt = line.offset(4, 1, 0);
+			level.setBlockAndUpdate(gap, Blocks.AIR.defaultBlockState());
+			level.setBlockAndUpdate(cogAt, Blocks.AIR.defaultBlockState());
+			BlockPos mill = STATION.offset(3, 1, -2);
+			level.setBlockAndUpdate(mill.below(), create.apply("creative_motor").defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
+			level.setBlockAndUpdate(mill, create.apply("millstone").defaultBlockState());
+			return l -> l.getBlockState(gap).is(create.apply("shaft")) && l.getBlockState(cogAt).is(create.apply("cogwheel"))
+				&& c.countItem(createItem.apply("wheat_flour")) > 0 && mechanic.isAlive();
+		}));
+		// Villagers work Create's machines (ROADMAP 39.3, filmed with Create): a Farmer at a composter, the store chest beside
+		// it with wheat, and a millstone on a creative motor a few steps away. The farmer takes wheat from the chest, pours it
+		// into the turning millstone and brings the flour it grinds back to the chest.
+		SCENES.put("create_mill", job("the Farmer took wheat from the chest to the turning millstone and brought the flour it ground back to the chest",
+			2400, (level, player) -> {
+			level.setDayTime(2000);
+			java.util.function.Function<String, Block> create = path -> net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
+			java.util.function.Function<String, Item> createItem = path -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
+			Showcase.check(!io.github.jcondedata.aliveworkplace.mechanic.MachineWorkFiles.all().isEmpty(), "Create is loaded and the machine-work files are read");
+			Container c = chest(level, chestPos(), new ItemStack(Items.WHEAT, 32));
+			Villager farmer = worker(level, STATION, Blocks.COMPOSTER, net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER,
+				net.minecraft.world.entity.npc.VillagerProfession.FARMER);
+			BlockPos mill = STATION.offset(3, 1, -2);
+			level.setBlockAndUpdate(mill.below(), create.apply("creative_motor").defaultBlockState().setValue(BlockStateProperties.FACING, Direction.UP));
+			level.setBlockAndUpdate(mill, create.apply("millstone").defaultBlockState());
+			return l -> c.countItem(createItem.apply("wheat_flour")) > 0 && farmer.isAlive();
+		}));
+		// The Create-powered builds (ROADMAP 39.4, filmed with Create): the Watermill, the Windmill and the Workshop set down
+		// side by side as a builder leaves them, facing the camera. Water falls from the header tanks through the two wheels,
+		// the windmill's bearing is started as the builder starts it, and every machine turns: both millstones and the press.
+		SCENES.put("create_builds", new Job("the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
+			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+			List<BlockPos> machines = new java.util.ArrayList<>();
+			int x = -20;
+			for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {
+				BlockPos at = STATION.offset(x, 0, 4);
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+				io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
+				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(4, 2, 4)
+					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
+				x += entry.size().getX() + 3;
+			}
+			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
+		}, null));
+		// Builders build contraptions (ROADMAP 39.5, filmed with Create): a player's own drive (a water wheel under a header
+		// tank, two shafts, a three-block belt and two cogwheels) stands behind the camera, is saved as a blueprint the way a
+		// Structure Block saves it and taken away, and a builder puts it up in front of the camera from the barrels: what
+		// holds it up first, then the shafts, the cogwheels and the belt last (the belt finding its controller in the new
+		// place). Once it's done the builder checks it, and every part turns.
+		SCENES.put("create_contraption", new Job("the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",
+			7000, new Vec3(5.5, -54.5, 9.5), new Vec3(-0.5, -59.0, -2.5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
+				&& io.github.jcondedata.aliveworkplace.mechanic.Contraptions.active(), "Create is loaded and builders build contraptions");
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(3, level.getServer());
+			java.util.function.Function<String, BlockState> block = text -> {
+				try {
+					return net.minecraft.commands.arguments.blocks.BlockStateParser.parseForBlock(
+						io.github.jcondedata.aliveworkplace.mc.Lookup.lookup(net.minecraft.core.registries.BuiltInRegistries.BLOCK), text, false).blockState();
+				} catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+					throw new IllegalStateException(text, e);
+				}
+			};
+			// The drive, from its corner (the same one ContraptionCompatTests builds)
+			Map<BlockPos, BlockState> drive = new LinkedHashMap<>();
+			for (int x = 0; x < 8; x++) {
+				for (int z = 2; z < 9; z++) {
+					if (x != 1 || z < 4 || z > 7) {
+						drive.put(new BlockPos(x, 0, z), Blocks.STONE_BRICKS.defaultBlockState());
+					}
+				}
+			}
+			for (int y = 1; y <= 2; y++) {
+				drive.put(new BlockPos(0, y, 3), Blocks.STONE_BRICKS.defaultBlockState());
+				drive.put(new BlockPos(2, y, 3), Blocks.STONE_BRICKS.defaultBlockState());
+			}
+			for (int x = 0; x <= 2; x++) {
+				for (int z = 3; z <= 5; z++) {
+					if (x != 1 || z != 4) {
+						drive.put(new BlockPos(x, 3, z), Blocks.STONE_BRICKS.defaultBlockState());
+					}
+				}
+			}
+			drive.put(new BlockPos(1, 4, 4), block.apply("minecraft:stone_brick_slab[type=bottom]"));
+			drive.put(new BlockPos(1, 1, 5), block.apply("create:water_wheel[facing=east]"));
+			drive.put(new BlockPos(2, 1, 5), block.apply("create:shaft[axis=x]"));
+			drive.put(new BlockPos(3, 1, 5), block.apply("create:shaft[axis=x]"));
+			for (String[] belt : new String[][] {{"5", "start"}, {"4", "middle"}, {"3", "end"}}) {
+				drive.put(new BlockPos(4, 1, Integer.parseInt(belt[0])),
+					block.apply("create:belt[facing=north,slope=horizontal,casing=false,part=" + belt[1] + "]"));
+			}
+			drive.put(new BlockPos(5, 1, 3), block.apply("create:cogwheel[axis=x]"));
+			drive.put(new BlockPos(5, 2, 3), block.apply("create:cogwheel[axis=x]"));
+			BlockPos original = STATION.offset(-4, 0, 30); // behind the camera
+			drive.forEach((p, state) -> level.setBlockAndUpdate(original.offset(p), state));
+			level.setBlockAndUpdate(original.offset(1, 3, 4), Blocks.WATER.defaultBlockState());
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("players/drive_line");
+			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), STATION.offset(-4, 0, -7),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			BlockPos bench = STATION.offset(5, 0, 1);
+			int[] tick = {0};
+			BuildSite[] site = {null};
+			return l -> {
+				if (++tick[0] == 80) { // the belt has worked out its length, the water runs: saved, taken away, built here
+					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = l.getStructureManager().getOrCreate(id);
+					template.fillFromWorld(l, original, new net.minecraft.core.Vec3i(8, 6, 9), false, Blocks.STRUCTURE_VOID);
+					for (int y = 5; y >= 0; y--) {
+						for (int x = 0; x < 8; x++) {
+							for (int z = 0; z < 9; z++) {
+								l.setBlock(original.offset(x, y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
+							}
+						}
+					}
+					l.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+					Villager builder = EntityType.VILLAGER.spawn(l, bench.south(), MobSpawnType.COMMAND);
+					Builders.employ(l, builder, bench);
+					site[0] = Builders.start(l, builder, null, id, placement);
+					Showcase.check(site[0] != null && site[0].kineticOrder(), "the builder took the contraption on, to build in a contraption's order");
+					if (site[0] == null) {
+						return false;
+					}
+					List<ItemStack> stacks = new ArrayList<>();
+					site[0].plan(l).materials().forEach((item, total) -> {
+						for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+							stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+						}
+					});
+					for (int b = 0; b * 27 < stacks.size(); b++) {
+						BlockPos at = bench.offset(1, 0, b);
+						l.setBlockAndUpdate(at, Blocks.BARREL.defaultBlockState());
+						Container barrel = (Container) l.getBlockEntity(at);
+						for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+							barrel.setItem(slot, stacks.get(b * 27 + slot));
+						}
+					}
+				}
+				if (site[0] == null) {
+					return false;
+				}
+				java.util.Optional<List<BlockPos>> still = BuildSiteManager.get(l).notTurning(placement);
+				if (still.isEmpty()) {
+					return false;
+				}
+				Showcase.check(still.get().isEmpty(), "the builder's check found every part turning (not: " + still.get() + ")");
+				return true;
+			};
+		}, null));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks

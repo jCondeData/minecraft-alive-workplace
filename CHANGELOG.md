@@ -52,6 +52,33 @@ asks for the steps, `latest.log` and any crash report).
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
   real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
   A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
+- **Create integration (2.3), the plan.** The design note (`docs/design/M39.md`): the Mechanic and their Toolbox,
+  villagers working Create's millstone, press, mixer and crushing wheels, the Watermill, Windmill and Workshop,
+  contraptions and Create schematics at the Blueprint Table, and trains later; its gate stays shut until 2.3 is
+  finished. The owner's Create port now loads in the compat tests, which check every Create id the plan uses (39.1).
+- **The Mechanic (2.3, being built).** With Create installed, a jobless villager by a Create Toolbox (any colour)
+  becomes the village's Mechanic, in a grey work apron, brass goggles on the brow and a wrench at the belt. They put
+  back shafts, gearboxes, cogwheels and belts missing from finished builds near the toolbox, from the build's
+  blueprint and with the parts in the chest by the toolbox, and walk a round of the village's millstones: what's
+  milled goes to the chest, and a turning, empty millstone gets wheat. Create's machines, belts and toolboxes are no
+  longer taken for supply chests. Setting `mechanics` (behind the 2.3 gate); no Mechanic without Create (39.2).
+- **Villagers work Create's machines (2.3, being built).** With Create installed, the farmer carries wheat from the
+  store to a turning millstone and brings back flour, the armorer presses ingots into sheets on the depot under a
+  mechanical press, the chef mixes dough in the basin under a mechanical mixer, and the miner drops raw ore between
+  crushing wheels and gathers the crushed ore. Only while the machine turns and the store has room; what each machine
+  makes comes from Create's own recipes, and each machine is a data file (`machine_work`) a datapack can change. The
+  Mechanic's round covers the new machines too. Setting `machineWork` (behind the 2.3 gate) (39.3).
+- **Create-powered builds.** With Create installed, the Blueprint Table offers the Watermill (a water wheel turned by
+  water falling from a header tank, driving a millstone), the Windmill (a stone tower with a windmill bearing and 24
+  sails over a millstone; the builder starts it when it's done) and the Workshop (a water wheel driving a belt to a
+  depot under a mechanical press): workplaces for the farmer's millstone and the armorer's press, turning as soon as
+  they're built. Setting `createBuilds` (behind the 2.3 gate) (39.4).
+- **Builders build contraptions (2.3, being built).** With Create installed, a blueprint with Create's moving parts in
+  it (one of ours or a machine you saved yourself) goes up in an order that keeps it whole: what holds it up, then
+  shafts and gearboxes, then cogwheels, then belts, each part facing and turning as drawn and a belt finding its
+  pulleys in the new place. A part broken before the build is done is put back first, and once it's finished the
+  owner is told whether every part turns, or which don't and where ("1 part doesn't turn: Shaft at 12 64 -30"). The
+  parts list is a data file (`kinetic_parts`). Setting `createBuilds` (behind the 2.3 gate) (39.5).
 - **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
   in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
   and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break

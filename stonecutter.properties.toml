@@ -62,6 +62,11 @@ tests.compat_mods = [
     "maven.modrinth:8BmcQJ2H:dnJdtm0u",         # GeckoLib 4.9.2 (for Raid Dens)
     "maven.modrinth:dlx62Wp3:KQwSroDP",         # Cobblecuisine 2.0.1 (the Chef's dishes, bean farms)
 ]
+# Local mod jars (files in the repo, not on a maven) the compat suite runs with. They go into the run's mods/ folder,
+# where Fabric Loader treats them as in a real install (build.gradle.kts, localModsInto), without their own GameTests.
+tests.compat_files = [
+    "libs/create-fabric-6.0.10.0+mc1.21.1.jar", # Milestone 39 (Create, 2.3): the owner's Fabric port of Create 6.0.10 (libs/README.md)
+]
 # -Pcobblemon18=true: the compat suite, the screenshot harness and the showcase run with Cobblemon 1.8.1 instead of
 # 1.7.3 (the mod still compiles against 1.7.3). "old -> new" swaps a runtime mod; "old -> " leaves it out of that run.
 tests.cobblemon18 = [
@@ -78,6 +83,8 @@ tests.screenshot_cobblemon = ["maven.modrinth:cobblemon:kF7CvxTo", "maven.modrin
 # Cobbleverse's performance stack, the pack's own versions (25.4): Sodium, Lithium, C2ME, FerriteCore, ModernFix,
 # EntityCulling, ImmediatelyFast, Krypton, ScalableLux.
 tests.screenshot_perf = ["maven.modrinth:AANobbMI:KIRFiWG4", "maven.modrinth:gvQqBUqZ:N08Z8wog", "maven.modrinth:VSNURh3q:h8ey5B7D", "maven.modrinth:uXXizFIs:sOzRw3CG", "maven.modrinth:nmDcB62a:NnNX8LBn", "maven.modrinth:NNAgCjsB:hsWvcyFJ", "maven.modrinth:5ZwdcRci:ATB4eNEP", "maven.modrinth:fQEb0iXm:Acz3ttTp", "maven.modrinth:Ps1zyz6x:Yx1tgJMI"]
+# -Pcreate=true (CREATE=true, a scene's create=True in tools/showcase/scenes.py): the owner's Create port too (M39).
+tests.screenshot_create = ["libs/create-fabric-6.0.10.0+mc1.21.1.jar"]
 tests.screenshot_mega = ["maven.modrinth:SszvX85I:Y6di9Ram", "maven.modrinth:jtmvUHXj:Xlt4eWBe", "maven.modrinth:ccKDOlHs:JB1fLQnc", "maven.modrinth:lhGA9TYQ:Wto0RchG"]
 # The pack's furniture mods for -Pfurniture=true (ROADMAP 37.4, scene furnished_home): Handcrafted with Resourceful Lib,
 # Beautify with Cloth Config, CobbleFurnies with Architectury and Athena (CobbleFurnies also needs Cobblemon, -Pcobblemon),

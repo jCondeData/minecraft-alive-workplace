@@ -91,7 +91,7 @@ public final class SupplyContainers {
 
 	/**
 	 * Blocks that hold items for their own work, not as storage: a brewing stand's bottles, a jukebox's disc, a lectern's
-	 * book, a crafter's grid, a Cobblemon Pasture Block's eggs (Cobbreeding makes it a container for the eggs it lays,
+	 * book, a crafter's grid, Create's machines and toolboxes (39.2), a Cobblemon Pasture Block's eggs (Cobbreeding makes it a container for the eggs it lays,
 	 * so a keeper putting things away would fill her own pasture instead of her chest).
 	 */
 	static boolean isMachine(BlockEntity be) {
@@ -103,7 +103,9 @@ public final class SupplyContainers {
 			|| be instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.LecternBlockEntity
-			|| be instanceof net.minecraft.world.level.block.entity.CrafterBlockEntity;
+			|| be instanceof net.minecraft.world.level.block.entity.CrafterBlockEntity
+			// Create's machines, belts and toolboxes (39.2): a mill's wheat and a player's tools are nobody's supplies
+			|| io.github.jcondedata.aliveworkplace.mechanic.Kinetics.keepsOwnItems(be.getBlockState());
 	}
 
 	/** Furnaces, blast furnaces and smokers near {@code bench}, nearest first. */

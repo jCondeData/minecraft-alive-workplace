@@ -135,6 +135,10 @@ public class SavedDataGameTests implements FabricGameTest {
 		samples.put("TAUGHT_BY", new io.github.jcondedata.aliveworkplace.people.Retirement.Teacher(B, "Bram", 24000L));
 		samples.put("WONDER_BLESSING", new io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.Blessed(41L, true, 2.0)); // (35.10)
 		samples.put("BLESSED_CHILD", 2.0); // (35.10)
+		samples.put("MECHANIC_ROUND", new io.github.jcondedata.aliveworkplace.mechanic.MechanicRound(java.util.List.of(new net.minecraft.core.BlockPos(3, 64, -2), new net.minecraft.core.BlockPos(-8, 65, 12)), 1)); // (39.2)
+		samples.put("MACHINE_JOB", new io.github.jcondedata.aliveworkplace.mechanic.MachineJob(new net.minecraft.core.BlockPos(5, 70, -3),
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.id("millstone"), io.github.jcondedata.aliveworkplace.mechanic.MachineJob.Stage.FEED,
+			java.util.List.of(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.WHEAT, 16)))); // (39.3)
 		return samples;
 	}
 

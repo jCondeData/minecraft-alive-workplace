@@ -109,6 +109,8 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.people.LifeStages.init(); // the Evergreen Charm (34.19a)
 		io.github.jcondedata.aliveworkplace.city.StewardRules.init();
 		io.github.jcondedata.aliveworkplace.ranch.PokemonChores.init();
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWorkFiles.init();
+		io.github.jcondedata.aliveworkplace.mechanic.Contraptions.init(); // contraptions from a blueprint (39.5)
 		io.github.jcondedata.aliveworkplace.legend.Legends.init();
 		io.github.jcondedata.aliveworkplace.wonder.Wonders.init(); // Wonders as data (35.2)
 		io.github.jcondedata.aliveworkplace.wonder.WonderStages.init(); // a Wonder's stages, one after another (35.4)
@@ -165,6 +167,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.command.CitySoak.init(); // 27.22
 		io.github.jcondedata.aliveworkplace.command.SeasonSoak.init(); // 30.22
 		io.github.jcondedata.aliveworkplace.command.Rehearsal.init(); // 34.23
+		io.github.jcondedata.aliveworkplace.command.FurnishedPackTest.init(); // 37.11
 		Platform.get().onServerStarting(server -> ClassWarmup.start()); // B103: no class loading stalls on day 1
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}

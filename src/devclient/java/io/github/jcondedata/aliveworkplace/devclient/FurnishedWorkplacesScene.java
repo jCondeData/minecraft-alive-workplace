@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * SCENE=furnished_workplaces (ROADMAP 37.5), filmed with -Pfurniture=true (the pack's furniture mods) and Cobblemon:
  * the Supply Shop, the Library, the Schoolhouse and the Healing Center furnished as this server would build them, side
- * by side, then walked inside: the shop's counters, shelf, picture and hanging pots, the trellises by its door, the
+ * by side, then walked inside: the shop's counters, shelf, picture and hanging pots, the
  * Library's desks, the Schoolhouse's benches and Poké Ball desk, the Healing Center's waiting benches and desk. Checks
  * every furniture spot holds the piece the server chose, pieces of at least two mods stand there, and each building
  * keeps exactly its vanilla chests and barrels as storage (no furniture piece counted as a chest).
@@ -45,11 +45,10 @@ final class FurnishedWorkplacesScene {
 	}
 
 	private static final List<View> VIEWS = List.of(
-		new View("01_shop_front", new Vec3(5.5, 3.2, -5.5), new Vec3(5.5, 2, 2), SHOP),
-		new View("02_shop_counter", new Vec3(5.5, 2.9, 3.2), new Vec3(5.5, 2.2, 7), SHOP),
-		new View("03_library_desks", new Vec3(6.5, 3.6, 3.4), new Vec3(6, 1.5, 7), LIBRARY),
-		new View("04_schoolroom", new Vec3(5.5, 3.2, 3.2), new Vec3(5.5, 1.5, 8), SCHOOL),
-		new View("05_clinic_benches", new Vec3(7.5, 2.7, 3.2), new Vec3(2.5, 1.3, 6), CLINIC));
+		new View("01_shop_counter", new Vec3(5.5, 2.9, 3.2), new Vec3(5.5, 2.2, 7), SHOP),
+		new View("02_library_desks", new Vec3(6.5, 3.6, 3.4), new Vec3(6, 1.5, 7), LIBRARY),
+		new View("03_schoolroom", new Vec3(5.5, 3.2, 3.2), new Vec3(5.5, 1.5, 8), SCHOOL),
+		new View("04_clinic_benches", new Vec3(7.5, 2.7, 3.2), new Vec3(2.5, 1.3, 6), CLINIC));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;
 

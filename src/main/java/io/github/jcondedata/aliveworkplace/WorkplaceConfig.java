@@ -174,6 +174,32 @@ public final class WorkplaceConfig {
 	 * a dish on the menu needs, and cut them when ripe, into the store. Off: farmers never sow beans.
 	 */
 	public boolean beanFarms = Expansions.on(Expansions.M38);
+	/**
+	 * With Create installed, a jobless villager by a Create Toolbox becomes the village's Mechanic (ROADMAP 39.2): they walk
+	 * a round of the village's machines, empty full millstones into the store and refill empty ones, and put back the
+	 * shafts, cogwheels and belts gone from finished builds. Off: no new Mechanics, and those hired stand idle. Without
+	 * Create it does nothing.
+	 */
+	public boolean mechanics = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, villagers work Create's machines (ROADMAP 39.3): the farmer mills wheat into flour, the
+	 * armorer presses ingots into sheets, the chef mixes dough and the miner crushes raw ore, taking the input from the
+	 * store and bringing what's made back, only while the machine turns and the store has room. Off: nobody feeds a
+	 * machine. Without Create it does nothing.
+	 */
+	public boolean machineWork = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, the Blueprint Table offers the Watermill, the Windmill and the Workshop (ROADMAP 39.4),
+	 * workplaces whose machines turn as soon as they're built. Off: they aren't offered (sites already started still
+	 * finish). Without Create it does nothing.
+	 */
+	public boolean createBuilds = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, the Blueprint Table lists the schematics players uploaded with Create's Schematic Table, and
+	 * a written Schematic used on the table imports its file (ROADMAP 39.6). Off: the table leaves Create's schematics
+	 * alone (those already imported stay). Without Create it does nothing.
+	 */
+	public boolean createSchematics = Expansions.on(Expansions.M39);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -859,6 +885,10 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED = cuisineDishes && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED = beanFarms && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED = mechanics && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.ENABLED = machineWork && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.ENABLED = createBuilds && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.table.CreateSchematics.ENABLED = createSchematics && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();

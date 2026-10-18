@@ -19,6 +19,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.PackModsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.SophisticatedStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.SophisticatedControllerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.TomsStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedBuildCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedHomesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedWorkplacesCompatTests",
@@ -35,6 +36,12 @@
 			"io.github.jcondedata.aliveworkplace.compat.CuisineCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BeanFarmCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CuisineTreatsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.CreateCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.MachineWorkCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.CreateBuildsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.ContraptionCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.CreateSchematicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenWardenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenChallengeCompatTests",
@@ -86,6 +93,7 @@
 		"toms_storage": "*",
 		"cobbleworkers": "*",
 		"cobblemonraiddens": "*",
-		"cobblecuisine": "*"
+		"cobblecuisine": "*",
+		"create": "*"
 	}
 }

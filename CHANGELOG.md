@@ -51,7 +51,45 @@ asks for the steps, `latest.log` and any crash report).
   tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
   real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
+- **Tom's Simple Storage as the Storehouse's store (2.1, behind its gate).** An inventory connector by the Storehouse
+  is one store for every chest, barrel and filing cabinet it joins (touching it, or on its cables through a cable
+  connector), so each item counts once; porters fill it and builders take from it through the connector, and a chest
+  unplugged from the network is its own store again. The board says "Linked through an inventory connector: 3 blocks",
+  and a storage terminal on the connector shows the village's goods in Tom's own screen (37.10).
   A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
+- **Create integration (2.3), the plan.** The design note (`docs/design/M39.md`): the Mechanic and their Toolbox,
+  villagers working Create's millstone, press, mixer and crushing wheels, the Watermill, Windmill and Workshop,
+  contraptions and Create schematics at the Blueprint Table, and trains later; its gate stays shut until 2.3 is
+  finished. The owner's Create port now loads in the compat tests, which check every Create id the plan uses (39.1).
+- **The Mechanic (2.3, being built).** With Create installed, a jobless villager by a Create Toolbox (any colour)
+  becomes the village's Mechanic, in a grey work apron, brass goggles on the brow and a wrench at the belt. They put
+  back shafts, gearboxes, cogwheels and belts missing from finished builds near the toolbox, from the build's
+  blueprint and with the parts in the chest by the toolbox, and walk a round of the village's millstones: what's
+  milled goes to the chest, and a turning, empty millstone gets wheat. Create's machines, belts and toolboxes are no
+  longer taken for supply chests. Setting `mechanics` (behind the 2.3 gate); no Mechanic without Create (39.2).
+- **Villagers work Create's machines (2.3, being built).** With Create installed, the farmer carries wheat from the
+  store to a turning millstone and brings back flour, the armorer presses ingots into sheets on the depot under a
+  mechanical press, the chef mixes dough in the basin under a mechanical mixer, and the miner drops raw ore between
+  crushing wheels and gathers the crushed ore. Only while the machine turns and the store has room; what each machine
+  makes comes from Create's own recipes, and each machine is a data file (`machine_work`) a datapack can change. The
+  Mechanic's round covers the new machines too. Setting `machineWork` (behind the 2.3 gate) (39.3).
+- **Create-powered builds.** With Create installed, the Blueprint Table offers the Watermill (a water wheel turned by
+  water falling from a header tank, driving a millstone), the Windmill (a stone tower with a windmill bearing and 24
+  sails over a millstone; the builder starts it when it's done) and the Workshop (a water wheel driving a belt to a
+  depot under a mechanical press): workplaces for the farmer's millstone and the armorer's press, turning as soon as
+  they're built. Setting `createBuilds` (behind the 2.3 gate) (39.4).
+- **Builders build contraptions (2.3, being built).** With Create installed, a blueprint with Create's moving parts in
+  it (one of ours or a machine you saved yourself) goes up in an order that keeps it whole: what holds it up, then
+  shafts and gearboxes, then cogwheels, then belts, each part facing and turning as drawn and a belt finding its
+  pulleys in the new place. A part broken before the build is done is put back first, and once it's finished the
+  owner is told whether every part turns, or which don't and where ("1 part doesn't turn: Shaft at 12 64 -30"). The
+  parts list is a data file (`kinetic_parts`). Setting `createBuilds` (behind the 2.3 gate) (39.5).
+- **Create schematics at the Blueprint Table (2.3, being built).** With Create installed, the schematics players
+  upload with Create's Schematic Table (`schematics/uploaded/<player>/`) are at the Blueprint Table the next time it
+  opens, as blueprints builders can build, and a written Schematic right-clicked on the table imports its own file
+  there and then. Blocks of mods the server doesn't have are counted and named, an upload under the same name replaces
+  its blueprint, and a Schematic whose file is gone says so; names that point outside the uploads are refused.
+  Setting `createSchematics` (behind the 2.3 gate) (39.6).
 - **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
   in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
   and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break
@@ -213,6 +251,15 @@ asks for the steps, `latest.log` and any crash report).
   door, under its low lintel, and a villager stepping up onto it there hit its head, so a leader coming in by the middle
   of the door stood in the doorway for good. The carpet now starts a step further in. A Leader's Hall already built
   keeps its carpet: take up the first piece by the door if your leader is stuck there (B170).
+- **Villagers no longer get stuck in doorways.** A villager is taller than a player, and a carpet, a seat or a stair
+  step right inside a door two blocks high made it hit its head on the lintel and stand in the doorway for good. Every
+  blueprint is now checked for it, and these were fixed: the Healing Center (front and ward doors), Supply Shop (its
+  rug, and the shopkeeper's seat moved aside of the back door), Village Hall and its meeting room (one bench seat and
+  the chair at the doorway's end of the council table taken out), Town Hall, Manor (a fanlight over the front door in place
+  of its lintel, since the grand stair starts right inside; the parlour rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
+  Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
+  room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
+  keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
 - **Chefs take the Kitchen's smoker, however it's decorated.** A villager walking to a workstation built in under
   solid blocks (the smoker in the Kitchen's brick oven) climbed onto the nearest chest or worktop instead, a step too far
   to take it, and stood there; it now walks to the floor in front of the workstation and takes it (B168).
@@ -346,6 +393,12 @@ asks for the steps, `latest.log` and any crash report).
   brew the Three-Herb Tonic at their brewing stand and take it round, with no traveling doctor sent for. A Remedy, from
   them or from your hand, only eases the cough for a day, as the story says, and a villager a Remedy is keeping well
   doesn't catch it. With **Physicians** off, Doctor Wren comes as before.
+
+### Dev
+- **The pack test builds furnished homes** (37.11). `FURNISHED=true tools/packtest/run.sh` boots Cobbleverse with
+  `furnitureMods` set to Cozy Home first and has two builders build the Starter Cottage and the Inn; it passes only when
+  both finish with nothing skipped, every block and furniture piece in place and Cozy Home pieces in each. The nightly
+  run does it too. The wiki's "Furniture and storage mods" page gains a table of each mod, and the player guide a page.
 
 ## 0.144.0 — 2026-10-13
 

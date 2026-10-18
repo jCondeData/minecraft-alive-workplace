@@ -1,0 +1,12 @@
+{
+  "requires": "create",
+  "groups": [
+    ["create:shaft", "create:gearbox", "create:andesite_encased_shaft", "create:brass_encased_shaft",
+      "create:metal_girder_encased_shaft", "create:clutch", "create:gearshift", "create:encased_chain_drive",
+      "create:adjustable_chain_gearshift", "create:sequenced_gearshift"],
+    ["create:cogwheel", "create:large_cogwheel", "create:andesite_encased_cogwheel", "create:brass_encased_cogwheel",
+      "create:andesite_encased_large_cogwheel", "create:brass_encased_large_cogwheel"],
+    ["create:belt"]
+  ],
+  "belts": ["create:belt"]
+}

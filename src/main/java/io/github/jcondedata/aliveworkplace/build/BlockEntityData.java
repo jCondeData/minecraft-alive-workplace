@@ -38,7 +38,8 @@ public final class BlockEntityData {
 			// or chronicle
 			return null;
 		}
-		if (isStorage(level, pos, state, blockEntity)) {
+		// A belt carries items but is no store: its place on the belt is copied (39.5; the items on it never are)
+		if (!io.github.jcondedata.aliveworkplace.mechanic.KineticParts.isBelt(state) && isStorage(level, pos, state, blockEntity)) {
 			// Containers (chests, barrels, jars, shelves, safes...): only the name, never the contents.
 			if (!Nbt.has(nbt, "CustomName", Tag.TAG_STRING)) {
 				return null;

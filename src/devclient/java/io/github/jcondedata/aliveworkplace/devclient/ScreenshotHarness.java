@@ -66,6 +66,26 @@ public class ScreenshotHarness implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
 	}
 
+	/**
+	 * A mod that adds a dimension through data (Cobblemon Raid Dens) makes vanilla call the world's settings
+	 * "experimental" and ask about a backup before opening it, and nobody clicks in a headless run (B169: every
+	 * Cobblemon scene waited there until the showcase killed it). The harness answers "continue without a backup".
+	 */
+	private static void skipBackupQuestion(Minecraft mc) {
+		if (!(mc.screen instanceof net.minecraft.client.gui.screens.BackupConfirmScreen screen)) {
+			return;
+		}
+		for (var child : screen.children()) {
+			if (child instanceof net.minecraft.client.gui.components.Button button
+				&& button.getMessage().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents key
+				&& "selectWorld.backupJoinSkipButton".equals(key.getKey())) {
+				System.out.println("[aliveworkplace-shots] Skipped the backup question: " + screen.getTitle().getString());
+				button.onPress();
+				return;
+			}
+		}
+	}
+
 	private final JobScenes jobScenes = new JobScenes();
 	private final WordsScene words = new WordsScene();
 	private final CityPlanScene cityPlan = new CityPlanScene();
@@ -157,6 +177,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final PieceLookScene pieceLook = new PieceLookScene();
 
 	private void onTick(Minecraft mc) {
+		skipBackupQuestion(mc);
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
 			return;
 		}

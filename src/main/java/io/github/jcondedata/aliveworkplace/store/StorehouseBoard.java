@@ -78,6 +78,10 @@ public final class StorehouseBoard {
 		if (networks.linked() > 0) { // 37.9: a Sophisticated Storage controller's blocks are one store
 			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.linked", networks.linked()), ChatFormatting.GRAY));
 		}
+		int joined = StorageNetworks.joinedCount(level, store);
+		if (joined > 0) { // 37.10: a Tom's Simple Storage inventory connector in the Storehouse
+			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.connector", joined), ChatFormatting.GRAY));
+		}
 		lore.add(plain(Component.translatable(requests.isEmpty() ? "screen.aliveworkplace.storehouse.nothing" : "screen.aliveworkplace.storehouse.click"),
 			ChatFormatting.GRAY));
 		info.set(DataComponents.LORE, new ItemLore(lore));

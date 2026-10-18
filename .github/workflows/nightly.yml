@@ -73,6 +73,13 @@ jobs:
           python3 tools/modtest/logaudit.py build/packtest/server --mod "$MODID" \
             $( [ -f tools/modtest/allow.txt ] && echo --allow tools/modtest/allow.txt ) | tee build/modtest/packtest-audit.md
 
+      - name: Furnished builds on the pack
+        if: always() && hashFiles('tools/packtest/run.sh') != ''
+        run: |
+          export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          # 37.11: the Starter Cottage and the Inn built with Cozy Home first in furnitureMods, nothing skipped.
+          FURNISHED=true tools/packtest/run.sh 2>&1 | tee build/modtest/furnished.log
+
       - name: Performance soak
         if: always() && hashFiles('tools/packtest/run.sh') != ''
         run: |

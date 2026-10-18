@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.registry;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import com.google.common.collect.ImmutableSet;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import java.util.List;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -883,6 +884,52 @@ public final class ModVillagers {
 	);
 
 	/**
+	 * Create's Toolbox, in any of its sixteen colours, is the Mechanic's job block (ROADMAP 39.2, design note M39): a POI
+	 * of ours registered once Create has registered every colour (mods start in no fixed order), so without Create there is
+	 * none. It's in the acquirable_job_site tag (as an optional entry), so a jobless villager takes one by themselves.
+	 */
+	public static final List<ResourceLocation> TOOLBOX_BLOCKS = java.util.stream.Stream.of("white", "orange", "magenta", "light_blue",
+			"yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black")
+		.map(c -> ResourceLocation.fromNamespaceAndPath("create", c + "_toolbox")).toList();
+	public static final ResourceLocation TOOLBOX_ID = AliveWorkplace.id("toolbox");
+	public static final ResourceKey<PoiType> TOOLBOX_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TOOLBOX_ID);
+
+	static {
+		java.util.Map<ResourceLocation, net.minecraft.world.level.block.Block> toolboxes = new java.util.LinkedHashMap<>();
+		for (ResourceLocation id : TOOLBOX_BLOCKS) {
+			Platform.get().whenBlockRegistered(id, block -> {
+				toolboxes.put(id, block);
+				if (toolboxes.size() == TOOLBOX_BLOCKS.size()) {
+					Platform.get().registerPoi(TOOLBOX_ID, 1, 1, toolboxes.values().toArray(net.minecraft.world.level.block.Block[]::new));
+				}
+			});
+		}
+	}
+
+	/**
+	 * Keeps the village's Create machines turning (ROADMAP 39.2): only with Create installed, so without it there is no
+	 * Mechanic at all (null). A villager saved as one in a world Create was removed from loads as a jobless one.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static final VillagerProfession MECHANIC = Platform.get().isModLoaded("create") ? Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("mechanic"),
+		new VillagerProfession(
+			"mechanic",
+			holder -> holder.is(TOOLBOX_POI),
+			holder -> holder.is(TOOLBOX_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_TOOLSMITH
+		)
+	) : null;
+
+	/** Whether {@code profession} is the Mechanic (false without Create). */
+	public static boolean isMechanic(VillagerProfession profession) {
+		return MECHANIC != null && profession == MECHANIC;
+	}
+
+	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
 	 */
@@ -922,7 +969,7 @@ public final class ModVillagers {
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
 			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER
-			|| profession == PHYSICIAN;
+			|| profession == PHYSICIAN || isMechanic(profession);
 	}
 
 	/**

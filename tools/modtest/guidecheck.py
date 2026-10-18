@@ -16,7 +16,7 @@ reference; the guide must never read like it. A page is every docs/guide/*.md ex
     "categories:", each "related:" page exists, and each portal in index.md's ```portals block names a category some
     page is in.
   - "expansion:" (a page written early for an expansion that is still switched off; site.py leaves it out until the
-    switch flips) names a gated expansion: M27 to M35, M37 or M38 (Expansions.MILESTONES). Gated pages are checked like every other page, and links to them are
+    switch flips) names a gated expansion: M27 to M35, M37, M38 or M39 (Expansions.MILESTONES). Gated pages are checked like every other page, and links to them are
     fine: the published site shows those as plain text.
 """
 import importlib.util
@@ -34,7 +34,7 @@ FORBIDDEN = [
     (re.compile(r"gametest", re.I), '"GameTest"'),
     (re.compile(r"(?<![\w-])src/"), "a path under src/"),
 ]
-EXPANSIONS = {f"M{n}" for n in range(27, 36)} | {"M37", "M38"}
+EXPANSIONS = {f"M{n}" for n in range(27, 36)} | {"M37", "M38", "M39"}
 LINK = re.compile(r"\]\(([^)\s]+)\)")
 PICTURE = re.compile(re.escape(SITE) + r"([^/)\s]+)/(still-(\d+)\.jpg|anim\.gif)")
 
@@ -113,7 +113,7 @@ def check(root):
             problems.append(f"{name}: needs an ```infobox block with 'categories:' (docs/guide/README.md)")
         for e in (x.strip() for x in info.get("expansion", "").split(",")):
             if e and e.upper() not in EXPANSIONS:
-                problems.append(f"{name}: expansion '{e}' is none of M27 to M35, M37 or M38")
+                problems.append(f"{name}: expansion '{e}' is none of M27 to M35, M37, M38 or M39")
         for r in (x.strip() for x in info.get("related", "").split(",")):
             if r and not (guide / r).exists():
                 problems.append(f"{name}: related page {r} doesn't exist")

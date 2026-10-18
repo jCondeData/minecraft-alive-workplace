@@ -331,6 +331,9 @@ public class BuilderWork extends Behavior<Villager> {
 					}
 					return;
 				}
+				if (site.endsStage() && io.github.jcondedata.aliveworkplace.mechanic.Contraptions.goBack(level, site, plan)) {
+					continue; // 39.5: a kinetic part broken since it went in: back over the parts, before the build is called done
+				}
 				site.finishList();
 				continue;
 			}
@@ -603,6 +606,9 @@ public class BuilderWork extends Behavior<Villager> {
 		for (BuildPlan.Step s : column) {
 			if (avoid.contains(s.pos()) || site.gaveUp(s.pos()) || site.placedThisStage(s.pos())) {
 				continue; // (B139: a block placed this stage that changed by itself since, as farmland drying out, stays)
+			}
+			if (io.github.jcondedata.aliveworkplace.mechanic.Contraptions.notYet(site, plan, s)) {
+				continue; // 39.5: a kinetic part waits for the lead to reach its group
 			}
 			Action a = actionFor(level, site, s, bench);
 			if (a != Action.BREAK && a != Action.PLACE) {
@@ -1700,6 +1706,7 @@ public class BuilderWork extends Behavior<Villager> {
 					MaterialRules.requirement(next.state()).ifPresent(r -> MaterialLedger.used(r.item(), bag.remove(r.item(), r.count())));
 				}
 				level.setBlock(at, next.state(), Block.UPDATE_ALL);
+				applyBlockEntityData(level, at, next.state(), next.nbt()); // 39.5: its place on the belt
 				site.placedNow(at);
 			}
 		}

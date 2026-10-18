@@ -62,6 +62,12 @@ asks for the steps, `latest.log` and any crash report).
   sails over a millstone; the builder starts it when it's done) and the Workshop (a water wheel driving a belt to a
   depot under a mechanical press): workplaces for the farmer's millstone and the armorer's press, turning as soon as
   they're built. Setting `createBuilds` (behind the 2.3 gate) (39.4).
+- **Builders build contraptions (2.3, being built).** With Create installed, a blueprint with Create's moving parts in
+  it (one of ours or a machine you saved yourself) goes up in an order that keeps it whole: what holds it up, then
+  shafts and gearboxes, then cogwheels, then belts, each part facing and turning as drawn and a belt finding its
+  pulleys in the new place. A part broken before the build is done is put back first, and once it's finished the
+  owner is told whether every part turns, or which don't and where ("1 part doesn't turn: Shaft at 12 64 -30"). The
+  parts list is a data file (`kinetic_parts`). Setting `createBuilds` (behind the 2.3 gate) (39.5).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

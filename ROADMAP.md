@@ -4923,7 +4923,7 @@ the owner's port jar; M33's caravans (39.7).
   by a water wheel). Each is a workplace for 39.3's jobs. Done when: the architect skill reviews their renders; compat
   GameTests: each builds with nothing skipped and its machine turns once built (its speed read from block entity data
   by name); hidden without Create (a GameTest); scene `create_builds`.
-- [ ] **39.5** **Builders build contraptions.** A
+- [x] **39.5** (review: pending 2026-10-18) **Builders build contraptions.** A
   blueprint holding kinetic blocks is built in an order that keeps it whole (supports, then shafts and gearboxes, then
   cogwheels, then belts), with each block's axis and facing kept and the block-entity data Create needs (belt length
   and part) copied; the builder checks it turns when done and lists what doesn't. Done when: compat GameTests: a
@@ -5040,6 +5040,18 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (39.5, lane-e-1018-0713, decisions; details in `docs/wiki/create.md`, "Contraptions" and "Decisions"):
+  (1) the switch is `createBuilds` (the design note gives it 39.5 too); the order is chosen when a site is made and
+  saved (`kinetic_order`, false for older saves), so flipping it mid-build never moves the cursor; (2) the parts' groups
+  are a data file (`kinetic_parts/create.json`); the water wheel and machines count as "what holds it up"; (3) a belt's
+  data is copied with its `Controller` moved, and a kinetic block's running data (`Speed`, `Network`, `Source`) never;
+  that fix runs whenever the gate is open, whatever the switch says, since an old controller breaks the belt; (4) a
+  part broken mid-build is put back by going over the kinetic parts again when the structure or decoration list ends
+  (at most twice a build); (5) "lists what doesn't turn on the build's tooltip": a finished build has no tooltip, so the
+  owner gets a chat line ~5 s after it's done and the result is kept with the finished building (`not_turning`), not on
+  the site, which is gone by then; (6) "the Mechanic leads the crew" (39.2's hook) means a Mechanic near the build gives
+  that line; (7) belt cost stays one connector per segment (Create's own count makes middle segments free, and a plan
+  never places a block that costs nothing).
 - 2026-10-18 (lane-e-1018-0713): 39.2-39.4 merged from `wip/lane-e` to `main` (full build 2264/2264, compat
   324/324). The hall test's leftover hall: `aFinishedVillageHallWorksLikeAPlacedOne` now also calls
   `Leftovers.halls(helper)`; which earlier test leaves the hall wasn't pinned down.

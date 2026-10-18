@@ -216,6 +216,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   [Stadium](stadium.md).
 - [Scaffolding](scaffolding.md): how builders climb to the tops of Wonders and other tall builds, and take it all
   down after.
+- [Contraptions from a blueprint](create-contraptions.md): with Create, builders put a machine's moving parts in last,
+  in order, and check it turns.
 
 ### Legends and guilds
 

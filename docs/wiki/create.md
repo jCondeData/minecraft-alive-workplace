@@ -4,9 +4,10 @@ Create integration brings the Create mod (the owner's Fabric port, in `libs/`) i
 the machines turning, villagers who feed Create's millstone, press, mixer and crushing wheels, Create-powered builds,
 contraptions built from a blueprint, Create schematics at the Blueprint Table and, later, trains between villages.
 Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gate and the port in the test runtime
-(39.1), the Mechanic (39.2) and villagers working the machines (39.3); the full plan is the design note, docs/design/M39.md.
+(39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4) and contraptions
+built from a blueprint (39.5); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5
 
 ## What a player sees
 
@@ -41,6 +42,16 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   wheel drives a belt to a depot under a mechanical press (driven up a column of cogwheels from the belt's far
   pulley), with the armorer's blast furnace and the store chest. The water is placed last, so the wheels turn as
   soon as the builder is done; the builder starts the windmill's bearing the way a player does, with an empty hand.
+
+- **Contraptions from a blueprint** (39.5). Any blueprint with Create's moving parts in it (one of the three above, or
+  a player's own machine saved with a Structure Block) is built in an order that keeps it whole:
+  everything that holds it up first (floors, walls, frames, the water wheel), then the shafts and gearboxes, then the
+  cogwheels, then the belts. Each part keeps its axis and facing, turned with the build; a belt keeps its length and
+  finds its controller segment in the new place. A part the builder already put in that's broken before the build is
+  done is put back before it's called done. About five seconds after the build is finished, its moving parts are
+  checked and the owner reads, in chat: "Bob checked the Drive Line: all 8 moving parts turn." or "Bob checked the
+  Drive Line: 1 part doesn't turn: Shaft at 12 64 -30." (up to four parts named, then "and 3 more"). With a Mechanic
+  near the build the line names the Mechanic, who leads on contraptions.
 
 Later in 2.3, schematics uploaded with Create's Schematic Table show up at the table.
 
@@ -78,6 +89,30 @@ worth, 1000 mB), the way villages draw water anywhere; no bucket is used up. Ite
 and fluid transfer, which Create's port exposes; a depot, basin or crusher is never anyone's supply chest. The
 Mechanic's round uses the same files and the same work done on the spot.
 
+**Contraptions.** The kinetic parts are a data file, `data/aliveworkplace/kinetic_parts/create.json` (`requires`
+`create`): three groups of block ids, shafts, gearboxes, encased shafts, clutches and gearshifts; the cogwheels, plain
+and encased; and the belt, plus the blocks whose data names a belt controller. A datapack can add an add-on's parts;
+ids that don't exist are skipped. A build site made while `createBuilds` is on (and the parts are known) saves
+`kinetic_order`, and its plan's structure list is sorted stably by group, so each group still goes layer by layer and
+everything not in a group comes first (`BuildPlan.kineticOrdered`). The order is fixed when the site is made, so a
+switch flipped mid-build never moves the saved cursor onto other steps; a site saved before 39.5 builds in today's
+order. A crew's helpers stay in the lead's group (`BuildSite.ahead`, `Contraptions.notYet`). When the structure or
+decoration list runs out and a kinetic part put in earlier is gone with its spot free, the lead goes back to the first
+kinetic part and over them again (`Contraptions.goBack`, at most twice a build, counted in `kinetic_passes`); what
+still stands is passed straight over. Block-entity data is made right for where the part is built
+(`Contraptions.blockData`): a kinetic block's `Speed`, `Source`, `Network` and `NeedsSpeedUpdate` are never copied
+(Create works them out again), and a belt segment gets its `Index`, `Length`, `IsController`, `Casing`, `Covered` and
+`Dye`, with `Controller` moved by the build's offset and rotation from where the blueprint was saved (read off the
+controller segment, whose `Controller` is its own position there). Without a controller segment in the blueprint, or
+in a mirrored build (which turns a belt end for end), the place on the belt is left out and Create works it out from
+the blocks, as for the Workshop. A belt is laid in one go (39.4), each segment with its data. A belt is no store, so
+its data is copied (never the items on it). The data fix runs whenever the parts are known and the gate is open,
+whatever `createBuilds` says: a belt copied with its old controller breaks itself. When a build in a contraption's
+order is finished, the positions of its blocks with a `Speed` in their saved data are kept in a turning check
+(`turn_checks`), looked at 100 ticks later; while something stands still it's looked at twice more, 100 ticks apart
+(a wheel's water takes a moment to fall), then the parts that don't turn (`Speed` 0, or gone) are kept with the
+finished building (`not_turning`) and the owner is told.
+
 Everything goes by Create's ids alone: block and item ids, block state names, block entity data read by name (a
 machine's `Speed`, a belt's length), recipe types such as `create:milling`, and the schematic item's data components.
 The mod has no Create classes and compiles without it, so Create stays optional: it's in the mod's `suggests`, never
@@ -100,9 +135,10 @@ showcase catalog).
 - `machineWork` (39.3): villagers (and the Mechanic) feed Create's machines. Off: nobody feeds a machine; a trip
   already under way waits, saved, until it's on again. Off for players until 2.3 ships, and does nothing without Create.
 
-- `createBuilds` (39.4): the Watermill, the Windmill and the Workshop at the Blueprint Table and in the creative tab.
-  Off: they aren't offered; a blueprint already handed out and a site already started still build. Off for players
-  until 2.3 ships, and does nothing without Create.
+- `createBuilds` (39.4, 39.5): the Watermill, the Windmill and the Workshop at the Blueprint Table and in the creative
+  tab, and the contraption order and turning check for builds started while it's on. Off: they aren't offered, and new
+  builds go up layer by layer, unchecked; a blueprint already handed out and a site already started still build, in the
+  order the site was made with. Off for players until 2.3 ships, and does nothing without Create.
 
 createSchematics and villageTrains are mapped to the gate and come into the config with 39.6 and 39.7.
 
@@ -116,6 +152,12 @@ createSchematics and villageTrains are mapped to the gate and come into the conf
   the stage (`fetch`, `feed`, `return`) and what's carried. Every field is optional; without it the worker has no trip.
   A trip saved mid-way goes on after a load, so nothing carried is lost. (The design note's per-dimension `machines`
   list wasn't needed: workers find machines near their workstation in loaded chunks.)
+
+- On a build site (39.5): `kinetic_order` (false when absent: a site saved before 39.5 builds in today's order) and
+  `kinetic_passes` (0). In the dimension's build sites: `turn_checks` (none when absent), each with the build, its
+  placement, owner, the builder's name, the parts' positions, when it's due and how often it has looked; and on a
+  finished building's entry `not_turning` (absent: not checked; empty: everything turned). The design note put
+  `notTurning` on the site; the site is gone once the build is done, so it lives with the finished building.
 
 The planned fields of later items, each with its default, are listed in the design note.
 
@@ -163,7 +205,13 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
   Create anyway (39.4).
 - The Workshop's belt is placed by its block states alone, and a builder lays it in one go (a segment alone breaks
   itself); Create rebuilds the belt's controller and length from its blocks. Each segment costs a belt connector
-  until 39.5 charges one per belt (39.4).
+  (39.4), and still does after 39.5: Create's own count (a connector for the belt, a shaft for each pulley, nothing for
+  the middle) would make the middle segments free, and a block that costs nothing is never placed by a plan.
+- Contraptions (39.5): the order lives in a data file, by block id, not in Create's classes; the water wheel, machines
+  and anything not listed are "what holds it up" and go first. The order is chosen when the site is made. The turning
+  check is a line in chat for the owner (the design note's "build's tooltip": a finished build has no tooltip of its
+  own), kept with the finished building. "Leading the crew" means the Mechanic near the build is the one who checks
+  it and says so (`MechanicWork.crewLead`); the builders keep their own order.
 - A started windmill's sails leave the world as blocks (the bearing carries them), so its finished-build check leaves
   out the sail plane (39.4).
 - The port's jar runs from the test server's `mods/` folder, without its own GameTests; Porting Lib's clash with
@@ -173,8 +221,9 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
 
 Nothing is built for players yet (the gate). Only one machine of each kind per trip, and a worker
 looks only near their own workstation; a stopped machine shows on the Mechanic's status, not yet in the chronicle.
-Putting back a belt has no test with a real belt yet (shafts and cogwheels do). Leading the crew on a contraption is
-39.5's: `MechanicWork.crewLead` finds the Mechanic for a site, and nothing calls it yet. Trains (39.7) wait on the
+Putting back a belt has no test with a real belt yet (shafts and cogwheels do). A part broken after a contraption is
+finished is the Mechanic's to mend, not the builder's; one broken while the ground is levelled is listed by the check.
+Trains (39.7) wait on the
 owner's answer in the design note. A windmill whose bearing can't be started (fewer than 8 sails left, the sails
 blocked) gets no sign yet: the player starts it with an empty hand (39.4).
 
@@ -206,4 +255,15 @@ blocked) gets no sign yet: the player starts it with an empty hand (39.4).
 - `SavedDataGameTests`: `machine_job` survives a save and load; `ConfigGameTests` and `ExpansionGateGameTests`: the
   `machineWork` switch on the screen and behind the gate.
 
-Showcase scenes: `mechanic`, `create_mill` (both filmed with Create).
+- `ContraptionCompatTests` (39.5, with Create): a contraption (a water wheel under a header tank, two shafts, a
+  three-block belt, two cogwheels) built and running, saved with a Structure Block's own call, taken away and built
+  turned a quarter elsewhere from barrels holding exactly its materials: every block as drawn, nothing skipped, each
+  group after the one before it, the belt's end naming its new controller, no running data copied, and the check finds
+  all of it turning; a cogwheel broken right after it went in is put back (one pass back); a save and reload of the
+  sites and the builder among the kinetic parts finishes it in order; a shaft joined to nothing is the one part
+  listed, with the line the owner reads; `createBuilds` off when the build starts, it goes layer by layer and isn't
+  checked.
+- `CreateBuildsGameTests.noContraptionsWithoutCreate` (without Create): no parts, no order, nothing checked; the new
+  saved fields' defaults and round trips; the lines' text.
+
+Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

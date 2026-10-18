@@ -35,6 +35,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MachineWorkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateBuildsCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.ContraptionCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RaidDenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenWardenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DenChallengeCompatTests",

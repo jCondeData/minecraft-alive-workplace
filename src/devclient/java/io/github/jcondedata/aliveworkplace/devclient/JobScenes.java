@@ -1132,6 +1132,109 @@ final class JobScenes {
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
 		}, null));
+		// Builders build contraptions (ROADMAP 39.5, filmed with Create): a player's own drive (a water wheel under a header
+		// tank, two shafts, a three-block belt and two cogwheels) stands behind the camera, is saved as a blueprint the way a
+		// Structure Block saves it and taken away, and a builder puts it up in front of the camera from the barrels: what
+		// holds it up first, then the shafts, the cogwheels and the belt last (the belt finding its controller in the new
+		// place). Once it's done the builder checks it, and every part turns.
+		SCENES.put("create_contraption", new Job("the builder put up the saved contraption, its shafts, cogwheels and belt last, and checked it: every part turned",
+			7000, new Vec3(5.5, -54.5, 9.5), new Vec3(-0.5, -59.0, -2.5), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
+				&& io.github.jcondedata.aliveworkplace.mechanic.Contraptions.active(), "Create is loaded and builders build contraptions");
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(3, level.getServer());
+			java.util.function.Function<String, BlockState> block = text -> {
+				try {
+					return net.minecraft.commands.arguments.blocks.BlockStateParser.parseForBlock(
+						io.github.jcondedata.aliveworkplace.mc.Lookup.lookup(net.minecraft.core.registries.BuiltInRegistries.BLOCK), text, false).blockState();
+				} catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+					throw new IllegalStateException(text, e);
+				}
+			};
+			// The drive, from its corner (the same one ContraptionCompatTests builds)
+			Map<BlockPos, BlockState> drive = new LinkedHashMap<>();
+			for (int x = 0; x < 8; x++) {
+				for (int z = 2; z < 9; z++) {
+					if (x != 1 || z < 4 || z > 7) {
+						drive.put(new BlockPos(x, 0, z), Blocks.STONE_BRICKS.defaultBlockState());
+					}
+				}
+			}
+			for (int y = 1; y <= 2; y++) {
+				drive.put(new BlockPos(0, y, 3), Blocks.STONE_BRICKS.defaultBlockState());
+				drive.put(new BlockPos(2, y, 3), Blocks.STONE_BRICKS.defaultBlockState());
+			}
+			for (int x = 0; x <= 2; x++) {
+				for (int z = 3; z <= 5; z++) {
+					if (x != 1 || z != 4) {
+						drive.put(new BlockPos(x, 3, z), Blocks.STONE_BRICKS.defaultBlockState());
+					}
+				}
+			}
+			drive.put(new BlockPos(1, 4, 4), block.apply("minecraft:stone_brick_slab[type=bottom]"));
+			drive.put(new BlockPos(1, 1, 5), block.apply("create:water_wheel[facing=east]"));
+			drive.put(new BlockPos(2, 1, 5), block.apply("create:shaft[axis=x]"));
+			drive.put(new BlockPos(3, 1, 5), block.apply("create:shaft[axis=x]"));
+			for (String[] belt : new String[][] {{"5", "start"}, {"4", "middle"}, {"3", "end"}}) {
+				drive.put(new BlockPos(4, 1, Integer.parseInt(belt[0])),
+					block.apply("create:belt[facing=north,slope=horizontal,casing=false,part=" + belt[1] + "]"));
+			}
+			drive.put(new BlockPos(5, 1, 3), block.apply("create:cogwheel[axis=x]"));
+			drive.put(new BlockPos(5, 2, 3), block.apply("create:cogwheel[axis=x]"));
+			BlockPos original = STATION.offset(-4, 0, 30); // behind the camera
+			drive.forEach((p, state) -> level.setBlockAndUpdate(original.offset(p), state));
+			level.setBlockAndUpdate(original.offset(1, 3, 4), Blocks.WATER.defaultBlockState());
+			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("players/drive_line");
+			BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), STATION.offset(-4, 0, -7),
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			BlockPos bench = STATION.offset(5, 0, 1);
+			int[] tick = {0};
+			BuildSite[] site = {null};
+			return l -> {
+				if (++tick[0] == 80) { // the belt has worked out its length, the water runs: saved, taken away, built here
+					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = l.getStructureManager().getOrCreate(id);
+					template.fillFromWorld(l, original, new net.minecraft.core.Vec3i(8, 6, 9), false, Blocks.STRUCTURE_VOID);
+					for (int y = 5; y >= 0; y--) {
+						for (int x = 0; x < 8; x++) {
+							for (int z = 0; z < 9; z++) {
+								l.setBlock(original.offset(x, y, z), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_SUPPRESS_DROPS);
+							}
+						}
+					}
+					l.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+					Villager builder = EntityType.VILLAGER.spawn(l, bench.south(), MobSpawnType.COMMAND);
+					Builders.employ(l, builder, bench);
+					site[0] = Builders.start(l, builder, null, id, placement);
+					Showcase.check(site[0] != null && site[0].kineticOrder(), "the builder took the contraption on, to build in a contraption's order");
+					if (site[0] == null) {
+						return false;
+					}
+					List<ItemStack> stacks = new ArrayList<>();
+					site[0].plan(l).materials().forEach((item, total) -> {
+						for (int left = total; left > 0; left -= item.getDefaultMaxStackSize()) {
+							stacks.add(new ItemStack(item, Math.min(left, item.getDefaultMaxStackSize())));
+						}
+					});
+					for (int b = 0; b * 27 < stacks.size(); b++) {
+						BlockPos at = bench.offset(1, 0, b);
+						l.setBlockAndUpdate(at, Blocks.BARREL.defaultBlockState());
+						Container barrel = (Container) l.getBlockEntity(at);
+						for (int slot = 0; slot < 27 && b * 27 + slot < stacks.size(); slot++) {
+							barrel.setItem(slot, stacks.get(b * 27 + slot));
+						}
+					}
+				}
+				if (site[0] == null) {
+					return false;
+				}
+				java.util.Optional<List<BlockPos>> still = BuildSiteManager.get(l).notTurning(placement);
+				if (still.isEmpty()) {
+					return false;
+				}
+				Showcase.check(still.get().isEmpty(), "the builder's check found every part turning (not: " + still.get() + ")");
+				return true;
+			};
+		}, null));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks

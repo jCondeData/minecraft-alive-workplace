@@ -99,6 +99,42 @@ public final class BuildSite {
 		this.ownerName = ownerName;
 		this.structure = structure;
 		this.placement = placement;
+		this.kineticOrder = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.active(); // 39.5: a new site (a load sets it from its save)
+	}
+
+	/**
+	 * 39.5: the structure list goes in a contraption's order (kinetic parts after what holds them up, by group), chosen
+	 * when the site is made, so a switch flipped mid-build never moves the saved cursor onto other steps. A site saved
+	 * before 39.5 builds in today's order.
+	 */
+	private boolean kineticOrder;
+	/** 39.5: how often the builder went back over the kinetic parts for one broken mid-build (at most twice). Saved. */
+	private int kineticPasses;
+
+	/** Whether this site builds in a contraption's order (39.5). */
+	public boolean kineticOrder() {
+		return kineticOrder;
+	}
+
+	/** How often the builder went back over the kinetic parts (39.5). */
+	public int kineticPasses() {
+		return kineticPasses;
+	}
+
+	/**
+	 * 39.5: back to the structure list at {@code index} (the first kinetic part), to put back one broken since it was
+	 * placed; what's still in place is passed straight over.
+	 */
+	public void backToKineticParts(int index) {
+		kineticPasses++;
+		stage = BuildPlan.Stage.STRUCTURE;
+		cursor = index;
+		retrying = false;
+		deferred.clear();
+		gaveUp.clear();
+		placedThisStage.clear();
+		placedStage = null;
+		onChange.run();
 	}
 
 	/** Whether the ground around the build gets levelled (the blueprint's switch; the gamerule sets how wide). */
@@ -211,6 +247,9 @@ public final class BuildSite {
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
+			if (kineticOrder && !deconstruct && !repair) {
+				plan = plan.kineticOrdered(); // 39.5: supports, then shafts and gearboxes, cogwheels, belts
+			}
 			if (progressFromCursor) {
 				progressFromCursor = false;
 				shownProgress = Math.max(shownProgress, oldSaveProgress(plan));
@@ -306,7 +345,14 @@ public final class BuildSite {
 			}
 			return out;
 		}
-		for (int i = cursor + 1; i < list.size() && out.size() < max; i++) {
+		int end = list.size();
+		for (int g = 0; stage == BuildPlan.Stage.STRUCTURE && plan.kineticStart(g) >= 0; g++) {
+			if (plan.kineticStart(g) > cursor) {
+				end = plan.kineticStart(g); // 39.5: helpers stay in the lead's group, so no part goes in before what it sits on
+				break;
+			}
+		}
+		for (int i = cursor + 1; i < end && out.size() < max; i++) {
 			out.add(list.get(i));
 		}
 		return out;
@@ -839,6 +885,12 @@ public final class BuildSite {
 		if (!gaveUp.isEmpty()) {
 			tag.putLongArray("gave_up", gaveUp.stream().mapToLong(BlockPos::asLong).toArray());
 		}
+		if (kineticOrder) {
+			tag.putBoolean("kinetic_order", true); // 39.5
+		}
+		if (kineticPasses > 0) {
+			tag.putInt("kinetic_passes", kineticPasses);
+		}
 		if (furniture == null) {
 			tag.putBoolean("furniture_unchosen", true); // 37.3: a new site not yet planned chooses when it is
 		} else if (!furniture.isVanilla()) {
@@ -890,6 +942,8 @@ public final class BuildSite {
 		for (long p : Nbt.getLongArray(tag, "gave_up")) { // B139: none in older saves
 			site.gaveUp.add(BlockPos.of(p));
 		}
+		site.kineticOrder = Nbt.getBoolean(tag, "kinetic_order"); // 39.5: older saves build in today's order
+		site.kineticPasses = Nbt.getInt(tag, "kinetic_passes");
 		// 37.3: older saves have neither, and build vanilla
 		site.furniture = Nbt.getBoolean(tag, "furniture_unchosen") ? null
 			: io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.load(Nbt.getList(tag, "furniture", Tag.TAG_COMPOUND));

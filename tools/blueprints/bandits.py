@@ -465,7 +465,7 @@ def pirate_ship():
     lantern(b, W - 1, 11, 25)
     # inside: red carpet, the loot chest at the back, a chart table, a lantern
     for x in range(1, W - 1):
-        for z in range(21, 25):
+        for z in range(22, 25):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
             b.set(x, 5, z, "red_carpet")
     b.set_nbt(C, 5, 24, Compound({"LootTable": String("aliveworkplace:chests/pirate_ship"), "id": String("minecraft:chest")}))
     b.set(C, 5, 24, "chest", facing="north", type="single", waterlogged=False)

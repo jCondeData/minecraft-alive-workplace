@@ -333,6 +333,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StewardPlanningCostGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardSafetyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldHousesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.DoorwayHeadroomGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RenewalGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RoadGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CaravanRoadGameTests",

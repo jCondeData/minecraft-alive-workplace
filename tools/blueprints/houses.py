@@ -202,6 +202,8 @@ def stone_house_3():
         b.set(x, 1, 8, "air")
     for y in (1, 2):
         b.set(5, y, 7, "air")
+    for x in (4, 5):  # the rug's back row comes up: on a carpet by the doorway's lintel a villager hits its head (B173)
+        b.set(x, 1, 6, "air")
     # The wing: walls x 2-8, z 7-12 (the house's back wall is its front)
     plinth(b, 2, 7, 8, 12, STONE_MIX, floor="spruce_planks")
     b.set(5, 0, 7, "spruce_planks")
@@ -791,7 +793,10 @@ def manor_house(b):
         fence(b, x, 1, 8, "dark_oak_fence")
     # The front door under a slab hood, a lamp either side of the step
     door(b, 9, 1, 7, "dark_oak_door", "south")
-    b.set(9, 3, 7, "chiseled_stone_bricks")
+    # A fanlight over the door, not a lintel: the grand stair starts right inside, and a villager (1.95 tall) climbing
+    # its first step a full block up while its back is still in the doorway needs three blocks of room there (B173).
+    # The open trapdoor lies flat on the outside face, clear of the head of anyone on the step.
+    trapdoor(b, 9, 3, 7, "dark_oak_trapdoor", "south", open_=True)
     for x in (8, 9, 10):
         slab(b, x, 3, 6, DARK_OAK, top=True)
     for x in (8, 10):
@@ -850,7 +855,7 @@ def manor_house(b):
     b.set(15, 1, 14, "bookshelf")
     b.set(14, 1, 14, "bookshelf")
     stairs(b, 13, 1, 11, SPRUCE, "west")
-    box(b, 13, 1, 9, 14, 1, 10, "red_carpet")
+    box(b, 14, 1, 9, 14, 1, 10, "red_carpet")  # clear of the doorway: on a carpet by its lintel a villager hits its head (B173)
     b.set(13, 1, 14, "barrel", facing="up", open=False)
     lantern(b, 14, 4, 11, hanging=True)
     # Furnished (37.4): a couch under the front window facing the fire chair, a lamp, cups on a shelf over the stove

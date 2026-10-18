@@ -521,7 +521,7 @@ def clinic_hall(b):
         stairs(b, 8, 1, z, "birch_stairs", "east")
     b.set(2, 1, 5, "potted_azalea_bush")
     b.set(8, 1, 5, "potted_azalea_bush")
-    for z in range(3, 6):
+    for z in range(4, 6):  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
         b.set(5, 1, z, "red_carpet")
     for x in (3, 7):
         for z in range(3, 8):
@@ -612,7 +612,7 @@ def clinic_ward(b):
     for x in (4, 6):
         b.bed(x, 1, 9, "white", facing="south")
         b.bed(x, 1, 12, "white", facing="south")
-    for z in range(9, 14):
+    for z in range(10, 13):  # clear of the doors at both ends (B173): on a carpet under a lintel a villager hits its head
         b.set(5, 1, z, "red_carpet")
     lantern(b, 5, 3, 11, hanging=True)
     gable_roof(b, 2, 8, 9, 15, 4, CLINIC_ROOF, axis="z", gable=CLINIC_WALL, gable_at=(14,), eave_trim=CLINIC_TRIM)
@@ -710,8 +710,7 @@ def shop_hall(b):
     b.set(5, 1, 6, "aliveworkplace:shop_counter", facing="south")
     b.set(3, 2, 6, "lantern", hanging=False, waterlogged=False)
     stairs(b, 5, 1, 7, SPRUCE, "south")  # the shopkeeper's seat
-    b.set(5, 1, 3, "light_blue_carpet")
-    b.set(5, 1, 4, "light_blue_carpet")
+    b.set(5, 1, 4, "light_blue_carpet")  # a block in from the door: on a carpet under its lintel a villager hits its head (B173)
     for z in (3, 7):
         for x in range(2, 9):
             log(b, x, 5, z, SHOP_FRAME_LOG, axis="x")
@@ -778,7 +777,8 @@ def shop_house(b):
         log(b, x, 4, 11, SHOP_FRAME_LOG, axis="x")
     b.set(5, 2, 8, "air")
     door(b, 5, 1, 8, "spruce_door", "south")
-    stairs(b, 5, 1, 7, SPRUCE, "west")  # the seat turned, so the door opens
+    b.set(5, 1, 7, "air")
+    stairs(b, 6, 1, 7, SPRUCE, "south")  # the seat moved aside: a step in front of the door kept the shopkeeper out (B173)
     window(b, 2, 2, 12, "west", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 8, 2, 12, "east", width=2, shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 3, 2, 14, "south", sill=SPRUCE)
@@ -1617,7 +1617,8 @@ def town_hall():
     for x in (2, 3, 9, 10):
         for y in (1, 2, 3):
             b.set(x, y, 10, "bookshelf")
-    box(b, 4, 1, 4, 8, 1, 4, "red_carpet")
+    for x0, x1 in ((4, 5), (7, 8)):  # parted at the doorway: on a carpet under its lintel a villager hits its head (B173)
+        box(b, x0, 1, 4, x1, 1, 4, "red_carpet")
     # The hipped slate roof
     hip_roof(b, 0, 12, 2, 12, 6, HALL_ROOF)
     # The tower in front: x 5-7, z 1-3, through the hall's front wall; the door at its foot, the belfry at the top

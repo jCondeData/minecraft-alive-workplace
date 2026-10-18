@@ -48,7 +48,7 @@ windows and a trellis either side of the door (open trapdoors flat on the wall);
 desks with their chairs, pictures by the door and hanging pots over the desks; the Schoolhouse's rows and the Village
 Hall's are benches, the Healing Center has waiting benches and a nurse's desk, the Schoolhouse a teacher's desk by the
 lectern, the Print Shop a printer's desk by the press and its buyers' counter, Village Hall II a council table with
-eight chairs, and the Kitchen crockery on the worktop (in place of its potted fern). With Handcrafted and Beautify those become
+seven chairs (none in front of its doorway), and the Kitchen crockery on the worktop (in place of its potted fern). With Handcrafted and Beautify those become
 Handcrafted counters, desks, chairs, benches, shelves and crockery and Beautify picture frames, rose trellises and
 hanging pots of vines. The Healing Center's and Schoolhouse's desks are CobbleFurnies' Poké Ball desks whenever
 CobbleFurnies is in the list (the owner's answer). No piece ever stands on a job block, a bed or a chest: the

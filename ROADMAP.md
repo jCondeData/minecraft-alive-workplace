@@ -5103,6 +5103,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-e-1018-2212, question for the owner): Milestone 39 (Create, 2.3) is built: 39.1-39.7c are ticked (39.6-39.7c waiting on review, 39.7b with a needs-owner-check), no `(lane: e)` bug is open, and `sessions.py next` lists nothing for lanes c, d or e (M37 and M38 are done too). The big-update lanes idle until the owner names the next big milestone (2.4?) or says to turn them to other work; `wip/lane-e` was already merged and is deleted.
 - 2026-10-18 (38.11, lane-d-1018-1608, decisions): (1) the Chef cooks the Campfire Pot recipes at his Kitchen Stove
   like his other dishes (Crafting's KITCHEN kind already planned pot recipes; only the menu was a fixed list), so no pot
   block at his station; (2) no new setting: they ride the `cuisineDishes` switch (behind M38's gate), whose tooltip

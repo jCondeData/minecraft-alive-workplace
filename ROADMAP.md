@@ -4820,11 +4820,11 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
 - [ ] **38.4** **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
   Leaders, Masters) may send its best one to an active den the village knows. The server can't play a raid with no
   player in it, so the challenge is settled like the Stadium's bouts: the trainer's rank and team against the den's
-  tier (a fixed random in tests), at most tier 4 for a Master. A win rolls the den's own tier loot table
+  tier (a fixed random in tests), at most tier 3 for Leaders and Masters alike (tier 4 and up are for players only: owner, 2026-10-18). A win rolls the den's own tier loot table
   (`cobblemonraiddens:raid/tier/<tier>`) into the village store, sets the den inactive (`is_active` false; its own
   reset cycle brings it back, `can_reset` untouched), and writes the chronicle; a loss sends the trainer home tired
   for a day. A player nearby can come along and watch. Done when: compat GameTests: a win puts that tier's loot in the
-  store and turns the den inactive; a loss leaves it active; a tier 6 den is never challenged; a den in use by a
+  store and turns the den inactive; a loss leaves it active; a tier 4 or higher den is never challenged; a den in use by a
   player (a player within 8 blocks) isn't challenged; scene `den_challenge` (`-Pcobblemon=true`).
 - [ ] **38.5** **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
   (`CobblemonMegas.megaAce`). Add: Trainer Leaders of a City-rank village, the Festival Cup's final round and the
@@ -4943,6 +4943,10 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Design decisions (from the owner)
 
+- **Post-1.0 answers** (2026-10-18): Raid Dens of tier 4 and up are for players only (village trainers up to tier 3,
+  38.4); the Mega Bracelet is given once per player per realm (38.5); furniture defaults to Handcrafted first, then
+  Cozy Home, CobbleFurnies, Beautify (37.3); homes with a Pokémon partner get CobbleFurnies' Poké Ball chair and desk
+  (37.4).
 - **The Blueprint Table is a collection** (2026-10-15, 26.10): unlocked builds in colour (Get Blueprint as before),
   locked ones greyed out with how to get them, rare ones (Wonders, the builder-only grander homes, other special
   builds) a hidden "???" until found; the preview still shows a locked build, dimmed. The basics start unlocked (about

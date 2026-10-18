@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.store.StorageNetworks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The builder's supply stash: every storage block near the Builder's Bench. Goes through the loader's item storage
  * ({@link ItemStores}: Fabric's transfer API), so modded storage (Sophisticated Storage chests and barrels, Tom's filing cabinets...)
- * works too; storage-network access points are skipped so nothing is counted twice.
+ * works too; storage-network access points are skipped so nothing is counted twice, except that the Storehouse reads a
+ * Tom's Simple Storage inventory connector as one store for the inventories it joins (ROADMAP 37.10, {@link StorageNetworks}).
  */
 public final class SupplyContainers {
 	/** Horizontal search radius around the bench. */
@@ -31,12 +33,19 @@ public final class SupplyContainers {
 	 * storage (anything could end up in their input slot); miners tend them on purpose, see {@link #furnaces}.
 	 */
 	public static List<BlockPos> find(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
-		return near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
+		List<BlockPos> found = near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
 			&& !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
 			&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity)
 			&& !isMachine(be)
 			&& !ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock())
 			&& STORES.isStore(level, be.getBlockPos()));
+		if (StorageNetworks.ENABLED && level.getBlockState(bench).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE)) {
+			// 37.10: the Storehouse reads a storage network through its head (a Tom's inventory connector) as one store
+			List<BlockPos> heads = near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
+				&& StorageNetworks.isHead(level, be.getBlockPos()) && STORES.isStore(level, be.getBlockPos()));
+			return StorageNetworks.asStorehouse(level, bench, found, heads);
+		}
+		return found;
 	}
 
 	/** Storage inside {@code box} (a building: a Legend's home chests, ROADMAP 29.5), the same kinds {@link #find} lists. */

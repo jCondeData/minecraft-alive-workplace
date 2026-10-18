@@ -40,6 +40,11 @@ asks for the steps, `latest.log` and any crash report).
   tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the
   real room ("Room for 6912 more items") and porters keep filling it while a slot has room, not only while one is empty (37.8).
+- **Tom's Simple Storage as the Storehouse's store (2.1, behind its gate).** An inventory connector by the Storehouse
+  is one store for every chest, barrel and filing cabinet it joins (touching it, or on its cables through a cable
+  connector), so each item counts once; porters fill it and builders take from it through the connector, and a chest
+  unplugged from the network is its own store again. The board says "Linked through an inventory connector: 3 blocks",
+  and a storage terminal on the connector shows the village's goods in Tom's own screen (37.10).
   A limited barrel holding more than a stack of something now counts, gives and takes all of it, not one stack.
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens

@@ -5,7 +5,7 @@
 # Output: versions/1.21.1/run/screenshots/screenshots/*.png and versions/1.21.1/run/screenshots/timelapse.gif, plus
 # screenshots/gif/*.png (small frames every half second) and showcase.json (the scene's checks: tools/showcase).
 # COBBLEMON=true / MEGA=true add Cobblemon (and Mega Showdown) for scenes not in the list below.
-# FURNITURE=true adds the pack's furniture mods (Handcrafted, Beautify, CobbleFurnies; ROADMAP 37.4).
+# FURNITURE=true adds the pack's furniture mods (Handcrafted, Beautify, CobbleFurnies; ROADMAP 37.4) and Tom's Simple Storage (37.10).
 # COBBLEMON18=true: those Pokémon scenes with Cobblemon 1.8.1 instead of the pack's 1.7.3 (ROADMAP 28.2).
 # PERF_STACK=true adds the pack's performance mods (Sodium, Lithium, C2ME, FerriteCore, ModernFix, EntityCulling,
 # ImmediatelyFast, Krypton, ScalableLux) to the client, for ROADMAP 25.4.

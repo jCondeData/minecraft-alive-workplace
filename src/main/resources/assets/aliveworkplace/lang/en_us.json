@@ -758,6 +758,7 @@
   "screen.aliveworkplace.storehouse.info": "Requests board",
   "screen.aliveworkplace.storehouse.stock": "Storehouse: %s chests, %s items, %s empty slots",
   "screen.aliveworkplace.storehouse.room": "Room for %s more items (some slots hold more than a stack)",
+  "screen.aliveworkplace.storehouse.connector": "Linked through an inventory connector: %s blocks",
   "screen.aliveworkplace.storehouse.nothing": "Nobody nearby is waiting for anything",
   "screen.aliveworkplace.storehouse.click": "What the workers nearby are waiting for: click one to give yours",
   "screen.aliveworkplace.storehouse.wants": "%s × %s",

@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.8
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.8, 37.10
 
 ## 1. What a player sees
 
@@ -41,6 +41,15 @@ gate (37.8): where a slot holds more than a stack, a stack upgrade or a limited 
 "Room for 6912 more items (some slots hold more than a stack)" under the usual "chests, items, empty slots" line, and
 porters keep filling such a store while any of its slots has room for another stack, even when no slot is empty. With
 only vanilla chests the board and the porters are exactly as before.
+
+Behind the gate (37.10), a Tom's Simple Storage inventory connector within the Storehouse's 8 blocks is one store for
+every inventory it joins: the chests, barrels and filing cabinets touching it (and touching those), and the one each
+cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says
+"Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
+they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
+cable connector) and it is a store of its own again at once. A storage or crafting terminal on the network is Tom's
+own: a player opens it and sees, and takes, the village's goods. With `moddedStorageNetworks` off, every chest on the
+network is its own store and the connector is passed over, as before.
 
 ## 2. How it works
 
@@ -95,6 +104,16 @@ Sophisticated Storage reports a stack-upgraded empty slot at four times what it 
 the free stacks instead of the empty slots, so a limited barrel whose one slot holds some iron still takes the porter's
 iron.
 
+**Tom's Simple Storage (37.10).** `store/StorageNetworks` finds a connector's inventories by block ids the way Tom's
+connector does (read from its 2.3.0 jar): from the connector through the inventories touching it, its trims and its
+inventory interface, within 16 blocks (Tom's connector scan range); and along its cable blocks (cables, framed
+cables, cable connectors, terminals, hoppers, level emitters, other connectors; at most 2048), the block each cable
+connector faces (`facing`). The connector exposes all of them through Fabric's transfer API, so `SupplyContainers.find`
+around the Storehouse block lists the connector and drops its inventories; nothing is saved, the walk is done again on
+every lookup. `Village.stashes` treats a connector as all its inventories: a chest of it listed in an earlier stash (a
+builder's own chests) turns the connector into its remaining chests one by one, so nothing counts twice across stashes.
+Every other job's lists still pass over Tom's blocks (`ModdedBlocks.STORAGE_NETWORK`) and read the chests themselves.
+
 ## 3. Switches
 
 | Key | Default | What it does |
@@ -116,7 +135,8 @@ data files, not saved.
 ## 5. Items, blocks, jobs, commands
 
 No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedBuilds`,
-`aliveworkplace.config.moddedStorageNetworks`. Board text: `screen.aliveworkplace.storehouse.room` (37.8).
+`aliveworkplace.config.moddedStorageNetworks`. Board text: `screen.aliveworkplace.storehouse.room` (37.8),
+`screen.aliveworkplace.storehouse.connector` (37.10).
 
 ## 6. Decisions
 
@@ -132,12 +152,14 @@ No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedB
 - The room in items is a line of its own, shown only where a slot holds more than a stack, so the board with vanilla
   chests doesn't change (37.8). The porter's free stacks count a slot's room for more of what it holds; a load of
   something else that doesn't fit stays in his bag and he waits, as with any full store.
+- A Tom's network is read through its connector only at the Storehouse (design note M37, rule 4): a worker's own
+  chests on a network stay separate stores, as at 2.0 (37.10).
 - Lanes don't make review packages (sessions.md, 2026-10-04): the digest sends the design note as 37.1's package.
 
 ## 7. Known limits
 
-- The workplaces aren't furnished yet beyond their chairs, tables and beds (37.5); seats and storage networks come with
-  37.6 to 37.10.
+- The workplaces aren't furnished yet beyond their chairs, tables and beds (37.5); seats and the Sophisticated controller come with
+  37.6 to 37.9.
 - A vanilla picture is a plain wall banner (a block, so a builder can place it): an item frame or a painting would be
   an entity, which a furniture spot can't hold.
 - The headless blueprint renderer (`tools/blueprints/render`, the architect skill's) can't draw Handcrafted,
@@ -148,6 +170,8 @@ No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedB
 - The generator finds only chairs, tables and beds by itself; couches, shelves, lamps and the rest are spots only where
   a drawing records them (the homes' rooms since 37.4; the workplaces with 37.5).
 - Lucky's Cozy Home can't load in the dev runtime, so it is tested by the pack test only.
+- Tom's connector's range, cable limit and blocked-block list are its config's defaults (16, 2048, none): a server that
+  changes them in Tom's config isn't followed (37.10). Tom's inventory proxies and remote links are not walked.
 - Sophisticated shulker boxes are stores too (they have item storage), but 37.8 tests only the chests and barrels.
 
 ## 8. Proof
@@ -183,3 +207,10 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 `SophisticatedStorageCompatTests.builderUsesAndLeavesSophisticatedStorage`,
 `SophisticatedStorageCompatTests.aStackUpgradeShowsItsRealRoomOnTheBoard`, and the older
 `PackModsCompatTests.packStorageWorksAsSupplyChests`.
+37.10: with Tom's Simple Storage (compat): `TomsStorageCompatTests.aConnectorIsOneStoreForItsChestsAndCabinet` (two
+chests and a filing cabinet on the connector and its cable count once, the board line, in and out through the
+connector, the switch off), `TomsStorageCompatTests.aChestUnpluggedIsItsOwnStoreAgain`,
+`TomsStorageCompatTests.aPorterDeliversIntoTheNetwork`, `TomsStorageCompatTests.theBuilderTakesWhatItNeedsThroughTheConnector`,
+and `PackModsCompatTests.packStorageWorksAsSupplyChests` (a connector by a builder's chest still doesn't count it twice).
+Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
+the board's line and Tom's terminal screen.

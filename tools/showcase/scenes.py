@@ -214,6 +214,12 @@ SCENES = [
       [("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
        ("21_request_board", "The Storehouse board in the Blueprint Table's style: requests listed, the store at a glance"),
        ("22_request_read_out", "A request read out in the pane")]),
+    # Modded storage at the Storehouse (ROADMAP 37.10, part two of modded_storehouse; 37.9 adds the Sophisticated controller)
+    S("modded_storehouse", "Porter", "A Tom's Simple Storage network as the Storehouse's one store",
+      "the Storehouse's store is the inventory connector, each item counted once, the board names the 3 linked blocks and the terminal opens",
+      60, [("01_network", "The connector, a chest touching it, a cable to a second chest and a filing cabinet, the terminal"),
+           ("02_board", "The Storehouse board: linked through an inventory connector, 3 blocks"),
+           ("03_terminal", "The village's goods in Tom's own terminal screen")], cobblemon=True, furniture=True),
     job("dropbox", "Porter", "Emptying a Drop Box", "the porter emptied the Drop Box into the store", 120,
         [("04_dropbox_screen", "Drop Box")]),
     # Crafters

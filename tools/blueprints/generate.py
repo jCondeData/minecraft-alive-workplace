@@ -138,6 +138,7 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in MORE_DECORATIONS:  # ROADMAP 26.14
         draw().save(MAIN_STRUCTURES, name)
+    mega_shrine().save(MAIN_STRUCTURES, "mega_shrine")  # ROADMAP 38.7: listed only with Mega Showdown's blocks
     stone_house().save(MAIN_STRUCTURES, "stone_house")
     stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
     stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")

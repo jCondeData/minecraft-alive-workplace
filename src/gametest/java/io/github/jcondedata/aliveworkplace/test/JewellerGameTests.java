@@ -534,7 +534,7 @@ public class JewellerGameTests implements FabricGameTest {
 	}
 
 	/** {@code text} in English, from the mod's own en_us.json (the server has no mod language). */
-	private static String english(Component text) {
+	static String english(Component text) {
 		JsonObject lang;
 		try (InputStream in = Files.newInputStream(FabricLoader.getInstance().getModContainer(AliveWorkplace.MOD_ID).orElseThrow()
 				.findPath("assets/aliveworkplace/lang/en_us.json").orElseThrow())) {

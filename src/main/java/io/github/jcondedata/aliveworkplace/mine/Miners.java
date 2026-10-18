@@ -294,13 +294,29 @@ public final class Miners {
 	static void returnEverything(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> supplies) {
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		for (ItemStack stack : bag.takeAll()) {
-			store(level, supplies, bench, stack);
+			deliver(level, supplies, bench, stack);
 		}
 		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
 		if (!tool.isEmpty()) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 			store(level, supplies, bench, tool);
 		}
+	}
+
+	/**
+	 * A find dropped off: Key Stone ore, Mega Stone Crystals and Mega meteorite ores go to the village store for the
+	 * Jeweller (38.6, with Mega Showdown and {@code villageMegas}); everything else, and what the store has no room for,
+	 * into the Miner's own chests.
+	 */
+	static void deliver(ServerLevel level, List<BlockPos> supplies, BlockPos bench, ItemStack stack) {
+		if (io.github.jcondedata.aliveworkplace.jeweller.MegaStones.forTheJeweller(stack)) {
+			List<BlockPos> store = io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench).stream().filter(c -> !supplies.contains(c)).toList();
+			stack = SupplyContainers.insert(level, store, stack);
+			if (stack.isEmpty()) {
+				return;
+			}
+		}
+		store(level, supplies, bench, stack);
 	}
 
 	static void store(ServerLevel level, List<BlockPos> supplies, BlockPos near, ItemStack stack) {

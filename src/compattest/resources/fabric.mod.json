@@ -25,6 +25,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.PaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaTrainerCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.MegaShrineCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.MegaStoneCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonDepthCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CreateCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",

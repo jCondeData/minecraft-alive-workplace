@@ -177,6 +177,9 @@ public final class ModAttachments {
 	/** The last day a villager came to a festival (see {@code hall/Festivals}). */
 	public static final Attachment<Long> FESTIVAL_DAY = Attachment.saved("festival_day", com.mojang.serialization.Codec.LONG);
 
+	/** The last day a villager watched a Mega Shrine's festival show (see {@code trainer/MegaShrines}, 38.7). */
+	public static final Attachment<Long> MEGA_SHOW_DAY = Attachment.saved("mega_show_day", com.mojang.serialization.Codec.LONG);
+
 	/** The last day a villager came to a festival under the village's banner (see {@code hall/Festivals}, 30.13). */
 	public static final Attachment<Long> FESTIVAL_BANNER_DAY = Attachment.saved("festival_banner_day", com.mojang.serialization.Codec.LONG);
 

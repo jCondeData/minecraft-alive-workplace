@@ -32,6 +32,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +46,10 @@ import org.jetbrains.annotations.Nullable;
  * {@code tag} ({@code #} optional); {@code level} (default 1), {@code count} (1), {@code min_age_days} (0) and the
  * output's {@code count} (1) may be left out, {@code ticks} is 100 if missing. A tag's {@code count} is of one of its
  * items ("5 wool of one colour"), or with {@code "mix": true} of any of them together ("3 wool of any colour", 34.10).
- * A file can be switched off with {@code "enabled": false} or load conditions, like the other data files.
+ * A file can be switched off with {@code "enabled": false} or load conditions, like the other data files. 38.6 adds an
+ * output named by a tag and a chooser ({@code "output": {"tag": "#mega_showdown:mega_stone", "for": "village_trainers"}}),
+ * {@code "keep"} (how many of each good the store is kept in) and {@code "when"} (a named switch, such as
+ * {@code village_megas}).
  *
  * <p>Goods that some recipe wants aged carry the day they were made ({@link MadeDay}, the {@code made_day} component),
  * stamped by the maker; a stack without one (old stock, a player's) counts as aged.
@@ -78,8 +82,76 @@ public final class LuxuryRecipes implements ResourceManagerReloadListener {
 		}
 	}
 
-	/** A luxury recipe: who may make it (the job, from its level up), the makings, what comes out and the ticks one takes. */
-	public record Recipe(ResourceLocation id, ResourceLocation job, int level, List<Input> inputs, Item output, int count, int ticks) {
+	/**
+	 * A luxury recipe: who may make it (the job, from its level up), the makings, what comes out and the ticks one takes.
+	 * An output named by a tag ({@code "output": {"tag": "...", "for": "<chooser>"}}, 38.6) leaves {@code output} as air:
+	 * the maker makes whichever of the tag's items the named {@link Chooser} picks for them. {@code keep}: how many of each
+	 * good the store is kept in (0: {@link LuxuryWork#KEEP}); {@code when}: a named switch the recipe runs only while on
+	 * ("" always).
+	 */
+	public record Recipe(ResourceLocation id, ResourceLocation job, int level, List<Input> inputs, Item output, int count, int ticks,
+			Optional<TagKey<Item>> outputTag, String chooser, int keep, String when) {
+		public Recipe(ResourceLocation id, ResourceLocation job, int level, List<Input> inputs, Item output, int count, int ticks) {
+			this(id, job, level, inputs, output, count, ticks, Optional.empty(), "", 0, "");
+		}
+
+		/** Whether this recipe makes {@code item} (its output, or one of its output tag's items). */
+		public boolean makes(Item item) {
+			return outputTag.isPresent() ? item.builtInRegistryHolder().is(outputTag.get()) : output == item;
+		}
+
+		/** Whether its switch (if it names one) is on. */
+		public boolean on() {
+			if (when.isEmpty()) {
+				return true;
+			}
+			java.util.function.BooleanSupplier s = SWITCHES.get(when);
+			return s != null && s.getAsBoolean();
+		}
+
+		/** The goods {@code maker} makes with it: its output, or what its chooser picks from the tag (none while switched off). */
+		public List<Item> goods(Villager maker) {
+			if (!on()) {
+				return List.of();
+			}
+			if (outputTag.isEmpty()) {
+				return List.of(output);
+			}
+			Chooser c = CHOOSERS.get(chooser);
+			if (c == null) {
+				return List.of();
+			}
+			List<Item> out = new ArrayList<>();
+			for (Item item : c.choose(maker)) {
+				if (makes(item) && !out.contains(item)) {
+					out.add(item);
+				}
+			}
+			return out;
+		}
+
+		/** How many of each of its goods the store is kept in. */
+		public int keepOr(int fallback) {
+			return keep > 0 ? keep : fallback;
+		}
+	}
+
+	/** Picks which of a tag's items a maker makes (38.6: the Mega Stones of the Pokémon the village's trainers use). */
+	public interface Chooser {
+		List<Item> choose(Villager maker);
+	}
+
+	private static final Map<String, java.util.function.BooleanSupplier> SWITCHES = new java.util.concurrent.ConcurrentHashMap<>();
+	private static final Map<String, Chooser> CHOOSERS = new java.util.concurrent.ConcurrentHashMap<>();
+
+	/** Names a switch recipes can run under ({@code "when": name}). */
+	public static void when(String name, java.util.function.BooleanSupplier on) {
+		SWITCHES.put(name, on);
+	}
+
+	/** Names a chooser a tag output can use ({@code "for": name}). */
+	public static void chooser(String name, Chooser chooser) {
+		CHOOSERS.put(name, chooser);
 	}
 
 	/** The day a good was made (the chronicle's day number) and how many days it takes to be vintage (0: it doesn't age). */
@@ -171,10 +243,26 @@ public final class LuxuryRecipes implements ResourceManagerReloadListener {
 		JsonObject output = GsonHelper.getAsJsonObject(o, "output");
 		int count = GsonHelper.getAsInt(output, "count", 1);
 		int ticks = GsonHelper.getAsInt(o, "ticks", 100);
-		if (count < 1 || ticks < 1) {
-			throw new JsonSyntaxException("output.count " + count + " or ticks " + ticks + " below 1");
+		int keep = GsonHelper.getAsInt(o, "keep", 0);
+		if (count < 1 || ticks < 1 || keep < 0) {
+			throw new JsonSyntaxException("output.count " + count + ", ticks " + ticks + " or keep " + keep + " out of range");
 		}
-		return new Recipe(id, job, level, List.copyOf(inputs), item(GsonHelper.getAsString(output, "id"), "output.id"), count, ticks);
+		String when = GsonHelper.getAsString(o, "when", "");
+		if (!when.isEmpty() && !SWITCHES.containsKey(when)) {
+			throw new JsonSyntaxException("when: no switch " + when);
+		}
+		if (output.has("tag")) {
+			String tag = GsonHelper.getAsString(output, "tag");
+			ResourceLocation tagId = ClassNeeds.id(tag.startsWith("#") ? tag.substring(1) : tag, "output.tag");
+			String chooser = GsonHelper.getAsString(output, "for");
+			if (!CHOOSERS.containsKey(chooser)) {
+				throw new JsonSyntaxException("output.for: no chooser " + chooser);
+			}
+			return new Recipe(id, job, level, List.copyOf(inputs), net.minecraft.world.item.Items.AIR, count, ticks,
+				Optional.of(TagKey.create(Registries.ITEM, tagId)), chooser, keep, when);
+		}
+		return new Recipe(id, job, level, List.copyOf(inputs), item(GsonHelper.getAsString(output, "id"), "output.id"), count, ticks,
+			Optional.empty(), "", keep, when);
 	}
 
 	private static Item item(String text, String field) {
@@ -194,7 +282,7 @@ public final class LuxuryRecipes implements ResourceManagerReloadListener {
 	public static List<Recipe> making(Item item) {
 		List<Recipe> out = new ArrayList<>();
 		for (Recipe r : recipes.values()) {
-			if (r.output() == item) {
+			if (r.on() && r.makes(item)) {
 				out.add(r);
 			}
 		}
@@ -206,7 +294,7 @@ public final class LuxuryRecipes implements ResourceManagerReloadListener {
 		ResourceLocation id = BuiltInRegistries.VILLAGER_PROFESSION.getKey(job);
 		List<Recipe> out = new ArrayList<>();
 		for (Recipe r : recipes.values()) {
-			if (r.job().equals(id) && r.level() <= level) {
+			if (r.job().equals(id) && r.level() <= level && r.on()) {
 				out.add(r);
 			}
 		}

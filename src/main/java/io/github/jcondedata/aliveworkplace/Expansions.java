@@ -52,7 +52,7 @@ public final class Expansions {
 	public static final boolean M35 = false;
 	/**
 	 * Milestone 37, Furnished homes and modded storage (2.1): {@code furnishedBuilds}, {@code furnitureMods},
-	 * {@code moddedStorageNetworks} (design note M37).
+	 * {@code moddedStorageNetworks}, {@code moddedLibrary} (37.12) (design note M37).
 	 */
 	public static final boolean M37 = false;
 	/**
@@ -140,7 +140,7 @@ public final class Expansions {
 				"elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames" -> "M34";
 			case "wonders", "wonderCaps", "wonderLegends", "wonderServerLimit", "disabledWonders", "wonderCrew", "builderScaffolding",
 				"wonderStanding" -> "M35";
-			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks" -> "M37";
+			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks", "moddedLibrary" -> "M37";
 			case "denWardens", "denChallenges", "denChallengeDays", "villageMegas", "cuisineDishes", "beanFarms" -> "M38";
 			case "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains" -> "M39";
 			default -> null;

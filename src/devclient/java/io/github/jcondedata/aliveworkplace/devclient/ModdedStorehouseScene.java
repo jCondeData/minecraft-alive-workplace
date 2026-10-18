@@ -56,7 +56,9 @@ final class ModdedStorehouseScene {
 	private static final BlockPos O = new BlockPos(0, -60, 20);
 	private static final BlockPos STOREHOUSE = O.offset(4, 0, 4);
 	private static final BlockPos CONNECTOR = O.offset(1, 0, 2);
-	private static final BlockPos TERMINAL = O.offset(1, 0, 3); // in front of the connector, facing the camera
+	// Against the connector's south side. Tom's terminal "faces" the block it reads (its screen on the other side),
+	// so facing north it reads the connector and shows its screen to the camera, as when a player places it there.
+	private static final BlockPos TERMINAL = O.offset(1, 0, 3);
 	private static final BlockPos CHEST_1 = O.offset(0, 0, 2); // touching the connector
 	private static final List<BlockPos> CABLES = List.of(O.offset(2, 0, 2), O.offset(3, 0, 2));
 	private static final BlockPos CABLE_CONNECTOR_1 = O.offset(4, 0, 2); // facing east, at the second chest
@@ -164,8 +166,10 @@ final class ModdedStorehouseScene {
 				ServerPlayer player = player(server);
 				player.closeContainer();
 				if (tomsHere) {
-					// The player right-clicks the terminal's face with an empty hand: Tom's own screen.
-					Direction face = facing(server.overworld().getBlockState(TERMINAL));
+					// The player walks up to the terminal (Tom's terminal opens only within 6 blocks: from the
+					// overview camera it says "Terminal out of range") and right-clicks its screen with an empty hand.
+					Direction face = facing(server.overworld().getBlockState(TERMINAL)).getOpposite();
+					ScreenshotHarness.hoverLookingAt(player, Vec3.atBottomCenterOf(TERMINAL).add(0, 0, 2.5), Vec3.atCenterOf(TERMINAL));
 					player.gameMode.useItemOn(player, server.overworld(), ItemStack.EMPTY, InteractionHand.MAIN_HAND,
 						new BlockHitResult(Vec3.atCenterOf(TERMINAL).relative(face, 0.5), face, TERMINAL, false));
 				}
@@ -247,7 +251,7 @@ final class ModdedStorehouseScene {
 		level.setBlock(CHEST_2, Blocks.CHEST.defaultBlockState(), 3);
 		level.setBlock(CABLE_CONNECTOR_2, turned(toms("inventory_cable_connector").defaultBlockState(), Direction.NORTH), 3);
 		level.setBlock(CABINET, toms("filing_cabinet").defaultBlockState(), 3);
-		level.setBlock(TERMINAL, turned(toms("storage_terminal").defaultBlockState(), Direction.SOUTH), 3);
+		level.setBlock(TERMINAL, turned(toms("storage_terminal").defaultBlockState(), Direction.NORTH), 3);
 		for (BlockPos p : List.of(CABLES.get(0), CABLES.get(1), CABLE_CONNECTOR_1, CABLE_CONNECTOR_2, CONNECTOR, TERMINAL)) {
 			level.setBlock(p, Block.updateFromNeighbourShapes(level.getBlockState(p), level, p), 3);
 		}

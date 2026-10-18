@@ -121,7 +121,9 @@ public class PokemonBuildsCompatTests implements FabricGameTest {
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "habitat_garden_2_build")
 	public void aBuilderBuildsHabitatGardenII(GameTestHelper helper) {
 		build(helper, StarterBlueprints.HABITAT_GARDEN_2, List.of(at(14, 1, 7, "cobblemon:pasture"), centreStone(),
-			at(3, 3, 17, "minecraft:spruce_planks"), at(2, 5, 16, "minecraft:spruce_log"), at(10, 0, 19, "minecraft:water")));
+			at(3, 3, 17, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.moddedLibrary(StarterBlueprints.HABITAT_GARDEN_2.id())
+				? "chipped:herringbone_spruce_planks" : "minecraft:spruce_planks"), // the modded library's herringbone floor (37.12)
+			at(2, 5, 16, "minecraft:spruce_log"), at(10, 0, 19, "minecraft:water")));
 	}
 
 	/** The centre stone, at the spot ROADMAP 28.14 puts the habitat under. */

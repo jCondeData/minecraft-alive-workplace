@@ -30,16 +30,34 @@ import net.minecraft.world.level.block.state.properties.BedPart;
  * also every spot of a site saved before 37.3 ({@link #VANILLA}). A piece whose block is gone (the mod was removed) is
  * dropped when the choice is read, so the vanilla piece is built (and put back by upkeep) there.
  */
-public record FurnitureChoice(Map<Integer, Placed> spots) {
+public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 	/** No spot swapped: the vanilla build. */
 	public static final FurnitureChoice VANILLA = new FurnitureChoice(Map.of());
+
+	/**
+	 * A choice of pieces only (the vanilla library). {@code modded} (37.12): the build is its modded library copy
+	 * ({@link io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary}), chosen with the furniture and saved with it.
+	 */
+	public FurnitureChoice(Map<Integer, Placed> spots) {
+		this(spots, false);
+	}
+
+	/** This choice from the modded library ({@code modded} true) or the vanilla one. */
+	public FurnitureChoice withLibrary(boolean fromModded) {
+		return fromModded == modded ? this : !fromModded && spots.isEmpty() ? VANILLA : new FurnitureChoice(spots, fromModded);
+	}
+
+	/** Whether a new build of {@code blueprint} comes from the modded library now (its switch, furnished builds on, every block of its copy here). */
+	public static boolean moddedLibrary(ResourceLocation blueprint) {
+		return Furnishings.ENABLED && io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.use(blueprint);
+	}
 
 	/** A spot's piece: the spot (index in the blueprint's spots file, its position and kind, to check it still matches), the mod and every cell's state. */
 	public record Placed(BlockPos pos, FurnitureSpot.Kind kind, String mod, Map<BlockPos, BlockState> cells) {
 	}
 
 	public boolean isVanilla() {
-		return spots.isEmpty();
+		return spots.isEmpty() && !modded;
 	}
 
 	/**
@@ -110,7 +128,8 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 
 	/** The choice for a new build of {@code blueprint} on this server now (the config's switch and order). */
 	public static FurnitureChoice forNewBuild(ResourceLocation blueprint) {
-		return choose(BlueprintFurniture.of(blueprint), Furnishings.MODS, Furnishings.ENABLED, false, hasPokeBallDesks(blueprint));
+		return choose(BlueprintFurniture.of(blueprint), Furnishings.MODS, Furnishings.ENABLED, false, hasPokeBallDesks(blueprint))
+			.withLibrary(moddedLibrary(blueprint));
 	}
 
 	/**
@@ -131,7 +150,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 	public static FurnitureChoice forNewBuild(ResourceLocation blueprint, ServerLevel level, BlockPos origin) {
 		List<FurnitureSpot> spots = BlueprintFurniture.of(blueprint);
 		boolean partner = Furnishings.ENABLED && !trainersRoom(spots).isEmpty() && hasPartner(level, origin);
-		return choose(spots, Furnishings.MODS, Furnishings.ENABLED, partner, hasPokeBallDesks(blueprint));
+		return choose(spots, Furnishings.MODS, Furnishings.ENABLED, partner, hasPokeBallDesks(blueprint)).withLibrary(moddedLibrary(blueprint));
 	}
 
 	/** The mod the Trainer's room pieces come from. */
@@ -224,7 +243,9 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 
 	/** {@code base} as this choice builds it, the spots read from {@code blueprint}'s file. */
 	public Blueprint apply(Blueprint base, ResourceLocation blueprint) {
-		return spots.isEmpty() ? base : apply(base, BlueprintFurniture.of(blueprint));
+		// 37.12: the modded library's copy has the vanilla build's shape and furniture spots, so the pieces go in the same places
+		Blueprint built = modded ? io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.copy(blueprint).orElse(base) : base;
+		return spots.isEmpty() ? built : apply(built, BlueprintFurniture.of(blueprint));
 	}
 
 	public ListTag save() {
@@ -245,14 +266,24 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 			tag.put("cells", cells);
 			list.add(tag);
 		});
+		if (modded) {
+			CompoundTag library = new CompoundTag();
+			library.putString("library", "modded"); // 37.12 (read back by load; a version before it drops the entry: no kind)
+			list.add(library);
+		}
 		return list;
 	}
 
 	/** A saved choice; a piece with a block that no longer exists is dropped (its spot builds vanilla). */
 	public static FurnitureChoice load(ListTag list) {
 		Map<Integer, Placed> out = new LinkedHashMap<>();
+		boolean modded = false;
 		for (int i = 0; i < list.size(); i++) {
 			CompoundTag tag = Nbt.compoundAt(list, i);
+			if ("modded".equals(Nbt.getString(tag, "library"))) {
+				modded = true; // 37.12: built from the modded library
+				continue;
+			}
 			FurnitureSpot.Kind kind = FurnitureSpot.Kind.of(Nbt.getString(tag, "kind"));
 			if (kind == null) {
 				continue;
@@ -273,7 +304,7 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 				out.put(Nbt.getInt(tag, "spot"), new Placed(BlockPos.of(Nbt.getLong(tag, "pos")), kind, Nbt.getString(tag, "mod"), Collections.unmodifiableMap(cells)));
 			}
 		}
-		return out.isEmpty() ? VANILLA : new FurnitureChoice(Collections.unmodifiableMap(out));
+		return out.isEmpty() && !modded ? VANILLA : new FurnitureChoice(Collections.unmodifiableMap(out), modded);
 	}
 
 	/**

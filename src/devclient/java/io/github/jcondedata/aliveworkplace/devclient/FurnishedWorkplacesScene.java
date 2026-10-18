@@ -48,7 +48,10 @@ final class FurnishedWorkplacesScene {
 		new View("01_shop_counter", new Vec3(5.5, 2.9, 3.2), new Vec3(5.5, 2.2, 7), SHOP),
 		new View("02_library_desks", new Vec3(6.5, 3.6, 3.4), new Vec3(6, 1.5, 7), LIBRARY),
 		new View("03_schoolroom", new Vec3(5.5, 3.2, 3.2), new Vec3(5.5, 1.5, 8), SCHOOL),
-		new View("04_clinic_benches", new Vec3(7.5, 2.7, 3.2), new Vec3(2.5, 1.3, 6), CLINIC));
+		// B194: the camera's feet on the clinic's floor (y 1; its eye 1.62 above, under the tie beams at y 4), with night
+		// vision for the shot. At feet 2.7 the eye sat in the beam log at (7, 4, 3): a black still on GitHub. The aim is
+		// worked out from the feet, so the target sits 1.6 lower than the bench it frames.
+		new View("04_clinic_benches", new Vec3(7.5, 1.0, 3.2), new Vec3(2.5, -0.1, 4.5), CLINIC));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;
 
@@ -76,7 +79,13 @@ final class FurnishedWorkplacesScene {
 		if (t >= 0 && t % EACH == 0 && t / EACH < VIEWS.size()) {
 			View view = VIEWS.get(t / EACH);
 			Vec3 base = Vec3.atLowerCornerOf(view.site().origin());
-			server.execute(() -> ScreenshotHarness.hoverLookingAt(server.getPlayerList().getPlayers().get(0), base.add(view.eye()), base.add(view.at())));
+			server.execute(() -> {
+				net.minecraft.server.level.ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+				if (view.site() == CLINIC) {
+					player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, -1, 0, false, false));
+				}
+				ScreenshotHarness.hoverLookingAt(player, base.add(view.eye()), base.add(view.at()));
+			});
 		}
 		if (t >= 40 && (t - 40) % EACH == 0 && (t - 40) / EACH < VIEWS.size()) {
 			ScreenshotHarness.shot(mc, VIEWS.get((t - 40) / EACH).name());

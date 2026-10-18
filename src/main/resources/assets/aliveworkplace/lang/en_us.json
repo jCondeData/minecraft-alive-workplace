@@ -6889,6 +6889,8 @@
   "aliveworkplace.config.furnishedBuilds.tooltip": "Builders use the furniture mods you have installed (Handcrafted, Lucky's Cozy Home, CobbleFurnies, Beautify) for chairs, tables, beds, lamps and blinds. Off: every build is the plain vanilla build.",
   "aliveworkplace.config.moddedStorageNetworks": "Storage Mod Networks",
   "aliveworkplace.config.moddedStorageNetworks.tooltip": "A Sophisticated Storage controller or a Tom's Simple Storage connector in the Storehouse counts as one store for every chest it links. Off: each linked chest is its own store.",
+  "aliveworkplace.config.moddedLibrary": "Modded Build Library",
+  "aliveworkplace.config.moddedLibrary.tooltip": "Homes and workshops are built from the modded library: the same builds dressed with Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted blocks, when all of those mods are installed and Furnished Builds is on. Off, or a mod missing: the vanilla builds.",
   "message.aliveworkplace.wonder.finished_announce": "%s has finished the %s!",
   "chronicle.aliveworkplace.wonder.finished": "The %s was finished, its Foundation Stone laid on day %s",
   "chronicle.aliveworkplace.wonder.finished_elsewhere": "%s finished the %s",

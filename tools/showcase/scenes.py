@@ -1131,6 +1131,14 @@ SCENES = [
            ("02_library_shelves", "Inside: Carved Wood spruce bookshelves round the spruce lectern"),
            ("03_grand_cottage", "The Starter Cottage in the Grand style"),
            ("04_grand_cottage_floor", "Inside the Grand cottage: Rechiseled dark oak flooring and andesite wall panels")], cobblemon=True, furniture=True),
+    # The two build libraries (ROADMAP 37.12): the Starter Cottage II from the vanilla and the modded library, the modded Inn II
+    S("modded_library", "Build families", "The modded build library: the same cottage in vanilla blocks and dressed with the pack's building mods",
+      "the vanilla Starter Cottage II stands beside its modded copy (daub walls with braces, herringbone floors, Carved Wood chests, crockery on the table) and the modded Inn II, built from the modded library because its mods are installed",
+      40, [("01_both_cottages", "The Starter Cottage II from the vanilla library (left) and the modded library (right)"),
+           ("02_modded_cottage", "The modded cottage: Supplementaries daub for the plaster, braced beside the posts"),
+           ("03_modded_cottage_back", "From behind: the daubed gable"),
+           ("04_modded_cottage_inside", "Inside: Chipped herringbone floors, Handcrafted furniture and crockery, Carved Wood chests"),
+           ("05_modded_inn", "The Inn II from the modded library")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",

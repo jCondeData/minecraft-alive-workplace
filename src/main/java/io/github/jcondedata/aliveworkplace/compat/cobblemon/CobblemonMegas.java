@@ -62,6 +62,24 @@ public final class CobblemonMegas {
 		return BuiltInRegistries.ITEM.getOptional(ResourceLocation.fromNamespaceAndPath("mega_showdown", stones.get(random.nextInt(stones.size()))));
 	}
 
+	// The Mega Stones (item ids) of the Pokémon on a village trainer's team at home, both of Charizard's (38.6: the
+	// Jeweller cuts these). Empty without Mega Showdown.
+	public static List<ResourceLocation> teamStones(net.minecraft.world.entity.npc.Villager trainer) {
+		if (!ENABLED) {
+			return List.of();
+		}
+		List<ResourceLocation> out = new java.util.ArrayList<>();
+		for (Pokemon pokemon : CobblemonTrainers.teamOf(trainer)) {
+			for (String stone : STONES.getOrDefault(pokemon.getSpecies().getResourceIdentifier().getPath(), List.of())) {
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath("mega_showdown", stone);
+				if (!out.contains(id)) {
+					out.add(id);
+				}
+			}
+		}
+		return out;
+	}
+
 	// True if this Pokémon holds the Mega Stone for its species.
 	public static boolean holdsItsStone(Pokemon pokemon) {
 		List<String> stones = STONES.get(pokemon.getSpecies().getResourceIdentifier().getPath());

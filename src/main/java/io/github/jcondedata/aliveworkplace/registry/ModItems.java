@@ -202,6 +202,11 @@ public final class ModItems {
 				for (StarterBlueprints.Entry entry : StarterBlueprints.DECORATIONS) {
 					output.accept(BlueprintItem.create(entry.id(), entry.size()));
 				}
+				for (StarterBlueprints.Entry entry : StarterBlueprints.MEGA_ONLY) { // with Mega Showdown's blocks, once M38 is open (38.7)
+					if (io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.megaOk(entry.id()) && StarterBlueprints.offered(entry.id())) {
+						output.accept(BlueprintItem.create(entry.id(), entry.size()));
+					}
+				}
 			})
 			.build()
 	);

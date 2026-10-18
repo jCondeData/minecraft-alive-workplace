@@ -4835,14 +4835,14 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   a Town-rank Leader's none; the Cup final's trainers have one; the bracelet layer is on exactly the trainers who can
   Mega Evolve; without Mega Showdown nothing changes (a GameTest); scene `mega_trainers` (a Leader Mega Evolving in a
   battle against the player).
-- [ ] **38.6** **Mega Stones and Key Stones from the village.** The Jeweller (M34) cuts Mega Stones and Key Stones:
+- [x] **38.6** (review: pending 2026-10-18) **Mega Stones and Key Stones from the village.** The Jeweller (M34) cuts Mega Stones and Key Stones:
   `luxury_recipes` files that take `mega_showdown:mega_stone_crystal` or `keystone_ore` (and gold, emeralds) to make
   `mega_showdown:keystone` and the stones in `#mega_showdown:mega_stone` for the Pokémon the village's trainers use;
   the Miner keeps the Key Stone ore and Mega meteorite ores they dig for the Jeweller; a player who beats every Trainer
   Leader of a realm once gets a Mega Bracelet from the capital's hall. Done when: compat GameTests: a Jeweller with a
   crystal and the makings in the store makes the stone; a Miner's find goes to the store, not the dump; the bracelet
   is given once; with M34 off the recipes simply don't run; scene `mega_jeweller`.
-- [ ] **38.7** **The Mega Shrine.** A new decoration blueprint, the Mega Shrine (a `mega_showdown:pedestal` on a dais
+- [x] **38.7** (review: pending 2026-10-18) **The Mega Shrine.** A new decoration blueprint, the Mega Shrine (a `mega_showdown:pedestal` on a dais
   of `mega_meteorid` bricks and blocks), listed at the Blueprint Table only when its blocks exist. A village with a
   finished shrine holds a partner show there on festival days (M28's partner shows): a village trainer Mega Evolves
   their ace by the pedestal, villagers off work gather and get +3 mood. Done when: the architect skill reviews its
@@ -5081,6 +5081,14 @@ the owner's port jar; M33's caravans (39.7).
   `world/VillageHouses` (a design choice, not a density problem). Commands: `tools/modtest/village_density.sh` on
   `main` (5d8652a1) and, for "before", the same script and `VillageDensityMeasure.java` copied into
   `git worktree add <dir> ac8dc522^`. The measurement is registered in no entrypoint, so `build` never runs it.
+- 2026-10-18 (38.6, decisions; details in `docs/wiki/raid-dens-megas-cuisine.md`, "Decisions"): the Mega Bracelet
+  is given **once per player per realm** as written, straight into the inventory (dropped when full) with the
+  capital's hall named, not collected at the hall; the design note's question 2 (once ever?) stays the owner's. A
+  realm's Leaders are the member villages whose hall's last round saw a Trainer Leader of their own. Mega Showdown's
+  Key Stone Ore and Mega Crystal drop a Key Stone and a plain Mega Stone without Silk Touch, so the Jeweller also cuts
+  that plain Mega Stone, and (level 4) 4 Mega meteorite ores, which is what the Miner keeps them for; the Miner takes
+  all of these to the village store. Recipes: 2 gold ingots and 4 emeralds each; 2 Key Stones and 1 of each Mega
+  Stone kept in the store.
 
 - 2026-10-17 (planning, **Lanes after 1.0**): the bug lane takes Bugs and M26's open items; the quick lane takes M36
   (Quick additions); the big-update lanes take M37 (2.1, furniture and storage mods), then M38 (2.2, Raid Dens, Megas,

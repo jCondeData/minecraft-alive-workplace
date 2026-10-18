@@ -4,10 +4,11 @@ Cobblemon depth brings three of the pack's Pokémon mods into village life: Cobb
 dens around it, guards watch them and its trainers challenge them), Mega Showdown (more village trainers Mega Evolve,
 and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchens cook its dishes and farmers grow its
 beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
-the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4) and more Mega trainers with their
-bracelets (38.5); the full plan is the design note, docs/design/M38.md.
+the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4), more Mega trainers with their
+bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6) and the Mega
+Shrine with its festival show (38.7); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7
 
 ## What a player sees
 
@@ -48,7 +49,44 @@ Mega Evolve wears a **Mega Bracelet** over their outfit: a gold band round the l
 set in it (`textures/entity/villager/mega_bracelet.png`, drawn by `tools/textures/art/megas.py`). Without Mega
 Showdown there are no extra stones, no bracelets and nothing is sent.
 
-The rest (Mega Stones from the Jeweller, the Mega Shrine, Cobblecuisine) comes with 38.6 to 38.10.
+**Mega Stones and Key Stones from the village (38.6).** With Mega Showdown, a Journeyman Jeweller (level 3) cuts, at the
+stonecutter, from the makings in their own chest, the village store and the workers' chests:
+
+| Makings | Makes | Level | Kept in the store |
+|---|---|---|---|
+| Key Stone Ore, 2 gold ingots, 4 emeralds | a Key Stone | 3 | 2 |
+| a Mega Stone Crystal (the block, silk-touched), 2 gold ingots, 4 emeralds | a Mega Stone the village's trainers use | 3 | 1 of each |
+| a Mega Stone (what a Mega Stone Crystal drops), 2 gold ingots, 4 emeralds | the same | 3 | 1 of each |
+| 4 Mega meteorite ores (any mix, silk-touched), 2 gold ingots, 4 emeralds | the same | 4 | 1 of each |
+
+"A Mega Stone the village's trainers use": the Jeweller looks at the trainers of their village (round the nearest
+Village Hall, or within 48 blocks without one; visitors and Cup delegates left out), nearest first, and at the Pokémon
+on each one's home team, and cuts the Mega Stone of the first such Pokémon whose stone the store doesn't hold yet
+(both Charizardites for a Charizard). A village whose trainers have no Pokémon with a Mega Evolution gets no stones;
+the Jeweller never floods the store with all 46. Missing makings go on the requests board, as for their other goods.
+
+A **Miner** drops off what they dig of Key Stone ore (a Key Stone, or the ore itself with a silk-touch pickaxe), Mega
+Stone Crystals (a Mega Stone, or the crystal) and Mega meteorite ores (silk-touched; without silk touch they drop
+Cobblemon's evolution stones, which stay in the Miner's chest) in the **village store** (the hall's storehouses and
+kitchens) for the Jeweller, instead of their own chest; what the store has no room for goes in their chest as before.
+
+A player who beats the **Trainer Leader of every village of a realm** that has one gets a **Mega Bracelet** from the
+capital's hall: it goes into their inventory (or drops at their feet when it's full) with "You've beaten every Trainer
+Leader of the Barony of Oakmere! The hall of Oakmere gives you a Mega Bracelet." Before that, each new village's Leader
+beaten tells them "Trainer Leaders of the Barony of Oakmere beaten: 1 of 3. ...". Once per player per realm. A Leader
+beaten counts once and for good; a village counts as having a Leader when its hall's last round saw one (so a village
+whose Leader left drops out of the count).
+
+With Mega Showdown, the Blueprint Table lists the **Mega Shrine** among the decorations (38.7): Mega Showdown's pedestal
+on a two-step dais of Mega meteorite bricks, with chiseled meteorite posts crowned with amethyst and soul lanterns (7 by
+6 by 7, beauty 2). Without Mega Showdown it isn't listed (its blocks don't exist). On a festival day, for its first
+hour and a half (from the festival's start, 1,500 ticks), a village with a finished shrine holds its show there: the
+villagers off work gather in front of the shrine instead of at the square, and a village trainer (one who can Mega
+Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ace: a flash, a burst of light, a beacon
+chord, and "<trainer> Mega Evolves their ace at the Mega Shrine, and the village cheers!" in chat for the players near.
+Every villager within 12 blocks is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
+festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
+fireworks. Cobblecuisine comes with 38.8 to 38.10.
 
 ## How it works
 
@@ -74,6 +112,31 @@ again whenever a player starts seeing one who wears it. The client draws `MegaBr
 outfit, class and Legend looks. A village that becomes a City (or drops back), a Cup's final and a visitor's day so
 show within two seconds. Nothing is saved: it all follows from the village's rank, the Cup and the visitor records.
 
+## How the Mega Stones are chosen (38.6)
+
+The luxury recipe format grew three optional parts, so the stones stay data: an output named by a tag and a chooser
+(`"output": {"tag": "#mega_showdown:mega_stone", "for": "village_trainers"}`), `keep` (how many of each good the store
+is kept in; 8 by default) and `when` (a named switch: `village_megas` is `villageMegas` with Jewellers on). The files
+`data/aliveworkplace/luxury_recipes/mega_*.json` load only with Cobblemon and Mega Showdown (Fabric load conditions).
+The chooser `village_trainers` (core `jeweller/MegaStones`) asks Cobblemon for each trainer's team
+(`CobblemonMegas.teamStones`: the same seeded team they field at home) and remembers the answer per trainer until
+their rank or Mega changes. The Miner's finds are the item tag `#aliveworkplace:jeweller_finds` (with
+`#aliveworkplace:mega_meteorite_ores`), every entry optional, so a pack can add its own.
+
+The bracelet (core `trainer/LeaderBracelets`): each hall's round notes whether its village has a Trainer Leader of its
+own; a player's win against a Leader (Cobblemon's battle end, the same call that pays the prize) marks the Leader's
+village (the nearest hall) for that player, then checks the realm the village is in.
+
+## How the shrine's show runs (38.7)
+
+`trainer/MegaShrines` (core) reads the shrine by its blueprint id from the finished builds near the hall
+(`BuildSiteManager.finishedNear`), and Mega Showdown's pedestal only by its id (`mega_showdown:pedestal`):
+`BlueprintLibrary.megaOk` lists the shrine only while that block exists and `villageMegas` is on. `Festivals.tick`
+asks it first each festival tick; in the show's hours it takes the crowd (to 4 blocks in front of the dais) and walks
+the trainer to the step before the pedestal; there, the show is held once a day per village (kept in memory: a restart
+mid-show may hold it again, and the mood is the same). The Mega Evolution is shown as light and sound at the pedestal,
+not by a Pokémon sent out.
+
 ## How dens are found (38.2)
 
 When a chunk loads, its block entities are looked at (never an area of blocks); a Raid Dens crystal among them is
@@ -89,7 +152,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `denWardens` | on (once 2.2 ships) | Guards can be posted to raid dens. Off: no new wardens, and those posted go back to normal duty. |
 | `denChallenges` | on (once 2.2 ships) | Village trainers challenge active dens. Off: no challenges. |
 | `denChallengeDays` | 3 (1 to 30) | Days between a village's challenges. |
-| `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5; 38.6 and 38.7 will use it too). Off: only Masters Mega Evolve, as before, and nobody wears a bracelet. |
+| `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
 The other two are mapped to the gate and come into the config with 38.8 to 38.10.
 
@@ -100,11 +163,17 @@ Each dimension saves its known dens (`aliveworkplace_raid_dens`): a list of `pos
 (`aliveworkplace_den_wardens`): each `guard` (their id) with their `den` and the players `cheered` this raid. An older
 save has no wardens. The den challenges are saved per dimension (`aliveworkplace_den_challenges`): each hall's
 `lastDenChallenge` (the day) and each tired trainer's `tiredUntil` (game time). An older save has none: every village
-may challenge at once. The planned fields of later items are listed in the design note.
+may challenge at once. The Mega Bracelets are saved on the overworld (`aliveworkplace_leader_bracelets`): the villages
+known to have a Trainer Leader (`leaderHalls`) and, per player, the villages whose Leader they beat (`beaten`) and the
+realms whose bracelet they had (`megaBracelet`). An older save has none: nobody has a bracelet yet. A villager who
+watched a Mega Shrine's show keeps the day on them (`mega_show_day`, 38.7); an older save has none. The planned fields
+of later items are listed in the design note.
 
 ## Items, blocks, jobs, commands
 
-None of our own yet. The ids the milestone reads from the three mods (the den block `cobblemonraiddens:raid_crystal_block`
+None of our own yet; 38.6 adds four Jeweller recipes (`mega_keystone`, `mega_stone`, `mega_stone_cut`,
+`mega_stone_meteorite`) and two item tags (`jeweller_finds`, `mega_meteorite_ores`); 38.7 adds the decoration
+blueprint `aliveworkplace:mega_shrine` (tools/blueprints/decor.py, `mega_shrine`). The ids the milestone reads from the three mods (the den block `cobblemonraiddens:raid_crystal_block`
 and its states, the cheers, `mega_showdown:keystone`, `cobblecuisine:bean_crop`, the beans and the dishes) are listed in
 the design note and checked by `CobblemonDepthCompatTests`.
 
@@ -135,6 +204,16 @@ the design note and checked by `CobblemonDepthCompatTests`.
 - The Stadium Day's visitors Mega Evolve in a player's challenge; their exhibition bouts against the home trainers are
   settled with each side's home team, as before (38.5).
 - A Mega Stone holder's battle AI Mega Evolves at any tier, Novice included (a Cup finalist can be one) (38.5).
+- The Key Stone and Mega Stone recipes take 2 gold ingots and 4 emeralds each; the Key Stone is kept 2 in the store,
+  each Mega Stone 1 (38.6).
+- Besides the Crystal block the spec names, the Jeweller also cuts a stone from the plain Mega Stone a Crystal drops
+  without silk touch, and (as a Master, level 4) from 4 Mega meteorite ores, which is what the Miner keeps them for
+  (38.6).
+- A Miner's Key Stone ore drops a Key Stone without silk touch: that goes to the store too (38.6).
+- The Mega Bracelet is once per player per realm, as the roadmap says (the design note's open question 2 stays the
+  owner's); it is Mega Showdown's plain `mega_bracelet`, given straight into the inventory with the capital's hall
+  named, not picked up at the hall (38.6).
+- A realm's Leader count is the member villages whose hall's last round saw a Trainer Leader of their own (38.6).
 - In local compat runs on the 7 GB dev box, `-PcompatHeap=2G` is needed now that the runtime holds two more mods
   (38.1); CI keeps the default.
 
@@ -144,7 +223,11 @@ Only dens within the map's 128-block square get a banner; farther ones (up to 16
 only. A den nobody has been near isn't known. A player who joins a raid from farther than 16 blocks (or whose advancement was granted earlier) gets no cheer. Only
 one warden per den. A challenge is settled at once: there's no battle to watch, only the den going dark. A won
 challenge gives no Raid Dens Pokémon, only the loot. On Cobblemon 1.8 (Raid Dens 0.13.2) the loot fields are untested.
-The Jeweller's Mega Stones, the shrine and Cobblecuisine aren't built yet. The bracelet's look is checked in the
+Cobblecuisine isn't built yet. The shrine's Mega Evolution is light, sound and a chat line at the pedestal, not a
+Pokémon sent out and Mega Evolved: our trainers' Pokémon exist only in battle. The show takes the festival's first
+hour and a half, then the square has the crowd. Our renderer has no model for the pedestal (a block entity), so the
+shrine's render shows its plinth bare; the showcase scene shows it in the game. A realm whose villages have no hall round yet (none loaded since 38.6)
+counts only the Leaders already beaten; a village whose Leader dies counts until its hall's next round. The bracelet's look is checked in the
 showcase scene only (a client is needed to draw it).
 Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 
@@ -169,5 +252,17 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   Expert, Novice and farmer don't; the clients are told the same), `switchedOffOnlyMastersMegaEvolve`,
   `aLeaderSavedAndLoadedIsTheSame`.
 - `MegaTrainerGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `aCupFinalistIsKnown`.
+- `MegaShrineCompatTests` (with Mega Showdown): `theShrineIsListedWithMegaShowdown`,
+  `theFestivalShowIsHeldAtAFinishedShrine` (the pedestal's place, the watchers' +3, once a festival, through a save),
+  `noShowWhenOffWithoutATrainerOrLate` (villageMegas off: not listed, no show; no trainer; past its hours).
+- `MegaShrineGameTests` (without Mega Showdown): `hiddenWithoutMegaShowdown`, `theShowsMoodAndText`.
+- `MegaStoneCompatTests` (with Mega Showdown, 38.6): `theRecipesAndFindsLoad`,
+  `aJewellerCutsAMegaStoneForTheVillagesTrainers` (a crystal, gold and emeralds become one stone of the Master's team),
+  `aJewellerCutsAKeyStone`, `onlyTheStonesTheStoreLacks` (and none with no trainer), `switchedOffTheRecipesDontRun`
+  (`villageMegas` off, Jewelers off), `aMinersKeyStonesGoToTheStore` (dug Key Stone ore: the stones in the store,
+  the cobblestone in the Miner's chest), `beatingEveryLeaderOfARealmGivesOneBracelet` (one Leader of two: nothing; a
+  loss: nothing; both: one; again: still one; save and load), `braceletEdges` (switch off, a Leader who left, no realm).
+- `MegaStoneGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `withoutMegaShowdownNoBracelet`,
+  `aTagOutputWithAChooser` (the recipe format's new parts and their errors), `theText`.
 
-Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`, `mega_trainers`
+Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`, `mega_trainers`, `mega_jeweller`

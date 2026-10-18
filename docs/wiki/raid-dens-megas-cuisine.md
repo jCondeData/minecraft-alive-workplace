@@ -8,7 +8,7 @@ the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9, 38.10
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9, 38.10, B190, B191
 
 ## What a player sees
 
@@ -86,7 +86,8 @@ Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ac
 chord, and "<trainer> Mega Evolves their ace at the Mega Shrine, and the village cheers!" in chat for the players near.
 Every villager within 12 blocks is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
 festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
-fireworks.
+fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
+festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
 
 **Cobblecuisine on the menus (38.8).** With Cobblecuisine, the Chef cooks its dishes after the plain menu, each from
 its own crafting recipe with the makings from the chests by the stove, the porters' and the butcher's spare (as he

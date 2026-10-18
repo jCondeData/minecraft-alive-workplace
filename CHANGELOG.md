@@ -254,6 +254,12 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **The Mega trainers and the Mega Shrine show again (B191).** The Mega trainers scene asked whether its City's Leader
+  could Mega Evolve before the game had filed the new Village Hall, and let the hall's first count make the test
+  village a Hamlet just before the battle, so the Leader had no Mega Stone and no bracelet; it now asks once the hall
+  stands and keeps the village a City. The Mega Shrine scene called the show by hand instead of holding a festival:
+  now the village's own festival day comes, the hall plans it, and the festival holds the show, as in a real world (a
+  new compat test proves that path).
 - **A raid den by a Village Hall is found in a real world.** Dens were looked for only as their chunk loaded, so a hall
   set down by a den already in view, or a den set down near a hall, stayed "No raid den known": no warden could be
   posted and the Leader found no den. Now a crystal set down in a loaded chunk is seen at once, and a new hall looks

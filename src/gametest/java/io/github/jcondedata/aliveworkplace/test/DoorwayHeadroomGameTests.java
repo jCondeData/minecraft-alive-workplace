@@ -35,6 +35,36 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 	}
 
 	/**
+	 * Makes {@code villager} a nitwit, with a nitwit's brain: no job site to go after, so only the walk it's given moves it.
+	 * B198: the profession alone wasn't enough. A villager's brain is built for the profession it spawned with (none), and
+	 * an unemployed brain looks for a free job site and walks to it: every run, the Healing Center's villager was sent
+	 * off to its brewing stand, and the two walk targets fought over its path.
+	 */
+	static void nitwit(GameTestHelper helper, Villager villager) {
+		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NITWIT));
+		villager.refreshBrain(helper.getLevel());
+	}
+
+	/**
+	 * Opens every wooden door in the test area, the front door propped open as a shop's is. B198: these tests are about
+	 * room overhead in the doorway, and vanilla's door opening raced the walk. A villager waits a second at a shut door,
+	 * then opens it, and the opening makes its path be worked out again; in 4 runs of 21 that new path came out as
+	 * "can't get there" and led away round the building, the villager shut the door behind it, and it walked round the
+	 * outside (falling into the blueprint's ground-layer pits by the porch) until the test ran out.
+	 */
+	private static void propDoorsOpen(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		net.minecraft.world.phys.AABB box = helper.getBounds();
+		for (BlockPos pos : BlockPos.betweenClosed(BlockPos.containing(box.minX, box.minY, box.minZ), BlockPos.containing(box.maxX, box.maxY, box.maxZ))) {
+			net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+			if (state.getBlock() instanceof net.minecraft.world.level.block.DoorBlock door && net.minecraft.world.level.block.DoorBlock.isWoodenDoor(state)
+				&& state.getValue(net.minecraft.world.level.block.DoorBlock.HALF) == net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER) {
+				door.setOpen(null, level, state, pos.immutable(), true);
+			}
+		}
+	}
+
+	/**
 	 * A villager at {@code from} (outside the front door) walks to {@code goal} inside; the test passes once its middle is in
 	 * the cell at {@code insideZ} (the step's), its feet at least {@code minFeet} over the floor: up on
 	 * the step, out of the doorway. Stuck, it stands in the doorway's cell with its feet on the floor.
@@ -42,8 +72,8 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 	private static void walkIn(GameTestHelper helper, BlockPos from, BlockPos goal, int insideZ, double minFeet) {
 		Villager villager = helper.spawn(EntityType.VILLAGER, from);
 		BlockPos target = helper.absolutePos(goal);
-		// a nitwit: no job site to go after, so only the walk it's given moves it
-		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NITWIT));
+		nitwit(helper, villager);
+		propDoorsOpen(helper);
 		double past = helper.absolutePos(new BlockPos(0, 0, insideZ)).getZ();
 		double floor = helper.absolutePos(new BlockPos(0, 2, 0)).getY();
 		helper.onEachTick(() -> {
@@ -105,7 +135,7 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		java.util.List<BlockPos> goals = new java.util.ArrayList<>();
 		for (int[] w : walks) {
 			Villager villager = helper.spawn(EntityType.VILLAGER, camp.offset(w[0], 1, w[1]));
-			villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NITWIT));
+			nitwit(helper, villager);
 			villagers.add(villager);
 			goals.add(helper.absolutePos(camp.offset(w[2], 1, w[3])));
 		}
@@ -148,7 +178,7 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		place(helper, "starter_cottage", cottage);
 		// template cells (y = 1 is the ground floor): the room by the rug, and the chair (stairs) at the table's north side
 		Villager villager = helper.spawn(EntityType.VILLAGER, cottage.offset(5, 1, 4));
-		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NITWIT));
+		nitwit(helper, villager);
 		BlockPos chair = helper.absolutePos(cottage.offset(3, 1, 3));
 		double floor = helper.absolutePos(cottage.offset(0, 1, 0)).getY();
 		helper.onEachTick(() -> {

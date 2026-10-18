@@ -106,4 +106,48 @@ public class VillageTrainGameTests implements FabricGameTest {
 		helper.assertTrue(!back.tracked(a, b), "track towards a village gone from the list is kept");
 		helper.succeed();
 	}
+
+	/**
+	 * 39.7b, the track's plan (no Create needed): Create's trains only pass between pieces that meet nearly straight, so a
+	 * way that steps up and back down gets a sloped curve over each step between level pieces two nodes off it (here the
+	 * two slopes share the landing between them), a turn with straight way either side a curve between the pieces three
+	 * nodes off it, nothing laid on the nodes the curves pass over; a step too short to slope and a node not free stay
+	 * gaps; a caravan aboard with its goods in the train's chest counts as waiting.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void theTrackPlanSlopesOverStepsAndCurvesRoundTurns(GameTestHelper helper) {
+		java.util.List<BlockPos> way = new java.util.ArrayList<>();
+		for (int x = 0; x <= 15; x++) {
+			way.add(new BlockPos(x, x >= 4 && x <= 7 ? 1 : 0, 0)); // up a block at x = 4, down again at x = 8
+		}
+		for (int z = 1; z <= 4; z++) {
+			way.add(new BlockPos(15, 0, z)); // the turn at (15, 0, 0): south from there
+		}
+		net.minecraft.core.Direction east = net.minecraft.core.Direction.EAST;
+		net.minecraft.core.Direction west = net.minecraft.core.Direction.WEST;
+		CaravanTrains.TrackPlan plan = CaravanTrains.plan(way, p -> true);
+		helper.assertTrue(plan.curves().equals(List.of(
+			new CaravanTrains.Curve(new BlockPos(12, 0, 0), east, new BlockPos(15, 0, 3), net.minecraft.core.Direction.NORTH),
+			new CaravanTrains.Curve(new BlockPos(1, 0, 0), east, new BlockPos(6, 1, 0), west),
+			new CaravanTrains.Curve(new BlockPos(6, 1, 0), east, new BlockPos(10, 0, 0), west))), "not a curve round the turn and a slope over each step: " + plan.curves());
+		java.util.Map<BlockPos, String> expected = new java.util.LinkedHashMap<>();
+		for (BlockPos p : List.of(new BlockPos(0, 0, 0), new BlockPos(1, 0, 0), new BlockPos(6, 1, 0), new BlockPos(10, 0, 0), new BlockPos(11, 0, 0), new BlockPos(12, 0, 0))) {
+			expected.put(p, "xo");
+		}
+		expected.put(new BlockPos(15, 0, 3), "zo");
+		expected.put(new BlockPos(15, 0, 4), "zo");
+		helper.assertTrue(plan.shapes().equals(expected), "the straight pieces aren't where they go (none under the curves): " + plan.shapes());
+		// a step with no room to slope is a gap, and so is a node with something on it
+		CaravanTrains.TrackPlan steep = CaravanTrains.plan(List.of(new BlockPos(0, 0, 0), new BlockPos(1, 1, 0)), p -> true);
+		helper.assertTrue(steep.curves().isEmpty(), "a slope of a block in a block: " + steep.curves());
+		CaravanTrains.TrackPlan taken = CaravanTrains.plan(List.of(new BlockPos(0, 0, 0), new BlockPos(1, 0, 0), new BlockPos(2, 0, 0)), p -> p.getX() != 1);
+		helper.assertTrue(!taken.shapes().containsKey(new BlockPos(1, 0, 0)) && taken.shapes().size() == 2, "track on a node with something on it: " + taken.shapes());
+		helper.assertTrue(CaravanTrains.waiting(CaravanTrains.IN_CHEST) && CaravanTrains.aboard(CaravanTrains.IN_CHEST) && CaravanTrains.aboard(CaravanTrains.ABOARD)
+			&& !CaravanTrains.aboard(CaravanTrains.BOARDING), "the train's stages don't read as they should");
+		for (String key : List.of("chronicle.aliveworkplace.train_built", "chronicle.aliveworkplace.train_goods_left", "blueprint.aliveworkplace.village_train")) {
+			helper.assertTrue(Language.getInstance().has(key), "no text for " + key);
+		}
+		helper.succeed();
+	}
 }

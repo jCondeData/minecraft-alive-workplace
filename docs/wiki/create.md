@@ -7,7 +7,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 (39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6) and trains between villages (39.7); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, B189, B193
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, B189, B193
 
 ## What a player sees
 
@@ -90,6 +90,22 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   stands at the other village's station. A station the village points at its track faces the other village (Create's
   stations are stopped at from one side). Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
+- **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
+  `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on
+  the lower node of each one-block step, rising towards the higher one (its high end meets the next straight piece), and
+  round each turn with three (or two) straight, level nodes either side a Create curve between the straight pieces that
+  far from the turn, joined once the site is done (`CreateTrains.curve`, a `BezierConnection` as Create's own track
+  placement makes one). A dip of one block, a step on a turn and a turn with no room stay gaps (the railway then never
+  joins and caravans take the timed trip). The train's six blocks are a generated blueprint
+  (`aliveworkplace:roads/<hall>/train_<other>`, "Village Train") at the first village's station, built by an idle
+  builder of the village from the bench's chests; the bogey is placed with railway casing. When they all stand, the
+  station's next look glues and assembles them ("Bob built the village's train at the station, ready to be put on the
+  rails"). At the departing station the caravan's goods go into the carriage's chest (Create's mounted storage, all or
+  nothing; arrival `IN_CHEST`; no room: they ride as the caravan's record as before), and at the other station what is
+  still in the chest of them comes out and is delivered. Train gone or the far station gone while they're in the chest:
+  what a derailed train still holds comes back out and the caravan takes the timed trip; a train broken up keeps them
+  in its chest (a player breaking it up at a station gets the chest back with them), the caravan is taken off the road
+  and the chronicle says "The train to Ashford was broken up on the way: the caravan's goods stayed in its chest".
 
 ## How it works
 

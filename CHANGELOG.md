@@ -23,6 +23,12 @@ asks for the steps, `latest.log` and any crash report).
   together at a station (a bogey, a carriage with the caravan's chest, controls at both ends and a jobless villager in
   the seat as driver) and Create runs it on a schedule between the two stations. Caravans wait at the station, ride the
   train and are unloaded when it stands at the other village's station. The scene `village_train` shows it moving.
+- **Village trains climb, turn and carry the goods** (39.7b, with Create). The track along a caravan road is now one
+  line Create's railway accepts: sloped track where the road steps up or down and Create curves round its turns, so both
+  villages' stations join one network. A builder builds the train from its blueprint out of the bench's chests (train
+  casing, two train controls, a seat and a chest) before the station puts it on the rails, and the caravan's goods ride
+  in the carriage's chest: loaded at one station, unloaded at the other. A train broken up on the way keeps them in
+  its chest, never paid out twice.
 - **Two build libraries, vanilla and modded** (2.1, behind its gate). Every build as it ships stays the vanilla
   library. With Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted installed, all 130 homes and workshops
   are built from the modded library instead: daub walls with braces, herringbone floors, Carved Wood chests and shelves

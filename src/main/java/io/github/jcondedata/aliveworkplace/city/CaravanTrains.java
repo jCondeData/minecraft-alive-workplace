@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,6 +32,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -67,6 +69,14 @@ import org.jetbrains.annotations.Nullable;
  * behind {@link #RAILWAY}; without Create, with the switch off, or with caravan roads off, nothing is laid and caravans
  * walk as before. Only trains the village put together are touched (their owner is the railway's own id,
  * {@link #railwayId}).
+ * <p>
+ * <b>39.7b.</b> The track is one line Create's trains can run: straight pieces on the level, a Create curve round each
+ * turn where the road runs straight for a few nodes either side, and a sloped Create curve over each run of steps
+ * ({@link #plan}). The train is built by a builder of the village from a blueprint of its blocks
+ * ({@link #openTrain}), then glued and assembled. The caravan's goods ride in the carriage's chest ({@link #IN_CHEST}):
+ * loaded at the departing station, taken out at the arriving one (only what is still there is delivered), and taken
+ * back out of a derailed train for the timed trip; a train broken up while they're aboard leaves them in its chest, never
+ * a second time with the caravan.
  */
 public final class CaravanTrains {
 	/** Config {@code villageTrains} (and M39 open). */
@@ -90,8 +100,14 @@ public final class CaravanTrains {
 	public static final long BOARDING = Long.MAX_VALUE;
 	/** A caravan's arrival while it rides the village's Create train to the other station (39.7a). */
 	public static final long ABOARD = Long.MAX_VALUE - 1;
+	/** A caravan's arrival while it rides the village's Create train with its goods in the carriage's chest (39.7b). */
+	public static final long IN_CHEST = Long.MAX_VALUE - 2;
 	/** How often (ticks) a hall looks at its village's Create train. */
 	static final int SERVE_EVERY = 10;
+	/** A train site's id part, after the hall's folder of road segments (39.7b). */
+	static final String TRAIN_PART = "train_";
+	/** How far from a turn (nodes) the curve round it starts, tried in this order (39.7b). */
+	static final int[] CURVE_REACH = {3, 2};
 
 	/**
 	 * Create's own trains (39.7a), filled in by {@code compat/create} when Create is installed. Stations are given by
@@ -109,12 +125,35 @@ public final class CaravanTrains {
 		boolean linked(ServerLevel level, BlockPos a, BlockPos b);
 
 		/**
-		 * Puts a village train together at {@code station} (on the track leading away from {@code other}) with
-		 * {@code conductor} in its seat, assembles it with the station and gives it a schedule between the two stations.
-		 * Returns null when it can't (no room on the track, the station busy), with the reason in the log.
+		 * The village train's blocks where a builder puts them (39.7b): on the track past {@code station}, on the side
+		 * away from {@code other}. Null when there's no room (the track past it not straight and clear, the station not on
+		 * a track).
+		 */
+		@Nullable
+		Map<BlockPos, BlockState> train(ServerLevel level, BlockPos station, BlockPos other);
+
+		/** Whether the train's blocks ({@link #train}) all stand where they go now. */
+		boolean built(ServerLevel level, BlockPos station, BlockPos other);
+
+		/**
+		 * Glues the train's blocks a builder put up ({@link #train}), sits {@code conductor} in its seat, assembles it
+		 * with the station and gives it a schedule between the two stations. Returns null when it can't (the blocks not
+		 * all there, the station busy), with the reason in the log.
 		 */
 		@Nullable
 		UUID assemble(ServerLevel level, BlockPos station, BlockPos other, UUID owner, Villager conductor);
+
+		/** Puts all of {@code goods} into the village train's chest, or none of them (false: no room, no train). */
+		boolean load(ServerLevel level, UUID owner, List<ItemStack> goods);
+
+		/** Takes {@code goods} out of the village train's chest (derailed too): what was there of them. */
+		List<ItemStack> unload(ServerLevel level, UUID owner, List<ItemStack> goods);
+
+		/** What the village train's chest holds now (empty without the train). */
+		List<ItemStack> cargo(ServerLevel level, UUID owner);
+
+		/** Joins two straight track pieces with a Create curve, leaving {@code a} towards {@code outA} and {@code b} towards {@code outB}; false if it can't. */
+		boolean curve(ServerLevel level, BlockPos a, Direction outA, BlockPos b, Direction outB);
 
 		/** Whether a village train with this owner is on the railway (and not derailed). */
 		boolean exists(ServerLevel level, UUID owner);
@@ -137,7 +176,12 @@ public final class CaravanTrains {
 
 	/** Whether {@code arrives} is a stage of a trip by the village's Create train (no time known yet). */
 	public static boolean waiting(long arrives) {
-		return arrives >= ABOARD;
+		return arrives >= IN_CHEST;
+	}
+
+	/** Whether {@code arrives} is a caravan on board the village's Create train (its goods in the chest or not). */
+	public static boolean aboard(long arrives) {
+		return arrives == ABOARD || arrives == IN_CHEST;
 	}
 
 	/** The railway between two villages: the owner of the train they run (the same both ways). */
@@ -154,7 +198,7 @@ public final class CaravanTrains {
 	}
 
 	/** The village that puts the pair's train together: the one whose key comes first. */
-	static boolean first(BlockPos hall, BlockPos other) {
+	public static boolean first(BlockPos hall, BlockPos other) {
 		return Roads.hallKey(hall).compareTo(Roads.hallKey(other)) <= 0;
 	}
 
@@ -169,14 +213,24 @@ public final class CaravanTrains {
 		}
 		Caravans.Data data = Caravans.Data.get(level);
 		List<BlockPos> stations = data.stations(hall);
-		if (stations.isEmpty()) {
-			return;
-		}
 		long now = level.getGameTime();
 		for (BlockPos other : data.partners(hall)) {
 			UUID id = railwayId(hall, other);
-			if (!RAILWAY.call(r -> r.exists(level, id), false)) {
-				long timed = now + trainTrip(Caravans.trip(level, hall, other, data));
+			boolean exists = RAILWAY.call(r -> r.exists(level, id), false);
+			long timed = now + trainTrip(Caravans.trip(level, hall, other, data));
+			if (!exists || data.stations(other).isEmpty()) {
+				// 39.7b: our goods in the chest of a train that's gone or can't come in: what's still in it (a derailed
+				// train keeps its chest) comes back out for the timed trip; a train broken up keeps them in its chest
+				int left = data.recover(hall, other, timed, goods -> RAILWAY.call(r -> r.unload(level, id, goods), List.<ItemStack>of()));
+				if (left > 0) {
+					Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_goods_left",
+						CaravanRoads.nameOf(level, other)));
+				}
+			}
+			if (stations.isEmpty()) {
+				continue;
+			}
+			if (!exists) {
 				data.retime(hall, other, BOARDING, timed); // no train: the caravans waiting for it take the trip as before
 				data.retime(hall, other, ABOARD, timed);
 				if (Math.floorMod(now + hall.hashCode(), CHECK_EVERY) < SERVE_EVERY && first(hall, other) && rides(data, hall, other)) {
@@ -188,22 +242,26 @@ public final class CaravanTrains {
 			if (!RAILWAY.call(r -> r.at(level, id, station), false)) {
 				continue;
 			}
-			if (data.retime(hall, other, BOARDING, ABOARD) > 0) {
-				whistle(level, hall, data); // loaded onto the train
+			// loaded onto the train: the goods into its chest (39.7b), or as the caravan's record when they don't fit
+			if (data.board(hall, other, goods -> RAILWAY.call(r -> r.load(level, id, goods), false)) > 0) {
+				whistle(level, hall, data);
 			}
-			if (data.retime(other, hall, ABOARD, now) > 0) {
+			int in = data.unload(other, hall, now, goods -> RAILWAY.call(r -> r.unload(level, id, goods), List.<ItemStack>of()))
+				+ data.retime(other, hall, ABOARD, now);
+			if (in > 0) {
 				whistle(level, hall, data); // the train brought them in
 				Caravans.trainIn(level, hall);
 			}
 		}
 	}
 
-	/** Puts the pair's train together at our station, with a jobless villager of ours as its conductor. */
-	private static void build(ServerLevel level, BlockPos hall, BlockPos other, VillageHallBlockEntity entity, Caravans.Data data, UUID id) {
+	/** Our station and theirs, both pointed at their track and on one network Create knows; null when not (yet). */
+	@Nullable
+	private static BlockPos[] aimed(ServerLevel level, BlockPos hall, BlockPos other, Caravans.Data data) {
 		List<BlockPos> ours = data.stations(hall);
 		List<BlockPos> theirs = data.stations(other);
-		if (theirs.isEmpty() || !level.isLoaded(theirs.get(0))) {
-			return;
+		if (ours.isEmpty() || theirs.isEmpty() || !level.isLoaded(theirs.get(0))) {
+			return null;
 		}
 		BlockPos station = ours.get(0);
 		BlockPos far = theirs.get(0);
@@ -216,6 +274,24 @@ public final class CaravanTrains {
 		String us = ourName;
 		String them = theirName;
 		if (!level.isLoaded(station) || !RAILWAY.call(r -> r.aim(level, station, far, us) & r.aim(level, far, station, them) && r.linked(level, station, far), false)) {
+			return null;
+		}
+		return new BlockPos[] {station, far};
+	}
+
+	/**
+	 * The pair's train at our station: built by a builder of ours from its blueprint when its blocks aren't all there
+	 * (39.7b), else glued and assembled with a jobless villager of ours as its conductor.
+	 */
+	private static void build(ServerLevel level, BlockPos hall, BlockPos other, VillageHallBlockEntity entity, Caravans.Data data, UUID id) {
+		BlockPos[] pair = aimed(level, hall, other, data);
+		if (pair == null) {
+			return;
+		}
+		BlockPos station = pair[0];
+		BlockPos far = pair[1];
+		if (!RAILWAY.call(r -> r.built(level, station, far), false)) {
+			openTrain(level, hall, other, entity, station, far);
 			return;
 		}
 		Villager conductor = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(station).inflate(24),
@@ -230,6 +306,49 @@ public final class CaravanTrains {
 				conductor.getDisplayName(), CaravanRoads.nameOf(level, other)));
 			whistle(level, hall, data);
 		}
+	}
+
+	/**
+	 * Opens the site of the pair's train at our station (39.7b): a blueprint of the train's blocks where they go on the
+	 * track past it ({@link Railway#train}), taken by an idle builder of ours, who brings its parts from the bench's
+	 * chests like any build's. Returns the site, or null: one already open, no room, or nobody free.
+	 */
+	@Nullable
+	public static BuildSite openTrain(ServerLevel level, BlockPos hall, BlockPos other, VillageHallBlockEntity entity, BlockPos station, BlockPos far) {
+		for (BuildSite site : Roads.openSegments(level, hall)) {
+			if (isTrainSite(site.structure())) {
+				return null; // one at a time
+			}
+		}
+		Map<BlockPos, BlockState> parts = RAILWAY.call(r -> r.train(level, station, far), null);
+		if (parts == null || parts.isEmpty()) {
+			return null;
+		}
+		BoundingBox box = BoundingBox.encapsulatingPositions(parts.keySet()).orElseThrow();
+		BlockPos origin = new BlockPos(box.minX(), box.minY(), box.minZ());
+		List<Blueprint.Entry> entries = new ArrayList<>();
+		parts.forEach((pos, state) -> entries.add(new Blueprint.Entry(pos.subtract(origin), state, null)));
+		Blueprint blueprint = new Blueprint(trainId(hall, other), new Vec3i(box.getXSpan(), box.getYSpan(), box.getZSpan()), entries);
+		Villager builder = Roads.builderFor(level, hall, box, true);
+		if (builder == null || !Roads.save(level, blueprint)) {
+			return null;
+		}
+		UUID owner = entity.owner() != null ? entity.owner() : builder.getUUID();
+		String ownerName = entity.owner() != null ? entity.ownerName() : "";
+		BuildSite site = Builders.start(level, builder, owner, ownerName, blueprint.id(),
+			new BlueprintData.Placement(Ids.of(level.dimension()), origin, Rotation.NONE, Mirror.NONE));
+		site.setLevelGround(false); // on the track as it is
+		return site;
+	}
+
+	/** The train site's blueprint id for the hall's train to {@code other} (39.7b). */
+	public static ResourceLocation trainId(BlockPos hall, BlockPos other) {
+		return AliveWorkplace.id(Roads.FOLDER + Roads.hallKey(hall) + "/" + TRAIN_PART + Roads.hallKey(other).replace('-', 'm'));
+	}
+
+	/** Whether {@code id} is a train site's blueprint (39.7b). */
+	public static boolean isTrainSite(ResourceLocation id) {
+		return Roads.isSegment(id) && id.getPath().substring(Roads.FOLDER.length()).contains("/" + TRAIN_PART);
 	}
 
 	/** Whether trains run at all: the switch on and Create installed. */
@@ -374,33 +493,195 @@ public final class CaravanTrains {
 	}
 
 	/**
-	 * The track for the hall's half of the road to {@code other}: Create track on every node of its way (feet height, the
-	 * road's middle), straight along the way there ({@code xo}, {@code zo}) or diagonal ({@code pd}, {@code nd}), but not
-	 * where the road steps up or down a block, nor where something stands on the road (the hall it starts from). Empty without Create's track block, or with no node to lay on.
+	 * A Create curve of the track (39.7b), round a turn of the road or up or down its steps: from the straight piece at
+	 * {@code a} towards {@code outA} to the one at {@code b} towards {@code outB}.
+	 */
+	public record Curve(BlockPos a, Direction outA, BlockPos b, Direction outB) {
+	}
+
+	/** The track along a way (39.7b): each node's Create track shape, and the curves joining them round turns and over steps. */
+	public record TrackPlan(Map<BlockPos, String> shapes, List<Curve> curves) {
+	}
+
+	/**
+	 * The track along {@code route} (feet heights, a node per block, as roads are routed) that Create's railway takes as
+	 * one line trains can run (39.7b). Create's trains only pass between pieces that meet nearly straight, so neither a
+	 * corner of two straight pieces nor Create's steep ascending piece next to a level one will do: like a player's
+	 * track, turns and slopes are curves. Round each turn with the way straight and level for {@link #CURVE_REACH} nodes
+	 * either side, a curve joins the straight pieces that far from the turn. On each straight stretch, each run of steps
+	 * the same way (up, or down) becomes one sloped curve from a level node before it to one after it, two nodes out where
+	 * there's room (at least two blocks along for every block up). Nothing is laid on the nodes a curve passes over. Every
+	 * other node with {@code free} gets a straight piece along the way ({@code xo}, {@code zo}). Turns with no room for a
+	 * curve, steps on a turn, slopes steeper than that and nodes not {@code free} stay gaps.
+	 */
+	public static TrackPlan plan(List<BlockPos> route, java.util.function.Predicate<BlockPos> free) {
+		int n = route.size();
+		Direction[] dir = new Direction[Math.max(0, n - 1)];
+		for (int j = 0; j + 1 < n; j++) {
+			int dx = route.get(j + 1).getX() - route.get(j).getX();
+			int dz = route.get(j + 1).getZ() - route.get(j).getZ();
+			dir[j] = Math.abs(dx) + Math.abs(dz) == 1 ? Direction.fromDelta(dx, 0, dz) : null;
+		}
+		String[] shape = new String[n];
+		boolean[] between = new boolean[n];
+		List<Curve> curves = new ArrayList<>();
+		for (int c = 1; c + 1 < n; c++) {
+			Direction d1 = dir[c - 1];
+			Direction d2 = dir[c];
+			if (d1 == null || d2 == null || d1.getAxis() == d2.getAxis()) {
+				continue;
+			}
+			for (int k : CURVE_REACH) {
+				if (curveFits(route, dir, shape, between, free, c, k)) {
+					for (int i = c - k + 1; i < c + k; i++) {
+						between[i] = true;
+					}
+					shape[c - k] = straight(d1);
+					shape[c + k] = straight(d2);
+					curves.add(new Curve(route.get(c - k), d1, route.get(c + k), d2.getOpposite()));
+					break;
+				}
+			}
+		}
+		for (int i = 0; i < n;) {
+			if (between[i]) {
+				i++;
+				continue;
+			}
+			int r1 = i;
+			while (r1 + 1 < n && !between[r1 + 1] && dir[r1] != null && dir[r1] == dir[i]) {
+				r1++;
+			}
+			if (r1 > i) {
+				slopes(route, i, r1, dir[i], shape, between, curves, free);
+			}
+			i = r1 + 1;
+		}
+		for (int j = 0; j < n; j++) {
+			if (between[j] || shape[j] != null || !free.test(route.get(j))) {
+				continue;
+			}
+			Direction before = j > 0 ? dir[j - 1] : null;
+			Direction after = j + 1 < n ? dir[j] : null;
+			if (j > 0 && before == null || j + 1 < n && after == null || before != null && after != null && before.getAxis() != after.getAxis()) {
+				continue; // a jump in the way (a bridge's deck), or a turn with no room for a curve
+			}
+			Direction along = after != null ? after : before;
+			if (along != null) {
+				shape[j] = straight(along);
+			}
+		}
+		Map<BlockPos, String> shapes = new LinkedHashMap<>();
+		for (int j = 0; j < n; j++) {
+			if (shape[j] != null) {
+				shapes.put(route.get(j), shape[j]);
+			}
+		}
+		return new TrackPlan(shapes, List.copyOf(curves));
+	}
+
+	/** The slopes of the straight stretch {@code r0..r1} running {@code d}: each run of steps the same way, a curve between level landings. */
+	private static void slopes(List<BlockPos> route, int r0, int r1, Direction d, String[] shape, boolean[] between, List<Curve> curves,
+			java.util.function.Predicate<BlockPos> free) {
+		List<int[]> groups = new ArrayList<>(); // {first step's lower index, last step's lower index, up or down}
+		for (int j = r0; j < r1; j++) {
+			int dy = Integer.signum(route.get(j + 1).getY() - route.get(j).getY());
+			if (dy == 0) {
+				continue;
+			}
+			if (!groups.isEmpty() && groups.get(groups.size() - 1)[2] == dy) {
+				groups.get(groups.size() - 1)[1] = j;
+			} else {
+				groups.add(new int[] {j, j, dy});
+			}
+		}
+		int prev = r0;
+		for (int g = 0; g < groups.size(); g++) {
+			int p = groups.get(g)[0];
+			int q = groups.get(g)[1];
+			int next = g + 1 < groups.size() ? groups.get(g + 1)[0] : r1;
+			int rise = Math.abs(route.get(q + 1).getY() - route.get(p).getY());
+			int a = Math.max(prev, p - 2);
+			int b = Math.min(next, q + 3);
+			while (b - a < 3 * rise + 1 && (a > prev || b < next)) {
+				if (a > prev) {
+					a--;
+				}
+				if (b - a < 3 * rise + 1 && b < next) {
+					b++;
+				}
+			}
+			String along = straight(d);
+			if (b - a < 2 * rise + 1 || !free.test(route.get(a)) || !free.test(route.get(b)) || shape[a] != null && !shape[a].equals(along)
+				|| shape[b] != null && !shape[b].equals(along)) {
+				for (int k = p + 1; k <= q; k++) {
+					between[k] = true; // too steep or taken: a gap there, never a piece that doesn't join
+				}
+				prev = q + 1;
+				continue;
+			}
+			for (int k = a + 1; k < b; k++) {
+				between[k] = true;
+			}
+			shape[a] = along;
+			shape[b] = along;
+			curves.add(new Curve(route.get(a), d, route.get(b), d.getOpposite()));
+			prev = b;
+		}
+	}
+
+	/** Whether a curve fits round the turn at node {@code c}, from {@code k} nodes before it to {@code k} after: straight and level all the way, free, untaken. */
+	private static boolean curveFits(List<BlockPos> route, Direction[] dir, String[] shape, boolean[] between, java.util.function.Predicate<BlockPos> free, int c, int k) {
+		int n = route.size();
+		if (c - k < 0 || c + k >= n) {
+			return false;
+		}
+		int y = route.get(c).getY();
+		for (int i = c - k; i <= c + k; i++) {
+			if (between[i] || shape[i] != null || route.get(i).getY() != y || !free.test(route.get(i))) {
+				return false;
+			}
+		}
+		for (int i = c - k; i < c; i++) {
+			if (dir[i] != dir[c - 1]) {
+				return false;
+			}
+		}
+		for (int i = c; i < c + k; i++) {
+			if (dir[i] != dir[c]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static String straight(Direction along) {
+		return along.getAxis() == Direction.Axis.X ? "xo" : "zo";
+	}
+
+	/** The way of the hall's half of the road to {@code other}, in the world. */
+	private static List<BlockPos> way(BlockPos hall, CityPlan.Road road) {
+		return road.route().stream().map(p -> p.offset(hall)).toList();
+	}
+
+	/** Where track may go: nothing standing there but track (the hall the road starts from, a lamp: the track goes round it). */
+	private static boolean free(ServerLevel level, BlockPos pos) {
+		BlockState here = level.getBlockState(pos);
+		return here.isAir() || here.canBeReplaced() || isTrack(here);
+	}
+
+	/**
+	 * The track for the hall's half of the road to {@code other}: Create track along its way at feet height, down the
+	 * road's middle, as {@link #plan} lays it (the curves are joined once it's laid, {@link #trackBuilt}). Empty without
+	 * Create's track block, or with no node to lay on.
 	 */
 	public static Optional<Roads.Segment> blueprint(ServerLevel level, BlockPos hall, BlockPos other, CityPlan.Road road) {
 		if (!BuiltInRegistries.BLOCK.containsKey(TRACK) || road == null || road.route().isEmpty()) {
 			return Optional.empty();
 		}
 		BlockState track = Lookup.value(BuiltInRegistries.BLOCK, TRACK).defaultBlockState();
-		List<BlockPos> route = road.route().stream().map(p -> p.offset(hall)).toList();
 		Map<BlockPos, BlockState> blocks = new LinkedHashMap<>();
-		for (int j = 0; j < route.size(); j++) {
-			BlockPos node = route.get(j);
-			BlockPos before = route.get(Math.max(0, j - 1));
-			BlockPos after = route.get(Math.min(route.size() - 1, j + 1));
-			if (before.getY() != node.getY() || after.getY() != node.getY()) {
-				continue; // the road steps here: stairs, no flat track
-			}
-			BlockState here = level.getBlockState(node);
-			if (!here.isAir() && !here.canBeReplaced() && !isTrack(here)) {
-				continue; // something stands on the road there (the hall it starts from, a lamp): the track goes round it
-			}
-			int dx = after.getX() - before.getX();
-			int dz = after.getZ() - before.getZ();
-			String shape = Math.abs(dx) > 2 * Math.abs(dz) ? "xo" : Math.abs(dz) > 2 * Math.abs(dx) ? "zo" : dx * dz > 0 ? "pd" : "nd";
-			blocks.put(node, with(track, "shape", shape));
-		}
+		plan(way(hall, road), p -> free(level, p)).shapes().forEach((pos, shape) -> blocks.put(pos, with(track, "shape", shape)));
 		if (blocks.isEmpty()) {
 			return Optional.empty();
 		}
@@ -427,6 +708,16 @@ public final class CaravanTrains {
 	 * says so, and when the other half is tracked too, both chronicles say the railway is open. False if it's no track site.
 	 */
 	static boolean trackBuilt(ServerLevel level, BuildSite site, @Nullable Villager builder) {
+		if (isTrainSite(site.structure())) {
+			// the village train's blocks are up (39.7b): the hall's next look at its trains glues and assembles it
+			for (BlockPos hall : Roads.hallsOf(level, site)) {
+				if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity) {
+					Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
+					Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_built", who));
+				}
+			}
+			return true;
+		}
 		if (!isTrackSite(site.structure())) {
 			return false;
 		}
@@ -441,6 +732,12 @@ public final class CaravanTrains {
 					continue;
 				}
 				data.setTracked(hall, other, true);
+				// 39.7b: the curves round the road's turns, joining the straight pieces the builder laid either side
+				for (Curve curve : plan(way(hall, road), p -> free(level, p)).curves()) {
+					if (level.isLoaded(curve.a()) && level.isLoaded(curve.b())) {
+						RAILWAY.call(r -> r.curve(level, curve.a(), curve.outA(), curve.b(), curve.outB()), false);
+					}
+				}
 				Component who = builder != null ? builder.getDisplayName() : Component.translatable("steward.aliveworkplace.jobs.someone");
 				Chronicle.record(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_track_laid", who,
 					CaravanRoads.nameOf(level, other)));

@@ -89,7 +89,8 @@ public final class MaterialRules {
 	 * Blocks of other mods with no item of their own, placed with another item, by id (no class of theirs): Create's belt
 	 * is laid with a belt connector (ROADMAP 39.4's Workshop). A builder lays a belt segment by segment, one connector each.
 	 */
-	private static final Map<String, String> PLACED_WITH = Map.of("create:belt", "create:belt_connector");
+	private static final Map<String, String> PLACED_WITH = Map.of("create:belt", "create:belt_connector",
+		"create:small_bogey", "create:railway_casing"); // 39.7b: a bogey is train casing used on the track
 
 	/** Whether {@code state} is laid in one piece with its neighbours of the same block (Create's belt): see BuilderWork. */
 	public static boolean laidWhole(BlockState state) {

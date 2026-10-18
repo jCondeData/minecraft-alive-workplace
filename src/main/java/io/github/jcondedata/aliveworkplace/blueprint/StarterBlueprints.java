@@ -476,6 +476,17 @@ public final class StarterBlueprints {
 	/** Built of Mega Showdown's blocks: in the Blueprint Table (and the creative tab) only while they exist (trainer/MegaShrines#blocksExist). */
 	public static final List<Entry> MEGA_ONLY = List.of(MEGA_SHRINE);
 
+	/**
+	 * The Create-powered builds (ROADMAP 39.4; tools/blueprints/create_builds.py): the Watermill (a water wheel turning a
+	 * millstone), the Windmill (a windmill bearing with 24 sails over a millstone) and the Workshop (a water wheel driving
+	 * a belt to a depot under a mechanical press). Workplaces for 39.3's machine work.
+	 */
+	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(11, 11, 9));
+	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
+	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(14, 10, 9));
+	/** Built of Create's blocks: in the Blueprint Table (and the creative tab) only with Create and {@code createBuilds} on (mechanic/CreateBuilds). */
+	public static final List<Entry> CREATE_ONLY = List.of(WATERMILL, WINDMILL, WORKSHOP);
+
 	/** Walls and gates: a wooden palisade with a walkway. */
 	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
 	/** A gate in the palisade (shut at night). */
@@ -609,6 +620,8 @@ public final class StarterBlueprints {
 		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2, JEWELLERS_WORKSHOP_3));
 		// M38, Cobblemon depth
 		put.accept("villageMegas", MEGA_ONLY);
+		// M39, Create integration
+		put.accept("createBuilds", CREATE_ONLY);
 		return java.util.Map.copyOf(map);
 	}
 

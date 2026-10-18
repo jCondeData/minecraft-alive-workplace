@@ -1109,6 +1109,29 @@ final class JobScenes {
 			level.setBlockAndUpdate(mill, create.apply("millstone").defaultBlockState());
 			return l -> c.countItem(createItem.apply("wheat_flour")) > 0 && farmer.isAlive();
 		}));
+		// The Create-powered builds (ROADMAP 39.4, filmed with Create): the Watermill, the Windmill and the Workshop set down
+		// side by side as a builder leaves them, facing the camera. Water falls from the header tanks through the two wheels,
+		// the windmill's bearing is started as the builder starts it, and every machine turns: both millstones and the press.
+		SCENES.put("create_builds", new Job("the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
+			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
+			level.setDayTime(2000);
+			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+			List<BlockPos> machines = new java.util.ArrayList<>();
+			int x = -20;
+			for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {
+				BlockPos at = STATION.offset(x, 0, 4);
+				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), at,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+				io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
+				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(4, 2, 4)
+					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
+				x += entry.size().getX() + 3;
+			}
+			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
+		}, null));
 		// Desert raiders (ROADMAP 32.9): a Town behind three Stone Walls at the desert's edge, the raiders' Tomb Camp out to
 		// the west with its Pharaoh and his husks. A husk climber piles a sand ramp against the middle wall, a block at a
 		// time, one up for one out, until it is level with the top, and walks up and over; then one of the Pharaoh's husks

@@ -57,6 +57,11 @@ asks for the steps, `latest.log` and any crash report).
   crushing wheels and gathers the crushed ore. Only while the machine turns and the store has room; what each machine
   makes comes from Create's own recipes, and each machine is a data file (`machine_work`) a datapack can change. The
   Mechanic's round covers the new machines too. Setting `machineWork` (behind the 2.3 gate) (39.3).
+- **Create-powered builds.** With Create installed, the Blueprint Table offers the Watermill (a water wheel turned by
+  water falling from a header tank, driving a millstone), the Windmill (a stone tower with a windmill bearing and 24
+  sails over a millstone; the builder starts it when it's done) and the Workshop (a water wheel driving a belt to a
+  depot under a mechanical press): workplaces for the farmer's millstone and the armorer's press, turning as soon as
+  they're built. Setting `createBuilds` (behind the 2.3 gate) (39.4).
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

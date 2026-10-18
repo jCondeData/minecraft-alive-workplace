@@ -4913,7 +4913,7 @@ the owner's port jar; M33's caravans (39.7).
   takes the input from the store, feeds the machine, collects the output to the store, and works only while the
   machine turns. Done when: compat GameTests per machine (input fed, output in the store, nothing fed while it's
   stopped, a full store pauses it, a save and reload mid-job finishes it); scene `create_mill`.
-- [ ] **39.4** **Create-powered builds.** Three new
+- [x] **39.4** (review: pending 2026-10-18) **Create-powered builds.** Three new
   blueprints, listed at the table only when Create is installed: the **Watermill** (a water wheel turning a millstone),
   the **Windmill** (a windmill bearing with sails; find a way to start it that needs no Create classes, or the builder
   leaves a sign telling the player to start it) and the **Workshop** (a belt line between a press and a depot, driven

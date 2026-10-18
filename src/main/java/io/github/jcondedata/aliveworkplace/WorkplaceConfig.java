@@ -177,6 +177,12 @@ public final class WorkplaceConfig {
 	 * machine. Without Create it does nothing.
 	 */
 	public boolean machineWork = Expansions.on(Expansions.M39);
+	/**
+	 * With Create installed, the Blueprint Table offers the Watermill, the Windmill and the Workshop (ROADMAP 39.4),
+	 * workplaces whose machines turn as soon as they're built. Off: they aren't offered (sites already started still
+	 * finish). Without Create it does nothing.
+	 */
+	public boolean createBuilds = Expansions.on(Expansions.M39);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -862,6 +868,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED = mechanics && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.ENABLED = machineWork && Expansions.on(Expansions.M39);
+		io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.ENABLED = createBuilds && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();

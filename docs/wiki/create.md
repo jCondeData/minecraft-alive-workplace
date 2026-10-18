@@ -6,7 +6,7 @@ contraptions built from a blueprint, Create schematics at the Blueprint Table an
 Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gate and the port in the test runtime
 (39.1), the Mechanic (39.2) and villagers working the machines (39.3); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3
+Roadmap items: 39.1, 39.2, 39.3, 39.4
 
 ## What a player sees
 
@@ -33,9 +33,16 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   ("the store is full: the Millstone waits"). A trip is short, and the job's own work picks up again after it. The
   Mechanic's round now covers the press, the mixer and the crushing wheels too.
 
-Later in 2.3, the
-Blueprint Table offers a Watermill, a Windmill and a Workshop, and schematics uploaded with Create's Schematic Table
-show up at the table.
+- **Create-powered builds** (39.4). The Blueprint Table offers three new workplaces, only with Create installed: the
+  **Watermill**, a stone-and-timber mill house whose water wheel on the west wall is turned by water falling from a
+  header tank into a walled mill race, its shaft running through the wall to a gearbox and a millstone inside, with
+  the farmer's composter and the store chest; the **Windmill**, a seven-square stone tower with a windmill bearing and
+  24 sails on its front and a shaft down the middle to the millstone; and the **Workshop**, a brick shop whose water
+  wheel drives a belt to a depot under a mechanical press (driven up a column of cogwheels from the belt's far
+  pulley), with the armorer's blast furnace and the store chest. The water is placed last, so the wheels turn as
+  soon as the builder is done; the builder starts the windmill's bearing the way a player does, with an empty hand.
+
+Later in 2.3, schematics uploaded with Create's Schematic Table show up at the table.
 
 ## How it works
 
@@ -93,8 +100,11 @@ showcase catalog).
 - `machineWork` (39.3): villagers (and the Mechanic) feed Create's machines. Off: nobody feeds a machine; a trip
   already under way waits, saved, until it's on again. Off for players until 2.3 ships, and does nothing without Create.
 
-createBuilds, createSchematics and villageTrains are mapped to the gate and come into the config with 39.4
-to 39.7.
+- `createBuilds` (39.4): the Watermill, the Windmill and the Workshop at the Blueprint Table and in the creative tab.
+  Off: they aren't offered; a blueprint already handed out and a site already started still build. Off for players
+  until 2.3 ships, and does nothing without Create.
+
+createSchematics and villageTrains are mapped to the gate and come into the config with 39.6 and 39.7.
 
 ## Saved data
 
@@ -114,6 +124,10 @@ The planned fields of later items, each with its default, are listed in the desi
 - Job: the **Mechanic** (`aliveworkplace:mechanic`, only with Create), at a Create Toolbox of any colour (POI
   `aliveworkplace:toolbox`). In the Village Hall's list a Mechanic shows with the toolbox's own item, as every job shows
   with its workstation.
+
+- Blueprints (39.4): `aliveworkplace:watermill` (11 x 11 x 9), `aliveworkplace:windmill` (9 x 17 x 9) and
+  `aliveworkplace:workshop` (14 x 10 x 9), drawn in `tools/blueprints/create_builds.py`, unlocked from the start and
+  listed only with Create (`mechanic/CreateBuilds`).
 
 No items or blocks of our own. The ids the milestone reads from Create (the machines, the drive-train parts, the sails, the
 toolboxes, the schematic items and components, the recipe types) are listed in the design note and checked by
@@ -143,6 +157,15 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
 - A worker looks for machine work every 5 seconds whatever their job's own work is doing (most jobs' own work never
   ends, a smelter waits at the furnace all day), and their job's own work waits while a trip is on and picks up after
   it (39.3).
+- The windmill's bearing is started through vanilla's block use with an empty hand by the loader's stand-in player
+  (`Platform.fakePlayer`), as the design note says; no Create class is used (39.4).
+- The three builds start unlocked: they're workplaces for jobs a village already has, and they're hidden without
+  Create anyway (39.4).
+- The Workshop's belt is placed by its block states alone, and a builder lays it in one go (a segment alone breaks
+  itself); Create rebuilds the belt's controller and length from its blocks. Each segment costs a belt connector
+  until 39.5 charges one per belt (39.4).
+- A started windmill's sails leave the world as blocks (the bearing carries them), so its finished-build check leaves
+  out the sail plane (39.4).
 - The port's jar runs from the test server's `mods/` folder, without its own GameTests; Porting Lib's clash with
   owo-lib, which happens only in the Mojang-named dev runtime, is fixed in the test copy, not in the mod (39.1).
 
@@ -152,10 +175,16 @@ Nothing is built for players yet (the gate). Only one machine of each kind per t
 looks only near their own workstation; a stopped machine shows on the Mechanic's status, not yet in the chronicle.
 Putting back a belt has no test with a real belt yet (shafts and cogwheels do). Leading the crew on a contraption is
 39.5's: `MechanicWork.crewLead` finds the Mechanic for a site, and nothing calls it yet. Trains (39.7) wait on the
-owner's answer in the design note.
+owner's answer in the design note. A windmill whose bearing can't be started (fewer than 8 sails left, the sails
+blocked) gets no sign yet: the player starts it with an empty hand (39.4).
 
 ## Proof
 
+- `CreateBuildsCompatTests` (39.4, with Create): `theCreateBuildsAreInTheTable`, and
+  `aBuilderBuildsTheWatermillAndItTurns`, `aBuilderBuildsTheWindmillAndStartsIt` and
+  `aBuilderBuildsTheWorkshopAndItTurns`: built from barrels holding exactly their materials, nothing skipped, the job
+  block a job site, and the millstone or press turning (its `Speed` read from its block entity data by name).
+- `CreateBuildsGameTests` (39.4, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`.
 - `CreateCompatTests`: `createIsLoaded` (Create and its libraries loaded, its own GameTests left out),
   `createBlockIdsExist`, `createItemIdsExist` and `createRecipeTypesExist` list every id the milestone reads and fail
   naming any that's missing.

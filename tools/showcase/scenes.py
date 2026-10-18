@@ -1008,6 +1008,10 @@ SCENES = [
     job("create_mill", "Create", "The farmer works the millstone: wheat in, flour back to the store",
         "the Farmer took wheat from the chest to the turning millstone and brought the flour it ground back to the chest",
         150, create=True),
+    # The Create-powered builds (ROADMAP 39.4, with Create): the Watermill, the Windmill and the Workshop, every machine turning
+    job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
+        "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
+        120, create=True),
     # Desert raiders (ROADMAP 32.9): the Tomb Camp, a sand ramp rising against a Stone Wall, a husk getting up again
     job("desert_raiders", "Threats", "Desert raiders: the tomb camp, the sand ramp, the Pharaoh's curse",
         "the desert raiders' tomb camp stood west of the Town; a husk piled a sand ramp against the Stone Wall and climbed over, and a husk that fell near the Pharaoh got up again", 150),

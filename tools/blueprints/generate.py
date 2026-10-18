@@ -35,6 +35,7 @@ from wonders import WONDERS, save_wonder
 from styles import styled
 from basements import LEVEL_4, butchers_shop, cutaway
 from cellars import LEVEL_3
+from create_builds import *
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -137,6 +138,8 @@ if __name__ == "__main__":
                        ("fountain", fountain), ("gazebo", gazebo), ("market_square", market_square)):
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in MORE_DECORATIONS:  # ROADMAP 26.14
+        draw().save(MAIN_STRUCTURES, name)
+    for name, draw in CREATE_BUILDS:  # ROADMAP 39.4: listed only with Create
         draw().save(MAIN_STRUCTURES, name)
     mega_shrine().save(MAIN_STRUCTURES, "mega_shrine")  # ROADMAP 38.7: listed only with Mega Showdown's blocks
     stone_house().save(MAIN_STRUCTURES, "stone_house")

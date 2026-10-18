@@ -85,6 +85,11 @@ SCENES = [
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
       [("01_preview_house", "A starter house"), ("03_preview_style", "Picked in Sandstone"),
        ("04_preview_large", "A large build, scaled to fit"), ("06_preview_imported", "An uploaded build")]),
+    # 36.4: the Signpost's boards name the villages and builds each way
+    S("signpost", "Builder", "The Signpost's boards say where things are",
+      "a Signpost at a crossroads between two villages had its four boards written as it was finished: Millford east, Ashford west, the Well south, Welcome north", 40,
+      [("01_signpost_crossroads", "The signpost at the crossroads"), ("02_board_east", "East: the next village"),
+       ("03_board_west", "West: a village further off"), ("04_board_south", "South: the Well")]),
     # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
     S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
       "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; the Storehouse board did the same", 45,

@@ -4594,7 +4594,7 @@ Depends on: nothing open.
   `aliveworkplace:village/camp_broken` to that player and to a second player in the party; a lair broken with no war
   party and no guard kills grants nothing; the generated quest's task is the advancement (a check in `generate.py`);
   `QuestbookCompatTests` passes. Nothing new to film.
-- [ ] **36.4** **The Signpost's boards say something.** The Signpost decoration (`tools/blueprints/decor.py`
+- [x] **36.4** (review: pending 2026-10-17) **The Signpost's boards say something.** The Signpost decoration (`tools/blueprints/decor.py`
   `signpost()`, four spruce wall signs) is built with blank boards. When a builder finishes one (any style), each board
   gets words, waxed so a passer-by can't edit them, the way the caravan road milestones are written
   (`CaravanRoads.signText`): the board facing a direction names the nearest other village whose hall lies that way

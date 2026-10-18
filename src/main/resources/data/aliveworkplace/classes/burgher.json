@@ -16,6 +16,7 @@
   ],
   "wants": [
     {"type": "luxury", "id": "aliveworkplace:amethyst_ring"},
+    {"type": "luxury", "id": "aliveworkplace:deluxe_shake"},
     {"type": "services", "all": ["library"]},
     {"type": "beauty", "points": 2}
   ],

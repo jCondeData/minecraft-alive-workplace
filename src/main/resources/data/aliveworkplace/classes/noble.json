@@ -16,7 +16,8 @@
   ],
   "wants": [
     {"type": "luxury", "id": "aliveworkplace:illuminated_book"},
-    {"type": "luxury", "id": "aliveworkplace:gold_circlet"}
+    {"type": "luxury", "id": "aliveworkplace:gold_circlet"},
+    {"type": "luxury", "id": "aliveworkplace:clodsire_eclair"}
   ],
   "jobs": [],
   "effects": [

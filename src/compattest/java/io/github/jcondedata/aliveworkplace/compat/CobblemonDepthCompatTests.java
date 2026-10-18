@@ -122,6 +122,14 @@ public class CobblemonDepthCompatTests implements FabricGameTest {
 		if (crop != null && property(crop, "age") == null) {
 			missing.add("bean_crop[age]");
 		}
+		// The ids the bean farms read (38.9): the crop and the seeds, by name.
+		if (crop != null && !io.github.jcondedata.aliveworkplace.farm.BeanFarms.isCrop(crop.defaultBlockState())) {
+			missing.add("BeanFarms doesn't know cobblecuisine:bean_crop");
+		}
+		net.minecraft.world.item.Item seeds = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(CUISINE, "bean_seeds"));
+		if (!io.github.jcondedata.aliveworkplace.farm.BeanFarms.isSeed(new net.minecraft.world.item.ItemStack(seeds))) {
+			missing.add("BeanFarms doesn't know cobblecuisine:bean_seeds");
+		}
 		List<String> beans = List.of("red_bean", "green_bean", "yellow_bean", "blue_bean", "orange_bean", "violet_bean", "indigo_bean");
 		item(CUISINE, "bean_seeds", missing);
 		beans.forEach(bean -> item(CUISINE, bean, missing));
@@ -156,7 +164,94 @@ public class CobblemonDepthCompatTests implements FabricGameTest {
 				.filter(item -> !new ItemStack(item).has(DataComponents.FOOD))
 				.ifPresent(item -> missing.add(food + " isn't food (the villagers' diet needs it to be)"));
 		}
+		// The partner treats and dish luxuries (38.10): every Poké Puff and shake the treat tag lists, the six deluxe
+		// shakes and the éclair, each an item the tags then hold.
+		List<String> treats = new ArrayList<>();
+		for (String puff : List.of("sweet", "mint", "citrus", "mocha", "spice")) {
+			treats.add(puff + "_pokepuff");
+		}
+		for (String strength : List.of("low", "medium", "high")) {
+			for (String colour : List.of("green", "red", "blue", "purple", "yellow", "pink")) {
+				treats.add(strength + "_" + colour + "_shake");
+			}
+		}
+		for (String treat : treats) {
+			net.minecraft.world.item.Item item = item(CUISINE, treat, missing);
+			if (item != null && !io.github.jcondedata.aliveworkplace.work.PartnerTreats.isTreat(new ItemStack(item))) {
+				missing.add(treat + " isn't a partner treat");
+			}
+		}
+		TagKey<net.minecraft.world.item.Item> deluxeTag = TagKey.create(Registries.ITEM, io.github.jcondedata.aliveworkplace.AliveWorkplace.id("deluxe_shakes"));
+		for (String shake : List.of("jewel", "earthy", "violet", "verdant", "coral", "bb")) {
+			net.minecraft.world.item.Item item = item(CUISINE, "deluxe_" + shake + "_shake", missing);
+			if (item != null && !new ItemStack(item).is(deluxeTag)) {
+				missing.add("deluxe_" + shake + "_shake isn't in #aliveworkplace:deluxe_shakes");
+			}
+		}
+		item(CUISINE, "eclair", missing);
 		helper.assertTrue(missing.isEmpty(), "Cobblecuisine ids missing: " + missing);
+		helper.succeed();
+	}
+
+	/**
+	 * 38.8: every dish the shipped dish lists ({@code cuisine_dishes}) and the Camp Cook's curries ({@code camp_menu})
+	 * name is a Cobblecuisine item with a recipe that makes it, and every ingredient of one such recipe matches some item
+	 * (a recipe asking for a tag nobody fills, as Cobblecuisine's {@code #cobblemon:mint_leaf} is on Cobblemon 1.7.3,
+	 * could never be cooked).
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void cuisineDishListIdsExist(GameTestHelper helper) {
+		List<String> missing = new ArrayList<>();
+		MinecraftServer server = helper.getLevel().getServer();
+		net.minecraft.server.packs.resources.ResourceManager resources = server.getResourceManager();
+		List<ResourceLocation> ids = new ArrayList<>();
+		resources.listResources("cuisine_dishes", p -> p.getNamespace().equals("aliveworkplace") && p.getPath().endsWith(".json")).forEach((file, res) -> {
+			try (java.io.Reader reader = res.openAsReader()) {
+				com.google.gson.JsonObject json = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+				io.github.jcondedata.aliveworkplace.craft.CuisineDishes.parse(json, FabricLoader.getInstance()::isModLoaded).forEach(e -> ids.add(e.id()));
+			} catch (Exception ex) {
+				missing.add(file + " doesn't read: " + ex.getMessage());
+			}
+		});
+		resources.listResources("camp_menu", p -> p.getNamespace().equals("aliveworkplace") && p.getPath().contains("cobblecuisine")).forEach((file, res) -> {
+			try (java.io.Reader reader = res.openAsReader()) {
+				ids.add(ResourceLocation.parse(com.google.gson.JsonParser.parseReader(reader).getAsJsonObject().get("dish").getAsString()));
+			} catch (Exception ex) {
+				missing.add(file + " doesn't read: " + ex.getMessage());
+			}
+		});
+		if (ids.size() < 25) {
+			missing.add("only " + ids.size() + " dishes listed");
+		}
+		for (ResourceLocation id : ids) {
+			net.minecraft.world.item.Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+			if (item == null) {
+				missing.add("item " + id);
+				continue;
+			}
+			boolean cookable = false;
+			boolean anyRecipe = false;
+			for (net.minecraft.world.item.crafting.RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+				if (holder.value().getType() != net.minecraft.world.item.crafting.RecipeType.CRAFTING
+					|| !holder.value().getResultItem(server.registryAccess()).is(item)) {
+					continue;
+				}
+				anyRecipe = true;
+				// (an empty tag shows as a named barrier, which isn't a plain item: Crafting.options leaves it out)
+				cookable |= holder.value().getIngredients().stream()
+					.allMatch(ing -> ing.isEmpty() || !io.github.jcondedata.aliveworkplace.craft.Crafting.options(helper.getLevel(), ing).isEmpty());
+			}
+			if (!anyRecipe) {
+				missing.add("a crafting recipe making " + id);
+			} else if (!cookable) {
+				missing.add(id + ": every recipe asks for something no item is");
+			}
+			if (io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(item) == null) {
+				missing.add(id + " isn't on the loaded dish lists");
+			}
+		}
+		helper.assertTrue(missing.isEmpty(), "Cobblecuisine dish list ids missing: " + missing);
 		helper.succeed();
 	}
 

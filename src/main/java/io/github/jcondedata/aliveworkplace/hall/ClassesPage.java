@@ -112,6 +112,9 @@ public final class ClassesPage {
 			List<NeedCount> counts = new ArrayList<>();
 			for (int w = 0; w < 2; w++) {
 				for (ClassNeeds.Need need : w == 0 ? c.needs() : c.wants()) {
+					if (w == 1 && need instanceof ClassNeeds.Luxury l && !Luxuries.all().isEmpty() && Luxuries.get(l.id()) == null) {
+						continue; // a luxury wanted only with another mod or switch (38.10: Cobblecuisine's), not loaded here
+					}
 					int have = 0;
 					for (Placed p : candidates) {
 						if (ClassNeeds.holds(need, p.household().members(), village)) {

@@ -62,10 +62,14 @@ public class InnkeeperWork extends Behavior<Villager> {
 		}
 		timer = EVERY;
 		tend(level, villager, counter);
+		// A guest's drink (38.8, Cobblecuisine): served at the counter, once a stay.
+		net.minecraft.world.item.ItemStack served = InnDrinks.serve(level, villager, counter);
+		Component line = served.isEmpty()
+			? Component.translatable("message.aliveworkplace.innkeeper.state." + state, Innkeepers.guests(level, counter).size())
+				.withStyle(state.equals("no_bed") ? ChatFormatting.YELLOW : ChatFormatting.GRAY)
+			: Component.translatable("message.aliveworkplace.innkeeper.state.serving", served.getHoverName()).withStyle(ChatFormatting.GRAY);
 		WorkerStatus.set(villager, Component.translatable("message.aliveworkplace.innkeeper.title",
-				ModAttachments.GUESTS_HOSTED.getOrElse(villager, 0)), -1f,
-			Component.translatable("message.aliveworkplace.innkeeper.state." + state, Innkeepers.guests(level, counter).size())
-				.withStyle(state.equals("no_bed") ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+				ModAttachments.GUESTS_HOSTED.getOrElse(villager, 0)), -1f, line);
 	}
 
 	/** The inn's round ({@link Innkeepers#tend}). */

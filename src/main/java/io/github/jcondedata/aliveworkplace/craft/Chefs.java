@@ -50,6 +50,17 @@ public final class Chefs {
 		return new ArrayList<>(out);
 	}
 
+	/**
+	 * What {@code chef} cooks: {@link #menu(ServerLevel)}, then the other mods' dishes ({@link CuisineDishes}, ROADMAP 38.8:
+	 * Cobblecuisine's salads and sandwiches from level 1, curries from 3, cakes from 4) of the chef's level and below.
+	 * Without those mods, or with {@code cuisineDishes} off, it's the same menu.
+	 */
+	public static List<Item> menu(ServerLevel level, Villager chef) {
+		Set<Item> out = new LinkedHashSet<>(menu(level));
+		out.addAll(CuisineDishes.upTo(io.github.jcondedata.aliveworkplace.build.BuilderLevels.level(chef)));
+		return new ArrayList<>(out);
+	}
+
 	private Chefs() {
 	}
 }

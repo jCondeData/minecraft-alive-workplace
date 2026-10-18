@@ -47,6 +47,10 @@ import org.jetbrains.annotations.Nullable;
  * of the class above (the {@code luxury} needs and wants in those class files), and notes the day; a couple takes one
  * between them and both note it. Taking comes before the needs are checked, so a luxury taken at dawn holds that day; an
  * empty store leaves it unmet. Porters carry luxuries out of the makers' chests to the storehouse ({@code Porters.keeps}).
+ *
+ * <p>A file may need another mod ({@code fabric:load_conditions}: without it the file is skipped quietly) and name a config
+ * switch ({@code "switch": "cuisineDishes"}): while it is off the luxury is neither wanted nor taken (38.10, the
+ * Cobblecuisine luxuries).
  */
 public final class Luxuries implements ResourceManagerReloadListener {
 	private static final ResourceLocation ID = AliveWorkplace.id("luxuries");
@@ -64,10 +68,15 @@ public final class Luxuries implements ResourceManagerReloadListener {
 	}
 
 	private static volatile Map<ResourceLocation, Luxury> luxuries = Map.of();
+	/** The luxuries whose file names a config switch ({@code "switch": "cuisineDishes"}, 38.10), by id. */
+	private static volatile Map<ResourceLocation, String> switched = Map.of();
+	/** The switches a luxury file may name: off, that luxury isn't wanted, taken or carried. */
+	private static final Map<String, java.util.function.BooleanSupplier> SWITCHES = Map.of(
+		"cuisineDishes", () -> io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED);
 
 	/** The hook {@link ClassNeeds#luxuryEvery} is set to: a loaded luxury's {@code every_days}, 0 for an unknown one. */
 	public static final ClassNeeds.LuxuryDays HOOK = id -> {
-		Luxury l = luxuries.get(id);
+		Luxury l = get(id);
 		return l == null ? 0 : l.everyDays();
 	};
 
@@ -99,17 +108,33 @@ public final class Luxuries implements ResourceManagerReloadListener {
 	/** Reads every luxury file; a broken one is skipped with a warning naming it, one switched off is left out. */
 	public static void load(Map<ResourceLocation, JsonElement> files) {
 		Map<ResourceLocation, Luxury> out = new LinkedHashMap<>();
+		Map<ResourceLocation, String> switches = new HashMap<>();
 		for (Map.Entry<ResourceLocation, JsonElement> e : new TreeMap<>(files).entrySet()) {
 			try {
 				Luxury l = read(e.getKey(), e.getValue());
 				if (l != null) {
 					out.put(l.id(), l);
+					String name = GsonHelper.getAsString(e.getValue().getAsJsonObject(), "switch", "");
+					if (!name.isEmpty()) {
+						switches.put(l.id(), name);
+					}
 				}
 			} catch (Exception ex) {
 				AliveWorkplace.LOG.warn("Skipping luxury {}: {}", e.getKey(), ex.getMessage());
 			}
 		}
 		luxuries = Map.copyOf(out);
+		switched = Map.copyOf(switches);
+	}
+
+	/** Whether {@code luxury}'s switch, if its file names one, is on (an unknown switch name counts as off). */
+	static boolean on(ResourceLocation luxury) {
+		String name = switched.get(luxury);
+		if (name == null) {
+			return true;
+		}
+		java.util.function.BooleanSupplier s = SWITCHES.get(name);
+		return s != null && s.getAsBoolean();
 	}
 
 	/** Reads one luxury; null if it is switched off ({@code "enabled": false}) or its load conditions fail; throws naming the bad field. */
@@ -118,6 +143,10 @@ public final class Luxuries implements ResourceManagerReloadListener {
 		JsonObject o = GsonHelper.convertToJsonObject(json, "luxury");
 		if (!GsonHelper.getAsBoolean(o, "enabled", true) || !Guilds.conditionsMet(o)) {
 			return null;
+		}
+		String sw = GsonHelper.getAsString(o, "switch", "");
+		if (!sw.isEmpty() && !SWITCHES.containsKey(sw)) {
+			throw new JsonSyntaxException("switch: no switch " + sw + " (known: " + new java.util.TreeSet<>(SWITCHES.keySet()) + ")");
 		}
 		String item = GsonHelper.getAsString(o, "item");
 		int every = GsonHelper.getAsInt(o, "every_days");
@@ -135,19 +164,30 @@ public final class Luxuries implements ResourceManagerReloadListener {
 		return new Luxury(id, Optional.of(itemId), Optional.empty(), every);
 	}
 
-	/** Every loaded luxury, by id. */
+	/** Every loaded luxury whose switch is on, by id. */
 	public static Map<ResourceLocation, Luxury> all() {
-		return luxuries;
+		if (switched.isEmpty()) {
+			return luxuries;
+		}
+		Map<ResourceLocation, Luxury> out = new LinkedHashMap<>();
+		luxuries.forEach((id, l) -> {
+			if (on(id)) {
+				out.put(id, l);
+			}
+		});
+		return out;
 	}
 
+	/** A loaded luxury whose switch is on; null for one not loaded (its mod missing) or switched off. */
 	@Nullable
 	public static Luxury get(ResourceLocation id) {
-		return luxuries.get(id);
+		Luxury l = luxuries.get(id);
+		return l != null && on(id) ? l : null;
 	}
 
 	/** Whether {@code stack} is one of any luxury (what a porter carries from a maker's chests to the storehouse). */
 	public static boolean isLuxury(ItemStack stack) {
-		for (Luxury l : luxuries.values()) {
+		for (Luxury l : all().values()) {
 			if (l.matches(stack)) {
 				return true;
 			}
@@ -164,7 +204,7 @@ public final class Luxuries implements ResourceManagerReloadListener {
 		for (List<ClassNeeds.Need> list : List.of(c.needs(), c.wants())) {
 			for (ClassNeeds.Need n : list) {
 				if (n instanceof ClassNeeds.Luxury l) {
-					Luxury luxury = luxuries.get(l.id());
+					Luxury luxury = get(l.id());
 					if (luxury != null && !out.contains(luxury)) {
 						out.add(luxury);
 					}

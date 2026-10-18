@@ -163,6 +163,17 @@ public final class WorkplaceConfig {
 	 * a bracelet and the village makes no Mega Stones.
 	 */
 	public boolean villageMegas = Expansions.on(Expansions.M38);
+	/**
+	 * Cobblecuisine's dishes on the menus (ROADMAP 38.8): the Chef cooks them from their own recipes by his level, each
+	 * counts as its food group for the villagers' diet, the Camp Cook adds its curries and the Innkeeper serves its
+	 * drinks. Off: the menus and the diet are as they were.
+	 */
+	public boolean cuisineDishes = Expansions.on(Expansions.M38);
+	/**
+	 * Bean farms (ROADMAP 38.9): with Cobblecuisine, farmers sow its beans when the store holds fewer than 16 of a colour
+	 * a dish on the menu needs, and cut them when ripe, into the store. Off: farmers never sow beans.
+	 */
+	public boolean beanFarms = Expansions.on(Expansions.M38);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -846,6 +857,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED = denChallenges && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.EVERY_DAYS = denChallengeDays;
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED = cuisineDishes && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED = beanFarms && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();

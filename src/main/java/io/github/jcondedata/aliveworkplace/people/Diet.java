@@ -13,7 +13,9 @@ import net.minecraft.world.item.ItemStack;
  * What villagers have been eating: the last {@link #REMEMBERED} meals they had from the village store. When a villager
  * eats they pick something they haven't had lately if the store has it; {@link #VARIED_KINDS} or more kinds among their
  * last meals is a varied diet (their mood goes up), the same thing every time is a dull one (it goes down). So a
- * village that stocks bread, baked potatoes, cooked fish and pies eats better than one living on bread alone.
+ * village that stocks bread, baked potatoes, cooked fish and pies eats better than one living on bread alone. Another
+ * mod's dishes ({@link io.github.jcondedata.aliveworkplace.craft.CuisineDishes}, ROADMAP 38.8) count by their food
+ * group: a salad, a sandwich and a curry are three kinds, three different salads one.
  */
 public final class Diet {
 	/** How many meals a villager remembers. */
@@ -35,9 +37,21 @@ public final class Diet {
 		ModAttachments.RECENT_MEALS.set(villager, List.copyOf(recent));
 	}
 
-	/** Whether {@code meal} is among the last meals {@code villager} had. */
+	/** Whether {@code meal}'s kind (the food, or a dish's group) is among the last meals {@code villager} had. */
 	public static boolean hadLately(Villager villager, ItemStack meal) {
-		return ModAttachments.RECENT_MEALS.getOrElse(villager, List.of()).contains(BuiltInRegistries.ITEM.getKey(meal.getItem()));
+		Object kind = kind(BuiltInRegistries.ITEM.getKey(meal.getItem()));
+		for (ResourceLocation id : ModAttachments.RECENT_MEALS.getOrElse(villager, List.of())) {
+			if (kind(id).equals(kind)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** The kind of food {@code id} is: itself, or for a dish of another mod its food group (38.8). */
+	static Object kind(ResourceLocation id) {
+		String group = io.github.jcondedata.aliveworkplace.craft.CuisineDishes.group(id);
+		return group == null ? id : "group:" + group;
 	}
 
 	/** How {@code villager}'s diet is going. */
@@ -46,7 +60,9 @@ public final class Diet {
 		if (recent.size() < ENOUGH) {
 			return Kind.UNKNOWN;
 		}
-		int kinds = new HashSet<>(recent).size();
+		java.util.Set<Object> seen = new HashSet<>();
+		recent.forEach(id -> seen.add(kind(id)));
+		int kinds = seen.size();
 		return kinds >= VARIED_KINDS ? Kind.VARIED : kinds == 1 ? Kind.SAME : Kind.PLAIN;
 	}
 

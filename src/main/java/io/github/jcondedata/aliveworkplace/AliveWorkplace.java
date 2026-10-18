@@ -146,6 +146,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.research.ResearchTrees.init();
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.init();
 		io.github.jcondedata.aliveworkplace.camp.CampCooks.init();
+		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.init(); // Cobblecuisine's dishes on the menus (38.8)
 		io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.init();
 		io.github.jcondedata.aliveworkplace.gem.GemGrowers.init();
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();

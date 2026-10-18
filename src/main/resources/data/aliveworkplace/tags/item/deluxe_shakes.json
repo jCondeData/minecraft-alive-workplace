@@ -1,0 +1,29 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "cobblecuisine:deluxe_jewel_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:deluxe_earthy_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:deluxe_violet_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:deluxe_verdant_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:deluxe_coral_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:deluxe_bb_shake",
+      "required": false
+    }
+  ]
+}

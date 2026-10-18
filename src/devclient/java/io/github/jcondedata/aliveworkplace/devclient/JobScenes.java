@@ -2895,6 +2895,111 @@ final class JobScenes {
 				new ItemStack(cobblemonItem("oran_berry"), 3));
 			return l -> c.countItem(cobblemonItem("poke_snack")) > 0 && n(ModAttachments.DISHES_COOKED, cook) >= 1;
 		}));
+		SCENES.put("cuisine_kitchen", job("the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest", 2400, (level, player) -> {
+			// ROADMAP 38.8 (Cobblemon and Cobblecuisine): a Journeyman Chef at a Kitchen Stove, and in the chest beside it
+			// the makings of a Mixed Vegetable Salad (a level-1 dish) and of a Beanburger Curry (level 3). He cooks both
+			// from their crafting recipes and puts them in the chest.
+			java.util.function.Function<String, Item> cc = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", id));
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(cc.apply("beanburger_curry")) != null,
+				"Cobblecuisine's dishes are on the menus (Cobblecuisine, cuisineDishes)");
+			Villager chef = worker(level, STATION, ModBlocks.KITCHEN_STOVE, ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
+			chef.setVillagerData(chef.getVillagerData().setLevel(3));
+			chef.setVillagerXp(150);
+			Container c = chest(level, chestPos(), new ItemStack(cc.apply("salad_mix"), 4), new ItemStack(cobblemonItem("bold_mint"), 4),
+				new ItemStack(cc.apply("green_bean"), 4), new ItemStack(Items.CARROT, 4), new ItemStack(cc.apply("red_bean"), 2),
+				new ItemStack(Items.BREAD, 2), new ItemStack(Items.POTATO, 2), new ItemStack(cobblemonItem("charti_berry"), 2),
+				new ItemStack(Items.COOKED_CHICKEN, 2));
+			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 1 && c.countItem(cc.apply("beanburger_curry")) >= 1;
+		}));
+		SCENES.put("bean_farm", job("the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows", 2400, (level, player) -> {
+			// ROADMAP 38.9 (Cobblemon and Cobblecuisine): a farmer's 5x3 field by her composter, watered down the middle,
+			// a row of ripe beans, a row still green and a row of bare farmland; bean seeds in the chest and no beans, so
+			// the menu's dishes want some. She cuts only the ripe row (the beans into the chest), sows the bare row and
+			// the cut one, and leaves the green row to grow.
+			java.util.function.Function<String, Item> cc = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", id));
+			Block crop = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", "bean_crop"));
+			net.minecraft.world.level.block.state.properties.IntegerProperty age =
+				(net.minecraft.world.level.block.state.properties.IntegerProperty) crop.getStateDefinition().getProperty("age");
+			int ripe = age.getPossibleValues().stream().mapToInt(Integer::intValue).max().orElse(0);
+			Showcase.check(io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED
+				&& !io.github.jcondedata.aliveworkplace.farm.BeanFarms.wanted(level).isEmpty(),
+				"the menu's dishes want beans (Cobblecuisine, cuisineDishes, beanFarms)");
+			BlockPos water = new BlockPos(3, -61, 2);
+			java.util.List<BlockPos> green = new java.util.ArrayList<>();
+			java.util.List<BlockPos> spots = new java.util.ArrayList<>();
+			for (int x = 1; x <= 5; x++) {
+				for (int z = 1; z <= 3; z++) {
+					BlockPos ground = new BlockPos(x, -61, z);
+					if (ground.equals(water)) {
+						level.setBlockAndUpdate(ground, Blocks.WATER.defaultBlockState());
+						continue;
+					}
+					level.setBlockAndUpdate(ground, Blocks.FARMLAND.defaultBlockState());
+					spots.add(ground.above());
+					if (z == 1) {
+						level.setBlockAndUpdate(ground.above(), crop.defaultBlockState().setValue(age, ripe));
+					} else if (z == 2) {
+						level.setBlockAndUpdate(ground.above(), crop.defaultBlockState().setValue(age, 2));
+						green.add(ground.above());
+					}
+				}
+			}
+			Villager farmer = worker(level, STATION, Blocks.COMPOSTER, PoiTypes.FARMER, VillagerProfession.FARMER);
+			io.github.jcondedata.aliveworkplace.farm.Fields.start(level, farmer,
+				net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(new BlockPos(1, -61, 1), new BlockPos(5, -61, 3)));
+			Container c = chest(level, chestPos(), new ItemStack(cc.apply("bean_seeds"), 8));
+			net.minecraft.tags.TagKey<Item> beans = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", "beans"));
+			return l -> {
+				int got = 0;
+				for (int i = 0; i < c.getContainerSize(); i++) {
+					got += c.getItem(i).is(beans) ? c.getItem(i).getCount() : 0;
+				}
+				for (BlockPos p : spots) {
+					if (!l.getBlockState(p).is(crop)) {
+						return false;
+					}
+				}
+				for (BlockPos p : green) {
+					if (l.getBlockState(p).getValue(age) >= ripe) {
+						return false;
+					}
+				}
+				return got >= 4;
+			};
+		}));
+		SCENES.put("partner_treats", job("the builder's Machop ate a Poké Puff from the storehouse chest as its treat of the day", 600, (level, player) -> {
+			// ROADMAP 38.10 (Cobblemon and Cobblecuisine): a builder at his bench with a Machop in the Pasture Block beside
+			// it, and a storehouse chest holding four Sweet Poké Puffs. When the builder's day at work is counted, the
+			// Machop eats one puff from the store (hearts, more friendship): three are left, and no more that day.
+			Item puff = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", "sweet_pokepuff"));
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED && puff != Items.AIR,
+				"Cobblecuisine's puffs and cuisineDishes on");
+			Villager builder = worker(level, STATION, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDER);
+			builder.setNoAi(true);
+			BlockPos pasture = STATION.east(3);
+			level.setBlockAndUpdate(pasture, ScreenshotHarness.with(ScreenshotHarness.with(ScreenshotHarness.cobblemonBlock("pasture"), "waterlogged", false),
+				"part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.BOTTOM));
+			level.setBlockAndUpdate(pasture.above(), ScreenshotHarness.with(ScreenshotHarness.with(ScreenshotHarness.cobblemonBlock("pasture"), "waterlogged", false),
+				"part", com.cobblemon.mod.common.block.PastureBlock.PasturePart.TOP));
+			var machop = com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse("machop level=20", " ", "=").create();
+			com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getPC(player).add(machop);
+			if (level.getBlockEntity(pasture) instanceof com.cobblemon.mod.common.block.entity.PokemonPastureBlockEntity pen) {
+				pen.tether(player, machop, Direction.SOUTH);
+			}
+			level.setBlockAndUpdate(chestPos().west(), io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE.defaultBlockState());
+			Container c = chest(level, chestPos(), new ItemStack(puff, 4));
+			return l -> {
+				builder.getBrain().setActiveActivityIfPossible(net.minecraft.world.entity.schedule.Activity.WORK);
+				io.github.jcondedata.aliveworkplace.work.Partners.countDay(builder); // the Workers' Cup's count, once a day
+				return c.countItem(puff) == 3;
+			};
+		}));
 		SCENES.put("gem_grower", job("the gem grower picked the ripe amethyst cluster and left the budding amethyst", 2400, (level, player) -> {
 			// ROADMAP 28.11 (no Cobblemon needed): a stonecutter picked with an amethyst shard; behind it a budding amethyst
 			// with a full cluster on top and a small bud on its side. She finds the bed, picks the full cluster (its shards

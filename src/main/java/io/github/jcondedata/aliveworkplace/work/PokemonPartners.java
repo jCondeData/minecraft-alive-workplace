@@ -57,6 +57,22 @@ public interface PokemonPartners {
 		return 0;
 	}
 
+	// Partner treats (ROADMAP 38.10, PartnerTreats): a Poké Puff or shake from the store once a day.
+
+	/** The pastured Pokémon helping at {@code center} (as {@link #countPartnerDay} counts them), nearest first. */
+	default List<Entity> helping(ServerLevel level, BlockPos center, int radius, Set<String> types, int max) {
+		return List.of();
+	}
+
+	/** The game day {@code entity} last had its treat; -1 if never or it isn't a Pokémon. */
+	default long treatDay(Entity entity) {
+		return -1;
+	}
+
+	/** Notes {@code day} as the day {@code entity} had its treat (kept in the Pokémon's own saved data). */
+	default void setTreatDay(Entity entity, long day) {
+	}
+
 	// Partner shows (ROADMAP 28.3, PartnerShows): a pastured partner seen helping at work.
 
 	/** Whether a pastured Pokémon may do a show now: never in battle, ridden, carrying someone or otherwise busy. */

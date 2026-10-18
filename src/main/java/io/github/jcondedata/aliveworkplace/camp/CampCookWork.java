@@ -177,6 +177,10 @@ public class CampCookWork extends Behavior<Villager> {
 		if (choice == null) {
 			return;
 		}
+		if (choice.plan() != null) {
+			cookByHand(level, villager, station, chests, bag, choice);
+			return;
+		}
 		for (int i = 0; i < GRID_SIZE; i++) {
 			Item item = choice.grid().get(i);
 			if (item != null) {
@@ -201,8 +205,53 @@ public class CampCookWork extends Behavior<Villager> {
 		status(villager, "cooking", dishName(choice.dish()));
 	}
 
-	/** A dish to cook now, with the recipe and the items for each grid slot (null: empty). */
-	record Choice(CampCooks.Dish dish, CampCooks.PotRecipe recipe, List<Item> grid, java.util.Set<Item> seasonWith) {
+	/**
+	 * A dish to cook now, with the recipe and the items for each grid slot (null: empty); or, for another mod's dish the
+	 * pot has no recipe for (a Cobblecuisine curry, 38.8), the {@code plan} of its own crafting recipe instead.
+	 */
+	record Choice(CampCooks.Dish dish, @Nullable CampCooks.PotRecipe recipe, @Nullable List<Item> grid, java.util.Set<Item> seasonWith,
+			@Nullable io.github.jcondedata.aliveworkplace.craft.Crafting.Plan plan) {
+		Choice(CampCooks.Dish dish, CampCooks.PotRecipe recipe, List<Item> grid, java.util.Set<Item> seasonWith) {
+			this(dish, recipe, grid, seasonWith, null);
+		}
+	}
+
+	/** At most this many of a dish cooked by its own recipe at once. */
+	static final int BY_HAND_BATCH = 4;
+
+	/**
+	 * Cooks a dish by its own recipe over the fire (38.8): the makings out of the chests, the dish (and any bottles or
+	 * buckets) into her bag, all in one go, so a restart finds either the makings in the chests or the dish in her bag.
+	 */
+	private void cookByHand(ServerLevel level, Villager villager, BlockPos station, List<BlockPos> chests, BuilderBag bag, Choice choice) {
+		io.github.jcondedata.aliveworkplace.craft.Crafting.Plan plan = choice.plan();
+		for (Map.Entry<Item, Integer> e : plan.takes().entrySet()) {
+			if (SupplyContainers.count(level, chests, e.getKey()) < e.getValue()) {
+				return; // a chest changed since she looked: she looks again
+			}
+		}
+		plan.takes().forEach((item, n) -> SupplyContainers.extract(level, chests, item, n));
+		List<ItemStack> out = new ArrayList<>();
+		plan.makes().forEach((item, n) -> out.add(new ItemStack(item, n)));
+		plan.takes().forEach((item, n) -> {
+			Item rest = item.getCraftingRemainingItem();
+			if (rest != null) {
+				out.add(new ItemStack(rest, n));
+			}
+		});
+		for (ItemStack stack : out) {
+			ItemStack rest = bag.add(stack);
+			if (!rest.isEmpty()) {
+				SupplyContainers.insert(level, chests, rest);
+			}
+		}
+		ModAttachments.DISHES_COOKED.set(villager, ModAttachments.DISHES_COOKED.getOrElse(villager, 0) + plan.count());
+		BuilderLevels.addXp(level, villager, 1, null);
+		level.sendParticles(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE, station.getX() + 0.5, station.getY() + 1.0,
+			station.getZ() + 0.5, 3, 0.15, 0.2, 0.15, 0.01);
+		level.playSound(null, station, net.minecraft.sounds.SoundEvents.CAMPFIRE_CRACKLE, net.minecraft.sounds.SoundSource.BLOCKS, 0.8f, 1f);
+		PartnerShows.cue(villager, "cook", station);
+		status(villager, "cooking", dishName(choice.dish()));
 	}
 
 	@Nullable
@@ -211,8 +260,9 @@ public class CampCookWork extends Behavior<Villager> {
 		CampCooks.Dish missing = null;
 		for (CampCooks.Dish dish : CampCooks.menu()) {
 			Item item = BuiltInRegistries.ITEM.getOptional(dish.item()).orElse(null);
-			if (item == null) {
-				continue;
+			if (item == null || !io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED
+				&& io.github.jcondedata.aliveworkplace.craft.CuisineDishes.listed(dish.item())) {
+				continue; // a mod's dish that isn't there, or Cobblecuisine's with cuisineDishes off (38.8)
 			}
 			// Asked seasoned a particular way (28.10): only the dishes seasoned so count, and only those berries season it.
 			java.util.Set<Item> asked = new java.util.LinkedHashSet<>();
@@ -226,6 +276,19 @@ public class CampCookWork extends Behavior<Villager> {
 				if (grid != null && (asked.isEmpty() || recipe.seasoning() != null
 					&& asked.stream().anyMatch(a -> stock.getOrDefault(a, 0L) > 0 && new ItemStack(a).is(recipe.seasoning())))) {
 					return new Choice(dish, recipe, grid, asked);
+				}
+			}
+			// Another mod's dish the pot can't make (a Cobblecuisine curry, 38.8): by its own recipe, over the fire.
+			if (asked.isEmpty() && io.github.jcondedata.aliveworkplace.craft.CuisineDishes.isDish(new ItemStack(item))
+				&& pot.recipes(level, item).isEmpty()) {
+				long have = stock.getOrDefault(item, 0L);
+				int most = dish.when() == CampCooks.When.ALWAYS ? (int) Math.max(1, Math.min(BY_HAND_BATCH, dish.keep() - have)) : 1;
+				for (int count = most; count >= 1; count /= 2) {
+					io.github.jcondedata.aliveworkplace.craft.Crafting.Plan plan = io.github.jcondedata.aliveworkplace.craft.Crafting.plan(level,
+						io.github.jcondedata.aliveworkplace.craft.Crafting.Kind.KITCHEN, item, count, stock);
+					if (plan != null && plan.count() > 0) {
+						return new Choice(dish, null, null, asked, plan);
+					}
 				}
 			}
 			if (missing == null) {

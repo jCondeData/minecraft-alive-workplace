@@ -1,0 +1,97 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "cobblecuisine:sweet_pokepuff",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:mint_pokepuff",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:citrus_pokepuff",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:mocha_pokepuff",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:spice_pokepuff",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:low_green_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:low_red_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:low_blue_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:low_purple_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:low_yellow_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:low_pink_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:medium_green_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:medium_red_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:medium_blue_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:medium_purple_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:medium_yellow_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:medium_pink_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:high_green_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:high_red_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:high_blue_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:high_purple_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:high_yellow_shake",
+      "required": false
+    },
+    {
+      "id": "cobblecuisine:high_pink_shake",
+      "required": false
+    }
+  ]
+}

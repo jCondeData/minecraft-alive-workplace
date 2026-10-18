@@ -55,7 +55,7 @@ public class ChefWork extends CrafterWork {
 				}
 			}
 		}
-		List<Item> menu = Chefs.menu(level);
+		List<Item> menu = Chefs.menu(level, villager); // with Cobblecuisine's dishes of the chef's level (38.8)
 		for (int i = 0; i < menu.size(); i++) {
 			Item dish = menu.get((next + i) % menu.size());
 			long have = stock.getOrDefault(dish, 0L);

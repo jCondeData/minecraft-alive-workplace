@@ -272,6 +272,9 @@ public final class VillageNeeds {
 		if (io.github.jcondedata.aliveworkplace.camp.CampCooks.isCampMeal(stack)) {
 			return true; // the Camp Cook's meals (ROADMAP 28.8), whatever seasoning they got
 		}
+		if (io.github.jcondedata.aliveworkplace.craft.CuisineDishes.isDish(stack)) {
+			return true; // Cobblecuisine's dishes (38.8), whatever their effects
+		}
 		FoodProperties food = stack.get(DataComponents.FOOD);
 		return food != null && food.effects().isEmpty() && !stack.is(NOT_A_MEAL);
 	}

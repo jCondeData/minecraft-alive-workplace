@@ -47,7 +47,8 @@ public final class Partners {
 	/**
 	 * Counts today for each Pokémon helping this villager at work (the Workers' Cup, ROADMAP 28.22): each pastured partner
 	 * gets one more day on a counter in its own saved data, never twice the same day, however many workers it helps.
-	 * Only while the villager is at work (its brain's work activity) and has partners helping.
+	 * Only while the villager is at work (its brain's work activity) and has partners helping. Each is also fed its daily
+	 * treat from the store then ({@link PartnerTreats}, 38.10).
 	 */
 	public static void countDay(Villager villager) {
 		if (!COBBLEMON || !(villager.level() instanceof ServerLevel level)
@@ -70,6 +71,7 @@ public final class Partners {
 		int max = max(villager);
 		int counted = PokemonPartners.EXTENSION.call(p -> p.countPartnerDay(level, site, RADIUS, types, max, day), 0);
 		if (counted > 0) {
+			PartnerTreats.feed(level, site, types, max, day); // their treat from the store (38.10)
 			synchronized (COUNTED) {
 				COUNTED.put(villager, day);
 			}

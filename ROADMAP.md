@@ -241,6 +241,9 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B167** (approved auto 2026-10-18) SkyChartGameTests (the 6,144-block chart timing test) failed in a local full build (lane-a-1018-0022, merge of main 8dd148ed with B164/B127, 2026-10-18 04:28Z): 'drawing the chart takes 564 ms' against its 250 ms wall-clock limit, its only failure of the suite, on the shared 7 GB box with another JVM running; main CI build 1052 passed it. Expected: passes on a loaded machine (a wall-clock limit this tight flakes under load; measure work, not time, or allow for load). Test: the test repeated under runGameTest with a parallel load (test-only) (found by lane-a-1018-0022, 2026-10-18) FIXED (lane-a-1018-0623): its three cost limits (search step 5 ms, step with 1,000 found 2 ms, chart 250 ms) were fixed wall-clock; each now stretches by a load factor (1 to 20) measured just before it in the same JVM: 16,384 vanilla biome samples on another square timed against 10 ms idle, so only machine load, never a slower chart, loosens them (the step check also failed once under load). SkyChartGameTests 10 runs pass, 6 with two CPU burners.
 - [x] **B168** (approved auto 2026-10-18) WorkplacesGameTests.workplaceBuilt_kitchen fails every run when the Kitchen gains one more block (a flower pot on the worktop at 6,2,8 or a wall shelf, tried for 37.5): the chef keeps the smoker as a potential job site (its ticket taken) but never claims it before the timeout. Expected: a chef takes the smoker however many decorations the Kitchen has. Test: WorkplacesGameTests.workplaceBuilt_kitchen (B162 held the worker still; the timing still seems to decide it). (found by lane-c-1018-0352, 2026-10-18) FIXED (lane-a-1018-0623): vanilla's ground navigation lifts a walk target on a solid block up through any solid blocks over it, so a villager walking to a smoker under bricks (the Kitchen's oven mouth) went to the raised spot nearest that lifted target (the larder chest's top, or the worktop's when free) and stood just over the 2 blocks AssignProfessionFromJobSite needs; one more decoration on the worktop left only the chest. GoToPotentialJobSiteMixin + work/JobSiteApproach now walk it to the open floor beside such a workstation (its front first). Test: BuiltInJobSiteGameTests (chef fails without the fix), and the Kitchen with the extra pot passes; full runGameTest 2255/2255.
 - [ ] **B169** Every Cobblemon showcase scene (37: orchard, daycare, daycare_keeper, partners_*, pace, guard_pokemon, pokemon_center, shop, battle, arena, cup_*, leader, tutor, smith, trader, fossil, raid_dens, village, pokemon_builds, ...) hangs in the client before a world is made and 'left no showcase.json' in showcase run 39044948649 (bb124de, 2026-10-17 17:01Z); the run before (08:59Z) had none. The client log stops at '(aliveworkplace) Renewal lists: 44' and prints nothing for 10-14 min until shard.py kills it (artifact showcase-13, orchard/client-log.txt). Likely cause: 28d3904e (38.1) added Cobblemon Raid Dens 0.11.3, GeckoLib 4.9.2 and Cobblecuisine 2.0.1 to tests.screenshot_cobblemon in stonecutter.properties.toml; which one hangs is not known (not run locally). Expected: Cobblemon scenes start and film again. Test: SCENE=orchard tools/screenshots/run.sh, then drop the three ids one at a time; consider a jstack dump in shard.py on timeout (showcase-only; found by triage) (found by lane-a-1018-0322, 2026-10-18)
+- [ ] **B170** Flaky GameTest WorkplacesGameTests workplaceBuilt_leaders_hall: in lane-d-1018-0408's full build at e771c076 (local) the leaders hall worker stayed idle with no job block (job block -18,3,-21, free tickets 0, day time 9883); the same commit passed the full runGameTest in an earlier run. Expected: the hall's worker takes its job block every run. Test: WorkplacesGameTests.workplaceBuilt_leaders_hall (found by lane-d-1018-0408, 2026-10-18)
+- [ ] **B171** Flaky GameTest WonderCrewGameTests.eightBuildersRaiseTheFolly: in lane-d-1018-0408's full build at e771c076 (local) the crew of eight took 3060 ticks against a limit of 3025 (a quarter of the lone builder's 12100); the same commit passed the full runGameTest earlier. Expected: the timing check has margin or measures deterministically. Test: WonderCrewGameTests.eightBuildersRaiseTheFolly (found by lane-d-1018-0408, 2026-10-18)
+- [ ] **B172** Flaky GameTest VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne failed once ('a hall before the build') in lane-d-1018-0408's runGameTest at e0320462; the same suite passed 2256/2256 ten minutes earlier on e771c076 (no hall code between). Lane d's container saw one different timing test fail per full run (also B170, B171). Expected: passes every run. Test: VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne (found by lane-d-1018-0408, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4852,7 +4855,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   their ace by the pedestal, villagers off work gather and get +3 mood. Done when: the architect skill reviews its
   render against STYLE.md; GameTests: hidden at the table without Mega Showdown, listed with it; compat GameTest: the
   festival show happens at a finished shrine and the watchers get the mood; scene `mega_shrine`.
-- [ ] **38.8** **Cobblecuisine on the Chef's menu.** With Cobblecuisine installed, `Chefs.menu` adds its dishes by id
+- [x] **38.8** (review: pending 2026-10-18) **Cobblecuisine on the Chef's menu.** With Cobblecuisine installed, `Chefs.menu` adds its dishes by id
   (the way it adds Cobblemon's Poké snacks): a data list of dishes by job level (salads and sandwiches first, curries
   and cakes higher up), each cooked from its own crafting recipe through the recipe manager, with the makings from the
   store and the stashes as the Chef cooks today. `Diet` counts the dishes as varied food (each its food group), the
@@ -4860,12 +4863,12 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   coffee, fruit punch). Done when: compat GameTests: a Chef with the makings cooks a level-1 dish and keeps 16; a
   level-1 Chef never cooks a level-4 dish; a villager who ate three kinds counts as a varied diet; the Camp Cook makes
   a curry; without Cobblecuisine the menu is today's (a GameTest); scene `cuisine_kitchen`.
-- [ ] **38.9** **Bean farms.** Farmers plant Cobblecuisine's beans on their fields when the store holds fewer than 16
+- [x] **38.9** (review: pending 2026-10-18) **Bean farms.** Farmers plant Cobblecuisine's beans on their fields when the store holds fewer than 16
   of a colour a dish on the menu needs, and harvest `cobblecuisine:bean_crop` when it's fully grown (its age property,
   read by name); the harvest goes to the store like other crops. Done when: compat GameTests: a farmer plants beans
   when the menu wants them, harvests only ripe ones, and puts them in the store; no beans are planted when nothing
   wants them; scene `bean_farm`.
-- [ ] **38.10** **Dishes for partners and luxuries.** Partner Pokémon (`CobblemonPartners`) are fed Cobblecuisine's
+- [x] **38.10** (review: pending 2026-10-18) **Dishes for partners and luxuries.** Partner Pokémon (`CobblemonPartners`) are fed Cobblecuisine's
   Poké Puffs and shakes from the store once a day, which counts as their treat (the partners' mood); and two dishes
   become luxuries (`luxuries` files: the deluxe shakes for Burghers every 4 days, the éclair for Nobles every 8),
   wanted only when Cobblecuisine is installed. Done when: compat GameTests: a partner is fed once a day and only from
@@ -5037,6 +5040,12 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-e-1018-0413, wip): 39.2, 39.3 and 39.4 are built and ticked on `wip/lane-e`, not on `main`: the
+  run's last full build (06:53 UTC, merged with main at 3b33d43c) passed the compat suite (305/305 in a separate run)
+  but failed one main GameTest, `VillageHallBuildGameTests.aFinishedVillageHallWorksLikeAPlacedOne` ("a hall before
+  the build": a Village Hall already stands near the test's builder; green on main's CI, so most likely a leftover
+  hall from a test that the new 39.x test classes moved into its spot). Next lane-e run: find what leaves the hall
+  (try `batch`/`Leftovers.clear` in that test or the new tests), full build, merge to main.
 - 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
   Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
   `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed

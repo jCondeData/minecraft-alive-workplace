@@ -176,7 +176,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 			new ClassNeeds.Building(StarterBlueprints.MARKET_SQUARE.id(), 1),
 			new ClassNeeds.Luxury(ours("fine_clothes")), new ClassNeeds.Luxury(ours("berry_wine")), new ClassNeeds.Luxury(ours("gazette")))),
 			"the Burgher's needs: " + burgher.needs());
-		helper.assertTrue(burgher.wants().equals(List.of(new ClassNeeds.Luxury(ours("amethyst_ring")), new ClassNeeds.Services(0, List.of(), List.of(ours("library"))),
+		helper.assertTrue(burgher.wants().equals(List.of(new ClassNeeds.Luxury(ours("amethyst_ring")), new ClassNeeds.Luxury(ours("deluxe_shake")), new ClassNeeds.Services(0, List.of(), List.of(ours("library"))),
 			new ClassNeeds.Beauty(2))), "the Burgher's wants: " + burgher.wants());
 		helper.assertTrue(burgher.jobs().equals(List.of(ours("scholar"), ours("undertaker"), ours("jeweller"), ours("trainer_leader"))), "the Burgher's jobs: " + burgher.jobs());
 		SocialClasses.SocialClass noble = cls("noble");
@@ -185,7 +185,7 @@ public class ClassGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 			new ClassNeeds.VillageRank(VillageRanks.Rank.TOWN), new ClassNeeds.Beauty(3),
 			new ClassNeeds.Luxury(ours("noble_robes")), new ClassNeeds.Luxury(ours("vintage_wine")), new ClassNeeds.Luxury(ours("emerald_brooch")))),
 			"the Noble's needs: " + noble.needs());
-		helper.assertTrue(noble.wants().equals(List.of(new ClassNeeds.Luxury(ours("illuminated_book")), new ClassNeeds.Luxury(ours("gold_circlet")))),
+		helper.assertTrue(noble.wants().equals(List.of(new ClassNeeds.Luxury(ours("illuminated_book")), new ClassNeeds.Luxury(ours("gold_circlet")), new ClassNeeds.Luxury(ours("clodsire_eclair")))),
 			"the Noble's wants: " + noble.wants());
 		helper.assertTrue(noble.jobs().isEmpty() && noble.effects().size() == 2 && noble.outfit().isPresent(), "the Noble's jobs and perks: " + noble);
 		helper.succeed();

@@ -90,6 +90,13 @@ asks for the steps, `latest.log` and any crash report).
   there and then. Blocks of mods the server doesn't have are counted and named, an upload under the same name replaces
   its blueprint, and a Schematic whose file is gone says so; names that point outside the uploads are refused.
   Setting `createSchematics` (behind the 2.3 gate) (39.6).
+- **Trains between villages (2.3, being built).** With Create installed, the Blueprint Table offers a Train Station (a
+  Create station beside a run of track, a platform and a timber shelter). When two villages with a trade route both
+  have a station and the road between them is built, their builders lay Create track down the middle of the road, and
+  from then on their caravans take the train: a third of the trip, never lost on the way, with steam and a bell at the
+  stations ("A train from Thornholm came in with 32 × Oak Log"). A station broken while a train is on its way leaves
+  the caravan to walk the rest, goods and all; without stations caravans walk as before. Setting `villageTrains`
+  (behind the 2.3 gate) (39.7).
 - **A Sophisticated controller as the Storehouse's store (2.1, behind its gate).** A Sophisticated Storage controller
   in the Storehouse's area makes the barrels and chests it links one store: counted once, porters put deliveries in
   and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break

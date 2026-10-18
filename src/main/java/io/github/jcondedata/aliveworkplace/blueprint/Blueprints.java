@@ -24,6 +24,9 @@ public final class Blueprints {
 				io.github.jcondedata.aliveworkplace.world.VillagePieces.houseName(outside.get()[1]),
 				io.github.jcondedata.aliveworkplace.world.VillagePieces.styleName(outside.get()[0]));
 		}
+		if (io.github.jcondedata.aliveworkplace.city.CaravanTrains.isTrackSite(id)) {
+			return Component.translatable("blueprint.aliveworkplace.railway"); // track along a road to another village (39.7)
+		}
 		if (io.github.jcondedata.aliveworkplace.city.Roads.isSegment(id)) {
 			return Component.translatable("blueprint.aliveworkplace.road"); // a road segment (27.15)
 		}

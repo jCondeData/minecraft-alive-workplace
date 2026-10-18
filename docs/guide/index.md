@@ -222,6 +222,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   in order, and check it turns.
 - [Create schematics at the Blueprint Table](create-schematics.md): with Create, the schematics you upload at its
   Schematic Table are blueprints your builders can build.
+- [Trains between villages](create-trains.md): with Create, a Train Station in each village and track along the road,
+  and caravans take the train.
 
 ### Legends and guilds
 

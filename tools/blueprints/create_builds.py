@@ -188,4 +188,54 @@ def workshop():
     return b
 
 
+BALLAST = Mix((5, "gravel"), (3, "andesite"), (2, "cobblestone"), seed=397)
+
+
+def train_station():
+    """13 x 9 x 8: the Train Station (ROADMAP 39.7), a village's stop for the caravans' train. A straight run of Create
+    track along the back (z 6, the whole width, on a ballast bed of gravel and andesite) with a Create station block on
+    the platform's edge beside it (z 4, the middle); the platform of polished andesite under a dark oak shelter on
+    spruce posts, closed on the street side by a birch-and-spruce wall with a doorway in the middle (a step before it)
+    and two shuttered windows, short return walls at either end. Inside, two benches face the track, lanterns hang
+    from the beams and stand on posts at the platform's ends, and hay waits for the next caravan's llamas."""
+    b = Build(13, 9, 8)
+    for x in range(13):  # the track bed and the track, the whole width so it runs on along the road
+        for z in (5, 6, 7):
+            b.set(x, 0, z, BALLAST)
+        b.set(x, 1, 6, CREATE + "track", shape="xo", turn=False, waterlogged=False)
+    plinth(b, 1, 1, 11, 4, BRICK_WALL_MIX, floor="polished_andesite")
+    b.set(6, 1, 4, CREATE + "track_station", assembling=False, waterlogged=False)  # beside the track
+    # The shelter: a wall on the street side, returns at the ends, open to the track
+    for x in range(2, 11):
+        for y in range(1, 4):
+            b.set(x, y, 1, "birch_planks")
+    for x in (2, 10):
+        for z in (2,):
+            for y in range(1, 4):
+                b.set(x, y, z, "birch_planks")
+    posts(b, [(2, 1), (5, 1), (7, 1), (10, 1), (2, 4), (10, 4)], 1, 3, "spruce_log")
+    for y in (1, 2):  # the doorway in the middle of the wall
+        b.set(6, y, 1, "air")
+    b.set(6, 3, 1, "stripped_spruce_log", axis="x")
+    stairs(b, 6, 0, 0, STONE_BRICK, "south")
+    for x in (5, 7):
+        b.set(x, 0, 0, "stone_bricks")
+    window(b, 3, 2, 1, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    window(b, 9, 2, 1, "north", shutters="spruce_trapdoor", sill=SPRUCE)
+    beam_ring(b, 2, 1, 10, 4, 4, "spruce_log")
+    gable_roof(b, 1, 11, 0, 5, 5, DARK_OAK, axis="x", gable="birch_planks", eave_trim=SPRUCE)
+    # Benches facing the track, lanterns, the llamas' hay
+    for x in (3, 4, 8, 9):
+        bench_seat(b, x, 1, 2, "south", "spruce")
+    lantern(b, 4, 3, 4, hanging=True)
+    lantern(b, 8, 3, 4, hanging=True)
+    lamp_post(b, 1, 1, 4)
+    lamp_post(b, 11, 1, 4)
+    b.set(3, 1, 4, "hay_block", axis="y")
+    b.set(9, 1, 4, "hay_block", axis="x")
+    b.fill_air()
+    return b
+
+
 CREATE_BUILDS = (("watermill", watermill), ("windmill", windmill), ("workshop", workshop))
+TRAIN_STATION = (("train_station", train_station),)  # ROADMAP 39.7: listed only with Create and villageTrains

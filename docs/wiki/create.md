@@ -326,10 +326,12 @@ tested (the GameTests use the table as the server does).
   another extension), `anUploadAgainReplacesItsBlueprint` (no `_2`; a broken file said once) and
   `theSwitchOffLeavesThemAlone`. Scene `create_schematic`: the written Schematic used on the table, then a builder puts
   the kiosk up.
-- `VillageTrainCompatTests` (39.7, with Create; two villages 140 blocks apart, the road between them laid):
-  `aBuilderLaysTrackAlongTheRoadBetweenTwoStations` (no track due before the stations; the idle builder takes the
-  site and lays it from a barrel, straight track down the road, nothing skipped; the railway opens in both
-  chronicles), `aCaravanBetweenTwoStationsGoesByTrainAndArrivesWithItsGoods` (a third of the walk, on time, 32 logs in
+- `VillageTrainCompatTests` (39.7, with Create; two villages 140 blocks apart):
+  `aBuilderLaysTrackAlongTheRoadBetweenTwoStations` (the road between them laid north of the area; no track due
+  before the stations; the idle builder takes the site and lays it from a barrel, straight track down the road,
+  nothing skipped; the railway opens in both chronicles). The caravan tests put the two villages up in the test's own
+  column (100 and 240 blocks over its floor, the road noted finished and tracked), out of reach of other tests'
+  storehouses, which in the full run stand within a hall's reach and can take a caravan's goods: `aCaravanBetweenTwoStationsGoesByTrainAndArrivesWithItsGoods` (a third of the walk, on time, 32 logs in
   the other chest), `withoutStationsCaravansWalkAsToday` (and with one station), `withVillageTrainsOffCaravansWalkAndNoTrackIsLaid`,
   `aTrainSavedAndReloadedMidTripStillArrives` and `aStationBrokenMidTripTheCaravanWalksTheRest`; and
   `aBuilderBuildsTheTrainStation` (exact materials, nothing skipped, the station beside the track). Without Create,

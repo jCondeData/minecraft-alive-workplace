@@ -197,6 +197,57 @@ public class VillageTrainCompatTests implements FabricGameTest {
 		}
 	}
 
+	/**
+	 * Two villages 140 blocks apart up in the test's own column of the world, with their road built between them (both
+	 * halves finished and meeting, as the caravans' list notes it once laid): Ashford 100 blocks over the area's floor,
+	 * Bramble 140 over Ashford. Out of reach (64 blocks) of every other test's halls, storehouses, chests and stations,
+	 * which in the full run stand round the area and along a road north of it while this test runs (a storehouse within a
+	 * hall's reach is that village's store too, and takes the goods), so the trip and its goods are this test's alone. Each has a storehouse and a chest by its
+	 * hall; Ashford's holds 64 oak logs, Bramble waits for 32.
+	 */
+	private static Villages skyVillages(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos a = helper.absolutePos(HALL).above(100);
+		BlockPos b = a.above(APART);
+		Caravans.Data data = Caravans.Data.get(level);
+		boolean trains = CaravanTrains.ENABLED;
+		List<BlockPos> placed = new ArrayList<>();
+		for (BlockPos hall : List.of(a, b)) {
+			for (BlockPos p : BlockPos.betweenClosed(hall.offset(-8, -1, -8), hall.offset(8, 3, 8))) {
+				level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+			}
+			level.setBlock(hall, ModBlocks.VILLAGE_HALL.defaultBlockState(), Block.UPDATE_ALL);
+			level.setBlock(hall.offset(6, 0, 0), ModBlocks.STOREHOUSE.defaultBlockState(), Block.UPDATE_ALL);
+			level.setBlock(hall.offset(6, 0, 2), Blocks.CHEST.defaultBlockState(), Block.UPDATE_ALL);
+			placed.addAll(List.of(hall, hall.offset(6, 0, 0), hall.offset(6, 0, 2)));
+			noStations(level, hall);
+		}
+		((Container) level.getBlockEntity(a.offset(6, 0, 2))).setItem(0, new ItemStack(Items.OAK_LOG, 64));
+		after(helper, () -> {
+			CaravanTrains.ENABLED = trains;
+			noStations(level, a);
+			noStations(level, b);
+			data.clearRoad(a);
+			data.remove(a);
+			data.remove(b);
+			placed.forEach(p -> {
+				if (level.getBlockEntity(p) instanceof Container c) {
+					c.clearContent();
+				}
+				level.removeBlock(p, false);
+			});
+		});
+		data.remove(a);
+		data.remove(b);
+		data.setWants(a, Component.literal("Ashford"), List.of());
+		data.setWants(b, Component.literal("Bramble"), List.of(new Caravans.Want(Items.OAK_LOG, 32)));
+		helper.assertTrue(data.toggleRoute(a, b), "setup: no route");
+		data.setHalf(a, b, new Caravans.Half(a, true, false, true));
+		data.setHalf(b, a, new Caravans.Half(b, true, false, true)); // the same column: the halves meet
+		helper.assertTrue(data.roadFinished(a, b), "setup: the road isn't finished");
+		return new Villages(a, b, data);
+	}
+
 	private static VillageHallBlockEntity hall(GameTestHelper helper, BlockPos hall) {
 		return (VillageHallBlockEntity) helper.getLevel().getBlockEntity(hall);
 	}
@@ -349,10 +400,10 @@ public class VillageTrainCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1500, batch = "villageTrainRide")
 	public void aCaravanBetweenTwoStationsGoesByTrainAndArrivesWithItsGoods(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		Villages v = villages(helper);
+		Villages v = skyVillages(helper);
 		stations(helper, v);
-		layTrack(helper, v, v.a(), v.b());
-		layTrack(helper, v, v.b(), v.a());
+		v.data().setTracked(v.a(), v.b(), true); // laid as aBuilderLaysTrackAlongTheRoadBetweenTwoStations proves
+		v.data().setTracked(v.b(), v.a(), true);
 		long now = level.getGameTime();
 		Caravans.Shipment s = sent(helper, v);
 		long train = CaravanTrains.trainTrip(walking());
@@ -379,7 +430,7 @@ public class VillageTrainCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "villageTrainWalk")
 	public void withoutStationsCaravansWalkAsToday(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		Villages v = villages(helper);
+		Villages v = skyVillages(helper);
 		v.data().setTracked(v.a(), v.b(), true);
 		v.data().setTracked(v.b(), v.a(), true);
 		long now = level.getGameTime();
@@ -401,7 +452,7 @@ public class VillageTrainCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "villageTrainOff")
 	public void withVillageTrainsOffCaravansWalkAndNoTrackIsLaid(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		Villages v = villages(helper);
+		Villages v = skyVillages(helper);
 		stations(helper, v);
 		List<ResourceLocation> listed = TableServer.listing(level.getServer()).stream().map(e -> e.id()).toList();
 		helper.assertTrue(listed.contains(StarterBlueprints.TRAIN_STATION.id()), "the Train Station isn't at the table with Create");
@@ -427,10 +478,10 @@ public class VillageTrainCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1500, batch = "villageTrainReload")
 	public void aTrainSavedAndReloadedMidTripStillArrives(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		Villages v = villages(helper);
+		Villages v = skyVillages(helper);
 		stations(helper, v);
-		layTrack(helper, v, v.a(), v.b());
-		layTrack(helper, v, v.b(), v.a());
+		v.data().setTracked(v.a(), v.b(), true); // laid as aBuilderLaysTrackAlongTheRoadBetweenTwoStations proves
+		v.data().setTracked(v.b(), v.a(), true);
 		Caravans.Shipment s = sent(helper, v);
 		helper.runAfterDelay(100, () -> {
 			Caravans.Data loaded = Caravans.Data.load(v.data().save(new CompoundTag(), level.registryAccess()), level.registryAccess());
@@ -459,10 +510,10 @@ public class VillageTrainCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1500, batch = "villageTrainBroken")
 	public void aStationBrokenMidTripTheCaravanWalksTheRest(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		Villages v = villages(helper);
+		Villages v = skyVillages(helper);
 		stations(helper, v);
-		layTrack(helper, v, v.a(), v.b());
-		layTrack(helper, v, v.b(), v.a());
+		v.data().setTracked(v.a(), v.b(), true); // laid as aBuilderLaysTrackAlongTheRoadBetweenTwoStations proves
+		v.data().setTracked(v.b(), v.a(), true);
 		Caravans.Shipment s = sent(helper, v);
 		helper.assertTrue(s.byTrain(), "setup: not on the train");
 		BlockPos chest = v.b().offset(6, 0, 2);

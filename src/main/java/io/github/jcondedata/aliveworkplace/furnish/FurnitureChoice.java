@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -42,12 +43,32 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 	 * has a piece for it that the registry knows and that fits; none, and it stays vanilla. Off ({@code enabled} false): vanilla.
 	 */
 	public static FurnitureChoice choose(List<FurnitureSpot> spots, List<String> mods, boolean enabled) {
+		return choose(spots, mods, enabled, false);
+	}
+
+	/**
+	 * {@link #choose(List, List, boolean)}, and with {@code partner} (a Pokémon partner lives at the home, owner's answer
+	 * 2026-10-18) the home's Trainer's room ({@link #trainersRoom}) gets CobbleFurnies' Poké Ball chair and desk whatever
+	 * the order, when those blocks are in the registry and CobbleFurnies is in the list at all; otherwise those spots follow the order like the rest.
+	 */
+	public static FurnitureChoice choose(List<FurnitureSpot> spots, List<String> mods, boolean enabled, boolean partner) {
 		if (!enabled || spots.isEmpty()) {
 			return VANILLA;
 		}
 		Map<Integer, Placed> out = new LinkedHashMap<>();
+		if (partner && mods.contains(TRAINER_MOD)) {
+			trainersRoom(spots).forEach((i, piece) -> {
+				Map<BlockPos, BlockState> cells = piece.resolve(spots.get(i));
+				if (cells != null) {
+					out.put(i, new Placed(spots.get(i).pos(), spots.get(i).kind(), TRAINER_MOD, Collections.unmodifiableMap(cells)));
+				}
+			});
+		}
 		for (int i = 0; i < spots.size(); i++) {
 			FurnitureSpot spot = spots.get(i);
+			if (out.containsKey(i)) {
+				continue;
+			}
 			for (String mod : mods) {
 				FurnishingTable table = FurnishingTable.of(mod).orElse(null);
 				FurnishingTable.Piece piece = table == null ? null : table.pieces().get(spot.kind());
@@ -64,6 +85,80 @@ public record FurnitureChoice(Map<Integer, Placed> spots) {
 	/** The choice for a new build of {@code blueprint} on this server now (the config's switch and order). */
 	public static FurnitureChoice forNewBuild(ResourceLocation blueprint) {
 		return choose(BlueprintFurniture.of(blueprint), Furnishings.MODS, Furnishings.ENABLED);
+	}
+
+	/**
+	 * The choice for a new build of {@code blueprint} placed at {@code origin}: as {@link #forNewBuild(ResourceLocation)},
+	 * and a home with a Pokémon partner (one kept in a Pasture Block within {@link io.github.jcondedata.aliveworkplace.work.Partners#RADIUS}
+	 * blocks of the plot, the partners' own reach; asked only through the Pokémon extension) gets the Poké Ball chair and desk.
+	 */
+	public static FurnitureChoice forNewBuild(ResourceLocation blueprint, ServerLevel level, BlockPos origin) {
+		List<FurnitureSpot> spots = BlueprintFurniture.of(blueprint);
+		boolean partner = Furnishings.ENABLED && !trainersRoom(spots).isEmpty() && hasPartner(level, origin);
+		return choose(spots, Furnishings.MODS, Furnishings.ENABLED, partner);
+	}
+
+	/** The mod the Trainer's room pieces come from. */
+	public static final String TRAINER_MOD = "cobblefurnies";
+	/** The Trainer's room's chair and desk (CobbleFurnies' Poké Ball pieces, by block id only). */
+	public static final FurnishingTable.Piece POKE_BALL_CHAIR = trainerPiece(TRAINER_MOD + ":poke_ball_chair");
+	public static final FurnishingTable.Piece POKE_BALL_DESK = trainerPiece(TRAINER_MOD + ":poke_ball_desk");
+	/** How far (blocks, each way) the desk may stand from the chair to be in the same room. */
+	private static final int ROOM_REACH = 3;
+
+	private static FurnishingTable.Piece trainerPiece(String block) {
+		return new FurnishingTable.Piece(List.of(block), "front", Map.of(), "oak", "white", List.of(new FurnishingTable.FootCell(BlockPos.ZERO, Map.of())));
+	}
+
+	/**
+	 * A home's Trainer's room: its first chair spot and the desk or table spot nearest it (within {@link #ROOM_REACH}),
+	 * by index, with the piece each becomes. Only in a home (a build with a bed spot) and only when CobbleFurnies' Poké Ball
+	 * chair is in the registry; otherwise empty.
+	 */
+	public static Map<Integer, FurnishingTable.Piece> trainersRoom(List<FurnitureSpot> spots) {
+		ResourceLocation chairId = ResourceLocation.tryParse(TRAINER_MOD + ":poke_ball_chair");
+		if (chairId == null || !BuiltInRegistries.BLOCK.containsKey(chairId) || spots.stream().noneMatch(s -> s.kind() == FurnitureSpot.Kind.BED)) {
+			return Map.of();
+		}
+		int chair = -1;
+		for (int i = 0; i < spots.size() && chair < 0; i++) {
+			if (spots.get(i).kind() == FurnitureSpot.Kind.CHAIR) {
+				chair = i;
+			}
+		}
+		if (chair < 0) {
+			return Map.of();
+		}
+		Map<Integer, FurnishingTable.Piece> out = new LinkedHashMap<>();
+		out.put(chair, POKE_BALL_CHAIR);
+		BlockPos at = spots.get(chair).pos();
+		int desk = -1;
+		long best = Long.MAX_VALUE;
+		for (int i = 0; i < spots.size(); i++) {
+			FurnitureSpot spot = spots.get(i);
+			if (spot.kind() != FurnitureSpot.Kind.DESK && spot.kind() != FurnitureSpot.Kind.TABLE) {
+				continue;
+			}
+			BlockPos d = spot.pos().subtract(at);
+			if (Math.abs(d.getX()) > ROOM_REACH || Math.abs(d.getY()) > 1 || Math.abs(d.getZ()) > ROOM_REACH) {
+				continue;
+			}
+			long dist = (long) d.getX() * d.getX() + (long) d.getZ() * d.getZ() + (spot.kind() == FurnitureSpot.Kind.DESK ? 0 : 1);
+			if (dist < best) {
+				best = dist;
+				desk = i;
+			}
+		}
+		if (desk >= 0) {
+			out.put(desk, POKE_BALL_DESK);
+		}
+		return out;
+	}
+
+	/** Whether a Pokémon is kept in a pasture near {@code origin} (always false without Cobblemon). */
+	public static boolean hasPartner(ServerLevel level, BlockPos origin) {
+		return io.github.jcondedata.aliveworkplace.work.PokemonPartners.EXTENSION.call(
+			p -> !p.pastured(level, origin, io.github.jcondedata.aliveworkplace.work.Partners.RADIUS).isEmpty(), false);
 	}
 
 	/**

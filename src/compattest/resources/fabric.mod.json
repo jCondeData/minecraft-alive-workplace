@@ -20,6 +20,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.SophisticatedStorageCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedBuildCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.FurnishedHomesCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.TrainersRoomCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PastureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MegaCompatTests",

@@ -33,7 +33,9 @@ asks for the steps, `latest.log` and any crash report).
 - **Furnished homes (2.1, behind its gate).** The Starter Cottage, Stone House, Townhouse, Manor, Artisan's House and the
   Inn get furnished rooms at every level: a dining corner, a bedroom with a nightstand and a lamp, a couch, a shelf of
   cups, a clock, pictures and blinds, in plain vanilla blocks that the pack's furniture mods (Handcrafted, Beautify,
-  CobbleFurnies, Cozy Home) turn into their own pieces (37.4).
+  CobbleFurnies, Cozy Home) turn into their own pieces. A home planned beside a pasture with a Pokémon in it gets a
+  Trainer's room: CobbleFurnies' Poké Ball chair and desk in place of its first chair and the table by it, even with
+  Handcrafted first (37.4).
 - **Sophisticated Storage as village storage (2.1, behind its gate).** Its chests, barrels and limited barrels of every
   tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the

@@ -5032,6 +5032,14 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (37.4, lane-c-1018-0053, decision, owner's Trainer's room answer): homes are planned before anyone lives
+  in them, so a home "with a Pokémon partner" is judged when its build is planned: a Pokémon kept in a Pasture Block
+  within `Partners.RADIUS` (16) of the plot's origin, through `PokemonPartners.pastured` (no Cobblemon class in core).
+  Its Trainer's room is the first chair spot and the nearest table/desk spot (within 3 blocks), in builds with a bed
+  spot; they get `cobblefurnies:poke_ball_chair` / `poke_ball_desk` whatever the order, when those blocks exist and
+  `cobblefurnies` is in `furnitureMods`. Saved with the site's choice like the rest (no new saved field); not redone
+  when a partner arrives later at a standing home (an upkeep refurnish would be a separate item if wanted).
+
 - 2026-10-18 (37.4, lane-c-1018-0053, decision): the item asks for architect-skill renders of the furnished homes with
   none, Handcrafted, CobbleFurnies and Beautify. Neither headless renderer (`tools/blueprints/render`, the architect
   skill's `render.mjs` with the mods' textures added) can draw those mods' pieces: they come out empty. So the rooms were

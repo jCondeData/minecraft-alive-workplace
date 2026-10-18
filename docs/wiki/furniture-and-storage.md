@@ -23,7 +23,10 @@ hood), pictures (plain wall banners) and blinds rolled up over the windows (clos
 Inn has shelves of cups behind the bar, a clock by the door, a nightstand, lamp and picture in each guest room, and a
 couch and lamp on the landing. With Handcrafted those become Handcrafted chairs, tables, fancy beds, nightstands,
 couches, shelves and crockery; Beautify adds its candelabras, picture frames and blinds; with CobbleFurnies first its
-chairs, tables, nightstands, sofas, lamps and curtains. Cozy Home's clocks and sofas come in on the real pack.
+chairs, tables, nightstands, sofas, lamps and curtains. Cozy Home's clocks and sofas come in on the real pack. A home
+planned with a Pokémon partner (a Pokémon kept in a Pasture Block within 16 blocks of the plot) gets a Trainer's room:
+with CobbleFurnies installed, its first chair becomes the Poké Ball chair and the table beside it the Poké Ball desk,
+whatever the order (the owner's answer); the rest of the house follows the order.
 
 When it is finished, a server with Handcrafted gets Handcrafted chairs round a Handcrafted table, fancy beds with nightstands and
 shelves of crockery in its homes; Cozy Home adds sofas, clocks and lamps, CobbleFurnies Poké Ball chairs, Beautify
@@ -119,6 +122,12 @@ No new items, blocks or commands. Config text: `aliveworkplace.config.furnishedB
 - Support goes by block and item ids, tags and data files only, never the mods' classes, so it is all core code with
   no `compat/` package; a piece is used when the registry has its id (ROADMAP Milestone 37).
 - Beautify is last in the default order because it makes decorations only (design note M37).
+- The Trainer's room (owner, 2026-10-18): homes are planned before anyone lives in them, so "a home with a Pokémon
+  partner" is read when the build is planned, as the partners' own rule reads it for jobs: a Pokémon kept in a Pasture
+  Block within 16 blocks of the plot (asked through the Pokémon extension, so it is false without Cobblemon). The room is
+  the home's first chair and the table or desk nearest it (within 3 blocks); only in a build with a bed, only when
+  CobbleFurnies' Poké Ball chair is in the registry and `cobblefurnies` is in `furnitureMods` at all. The choice is
+  saved with the site like every other piece, so a partner leaving later doesn't change a standing home.
 - The room in items is a line of its own, shown only where a slot holds more than a stack, so the board with vanilla
   chests doesn't change (37.8). The porter's free stacks count a slot's room for more of what it holds; a load of
   something else that doesn't fit stays in his bag and he waits, as with any full store.
@@ -157,12 +166,14 @@ with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarte
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.
 37.4 (no mods): `FurnishedHomesGameTests.everyHomeHasItsFurnishedRooms`,
 `FurnishedHomesGameTests.withoutFurnitureModsEveryHomeIsVanilla`, `FurnishedHomesGameTests.aBuilderBuildsTheFurnishedInnInVanilla`,
-`FurnishedHomesGameTests.theBuilderWaitsForAMissingPicture`; with the mods (compat):
+`FurnishedHomesGameTests.theBuilderWaitsForAMissingPicture`, `FurnishedHomesGameTests.withoutCobbleFurniesThereIsNoTrainersRoom`; with the mods (compat):
 `FurnishedHomesCompatTests.aBuilderBuildsTheCottageWithHandcrafted`, `FurnishedHomesCompatTests.aBuilderBuildsTheCottageWithCobbleFurnies`,
 `FurnishedHomesCompatTests.aBuilderBuildsTheInnWithHandcrafted`, `FurnishedHomesCompatTests.aBuilderBuildsTheInnWithCobbleFurnies`
 (each built from chests of exactly its materials, nothing skipped, each spot the piece of the mod the order picks for its
 kind), `FurnishedHomesCompatTests.theBuilderWaitsForAMissingCouch`, `FurnishedHomesCompatTests.aSavedFurnishedSiteKeepsEveryPiece`,
-`FurnishedHomesCompatTests.switchedOffTheRoomsAreVanilla`. Showcase scene `furnished_home` (filmed with `-Pfurniture=true`,
+`FurnishedHomesCompatTests.switchedOffTheRoomsAreVanilla`, `TrainersRoomCompatTests.aPartneredHomeGetsThePokeBallChairAndDesk`
+(a pastured Pikachu by the plot: the Poké Ball chair and desk with Handcrafted first; far from the pasture, or with
+CobbleFurnies left out of the list, Handcrafted's). Showcase scene `furnished_home` (filmed with `-Pfurniture=true`,
 the pack's furniture mods): Starter Cottage II furnished, room by room, beside the vanilla one.
 37.8: `StorageRoomGameTests.vanillaRoomIsCountedAsBefore`,
 `StorageRoomGameTests.aFullVanillaStoreIsFullForPorters` (no mods: the vanilla counts and board unchanged);

@@ -184,4 +184,21 @@ public class FurnishedHomesGameTests implements FabricGameTest {
 		}
 		return site;
 	}
+	/**
+	 * 37.4, the owner's Trainer's room: without CobbleFurnies (and Cobblemon) there is no Poké Ball chair, so a home has no
+	 * Trainer's room, nobody counts as partnered, and a placed home plans exactly what the order alone gives.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void withoutCobbleFurniesThereIsNoTrainersRoom(GameTestHelper helper) {
+		ResourceLocation cottage = AliveWorkplace.id("starter_cottage");
+		BlockPos origin = helper.absolutePos(new BlockPos(1, 2, 1));
+		helper.assertTrue(FurnitureChoice.trainersRoom(BlueprintFurniture.of(cottage)).isEmpty(), "a Trainer's room without CobbleFurnies");
+		helper.assertTrue(!FurnitureChoice.hasPartner(helper.getLevel(), origin), "a Pokémon partner without Cobblemon");
+		FurnitureChoice partnered = FurnitureChoice.choose(BlueprintFurniture.of(cottage), List.of("handcrafted", "cobblefurnies"), true, true);
+		helper.assertTrue(partnered.isVanilla(), "the cottage got pieces with no furniture mod installed: " + partnered.spots().keySet());
+		helper.assertTrue(FurnitureChoice.forNewBuild(cottage, helper.getLevel(), origin).equals(FurnitureChoice.forNewBuild(cottage)),
+			"a placed cottage plans other furniture than the order gives");
+		helper.succeed();
+	}
 }

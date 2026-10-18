@@ -56,9 +56,17 @@ import org.jetbrains.annotations.Nullable;
  * stations. Its goods, sale and arrival are a caravan's as before. A station gone at the end when the train comes in:
  * the caravan gets off and walks the rest ({@code Caravans.round}).</li>
  * </ul>
- * The train is the trip, not a Create train assembled from bogeys (design note M39, question 1): no Create class is
- * used, everything goes by block id. Without Create, with the switch off, or with caravan roads off, nothing is laid
- * and caravans walk as before.
+ * <b>Real Create trains (39.7a, owner 2026-10-18).</b> When the two stations stand on one track network Create's railway
+ * knows ({@link Railway#linked}), the first village of the pair puts its own train together at its station the way a
+ * player does: a bogey on the track, a carriage of train casing with the caravan's chest, controls at both ends and a
+ * seat between them where a jobless villager of the village sits as conductor, glued and assembled by the station, with
+ * a schedule that runs it between the two stations ({@link Railway#assemble}). Create drives it from then on. A caravan
+ * on that line waits at the station ({@link #BOARDING}) until the train stands there, rides it ({@link #ABOARD}), and is
+ * unloaded the moment the train stands at the other village's station. Without that train (not yet assembled, or
+ * broken by a player) the caravan takes the timed trip above. Everything Create-specific is in {@code compat/create}
+ * behind {@link #RAILWAY}; without Create, with the switch off, or with caravan roads off, nothing is laid and caravans
+ * walk as before. Only trains the village put together are touched (their owner is the railway's own id,
+ * {@link #railwayId}).
  */
 public final class CaravanTrains {
 	/** Config {@code villageTrains} (and M39 open). */
@@ -78,7 +86,150 @@ public final class CaravanTrains {
 	/** A village's stations noted on the list: at most this many. */
 	static final int MAX_STATIONS = 4;
 
+	/** A caravan's arrival while it waits at the station for the village's Create train (39.7a). */
+	public static final long BOARDING = Long.MAX_VALUE;
+	/** A caravan's arrival while it rides the village's Create train to the other station (39.7a). */
+	public static final long ABOARD = Long.MAX_VALUE - 1;
+	/** How often (ticks) a hall looks at its village's Create train. */
+	static final int SERVE_EVERY = 10;
+
+	/**
+	 * Create's own trains (39.7a), filled in by {@code compat/create} when Create is installed. Stations are given by
+	 * their block position; a village train is known by its owner, the railway's id ({@link #railwayId}).
+	 */
+	public interface Railway {
+		/**
+		 * Points the station at {@code station} at the Create track beside it, if it isn't yet, facing {@code other}
+		 * (trains coming from {@code other} stop there, and the village train is put together on that side); true when
+		 * Create knows it as a station on a track network.
+		 */
+		boolean aim(ServerLevel level, BlockPos station, BlockPos other, String name);
+
+		/** Whether the two stations stand on one track network (a train can run between them). */
+		boolean linked(ServerLevel level, BlockPos a, BlockPos b);
+
+		/**
+		 * Puts a village train together at {@code station} (on the track leading away from {@code other}) with
+		 * {@code conductor} in its seat, assembles it with the station and gives it a schedule between the two stations.
+		 * Returns null when it can't (no room on the track, the station busy), with the reason in the log.
+		 */
+		@Nullable
+		UUID assemble(ServerLevel level, BlockPos station, BlockPos other, UUID owner, Villager conductor);
+
+		/** Whether a village train with this owner is on the railway (and not derailed). */
+		boolean exists(ServerLevel level, UUID owner);
+
+		/** Whether the village train with this owner stands at the station at {@code station} now. */
+		boolean at(ServerLevel level, UUID owner, BlockPos station);
+
+		/** A line about the village train with this owner for the log and the tests (where it's going, how fast, its conductors). */
+		String status(ServerLevel level, UUID owner);
+
+		/** Takes the village train with this owner off the railway (its carriages go with it). */
+		void scrap(ServerLevel level, UUID owner);
+	}
+
+	/** Create's trains, when Create is installed (compat/create). */
+	public static final io.github.jcondedata.aliveworkplace.work.Extension<Railway> RAILWAY = new io.github.jcondedata.aliveworkplace.work.Extension<>("Create's trains");
+
 	private CaravanTrains() {
+	}
+
+	/** Whether {@code arrives} is a stage of a trip by the village's Create train (no time known yet). */
+	public static boolean waiting(long arrives) {
+		return arrives >= ABOARD;
+	}
+
+	/** The railway between two villages: the owner of the train they run (the same both ways). */
+	public static UUID railwayId(BlockPos a, BlockPos b) {
+		String ka = Roads.hallKey(a);
+		String kb = Roads.hallKey(b);
+		String key = ka.compareTo(kb) <= 0 ? ka + "/" + kb : kb + "/" + ka;
+		return UUID.nameUUIDFromBytes(("aliveworkplace:railway/" + key).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+	}
+
+	/** Whether the village's own Create train runs between {@code from} and {@code to} now. */
+	public static boolean realTrain(ServerLevel level, BlockPos from, BlockPos to) {
+		return live() && RAILWAY.call(r -> r.exists(level, railwayId(from, to)), false);
+	}
+
+	/** The village that puts the pair's train together: the one whose key comes first. */
+	static boolean first(BlockPos hall, BlockPos other) {
+		return Roads.hallKey(hall).compareTo(Roads.hallKey(other)) <= 0;
+	}
+
+	/**
+	 * The hall's look at its trains (39.7a, every {@link #SERVE_EVERY} ticks): its stations pointed at their track; per
+	 * partner, the village train put together when it's due and missing; caravans loaded when the train stands at our
+	 * station and unloaded when it brings ours in. Without the train, caravans waiting for it take the timed trip.
+	 */
+	public static void serve(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		if (!live() || !RAILWAY.present()) {
+			return;
+		}
+		Caravans.Data data = Caravans.Data.get(level);
+		List<BlockPos> stations = data.stations(hall);
+		if (stations.isEmpty()) {
+			return;
+		}
+		long now = level.getGameTime();
+		for (BlockPos other : data.partners(hall)) {
+			UUID id = railwayId(hall, other);
+			if (!RAILWAY.call(r -> r.exists(level, id), false)) {
+				long timed = now + trainTrip(Caravans.trip(level, hall, other, data));
+				data.retime(hall, other, BOARDING, timed); // no train: the caravans waiting for it take the trip as before
+				data.retime(hall, other, ABOARD, timed);
+				if (Math.floorMod(now + hall.hashCode(), CHECK_EVERY) < SERVE_EVERY && first(hall, other) && rides(data, hall, other)) {
+					build(level, hall, other, entity, data, id);
+				}
+				continue;
+			}
+			BlockPos station = stations.get(0); // the village's own station, the nearest (the other's may be in reach too)
+			if (!RAILWAY.call(r -> r.at(level, id, station), false)) {
+				continue;
+			}
+			if (data.retime(hall, other, BOARDING, ABOARD) > 0) {
+				whistle(level, hall, data); // loaded onto the train
+			}
+			if (data.retime(other, hall, ABOARD, now) > 0) {
+				whistle(level, hall, data); // the train brought them in
+				Caravans.trainIn(level, hall);
+			}
+		}
+	}
+
+	/** Puts the pair's train together at our station, with a jobless villager of ours as its conductor. */
+	private static void build(ServerLevel level, BlockPos hall, BlockPos other, VillageHallBlockEntity entity, Caravans.Data data, UUID id) {
+		List<BlockPos> ours = data.stations(hall);
+		List<BlockPos> theirs = data.stations(other);
+		if (theirs.isEmpty() || !level.isLoaded(theirs.get(0))) {
+			return;
+		}
+		BlockPos station = ours.get(0);
+		BlockPos far = theirs.get(0);
+		String ourName = VillageHalls.name(level, hall).getString();
+		String theirName = VillageHalls.name(level, other).getString();
+		if (ourName.equals(theirName)) { // the schedule goes by name: two stations of one name would be one stop
+			ourName += " " + Roads.hallKey(hall);
+			theirName += " " + Roads.hallKey(other);
+		}
+		String us = ourName;
+		String them = theirName;
+		if (!level.isLoaded(station) || !RAILWAY.call(r -> r.aim(level, station, far, us) & r.aim(level, far, station, them) && r.linked(level, station, far), false)) {
+			return;
+		}
+		Villager conductor = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(station).inflate(24),
+				v -> v.isAlive() && !v.isBaby() && !v.isPassenger() && v.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.NONE)
+			.stream().min(Comparator.comparingDouble(v -> v.distanceToSqr(station.getX(), station.getY(), station.getZ()))).orElse(null);
+		if (conductor == null) {
+			return; // nobody free to drive it yet: the caravans take the timed trip
+		}
+		UUID train = RAILWAY.call(r -> r.assemble(level, station, far, id, conductor), null);
+		if (train != null) {
+			Chronicle.atHall(level, hall, Chronicle.Kind.CARAVAN, Component.translatable("chronicle.aliveworkplace.train_assembled",
+				conductor.getDisplayName(), CaravanRoads.nameOf(level, other)));
+			whistle(level, hall, data);
+		}
 	}
 
 	/** Whether trains run at all: the switch on and Create installed. */
@@ -159,6 +310,9 @@ public final class CaravanTrains {
 	static void tick(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		if (Math.floorMod(level.getGameTime() + hall.hashCode(), CHECK_EVERY) == 0) {
 			open(level, hall, entity);
+		}
+		if (Math.floorMod(level.getGameTime() + hall.hashCode(), SERVE_EVERY) == 0) {
+			serve(level, hall, entity); // 39.7a: the village's Create train
 		}
 	}
 

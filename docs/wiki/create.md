@@ -7,7 +7,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 (39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6) and trains between villages (39.7); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, B189
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, B189, B193
 
 ## What a player sees
 
@@ -79,6 +79,17 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   rest ("The station was gone when the train from Thornholm came: its caravan walks the rest of the way"), arriving
   with all its goods a quarter of the walk later (never sooner than the train would have). With a station at one end
   only, an unfinished road, or the switch off, caravans walk as before.
+- **Real Create trains** (39.7a). Once Create's railway knows both stations on one track network, the village whose
+  hall comes first puts its own train together at its station, the way a player does: a small bogey on the track, a
+  carriage of train casing with the caravan's chest, a seat between two train controls (one facing each way, so it can
+  be driven both ways), all glued with super glue, and a jobless villager of the village in the seat as conductor
+  ("Bob took the seat of the village's new train at the station: it runs to Ashford and back"). The station assembles
+  it and the train gets a Create schedule: to the other village's station, wait 10 seconds, back, wait, round and
+  round; Create drives it from then on. It is named "Thornholm - Ashford Caravan Train". A caravan on that line waits
+  at the station until the train stands there, boards it (steam and the bell) and is unloaded the moment the train
+  stands at the other village's station. A station the village points at its track faces the other village (Create's
+  stations are stopped at from one side). Without a free villager, before the train is put together, or after a player
+  breaks it up, caravans take the timed trip above.
 
 ## How it works
 
@@ -93,6 +104,21 @@ goes on each node of the half's way at feet height, straight or diagonal by its 
 steps a block (its stairs) or where something already stands (the hall it starts from). The finished site
 (`Roads.segmentBuilt`) marks the half tracked. `Caravans.send` asks `CaravanTrains.rides` (switch, Create, roads on,
 a station at both ends, the road finished, both halves tracked) and saves the answer on the shipment.
+
+**Real trains (39.7a).** The only code that uses Create's classes is `compat/create/CreateTrains`, behind the extension
+point `CaravanTrains.RAILWAY` (`work/Extension`; `compat/Compat` fills it when Create is loaded). The mod compiles
+against the port in `libs/` (`tests.compat_compile_files`, modCompileOnly, with its nested Ponder and Porting Lib
+jars); it is never a dependency. Every 10 ticks a hall's road tick calls `CaravanTrains.serve`: per partner, with no
+village train it re-times waiting caravans to the timed trip and (every 100 ticks, the village whose hall key sorts
+first, `rides` true) puts the train together: both stations aimed at a straight level track beside them or a step away
+(their block entity's `TargetTrack` and `TargetDirection`, facing each other) and named after their villages, the two on
+one `TrackGraph` (`Create.RAILWAYS.trackNetworks`), three straight clear track blocks past the station in its assembly
+direction, a jobless adult villager within 24 blocks; then the station's enterAssemblyMode, assemble,
+exitAssemblyMode, and the train's schedule runtime with two `DestinationInstruction`s and `ScheduledDelay`s, cyclic.
+The train's owner is `CaravanTrains.railwayId` (a name-based UUID of the two halls), which is how the village finds its
+own train and never touches a player's. A shipment's `arrives` holds `BOARDING` (`Long.MAX_VALUE`) while it waits and
+`ABOARD` while it rides; the train standing at the village's nearest station (`Train.currentStation`) moves it on, and
+at the other end sets `arrives` to now and unloads (`Caravans.trainIn`). Saved as before: nothing new in the save.
 
 
 **Schematics.** Create keeps uploads in the game folder's `schematics/uploaded/<player>/<name>.nbt` (its
@@ -297,10 +323,11 @@ toolboxes, the schematic items and components, the recipe types) are listed in t
   the admin's say. Imports are server-wide, as uploads at the table are. A deleted file's blueprint stays (a build
   under way may use it).
 
-- Trains (39.7, the design note's question 1, decided by the lane while the owner hasn't answered): the train is the
-  caravan's trip, not a Create train assembled from bogeys and controls, which needs Create's classes and a player's
-  assembly screen. Villages lay real Create track and stand at real Create stations, so a player can still run their
-  own trains on it.
+- Trains (39.7a, the owner, 2026-10-18): real Create trains, assembled at a station and run on a Create schedule. The
+  caravan's goods stay the caravan's record while it rides (boarding when the train stands at its station, unloaded
+  when it stands at the other), and the train's chest is the caravan's trunk, not a store the goods are moved into:
+  Create's mounted storage would need much more of its API and a train broken up mid-trip would spill them. The
+  timed trip (39.7) stays as the fallback.
 
 ## Known limits
 

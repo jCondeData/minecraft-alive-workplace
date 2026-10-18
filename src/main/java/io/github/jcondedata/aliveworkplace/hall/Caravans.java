@@ -433,12 +433,34 @@ public final class Caravans {
 					return s;
 				}
 				from.add(s.from());
-				return new Shipment(s.from(), s.to(), s.goods(), Math.max(s.arrives(), now + walk.applyAsLong(s)), s.sale(), s.back(), false);
+				long arrives = io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives()) ? now + walk.applyAsLong(s) // 39.7a: never boarded
+					: Math.max(s.arrives(), now + walk.applyAsLong(s));
+				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), false);
 			});
 			if (!from.isEmpty()) {
 				setDirty();
 			}
 			return from;
+		}
+
+		/**
+		 * 39.7a: the caravans from {@code from} to {@code to} whose arrival is {@code was} (a stage of the trip by the
+		 * village's Create train, {@link io.github.jcondedata.aliveworkplace.city.CaravanTrains#BOARDING}) get {@code arrives}
+		 * instead. Returns how many.
+		 */
+		public int retime(BlockPos from, BlockPos to, long was, long arrives) {
+			int[] n = {0};
+			onTheRoad.replaceAll(s -> {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != was) {
+					return s;
+				}
+				n[0]++;
+				return new Shipment(s.from(), s.to(), s.goods(), arrives, s.sale(), s.back(), s.byTrain());
+			});
+			if (n[0] > 0) {
+				setDirty();
+			}
+			return n[0];
 		}
 
 		/** Takes every caravan to or from {@code hall} off the road (tests clean up after themselves). */
@@ -873,8 +895,11 @@ public final class Caravans {
 		// 39.7: between two villages with stations and track along the road, the caravan rides the train
 		boolean train = io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, hall, to);
 		long ticks = trip(level, hall, to, data);
-		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods),
-			level.getGameTime() + (train ? io.github.jcondedata.aliveworkplace.city.CaravanTrains.trainTrip(ticks) : ticks), sale, false, train);
+		// 39.7a: with the village's own Create train on the line, the goods wait at the station to be loaded onto it
+		long arrives = train && io.github.jcondedata.aliveworkplace.city.CaravanTrains.realTrain(level, hall, to)
+			? io.github.jcondedata.aliveworkplace.city.CaravanTrains.BOARDING
+			: level.getGameTime() + (train ? io.github.jcondedata.aliveworkplace.city.CaravanTrains.trainTrip(ticks) : ticks);
+		Shipment shipment = new Shipment(hall.immutable(), to.immutable(), List.copyOf(goods), arrives, sale, false, train);
 		List<ItemStack> all = new ArrayList<>(goods);
 		sale.forEach(lot -> all.addAll(lot.stacks()));
 		// 31.20: on a long road, one caravan in lostCaravanChance goes missing; the Lost Caravan's arc holds its goods (never a train's)
@@ -893,6 +918,11 @@ public final class Caravans {
 			CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
 		}
 		return shipment;
+	}
+
+	/** 39.7a: the village's Create train came in at {@code hall}'s station: the caravans it brought are unloaded now. */
+	public static void trainIn(ServerLevel level, BlockPos hall) {
+		unload(level, hall, Data.get(level));
 	}
 
 	/** Unloads the caravans that have come to {@code hall} into its Storehouses' chests (what doesn't fit stays on the road). */

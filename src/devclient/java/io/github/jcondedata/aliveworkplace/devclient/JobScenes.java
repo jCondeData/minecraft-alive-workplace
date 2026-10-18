@@ -1142,15 +1142,19 @@ final class JobScenes {
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
 		}, null));
-		// Trains link villages (ROADMAP 39.7, filmed with Create): two Train Stations end to end, Create track laid between
-		// them, a Village Hall behind each (Thornholm west, Ashford east) with a storehouse chest. Ashford waits for oak logs,
-		// Thornholm has plenty: its caravan leaves by train (steam and a bell at its station), and comes in at Ashford's a
-		// third of the walk later, its 32 logs in Ashford's chest.
-		SCENES.put("village_train", new Job("Thornholm's caravan took the train to Ashford, steam and a bell at each station, and its 32 oak logs came in to Ashford's chest",
-			1600, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
+		// Trains link villages (ROADMAP 39.7 and 39.7a, filmed with Create): two Train Stations end to end, Create track laid
+		// between them, a Village Hall behind each (Thornholm west, Ashford east) with a storehouse chest and a jobless
+		// villager by its station. Create's railway knows both stations; the village whose turn it is puts its own train
+		// together at its station (a bogey, train casing, the caravan's chest, controls both ways and its villager in the
+		// seat as conductor) and Create runs it on its schedule between the two. Thornholm's caravan of oak logs waits at
+		// its station, rides the train and comes off at Ashford's, unloaded there (B193: both stations noted before the
+		// caravan leaves, and a wait long enough for a slow runner).
+		SCENES.put("village_train", new Job("Thornholm's caravan rode the village's own Create train to Ashford's station and its 32 oak logs were unloaded there",
+			2400, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
-				&& io.github.jcondedata.aliveworkplace.city.CaravanTrains.live(), "Create is loaded and trains run");
+				&& io.github.jcondedata.aliveworkplace.city.CaravanTrains.live()
+				&& io.github.jcondedata.aliveworkplace.city.CaravanTrains.RAILWAY.present(), "Create is loaded and village trains run");
 			BlockPos west = STATION.offset(-16, 0, 4);
 			BlockPos east = STATION.offset(8, 0, 4);
 			for (BlockPos at : List.of(west, east)) {
@@ -1171,24 +1175,59 @@ final class JobScenes {
 				level.setBlockAndUpdate(hall.east(3).north(2), Blocks.CHEST.defaultBlockState());
 				data.remove(hall);
 			}
+			for (BlockPos platform : List.of(west.offset(4, 1, 3), east.offset(8, 1, 3))) { // a villager waiting on each platform
+				Villager waiting = EntityType.VILLAGER.spawn(level, platform, MobSpawnType.COMMAND);
+				waiting.setNoAi(true);
+			}
 			((Container) level.getBlockEntity(thornholm.east(3).north(2))).setItem(0, new ItemStack(Items.OAK_LOG, 64));
 			data.setWants(thornholm, Component.literal("Thornholm"), List.of());
 			data.setWants(ashford, Component.literal("Ashford"), List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32)));
 			data.toggleRoute(thornholm, ashford);
+			data.sent(thornholm, io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level)); // today's caravan goes once the train runs
 			BlockPos meet = STATION.offset(2, 0, -6); // the road between them, built and met in the middle, its track laid
 			data.setHalf(thornholm, ashford, new io.github.jcondedata.aliveworkplace.hall.Caravans.Half(meet, true, false, true));
 			data.setHalf(ashford, thornholm, new io.github.jcondedata.aliveworkplace.hall.Caravans.Half(meet, true, false, true));
 			data.setTracked(thornholm, ashford, true);
 			data.setTracked(ashford, thornholm, true);
-			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, thornholm, null); // the stations noted, the caravan sent
-			io.github.jcondedata.aliveworkplace.hall.Caravans.Shipment train = data.onTheRoad().stream().filter(s -> s.to().equals(ashford)).findFirst().orElse(null);
-			Showcase.check(train != null && train.byTrain(), "Thornholm's caravan left by train");
+			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, thornholm, data); // both stations known (B193)
+			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, ashford, data);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, thornholm, ashford), "the two villages are on a railway");
 			Container chest = (Container) level.getBlockEntity(ashford.east(3).north(2));
+			Container home = (Container) level.getBlockEntity(thornholm.east(3).north(2));
+			int[] tick = {0};
+			boolean[] sent = {false};
+			boolean[] aboard = {false};
 			return l -> {
-				if (train != null && l.getGameTime() >= train.arrives()) {
-					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, ashford, null); // Ashford's round unloads it
+				if (++tick[0] % 10 == 0) {
+					for (BlockPos hall : List.of(thornholm, ashford)) {
+						io.github.jcondedata.aliveworkplace.city.CaravanTrains.serve(l, hall, (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall));
+					}
 				}
-				return chest.countItem(Items.OAK_LOG) == 32;
+				if (!sent[0]) {
+					if (io.github.jcondedata.aliveworkplace.city.CaravanTrains.realTrain(l, thornholm, ashford)) {
+						Showcase.check(true, "the village put its own Create train together at its station");
+						data.sent(thornholm, -1);
+						data.setWants(thornholm, Component.literal("Thornholm"), List.of()); // the halls' own rounds count their villagers' wants
+						data.setWants(ashford, Component.literal("Ashford"), List.of(new io.github.jcondedata.aliveworkplace.hall.Caravans.Want(Items.OAK_LOG, 32)));
+						io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, thornholm, null);
+						io.github.jcondedata.aliveworkplace.hall.Caravans.Shipment s = data.onTheRoad().stream().filter(x -> x.to().equals(ashford)).findFirst().orElse(null);
+						Showcase.check(s != null && s.byTrain() && io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives()),
+							"Thornholm's caravan waits at its station for the train");
+						sent[0] = true;
+					}
+					return false;
+				}
+				io.github.jcondedata.aliveworkplace.hall.Caravans.Shipment s = data.onTheRoad().stream().filter(x -> x.to().equals(ashford)).findFirst().orElse(null);
+				if (s != null && s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.ABOARD && !aboard[0]) {
+					aboard[0] = true;
+					Showcase.check(true, "the caravan boarded the train");
+				}
+				// both storehouses are in each hall's reach, so the logs may go into either chest: all 64 there, the caravan in
+				boolean in = s == null && aboard[0] && chest.countItem(Items.OAK_LOG) + home.countItem(Items.OAK_LOG) == 64;
+				if (in) {
+					Showcase.check(true, "the train came in at Ashford's station and the caravan was unloaded");
+				}
+				return in;
 			};
 		}, null));
 		// Builders build contraptions (ROADMAP 39.5, filmed with Create): a player's own drive (a water wheel under a header

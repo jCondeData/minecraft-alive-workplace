@@ -64,6 +64,9 @@ tests.compat_mods = [
 ]
 # Local mod jars (files in the repo, not on a maven) the compat suite runs with. They go into the run's mods/ folder,
 # where Fabric Loader treats them as in a real install (build.gradle.kts, localModsInto), without their own GameTests.
+# Local mod jars the mod compiles against for compat/<mod>/ (modCompileOnly: never a runtime dependency or in the jar).
+# The owner's Create port: compat/create/ drives Create's own trains (ROADMAP 39.7a).
+tests.compat_compile_files = ["libs/create-fabric-6.0.10.0+mc1.21.1.jar"]
 tests.compat_files = [
     "libs/create-fabric-6.0.10.0+mc1.21.1.jar", # Milestone 39 (Create, 2.3): the owner's Fabric port of Create 6.0.10 (libs/README.md)
 ]

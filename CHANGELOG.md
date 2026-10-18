@@ -19,6 +19,10 @@ asks for the steps, `latest.log` and any crash report).
 ### Added
 - **The Chef cooks every Campfire Pot recipe** (2.2, with Cobblemon): the EXP and IV/EV candies, medicines, sweets and
   any pot recipe a mod or data pack adds, found by recipe type, only from makings in the store, 16 kept by his stove.
+- **Real Create trains between villages.** With Create, two villages joined by rail now put their own Create train
+  together at a station (a bogey, a carriage with the caravan's chest, controls at both ends and a jobless villager in
+  the seat as driver) and Create runs it on a schedule between the two stations. Caravans wait at the station, ride the
+  train and are unloaded when it stands at the other village's station. The scene `village_train` shows it moving.
 - **Two build libraries, vanilla and modded** (2.1, behind its gate). Every build as it ships stays the vanilla
   library. With Rechiseled, Supplementaries, Carved Wood, Chipped and Handcrafted installed, all 130 homes and workshops
   are built from the modded library instead: daub walls with braces, herringbone floors, Carved Wood chests and shelves

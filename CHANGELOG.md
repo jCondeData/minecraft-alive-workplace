@@ -49,13 +49,22 @@ asks for the steps, `latest.log` and any crash report).
 - **Den Wardens (2.2).** Post a guard to a raid den from the Defense page: they stand watch by day, the chronicle
   says when the den glows again, and a player who joins a raid there gets a cheer. Switch: `denWardens`.
 - **Village trainers challenge the raid dens (2.2).** Every 3 days a village's Trainer Leader or Master takes on an
-  active den nearby (up to tier 3 for a Leader, tier 4 for a Master, never one a player is at). A win brings that
+  active den nearby (up to tier 3, never one a player is at; tier 4 and up are for players). A win brings that
   tier's raid loot home to the village store and the den goes dark until it resets; a loss sends the trainer home
   tired for a day. Players nearby are told, so they can go and watch. Switches: `denChallenges`, `denChallengeDays`.
 - **More village trainers Mega Evolve (2.2).** With Mega Showdown, a City's Trainer Leaders, the Festival Cup's
   finalists and the Stadium Day's visiting trainers carry a Mega Stone like Masters do, and Mega Evolve in battle
   against you. Every village trainer who can wears a Mega Bracelet (a gold band with the rainbow Key Stone) on their
   wrist, so you can tell before you challenge them. Switch: `villageMegas`.
+- **Mega Stones and Key Stones from the village (2.2).** With Mega Showdown, a Journeyman Jeweler cuts Key Stone Ore
+  into a Key Stone, and a Mega Crystal (or 4 Mega Meteoroid ores, for a Master) into the Mega Stone of a Pokémon your
+  village's own trainers use, each with 2 gold ingots and 4 emeralds. Miners take the Key Stones, Mega Stones and ores
+  they dig to the village store for the Jeweler. Beat the Trainer Leader of every village of a realm and the capital's
+  hall gives you a Mega Bracelet, once per realm. Switch: `villageMegas`.
+- **The Mega Shrine (2.2).** With Mega Showdown, the Blueprint Table has a new decoration: Mega Showdown's pedestal on a
+  dais of Mega meteorite bricks, with amethyst-crowned posts and soul lanterns. On festival days a village with a
+  finished shrine holds a show there first: a village trainer climbs to the pedestal and Mega Evolves their ace, and
+  the villagers who gather to watch get +3 mood. Switch: `villageMegas`.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

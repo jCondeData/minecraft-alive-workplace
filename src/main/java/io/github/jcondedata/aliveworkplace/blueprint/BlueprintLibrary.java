@@ -69,6 +69,7 @@ public final class BlueprintLibrary {
 		Path generated = server.getWorldPath(LevelResource.GENERATED_DIR);
 		return server.getStructureManager().listTemplates()
 			.filter(id -> everything || cobblemonOk(id))
+			.filter(id -> everything || megaOk(id)) // the Mega Shrine: Mega Showdown's blocks (38.7)
 			.filter(id -> everything || !soldOnly(id)) // sold by villagers only (34.15a, 34.15b)
 			.filter(id -> everything || StarterBlueprints.offered(id)) // an expansion's build, only once it's open (B119)
 			.filter(id -> everything || !io.github.jcondedata.aliveworkplace.city.Roads.isSegment(id)) // a Steward's road segments (27.15)
@@ -83,6 +84,12 @@ public final class BlueprintLibrary {
 		return io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon")
 			|| StarterBlueprints.COBBLEMON_ONLY.stream().noneMatch(e -> e.id().equals(id))
 			&& StarterBlueprints.COBBLEMON_WORKPLACES.stream().noneMatch(e -> e.id().equals(id));
+	}
+
+	/** Blueprints of Mega Showdown's blocks ({@link StarterBlueprints#MEGA_ONLY}) are listed only while those blocks exist and {@code villageMegas} is on. */
+	public static boolean megaOk(ResourceLocation id) {
+		return StarterBlueprints.MEGA_ONLY.stream().noneMatch(e -> e.id().equals(BlueprintStyles.base(id)))
+			|| io.github.jcondedata.aliveworkplace.trainer.MegaShrines.listed();
 	}
 
 	/** Blueprints villagers sell and the Blueprint Table doesn't list ({@link StarterBlueprints#SOLD_ONLY}); they still load by id. */

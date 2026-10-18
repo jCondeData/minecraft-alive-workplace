@@ -158,7 +158,9 @@ public final class WorkplaceConfig {
 	/**
 	 * More village trainers Mega Evolve (ROADMAP 38.5, Mega Showdown): a City's Trainer Leaders, the Festival Cup's
 	 * finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega
-	 * Bracelet. Off: only Masters carry one, as before, and nobody wears a bracelet.
+	 * Bracelet. 38.6: the Jeweller cuts Mega Stones and Key Stones, Miners take the Mega finds to the store, and a player
+	 * who beats every Trainer Leader of a realm gets a Mega Bracelet. Off: only Masters carry one, as before, nobody wears
+	 * a bracelet and the village makes no Mega Stones.
 	 */
 	public boolean villageMegas = Expansions.on(Expansions.M38);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */

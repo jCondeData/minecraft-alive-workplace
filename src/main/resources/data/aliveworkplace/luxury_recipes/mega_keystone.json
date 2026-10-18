@@ -1,0 +1,35 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblemon",
+        "mega_showdown"
+      ]
+    }
+  ],
+  "job": "aliveworkplace:jeweller",
+  "level": 3,
+  "when": "village_megas",
+  "inputs": [
+    {
+      "item": "mega_showdown:keystone_ore",
+      "count": 1
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 2
+    },
+    {
+      "item": "minecraft:emerald",
+      "count": 4
+    }
+  ],
+  "output": {
+    "id": "mega_showdown:keystone",
+    "count": 1
+  },
+  "keep": 2,
+  "ticks": 200,
+  "enabled": true
+}

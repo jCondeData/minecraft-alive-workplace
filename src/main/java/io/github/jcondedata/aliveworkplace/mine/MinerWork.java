@@ -579,7 +579,7 @@ public class MinerWork extends Behavior<Villager> {
 	private static void deposit(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
 		for (ItemStack stack : bag.takeAllExcept(java.util.Set.of(Items.TORCH, Items.LADDER))) {
-			Miners.store(level, supplies, bench, stack);
+			Miners.deliver(level, supplies, bench, stack);
 		}
 		topUpTorches(level, supplies, bag);
 		topUpFiller(level, site, supplies, bag);

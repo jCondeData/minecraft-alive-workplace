@@ -43,7 +43,7 @@ The slot then shows "Warden:" and the guard's name. Click it to recall them to n
 ## Your trainers challenge the dens
 
 Every 3 days, by day, a village with a [Trainer Leader](trainer-leader.md) or a Master trainer sends its best one to
-take on an active den it knows: up to tier 3 for a Leader, tier 4 for a Master. Tier 5 and up are left for you. A den
+take on an active den it knows: up to tier 3, Leaders and Masters alike. Tier 4 and up are left for you. A den
 with a player within 8 blocks is yours, so nobody is sent there.
 
 If you're in the village or near the den you're told when the trainer sets off and how it went, so you can go and watch

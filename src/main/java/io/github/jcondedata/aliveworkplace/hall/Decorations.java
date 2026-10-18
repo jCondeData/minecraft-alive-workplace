@@ -24,6 +24,7 @@ public final class Decorations {
 		Map.entry(StarterBlueprints.MARKET_SQUARE.id(), 5),
 		Map.entry(StarterBlueprints.CHAPEL.id(), 4),
 		Map.entry(StarterBlueprints.BANDSTAND.id(), 3), // the Bard's (ROADMAP 27.14)
+		Map.entry(StarterBlueprints.MEGA_SHRINE.id(), 2), // with Mega Showdown (ROADMAP 38.7)
 		// ROADMAP 26.14: the small ones 1, the rest 2, the Topiary Garden 3
 		Map.entry(StarterBlueprints.SIGNPOST.id(), 1),
 		Map.entry(StarterBlueprints.FLOWER_PLANTERS.id(), 1),

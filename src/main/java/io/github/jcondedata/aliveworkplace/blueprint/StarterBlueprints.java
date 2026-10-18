@@ -468,6 +468,14 @@ public final class StarterBlueprints {
 	public static final List<Entry> MORE_DECORATIONS = List.of(MARKET_CROSS, STAG_STATUE, FLOWER_PLANTERS, SIGNPOST, STONE_ARCHWAY, LILY_POND,
 		HAY_CART, NOTICE_BOARD, LANTERN_PERGOLA, FIRE_PIT, SUNDIAL, TOPIARY_GARDEN, MARKET_CORNER, FOOTBRIDGE);
 
+	/**
+	 * The Mega Shrine (ROADMAP 38.7; tools/blueprints/decor.py, mega_shrine): Mega Showdown's pedestal on a dais of Mega
+	 * meteorite bricks. A decoration (beauty 2) where the village's festival show is held (trainer/MegaShrines).
+	 */
+	public static final Entry MEGA_SHRINE = new Entry(AliveWorkplace.id("mega_shrine"), new Vec3i(7, 6, 7));
+	/** Built of Mega Showdown's blocks: in the Blueprint Table (and the creative tab) only while they exist (trainer/MegaShrines#blocksExist). */
+	public static final List<Entry> MEGA_ONLY = List.of(MEGA_SHRINE);
+
 	/** Walls and gates: a wooden palisade with a walkway. */
 	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
 	/** A gate in the palisade (shut at night). */
@@ -599,6 +607,8 @@ public final class StarterBlueprints {
 		put.accept("tailors", List.of(TAILORS_SHOP, TAILORS_SHOP_2));
 		put.accept("printers", List.of(PRINT_SHOP, PRINT_SHOP_2));
 		put.accept("jewellers", List.of(JEWELLERS_WORKSHOP, JEWELLERS_WORKSHOP_2, JEWELLERS_WORKSHOP_3));
+		// M38, Cobblemon depth
+		put.accept("villageMegas", MEGA_ONLY);
 		return java.util.Map.copyOf(map);
 	}
 

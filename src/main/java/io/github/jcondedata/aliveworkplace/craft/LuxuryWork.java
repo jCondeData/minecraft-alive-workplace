@@ -81,10 +81,11 @@ public class LuxuryWork extends CrafterWork {
 		for (int i = 0; i < goods.size(); i++) {
 			Item good = goods.get((next + i) % goods.size());
 			long have = held.getOrDefault(good, 0L);
-			if (have >= KEEP || !stocks(level, villager, station, good)) {
+			int keep = keep(villager, good);
+			if (have >= keep || !stocks(level, villager, station, good)) {
 				continue;
 			}
-			for (int count = (int) (KEEP - have); count >= 1; count /= 2) {
+			for (int count = (int) (keep - have); count >= 1; count /= 2) {
 				Crafting.Plan plan = planFor(level, good, count, usable);
 				if (fits(plan)) {
 					next = (next + i + 1) % goods.size();
@@ -93,7 +94,7 @@ public class LuxuryWork extends CrafterWork {
 				}
 			}
 			if (firstShort == null) {
-				firstShort = allowed(villager).stream().filter(r -> r.output() == good).findFirst().orElse(null);
+				firstShort = allowed(villager).stream().filter(r -> r.makes(good)).findFirst().orElse(null);
 			}
 		}
 		if (firstShort != null) {
@@ -128,7 +129,7 @@ public class LuxuryWork extends CrafterWork {
 	}
 
 	/** The village store: its hall's (kitchens and storehouses), or without a hall the storehouses near the workstation. */
-	static List<BlockPos> store(ServerLevel level, BlockPos station) {
+	public static List<BlockPos> store(ServerLevel level, BlockPos station) {
 		Optional<BlockPos> hall = VillageHalls.nearest(level, station);
 		if (hall.isPresent()) {
 			return VillageNeeds.store(level, hall.get());
@@ -149,11 +150,24 @@ public class LuxuryWork extends CrafterWork {
 	static List<Item> goods(Villager villager) {
 		List<Item> out = new ArrayList<>();
 		for (LuxuryRecipes.Recipe r : allowed(villager)) {
-			if (!out.contains(r.output())) {
-				out.add(r.output());
+			for (Item good : r.goods(villager)) {
+				if (!out.contains(good)) {
+					out.add(good);
+				}
 			}
 		}
 		return out;
+	}
+
+	/** How many of {@code good} the store is kept in: {@link #KEEP}, or less where its recipe says (a Mega Stone: one, 38.6). */
+	static int keep(Villager villager, Item good) {
+		int keep = KEEP;
+		for (LuxuryRecipes.Recipe r : allowed(villager)) {
+			if (r.makes(good)) {
+				keep = Math.min(keep, r.keepOr(KEEP));
+			}
+		}
+		return keep;
 	}
 
 	@Override
@@ -209,7 +223,7 @@ public class LuxuryWork extends CrafterWork {
 		for (Crafting.Step step : plan.steps()) {
 			int each = CRAFT_TICKS;
 			for (LuxuryRecipes.Recipe r : allowed(villager)) {
-				if (r.output() == step.out().getItem()) {
+				if (r.makes(step.out().getItem())) {
 					each = r.ticks();
 					break;
 				}

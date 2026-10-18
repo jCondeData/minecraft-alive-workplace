@@ -167,6 +167,11 @@ public final class Moods {
 			score += festival;
 			good.add(reason(festival > io.github.jcondedata.aliveworkplace.hall.Festivals.MOOD ? "festival_banner" : "festival"));
 		}
+		int megaShow = io.github.jcondedata.aliveworkplace.trainer.MegaShrines.mood(level, villager); // watched a Mega Shrine's show (38.7)
+		if (megaShow > 0) {
+			score += megaShow;
+			good.add(reason("mega_show"));
+		}
 		if (io.github.jcondedata.aliveworkplace.hall.Festivals.disappointed(level, villager)) {
 			score -= io.github.jcondedata.aliveworkplace.hall.Festivals.DISAPPOINTED;
 			bad.add(reason("disappointed"));

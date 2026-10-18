@@ -1038,6 +1038,15 @@ SCENES = [
            ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
            ("05_sitting", "Upstairs: the sitting corner's couch, blinds and a picture"),
            ("06_vanilla_dining", "The same corner without furniture mods: the vanilla pieces")], cobblemon=True, furniture=True),
+    # Furnished workplaces (ROADMAP 37.5): the Supply Shop, Library, Schoolhouse and Healing Center as a server with the
+    # pack's furniture mods builds them
+    S("furnished_workplaces", "Build families", "Furnished workplaces: shop counters, Library desks, school benches (Handcrafted, Beautify, CobbleFurnies)",
+      "every furniture spot of the four workplaces holds the piece this server chose, pieces of at least two mods, and each keeps only its own chests and barrels as storage",
+      80, [("01_shop_front", "The Supply Shop's door between two Beautify trellises of roses"),
+           ("02_shop_counter", "Inside the shop: Handcrafted counters either side of the Shop Counter, a shelf of cups, a picture, hanging pots"),
+           ("03_library_desks", "The Library's reading desks and chairs under hanging pots, the scholar's lectern beyond"),
+           ("04_schoolroom", "The schoolroom's benches facing the blackboard and the teacher's Poké Ball desk"),
+           ("05_clinic_benches", "The Healing Center's waiting benches, pictures and the nurse's Poké Ball desk")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry
     S("village_hall", "Build families", "The Village Hall build (I, II, III), and Hall III in Sandstone and Cherry",
       "Village Hall I, II and III and Hall III in Sandstone and Cherry stand finished, each with its hall block and bell in place",

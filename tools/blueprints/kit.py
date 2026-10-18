@@ -980,3 +980,60 @@ def clock(b, x, y, z, facing, wood):
     log(b, x, y, z, f"stripped_{wood}_log")
     trapdoor(b, x, y + 1, z, f"{wood}_trapdoor", facing, half="bottom")
     b.furniture("clock", x, y, z, facing, cells=((0, 0, 0), (0, 1, 0)), wood=wood)
+
+
+# --- Furnished workplaces (ROADMAP 37.5): desks, benches, counters and decorations in the workplaces ------------------
+# The same rule as the homes: every piece is vanilla blocks recorded as a furniture spot. A job block, a bed or a
+# container is never part of a spot (FurnishedWorkplacesGameTests checks every shipped spot), so a furniture mod's piece
+# can never stand where a job reads its block or its chest.
+NOT_FURNITURE = ("chest", "barrel", "_shulker_box", "lectern", "_bed", "smoker", "furnace", "brewing_stand", "composter",
+                 "cartography_table", "crafting_table", "loom", "fletching_table", "smithing_table", "stonecutter",
+                 "grindstone", "cauldron", "anvil", "bell", "hopper", "dispenser", "dropper", "aliveworkplace:",
+                 "cobblemon:")
+
+
+def _job_free(b, cells):
+    for c in cells:
+        got = b.blocks.get(c)
+        assert got is not None and got[0] != "minecraft:air", f"furniture spot on nothing at {c}"
+        assert not any(n in got[0] for n in NOT_FURNITURE), f"furniture spot over a job block, bed or container {got} at {c}"
+
+
+def furnish(b, kind, x, y, z, facing, cells=((0, 0, 0),), wood=None, colour=None):
+    """Records a piece already drawn at (x, y, z) (a counter of planks under a slab, a row of stair benches) as a
+    furniture spot, refusing one that would cover a job block, a bed or a container."""
+    _job_free(b, [(x + dx, y + dy, z + dz) for dx, dy, dz in cells])
+    b.furniture(kind, x, y, z, facing, cells=cells, wood=wood, colour=colour)
+
+
+def desk(b, x, y, z, facing, wood):
+    """A writing desk: an upside-down slab, the person at it facing `facing`."""
+    _free(b, (x, y, z))
+    b.set(x, y, z, f"{wood}_slab", type="top", waterlogged=False)
+    b.furniture("desk", x, y, z, facing, wood=wood)
+
+
+def bench_seat(b, x, y, z, facing, wood):
+    """One seat of a bench: a stair whose sitter faces `facing` (its back the other way)."""
+    _free(b, (x, y, z))
+    stairs(b, x, y, z, wood_family(wood), OPP[facing])
+    b.furniture("bench", x, y, z, facing, wood=wood)
+
+
+def trellis(b, x, y, z, facing, wood, height=2):
+    """A trellis on a wall: open trapdoors flat against the wall behind, `height` high, a lattice for climbers.
+    `facing`: away from the wall."""
+    cells = [(x, y + i, z) for i in range(height)]
+    _free(b, *cells)
+    for c in cells:
+        trapdoor(b, *c, f"{wood}_trapdoor", facing, open_=True)
+    b.furniture("trellis", x, y, z, facing, cells=tuple((0, i, 0) for i in range(height)), wood=wood)
+
+
+def hanging_pot(b, x, y, z, plant="potted_fern", wood="oak"):
+    """A hanging pot: a chain from the beam above (x, y + 1, z) holding a potted plant under it at y - 1. The spot is the
+    chain's cell (a modded hanging pot hangs from the beam there)."""
+    _free(b, (x, y, z), (x, y - 1, z))
+    b.set(x, y, z, "chain", axis="y", waterlogged=False)
+    b.set(x, y - 1, z, plant)
+    b.furniture("hanging_pot", x, y, z, "north", cells=((0, 0, 0), (0, -1, 0)), wood=wood)

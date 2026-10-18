@@ -4712,7 +4712,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   compat GameTests build the Starter Cottage and the Inn with Handcrafted and with CobbleFurnies, nothing skipped;
   scene `furnished_home` (`-Pfurniture=true`, a new harness switch that adds the pack's furniture mods; the cottage
   furnished, room by room).
-- [ ] **37.5** **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
+- [x] **37.5** (review: pending 2026-10-18) **Furnished workplaces.** Shops, the Library, the Healing Center, the Schoolhouse, the Village Hall, the
   Kitchen and the M34 trades' workshops get furniture where it fits: desks for the Scribe and Printer, counters and
   shelves in the shops, crockery and benches in the Kitchen, Beautify trellises, hanging pots and picture frames as
   decoration. Never a job block, a bed a villager needs, or a container is swapped: those stay what the job reads.
@@ -5032,6 +5032,21 @@ the owner's port jar; M33's caravans (39.7).
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-18 (37.5, lane-c-1018-0352, decisions): (1) Handcrafted's counters, desks, shelves, drawers, cupboards,
+  nightstands and side tables hold items (its ContainerBlockEntity), so the compat test found the Print Shop's
+  Handcrafted desk and counters counted as the printer's chests. Following the design note ("modded storage furniture is
+  decoration only... no job reads it"), the block tag `#aliveworkplace:furniture_storage` (those, Cozy Home storage
+  counters, CobbleFurnies cabinets; all `required: false`) is skipped as storage by `SupplyContainers` while
+  `furnishedBuilds` is on; off, nothing changes. (2) Workplaces' beds (Healing Center ward, shopkeeper, cook) get no bed
+  spot: a fancy bed isn't a vanilla villager home (homes filed as B166). (3) "Where it fits": the Tailor's and Jeweler's
+  workshops keep their vanilla furniture (the Print Shop is the M34 workshop furnished), and the Kitchen gets crockery in
+  place of its worktop fern but no bench or shelf (no free wall beside its table, oven, bed and larder hatch, and any
+  extra block made `workplaceBuilt_kitchen` fail every run: B168). (4) The Healing Center's and
+  Schoolhouse's desks are Poké Ball desks whenever `cobblefurnies` is in the list (owner's 2026-10-18 answer), partner or
+  not. (5) New kinds `trellis` and `hanging_pot` for Beautify's; a vanilla hanging pot is a potted plant under a chain
+  (`check.py` now accepts a pot hung from a chain: a flower pot needs nothing under it in game, proven by the vanilla
+  Supply Shop build test).
 
 - 2026-10-18 (37.4, lane-c-1018-0053, decision, owner's Trainer's room answer): homes are planned before anyone lives
   in them, so a home "with a Pokémon partner" is judged when its build is planned: a Pokémon kept in a Pasture Block

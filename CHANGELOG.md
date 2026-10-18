@@ -36,6 +36,13 @@ asks for the steps, `latest.log` and any crash report).
   CobbleFurnies, Cozy Home) turn into their own pieces. A home planned beside a pasture with a Pokémon in it gets a
   Trainer's room: CobbleFurnies' Poké Ball chair and desk in place of its first chair and the table by it, even with
   Handcrafted first (37.4).
+- **Furnished workplaces (2.1, behind its gate).** The Supply Shop, Library, Healing Center, Schoolhouse, Village Hall,
+  Kitchen and Print Shop get furniture at every level: counters, a shelf of cups, a picture, hanging pots and rose
+  trellises in the shop, reading desks in the Library, benches in the schoolroom, the Village Hall and the Healing
+  Center's waiting room, the teacher's, nurse's and printer's desks, the council table, crockery on the Kitchen's worktop. Their
+  job blocks, beds and chests are never swapped; with the pack's mods they become Handcrafted counters, desks and
+  benches and Beautify trellises, hanging pots and picture frames, and the Healing Center's and Schoolhouse's desks are
+  CobbleFurnies' Poké Ball desks. A furniture mod's desk, counter or cabinet is never taken for a job's chest (37.5).
 - **Sophisticated Storage as village storage (2.1, behind its gate).** Its chests, barrels and limited barrels of every
   tier are tested as supply chests, porters' chests and Storehouse chests, and builders leave them standing with their
   contents. Where a stack upgrade or a limited barrel lets a slot hold more than a stack, the Storehouse board shows the

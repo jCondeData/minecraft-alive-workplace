@@ -1261,6 +1261,8 @@ def print_shop_ground(b):
     # The counter for buyers, east of the door, and the shelves of paper and ink behind it
     for x in (6, 7, 8):
         slab(b, x, 1, 3, DARK_OAK, top=True)
+        furnish(b, "counter", x, 1, 3, "north", wood="dark_oak")  # 37.5
+    desk(b, 2, 1, 4, "east", "spruce")  # the printer's desk by the press (37.5)
     for i, (x, z) in enumerate(((8, 5), (8, 6), (7, 6), (6, 6))):
         shelf(b, x, 1, z, "paper" if i % 2 == 0 else "ink")
         shelf(b, x, 3, z, "ink" if i % 2 == 0 else "paper")

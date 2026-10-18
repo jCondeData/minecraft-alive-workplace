@@ -21,7 +21,9 @@ public record FurnitureSpot(Kind kind, BlockPos pos, Direction facing, @Nullable
 	/** The kinds of furniture (the design note's table). */
 	public enum Kind {
 		CHAIR, STOOL, BENCH, COUCH, TABLE, SIDE_TABLE, DESK, COUNTER, CUPBOARD, SHELF, NIGHTSTAND, DRAWER, BED, LAMP, CLOCK,
-		PICTURE, BLINDS, CROCKERY;
+		PICTURE, BLINDS, CROCKERY,
+		/** Workplace decorations (37.5): a lattice on a wall, a pot hanging from a beam. */
+		TRELLIS, HANGING_POT;
 
 		/** The name in a spots file ({@code side_table}). */
 		public String id() {

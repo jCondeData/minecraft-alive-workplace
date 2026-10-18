@@ -68,6 +68,10 @@ public final class SupplyContainers {
 	 */
 	static boolean isMachine(BlockEntity be) {
 		return io.github.jcondedata.aliveworkplace.work.Pastures.isPasture(be.getBlockState())
+			// 37.5: with furnished builds on, a furniture mod's desk, counter, shelf or cabinet holds items but is furniture
+			// (design note M37, "decoration only"): no job takes it for a chest
+			|| io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED
+			&& be.getBlockState().is(io.github.jcondedata.aliveworkplace.furnish.Furnishings.FURNITURE_STORAGE)
 			|| be instanceof net.minecraft.world.level.block.entity.BrewingStandBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity
 			|| be instanceof net.minecraft.world.level.block.entity.LecternBlockEntity

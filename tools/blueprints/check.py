@@ -69,6 +69,8 @@ def check(b, only=None, whole=None):
         elif short.endswith("_door"):
             other = (x, y + 1, z) if props.get("half") == "lower" else (x, y - 1, z)
             bad = (other not in blocks or blocks[other][0] != name) and "is missing a half"
+        elif short.startswith("potted_") and above is not None and above[0] == "minecraft:chain":
+            pass  # a hanging pot (37.5): a flower pot needs nothing under it in game, the chain holds it to the beam
         elif any(s in short for s in STANDS) and "wall_" not in short:
             bad = not grounded(x, y, z) and below is None and "stands on air"
         elif any(name.startswith(g) or g in name for g in GRAVITY):

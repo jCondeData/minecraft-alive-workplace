@@ -1,0 +1,401 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "handcrafted:acacia_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:acacia_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:acacia_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:acacia_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:acacia_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:acacia_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:acacia_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:bamboo_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:bamboo_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:bamboo_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:bamboo_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:bamboo_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:bamboo_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:bamboo_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:birch_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:birch_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:birch_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:birch_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:birch_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:birch_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:birch_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cherry_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cherry_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cherry_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cherry_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cherry_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cherry_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:cherry_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:crimson_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:crimson_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:crimson_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:crimson_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:crimson_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:crimson_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:crimson_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:dark_oak_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:dark_oak_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:dark_oak_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:dark_oak_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:dark_oak_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:dark_oak_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:dark_oak_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:jungle_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:jungle_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:jungle_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:jungle_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:jungle_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:jungle_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:jungle_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:mangrove_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:mangrove_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:mangrove_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:mangrove_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:mangrove_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:mangrove_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:mangrove_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:oak_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:oak_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:oak_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:oak_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:oak_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:oak_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:oak_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:spruce_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:spruce_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:spruce_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:spruce_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:spruce_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:spruce_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:spruce_side_table",
+      "required": false
+    },
+    {
+      "id": "handcrafted:warped_counter",
+      "required": false
+    },
+    {
+      "id": "handcrafted:warped_cupboard",
+      "required": false
+    },
+    {
+      "id": "handcrafted:warped_desk",
+      "required": false
+    },
+    {
+      "id": "handcrafted:warped_drawer",
+      "required": false
+    },
+    {
+      "id": "handcrafted:warped_nightstand",
+      "required": false
+    },
+    {
+      "id": "handcrafted:warped_shelf",
+      "required": false
+    },
+    {
+      "id": "handcrafted:warped_side_table",
+      "required": false
+    },
+    {
+      "id": "cozyhome:acacia_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:bamboo_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:birch_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:cherry_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:crimson_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:dark_oak_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:jungle_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:mangrove_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:oak_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:spruce_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cozyhome:warped_storage_counter",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:acacia_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:bamboo_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:birch_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:cherry_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:crimson_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:dark_oak_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:jungle_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:mangrove_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:oak_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:spruce_cabinet",
+      "required": false
+    },
+    {
+      "id": "cobblefurnies:warped_cabinet",
+      "required": false
+    }
+  ]
+}

@@ -13,7 +13,7 @@ Conventions for every blueprint (the mod relies on these):
 import os
 import zlib
 import nbtlib
-from nbtlib import Compound, List, Int, String
+from nbtlib import Compound, List, Int, String, Double
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 MAIN_STRUCTURES = os.path.join(ROOT, "src/main/resources/data/aliveworkplace/structure")
@@ -129,7 +129,9 @@ class Build:
                            "cells": [(x + dx, y + dy, z + dz) for dx, dy, dz in cells]})
 
     def to_nbt(self):
-        assert not (self.basement and getattr(self, "entities", None)), "entities in a build with a basement aren't moved up"
+        entities = getattr(self, "entities", [])
+        if self.basement and entities:  # 36.7: moved up with the blocks (StarterBlueprints.withBasement moves them back)
+            entities = [moved_up(e, self.basement) for e in entities]
         palette, index, blocks = [], {}, []
         for (x, y, z), key in sorted(self.blocks.items()):
             if key[0] == "minecraft:structure_void":
@@ -153,7 +155,7 @@ class Build:
             "size": List[Int]([Int(self.w), Int(self.h + self.basement), Int(self.d)]),
             "palette": List[Compound](palette),
             "blocks": List[Compound](blocks),
-            "entities": List[Compound](getattr(self, "entities", [])),
+            "entities": List[Compound](entities),
         })
 
     def save(self, folder, name, checked=True):
@@ -648,6 +650,18 @@ def chimney(b, x, z, y0, y1, name=STONE_MIX, smoke=True):
         b.set(x, y, z, resolve(name, x, y, z))
     if smoke:
         b.set(x, y1 + 1, z, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+
+
+def moved_up(entity, dy):
+    """A copy of a build's entity entry (pos, blockPos, nbt) {@code dy} higher, for a file that holds a basement under it."""
+    out = Compound(dict(entity))
+    out["pos"] = List[Double]([Double(float(v) + (dy if i == 1 else 0)) for i, v in enumerate(entity["pos"])])
+    out["blockPos"] = List[Int]([Int(int(v) + (dy if i == 1 else 0)) for i, v in enumerate(entity["blockPos"])])
+    nbt = Compound(dict(entity["nbt"]))
+    if "TileY" in nbt:
+        nbt["TileY"] = Int(int(nbt["TileY"]) + dy)
+    out["nbt"] = nbt
+    return out
 
 
 def cellar(b, x0, z0, x1, z1, wall=MOSSY_BRICK_MIX, floor="stone_bricks", ladder=None, depth=None, beam=None,

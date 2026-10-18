@@ -563,6 +563,11 @@ SCENES = [
     S("basement", "Builder", "Level 4: a root cellar dug under the cottage",
       "a builder dug a root cellar under a finished Starter Cottage III and built the Level 4 over it, then the camera went down the ladder into it",
       420, [START, ("02_root_cellar", "In the root cellar: bins, sacks, a shelf, the lights"), ("02_ladder_up", "The ladder up to the cottage"), DONE]),
+    # Cellars (ROADMAP 36.7): the Inn III cut away to its ale and wine cellar; an old Smithy, finished before it had a
+    # cellar, gets its coal store dug by its builder ("Dig the cellar")
+    S("cellars", "Builder", "Level III cellars, and digging an old build's cellar",
+      "the Inn III stood cut away to its ale and wine cellar, and a builder dug the cellar under an old Smithy built before it had one",
+      300, [START, ("02_inn_cellar", "The Inn III cut away: its ale and wine cellar"), ("02_smithy_cellar", "The old Smithy's coal store, dug"), DONE]),
     # The Pathfinder (ROADMAP 29.13): an expedition with the player through a forest to a staged Stronghold
     job("legend_pathfinder", "Legends", "The Pathfinder leads the player through a forest",
         "the Pathfinder led the player through a forest to a staged Stronghold and planted a banner at its entrance", 120),

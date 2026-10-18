@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Cellars for eight Level IIs, and for old builds.** The Inn, Winery, Farmstead, Guildhall, Barracks, Research Lab,
+  Jeweler's Workshop and Artisan's House get a Level III: their Level II with a furnished, lit cellar dug under it (an ale
+  and wine cellar, a barrel vault, a root cellar, a strongroom, an armoury, a lower lab, a vault, a storeroom), down a
+  ladder under a hatch, everything above kept. A Smithy, Storehouse or Kitchen finished before it had its cellar is
+  offered **Dig the cellar** by the village's builders (and the Village Hall's advice): its builder digs and fits out
+  only the cellar.
 - **A line about every blueprint.** The Blueprint Table now says what each build is and who works or lives there,
   wrapped under its size ("A shore hut with a jetty on log posts out over the water; a Fisherman works at its
   barrel."), and what each level adds. All 170 builds the table lists have one; imported builds show none.

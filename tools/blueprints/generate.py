@@ -33,7 +33,8 @@ from realm import *
 from village_hall import village_hall, village_hall_2, village_hall_3
 from wonders import WONDERS, save_wonder
 from styles import styled
-from basements import LEVEL_4, butchers_shop
+from basements import LEVEL_4, butchers_shop, cutaway
+from cellars import LEVEL_3
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -187,6 +188,8 @@ if __name__ == "__main__":
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
         draw().save(MAIN_STRUCTURES, name)
     butchers_shop().save(MAIN_STRUCTURES, "butchers_shop")  # ROADMAP 26.15: with its freezer
+    for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
+        draw().save(MAIN_STRUCTURES, name)
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

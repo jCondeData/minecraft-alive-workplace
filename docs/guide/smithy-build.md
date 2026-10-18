@@ -23,6 +23,8 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Under the forge the Smithy has a **coal store**, down a ladder by the forge: heaps of coal behind boards, raw iron and chests of ore. Your builder digs it out of the ground himself, so give him room to dig: four blocks under the floor.
 
+A Smithy finished before it had its coal store can still get it: any builder of the village sells **Dig the cellar** for it (a blueprint already lined up over the building), and the Village Hall's **What next?** page reminds you. Give it back to the builder and they dig and fit out only the coal store, leaving the rest as it stands. Upgrading such a Smithy digs its coal store too.
+
 ## Upgrades
 
 Once a builder finishes the Smithy, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.

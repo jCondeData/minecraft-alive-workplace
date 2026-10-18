@@ -4625,7 +4625,7 @@ Depends on: nothing open.
   there. Done when: a GameTest walks every blueprint the table lists and finds its description key in `en_us.json`;
   every description is checked against the build (who works there comes from the job blocks it holds);
   `langcheck.py` passes; the `table` scene's stills show a description.
-- [ ] **36.7** **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
+- [x] **36.7** (review: pending 2026-10-18) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
   Level II. Eight of them, where a cellar suits the trade, get a Level III that is their Level II with a basement
   under it, named `<name>_3` because upgrades go by name (`BlueprintUpgrades`), drawn in `tools/blueprints/` and
   listed with its depth like the Level 4s (26.15, `StarterBlueprints.WITH_BASEMENTS`): the **Inn** (an ale and wine

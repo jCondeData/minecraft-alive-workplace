@@ -3,7 +3,7 @@
 ```infobox
 type: Build
 Size: 13 by 13, 16 high (II: 19 by 13)
-Tiers: I, II (a stable)
+Tiers: I, II (a stable), III (an ale and wine cellar)
 Houses: an Innkeeper at the Shop Counter, six guest beds; a Rancher's smoker in tier II's stable
 Where to get it: Blueprint Table
 Main materials: spruce stairs and planks, dark oak logs, birch planks, cobblestone
@@ -26,6 +26,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 Once a builder finishes the Inn, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
 - **Inn II** adds a stable on the side, with a **smoker**, a water trough and a second chest.
+- **Inn III** digs an **ale and wine cellar** under the inn, down a ladder under a hatch in the taproom's corner: racks of wine casks along both walls, oak ale casks and sacks of malt, bottles in chests and pots, and a tasting table. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

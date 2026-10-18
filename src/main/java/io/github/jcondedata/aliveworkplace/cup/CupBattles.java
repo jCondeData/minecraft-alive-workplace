@@ -30,6 +30,12 @@ public interface CupBattles {
 	@Nullable
 	UUID versusVillager(ServerPlayer player, Villager trainer, Component name, int tier, UUID entrant, CupThemes.Theme theme);
 
+	/** The same; with {@code megaAce} (38.5: the Cup's final) one of the villager's team holds its Mega Stone when the theme allows one. */
+	@Nullable
+	default UUID versusVillager(ServerPlayer player, Villager trainer, Component name, int tier, UUID entrant, CupThemes.Theme theme, boolean megaAce) {
+		return versusVillager(player, trainer, name, tier, entrant, theme);
+	}
+
 	/** Starts a battle between two players in the theme's format, level and rules, with healed copies of their eligible teams. */
 	@Nullable
 	UUID versusPlayer(ServerPlayer a, ServerPlayer b, CupThemes.Theme theme);

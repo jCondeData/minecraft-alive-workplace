@@ -15,7 +15,7 @@ at `/guide/`: the Guide Book's showcase scene already owns that folder.
   plans or anything coming later. Settings in plain words with the settings screen's names (game rule names and
   commands are fine: players type them).
 - Only what is switched on in the release. Content of an expansion that is still switched off goes on its own page,
-  written early, with `expansion: M32` (the expansion's milestone, M27 to M35; `M30, M33` for a page that needs both)
+  written early, with `expansion: M32` (the expansion's milestone, M27 to M35, M37 or M38; `M30, M33` for a page that needs both)
   in its infobox. `site.py` reads the switches from `Expansions.java` and leaves such a page out of the published site
   while any of them is off: no page, not counted, in no category, See also, All pages or portal, and the index's list
   items that start with a link to it are dropped (a section or subsection left empty goes too). Links to it from published pages
@@ -59,6 +59,6 @@ Check the site after changing the layout: `python3 tools/playerguide/site.py --s
 - **`tools/modtest/guidecheck.py` fails the build** (`./gradlew build` runs it as `checkGuide`) when a page has a
   roadmap id, "ROADMAP", "GameTest" or a path under `src/`, links a page that doesn't exist or isn't linked from
   `index.md`, shows a picture of a scene or still that doesn't exist, lacks an infobox with categories, names a
-  `related` page that doesn't exist, has a portal no page is in, or names an `expansion` other than M27 to M35. Gated
+  `related` page that doesn't exist, has a portal no page is in, or names an `expansion` other than M27 to M35, M37 or M38. Gated
   pages are checked like the others. Run it yourself (under a second):
   `python3 tools/modtest/guidecheck.py`; its own tests: `python3 tools/modtest/test_guidecheck.py`.

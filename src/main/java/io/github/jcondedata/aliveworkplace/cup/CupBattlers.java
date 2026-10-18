@@ -16,6 +16,11 @@ public interface CupBattlers {
 	/** The trainer's team for a Cup with this theme: its seeded pool filtered by the theme, as many as it brings, at its level. */
 	List<CupBout.Fighter> team(UUID trainer, int tier, CupThemes.Theme theme);
 
+	/** The same, and with {@code megaAce} (38.5: a Cup final) one of them holding its Mega Stone when the theme allows one. */
+	default List<CupBout.Fighter> team(UUID trainer, int tier, CupThemes.Theme theme, boolean megaAce) {
+		return team(trainer, tier, theme);
+	}
+
 	/**
 	 * The trainer's own team at {@code tier}, as players meet it at their post (35.24: a Stadium Day's bouts, settled by
 	 * rank and team strength); none without Cobblemon.

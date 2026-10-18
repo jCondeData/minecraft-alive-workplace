@@ -289,6 +289,11 @@ SCENES = [
     S("battle", "Trainer", "A battle with a Master trainer", "the battle ran to the end and a Mega Evolution happened", 420,
       [("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
       cobblemon=True, mega=True),
+    # More Mega trainers (ROADMAP 38.5): a City's Trainer Leader wears the Mega Bracelet and Mega Evolves against the player
+    S("mega_trainers", "Trainer Leader", "Mega trainers: a City's Leader Mega Evolves",
+      "the City's Trainer Leader wears the Mega Bracelet and their lead Mega Evolved in a battle against the player", 420,
+      [("01_mega_leader", "The Leader's Mega Bracelet"), ("mega_battle_*@middle", "Mid-battle"), ("99_mega_battle_end", "Battle over")],
+      cobblemon=True, mega=True),
     S("arena", "Trainer Leader", "The Arena, three tiers",
       "every tier's ring center, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
       [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),
@@ -927,6 +932,14 @@ SCENES = [
       "a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state", 45,
       [("01_raid_den", "A raid den by the hall"), ("02_raid_den_page", "The Defense page: tier 3, Fire, active"),
        ("03_raid_den_resting", "A beaten den, resting")], cobblemon=True),
+    # Den Wardens (ROADMAP 38.3, Cobblemon Raid Dens): a guard stands watch by the den
+    S("den_warden", "Village Hall", "Den Wardens: a guard stands watch at the raid den",
+      "a guard posted from the hall's Defense page stands watch by the raid den, by day", 45,
+      [("01_den_warden", "The warden by the glowing den"), ("02_den_warden_page", "The Defense page: the den's warden")], cobblemon=True),
+    # Den challenges (ROADMAP 38.4, Cobblemon Raid Dens): the village's Trainer Leader beats a den
+    S("den_challenge", "Village Hall", "Den challenges: the village's trainer beats a raid den",
+      "the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it", 45,
+      [("01_den_challenge", "The beaten den, dark, and the Leader by it"), ("02_den_challenge_chronicle", "The chronicle: the Leader beat the tier 3 Fire den")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,

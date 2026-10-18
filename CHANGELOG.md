@@ -46,6 +46,16 @@ asks for the steps, `latest.log` and any crash report).
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.
 - **The village knows its raid dens (2.2).** With Cobblemon Raid Dens, the dens within 160 blocks of a Village Hall
   show on its Defense page ("Raid den, tier 3, Fire, active") and on the village map, found as their chunks load.
+- **Den Wardens (2.2).** Post a guard to a raid den from the Defense page: they stand watch by day, the chronicle
+  says when the den glows again, and a player who joins a raid there gets a cheer. Switch: `denWardens`.
+- **Village trainers challenge the raid dens (2.2).** Every 3 days a village's Trainer Leader or Master takes on an
+  active den nearby (up to tier 3 for a Leader, tier 4 for a Master, never one a player is at). A win brings that
+  tier's raid loot home to the village store and the den goes dark until it resets; a loss sends the trainer home
+  tired for a day. Players nearby are told, so they can go and watch. Switches: `denChallenges`, `denChallengeDays`.
+- **More village trainers Mega Evolve (2.2).** With Mega Showdown, a City's Trainer Leaders, the Festival Cup's
+  finalists and the Stadium Day's visiting trainers carry a Mega Stone like Masters do, and Mega Evolve in battle
+  against you. Every village trainer who can wears a Mega Bracelet (a gold band with the rainbow Key Stone) on their
+  wrist, so you can tell before you challenge them. Switch: `villageMegas`.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

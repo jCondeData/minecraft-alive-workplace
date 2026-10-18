@@ -153,6 +153,8 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 
 - [Pokémon and villagers](pokemon.md): Pokémon partners that speed up the work, trainers to battle, move tutors, ball
   smiths, traders and fossils.
+- [Raid dens](raid-dens.md): the dens your village knows, the guards who watch them and the trainers who beat them.
+- [Mega trainers](mega-trainers.md): which village trainers Mega Evolve, and the bracelet that shows it.
 
 ## For server owners
 

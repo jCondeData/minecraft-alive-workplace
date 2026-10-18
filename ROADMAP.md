@@ -237,6 +237,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B163** FireGameTests.aJourneymanCallsABucketBrigade timed out (1200 ticks) in a local full build on the shared 7 GB box at 14:52Z (commit f4858e6e, M38 raid dens; nothing in that diff touches fire or villagers' walking). Not seen on CI. Expected: the brigade puts the fire out within the timeout. Probably a flake under load; repeat it. Test: FireGameTests.aJourneymanCallsABucketBrigade (found by lane-d-1017-1320, 2026-10-17)
 - [x] **B164** (approved auto 2026-10-18) The nightly's compat-cobblemon18 job (compat GameTests with -Pcobblemon18=true) failed on nightly 21 (run 39015121229, main 20721c8, 2026-10-17), and nightlies 19 and 20 also ended red; it holds back 26.4's three green nightlies. The nightly-tests issue comment only shows cloth-config 'duplicate input class' noise, not the failing test. Expected: the job passes and the issue shows the real failure. Test: runCompatGameTest -Pcobblemon18=true (found by red duty) (found by lane-a-1018-0022, 2026-10-18)
 - [ ] **B165** PartnersAllCompatTests.aCombeeCirclesTheHive failed on main CI build 1049 (bcaaeacd, docs-only commit, 2026-10-18 02:21Z), its only failure (compat 231/232), and passed in builds 1050-1052: B110's flake is back (B110 closed 2026-10-12). The CI log prints only the name; the message is in that run's gametest-report artifact. Expected: passes every run. Test: the test repeated under runCompatGameTest with the repeat generator (test-only; turned main red once) (found by lane-a-1018-0322, 2026-10-18)
+- [ ] **B166** Furnished homes (37.4) swap villagers' beds for Handcrafted fancy beds, but the game's villager HOME point of interest is built from the vanilla bed blocks only, so villagers may not claim or sleep in a furnished home's fancy beds (check whether Handcrafted registers its beds as a POI; if not, keep bed spots vanilla or skip the bed kind). Found while building 37.5, whose workplaces keep their beds vanilla. (found by lane-c-1018-0352, 2026-10-18)
+- [ ] **B167** SkyChartGameTests (the 6,144-block chart timing test) failed in a local full build (lane-a-1018-0022, merge of main 8dd148ed with B164/B127, 2026-10-18 04:28Z): 'drawing the chart takes 564 ms' against its 250 ms wall-clock limit, its only failure of the suite, on the shared 7 GB box with another JVM running; main CI build 1052 passed it. Expected: passes on a loaded machine (a wall-clock limit this tight flakes under load; measure work, not time, or allow for load). Test: the test repeated under runGameTest with a parallel load (test-only) (found by lane-a-1018-0022, 2026-10-18)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4811,14 +4813,14 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   the next check. The dens show on the village map (`VillageMaps`) and the hall's Defence page ("Raid den, tier 3,
   Fire, active"). Done when: compat GameTests: a den placed with known states near a hall is listed with them; a den
   turned inactive shows inactive; a den 200 blocks off isn't listed; a reload keeps the list; the map marks it.
-- [ ] **38.3** **Den Wardens.** A guard (`guard/`) can be posted to a known den from the Defence page: they stand watch
+- [x] **38.3** (review: pending 2026-10-18) **Den Wardens.** A guard (`guard/`) can be posted to a known den from the Defence page: they stand watch
   by day, keep wild Pokémon from crowding it, and tell the chronicle when it turns active again ("The Fire den by the
   river glows again"). A player who joins a raid at a watched den (the `cobblemonraiddens:join_raid` advancement, or a
   tier advancement, granted while near it) gets the warden's cheer: one of the mod's cheer items. Done when: compat
   GameTests: a posted guard walks to the den and back at dusk; a den that turns active writes the chronicle line once;
   a player granted the join advancement near a watched den gets one cheer item, once per raid; a warden recalled goes
   back to normal duty.
-- [ ] **38.4** **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
+- [x] **38.4** (review: pending 2026-10-18) **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
   Leaders, Masters) may send its best one to an active den the village knows. The server can't play a raid with no
   player in it, so the challenge is settled like the Stadium's bouts: the trainer's rank and team against the den's
   tier (a fixed random in tests), at most tier 3 for Leaders and Masters alike (tier 4 and up are for players only: owner, 2026-10-18). A win rolls the den's own tier loot table
@@ -4827,7 +4829,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   for a day. A player nearby can come along and watch. Done when: compat GameTests: a win puts that tier's loot in the
   store and turns the den inactive; a loss leaves it active; a tier 4 or higher den is never challenged; a den in use by a
   player (a player within 8 blocks) isn't challenged; scene `den_challenge` (`-Pcobblemon=true`).
-- [ ] **38.5** **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
+- [x] **38.5** (review: pending 2026-10-18) **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
   (`CobblemonMegas.megaAce`). Add: Trainer Leaders of a City-rank village, the Festival Cup's final round and the
   Stadium Day's visiting champions (35.x) get a Mega Stone ace too, and every villager trainer whose team can Mega
   Evolve wears a Mega Bracelet on their outfit (an outfit layer drawn with the pixel-art skill, shown only when Mega
@@ -5033,6 +5035,15 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-18 (lane-d-1018-0108, **wip/lane-d holds 38.6 and 38.7**, ticked there but not on `main`): 38.6 (Mega
+  Stones from the Jeweller) passed its own tests and the full `runGameTest`, but
+  `MegaStoneCompatTests.aJewellerCutsAMegaStoneForTheVillagesTrainers` failed in the full `runCompatGameTest` (passed
+  alone); commit 0ec1567f there narrows the village radius in that test, NOT YET RUN. 38.7 (the Mega Shrine) passed
+  its own classes; the full suite wasn't run. Next lane d run: run that test and the full build, then merge to `main`.
+  The owner's answers in docs/design/M38.md (2026-10-18): the bracelet stays once per realm (as built); village
+  trainers take raid dens up to tier 3 only, so 38.4's `DenChallenges.MASTER_MAX` must drop from 4 to 3. Commit
+  e0abbaae on wip/lane-d-tier3 does it with a test, but `aLossLeavesTheDenActive` and `tiredTrainersSurviveASave`
+  (DenChallengeCompatTests) use a tier 4 den for a Master's loss and need a tier 3 den with a weaker roll instead.
 - 2026-10-18 (37.4, lane-c-1018-0053, decision, owner's Trainer's room answer): homes are planned before anyone lives
   in them, so a home "with a Pokémon partner" is judged when its build is planned: a Pokémon kept in a Pasture Block
   within `Partners.RADIUS` (16) of the plot's origin, through `PokemonPartners.pastured` (no Cobblemon class in core).

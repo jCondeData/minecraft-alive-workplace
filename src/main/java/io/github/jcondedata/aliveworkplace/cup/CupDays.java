@@ -461,6 +461,24 @@ public final class CupDays {
 		level.sendParticles(ParticleTypes.NOTE, ring.x, ring.y + 1.5, ring.z, 6, 1.5, 0.5, 1.5, 1);
 	}
 
+	/**
+	 * Whether {@code v} fights in a Cup final still to be decided today (38.5: its trainers carry a Mega Stone): one of
+	 * the final's two entrants, or a delegate standing in for one.
+	 */
+	public static boolean inFinal(ServerLevel level, Villager v) {
+		Delegate d = delegate(v);
+		UUID id = d != null ? d.leader() : v.getUUID();
+		for (CupData.Cup cup : CupData.get(level).all().values()) {
+			if (today(level, cup) && finalNext(cup)) {
+				CupBouts.Pairing p = undecided(cup);
+				if (p != null && (p.a().id().equals(id) || p.b().id().equals(id))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/** Whether the next bout is the final (one pair left). */
 	public static boolean finalNext(CupData.Cup cup) {
 		List<CupData.Entrant> slots = new ArrayList<>(cup.bracket);
@@ -666,7 +684,9 @@ public final class CupDays {
 				win = aOut ? p.b() : p.a();
 				walkover = true;
 			} else if (p.a().kind() != CupData.Kind.PLAYER && p.b().kind() != CupData.Kind.PLAYER && theme != null) {
-				CupBout bout = new CupBout(p.a().id(), p.b().id(), CupBouts.team(p.a(), theme), CupBouts.team(p.b(), theme), p.round(), seed, ring, ring, ring);
+				boolean isFinal = finalNext(cup);
+				CupBout bout = new CupBout(p.a().id(), p.b().id(), CupBouts.team(p.a(), theme, isFinal), CupBouts.team(p.b(), theme, isFinal), p.round(), seed,
+					ring, ring, ring);
 				bout.playOut();
 				win = bout.winner == 0 ? p.a() : p.b();
 			} else {

@@ -39,7 +39,8 @@ MAGENTA_FRAME = 16  # ... in a 480x270 GIF frame
 ASSET_LINES = re.compile(r"(Missing model|Unable to load model|Missing textures? in model|Unable to resolve texture|"
                          r"Using missing texture|Couldn't load texture|Failed to load texture|Missing sprite)")
 KEY = re.compile(r"^[a-z0-9_\-]+(\.[a-z0-9_\-/]+)+$")
-FOREIGN = re.compile(r"cobblemon|cobbledollars|mega_?showdown|showdown|accessories|owo|fabric|architectury")
+FOREIGN = re.compile(r"cobblemon|cobbledollars|mega_?showdown|showdown|accessories|owo|fabric|architectury|supplementaries|"
+                     r"moonlight|handcrafted|beautify|cobblefurnies|chipped|rechiseled|carved_?wood|toms_storage|sophisticated")
 CRASH = re.compile(r"---- Minecraft Crash Report ----|#@!@# Game crashed|Exception in server tick loop")
 
 

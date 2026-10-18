@@ -223,7 +223,6 @@ SCENES = [
       "then a Storehouse's store is the inventory connector, each item counted once, the board names the 3 linked blocks and the terminal opens",
       100, [("01_storehouse", "The Storehouse with a Sophisticated controller on its linked barrels and chests"),
             ("02_board", "The Storehouse board: one store, and the line 'Linked through a storage controller: 5 blocks'"),
-            ("03_network", "The connector, a chest touching it, a cable to a second chest and a filing cabinet, the terminal"),
             ("04_board", "The Storehouse board: linked through an inventory connector, 3 blocks"),
             ("05_terminal", "The village's goods in Tom's own terminal screen")], cobblemon=True, furniture=True),
     job("dropbox", "Porter", "Emptying a Drop Box", "the porter emptied the Drop Box into the store", 120,
@@ -1136,7 +1135,6 @@ SCENES = [
       "the vanilla Starter Cottage II stands beside its modded copy (daub walls with braces, herringbone floors, Carved Wood chests, crockery on the table) and the modded Inn II, built from the modded library because its mods are installed",
       40, [("01_both_cottages", "The Starter Cottage II from the vanilla library (left) and the modded library (right)"),
            ("02_modded_cottage", "The modded cottage: Supplementaries daub for the plaster, braced beside the posts"),
-           ("03_modded_cottage_back", "From behind: the daubed gable"),
            ("04_modded_cottage_inside", "Inside: Chipped herringbone floors, Handcrafted furniture and crockery, Carved Wood chests"),
            ("05_modded_inn", "The Inn II from the modded library")], cobblemon=True, furniture=True),
     # The Village Hall build in its three levels, walked round as a player sees it, then in Sandstone and Cherry

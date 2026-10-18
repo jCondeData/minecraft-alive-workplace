@@ -45,6 +45,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Legends.tick((Villager) (Object) this);
 		io.github.jcondedata.aliveworkplace.legend.Gifted.tick((Villager) (Object) this);
+		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.tick((Villager) (Object) this); // who wears a Mega Bracelet (38.5)
 		io.github.jcondedata.aliveworkplace.people.Retirement.tick((Villager) (Object) this); // shadows and mentors (34.20)
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();

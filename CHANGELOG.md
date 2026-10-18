@@ -32,6 +32,10 @@ asks for the steps, `latest.log` and any crash report).
   active den nearby (up to tier 3 for a Leader, tier 4 for a Master, never one a player is at). A win brings that
   tier's raid loot home to the village store and the den goes dark until it resets; a loss sends the trainer home
   tired for a day. Players nearby are told, so they can go and watch. Switches: `denChallenges`, `denChallengeDays`.
+- **More village trainers Mega Evolve (2.2).** With Mega Showdown, a City's Trainer Leaders, the Festival Cup's
+  finalists and the Stadium Day's visiting trainers carry a Mega Stone like Masters do, and Mega Evolve in battle
+  against you. Every village trainer who can wears a Mega Bracelet (a gold band with the rainbow Key Stone) on their
+  wrist, so you can tell before you challenge them. Switch: `villageMegas`.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

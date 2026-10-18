@@ -5937,6 +5937,8 @@
   "aliveworkplace.config.denChallenges.tooltip": "A village's best trainer (a Trainer Leader or a Master) challenges an active raid den it knows: a win brings that tier's raid loot to the store. Needs Cobblemon Raid Dens. Off: no challenges.",
   "aliveworkplace.config.denChallengeDays": "Den Challenge Days",
   "aliveworkplace.config.denChallengeDays.tooltip": "How many days a village waits between raid den challenges.",
+  "aliveworkplace.config.villageMegas": "Village Megas",
+  "aliveworkplace.config.villageMegas.tooltip": "A City's Trainer Leaders, the Festival Cup's finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega Bracelet. Needs Mega Showdown. Off: only Masters Mega Evolve, and nobody wears a bracelet.",
   "message.aliveworkplace.well_keeper.title_full": "Well Keeper · bucket full",
   "message.aliveworkplace.well_keeper.title_empty": "Well Keeper · bucket empty",
   "message.aliveworkplace.well_keeper.state.water": "fetching water",

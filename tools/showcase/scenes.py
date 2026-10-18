@@ -282,6 +282,11 @@ SCENES = [
     S("battle", "Trainer", "A battle with a Master trainer", "the battle ran to the end and a Mega Evolution happened", 420,
       [("battle_*@first", "Battle starts"), ("battle_*@middle", "Mid-battle"), ("99_battle_end", "Battle over")],
       cobblemon=True, mega=True),
+    # More Mega trainers (ROADMAP 38.5): a City's Trainer Leader wears the Mega Bracelet and Mega Evolves against the player
+    S("mega_trainers", "Trainer Leader", "Mega trainers: a City's Leader Mega Evolves",
+      "the City's Trainer Leader wears the Mega Bracelet and their lead Mega Evolved in a battle against the player", 420,
+      [("01_mega_leader", "The Leader's Mega Bracelet"), ("mega_battle_*@middle", "Mid-battle"), ("99_mega_battle_end", "Battle over")],
+      cobblemon=True, mega=True),
     S("arena", "Trainer Leader", "The Arena, three tiers",
       "every tier's ring center, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
       [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),

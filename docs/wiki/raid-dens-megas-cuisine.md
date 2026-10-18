@@ -4,9 +4,10 @@ Cobblemon depth brings three of the pack's Pokémon mods into village life: Cobb
 dens around it, guards watch them and its trainers challenge them), Mega Showdown (more village trainers Mega Evolve,
 and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchens cook its dishes and farmers grow its
 beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
-the village knows (38.2), Den Wardens (38.3) and the village's den challenges (38.4); the full plan is the design note, docs/design/M38.md.
+the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4) and more Mega trainers with their
+bracelets (38.5); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5
 
 ## What a player sees
 
@@ -36,7 +37,18 @@ would) into the village store, turns the den inactive (`is_active` false; Raid D
 things". A loss leaves the den glowing, sends the trainer home tired for a day and writes "... lost to the tier
 4 Fire raid den". Each try counts as a battle for the trainer and earns experience (more for a win).
 
-The rest (Megas, Cobblecuisine) comes with 38.5 to 38.10.
+**More Mega trainers (38.5).** With Mega Showdown installed, Masters still carry a Mega Stone, and now so do: a Trainer
+Leader whose village (the nearest Village Hall) is a City, the two trainers of a Festival Cup's final (on the Cup's
+day, until the final is decided; a delegate standing in for one too), and the Stadium Day's visiting trainers. One
+Pokémon of their team holds its own Mega Stone (the first that has one; otherwise the last is swapped for one that
+does, the same level and training), and their battle AI Mega Evolves it the first turn it can, at any tier. A Town's
+Leader (or a Hamlet's or a Village's) holds none. In a Cup final the Mega Pokémon must fit the theme (types, stage,
+banned labels); with no Mega Evolution fitting it (the Little Cup), the team stays as it is. Every trainer who can
+Mega Evolve wears a **Mega Bracelet** over their outfit: a gold band round the left wrist with the rainbow Key Stone
+set in it (`textures/entity/villager/mega_bracelet.png`, drawn by `tools/textures/art/megas.py`). Without Mega
+Showdown there are no extra stones, no bracelets and nothing is sent.
+
+The rest (Mega Stones from the Jeweller, the Mega Shrine, Cobblecuisine) comes with 38.6 to 38.10.
 
 ## How it works
 
@@ -53,6 +65,15 @@ versions, next to Mega Showdown 1.8.4, which was already there; so does the scre
 (`-Pcobblemon=true`). The Cobblemon 1.8 runs swap Raid Dens to 0.13.2 and keep Cobblecuisine 2.0.1, which has no build
 for 1.8.
 
+## How the bracelet reaches the players (38.5)
+
+`trainer/MegaBracelets` (core) decides who can Mega Evolve; `compat/cobblemon` builds the team with the stone from it
+(`CobblemonTrainers.teamOf`). Every 40 ticks of a trainer's life the server checks again and, when the answer changed,
+sends a small packet (`aliveworkplace:mega_bracelet`: the entity id and yes or no) to every player who sees them, and
+again whenever a player starts seeing one who wears it. The client draws `MegaBraceletLayer` over the villager's
+outfit, class and Legend looks. A village that becomes a City (or drops back), a Cup's final and a visitor's day so
+show within two seconds. Nothing is saved: it all follows from the village's rank, the Cup and the visitor records.
+
 ## How dens are found (38.2)
 
 When a chunk loads, its block entities are looked at (never an area of blocks); a Raid Dens crystal among them is
@@ -68,8 +89,9 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `denWardens` | on (once 2.2 ships) | Guards can be posted to raid dens. Off: no new wardens, and those posted go back to normal duty. |
 | `denChallenges` | on (once 2.2 ships) | Village trainers challenge active dens. Off: no challenges. |
 | `denChallengeDays` | 3 (1 to 30) | Days between a village's challenges. |
+| `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5; 38.6 and 38.7 will use it too). Off: only Masters Mega Evolve, as before, and nobody wears a bracelet. |
 
-The other three are mapped to the gate and come into the config with 38.5 to 38.10.
+The other two are mapped to the gate and come into the config with 38.8 to 38.10.
 
 ## Saved data
 
@@ -106,6 +128,13 @@ the design note and checked by `CobblemonDepthCompatTests`.
   log (38.4).
 - The challenge is looked at every 30 seconds by day; a village that tried (won or lost) waits `denChallengeDays`
   days, and a village with no free Leader or Master, or no den in reach, tries again next look (38.4).
+- The village's Megas come from where the trainer stands now: a Leader's village is the nearest hall's, so a Leader of
+  a City who walks into a Town's reach counts as the Town's (38.5).
+- In a Cup final's simulated bouts (two villagers) the Mega Stone holder fights as the Pokémon it is: the bout's small
+  formula has no Mega Evolution; only real battles against a player Mega Evolve (38.5).
+- The Stadium Day's visitors Mega Evolve in a player's challenge; their exhibition bouts against the home trainers are
+  settled with each side's home team, as before (38.5).
+- A Mega Stone holder's battle AI Mega Evolves at any tier, Novice included (a Cup finalist can be one) (38.5).
 - In local compat runs on the 7 GB dev box, `-PcompatHeap=2G` is needed now that the runtime holds two more mods
   (38.1); CI keeps the default.
 
@@ -115,7 +144,8 @@ Only dens within the map's 128-block square get a banner; farther ones (up to 16
 only. A den nobody has been near isn't known. A player who joins a raid from farther than 16 blocks (or whose advancement was granted earlier) gets no cheer. Only
 one warden per den. A challenge is settled at once: there's no battle to watch, only the den going dark. A won
 challenge gives no Raid Dens Pokémon, only the loot. On Cobblemon 1.8 (Raid Dens 0.13.2) the loot fields are untested.
-Megas and Cobblecuisine aren't built yet.
+The Jeweller's Mega Stones, the shrine and Cobblecuisine aren't built yet. The bracelet's look is checked in the
+showcase scene only (a client is needed to draw it).
 Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 
 ## Proof
@@ -133,4 +163,11 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   chronicle line), `aLossLeavesTheDenActive` (and the trainer tired, not sent again), `aTierSixDenIsNeverChallenged`,
   `aDenInUseByAPlayerIsntChallenged`, `aBrokenDenIsntChallenged`, `tiredTrainersSurviveASave`.
 
-Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`
+- `MegaTrainerCompatTests` (with Mega Showdown): `aCityLeaderMegaEvolvesATownLeaderDoesNot`,
+  `theCupFinalsTrainersHoldAMegaStone` (six seeds, the theme kept, as fighters too, not in earlier rounds; finalists
+  in a Cup today wear the bracelet), `theBraceletIsOnExactlyTheMegaTrainers` (City Leader, Master and visitor do;
+  Expert, Novice and farmer don't; the clients are told the same), `switchedOffOnlyMastersMegaEvolve`,
+  `aLeaderSavedAndLoadedIsTheSame`.
+- `MegaTrainerGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `aCupFinalistIsKnown`.
+
+Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`, `mega_trainers`

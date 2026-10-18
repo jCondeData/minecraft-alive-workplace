@@ -91,7 +91,7 @@ public final class CobblemonTrainers {
 			return;
 		}
 		int tier = Trainers.tier(trainer);
-		List<Pokemon> team = team(trainer.getUUID(), tier);
+		List<Pokemon> team = teamOf(trainer);
 		java.util.OptionalInt cap = io.github.jcondedata.aliveworkplace.compat.rct.RctLevelCaps.levelCap(player);
 		if (cap.isPresent()) {
 			team = scaleToCap(team, tier, cap.getAsInt());
@@ -101,7 +101,7 @@ public final class CobblemonTrainers {
 			pokemon.getPersistentData().putBoolean(VillagerTrainerActor.TRAINER_POKEMON, true);
 			theirs.add(BattlePokemon.Companion.safeCopyOf(pokemon));
 		}
-		BattleAI ai = tier <= 1 ? new RandomBattleAI() : CobblemonMegas.megaEvolving(new StrongBattleAI(tier));
+		BattleAI ai = CobblemonMegas.megaEvolving(tier <= 1 ? new RandomBattleAI() : new StrongBattleAI(tier)); // a Mega Stone holder Mega Evolves at any tier (38.5)
 		VillagerTrainerActor them = new VillagerTrainerActor(trainer, Trainers.title(trainer).getString(), theirs, ai);
 		PlayerBattleActor us = new PlayerBattleActor(player.getUUID(), mine);
 		BattleStartResult result = BattleRegistry.startBattle(BattleFormat.Companion.getGEN_9_SINGLES(), new BattleSide(us), new BattleSide(them), false);
@@ -117,6 +117,17 @@ public final class CobblemonTrainers {
 	// The trainer's team at this tier: always the same for the same trainer and tier (seeded by the
 	// villager), never legendaries; young Pokémon for beginners, fully evolved ones at the top.
 	public static List<Pokemon> team(UUID trainer, int tier) {
+		return team(trainer, tier, tier >= 5);
+	}
+
+	// The team {@code trainer} fields at home: one of them holds its Mega Stone when the trainer can Mega Evolve
+	// (MegaBracelets: a Master; with villageMegas on, a City's Trainer Leader, a Stadium Day's visitor, a Cup finalist).
+	public static List<Pokemon> teamOf(Villager trainer) {
+		return team(trainer.getUUID(), Trainers.tier(trainer), io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.canMegaEvolve(trainer));
+	}
+
+	// The trainer's team at this tier, with a Mega Stone holder if {@code megaAce} (and Mega Showdown is installed).
+	public static List<Pokemon> team(UUID trainer, int tier, boolean megaAce) {
 		int t = Math.max(1, Math.min(5, tier)) - 1;
 		Random random = new Random(trainer.getMostSignificantBits() ^ trainer.getLeastSignificantBits() ^ (31L * t));
 		List<Species> pool = new ArrayList<>();
@@ -148,8 +159,8 @@ public final class CobblemonTrainers {
 			train(pokemon, t, new Random(trainer.getLeastSignificantBits() ^ (7919L * (i + 1)) ^ (131L * t)));
 			team.add(pokemon);
 		}
-		if (t == 4) {
-			CobblemonMegas.megaAce(team, t, new Random(trainer.getMostSignificantBits() ^ 0x4D454741L));
+		if (megaAce) {
+			CobblemonMegas.megaAce(team, t, new Random(trainer.getMostSignificantBits() ^ 0x4D454741L), species -> true);
 		}
 		return team;
 	}
@@ -159,6 +170,12 @@ public final class CobblemonTrainers {
 	// (Cobblemon's level adjust), trained by the trainer's tier as at home. A delegate passes its Leader's UUID, so it
 	// fields the same team.
 	public static List<Pokemon> team(UUID trainer, int tier, io.github.jcondedata.aliveworkplace.cup.CupThemes.Theme theme) {
+		return team(trainer, tier, theme, false);
+	}
+
+	// The same; with {@code megaAce} (38.5: the Cup's final) one of them holds its Mega Stone, a Pokémon the theme allows
+	// (none when no Mega Evolution fits it, as in the Little Cup).
+	public static List<Pokemon> team(UUID trainer, int tier, io.github.jcondedata.aliveworkplace.cup.CupThemes.Theme theme, boolean megaAce) {
 		int t = Math.max(1, Math.min(5, tier)) - 1;
 		Random random = new Random(trainer.getMostSignificantBits() ^ trainer.getLeastSignificantBits() ^ (31L * t));
 		Set<String> types = theme.trainerTypes(); // the Workers' Cup: the types the jobs' partners are
@@ -176,6 +193,10 @@ public final class CobblemonTrainers {
 			train(pokemon, t, new Random(trainer.getLeastSignificantBits() ^ (7919L * (i + 1)) ^ (131L * t)));
 			pokemon.heal();
 			team.add(pokemon);
+		}
+		if (megaAce) {
+			CobblemonMegas.megaAce(team, t, new Random(trainer.getMostSignificantBits() ^ 0x4D454741L), species -> fitsTheme(species, theme, types));
+			team.forEach(Pokemon::heal);
 		}
 		return team;
 	}

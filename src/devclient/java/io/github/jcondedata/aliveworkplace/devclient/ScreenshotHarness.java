@@ -507,6 +507,11 @@ public class ScreenshotHarness implements ClientModInitializer {
 			battleScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("mega_trainers".equals(System.getProperty("aliveworkplace.scene"))) {
+			megaLeader = true; // 38.5: the same battle against a City's Trainer Leader, who wears the Mega Bracelet
+			battleScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("smith".equals(System.getProperty("aliveworkplace.scene"))) {
 			smithScene(mc, mc.getSingleplayerServer());
 			return;
@@ -2735,6 +2740,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 	// --- Trader: the Pokémon Trader's offers (needs Cobblemon too) ------------------------------------
 
 	private Villager battleTrainer;
+	/** SCENE=mega_trainers (38.5): the trainer is a City's Trainer Leader, not a Master. */
+	private boolean megaLeader;
+	private boolean braceletSeen;
+	private static final BlockPos MEGA_HALL = new BlockPos(0, -60, 10);
 	private final AtomicBoolean megaSeen = new AtomicBoolean(false);
 	private final AtomicBoolean battleOver = new AtomicBoolean(false);
 	private final AtomicBoolean battleStarted = new AtomicBoolean(false);
@@ -2791,7 +2800,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 				java.util.UUID id = null;
 				for (int i = 0; i < 500 && id == null; i++) {
 					java.util.UUID u = new java.util.UUID(0xba771eL, i);
-					var team = io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(u, 5);
+					var team = megaLeader ? io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(u, 4, true)
+						: io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers.team(u, 5);
 					if (!team.isEmpty() && io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonMegas.holdsItsStone(team.get(0))) {
 						id = u;
 					}
@@ -2803,16 +2813,46 @@ public class ScreenshotHarness implements ClientModInitializer {
 				trainer.setUUID(id);
 				trainer.moveTo(0.5, -60, 5.5, 180, 0);
 				level.addFreshEntity(trainer);
-				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
-					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER);
-				trainer.setVillagerData(trainer.getVillagerData().setLevel(5));
+				if (megaLeader) { // a Trainer Leader (an Expert) of a City: their team holds a Mega Stone and they wear the bracelet
+					level.setBlockAndUpdate(MEGA_HALL, ModBlocks.VILLAGE_HALL.defaultBlockState());
+					((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(MEGA_HALL))
+						.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
+						io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER_LEADER);
+					trainer.setVillagerData(trainer.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER_LEADER));
+					Showcase.check(io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.canMegaEvolve(trainer), "the City's Trainer Leader can Mega Evolve");
+					io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.refresh(trainer);
+					player.teleportTo(level, 0.5, -60, 2.5, 0, 12); // close up, for the bracelet
+				} else {
+					io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, trainer, post,
+						io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINING_POST_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER);
+					trainer.setVillagerData(trainer.getVillagerData().setLevel(5));
+				}
 				battleTrainer = trainer;
 				var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
 				for (String p : List.of("snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100", "garchomp level=100")) {
 					party.add(com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(p, " ", "=").create());
 				}
 				player.setGameMode(GameType.SURVIVAL);
-				player.teleportTo(level, 0.5, -60, -6.5, 0, 10);
+				if (!megaLeader) {
+					player.teleportTo(level, 0.5, -60, -6.5, 0, 10);
+				}
+			});
+		}
+		if (megaLeader && tick == 70) {
+			net.minecraft.world.entity.Entity seen = mc.level == null || battleTrainer == null ? null : mc.level.getEntity(battleTrainer.getId());
+			braceletSeen = seen != null && io.github.jcondedata.aliveworkplace.client.MegaBraceletLayer.wears(seen);
+			Showcase.check(braceletSeen, "the client draws the Leader's Mega Bracelet");
+			shot(mc, "01_mega_leader");
+		}
+		if (megaLeader && tick == 76) {
+			server.execute(() -> server.getPlayerList().getPlayers().get(0).teleportTo(server.overworld(), 0.5, -60, -6.5, 0, 10));
+		}
+		if (megaLeader && tick > 80 && tick % 20 == 0) { // the hall's round would count the test village as a Hamlet
+			server.execute(() -> {
+				if (server.overworld().getBlockEntity(MEGA_HALL) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall) {
+					hall.setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.CITY);
+				}
 			});
 		}
 		if (tick == 80) {
@@ -2883,14 +2923,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
 				player.teleportTo(server.overworld(), 8.5, -58.2, 2.5, 72, 14);
 			});
-			shot(mc, String.format("battle_%03d", battleShots++));
+			shot(mc, String.format(megaLeader ? "mega_battle_%03d" : "battle_%03d", battleShots++));
 		}
 		if ((battleOver.get() || tick >= 8000) && tick % 20 == 0) {
 			System.out.println("[battle scene] over at tick " + tick + ", mega " + megaSeen.get());
-			Showcase.check(battleStarted.get(), "the Master trainer took the challenge");
-			Showcase.check(megaSeen.get(), "the Master's lead Mega Evolved");
+			Showcase.check(battleStarted.get(), megaLeader ? "the City's Trainer Leader took the challenge" : "the Master trainer took the challenge");
+			Showcase.check(megaSeen.get(), megaLeader ? "the Leader's lead Mega Evolved" : "the Master's lead Mega Evolved");
 			Showcase.check(battleOver.get() && tick < 8000, "the battle ran to the end");
-			shot(mc, "99_battle_end");
+			shot(mc, megaLeader ? "99_mega_battle_end" : "99_battle_end");
 			mc.stop();
 		}
 	}

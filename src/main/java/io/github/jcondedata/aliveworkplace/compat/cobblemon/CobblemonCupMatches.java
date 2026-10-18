@@ -186,12 +186,17 @@ public final class CobblemonCupMatches implements CupBattles {
 
 	@Override
 	public UUID versusVillager(ServerPlayer player, Villager trainer, Component name, int tier, UUID entrant, CupThemes.Theme theme) {
+		return versusVillager(player, trainer, name, tier, entrant, theme, false);
+	}
+
+	@Override
+	public UUID versusVillager(ServerPlayer player, Villager trainer, Component name, int tier, UUID entrant, CupThemes.Theme theme, boolean megaAce) {
 		if (BattleRegistry.getBattleByParticipatingPlayer(player) != null) {
 			return null;
 		}
 		List<BattlePokemon> mine = copies(player, theme);
 		List<BattlePokemon> theirs = new ArrayList<>();
-		for (Pokemon pokemon : CobblemonTrainers.team(entrant, tier, theme)) {
+		for (Pokemon pokemon : CobblemonTrainers.team(entrant, tier, theme, megaAce)) {
 			pokemon.getPersistentData().putBoolean(VillagerTrainerActor.TRAINER_POKEMON, true);
 			BattlePokemon copy = BattlePokemon.Companion.safeCopyOf(pokemon);
 			copy.getEffectedPokemon().heal();
@@ -200,7 +205,7 @@ public final class CobblemonCupMatches implements CupBattles {
 		if (mine.isEmpty() || theirs.isEmpty()) {
 			return null;
 		}
-		BattleAI ai = tier <= 1 ? new RandomBattleAI() : CobblemonMegas.megaEvolving(new StrongBattleAI(tier));
+		BattleAI ai = CobblemonMegas.megaEvolving(tier <= 1 ? new RandomBattleAI() : new StrongBattleAI(tier)); // a Mega Stone holder Mega Evolves at any tier (38.5)
 		VillagerTrainerActor them = new VillagerTrainerActor(trainer, name.getString(), theirs, ai);
 		PlayerBattleActor us = new PlayerBattleActor(player.getUUID(), mine);
 		BattleStartResult result = BattleRegistry.startBattle(format(theme), new BattleSide(us), new BattleSide(them), false);

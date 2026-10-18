@@ -4826,7 +4826,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   for a day. A player nearby can come along and watch. Done when: compat GameTests: a win puts that tier's loot in the
   store and turns the den inactive; a loss leaves it active; a tier 6 den is never challenged; a den in use by a
   player (a player within 8 blocks) isn't challenged; scene `den_challenge` (`-Pcobblemon=true`).
-- [ ] **38.5** **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
+- [x] **38.5** (review: pending 2026-10-18) **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
   (`CobblemonMegas.megaAce`). Add: Trainer Leaders of a City-rank village, the Festival Cup's final round and the
   Stadium Day's visiting champions (35.x) get a Mega Stone ace too, and every villager trainer whose team can Mega
   Evolve wears a Mega Bracelet on their outfit (an outfit layer drawn with the pixel-art skill, shown only when Mega

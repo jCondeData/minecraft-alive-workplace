@@ -155,6 +155,12 @@ public final class WorkplaceConfig {
 	public boolean denChallenges = Expansions.on(Expansions.M38);
 	/** Days between a village's raid den challenges (38.4). */
 	public int denChallengeDays = 3;
+	/**
+	 * More village trainers Mega Evolve (ROADMAP 38.5, Mega Showdown): a City's Trainer Leaders, the Festival Cup's
+	 * finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega
+	 * Bracelet. Off: only Masters carry one, as before, and nobody wears a bracelet.
+	 */
+	public boolean villageMegas = Expansions.on(Expansions.M38);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */
 	public boolean festivals = true;
 	/** Villagers near a player now and then say something about their day, over their heads. */
@@ -837,6 +843,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED = denWardens && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED = denChallenges && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.EVERY_DAYS = denChallengeDays;
+		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.work.PhysicianWork.ENABLED = physicians && Expansions.on(Expansions.M32);
 		// Which cultures may come at all (32.2); the two switches above stay the chance-driven raids' and camps' own.
 		io.github.jcondedata.aliveworkplace.threat.Threats.DISABLED = culturesOff();

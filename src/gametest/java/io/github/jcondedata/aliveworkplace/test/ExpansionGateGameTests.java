@@ -44,7 +44,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "tradePacts", "alliances", "feuds", "feudWars", "realmMap", "weeklyLeaderboard", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
 		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends", "builderScaffolding",
-		"furnishedBuilds", "moddedStorageNetworks", "denWardens", "denChallenges");
+		"furnishedBuilds", "moddedStorageNetworks", "denWardens", "denChallenges", "villageMegas");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
@@ -181,8 +181,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 131 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (131 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 132 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (132 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -281,7 +281,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 131, "every option on the screen in GameTests (37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 132, "every option on the screen in GameTests (38.5 villageMegas, 37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 

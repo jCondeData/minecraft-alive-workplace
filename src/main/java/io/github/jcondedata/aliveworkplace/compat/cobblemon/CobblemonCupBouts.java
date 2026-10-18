@@ -97,8 +97,13 @@ public final class CobblemonCupBouts implements CupBattlers {
 
 	@Override
 	public List<CupBout.Fighter> team(UUID trainer, int tier, CupThemes.Theme theme) {
+		return team(trainer, tier, theme, false);
+	}
+
+	@Override
+	public List<CupBout.Fighter> team(UUID trainer, int tier, CupThemes.Theme theme, boolean megaAce) {
 		List<CupBout.Fighter> out = new ArrayList<>();
-		for (Pokemon pokemon : CobblemonTrainers.team(trainer, tier, theme)) {
+		for (Pokemon pokemon : CobblemonTrainers.team(trainer, tier, theme, megaAce)) {
 			out.add(fighter(pokemon));
 		}
 		return out;

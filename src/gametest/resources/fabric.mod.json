@@ -341,6 +341,7 @@
 			"io.github.jcondedata.aliveworkplace.test.StewardHomesRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardCivicRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkplacesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BuiltInJobSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CraftWorkplacesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CountryWorkplacesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PlotGameTests",

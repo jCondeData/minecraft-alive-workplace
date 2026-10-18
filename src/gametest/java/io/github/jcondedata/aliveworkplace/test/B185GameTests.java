@@ -80,6 +80,7 @@ public class B185GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		villager.setAge(-20); // grows up in a second
 		int[] grownAt = {-1};
 		String[] problem = {null};
+		Vec3[] freedAt = {null};
 		helper.onEachTick(() -> {
 			if (!villager.isAlive()) {
 				problem[0] = "the villager died at tick " + helper.getTick();
@@ -87,6 +88,10 @@ public class B185GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			}
 			if (grownAt[0] < 0 && !villager.isBaby()) {
 				grownAt[0] = (int) helper.getTick();
+			}
+			// where it was let out to: afterwards a free villager wanders off on its own (once 7.4 blocks by tick 120)
+			if (grownAt[0] >= 0 && freedAt[0] == null && !stuck(level, villager)) {
+				freedAt[0] = villager.position();
 			}
 			if (problem[0] == null && grownAt[0] >= 0 && helper.getTick() > grownAt[0] + LET_OUT_BY && stuck(level, villager)) {
 				problem[0] = "B185: the grown villager is still inside " + what + " " + (helper.getTick() - grownAt[0]) + " ticks after growing up, at "
@@ -97,7 +102,8 @@ public class B185GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.assertTrue(problem[0] == null, problem[0] == null ? "" : problem[0]);
 			helper.assertTrue(grownAt[0] >= 0, "the baby didn't grow up");
 			helper.assertFalse(stuck(level, villager), "B185: the grown villager is inside " + what);
-			helper.assertTrue(villager.position().distanceTo(abs) < 6, "the villager was moved too far: " + villager.position().distanceTo(abs));
+			helper.assertTrue(freedAt[0] != null, "B185: the grown villager was never out of " + what);
+			helper.assertTrue(freedAt[0].distanceTo(abs) < 6, "the villager was moved too far: " + freedAt[0].distanceTo(abs));
 			villager.discard();
 			helper.succeed();
 		});

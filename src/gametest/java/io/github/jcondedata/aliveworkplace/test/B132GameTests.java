@@ -1,0 +1,160 @@
+package io.github.jcondedata.aliveworkplace.test;
+
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
+import io.github.jcondedata.aliveworkplace.build.BuildPlan;
+import io.github.jcondedata.aliveworkplace.build.BuildSite;
+import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.build.BuilderWork;
+import io.github.jcondedata.aliveworkplace.build.Builders;
+import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestAssertException;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.StairsShape;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * B132: in the city time-lapse a porter stood stuck in a wall between a stair and a slab a builder had just put down. A
+ * builder checked for room for the block in its blueprint but put down the block shaped by its neighbours: an
+ * outer-corner stair whose neighbour isn't built yet goes down straight, which fills a quarter more, and that quarter
+ * went down onto whoever stood there. Here: a villager in that quarter is never inside the stair, and the stair still
+ * gets built; and a mob left inside a block by a builder's placement is moved out to the nearest room to stand.
+ */
+public class B132GameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
+	private static final String AREA = "aliveworkplace_test:build_area";
+	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
+	private static final BlockPos BUILDER = new BlockPos(3, 2, 3);
+	private static final BlockPos ORIGIN = new BlockPos(6, 2, 6);
+
+	/** A villager stands where a straight stair reaches but the blueprint's outer-corner stair doesn't. */
+	//$ gametest_ticks_batch AREA '2400' '"b132CornerStair"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "b132CornerStair")
+	public void b132AStairPutDownStraightNeverGoesOntoAVillager(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		// The blueprint: one oak stair facing north, captured as an outer corner (a stair facing east in front of it).
+		BlockPos src = new BlockPos(12, 2, 12);
+		BlockState north = Blocks.OAK_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.NORTH);
+		helper.setBlock(src.north(), Blocks.OAK_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.EAST));
+		helper.setBlock(src, north);
+		BlockState outer = Block.updateFromNeighbourShapes(north, level, helper.absolutePos(src));
+		helper.assertTrue(outer.getValue(StairBlock.SHAPE) == StairsShape.OUTER_LEFT || outer.getValue(StairBlock.SHAPE) == StairsShape.OUTER_RIGHT,
+			"the blueprint's stair should be an outer corner, is " + outer);
+		helper.setBlock(src, outer);
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "b132_stair_" + Long.toHexString(level.getGameTime()));
+		level.getStructureManager().getOrCreate(id).fillFromWorld(level, helper.absolutePos(src), new Vec3i(1, 1, 1), false, Blocks.STRUCTURE_VOID);
+		helper.setBlock(src, Blocks.AIR);
+		helper.setBlock(src.north(), Blocks.AIR);
+
+		level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(true, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		Leftovers.after(helper, () -> level.getGameRules().getRule(ModGameRules.FREE_MATERIALS).set(false, level.getServer()));
+		helper.setDayTime(2000);
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager builder = helper.spawn(EntityType.VILLAGER, BUILDER);
+		Builders.employ(level, builder, helper.absolutePos(BENCH));
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
+		BuildSite site = Builders.start(level, builder, null, id, placement);
+		if (site == null) {
+			throw new GameTestAssertException(id + " didn't start");
+		}
+		BuildPlan plan = site.plan(level);
+		BuildPlan.Step stair = null;
+		for (BuildPlan.Stage stage : BuildPlan.Stage.values()) {
+			if (plan == null || stage == BuildPlan.Stage.DONE) {
+				continue;
+			}
+			for (BuildPlan.Step step : plan.steps(stage)) {
+				if (step.state().getBlock() instanceof StairBlock) {
+					stair = step;
+				}
+			}
+		}
+		if (stair == null) {
+			throw new GameTestAssertException("the plan has no stair");
+		}
+		BlockPos at = stair.pos();
+		BlockState planned = stair.state();
+		BlockState straight = planned.setValue(StairBlock.SHAPE, StairsShape.STRAIGHT);
+		// Stand the villager on the stair's bottom half, where the straight stair's top reaches and the corner's doesn't.
+		Vec3 spot = null;
+		for (double x : new double[] {0.15, 0.85}) {
+			Vec3 feet = new Vec3(at.getX() + x, at.getY() + 0.5, at.getZ() + 0.3);
+			AABB body = EntityType.VILLAGER.getDimensions().makeBoundingBox(feet).deflate(0.1);
+			boolean inCorner = planned.getCollisionShape(level, at).toAabbs().stream().anyMatch(b -> b.move(at).intersects(body));
+			boolean inStraight = straight.getCollisionShape(level, at).toAabbs().stream().anyMatch(b -> b.move(at).intersects(body));
+			if (!inCorner && inStraight) {
+				spot = feet;
+			}
+		}
+		if (spot == null) {
+			throw new GameTestAssertException("no place in the stair's block that only the straight stair fills");
+		}
+		Villager other = helper.spawn(EntityType.VILLAGER, helper.relativePos(at));
+		other.setNoAi(true);
+		other.setNoGravity(true);
+		other.teleportTo(spot.x, spot.y, spot.z);
+		Leftovers.after(helper, other::discard);
+		String[] problem = {null};
+		int[] builtAt = {-1};
+		helper.onEachTick(() -> {
+			if (!other.isAlive()) {
+				return;
+			}
+			if (problem[0] == null && !level.noCollision(other, other.getBoundingBox().deflate(0.1))) {
+				problem[0] = "B132: the villager is inside " + level.getBlockState(at) + " at tick " + helper.getTick() + " (it is at "
+					+ String.format("%.2f %.2f %.2f", other.getX() - at.getX(), other.getY() - at.getY(), other.getZ() - at.getZ()) + " from the stair)";
+			}
+			if (builtAt[0] < 0 && level.getBlockState(at).getBlock() instanceof StairBlock) {
+				builtAt[0] = (int) helper.getTick();
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(problem[0] == null, problem[0] == null ? "" : problem[0]);
+			helper.assertTrue(builtAt[0] >= 0, "the stair isn't built yet: stage " + site.stage() + ", " + site.detail());
+			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: stage " + site.stage() + ", " + site.detail());
+		});
+	}
+
+	/** A villager a placement left inside a block is moved to room to stand; one beside the block is left where it is. */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void b132AVillagerLeftInsideAPlacedBlockIsMovedOut(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Villager inside = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 2));
+		Villager beside = helper.spawn(EntityType.VILLAGER, new BlockPos(5, 2, 2));
+		for (Villager v : new Villager[] {inside, beside}) {
+			v.setNoAi(true);
+			v.setNoGravity(true);
+		}
+		Vec3 besideAt = helper.absoluteVec(new Vec3(5.5, 2, 2.5));
+		beside.teleportTo(besideAt.x, besideAt.y, besideAt.z);
+		BlockPos block = helper.absolutePos(new BlockPos(2, 3, 2));
+		level.setBlock(block, Blocks.STONE.defaultBlockState(), Block.UPDATE_ALL);
+		BlockPos next = helper.absolutePos(new BlockPos(4, 2, 2));
+		level.setBlock(next, Blocks.STONE.defaultBlockState(), Block.UPDATE_ALL);
+		helper.assertTrue(BuilderWork.insideBlock(level, inside) != null, "the villager should start inside the stone");
+		BuilderWork.freeBystanders(level, block, null);
+		BuilderWork.freeBystanders(level, next, null);
+		helper.assertTrue(BuilderWork.insideBlock(level, inside) == null, "the villager is still inside "
+			+ level.getBlockState(BuilderWork.insideBlock(level, inside) == null ? block : BuilderWork.insideBlock(level, inside)));
+		helper.assertTrue(beside.position().distanceTo(besideAt) < 0.01, "the villager beside the block was moved to " + beside.position());
+		helper.succeed();
+	}
+}

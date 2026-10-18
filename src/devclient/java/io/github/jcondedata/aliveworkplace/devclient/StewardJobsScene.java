@@ -106,18 +106,27 @@ final class StewardJobsScene {
 		if (tick == 230) {
 			ScreenshotHarness.shot(mc, "03_jobs_walking");
 		}
+		// B132: each arrival counts once, whenever it happens: read only at tick 520, a villager that had got there and
+		// wandered off (or a slow GitHub runner's late walker) failed the check. The walk may take until tick 900.
+		if (tick > 130 && tick % 10 == 0 && stopAt < 0) {
+			server.execute(() -> jobless.stream().filter(v -> v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+				.map(g -> g.pos().distToCenterSqr(v.position()) <= 4 * 4).orElse(false)).forEach(v -> arrived.add(v.getUUID())));
+		}
 		if (tick == 520) {
 			ScreenshotHarness.shot(mc, "04_jobs_at_work");
-			server.execute(() -> {
-				long there = jobless.stream().filter(v -> v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
-					.map(g -> g.pos().distToCenterSqr(v.position()) <= 4 * 4).orElse(false)).count();
-				Showcase.check(there == 3, "all three walked to their new workstations (" + there + " there)");
-			});
 		}
-		if (tick == 540) {
+		if (tick >= 520 && stopAt < 0 && (arrived.size() == 3 || tick >= 900)) {
+			int there = arrived.size();
+			server.execute(() -> Showcase.check(there == 3, "all three walked to their new workstations (" + there + " there)"));
+			stopAt = tick + 20;
+		}
+		if (tick == stopAt) {
 			mc.stop();
 		}
 	}
+
+	private final java.util.Set<java.util.UUID> arrived = java.util.concurrent.ConcurrentHashMap.newKeySet();
+	private int stopAt = -1;
 
 	private static ServerPlayer player(MinecraftServer server) {
 		return server.getPlayerList().getPlayers().get(0);

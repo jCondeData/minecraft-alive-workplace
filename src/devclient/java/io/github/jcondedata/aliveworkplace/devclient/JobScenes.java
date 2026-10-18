@@ -2948,6 +2948,38 @@ final class JobScenes {
 				return false;
 			};
 		}));
+		SCENES.put("mega_shrine", new Job("on a festival day the village trainer walked up to the Mega Shrine's pedestal and Mega Evolved their ace, and the villagers watching cheered (+3 mood)", 1600,
+			new Vec3(4.5, -55.0, -17.5), new Vec3(0.5, -57.5, -5.5), (level, player) -> {
+			// ROADMAP 38.7 (Mega Showdown): a finished Mega Shrine north of the station and a Village Hall south of it; the
+			// festival's hours (its start); a Trainer below the dais and three villagers off work. The trainer climbs to the
+			// pedestal for the show, the others gather in front to watch.
+			BlockPos hall = STATION.offset(0, 0, 6);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos origin = STATION.offset(-3, 0, -8);
+			level.getStructureManager().get(StarterBlueprints.MEGA_SHRINE.id()).orElseThrow().placeInWorld(level, origin, origin,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.MEGA_SHRINE.id(), new BlueprintData.Placement(level.dimension().location(),
+				origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			level.setDayTime((io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level) - 1) * 24000L + io.github.jcondedata.aliveworkplace.hall.Festivals.START + 50);
+			Showcase.check(io.github.jcondedata.aliveworkplace.trainer.MegaShrines.live(), "the shrine's show is on (Mega Showdown, villageMegas)");
+			Villager trainer = EntityType.VILLAGER.create(level);
+			trainer.moveTo(STATION.getX() + 3.5, STATION.getY(), STATION.getZ() - 11.5, 0f, 0f);
+			trainer.setVillagerData(trainer.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRAINER).setLevel(5));
+			level.addFreshEntity(trainer);
+			List<Villager> watchers = new java.util.ArrayList<>();
+			for (int i = 0; i < 3; i++) {
+				Villager v = EntityType.VILLAGER.create(level);
+				v.moveTo(STATION.getX() - 2.5 + 2 * i, STATION.getY(), STATION.getZ() - 13.5, 180f, 0f);
+				level.addFreshEntity(v);
+				watchers.add(v);
+			}
+			return l -> {
+				if (l.getGameTime() % 20 == 0) {
+					io.github.jcondedata.aliveworkplace.trainer.MegaShrines.tick(l, hall);
+				}
+				return watchers.stream().allMatch(v -> io.github.jcondedata.aliveworkplace.trainer.MegaShrines.mood(l, v) == io.github.jcondedata.aliveworkplace.trainer.MegaShrines.MOOD);
+			};
+		}, null));
 		SCENES.put("habitat_keeper", job("the habitat keeper set out a snack, slathered the log and spotted a shiny Eevee", 2400, (level, player) -> {
 			// ROADMAP 28.10: Cobblemon's Pasture Block picked with a honey bottle; Poké Snacks and a honey bottle in the
 			// chest; a lure spot marked behind the pasture, a Saccharine log beside it, and a shiny wild Eevee nearby. She

@@ -5,10 +5,10 @@ dens around it, guards watch them and its trainers challenge them), Mega Showdow
 and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchens cook its dishes and farmers grow its
 beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
 the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4), more Mega trainers with their
-bracelets (38.5) and the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6); the full plan is
-the design note, docs/design/M38.md.
+bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6) and the Mega
+Shrine with its festival show (38.7); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7
 
 ## What a player sees
 
@@ -77,7 +77,16 @@ beaten tells them "Trainer Leaders of the Barony of Oakmere beaten: 1 of 3. ..."
 beaten counts once and for good; a village counts as having a Leader when its hall's last round saw one (so a village
 whose Leader left drops out of the count).
 
-The rest (the Mega Shrine, Cobblecuisine) comes with 38.7 to 38.10.
+With Mega Showdown, the Blueprint Table lists the **Mega Shrine** among the decorations (38.7): Mega Showdown's pedestal
+on a two-step dais of Mega meteorite bricks, with chiseled meteorite posts crowned with amethyst and soul lanterns (7 by
+6 by 7, beauty 2). Without Mega Showdown it isn't listed (its blocks don't exist). On a festival day, for its first
+hour and a half (from the festival's start, 1,500 ticks), a village with a finished shrine holds its show there: the
+villagers off work gather in front of the shrine instead of at the square, and a village trainer (one who can Mega
+Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ace: a flash, a burst of light, a beacon
+chord, and "<trainer> Mega Evolves their ace at the Mega Shrine, and the village cheers!" in chat for the players near.
+Every villager within 12 blocks is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
+festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
+fireworks. Cobblecuisine comes with 38.8 to 38.10.
 
 ## How it works
 
@@ -118,6 +127,16 @@ The bracelet (core `trainer/LeaderBracelets`): each hall's round notes whether i
 own; a player's win against a Leader (Cobblemon's battle end, the same call that pays the prize) marks the Leader's
 village (the nearest hall) for that player, then checks the realm the village is in.
 
+## How the shrine's show runs (38.7)
+
+`trainer/MegaShrines` (core) reads the shrine by its blueprint id from the finished builds near the hall
+(`BuildSiteManager.finishedNear`), and Mega Showdown's pedestal only by its id (`mega_showdown:pedestal`):
+`BlueprintLibrary.megaOk` lists the shrine only while that block exists and `villageMegas` is on. `Festivals.tick`
+asks it first each festival tick; in the show's hours it takes the crowd (to 4 blocks in front of the dais) and walks
+the trainer to the step before the pedestal; there, the show is held once a day per village (kept in memory: a restart
+mid-show may hold it again, and the mood is the same). The Mega Evolution is shown as light and sound at the pedestal,
+not by a Pokémon sent out.
+
 ## How dens are found (38.2)
 
 When a chunk loads, its block entities are looked at (never an area of blocks); a Raid Dens crystal among them is
@@ -133,7 +152,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `denWardens` | on (once 2.2 ships) | Guards can be posted to raid dens. Off: no new wardens, and those posted go back to normal duty. |
 | `denChallenges` | on (once 2.2 ships) | Village trainers challenge active dens. Off: no challenges. |
 | `denChallengeDays` | 3 (1 to 30) | Days between a village's challenges. |
-| `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6); 38.7 will use it too. Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
+| `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
 The other two are mapped to the gate and come into the config with 38.8 to 38.10.
 
@@ -146,13 +165,15 @@ save has no wardens. The den challenges are saved per dimension (`aliveworkplace
 `lastDenChallenge` (the day) and each tired trainer's `tiredUntil` (game time). An older save has none: every village
 may challenge at once. The Mega Bracelets are saved on the overworld (`aliveworkplace_leader_bracelets`): the villages
 known to have a Trainer Leader (`leaderHalls`) and, per player, the villages whose Leader they beat (`beaten`) and the
-realms whose bracelet they had (`megaBracelet`). An older save has none: nobody has a bracelet yet. The planned fields
+realms whose bracelet they had (`megaBracelet`). An older save has none: nobody has a bracelet yet. A villager who
+watched a Mega Shrine's show keeps the day on them (`mega_show_day`, 38.7); an older save has none. The planned fields
 of later items are listed in the design note.
 
 ## Items, blocks, jobs, commands
 
 None of our own yet; 38.6 adds four Jeweller recipes (`mega_keystone`, `mega_stone`, `mega_stone_cut`,
-`mega_stone_meteorite`) and two item tags (`jeweller_finds`, `mega_meteorite_ores`). The ids the milestone reads from the three mods (the den block `cobblemonraiddens:raid_crystal_block`
+`mega_stone_meteorite`) and two item tags (`jeweller_finds`, `mega_meteorite_ores`); 38.7 adds the decoration
+blueprint `aliveworkplace:mega_shrine` (tools/blueprints/decor.py, `mega_shrine`). The ids the milestone reads from the three mods (the den block `cobblemonraiddens:raid_crystal_block`
 and its states, the cheers, `mega_showdown:keystone`, `cobblecuisine:bean_crop`, the beans and the dishes) are listed in
 the design note and checked by `CobblemonDepthCompatTests`.
 
@@ -202,7 +223,10 @@ Only dens within the map's 128-block square get a banner; farther ones (up to 16
 only. A den nobody has been near isn't known. A player who joins a raid from farther than 16 blocks (or whose advancement was granted earlier) gets no cheer. Only
 one warden per den. A challenge is settled at once: there's no battle to watch, only the den going dark. A won
 challenge gives no Raid Dens Pokémon, only the loot. On Cobblemon 1.8 (Raid Dens 0.13.2) the loot fields are untested.
-The shrine and Cobblecuisine aren't built yet. A realm whose villages have no hall round yet (none loaded since 38.6)
+Cobblecuisine isn't built yet. The shrine's Mega Evolution is light, sound and a chat line at the pedestal, not a
+Pokémon sent out and Mega Evolved: our trainers' Pokémon exist only in battle. The show takes the festival's first
+hour and a half, then the square has the crowd. Our renderer has no model for the pedestal (a block entity), so the
+shrine's render shows its plinth bare; the showcase scene shows it in the game. A realm whose villages have no hall round yet (none loaded since 38.6)
 counts only the Leaders already beaten; a village whose Leader dies counts until its hall's next round. The bracelet's look is checked in the
 showcase scene only (a client is needed to draw it).
 Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
@@ -228,6 +252,10 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   Expert, Novice and farmer don't; the clients are told the same), `switchedOffOnlyMastersMegaEvolve`,
   `aLeaderSavedAndLoadedIsTheSame`.
 - `MegaTrainerGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `aCupFinalistIsKnown`.
+- `MegaShrineCompatTests` (with Mega Showdown): `theShrineIsListedWithMegaShowdown`,
+  `theFestivalShowIsHeldAtAFinishedShrine` (the pedestal's place, the watchers' +3, once a festival, through a save),
+  `noShowWhenOffWithoutATrainerOrLate` (villageMegas off: not listed, no show; no trainer; past its hours).
+- `MegaShrineGameTests` (without Mega Showdown): `hiddenWithoutMegaShowdown`, `theShowsMoodAndText`.
 - `MegaStoneCompatTests` (with Mega Showdown, 38.6): `theRecipesAndFindsLoad`,
   `aJewellerCutsAMegaStoneForTheVillagesTrainers` (a crystal, gold and emeralds become one stone of the Master's team),
   `aJewellerCutsAKeyStone`, `onlyTheStonesTheStoreLacks` (and none with no trainer), `switchedOffTheRecipesDontRun`

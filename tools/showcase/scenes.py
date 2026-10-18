@@ -291,6 +291,10 @@ SCENES = [
     job("mega_jeweller", "Jeweler", "Mega Stones: the Jeweler cuts one for the village's Master",
         "the jeweler cut a Mega Stone for a Pokémon on the village Master's team from a Mega Crystal, gold and emeralds",
         cobblemon=True, mega=True),
+    # The Mega Shrine (ROADMAP 38.7): on a festival day a village trainer Mega Evolves their ace at the shrine's pedestal
+    job("mega_shrine", "Trainer", "The Mega Shrine: a festival show",
+        "the village trainer walked up to the Mega Shrine's pedestal and Mega Evolved their ace, and the villagers watching got +3 mood",
+        cobblemon=True, mega=True),
     # More Mega trainers (ROADMAP 38.5): a City's Trainer Leader wears the Mega Bracelet and Mega Evolves against the player
     S("mega_trainers", "Trainer Leader", "Mega trainers: a City's Leader Mega Evolves",
       "the City's Trainer Leader wears the Mega Bracelet and their lead Mega Evolved in a battle against the player", 420,

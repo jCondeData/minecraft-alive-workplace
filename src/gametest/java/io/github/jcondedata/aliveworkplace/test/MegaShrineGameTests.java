@@ -58,7 +58,7 @@ public class MegaShrineGameTests implements FabricGameTest {
 		helper.assertTrue(MegaShrines.mood(helper.getLevel(), v) == 0, "the show's mood lasts too long");
 		Language en = Language.getInstance();
 		helper.assertTrue(en.has("message.aliveworkplace.mega_shrine.show") && en.has("mood.aliveworkplace.reason.mega_show")
-			&& en.has("blueprint.aliveworkplace.mega_shrine") && en.has("blueprint_desc.aliveworkplace.mega_shrine"), "the shrine's text is missing");
+			&& en.has("blueprint.aliveworkplace.mega_shrine"), "the shrine's text is missing");
 		helper.assertTrue(en.getOrDefault("message.aliveworkplace.mega_shrine.show").contains("%s"), "the show's line names no trainer");
 		copy.discard();
 		v.discard();

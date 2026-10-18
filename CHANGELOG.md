@@ -192,6 +192,13 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **The Trainer Leader gets to the Leader's Hall's Training Post.** The red carpet started right inside the double
+  door, under its low lintel, and a villager stepping up onto it there hit its head, so a leader coming in by the middle
+  of the door stood in the doorway for good. The carpet now starts a step further in. A Leader's Hall already built
+  keeps its carpet: take up the first piece by the door if your leader is stuck there (B170).
+- **Chefs take the Kitchen's smoker, however it's decorated.** A villager walking to a workstation built in under
+  solid blocks (the smoker in the Kitchen's brick oven) climbed onto the nearest chest or worktop instead, a step too far
+  to take it, and stood there; it now walks to the floor in front of the workstation and takes it (B168).
 - **Villagers sleep in furnished homes' beds.** A furnished home's fancy beds are now checked to be beds villagers
   claim as their home and sleep in (Handcrafted's are), and a furniture mod's bed that isn't one leaves the vanilla
   bed in its place, so every bed of a furnished home is a villager's bed (B166).

@@ -31,6 +31,10 @@ of the barrel. Once a village has its fishermen, a jobless villager passes free 
 workstation instead (or stays jobless if there is none). A fisherman the village already has keeps his job when it is
 over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back.
 
+**Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
+its brick oven, is still taken: a villager who picks it walks to the open floor beside it (the side it faces first), not
+onto a chest or worktop nearby, and takes it from there.
+
 Chests and barrels within 8 blocks of the workstation are that worker's supply chests: tools and materials come out
 of them and the work goes into them. A line over a worker's head says what they are doing or waiting for, and
 sneak-right-clicking a worker with an empty hand shows their status, ending with their level in their own job

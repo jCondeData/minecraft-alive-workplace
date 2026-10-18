@@ -253,7 +253,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 
 	/**
 	 * One builder raises the folly alone, and its time is taken; then, the site cleared, eight raise it again: one
-	 * column each, nothing hung in the air, and in a quarter of the lone builder's time at most.
+	 * column each, nothing hung in the air, and in about a quarter of the lone builder's time (a tenth over it at most).
 	 */
 	//$ gametest_ticks_batch TALL '48000' '"eightBuildersRaiseTheFolly"'
 	@GameTest(template = TALL, timeoutTicks = 48000, batch = "eightBuildersRaiseTheFolly")
@@ -306,8 +306,10 @@ public class WonderCrewGameTests implements FabricGameTest {
 			helper.assertTrue(now.done() && crewTicks[0] >= 0, "the crew is still at stage " + now.stage() + ", "
 				+ Math.round(WonderStages.stageProgress(level, now) * 100) + "%, crew " + WonderCrews.crew(level, now).size());
 			helper.assertTrue(watch.most == 8, "all eight builders on the crew at once: at most " + watch.most);
-			helper.assertTrue(crewTicks[0] * 4 <= soloTicks[0], "the crew of eight took " + crewTicks[0] + " ticks, the lone builder " + soloTicks[0]
-				+ " (a quarter: " + soloTicks[0] / 4 + "; " + watch.placeable + " blocks, the least one builder could take " + watch.placeable * 20L
+			// B171: a quarter, with a tenth of it for the crew's jostling. Eight builders walking round each other don't
+			// take the same ticks twice: 2,500 to 2,900 most runs, but 3,060 once against a lone 12,100 (25.3%)
+			helper.assertTrue(crewTicks[0] * 40 <= soloTicks[0] * 11, "the crew of eight took " + crewTicks[0] + " ticks, the lone builder " + soloTicks[0]
+				+ " (a quarter and a tenth of it: " + soloTicks[0] * 11 / 40 + "; " + watch.placeable + " blocks, the least one builder could take " + watch.placeable * 20L
 				+ "); members busy " + watch.busyTicks + " of " + watch.memberTicks + " ticks; stages " + watch.stages);
 			List<BlockPos> left = unlikeButTheFinial(level, at);
 			helper.assertTrue(left.isEmpty(), left.size() + " blocks unlike the drawing, e.g. " + left.stream().limit(4)

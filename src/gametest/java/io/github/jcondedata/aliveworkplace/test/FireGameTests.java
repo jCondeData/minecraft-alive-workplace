@@ -353,10 +353,13 @@ public class FireGameTests implements FabricGameTest {
 
 	/**
 	 * A Journeyman Firewarden rings the bell: two villagers off work nearby join the bucket brigade (once a fire), and
-	 * they put the fire out, a block every two seconds; the chronicle says the brigade did.
+	 * they put the fire out, a block every two seconds; the chronicle says the brigade did. The roof fire is held still
+	 * once lit (fire ticks off, put back after the test): the game's own fire, by the level's random, sometimes burned the
+	 * log under it and went out by itself before the brigade arrived (B157), and a spreading roof under load outran the
+	 * timeout (B163). The brigade's walk, bucket and douse are the real ones; 2,400 ticks leave a loaded machine room.
 	 */
-	//$ gametest_ticks_batch AREA '1200' '"fireBrigade"'
-	@GameTest(template = AREA, timeoutTicks = 1200, batch = "fireBrigade")
+	//$ gametest_ticks_batch AREA '2400' '"fireBrigade"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "fireBrigade")
 	public void aJourneymanCallsABucketBrigade(GameTestHelper helper) {
 		Hut hut = hut(helper, "brigade");
 		Villager warden = firewarden(helper, new BlockPos(3, 2, 4));
@@ -367,6 +370,8 @@ public class FireGameTests implements FabricGameTest {
 		Villager c = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 8));
 		helper.runAfterDelay(2, () -> {
 			fire(helper, ROOF_TOP);
+			// Held still: it can't burn out (or spread) before the brigade gets there; hut() restores the rule.
+			hut.level().getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(false, hut.level().getServer());
 			List<Villager> called = VillageFire.ring(hut.level(), warden, helper.absolutePos(ROOF_TOP));
 			helper.assertTrue(called.size() == VillageFire.BRIGADE_SIZE, "the bell called " + called.size() + " villagers");
 			helper.assertTrue(called.contains(a) && called.contains(b) && !called.contains(c), "the brigade isn't the two nearest: " + called);

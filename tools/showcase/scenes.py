@@ -280,7 +280,7 @@ SCENES = [
        ("03_healing", "In the Healing Machine")], cobblemon=True),
     # Shopkeeper
     S("shop", "Shopkeeper", "The shop", "the shop screen opened with prices", 60,
-      [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
+      [("01_shop_menu", "Shop screen"), ("01_shop_counter", "The counter")], cobblemon=True),
     S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
       [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
     # Ferryman
@@ -1093,11 +1093,10 @@ SCENES = [
     # pack's furniture mods builds them
     S("furnished_workplaces", "Build families", "Furnished workplaces: shop counters, Library desks, school benches (Handcrafted, Beautify, CobbleFurnies)",
       "every furniture spot of the four workplaces holds the piece this server chose, pieces of at least two mods, and each keeps only its own chests and barrels as storage",
-      80, [("01_shop_front", "The Supply Shop's door between two Beautify trellises of roses"),
-           ("02_shop_counter", "Inside the shop: Handcrafted counters either side of the Shop Counter, a shelf of cups, a picture, hanging pots"),
-           ("03_library_desks", "The Library's reading desks and chairs under hanging pots, the scholar's lectern beyond"),
-           ("04_schoolroom", "The schoolroom's benches facing the blackboard and the teacher's Poké Ball desk"),
-           ("05_clinic_benches", "The Healing Center's waiting benches, pictures and the nurse's Poké Ball desk")], cobblemon=True, furniture=True),
+      80, [("01_shop_counter", "Inside the shop: Handcrafted counters either side of the Shop Counter, a shelf of cups, a picture, hanging pots"),
+           ("02_library_desks", "The Library's reading desks and chairs under hanging pots, the scholar's lectern beyond"),
+           ("03_schoolroom", "The schoolroom's benches facing the blackboard and the teacher's Poké Ball desk"),
+           ("04_clinic_benches", "The Healing Center's waiting benches, pictures and the nurse's Poké Ball desk")], cobblemon=True, furniture=True),
     # Villagers use the furniture (ROADMAP 37.6): Handcrafted chairs at supper, Handcrafted fancy beds at bedtime
     S("seats_and_beds", "Build families", "Villagers sit on Handcrafted chairs at supper and sleep in its fancy beds",
       "two villagers sit on the furniture mod's chairs at supper, then get up at bedtime and sleep in its fancy beds",

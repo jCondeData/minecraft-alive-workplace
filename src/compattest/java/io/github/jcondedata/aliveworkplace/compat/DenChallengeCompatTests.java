@@ -104,6 +104,19 @@ public class DenChallengeCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** A tier 4 den is left for players: not even a Master challenges it (owner, 2026-10-18). */
+	//$ gametest_batch 'CompatGameTests.AREA' '"denChallengeTier4"'
+	@GameTest(template = CompatGameTests.AREA, batch = "denChallengeTier4")
+	public void aTierFourDenIsLeftForPlayers(GameTestHelper helper) {
+		BlockPos[] at = village(helper, "tier_four");
+		master(helper);
+		DenChallenges.Result result = DenChallenges.challenge(helper.getLevel(), at[0], 0f, RandomSource.create(38));
+		helper.assertTrue(result == DenChallenges.Result.NO_DEN, "a tier 4 den: " + result);
+		helper.assertTrue(RaidDenCompatTests.listed(helper, at[0], at[1]).map(RaidDens.Den::active).orElse(false), "the tier 4 den went quiet");
+		cleanUp(helper, at[0], at[1]);
+		helper.succeed();
+	}
+
 	/** A tier 6 den is never challenged, not even by a Master who would surely win. */
 	//$ gametest_batch 'CompatGameTests.AREA' '"denChallengeTier6"'
 	@GameTest(template = CompatGameTests.AREA, batch = "denChallengeTier6")

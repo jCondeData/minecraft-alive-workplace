@@ -49,7 +49,7 @@ asks for the steps, `latest.log` and any crash report).
 - **Den Wardens (2.2).** Post a guard to a raid den from the Defense page: they stand watch by day, the chronicle
   says when the den glows again, and a player who joins a raid there gets a cheer. Switch: `denWardens`.
 - **Village trainers challenge the raid dens (2.2).** Every 3 days a village's Trainer Leader or Master takes on an
-  active den nearby (up to tier 3 for a Leader, tier 4 for a Master, never one a player is at). A win brings that
+  active den nearby (up to tier 3, never one a player is at; tier 4 and up are for players). A win brings that
   tier's raid loot home to the village store and the den goes dark until it resets; a loss sends the trainer home
   tired for a day. Players nearby are told, so they can go and watch. Switches: `denChallenges`, `denChallengeDays`.
 - **More village trainers Mega Evolve (2.2).** With Mega Showdown, a City's Trainer Leaders, the Festival Cup's

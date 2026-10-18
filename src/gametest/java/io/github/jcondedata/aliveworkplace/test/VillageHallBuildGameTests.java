@@ -79,6 +79,9 @@ public class VillageHallBuildGameTests implements FabricGameTest {
 	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "village_hall_build")
 	public void aFinishedVillageHallWorksLikeAPlacedOne(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// an earlier batch's Village Hall left outside its own area (one stood at 3, 2, -33 here after the 37.5/37.6 merge
+		// reordered the batches) would already be the builder's village
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());

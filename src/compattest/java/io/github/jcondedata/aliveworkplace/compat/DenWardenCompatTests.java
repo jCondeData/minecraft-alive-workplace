@@ -60,6 +60,15 @@ public class DenWardenCompatTests implements FabricGameTest {
 				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
 			level.removeBlock(hall, false);
 		}
+		// The village store is the chests by the kitchens (smokers, Kitchen Stoves) and Storehouses within a hall's reach: an
+		// earlier batch's Camp Kitchen II, built outside this smaller area, made its chest and barrels this village's store,
+		// and the den's loot and the Miner's Key Stones went there (after the 37.5/37.6 merge reordered the batches).
+		net.minecraft.world.phys.AABB own = helper.getBounds();
+		for (BlockPos store : level.getPoiManager().findAll(h -> h.is(ModVillagers.KITCHEN_STOVE_POI) || h.is(ModVillagers.STOREHOUSE_POI)
+				|| h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER), p -> !own.contains(net.minecraft.world.phys.Vec3.atCenterOf(p)), center, reach,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+			level.removeBlock(store, false);
+		}
 	}
 
 	/** Sets the time of day and the sky's darkness with it (isNight reads the darkness, updated once a tick). */

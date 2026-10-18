@@ -196,6 +196,12 @@ public class QuestbookCompatTests implements FabricGameTest {
 			}
 			return 1;
 		}
+		if (kind.equals("advancement") && rl.getNamespace().equals("cobblemon")) {
+			// Cobblemon moves its advancements between versions (1.7's first_catch is 1.8's catching/first_catch), so a
+			// quest on one never completes on the other (B164): use our own advancement on Cobblemon's trigger instead.
+			problems.add(where + ": advancement " + id + " is Cobblemon's own, which moves between Cobblemon versions");
+			return 1;
+		}
 		boolean exists = switch (kind) {
 			case "entity" -> BuiltInRegistries.ENTITY_TYPE.containsKey(rl);
 			case "block" -> BuiltInRegistries.BLOCK.containsKey(rl);

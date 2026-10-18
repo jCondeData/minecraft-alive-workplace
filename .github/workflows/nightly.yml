@@ -254,8 +254,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
+          # B164: the failing tests and their reasons, not the hundreds of harmless "duplicate input class ...Exception"
+          # lines the compat mods print while the classpath is set up.
           { echo "Compat GameTests with Cobblemon 1.8.1 failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; echo
-            grep -a -E "failed|FAILED|Exception" build/modtest/compat18.log | head -c 15000; } > build/modtest/issue18.md
+            echo '```'
+            grep -a -E -A6 "Exception occurred when invoking test method|failed! |required tests failed|GameTest[A-Za-z]*Exception|What went wrong" build/modtest/compat18.log \
+              | grep -a -v -E "duplicate input class|^\s+at " | head -c 15000 || true
+            echo '```'; } > build/modtest/issue18.md
           gh label create nightly-tests --color B60205 2>/dev/null || true
           n=$(gh issue list --label nightly-tests --state open --json number -q '.[0].number')
           if [ -n "$n" ]; then gh issue comment "$n" --body-file build/modtest/issue18.md

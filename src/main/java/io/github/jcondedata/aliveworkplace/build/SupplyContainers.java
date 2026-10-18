@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import io.github.jcondedata.aliveworkplace.platform.ItemStores;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.store.StorageNetworks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +19,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The builder's supply stash: every storage block near the Builder's Bench. Goes through the loader's item storage
  * ({@link ItemStores}: Fabric's transfer API), so modded storage (Sophisticated Storage chests and barrels, Tom's filing cabinets...)
- * works too; storage-network access points are skipped so nothing is counted twice.
+ * works too; storage-network access points are skipped so nothing is counted twice, except that the Storehouse reads a
+ * Sophisticated Storage controller (ROADMAP 37.9) or a Tom's Simple Storage inventory connector (37.10) as one store for
+ * the inventories it links ({@link StorageNetworks}).
  */
 public final class SupplyContainers {
 	/** Horizontal search radius around the bench. */
@@ -36,9 +39,10 @@ public final class SupplyContainers {
 	}
 
 	/**
-	 * 37.9: around a Storehouse, with {@code moddedStorageNetworks} on, a Sophisticated Storage controller stands for the
-	 * storage blocks it links (one store, read and filled through the controller), which leave the list. Every other
-	 * worker's chests are read one by one, as before.
+	 * 37.9 and 37.10: around a Storehouse, with {@code moddedStorageNetworks} on, a Sophisticated Storage controller
+	 * stands for the storage blocks it links and a Tom's Simple Storage inventory connector for the inventories it joins
+	 * (each one store, read and filled through the controller or connector), which leave the list. Every other worker's
+	 * chests are read one by one, as before. {@code linked()} counts the controllers' blocks only.
 	 */
 	public static io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded networks(ServerLevel level, BlockPos storehouse) {
 		List<BlockPos> found = stores(level, storehouse, null);
@@ -53,6 +57,11 @@ public final class SupplyContainers {
 
 	private static io.github.jcondedata.aliveworkplace.store.StorageNetworks.Folded folded(ServerLevel level, BlockPos storehouse, List<BlockPos> found,
 		@Nullable BoundingBox exclude) {
+		// 37.10: a storage network's head (a Tom's inventory connector) stands for the inventories it joins
+		List<BlockPos> heads = near(level, storehouse, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
+			&& StorageNetworks.isHead(level, be.getBlockPos()) && STORES.isStore(level, be.getBlockPos()));
+		found = StorageNetworks.asStorehouse(level, storehouse, found, heads);
+		// 37.9: a Sophisticated Storage controller stands for the storage blocks it links
 		List<BlockPos> controllers = near(level, storehouse, be -> io.github.jcondedata.aliveworkplace.store.StorageNetworks.isController(be.getBlockState())
 			&& STORES.isStore(level, be.getBlockPos()));
 		return io.github.jcondedata.aliveworkplace.store.StorageNetworks.fold(level, storehouse, found, controllers, exclude);

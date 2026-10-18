@@ -167,6 +167,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.command.CitySoak.init(); // 27.22
 		io.github.jcondedata.aliveworkplace.command.SeasonSoak.init(); // 30.22
 		io.github.jcondedata.aliveworkplace.command.Rehearsal.init(); // 34.23
+		io.github.jcondedata.aliveworkplace.command.FurnishedPackTest.init(); // 37.11
 		Platform.get().onServerStarting(server -> ClassWarmup.start()); // B103: no class loading stalls on day 1
 		LOG.info("Alive Workplace ready — go hire a builder.");
 	}

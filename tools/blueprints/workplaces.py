@@ -216,7 +216,7 @@ def carpenters_workshop_build():
     # Inside the workshop: the crafting table (the carpenter's), a chest of wood, the bed, a lantern
     b.set(2, 1, 7, "crafting_table")
     b.set(2, 1, 6, "chest", facing="east", type="single", waterlogged=False)
-    b.bed(4, 1, 5, "brown", facing="south")
+    b.bed(4, 1, 5, "brown", facing="north")  # its head to the wall: the cell inside the door stays clear (B178)
     b.set(2, 1, 4, "oak_slab", type="bottom", waterlogged=False)
     b.set(2, 2, 4, "potted_azure_bluet")
     for x in range(2, 5):

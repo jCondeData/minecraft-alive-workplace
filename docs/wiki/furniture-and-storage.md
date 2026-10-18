@@ -94,7 +94,8 @@ cable connector on its cables faces. The board's first line counts the connector
 "Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
 they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
 cable connector) and it is a store of its own again at once. A storage or crafting terminal on the network is Tom's
-own: a player opens it and sees, and takes, the village's goods. With `moddedStorageNetworks` off, every chest on the
+own: a player opens it and sees, and takes, the village's goods (place the terminal against the connector or a cable,
+its screen facing you, and click it from within Tom's reach of 6 blocks). With `moddedStorageNetworks` off, every chest on the
 network is its own store and the connector is passed over, as before.
 
 Carved Wood and Rechiseled (37.7, behind the gate and `furnishedBuilds`): the Blueprint Table offers a **Spruce** style
@@ -361,6 +362,8 @@ chests and a filing cabinet on the connector and its cable count once, the board
 connector, the switch off), `TomsStorageCompatTests.aChestUnpluggedIsItsOwnStoreAgain`,
 `TomsStorageCompatTests.aPorterDeliversIntoTheNetwork`, `TomsStorageCompatTests.theBuilderTakesWhatItNeedsThroughTheConnector`,
 and `PackModsCompatTests.packStorageWorksAsSupplyChests` (a connector by a builder's chest still doesn't count it twice).
+B192: `TomsStorageCompatTests.aPlayerOpensTheTerminalBesideTheStorehouse` (a player right-clicks the terminal next to
+the Storehouse and gets Tom's terminal menu, listing 10 cobblestone, 20 planks and 1 sword, each once).
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

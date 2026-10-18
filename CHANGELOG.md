@@ -254,6 +254,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Tom's storage terminal opens beside the Storehouse.** The showcase placed the terminal backwards (facing away
+  from the inventory connector) and clicked it from the overview camera, ten blocks away, so Tom's mod said "Terminal
+  out of range". The mod was never at fault: a terminal placed against the connector, as a player places it, opens
+  Tom's screen with the village's goods, now proven by a compat test (B192).
 - **Raiders beside or behind a besieged village's walls go round to the open gateway.** Sent straight for the way in,
   a raider a fight had taken beside the walls could be led to the outside spot nearest the yard, behind the back wall,
   and stand there for the rest of the siege with the gate broken open; now it goes round to the front of the breach

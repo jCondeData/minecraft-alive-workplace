@@ -44,7 +44,9 @@ final class ModdedLibraryScene {
 		new View("01_both_cottages", new Vec3(13.5, 9, -16), new Vec3(13.5, 4, 5), VANILLA),
 		new View("02_modded_cottage", new Vec3(5.5, 5, -9.5), new Vec3(5.5, 4, 5), MODDED),
 		new View("03_modded_cottage_back", new Vec3(5.5, 6, 20), new Vec3(5.5, 4, 5), MODDED),
-		new View("04_modded_cottage_inside", new Vec3(5.5, 3.6, 2.5), new Vec3(4, 1, 6), MODDED),
+		// Feet on the ground floor just inside the door (eye 2.62 up, under the upper floor at y 5), looking at the table:
+		// at feet y 3.6 the eye sat in the upper floor's herringbone planks and the still came out blank (B200).
+		new View("04_modded_cottage_inside", new Vec3(5.5, 1, 3.5), new Vec3(4, 1, 6.5), MODDED),
 		new View("05_modded_inn", new Vec3(8, 7, -12), new Vec3(8, 4, 6), INN));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;

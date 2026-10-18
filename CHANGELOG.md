@@ -323,6 +323,12 @@ asks for the steps, `latest.log` and any crash report).
   so a bed right inside a door trapped it under the lintel: the Carpenter's Workshop's bed turns its head to the wall,
   and the builder's and carpenter's village workshops have their side door a block or two along. Camps and workshops
   already standing keep theirs (B178).
+- **No more villagers stuck on a step under a low ceiling, away from doors too.** A villager stepping onto a carpet,
+  slab, stair or bed with less than its own height over it stood there with its head in the ceiling. The Starter
+  Cottage's chair by the front window had the blinds right over it (the blinds there are gone), the upstairs rug lay
+  under the tie beam (it now lies by the bed), the Pokéball workshop's drying loft had apricorns under the spire's low
+  foot (they dry under the spire now), the Lodge-look Pokémon Center's flower boxes stood on the step round its walls,
+  and a few moss patches in the Hanging Gardens lay under ledges. Builds already standing keep theirs (B197).
 - **Chefs take the Kitchen's smoker, however it's decorated.** A villager walking to a workstation built in under
   solid blocks (the smoker in the Kitchen's brick oven) climbed onto the nearest chest or worktop instead, a step too far
   to take it, and stood there; it now walks to the floor in front of the workstation and takes it (B168).

@@ -131,4 +131,35 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 			helper.assertTrue(out.isEmpty(), out.toString());
 		});
 	}
+
+	/**
+	 * B197: B178's trap away from doorways. A villager stands where the two cells its body is in are open, so a step that
+	 * leaves less than its 1.95 under whatever is over it is a place it walks to and can't get onto. check.py now flags
+	 * every such step a villager gets to; in the Starter Cottage (every tier) the chair against the front wall had the
+	 * window's blinds (a shut trapdoor) over it, 1.81 above the seat. The cottage is placed from its own file and a
+	 * villager in the room is walked onto that chair (vanilla's walk target).
+	 */
+	//$ gametest_ticks_batch AREA '300' '"b197Cottage"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "b197Cottage")
+	public void aVillagerSitsDownOnTheStarterCottagesChairUnderTheWindow(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		BlockPos cottage = new BlockPos(5, 1, 5);
+		place(helper, "starter_cottage", cottage);
+		// template cells (y = 1 is the ground floor): the room by the rug, and the chair (stairs) at the table's north side
+		Villager villager = helper.spawn(EntityType.VILLAGER, cottage.offset(5, 1, 4));
+		villager.setVillagerData(villager.getVillagerData().setProfession(VillagerProfession.NITWIT));
+		BlockPos chair = helper.absolutePos(cottage.offset(3, 1, 3));
+		double floor = helper.absolutePos(cottage.offset(0, 1, 0)).getY();
+		helper.onEachTick(() -> {
+			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(chair));
+			villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(chair, 0.6f, 0));
+		});
+		helper.succeedWhen(() -> {
+			BlockPos at = villager.blockPosition();
+			helper.assertTrue(at.getX() == chair.getX() && at.getZ() == chair.getZ() && villager.getY() >= floor + 0.45,
+				"the villager hasn't got up onto the chair under the front window: at " + villager.position()
+					+ " (the chair's cell " + chair.getX() + ", " + chair.getZ() + ", feet over " + (floor + 0.45) + ")");
+		});
+	}
 }

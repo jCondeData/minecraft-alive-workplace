@@ -751,10 +751,12 @@ def ball_workshop(b, P):
     for x, z in ring:
         fence(b, x, 10, z, P.fence)
     apricorns = ("red_carpet", "yellow_carpet", "blue_carpet", "lime_carpet", "pink_carpet", "black_carpet", "white_carpet")
-    for i, (x, z) in enumerate(sorted(inside)):
-        if (x, z) != (cx + 1, cz):
-            b.set(x, 10, z, apricorns[i % len(apricorns)])
     hip_roof(b, cx - 2, cx + 2, cz - 2, cz + 2, 11, CUT_COPPER, steep=True)
+    # under the spire's foot the loft is two high: a carpet there leaves a villager 1.94 (B197), so the apricorns
+    # dry only where the spire rises over the floor
+    for i, (x, z) in enumerate(sorted(inside)):
+        if (x, z) != (cx + 1, cz) and all(b.blocks.get((x, yy, z), ("minecraft:air",))[0] == "minecraft:air" for yy in (11, 12)):
+            b.set(x, 10, z, apricorns[i % len(apricorns)])
     b.set(cx, 15, cz, "lightning_rod", facing="up", powered=False, waterlogged=False)
     # the way in from the workshop and up the tower
     for yy in (1, 2):

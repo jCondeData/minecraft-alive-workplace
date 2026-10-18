@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.145.0 — 2026-10-18
+
 ### Added
 - **Fill empty job blocks from the Village Hall** (36.9). The hall's new Free job blocks tab lists every job block in
   the village nobody works at (its job, the building it's in, how far away) and the villagers without a job who could

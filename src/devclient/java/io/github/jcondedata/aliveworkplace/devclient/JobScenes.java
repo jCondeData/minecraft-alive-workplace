@@ -2731,6 +2731,7 @@ final class JobScenes {
 			java.util.Set<Long> columns = new java.util.HashSet<>();
 			smithyPrint.blocks().stream().filter(e -> e.pos().getY() < 0).forEach(e -> columns.add(BlockPos.asLong(e.pos().getX(), 0, e.pos().getZ())));
 			double[] cellar = new double[4];
+			int[] cellarFloor = {Integer.MAX_VALUE}; // the lowest air of the coal store: the camera stands on its floor (B188)
 			for (Blueprint.Entry e : smithyPrint.blocks()) {
 				BlockPos p = atSmithy.apply(e.pos());
 				if (e.pos().getY() < 0) {
@@ -2741,6 +2742,7 @@ final class JobScenes {
 						cellar[1] += p.getY();
 						cellar[2] += p.getZ() + 0.5;
 						cellar[3]++;
+						cellarFloor[0] = Math.min(cellarFloor[0], p.getY());
 					}
 				} else if (e.pos().getY() == 0 && columns.contains(BlockPos.asLong(e.pos().getX(), 0, e.pos().getZ()))
 						&& (e.state().is(net.minecraft.tags.BlockTags.TRAPDOORS) || e.state().is(Blocks.LADDER) || e.state().isAir())) {
@@ -2800,12 +2802,17 @@ final class JobScenes {
 					BlockPos floor = BlockPos.containing(middle.x, middle.y - 0.5, middle.z);
 					Showcase.check(!io.github.jcondedata.aliveworkplace.build.Cellars.needsDigging(l, smithy.id(), smithyAt) && l.getBlockState(BlockPos.containing(middle)).isAir(),
 						"the coal store was dug out under the old Smithy and fitted out (floor " + l.getBlockState(floor) + ")");
-					aim(l, player, middle.add(-1.5, 0.6, -1.5), middle.add(1.5, -0.8, 1.5));
+					// B188: the camera's feet on the cellar floor (its eye 1.62 above), not the middle's height plus 0.6, which put the eye
+					// in the Smithy's floor (a blank picture on GitHub); night vision for the unlit store.
+					double feet = cellarFloor[0] == Integer.MAX_VALUE ? middle.y : cellarFloor[0];
+					player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.NIGHT_VISION, -1, 0, false, false));
+					aim(l, player, new Vec3(middle.x - 1.5, feet, middle.z - 1.5), new Vec3(middle.x + 1.5, feet + 0.5, middle.z + 1.5));
 				} else if (step[0] == 4 && t - since[0] >= 40) {
 					step[0]++;
 					SHOTS.add("02_smithy_cellar");
 				} else if (step[0] == 5 && t - since[0] >= 70) {
 					step[0]++;
+					player.removeEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION);
 					aim(l, player, new Vec3(0.5, -48, 14.5), new Vec3(0, -58, -6));
 				}
 				return step[0] == 6 && t - since[0] >= 110;
@@ -6397,6 +6404,11 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.people.SocialClasses.load(files);
 					long today = io.github.jcondedata.aliveworkplace.hall.Chronicle.day(level);
 					List<Villager> couple = classPeople.subList(0, 2);
+					// B188: the hall's own dawn round may already have counted the couple on the day before (on a slow machine it runs
+					// between the setup and this step), and a household counted that day is skipped; fresh Peasants start the two dawns.
+					for (Villager v : couple) {
+						io.github.jcondedata.aliveworkplace.people.SocialClasses.seed(v, io.github.jcondedata.aliveworkplace.people.SocialClasses.get(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("peasant")));
+					}
 					io.github.jcondedata.aliveworkplace.people.SocialClasses.check(level, STATION, couple, today - 1, 8);
 					var rise = io.github.jcondedata.aliveworkplace.people.SocialClasses.check(level, STATION, couple, today, 8);
 					Showcase.check(rise.changes().size() == 1 && rise.changes().get(0).rose(), "the couple rose to Artisan at dawn: " + rise.changes());

@@ -1014,11 +1014,15 @@ public class ScreenshotHarness implements ClientModInitializer {
 					new BlueprintData.Placement(level.dimension().location(), new BlockPos(-14, -60, -18),
 						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
 				// The chronicle's long entry: a war party's victory names every guard who killed at the lair.
+				// Written at the hall itself (B188): Chronicle.record finds the nearest hall by its point of interest, which the game
+				// adds a tick after the block is placed, so the entry was dropped. 64 guards with their family names: 48 first names
+				// alone fitted the pane at 1920x1080, scale 4, and there was nothing to scroll.
 				List<String> guards = new ArrayList<>();
-				for (int i = 0; i < 48; i++) {
-					guards.add(io.github.jcondedata.aliveworkplace.people.Names.name(i).getString());
+				for (int i = 0; i < 64; i++) {
+					guards.add(Component.translatable("family.aliveworkplace.full_name", io.github.jcondedata.aliveworkplace.people.Names.name(i),
+						io.github.jcondedata.aliveworkplace.people.FamilyBook.familyName(i % io.github.jcondedata.aliveworkplace.people.FamilyBook.NAMES_COUNT + 1)).getString());
 				}
-				io.github.jcondedata.aliveworkplace.hall.Chronicle.record(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.RAID,
+				io.github.jcondedata.aliveworkplace.hall.Chronicle.atHall(level, hall, io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.RAID,
 					Component.translatable("chronicle.aliveworkplace.war_party.broken", server.getPlayerList().getPlayers().get(0).getDisplayName(),
 						Component.literal("the Rust Wolves"), String.join(", ", guards)));
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 8.5), 180, 20);

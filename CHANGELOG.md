@@ -70,6 +70,9 @@ asks for the steps, `latest.log` and any crash report).
   from Expert, keeping 16 of each. Each dish counts as its kind of food (a salad, a sandwich, a curry...), so villagers
   eating them have a more varied diet; the Camp Cook cooks three of its curries, and the Innkeeper serves each guest a
   Bouncy Brionne Soda, Teddiursa Iced Coffee or Fruit Punch. Switch: `cuisineDishes`.
+- **Bean farms (2.2).** With Cobblecuisine, farmers sow its bean seeds on their fields when the store holds fewer than
+  16 of a bean colour a dish on the menu needs, cut the beans only when fully grown, and take them to the store like
+  any crop. With enough beans of every colour, or no bean dish on the menu, they plant none. Switch: `beanFarms`.
 - **Basements.** Eight homes and workshops get a Level 4 that digs a furnished, lit basement under the finished Level
   III, down a ladder or a stone stair from inside: a root cellar under the Starter Cottage, wine cellars under the Stone
   House and the Noble's Manor, a cellar of casks and coal under the Burgher's Townhouse, a stockroom under the Supply

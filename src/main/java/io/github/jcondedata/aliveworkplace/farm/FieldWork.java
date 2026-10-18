@@ -96,6 +96,10 @@ public class FieldWork extends Behavior<Villager> {
 	private int progress;
 	private boolean depositDue;
 	private boolean chestsHaveSeeds;
+	/** Bean farms (38.9): a colour a menu dish needs is short in the store, so bean seeds count as seeds this round. */
+	private boolean beans;
+	/** What this farmer sows this round: {@link #isSeed}, and bean seeds while {@link #beans}. */
+	private final java.util.function.Predicate<ItemStack> seed = s -> isSeed(s) || beans && BeanFarms.isSeed(s);
 	private boolean chestsHaveHoe;
 	private boolean chestsHaveBoneMeal;
 	/** Something couldn't be sown with the seeds we carry (sugar cane wanted by the water): fetch the other kinds. */
@@ -163,7 +167,7 @@ public class FieldWork extends Behavior<Villager> {
 			rest(villager, false);
 			status(villager, field, Phase.DEPOSITING);
 			if (walker.walkTo(level, villager, containerNear(level, station), 3.0)) {
-				deposit(level, station, bag);
+				deposit(level, station, bag, seed);
 				depositDue = false;
 			}
 			return;
@@ -176,15 +180,16 @@ public class FieldWork extends Behavior<Villager> {
 			skipped.clear();
 			fetchedOtherSeeds = false;
 			List<BlockPos> supplies = SupplyContainers.find(level, station, null);
-			chestsHaveSeeds = SupplyContainers.firstMatching(level, supplies, FieldWork::isSeed) != null
-				|| io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, FieldWork::isSeed) != null;
+			beans = beansWanted(level, villager, station, supplies);
+			chestsHaveSeeds = SupplyContainers.firstMatching(level, supplies, seed) != null
+				|| io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, seed) != null;
 			chestsHaveHoe = SupplyContainers.firstMatching(level, supplies, FieldWork::isHoe) != null
 				|| io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, station, null, FieldWork::isHoe) != null;
 			chestsHaveBoneMeal = SupplyContainers.firstMatching(level, supplies, s -> s.is(Items.BONE_MEAL)) != null;
 		}
 
 		// 3. Pick the nearest job that can be done with what we carry (or can fetch).
-		boolean hasSeeds = hasSeeds(bag);
+		boolean hasSeeds = hasSeeds(bag, seed);
 		boolean hasHoe = isHoe(villager.getItemBySlot(EquipmentSlot.MAINHAND));
 		boolean hasBoneMeal = bag.has(Items.BONE_MEAL, 1);
 		if (current == null || !stillNeeded(level, field, current)) {
@@ -253,7 +258,7 @@ public class FieldWork extends Behavior<Villager> {
 					fetch(level, villager, station, bag, false);
 					return;
 				}
-				if (hasHarvest(bag)) {
+				if (hasHarvest(bag, seed)) {
 					depositDue = true;
 					return;
 				}
@@ -296,14 +301,14 @@ public class FieldWork extends Behavior<Villager> {
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, task.kind() == Kind.TILL ? "till" : "tend",
 			task.kind() == Kind.TILL ? task.pos().above() : task.pos());
 		switch (task.kind()) {
-			case HARVEST -> harvest(level, villager, bag, task.pos());
+			case HARVEST -> harvest(level, villager, bag, task.pos(), seed);
 			case PLANT -> {
-				if (!plant(level, bag, task.pos())) {
+				if (!plant(level, bag, task.pos(), seed)) {
 					skipped.add(task.pos());
 					wantOtherSeeds = true;
 				}
 			}
-			case TILL -> till(level, villager, bag, task.pos());
+			case TILL -> till(level, villager, bag, task.pos(), seed);
 			case FERTILIZE -> fertilize(level, bag, task.pos());
 		}
 	}
@@ -406,6 +411,9 @@ public class FieldWork extends Behavior<Villager> {
 
 	private static boolean isRipe(ServerLevel level, BlockPos pos, BlockState state) {
 		Block block = state.getBlock();
+		if (BeanFarms.isCrop(state)) {
+			return BeanFarms.isRipe(state); // Cobblecuisine's beans (38.9): ripe at the top of their age property, by name
+		}
 		if (block instanceof CropBlock crop) {
 			// A two-block crop (Cobblemon's Hearty Grains) is cut from its bottom half: the top comes with it.
 			if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
@@ -480,7 +488,7 @@ public class FieldWork extends Behavior<Villager> {
 
 	// --- doing it ---------------------------------------------------------------------------------
 
-	private static void harvest(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos) {
+	private static void harvest(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos, java.util.function.Predicate<ItemStack> sows) {
 		BlockState state = level.getBlockState(pos);
 		if (!(state.getBlock() instanceof CropBlock) && Fruit.isRipe(state)) {
 			List<ItemStack> picked = new ArrayList<>(Fruit.pick(level, pos, villager));
@@ -503,8 +511,9 @@ public class FieldWork extends Behavior<Villager> {
 			boolean replant = state.getBlock() instanceof CropBlock || state.getBlock() instanceof NetherWartBlock;
 			Item seed = replant ? state.getBlock().getCloneItemStack(level, pos, state).getItem() : null;
 			take(level, villager, bag, pos, true);
-			// The same crop goes straight back in.
-			if (seed != null && bag.has(seed, 1) && seed instanceof BlockItem bi) {
+			// The same crop goes straight back in (beans only while the menu still wants some, 38.9).
+			if (seed != null && (!BeanFarms.isSeed(new ItemStack(seed)) || sows.test(new ItemStack(seed)))
+				&& bag.has(seed, 1) && seed instanceof BlockItem bi) {
 				BlockState sown = bi.getBlock().defaultBlockState();
 				if (level.getBlockState(pos).isAir() && sown.canSurvive(level, pos)) {
 					level.setBlockAndUpdate(pos, sown);
@@ -579,12 +588,13 @@ public class FieldWork extends Behavior<Villager> {
 	}
 
 	/** Sows {@code spot} with the crop growing next to it, or else the seed we carry most of. */
-	static boolean plant(ServerLevel level, BuilderBag bag, BlockPos spot) {
+	/** ({@code sows}: what counts as a seed this round, bean seeds too while beans are wanted, 38.9.) */
+	static boolean plant(ServerLevel level, BuilderBag bag, BlockPos spot, java.util.function.Predicate<ItemStack> sows) {
 		BlockState there = level.getBlockState(spot);
 		if (!there.isAir() && !(there.is(Blocks.WATER) && there.getFluidState().isSource())) {
 			return false;
 		}
-		Item seed = seedFor(level, bag, spot);
+		Item seed = seedFor(level, bag, spot, sows);
 		if (seed == null) {
 			return false;
 		}
@@ -595,13 +605,13 @@ public class FieldWork extends Behavior<Villager> {
 	}
 
 	@Nullable
-	private static Item seedFor(ServerLevel level, BuilderBag bag, BlockPos spot) {
+	private static Item seedFor(ServerLevel level, BuilderBag bag, BlockPos spot, java.util.function.Predicate<ItemStack> sows) {
 		for (int r = 1; r <= 2; r++) {
 			for (BlockPos n : BlockPos.betweenClosed(spot.offset(-r, 0, -r), spot.offset(r, 0, r))) {
 				BlockState state = level.getBlockState(n);
-				if (state.is(BlockTags.CROPS) || state.getBlock() instanceof NetherWartBlock || isStacked(state)) {
+				if (state.is(BlockTags.CROPS) || state.getBlock() instanceof NetherWartBlock || isStacked(state) || BeanFarms.isCrop(state)) {
 					Item seed = state.getBlock().getCloneItemStack(level, n, state).getItem();
-					if (bag.has(seed, 1) && canPlant(level, seed, spot)) {
+					if (sows.test(new ItemStack(seed)) && bag.has(seed, 1) && canPlant(level, seed, spot)) {
 						return seed;
 					}
 				}
@@ -610,7 +620,7 @@ public class FieldWork extends Behavior<Villager> {
 		Item best = null;
 		int most = 0;
 		for (ItemStack stack : bag.stacks()) {
-			if (isSeed(stack) && canPlant(level, stack.getItem(), spot)) {
+			if (sows.test(stack) && canPlant(level, stack.getItem(), spot)) {
 				int count = bag.count(stack.getItem());
 				if (count > most) {
 					most = count;
@@ -635,7 +645,7 @@ public class FieldWork extends Behavior<Villager> {
 		return seed == Items.BAMBOO ? Blocks.BAMBOO_SAPLING.defaultBlockState() : ((BlockItem) seed).getBlock().defaultBlockState();
 	}
 
-	private static void till(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos) {
+	private static void till(ServerLevel level, Villager villager, BuilderBag bag, BlockPos pos, java.util.function.Predicate<ItemStack> sows) {
 		BlockPos above = pos.above();
 		BlockState weed = level.getBlockState(above);
 		if (isWeed(weed)) {
@@ -651,10 +661,25 @@ public class FieldWork extends Behavior<Villager> {
 			hoe.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
 		}
 		// Sow it right away so the fresh farmland doesn't dry back to dirt.
-		plant(level, bag, above);
+		plant(level, bag, above, sows);
 	}
 
 	// --- errands ----------------------------------------------------------------------------------
+
+	/**
+	 * Bean farms (38.9): whether the store (this farmer's chests and the village's stashes) holds fewer than
+	 * {@link BeanFarms#LOW} of a bean colour a dish on the menu needs. False without Cobblecuisine, dishes or the switch.
+	 */
+	private static boolean beansWanted(ServerLevel level, Villager villager, BlockPos station, List<BlockPos> supplies) {
+		if (!BeanFarms.ENABLED || BeanFarms.wanted(level).isEmpty()) {
+			return false;
+		}
+		java.util.Map<Item, Long> store = new java.util.HashMap<>(SupplyContainers.contents(level, supplies));
+		for (io.github.jcondedata.aliveworkplace.work.Village.Stash stash : io.github.jcondedata.aliveworkplace.work.Village.stashes(level, villager, station, null)) {
+			SupplyContainers.contents(level, stash.chests()).forEach((item, n) -> store.merge(item, n, Long::sum));
+		}
+		return BeanFarms.anyShort(level, store);
+	}
 
 	/** Sugar cane, cactus, bamboo, kelp: planted like seeds, but a crop too (they all go to the chests). */
 	static boolean isPlantation(ItemStack stack) {
@@ -691,9 +716,9 @@ public class FieldWork extends Behavior<Villager> {
 		return !stack.isEmpty() && stack.is(ItemTags.HOES);
 	}
 
-	private static boolean hasSeeds(BuilderBag bag) {
+	private static boolean hasSeeds(BuilderBag bag, java.util.function.Predicate<ItemStack> sows) {
 		for (ItemStack stack : bag.stacks()) {
-			if (isSeed(stack)) {
+			if (sows.test(stack)) {
 				return true;
 			}
 		}
@@ -701,9 +726,9 @@ public class FieldWork extends Behavior<Villager> {
 	}
 
 	/** Anything in the bag worth carrying to the chests (not just the seeds we keep). */
-	private static boolean hasHarvest(BuilderBag bag) {
+	private static boolean hasHarvest(BuilderBag bag, java.util.function.Predicate<ItemStack> sows) {
 		for (ItemStack stack : bag.stacks()) {
-			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!isSeed(stack) || isCropToo(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
+			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!sows.test(stack) || isCropToo(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
 				return true;
 			}
 		}
@@ -797,7 +822,7 @@ public class FieldWork extends Behavior<Villager> {
 	/** Walks to the chests and takes seeds (the kind there is most of, and some of each other kind) or a hoe; true once done. */
 	private boolean fetch(ServerLevel level, Villager villager, BlockPos station, BuilderBag bag, boolean seeds) {
 		List<BlockPos> supplies = SupplyContainers.find(level, station, null);
-		java.util.function.Predicate<ItemStack> wanted = seeds ? FieldWork::isSeed : FieldWork::isHoe;
+		java.util.function.Predicate<ItemStack> wanted = seeds ? seed : FieldWork::isHoe;
 		BlockPos chest = SupplyContainers.firstMatching(level, supplies, wanted);
 		// Our own chests are ours; a village-mate's (a storehouse) keep what the builds near them still need (B84: farmers
 		// took a Farmstead's seeds, carrots and potatoes from the storehouse to sow, and the build waited for days).
@@ -838,7 +863,7 @@ public class FieldWork extends Behavior<Villager> {
 			// And some of every other kind there, so a mixed field (wheat here, sugar cane by the water) gets sown.
 			for (java.util.Map.Entry<Item, Long> e : SupplyContainers.contents(level, supplies).entrySet()) {
 				ItemStack kind = new ItemStack(e.getKey());
-				if (e.getKey() != got.getItem() && isSeed(kind)) {
+				if (e.getKey() != got.getItem() && seed.test(kind)) {
 					int want = keepOf(kind) - bag.count(e.getKey());
 					if (want > 0) {
 						int n = Math.min(want, bag.spaceFor(e.getKey()));
@@ -858,12 +883,12 @@ public class FieldWork extends Behavior<Villager> {
 		return true;
 	}
 
-	private static void deposit(ServerLevel level, BlockPos station, BuilderBag bag) {
+	private static void deposit(ServerLevel level, BlockPos station, BuilderBag bag, java.util.function.Predicate<ItemStack> sows) {
 		List<BlockPos> supplies = SupplyContainers.find(level, station, null);
 		List<ItemStack> all = new ArrayList<>(bag.takeAll());
 		all.sort(Comparator.comparingInt(s -> -s.getCount())); // keep the fullest seed stacks
 		for (ItemStack stack : all) {
-			if (isSeed(stack) && !isCropToo(stack) && bag.count(stack.getItem()) < KEEP_SEEDS) {
+			if (sows.test(stack) && !isCropToo(stack) && bag.count(stack.getItem()) < KEEP_SEEDS) {
 				int keep = Math.min(stack.getCount(), KEEP_SEEDS - bag.count(stack.getItem()));
 				bag.add(stack.split(keep));
 			} else if (stack.is(Items.BONE_MEAL) && bag.count(Items.BONE_MEAL) < KEEP_BONE_MEAL) {

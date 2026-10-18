@@ -122,6 +122,14 @@ public class CobblemonDepthCompatTests implements FabricGameTest {
 		if (crop != null && property(crop, "age") == null) {
 			missing.add("bean_crop[age]");
 		}
+		// The ids the bean farms read (38.9): the crop and the seeds, by name.
+		if (crop != null && !io.github.jcondedata.aliveworkplace.farm.BeanFarms.isCrop(crop.defaultBlockState())) {
+			missing.add("BeanFarms doesn't know cobblecuisine:bean_crop");
+		}
+		net.minecraft.world.item.Item seeds = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(CUISINE, "bean_seeds"));
+		if (!io.github.jcondedata.aliveworkplace.farm.BeanFarms.isSeed(new net.minecraft.world.item.ItemStack(seeds))) {
+			missing.add("BeanFarms doesn't know cobblecuisine:bean_seeds");
+		}
 		List<String> beans = List.of("red_bean", "green_bean", "yellow_bean", "blue_bean", "orange_bean", "violet_bean", "indigo_bean");
 		item(CUISINE, "bean_seeds", missing);
 		beans.forEach(bean -> item(CUISINE, bean, missing));

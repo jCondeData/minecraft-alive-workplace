@@ -8,7 +8,7 @@ the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7) and Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.7, 38.8, 38.9
 
 ## What a player sees
 
@@ -100,7 +100,14 @@ Camp Cook's menu has three curries (Beanburger, Mild Honey, Spicy Potato): the p
 cooks them by their own recipe over the fire, makings out of the chests and the curry into her bag in one go, and
 takes them to the chests by the pot (16 kept). The Innkeeper serves each guest one of the three drinks once a stay,
 from the chests by her counter or else the village store; it counts in the guest's diet, and her status says "served
-a guest Bouncy Brionne Soda". Cobblecuisine's beans on the fields and the partners' treats come with 38.9 and 38.10.
+a guest Bouncy Brionne Soda". The partners' treats come with 38.10.
+
+A farmer with Cobblecuisine grows beans for those dishes (38.9): while the store (her chests and the village's stashes)
+holds fewer than 16 of a bean colour a dish on the menu needs, she takes bean seeds from the chests and sows her
+field's empty farmland with them, cuts a bean plant only once it's fully grown, and takes the beans to the store with
+the rest of the harvest. Which colour comes up is Cobblecuisine's own loot (one of the seven at random), so a short
+colour brings a field of mixed beans. With 16 of every wanted colour, or no bean dish on the menu, she sows none and
+the seeds stay in the chest; the ripe beans already growing are still cut, but not sown again.
 
 ## How it works
 
@@ -182,8 +189,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
 | `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes on the Chef's menu by his level, counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8). Off: the menus and the diet are as before. |
-
-The last one, beanFarms, is mapped to the gate and comes into the config with 38.9.
+| `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a colour a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
 
 ## Saved data
 
@@ -196,7 +202,8 @@ may challenge at once. The Mega Bracelets are saved on the overworld (`alivework
 known to have a Trainer Leader (`leaderHalls`) and, per player, the villages whose Leader they beat (`beaten`) and the
 realms whose bracelet they had (`megaBracelet`). An older save has none: nobody has a bracelet yet. A villager who
 watched a Mega Shrine's show keeps the day on them (`mega_show_day`, 38.7); an older save has none. Cobblecuisine's
-dishes (38.8) save nothing new: the dishes go in chests and the meals in the villagers' `recent_meals`. The planned fields
+dishes (38.8) save nothing new: the dishes go in chests and the meals in the villagers' `recent_meals`. Bean farms
+(38.9) save nothing new either: whether beans are wanted is worked out again at each look over the field. The planned fields
 of later items are listed in the design note.
 
 ## Items, blocks, jobs, commands
@@ -211,6 +218,14 @@ the design note and checked by `CobblemonDepthCompatTests`.
 ## Decisions
 
 - Cobblecuisine has seven bean colours, not six as the roadmap said; the plan uses all seven (38.1).
+- Bean farms have their own switch, `beanFarms`, as the design note's switch table planned, rather than sharing
+  `cuisineDishes`: a server can keep the dishes and grow its beans by hand. Beans are only wanted while dishes are on
+  the menu, so `cuisineDishes` off means no bean farms either (38.9).
+- "A dish on the menu" is any dish on the loaded lists (every level), not only those the village's Chef can cook
+  today: a Chef rises, and the beans take days to grow. The beans a dish needs are the `#cobblecuisine:beans` items its
+  own recipes ask for, found by result as the Chef finds them (38.9).
+- The store counted is the farmer's chests and her village-mates' stashes. A colour can't be chosen: the crop's loot
+  picks it, so any short colour sows the field with seeds (38.9).
 - A Cobblecuisine dish is found by the recipe whose result it is, not by the recipe's id: some differ
   (`cake_honey_fruit` makes `fruit_honey_cake`) (38.1).
 - Dens are recorded when their chunk loads near a village, never by scanning (38.2's spec).
@@ -312,6 +327,13 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   `theCampCookMakesNoCurryWithTheSwitchOff`, `theInnkeeperServesAGuestADrinkOnceAStay`.
 - `CobblemonDepthCompatTests.cuisineDishListIdsExist`: every dish on the shipped lists and camp menu files is an item
   with a crafting recipe whose every ingredient some item fills.
-- `CuisineGameTests` (without Cobblecuisine): `withoutCobblecuisineTheMenuIsTodays`, `dishListsAreReadAsTheirFormatSays`.
+- `CuisineGameTests` (without Cobblecuisine): `withoutCobblecuisineTheMenuIsTodays`, `dishListsAreReadAsTheirFormatSays`,
+  `beanFarmSwitchText` (38.9).
+- `BeanFarmCompatTests` (38.9, the real Cobblecuisine): `menuWantsTheBeansOfItsRecipes` (the salad's green bean, all
+  in the tag, none with the dishes off; ripe only at the top age), `farmerPlantsBeansTheMenuWants`,
+  `noBeansPlantedWhenTheStoreHasEnough`, `noBeansWithTheSwitchOff`, `farmerHarvestsOnlyRipeBeansIntoTheStore` (no
+  seeds in the store to start with; the green half left, the beans in the chest, the cut half sown again);
+  `CobblemonDepthCompatTests.cuisineIdsExist` checks the crop and seed ids `farm/BeanFarms` reads.
+- Scene `bean_farm` (38.9): a row ripe, a row green, a row bare; the ripe row cut into the chest and the bare rows sown.
 
 Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`, `mega_trainers`, `mega_jeweller`, `cuisine_kitchen`

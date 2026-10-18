@@ -6,10 +6,10 @@ expansion: M38
 image: https://jcondedata.github.io/minecraft-alive-workplace/cuisine_kitchen/still-3.jpg
 caption: A Journeyman Chef's salad and curry in the chest by the stove
 Needs: Cobblemon and Cobblecuisine on the server
-Who: the Chef, the Camp Cook and the Innkeeper
+Who: the Chef, the Camp Cook, the Innkeeper and the Farmer
 Kept: 16 of each dish in the chests by the stove
 categories: Pokémon, Jobs
-related: chef.md, camp-cook.md, innkeeper.md, food-and-diet.md, settings.md
+related: chef.md, camp-cook.md, innkeeper.md, farmer.md, food-and-diet.md, settings.md
 ```
 
 With **Cobblecuisine** on the server, your village's cooks make its salads, sandwiches, curries, cakes and drinks, and
@@ -48,7 +48,15 @@ The [Innkeeper](innkeeper.md) serves each guest staying at her inn a drink: a Bo
 Coffee or a Fruit Punch, once a stay. She takes it from the chests by her counter, or else from the village store, so
 keep some there.
 
+## Beans on the farm
+
+Your [Farmers](farmer.md) grow the beans the dishes need. When the store holds fewer than 16 of a colour of bean that
+a dish on the menu uses, a farmer takes **bean seeds** from her chests and sows them on her field's empty farmland. She
+cuts the beans only when they're fully grown and takes them to the store with the rest of her harvest. The colour of
+each bean is Cobblecuisine's choice, so a field brings a mix. Once the store has 16 of every colour the menu wants,
+she plants no more, and the seeds stay in the chest. Put a few bean seeds in her chest to start.
+
 ## Settings
 
 On the settings screen, **Cobblecuisine Dishes** turns this on or off. Off, the cooks make what they made before and
-the dishes count for the diet like any other food. Without Cobblecuisine nothing changes at all.
+the dishes count for the diet like any other food. Without Cobblecuisine nothing changes at all. **Bean Farms** turns the farmers' beans on or off: off, they never sow beans.

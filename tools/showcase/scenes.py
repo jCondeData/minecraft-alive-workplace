@@ -361,6 +361,10 @@ SCENES = [
     job("cuisine_kitchen", "Chef", "Cobblecuisine: a salad and a curry from the Chef",
         "the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest",
         cobblemon=True),
+    # Bean farms (ROADMAP 38.9): the farmer cuts ripe Cobblecuisine beans, leaves the green ones and sows the bare rows
+    job("bean_farm", "Farmer", "Cobblecuisine: beans for the menu",
+        "the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows",
+        cobblemon=True),
     job("gem_grower", "Gem Grower", "A ripe amethyst cluster picked, the budding block kept",
         "the gem grower picked the ripe amethyst cluster and left the budding amethyst", 150),
     job("jeweller", "Jeweler", "Making amethyst rings at the stonecutter", "the jeweler made amethyst rings at the stonecutter"),

@@ -6141,6 +6141,8 @@
   "aliveworkplace.config.villageMegas.tooltip": "A City's Trainer Leaders, the Festival Cup's finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega Bracelet. The Jeweler cuts Mega Stones and Key Stones, and beating every Trainer Leader of a realm earns a Mega Bracelet. Needs Mega Showdown. Off: only Masters Mega Evolve, nobody wears a bracelet and the village makes no Mega Stones.",
   "aliveworkplace.config.cuisineDishes": "Cobblecuisine Dishes",
   "aliveworkplace.config.cuisineDishes.tooltip": "The Chef cooks Cobblecuisine's dishes from their own recipes (salads and sandwiches from the start, drinks at Apprentice, curries at Journeyman, cakes at Expert), each counts as its own kind of food for the villagers' diet, the Camp Cook adds its curries and the Innkeeper serves its drinks. Needs Cobblecuisine. Off: the menus are as they were.",
+  "aliveworkplace.config.beanFarms": "Bean Farms",
+  "aliveworkplace.config.beanFarms.tooltip": "Farmers sow Cobblecuisine's beans on their fields when the store holds fewer than 16 of a colour a dish on the menu needs, and harvest them when fully grown, into the store. Needs Cobblecuisine. Off: farmers never sow beans.",
   "message.aliveworkplace.well_keeper.title_full": "Well Keeper · bucket full",
   "message.aliveworkplace.well_keeper.title_empty": "Well Keeper · bucket empty",
   "message.aliveworkplace.well_keeper.state.water": "fetching water",

@@ -68,4 +68,16 @@ public class CuisineGameTests implements FabricGameTest {
 		helper.assertTrue(tip.contains("curries at Journeyman, cakes at Expert") && tip.contains("Needs Cobblecuisine"), tip);
 		helper.succeed();
 	}
+
+	/** Bean farms' switch (38.9): its name and tooltip, and it's on in GameTests. */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void beanFarmSwitchText(GameTestHelper helper) {
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED, "beanFarms should be on in GameTests");
+		String name = JewellerGameTests.english(net.minecraft.network.chat.Component.translatable("aliveworkplace.config.beanFarms"));
+		helper.assertTrue(name.equals("Bean Farms"), name);
+		String tip = JewellerGameTests.english(net.minecraft.network.chat.Component.translatable("aliveworkplace.config.beanFarms.tooltip"));
+		helper.assertTrue(tip.contains("fewer than 16 of a colour") && tip.contains("Needs Cobblecuisine"), tip);
+		helper.succeed();
+	}
 }

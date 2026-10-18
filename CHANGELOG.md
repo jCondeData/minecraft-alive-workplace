@@ -254,6 +254,10 @@ asks for the steps, `latest.log` and any crash report).
   Houses already standing keep their old look; the jobs, beds and villagers inside are unchanged.
 
 ### Fixed
+- **Holding a Create Schematic after using it on the Blueprint Table no longer crashes the game.** A written Schematic
+  without its size (made by a command or another mod) crashed Create's own schematic code when held ("getBounds() is
+  null"); the table now fills in what Create's Schematic Table writes, its size read from the file, and still lists
+  and imports it (B189).
 - **Raiders beside or behind a besieged village's walls go round to the open gateway.** Sent straight for the way in,
   a raider a fight had taken beside the walls could be led to the outside spot nearest the yard, behind the back wall,
   and stand there for the rest of the siege with the gate broken open; now it goes round to the front of the breach

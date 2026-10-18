@@ -815,7 +815,7 @@ final class JobScenes {
 		// Drowned pirates (ROADMAP 32.8): a Town on the beach at dusk, the Pirate Ship at anchor out on the sea with its bow to
 		// the village; its drowned crew wades ashore at the beach nearest it; then Captain Silas Brine falls in his cabin and
 		// the ship burns and sinks, top down, its loot chest left on a log raft.
-		SCENES.put("pirates", new Job("the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 520,
+		SCENES.put("pirates", new Job("the pirate ship anchored off the Town at dusk, its drowned crew waded ashore, and when its captain fell it burned and sank, leaving its chest on a raft", 900, // (done at 510 of 520 locally: room for a slower runner, B130)
 			new Vec3(25.5, -50.0, 0.5), new Vec3(0.5, -58.0, 20.0), (level, player) -> {
 			BlockPos hall = STATION.north(6);
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
@@ -858,7 +858,8 @@ final class JobScenes {
 			long began = level.getGameTime();
 			BlockPos masthead = new BlockPos(0, -63 + 19, 30 + 2);
 			return l -> {
-				if (l.getGameTime() - began == 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
+				// (asked every 10 frames, so ">=": "==" missed the moment and the captain never fell, B130)
+				if (l.getGameTime() - began >= 160 && l.getEntity(captain) instanceof net.minecraft.world.entity.LivingEntity brine && brine.isAlive()) {
 					brine.hurt(l.damageSources().fellOutOfWorld(), 1000f); // the captain falls: the ship burns and sinks
 				}
 				return l.getGameTime() - began > 160 && io.github.jcondedata.aliveworkplace.threat.Ships.sinking(l).isEmpty()
@@ -948,7 +949,8 @@ final class JobScenes {
 			level.addFreshEntity(creeper);
 			long began = level.getGameTime();
 			return l -> {
-				if (l.getGameTime() - began == 60 && creeper.isAlive()) {
+				// (asked every 10 frames, so ">=": "==" missed the moment and the creeper never lit, B130)
+				if (l.getGameTime() - began >= 60 && creeper.isAlive() && !creeper.isIgnited()) {
 					creeper.ignite();
 				}
 				if (l.getGameTime() - began < 160 || creeper.isAlive()) {
@@ -1889,6 +1891,10 @@ final class JobScenes {
 			}
 			BlockPos post = STATION.offset(4, 0, -13);
 			level.setBlockAndUpdate(post, ModBlocks.GUARD_POST.defaultBlockState());
+			// The hall's and the post's records now, not in vanilla's next task, so the archer finds his village and his post (B130).
+			ScreenshotHarness.fileRecords(level, hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS);
+			io.github.jcondedata.aliveworkplace.hall.CivicEffects.forget();
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 			Villager archer = EntityType.VILLAGER.spawn(level, STATION.offset(4, 0, -11), MobSpawnType.COMMAND);
 			io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, archer, post, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD_POST_POI,
 				io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD);
@@ -1915,9 +1921,9 @@ final class JobScenes {
 				if (phase[0] == 0 && io.github.jcondedata.aliveworkplace.threat.Sieges.portcullisDown(l, hall)) {
 					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Sieges.status(l, hall).open() == 0, "the gates shut at noon");
 					phase[0] = 1;
-				} else if (phase[0] >= 1 && phase[0] < 100) {
-					phase[0]++; // a few seconds with the gates shut in the sun
-				} else if (phase[0] == 100) {
+				} else if (phase[0] >= 1 && phase[0] < 10) {
+					phase[0]++; // a few seconds with the gates shut in the sun (asked every 10 frames: 100 was 50 seconds, B130)
+				} else if (phase[0] == 10) {
 					l.setDayTime(base + io.github.jcondedata.aliveworkplace.guard.VillageRaids.DUSK + 20);
 					phase[0] = 101;
 				}

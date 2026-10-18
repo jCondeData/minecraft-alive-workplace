@@ -3414,6 +3414,7 @@ final class JobScenes {
 			// ROADMAP 38.6 (Cobblemon and Mega Showdown): a Journeyman Jeweller with a Mega Crystal, 2 gold ingots and 4
 			// emeralds in the chest (and the store's rings, brooches and circlets already made), and a Master trainer of
 			// the village beside the stonecutter. The Jeweller cuts the Mega Stone of a Pokémon on the Master's team.
+			// 38.6a: Mega makings count only in the village store, so the chest is a Storehouse's (the Storehouse beside it).
 			Villager jeweller = picked(level, player, STATION, Blocks.STONECUTTER, Items.GOLD_NUGGET);
 			jeweller.setVillagerData(jeweller.getVillagerData().setLevel(3));
 			jeweller.setVillagerXp(150);
@@ -3424,6 +3425,7 @@ final class JobScenes {
 				master.setNoAi(true);
 				level.addFreshEntity(master);
 			}
+			level.setBlockAndUpdate(chestPos().west(), ModBlocks.STOREHOUSE.defaultBlockState());
 			Showcase.check(io.github.jcondedata.aliveworkplace.jeweller.MegaStones.on(), "the village's Mega Stones are on (Mega Showdown, villageMegas, Jewelers)");
 			Showcase.check(master != null && !io.github.jcondedata.aliveworkplace.jeweller.MegaStones.stonesOf(master).isEmpty(), "the Master's team has a Mega Stone to cut");
 			net.minecraft.tags.TagKey<net.minecraft.world.item.Item> stones = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,

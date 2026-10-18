@@ -303,7 +303,7 @@ SCENES = [
       cobblemon=True, mega=True),
     # Mega Stones from the village (ROADMAP 38.6): a Journeyman Jeweller cuts a Mega Stone for the village's Master
     job("mega_jeweller", "Jeweler", "Mega Stones: the Jeweler cuts one for the village's Master",
-        "the jeweler cut a Mega Stone for a Pokémon on the village Master's team from a Mega Crystal, gold and emeralds",
+        "the jeweler cut a Mega Stone for a Pokémon on the village Master's team from a Mega Crystal, gold and emeralds the player put in the Storehouse",
         cobblemon=True, mega=True),
     # The Mega Shrine (ROADMAP 38.7): on a festival day a village trainer Mega Evolves their ace at the shrine's pedestal
     job("mega_shrine", "Trainer", "The Mega Shrine: a festival show",

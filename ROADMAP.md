@@ -4889,7 +4889,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   Leader of a realm once gets a Mega Bracelet from the capital's hall. Done when: compat GameTests: a Jeweller with a
   crystal and the makings in the store makes the stone; a Miner's find goes to the store, not the dump; the bracelet
   is given once; with M34 off the recipes simply don't run; scene `mega_jeweller`.
-  - [ ] **38.6a** Change from the owner (2026-10-18): the Jeweler cuts Mega Stones only from materials the player provides through the Storehouse storage, never on his own initiative from nothing.
+  - [x] **38.6a** (review: pending 2026-10-18) Change from the owner (2026-10-18): the Jeweler cuts Mega Stones only from materials the player provides through the Storehouse storage, never on his own initiative from nothing.
 - [x] **38.7** (review: pending 2026-10-18) **The Mega Shrine.** A new decoration blueprint, the Mega Shrine (a `mega_showdown:pedestal` on a dais
   of `mega_meteorid` bricks and blocks), listed at the Blueprint Table only when its blocks exist. A village with a
   finished shrine holds a partner show there on festival days (M28's partner shows): a village trainer Mega Evolves
@@ -5195,6 +5195,18 @@ the owner's port jar; M33's caravans (39.7).
   `world/VillageHouses` (a design choice, not a density problem). Commands: `tools/modtest/village_density.sh` on
   `main` (5d8652a1) and, for "before", the same script and `VillageDensityMeasure.java` copied into
   `git worktree add <dir> ac8dc522^`. The measurement is registered in no entrypoint, so `build` never runs it.
+- 2026-10-18 (38.6a, lane-d-1018-1608, decisions): the Jeweller's Mega recipes (every `luxury_recipes` file with
+  `"when": "village_megas"`: Key Stone, Mega Stone from a crystal, from a plain Mega Stone, from 4 meteorite ores) take
+  their makings **only from the village store** (`LuxuryWork.store`: the hall's storehouses and kitchens, or without a
+  hall the storehouses near the stonecutter), never the Jeweller's own chest or other workers' stashes; the stone still
+  goes into his own chest. The costs stay as 38.6 set them (1 crystal or Key Stone ore or plain Mega Stone, or 4
+  meteorite ores, plus 2 gold ingots and 4 emeralds each); they were already spent per stone, the change is where they
+  may come from. Short of makings he cuts nothing and his line says what the Storehouse should hold (for the stone whose
+  makings the store holds most of); these goods are not posted on the requests board any more, because a hand-over there
+  goes to the worker's own chest, which no longer counts. The Miner still takes his finds (Key Stone ore, crystals,
+  meteorite ores) to the store as 38.6 says: they then count like anything the player puts there. Other luxury goods
+  are unchanged (the hook `LuxuryWork.fromStoreOnly` is false for them).
+
 - 2026-10-18 (38.6, decisions; details in `docs/wiki/raid-dens-megas-cuisine.md`, "Decisions"): the Mega Bracelet
   is given **once per player per realm** as written, straight into the inventory (dropped when full) with the
   capital's hall named, not collected at the hall; the design note's question 2 (once ever?) stays the owner's. A

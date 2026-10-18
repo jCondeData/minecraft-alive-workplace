@@ -810,6 +810,7 @@
   "message.aliveworkplace.luxury.state.crafting": "making %s %s",
   "message.aliveworkplace.luxury.state.delivering": "putting %s %s away",
   "message.aliveworkplace.luxury.state.tidying": "putting things away",
+  "message.aliveworkplace.luxury.state.needs_store": "needs %s × %s in the Storehouse",
   "block.aliveworkplace.fossil_lab": "Fossil Lab",
   "entity.minecraft.villager.fossil_scientist": "Fossil Scientist",
   "entity.minecraft.zombie_villager.fossil_scientist": "Zombie Fossil Scientist",

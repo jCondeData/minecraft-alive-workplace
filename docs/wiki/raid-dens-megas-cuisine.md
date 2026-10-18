@@ -50,7 +50,9 @@ set in it (`textures/entity/villager/mega_bracelet.png`, drawn by `tools/texture
 Showdown there are no extra stones, no bracelets and nothing is sent.
 
 **Mega Stones and Key Stones from the village (38.6).** With Mega Showdown, a Journeyman Jeweller (level 3) cuts, at the
-stonecutter, from the makings in their own chest, the village store and the workers' chests:
+stonecutter, only from makings in the **village store** (the hall's storehouses and kitchens, or without a hall the
+storehouses near the stonecutter; 38.6a, the owner: never from their own chest or other workers' chests, and never from
+nothing):
 
 | Makings | Makes | Level | Kept in the store |
 |---|---|---|---|
@@ -63,7 +65,10 @@ stonecutter, from the makings in their own chest, the village store and the work
 Village Hall, or within 48 blocks without one; visitors and Cup delegates left out), nearest first, and at the Pokémon
 on each one's home team, and cuts the Mega Stone of the first such Pokémon whose stone the store doesn't hold yet
 (both Charizardites for a Charizard). A village whose trainers have no Pokémon with a Mega Evolution gets no stones;
-the Jeweller never floods the store with all 46. Missing makings go on the requests board, as for their other goods.
+the Jeweller never floods the store with all 46. Makings in the store are used up by the cut. While the store lacks
+them the Jeweller cuts nothing and the line above their head says what the Storehouse should hold ("needs 4 × Emerald
+in the Storehouse", for the stone closest to done); these aren't posted on the requests board, since a hand-over there
+goes to the Jeweller's own chest, which doesn't count.
 
 A **Miner** drops off what they dig of Key Stone ore (a Key Stone, or the ore itself with a silk-touch pickaxe), Mega
 Stone Crystals (a Mega Stone, or the crystal) and Mega meteorite ores (silk-touched; without silk touch they drop

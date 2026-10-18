@@ -360,7 +360,59 @@ public class SiegeGameTests implements FabricGameTest {
 				helper.fail("the pillager isn't through the Gatehouse after 2800 ticks (through the Palisade Gate in " + took[0] + "): pillager "
 					+ state(helper, second[1]) + "; ram " + state(helper, second[0]) + "; bars " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 3)) + "/"
 					+ Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 2, 3)) + ", gate " + Sieges.hitPointsLeft(level, yard.hall(), yard.at(5, 1, 2)) + "; "
-					+ siegeState(level, yard));
+					+ siegeState(level, yard) + "; " + about(helper, level, second[1]));
+			}
+		});
+	}
+
+	/**
+	 * More for a failure message about a raider that never got through (B175): every raider about with what it's doing,
+	 * every siege on the level (an earlier batch's could order this raider too), and the goals the raider is running (the
+	 * director's goal, or its own).
+	 */
+	private static String about(GameTestHelper helper, ServerLevel level, Mob mob) {
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		List<String> raiders = level.getEntitiesOfClass(Mob.class, helper.getBounds().inflate(52), m -> m.getTags().contains(Threats.RAIDER_TAG)).stream()
+			.map(m -> m.getType().toShortString() + " " + state(helper, m) + ", ticked " + m.tickCount).toList();
+		List<String> sieges = ThreatData.get(level).sieges().stream().map(s -> "hall " + s.hall.subtract(base).toShortString() + (s.over ? " over" : " on")
+			+ ", raid " + (ThreatData.get(level).raid(s.hall).isPresent() ? "on" : "over")).toList();
+		List<String> goals = ((io.github.jcondedata.aliveworkplace.mixin.MobAccessor) mob).aliveworkplace$goals().getAvailableGoals().stream()
+			.filter(net.minecraft.world.entity.ai.goal.WrappedGoal::isRunning).map(w -> w.getGoal().getClass().getSimpleName()).toList();
+		return "raiders about " + raiders + "; sieges " + sieges + "; its goals " + goals;
+	}
+
+	/**
+	 * B175: a raider beside the yard's side wall when the way opens (where a fight took it) still goes in. Sent straight
+	 * for the way in, the pathfinder's best try could end behind the back wall, the outside point nearest it (seen once
+	 * at some spots of the test grid, not at every one), and the pillager stood there for the rest of the siege; the
+	 * director sends it round to the front of the breach first now.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"siegeBesideTheWall"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "siegeBesideTheWall")
+	public void aRaiderBesideTheWallGoesInWhenTheWayOpens(GameTestHelper helper) {
+		Yard yard = yard(helper, StarterBlueprints.GATEHOUSE);
+		ServerLevel level = yard.level();
+		Mob ram = raider(helper, yard, Culture.Role.RAM, 14.5, 21.5);
+		Mob pillager = raider(helper, yard, Culture.Role.RANGED, 14.5, 25.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(ram, pillager));
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		long[] open = {-1};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (open[0] < 0 && Sieges.open(yard.siege(helper))) {
+				open[0] = tick;
+				// Beside the west wall, outside the yard, halfway along it.
+				pillager.teleportTo(base.getX() + 3.5, base.getY() + 2, base.getZ() + 10.5);
+				pillager.getNavigation().stop();
+				pillager.setTarget(null); // (the fight that took it there is over: the failures had no foe)
+			}
+			if (open[0] >= 0 && through(helper, yard, pillager)) {
+				helper.succeed();
+			} else if (open[0] >= 0 && tick - open[0] > 600) {
+				helper.fail("the pillager from beside the wall isn't in 600 ticks after the way opened: pillager " + state(helper, pillager) + "; ram "
+					+ state(helper, ram) + "; " + siegeState(level, yard));
+			} else if (open[0] < 0 && tick > 2000) {
+				helper.fail("the way isn't open after 2000 ticks: ram " + state(helper, ram));
 			}
 		});
 	}

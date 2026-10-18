@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175
 
 ## What a player sees
 
@@ -15,7 +15,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20
 - **The ram goes for the gate** nearest the raiders' side: a ravager, or without one the raiders with axes. Every blow
   is heard, the block cracks a little more with each, and at the end it breaks: nothing drops. The chat says "The
   raiders have broken through a gate of Oakbrook!" The other raiders wait a few blocks behind the ram and walk in
-  through the gap; the ram steps aside out of the gateway to let them past, then widens it.
+  through the gap; the ram steps aside out of the gateway to let them past, then widens it. A raider a fight took
+  round the side of the walls comes back round to the gateway and in.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder

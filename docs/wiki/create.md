@@ -7,7 +7,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 (39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6) and trains between villages (39.7); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, B189, B193
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, B189, B193
 
 ## What a player sees
 
@@ -90,6 +90,40 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   stands at the other village's station. A station the village points at its track faces the other village (Create's
   stations are stopped at from one side). Without a free villager, before the train is put together, or after a player
   breaks it up, caravans take the timed trip above.
+- **One line, a built train, goods in its chest** (39.7b). The track a builder lays along a road follows
+  `CaravanTrains.plan`: a straight piece (`xo`, `zo`) on each level node, an ascending piece (`an`, `as`, `ae`, `aw`) on
+  the lower node of each one-block step, rising towards the higher one (its high end meets the next straight piece), and
+  round each turn with three (or two) straight, level nodes either side a Create curve between the straight pieces that
+  far from the turn, joined once the site is done (`CreateTrains.curve`, a `BezierConnection` as Create's own track
+  placement makes one). A dip of one block, a step on a turn and a turn with no room stay gaps (the railway then never
+  joins and caravans take the timed trip). The train's six blocks are a generated blueprint
+  (`aliveworkplace:roads/<hall>/train_<other>`, "Village Train") at the first village's station, built by an idle
+  builder of the village from the bench's chests; the bogey is placed with railway casing. When they all stand, the
+  station's next look glues and assembles them ("Bob built the village's train at the station, ready to be put on the
+  rails"). At the departing station the caravan's goods go into the carriage's chest (Create's mounted storage, all or
+  nothing; arrival `IN_CHEST`; no room: they ride as the caravan's record as before), and at the other station what is
+  still in the chest of them comes out and is delivered. Train gone or the far station gone while they're in the chest:
+  what a derailed train still holds comes back out and the caravan takes the timed trip; a train broken up keeps them
+  in its chest (a player breaking it up at a station gets the chest back with them), the caravan is taken off the road
+  and the chronicle says "The train to Ashford was broken up on the way: the caravan's goods stayed in its chest".
+- **Every station, every road, a drawn train** (39.7c). After its first pass, `CaravanTrains.plan` joins what is left
+  unjoined: the plan's pieces make lines (straight pieces meeting level and in line, or a curve's two ends); short lines
+  of one or two pieces between gaps (a zig-zag's straight bits) are taken out, and each gap gets one Create curve from
+  the last piece of a line to the first of the next, leaving each along its own axis (a turn, an S-bend, a slope or all
+  three: at most 20 blocks, two along for each block up, a turn a quarter circle with legs of one length, an S-bend
+  with as much way along as across or half as much again, since in between Create's curve kinks at its ends and trains
+  never pass it), the lines shortened by up to four pieces where it needs the room; a longer gap gets a straight piece
+  about halfway along the way's main axis and two curves. So a one-block dip is a slope down and one up, a step on a
+  turn one climbing curve, and a diagonal road one S-bend (or two). A Train Station off the road
+  (`CaravanTrains.spur`, when the track site is done and before the stations are aimed) gets one curve from an end of
+  its own straight track to the nearest straight piece of the road's that it can reach (32 blocks at most), joining it
+  heading for the other village; a station on a spur faces the way out (`CreateTrains.aim`: the side whose track runs
+  on rather than ending). The train is drawn: `aliveworkplace:train/village_train` (4 x 4 x 1, `village_train` in
+  `tools/blueprints/create_builds.py`, render-checked), running east from its bogey and turned to the track past the
+  station (`CreateTrains.parts`): bogey, railway casing, chest and casing below; controls facing out, the brown seat and
+  controls facing back on the deck (Create's conductor sits between them), a spruce rail at the tail; spruce fence posts at both ends, a hanging lantern and a spruce
+  slab canopy. The glue covers all of it. Its parts: three railway casings (the bogey is one), two controls, a seat, a
+  chest, three spruce fences, four spruce slabs and a lantern.
 
 ## How it works
 

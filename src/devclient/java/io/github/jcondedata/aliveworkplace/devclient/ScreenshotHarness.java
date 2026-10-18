@@ -719,9 +719,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 160) {
 			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen, "the Blueprint Table screen opened");
-			// 36.6: the Starter Cottage's line about it, wrapped under its size
-			String description = mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s.selectedDescription() : "";
-			Showcase.check(!description.isEmpty(), "the Starter Cottage's description shows under its size (\"" + description + "\")");
+			// 36.6a: the Starter Cottage's beds (and any jobs) under its size, no description
+			String facts = mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s.selectedFacts() : "";
+			Showcase.check(facts.contains("Beds: "), "the Starter Cottage's beds show under its size (\"" + facts.replace('\n', ' ') + "\")");
 			shot(mc, "10_table_library");
 			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
 				screen.showFiles();
@@ -735,10 +735,6 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 280) {
 			shot(mc, "12_table_uploaded");
-			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen && screen.selected() != null) {
-				// 36.6: the uploaded build is selected, and an imported build has no description
-				Showcase.check(screen.selectedDescription().isEmpty(), "the uploaded build " + screen.selected() + " shows no description");
-			}
 			server.execute(() -> {
 				int now = BlueprintLibrary.list(server, false).size();
 				Showcase.check(now > libraryBefore, "a .litematic file uploaded into the library (" + libraryBefore + " -> " + now + " blueprints)");

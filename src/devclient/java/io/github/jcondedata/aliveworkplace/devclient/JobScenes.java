@@ -1149,8 +1149,11 @@ final class JobScenes {
 		// seat as conductor) and Create runs it on its schedule between the two. Thornholm's caravan of oak logs waits at
 		// its station, rides the train and comes off at Ashford's, unloaded there (B193: both stations noted before the
 		// caravan leaves, and a wait long enough for a slow runner).
-		SCENES.put("village_train", new Job("Thornholm's caravan rode the village's own Create train to Ashford's station and its 32 oak logs were unloaded there",
-			2400, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
+		// 39.7b: Thornholm's builder builds the train from its blueprint out of the bench's barrel (the bogey from train
+		// casing), and the caravan's logs ride in the carriage's chest: loaded at Thornholm, taken out at Ashford (what the
+		// chest holds is shown over the hotbar the whole time).
+		SCENES.put("village_train", new Job("Thornholm's builder built the train, the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
+			4000, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
 				&& io.github.jcondedata.aliveworkplace.city.CaravanTrains.live()
@@ -1194,10 +1197,33 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, thornholm, ashford), "the two villages are on a railway");
 			Container chest = (Container) level.getBlockEntity(ashford.east(3).north(2));
 			Container home = (Container) level.getBlockEntity(thornholm.east(3).north(2));
+			BlockPos bench = thornholm.offset(-3, 0, 2); // Thornholm's builder, with the train's parts in the barrel by the bench
+			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
+			level.setBlockAndUpdate(bench.west(), Blocks.BARREL.defaultBlockState());
+			Container parts = (Container) level.getBlockEntity(bench.west());
+			java.util.function.Function<String, net.minecraft.world.item.Item> create = path -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
+			parts.setItem(0, new ItemStack(create.apply("railway_casing"), 3));
+			parts.setItem(4, new ItemStack(Items.SPRUCE_FENCE, 3)); // 39.7c: the drawn train's posts, canopy and lantern
+			parts.setItem(5, new ItemStack(Items.SPRUCE_SLAB, 4));
+			parts.setItem(6, new ItemStack(Items.LANTERN, 1));
+			parts.setItem(1, new ItemStack(create.apply("controls"), 2));
+			parts.setItem(2, new ItemStack(create.apply("brown_seat"), 1));
+			parts.setItem(3, new ItemStack(Items.CHEST, 1));
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(3, level.getServer());
+			Villager trainBuilder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			Builders.employ(level, trainBuilder, bench);
+			java.util.UUID owner = io.github.jcondedata.aliveworkplace.city.CaravanTrains.railwayId(thornholm, ashford);
 			int[] tick = {0};
 			boolean[] sent = {false};
 			boolean[] aboard = {false};
+			boolean[] filled = {false};
 			return l -> {
+				if (tick[0] % 20 == 0) { // what the train's chest holds, over the hotbar
+					int logs = io.github.jcondedata.aliveworkplace.city.CaravanTrains.RAILWAY.call(r -> r.cargo(l, owner), List.<ItemStack>of()).stream()
+						.filter(st -> st.is(Items.OAK_LOG)).mapToInt(ItemStack::getCount).sum();
+					player.displayClientMessage(Component.literal("Train's chest: " + logs + " oak logs"), true);
+				}
 				if (++tick[0] % 10 == 0) {
 					for (BlockPos hall : List.of(thornholm, ashford)) {
 						io.github.jcondedata.aliveworkplace.city.CaravanTrains.serve(l, hall, (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) l.getBlockEntity(hall));
@@ -1218,14 +1244,20 @@ final class JobScenes {
 					return false;
 				}
 				io.github.jcondedata.aliveworkplace.hall.Caravans.Shipment s = data.onTheRoad().stream().filter(x -> x.to().equals(ashford)).findFirst().orElse(null);
-				if (s != null && s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.ABOARD && !aboard[0]) {
+				if (s != null && io.github.jcondedata.aliveworkplace.city.CaravanTrains.aboard(s.arrives()) && !aboard[0]) {
 					aboard[0] = true;
 					Showcase.check(true, "the caravan boarded the train");
+				}
+				if (s != null && s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST && !filled[0]) {
+					filled[0] = true;
+					Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.RAILWAY.call(r -> r.cargo(l, owner), List.<ItemStack>of()).stream()
+						.filter(st -> st.is(Items.OAK_LOG)).mapToInt(ItemStack::getCount).sum() == 32, "the caravan's 32 logs filled the train's chest at Thornholm");
 				}
 				// both storehouses are in each hall's reach, so the logs may go into either chest: all 64 there, the caravan in
 				boolean in = s == null && aboard[0] && chest.countItem(Items.OAK_LOG) + home.countItem(Items.OAK_LOG) == 64;
 				if (in) {
-					Showcase.check(true, "the train came in at Ashford's station and the caravan was unloaded");
+					Showcase.check(filled[0] && io.github.jcondedata.aliveworkplace.city.CaravanTrains.RAILWAY.call(r -> r.cargo(l, owner), List.<ItemStack>of()).isEmpty(),
+						"the train came in at Ashford's station and its chest emptied into Ashford's storehouse");
 				}
 				return in;
 			};
@@ -3993,6 +4025,60 @@ final class JobScenes {
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)
+		// Free job blocks (ROADMAP 36.9): the hall's page lists a Storehouse nobody works at in a finished Storehouse and a
+		// bench in the open, with the distance and who could take each; the Storehouse's page lists Dara and Odo, and picking
+		// Dara makes her the Porter, who walks over.
+		SCREENS.put("hall_jobs", new Screen("the hall's Free job blocks page listed the empty Storehouse (in the Storehouse, its distance, two villagers who could take it) and a bench; "
+			+ "Dara was picked from the Storehouse's page and became the Porter",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos store = new BlockPos(-4, -60, -3);
+				place(level, store, ModBlocks.STOREHOUSE);
+				place(level, new BlockPos(4, -60, -3), ModBlocks.BUILDERS_BENCH);
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.STOREHOUSE.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-12, -60, -7),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				classPeople.clear();
+				String[] names = {"Dara", "Odo"};
+				for (int i = 0; i < names.length; i++) {
+					Villager v = EntityType.VILLAGER.create(level);
+					v.moveTo(-2.5 + i * 4, -60, 3.5, 180, 0);
+					v.setNoAi(true); // jobless villagers would take a free block on their own before the camera sees it
+					v.setCustomName(Component.literal(names[i]));
+					v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.NONE));
+					level.addFreshEntity(v);
+					classPeople.add(v);
+				}
+			},
+			List.of(new Step("01_free_jobs", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.FreeJobsPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(ModBlocks.STOREHOUSE.asItem()),
+							"the empty Storehouse first on the page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_who_takes_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString().startsWith("Odo"),
+							"Dara and Odo could take it: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString());
+					}
+				}, 40),
+				new Step("03_dara_porter", -1, 0, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+					}
+					player.closeContainer();
+					Villager dara = classPeople.get(0);
+					Showcase.check(dara.getVillagerData().getProfession() == ModVillagers.PORTER, "Dara is the Porter: " + dara.getVillagerData().getProfession());
+					dara.setNoAi(false); // and walks to her Storehouse
+				}, 60)),
+			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
+				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

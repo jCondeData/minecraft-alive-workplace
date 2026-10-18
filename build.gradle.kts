@@ -138,6 +138,11 @@ loom {
                 // ... and POKEMON_HOUSE_WEIGHT the five Pokémon jobs' houses (ROADMAP 28.15, SCENE=village)
                 findProperty("pokemonHouseWeight")?.let { vmArg("-Daliveworkplace.pokemonHouseWeight=$it") }
                 vmArg("-Daliveworkplace.debug=${findProperty("builderDebug") ?: "false"}")
+                // The furniture scenes load Cobblemon and the pack's building mods (Chipped, Supplementaries, Rechiseled...):
+                // their block states outgrow the default heap (a quarter of RAM, 4 GB on GitHub's runners), and the
+                // integrated server ran out of memory saving chunks a minute in (every furniture scene, 2026-10-18).
+                // -PshotsHeap=N to override.
+                (findProperty("shotsHeap") ?: if (findProperty("furniture") == "true") "6g" else null)?.let { vmArg("-Xmx$it") }
             }
         }
         if (compattest != null) {

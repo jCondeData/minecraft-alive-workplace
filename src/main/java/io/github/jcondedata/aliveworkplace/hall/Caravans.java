@@ -429,8 +429,8 @@ public final class Caravans {
 		List<BlockPos> walkTheRest(BlockPos hall, long now, java.util.function.ToLongFunction<Shipment> walk) {
 			List<BlockPos> from = new ArrayList<>();
 			onTheRoad.replaceAll(s -> {
-				if (!s.to().equals(hall) || !s.byTrain()) {
-					return s;
+				if (!s.to().equals(hall) || !s.byTrain() || s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST) {
+					return s; // 39.7b: goods in the train's chest come back out of it first (CaravanTrains.serve), never twice
 				}
 				from.add(s.from());
 				long arrives = io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives()) ? now + walk.applyAsLong(s) // 39.7a: never boarded
@@ -461,6 +461,78 @@ public final class Caravans {
 				setDirty();
 			}
 			return n[0];
+		}
+
+		/**
+		 * 39.7b: the caravans from {@code from} to {@code to} waiting at the station board the train standing there: with
+		 * {@code load} putting their goods in its chest they ride {@link io.github.jcondedata.aliveworkplace.city.CaravanTrains#IN_CHEST},
+		 * else (no room) as the caravan's record ({@code ABOARD}). Returns how many boarded.
+		 */
+		public int board(BlockPos from, BlockPos to, java.util.function.Predicate<List<ItemStack>> load) {
+			int[] n = {0};
+			onTheRoad.replaceAll(s -> {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != io.github.jcondedata.aliveworkplace.city.CaravanTrains.BOARDING) {
+					return s;
+				}
+				n[0]++;
+				long stage = load.test(s.goods()) ? io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST
+					: io.github.jcondedata.aliveworkplace.city.CaravanTrains.ABOARD;
+				return new Shipment(s.from(), s.to(), s.goods(), stage, s.sale(), s.back(), s.byTrain());
+			});
+			if (n[0] > 0) {
+				setDirty();
+			}
+			return n[0];
+		}
+
+		/**
+		 * 39.7b: the train brought the caravans from {@code from} in at {@code to}'s station: each one's goods come out of
+		 * its chest ({@code unload} gives what was still there) and it arrives {@code now} with those. Returns how many.
+		 */
+		public int unload(BlockPos from, BlockPos to, long now, java.util.function.UnaryOperator<List<ItemStack>> unload) {
+			int[] n = {0};
+			onTheRoad.replaceAll(s -> {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST) {
+					return s;
+				}
+				n[0]++;
+				return new Shipment(s.from(), s.to(), List.copyOf(unload.apply(s.goods())), now, s.sale(), s.back(), s.byTrain());
+			});
+			if (n[0] > 0) {
+				setDirty();
+			}
+			return n[0];
+		}
+
+		/**
+		 * 39.7b: the train with the goods of the caravans from {@code from} to {@code to} in its chest is gone or can't come
+		 * in: what {@code unload} still finds in the chest (a derailed train keeps it) goes on with the caravan, arriving
+		 * {@code arrives}; a caravan with nothing left there (the train broken up: its chest has them) is taken off the
+		 * road. Returns how many were taken off.
+		 */
+		public int recover(BlockPos from, BlockPos to, long arrives, java.util.function.UnaryOperator<List<ItemStack>> unload) {
+			int[] gone = {0};
+			boolean[] changed = {false};
+			List<Shipment> next = new ArrayList<>();
+			for (Shipment s : onTheRoad) {
+				if (!s.from().equals(from) || !s.to().equals(to) || s.arrives() != io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST) {
+					next.add(s);
+					continue;
+				}
+				changed[0] = true;
+				List<ItemStack> back = unload.apply(s.goods());
+				if (back.isEmpty()) {
+					gone[0]++;
+				} else {
+					next.add(new Shipment(s.from(), s.to(), List.copyOf(back), arrives, s.sale(), s.back(), s.byTrain()));
+				}
+			}
+			if (changed[0]) {
+				onTheRoad.clear();
+				onTheRoad.addAll(next);
+				setDirty();
+			}
+			return gone[0];
 		}
 
 		/** Takes every caravan to or from {@code hall} off the road (tests clean up after themselves). */

@@ -57,6 +57,12 @@ asks for the steps, `latest.log` and any crash report).
   and builders take materials through it, and the board says "Linked through a storage controller: 3 blocks". Break
   the controller and they are separate stores again. A "Sophisticated" style builds the Storehouse with the mod's
   chests and barrels and a controller on top of the Storehouse block.
+- **Carved Wood and Rechiseled in the styles (2.1, behind its gate).** A new **Spruce** style builds any blueprint in
+  spruce, and with Carved Wood its chests, bookshelves, lecterns, crafting tables, ladders, lanterns and beehives are
+  Carved Wood's spruce ones: a Library in Spruce has spruce shelves, and its Librarian still takes the spruce lectern
+  (Carved Wood registers it as the same job site). With Rechiseled, the **Grand** style's floors are patterned dark oak
+  flooring and its wall panels andesite squares. Without the mods both look as before; Carved Wood chests and barrels
+  are supply chests like any chest.
 - **Cobblemon depth (2.2), the plan.** The design note for raid dens, more Mega trainers and Mega Stones, and
   Cobblecuisine dishes and bean farms (docs/design/M38.md), its expansion gate (off until 2.2), and Cobblemon Raid Dens
   and Cobblecuisine in the compat tests, with a test that every id the expansion reads still exists.

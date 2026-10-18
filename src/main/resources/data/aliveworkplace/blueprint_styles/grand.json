@@ -2,6 +2,9 @@
   "order": 6,
   "icon": "minecraft:chiseled_stone_bricks",
   "replace": [
+    {"from": "minecraft:(spruce|oak)_planks", "to": "rechiseled:dark_oak_planks_flooring", "requires_switch": "furnishedBuilds"},
+    {"from": "minecraft:(birch_planks|white_terracotta)", "to": "rechiseled:andesite_squares", "requires_switch": "furnishedBuilds"},
+    {"from": "minecraft:polished_andesite", "to": "rechiseled:andesite_tiles", "requires_switch": "furnishedBuilds"},
     {"from": "minecraft:lantern", "to": "minecraft:copper_lantern"},
     {"from": "minecraft:(spruce|oak|birch|dark_oak)_stairs", "to": "minecraft:deepslate_tile_stairs"},
     {"from": "minecraft:(spruce|oak|birch|dark_oak)_slab", "to": "minecraft:deepslate_tile_slab"},

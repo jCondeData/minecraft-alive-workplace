@@ -50,10 +50,23 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 	public static final String FOLDER = "blueprint_styles";
 	private static final String PREFIX = "styled/";
 
-	/** One swap: block ids matching {@code from} become {@code to} ($1, $2... are the groups). */
-	public record Rule(Pattern from, String to, @Nullable ResourceLocation near) {
+	/**
+	 * One swap: block ids matching {@code from} become {@code to} ($1, $2... are the groups); {@code requiresSwitch}
+	 * (optional, 37.7) the config switch the rule applies under (off, the rule is passed over as if its block didn't
+	 * exist, so the style builds as it did before).
+	 */
+	public record Rule(Pattern from, String to, @Nullable ResourceLocation near, @Nullable String requiresSwitch) {
 		public Rule(Pattern from, String to) {
-			this(from, to, null);
+			this(from, to, null, null);
+		}
+
+		public Rule(Pattern from, String to, @Nullable ResourceLocation near) {
+			this(from, to, near, null);
+		}
+
+		/** Whether the rule applies now: its config switch, if it names one, is on. */
+		boolean active() {
+			return requiresSwitch == null || switchOn(requiresSwitch);
 		}
 
 		@Nullable
@@ -158,7 +171,8 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 		for (JsonElement r : json.getAsJsonArray("replace")) {
 			JsonObject rule = r.getAsJsonObject();
 			rules.add(new Rule(Pattern.compile(rule.get("from").getAsString()), rule.get("to").getAsString(),
-				rule.has("near") ? ResourceLocation.parse(rule.get("near").getAsString()) : null));
+				rule.has("near") ? ResourceLocation.parse(rule.get("near").getAsString()) : null,
+				rule.has("requires_switch") ? rule.get("requires_switch").getAsString() : null));
 		}
 		int order = json.has("order") ? json.get("order").getAsInt() : 100;
 		ResourceLocation icon = json.has("icon") ? ResourceLocation.parse(json.get("icon").getAsString()) : ResourceLocation.withDefaultNamespace("paper");
@@ -171,6 +185,7 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 	static boolean switchOn(String name) {
 		return switch (name) {
 			case "moddedStorageNetworks" -> io.github.jcondedata.aliveworkplace.store.StorageNetworks.ENABLED;
+			case "furnishedBuilds" -> io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED;
 			default -> false;
 		};
 	}
@@ -245,7 +260,7 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 
 	/** {@code base} in {@code style}, under {@code id}. */
 	public static Blueprint apply(Style style, Blueprint base, ResourceLocation id) {
-		return CACHE.computeIfAbsent(base, b -> Collections.synchronizedMap(new HashMap<>())).computeIfAbsent(style.name(), s -> {
+		return CACHE.computeIfAbsent(base, b -> Collections.synchronizedMap(new HashMap<>())).computeIfAbsent(key(style), s -> {
 			List<Blueprint.Entry> blocks = new ArrayList<>(base.blocks().size());
 			boolean isFor = style.isFor(base(id));
 			Map<ResourceLocation, java.util.Set<BlockPos>> near = isFor ? nearBlocks(style, base) : Map.of();
@@ -274,7 +289,7 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 	public static BlockState apply(Style style, BlockState state) {
 		Block to;
 		synchronized (SWAPS) {
-			to = SWAPS.computeIfAbsent(style.name(), s -> new HashMap<>()).computeIfAbsent(state.getBlock(), b -> swap(style, b));
+			to = SWAPS.computeIfAbsent(key(style), s -> new HashMap<>()).computeIfAbsent(state.getBlock(), b -> swap(style, b));
 		}
 		if (to == state.getBlock()) {
 			return state;
@@ -283,7 +298,45 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 		for (Property<?> property : state.getProperties()) {
 			out = copy(state, out, property);
 		}
-		return out;
+		return hangs(state, out);
+	}
+
+	/**
+	 * A hanging lantern swapped for a block that tells hanging by its {@code shape} (37.7: Carved Wood's wooden lanterns,
+	 * which keep {@code hanging} too but stand on the block below unless their shape says they hang) gets
+	 * {@code shape=hanging}, so it hangs from its chain instead of dropping.
+	 */
+	private static BlockState hangs(BlockState from, BlockState to) {
+		boolean hanging = false;
+		for (Property<?> p : from.getProperties()) {
+			hanging |= p.getName().equals("hanging") && Boolean.TRUE.equals(from.getValue(p));
+		}
+		if (!hanging) {
+			return to;
+		}
+		for (Property<?> p : to.getProperties()) {
+			if (p.getName().equals("shape")) {
+				Optional<?> value = p.getValue("hanging");
+				if (value.isPresent()) {
+					return with(to, p, value.get());
+				}
+			}
+		}
+		return to;
+	}
+
+	/**
+	 * The name the swaps of {@code style} are cached under: its name, and which of its rules' config switches are on, so
+	 * turning a switch picks the other set (37.7: the Grand style's Rechiseled rules under {@code furnishedBuilds}).
+	 */
+	private static String key(Style style) {
+		StringBuilder out = new StringBuilder(style.name());
+		for (Rule rule : style.rules()) {
+			if (rule.requiresSwitch() != null) {
+				out.append(rule.active() ? '+' : '-');
+			}
+		}
+		return out.toString();
 	}
 
 	/** Where each block a style's {@code near} rules name stands in {@code base}. */
@@ -316,7 +369,7 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 		}
 		ResourceLocation id = BuiltInRegistries.BLOCK.getKey(e.state().getBlock());
 		for (Rule rule : style.rules()) {
-			if (rule.near() == null) {
+			if (rule.near() == null || !rule.active()) {
 				continue;
 			}
 			java.util.Set<BlockPos> at = near.get(rule.near());
@@ -339,7 +392,7 @@ public final class BlueprintStyles implements ResourceManagerReloadListener {
 	private static Block swap(Style style, Block block) {
 		ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
 		for (Rule rule : style.rules()) {
-			if (rule.near() != null) {
+			if (rule.near() != null || !rule.active()) {
 				continue;
 			}
 			ResourceLocation target = rule.apply(id);

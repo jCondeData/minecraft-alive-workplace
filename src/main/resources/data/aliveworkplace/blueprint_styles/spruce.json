@@ -1,0 +1,19 @@
+{
+  "order": 7,
+  "icon": "minecraft:spruce_log",
+  "requires_switch": "furnishedBuilds",
+  "replace": [
+    {"from": "minecraft:chest", "to": "carved_wood:spruce_chest"},
+    {"from": "minecraft:trapped_chest", "to": "carved_wood:trapped_spruce_chest"},
+    {"from": "minecraft:bookshelf", "to": "carved_wood:spruce_bookshelf"},
+    {"from": "minecraft:chiseled_bookshelf", "to": "carved_wood:chiseled_spruce_bookshelf"},
+    {"from": "minecraft:lectern", "to": "carved_wood:spruce_lectern"},
+    {"from": "minecraft:beehive", "to": "carved_wood:spruce_beehive"},
+    {"from": "minecraft:crafting_table", "to": "carved_wood:spruce_crafting_table"},
+    {"from": "minecraft:ladder", "to": "carved_wood:spruce_ladder"},
+    {"from": "minecraft:lantern", "to": "carved_wood:spruce_lantern"},
+    {"from": "minecraft:birch_planks", "to": "minecraft:stripped_spruce_wood"},
+    {"from": "minecraft:(stripped_)?(oak|dark_oak)_(log|wood)", "to": "minecraft:$1spruce_$3"},
+    {"from": "minecraft:(oak|dark_oak|birch)_(planks|stairs|slab|fence|fence_gate|door|trapdoor|pressure_plate|button)", "to": "minecraft:spruce_$2"}
+  ]
+}

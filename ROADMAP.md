@@ -4740,7 +4740,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   counts towards M34's beauty need. Done when: compat GameTests: a villager sits on a Handcrafted chair at supper and
   gets up at dawn; a villager claims and sleeps in a Handcrafted fancy bed and its house counts as their home; a seat
   in use isn't taken twice; with the tag's mods absent the tag still loads (a GameTest); scene `seats_and_beds`.
-- [ ] **37.7** **Carved Wood and Rechiseled in the styles.** New blueprint styles (`blueprint_styles/`) that use Carved
+- [x] **37.7** (review: pending 2026-10-18) **Carved Wood and Rechiseled in the styles.** New blueprint styles (`blueprint_styles/`) that use Carved
   Wood's wooden versions of vanilla blocks (each wood's `carved_wood:<wood>_chest`, `_barrel`, `_bookshelf`,
   `_lectern`, `_crafting_table`, `_ladder`, `_lantern`...) so a spruce build's chests and shelves are spruce, and
   Rechiseled's patterned planks and bricks (`rechiseled:<wood>_planks_<pattern>`, about 3,600 blocks) for the Grand

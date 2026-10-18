@@ -154,7 +154,10 @@ public final class TableServer {
 		if (!id.equals(base) && (!open || !styleTaken(server, id))) {
 			return Optional.empty();
 		}
-		return BlueprintLibrary.get(server, id).map(bp -> new TablePayloads.Details(id, cachedMaterials(id, bp), open ? styles(server, base) : List.of()));
+		return BlueprintLibrary.get(server, id).map(bp -> {
+			CachedMaterials cached = cachedMaterials(id, bp);
+			return new TablePayloads.Details(id, cached.materials(), open ? styles(server, base) : List.of(), cached.jobs().jobs(), cached.jobs().beds());
+		});
 	}
 
 	// --- styles (26.11) ----------------------------------------------------------------------
@@ -162,7 +165,7 @@ public final class TableServer {
 	private record CachedStyles(Blueprint blueprint, List<TablePayloads.StyleChoice> styles) {
 	}
 	private static final Map<ResourceLocation, CachedStyles> STYLES = java.util.Collections.synchronizedMap(new HashMap<>());
-	private record CachedMaterials(Blueprint blueprint, List<TablePayloads.Material> materials) {
+	private record CachedMaterials(Blueprint blueprint, List<TablePayloads.Material> materials, BuildJobs.Summary jobs) {
 	}
 	private static final Map<ResourceLocation, CachedMaterials> MATERIALS = java.util.Collections.synchronizedMap(
 		new java.util.LinkedHashMap<>(16, 0.75f, true) {
@@ -206,14 +209,15 @@ public final class TableServer {
 		return styled.isEmpty() || styles(server, styled.get().base()).stream().anyMatch(s -> s.name().equals(styled.get().style()));
 	}
 
-	private static List<TablePayloads.Material> cachedMaterials(ResourceLocation id, Blueprint blueprint) {
+	/** A build's materials and its job blocks and beds (36.6a), worked out once per build. */
+	private static CachedMaterials cachedMaterials(ResourceLocation id, Blueprint blueprint) {
 		CachedMaterials cached = MATERIALS.get(id);
 		if (cached != null && cached.blueprint() == blueprint) {
-			return cached.materials();
+			return cached;
 		}
-		List<TablePayloads.Material> materials = List.copyOf(materials(blueprint));
-		MATERIALS.put(id, new CachedMaterials(blueprint, materials));
-		return materials;
+		cached = new CachedMaterials(blueprint, List.copyOf(materials(blueprint)), BuildJobs.of(blueprint));
+		MATERIALS.put(id, cached);
+		return cached;
 	}
 
 	// --- 3D preview (26.9) -------------------------------------------------------------------

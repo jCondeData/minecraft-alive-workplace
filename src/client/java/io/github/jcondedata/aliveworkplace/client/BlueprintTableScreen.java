@@ -42,6 +42,8 @@ public class BlueprintTableScreen extends Screen {
 	private List<TablePayloads.Entry> entries;
 	private boolean canUpload;
 	private final Map<ResourceLocation, List<TablePayloads.Material>> details = new HashMap<>();
+	/** What each build brings, "Jobs: ..." and "Beds: N" (36.6a), from its details; by blueprint as shown. */
+	private final Map<ResourceLocation, List<Component>> facts = new HashMap<>();
 	/** 3D previews by blueprint (26.9), sent with the details; kept while the screen is open. */
 	private final Map<ResourceLocation, TablePreview> previews = new HashMap<>();
 	private int previewX, previewY, previewW, previewH;
@@ -112,6 +114,7 @@ public class BlueprintTableScreen extends Screen {
 
 	public void setDetails(TablePayloads.Details payload) {
 		details.put(payload.id(), payload.materials());
+		facts.put(payload.id(), io.github.jcondedata.aliveworkplace.table.BuildJobs.lines(payload.jobs(), payload.beds()));
 		styles.put(BlueprintStyles.base(payload.id()), payload.styles());
 	}
 
@@ -315,10 +318,10 @@ public class BlueprintTableScreen extends Screen {
 		return m == null ? -1 : m.size();
 	}
 
-	/** The selected build's description as the pane shows it, or "" when it has none (36.6; for the screenshot harness). */
-	public String selectedDescription() {
-		Component description = selectedId == null ? null : Blueprints.description(selectedId, net.minecraft.locale.Language.getInstance()::has);
-		return description == null ? "" : description.getString();
+	/** The selected build's job and bed lines as the pane shows them, one per line, or "" when it has neither (36.6a; for the screenshot harness). */
+	public String selectedFacts() {
+		List<Component> lines = selectedId == null ? null : facts.get(shownId());
+		return lines == null ? "" : String.join("\n", lines.stream().map(Component::getString).toList());
 	}
 
 	private void take() {
@@ -438,12 +441,15 @@ public class BlueprintTableScreen extends Screen {
 				x, y, 0xFF9AA8BA, false);
 			y += 10;
 		}
-		// What it is and who works or lives there (36.6), wrapped; an imported build has none and the line is left out.
-		Component description = Blueprints.description(entry.id(), net.minecraft.locale.Language.getInstance()::has);
-		if (description != null) {
+		// What jobs it brings and its beds (36.6a), wrapped; a build with neither shows nothing here.
+		List<Component> lines = facts.getOrDefault(shownId(), List.of());
+		if (!lines.isEmpty()) {
 			y += 1;
-			g.drawWordWrap(font, description, x, y, w, 0xFFC8C0A8);
-			y += 9 * font.split(description, w).size() + 2;
+			for (Component line : lines) {
+				g.drawWordWrap(font, line, x, y, w, 0xFFC8C0A8);
+				y += 9 * font.split(line, w).size();
+			}
+			y += 2;
 		}
 		if (!entry.hint().isEmpty()) {
 			// Locked (or a Wonder, raised from its plan): how to get it, where the id goes for the rest.

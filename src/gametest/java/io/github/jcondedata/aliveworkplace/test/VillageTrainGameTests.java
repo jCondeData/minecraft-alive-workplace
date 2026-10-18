@@ -50,7 +50,7 @@ public class VillageTrainGameTests implements FabricGameTest {
 		data.setTracked(b, a, true);
 		helper.assertTrue(data.roadFinished(a, b) && !CaravanTrains.rides(data, a, b), "a caravan rides a train without Create");
 		Language en = Language.getInstance();
-		for (String key : List.of("blueprint.aliveworkplace.train_station", "blueprint_desc.aliveworkplace.train_station", "blueprint.aliveworkplace.railway",
+		for (String key : List.of("blueprint.aliveworkplace.train_station", "blueprint.aliveworkplace.railway",
 			"aliveworkplace.config.villageTrains", "aliveworkplace.config.villageTrains.tooltip", "chronicle.aliveworkplace.train_left",
 			"chronicle.aliveworkplace.train_came", "chronicle.aliveworkplace.train_walked", "chronicle.aliveworkplace.train_track_laid",
 			"chronicle.aliveworkplace.railway_open")) {

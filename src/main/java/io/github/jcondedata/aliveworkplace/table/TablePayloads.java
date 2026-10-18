@@ -63,6 +63,17 @@ public final class TablePayloads {
 			Material::new);
 	}
 
+	/**
+	 * A kind of job block in a build (36.6a): the jobs that share it (profession ids, the one a jobless villager takes by
+	 * itself first) and how many of it the build holds.
+	 */
+	public record JobBlock(List<ResourceLocation> jobs, int count) {
+		public static final StreamCodec<FriendlyByteBuf, JobBlock> CODEC = StreamCodec.composite(
+			ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list(32)), JobBlock::jobs,
+			ByteBufCodecs.VAR_INT, JobBlock::count,
+			JobBlock::new);
+	}
+
 	/** S2C: open (or refresh) the table screen with the server's library. */
 	public record Open(BlockPos table, List<Entry> entries, boolean canUpload) implements CustomPacketPayload {
 		public static final Type<Open> TYPE = new Type<>(AliveWorkplace.id("table_open"));
@@ -105,16 +116,23 @@ public final class TablePayloads {
 	}
 
 	/**
-	 * S2C: the materials list for one blueprint (as drawn or in a style), and the styles its build can be built in (26.11;
-	 * none for a locked build or a Wonder).
+	 * S2C: the materials list for one blueprint (as drawn or in a style), the styles its build can be built in (26.11;
+	 * none for a locked build or a Wonder), and its job blocks and beds (36.6a, {@link BuildJobs}).
 	 */
-	public record Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles) implements CustomPacketPayload {
+	public record Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles, List<JobBlock> jobs, int beds)
+		implements CustomPacketPayload {
 		public static final Type<Details> TYPE = new Type<>(AliveWorkplace.id("table_details"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Details> CODEC = StreamCodec.composite(
 			ResourceLocation.STREAM_CODEC, Details::id,
 			Material.CODEC.apply(ByteBufCodecs.list()), Details::materials,
 			StyleChoice.CODEC.apply(ByteBufCodecs.list()), Details::styles,
+			JobBlock.CODEC.apply(ByteBufCodecs.list()), Details::jobs,
+			ByteBufCodecs.VAR_INT, Details::beds,
 			Details::new);
+
+		public Details(ResourceLocation id, List<Material> materials, List<StyleChoice> styles) {
+			this(id, materials, styles, List.of(), 0);
+		}
 
 		public Details(ResourceLocation id, List<Material> materials) {
 			this(id, materials, List.of());

@@ -4995,6 +4995,7 @@ the owner's port jar; M33's caravans (39.7).
   and arrives with its goods; without stations caravans walk as today; scene `village_train`; the wiki gets a "Create"
   page and the player guide a section.
   - [x] **39.7a** (review: pending 2026-10-18) Change from the owner (2026-10-18): real Create trains, assembled and run the way Create intends (track, stations, a train with bogeys and controls, schedules), not a caravan that only takes the train in name.
+  - [ ] **39.7b** The rest of 39.7a (lane-e-1018-1612): (1) the track builders lay along a caravan road has gaps where the road steps up or down, so in a real world the two stations don't join one Create network and the real train never runs (caravans fall back to the timed trip); lay continuous track Create's graph accepts (slopes, curves) and test it on a stepped road; (2) the train's blocks are placed by the village, not built by a builder from a blueprint: a builder builds it (architect skill); (3) the caravan's goods ride as the caravan's record, not in the train's chest: load and unload the carriage's chest at the stations. Done when: a compat GameTest with two villages on a stepped road gets a real train running end to end with the goods in its chest; scene village_train shows the chest filling and emptying.
 
 ## Later (not in this plan)
 

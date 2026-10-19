@@ -6,6 +6,8 @@
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
 # FurnitureSpotGameTests ships a broken spots file in the test pack to prove it is logged with its path and skipped (37.2).
 Skipping furniture spots aliveworkplace_test:blueprint_furniture/broken\.json
+# FurnitureAnyModGameTests ships a broken equivalents file in the test pack to prove it is logged with its path and skipped (37.13).
+Skipping furniture equivalents aliveworkplace_test:furniture_equivalents/broken\.json
 # OptionalModsGameTests feeds an integration a missing method to prove it switches itself off.
 a test integration from test turned off
 # MinerGameTests loads a quarry saved by a pre-0.45.0 bug to prove the repair stops it.

@@ -126,6 +126,102 @@ public record FurnitureChoice(Map<Integer, Placed> spots, boolean modded) {
 		return out.isEmpty() ? VANILLA : new FurnitureChoice(Collections.unmodifiableMap(out));
 	}
 
+	/**
+	 * This choice with each spot not yet started taking the piece the chests hold (ROADMAP 37.13): for a spot whose piece
+	 * is one of a set of equivalent pieces ({@link FurnitureEquivalents}: a spruce chair of any furniture mod), the first
+	 * mod in {@code mods} whose piece is installed, has the same footprint as the chosen one and is in {@code stock}
+	 * (each piece taken off what's left, so two spots don't count the same chair). A spot none of whose pieces is in stock
+	 * keeps its piece (the builder waits for it, as before); a spot that {@code started} says is already going up, or
+	 * whose piece isn't in a set (CobbleFurnies' Poké Ball chair), is never changed. Returns this choice when nothing changes.
+	 */
+	public FurnitureChoice restocked(List<FurnitureSpot> spotsOfBase, List<String> mods, java.util.function.IntPredicate started,
+									 Map<net.minecraft.world.item.Item, Long> stock) {
+		if (spots.isEmpty()) {
+			return this;
+		}
+		Map<net.minecraft.world.item.Item, Long> left = new HashMap<>(stock);
+		Map<Integer, Placed> out = new LinkedHashMap<>(spots);
+		boolean changed = false;
+		for (Map.Entry<Integer, Placed> e : new java.util.TreeMap<>(spots).entrySet()) {
+			int i = e.getKey();
+			Placed placed = e.getValue();
+			if (i < 0 || i >= spotsOfBase.size()) {
+				continue;
+			}
+			FurnitureSpot spot = spotsOfBase.get(i);
+			if (!spot.pos().equals(placed.pos()) || spot.kind() != placed.kind()) {
+				continue;
+			}
+			FurnitureEquivalents.Group group = FurnitureEquivalents.of(spot).orElse(null);
+			net.minecraft.world.level.block.Block planned = group == null ? null : group.block(placed.mod());
+			if (planned == null || placed.cells().values().stream().noneMatch(s -> s.is(planned)) || started.test(i)) {
+				continue;
+			}
+			java.util.Set<BlockPos> footprint = footprint(placed.cells());
+			Placed pick = null;
+			Map<net.minecraft.world.item.Item, Integer> pickCost = null;
+			for (String mod : group.installed(mods)) {
+				Placed candidate = mod.equals(placed.mod()) ? placed : as(spot, mod, group.block(mod));
+				if (candidate == null || !footprint(candidate.cells()).equals(footprint)
+					|| (spot.kind() == FurnitureSpot.Kind.BED && !sleepable(candidate.cells()))) {
+					continue;
+				}
+				Map<net.minecraft.world.item.Item, Integer> cost = cost(candidate.cells());
+				if (!cost.isEmpty() && cost.entrySet().stream().allMatch(c -> left.getOrDefault(c.getKey(), 0L) >= c.getValue())) {
+					pick = candidate;
+					pickCost = cost;
+					break;
+				}
+			}
+			if (pick == null) {
+				continue;
+			}
+			pickCost.forEach((item, n) -> left.merge(item, -(long) n, Long::sum));
+			if (pick != placed) {
+				out.put(i, pick);
+				changed = true;
+			}
+		}
+		return changed ? new FurnitureChoice(Collections.unmodifiableMap(out), modded) : this;
+	}
+
+	/** {@code spot} as {@code mod}'s piece {@code block}: its table's facing, states and footprint for the kind (one cell facing the spot's way if it has none). */
+	@org.jetbrains.annotations.Nullable
+	private static Placed as(FurnitureSpot spot, String mod, net.minecraft.world.level.block.Block block) {
+		String id = BuiltInRegistries.BLOCK.getKey(block).toString();
+		FurnishingTable.Piece own = FurnishingTable.of(mod).map(t -> t.pieces().get(spot.kind())).orElse(null);
+		FurnishingTable.Piece piece = own == null
+			? new FurnishingTable.Piece(List.of(id), "front", Map.of(), "oak", "white", List.of(new FurnishingTable.FootCell(BlockPos.ZERO, Map.of())))
+			: new FurnishingTable.Piece(List.of(id), own.facing(), own.states(), own.wood(), own.colour(), own.footprint());
+		Map<BlockPos, BlockState> cells = piece.resolve(spot);
+		return cells == null ? null : new Placed(spot.pos(), spot.kind(), mod, Collections.unmodifiableMap(cells));
+	}
+
+	/** Where a piece has blocks (not air), relative to its spot. */
+	private static java.util.Set<BlockPos> footprint(Map<BlockPos, BlockState> cells) {
+		java.util.Set<BlockPos> out = new java.util.HashSet<>();
+		cells.forEach((at, state) -> {
+			if (!state.isAir()) {
+				out.add(at);
+			}
+		});
+		return out;
+	}
+
+	/** What building a piece's cells uses up (as a builder counts it: a bed's head comes with its foot). */
+	public static Map<net.minecraft.world.item.Item, Integer> cost(Map<BlockPos, BlockState> cells) {
+		Map<net.minecraft.world.item.Item, Integer> out = new HashMap<>();
+		for (BlockState state : cells.values()) {
+			if (io.github.jcondedata.aliveworkplace.build.MaterialRules.classify(state) == io.github.jcondedata.aliveworkplace.build.MaterialRules.Kind.SKIP) {
+				continue;
+			}
+			for (io.github.jcondedata.aliveworkplace.build.MaterialRules.Requirement r : io.github.jcondedata.aliveworkplace.build.MaterialRules.requirements(state, null)) {
+				out.merge(r.item(), r.count(), Integer::sum);
+			}
+		}
+		return out;
+	}
+
 	/** The choice for a new build of {@code blueprint} on this server now (the config's switch and order). */
 	public static FurnitureChoice forNewBuild(ResourceLocation blueprint) {
 		return choose(BlueprintFurniture.of(blueprint), Furnishings.MODS, Furnishings.ENABLED, false, hasPokeBallDesks(blueprint))

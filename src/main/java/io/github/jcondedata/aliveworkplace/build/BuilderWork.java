@@ -1111,6 +1111,10 @@ public class BuilderWork extends Behavior<Villager> {
 			available += SupplyContainers.count(level, supplies, item);
 		}
 		if (available < needed) {
+			// 37.13: any mod's spruce chair will do: the furniture not yet started becomes the pieces the chests hold
+			if (FurnitureStock.restock(level, site, bag, supplies, requirement.item())) {
+				return;
+			}
 			if (site.stage() == BuildPlan.Stage.LANDSCAPE) {
 				// Out of dirt for tidying up: leave that hole rather than wait (the building is finished), and the
 				// other holes that want it too, all at once (35.5: one a tick, levelling round the test folly with no dirt

@@ -4896,7 +4896,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   (default: modded when the mods are installed). Choosing what ships in which release is the owner's later. Done
   when: the modded copies exist for every home and workshop, renders checked against STYLE.md, the switch works,
   vanilla builds untouched; compat GameTests; scene `modded_library`.
-- [ ] **37.13** **Any mod's "spruce chair" will do** (owner, 2026-10-19). Furniture such as a spruce chair exists in several mods (Handcrafted,
+- [x] **37.13** (review: pending 2026-10-19) **Any mod's "spruce chair" will do** (owner, 2026-10-19). Furniture such as a spruce chair exists in several mods (Handcrafted,
   CobbleFurnies, Lucky's Cozy Home, Beautify) and a build asks for one mod's piece (the first in `furnitureMods`, now Handcrafted), so players
   bring the wrong one and the Builder stalls. Make equivalent pieces interchangeable the way `MaterialFamilies` does for vanilla
   blocks: an equivalence table for furniture (data file, by piece and wood or colour: chair, table, bed, lamp, shelf, cabinet,
@@ -5200,6 +5200,15 @@ the owner's port jar; M33's caravans (39.7).
   CreateBuilds:78 (this Create port's bearing answers useItemOn; the fallback is for ports that pass). Fixed on the way:
   a written Schematic naming a file with a NUL in it threw (InvalidPathException) instead of being refused by name.
   mutate.py read every failing compat run as NO-COMPILE (mods' "- error: " log lines); it now matches javac's own lines.
+- 2026-10-19 (lane-c-1019-1555, 37.13): "neither (vanilla stand-in)" is read as point (3): a piece no mod in
+  `furnitureMods` has is the vanilla stand-in whatever the chest holds (compat test: `furnitureMods` without a chair mod,
+  both chairs in the chest). With an installed mod's piece planned and none of its equivalents in the chests, the builder
+  still waits for the planned piece, as 37.4 decided (`theBuilderWaitsForAMissingCouch`); building stairs whenever the
+  chests ran short would undo furnished homes. Owner: say if you wanted the stand-in in that case too. The equivalents
+  are their own data file (`data/aliveworkplace/furniture_equivalents/furniture.json`: chair, couch, table, desk,
+  counter, cupboard, nightstand, drawer by wood; lamp by colour), not read from the furnishing tables, because a table's
+  fallback ids (CobbleFurnies' coloured chair) aren't the same piece. Pieces switch only when the builder goes for one it
+  lacks, so nothing in the bag or chests is traded away; a spot already going up never switches.
 - 2026-10-19 (lane-c-1019-0953): Milestone 37 has no open item and no `(lane: c)` bug; `sessions.py next` lists nothing for
   lanes b, c, d or e, so the owner's question above (lane-e-1018-2212: which big milestone next?) still stands. This run
   killed three mutants the nightly mutation job left alive in M37 code (SupplyContainers:62, StorageNetworks:336,

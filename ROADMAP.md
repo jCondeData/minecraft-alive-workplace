@@ -309,6 +309,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B232** (approved auto 2026-10-19) Showcase scene job_plate failed every check in showcase run 39309028348 (main 723f20a, 2026-10-19): 'a level-3 fisherman's plate (null)', 'a named builder's plate keeps her name first (null)', 'looking at a jobless villager shows no plate': the plate text reads null, so B221's job plate may not show on a real client. Expected: all three checks pass. Test: SCENE=job_plate tools/screenshots/run.sh (found by lane-a-1019-2123, 2026-10-19) Status (lane-a-1019-2123): fixed in the scene, not the mod: hoverLookingAt aims from the player's feet but the crosshair ray starts at the eyes, so the view tilted up over the villager's head and crosshairPickEntity was null. The scene now lowers its target by the eye height; locally all three checks pass and the stills show 'Fisherman, Journeyman' and 'Dara — Builder, Expert' plates.
 - [ ] **B233** Showcase scene mega_jeweller left no showcase.json and ran over its time limit in showcase run 39309028348 (main 723f20a, 2026-10-19), passed in run 39228779127: it crashed or never started. Expected: the scene runs and passes every run. Test: SCENE=mega_jeweller tools/screenshots/run.sh (needs Cobblemon: the nightly's Cobblemon job) (found by lane-a-1019-2123, 2026-10-19)
 - [ ] **B234** [lane: b] Showcase scene repair_ask failed in showcase run 39309028348 (main 723f20a): 'five blocks knocked out of the cottage's front: 2', so the scene's setup knocked out only 2 of 5 blocks (36.15, Builder asks before repairing). Expected: the scene passes. Test: SCENE=repair_ask tools/screenshots/run.sh (found by lane-a-1019-2123, 2026-10-19)
+- [ ] **B235** Showcase scene job_plate fails on GitHub (showcase page, 2026-10-19, after B221's fix): 'not done: a level-3 fisherman's plate (null)' and 'a named builder's plate keeps her name first (null)'; the plate texts do show in the stills ('Fisherman, Journeyman', 'Dara - Builder, Expert') but the scene's checks read null, so the scene reports FAIL and B221 isn't ready to approve (lane: a) (found by digest-1019-2253, 2026-10-19)
+- [ ] **B236** Showcase scene undertaker_graveyard fails on GitHub (showcase page, 2026-10-19, after B222's fix): 'the undertaker laid Mira's grave from the street in the plot by the hall (not within 120 seconds)', picture 03_done missing; the grave is not moved to the Graveyard in the scene, so B222 isn't ready to approve (lane: a) (found by digest-1019-2253, 2026-10-19)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -5195,6 +5197,16 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-c-1019-2153): Milestone 37 still has no open item and no `(lane: c)` bug, and `sessions.py next` lists
+  nothing for lanes b-e (the owner's "which big milestone next?" still stands). Done instead, the QA suggestion two lanes
+  left (lane-c-1019-0953, lane-e-1019-1913): the nightly mutation job now runs each plain-suite survivor once more
+  against the compat suite (`mutate.py --compat-cmd`, at most 4 per shard, the compat suite's own baseline run first),
+  so code only Cobblemon/Create/storage-mod tests reach is no longer reported as a survivor when a compat test kills
+  it. Checked here on StorageNetworks:336 (`drop !`): the plain suite let it live, the compat suite killed it (four
+  TomsStorageCompatTests). Also: a run on the real code that fails with no test named (Gradle failed: a plugin not
+  resolved, an out-of-memory kill) now stops the check instead of reporting every mutant as a survivor; that happened
+  here twice. `python3 tools/modtest/test_mutate.py` tests the tool (7 cases). Locally the compat run needs the
+  daemon stopped first (7 GB): `--compat-cmd "./gradlew --stop; ./gradlew --no-daemon ... runCompatGameTest"`.
 - 2026-10-19 (lane-d-1019-1908): short mutation pass on M38 Megas, seed 42: MegaShrines and MegaStones (4 mutants each)
   against the four Mega compat classes alone (trimmed compat fabric.mod.json, `--offline`, about 2 min a run). 8
   mutants: 4 killed, 1 didn't compile, 3 survived. MegaShrines:119 (`!=` to `==`, the day's crowd started afresh every

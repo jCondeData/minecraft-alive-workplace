@@ -3511,7 +3511,7 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.jeweller.MegaStones.on(), "the village's Mega Stones are on (Mega Showdown, villageMegas, Jewelers)");
 			Showcase.check(master != null && !io.github.jcondedata.aliveworkplace.jeweller.MegaStones.stonesOf(master).isEmpty(), "the Master's team has a Mega Stone to cut");
 			net.minecraft.tags.TagKey<net.minecraft.world.item.Item> stones = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
-				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone"));
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("mega_stones"));
 			Container c = chest(level, chestPos(), new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 					net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone_crystal"))),
 				new ItemStack(Items.GOLD_INGOT, 2), new ItemStack(Items.EMERALD, 4), new ItemStack(ModItems.AMETHYST_RING, 8),

@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A Jeweller now cuts Abomasite for a Master trainer whose team has an Abomasnow: it was the one Mega Stone
+  missing from Mega Showdown's stone list, so he waited for makings forever (B174).
+
 ## 0.145.0 — 2026-10-18
 
 ### Added

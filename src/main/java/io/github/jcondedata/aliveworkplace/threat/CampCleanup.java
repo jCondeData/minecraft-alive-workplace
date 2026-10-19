@@ -10,6 +10,7 @@ import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -40,6 +41,11 @@ import org.jetbrains.annotations.Nullable;
  * instead: its fire put out, nothing removed. Either way the camp is gone from the village's threats, the Defence page and
  * the scouts' reports at once.
  *
+ * <p>Then its ground goes back to the land (B225, {@link CampGround}): the levelled pad, the trampled earth and gravel
+ * and the dirt filling become what was there before the camp (recorded when it was made), or, for a camp made before
+ * that, are blended into the land round it. Ruins keep their tents and the ground under them; the open ground round them
+ * goes back too.
+ *
  * <p>Where a camp's blocks are: the lair's record keeps only its middle, so the turn it was set down with is found by
  * matching its blueprint against the world there (the right turn matches nearly all of it, the others little). A camp
  * whose ground isn't loaded waits in the list (saved, so a restart mid-clearing carries on).
@@ -67,11 +73,12 @@ public final class CampCleanup {
 
 	/**
 	 * A camp coming down: its structure, its middle in the world and that middle's spot in its blueprint, the game time
-	 * it starts (or started) to come down, whether it is left as ruins instead, and its turn once known (-1: not yet).
+	 * it starts (or started) to come down, whether it is left as ruins instead, its turn once known (-1: not yet), and the
+	 * ground it covered before it was set down (B225; null for a camp made before that: its pad is blended back instead).
 	 */
-	public record Clearing(ResourceLocation structure, BlockPos middle, BlockPos spot, long began, boolean ruins, int rotation) {
+	public record Clearing(ResourceLocation structure, BlockPos middle, BlockPos spot, long began, boolean ruins, int rotation, @Nullable CampGround ground) {
 		Clearing turned(int rotation) {
-			return new Clearing(structure, middle, spot, began, ruins, rotation);
+			return new Clearing(structure, middle, spot, began, ruins, rotation, ground);
 		}
 
 		StructurePlaceSettings settings() {
@@ -90,6 +97,9 @@ public final class CampCleanup {
 			c.putLong("began", began);
 			c.putBoolean("ruins", ruins);
 			c.putInt("rotation", rotation);
+			if (ground != null) {
+				c.put("ground", ground.write());
+			}
 			return c;
 		}
 
@@ -101,7 +111,8 @@ public final class CampCleanup {
 			}
 			int rotation = Nbt.getInt(c, "rotation");
 			return new Clearing(structure, BlockPos.of(Nbt.getLong(c, "middle")), BlockPos.of(Nbt.getLong(c, "spot")), Nbt.getLong(c, "began"),
-				Nbt.getBoolean(c, "ruins"), rotation < 0 || rotation > 3 ? -1 : rotation);
+				Nbt.getBoolean(c, "ruins"), rotation < 0 || rotation > 3 ? -1 : rotation,
+				Nbt.has(c, "ground", Tag.TAG_COMPOUND) ? CampGround.read(Nbt.getCompound(c, "ground")) : null);
 		}
 	}
 
@@ -124,7 +135,8 @@ public final class CampCleanup {
 		}
 		BlockPos spot = structure.equals(Lairs.BANDIT_CAMP) ? Lairs.FIRE
 			: new BlockPos(template.getSize().getX() / 2, spec.flatMap(Culture.Lair::captainAt).map(BlockPos::getY).orElse(1), template.getSize().getZ() / 2);
-		queue(level, new Clearing(structure, lair.pos(), spot, level.getGameTime() + DELAY, RUINS, -1));
+		CampGround ground = Lairs.Data.get(level).grounds.remove(lair.pos());
+		queue(level, new Clearing(structure, lair.pos(), spot, level.getGameTime() + DELAY, RUINS, -1, ground));
 	}
 
 	static void queue(ServerLevel level, Clearing clearing) {
@@ -151,7 +163,7 @@ public final class CampCleanup {
 			}
 			Clearing at = c;
 			if (at.rotation() < 0) {
-				int turn = turn(level, at, KNOWN_MATCH);
+				int turn = at.ground() != null ? at.ground().rotation() : turn(level, at, KNOWN_MATCH); // (the ground's record knows it)
 				if (turn < 0) {
 					AliveWorkplace.LOG.info("The broken camp at {} ({}) is no longer there to take down", c.middle(), c.structure());
 					data.clearing.remove(c);
@@ -164,6 +176,7 @@ public final class CampCleanup {
 			}
 			if (at.ruins()) {
 				ruin(level, at);
+				ground(level, at);
 				data.clearing.remove(at);
 				data.setDirty();
 				AliveWorkplace.LOG.info("The broken camp at {} is left as ruins", at.middle());
@@ -251,7 +264,42 @@ public final class CampCleanup {
 			level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, c.middle().getX() + 0.5, c.middle().getY() + 1.0, c.middle().getZ() + 0.5, 3, 2, 0.5, 2, 0.01);
 			level.playSound(null, c.middle(), SoundEvents.WOOL_BREAK, SoundSource.BLOCKS, 1f, 0.8f);
 		}
+		if (done) {
+			ground(level, c); // (in the same tick the clearing ends: a reload before it finds the ground still to do)
+		}
 		return done;
+	}
+
+	/**
+	 * The camp's ground goes back to the land (B225): to what it was before the camp, from its record, or, for a camp made
+	 * before that, blended into the land round it. A ruined camp's tents and fire stay, and the ground under them.
+	 */
+	static void ground(ServerLevel level, Clearing c) {
+		StructureTemplate template = level.getStructureManager().get(c.structure()).orElse(null);
+		Blueprint blueprint = Ships.blueprint(level, c.structure());
+		if (template == null || blueprint == null) {
+			return;
+		}
+		StructurePlaceSettings settings = c.settings();
+		BlockPos origin = c.origin();
+		Rotation rotation = Rotation.values()[c.rotation()];
+		java.util.Map<BlockPos, BlockState> camp = new java.util.HashMap<>();
+		java.util.Set<Long> keep = new java.util.HashSet<>();
+		for (Blueprint.Entry e : blueprint.blocks()) {
+			if (e.state().isAir()) {
+				continue;
+			}
+			BlockPos p = origin.offset(StructureTemplate.calculateRelativePosition(settings, e.pos()));
+			camp.put(p, e.state().mirror(Mirror.NONE).rotate(rotation));
+			if (c.ruins() && e.pos().getY() >= 1) {
+				keep.add(CampGround.column(p)); // (the ruins stand there)
+			}
+		}
+		if (c.ground() != null) {
+			c.ground().restore(level, camp, keep);
+		} else {
+			CampGround.blend(level, template.getBoundingBox(settings, origin), camp, keep);
+		}
 	}
 
 	/** Leaves the camp as ruins: its fires put out, all else as it is. */
@@ -311,7 +359,7 @@ public final class CampCleanup {
 					all = false; // (someone's still: look again later)
 					continue;
 				}
-				Clearing c = new Clearing(Lairs.BANDIT_CAMP, top.immutable(), Lairs.FIRE, level.getGameTime(), RUINS, -1);
+				Clearing c = new Clearing(Lairs.BANDIT_CAMP, top.immutable(), Lairs.FIRE, level.getGameTime(), RUINS, -1, null);
 				int turn = turn(level, c, SWEEP_MATCH);
 				if (turn >= 0) {
 					queue(level, c.turned(turn));

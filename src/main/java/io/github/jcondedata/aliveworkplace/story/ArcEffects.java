@@ -403,9 +403,7 @@ public final class ArcEffects {
 			JsonArray ring = rule.getAsJsonArray("ring");
 			int near = ring.get(0).getAsInt();
 			int far = Math.max(near, ring.get(1).getAsInt());
-			double angle = random.nextDouble() * Math.PI * 2;
-			int distance = near + random.nextInt(far - near + 1);
-			return hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
+			return ring(hall, near, far, random);
 		}
 		if (rule.has("fort")) {
 			// The Bandit King's fort (31.15): fit ground NEAR to FAR out when it's loaded now; else a column there, and the
@@ -417,9 +415,7 @@ public final class ArcEffects {
 			if (fit != null) {
 				return fit;
 			}
-			double angle = random.nextDouble() * Math.PI * 2;
-			int distance = near + random.nextInt(far - near + 1);
-			return hall.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
+			return ring(hall, near, far, random);
 		}
 		if (rule.has("offset")) {
 			JsonArray o = rule.getAsJsonArray("offset");
@@ -455,11 +451,34 @@ public final class ArcEffects {
 			if (GsonHelper.getAsBoolean(rule, "away", false)) {
 				return CaravanTrail.away(level, hall, other.spot, near, far, random); // the raiders' stockade (31.19)
 			}
-			double angle = random.nextDouble() * Math.PI * 2;
-			int distance = near + random.nextInt(far - near + 1);
-			return other.spot.offset((int) Math.round(Math.cos(angle) * distance), 0, (int) Math.round(Math.sin(angle) * distance));
+			return ring(other.spot, near, far, random);
 		}
 		return null;
+	}
+
+	/**
+	 * A column NEAR to FAR blocks (straight-line, across the ground) from {@code centre} in a random direction. Rounding
+	 * each axis on its own can put a diagonal spot up to 0.7 of a block past the ring (104 out became 104.6, B205), so
+	 * the spot is stepped in, or out, along its longer axis until it lies within the ring.
+	 */
+	public static BlockPos ring(BlockPos centre, int near, int far, net.minecraft.util.RandomSource random) {
+		double angle = random.nextDouble() * Math.PI * 2;
+		int distance = near + random.nextInt(far - near + 1);
+		int dx = (int) Math.round(Math.cos(angle) * distance);
+		int dz = (int) Math.round(Math.sin(angle) * distance);
+		for (int i = 0; i < 4; i++) {
+			long r = (long) dx * dx + (long) dz * dz;
+			int step = r > (long) far * far ? -1 : r < (long) near * near ? 1 : 0;
+			if (step == 0) {
+				break;
+			}
+			if (Math.abs(dx) >= Math.abs(dz)) {
+				dx += dx < 0 ? -step : step;
+			} else {
+				dz += dz < 0 ? -step : step;
+			}
+		}
+		return centre.offset(dx, 0, dz);
 	}
 
 	/** Builds the next stage of {@code p} (its first: on clear natural ground near its spot); false if it must wait. */

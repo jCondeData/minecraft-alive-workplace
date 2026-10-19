@@ -80,6 +80,17 @@ final class Leftovers {
 				sites.remove(site.id());
 			}
 		}
+		storehouses(helper);
+	}
+
+	/**
+	 * Removes every Storehouse whose village (at {@code VillageHalls.RADIUS} as it is now) reaches the test area. One built
+	 * outside its own test's area is never cleared, and a hall here counts its chests as its own: LostCaravanGameTests'
+	 * caravan was loaded from an earlier batch's Storehouse nearby, so its own chest kept 96 logs, not 64 (B184).
+	 * Only for tests alone in their batch.
+	 */
+	static void storehouses(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
 		AABB box = helper.getBounds();
 		int reach = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS + (int) Math.ceil(Math.max(box.getXsize(), box.getZsize()) / 2);
 		java.util.List<net.minecraft.core.BlockPos> storehouses = level.getPoiManager().findAll(

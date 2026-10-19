@@ -359,4 +359,28 @@ public class BanditKingStoryGameTests implements FabricGameTest {
 		helper.assertTrue(!again.getList("halls", Tag.TAG_COMPOUND).getCompound(0).contains("bandit_camps_broken"), "an old save got a count");
 		helper.succeed();
 	}
+
+	/**
+	 * B205: a {@code ring} place (the Bandit King's camps, 80 to 104 out) never lies past the ring's edges. Each axis was
+	 * rounded on its own, so a diagonal spot drawn 104 out could land 104.6 out, and the walk once found "a camp 105
+	 * blocks out". 20,000 spots from a fixed seed, and the arc's own rule read from its JSON through {@code spot}.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void campRingStaysWithinItsEdges(GameTestHelper helper) {
+		BlockPos hall = new BlockPos(1000, 64, -2000);
+		net.minecraft.util.RandomSource random = net.minecraft.util.RandomSource.create(205);
+		for (int i = 0; i < 20000; i++) {
+			BlockPos p = ArcEffects.ring(hall, 80, 104, random);
+			double d = Math.sqrt(p.distSqr(new BlockPos(hall.getX(), p.getY(), hall.getZ())));
+			helper.assertTrue(p.getY() == hall.getY() && d >= 80 && d <= 104, "a spot " + d + " blocks out: " + p.subtract(hall));
+		}
+		com.google.gson.JsonObject rule = JsonParser.parseString("{\"ring\": [80, 104]}").getAsJsonObject();
+		for (int i = 0; i < 2000; i++) {
+			BlockPos p = ArcEffects.spot(helper.getLevel(), hall, null, rule);
+			double d = Math.sqrt(p.distSqr(hall));
+			helper.assertTrue(d >= 80 && d <= 104, "the arc's ring rule put a camp " + d + " blocks out");
+		}
+		helper.succeed();
+	}
 }

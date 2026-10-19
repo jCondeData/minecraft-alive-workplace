@@ -706,9 +706,14 @@ public final class ArcEffects {
 		m.uuid = mob.getUUID(); // (before it joins: onLoad must know it)
 		m.spot = at;
 		s.roles.put(role, new ArcState.Role(Optional.of(m.uuid), name != null ? name : mob.getDisplayName()));
-		level.addFreshEntityWithPassengers(mob);
 		Stories.Data.get(level).setDirty();
-		return mob;
+		// Past a mob blocklist (B208, B211): a foe as the threats are, anything else as the village's own; refused, it's
+		// tried again at the next check, the log saying so once.
+		String what = "story arc " + s.id + " (" + role + ")";
+		boolean in = mob instanceof net.minecraft.world.entity.monster.Enemy
+			? io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, mob, what)
+			: io.github.jcondedata.aliveworkplace.threat.HostileSpawns.addVillage(level, mob, what);
+		return in ? mob : null;
 	}
 
 	// ---- the 40-tick check -----------------------------------------------------------------------------------------

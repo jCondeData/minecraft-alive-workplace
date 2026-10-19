@@ -109,6 +109,13 @@ public final class WorkplaceConfig {
 	 */
 	public boolean forceThreatSpawns = true;
 	/**
+	 * The village's own iron golems, relief riders' horses, the Beastmaster's foals and wolf pups and a caravan's pack
+	 * llamas, when another mod refuses them (MobsBeGone, which Cobbleverse ships with iron golems, wolves, horses, cats and
+	 * llamas on it), are put in the world anyway (B211). Off: they are left out, and the log says which. Never vanilla's
+	 * own spawns.
+	 */
+	public boolean forceVillageSpawns = true;
+	/**
 	 * A bandit camp or other raiders' lair that is broken up (its captain killed) or leaves is left as ruins, its fire put
 	 * out, instead of taken down (B209). Off: the camp comes down a few seconds after, its chests' loot spilling out.
 	 */
@@ -893,6 +900,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE = forceThreatSpawns;
+		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE_VILLAGE = forceVillageSpawns;
 		io.github.jcondedata.aliveworkplace.threat.CampCleanup.RUINS = campRuins;
 		// The other cultures' lairs (32.3) come by chance as the bandits' do; each has its switch in raiderCultures.
 		io.github.jcondedata.aliveworkplace.threat.Lairs.ENABLED = System.getProperty("fabric-api.gametest") == null;

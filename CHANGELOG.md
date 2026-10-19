@@ -29,6 +29,11 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Village golems, horses and pups on modpacks that block animals** (B211). Cobbleverse's MobsBeGone also blocks iron
+  golems, wolves, horses and llamas, so the Golem Smith's and Iron Pact's golems, relief riders' horses, the
+  Beastmaster's foals and wolf pups and caravan pack llamas never appeared. They are now put in the world anyway (new
+  setting Force Village Spawns, on), or left out with one clear line in the server log; a Golem Smith keeps his iron
+  when his golem is refused. A story arc's foes are forced like raiders now too.
 - **A broken bandit camp no longer stands for good** (B209). Kill a camp's chief and the camp is gone from the village
   at once (the hall, the Defense page and the scouts' reports forget it), and a couple of seconds later its tents, fire
   and chests come down, top first; the loot in its chests spills out on the ground, and anything a player built or

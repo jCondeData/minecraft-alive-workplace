@@ -263,7 +263,9 @@ public final class OldSage {
 		golem.finalizeSpawn(level, level.getCurrentDifficultyAt(spot), MobSpawnType.EVENT, null);
 		golem.setPlayerCreated(true);
 		golem.addTag(PACT_TAG);
-		level.addFreshEntityWithPassengers(golem);
+		if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.addVillage(level, golem, "Iron Pact by the village hall at " + hall.toShortString())) {
+			return null;
+		}
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, golem.getX(), golem.getY() + 1.5, golem.getZ(), 20, 0.6, 1, 0.6, 0.05);
 		Chronicle.record(level, hall, Chronicle.Kind.ARRIVED, Component.translatable("chronicle.aliveworkplace.iron_pact"));
 		return golem;

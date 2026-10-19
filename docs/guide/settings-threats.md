@@ -8,6 +8,7 @@ Monster Raids: on
 Bandit Camps: on
 Threat Level: 2 (0 to 3)
 Force Raider Spawns: on
+Force Village Spawns: on
 Village Protection: on
 categories: Settings, Defense
 related: raids.md, bandit-camps.md, threat-level.md, village-protection.md
@@ -41,6 +42,14 @@ so no camp goes up and no raid comes, and the server log says which mob was bloc
 
 On **Peaceful** difficulty hostile mobs can't exist at all, so nothing comes whatever this says; players near the place
 are told so.
+
+## Force Village Spawns
+
+Normally **on**: the same kind of mod can also stop iron golems, wolves, horses, cats and llamas (Cobbleverse's
+MobsBeGone blocks all of them). With this on, the village's own animals and golems are put in the world anyway: the
+Golem Smith's golems, the Iron Pact's golem, relief riders' horses, the Beastmaster's foals and wolf pups, and a
+caravan's pack llamas. Off: they stay out, and the server log says which animal was blocked. Animals and golems the game
+spawns by itself are never forced.
 
 ## Camp Ruins
 

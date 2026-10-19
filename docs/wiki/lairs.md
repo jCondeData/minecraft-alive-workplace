@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209
+Roadmap items: 32.3, B208, B209, B211
 
 ## What a player sees
 
@@ -73,7 +73,15 @@ None. One new screen page (the Defense page).
   logged once per mob type and, with the switch on, the mob is put in through the entity manager directly; off, or
   still refused, it's left out and logged. A lair whose captain can't spawn isn't made (before B208 it was recorded
   with no captain and "broken up" at the next round, by nobody); a raid counts only the raiders in the world. On
-  Peaceful nothing hostile is spawned and players within 96 blocks are told once a day.
+  Peaceful nothing hostile is spawned and players within 96 blocks are told once a day. A story arc's mobs go the same
+  way (B211).
+- `forceVillageSpawns` (true, B211): the same blocklist names iron golems, wolves, horses, cats and llamas, so the
+  village's own go in through `HostileSpawns.addVillage`: the Golem Smith's golems and the Iron Pact's golem, relief
+  riders' horses (a rider whose horse is refused comes on foot), the Beastmaster's foals and wolf pups (bred as vanilla
+  breeds them, then added checked), a caravan's pack llamas and a story arc's non-hostile mobs. Forced when on (log:
+  "Another mod refused to let minecraft:iron_golem spawn for the ...; Alive Workplace placed it directly"), left out and
+  logged ("... and forceVillageSpawns is off") when off. The mod spawns no cats or war dogs itself (war dogs are wolves
+  already about, tamed), and vanilla's own spawns and breeding are never forced.
 - `campRuins` (false, B209): a broken camp stays as ruins, its fires put out, instead of coming down. Either way it is
   forgotten at once.
 - Camps from before B209: a save without the `b209` mark lists every village that ever broke up a camp as unswept. The
@@ -134,6 +142,9 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B208GameTests`: with the world refusing hostile mobs as MobsBeGone does, a camp's chief and band of 6 and a night
   attack's raiders are in the world, persistent, and still there 100 ticks later; with `forceThreatSpawns` off no camp is
   made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.
+- `B211GameTests`: with the world refusing iron golems, wolves, horses and llamas, the Golem Smith's golem, the Iron
+  Pact's golem, a relief rider's horse (with its rider on it), a Beastmaster foal and wolf pup and a caravan llama are in
+  the world and still there 100 ticks later; with `forceVillageSpawns` off they are left out and the log says why.
 - `B209GameTests`: the chief killed, the camp's record, band and scouts' report are gone at once and its campfire, two
   chests, tents and five beds are gone within 150 ticks, while a player's gold block in a tent and the ground stay and
   the chests' loot lies on the ground; a new camp is made after and stands; with `campRuins` the camp stays, its fire

@@ -294,7 +294,7 @@ public final class Beastmaster {
 			Wolf a = wolves.get(0);
 			Wolf b = wolves.get(1);
 			if (a.getAge() == 0 && b.getAge() == 0) {
-				a.spawnChildFromBreeding(level, b);
+				pup(level, a, b);
 				hearts(level, a);
 				hearts(level, b);
 			}
@@ -509,6 +509,18 @@ public final class Beastmaster {
 		return foal;
 	}
 
+	/** {@code a} and {@code b}'s pup, bred as vanilla breeds them but put in the world past a mob blocklist (B211). */
+	@Nullable
+	public static Wolf pup(ServerLevel level, Wolf a, Wolf b) {
+		if (!(a.getBreedOffspring(level, b) instanceof Wolf pup)) {
+			return null;
+		}
+		pup.setBaby(true);
+		pup.moveTo(a.getX(), a.getY(), a.getZ(), 0f, 0f);
+		a.finalizeSpawnChildFromBreeding(level, b, pup);
+		return io.github.jcondedata.aliveworkplace.threat.HostileSpawns.addVillage(level, pup, "Beastmaster's wolf pup") ? pup : null;
+	}
+
 	/** {@code a} and {@code b}'s foal (as vanilla breeds them), with the Beastmaster's stats, tame and marked as theirs. */
 	@Nullable
 	public static AbstractHorse breed(ServerLevel level, AbstractHorse a, AbstractHorse b, float bonus) {
@@ -525,7 +537,9 @@ public final class Beastmaster {
 		foal.setHealth(foal.getMaxHealth());
 		foal.setTamed(true);
 		ModAttachments.BRED_HORSE.set(foal, Chronicle.day(level));
-		level.addFreshEntityWithPassengers(foal);
+		if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.addVillage(level, foal, "Beastmaster's foal")) {
+			return null;
+		}
 		hearts(level, a);
 		hearts(level, b);
 		return foal;

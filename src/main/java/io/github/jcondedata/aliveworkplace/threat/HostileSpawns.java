@@ -34,6 +34,10 @@ import org.jetbrains.annotations.Nullable;
  * the log says so plainly once per mob type, so the caller neither counts it nor treats its camp as defeated.</li>
  * <li>On Peaceful difficulty hostile mobs can't exist (the game discards them every tick): nothing is spawned, the log
  * says why, and players near are told once a day.</li>
+ * <li>The village's own animals and golems (B211) go the same way through {@link #addVillage}: the Golem Smith's and the
+ * Iron Pact's iron golems, relief riders' horses, the Beastmaster's foals and wolf pups, a caravan's pack llamas. The
+ * same blocklist names iron golems, wolves, horses, cats and llamas; while {@link #FORCE_VILLAGE}
+ * ({@code forceVillageSpawns}) they are placed directly too. Only the mod's own spawns come here, never vanilla's.</li>
  * </ul>
  */
 public final class HostileSpawns {
@@ -41,6 +45,9 @@ public final class HostileSpawns {
 
 	/** Whether a mob another mod refused is put in the world directly ({@code forceThreatSpawns}, on by default). */
 	public static volatile boolean FORCE = true;
+
+	/** Whether a village animal or golem another mod refused is put in the world directly ({@code forceVillageSpawns}, on). */
+	public static volatile boolean FORCE_VILLAGE = true;
 
 	/** GameTests only: the entities the world refuses at {@code addEntity}, as a mob blocklist would (null: none). */
 	@Nullable
@@ -54,7 +61,7 @@ public final class HostileSpawns {
 	private static volatile String lastWarning = "";
 
 	/** Why a foe couldn't be put in the world. */
-	public enum Refusal { PEACEFUL, REFUSED, REFUSED_FORCED }
+	public enum Refusal { PEACEFUL, REFUSED, REFUSED_VILLAGE, REFUSED_FORCED }
 
 	/**
 	 * Puts {@code mob} (made and set up, not yet in the world) and its passengers in {@code level}, as the {@code what}
@@ -66,8 +73,21 @@ public final class HostileSpawns {
 
 	/** As {@link #add(ServerLevel, Mob, String)}, as if the world's difficulty were {@code difficulty} (tests). */
 	public static boolean add(ServerLevel level, Mob mob, String what, Difficulty difficulty) {
+		return add(level, mob, what, difficulty, true);
+	}
+
+	/**
+	 * Puts the village's own {@code mob} (an iron golem, a relief horse, a foal, a pack llama: made and set up, not yet in
+	 * the world) and its passengers in {@code level}, forced past another mod's blocklist while {@link #FORCE_VILLAGE}
+	 * (B211). True if it's in the world now.
+	 */
+	public static boolean addVillage(ServerLevel level, Mob mob, String what) {
+		return add(level, mob, what, level.getDifficulty(), false);
+	}
+
+	private static boolean add(ServerLevel level, Mob mob, String what, Difficulty difficulty, boolean threat) {
 		List<Entity> all = mob.getSelfAndPassengers().toList();
-		if (difficulty == Difficulty.PEACEFUL && mob instanceof Enemy) {
+		if (threat && difficulty == Difficulty.PEACEFUL && mob instanceof Enemy) {
 			all.forEach(Entity::discard);
 			refused(level, mob, what, Refusal.PEACEFUL);
 			return false;
@@ -83,9 +103,9 @@ public final class HostileSpawns {
 		if (refused.isEmpty()) {
 			return true;
 		}
-		if (!FORCE) {
+		if (!(threat ? FORCE : FORCE_VILLAGE)) {
 			refused.forEach(Entity::discard);
-			refused(level, mob, what, Refusal.REFUSED);
+			refused(level, mob, what, threat ? Refusal.REFUSED : Refusal.REFUSED_VILLAGE);
 			return in(level, mob);
 		}
 		for (Entity e : refused) {
@@ -106,6 +126,12 @@ public final class HostileSpawns {
 			return false;
 		}
 		String type = type(mob);
+		if (!threat) {
+			log("forced_village|" + type, String.format("Another mod refused to let %s spawn for the %s (a mob blocklist such as MobsBeGone, "
+				+ "which Cobbleverse ships with iron golems, wolves, horses, cats and llamas on it); Alive Workplace placed it directly. "
+				+ "Set forceVillageSpawns to false in config/aliveworkplace.json to leave such animals and golems out instead.", type, what));
+			return true;
+		}
 		log("forced|" + type, String.format("Another mod refused to let %s spawn for the %s (a mob blocklist such as MobsBeGone, which "
 			+ "Cobbleverse ships with pillagers and zombies on it); Alive Workplace placed it directly so its camp or raid isn't empty. "
 			+ "Set forceThreatSpawns to false in config/aliveworkplace.json to leave such mobs out instead.", type, what));
@@ -119,6 +145,8 @@ public final class HostileSpawns {
 			case PEACEFUL -> "the world is on Peaceful difficulty, where hostile mobs can't exist; raise the difficulty for raids and camps";
 			case REFUSED -> "another mod refused it (a mob blocklist such as MobsBeGone's config/mobsbegone-blacklist.json?) and "
 				+ "forceThreatSpawns is off";
+			case REFUSED_VILLAGE -> "another mod refused it (a mob blocklist such as MobsBeGone's config/mobsbegone-blacklist.json?) and "
+				+ "forceVillageSpawns is off";
 			case REFUSED_FORCED -> "another mod refused it, and the world refused it again when placed directly";
 		};
 		log(why + "|" + type, String.format("Could not spawn %s for the %s at %s: %s.", type, what, mob.blockPosition().toShortString(), reason));

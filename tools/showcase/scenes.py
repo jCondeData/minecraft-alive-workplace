@@ -192,6 +192,8 @@ SCENES = [
       [("01_steward_civic_day_1", "Day 1: a lamp by the dark beds and a well"), ("02_steward_civic_day_2", "Day 2: children came, so a schoolhouse")]),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
+    # B222: graves lying about the village go to its Graveyard (here the plot by the hall, the village having no Graveyard)
+    job("undertaker_graveyard", "Undertaker", "Laying a grave to rest", "the undertaker moved Mira's grave from the street to the plot by the hall"),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
     job("legend", "Legends", "A villager becomes a Legend",
         "a villager became a Legend, a Master who speeds up the builder beside them"),

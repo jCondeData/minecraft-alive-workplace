@@ -2337,6 +2337,24 @@ final class JobScenes {
 			chest(level, STATION.east(2), new ItemStack(Items.GOLDEN_APPLE, 2));
 			return l -> n(ModAttachments.VILLAGERS_REVIVED, u) >= 1 && l.getEntity(id) instanceof Villager back && back.isAlive();
 		}, null));
+		// B222: Mira dies in the street; with no golden apple, the undertaker lays her grave in the plot by the hall (no Graveyard yet)
+		SCENES.put("undertaker_graveyard", new Job("the undertaker laid Mira's grave from the street in the plot by the hall", 2400,
+			new Vec3(4.5, -54, 12), new Vec3(-2, -59.5, 0), (level, player) -> {
+			BlockPos hall = new BlockPos(-3, -60, -8);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos bench = new BlockPos(-8, -60, -3);
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(6, -60, 6), MobSpawnType.COMMAND);
+			Jobs.employ(level, mira, bench, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+			mira.setVillagerData(mira.getVillagerData().setLevel(3));
+			mira.setCustomName(Component.literal("Mira"));
+			mira.kill();
+			List<BlockPos> street = io.github.jcondedata.aliveworkplace.grave.Graves.near(level, new BlockPos(6, -60, 6), 4);
+			picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
+			chest(level, STATION.east(2));
+			return l -> !street.isEmpty() && !l.getBlockState(street.get(0)).is(ModBlocks.GRAVE)
+				&& io.github.jcondedata.aliveworkplace.grave.Graveyards.plot(l, hall).stream().anyMatch(p -> l.getBlockState(p).is(ModBlocks.GRAVE));
+		}, null));
 		SCENES.put("innkeeper", new Job("a traveller came to stay at the inn", 1200, CAMERA, TARGET, (level, player) -> {
 			for (int x = 3; x <= 5; x += 2) {
 				level.setBlockAndUpdate(new BlockPos(x, -60, -3), Blocks.RED_BED.defaultBlockState()

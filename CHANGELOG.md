@@ -35,6 +35,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Graves no longer clutter the village** (B222). The Undertaker walks to each grave lying in a street, a field or on
+  a doorstep and lays it in the next free row of the village's Graveyard; a village with no Graveyard gets a small plot
+  of three rows near the hall. Everything in the grave is kept (name, job, level, trades, partner) and the villager can
+  be brought back from there. Graves already scattered in your world are moved too. Setting: `gravesToGraveyard` (on).
 - **Look at a villager to see its job and level** (B221). Point your crosshair at a working villager up close and a
   plate over its head reads "Fisherman, Journeyman" ("Dara — Fisherman, Journeyman" for one with a name). Every job
   shows, ours and vanilla's; jobless villagers and nitwits show nothing new, and no villager's name is changed.

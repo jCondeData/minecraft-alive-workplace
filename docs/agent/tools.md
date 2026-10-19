@@ -71,7 +71,7 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   builder/miner decisions. `GUI_SCALE=4` (or 3) films any scene at that GUI scale in a 1920x1080 window (24.4: screens at scales 2 and 4). Long scenes take >10 min: start run.sh in the background and poll.
   Never `pkill -f`/`pgrep -f` a pattern that also appears in your own command line (it kills your shell).
   More scenes, one per job or screen that had none (`src/devclient/.../JobScenes.java`): `beekeeper`, `florist`,
-  `scholar` (and the research screen), `sifter`, `tinkerer`, `composter`, `netherworker`, `undertaker`, `innkeeper`
+  `scholar` (and the research screen), `sifter`, `tinkerer`, `composter`, `netherworker`, `undertaker`, `undertaker_graveyard` (B222: a street grave laid in the plot by the hall), `innkeeper`
   (and the hire screen), `teacher`, `rancher`, `mason`, `dyer`, `nurse`, `smelter`, `toolsmith`, `weaponsmith`,
   `fletcher`, `shepherd`, `herder`, `alchemist`, `scribe`, `explorer`, `bard`, `dropbox` (the Drop Box and its screen),
   `fossil` (Cobblemon); screens: `shapes`, `style_menu` (with the Mirror button), `counter` (the Shop Counter's prices

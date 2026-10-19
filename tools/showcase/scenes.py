@@ -206,6 +206,8 @@ SCENES = [
       [("01_steward_civic_day_1", "Day 1: a lamp by the dark beds and a well"), ("02_steward_civic_day_2", "Day 2: children came, so a schoolhouse")]),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
+    # B222: graves lying about the village go to its Graveyard (here the plot by the hall, the village having no Graveyard)
+    job("undertaker_graveyard", "Undertaker", "Laying a grave to rest", "the undertaker moved Mira's grave from the street to the plot by the hall"),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
     job("legend", "Legends", "A villager becomes a Legend",
         "a villager became a Legend, a Master who speeds up the builder beside them"),
@@ -1202,6 +1204,12 @@ SCENES = [
        ("03_hall_line", "Close up: it still looks like moss")], cobblemon18=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),
+    # Job plates (B221): looking at a working villager shows its job and level over its head, after its own name if it has
+    # one; a jobless villager shows nothing
+    S("job_plate", "Everyone at work", "Look at a villager to see its job and level",
+      "a Journeyman fisherman's plate reads its job and level, a named builder's her name first, a jobless villager's nothing", 15,
+      [("01_fisherman_plate", "Fisherman, Journeyman"), ("02_named_plate", "Dara — Builder, Expert"),
+       ("03_jobless_no_plate", "A jobless villager: no plate")]),
 ]
 
 BY_NAME = {s["name"]: s for s in SCENES}

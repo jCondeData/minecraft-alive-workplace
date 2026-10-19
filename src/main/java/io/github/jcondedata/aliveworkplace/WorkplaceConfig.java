@@ -127,6 +127,8 @@ public final class WorkplaceConfig {
 	 * own spawns.
 	 */
 	public boolean forceVillageSpawns = true;
+	/** The Undertaker moves each grave lying about the village to its Graveyard (or a plot near the hall), in rows (B222). Off: graves stay where villagers fall. */
+	public boolean gravesToGraveyard = true;
 	/**
 	 * A bandit camp or other raiders' lair that is broken up (its captain killed) or leaves is left as ruins, its fire put
 	 * out, instead of taken down (B209). Off: the camp comes down a few seconds after, its chests' loot spilling out.
@@ -918,6 +920,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE = forceThreatSpawns;
 		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE_VILLAGE = forceVillageSpawns;
+		// (off in GameTests, where graves would be moved out of other tests' areas; B222GameTests turns it on)
+		io.github.jcondedata.aliveworkplace.grave.Graveyards.ENABLED = gravesToGraveyard && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.CampCleanup.RUINS = campRuins;
 		// The other cultures' lairs (32.3) come by chance as the bandits' do; each has its switch in raiderCultures.
 		io.github.jcondedata.aliveworkplace.threat.Lairs.ENABLED = System.getProperty("fabric-api.gametest") == null;

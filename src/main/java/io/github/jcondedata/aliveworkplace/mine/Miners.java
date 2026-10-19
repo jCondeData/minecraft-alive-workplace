@@ -328,7 +328,9 @@ public final class Miners {
 
 	static void returnEverything(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> supplies) {
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
-		for (ItemStack stack : bag.takeAll()) {
+		List<ItemStack> load = new java.util.ArrayList<>(bag.takeAll());
+		load.sort(java.util.Comparator.comparing(MinerWork::isRock)); // the ores first (B224)
+		for (ItemStack stack : load) {
 			deliver(level, supplies, bench, stack);
 		}
 		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
@@ -341,21 +343,58 @@ public final class Miners {
 	/**
 	 * A find dropped off: Key Stone ore, Mega Stone Crystals and Mega meteorite ores go to the village store for the
 	 * Jeweller (38.6, with Mega Showdown and {@code villageMegas}); everything else, and what the store has no room for,
-	 * into the Miner's own chests.
+	 * into the Miner's own chests. What the Miner's chests have no room for (or all of it, with no chests by the bench)
+	 * goes to the village Storehouse's chests (B224), and only what fits nowhere is dropped by the bench.
 	 */
 	static void deliver(ServerLevel level, List<BlockPos> supplies, BlockPos bench, ItemStack stack) {
+		List<BlockPos> store = null;
 		if (io.github.jcondedata.aliveworkplace.jeweller.MegaStones.forTheJeweller(stack)) {
-			List<BlockPos> store = io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench).stream().filter(c -> !supplies.contains(c)).toList();
+			store = villageStore(level, supplies, bench);
 			stack = SupplyContainers.insert(level, store, stack);
 			if (stack.isEmpty()) {
 				return;
 			}
 		}
-		store(level, supplies, bench, stack);
+		stack = SupplyContainers.insert(level, supplies, stack);
+		List<ItemStack> moved = new java.util.ArrayList<>();
+		if (!stack.isEmpty() && !MinerWork.isRock(stack)) {
+			// Chests full: a stack of rock makes way for the ore, and goes on to the Storehouse instead (B224).
+			for (BlockPos chest : supplies) {
+				while (!stack.isEmpty()) {
+					List<ItemStack> rock = SupplyContainers.takeMatching(level, chest, MinerWork::isRock, 1);
+					if (rock.isEmpty()) {
+						break;
+					}
+					moved.addAll(rock);
+					int before = stack.getCount();
+					stack = SupplyContainers.insert(level, supplies, stack);
+					if (stack.getCount() == before) {
+						break; // the room isn't the ore's to take (a filtered store): leave the rest of the rock be
+					}
+				}
+			}
+		}
+		moved.add(0, stack);
+		for (ItemStack rest : moved) {
+			if (!rest.isEmpty()) {
+				if (store == null) {
+					store = villageStore(level, supplies, bench);
+				}
+				store(level, List.of(), bench, SupplyContainers.insert(level, store, rest));
+			}
+		}
+	}
+
+	/** The village Storehouse's chests (or the Village Hall's store) near {@code bench}, other than the Miner's own. */
+	private static List<BlockPos> villageStore(ServerLevel level, List<BlockPos> supplies, BlockPos bench) {
+		return io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench).stream().filter(c -> !supplies.contains(c)).toList();
 	}
 
 	static void store(ServerLevel level, List<BlockPos> supplies, BlockPos near, ItemStack stack) {
-		ItemStack rest = SupplyContainers.insert(level, supplies, stack);
+		if (stack.isEmpty()) {
+			return;
+		}
+		ItemStack rest = supplies.isEmpty() ? stack : SupplyContainers.insert(level, supplies, stack);
 		if (!rest.isEmpty()) {
 			net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(level,
 				near.getX() + 0.5, near.getY() + 1.1, near.getZ() + 0.5, rest);

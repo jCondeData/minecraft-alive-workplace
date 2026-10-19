@@ -58,6 +58,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Grander homes](grander-homes.md): home grades, the Artisan's House, the Burgher's Townhouse and the Noble's Manor
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
   rules (1.8).
+- [Graveyards](graveyards.md): the Undertaker lays the village's graves to rest in its Graveyard, in rows, or in a plot by the hall (B222).
 - [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).
 - [Wonders](wonders.md): the eight Wonders, what each needs and gives; the data files, requirements, the Wonders page, the Wonder Plan, the Foundation Stone, crews, goods and dedication, a finished Wonder's celebration, upkeep and powers, and each Wonder's design and powers (2.0, 35.1 to 35.24).
 - [Raid dens, Megas and Cobblecuisine](raid-dens-megas-cuisine.md): Cobblemon depth, three of the pack's Pokémon mods in village life: raid dens, more Mega trainers and Mega Stones, Cobblecuisine dishes and bean farms (2.2, 38.1 to 38.10).

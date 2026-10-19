@@ -192,20 +192,30 @@ abstract class VillagerMixin {
 			|| io.github.jcondedata.aliveworkplace.farm.Fields.isFarmer(self) && io.github.jcondedata.aliveworkplace.farm.Fields.hasField(self)
 			|| io.github.jcondedata.aliveworkplace.fish.Fishers.isFisherman(self) && io.github.jcondedata.aliveworkplace.fish.Fishers.isHired(self))) {
 			brain.setSchedule(ModVillagers.BUILDER_SCHEDULE);
-			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
+			aliveworkplace$followSchedule(brain, self);
 		} else if (!self.isBaby() && self.getVillagerData().getProfession() == ModVillagers.GUARD) {
 			brain.setSchedule(ModVillagers.GUARD_SCHEDULE);
-			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
+			aliveworkplace$followSchedule(brain, self);
 		} else if (!self.isBaby() && self.getVillagerData().getProfession() == ModVillagers.BARD) {
 			brain.setSchedule(ModVillagers.BARD_SCHEDULE);
-			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
+			aliveworkplace$followSchedule(brain, self);
 		}
 		if (io.github.jcondedata.aliveworkplace.legend.Gifted.nightOwl(self)) {
 			// A Night Owl (29.6) works the night, whatever their trade.
 			brain.setSchedule(ModVillagers.NIGHT_OWL_SCHEDULE);
-			brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
+			aliveworkplace$followSchedule(brain, self);
 		}
 		io.github.jcondedata.aliveworkplace.guard.Guards.updateHealth(self);
+	}
+
+	/**
+	 * Puts {@code brain} in what its (new) schedule says now, at once. Vanilla's registerBrainGoals has just looked at its
+	 * own schedule, and a brain looks at most once a second: without this a fisherman handed a rod, or a villager taking a
+	 * job with our hours, kept vanilla's activity for up to a second before starting work (B220).
+	 */
+	private static void aliveworkplace$followSchedule(Brain<Villager> brain, Villager self) {
+		((BrainAccessor) brain).aliveworkplace$setLastScheduleUpdate(self.level().getGameTime() - 21);
+		brain.updateActivityFromSchedule(self.level().getDayTime(), self.level().getGameTime());
 	}
 
 	/** A Gifted villager sparkles when they level up (29.6). */

@@ -332,6 +332,12 @@ public class MinerWork extends Behavior<Villager> {
 		return false;
 	}
 
+	/** The plain rock a quarry gives (stone of every kind, dirt, gravel, sand, flint): stored after the ores (B224). */
+	static boolean isRock(ItemStack stack) {
+		return FILLERS.contains(stack.getItem()) || stack.is(Items.GRAVEL) || stack.is(Items.FLINT) || stack.is(Items.SAND)
+			|| stack.is(Items.RED_SAND) || stack.is(Items.COARSE_DIRT) || stack.is(Items.CALCITE) || stack.is(Items.SMOOTH_BASALT);
+	}
+
 	@Nullable
 	static Item filler(BuilderBag bag) {
 		for (Item item : FILLERS) {
@@ -637,7 +643,10 @@ public class MinerWork extends Behavior<Villager> {
 
 	private static void deposit(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
-		for (ItemStack stack : bag.takeAllExcept(java.util.Set.of(Items.TORCH, Items.LADDER))) {
+		// B224: the ores and finds first, so that with the chests nearly full they get the room; then the rock.
+		List<ItemStack> load = new java.util.ArrayList<>(bag.takeAllExcept(java.util.Set.of(Items.TORCH, Items.LADDER)));
+		load.sort(java.util.Comparator.comparing(MinerWork::isRock));
+		for (ItemStack stack : load) {
 			Miners.deliver(level, supplies, bench, stack);
 		}
 		topUpTorches(level, supplies, bag);

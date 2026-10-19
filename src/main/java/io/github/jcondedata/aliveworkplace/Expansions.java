@@ -49,25 +49,25 @@ public final class Expansions {
 	 * Milestone 35, Wonders (2.0): {@code wonders}, {@code wonderCaps}, {@code wonderLegends}, {@code wonderServerLimit},
 	 * {@code disabledWonders} (35.2), {@code wonderCrew} (35.5), {@code builderScaffolding} (35.6), {@code wonderStanding} (35.8).
 	 */
-	public static final boolean M35 = false;
+	public static final boolean M35 = true;
 	/**
 	 * Milestone 37, Furnished homes and modded storage (2.1): {@code furnishedBuilds}, {@code furnitureMods},
 	 * {@code moddedStorageNetworks}, {@code moddedLibrary} (37.12) (design note M37).
 	 */
-	public static final boolean M37 = false;
+	public static final boolean M37 = true;
 	/**
 	 * Milestone 38, Cobblemon depth (2.2): raid dens, more Megas and Cobblecuisine (design note M38). Its switches:
 	 * {@code denHelpers}, {@code denHelperPrice}, {@code villageMegas}, {@code cuisineDishes},
 	 * {@code beanFarms}; each comes into the config with the item that builds it (38.3 to 38.10).
 	 */
-	public static final boolean M38 = false;
+	public static final boolean M38 = true;
 	/**
 	 * Milestone 39, Create integration (2.3): the Mechanic, villagers working Create's machines, Create-powered builds,
 	 * Create schematics at the Blueprint Table and trains between villages (design note M39), all only with Create
 	 * installed. Its switches: {@code mechanics}, {@code machineWork}, {@code createBuilds}, {@code createSchematics},
 	 * {@code villageTrains}; each comes into the config with the item that builds it (39.2 to 39.7).
 	 */
-	public static final boolean M39 = false;
+	public static final boolean M39 = true;
 
 	/**
 	 * Open in GameTests (they test the unfinished expansions) and in the screenshot client (the nightly showcase films

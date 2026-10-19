@@ -5124,6 +5124,12 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-c-1019-0953): Milestone 37 has no open item and no `(lane: c)` bug; `sessions.py next` lists nothing for
+  lanes b, c, d or e, so the owner's question above (lane-e-1018-2212: which big milestone next?) still stands. This run
+  killed three mutants the nightly mutation job left alive in M37 code (SupplyContainers:62, StorageNetworks:336,
+  FurnishedPackTest:158; tests in TomsStorageCompatTests and FurnishedPackTestGameTests). Suggestion for the QA lane:
+  the nightly mutation job runs only `runGameTest`, so every mutant in compat-only code (compat/, storage networks,
+  Create) is reported as a survivor even when compat tests kill it (StorageNetworks:336 fails five Tom's compat tests).
 - 2026-10-19 (38.1a, 38.3a, 38.4a, lane-d-1019-0110; for the owner, plain words): (1) The village no longer raids dens
   on its own: a trainer beating a den alone and bringing the loot home is gone. (2) The Den Warden is gone too: no more
   guard standing watch at a den. (3) Instead, on the hall's Defence page you hire up to 3 of the village's trainers for

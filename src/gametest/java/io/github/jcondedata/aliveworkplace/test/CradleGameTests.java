@@ -85,7 +85,7 @@ public class CradleGameTests implements FabricGameTest {
 		helper.setBlock(CHEST, Blocks.CHEST);
 		helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8)).setNoAi(true);
 		helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 8)).setNoAi(true);
-		for (int x : new int[] {3, 13}) {
+		for (int x : new int[] {3, 9, 13}) { // three babies, each with a bed of their own (B206)
 			bed(helper, x);
 		}
 		VillageNeeds.Needs happy = new VillageNeeds.Needs(2, 2, 2, 2, 2, 0, 0, 1f);

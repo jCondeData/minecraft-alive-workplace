@@ -270,6 +270,7 @@ public class WonderGardensGameTests implements FabricGameTest {
 		helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 8)).setNoAi(true);
 		bed(helper, new BlockPos(3, 2, 15));
 		bed(helper, new BlockPos(5, 2, 15));
+		bed(helper, new BlockPos(7, 2, 15)); // the third baby's bed: each takes one of their own (B206)
 		helper.setBlock(HOME, ModBlocks.VILLAGE_HALL);
 		VillageNeeds.Needs happy = new VillageNeeds.Needs(2, 2, 2, 2, 2, 0, 0, 1f);
 		helper.runAfterDelay(5, () -> {

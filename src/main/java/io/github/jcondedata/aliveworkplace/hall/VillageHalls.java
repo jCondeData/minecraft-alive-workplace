@@ -44,7 +44,12 @@ public final class VillageHalls {
 
 	/** The village at a glance. */
 	public record Census(List<Villager> workers, List<Villager> jobless, int children, int beds, int freeBeds, long food, int guards,
-						 List<Requests.Request> requests, List<Build> builds) {
+						 List<Requests.Request> requests, List<Build> builds, int wagonBeds) {
+		/** B206: the village is full: no bed in its houses is free, so nobody new moves in. */
+		public boolean full() {
+			return freeBeds <= 0;
+		}
+
 		public int villagers() {
 			return workers.size() + jobless.size() + children;
 		}
@@ -78,14 +83,16 @@ public final class VillageHalls {
 			.thenComparing(v -> -v.getVillagerData().getLevel()).thenComparing(v -> v.distanceToSqr(hall.getCenter())));
 		jobless.sort(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getCenter())));
 		PoiManager poi = level.getPoiManager();
-		int beds = (int) poi.getCountInRange(h -> h.is(PoiTypes.HOME), hall, RADIUS, PoiManager.Occupancy.ANY);
-		int freeBeds = (int) poi.getCountInRange(h -> h.is(PoiTypes.HOME), hall, RADIUS, PoiManager.Occupancy.HAS_SPACE);
+		// B206, B207: a settlers' wagon's bedrolls are for the road, not the village's beds
+		int wagonBeds = io.github.jcondedata.aliveworkplace.camp.CampBeds.inVillage(level, hall).size();
+		int beds = (int) poi.getCountInRange(h -> h.is(PoiTypes.HOME), hall, RADIUS, PoiManager.Occupancy.ANY) - wagonBeds;
+		int freeBeds = io.github.jcondedata.aliveworkplace.camp.CampBeds.freeHomes(level, hall, RADIUS).size();
 		List<Requests.Request> requests = new ArrayList<>();
 		for (Villager worker : workers) {
 			requests.addAll(Requests.of(level, worker));
 		}
 		return new Census(List.copyOf(workers), List.copyOf(jobless), children, beds, freeBeds, food(level, hall), guards, requests,
-			builds(level, hall));
+			builds(level, hall), wagonBeds);
 	}
 
 	/** How many kinds of meal the store has (see {@link io.github.jcondedata.aliveworkplace.people.Diet}). */

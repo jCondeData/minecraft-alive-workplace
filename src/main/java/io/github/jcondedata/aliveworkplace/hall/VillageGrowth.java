@@ -11,8 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
-import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,10 +81,10 @@ public final class VillageGrowth {
 		return Blocker.NONE;
 	}
 
-	/** A bed nobody has claimed within the village, nearest the hall. */
+	/** A bed nobody has claimed within the village, nearest the hall; never a settlers' wagon's bedroll (B206). */
 	@Nullable
 	static BlockPos freeBed(ServerLevel level, BlockPos hall) {
-		return level.getPoiManager().findClosest(h -> h.is(PoiTypes.HOME), hall, VillageHalls.RADIUS, PoiManager.Occupancy.HAS_SPACE).orElse(null);
+		return io.github.jcondedata.aliveworkplace.camp.CampBeds.freeHome(level, hall, VillageHalls.RADIUS).orElse(null);
 	}
 
 	/** The meals in the store. */
@@ -124,7 +122,7 @@ public final class VillageGrowth {
 		if (parents.size() < 2) {
 			return null;
 		}
-		return born(level, hall, parents);
+		return born(level, hall, parents, bed);
 	}
 
 	/**
@@ -135,12 +133,13 @@ public final class VillageGrowth {
 	@Nullable
 	static Villager blessedBirth(ServerLevel level, BlockPos hall, @Nullable VillageNeeds.Needs needs) {
 		int cap = VillageRanks.growthCap(VillageRanks.of(level, hall));
-		if (needs == null || cap <= 0 || needs.villagers() >= cap || freeBed(level, hall) == null) {
+		BlockPos bed = needs == null || cap <= 0 || needs.villagers() >= cap ? null : freeBed(level, hall);
+		if (bed == null) {
 			return null;
 		}
 		List<Villager> parents = io.github.jcondedata.aliveworkplace.legend.Seer.blessedCouple(level, hall);
 		if (parents.size() >= 2) {
-			Villager baby = born(level, hall, parents);
+			Villager baby = born(level, hall, parents, bed);
 			if (baby != null) {
 				io.github.jcondedata.aliveworkplace.legend.Seer.babyCame(parents);
 			}
@@ -151,16 +150,20 @@ public final class VillageGrowth {
 		if (parents.size() < 2) {
 			return null;
 		}
-		Villager baby = born(level, hall, parents);
+		Villager baby = born(level, hall, parents, bed);
 		if (baby != null) {
 			io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.babyCame(parents);
 		}
 		return baby;
 	}
 
-	/** {@code parents}' baby is born; the family eats {@link #familyMeals} meals from the store. */
+	/**
+	 * {@code parents}' baby is born, the free bed {@code bed} theirs at once (B206: as vanilla gives a newborn a bed, so a
+	 * second birth, a traveller or vanilla's own breeding can't count the same bed free); the family eats
+	 * {@link #familyMeals} meals from the store.
+	 */
 	@Nullable
-	private static Villager born(ServerLevel level, BlockPos hall, List<Villager> parents) {
+	private static Villager born(ServerLevel level, BlockPos hall, List<Villager> parents, BlockPos bed) {
 		Villager baby = EntityType.VILLAGER.create(level);
 		if (baby == null) {
 			return null;
@@ -174,6 +177,7 @@ public final class VillageGrowth {
 		io.github.jcondedata.aliveworkplace.people.Families.born(baby, mother, father);
 		io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.born(baby, parents); // a blessed couple's child: likelier Gifted (35.10)
 		level.addFreshEntityWithPassengers(baby);
+		io.github.jcondedata.aliveworkplace.camp.CampBeds.claim(level, baby, bed);
 		io.github.jcondedata.aliveworkplace.build.BuildReserve store = io.github.jcondedata.aliveworkplace.build.BuildReserve.of(level,
 			VillageNeeds.store(level, hall)); // B84: never what a build near the store still needs
 		int meals = familyMeals(level, hall);

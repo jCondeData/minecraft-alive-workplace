@@ -29,6 +29,13 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **No more villagers than beds, and nobody lives in the settlers' wagon** (B206, B207). The bedrolls by a Settler's
+  Wagon or a Colony Camp are for the road: once the Village Hall stands, a settler who kept one as their home gets up
+  and finds a bed in the village's houses, and nobody claims one again. The hall doesn't count them among its beds
+  (its Beds button says how many it left out). A baby or an inn's traveller now moves in only on a free bed in a house
+  and takes it at once, so one free bed can't be counted twice (a birth, a traveller and vanilla's own breeding all
+  used the same free bed before); a village with every bed taken takes nobody in, and the hall says "The village is
+  full". Existing worlds are mended at each hall's next round, older camps known by their bedrolls, campfire and hay.
 - **Village golems, horses and pups on modpacks that block animals** (B211). Cobbleverse's MobsBeGone also blocks iron
   golems, wolves, horses and llamas, so the Golem Smith's and Iron Pact's golems, relief riders' horses, the
   Beastmaster's foals and wolf pups and caravan pack llamas never appeared. They are now put in the world anyway (new

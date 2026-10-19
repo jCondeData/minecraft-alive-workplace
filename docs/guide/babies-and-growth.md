@@ -19,7 +19,9 @@ couple has a **baby**.
 
 All of these at once:
 
-- a **free bed** that nobody has claimed, inside the village;
+- a **free bed** that nobody has claimed, inside the village (the settlers' wagon bedrolls don't count). The baby
+  takes that bed at once, so a village never has more newcomers than free beds; with every bed taken the hall's Beds
+  button says **the village is full**;
 - at least **16 meals** in the store (the family eats 8 of them for the baby);
 - [wellbeing](village-needs.md) of at least **half**: fed, housed and safe enough;
 - at least two grown villagers;

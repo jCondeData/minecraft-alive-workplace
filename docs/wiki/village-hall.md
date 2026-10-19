@@ -55,7 +55,17 @@ met is the village's wellbeing, 0 to 100%. Work goes up to 25% faster in a well-
 quarter more, and room for ten more villagers. Roads never count as buildings and a whole wall counts as one.
 
 **Growth.** At most once a day, with a free bed, 16 meals in the store and wellbeing of 50% or more, the two
-villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`.
+villagers nearest the free bed have a baby (the family eats 8 meals), up to `villageGrowthCap`. The baby takes that
+bed at once (B206), so a second birth, an inn's traveller or vanilla breeding can't count the same bed free: a village
+with N free beds takes in at most N newcomers. With no bed free the Beds button says **The village is full: nobody new
+moves in until a bed is free**.
+
+**Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The bedrolls of a Settler's Wagon's camp or a Colony Camp
+are listed when the camp is placed (`aliveworkplace_camp_beds`, per dimension); an older camp's are known by their
+look (a brown or green bed with a campfire and a hay bale within 10 blocks) and listed once seen. At each round the
+hall moves out anyone homed in one (they wake and forget it, then find a bed in a house) and holds every wagon bed for
+nobody, so it is never claimed again. The census leaves them out of Beds and Free, and the Beds button says how many
+it left out ("Not counted: 2 wagon beds"). Before a hall stands, the settlers sleep in the wagon as before.
 
 **Treasury.** Each morning every worker puts by `treasuryPerWorker` hundredths of an emerald (20: a fifth of an
 emerald), half in a badly kept village, half again in a well kept one, a quarter more per rank. Whoever opens the hall
@@ -159,6 +169,9 @@ point of interest, saved by Minecraft).
 ## Proof
 
 GameTests: `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
+`WagonBedsGameTests` (B206, B207: settlers leave the wagon once the hall stands, an older camp's bedroll is mended,
+two free beds take in two newcomers and the hall says it's full, the inn takes a traveller only into a free house bed,
+the wagon-bed list and its save),
 `HallUiGameTests` (the hall and the Storehouse board on their own screens), `HallPagesGameTests`, `QaHallPagesSeasonsGameTests`, `HallSpecGameTests`, `ProtectionGameTests`,
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
 the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),

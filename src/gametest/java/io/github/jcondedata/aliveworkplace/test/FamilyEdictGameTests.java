@@ -205,7 +205,7 @@ public class FamilyEdictGameTests implements FabricGameTest {
 		helper.setBlock(CHEST, Blocks.CHEST);
 		helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 8)).setNoAi(true);
 		helper.spawn(EntityType.VILLAGER, new BlockPos(9, 2, 8)).setNoAi(true);
-		for (int x : new int[] {3, 5, 7}) {
+		for (int x : new int[] {3, 5, 7, 9}) { // four babies, each with a bed of their own (B206)
 			helper.setBlock(new BlockPos(x, 2, 15), Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH).setValue(BedBlock.PART, BedPart.FOOT));
 			helper.setBlock(new BlockPos(x, 2, 16), Blocks.RED_BED.defaultBlockState().setValue(BedBlock.FACING, Direction.SOUTH).setValue(BedBlock.PART, BedPart.HEAD));
 		}

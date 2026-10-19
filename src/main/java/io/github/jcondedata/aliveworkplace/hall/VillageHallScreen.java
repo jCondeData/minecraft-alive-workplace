@@ -42,7 +42,7 @@ import net.minecraft.world.phys.Vec3;
 public final class VillageHallScreen {
 	public static final int NAME = 0;
 	static final int PEOPLE = 1;
-	static final int BEDS = 2;
+	public static final int BEDS = 2;
 	public static final int FOOD = 3;
 	public static final int GUARDS = 4;
 	static final int WELLBEING = 5;
@@ -203,9 +203,7 @@ public final class VillageHallScreen {
 			line(Component.translatable("screen.aliveworkplace.hall.growth." + growth.name().toLowerCase(), VillageGrowth.foodNeeded(level, hall),
 				Math.round(VillageGrowth.WELLBEING_NEEDED * 100), VillageRanks.growthCap(VillageRanks.of(level, hall))), growth == VillageGrowth.Blocker.NONE ? ChatFormatting.GREEN : ChatFormatting.YELLOW)), null);
 		menu.button(BEDS, icon(Items.RED_BED, Component.translatable("screen.aliveworkplace.hall.beds", census.beds()), ChatFormatting.WHITE,
-			line(Component.translatable("screen.aliveworkplace.hall.free_beds", census.freeBeds()),
-				census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW),
-			Cradles.status(level, hall)), null);
+			bedLines(level, hall, census)), null);
 		int kinds = VillageHalls.mealKinds(level, hall);
 		List<Component> foodLore = new ArrayList<>(List.of(line("screen.aliveworkplace.hall.food_where", ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.meal_kinds", kinds, io.github.jcondedata.aliveworkplace.people.Diet.VARIED_KINDS),
@@ -1079,6 +1077,24 @@ public final class VillageHallScreen {
 
 	public static Component line(String key, ChatFormatting color) {
 		return line(Component.translatable(key), color);
+	}
+
+	/**
+	 * The Beds button's lines: the free beds, and (B206) that the village is full, nobody moving in until a bed is free;
+	 * (B207) the settlers' wagon beds, which aren't counted; then the cradles.
+	 */
+	static Component[] bedLines(ServerLevel level, BlockPos hall, VillageHalls.Census census) {
+		List<Component> lines = new ArrayList<>();
+		lines.add(line(Component.translatable("screen.aliveworkplace.hall.free_beds", census.freeBeds()),
+			census.freeBeds() > 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
+		if (census.full()) {
+			lines.add(line(Component.translatable("screen.aliveworkplace.hall.full"), ChatFormatting.YELLOW));
+		}
+		if (census.wagonBeds() > 0) {
+			lines.add(line(Component.translatable("screen.aliveworkplace.hall.wagon_beds", census.wagonBeds()), ChatFormatting.GRAY));
+		}
+		lines.add(Cradles.status(level, hall));
+		return lines.toArray(Component[]::new);
 	}
 
 	public static Component line(Component text, ChatFormatting color) {

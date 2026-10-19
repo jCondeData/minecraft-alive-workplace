@@ -20,8 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
-import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
@@ -133,9 +132,9 @@ public final class Innkeepers {
 		return guests.isEmpty() ? "waiting" : "hosting";
 	}
 
-	/** A bed nobody has claimed near the counter. */
+	/** A bed nobody has claimed near the counter (never a settlers' wagon's bedroll, B206). */
 	public static boolean hasFreeBed(ServerLevel level, BlockPos counter) {
-		return level.getPoiManager().findClosest(h -> h.is(PoiTypes.HOME), counter, RADIUS, PoiManager.Occupancy.HAS_SPACE).isPresent();
+		return io.github.jcondedata.aliveworkplace.camp.CampBeds.freeHome(level, counter, RADIUS).isPresent();
 	}
 
 	/**
@@ -168,6 +167,8 @@ public final class Innkeepers {
 		if (spot == null) {
 			return null;
 		}
+		// B206: the free bed the inn's round found ({@link #hasFreeBed}) is the traveller's as they arrive, so two newcomers never count one free bed
+		BlockPos bed = io.github.jcondedata.aliveworkplace.camp.CampBeds.freeHome(level, counter, RADIUS).orElse(null);
 		Villager guest = EntityType.VILLAGER.create(level);
 		if (guest == null) {
 			return null;
@@ -182,6 +183,9 @@ public final class Innkeepers {
 		ModAttachments.TRAVELLER.set(guest, new Traveller(level.getGameTime(), lvl));
 		guest.setCustomName(Component.translatable("entity.aliveworkplace.traveller", BuilderLevels.levelName(lvl)));
 		level.addFreshEntityWithPassengers(guest);
+		if (bed != null) {
+			io.github.jcondedata.aliveworkplace.camp.CampBeds.claim(level, guest, bed);
+		}
 		if (io.github.jcondedata.aliveworkplace.threat.Plague.fromFarAway(guest, innkeeper)) {
 			io.github.jcondedata.aliveworkplace.threat.Plague.carried(level, guest, level.random); // a traveller from far away may bring the plague (32.18)
 		}
@@ -219,6 +223,7 @@ public final class Innkeepers {
 			return;
 		}
 		level.sendParticles(ParticleTypes.POOF, guest.getX(), guest.getY() + 0.5, guest.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+		guest.releasePoi(MemoryModuleType.HOME); // their bed is free for the next one (B206)
 		guest.discard();
 	}
 

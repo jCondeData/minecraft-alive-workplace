@@ -543,6 +543,12 @@ public final class StarterBlueprints {
 	/** A U of brick round a courtyard with the tutor's post in it. */
 	public static final Entry SCHOOL = workplace("school", 17, 11, 13);
 
+	/**
+	 * A pit the Miner works like a farm (36.12, {@code mine/QuarryBuilds}): a curbed, fenced rim round the ground it digs,
+	 * steps cut down its east side, a hoist, and the Miner's shed with their blast furnace. The pit isn't in the file.
+	 */
+	public static final Entry QUARRY = workplace("quarry", 17, 9, 12, 5);
+
 	/** The workplaces in the Blueprint Table for everyone. */
 	public static final List<Entry> WORKPLACES = List.of(BUILDERS_WORKSHOP, CARPENTERS_WORKSHOP, KITCHEN, POST_OFFICE, GUARD_HOUSE, CLINIC, FERRY_HOUSE);
 	/** The workplaces of Cobblemon's jobs: in the Blueprint Table (and the creative tab) only with Cobblemon, as {@link #COBBLEMON_ONLY}. */
@@ -586,7 +592,7 @@ public final class StarterBlueprints {
 		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP);
+	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */
 	public static final List<Entry> DECORATIONS = java.util.stream.Stream.concat(
@@ -641,6 +647,9 @@ public final class StarterBlueprints {
 
 	/** Whether {@code id} may be offered now: it belongs to no expansion, or its expansion is open (B119). */
 	public static boolean offered(ResourceLocation id) {
+		if (!io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.ENABLED && io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.isQuarry(id)) {
+			return false; // quarryBuild off (36.12)
+		}
 		String option = expansionSwitch(id);
 		return option == null || io.github.jcondedata.aliveworkplace.Expansions.optionLive(option);
 	}
@@ -651,7 +660,7 @@ public final class StarterBlueprints {
 	/** Every shipped build with a basement or a cellar (26.15): the Level 4s and the cellars from Level 1. */
 	public static final List<Entry> WITH_BASEMENTS = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2, STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN,
-		INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3, JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3);
+		INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3, JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3, QUARRY);
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);

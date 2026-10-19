@@ -2550,6 +2550,70 @@ final class JobScenes {
 			return l -> n(ModAttachments.ITEMS_CRAFTED, t) >= 1
 				&& (theirs.countItem(Items.IRON_AXE) >= 1 || lumberjack.getMainHandItem().is(Items.IRON_AXE));
 		}, null));
+		SCENES.put("miner_pickaxe", job("the miner's stone pickaxe wore out on the fourth block; she made a new one at the blast furnace from the cobblestone she had dug and dug on to the end",
+			2400, (level, player) -> {
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			Container c = chest(level, chestPos(), new ItemStack(Items.STICK, 2), new ItemStack(Items.TORCH, 4));
+			BlockPos min = new BlockPos(-1, -60, -5);
+			BlockPos max = new BlockPos(1, -59, -3);
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+			}
+			Villager m = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			ItemStack worn = new ItemStack(Items.STONE_PICKAXE);
+			worn.setDamageValue(worn.getMaxDamage() - 4);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, worn);
+			io.github.jcondedata.aliveworkplace.mine.QuarrySite site = io.github.jcondedata.aliveworkplace.mine.Miners.start(level, m, player,
+				net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max), 2);
+			site.setStairs(false);
+			boolean[] making = {false};
+			return l -> {
+				var now = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				if (!making[0] && now != null && now.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.CRAFTING_PICKAXE) {
+					making[0] = true;
+					SHOTS.add("04_making_pickaxe");
+				}
+				return making[0] && now == null && c.countItem(Items.STONE_PICKAXE) >= 1 && c.countItem(Items.STICK) == 0;
+			};
+		}));
+		// The Quarry build (36.12): the pit's top four layers dug already, the Miner at the shed's blast furnace takes the
+		// pit by themselves and digs on down, and what they dug grows back from the bottom up (fast, for the film).
+		SCENES.put("quarry_build", new Job("the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up",
+			4800, new Vec3(0.5, -41, 5.5), new Vec3(1.5, -53, -10), (level, player) -> {
+			BlockPos origin = new BlockPos(-4, -49, -16);
+			io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(
+				level.dimension().location(), origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			net.minecraft.world.level.levelgen.structure.BoundingBox pit = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pit(placement);
+			net.minecraft.util.RandomSource rock = net.minecraft.util.RandomSource.create(3612);
+			// A hill of rock to dig the pit in (the superflat ground is too thin), grass on top round the pit
+			for (BlockPos p : BlockPos.betweenClosed(origin.getX() - 2, -60, origin.getZ() - 1, origin.getX() + 17, origin.getY() - 1, origin.getZ() + 12)) {
+				boolean inPit = pit.isInside(p);
+				BlockState state;
+				if (inPit) {
+					state = p.getY() > pit.maxY() - 4 ? Blocks.AIR.defaultBlockState()
+						: io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pick(rock, p.getY() < pit.minY() + 3);
+				} else {
+					state = (p.getY() == origin.getY() - 1 ? Blocks.GRASS_BLOCK : p.getY() > origin.getY() - 4 ? Blocks.DIRT : Blocks.STONE).defaultBlockState();
+				}
+				level.setBlock(p, state, 2);
+			}
+			level.getStructureManager().get(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT).orElseThrow().placeInWorld(level,
+				origin.below(5), origin.below(5), new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
+			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT,
+				placement, player.getUUID());
+			io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = 1200; // a block every second, for the film
+			BlockPos furnace = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.furnace(placement);
+			Villager m = EntityType.VILLAGER.spawn(level, furnace.west(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, furnace);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+			return l -> {
+				var site = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).all().stream().filter(s -> origin.equals(s.refillBuild())).findFirst();
+				return site.isPresent() && site.get().mined() >= 12 && site.get().grownTotal() >= 8;
+			};
+		}, null));
 		SCENES.put("weaponsmith", job("the weaponsmith mended the worn pickaxe", 1800, (level, player) -> {
 			Villager w = worker(level, STATION, Blocks.GRINDSTONE.defaultBlockState()
 				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)
@@ -4203,6 +4267,74 @@ final class JobScenes {
 			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
 				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
+		// The Builder asks before repairing a house (ROADMAP 36.15): a Starter Cottage the player's builder finished has five
+		// blocks knocked out of its front wall; the builder asks in chat ("Repair it? [Yes] [Not now]"), the hall's Repairs
+		// page lists it waiting for an answer, its view has Yes and Not now, and Yes sets the builder to it.
+		SCREENS.put("repair_ask", new Screen("the builder asked before repairing the Starter Cottage: the question in chat, the hall's Repairs page listing it "
+			+ "waiting for an answer with 5 blocks missing, its Yes and Not now, and after Yes the builder repairing it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos origin = STATION.offset(-5, 0, -15);
+				net.minecraft.core.Vec3i size = StarterBlueprints.STARTER_COTTAGE.size();
+				level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
+				// five blocks of the front wall knocked out (a creeper's hole, say: nothing a threat is counted for)
+				int knocked = 0;
+				for (int x = 0; x < size.getX() && knocked < 5; x++) {
+					BlockPos at = origin.offset(x, 2, 0);
+					if (!level.getBlockState(at).isAir() && level.getBlockEntity(at) == null) {
+						level.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
+						knocked++;
+					}
+				}
+				Showcase.check(knocked == 5, "five blocks knocked out of the cottage's front: " + knocked);
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				chest(level, bench.east(), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_LOG, 64),
+					new ItemStack(Items.GLASS_PANE, 16), new ItemStack(Items.SPRUCE_PLANKS, 64));
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+				io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder); // finds the hole and asks
+				var ask = BuildSiteManager.get(level).repairAsk(placement);
+				Showcase.check(ask != null && ask.state() == io.github.jcondedata.aliveworkplace.build.RepairAsks.State.ASKED,
+					"the builder asked about the cottage: " + ask);
+			},
+			List.of(new Step("01_repair_question", -1, 0, (level, player) -> player.closeContainer(), 30),
+				new Step("02_repairs_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.RepairsPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.CRACKED_STONE_BRICKS),
+							"the cottage first on the Repairs page, waiting: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("03_yes_or_not_now", io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES).is(Items.LIME_DYE)
+							&& m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.NOT_NOW).is(Items.RED_DYE), "the cottage's Yes and Not now");
+					}
+				}, 40),
+				new Step("04_repairing", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
+							"after Yes the page shows the cottage being repaired: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40)),
+			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

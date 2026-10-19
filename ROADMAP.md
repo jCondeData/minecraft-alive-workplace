@@ -305,6 +305,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B228** (approved auto 2026-10-19) Refresh active project fails on main: FurnitureSeatsCompatTests.java:108 swap line passes FabricGameTest.EMPTY_STRUCTURE unquoted (//$ gametest_ticks_batch FabricGameTest.EMPTY_STRUCTURE '20' ...); Stonecutter says Mismatched input '.'. Quote it as 'FabricGameTest.EMPTY_STRUCTURE'. (found by lane-c-1019-1555, 2026-10-19) Duplicate of B227, fixed with it (lane-c-1019-1555).
 - [ ] **B229** B224GameTests.minerWithNoChestsStoresInTheStorehouse failed once in a local full build of main 661ce966 (lane-a-1019-1522, 2026-10-19 17:13Z, run while another GameTest server ran on the same 2-CPU box): 'the Storehouse holds 9 minecraft:cobblestone, dug 11'; passed in the B224 fix's own runs and in a full build of bd742222 (2362/2362). SkyChartGameTests.aStepAndTheChartAreCheap failed in the same run (CPU contention, likely). Expected: every block the Miner digs reaches the Storehouse. Find where the 2 cobblestone went (dropped on the ground, used by the miner, or taken by something else) and fix the cause or the test's isolation; repeat-run it with the tester's repeat generator. Test: the same test, 20 repeats (found by lane-a-1019-1522, 2026-10-19)
 - [ ] **B230** FireGameTests.aFireWardenThrowsUpOntoAHighRoof (B218's test) failed once in a local full build (lane-b-1019-1538, 17:48Z, 2372 tests, 1 failed): '(..) the firewarden gained no experience: 1'. It passed in the build before and nothing in that run touched the Firewarden; looks like a flake in the experience check. Expected: passes every run. Test: the tester skill's repeat generator on FireGameTests. (found by lane-b-1019-1538) (found by lane-b-1019-1538, 2026-10-19)
+- [ ] **B231** Player-visible, live server, client crash (owner report with crash log, 2026-10-19; being fixed in the owner's chat by digest-1019-1253): with shaders on (Iris, COBBLEVERSE shaders), Flywheel falls back to 'off' and Create draws the village Windmill's turning sails (39.4, a create:bearing contraption of dark oak logs and white sails) through Ponder's ShadedBlockSbbBuilder, which only supports putBulkData; Sodium 0.8's FRAPI writes Continuity-wrapped block models vertex by vertex and the client crashes ('ShadedBlockSbbBuilder only supports putBulkData!', Rendering entity in world). Stops with shaders off. Expected: no crash; the sails draw. Test: a client check in the create_builds scene writes a quad vertex by vertex into ShadedBlockSbbBuilder (urgent: owner) (found by digest-1019-1253, 2026-10-19)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4730,18 +4731,18 @@ Depends on: nothing open.
   GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
   `hall_jobs`.
   - [x] **36.9a** (approved 2026-10-19) Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
-- [ ] **36.10** **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
+- [x] **36.10** (review: pending 2026-10-19) **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
   the list in the Blueprint Table: typing filters the library live by name, id and the jobs a build brings ("smith", "inn",
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
   empty result says so. Done when: GameTests for the filter (name, id, job, no match, cleared box, selected build hidden by
   a filter); `langcheck.py` passes; the `table` scene's stills show a search typed and the list narrowed.
-- [ ] **36.11** **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
+- [x] **36.11** (review: pending 2026-10-19) **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
   the materials (cobblestone or deepslate for the head, sticks from the village store or crafted from planks; stone, then iron
   and diamond as the level rises), crafts a new one at their work block from what they mined themselves, instead of waiting
   for the player or the Toolsmith. Done when: GameTests for the happy path (mined cobblestone and sticks become a stone
   pickaxe and the Miner keeps working), missing materials (they post a request on the Storehouse board and wait), a worn-out
   pickaxe, save and reload, the config switch off; the new status line is in `en_us.json`; scene `miner_pickaxe`.
-- [ ] **36.12** **A Quarry build that refills.** (owner, 2026-10-19). A "Quarry" blueprint (architect skill, checked against STYLE.md in a
+- [x] **36.12** (review: pending 2026-10-19) **A Quarry build that refills.** (owner, 2026-10-19). A "Quarry" blueprint (architect skill, checked against STYLE.md in a
   render): a pit with a ramp or steps, a rim and a Miner's shed with the job block, that the Miner mines from like a farm:
   the pit's ore-bearing stone is the crop. The blocks they mine grow back slowly over time, from the bottom up, in a
   weighted mix (mostly stone, some coal and copper, rarely iron, gold, redstone and diamond, deeper layers deepslate), so
@@ -4749,7 +4750,7 @@ Depends on: nothing open.
   Jobs line; GameTests: the Miner mines from it, mined blocks come back over time (a fixed random, a config for how fast,
   the full pit refills only after days), nothing outside the pit is touched, a block a player placed in the pit isn't
   replaced, save and reload, the switch off; scene `quarry_build`; the existing Quarry Marker still works for free areas.
-- [ ] **36.13** **The Blueprint Table is a library** (owner, 2026-10-19). Once a build is unlocked and a blueprint for it bought, the Table keeps it:
+- [x] **36.13** (review: pending 2026-10-19) **The Blueprint Table is a library** (owner, 2026-10-19). Once a build is unlocked and a blueprint for it bought, the Table keeps it:
   the player stores bought blueprints in the table (a Stored tab or a "Store" button on a blueprint held in hand), sees them
   listed with a count, and takes one back out whenever they like, so a blueprint never has to sit in a chest or inventory.
   Stored blueprints are the table's own (a broken table drops them; the table saves them across restarts). Done when: GameTests for storing,
@@ -4763,7 +4764,7 @@ Depends on: nothing open.
   in the way and where. Done when: GameTests for the list, a free-space upgrade, one blocked by another build, one over natural
   terrain only (it goes ahead), a build with no next level, the upgrade of a house with residents (they keep their beds), save and
   reload; the page's text in `en_us.json`; scene `hall_upgrade`.
-- [ ] **36.15** **The Builder asks before repairing a house** (owner, 2026-10-19). Today a Builder starts repairs by themselves and the player
+- [x] **36.15** (review: pending 2026-10-19) **The Builder asks before repairing a house** (owner, 2026-10-19). Today a Builder starts repairs by themselves and the player
   can't stop them or send them to another job. Change it: a damaged build is listed and the Builder asks first
   (a prompt on the Village Hall's page or a "Repair? Yes / Not now" choice shown with the repair request), and only repairs the
   builds the player agreed to; a repair in progress can be cancelled or paused from the same page, and a Builder who is paused
@@ -5207,6 +5208,17 @@ the owner's port jar; M33's caravans (39.7).
   None equivalent; no mod bug found. Belt data was untested end to end because Create works a belt out from its blocks
   anyway, so the new belt tests call blockData and beltData directly. Runs need `./gradlew --stop` between batches here:
   with leftover daemons a compat run was OOM-killed (exit 137), which mutate.py would count as a kill.
+- 2026-10-19 (lane-b-1019-1538, 36.15): defence repairs after a threat stay automatic, as the spec allows while the
+  owner hasn't objected: anything on the threats' damage list (32.16a: a gate a ram broke, a block a village fire
+  burned) is repaired without a question, and a question asked about that building before the threat is dropped. A
+  damaged Wonder's parts (35.8) are repaired without asking too. Everything else is asked about. Decided: the question
+  is answered by the build's owner, their friends, the village's leader or an operator; "Not now" is asked again only
+  once more blocks go missing; "Pause" waits for Carry on; a blueprint handed to a builder mid-repair starts at once and
+  puts an agreed repair aside (still agreed, taken up when the builder is free), while a repair no one was asked about
+  (a threat's) keeps the old order (the blueprint queues behind it). Cancelling a repair no longer hands out a blueprint
+  of the house (it did through `/workplace cancel`: nobody handed one over). The Repairs page is a spare tab
+  (`HallPages.SPARES` 3 to 4; the six tabs kept for other mods stay free).
+
 - 2026-10-19 (lane-e-1019-1313): mutation pass on M39 (Create) code against the Create compat tests (the ten Create
   classes alone via the compat fabric.mod.json, about 2 min a run). 23 mutants (seed 39) in CreateSchematics,
   CreateTrains, CaravanTrains, MachineWork, MechanicWork, CreateBuilds, MechanicRound and Kinetics: 11 killed, 12
@@ -6812,3 +6824,4 @@ the owner's port jar; M33's caravans (39.7).
 - **lane-c handoff** (lane-c-1018-1852, 2026-10-18 18:53Z): lane-c-1018-1852 (18:52Z): nothing built. M37 has no open item; next lists only 39.7b, lane e's own Create item (added by lane-e-1018-1612 at 17:55Z), and lane e's next scheduled run starts 19:12Z, so taking it would build it twice (lane-d's rule: take another lane's last item only when that lane hasn't run for 3 hours). Pending review is 24 (cap 10). wip/lane-c holds nothing main lacks. Owner question still open (lane-c-1018-1253): what is the next big update after 2.3 for lanes c and d (a Milestone 40, e.g. 2.4), or should they pause until the pending reviews are done? Until he answers, lane c stops early.
 - **lane-d handoff** (lane-d-1018-1908, 2026-10-18 19:09Z): lane-d-1018-1908 (19:08Z): nothing built. M38 and M37 have no open item (B190/B191, lane d's bugs, are ticked, review pending); next lists only 39.7b, lane e's own Create item, and lane e's run starts 19:12Z, so taking it would build it twice (lane-d rule: take another lane's last item only when that lane hasn't run for 3 hours). wip/lane-d and wip/lane-d-tier3 hold nothing main lacks. Owner question still open (lane-d-1018-1009, lane-c-1018-1253): new Cobblemon items (38.x follow-ups or a 2.4 Milestone 40) for lane d, or pause until the pending reviews are done? Until he answers, lane d stops early.
 - **lane-b handoff** (lane-b-1019-0038, 2026-10-19 01:57Z): 36.9a fixed (the hall_jobs scene put Odo nearer the hall than Dara, so the first row was Odo; the feature was right; scene restaged, all four checks pass locally; GitHub films it after 61750432). 36.6b needed no change: the table scene already passes on the showcase page with the Jobs and Beds lines. wip/lane-b-36.9fix needs no merge (lane a brought it in with B201). Owner question (open since lane-b-1018-2138): Milestone 36 has no quick additions left; what should the quick lane build next? Until then lane b runs find nothing to do. wip/lane-b (2026-10-13, B128/B130/B132/B142 fixes, never merged) is bug work for lane a. wip/lane-b-36.6a and wip/lane-b-36.9fix are merged or superseded (the git proxy refuses branch deletes).
+- **lane-b handoff** (lane-b-1019-1538, 2026-10-19 18:22Z): 36.10 (Table search), 36.11 (Miners craft pickaxes), 36.12 (refilling Quarry build), 36.13 (Table library) and 36.15 (Builder asks before repairs) landed, all --review; scenes table, miner_pickaxe, quarry_build, table_library and repair_ask get filmed on GitHub. Next: 36.14 (upgrade builds from the hall), the only open M36 item. Last local full build: all 2408 GameTests passed; runCompatGameTest was OOM-killed (exit 137) in this 7 GB container after the merge (it passed in the build before the merge), so CI is the check for compat. Filed B227 (fixed by lane c) and B230 (FireGameTests high-roof flake).

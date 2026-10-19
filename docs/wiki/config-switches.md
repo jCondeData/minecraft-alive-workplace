@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131, B161
+Roadmap items: 25.5, B76, B119, B131, B161, 36.15
 
 ## What a player sees
 
@@ -67,6 +67,9 @@ range is in brackets.
 | `partnerRadius` | 16 (4 to 48) |  | How far from a workstation pastured Pokémon count as partners. |
 | `postmanRange` | 64 (16 to 256) |  | How far from their Mailbox a postman walks to deliver (farther mail arrives at dawn). |
 | `maxWorkersPerVillage` | 0 (0 to 500) |  | At most this many workers per village (taken workstations within the village radius); 0: no cap. Nobody loses a job they have. |
+| `minerCraftsPickaxe` | on |  | A Miner whose pickaxe wore out, or who has none, makes a new one at their workstation from what they mined (stone, iron from Journeyman, diamond from Expert). Off: they wait for a pickaxe from you or the Toolsmith. |
+| `quarryBuild` | on |  | The Quarry build (36.12): the Miner at its blast furnace digs its pit without a Quarry Marker, and what they dig grows back slowly from the bottom up. Off: the Quarry isn't offered and nothing grows back; the Quarry Marker works as before. |
+| `quarryRegrowth` | 100 (0 to 2400) |  | Blocks that grow back in a Quarry's pit in a Minecraft day (0: none). At 100 a pit dug to the bottom takes about a week to fill. |
 | `fishermanCap` | on |  | A village takes only so many fishermen: other jobless villagers pass free barrels (storage in builds) by for another workstation. A fisherman a village already has keeps his job. Off: as in vanilla. |
 | `fishermenPerVillage` | 1 (1 to 20) |  | With the fisherman cap on, the fishermen every village takes. |
 | `villagersPerFisherman` | 10 (1 to 100) |  | With the fisherman cap on, one more fisherman for every this many villagers within the village radius. |
@@ -87,6 +90,7 @@ range is in brackets.
 | `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). |
 | `mythicLegendCap` | 0, 0, 1, 2 |  | Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City (each 0 to 10). In the file only: a list isn't on the settings screen. |
 | `builderRepairs` | on |  | Idle builders repair the buildings they finished when blocks go missing. |
+| `repairAsk` | on |  | A builder who finds blocks missing from a finished build asks first (Repair it? Yes / Not now, in chat and on the Village Hall's Repairs page) and repairs only what was agreed (36.15). Off: they repair by themselves, as before. What raiders and village fires took is always repaired without asking. |
 | `marketDays` | on |  | A village with a Village Hall and a Market Square holds a market once a week. |
 | `villageRaids` | on |  | Monsters raid bigger villages with a Village Hall at night now and then. |
 | `banditCamps` | on |  | Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls. |

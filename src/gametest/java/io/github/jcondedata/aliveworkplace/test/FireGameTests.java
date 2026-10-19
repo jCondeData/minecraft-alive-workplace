@@ -568,8 +568,13 @@ public class FireGameTests implements FabricGameTest {
 	public void theBuilderPutsBackWhatBurned(GameTestHelper helper) {
 		Hut hut = hut(helper, "upkeep");
 		boolean was = io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED;
+		boolean asks = io.github.jcondedata.aliveworkplace.build.Upkeep.ASK;
 		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = true;
-		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = was);
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = false; // 36.15: repairs without asking (repairAsk off): this test is about the repair; the ask has RepairAskGameTests
+		Leftovers.after(helper, () -> {
+			io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = was;
+			io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = asks;
+		});
 		ServerLevel level = hut.level();
 		BlockPos chestPos = new BlockPos(6, 2, 2);
 		helper.setBlock(chestPos, Blocks.CHEST);

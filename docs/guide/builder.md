@@ -58,11 +58,17 @@ take it down and put the blocks back in the chests.
 - **Busy builders queue up** to five more blueprints and build them in order.
 - **Idle builders help.** Up to three builders with nothing to do join a build near their table, so a crew of four
   finishes in under a third of the time.
-- **They keep up repairs.** Now and then an idle builder walks round what they built and puts back what's missing: a
-  creeper's hole, a broken window. Only holes: anything you changed yourself stays.
+- **They ask before repairs.** Now and then an idle builder walks round what they built, and when something's missing (a
+  creeper's hole, a broken window) they ask you first: "Repair it? [Yes] [Not now]" in chat, and on the Village Hall's
+  Repairs tab (the anvil). Say yes and they put back only the holes: anything you changed yourself stays. Say not now
+  and they leave it until more goes missing. A repair under way can be paused or stopped from the same tab, and handing
+  the builder a new blueprint puts the repair aside until they're free. What raiders or a village fire broke is put
+  back without asking. **Ask Before Repairs** in the settings, turned off, has them repair by themselves.
 - **They lay paths.** After a building they lay a dirt path from its door to the village bell or hall.
 
 ![A crew of four on one build](https://jcondedata.github.io/minecraft-alive-workplace/crew/still-2.jpg)
+
+![The Village Hall's Repairs tab: a cottage waiting for your answer](https://jcondedata.github.io/minecraft-alive-workplace/repair_ask/still-2.jpg)
 
 ## How the builder fits in
 

@@ -36,6 +36,7 @@ from styles import styled
 from basements import LEVEL_4, butchers_shop, cutaway
 from cellars import LEVEL_3
 from create_builds import *
+from quarry import quarry
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -190,6 +191,7 @@ if __name__ == "__main__":
     for name, draw in (("print_shop", print_shop), ("print_shop_2", print_shop_2), ("jewellers_workshop", jewellers_workshop),
                        ("jewellers_workshop_2", jewellers_workshop_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
+    quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     for name, draw in (("fire_station", fire_station), ("well_house", well_house), ("physicians_house", physicians_house)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement

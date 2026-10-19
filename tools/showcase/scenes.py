@@ -82,8 +82,15 @@ SCENES = [
     S("missing", "Builder", "What a build is still missing, and its material list", "the blueprint's tooltip lists what the chests are short of, and a Book and Quill becomes the list", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip"),
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
-    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, and a file was uploaded", 60,
-      [("10_table_library", "Library"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+    # 36.10: the search box over the library: "smith" narrows it to the forges, a search for nothing says so
+    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, \"smith\" typed in the search box narrowed the library to the builds that bring a smith, a search for nothing said so, and a file was uploaded", 65,
+      [("10_table_library", "Library"), ("10s_table_search", "Searched for \"smith\": the list narrowed"),
+       ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+    # 36.13: the Blueprint Table keeps bought blueprints: Store All, listed with counts, one taken back out
+    S("table_library", "Builder", "Blueprint Table: a library for your blueprints",
+      "the table's Stored tab started empty, Store All put the four blueprints carried on its shelf (two Starter Cottages listed as 2 stored), and Take One Out handed a cottage back into the player's hand", 40,
+      [("01_stored_empty", "The Stored tab, empty"), ("02_stored", "Stored, with how many of each"),
+       ("03_taken_out", "One taken out: the count goes down"), ("04_in_hand", "Back in hand")]),
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
@@ -113,6 +120,13 @@ SCENES = [
     # Miner
     S("quarry", "Miner", "A miner digs out a quarry", "the miner dug out the whole quarry", 420,
       [("frame_*@first", "Start"), ("frame_*@middle", "Digging"), ("50_quarry_done", "Dug out")]),
+    # Miners make their own pickaxe (ROADMAP 36.11): a worn stone pickaxe breaks, a new one is made at the blast furnace
+    job("miner_pickaxe", "Miner", "Making a new pickaxe from what she mined",
+        "the miner's worn pickaxe broke, she made a stone pickaxe at the blast furnace from the cobblestone she dug and dug on to the end", 150,
+        extra=[("04_making_pickaxe", "Making the pickaxe at the blast furnace")]),
+    # The Quarry build (ROADMAP 36.12): the Miner at its blast furnace digs its pit without a marker, and it grows back
+    job("quarry_build", "Miner", "A Quarry that grows back",
+        "the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up", 300),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),
@@ -413,6 +427,12 @@ SCENES = [
       "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
       [("01_free_jobs", "The Free job blocks page: the Storehouse and a bench"), ("02_who_takes_it", "Who could take the Storehouse"),
        ("03_dara_porter", "Dara picked: now the Porter, walking over")]),
+    # The Builder asks before repairing a house (ROADMAP 36.15): the question in chat and on the hall's Repairs page, then Yes
+    S("repair_ask", "Village Hall", "The Builder asks before repairing a house",
+      "Bram found 5 blocks missing from the Starter Cottage and asked in chat; the hall's Repairs page listed it waiting for an answer, "
+      "its view had Yes and Not now, and after Yes the page showed Bram repairing it", 50,
+      [("01_repair_question", "The question in chat: Repair it? [Yes] [Not now]"), ("02_repairs_page", "The hall's Repairs page: the cottage, waiting"),
+       ("03_yes_or_not_now", "The cottage's view: Yes, repair it, or Not now"), ("04_repairing", "After Yes: being repaired by Bram")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

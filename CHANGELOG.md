@@ -17,6 +17,25 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A Quarry that grows back** (36.12). A new blueprint in the Blueprint Table: a fenced pit with steps cut down its side,
+  a hoist and the Miner's shed with its blast furnace. The Miner who works at that furnace digs the pit by themselves (no
+  Quarry Marker), and what they dig grows back slowly from the bottom up: mostly stone, some coal and copper, now and
+  then iron, redstone and gold, rarely a diamond, deepslate in the bottom layers. Dug to the bottom, they wait at the
+  shed for a layer to grow back; a pit dug right out takes about a week to fill again. Nothing outside the pit changes
+  and a block you put in it stays. The Quarry Marker works as before. Settings: Quarry Build (on), Quarry Regrowth (100
+  blocks a day).
+- **The Builder asks before repairing a house** (36.15). A builder who finds blocks missing from a build asks first:
+  "Repair it? [Yes] [Not now]" in chat, and on the Village Hall's new Repairs tab, and repairs only what you said yes to.
+  A repair under way can be paused or stopped there (the builder goes straight on to their next job), and a blueprint
+  handed over mid-repair comes first. What raiders and village fires broke is still put back without asking. The
+  setting Ask Before Repairs, off, brings back repairs without asking.
+- **The Blueprint Table keeps your blueprints** (36.13). A Stored tab on the table lists the blueprints you put away in
+  it, with how many of each: Store Held or Store All puts them on its shelf, Take One Out hands one back. They belong to
+  the table (up to 200), stay through restarts and drop when the table is broken.
+- **Miners make their own pickaxe** (36.11). A Miner whose pickaxe wore out, or who has none, makes a new one at their blast furnace from what they mined: three cobblestone and two sticks (or two planks), iron from Journeyman and diamond from Expert. With nothing to make it from they wait, and the Storehouse board asks for what's missing. Setting: Miners Make Pickaxes (on).
+- **Search the Blueprint Table** (36.10). A search box over the library narrows its 150-odd builds as you type, by
+  name ("inn"), id ("fishers_hut") or a job a build brings ("fisherman", "smith"), in capitals or not. A build's levels
+  stay under it, the header counts the matches, and a search that finds nothing says so; an empty box lists everything.
 - **The Conductor** (39.7d, with Create). A villager without a job by a Create Train Station becomes the village's
   Conductor (maroon cap and tunic, brass buttons, a ticket punch): they take the seat of the village's train instead of a
   jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade

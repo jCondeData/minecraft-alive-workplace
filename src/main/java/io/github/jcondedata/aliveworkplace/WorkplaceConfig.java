@@ -47,6 +47,12 @@ public final class WorkplaceConfig {
 	public int postmanRange = 64;
 	/** At most this many workers per village (taken workstations within villageRadius); 0: no cap. */
 	public int maxWorkersPerVillage = 0;
+	/** A Miner with no pickaxe makes one at their workstation from what they mined (36.11). Off: they wait for one. */
+	public boolean minerCraftsPickaxe = true;
+	/** The Quarry build (36.12): its Miner works its pit without a marker, and what they dig grows back. Off: not offered, nothing grows back. */
+	public boolean quarryBuild = true;
+	/** Blocks that grow back in a Quarry build's pit in a Minecraft day (0: none). */
+	public int quarryRegrowth = 100;
 	/** A village takes only so many fishermen (ROADMAP 26.13: storage barrels made most villagers fishermen). Off: vanilla. */
 	public boolean fishermanCap = true;
 	/** Fishermen every village takes, with the cap on. */
@@ -90,6 +96,12 @@ public final class WorkplaceConfig {
 	public List<Integer> mythicLegendCap = new ArrayList<>(DEFAULT_MYTHIC_CAP);
 	/** Idle builders repair the buildings they finished when blocks go missing. Off: they still put back what threats took (32.16a). */
 	public boolean builderRepairs = true;
+	/**
+	 * A builder who finds blocks missing from a finished build asks its owner first (36.15: "Repair? Yes / Not now", in chat
+	 * and on the Village Hall's Repairs page) and repairs only what they agreed to. Off: they repair by themselves, as
+	 * before. What threats took is always repaired without asking (32.16a).
+	 */
+	public boolean repairAsk = true;
 	/** A village with a Village Hall and a Market Square holds a market once a week. */
 	public boolean marketDays = true;
 	/** Monsters raid bigger villages with a Village Hall at night now and then. */
@@ -568,7 +580,8 @@ public final class WorkplaceConfig {
 		"wonderServerLimit", 0, 64,
 		"wonderCrew", 1, 32,
 		"wonderStanding", 50, 100,
-		"denHelperPrice", 1, 64);
+		"denHelperPrice", 1, 64,
+		"quarryRegrowth", 0, 2400);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -864,6 +877,9 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.PATH_RANGE = workerPathRange;
 		// Off in gametests (fishermen in the tests beside one would count against it); the cap's tests turn it on.
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED = fishermanCap && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.mine.PickaxeCrafting.ENABLED = minerCraftsPickaxe;
+		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.ENABLED = quarryBuild;
+		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = quarryRegrowth;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.BASE = fishermenPerVillage;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.PER_VILLAGERS = villagersPerFisherman;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.RADIUS = villageRadius;
@@ -898,6 +914,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = villagerMoods && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = builderRepairs && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS = System.getProperty("fabric-api.gametest") == null; // (32.16a: whatever builderRepairs says)
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = repairAsk; // 36.15 (in GameTests too: the repair tests turn it off or answer)
 		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;

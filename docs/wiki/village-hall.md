@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15
 
 ## What a player sees
 
@@ -32,6 +32,12 @@ job could take it. Click a block and its page lists those villagers; click one a
 and walk over to it. So an empty Storehouse or a lectern left in a finished home can be filled from the hall, without
 leading anyone into the house. A villager who already works isn't listed; they are retrained at the block itself, for
 a price (26.6, see [Villager jobs](villager-jobs.md)).
+
+**Repairs (36.15).** A tab with an anvil opens the "Repairs" page: the village's damaged builds, each with what's missing
+and where its question stands (waiting for your answer, being repaired by a named Builder, agreed, paused, left for
+now). A click on one gives Yes, repair it and Not now, or Pause and Stop the repair while it's being repaired. Builders
+ask here (and in chat) before repairing anything; what raiders and village fires broke is repaired without asking. The
+whole of it is on the [Builder](builder.md) page.
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the

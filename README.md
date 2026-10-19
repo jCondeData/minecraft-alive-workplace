@@ -69,7 +69,10 @@ down and put the blocks back in the chests.
 **Repairs.** Builders look after what they've built: now and then an idle builder walks round the buildings they (or
 whoever they work for) finished near their Blueprint Table, and when blocks are missing — a creeper's hole, a raid, a
 broken window — they put them back from their chests. Only holes are filled: anything you've put in or changed since
-stays as it is. `builderRepairs` in the config turns it off.
+stays as it is. A builder asks before a repair: "Repair it? [Yes] [Not now]" in chat and on the Village Hall's Repairs
+page, and only what you said yes to is repaired; a repair can be paused or stopped there, and a blueprint handed over
+mid-repair comes first. What raiders and village fires broke is repaired without asking. `repairAsk` off brings back
+repairs without asking, and `builderRepairs` in the config turns repairs off.
 
 **More builders, faster builds.** A builder with nothing to do helps with builds near their Blueprint Table (up to three
 helpers per build), sharing the chests and passing each other materials.
@@ -1892,6 +1895,7 @@ saves the file and puts the settings into effect in your own worlds (a dedicated
 | `villagersPerFisherman` | 10 | with `fishermanCap` on, one more fisherman for every this many villagers within `villageRadius` (1 to 100) |
 | `workerPathRange` | 48 | how far villagers with a job look for a path in one go, in blocks; lower is lighter on the server, and farther walks are made in legs (vanilla: 48) |
 | `builderRepairs` | true | idle builders repair the buildings they finished when blocks go missing |
+| `repairAsk` | true | builders ask before a repair (Repair it? Yes / Not now, in chat and on the Village Hall's Repairs page); off: they repair by themselves. What threats took is always repaired |
 | `banditCamps` | true | bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls |
 | `raiderCultures` | every culture on | who may raid, culture by culture: `"monsters": true`, `"bandits": true`, and a datapack's by its id; one set to false never comes. In the file only; it always lists every culture (`docs/wiki/raids.md`) |
 | `festivals` | true | villages with a Village Hall hold a festival every season (players can still call one with a cake) |

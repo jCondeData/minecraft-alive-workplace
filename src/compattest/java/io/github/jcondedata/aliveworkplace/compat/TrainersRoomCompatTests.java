@@ -92,6 +92,38 @@ public class TrainersRoomCompatTests implements net.fabricmc.fabric.api.gametest
 		});
 	}
 
+
+	/**
+	 * The Trainer's room is the home's first chair spot even when that is the very first spot of the file, and the desk
+	 * nearest it; a later chair isn't taken instead (mutation check, 37.4).
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void theTrainersRoomTakesTheFirstChairEvenAtSpotZero(GameTestHelper helper) {
+		List<FurnitureSpot> spots = List.of(
+			spot(FurnitureSpot.Kind.CHAIR, new BlockPos(1, 1, 1)),
+			spot(FurnitureSpot.Kind.BED, new BlockPos(6, 1, 6)),
+			spot(FurnitureSpot.Kind.CHAIR, new BlockPos(12, 1, 12)),
+			spot(FurnitureSpot.Kind.DESK, new BlockPos(2, 1, 1)),
+			spot(FurnitureSpot.Kind.DESK, new BlockPos(13, 1, 12)));
+		Map<Integer, FurnishingTable.Piece> room = FurnitureChoice.trainersRoom(spots);
+		helper.assertTrue(room.get(0) == FurnitureChoice.POKE_BALL_CHAIR, "the first chair (spot 0) isn't the Trainer's chair: " + room.keySet());
+		helper.assertTrue(room.get(3) == FurnitureChoice.POKE_BALL_DESK, "the desk beside it isn't the Trainer's desk: " + room.keySet());
+		helper.assertTrue(room.size() == 2, "the Trainer's room should be one chair and one desk: " + room.keySet());
+		// The desk may be the file's first spot too.
+		Map<Integer, FurnishingTable.Piece> deskFirst = FurnitureChoice.trainersRoom(List.of(
+			spot(FurnitureSpot.Kind.DESK, new BlockPos(2, 1, 1)),
+			spot(FurnitureSpot.Kind.BED, new BlockPos(6, 1, 6)),
+			spot(FurnitureSpot.Kind.CHAIR, new BlockPos(1, 1, 1))));
+		helper.assertTrue(deskFirst.get(2) == FurnitureChoice.POKE_BALL_CHAIR && deskFirst.get(0) == FurnitureChoice.POKE_BALL_DESK,
+			"a desk at spot 0 was left out of the Trainer's room: " + deskFirst.keySet());
+		helper.succeed();
+	}
+
+	private static FurnitureSpot spot(FurnitureSpot.Kind kind, BlockPos pos) {
+		return new FurnitureSpot(kind, pos, Direction.NORTH, "oak", null, List.of());
+	}
+
 	private static BuildSite site(GameTestHelper helper, BlockPos origin) {
 		return new BuildSite(UUID.randomUUID(), UUID.randomUUID(), "test", COTTAGE,
 			new BlueprintData.Placement(helper.getLevel().dimension().location(), origin, Rotation.NONE, Mirror.NONE));

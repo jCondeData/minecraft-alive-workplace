@@ -187,6 +187,8 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	private static final Map<Villager, Long> LAST_CUE = new WeakHashMap<>();
 	private static final Set<UUID> DISPLAYS = new HashSet<>();
 	private static int DELIVERIES;
+	/** How the last {@code flies_off} show went (take-off, ceiling, what stopped the climb, a cut-off): tests and the debug log (B177). */
+	private static String lastFlight = "";
 	/** The last show each worker's cue started, and its partner: for tests and the debug log. */
 	private static final Map<UUID, ResourceLocation> LAST_SHOW = new java.util.HashMap<>();
 
@@ -350,6 +352,9 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				}
 				PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, spot, 1.0));
 				RUNNING.add(run);
+				if (show.fliesOff()) {
+					lastFlight = "";
+				}
 				LAST_CUE.put(worker, now);
 				LAST_SHOW.put(worker.getUUID(), show.name());
 				lastRefusal = "";
@@ -469,6 +474,11 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	private static boolean step(Running run) {
 		Entity pokemon = run.pokemon;
 		if (!pokemon.isAlive() || pokemon.isRemoved() || !PokemonPartners.EXTENSION.call(p -> p.canPerform(pokemon), false)) {
+			if (run.show.fliesOff()) {
+				String why = !pokemon.isAlive() ? "gone" : pokemon.isRemoved() ? "removed (" + pokemon.getRemovalReason() + ")"
+					: "can't perform (battling, busy, ridden or no longer pastured)";
+				lastFlight += (lastFlight.isEmpty() ? "" : "; ") + "cut off in " + run.phase + " after " + run.phaseTicks + " ticks: " + why;
+			}
 			return false; // recalled, in a battle, picked up: the show stops there
 		}
 		run.phaseTicks++;
@@ -493,6 +503,7 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 					if (run.show.fliesOff()) {
 						run.takeOff = pokemon.position();
 						run.ceiling = headroom(run.level, pokemon);
+						lastFlight = flightNote(run.level, pokemon, run.ceiling);
 					}
 				} else if (run.phaseTicks % 20 == 0) {
 					PokemonPartners.EXTENSION.run(p -> p.walkTo(pokemon, run.spot, 1.0)); // the brain may have sent it elsewhere
@@ -596,6 +607,30 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 			}
 		}
 		return most;
+	}
+
+	/** Where {@code pokemon} took off, how high it may climb and what stops it there (B177: a climb of 0 is then explained). */
+	private static String flightNote(ServerLevel level, Entity pokemon, int ceiling) {
+		double top = PokemonPartners.EXTENSION.call(p -> p.roamTop(pokemon), Double.POSITIVE_INFINITY);
+		String note = pokemon.getUUID().toString().substring(0, 8) + " took off at " + pokemon.blockPosition().toShortString()
+			+ " (y " + String.format(java.util.Locale.ROOT, "%.2f", pokemon.getY()) + "), ceiling " + ceiling + ", roam top " + top;
+		if (ceiling < FLIGHT_HEIGHT && pokemon.getY() + ceiling + 1.5 < top) {
+			// The climb stopped below the pasture's top: name the first solid block over its head.
+			BlockPos.MutableBlockPos at = pokemon.blockPosition().mutable();
+			for (int up = 0; up <= ceiling + Math.ceil(pokemon.getBbHeight()) + 1; up++, at.move(0, 1, 0)) {
+				var shape = level.getBlockState(at).getCollisionShape(level, at);
+				if (!shape.isEmpty() && at.getY() + shape.max(net.minecraft.core.Direction.Axis.Y) > pokemon.getY() + 1e-3) {
+					note += ", under " + BuiltInRegistries.BLOCK.getKey(level.getBlockState(at).getBlock()) + " at " + at.toShortString();
+					break;
+				}
+			}
+		}
+		return note;
+	}
+
+	/** How the last {@code flies_off} show went: where it took off, its ceiling and why, and any cut-off ("" if none yet). */
+	public static String lastFlight() {
+		return lastFlight;
 	}
 
 	/**

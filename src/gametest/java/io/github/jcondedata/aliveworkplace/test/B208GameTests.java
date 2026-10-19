@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.threat.HostileSpawns;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
+import io.github.jcondedata.aliveworkplace.threat.Threats;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
@@ -16,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -39,13 +41,19 @@ public class B208GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	/** A hall with four villagers, the world refusing hostile mobs as MobsBeGone does; all of it undone at the end. */
 	private static BlockPos village(GameTestHelper helper, boolean force) {
 		Leftovers.clear(helper);
+		// B216: what earlier batches left at this spot is not this village's. A hall left nearby has its own raid rounds over
+		// these raiders, and a lair or a raid recorded for the same hall position (saved world data) picks who comes.
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
+		Lairs.forget(level);
+		VillageRaids.forget();
 		int radius = VillageHalls.RADIUS;
 		long time = level.getDayTime();
 		VillageHalls.RADIUS = 16;
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL);
 		ThreatData.get(level).forgetPast(hall);
+		ThreatData.get(level).forgetClock(hall);
 		HostileSpawns.forget();
 		HostileSpawns.FORCE = force;
 		HostileSpawns.REFUSED_FOR_TESTS = e -> e instanceof Enemy;
@@ -71,6 +79,28 @@ public class B208GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 
 	private static boolean in(ServerLevel level, Entity e) {
 		return e != null && e.isAlive() && level.getEntity(e.getUUID()) == e;
+	}
+
+	/** Each raider as a failure message needs it (B216): type, where, whether in the world, why removed, health, last hurt by. */
+	private static String describe(ServerLevel level, List<Mob> mobs) {
+		StringBuilder s = new StringBuilder("[");
+		for (Mob m : mobs) {
+			s.append(net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(m.getType()).getPath())
+				.append('@').append(m.blockPosition().toShortString())
+				.append(in(level, m) ? " in" : " OUT").append(m.isRemoved() ? " removed=" + m.getRemovalReason() : "")
+				.append(" hp=").append(m.getHealth())
+				.append(m.getLastDamageSource() != null ? " hurt=" + m.getLastDamageSource().getMsgId() : "")
+				.append(" ticking=").append(level.isPositionEntityTicking(m.blockPosition()))
+				.append(" persistent=").append(m.isPersistenceRequired()).append("; ");
+		}
+		return s.append(']').toString();
+	}
+
+	/** The world round the village a failure ran in (B216). */
+	private static String state(ServerLevel level, BlockPos hall) {
+		return "difficulty " + level.getDifficulty() + ", day time " + level.getDayTime() % DAY + ", lair " + Lairs.near(level, hall).map(Lairs.Lair::culture).orElse(null)
+			+ ", raid " + ThreatData.get(level).raid(hall).orElse(null) + ", gathered at " + VillageRaids.lastGathering
+			+ ", force " + HostileSpawns.FORCE + ", last warning: " + HostileSpawns.lastWarning();
 	}
 
 	/** A camp made while the world refuses its bandits still has its chief and band, persistent, and stands later. */
@@ -112,13 +142,15 @@ public class B208GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		ServerLevel level = helper.getLevel();
 		helper.runAfterDelay(2, () -> {
 			level.setDayTime(39 * DAY + 15000);
-			VillageRaids.Raid raid = VillageRaids.start(level, hall, 8, 0);
-			helper.assertTrue(raid != null && raid.raiders() > 0, "no raid: " + raid);
+			// The plain monsters (the only culture a village of 8 with no lair draws), with a fixed random (B216).
+			VillageRaids.Raid raid = VillageRaids.start(level, hall, 8, 0, Double.NaN, Threats.on(Threats.MONSTERS).orElseThrow(), RandomSource.create(208));
+			helper.assertTrue(raid != null && raid.raiders() > 0, "no raid: " + raid + "; " + state(level, hall));
 			List<Mob> raiders = VillageRaids.raiders(level, hall);
 			helper.assertTrue(raiders.size() == raid.raiders() && raiders.stream().allMatch(m -> in(level, m) && m.isPersistenceRequired()),
-				"the raiders: " + raiders + " of " + raid.raiders());
+				"the raiders: " + describe(level, raiders) + " of " + raid.raiders() + "; " + state(level, hall));
 			helper.runAfterDelay(100, () -> {
-				helper.assertTrue(raiders.stream().filter(m -> in(level, m)).count() == raiders.size(), "raiders gone after 100 ticks");
+				helper.assertTrue(raiders.stream().filter(m -> in(level, m)).count() == raiders.size(),
+					"raiders gone after 100 ticks: " + describe(level, raiders) + "; " + state(level, hall));
 				helper.succeed();
 			});
 		});

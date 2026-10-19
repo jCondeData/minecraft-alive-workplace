@@ -141,11 +141,14 @@ public class ChimneyCampfireGameTests {
 	/** As on the live server (1.0): repairs on, and no scaffolding (35.6 is Milestone 35's, still shut). */
 	private static void liveServer(GameTestHelper helper) {
 		boolean upkeep = Upkeep.ENABLED;
+		boolean asks = Upkeep.ASK;
 		boolean scaffolds = Scaffolds.ENABLED;
 		Upkeep.ENABLED = true;
+		Upkeep.ASK = false; // 36.15: repairs without asking (repairAsk off): this test is about the repair; the ask has RepairAskGameTests
 		Scaffolds.ENABLED = false;
 		Leftovers.after(helper, () -> {
 			Upkeep.ENABLED = upkeep;
+			Upkeep.ASK = asks;
 			Scaffolds.ENABLED = scaffolds;
 		});
 	}

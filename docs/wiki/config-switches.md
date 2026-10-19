@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131, B161
+Roadmap items: 25.5, B76, B119, B131, B161, 36.15
 
 ## What a player sees
 
@@ -88,6 +88,7 @@ range is in brackets.
 | `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). |
 | `mythicLegendCap` | 0, 0, 1, 2 |  | Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City (each 0 to 10). In the file only: a list isn't on the settings screen. |
 | `builderRepairs` | on |  | Idle builders repair the buildings they finished when blocks go missing. |
+| `repairAsk` | on |  | A builder who finds blocks missing from a finished build asks first (Repair it? Yes / Not now, in chat and on the Village Hall's Repairs page) and repairs only what was agreed (36.15). Off: they repair by themselves, as before. What raiders and village fires took is always repaired without asking. |
 | `marketDays` | on |  | A village with a Village Hall and a Market Square holds a market once a week. |
 | `villageRaids` | on |  | Monsters raid bigger villages with a Village Hall at night now and then. |
 | `banditCamps` | on |  | Bandits make camp near villages of Village rank or more now and then, and raid them until their chief falls. |

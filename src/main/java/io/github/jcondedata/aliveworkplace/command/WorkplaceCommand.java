@@ -149,6 +149,15 @@ public final class WorkplaceCommand {
 					.then(Commands.argument("id", UuidArgument.uuid())
 						.executes(ctx -> io.github.jcondedata.aliveworkplace.hall.EdictProposals.answer(ctx.getSource().getPlayerOrException(),
 							UuidArgument.getUuid(ctx, "id"), false) ? 1 : 0))))
+			.then(Commands.literal("repair") // the builder's question: [Yes] and [Not now] (36.15)
+				.then(Commands.literal("yes")
+					.then(Commands.argument("pos", net.minecraft.commands.arguments.coordinates.BlockPosArgument.blockPos())
+						.executes(ctx -> io.github.jcondedata.aliveworkplace.build.RepairAsks.yes(ctx.getSource().getPlayerOrException(),
+							net.minecraft.commands.arguments.coordinates.BlockPosArgument.getBlockPos(ctx, "pos")).ok() ? 1 : 0)))
+				.then(Commands.literal("notnow")
+					.then(Commands.argument("pos", net.minecraft.commands.arguments.coordinates.BlockPosArgument.blockPos())
+						.executes(ctx -> io.github.jcondedata.aliveworkplace.build.RepairAsks.notNow(ctx.getSource().getPlayerOrException(),
+							net.minecraft.commands.arguments.coordinates.BlockPosArgument.getBlockPos(ctx, "pos")).ok() ? 1 : 0))))
 			.then(Commands.literal("steward")
 				.then(Commands.literal("explain")
 					.executes(WorkplaceCommand::explainSteward)))

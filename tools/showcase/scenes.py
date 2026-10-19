@@ -422,6 +422,12 @@ SCENES = [
       "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
       [("01_free_jobs", "The Free job blocks page: the Storehouse and a bench"), ("02_who_takes_it", "Who could take the Storehouse"),
        ("03_dara_porter", "Dara picked: now the Porter, walking over")]),
+    # The Builder asks before repairing a house (ROADMAP 36.15): the question in chat and on the hall's Repairs page, then Yes
+    S("repair_ask", "Village Hall", "The Builder asks before repairing a house",
+      "Bram found 5 blocks missing from the Starter Cottage and asked in chat; the hall's Repairs page listed it waiting for an answer, "
+      "its view had Yes and Not now, and after Yes the page showed Bram repairing it", 50,
+      [("01_repair_question", "The question in chat: Repair it? [Yes] [Not now]"), ("02_repairs_page", "The hall's Repairs page: the cottage, waiting"),
+       ("03_yes_or_not_now", "The cottage's view: Yes, repair it, or Not now"), ("04_repairing", "After Yes: being repaired by Bram")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

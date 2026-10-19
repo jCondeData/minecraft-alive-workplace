@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Builder asks before repairing a house** (36.15). A builder who finds blocks missing from a build asks first:
+  "Repair it? [Yes] [Not now]" in chat, and on the Village Hall's new Repairs tab, and repairs only what you said yes to.
+  A repair under way can be paused or stopped there (the builder goes straight on to their next job), and a blueprint
+  handed over mid-repair comes first. What raiders and village fires broke is still put back without asking. The
+  setting Ask Before Repairs, off, brings back repairs without asking.
 - **The Blueprint Table keeps your blueprints** (36.13). A Stored tab on the table lists the blueprints you put away in
   it, with how many of each: Store Held or Store All puts them on its shelf, Take One Out hands one back. They belong to
   the table (up to 200), stay through restarts and drop when the table is broken.

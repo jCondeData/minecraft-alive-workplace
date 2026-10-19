@@ -4761,7 +4761,7 @@ Depends on: nothing open.
   in the way and where. Done when: GameTests for the list, a free-space upgrade, one blocked by another build, one over natural
   terrain only (it goes ahead), a build with no next level, the upgrade of a house with residents (they keep their beds), save and
   reload; the page's text in `en_us.json`; scene `hall_upgrade`.
-- [ ] **36.15** **The Builder asks before repairing a house** (owner, 2026-10-19). Today a Builder starts repairs by themselves and the player
+- [x] **36.15** (review: pending 2026-10-19) **The Builder asks before repairing a house** (owner, 2026-10-19). Today a Builder starts repairs by themselves and the player
   can't stop them or send them to another job. Change it: a damaged build is listed and the Builder asks first
   (a prompt on the Village Hall's page or a "Repair? Yes / Not now" choice shown with the repair request), and only repairs the
   builds the player agreed to; a repair in progress can be cancelled or paused from the same page, and a Builder who is paused
@@ -5188,6 +5188,17 @@ the owner's port jar; M33's caravans (39.7).
   3-hour runs (owner: longer if need be); lane C is off; the QA lane runs overnight only; reviews never block; the evening digest releases daily.
 
 ## Notes / blocked
+
+- 2026-10-19 (lane-b-1019-1538, 36.15): defence repairs after a threat stay automatic, as the spec allows while the
+  owner hasn't objected: anything on the threats' damage list (32.16a: a gate a ram broke, a block a village fire
+  burned) is repaired without a question, and a question asked about that building before the threat is dropped. A
+  damaged Wonder's parts (35.8) are repaired without asking too. Everything else is asked about. Decided: the question
+  is answered by the build's owner, their friends, the village's leader or an operator; "Not now" is asked again only
+  once more blocks go missing; "Pause" waits for Carry on; a blueprint handed to a builder mid-repair starts at once and
+  puts an agreed repair aside (still agreed, taken up when the builder is free), while a repair no one was asked about
+  (a threat's) keeps the old order (the blueprint queues behind it). Cancelling a repair no longer hands out a blueprint
+  of the house (it did through `/workplace cancel`: nobody handed one over). The Repairs page is a spare tab
+  (`HallPages.SPARES` 3 to 4; the six tabs kept for other mods stay free).
 
 - 2026-10-19 (lane-e-1019-1313): mutation pass on M39 (Create) code against the Create compat tests (the ten Create
   classes alone via the compat fabric.mod.json, about 2 min a run). 23 mutants (seed 39) in CreateSchematics,

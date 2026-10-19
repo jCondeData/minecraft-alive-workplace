@@ -92,6 +92,12 @@ public final class WorkplaceConfig {
 	public List<Integer> mythicLegendCap = new ArrayList<>(DEFAULT_MYTHIC_CAP);
 	/** Idle builders repair the buildings they finished when blocks go missing. Off: they still put back what threats took (32.16a). */
 	public boolean builderRepairs = true;
+	/**
+	 * A builder who finds blocks missing from a finished build asks its owner first (36.15: "Repair? Yes / Not now", in chat
+	 * and on the Village Hall's Repairs page) and repairs only what they agreed to. Off: they repair by themselves, as
+	 * before. What threats took is always repaired without asking (32.16a).
+	 */
+	public boolean repairAsk = true;
 	/** A village with a Village Hall and a Market Square holds a market once a week. */
 	public boolean marketDays = true;
 	/** Monsters raid bigger villages with a Village Hall at night now and then. */
@@ -899,6 +905,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.people.Moods.ENABLED = villagerMoods && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = builderRepairs && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS = System.getProperty("fabric-api.gametest") == null; // (32.16a: whatever builderRepairs says)
+		io.github.jcondedata.aliveworkplace.build.Upkeep.ASK = repairAsk; // 36.15 (in GameTests too: the repair tests turn it off or answer)
 		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;

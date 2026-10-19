@@ -28,11 +28,17 @@ import org.jetbrains.annotations.Nullable;
  * for what threats took (ROADMAP 32.16a: a gate a ram broke, a block a village fire burned; {@code ThreatData#damaged}):
  * those buildings are always repaired, so no threat ever destroys the builders' work for good. A damaged Wonder (35.8,
  * {@code WonderUpkeep}) comes first and is always repaired too: its powers wait on it.
+ *
+ * <p>36.15: with {@code repairAsk} on ({@link #ASK}, the default) the builder asks first: a damaged building nothing
+ * threatened is put on the list with "Repair? Yes / Not now" for its owner ({@link RepairAsks}), and only one they said
+ * yes to is repaired. What threats took and a Wonder's parts are still repaired without asking.
  */
 public final class Upkeep {
 	public static boolean ENABLED = true;
 	/** Whether builders put back what threats took even with {@link #ENABLED} off (off in GameTests, as {@link #ENABLED} is). */
 	public static boolean THREATS = true;
+	/** Whether builders ask before repairing a building nothing threatened (36.15, {@code repairAsk}); off: they repair by themselves. */
+	public static boolean ASK = true;
 	/** How often an idle builder looks (ticks). */
 	public static int EVERY = 1200;
 
@@ -111,18 +117,23 @@ public final class Upkeep {
 			if (blueprint.isEmpty()) {
 				continue;
 			}
-			if (!ENABLED) {
-				// builderRepairs off: only what threats took (32.16a).
-				net.minecraft.world.level.levelgen.structure.BoundingBox box = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(),
-					blueprint.get().size());
-				if (taken.stream().noneMatch(box::isInside)) {
-					continue;
-				}
+			net.minecraft.world.level.levelgen.structure.BoundingBox box = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(),
+				blueprint.get().size());
+			boolean threatened = taken.stream().anyMatch(box::isInside);
+			if (!ENABLED && !threatened) {
+				continue; // builderRepairs off: only what threats took (32.16a).
 			}
 			// (what an earlier repair couldn't put back stays out: it would only be fetched, skipped and taken back again)
 			int missing = BuildPlan.repair(blueprint.get(), f.placement(), level, manager.gaveUp(f.placement())).size();
 			if (missing == 0) {
+				manager.setRepairAsk(f.placement(), null); // (put right some other way: off the Repairs page)
 				continue;
+			}
+			if (ASK && !threatened && !RepairAsks.mayStart(level, manager, f, missing, builder)) {
+				continue; // 36.15: asked, or waiting for an answer
+			}
+			if (threatened) {
+				manager.setRepairAsk(f.placement(), null); // what threats took is repaired without asking: a question from before is moot
 			}
 			ServerPlayer owner = level.getServer().getPlayerList().getPlayer(f.owner());
 			BuildSite site = manager.create(f.owner(), owner != null ? owner.getGameProfile().getName() : "", f.structure(), f.placement());

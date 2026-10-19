@@ -4189,6 +4189,74 @@ final class JobScenes {
 			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
 				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
+		// The Builder asks before repairing a house (ROADMAP 36.15): a Starter Cottage the player's builder finished has five
+		// blocks knocked out of its front wall; the builder asks in chat ("Repair it? [Yes] [Not now]"), the hall's Repairs
+		// page lists it waiting for an answer, its view has Yes and Not now, and Yes sets the builder to it.
+		SCREENS.put("repair_ask", new Screen("the builder asked before repairing the Starter Cottage: the question in chat, the hall's Repairs page listing it "
+			+ "waiting for an answer with 5 blocks missing, its Yes and Not now, and after Yes the builder repairing it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos origin = STATION.offset(-5, 0, -15);
+				net.minecraft.core.Vec3i size = StarterBlueprints.STARTER_COTTAGE.size();
+				level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
+				// five blocks of the front wall knocked out (a creeper's hole, say: nothing a threat is counted for)
+				int knocked = 0;
+				for (int x = 0; x < size.getX() && knocked < 5; x++) {
+					BlockPos at = origin.offset(x, 2, 0);
+					if (!level.getBlockState(at).isAir() && level.getBlockEntity(at) == null) {
+						level.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
+						knocked++;
+					}
+				}
+				Showcase.check(knocked == 5, "five blocks knocked out of the cottage's front: " + knocked);
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				chest(level, bench.east(), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_LOG, 64),
+					new ItemStack(Items.GLASS_PANE, 16), new ItemStack(Items.SPRUCE_PLANKS, 64));
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+				io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder); // finds the hole and asks
+				var ask = BuildSiteManager.get(level).repairAsk(placement);
+				Showcase.check(ask != null && ask.state() == io.github.jcondedata.aliveworkplace.build.RepairAsks.State.ASKED,
+					"the builder asked about the cottage: " + ask);
+			},
+			List.of(new Step("01_repair_question", -1, 0, (level, player) -> player.closeContainer(), 30),
+				new Step("02_repairs_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.RepairsPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.CRACKED_STONE_BRICKS),
+							"the cottage first on the Repairs page, waiting: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("03_yes_or_not_now", io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES).is(Items.LIME_DYE)
+							&& m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.NOT_NOW).is(Items.RED_DYE), "the cottage's Yes and Not now");
+					}
+				}, 40),
+				new Step("04_repairing", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
+							"after Yes the page shows the cottage being repaired: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40)),
+			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

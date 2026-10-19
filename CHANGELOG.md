@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- **A job block a villager was walking to is let go when they're given another (B201).** A jobless villager on the
+  way to a job block they picked on their own and given a different one, from the Village Hall or by sneak-right-
+  clicking them with a job's item, kept the first one held for nobody: it dropped off the Free job blocks list and no
+  other villager could take it.
 - A Jeweller now cuts Abomasite for a Master trainer whose team has an Abomasnow: it was the one Mega Stone
   missing from Mega Showdown's stone list, so he waited for makings forever (B174).
 

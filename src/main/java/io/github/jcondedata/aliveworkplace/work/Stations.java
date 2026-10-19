@@ -460,7 +460,7 @@ public final class Stations {
 			// The block they remember, but its place is free: it was broken while they were away and put back (bug B26).
 			level.getPoiManager().take(h -> true, (h, p) -> p.equals(station), station, 1);
 		}
-		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		forgetWalkedTo(villager, target);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, target);
 		JobSiteTickets.hold(level, villager);
 		WorkerLimits.order(villager, profession);
@@ -468,6 +468,19 @@ public final class Stations {
 			villager.setVillagerXp(1); // keeps the profession even if the block is briefly missing
 		}
 		villager.refreshBrain(level);
+	}
+
+	/**
+	 * Forgets the job block a jobless {@code villager} was walking to on their own, letting go of it first unless it's
+	 * {@code keep}, the block they're being given. Vanilla's AcquirePoi holds that block for them on the way (their
+	 * potential job site takes its place) and only lets it go while the memory is still there, so erasing the memory
+	 * alone left it held for nobody, off the village's free blocks (36.9, B201).
+	 */
+	public static void forgetWalkedTo(Villager villager, GlobalPos keep) {
+		villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE)
+			.filter(walking -> !walking.equals(keep))
+			.ifPresent(walking -> villager.releasePoi(MemoryModuleType.POTENTIAL_JOB_SITE));
+		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 	}
 
 	/**

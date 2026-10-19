@@ -12,6 +12,7 @@ share a vanilla block. To start one of ours, stand the villager within about 4 b
 **sneak-right-click them holding the job's item**. A villager already working there switches the same way, and the
 block's own job comes back with its own item (wheat for a Farmer, coal for an Armorer). You are told what happened
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
+A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
 needs Cobblemon, without it) isn't listed.
 

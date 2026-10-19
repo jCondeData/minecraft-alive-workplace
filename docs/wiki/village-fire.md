@@ -50,7 +50,9 @@ Roadmap items: 32.16
   fire keeps the list of its fire blocks in memory. Firewardens, the brigade and the Pokémon look only at that list.
   A fire lit on netherrack (a hearth) is left alone.
 - **The Firewarden** works in their CORE activity, so at any hour. They answer fires within 48 blocks of their
-  grindstone; they throw from 3.5 blocks away; each bucket gains them 2 experience plus 1 per fire block it put out.
+  grindstone; they throw from 3.5 blocks away, or, for a fire with nowhere near it to stand (a pitched roof's ridge),
+  from the open ground below it, up to 12 blocks away and 7 out from under it (never from under a roof); each bucket
+  gains them 2 experience plus 1 per fire block it put out.
   An empty bucket is filled at the nearest water source or water cauldron within 16 blocks of the grindstone (a water
   source fills both, a cauldron fills one and is emptied, as a bucket empties it in vanilla).
 - **The brigade.** The bell swings and rings, but only the two called answer it (the bell's own ring would send the

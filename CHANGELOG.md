@@ -29,6 +29,9 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **The Firewarden puts out a fire on a high roof** (B218). A fire on the ridge of a pitched roof, such as the Starter
+  Cottage's, had nowhere within a bucket's throw to stand, so the Firewarden waited by the grindstone while it spread
+  down the roof. Now they run to the open ground below it and throw their buckets up onto the roof (up to 12 blocks).
 - **The whole crowd sees the Mega Shrine's show** (B215). On a festival day the trainer at the shrine's pedestal now
   waits for the villagers off work to gather before Mega Evolving their ace (at most half a minute), and everyone who
   came cheers (+3 mood), even those at the back of the crowd. Before, the show could go off as the first villagers

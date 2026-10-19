@@ -229,12 +229,33 @@ public class FireGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '900' '"fireWardenHigh"'
 	@GameTest(template = AREA, timeoutTicks = 900, batch = "fireWardenHigh")
 	public void aFirewardenThrowsUpOntoAHighRoof(GameTestHelper helper) {
+		throwsUpOntoAHighRoof(helper, new BlockPos(3, 2, 4));
+	}
+
+	/**
+	 * B230: a Firewarden who starts a step from the open ground they throw up onto the ridge from, just out of throwing
+	 * range, still steps onto it and throws. (Before, the game's walking counted one block away as there: they stood a
+	 * step short, out of range, with nowhere to hop to, and watched it burn.)
+	 */
+	//$ gametest_ticks_batch AREA '900' '"fireWardenStepShort"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "fireWardenStepShort")
+	public void aFirewardenAStepShortOfTheThrowStillThrows(GameTestHelper helper) {
+		throwsUpOntoAHighRoof(helper, new BlockPos(9, 2, 9));
+	}
+
+	private static void throwsUpOntoAHighRoof(GameTestHelper helper, BlockPos start) {
 		Hut hut = hut(helper, "high", true);
+		// B230: the fire mustn't go out, or spread, by itself before the Firewarden gets there. With siegeDamage on, the
+		// game's fire burned the ridge's stair from under itself on its first tick in about 1 run in 20 (34 ticks, a race
+		// with the Firewarden's throw), and went out with nothing thrown ("burned before it burned out"), or spread down
+		// the roof past 400 ticks. With it off the village's fire burns nothing, so the one fire on the ridge stays until
+		// they throw (spreading with a Firewarden about: aFirewardenPutsTheFireOut). Leftovers.after puts it back on.
+		Sieges.DAMAGE = false;
 		helper.setBlock(new BlockPos(4, 1, 6), Blocks.WATER);
-		Villager warden = firewarden(helper, new BlockPos(3, 2, 4));
+		Villager warden = firewarden(helper, start);
 		warden.setCustomName(net.minecraft.network.chat.Component.literal("Rowan"));
 		BlockPos ridge = new BlockPos(14, 9, 14);
-		helper.assertTrue(Walker.standingSpot(hut.level(), helper.absolutePos(ridge), helper.absolutePos(new BlockPos(3, 2, 4)), 3.5) == null,
+		helper.assertTrue(Walker.standingSpot(hut.level(), helper.absolutePos(ridge), helper.absolutePos(start), 3.5) == null,
 			"there is somewhere to stand near the ridge: the test doesn't test a high roof");
 		int[] xp = {-1};
 		long[] lit = {-1};
@@ -246,16 +267,25 @@ public class FireGameTests implements FabricGameTest {
 			helper.assertTrue(VillageFire.incident(hut.level(), hut.hall()).isPresent(), "the fire wasn't noticed when it was placed");
 			helper.assertTrue(fires(helper) == 1, "the fire didn't take: " + fires(helper) + " fire blocks");
 		});
+		String[] how = {""};
 		helper.onEachTick(() -> {
-			if (lit[0] >= 0 && out[0] < 0 && fires(helper) == 0) {
-				out[0] = helper.getTick();
+			if (lit[0] >= 0 && out[0] < 0) {
+				Optional<VillageFire.Incident> incident = VillageFire.incident(hut.level(), hut.hall());
+				how[0] = "ridge under the fire " + hut.level().getBlockState(helper.absolutePos(ridge.below())).getBlock() + ", "
+					+ incident.map(i -> i.dousedBy(warden.getUUID()) + " fire blocks doused by the firewarden, " + i.burned() + " blocks burned").orElse("no incident");
+				if (fires(helper) == 0) {
+					out[0] = helper.getTick();
+				}
 			}
 		});
 		helper.succeedWhen(() -> {
-			helper.assertTrue(out[0] >= 0, "the fire on the ridge is still burning (" + fires(helper) + " fire blocks); the firewarden at "
-				+ warden.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString() + " with " + FirewardenWork.water(warden) + " buckets");
+			helper.assertTrue(out[0] >= 0, "the fire on the ridge is still burning (" + fires(helper) + " fire blocks); " + scene(helper, hut, warden));
 			helper.assertTrue(out[0] - lit[0] <= 400, "the fire took " + (out[0] - lit[0]) + " ticks to put out");
-			helper.assertTrue(warden.getVillagerXp() > xp[0], "the firewarden gained no experience: " + warden.getVillagerXp());
+			helper.assertTrue(warden.getVillagerXp() > xp[0], "the firewarden gained no experience: " + xp[0] + " -> " + warden.getVillagerXp() + " (fire out "
+				+ (out[0] - lit[0]) + " ticks after it was lit; " + how[0] + "); " + scene(helper, hut, warden));
+			Optional<Chronicle.Entry> entry = fireEntry(hut);
+			helper.assertTrue(entry.isPresent(), "no fire in the chronicle");
+			helper.assertTrue(entry.get().text().getString().contains("Rowan the Firewarden put it out"), "the chronicle says: " + entry.get().text().getString());
 		});
 	}
 

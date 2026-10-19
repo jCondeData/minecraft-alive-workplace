@@ -54,6 +54,9 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **A Firewarden no longer stops a step short of a fire on a high roof** (B230). For a fire on a roof's ridge they now
+  walk onto the very spot they throw the bucket up from; before, they could stop one block away, just out of throwing
+  range, and stand there watching it burn.
 - **Graves no longer clutter the village** (B222). The Undertaker walks to each grave lying in a street, a field or on
   a doorstep and lays it in the next free row of the village's Graveyard; a village with no Graveyard gets a small plot
   of three rows near the hall. Everything in the grave is kept (name, job, level, trades, partner) and the villager can

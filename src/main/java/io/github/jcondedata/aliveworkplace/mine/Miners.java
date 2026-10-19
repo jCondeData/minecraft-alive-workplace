@@ -100,6 +100,11 @@ public final class Miners {
 			return InteractionResult.CONSUME;
 		}
 		QuarrySite existing = activeSite(level, villager);
+		if (existing != null && existing.refills()) {
+			// 36.12: the Quarry build's pit waits while they dig the marked area; they go back to it after
+			end(level, villager, existing);
+			existing = null;
+		}
 		if (existing != null) {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.busy", villager.getDisplayName()), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
@@ -173,6 +178,25 @@ public final class Miners {
 	}
 
 	/** Creates the quarry and gives the miner the job. Also used by tests. */
+	/**
+	 * Gives {@code villager} the pit of the Quarry built at {@code origin} (36.12, {@link QuarryBuilds#hire}): dug like a
+	 * marked-out quarry, but it grows back and is never finished. Its owner, if online, hears of it.
+	 */
+	public static QuarrySite startQuarryBuild(ServerLevel level, Villager villager, java.util.UUID owner, BoundingBox pit, BlockPos origin) {
+		ServerPlayer player = level.getServer().getPlayerList().getPlayer(owner);
+		QuarrySite site = QuarrySiteManager.get(level).create(owner, player != null ? player.getGameProfile().getName() : "",
+			Ids.of(level.dimension()), clampToWorld(level, pit), pit.getYSpan());
+		site.setRefillBuild(origin);
+		site.setMiner(villager.getUUID());
+		site.setBench(Builders.benchPos(villager).orElse(null));
+		site.planStairs(site.bench());
+		ModAttachments.MINER_JOB.set(villager, new BuilderJob(site.id()));
+		if (player != null) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.build_started", villager.getDisplayName()), ChatFormatting.GREEN);
+		}
+		return site;
+	}
+
 	public static QuarrySite start(ServerLevel level, Villager villager, @Nullable Player owner, BoundingBox box, int depth) {
 		QuarrySite site = QuarrySiteManager.get(level).create(
 			owner != null ? owner.getUUID() : villager.getUUID(),
@@ -224,8 +248,17 @@ public final class Miners {
 	static void notifyNeedsPickaxe(ServerLevel level, Villager villager, QuarrySite site) {
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null && site.shouldNotify(level.getGameTime(), 1200)) {
-			tell(owner, Component.translatable("message.aliveworkplace.quarry.needs_pickaxe", villager.getDisplayName(), SupplyContainers.RADIUS),
-				ChatFormatting.YELLOW);
+			tell(owner, Component.translatable(PickaxeCrafting.ENABLED ? "message.aliveworkplace.quarry.needs_pickaxe_or_materials"
+				: "message.aliveworkplace.quarry.needs_pickaxe", villager.getDisplayName(), SupplyContainers.RADIUS), ChatFormatting.YELLOW);
+		}
+	}
+
+	/** The miner made a new pickaxe from what they mined (36.11): the owner hears of it. */
+	static void notifyCraftedPickaxe(ServerLevel level, Villager villager, QuarrySite site, ItemStack pick) {
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner != null) {
+			tell(owner, Component.translatable("message.aliveworkplace.quarry.crafted_pickaxe", villager.getDisplayName(), pick.getHoverName()),
+				ChatFormatting.GRAY);
 		}
 	}
 
@@ -256,7 +289,7 @@ public final class Miners {
 
 	/** Stops a quarry: tools, finds and the marker go back; dug holes stay dug. */
 	public static void cancel(ServerLevel level, QuarrySite site) {
-		cancel(level, site, markerFor(site));
+		cancel(level, site, site.refills() ? ItemStack.EMPTY : markerFor(site)); // a Quarry build's pit had no marker
 	}
 
 	private static void cancel(ServerLevel level, QuarrySite site, ItemStack marker) {
@@ -267,7 +300,7 @@ public final class Miners {
 			returnEverything(level, villager, bench, supplies);
 		}
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
-		if (owner == null || !owner.getInventory().add(marker)) {
+		if (!marker.isEmpty() && (owner == null || !owner.getInventory().add(marker))) {
 			store(level, supplies, bench, marker);
 		}
 		if (villager != null) {
@@ -281,7 +314,9 @@ public final class Miners {
 		QuarrySite site = activeSite(level, villager);
 		if (site != null) {
 			BlockPos at = villager.blockPosition();
-			store(level, List.of(), at, markerFor(site));
+			if (!site.refills()) {
+				store(level, List.of(), at, markerFor(site));
+			}
 			QuarrySiteManager.get(level).remove(site.id());
 		}
 	}
@@ -293,7 +328,9 @@ public final class Miners {
 
 	static void returnEverything(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> supplies) {
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
-		for (ItemStack stack : bag.takeAll()) {
+		List<ItemStack> load = new java.util.ArrayList<>(bag.takeAll());
+		load.sort(java.util.Comparator.comparing(MinerWork::isRock)); // the ores first (B224)
+		for (ItemStack stack : load) {
 			deliver(level, supplies, bench, stack);
 		}
 		ItemStack tool = villager.getItemBySlot(EquipmentSlot.MAINHAND);
@@ -306,21 +343,58 @@ public final class Miners {
 	/**
 	 * A find dropped off: Key Stone ore, Mega Stone Crystals and Mega meteorite ores go to the village store for the
 	 * Jeweller (38.6, with Mega Showdown and {@code villageMegas}); everything else, and what the store has no room for,
-	 * into the Miner's own chests.
+	 * into the Miner's own chests. What the Miner's chests have no room for (or all of it, with no chests by the bench)
+	 * goes to the village Storehouse's chests (B224), and only what fits nowhere is dropped by the bench.
 	 */
 	static void deliver(ServerLevel level, List<BlockPos> supplies, BlockPos bench, ItemStack stack) {
+		List<BlockPos> store = null;
 		if (io.github.jcondedata.aliveworkplace.jeweller.MegaStones.forTheJeweller(stack)) {
-			List<BlockPos> store = io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench).stream().filter(c -> !supplies.contains(c)).toList();
+			store = villageStore(level, supplies, bench);
 			stack = SupplyContainers.insert(level, store, stack);
 			if (stack.isEmpty()) {
 				return;
 			}
 		}
-		store(level, supplies, bench, stack);
+		stack = SupplyContainers.insert(level, supplies, stack);
+		List<ItemStack> moved = new java.util.ArrayList<>();
+		if (!stack.isEmpty() && !MinerWork.isRock(stack)) {
+			// Chests full: a stack of rock makes way for the ore, and goes on to the Storehouse instead (B224).
+			for (BlockPos chest : supplies) {
+				while (!stack.isEmpty()) {
+					List<ItemStack> rock = SupplyContainers.takeMatching(level, chest, MinerWork::isRock, 1);
+					if (rock.isEmpty()) {
+						break;
+					}
+					moved.addAll(rock);
+					int before = stack.getCount();
+					stack = SupplyContainers.insert(level, supplies, stack);
+					if (stack.getCount() == before) {
+						break; // the room isn't the ore's to take (a filtered store): leave the rest of the rock be
+					}
+				}
+			}
+		}
+		moved.add(0, stack);
+		for (ItemStack rest : moved) {
+			if (!rest.isEmpty()) {
+				if (store == null) {
+					store = villageStore(level, supplies, bench);
+				}
+				store(level, List.of(), bench, SupplyContainers.insert(level, store, rest));
+			}
+		}
+	}
+
+	/** The village Storehouse's chests (or the Village Hall's store) near {@code bench}, other than the Miner's own. */
+	private static List<BlockPos> villageStore(ServerLevel level, List<BlockPos> supplies, BlockPos bench) {
+		return io.github.jcondedata.aliveworkplace.craft.LuxuryWork.store(level, bench).stream().filter(c -> !supplies.contains(c)).toList();
 	}
 
 	static void store(ServerLevel level, List<BlockPos> supplies, BlockPos near, ItemStack stack) {
-		ItemStack rest = SupplyContainers.insert(level, supplies, stack);
+		if (stack.isEmpty()) {
+			return;
+		}
+		ItemStack rest = supplies.isEmpty() ? stack : SupplyContainers.insert(level, supplies, stack);
 		if (!rest.isEmpty()) {
 			net.minecraft.world.entity.item.ItemEntity item = new net.minecraft.world.entity.item.ItemEntity(level,
 				near.getX() + 0.5, near.getY() + 1.1, near.getZ() + 0.5, rest);

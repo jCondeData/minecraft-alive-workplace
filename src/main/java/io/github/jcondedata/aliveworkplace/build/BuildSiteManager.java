@@ -51,6 +51,21 @@ public final class BuildSiteManager extends SavedData {
 	private final List<TurnCheck> turnChecks = new java.util.ArrayList<>();
 	/** 39.5: per finished contraption, the parts its last check found not turning (empty: all turn). Saved with the building. */
 	private final Map<BlueprintData.Placement, List<net.minecraft.core.BlockPos>> notTurning = new java.util.HashMap<>();
+	/** 36.15: per finished building, the question about repairing it and its answer ({@link RepairAsks}; none: never asked). Saved with the building. */
+	private final Map<BlueprintData.Placement, RepairAsks.Ask> repairAsks = new java.util.HashMap<>();
+
+	/** The question about repairing the building at {@code placement} (36.15), or null if it was never asked or is settled. */
+	@Nullable
+	public RepairAsks.Ask repairAsk(BlueprintData.Placement placement) {
+		return repairAsks.get(placement);
+	}
+
+	/** Records the question about repairing the building at {@code placement}, or (null) takes it off the list. */
+	public void setRepairAsk(BlueprintData.Placement placement, @Nullable RepairAsks.Ask ask) {
+		if (ask == null ? repairAsks.remove(placement) != null : !ask.equals(repairAsks.put(placement, ask))) {
+			setDirty();
+		}
+	}
 
 	/** Schedules a turning check (39.5), replacing one for the same spot. */
 	public void scheduleTurnCheck(TurnCheck check) {
@@ -101,6 +116,7 @@ public final class BuildSiteManager extends SavedData {
 		gaveUp.remove(placement);
 		furniture.remove(placement);
 		notTurning.remove(placement);
+		repairAsks.remove(placement);
 		finished.addLast(new Finished(structure, placement, owner));
 		while (finished.size() > MAX_FINISHED) {
 			finished.removeFirst();
@@ -131,6 +147,7 @@ public final class BuildSiteManager extends SavedData {
 		gaveUp.remove(placement);
 		furniture.remove(placement);
 		notTurning.remove(placement);
+		repairAsks.remove(placement);
 		turnChecks.removeIf(c -> c.placement().equals(placement));
 		if (finished.removeIf(f -> f.placement().equals(placement))) {
 			changes++;
@@ -260,6 +277,11 @@ public final class BuildSiteManager extends SavedData {
 			if (stuck != null) { // 39.5: checked (an empty list: everything turned)
 				entry.putLongArray("not_turning", stuck.stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
 			}
+			RepairAsks.Ask ask = repairAsks.get(f.placement());
+			if (ask != null) { // 36.15
+				entry.putString("repair_ask", ask.state().key());
+				entry.putInt("repair_missing", ask.missing());
+			}
 			done.add(entry);
 		}
 		tag.put("finished", done);
@@ -314,6 +336,8 @@ public final class BuildSiteManager extends SavedData {
 					manager.notTurning.put(placement.get(), java.util.Arrays.stream(Nbt.getLongArray(entry, "not_turning"))
 						.mapToObj(net.minecraft.core.BlockPos::of).toList());
 				}
+				RepairAsks.State.of(Nbt.getString(entry, "repair_ask")).ifPresent(state -> // 36.15: older saves have none (never asked)
+					manager.repairAsks.put(placement.get(), new RepairAsks.Ask(state, Nbt.getInt(entry, "repair_missing"))));
 			}
 		}
 		ListTag checks = Nbt.getList(tag, "turn_checks", Tag.TAG_COMPOUND); // 39.5: older saves have none

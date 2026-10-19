@@ -25,6 +25,12 @@ from the chest. See [Porters, post and services](jobs-services.md).
 
 A villager a zombie turns into a zombie villager leaves no grave: cure them the vanilla way instead.
 
+## Laid to rest
+
+Graves don't stay in the street. The Undertaker moves each grave lying about the village to the village's
+[Graveyard](graveyard-build.md), in rows, keeping everything in it; a village with no Graveyard gets a small plot near
+its [Village Hall](village-hall.md). They can still be brought back from there.
+
 ## How it interacts
 
 - **Fed by:** deaths in [raids](raids.md) and accidents. Guards and walls mean fewer graves.

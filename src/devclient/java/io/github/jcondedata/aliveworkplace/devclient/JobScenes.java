@@ -1128,6 +1128,7 @@ final class JobScenes {
 			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			int x = -20;
 			for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {
@@ -1778,15 +1779,31 @@ final class JobScenes {
 		}, -1, 0)));
 		// B209: a broken bandit camp comes down. The camp stands south of the village; its chief falls, the camp is gone from
 		// the village's records at once, and a couple of seconds later its tents, fire and chests come down top first, the
-		// loot spilling out on its trampled ground.
-		SCENES.put("camp_cleared", new Job("the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilled on the trampled ground", 900,
+		// loot spilling out on its trampled ground. B225: the camp is made on a grassy rise, and once it is down the rise is
+		// back as it was (its slope and grass, no levelled pad, trampled earth or gravel).
+		SCENES.put("camp_cleared", new Job("the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilling out, and the grassy rise it had levelled came back as it was", 900,
 			new Vec3(12.5, -53.0, 10.0), new Vec3(0.5, -60.0, 24.0), (level, player) -> {
 			level.setDayTime(1000);
 			BlockPos hall = STATION.north(6);
 			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			BlockPos ground = STATION.offset(0, -1, 24);
-			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, ground, io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
+			// A grassy rise across the site, higher to the east (B225): the camp levels it, and puts it back when it goes.
+			java.util.Map<BlockPos, Integer> land = new java.util.HashMap<>();
+			for (int dx = -12; dx <= 12; dx++) {
+				for (int dz = -11; dz <= 11; dz++) {
+					int rise = Math.max(0, Math.min(3, (dx + 6) / 4 - Math.max(0, Math.abs(dz) - 8)));
+					BlockPos column = ground.offset(dx, 0, dz);
+					for (int y = 0; y <= rise; y++) {
+						level.setBlock(column.above(y), (y == rise ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState(), 2);
+					}
+					for (int y = rise + 1; y <= 8; y++) {
+						level.setBlock(column.above(y), Blocks.AIR.defaultBlockState(), 2);
+					}
+					land.put(column, ground.getY() + rise);
+				}
+			}
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, ground.above(land.get(ground) - ground.getY()), io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
 			Showcase.check(lair != null, "the bandits made camp south of the village");
 			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
 			long start = level.getGameTime();
@@ -1813,6 +1830,14 @@ final class JobScenes {
 				boolean gone = !(l.getBlockState(lair.pos()).getBlock() instanceof net.minecraft.world.level.block.CampfireBlock)
 					&& !l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(lair.pos()).inflate(10)).isEmpty();
 				Showcase.check(gone, "the camp came down and its loot spilled out");
+				int off = 0;
+				for (var e : land.entrySet()) {
+					BlockPos top = l.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, e.getKey()).below();
+					if (top.getY() != e.getValue() || !l.getBlockState(top).is(Blocks.GRASS_BLOCK)) {
+						off++;
+					}
+				}
+				Showcase.check(off == 0, "the rise the camp levelled is back as it was, grass on top, no trampled earth (" + off + " columns off)");
 				return true;
 			};
 		}, null));
@@ -2337,6 +2362,24 @@ final class JobScenes {
 			chest(level, STATION.east(2), new ItemStack(Items.GOLDEN_APPLE, 2));
 			return l -> n(ModAttachments.VILLAGERS_REVIVED, u) >= 1 && l.getEntity(id) instanceof Villager back && back.isAlive();
 		}, null));
+		// B222: Mira dies in the street; with no golden apple, the undertaker lays her grave in the plot by the hall (no Graveyard yet)
+		SCENES.put("undertaker_graveyard", new Job("the undertaker laid Mira's grave from the street in the plot by the hall", 2400,
+			new Vec3(4.5, -54, 12), new Vec3(-2, -59.5, 0), (level, player) -> {
+			BlockPos hall = new BlockPos(-3, -60, -8);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos bench = new BlockPos(-8, -60, -3);
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(6, -60, 6), MobSpawnType.COMMAND);
+			Jobs.employ(level, mira, bench, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+			mira.setVillagerData(mira.getVillagerData().setLevel(3));
+			mira.setCustomName(Component.literal("Mira"));
+			mira.kill();
+			List<BlockPos> street = io.github.jcondedata.aliveworkplace.grave.Graves.near(level, new BlockPos(6, -60, 6), 4);
+			picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
+			chest(level, STATION.east(2));
+			return l -> !street.isEmpty() && !l.getBlockState(street.get(0)).is(ModBlocks.GRAVE)
+				&& io.github.jcondedata.aliveworkplace.grave.Graveyards.plot(l, hall).stream().anyMatch(p -> l.getBlockState(p).is(ModBlocks.GRAVE));
+		}, null));
 		SCENES.put("innkeeper", new Job("a traveller came to stay at the inn", 1200, CAMERA, TARGET, (level, player) -> {
 			for (int x = 3; x <= 5; x += 2) {
 				level.setBlockAndUpdate(new BlockPos(x, -60, -3), Blocks.RED_BED.defaultBlockState()
@@ -2507,6 +2550,70 @@ final class JobScenes {
 			Container theirs = chest(level, block.east(2));
 			return l -> n(ModAttachments.ITEMS_CRAFTED, t) >= 1
 				&& (theirs.countItem(Items.IRON_AXE) >= 1 || lumberjack.getMainHandItem().is(Items.IRON_AXE));
+		}, null));
+		SCENES.put("miner_pickaxe", job("the miner's stone pickaxe wore out on the fourth block; she made a new one at the blast furnace from the cobblestone she had dug and dug on to the end",
+			2400, (level, player) -> {
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			Container c = chest(level, chestPos(), new ItemStack(Items.STICK, 2), new ItemStack(Items.TORCH, 4));
+			BlockPos min = new BlockPos(-1, -60, -5);
+			BlockPos max = new BlockPos(1, -59, -3);
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+			}
+			Villager m = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			ItemStack worn = new ItemStack(Items.STONE_PICKAXE);
+			worn.setDamageValue(worn.getMaxDamage() - 4);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, worn);
+			io.github.jcondedata.aliveworkplace.mine.QuarrySite site = io.github.jcondedata.aliveworkplace.mine.Miners.start(level, m, player,
+				net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max), 2);
+			site.setStairs(false);
+			boolean[] making = {false};
+			return l -> {
+				var now = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				if (!making[0] && now != null && now.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.CRAFTING_PICKAXE) {
+					making[0] = true;
+					SHOTS.add("04_making_pickaxe");
+				}
+				return making[0] && now == null && c.countItem(Items.STONE_PICKAXE) >= 1 && c.countItem(Items.STICK) == 0;
+			};
+		}));
+		// The Quarry build (36.12): the pit's top four layers dug already, the Miner at the shed's blast furnace takes the
+		// pit by themselves and digs on down, and what they dug grows back from the bottom up (fast, for the film).
+		SCENES.put("quarry_build", new Job("the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up",
+			4800, new Vec3(0.5, -41, 5.5), new Vec3(1.5, -53, -10), (level, player) -> {
+			BlockPos origin = new BlockPos(-4, -49, -16);
+			io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(
+				level.dimension().location(), origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			net.minecraft.world.level.levelgen.structure.BoundingBox pit = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pit(placement);
+			net.minecraft.util.RandomSource rock = net.minecraft.util.RandomSource.create(3612);
+			// A hill of rock to dig the pit in (the superflat ground is too thin), grass on top round the pit
+			for (BlockPos p : BlockPos.betweenClosed(origin.getX() - 2, -60, origin.getZ() - 1, origin.getX() + 17, origin.getY() - 1, origin.getZ() + 12)) {
+				boolean inPit = pit.isInside(p);
+				BlockState state;
+				if (inPit) {
+					state = p.getY() > pit.maxY() - 4 ? Blocks.AIR.defaultBlockState()
+						: io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pick(rock, p.getY() < pit.minY() + 3);
+				} else {
+					state = (p.getY() == origin.getY() - 1 ? Blocks.GRASS_BLOCK : p.getY() > origin.getY() - 4 ? Blocks.DIRT : Blocks.STONE).defaultBlockState();
+				}
+				level.setBlock(p, state, 2);
+			}
+			level.getStructureManager().get(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT).orElseThrow().placeInWorld(level,
+				origin.below(5), origin.below(5), new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
+			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT,
+				placement, player.getUUID());
+			io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = 1200; // a block every second, for the film
+			BlockPos furnace = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.furnace(placement);
+			Villager m = EntityType.VILLAGER.spawn(level, furnace.west(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, furnace);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+			return l -> {
+				var site = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).all().stream().filter(s -> origin.equals(s.refillBuild())).findFirst();
+				return site.isPresent() && site.get().mined() >= 12 && site.get().grownTotal() >= 8;
+			};
 		}, null));
 		SCENES.put("weaponsmith", job("the weaponsmith mended the worn pickaxe", 1800, (level, player) -> {
 			Villager w = worker(level, STATION, Blocks.GRINDSTONE.defaultBlockState()
@@ -4162,6 +4269,74 @@ final class JobScenes {
 			(level, player) -> !classPeople.isEmpty() && classPeople.get(0).getVillagerData().getProfession() == ModVillagers.PORTER
 				&& classPeople.get(0).getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(new BlockPos(-4, -60, -3))).orElse(false)));
+		// The Builder asks before repairing a house (ROADMAP 36.15): a Starter Cottage the player's builder finished has five
+		// blocks knocked out of its front wall; the builder asks in chat ("Repair it? [Yes] [Not now]"), the hall's Repairs
+		// page lists it waiting for an answer, its view has Yes and Not now, and Yes sets the builder to it.
+		SCREENS.put("repair_ask", new Screen("the builder asked before repairing the Starter Cottage: the question in chat, the hall's Repairs page listing it "
+			+ "waiting for an answer with 5 blocks missing, its Yes and Not now, and after Yes the builder repairing it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos origin = STATION.offset(-5, 0, -15);
+				net.minecraft.core.Vec3i size = StarterBlueprints.STARTER_COTTAGE.size();
+				level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, origin, origin,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
+				// five blocks of the front wall knocked out (a creeper's hole, say: nothing a threat is counted for)
+				int knocked = 0;
+				for (int x = 0; x < size.getX() && knocked < 5; x++) {
+					BlockPos at = origin.offset(x, 2, 0);
+					if (!level.getBlockState(at).isAir() && level.getBlockEntity(at) == null) {
+						level.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
+						knocked++;
+					}
+				}
+				Showcase.check(knocked == 5, "five blocks knocked out of the cottage's front: " + knocked);
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				chest(level, bench.east(), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_LOG, 64),
+					new ItemStack(Items.GLASS_PANE, 16), new ItemStack(Items.SPRUCE_PLANKS, 64));
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+				io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder); // finds the hole and asks
+				var ask = BuildSiteManager.get(level).repairAsk(placement);
+				Showcase.check(ask != null && ask.state() == io.github.jcondedata.aliveworkplace.build.RepairAsks.State.ASKED,
+					"the builder asked about the cottage: " + ask);
+			},
+			List.of(new Step("01_repair_question", -1, 0, (level, player) -> player.closeContainer(), 30),
+				new Step("02_repairs_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.RepairsPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.CRACKED_STONE_BRICKS),
+							"the cottage first on the Repairs page, waiting: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("03_yes_or_not_now", io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES).is(Items.LIME_DYE)
+							&& m.icon(io.github.jcondedata.aliveworkplace.hall.RepairsPage.NOT_NOW).is(Items.RED_DYE), "the cottage's Yes and Not now");
+					}
+				}, 40),
+				new Step("04_repairing", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
+							"after Yes the page shows the cottage being repaired: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40)),
+			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".
@@ -5796,6 +5971,14 @@ final class JobScenes {
 					Showcase.check(quest != null && quest.helpers.containsKey(player.getUUID()), "[I'll help] opened her request with the player as its helper");
 				}, 50),
 				new Step("03_hand_in", io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW, 6, (level, player) -> {
+					// She has asked: she waits beside the player from here. Walking on, she pushed the hovering camera back past
+					// the hall's 8-block reach, which shut the journal before its click (B219); the camera goes back to its place.
+					Villager dara = subject;
+					dara.setNoAi(true);
+					dara.moveTo(2.5, -60, 4.5, 27f, 0f);
+					dara.setYHeadRot(27f);
+					dara.setYBodyRot(27f);
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5));
 					// The pie in hand, the hall's quest journal on its Personal tab.
 					player.getInventory().add(new ItemStack(Items.PUMPKIN_PIE));
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
@@ -5806,9 +5989,9 @@ final class JobScenes {
 						ItemStack icon = m.icon(io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW);
 						shown = icon.is(Items.PUMPKIN_PIE) && icon.getHoverName().getString().equals("A taste of home");
 					}
-					Showcase.check(shown, "the journal's Personal tab shows \"A taste of home\" as a Pumpkin Pie to hand in");
-				}, 40),
+					Showcase.check(shown, "the journal's Personal tab shows \"A taste of home\" as a Pumpkin Pie to hand in");				}, 40),
 				new Step("04_thanks", -1, 0, (level, player) -> {
+					boolean open = player.containerMenu instanceof ChoiceMenu;
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW, player); // the click that hands it in
 					}
@@ -5820,7 +6003,9 @@ final class JobScenes {
 					boolean chronicled = level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall
 						&& hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FRIEND
 							&& e.text().getString().equals(me + " helped Dara: A taste of home"));
-					Showcase.check(done && chronicled, "the pie handed in: the request is done, 4 emeralds paid, and the chronicle says " + me + " helped Dara");
+					Showcase.check(done && chronicled, "the pie handed in: the request is done, 4 emeralds paid, and the chronicle says " + me + " helped Dara"
+						+ (done && chronicled ? "" : "; journal " + (open ? "open" : "shut") + ", " + String.format("%.1f", Math.sqrt(player.distanceToSqr(Vec3.atCenterOf(STATION))))
+							+ " blocks from the hall"));
 				}, 60)),
 			(level, player) -> {
 				if (subject == null) {
@@ -7531,6 +7716,36 @@ final class JobScenes {
 	private Done done;
 	private final AtomicBoolean isDone = new AtomicBoolean(false);
 	private final AtomicBoolean ok = new AtomicBoolean(false);
+
+	/**
+	 * B231: writes one quad into Ponder's {@code ShadedBlockSbbBuilder} vertex by vertex, as Sodium does for a wrapped
+	 * block model when shaders turn Flywheel off, on the render thread, and reads the mesh back; false if a vertex call
+	 * throws ("only supports putBulkData!") or the mesh comes back empty.
+	 */
+	private static boolean contraptionBufferTakesVertices() {
+		try {
+			return Minecraft.getInstance().submit(() -> {
+				try {
+					Class<?> type = Class.forName("net.createmod.catnip.render.ShadedBlockSbbBuilder");
+					Object builder = type.getMethod("create").invoke(null);
+					type.getMethod("begin").invoke(builder);
+					com.mojang.blaze3d.vertex.VertexConsumer consumer = (com.mojang.blaze3d.vertex.VertexConsumer) builder;
+					for (int i = 0; i < 4; i++) {
+						consumer.addVertex(i & 1, 0, i >> 1, 0xFFFFFFFF, 0, 0, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0xF000F0, 0, 1, 0);
+					}
+					Object buffer = type.getMethod("end").invoke(builder);
+					boolean empty = (boolean) buffer.getClass().getMethod("isEmpty").invoke(buffer);
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[showcase] B231: a quad written vertex by vertex went in ({})", empty ? "empty" : "4 vertices");
+					return !empty;
+				} catch (ReflectiveOperationException e) {
+					throw new IllegalStateException(e);
+				}
+			}).get(10, java.util.concurrent.TimeUnit.SECONDS);
+		} catch (Exception e) {
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("[showcase] B231: a quad written vertex by vertex failed", e);
+			return false;
+		}
+	}
 
 	private static void command(MinecraftServer server, String command) {
 		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);

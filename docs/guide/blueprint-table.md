@@ -41,6 +41,14 @@ under a faint green line where the ground will be, and its size says how many bl
 
 ![The starter cottage in Sandstone, picked from the style row](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-3.jpg)
 
+- **Search.** Type in the box over the list and it narrows as you type: by a build's name ("inn"), its id
+  ("fishers_hut") or a job it brings ("fisherman", or "smith" for every forge), in capitals or not. A build's levels
+  stay under it (search "inn" and Inn II and Inn III come with the Inn), the header says how many match, and if nothing
+  does, the list says so. If the build you had picked isn't in the results, the first one that is gets picked instead.
+  Empty the box to see everything again.
+
+![Searching the library for "smith"](https://jcondedata.github.io/minecraft-alive-workplace/table/still-2.jpg)
+
 - **Jobs and beds.** Under the size, the build says what work it brings: "Jobs: Fisherman (1), Butcher/Chef/Rancher
   (3)". Each entry is one kind of job block; a slash means the jobs share that block (any one of them can work there),
   and the number is how many of that block the build has. "Beds: 2" follows when it has beds. A build with no job block
@@ -60,6 +68,21 @@ under a faint green line where the ground will be, and its size says how many bl
   pick in the library for everyone. Unless the server allows it with the `workplaceAllowUploads` game rule, only
   operators can upload.
 - Builds you save with a [Scan Tool](scan-tool.md) show up here for everyone too.
+
+## Storing your blueprints
+
+The table is a shelf for the blueprints you bought, too, so they never have to sit in a chest. Click **Stored** at the
+top of the table's screen: it lists every blueprint stored in this table with its picture and how many there are
+("2 stored"), and the header counts them all ("4 of 200 stored").
+
+- **Store Held** puts the blueprint in your hand on the shelf; **Store All** puts away every blueprint you carry
+  (Blank Blueprints stay with you). Wonder Plans can be stored too.
+- **Take One Out** hands you one of the blueprint you picked, just as it went in, and the count goes down. With a full
+  inventory it stays in the table and the table says so.
+- The blueprints belong to the table, not to you: anyone at it can take one out. They stay through restarts, a table
+  holds up to 200, and breaking the table drops them all on the ground.
+
+![A stored Starter Cottage taken back out](https://jcondedata.github.io/minecraft-alive-workplace/table_library/still-3.jpg)
 
 ## A collection that grows
 
@@ -98,7 +121,7 @@ off with **Blueprint Unlocks** in the [Settings](settings.md): then every build 
 - **Crews.** Up to three builders with nothing to do join a build near their table and finish it sooner.
 - **Safe while they work.** Builders clearing a site never break the table or your chests, and a miner's quarry never
   digs one up.
-- **Breaking it.** Mine it with an axe; it drops itself. A builder who has leveled up keeps the job and takes a free
+- **Breaking it.** Mine it with an axe; it drops itself, and the blueprints stored in it drop beside it. A builder who has leveled up keeps the job and takes a free
   table nearby by themselves; one who hasn't worked yet may go back to having no job, as in vanilla.
 
 More in [The Builder and blueprints](builder.md).

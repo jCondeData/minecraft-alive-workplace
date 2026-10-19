@@ -8,6 +8,7 @@
 		"BehaviorMixin",
 		"BlockItemMixin",
 		"BlockStateBaseMixin",
+		"BrainAccessor",
 		"BrainMixin",
 		"BrewingStandAccessor",
 		"BurningArrowMixin",

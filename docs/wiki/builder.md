@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15
 
 ## 1. What a player sees
 
@@ -12,7 +12,9 @@ walks to the spot and builds: first clearing the ground, then the foundation, th
 things (doors, torches, flowers), then the landscaping. The materials come from chests and barrels near the bench.
 Above the Builder's head you can see the progress, what it is short of, and where it takes things from. If the
 chests run short, the Builder waits and tells you what is missing. Idle Builders walk over and help other Builders'
-builds nearby, and later fix holes in buildings they finished (a creeper's hole, a broken window). Builders get
+builds nearby, and later offer to fix holes in buildings they finished (a creeper's hole, a broken window): the
+Builder asks first, "Repair it? [Yes] [Not now]" in chat and on the Village Hall's Repairs page, and repairs only what
+you said yes to (36.15). What raiders and village fires broke is put back without asking. Builders get
 better with each building: they level up like villagers you trade with, and each level makes them faster.
 At the Blueprint Table's library, the selected build is shown in 3D beside its materials: it turns slowly, can be
 dragged round, and is scaled to fit, for imported and uploaded builds too. A row of style buttons under it (26.11)
@@ -62,7 +64,23 @@ their friends (`/workplace friend add|remove|list`) and operators.
 
 **Upkeep and paths.** An idle Builder looks over buildings it (or its employer) finished within
 `maxSiteDistance`, every 1200 ticks, and fills only the holes with its usual materials; things players put there
-are left alone. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long).
+are left alone.
+
+**Asking before a repair (36.15).** With `repairAsk` on (the default) a Builder who finds blocks missing doesn't start:
+the building goes on the list (`RepairAsks`) with the question for its owner, sent in chat to the owner (or, for a build
+nobody hired the Builder for, the village's leader) as "Bram found 5 blocks missing from the Starter Cottage at x, y, z.
+Repair it? [Yes] [Not now]". The Village Hall's **Repairs** tab (an anvil, one of the mod's spare pages) lists the
+village's damaged builds, the questions waiting first, then repairs going on, agreed ones waiting for a free Builder,
+paused ones and those left for now. A click on one opens it: **Yes, repair it** and **Not now** while it waits, **Pause**
+and **Stop the repair** while a Builder repairs it, **Carry on** when paused. Yes sets the nearest free Builder who looks
+after it to it at once. Not now leaves it as it is, and it is asked about again only once more goes missing; Pause
+leaves it until Carry on. Pausing or stopping ends the repair there and then (what is put back stays, no blueprint is
+handed out) and the Builder goes straight on to the next job in its queue. Handing a Builder a blueprint mid-repair
+starts the new job at once instead of queueing it behind the repair; the repair is put aside, still agreed, and taken
+up again when the Builder is free. Its owner, their friends, the village's leader and operators may answer; anyone
+else is told it isn't theirs. Not asked: what threats took (32.16a: a gate a ram broke, a block a village fire burned),
+repaired without asking as before, and a damaged Wonder's parts (35.8). `repairAsk` off: Builders repair by
+themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long).
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.
@@ -105,6 +123,7 @@ Config file keys (`WorkplaceConfig`):
 | `maxSiteDistance` | 48 | How far from its bench a Builder takes a build (also how far upkeep looks) |
 | `builderPaths` | true | Builders lay a dirt path from each finished building to the bell or hall |
 | `builderRepairs` | true | Idle Builders repair buildings they finished when blocks go missing |
+| `repairAsk` | true | Builders ask before a repair (Repair it? Yes / Not now) and repair only what was agreed; off: they repair by themselves. Threat damage is never asked about |
 
 Game rules (per world, `/gamerule`):
 
@@ -138,6 +157,10 @@ On the villager (attachments in `registry/ModAttachments`):
 - `builder_bag`: the 27-slot bag, empty by default.
 - `builder_employer`: who the Builder works for (fields not listed here).
 
+Per finished building (36.15): `repair_ask` (`asked`, `yes`, `not_now` or `paused`; absent: never asked, as in every
+save from before 36.15) and `repair_missing` (the blocks missing when it was last looked at). It is cleared when the
+repair finishes, when nothing is missing any more, and when the building is taken down or built again on its spot.
+
 Friends are saved in `aliveworkplace_friends`. Not saved, worked out again: the plan, status, missing list, helpers'
 claims and trip counts.
 
@@ -149,7 +172,8 @@ claims and trip counts.
 - Hand over: right-click the Builder with a Blueprint. Sneak-right-click with an empty hand: status.
 - Commands: `/workplace blueprints`, `/workplace blueprint`, `/workplace import`, `/workplace sites`,
   `/workplace cancel <site>` (the blueprint stays placed; hand it back to carry on), `/workplace friend add|remove|list`,
-  `/workplace strip`. Test and QA only: `/workplace soak`, `/workplace benchmark`.
+  `/workplace strip`, `/workplace repair yes|notnow <x> <y> <z>` (what the chat's [Yes] and [Not now] run, 36.15).
+  Test and QA only: `/workplace soak`, `/workplace benchmark`.
 
 ## 6. Decisions
 
@@ -192,13 +216,19 @@ claims and trip counts.
   only looked at; the villager then turned round, shut the door behind it and walked off round the building. A path
   worked out again now goes where the villager is walking (B203).
 
+- Builders ask before repairing a house, and a repair can be stopped, paused or put aside for another job (owner,
+  2026-10-19, 36.15). Defence repairs after a threat (32.16a) stay automatic, as the owner hadn't objected to them: a
+  wall or gate a siege broke goes back without a question.
+
 ## 7. Known limits
 
 - Only builds that fit within `maxSiteDistance` (48) of the bench are taken.
 - Blocks on the never-placed list (spawners, portals, bedrock, command blocks...) are skipped, not substituted.
 - Steps that cannot be done after being put off once are skipped, so a build can finish with a few blocks missing
   (the `skipped` count).
-- Upkeep looks only every 1200 ticks and only at buildings within range of the bench.
+- Upkeep looks only every 1200 ticks and only at buildings within range of the bench, so a damaged build is asked
+  about at a Builder's next round, not the moment it breaks.
+- The question in chat goes only to a player who is online when the Builder asks; otherwise it waits on the Repairs page.
 - A site in unloaded chunks, queued, or without a Builder is not watched for stalls.
 - The table preview leaves out fluids (water and lava have no block model) and draws blocks at full brightness.
 - Not tested here: the pack-server soak result of the last run (see the soak scene's pass or fail on the showcase).
@@ -224,7 +254,15 @@ bells, `DoorwayHeadroomGameTests.aVillagerOpensTheHealingCentersShutFrontDoorAnd
 Healing Center's door and takes its brewing stand as a cleric,
 `DoorwayHeadroomGameTests.aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand`).
 
-Showcase scenes (`tools/showcase/scenes.py`): `builders` (three builders, three starter builds), `soak` (10 builders,
+`RepairAskGameTests` (9, 36.15: the ask with nothing started and the page's Yes and Not now,
+`theBuilderAsksBeforeRepairing`; Yes on the hall's page repairs it, `yesOnTheHallPageRepairsIt`; Not now from the chat
+command and asked again once more goes missing, a stranger refused, `notNowLeavesItUntilMoreGoesMissing`; Stop and
+Pause mid-repair with the builder going straight to its queued job, `aRepairGoingOnStopsAndPausesFromTheHall`; a new
+blueprint puts the repair aside, `aNewJobPutsTheRepairAside`; the switch off, `withTheSwitchOffTheyRepairByThemselves`;
+a threat's damage not asked about, `whatAThreatTookIsRepairedWithoutAsking`; save and reload,
+`answersSurviveASaveAndReload`; the text, `repairAskWordsAreWritten`).
+
+Showcase scenes (`tools/showcase/scenes.py`): `repair_ask` (36.15: the question in chat, the Repairs page, Yes), `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the
 missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`.

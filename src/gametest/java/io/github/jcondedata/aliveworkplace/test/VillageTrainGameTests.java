@@ -152,6 +152,44 @@ public class VillageTrainGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * A train leaving or coming in (39.7a) is seen and heard by a player near the village: steam and a cloud over the
+	 * station (here the hall, the village having none on the list) and a bell, every particle above the block, none
+	 * underground. No Create needed: the whistle is the mod's own.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void aTrainsWhistleIsSeenAndHeardOverTheStation(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(new BlockPos(1, 2, 1));
+		var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(
+			new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "whistle_listener"), false);
+		net.minecraft.server.level.ServerPlayer player = new net.minecraft.server.level.ServerPlayer(level.getServer(), level, cookie.gameProfile(), cookie.clientInformation());
+		net.minecraft.network.Connection connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
+		io.netty.channel.embedded.EmbeddedChannel channel = new io.netty.channel.embedded.EmbeddedChannel(connection);
+		level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
+		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		player.moveTo(hall.getX() + 4.5, hall.getY(), hall.getZ() + 0.5);
+		channel.outboundMessages().clear(); // what joining sent
+		CaravanTrains.whistle(level, hall, new Caravans.Data());
+		List<net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket> particles = new java.util.ArrayList<>();
+		boolean bell = false;
+		for (Object sent : channel.outboundMessages()) {
+			if (sent instanceof net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket p) {
+				particles.add(p);
+			} else if (sent instanceof net.minecraft.network.protocol.game.ClientboundSoundPacket s
+				&& s.getSound().value() == net.minecraft.sounds.SoundEvents.BELL_BLOCK) {
+				bell = true;
+			}
+		}
+		helper.assertTrue(particles.size() == 2, "the whistle's steam and cloud weren't sent to the player near: " + particles.size() + " particle packets");
+		helper.assertTrue(bell, "the whistle's bell wasn't heard by the player near");
+		for (var p : particles) {
+			helper.assertTrue(p.getY() > hall.getY() + 1, net.minecraft.core.registries.BuiltInRegistries.PARTICLE_TYPE.getKey(p.getParticle().getType()) + " isn't over the station but at y " + p.getY() + " (the block's top is " + (hall.getY() + 1) + ")");
+		}
+		helper.succeed();
+	}
+
+	/**
 	 * 39.7c, the track's plan (no Create needed): a one-block dip gets a sloped curve down into it and one up out of it; a
 	 * step on a turn is one curve that turns and climbs; a zig-zag (a diagonal road in single steps) is one S-bend with no
 	 * straight bits left in it; a gap longer than one curve gets a straight piece halfway and two curves.

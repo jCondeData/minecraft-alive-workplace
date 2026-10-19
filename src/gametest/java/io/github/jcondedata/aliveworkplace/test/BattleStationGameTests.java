@@ -518,8 +518,13 @@ public class BattleStationGameTests implements FabricGameTest {
 		Village village = village(helper, false);
 		ServerLevel level = village.level();
 		boolean was = Upkeep.ENABLED;
+		boolean asks = Upkeep.ASK;
 		Upkeep.ENABLED = true;
-		Leftovers.after(helper, () -> Upkeep.ENABLED = was);
+		Upkeep.ASK = false; // 36.15: repairs without asking (repairAsk off): this test is about the repair; the ask has RepairAskGameTests
+		Leftovers.after(helper, () -> {
+			Upkeep.ENABLED = was;
+			Upkeep.ASK = asks;
+		});
 		BlockPos bench = new BlockPos(20, 2, 20);
 		BlockPos chestAt = new BlockPos(20, 2, 22);
 		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);

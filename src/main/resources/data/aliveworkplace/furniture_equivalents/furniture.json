@@ -1,0 +1,16 @@
+{
+  "_comment": "ROADMAP 37.13: pieces that stand for each other, whichever furniture mod made them. Per kind: matched by wood or colour, and each mod's block ({wood} or {colour} filled in). The Builder takes whichever is in its chests, in furnitureMods order; the material list shows the piece once. Ids from the M37 design note's table.",
+  "woods": ["oak", "spruce", "birch", "jungle", "acacia", "dark_oak", "mangrove", "cherry", "bamboo", "crimson", "warped"],
+  "colours": ["white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black"],
+  "pieces": {
+    "chair": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_chair", "cozyhome": "cozyhome:{wood}_chair", "cobblefurnies": "cobblefurnies:{wood}_chair"}},
+    "couch": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_couch", "cozyhome": "cozyhome:{wood}_sofa"}},
+    "table": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_table", "cozyhome": "cozyhome:{wood}_table", "cobblefurnies": "cobblefurnies:{wood}_table"}},
+    "desk": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_desk", "cozyhome": "cozyhome:{wood}_desk"}},
+    "counter": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_counter", "cozyhome": "cozyhome:{wood}_counter"}},
+    "cupboard": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_cupboard", "cozyhome": "cozyhome:{wood}_storage_counter", "cobblefurnies": "cobblefurnies:{wood}_cabinet"}},
+    "nightstand": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_nightstand", "cobblefurnies": "cobblefurnies:{wood}_nightstand"}},
+    "drawer": {"by": "wood", "mods": {"handcrafted": "handcrafted:{wood}_drawer", "cozyhome": "cozyhome:{wood}_drawer"}},
+    "lamp": {"by": "colour", "mods": {"cobblefurnies": "cobblefurnies:{colour}_lamp", "beautify": "beautify:lamp_candelabra_{colour}"}}
+  }
+}

@@ -104,6 +104,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final RealmEdictsScene realmEdicts = new RealmEdictsScene();
 	private final ReliefScene relief = new ReliefScene();
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
+	private final JobPlateScene jobPlate = new JobPlateScene();
 	private final CupPageScene cupPage = new CupPageScene();
 	private final CupBoutScene cupBout = new CupBoutScene();
 	private final CupMatchScene cupMatch = new CupMatchScene();
@@ -133,6 +134,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
 	private final FurnishedHomeScene furnishedHome = new FurnishedHomeScene();
+	private final FurnitureAnyModScene furnitureAnyMod = new FurnitureAnyModScene();
 	private final FurnishedWorkplacesScene furnishedWorkplaces = new FurnishedWorkplacesScene();
 	private final SeatsAndBedsScene seatsAndBeds = new SeatsAndBedsScene();
 	private final ModdedStorehouseScene moddedStorehouse = new ModdedStorehouseScene();
@@ -176,6 +178,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final StewardCivicScene stewardCivic = new StewardCivicScene();
 	private final CityTimelapseScene cityTimelapse = new CityTimelapseScene();
 	private final PieceLookScene pieceLook = new PieceLookScene();
+	/** SCENE=table_library (ROADMAP 36.13): blueprints stored in the Blueprint Table, listed with counts, one taken back out. */
+	private final TableLibraryScene tableLibrary = new TableLibraryScene();
 
 	private void onTick(Minecraft mc) {
 		skipBackupQuestion(mc);
@@ -188,6 +192,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("table".equals(System.getProperty("aliveworkplace.scene"))) {
 			tableScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("table_library".equals(System.getProperty("aliveworkplace.scene"))) {
+			tableLibrary.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("table_preview".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -342,6 +350,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			furnishedHome.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("furniture_any_mod".equals(System.getProperty("aliveworkplace.scene"))) {
+			furnitureAnyMod.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("furnished_workplaces".equals(System.getProperty("aliveworkplace.scene"))) {
 			furnishedWorkplaces.tick(mc, mc.getSingleplayerServer());
 			return;
@@ -440,6 +452,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("founder_colony".equals(System.getProperty("aliveworkplace.scene"))) {
 			founderColony.tick(mc);
+			return;
+		}
+		if ("job_plate".equals(System.getProperty("aliveworkplace.scene"))) {
+			jobPlate.tick(mc);
 			return;
 		}
 		if ("legends_hall".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -723,24 +739,37 @@ public class ScreenshotHarness implements ClientModInitializer {
 			String facts = mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s.selectedFacts() : "";
 			Showcase.check(facts.contains("Beds: "), "the Starter Cottage's beds show under its size (\"" + facts.replace('\n', ' ') + "\")");
 			shot(mc, "10_table_library");
+			// 36.10: a search typed into the box over the list narrows it to the forges (by the smiths' jobs)
 			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
-				screen.showFiles();
+				screen.search("smith");
 			}
 		}
-		if (tick == 200) {
+		if (tick == 190 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
+			Showcase.check(screen.shownCount() > 0 && screen.shownCount() < screen.entryCount(),
+				"typing \"smith\" narrowed the library (" + screen.shownCount() + " of " + screen.entryCount() + " builds listed)");
+			shot(mc, "10s_table_search");
+			screen.search("zzqx");
+		}
+		if (tick == 210 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
+			Showcase.check(screen.shownCount() == 0, "a search that finds nothing lists nothing (" + screen.shownCount() + " listed)");
+			screen.search("");
+			Showcase.check(screen.shownCount() == screen.entryCount(), "clearing the box lists the whole library again");
+			screen.showFiles();
+		}
+		if (tick == 250) {
 			shot(mc, "11_table_upload");
 			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
 				screen.upload();
 			}
 		}
-		if (tick == 280) {
+		if (tick == 330) {
 			shot(mc, "12_table_uploaded");
 			server.execute(() -> {
 				int now = BlueprintLibrary.list(server, false).size();
 				Showcase.check(now > libraryBefore, "a .litematic file uploaded into the library (" + libraryBefore + " -> " + now + " blueprints)");
 			});
 		}
-		if (tick == 300) {
+		if (tick == 350) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}

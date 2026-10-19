@@ -15,6 +15,9 @@ public final class ModBlocks {
 
 	/** Browse the server's blueprints, see their materials, take copies and upload your own files. */
 	public static final BlueprintTableBlock BLUEPRINT_TABLE = Reg.block("blueprint_table", BlueprintTableBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));
+	/** The table's own shelf of stored blueprints (36.13). */
+	public static final net.minecraft.world.level.block.entity.BlockEntityType<io.github.jcondedata.aliveworkplace.table.BlueprintTableBlockEntity> BLUEPRINT_TABLE_ENTITY =
+		Reg.blockEntity("blueprint_table", io.github.jcondedata.aliveworkplace.table.BlueprintTableBlockEntity::new, BLUEPRINT_TABLE);
 
 	/** Workstation for the Miner profession; chests near it are where the miner drops off what it digs. */
 	public static final BuildersBenchBlock MINERS_BENCH = Reg.block("miners_bench", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.SMITHING_TABLE));

@@ -33,6 +33,11 @@ With a **golden apple**, a **healing potion** or a **totem of undying** in the c
 nearest grave within 32 blocks, spends a little while at the graveside, and whoever lies there gets up again, with their
 old job, level, trades and name. Without one, they ask for a golden apple on the Storehouse's requests board.
 
+Meanwhile they tidy up: each grave lying about the village (a street, a field, a doorstep) is laid to rest in a row of
+the village's [Graveyard](graveyard-build.md), and whoever lies there can still be brought back from it. A village with
+a Village Hall and no Graveyard gets a small plot of three rows near the hall. The `gravesToGraveyard` setting turns
+this off.
+
 Over their head: how many they've brought back, and whether they're going to a grave, bringing someone back, or what
 they need.
 

@@ -68,8 +68,9 @@ village workers nobody has hired.
 ## What are they doing?
 
 A line over a worker's head says what they're doing or waiting for. Sneak-right-click a worker with an empty hand for
-their full status and how to stop them. Workers level up as they work, like villagers you trade with, and every level
-makes them faster. Villages keep working while you're away, as long as someone is online.
+their full status and how to stop them. Look at any working villager up close and a plate over their head names their
+job and level ("Fisherman, Journeyman", or "Dara — Fisherman, Journeyman" with a name). Workers level up as they
+work, like villagers you trade with, and every level makes them faster. Villages keep working while you're away, as long as someone is online.
 
 ## Every job
 

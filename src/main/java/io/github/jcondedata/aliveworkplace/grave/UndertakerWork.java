@@ -43,12 +43,18 @@ public class UndertakerWork extends Behavior<Villager> {
 	static final int RITES = 100;
 	static final int LOOK_EVERY = 40;
 
-	private enum Task { NONE, FETCH, GO, RITES }
+	/** Ticks at a stray grave lifting it before it's laid in the graveyard (B222). */
+	static final int LIFT = 40;
+
+	private enum Task { NONE, FETCH, GO, RITES, MOVE_GO, MOVE_LIFT, MOVE_LAY }
 
 	private final Walker walker = new Walker(0.5f);
 	private Task task = Task.NONE;
 	@Nullable
 	private BlockPos grave;
+	/** Where the grave just moved was laid (B222), walked to after. */
+	@Nullable
+	private BlockPos laid;
 	private int timer;
 	private String state = "none";
 
@@ -106,7 +112,7 @@ public class UndertakerWork extends Behavior<Villager> {
 		}
 		List<BlockPos> own = SupplyContainers.find(level, table, null);
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
-		if (grave != null && !level.getBlockState(grave).is(ModBlocks.GRAVE)) {
+		if (grave != null && task != Task.MOVE_LAY && !level.getBlockState(grave).is(ModBlocks.GRAVE)) {
 			grave = null;
 			task = Task.NONE;
 		}
@@ -132,6 +138,26 @@ public class UndertakerWork extends Behavior<Villager> {
 				}
 			}
 			case RITES -> rites(level, villager, bag);
+			case MOVE_GO -> {
+				if (walker.walkTo(level, villager, grave, 2.5)) {
+					task = Task.MOVE_LIFT;
+					timer = LIFT;
+					walker.reset();
+				}
+			}
+			case MOVE_LIFT -> lift(level, villager);
+			case MOVE_LAY -> {
+				if (laid == null || walker.walkTo(level, villager, laid, 2.5)) {
+					if (laid != null) {
+						villager.swing(InteractionHand.MAIN_HAND);
+					}
+					laid = null;
+					grave = null;
+					task = Task.NONE;
+					timer = LOOK_EVERY;
+					walker.reset();
+				}
+			}
 		}
 		status(villager);
 	}
@@ -148,7 +174,15 @@ public class UndertakerWork extends Behavior<Villager> {
 		}
 		timer = LOOK_EVERY;
 		// the whole village with the Cathedral's power (35.10), else round the table
-		List<BlockPos> graves = io.github.jcondedata.aliveworkplace.wonder.powers.UndertakersPower.graves(level, table, radius(villager));
+		List<BlockPos> graves = new java.util.ArrayList<>(io.github.jcondedata.aliveworkplace.wonder.powers.UndertakersPower.graves(level, table, radius(villager)));
+		if (Graveyards.ENABLED) {
+			// the village's Graveyard is the Undertaker's wherever it lies (B222): its graves are revived from there too
+			for (BlockPos g : Graveyards.resting(level, Graveyards.resting(level, table, false))) {
+				if (!graves.contains(g)) {
+					graves.add(g);
+				}
+			}
+		}
 		if (graves.isEmpty()) {
 			state = "none";
 			Requests.clear(villager);
@@ -158,6 +192,17 @@ public class UndertakerWork extends Behavior<Villager> {
 		if (!inBag && (own.isEmpty() || SupplyContainers.firstMatching(level, own, Graves::isRevivalItem) == null)) {
 			state = own.isEmpty() ? "no_chest" : "needs";
 			Requests.post(villager, new ItemStack(Items.GOLDEN_APPLE), 1, Component.translatable("request.aliveworkplace.revival"), Graves::isRevivalItem);
+			// Meanwhile the graves lying about the village go to the graveyard (B222).
+			Graveyards.Resting resting = Graveyards.ENABLED ? Graveyards.resting(level, table) : null;
+			if (resting != null && Graveyards.nextSlot(level, resting) != null) {
+				List<BlockPos> strays = Graveyards.strays(level, graves, resting);
+				if (!strays.isEmpty()) {
+					grave = strays.get(0);
+					task = Task.MOVE_GO;
+					state = "moving";
+					walker.reset();
+				}
+			}
 			return;
 		}
 		Requests.clear(villager);
@@ -209,6 +254,30 @@ public class UndertakerWork extends Behavior<Villager> {
 		grave = null;
 		task = Task.NONE;
 		timer = LOOK_EVERY;
+	}
+
+	/** At a stray grave: lifting it a while, then it's laid in the next free row slot of the graveyard (B222). */
+	private void lift(ServerLevel level, Villager villager) {
+		state = "moving";
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.BlockPosTracker(grave));
+		if (timer % 20 == 0) {
+			villager.swing(InteractionHand.MAIN_HAND);
+			level.playSound(null, grave, SoundEvents.ROOTED_DIRT_BREAK, SoundSource.BLOCKS, 0.6f, 0.8f);
+		}
+		if (--timer > 0) {
+			return;
+		}
+		BlockPos table = Builders.benchPos(villager).orElse(null);
+		BlockPos slot = !Graveyards.ENABLED || table == null ? null : Graveyards.nextSlot(level, Graveyards.resting(level, table));
+		if (slot != null && Graveyards.move(level, grave, slot)) {
+			laid = slot;
+			task = Task.MOVE_LAY;
+		} else {
+			grave = null;
+			task = Task.NONE;
+			timer = LOOK_EVERY;
+		}
+		walker.reset();
 	}
 
 	private void status(Villager villager) {

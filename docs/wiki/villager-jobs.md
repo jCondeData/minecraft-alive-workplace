@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, B97, B101, B103, B226, B224, B220, B221
 
 ## What a player sees
 
@@ -15,6 +15,10 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
 needs Cobblemon, without it) isn't listed.
+
+**Look at a villager to see its job and level (B221).** Point your crosshair at any working villager, from up to
+about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman". One with a name of its own reads
+"Dara — Fisherman, Journeyman". Every job shows, ours and vanilla's; a jobless villager or a nitwit shows nothing new.
 
 **Retraining (26.6).** A villager who already has a job (vanilla, ours or another mod's, traded with or not; never a
 child or a nitwit) becomes a Builder at a free Blueprint Table within about 4 blocks, sneak-right-clicked with a
@@ -106,6 +110,24 @@ says what it does all day.
 
 ## How it works
 
+**Job plates (B221).** The client already knows every villager's job and level (vanilla sends them, for the outfit
+and the level badge), so the plate is drawn on the client from those: `JobPlate` composes the text
+(`message.aliveworkplace.plate.job`, "%s, %s", with the job's name and vanilla's own level names Novice to Master;
+`message.aliveworkplace.plate.named`, "%s — %s", in front of a name), `JobPlateShownMixin` lets an unnamed working
+villager show a plate when it's the crosshair's target (vanilla only does that for a named mob), and
+`JobPlateTextMixin` puts the text on the plate as it's drawn. A Builder's status above its head moves up out of the
+plate's way.
+
+**A fresh hire starts at once (B220).** A Fisherman handed a rod or a Builder handed a blueprint during their work day
+is at it within a tick or two. A villager taking our longer hours (a hired Fisherman, a job picked with an item) gets a
+new brain, and vanilla's own brain setup has just looked at vanilla's hours; a brain looks at its schedule at most once
+a second, so it used to keep vanilla's activity (late in the day, gossiping) for a second. `VillagerMixin` now lets the
+new hours apply at once (`BrainAccessor`). Outside their hours the hand-off is taken as before, the villager keeps their
+hours (a night's hire sleeps first) and the player is told when the work starts (`Jobs.startsLater`).
+
+**A Miner keeps all they dig (B224).** Stone of every kind, gravel and dirt go into the chests by the blast furnace with
+the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
+
 **Fewer job blocks (21.1a).** Related jobs share a block. A jobless villager by a vanilla block takes the vanilla
 job by itself, as in vanilla; the player picks one of ours with its item. A crafting table, a beehive, a jukebox or a
 Mailbox never takes a jobless villager by itself. Where one item fits two blocks (paper, a book, a glass bottle), the
@@ -129,6 +151,9 @@ blueprint returned still placed.
 **Villages share.** Workers whose workstations are within `villageRadius` blocks (48) of each other are one
 village: one short of something takes it from another's chests. Only workers who answer to the same people share
 (yours and your friends', or village workers nobody hired).
+A Storehouse in the village counts by its block, whether or not its Porter is about (asleep at home far off, in a
+chunk that isn't loaded, or gone): it is shared as its owner's (the player who placed or had it built, or nobody for
+a village one), so a Builder with no chests by its bench builds from the Storehouse's chests (B226).
 
 **Pace.** Every job's speed goes through one rule: the worker's level, then every bonus (partners, a well-kept
 village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkPace`, then penalties (illness, a bad
@@ -139,6 +164,17 @@ players can hand things over; the Village Hall lists it too. The board is drawn 
 requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
 list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
 over what you have, as before.
+
+**Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
+chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three
+Cobblestone (or Cobbled Deepslate or Blackstone) from their bag and their chests, and two Sticks from there or from the
+village store, or two Planks cut into sticks (the spare two go in the bag). A Journeyman makes iron when there are three
+Iron Ingots in their chests (the blast furnace's own, often), an Expert or Master diamond with three Diamonds: always
+the best they can. It takes three seconds at the furnace, the line over their head says "making a pickaxe", and the
+owner reads "Dara made a new Stone Pickaxe at their workstation from what they mined." Nothing is taken unless all of
+it is there, so a Miner saved and loaded mid-way simply starts it again. Without the materials they wait as before
+("needs a pickaxe"), and the Storehouse board asks for what they lack, the cobblestone first and then the sticks,
+beside "A pickaxe" (which the Toolsmith may still make): handed over, it goes into their chests and they make it.
 
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages
 keep working when no player is near (`keepVillagesWorking`). Builds and quarries follow the game rule
@@ -166,6 +202,24 @@ list of free workstations finds each kind of workstation's job once.
 
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 
+**A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table
+with "Jobs: Armorer/Miner (1)") is a curbed, fenced rim round an 8 x 9 pit, steps cut down its east side to a landing
+four deep, a hoist, and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
+y -1 to -10) is not in the file: it is the ground as it lies. Every 5 seconds `mine/QuarryBuilds.hire` looks at the
+finished Quarries: one with no quarry site of its own is given to the Miner whose job site is its blast furnace and
+who has no quarry, as a `QuarrySite` that remembers the build's origin (no marker; the owner, if online,
+reads "Dara works the Quarry's pit now..."). The Miner digs it like a marked-out pit (stairs spiral down from the wall
+nearest the furnace). Every second `QuarryBuilds.regrow` grows back what is due: one block every day / `quarryRegrowth`
+ticks (100 a day: the 720-block pit takes 7.2 days to fill), at most 32 in one go, each into the lowest open air in the
+pit (never where an entity stands, never over a block that isn't air, so a player's block stays), picked from a
+weighted mix out of 1000 (stone 820, coal 80, copper 50, iron 25, redstone 10, gold 10, diamond 5), the deepslate kind in
+the pit's lower third or below y 0, with a random fixed by the site's id, the spot and the count grown. Time unloaded
+catches up when the pit loads again; nothing is banked while the pit is full. When the cursor reaches the end, the
+Miner drops off the finds and waits at the shed ("waiting at the shed for the pit to grow back") until a layer's worth
+(72 blocks) has grown since the last pass, then starts again from the top. A Quarry Marker handed to them ends the
+pit's site and starts the marked one; once that is done or cancelled the pit is given back. Cancelling the pit's site
+gives no marker back (there was none), and the Miner takes the pit again within 5 seconds.
+
 ## Switches
 
 | Key | Default | What it does |
@@ -178,6 +232,9 @@ list of free workstations finds each kind of workstation's job once.
 | `villagersPerFisherman` | 10 (1 to 100) | One more fisherman for every this many villagers, with the cap on |
 | `workerPathRange` | 48 (16 to 128) | How far a worker looks for a path in one go |
 | `keepVillagesWorking` | on | Villages keep working while no player is near |
+| `minerCraftsPickaxe` | on | A Miner with no pickaxe makes one at their workstation from what they mined; off: they wait for one |
+| `quarryBuild` | on | The Quarry build's Miner digs its pit without a marker and it grows back; off: not offered, nothing grows back |
+| `quarryRegrowth` | 100 (0 to 2400) | Blocks that grow back in a Quarry's pit in a Minecraft day; 0: none |
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
@@ -204,7 +261,8 @@ A villager's job is vanilla's own profession and job-site memory. On top of it t
 the villager (`registry/ModAttachments`), each absent or zero by default: the job in hand (`builder_job`,
 `miner_job`, `farm_field`, `tree_farm`, `orchard`, `courier_routes`, `patrol_route`), who hired them
 (`builder_employer`), and a counter per job that the hall shows (`trees_felled`, `fish_caught`, `mail_delivered`
-and so on). Status lines and the requests board are not saved: workers post again after a restart.
+and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill_build` (the build's origin),
+`last_growth`, `grown` and `grown_since_pass` (36.12); all absent in older saves and marked-out quarries. Status lines and the requests board are not saved: workers post again after a restart.
 
 ## Items, blocks, jobs, commands
 
@@ -235,9 +293,26 @@ and so on). Status lines and the requests board are not saved: workers post agai
   `villageRadius` of the barrel, as for the worker cap; fishermen are counted by their job, so one whose barrel is
   broken still counts. The cap is off in GameTests (tests side by side would count each other's villagers): its own
   tests switch it on.
+- B220 (bug lane, 2026-10-19): a villager handed their job's item outside their work hours keeps their hours and says
+  when they start ("Fred starts work when their work day begins, in about 8 minutes."), rather than starting at once:
+  starting early would need a saved override of the schedule, and a fresh hire at night would leave their bed.
+- B221 (bug lane, 2026-10-19, owner's report): the job and level show on the name plate of the villager you look at,
+  drawn by the client, rather than by renaming villagers on the server. Every player on the owner's server has the
+  mod (its blocks and items need it), so the client already has the job and level and no packet is needed; a
+  server-side name would have been saved into every villager's name, shown in chat and death messages, and fought a
+  player's own name tag. Vanilla jobs show too ("Farmer, Master"): a player asks "who is this?" of every villager.
+  A named villager keeps its name first.
 - 26.6 (owner's playtest, 2026-10-14): in Cobblemon villages nearly every villager works, so a working villager can
   be retrained as a Builder for emeralds. Whether the other jobs' switches should cost too is a question in the ROADMAP
   Notes; for now they stay free.
+- 36.11 (owner, 2026-10-19): a Miner makes their own pickaxe instead of waiting for the player or the Toolsmith. A
+  pickaxe already in their chests comes first (it's there to be used), then making one, then a spare from another
+  worker's chests. Iron from Journeyman and diamond from Expert; the head comes only from their own bag and chests
+  (what they mined), the sticks may come from the village store too.
+- 36.12 (owner, 2026-10-19): the Quarry's pit is the ground it's built on, not blocks the builder places (no stone or
+  ore to bring); the regrowth fills only air, bottom up, so the Miner's own steps and a player's blocks stay. The Miner
+  starts again after a layer's worth has grown back, not after every block. A cancelled pit is taken again: to stop it
+  for good, switch `quarryBuild` off or give the Miner another workstation.
 
 ## Known limits
 
@@ -247,6 +322,9 @@ and so on). Status lines and the requests board are not saved: workers post agai
   grows later, he looks again by himself, but a fisherman over the cap is never let go to make room.
 - The five Pokémon jobs and the Gem Grower are behind 1.2's gate, the Vintner, the Tailor, the Printer and the Jeweler
   behind 1.8's, and the Firewarden, the Well Keeper and the Physician behind 1.6's; 1.0 opens them all.
+- The job plate shows only on a client with the mod (every client on a server with it), and only for the villager
+  under the crosshair, as close as vanilla's reach. Jade or WTHIT tooltips don't get it (no compat yet).
+- A Miner makes only pickaxes, never their ladders or torches; the board asks for one missing material at a time.
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
 
 ## Proof
@@ -256,11 +334,21 @@ same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTes
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
 refuse, save and reload, the switch off), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+`HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
+mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
 save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
-their jobs).
+their jobs), `JobPlateGameTests` (3, B221: a level-3 fisherman reads "Fisherman, Journeyman", a Builder and a
+Master Farmer, a named fisherman "Dara — Fisherman, Journeyman" with her saved name untouched, a jobless villager, a
+nitwit and a pig unchanged), `MinerPickaxeGameTests` (7, 36.11: cobblestone and sticks become a stone pickaxe and the quarry is dug,
+a worn-out pickaxe made again from the bag and cut planks, missing materials on the Storehouse board and handed over
+there, save and reload mid-way, the switch off, iron and diamond as the miner rises, the new sentences),
+`QuarryBuildGameTests` (10, 36.12: listed with its Jobs line and nothing drawn in the pit, the Miner takes and mines the
+pit, regrowth bottom up at the set rate with a player's block kept and nothing outside touched, a day grows back only a
+day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
+the new sentences). The client mixins themselves are proved by the scene.
 
-Showcase scenes: `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
+Showcase scenes: `job_plate` (a Journeyman fisherman, Dara the Expert builder and a jobless villager, each looked at), `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,
 `vintner`, `tailor`, `printer`.

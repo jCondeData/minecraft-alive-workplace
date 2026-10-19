@@ -1,0 +1,5 @@
+{
+  "requires": "aliveworkplace_absent_mod",
+  "groups": [["minecraft:command_block"]],
+  "belts": ["minecraft:command_block"]
+}

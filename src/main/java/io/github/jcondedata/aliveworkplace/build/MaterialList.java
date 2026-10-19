@@ -76,13 +76,15 @@ public final class MaterialList {
 
 	/** "☐ 25 × Cobblestone", or "☑ Oak Door (in the chests)" when the chests hold all of it. */
 	static Component line(BlueprintSupplies.Line line) {
+		// 37.13: a furniture piece several mods make is "Spruce Chair (any furniture mod)", each mod's piece on hover
+		Component name = io.github.jcondedata.aliveworkplace.furnish.FurnitureEquivalents.name(line.item());
 		if (line.toBring() == 0) {
-			return Component.translatable("book.aliveworkplace.material_list.done", line.item().getDescription()).withStyle(ChatFormatting.DARK_GREEN);
+			return Component.translatable("book.aliveworkplace.material_list.done", name).withStyle(ChatFormatting.DARK_GREEN);
 		}
 		if (line.toBring() < line.need()) {
-			return Component.translatable("book.aliveworkplace.material_list.partly", line.toBring(), line.item().getDescription(), line.need());
+			return Component.translatable("book.aliveworkplace.material_list.partly", line.toBring(), name, line.need());
 		}
-		return Component.translatable("book.aliveworkplace.material_list.todo", line.toBring(), line.item().getDescription());
+		return Component.translatable("book.aliveworkplace.material_list.todo", line.toBring(), name);
 	}
 
 	private static ItemStack book(Component name, BlueprintSupplies.Checklist list, String author) {

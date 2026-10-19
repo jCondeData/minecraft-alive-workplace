@@ -1,0 +1,1 @@
+{"spots": [{"kind": "chair", "pos": [1, 1, 1], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}]}]}

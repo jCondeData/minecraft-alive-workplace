@@ -17,11 +17,36 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A Quarry that grows back** (36.12). A new blueprint in the Blueprint Table: a fenced pit with steps cut down its side,
+  a hoist and the Miner's shed with its blast furnace. The Miner who works at that furnace digs the pit by themselves (no
+  Quarry Marker), and what they dig grows back slowly from the bottom up: mostly stone, some coal and copper, now and
+  then iron, redstone and gold, rarely a diamond, deepslate in the bottom layers. Dug to the bottom, they wait at the
+  shed for a layer to grow back; a pit dug right out takes about a week to fill again. Nothing outside the pit changes
+  and a block you put in it stays. The Quarry Marker works as before. Settings: Quarry Build (on), Quarry Regrowth (100
+  blocks a day).
+- **The Builder asks before repairing a house** (36.15). A builder who finds blocks missing from a build asks first:
+  "Repair it? [Yes] [Not now]" in chat, and on the Village Hall's new Repairs tab, and repairs only what you said yes to.
+  A repair under way can be paused or stopped there (the builder goes straight on to their next job), and a blueprint
+  handed over mid-repair comes first. What raiders and village fires broke is still put back without asking. The
+  setting Ask Before Repairs, off, brings back repairs without asking.
+- **The Blueprint Table keeps your blueprints** (36.13). A Stored tab on the table lists the blueprints you put away in
+  it, with how many of each: Store Held or Store All puts them on its shelf, Take One Out hands one back. They belong to
+  the table (up to 200), stay through restarts and drop when the table is broken.
+- **Miners make their own pickaxe** (36.11). A Miner whose pickaxe wore out, or who has none, makes a new one at their blast furnace from what they mined: three cobblestone and two sticks (or two planks), iron from Journeyman and diamond from Expert. With nothing to make it from they wait, and the Storehouse board asks for what's missing. Setting: Miners Make Pickaxes (on).
+- **Search the Blueprint Table** (36.10). A search box over the library narrows its 150-odd builds as you type, by
+  name ("inn"), id ("fishers_hut") or a job a build brings ("fisherman", "smith"), in capitals or not. A build's levels
+  stay under it, the header counts the matches, and a search that finds nothing says so; an empty box lists everything.
 - **The Conductor** (39.7d, with Create). A villager without a job by a Create Train Station becomes the village's
   Conductor (maroon cap and tunic, brass buttons, a ticket punch): they take the seat of the village's train instead of a
   jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade
   rails, Create track, train schedules, signals, railway casing and train controls. Without a Conductor a jobless
   villager still drives. Behind the Village trains setting.
+- **Any mod's spruce chair will do** (37.13; 2.1, behind its gate). A furnished build no longer insists on one
+  furniture mod's piece: bring CobbleFurnies' or Cozy Home's spruce chair where the build asked for Handcrafted's and
+  the builder builds yours, in the same place and facing the same way (the first mod in the furniture mods list when the
+  chest holds several). The material list book shows the piece once, "Spruce Chair (any furniture mod)", with each
+  mod's piece on hover. Chairs, tables, couches, desks, counters, cupboards, nightstands, drawers and lamps; pieces
+  already built stay, and a piece no installed mod makes is the plain one as before.
 ### Changed
 - **Cobblecuisine dishes are asked for at the Village Hall** (38.8a). The Chef no longer cooks Cobblecuisine's dishes on
   his own: open the hall, click the minecart and pick the new **Dishes** tab, then click a dish to ask for 4 (shift: 16,
@@ -29,6 +54,39 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **No more client crash near a turning Windmill with shaders on** (B231). With shaders, Create draws spinning
+  contraptions the slow way, and in packs where Sodium and Continuity write a block one corner at a time (Cobbleverse)
+  the Windmill's sails crashed the game ("ShadedBlockSbbBuilder only supports putBulkData!"). Each corner now goes into
+  Create's buffer as it would whole, so the sails draw.
+- **Graves no longer clutter the village** (B222). The Undertaker walks to each grave lying in a street, a field or on
+  a doorstep and lays it in the next free row of the village's Graveyard; a village with no Graveyard gets a small plot
+  of three rows near the hall. Everything in the grave is kept (name, job, level, trades, partner) and the villager can
+  be brought back from there. Graves already scattered in your world are moved too. Setting: `gravesToGraveyard` (on).
+- **Look at a villager to see its job and level** (B221). Point your crosshair at a working villager up close and a
+  plate over its head reads "Fisherman, Journeyman" ("Dara — Fisherman, Journeyman" for one with a name). Every job
+  shows, ours and vanilla's; jobless villagers and nitwits show nothing new, and no villager's name is changed.
+- **A villager handed the item for their job gets straight to it** (B220). A Fisherman given a rod late in the work
+  day stood about for a second before fishing; now the work starts within a tick, as it does for a Builder given a
+  blueprint. Handed one outside their work hours, a villager now says when they start ("in about 8 minutes") instead
+  of standing there with no word; at night they still sleep first.
+- **A Miner stores everything they dig** (B224). Stone, cobblestone, deepslate, andesite, diorite, granite, tuff,
+  gravel and dirt go into the chests by the blast furnace along with the ores. When those chests are full (or there
+  are none), the rest goes to the village Storehouse instead of being dropped on the ground to vanish, and ores always
+  get the room first: a stack of stone moves on to the Storehouse to make way for them.
+- **A Builder with no chests by its bench builds from the village Storehouse again** (B226). The Storehouse only
+  counted while its Porter was in reach, so with the Porter asleep at home far off (or in a chunk that wasn't loaded)
+  the Builder said "No chests by its bench" and waited, though everything was in the Storehouse's chests. Now the
+  Storehouse counts by its block, Porter or not.
+- **A broken bandit camp gives the land back** (B225). When a camp came down it left its levelled pad and its patch of
+  trampled earth and gravel for good, so the land round a village got scarred as camps came and went. Now a camp
+  remembers the ground it was set on, and once it is down that ground comes back: the hill it cut into, the hollow it
+  filled, the grass. Camps made before this update have their pad blended into the land round them instead (grass on
+  top, no trampled earth or gravel, no sharp steps). With Camp Ruins on, the tents stay but the open ground round them
+  goes back. Anything a player built there stays.
+- The Blueprint Table no longer errors on a Create Schematic whose file name holds a hidden control character: it refuses it by name, like other bad names.
+- **The Firewarden puts out a fire on a high roof** (B218). A fire on the ridge of a pitched roof, such as the Starter
+  Cottage's, had nowhere within a bucket's throw to stand, so the Firewarden waited by the grindstone while it spread
+  down the roof. Now they run to the open ground below it and throw their buckets up onto the roof (up to 12 blocks).
 - **The whole crowd sees the Mega Shrine's show** (B215). On a festival day the trainer at the shrine's pedestal now
   waits for the villagers off work to gather before Mega Evolving their ace (at most half a minute), and everyone who
   came cheers (+3 mood), even those at the back of the crowd. Before, the show could go off as the first villagers

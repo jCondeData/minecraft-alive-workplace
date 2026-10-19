@@ -12,6 +12,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Packets for the Blueprint Table screen. The server owns the blueprint library; the client screen
@@ -24,8 +25,10 @@ public final class TablePayloads {
 	/**
 	 * One blueprint in the library listing. {@code state} is a {@link BlueprintUnlocks.State} ordinal (26.10); a locked
 	 * build's {@code hint} is the lang key of how to get it. A hidden ("???") entry carries a stand-in id and no size.
+	 * {@code jobs} are the jobs its job blocks bring (profession ids, 36.10: the Table's search finds a build by them).
 	 */
-	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint) {
+	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint, List<ResourceLocation> jobs) {
+		private static final StreamCodec<io.netty.buffer.ByteBuf, List<ResourceLocation>> JOBS = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list(64));
 		public static final StreamCodec<FriendlyByteBuf, Entry> CODEC = StreamCodec.of((buf, e) -> {
 			ResourceLocation.STREAM_CODEC.encode(buf, e.id());
 			buf.writeVarInt(e.sizeX());
@@ -34,8 +37,18 @@ public final class TablePayloads {
 			buf.writeVarInt(e.blocks());
 			buf.writeVarInt(e.state());
 			buf.writeUtf(e.hint(), 256);
+			JOBS.encode(buf, e.jobs());
 		}, buf -> new Entry(ResourceLocation.STREAM_CODEC.decode(buf), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
-			buf.readVarInt(), buf.readUtf(256)));
+			buf.readVarInt(), buf.readUtf(256), JOBS.decode(buf)));
+
+		public Entry {
+			jobs = List.copyOf(jobs);
+		}
+
+		/** An entry whose build brings no jobs. */
+		public Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint) {
+			this(id, sizeX, sizeY, sizeZ, blocks, state, hint, List.of());
+		}
 
 		/** An unlocked entry. */
 		public Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks) {
@@ -74,14 +87,69 @@ public final class TablePayloads {
 			JobBlock::new);
 	}
 
-	/** S2C: open (or refresh) the table screen with the server's library. */
-	public record Open(BlockPos table, List<Entry> entries, boolean canUpload) implements CustomPacketPayload {
+	/** A blueprint stored in the table (36.13): one of it (for its name and icon) and how many are stored. */
+	public record Stored(ItemStack stack, int count) {
+		public static final StreamCodec<RegistryFriendlyByteBuf, Stored> CODEC = StreamCodec.composite(
+			ItemStack.STREAM_CODEC, Stored::stack,
+			ByteBufCodecs.VAR_INT, Stored::count,
+			Stored::new);
+	}
+
+	/**
+	 * S2C: open (or refresh) the table screen with the server's library, and the blueprints stored in this table (36.13)
+	 * with how many it holds at most.
+	 */
+	public record Open(BlockPos table, List<Entry> entries, boolean canUpload, List<Stored> stored, int capacity) implements CustomPacketPayload {
 		public static final Type<Open> TYPE = new Type<>(AliveWorkplace.id("table_open"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, Open> CODEC = StreamCodec.composite(
 			BlockPos.STREAM_CODEC, Open::table,
 			Entry.CODEC.apply(ByteBufCodecs.list()), Open::entries,
 			ByteBufCodecs.BOOL, Open::canUpload,
+			Stored.CODEC.apply(ByteBufCodecs.list()), Open::stored,
+			ByteBufCodecs.VAR_INT, Open::capacity,
 			Open::new);
+
+		public Open {
+			stored = List.copyOf(stored);
+		}
+
+		/** A table with nothing stored. */
+		public Open(BlockPos table, List<Entry> entries, boolean canUpload) {
+			this(table, entries, canUpload, List.of(), BlueprintTableBlockEntity.CAPACITY);
+		}
+
+		/** Blueprints stored, in all. */
+		public int storedCount() {
+			return stored.stream().mapToInt(Stored::count).sum();
+		}
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
+	/** C2S (36.13): store the blueprint in the main hand in this table, or with {@code all} every blueprint carried. */
+	public record Store(BlockPos table, boolean all) implements CustomPacketPayload {
+		public static final Type<Store> TYPE = new Type<>(AliveWorkplace.id("table_store"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, Store> CODEC = StreamCodec.composite(
+			BlockPos.STREAM_CODEC, Store::table,
+			ByteBufCodecs.BOOL, Store::all,
+			Store::new);
+
+		@Override
+		public Type<? extends CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
+	/** C2S (36.13): take one blueprint like {@code stack} out of this table. */
+	public record TakeStored(BlockPos table, ItemStack stack) implements CustomPacketPayload {
+		public static final Type<TakeStored> TYPE = new Type<>(AliveWorkplace.id("table_take_stored"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, TakeStored> CODEC = StreamCodec.composite(
+			BlockPos.STREAM_CODEC, TakeStored::table,
+			ItemStack.STREAM_CODEC, TakeStored::stack,
+			TakeStored::new);
 
 		@Override
 		public Type<? extends CustomPacketPayload> type() {

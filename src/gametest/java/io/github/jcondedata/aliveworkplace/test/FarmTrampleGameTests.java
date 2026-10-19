@@ -105,8 +105,13 @@ public class FarmTrampleGameTests implements FabricGameTest {
 	public void upkeepLeavesAFarmsCropsToTheFarmer(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		boolean was = Upkeep.ENABLED;
+		boolean asks = Upkeep.ASK;
 		Upkeep.ENABLED = true;
-		Leftovers.after(helper, () -> Upkeep.ENABLED = was);
+		Upkeep.ASK = false; // 36.15: repairs without asking (repairAsk off): this test is about the repair; the ask has RepairAskGameTests
+		Leftovers.after(helper, () -> {
+			Upkeep.ENABLED = was;
+			Upkeep.ASK = asks;
+		});
 		ServerLevel level = helper.getLevel();
 		// The farm: a plank, then three farmland with ripe wheat on them.
 		BlockPos src = new BlockPos(6, 2, 6);

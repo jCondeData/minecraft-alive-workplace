@@ -271,6 +271,15 @@ public final class Builders {
 		}
 
 		Friends.hire(player, villager);
+		if (existing != null && existing.isRepair() && existing.wonder() == null && RepairAsks.agreed(level, existing.placement())) {
+			// 36.15: a repair the owner agreed to is put aside for the new job (what's put back stays, and it's still agreed:
+			// the builder takes it up again when they're free)
+			Component repair = Blueprints.displayName(existing.structure());
+			cancel(level, existing);
+			existing = activeSite(level, villager); // (their queue's next, if they had one)
+			queued = existing != null ? queue(level, villager).size() : 0;
+			tell(player, Component.translatable("message.aliveworkplace.repair_answer.put_aside", villager.getDisplayName(), repair), ChatFormatting.GRAY);
+		}
 		BuildSite site = existing == null
 			? start(level, villager, player, data.get().structure(), placement.get())
 			: enqueue(level, villager, player, data.get().structure(), placement.get());
@@ -288,7 +297,12 @@ public final class Builders {
 		} else if (existing == null) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.started", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
-		} else {
+		}
+		Component later = existing == null ? io.github.jcondedata.aliveworkplace.work.Jobs.startsLater(villager) : null; // B220
+		if (later != null) {
+			tell(player, later, ChatFormatting.YELLOW);
+		}
+		if (existing != null) {
 			tell(player, Component.translatable("message.aliveworkplace.queue.added", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), Blueprints.displayName(existing.structure()), queued + 1), ChatFormatting.GREEN);
 		}
@@ -722,6 +736,9 @@ public final class Builders {
 				tell(owner, Component.translatable("message.aliveworkplace.repaired", villager.getDisplayName(), Blueprints.displayName(site.structure())),
 					ChatFormatting.GREEN);
 			}
+			if (site.wonder() == null) {
+				BuildSiteManager.get(level).setRepairAsk(site.placement(), null); // 36.15: done, off the Repairs page
+			}
 			endJob(level, villager, site);
 			BuilderLevels.addXp(level, villager, 2, site.owner());
 			return;
@@ -864,8 +881,8 @@ public final class Builders {
 		if (site.wonder() != null) {
 			return; // a Wonder's part (35.4): the Wonder Plan comes back instead (WonderStages.cancel)
 		}
-		if (site.isSteward() || io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
-			return; // the Steward's build (27.8) or a house's new outside (23.10a): nobody handed a blueprint over, so none comes back
+		if (site.isSteward() || site.isRepair() || io.github.jcondedata.aliveworkplace.world.VillagePieces.isOutside(site.structure())) {
+			return; // the Steward's build (27.8), a repair (36.15) or a house's new outside (23.10a): nobody handed a blueprint over, so none comes back
 		}
 		// Still placed where it was (23.8): hand it back to carry on there, or click the ground to move it first.
 		ItemStack blueprint = blueprintFor(level, site);

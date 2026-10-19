@@ -90,6 +90,7 @@ public class MinerWork extends Behavior<Villager> {
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
 		walker.reset();
 		digging = null;
+		crafting = 0;
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
 	}
 
@@ -146,6 +147,16 @@ public class MinerWork extends Behavior<Villager> {
 				break;
 			}
 			site.advance(false, v == Verdict.LEAVE);
+		}
+		if (site.isDone() && site.refills()) {
+			// A Quarry build's pit (36.12): never finished. Drop off the finds, then wait at the shed for a layer to grow back.
+			if (site.grownSincePass() >= QuarryBuilds.restartAfter(site)) {
+				site.restart();
+			} else if (site.status() != QuarrySite.Status.REFILLING && walkTo(level, villager, containerNear(level, bench), CONTAINER_REACH)) {
+				deposit(level, villager, site, bench, bag);
+				site.setStatus(QuarrySite.Status.REFILLING);
+			}
+			return;
 		}
 		if (site.isDone()) {
 			if (walkTo(level, villager, containerNear(level, bench), CONTAINER_REACH)) {
@@ -319,6 +330,12 @@ public class MinerWork extends Behavior<Villager> {
 			}
 		}
 		return false;
+	}
+
+	/** The plain rock a quarry gives (stone of every kind, dirt, gravel, sand, flint): stored after the ores (B224). */
+	static boolean isRock(ItemStack stack) {
+		return FILLERS.contains(stack.getItem()) || stack.is(Items.GRAVEL) || stack.is(Items.FLINT) || stack.is(Items.SAND)
+			|| stack.is(Items.RED_SAND) || stack.is(Items.COARSE_DIRT) || stack.is(Items.CALCITE) || stack.is(Items.SMOOTH_BASALT);
 	}
 
 	@Nullable
@@ -502,6 +519,15 @@ public class MinerWork extends Behavior<Villager> {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, site.box());
 		BlockPos chest = SupplyContainers.firstMatching(level, supplies, MinerWork::isPickaxe);
 		if (chest == null) {
+			// None in their chests: make one from what they mined (36.11).
+			PickaxeCrafting.Plan plan = PickaxeCrafting.plan(level, villager, bench, supplies, bag);
+			if (plan != null) {
+				craftPickaxe(level, villager, site, bench, supplies, bag);
+				return;
+			}
+		}
+		crafting = 0;
+		if (chest == null) {
 			// Another worker in the village may have a spare.
 			io.github.jcondedata.aliveworkplace.work.Village.Find elsewhere = io.github.jcondedata.aliveworkplace.work.Village.find(level, villager, bench, site.box(), MinerWork::isPickaxe);
 			if (elsewhere != null) {
@@ -512,6 +538,12 @@ public class MinerWork extends Behavior<Villager> {
 		if (chest == null) {
 			site.setStatus(QuarrySite.Status.NEEDS_PICKAXE);
 			walkTo(level, villager, bench, 3);
+			PickaxeCrafting.Missing missing = PickaxeCrafting.ENABLED ? PickaxeCrafting.missing(level, villager, bench, supplies, bag) : null;
+			if (missing != null) {
+				// The Storehouse board shows what they lack to make one (handed over, it goes in their chests).
+				io.github.jcondedata.aliveworkplace.work.Requests.post(villager, new ItemStack(missing.item()), missing.count(),
+					missing.item().getDescription(), io.github.jcondedata.aliveworkplace.work.Requests.exactly(missing.item()));
+			}
 			Miners.notifyNeedsPickaxe(level, villager, site);
 			return;
 		}
@@ -521,9 +553,42 @@ public class MinerWork extends Behavior<Villager> {
 		ItemStack pick = SupplyContainers.takeOne(level, supplies, MinerWork::isPickaxe);
 		if (!pick.isEmpty()) {
 			villager.setItemSlot(EquipmentSlot.MAINHAND, pick);
+			io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
 			level.playSound(null, chest, SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.4f, 1.1f);
 		}
 		supplies = SupplyContainers.find(level, bench, site.box()); // the rest from our own chests
+		topUpTorches(level, supplies, bag);
+		topUpFiller(level, site, supplies, bag);
+		topUpLadders(level, site, supplies, bag);
+	}
+
+	/** Ticks spent at the workstation making a pickaxe (not saved: after a restart they start it again, nothing taken yet). */
+	private int crafting;
+
+	/** Makes a pickaxe at the workstation from their own materials (36.11), then takes up digging again. */
+	private void craftPickaxe(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, List<BlockPos> supplies, BuilderBag bag) {
+		site.setStatus(QuarrySite.Status.CRAFTING_PICKAXE);
+		if (!walkTo(level, villager, bench, 3)) {
+			return;
+		}
+		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(bench));
+		if (crafting++ % 15 == 0) {
+			villager.swing(InteractionHand.MAIN_HAND);
+			level.playSound(null, bench, SoundEvents.VILLAGER_WORK_TOOLSMITH, SoundSource.NEUTRAL, 0.8f, 1f);
+		}
+		if (crafting < PickaxeCrafting.CRAFT_TICKS) {
+			return;
+		}
+		crafting = 0;
+		ItemStack pick = PickaxeCrafting.craft(level, villager, bench, supplies, bag);
+		if (pick.isEmpty()) {
+			return; // the materials went meanwhile: next tick they look again
+		}
+		villager.setItemSlot(EquipmentSlot.MAINHAND, pick);
+		io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
+		level.playSound(null, bench, SoundEvents.SMITHING_TABLE_USE, SoundSource.BLOCKS, 0.8f, 1f);
+		site.setStatus(QuarrySite.Status.WORKING);
+		Miners.notifyCraftedPickaxe(level, villager, site, pick);
 		topUpTorches(level, supplies, bag);
 		topUpFiller(level, site, supplies, bag);
 		topUpLadders(level, site, supplies, bag);
@@ -578,7 +643,10 @@ public class MinerWork extends Behavior<Villager> {
 
 	private static void deposit(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, null);
-		for (ItemStack stack : bag.takeAllExcept(java.util.Set.of(Items.TORCH, Items.LADDER))) {
+		// B224: the ores and finds first, so that with the chests nearly full they get the room; then the rock.
+		List<ItemStack> load = new java.util.ArrayList<>(bag.takeAllExcept(java.util.Set.of(Items.TORCH, Items.LADDER)));
+		load.sort(java.util.Comparator.comparing(MinerWork::isRock));
+		for (ItemStack stack : load) {
 			Miners.deliver(level, supplies, bench, stack);
 		}
 		topUpTorches(level, supplies, bag);

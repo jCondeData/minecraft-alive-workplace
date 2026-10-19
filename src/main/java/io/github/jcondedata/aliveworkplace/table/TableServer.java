@@ -59,6 +59,9 @@ public final class TableServer {
 
 		Platform.get().serverbound(TablePayloads.RequestDetails.TYPE, TablePayloads.RequestDetails.CODEC, (payload, player) -> details(player, payload.id()));
 		Platform.get().serverbound(TablePayloads.Take.TYPE, TablePayloads.Take.CODEC, (payload, player) -> take(player, payload.table(), payload.id()));
+		Platform.get().serverbound(TablePayloads.Store.TYPE, TablePayloads.Store.CODEC, (payload, player) -> TableLibrary.store(player, payload.table(), payload.all()));
+		Platform.get().serverbound(TablePayloads.TakeStored.TYPE, TablePayloads.TakeStored.CODEC,
+			(payload, player) -> TableLibrary.takeOut(player, payload.table(), payload.stack()));
 		Platform.get().serverbound(TablePayloads.UploadChunk.TYPE, TablePayloads.UploadChunk.CODEC, (payload, player) -> upload(player, payload));
 		Platform.get().onPlayerLeave(player -> UPLOADS.remove(player.getUUID()));
 	}
@@ -68,7 +71,14 @@ public final class TableServer {
 		ServerLevel level = Players.level(player);
 		// Create's uploaded schematics join the library first (39.6), and the player hears what came of each new one.
 		CreateSchematics.sync(level.getServer()).forEach(player::sendSystemMessage);
-		Platform.get().send(player, new TablePayloads.Open(table, listing(level, BlueprintUnlocks.village(level, table)), canUpload(player)));
+		Platform.get().send(player, openPayload(player, table));
+	}
+
+	/** What {@link #open} sends: the library, and the blueprints stored in this table (36.13). */
+	public static TablePayloads.Open openPayload(ServerPlayer player, BlockPos table) {
+		ServerLevel level = Players.level(player);
+		return new TablePayloads.Open(table, listing(level, BlueprintUnlocks.village(level, table)), canUpload(player),
+			TableLibrary.stored(TableLibrary.at(player, table)), BlueprintTableBlockEntity.CAPACITY);
 	}
 
 	/** The listing of a Table far from any village. */
@@ -97,7 +107,7 @@ public final class TableServer {
 			}
 			String hint = state == BlueprintUnlocks.State.UNLOCKED ? "" : BlueprintUnlocks.hint(id);
 			BlueprintLibrary.get(server, id).ifPresent(bp -> entries.add(new TablePayloads.Entry(id, bp.size().getX(), bp.size().getY(),
-				bp.size().getZ(), bp.solidBlockCount(), state.ordinal(), hint)));
+				bp.size().getZ(), bp.solidBlockCount(), state.ordinal(), hint, listedJobs(id, bp))));
 		}
 		// Unlocked first (26.10); our own blueprints first, then everything else alphabetically.
 		entries.sort(Comparator.comparing((TablePayloads.Entry e) -> e.locked())
@@ -207,6 +217,27 @@ public final class TableServer {
 	public static boolean styleTaken(MinecraftServer server, ResourceLocation id) {
 		Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
 		return styled.isEmpty() || styles(server, styled.get().base()).stream().anyMatch(s -> s.name().equals(styled.get().style()));
+	}
+
+	private record CachedJobs(Blueprint blueprint, List<ResourceLocation> jobs) {
+	}
+	/** Every listed build's jobs (36.10), small enough to keep them all. */
+	private static final Map<ResourceLocation, CachedJobs> JOBS = java.util.Collections.synchronizedMap(new HashMap<>());
+
+	/**
+	 * The jobs a listed build brings (36.10), each once, in the order {@link BuildJobs#of} finds them: what the Table's
+	 * search matches "fisherman" or "smith" against. Worked out once per build and kept.
+	 */
+	public static List<ResourceLocation> listedJobs(ResourceLocation id, Blueprint blueprint) {
+		CachedJobs cached = JOBS.get(id);
+		if (cached != null && cached.blueprint() == blueprint) {
+			return cached.jobs();
+		}
+		CachedMaterials materials = MATERIALS.get(id);
+		BuildJobs.Summary summary = materials != null && materials.blueprint() == blueprint ? materials.jobs() : BuildJobs.of(blueprint);
+		List<ResourceLocation> jobs = summary.jobs().stream().flatMap(b -> b.jobs().stream()).distinct().toList();
+		JOBS.put(id, new CachedJobs(blueprint, jobs));
+		return jobs;
 	}
 
 	/** A build's materials and its job blocks and beds (36.6a), worked out once per build. */
@@ -340,7 +371,7 @@ public final class TableServer {
 		}
 	}
 
-	private static boolean atTable(ServerPlayer player, BlockPos table) {
+	static boolean atTable(ServerPlayer player, BlockPos table) {
 		return player.level().getBlockState(table).is(ModBlocks.BLUEPRINT_TABLE)
 			&& player.position().distanceToSqr(Vec3.atCenterOf(table)) <= MAX_DISTANCE * MAX_DISTANCE;
 	}

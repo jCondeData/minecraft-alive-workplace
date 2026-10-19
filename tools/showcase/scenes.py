@@ -82,8 +82,15 @@ SCENES = [
     S("missing", "Builder", "What a build is still missing, and its material list", "the blueprint's tooltip lists what the chests are short of, and a Book and Quill becomes the list", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip"),
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
-    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, and a file was uploaded", 60,
-      [("10_table_library", "Library"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+    # 36.10: the search box over the library: "smith" narrows it to the forges, a search for nothing says so
+    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, \"smith\" typed in the search box narrowed the library to the builds that bring a smith, a search for nothing said so, and a file was uploaded", 65,
+      [("10_table_library", "Library"), ("10s_table_search", "Searched for \"smith\": the list narrowed"),
+       ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+    # 36.13: the Blueprint Table keeps bought blueprints: Store All, listed with counts, one taken back out
+    S("table_library", "Builder", "Blueprint Table: a library for your blueprints",
+      "the table's Stored tab started empty, Store All put the four blueprints carried on its shelf (two Starter Cottages listed as 2 stored), and Take One Out handed a cottage back into the player's hand", 40,
+      [("01_stored_empty", "The Stored tab, empty"), ("02_stored", "Stored, with how many of each"),
+       ("03_taken_out", "One taken out: the count goes down"), ("04_in_hand", "Back in hand")]),
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,
@@ -113,6 +120,13 @@ SCENES = [
     # Miner
     S("quarry", "Miner", "A miner digs out a quarry", "the miner dug out the whole quarry", 420,
       [("frame_*@first", "Start"), ("frame_*@middle", "Digging"), ("50_quarry_done", "Dug out")]),
+    # Miners make their own pickaxe (ROADMAP 36.11): a worn stone pickaxe breaks, a new one is made at the blast furnace
+    job("miner_pickaxe", "Miner", "Making a new pickaxe from what she mined",
+        "the miner's worn pickaxe broke, she made a stone pickaxe at the blast furnace from the cobblestone she dug and dug on to the end", 150,
+        extra=[("04_making_pickaxe", "Making the pickaxe at the blast furnace")]),
+    # The Quarry build (ROADMAP 36.12): the Miner at its blast furnace digs its pit without a marker, and it grows back
+    job("quarry_build", "Miner", "A Quarry that grows back",
+        "the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up", 300),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),
@@ -192,6 +206,8 @@ SCENES = [
       [("01_steward_civic_day_1", "Day 1: a lamp by the dark beds and a well"), ("02_steward_civic_day_2", "Day 2: children came, so a schoolhouse")]),
     job("netherworker", "Netherworker", "A trip to the Nether", "the netherworker came back from the Nether with loot", 240),
     job("undertaker", "Undertaker", "Bringing a worker back from the grave", "the undertaker revived the villager"),
+    # B222: graves lying about the village go to its Graveyard (here the plot by the hall, the village having no Graveyard)
+    job("undertaker_graveyard", "Undertaker", "Laying a grave to rest", "the undertaker moved Mira's grave from the street to the plot by the hall"),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
     job("legend", "Legends", "A villager becomes a Legend",
         "a villager became a Legend, a Master who speeds up the builder beside them"),
@@ -411,6 +427,12 @@ SCENES = [
       "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
       [("01_free_jobs", "The Free job blocks page: the Storehouse and a bench"), ("02_who_takes_it", "Who could take the Storehouse"),
        ("03_dara_porter", "Dara picked: now the Porter, walking over")]),
+    # The Builder asks before repairing a house (ROADMAP 36.15): the question in chat and on the hall's Repairs page, then Yes
+    S("repair_ask", "Village Hall", "The Builder asks before repairing a house",
+      "Bram found 5 blocks missing from the Starter Cottage and asked in chat; the hall's Repairs page listed it waiting for an answer, "
+      "its view had Yes and Not now, and after Yes the page showed Bram repairing it", 50,
+      [("01_repair_question", "The question in chat: Repair it? [Yes] [Not now]"), ("02_repairs_page", "The hall's Repairs page: the cottage, waiting"),
+       ("03_yes_or_not_now", "The cottage's view: Yes, repair it, or Not now"), ("04_repairing", "After Yes: being repaired by Bram")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "
@@ -1066,9 +1088,10 @@ SCENES = [
     job("war_party", "Threats", "Marching on the lair: the war party, the Warlord, the loot",
         "the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 150,
         [("04_loot", "The war camp's loot chest")]),
-    # A broken camp comes down (B209): the chief falls, the village forgets the camp, its tents and fire come down
-    job("camp_cleared", "Threats", "A broken bandit camp comes down",
-        "the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilled on the trampled ground", 90),
+    # A broken camp comes down (B209): the chief falls, the village forgets the camp, its tents and fire come down;
+    # the grassy rise it levelled comes back as it was (B225)
+    job("camp_cleared", "Threats", "A broken bandit camp comes down, the land back as it was",
+        "the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilling out, and the grassy rise it had levelled came back as it was", 90),
     # Witch covens (ROADMAP 32.11): the Coven Hut in the swamp at night, a hex, witches throwing potions over a palisade
     job("coven", "Threats", "Witch covens: the hut, the hex, potions over the wall",
         "the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 150),
@@ -1116,6 +1139,13 @@ SCENES = [
            ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
            ("05_sitting", "Upstairs: the sitting corner's couch, blinds and a picture"),
            ("06_vanilla_dining", "The same corner without furniture mods: the vanilla pieces")], cobblemon=True, furniture=True),
+    # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
+    S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
+      "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",
+      60, [("01_chests", "The Builder's Bench and a chest holding only CobbleFurnies' chairs"),
+           ("02_handcrafted_dining", "The cottage whose chest held Handcrafted's chairs: Handcrafted chairs at the table"),
+           ("03_cobblefurnies_dining", "The cottage whose chest held CobbleFurnies' chairs: CobbleFurnies chairs in the same places"),
+           ("04_both", "The two cottages side by side")], cobblemon=True, furniture=True),
     # Furnished workplaces (ROADMAP 37.5): the Supply Shop, Library, Schoolhouse and Healing Center as a server with the
     # pack's furniture mods builds them
     S("furnished_workplaces", "Build families", "Furnished workplaces: shop counters, Library desks, school benches (Handcrafted, Beautify, CobbleFurnies)",
@@ -1174,6 +1204,12 @@ SCENES = [
        ("03_hall_line", "Close up: it still looks like moss")], cobblemon18=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),
+    # Job plates (B221): looking at a working villager shows its job and level over its head, after its own name if it has
+    # one; a jobless villager shows nothing
+    S("job_plate", "Everyone at work", "Look at a villager to see its job and level",
+      "a Journeyman fisherman's plate reads its job and level, a named builder's her name first, a jobless villager's nothing", 15,
+      [("01_fisherman_plate", "Fisherman, Journeyman"), ("02_named_plate", "Dara — Builder, Expert"),
+       ("03_jobless_no_plate", "A jobless villager: no plate")]),
 ]
 
 BY_NAME = {s["name"]: s for s in SCENES}

@@ -1066,6 +1066,9 @@ SCENES = [
     job("war_party", "Threats", "Marching on the lair: the war party, the Warlord, the loot",
         "the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 150,
         [("04_loot", "The war camp's loot chest")]),
+    # A broken camp comes down (B209): the chief falls, the village forgets the camp, its tents and fire come down
+    job("camp_cleared", "Threats", "A broken bandit camp comes down",
+        "the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilled on the trampled ground", 90),
     # Witch covens (ROADMAP 32.11): the Coven Hut in the swamp at night, a hex, witches throwing potions over a palisade
     job("coven", "Threats", "Witch covens: the hut, the hex, potions over the wall",
         "the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 150),

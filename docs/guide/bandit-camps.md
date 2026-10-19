@@ -35,6 +35,12 @@ Kill the **chief** and the camp is broken up: his band scatters, and the chest i
 like emeralds, iron and gold, bread, arrows, a crossbow or an iron axe, and with luck a diamond, a golden apple, a saddle
 or a name tag. The chronicle remembers who brought him down, and no new camp comes for five days.
 
+A couple of seconds after the chief falls, the camp comes down: the tents, the fire and the chests go, top first, and
+whatever was still in the chests spills out on the ground for you to pick up. Anything you built or changed at the camp
+stays. The village forgets the camp at once: it is gone from the hall's Defense page and your scouts stop reporting it.
+After the five quiet days a new band may make camp, somewhere else. If you'd rather keep the ruins, turn on the
+[Camp Ruins](settings-threats.md) setting: the camp then stays standing, its fire put out.
+
 Take help along: raise a Rally Banner and your guards follow you out, or hire three mercenaries at the hall for the
 night (see [Threats and defense](defence.md)). Guards stay at home otherwise: the camp is far beyond their patrol.
 

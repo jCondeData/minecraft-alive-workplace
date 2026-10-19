@@ -129,6 +129,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.threat.SandRamps.init(); // sand ramps against the walls (32.9)
 		io.github.jcondedata.aliveworkplace.threat.Risings.init(); // the Pharaoh's husks rise again (32.9)
 		io.github.jcondedata.aliveworkplace.threat.Ships.init(); // the pirate ship: lairs on the sea, sinking (32.8)
+		io.github.jcondedata.aliveworkplace.threat.CampCleanup.init(); // broken camps come down, or stay as ruins (B209)
 		io.github.jcondedata.aliveworkplace.threat.Piglins.init(); // piglin raiders: never zombify, go for villagers (32.10)
 		io.github.jcondedata.aliveworkplace.threat.Plunder.init(); // the tactic plunder: gold from the village's chests (32.10)
 		io.github.jcondedata.aliveworkplace.threat.Covens.init(); // witch covens: the hex tactic, nightly hexes, the Coven Mother (32.11)

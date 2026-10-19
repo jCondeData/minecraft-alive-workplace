@@ -63,7 +63,8 @@ import org.jetbrains.annotations.Nullable;
  * the cultures that fit the village makes camp {@link #NEAR} to {@link #FAR} blocks from its hall, on dry, fairly flat,
  * open ground: its structure, its captain and his band. At most one lair stands by a village; while it stands the
  * village's raids come from it. Kill the captain and the lair is broken up: the band scatters, its chests (the culture's
- * loot table) are yours, the chronicle remembers who did it, and none comes for {@link #REST_DAYS} days.
+ * loot table) are yours, the chronicle remembers who did it, and none comes for {@link #REST_DAYS} days. The camp itself
+ * then comes down, its chests spilling their loot, or stays as ruins ({@link CampCleanup}, B209).
  *
  * <p>Every lair has:
  * <ul>
@@ -230,6 +231,7 @@ public final class Lairs {
 	/** As {@link #round(ServerLevel, BlockPos, boolean)}, rolling with {@code random}. */
 	public static void round(ServerLevel level, BlockPos hall, boolean bandits, RandomSource random) {
 		Data data = Data.get(level);
+		CampCleanup.sweep(level, hall); // camps broken up before B209, still standing
 		Lair lair = data.lairs.get(hall);
 		boolean quiet = Threats.quiet(level, hall);
 		if (!quiet) {
@@ -322,6 +324,8 @@ public final class Lairs {
 		Data data = Data.get(level);
 		data.lairs.remove(lair.hall());
 		data.setDirty();
+		forgetEverywhere(level, lair);
+		CampCleanup.broken(level, lair); // the camp is packed up (B209)
 		Piglins.putOut(level, lair);
 		List<Mob> going = new ArrayList<>(band(level, lair));
 		if (level.getEntity(lair.captain()) instanceof Mob captain && !going.contains(captain)) {
@@ -863,12 +867,19 @@ public final class Lairs {
 		}
 	}
 
+	/** What the village knew of a lair that is gone: its scouts' report of where it stood (B209). */
+	private static void forgetEverywhere(ServerLevel level, Lair lair) {
+		io.github.jcondedata.aliveworkplace.guard.Scouts.forgetLair(level, lair.hall());
+	}
+
 	/** The lair is broken up: the band scatters, the village is told, the chronicle remembers who did it. */
 	static void breakUp(ServerLevel level, Lair lair, @Nullable Entity by) {
 		Data data = Data.get(level);
 		data.lairs.remove(lair.hall());
 		data.broken.put(lair.hall(), new Rest(Chronicle.day(level), REST_DAYS));
 		data.setDirty();
+		forgetEverywhere(level, lair);
+		CampCleanup.broken(level, lair); // its camp comes down, or stays as ruins (B209)
 		// A lair with a portal: it goes out; the Warlord's band left in the Overworld turns zombified (32.10).
 		Piglins.fallen(level, lair);
 		for (Mob mob : band(level, lair)) {
@@ -953,6 +964,8 @@ public final class Lairs {
 		Data data = Data.get(level);
 		data.lairs.clear();
 		data.broken.clear();
+		data.clearing.clear();
+		data.unswept.clear();
 		data.setDirty();
 		QUIET.clear();
 		Ships.forget(level);
@@ -967,6 +980,10 @@ public final class Lairs {
 		public static final String NAME = "aliveworkplace_bandit_camps";
 		final Map<BlockPos, Lair> lairs = new LinkedHashMap<>();
 		final Map<BlockPos, Rest> broken = new LinkedHashMap<>();
+		/** The broken camps coming down (B209). */
+		final List<CampCleanup.Clearing> clearing = new ArrayList<>();
+		/** The villages whose camps broken up before B209 may still stand, not yet swept for them ({@link CampCleanup#sweep}). */
+		final java.util.Set<BlockPos> unswept = new java.util.LinkedHashSet<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -1004,6 +1021,19 @@ public final class Lairs {
 				cleared.add(c);
 			}
 			tag.put("broken_up", cleared);
+			ListTag going = new ListTag();
+			for (CampCleanup.Clearing c : clearing) {
+				going.add(c.write());
+			}
+			tag.put("clearing", going);
+			ListTag swept = new ListTag();
+			for (BlockPos hall : unswept) {
+				CompoundTag c = new CompoundTag();
+				c.putLong("hall", hall.asLong());
+				swept.add(c);
+			}
+			tag.put("unswept", swept);
+			tag.putBoolean("b209", true);
 			return tag;
 		}
 
@@ -1017,11 +1047,14 @@ public final class Lairs {
 		 * Replaces what this holds with what {@code tag} holds (a load). A camp saved before 32.3 has only {@code pos},
 		 * {@code hall}, {@code chief} and {@code day}: it is a {@code bandits} lair of its culture's strength that last
 		 * grew the day it was made, with nobody out, and its captain's name picked from his UUID (so it stays the same);
-		 * a rest without {@code rest} lasts {@link #REST_DAYS} days.
+		 * a rest without {@code rest} lasts {@link #REST_DAYS} days. A file saved before B209 (no {@code b209}) has no
+		 * camps coming down, and every village with a rest is to be swept for the camps it broke up then.
 		 */
 		public void read(CompoundTag tag) {
 			lairs.clear();
 			broken.clear();
+			clearing.clear();
+			unswept.clear();
 			ListTag list = Nbt.getList(tag, "camps", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
 				CompoundTag c = Nbt.compoundAt(list, i);
@@ -1044,6 +1077,21 @@ public final class Lairs {
 			for (int i = 0; i < cleared.size(); i++) {
 				CompoundTag c = Nbt.compoundAt(cleared, i);
 				broken.put(BlockPos.of(Nbt.getLong(c, "hall")), new Rest(Nbt.getLong(c, "day"), Nbt.has(c, "rest", Tag.TAG_INT) ? Nbt.getInt(c, "rest") : REST_DAYS));
+			}
+			ListTag going = Nbt.getList(tag, "clearing", Tag.TAG_COMPOUND);
+			for (int i = 0; i < going.size(); i++) {
+				CampCleanup.Clearing c = CampCleanup.Clearing.read(Nbt.compoundAt(going, i));
+				if (c != null) {
+					clearing.add(c);
+				}
+			}
+			if (Nbt.getBoolean(tag, "b209")) {
+				ListTag swept = Nbt.getList(tag, "unswept", Tag.TAG_COMPOUND);
+				for (int i = 0; i < swept.size(); i++) {
+					unswept.add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(swept, i), "hall")));
+				}
+			} else {
+				unswept.addAll(broken.keySet()); // (a world from before B209: its broken camps may still stand)
 			}
 			setDirty();
 		}

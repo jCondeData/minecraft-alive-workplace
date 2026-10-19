@@ -3701,6 +3701,8 @@
   "aliveworkplace.config.threatLevel.tooltip": "How hard the village's threats are, beside each one's own switch. 0: none at all (no raids, raiders' camps, sieges or disasters). 1, gentle: half as often, no sieges (raiders walk in), no hexes, no plague. 2: normal. 3, hard: half again as often, and a quarter more raiders. On Peaceful nothing comes.",
   "aliveworkplace.config.forceThreatSpawns": "Force Raider Spawns",
   "aliveworkplace.config.forceThreatSpawns.tooltip": "A raider, bandit or camp mob another mod refuses to spawn (a mob blocklist such as MobsBeGone, which Cobbleverse ships with pillagers and zombies on it) is put in the world anyway, so camps and raids aren't empty. Off: such mobs are left out, and the server log says which.",
+  "aliveworkplace.config.campRuins": "Camp Ruins",
+  "aliveworkplace.config.campRuins.tooltip": "A bandit camp or other raiders' camp whose captain is killed (or that leaves the village in peace) stays as ruins with its fire put out. Off: the camp is taken down a few seconds later, and the loot in its chests spills out on the ground.",
   "aliveworkplace.config.siegeDamage": "Siege Damage",
   "aliveworkplace.config.siegeDamage.tooltip": "In a siege, rams break only the gate blocks of finished walls and gates, and a village fire can burn the builders' blocks; builders always put back what either took. No other raider breaks a builder's block. Off: gates hold and fires burn nothing. The mobGriefing gamerule off holds the gates too.",
   "aliveworkplace.config.festivals": "Festivals",

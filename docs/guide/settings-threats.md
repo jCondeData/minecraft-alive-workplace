@@ -42,6 +42,12 @@ so no camp goes up and no raid comes, and the server log says which mob was bloc
 On **Peaceful** difficulty hostile mobs can't exist at all, so nothing comes whatever this says; players near the place
 are told so.
 
+## Camp Ruins
+
+Normally **off**: a bandit camp (or another raiders' camp) whose chief is killed comes down a couple of seconds later,
+its tents and fire gone and the loot in its chests spilled on the ground. On: the broken camp stays standing as ruins,
+its fire put out. Either way the village forgets it at once, and a new camp may come after the quiet days.
+
 ## Village Protection
 
 Normally **on**: a Village Hall's owner may [protect](village-protection.md) the village from other players. It's a

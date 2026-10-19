@@ -474,6 +474,14 @@ public final class Scouts {
 		return 4;
 	}
 
+	/** The village round {@code hall} forgets where its lair stood: the lair is gone (B209). */
+	public static void forgetLair(ServerLevel level, BlockPos hall) {
+		Data data = Data.get(level);
+		if (data.known.remove(hall) != null) {
+			data.setDirty();
+		}
+	}
+
 	/** Forgets every mission and what every village knows (tests). */
 	public static void forget(ServerLevel level) {
 		Data data = Data.get(level);

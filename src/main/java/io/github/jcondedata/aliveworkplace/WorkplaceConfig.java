@@ -109,6 +109,11 @@ public final class WorkplaceConfig {
 	 */
 	public boolean forceThreatSpawns = true;
 	/**
+	 * A bandit camp or other raiders' lair that is broken up (its captain killed) or leaves is left as ruins, its fire put
+	 * out, instead of taken down (B209). Off: the camp comes down a few seconds after, its chests' loot spilling out.
+	 */
+	public boolean campRuins = false;
+	/**
 	 * Every raider culture (ROADMAP 32.2) and whether it's on: ours by name ({@code monsters}), a datapack's by its id
 	 * ({@code pack:id}). One set to false is never picked. In the file only (a map isn't on the settings screen); a
 	 * culture the file doesn't list is added, on, when the world's data loads. {@code villageRaids} and
@@ -888,6 +893,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE = forceThreatSpawns;
+		io.github.jcondedata.aliveworkplace.threat.CampCleanup.RUINS = campRuins;
 		// The other cultures' lairs (32.3) come by chance as the bandits' do; each has its switch in raiderCultures.
 		io.github.jcondedata.aliveworkplace.threat.Lairs.ENABLED = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED = sieges && Expansions.on(Expansions.M32);

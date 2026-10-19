@@ -1766,10 +1766,56 @@ final class JobScenes {
 				if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity) {
 					Showcase.check(true, "the war camp's loot chest was left standing");
 					player.connection.teleport(p.getX() + 0.5, p.getY() + 1, p.getZ() - 1.5, 0f, 40f);
-					break;
+					return;
 				}
 			}
+			// B209: the broken camp comes down a few seconds after, its chests' loot spilling out
+			var loot = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(camp).inflate(14, 8, 14));
+			Showcase.check(!loot.isEmpty(), "the war camp came down and its loot spilled out");
+			if (!loot.isEmpty()) {
+				player.connection.teleport(loot.get(0).getX(), loot.get(0).getY() + 1, loot.get(0).getZ() - 1.5, 0f, 40f);
+			}
 		}, -1, 0)));
+		// B209: a broken bandit camp comes down. The camp stands south of the village; its chief falls, the camp is gone from
+		// the village's records at once, and a couple of seconds later its tents, fire and chests come down top first, the
+		// loot spilling out on its trampled ground.
+		SCENES.put("camp_cleared", new Job("the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilled on the trampled ground", 900,
+			new Vec3(12.5, -53.0, 10.0), new Vec3(0.5, -60.0, 24.0), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.north(6);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos ground = STATION.offset(0, -1, 24);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, ground, io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
+			Showcase.check(lair != null, "the bandits made camp south of the village");
+			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
+			long start = level.getGameTime();
+			boolean[] fallen = {false};
+			return l -> {
+				long t = l.getGameTime() - start;
+				if (lair == null) {
+					return t > 40;
+				}
+				if (!fallen[0]) {
+					if (t < 100) {
+						return false; // (the camp standing, its band by the fire)
+					}
+					fallen[0] = true;
+					if (l.getEntity(lair.captain()) instanceof net.minecraft.world.entity.LivingEntity chief) {
+						chief.hurt(l.damageSources().playerAttack(player), 10000f);
+					}
+					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall).isEmpty(), "the chief fell and the village forgot the camp at once");
+					return false;
+				}
+				if (!io.github.jcondedata.aliveworkplace.threat.CampCleanup.clearing(l).isEmpty()) {
+					return false;
+				}
+				boolean gone = !(l.getBlockState(lair.pos()).getBlock() instanceof net.minecraft.world.level.block.CampfireBlock)
+					&& !l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(lair.pos()).inflate(10)).isEmpty();
+				Showcase.check(gone, "the camp came down and its loot spilled out");
+				return true;
+			};
+		}, null));
 		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
 		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
 		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.

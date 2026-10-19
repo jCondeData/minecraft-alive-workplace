@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208
+Roadmap items: 32.3, B208, B209
 
 ## What a player sees
 
@@ -22,6 +22,13 @@ Roadmap items: 32.3, B208
   kill at the camp. After a costly night the camp is weak, and a camp with nobody left sends no raid until it grows.
 - **Kill the captain** and the camp is broken up: the band scatters, the chest (the culture's loot table) is yours, the
   chronicle names who did it, and no camp comes for 5 days.
+- **The broken camp comes down** (B209, `threat/CampCleanup`). Its record, the scouts' report of it and its Defense page
+  row go at once; 40 ticks later its blocks above the ground layer go, top down over 100 ticks, with smoke. Only the
+  camp's own blocks still as the blueprint set them (`MaterialRules.matches`) go: a block a player put there or changed
+  stays, and the trampled ground stays. A chest's or barrel's items spill out as items. The camp's turn isn't saved: it
+  is found by matching the blueprint round the camp's middle in each of the four turns (at least a quarter must match).
+  A camp whose ground isn't loaded waits; the list is saved, so a restart mid-clearing carries on. A lair that leaves
+  in peace (`/workplace threat clear`, a quiet village) packs up the same way. A ship sinks or sails off as before.
 - **The Defense page.** Click the guards icon (the iron sword) on the Village Hall. Everyone who may open the hall may
   read it:
   - second row: the camp (whose it is), the captain by name, the strength (the icon counts it; the tooltip says how many
@@ -67,6 +74,13 @@ None. One new screen page (the Defense page).
   still refused, it's left out and logged. A lair whose captain can't spawn isn't made (before B208 it was recorded
   with no captain and "broken up" at the next round, by nobody); a raid counts only the raiders in the world. On
   Peaceful nothing hostile is spawned and players within 96 blocks are told once a day.
+- `campRuins` (false, B209): a broken camp stays as ruins, its fires put out, instead of coming down. Either way it is
+  forgotten at once.
+- Camps from before B209: a save without the `b209` mark lists every village that ever broke up a camp as unswept. The
+  hall's round looks 64 to 120 blocks out for a campfire on top with the bandit camp's blueprint round it (half of it
+  must match), with no living foe of ours (an `Enemy` with an `aliveworkplace_` tag) within 32 blocks and no standing
+  lair, running Bandit King story camp or bounty hideout within 24, and takes it down as above. The village is marked
+  swept once every column of that ring was loaded on one round (and its band, if any, is gone).
 
 ## Saved data
 
@@ -120,3 +134,9 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
 - `B208GameTests`: with the world refusing hostile mobs as MobsBeGone does, a camp's chief and band of 6 and a night
   attack's raiders are in the world, persistent, and still there 100 ticks later; with `forceThreatSpawns` off no camp is
   made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.
+- `B209GameTests`: the chief killed, the camp's record, band and scouts' report are gone at once and its campfire, two
+  chests, tents and five beds are gone within 150 ticks, while a player's gold block in a tent and the ground stay and
+  the chests' loot lies on the ground; a new camp is made after and stands; with `campRuins` the camp stays, its fire
+  out; a save and reload before and halfway through the clearing carries on; a save from before B209 with a broken
+  camp still standing is swept by the hall's round (not while its chief is alive), and only once.
+- Showcase scene `camp_cleared`: a bandit camp, its chief falling, the camp coming down.

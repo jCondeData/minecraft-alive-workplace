@@ -29,6 +29,12 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **A broken bandit camp no longer stands for good** (B209). Kill a camp's chief and the camp is gone from the village
+  at once (the hall, the Defense page and the scouts' reports forget it), and a couple of seconds later its tents, fire
+  and chests come down, top first; the loot in its chests spills out on the ground, and anything a player built or
+  changed there stays. Camps broken up before this update are found and taken down the same way when the village's
+  hall next checks for threats. A camp that leaves a village in peace packs up the same way. The new **Camp Ruins**
+  setting (off) leaves a broken camp standing as ruins instead, its fire out.
 - **Bandit camps and night raids have their mobs again in modpacks that block vanilla mobs (B208).** Cobbleverse ships
   MobsBeGone, which stops pillagers, vindicators, zombies and most other vanilla mobs from spawning, so camps stood
   empty and were "broken up" at once and night raids never came. Camps, raids, the Bandit King's fort and bounty bands

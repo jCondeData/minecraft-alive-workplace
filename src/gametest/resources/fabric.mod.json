@@ -42,6 +42,7 @@
 			"io.github.jcondedata.aliveworkplace.test.TableGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TablePreviewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TableSearchGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TableLibraryGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintUnlocksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageGameTests",

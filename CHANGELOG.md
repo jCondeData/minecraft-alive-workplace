@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Blueprint Table keeps your blueprints** (36.13). A Stored tab on the table lists the blueprints you put away in
+  it, with how many of each: Store Held or Store All puts them on its shelf, Take One Out hands one back. They belong to
+  the table (up to 200), stay through restarts and drop when the table is broken.
 - **Miners make their own pickaxe** (36.11). A Miner whose pickaxe wore out, or who has none, makes a new one at their blast furnace from what they mined: three cobblestone and two sticks (or two planks), iron from Journeyman and diamond from Expert. With nothing to make it from they wait, and the Storehouse board asks for what's missing. Setting: Miners Make Pickaxes (on).
 - **Search the Blueprint Table** (36.10). A search box over the library narrows its 150-odd builds as you type, by
   name ("inn"), id ("fishers_hut") or a job a build brings ("fisherman", "smith"), in capitals or not. A build's levels

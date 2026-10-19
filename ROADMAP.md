@@ -4746,7 +4746,7 @@ Depends on: nothing open.
   Jobs line; GameTests: the Miner mines from it, mined blocks come back over time (a fixed random, a config for how fast,
   the full pit refills only after days), nothing outside the pit is touched, a block a player placed in the pit isn't
   replaced, save and reload, the switch off; scene `quarry_build`; the existing Quarry Marker still works for free areas.
-- [ ] **36.13** **The Blueprint Table is a library** (owner, 2026-10-19). Once a build is unlocked and a blueprint for it bought, the Table keeps it:
+- [x] **36.13** (review: pending 2026-10-19) **The Blueprint Table is a library** (owner, 2026-10-19). Once a build is unlocked and a blueprint for it bought, the Table keeps it:
   the player stores bought blueprints in the table (a Stored tab or a "Store" button on a blueprint held in hand), sees them
   listed with a count, and takes one back out whenever they like, so a blueprint never has to sit in a chest or inventory.
   Stored blueprints are the table's own (a broken table drops them; the table saves them across restarts). Done when: GameTests for storing,

@@ -176,6 +176,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final StewardCivicScene stewardCivic = new StewardCivicScene();
 	private final CityTimelapseScene cityTimelapse = new CityTimelapseScene();
 	private final PieceLookScene pieceLook = new PieceLookScene();
+	/** SCENE=table_library (ROADMAP 36.13): blueprints stored in the Blueprint Table, listed with counts, one taken back out. */
+	private final TableLibraryScene tableLibrary = new TableLibraryScene();
 
 	private void onTick(Minecraft mc) {
 		skipBackupQuestion(mc);
@@ -188,6 +190,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("table".equals(System.getProperty("aliveworkplace.scene"))) {
 			tableScene(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("table_library".equals(System.getProperty("aliveworkplace.scene"))) {
+			tableLibrary.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("table_preview".equals(System.getProperty("aliveworkplace.scene"))) {

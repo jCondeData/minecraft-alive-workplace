@@ -86,6 +86,11 @@ SCENES = [
     S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, \"smith\" typed in the search box narrowed the library to the builds that bring a smith, a search for nothing said so, and a file was uploaded", 65,
       [("10_table_library", "Library"), ("10s_table_search", "Searched for \"smith\": the list narrowed"),
        ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+    # 36.13: the Blueprint Table keeps bought blueprints: Store All, listed with counts, one taken back out
+    S("table_library", "Builder", "Blueprint Table: a library for your blueprints",
+      "the table's Stored tab started empty, Store All put the four blueprints carried on its shelf (two Starter Cottages listed as 2 stored), and Take One Out handed a cottage back into the player's hand", 40,
+      [("01_stored_empty", "The Stored tab, empty"), ("02_stored", "Stored, with how many of each"),
+       ("03_taken_out", "One taken out: the count goes down"), ("04_in_hand", "Back in hand")]),
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,

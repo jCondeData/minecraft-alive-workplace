@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.InteractionResult;
@@ -14,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -21,9 +24,10 @@ import net.minecraft.world.phys.BlockHitResult;
 
 /**
  * Where blueprints come from: browse every blueprint on the server, see what it needs, take a copy
- * (for a Blank Blueprint), and upload your own .litematic/.schem files.
+ * (for a Blank Blueprint), and upload your own .litematic/.schem files. Bought blueprints can be stored in it and taken
+ * back out (36.13, {@link BlueprintTableBlockEntity}); breaking the table drops them.
  */
-public class BlueprintTableBlock extends HorizontalDirectionalBlock {
+public class BlueprintTableBlock extends HorizontalDirectionalBlock implements EntityBlock {
 	public static final MapCodec<BlueprintTableBlock> CODEC = simpleCodec(BlueprintTableBlock::new);
 
 	public BlueprintTableBlock(Properties properties) {
@@ -34,6 +38,22 @@ public class BlueprintTableBlock extends HorizontalDirectionalBlock {
 	@Override
 	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
 		return CODEC;
+	}
+
+	@Override
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new BlueprintTableBlockEntity(pos, state);
+	}
+
+	/** Broken (or replaced by another block): the blueprints stored in it drop where it stood (36.13). */
+	@Override
+	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moved) {
+		if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof BlueprintTableBlockEntity table) {
+			for (ItemStack stack : table.takeAll()) {
+				Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
+			}
+		}
+		super.onRemove(state, level, pos, newState, moved);
 	}
 
 	@Override

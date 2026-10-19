@@ -59,6 +59,9 @@ public final class TableServer {
 
 		Platform.get().serverbound(TablePayloads.RequestDetails.TYPE, TablePayloads.RequestDetails.CODEC, (payload, player) -> details(player, payload.id()));
 		Platform.get().serverbound(TablePayloads.Take.TYPE, TablePayloads.Take.CODEC, (payload, player) -> take(player, payload.table(), payload.id()));
+		Platform.get().serverbound(TablePayloads.Store.TYPE, TablePayloads.Store.CODEC, (payload, player) -> TableLibrary.store(player, payload.table(), payload.all()));
+		Platform.get().serverbound(TablePayloads.TakeStored.TYPE, TablePayloads.TakeStored.CODEC,
+			(payload, player) -> TableLibrary.takeOut(player, payload.table(), payload.stack()));
 		Platform.get().serverbound(TablePayloads.UploadChunk.TYPE, TablePayloads.UploadChunk.CODEC, (payload, player) -> upload(player, payload));
 		Platform.get().onPlayerLeave(player -> UPLOADS.remove(player.getUUID()));
 	}
@@ -68,7 +71,14 @@ public final class TableServer {
 		ServerLevel level = Players.level(player);
 		// Create's uploaded schematics join the library first (39.6), and the player hears what came of each new one.
 		CreateSchematics.sync(level.getServer()).forEach(player::sendSystemMessage);
-		Platform.get().send(player, new TablePayloads.Open(table, listing(level, BlueprintUnlocks.village(level, table)), canUpload(player)));
+		Platform.get().send(player, openPayload(player, table));
+	}
+
+	/** What {@link #open} sends: the library, and the blueprints stored in this table (36.13). */
+	public static TablePayloads.Open openPayload(ServerPlayer player, BlockPos table) {
+		ServerLevel level = Players.level(player);
+		return new TablePayloads.Open(table, listing(level, BlueprintUnlocks.village(level, table)), canUpload(player),
+			TableLibrary.stored(TableLibrary.at(player, table)), BlueprintTableBlockEntity.CAPACITY);
 	}
 
 	/** The listing of a Table far from any village. */
@@ -361,7 +371,7 @@ public final class TableServer {
 		}
 	}
 
-	private static boolean atTable(ServerPlayer player, BlockPos table) {
+	static boolean atTable(ServerPlayer player, BlockPos table) {
 		return player.level().getBlockState(table).is(ModBlocks.BLUEPRINT_TABLE)
 			&& player.position().distanceToSqr(Vec3.atCenterOf(table)) <= MAX_DISTANCE * MAX_DISTANCE;
 	}

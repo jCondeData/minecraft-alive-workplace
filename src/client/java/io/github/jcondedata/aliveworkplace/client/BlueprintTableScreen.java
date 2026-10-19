@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
+import io.github.jcondedata.aliveworkplace.table.TableLibrary;
 import io.github.jcondedata.aliveworkplace.table.TablePayloads;
 import io.github.jcondedata.aliveworkplace.table.TableSearch;
 import java.io.IOException;
@@ -33,13 +34,14 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The Blueprint Table: a list of every blueprint on the server with its size and materials, a button
  * to take a copy, and an "upload" view listing build files in the player's own blueprints folder. A search box above
- * the list (36.10) narrows it by name, id or job as the player types ({@link TableSearch}).
+ * the list (36.10) narrows it by name, id or job as the player types ({@link TableSearch}). The Stored tab (36.13) lists the
+ * bought blueprints kept in this table, with how many of each, to store more in it or take one back out.
  */
 public class BlueprintTableScreen extends Screen {
 	private static final int LIST_BG = TableStyle.LIST_BG;
 	private static final int ROW = TableStyle.ROW;
 
-	private enum Mode { LIBRARY, FILES }
+	private enum Mode { LIBRARY, FILES, STORED }
 
 	private final BlockPos table;
 	private List<TablePayloads.Entry> entries;
@@ -88,12 +90,22 @@ public class BlueprintTableScreen extends Screen {
 	private int gridScroll;
 	private int gridX, gridY, gridW, gridH, moreX, moreY, moreW;
 	private static final int ALL_ROW = 18;
+	/** The blueprints stored in this table (36.13), how many it holds at most, and the one picked in the Stored tab. */
+	private List<TablePayloads.Stored> stored;
+	private int capacity;
+	@Nullable
+	private ItemStack selectedStored;
+	private StoredList storedList;
+	private Button libraryTab, storedTab, takeOutButton, storeHeldButton, storeAllButton;
+	private static final int TAB_H = 14;
 
 	public BlueprintTableScreen(TablePayloads.Open open) {
 		super(Component.translatable("block.aliveworkplace.blueprint_table"));
 		this.table = open.table();
 		this.entries = open.entries();
 		this.canUpload = open.canUpload();
+		this.stored = open.stored();
+		this.capacity = open.capacity();
 	}
 
 	public BlockPos table() {
@@ -111,6 +123,11 @@ public class BlueprintTableScreen extends Screen {
 	public void refresh(TablePayloads.Open open) {
 		this.entries = open.entries();
 		this.canUpload = open.canUpload();
+		this.stored = open.stored();
+		this.capacity = open.capacity();
+		if (storedList != null) {
+			fillStored();
+		}
 		if (library != null) {
 			fillLibrary();
 			if (selectAfterRefresh != null) {
@@ -224,6 +241,19 @@ public class BlueprintTableScreen extends Screen {
 		files.fill();
 		addRenderableWidget(files);
 
+		// The Stored tab (36.13): its list keeps the full height, as the upload view's does.
+		storedList = new StoredList(minecraft, listW, listH, listTop);
+		storedList.setX(left + 8);
+		fillStored();
+		addRenderableWidget(storedList);
+		// The tabs sit in the header, after the title.
+		Component libTitle = Component.translatable("screen.aliveworkplace.table.tab_library");
+		int tx = left + 8 + font.width(title) + 10;
+		libraryTab = addRenderableWidget(Button.builder(libTitle, b -> showLibrary()).bounds(tx, top + 4, font.width(libTitle) + 12, TAB_H).build());
+		Component storedTitle = Component.translatable("screen.aliveworkplace.table.tab_stored", 999);
+		storedTab = addRenderableWidget(Button.builder(storedTabLabel(), b -> showStored())
+			.bounds(tx + libraryTab.getWidth() + 2, top + 4, font.width(storedTitle) + 12, TAB_H).build());
+
 		int by = top + panelH - 28;
 		int bw = (panelW - 24) / 2;
 		takeButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.take"), b -> take())
@@ -244,6 +274,12 @@ public class BlueprintTableScreen extends Screen {
 			mode = Mode.LIBRARY;
 			updateVisibility();
 		}).bounds(left + 24 + 2 * bw3, by, bw3, 20).build());
+		takeOutButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.take_out"), b -> takeOut())
+			.bounds(left + 8, by, bw3, 20).build());
+		storeHeldButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.store_held"), b -> store(false))
+			.bounds(left + 16 + bw3, by, bw3, 20).build());
+		storeAllButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.store_all"), b -> store(true))
+			.bounds(left + 24 + 2 * bw3, by, bw3, 20).build());
 		// Placed in render (it sits beside the "Materials" heading, below the preview).
 		Component all = Component.translatable("screen.aliveworkplace.table.all_materials");
 		allMaterialsButton = addRenderableWidget(Button.builder(all, b -> showAllMaterials())
@@ -299,15 +335,26 @@ public class BlueprintTableScreen extends Screen {
 
 	private void updateVisibility() {
 		boolean lib = mode == Mode.LIBRARY;
+		boolean st = mode == Mode.STORED;
 		library.visible = lib;
 		search.visible = lib;
+		storedList.visible = st;
+		takeOutButton.visible = st;
+		storeHeldButton.visible = st;
+		storeAllButton.visible = st;
+		takeOutButton.active = selectedStoredEntry() != null;
+		storeHeldButton.active = minecraft.player != null && TableLibrary.storable(minecraft.player.getMainHandItem()) && storedCount() < capacity;
+		storeAllButton.active = minecraft.player != null && carriesStorable() && storedCount() < capacity;
+		libraryTab.active = mode != Mode.LIBRARY;
+		storedTab.active = !st;
+		storedTab.setMessage(storedTabLabel());
 		takeButton.visible = lib;
 		uploadViewButton.visible = lib;
 		uploadViewButton.active = canUpload;
-		files.visible = !lib;
-		uploadButton.visible = !lib;
-		folderButton.visible = !lib;
-		backButton.visible = !lib;
+		files.visible = mode == Mode.FILES;
+		uploadButton.visible = mode == Mode.FILES;
+		folderButton.visible = mode == Mode.FILES;
+		backButton.visible = mode == Mode.FILES;
 		TablePayloads.Entry chosen = selectedEntry();
 		takeButton.active = chosen != null && chosen.unlocked(); // a locked or "???" build isn't handed out (26.10)
 		// The full list is of the build as shown, in the chosen style (26.11).
@@ -317,7 +364,7 @@ public class BlueprintTableScreen extends Screen {
 		}
 		allMaterialsButton.visible = lib && !allMaterials && materials != null && !materials.isEmpty();
 		allBackButton.visible = allMaterials;
-		uploadButton.active = !lib && selectedFile != null && !uploading && canUpload;
+		uploadButton.active = mode == Mode.FILES && selectedFile != null && !uploading && canUpload;
 	}
 
 	@Override
@@ -384,6 +431,126 @@ public class BlueprintTableScreen extends Screen {
 		}
 	}
 
+	// --- the Stored tab (36.13) ---------------------------------------------------------------
+
+	private Component storedTabLabel() {
+		return Component.translatable("screen.aliveworkplace.table.tab_stored", storedCount());
+	}
+
+	/** Blueprints stored in the table, in all (for the screenshot harness too). */
+	public int storedCount() {
+		return stored.stream().mapToInt(TablePayloads.Stored::count).sum();
+	}
+
+	/** Different blueprints the Stored tab lists (for the screenshot harness). */
+	public int storedKinds() {
+		return stored.size();
+	}
+
+	/** The Stored tab's rows, keeping the pick if it's still stored (else the first). */
+	private void fillStored() {
+		storedList.fill();
+		TablePayloads.Stored keep = selectedStoredEntry();
+		selectedStored = keep != null ? keep.stack() : stored.isEmpty() ? null : stored.get(0).stack();
+		for (StoredList.Row row : storedList.children()) {
+			if (selectedStored != null && ItemStack.isSameItemSameComponents(row.stored.stack(), selectedStored)) {
+				storedList.setSelected(row);
+			}
+		}
+		storedList.clampScrollAmount();
+	}
+
+	@Nullable
+	private TablePayloads.Stored selectedStoredEntry() {
+		if (selectedStored == null) {
+			return null;
+		}
+		for (TablePayloads.Stored s : stored) {
+			if (ItemStack.isSameItemSameComponents(s.stack(), selectedStored)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
+	/** The picked stored blueprint's name, or "" (for the screenshot harness). */
+	public String selectedStoredName() {
+		TablePayloads.Stored s = selectedStoredEntry();
+		return s == null ? "" : s.stack().getHoverName().getString();
+	}
+
+	/** How many of the picked stored blueprint the table holds, or 0 (for the screenshot harness). */
+	public int selectedStoredCount() {
+		TablePayloads.Stored s = selectedStoredEntry();
+		return s == null ? 0 : s.count();
+	}
+
+	private boolean carriesStorable() {
+		var inventory = minecraft.player.getInventory();
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
+			if (TableLibrary.storable(inventory.getItem(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Switches to the library (tab button; also for the screenshot harness). */
+	public void showLibrary() {
+		mode = Mode.LIBRARY;
+		updateVisibility();
+	}
+
+	/** Switches to the Stored tab (tab button; also for the screenshot harness). */
+	public void showStored() {
+		mode = Mode.STORED;
+		allMaterials = false;
+		fillStored();
+		requestStoredPreview();
+		updateVisibility();
+	}
+
+	/** Whether the Stored tab is showing (for the screenshot harness). */
+	public boolean storedOpen() {
+		return mode == Mode.STORED;
+	}
+
+	/** Picks a stored blueprint in the Stored tab. */
+	private void selectStored(TablePayloads.Stored entry) {
+		selectedStored = entry.stack();
+		requestStoredPreview();
+	}
+
+	/** The build a stored blueprint is for (as styled), if it is one the Table can draw. */
+	@Nullable
+	private static ResourceLocation buildOf(ItemStack stack) {
+		return io.github.jcondedata.aliveworkplace.blueprint.BlueprintItem.data(stack).map(d -> d.structure())
+			.or(() -> io.github.jcondedata.aliveworkplace.wonder.WonderPlanItem.plan(stack)
+				.map(p -> io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.idOf(p.wonder())))
+			.orElse(null);
+	}
+
+	private void requestStoredPreview() {
+		TablePayloads.Stored entry = selectedStoredEntry();
+		ResourceLocation id = entry == null ? null : buildOf(entry.stack());
+		if (id != null && !previews.containsKey(id) && !details.containsKey(id)) {
+			ClientPlayNetworking.send(new TablePayloads.RequestDetails(id));
+		}
+	}
+
+	/** Takes one of the picked stored blueprint out of the table (button action; public for the screenshot harness). */
+	public void takeOut() {
+		TablePayloads.Stored entry = selectedStoredEntry();
+		if (entry != null) {
+			ClientPlayNetworking.send(new TablePayloads.TakeStored(table, entry.stack()));
+		}
+	}
+
+	/** Stores the blueprint in hand, or with {@code all} every blueprint carried (button actions; public for the screenshot harness). */
+	public void store(boolean all) {
+		ClientPlayNetworking.send(new TablePayloads.Store(table, all));
+	}
+
 	/** Uploads the selected file (button action; public for the screenshot harness). */
 	public void upload() {
 		if (selectedFile == null || uploading) {
@@ -429,7 +596,8 @@ public class BlueprintTableScreen extends Screen {
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.render(g, mouseX, mouseY, partialTick);
 		long unlocked = entries.stream().filter(TablePayloads.Entry::unlocked).count();
-		Component sub = mode == Mode.LIBRARY
+		Component sub = mode == Mode.STORED ? Component.translatable("screen.aliveworkplace.table.stored_count", storedCount(), capacity)
+			: mode == Mode.LIBRARY
 			? !query.isBlank() ? Component.translatable("screen.aliveworkplace.table.search_count", shown.size(), entries.size())
 			: unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
 				: Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
@@ -459,6 +627,8 @@ public class BlueprintTableScreen extends Screen {
 				g.renderTooltip(font, List.of(hoveredStyle.getVisualOrderText(), Component.translatable("screen.aliveworkplace.table.style_hint")
 					.withStyle(net.minecraft.ChatFormatting.GRAY).getVisualOrderText()), mouseX, mouseY);
 			}
+		} else if (mode == Mode.STORED) {
+			renderStored(g, dx, dy, dw, mouseX, mouseY);
 		} else {
 			renderFileHelp(g, dx, dy, dw);
 		}
@@ -720,6 +890,49 @@ public class BlueprintTableScreen extends Screen {
 		return count >= 1000 ? (count / 1000) + "k" : String.valueOf(count);
 	}
 
+	/** The Stored tab's right side (36.13): the picked blueprint, how many are stored, its build in 3D, and what storing is. */
+	private void renderStored(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
+		int bottom = top + panelH - 46;
+		Component help = Component.translatable("screen.aliveworkplace.table.stored_help");
+		int helpH = 9 * font.split(help, w).size();
+		if (stored.isEmpty()) {
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.stored_empty"), x, y, w, TableStyle.BODY);
+			int ly = storedList.getY() + 8;
+			for (var line : font.split(Component.translatable("screen.aliveworkplace.table.stored_none"), storedList.getWidth() - 12)) {
+				g.drawString(font, line, storedList.getX() + 6, ly, TableStyle.LOADING, false);
+				ly += 10;
+			}
+			g.drawWordWrap(font, help, x, bottom - helpH, w, TableStyle.FAINT);
+			return;
+		}
+		TablePayloads.Stored entry = selectedStoredEntry();
+		if (entry == null) {
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.stored_pick"), x, y, w, TableStyle.BODY);
+			return;
+		}
+		g.renderItem(entry.stack(), x, y);
+		g.drawString(font, font.plainSubstrByWidth(entry.stack().getHoverName().getString(), w - 20), x + 20, y, TableStyle.NAME, false);
+		g.drawString(font, font.plainSubstrByWidth(Component.translatable("screen.aliveworkplace.table.stored_here", entry.count()).getString(), w - 20),
+			x + 20, y + 9, TableStyle.TITLE, false);
+		y += 20;
+		// The blueprint's own lines (size, style, where it's placed), as its tooltip has them.
+		List<Component> lines = entry.stack().getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(minecraft.level), minecraft.player,
+			net.minecraft.world.item.TooltipFlag.Default.NORMAL);
+		for (int i = 1; i < lines.size() && i < 5; i++) {
+			g.drawString(font, font.plainSubstrByWidth(lines.get(i).getString(), w), x, y, TableStyle.SUBLINE, false);
+			y += 10;
+		}
+		y += 2;
+		ResourceLocation id = buildOf(entry.stack());
+		TablePreview preview = id == null ? null : previews.get(id);
+		int ph = Math.min(120, bottom - helpH - 6 - y);
+		if (preview != null && ph >= 40) {
+			g.fill(x, y, x + w, y + ph, LIST_BG);
+			preview.render(g, x, y, w, ph);
+		}
+		g.drawWordWrap(font, help, x, bottom - helpH, w, TableStyle.FAINT);
+	}
+
 	private void renderFileHelp(GuiGraphics g, int x, int y, int w) {
 		g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.files_help"), x, y, w, 0xFFCCCCCC);
 		if (selectedFile != null) {
@@ -873,6 +1086,66 @@ public class BlueprintTableScreen extends Screen {
 			@Override
 			public Component getNarration() {
 				return entry.hidden() ? Component.translatable("screen.aliveworkplace.table.hidden_name") : Blueprints.displayName(entry.id());
+			}
+		}
+	}
+
+	/** The Stored tab's list (36.13): each stored blueprint with its icon and how many the table holds. */
+	private class StoredList extends ObjectSelectionList<StoredList.Row> {
+		StoredList(Minecraft mc, int width, int height, int y) {
+			super(mc, width, height, y, ROW);
+		}
+
+		void fill() {
+			clearEntries();
+			for (TablePayloads.Stored s : stored) {
+				addEntry(new Row(s));
+			}
+		}
+
+		@Override
+		public int getRowWidth() {
+			return width - 12;
+		}
+
+		@Override
+		protected int getScrollbarPosition() {
+			return getX() + width - 6;
+		}
+
+		@Override
+		protected void renderListBackground(GuiGraphics g) {
+			TableStyle.listBackground(g, getX(), getY(), width, height);
+		}
+
+		@Override
+		protected void renderListSeparators(GuiGraphics g) {
+		}
+
+		class Row extends ObjectSelectionList.Entry<Row> {
+			final TablePayloads.Stored stored;
+
+			Row(TablePayloads.Stored stored) {
+				this.stored = stored;
+			}
+
+			@Override
+			public void render(GuiGraphics g, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick) {
+				g.renderItem(stored.stack(), x + 1, y + 1);
+				g.drawString(font, font.plainSubstrByWidth(stored.stack().getHoverName().getString(), width - 24), x + 20, y + 1, TableStyle.NAME, false);
+				g.drawString(font, Component.translatable("screen.aliveworkplace.table.stored_row", stored.count()), x + 20, y + 10, TableStyle.SUBLINE, false);
+			}
+
+			@Override
+			public boolean mouseClicked(double mouseX, double mouseY, int button) {
+				StoredList.this.setSelected(this);
+				selectStored(stored);
+				return true;
+			}
+
+			@Override
+			public Component getNarration() {
+				return Component.translatable("screen.aliveworkplace.table.stored_narration", stored.stack().getHoverName(), stored.count());
 			}
 		}
 	}

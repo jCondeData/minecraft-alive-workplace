@@ -5127,6 +5127,19 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-e-1019-1313): mutation pass on M39 (Create) code against the Create compat tests (the ten Create
+  classes alone via the compat fabric.mod.json, about 2 min a run). 23 mutants (seed 39) in CreateSchematics,
+  CreateTrains, CaravanTrains, MachineWork, MechanicWork, CreateBuilds, MechanicRound and Kinetics: 11 killed, 12
+  survived. Seven survivors were real gaps, now killed: CreateSchematicCompatTests.oddNamesAreRefusedByName
+  (CreateSchematics:142, :246) and .aBlueprintAsNewAsItsFileIsCurrent (:254; lines as at 233ac917), VillageTrainGameTests
+  .aTrainsWhistleIsSeenAndHeardOverTheStation (CaravanTrains:487, :491), MechanicCompatTests
+  .aPartInHandWhenTheWorkStopsGoesBackOnce (MechanicWork:576, a part kept in hand and put back too: duplicated) and
+  .aMachineBuiltLaterJoinsARoundOfOne (MechanicRound:38). Five are equivalent: CreateTrains:97 (aim's early true is
+  gated by linked()), CaravanTrains:881 (taken()'s curve branch: shortens() already refuses a node a curve ends on),
+  MachineWork:537 (the walker re-checks a stale stand spot), MechanicWork:400 (canStillUse stops it before a tick),
+  CreateBuilds:78 (this Create port's bearing answers useItemOn; the fallback is for ports that pass). Fixed on the way:
+  a written Schematic naming a file with a NUL in it threw (InvalidPathException) instead of being refused by name.
+  mutate.py read every failing compat run as NO-COMPILE (mods' "- error: " log lines); it now matches javac's own lines.
 - 2026-10-19 (lane-c-1019-0953): Milestone 37 has no open item and no `(lane: c)` bug; `sessions.py next` lists nothing for
   lanes b, c, d or e, so the owner's question above (lane-e-1018-2212: which big milestone next?) still stands. This run
   killed three mutants the nightly mutation job left alive in M37 code (SupplyContainers:62, StorageNetworks:336,

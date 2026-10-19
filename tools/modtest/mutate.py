@@ -145,7 +145,8 @@ def run(cmd, root, timeout):
         return "TIMEOUT", time.time() - t, str(e.stdout or "")[-2000:]
     if code == 0:
         return "SURVIVED", time.time() - t, out[-1500:]
-    if re.search(r"Compilation failed|error: |compileJava FAILED|Execution failed for task '.*compile", out):
+    # javac's own lines only ("Foo.java:12: error: "): the compat suite's server log is full of mods' "- error: " warnings
+    if re.search(r"Compilation failed|\.java:\d+: error: |compileJava FAILED|Execution failed for task '.*compile", out):
         return "NO-COMPILE", time.time() - t, out[-1500:]
     return "KILLED", time.time() - t, out[-3000:]
 

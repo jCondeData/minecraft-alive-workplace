@@ -316,6 +316,24 @@ public class MechanicCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * 39.5's crew lead: the Mechanic whose toolbox is near a build leads its crew; one whose toolbox is
+	 * out of reach doesn't.
+	 */
+	//$ gametest_batch AREA '"mechanic_crew_lead"'
+	@GameTest(template = AREA, batch = "mechanic_crew_lead")
+	public void theMechanicNearABuildLeadsItsCrew(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		Villager mechanic = mechanic(helper);
+		BlockPos site = helper.absolutePos(LINE);
+		helper.assertTrue(MechanicWork.crewLead(level, site).filter(v -> v == mechanic).isPresent(),
+			"the Mechanic by the build doesn't lead its crew: " + MechanicWork.crewLead(level, site));
+		BlockPos far = helper.absolutePos(TOOLBOX).offset(MechanicWork.REACH + 4, 0, 0);
+		helper.assertTrue(MechanicWork.crewLead(level, far).isEmpty(), "a Mechanic leads the crew of a build out of reach");
+		helper.succeed();
+	}
+
+	/**
 	 * A round of one machine is back at its start every visit, so a machine built since then is found and joins it: the
 	 * Mechanic of a village's first millstone sees to its second one too.
 	 */

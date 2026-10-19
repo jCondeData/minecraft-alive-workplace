@@ -72,6 +72,20 @@ public class CreateBuildsGameTests implements FabricGameTest {
 	 * is checked; a site saved before 39.5 (no {@code kinetic_order}) loads in today's order, one saved after keeps its
 	 * order and its passes, and a build-site save without turning checks loads with none.
 	 */
+	/**
+	 * A kinetic-parts file for a mod that isn't here is skipped whole: this suite's {@code kinetic_parts/absent_mod.json}
+	 * names a block that does exist (the command block), but its mod is missing, so it's no part and no belt.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void aKineticPartsFileForAMissingModIsSkipped(GameTestHelper helper) {
+		var block = net.minecraft.world.level.block.Blocks.COMMAND_BLOCK.defaultBlockState();
+		helper.assertTrue(KineticParts.group(block) == -1 && !KineticParts.isBelt(block),
+			"a part of a file for a missing mod is known: group " + KineticParts.group(block) + ", belt " + KineticParts.isBelt(block));
+		helper.assertTrue(!KineticParts.any(), "kinetic parts known with only files for missing mods");
+		helper.succeed();
+	}
+
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void noContraptionsWithoutCreate(GameTestHelper helper) {

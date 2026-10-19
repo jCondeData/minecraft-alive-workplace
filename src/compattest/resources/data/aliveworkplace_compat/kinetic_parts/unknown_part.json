@@ -1,0 +1,5 @@
+{
+  "requires": "create",
+  "groups": [["aliveworkplace_compat:no_such_shaft"]],
+  "belts": ["aliveworkplace_compat:no_such_belt"]
+}

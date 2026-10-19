@@ -720,7 +720,7 @@ about 12% of that. For villager mods, the cost is pathfinding to distant points 
   runs green (blocked until they have run). Then the owner's own play session in the pack's client (carried over from
   Milestone 5). Done when: all of these have passed, and the owner has played.
 - [ ] **26.5** (approved: owner 2026-10-13, publish once 26.4 has passed and we feel ready; waits on 26.4) **Publish.** Done when: the pages are live and linked from the README.
-- [x] **26.6** (review: pending 2026-10-14) **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
+- [x] **26.6** (approved 2026-10-19) **Retrain a villager who already has a job** (owner's playtest, 2026-10-14: in Cobblemon villages almost
   every villager already works, so there's nobody to hire). Sneak-right-click any grown villager who has a job (vanilla,
   ours or another mod's, traded with or not; never a child or a nitwit) within about 4 blocks of one of our job blocks
   (the Blueprint Table and every workstation that picks one of our jobs), holding that job's item: the villager is
@@ -4636,7 +4636,7 @@ Depends on: nothing open.
   `aliveworkplace:village/camp_broken` to that player and to a second player in the party; a lair broken with no war
   party and no guard kills grants nothing; the generated quest's task is the advancement (a check in `generate.py`);
   `QuestbookCompatTests` passes. Nothing new to film.
-- [x] **36.4** (review: pending 2026-10-17) **The Signpost's boards say something.** The Signpost decoration (`tools/blueprints/decor.py`
+- [x] **36.4** (approved 2026-10-19) **The Signpost's boards say something.** The Signpost decoration (`tools/blueprints/decor.py`
   `signpost()`, four spruce wall signs) is built with blank boards. When a builder finishes one (any style), each board
   gets words, waxed so a passer-by can't edit them, the way the caravan road milestones are written
   (`CaravanRoads.signText`): the board facing a direction names the nearest other village whose hall lies that way
@@ -4647,7 +4647,7 @@ Depends on: nothing open.
   waxed boards with the expected words; a renamed village is renamed on it at the next dawn; a signpost in another
   style gets words too; a save and reload keeps them; the new lang lines pass `langcheck.py`; scene `signpost` (a
   signpost at a crossroads between two villages, each board up close).
-- [x] **36.5** (review: pending 2026-10-17) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
+- [x] **36.5** (approved 2026-10-19) **Read a long entry without clicking it.** In `ChoiceTableScreen` (the Village Hall and the Storehouse
   board) the pane on the right reads out the row under the mouse, but on the way to the pane the mouse crosses other
   rows and then leaves the list, so the pane falls back to the last button clicked: a long entry can only be read by
   clicking it, which also runs it. Three changes: the pane holds the last row hovered while the mouse moves from the
@@ -4806,7 +4806,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   mod's there. Done when: compat GameTests: a controller with three linked barrels counts their contents once, takes
   a porter's delivery and gives the builder what's asked; breaking the controller turns them back into three stores;
   the Storehouse board says "linked through a storage controller: N blocks"; scene `modded_storehouse` part one.
-- [x] **37.10** (review: pending 2026-10-18) **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
+- [x] **37.10** (approved 2026-10-19) **Tom's Simple Storage as the Storehouse's source.** A `toms_storage:inventory_connector` in the
   Storehouse's area is one store for everything it connects (the inventories touching it and those on its
   `inventory_cable`, `inventory_cable_connector` and framed cables, found by walking block ids), read and filled
   through the connector's item storage; the connected inventories drop out of the list. A `storage_terminal` or
@@ -4886,7 +4886,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   for a day. A player nearby can come along and watch. Done when: compat GameTests: a win puts that tier's loot in the
   store and turns the den inactive; a loss leaves it active; a tier 4 or higher den is never challenged; a den in use by a
   player (a player within 8 blocks) isn't challenged; scene `den_challenge` (`-Pcobblemon=true`).
-- [x] **38.5** (review: pending 2026-10-18) **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
+- [x] **38.5** (approved 2026-10-19) **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
   (`CobblemonMegas.megaAce`). Add: Trainer Leaders of a City-rank village, the Festival Cup's final round and the
   Stadium Day's visiting champions (35.x) get a Mega Stone ace too, and every villager trainer whose team can Mega
   Evolve wears a Mega Bracelet on their outfit (an outfit layer drawn with the pixel-art skill, shown only when Mega
@@ -4894,7 +4894,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   a Town-rank Leader's none; the Cup final's trainers have one; the bracelet layer is on exactly the trainers who can
   Mega Evolve; without Mega Showdown nothing changes (a GameTest); scene `mega_trainers` (a Leader Mega Evolving in a
   battle against the player).
-- [x] **38.6** (review: pending 2026-10-18) **Mega Stones and Key Stones from the village.** The Jeweller (M34) cuts Mega Stones and Key Stones:
+- [x] **38.6** (approved 2026-10-19) **Mega Stones and Key Stones from the village.** The Jeweller (M34) cuts Mega Stones and Key Stones:
   `luxury_recipes` files that take `mega_showdown:mega_stone_crystal` or `keystone_ore` (and gold, emeralds) to make
   `mega_showdown:keystone` and the stones in `#mega_showdown:mega_stone` for the Pokémon the village's trainers use;
   the Miner keeps the Key Stone ore and Mega meteorite ores they dig for the Jeweller; a player who beats every Trainer
@@ -4902,7 +4902,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   crystal and the makings in the store makes the stone; a Miner's find goes to the store, not the dump; the bracelet
   is given once; with M34 off the recipes simply don't run; scene `mega_jeweller`.
   - [x] **38.6a** (review: pending 2026-10-18) Change from the owner (2026-10-18): the Jeweler cuts Mega Stones only from materials the player provides through the Storehouse storage, never on his own initiative from nothing.
-- [x] **38.7** (review: pending 2026-10-18) **The Mega Shrine.** A new decoration blueprint, the Mega Shrine (a `mega_showdown:pedestal` on a dais
+- [x] **38.7** (approved 2026-10-19) **The Mega Shrine.** A new decoration blueprint, the Mega Shrine (a `mega_showdown:pedestal` on a dais
   of `mega_meteorid` bricks and blocks), listed at the Blueprint Table only when its blocks exist. A village with a
   finished shrine holds a partner show there on festival days (M28's partner shows): a village trainer Mega Evolves
   their ace by the pedestal, villagers off work gather and get +3 mood. Done when: the architect skill reviews its
@@ -4916,12 +4916,12 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   coffee, fruit punch). Done when: compat GameTests: a Chef with the makings cooks a level-1 dish and keeps 16; a
   level-1 Chef never cooks a level-4 dish; a villager who ate three kinds counts as a varied diet; the Camp Cook makes
   a curry; without Cobblecuisine the menu is today's (a GameTest); scene `cuisine_kitchen`.
-- [x] **38.9** (approved 2026-10-18) **Bean farms.** Farmers plant Cobblecuisine's beans on their fields when the store holds fewer than 16
+- [x] **38.9** (approved 2026-10-19) **Bean farms.** Farmers plant Cobblecuisine's beans on their fields when the store holds fewer than 16
   of a colour a dish on the menu needs, and harvest `cobblecuisine:bean_crop` when it's fully grown (its age property,
   read by name); the harvest goes to the store like other crops. Done when: compat GameTests: a farmer plants beans
   when the menu wants them, harvests only ripe ones, and puts them in the store; no beans are planted when nothing
   wants them; scene `bean_farm`.
-- [x] **38.10** (review: pending 2026-10-18) **Dishes for partners and luxuries.** Partner Pokémon (`CobblemonPartners`) are fed Cobblecuisine's
+- [x] **38.10** (approved 2026-10-19) **Dishes for partners and luxuries.** Partner Pokémon (`CobblemonPartners`) are fed Cobblecuisine's
   Poké Puffs and shakes from the store once a day, which counts as their treat (the partners' mood); and two dishes
   become luxuries (`luxuries` files: the deluxe shakes for Burghers every 4 days, the éclair for Nobles every 8),
   wanted only when Cobblecuisine is installed. Done when: compat GameTests: a partner is fed once a day and only from
@@ -4988,14 +4988,14 @@ the owner's port jar; M33's caravans (39.7).
   and part) copied; the builder checks it turns when done and lists what doesn't. Done when: compat GameTests: a
   blueprint of a water wheel, shafts, two cogwheels and a belt is built and turns; a cogwheel broken mid-build is
   rebuilt; a save and reload mid-build finishes it; scene `create_contraption`.
-- [x] **39.6** (review: pending 2026-10-18) **Create schematics at the Blueprint
+- [x] **39.6** (approved 2026-10-19) **Create schematics at the Blueprint
   Table.** A Create schematic is a structure `.nbt`, which `BlueprintImporter` already reads: the table also lists the
   files players uploaded to the server's Create schematics folder (`schematics/uploaded/<player>/`), and a written
   `create:schematic` item right-clicked on the table imports its file (its file name read from the item's data by
   name). Unknown blocks are counted and named as for other imports. Done when: compat GameTests: a schematic file in
   the uploaded folder appears at the table and imports; a written schematic item imports its file; a missing file
   says so; scene `create_schematic`.
-- [x] **39.7** (review: pending 2026-10-18) **Trains link villages (later item:
+- [x] **39.7** (approved 2026-10-19) **Trains link villages (later item:
   after 39.2 to 39.6).** A Train Station build (`create:track_station`), track laid by builders along a caravan road
   (`CaravanRoads`), and caravans (M33) that ride a train between two villages with stations instead of walking.
   Done when: compat GameTests: track is laid along a road between two stations; a caravan between them goes by train

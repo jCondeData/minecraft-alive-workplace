@@ -29,6 +29,7 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- The Blueprint Table no longer errors on a Create Schematic whose file name holds a hidden control character: it refuses it by name, like other bad names.
 - **The whole crowd sees the Mega Shrine's show** (B215). On a festival day the trainer at the shrine's pedestal now
   waits for the villagers off work to gather before Mega Evolving their ace (at most half a minute), and everyone who
   came cheers (+3 mood), even those at the back of the crowd. Before, the show could go off as the first villagers

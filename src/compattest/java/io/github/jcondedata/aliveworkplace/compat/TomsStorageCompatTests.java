@@ -227,6 +227,66 @@ public class TomsStorageCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A double chest whose one half a cable connector faces is joined whole: its other half isn't also the Storehouse's
+	 * own store, so the store is the connector alone and what lies in the far half counts once.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_double"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_double")
+	public void aDoubleChestOnACableCountsOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		network(helper, false);
+		// CHEST_2 (faced by the cable connector) and the half south of it: one double chest, its front east.
+		BlockPos farHalf = CHEST_2.south();
+		helper.setBlock(CHEST_2, Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.EAST)
+			.setValue(net.minecraft.world.level.block.ChestBlock.TYPE, net.minecraft.world.level.block.state.properties.ChestType.LEFT));
+		helper.setBlock(farHalf, Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.EAST)
+			.setValue(net.minecraft.world.level.block.ChestBlock.TYPE, net.minecraft.world.level.block.state.properties.ChestType.RIGHT));
+		put(helper, CHEST_1, new ItemStack(Items.COBBLESTONE, 10));
+		put(helper, farHalf, new ItemStack(Items.OAK_PLANKS, 20));
+		BlockPos storehouse = helper.absolutePos(STOREHOUSE);
+		helper.runAfterDelay(40, () -> {
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			helper.assertTrue(store.equals(List.of(helper.absolutePos(CONNECTOR))), "the store: " + rel(helper, store) + ", wanted the connector alone");
+			assertCount(helper, store, Items.OAK_PLANKS, 20);
+			assertCount(helper, store, Items.COBBLESTONE, 10);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A connector standing inside the plot being built (the area a worker's store list leaves out) isn't read as one
+	 * store: the chests it would join that stand outside the plot are each their own store again, and the connector,
+	 * part of what's being built over, is passed over.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_in_plot"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_in_plot")
+	public void aConnectorInsideThePlotIsPassedOver(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		network(helper, false);
+		put(helper, CHEST_1, new ItemStack(Items.COBBLESTONE, 10));
+		put(helper, CHEST_2, new ItemStack(Items.OAK_PLANKS, 20));
+		BlockPos storehouse = helper.absolutePos(STOREHOUSE);
+		BlockPos connector = helper.absolutePos(CONNECTOR);
+		// The plot: the connector and the terminal beside it, nothing else of the network.
+		net.minecraft.world.level.levelgen.structure.BoundingBox plot = net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			helper.absolutePos(TERMINAL), connector);
+		helper.runAfterDelay(40, () -> {
+			List<BlockPos> whole = SupplyContainers.find(level, storehouse, null);
+			helper.assertTrue(whole.equals(List.of(connector)), "outside any plot, the store: " + rel(helper, whole));
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, plot);
+			helper.assertFalse(store.contains(connector), "the connector inside the plot is a store: " + rel(helper, store));
+			List<BlockPos> outside = List.of(helper.absolutePos(CHEST_1), helper.absolutePos(CHEST_2), helper.absolutePos(CABINET));
+			helper.assertTrue(store.size() == 3 && store.containsAll(outside), "with the connector in the plot, the store: " + rel(helper, store)
+				+ ", wanted the two chests and the cabinet");
+			assertCount(helper, store, Items.COBBLESTONE, 10);
+			assertCount(helper, store, Items.OAK_PLANKS, 20);
+			helper.succeed();
+		});
+	}
+
 	/** A porter carries a miner's raw iron into the Storehouse: through the connector, into the network's chests. */
 	//$ gametest_ticks_batch AREA '1600' '"toms_porter"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "toms_porter")

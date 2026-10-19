@@ -4044,7 +4044,9 @@ final class JobScenes {
 				String[] names = {"Dara", "Odo"};
 				for (int i = 0; i < names.length; i++) {
 					Villager v = EntityType.VILLAGER.create(level);
-					v.moveTo(-2.5 + i * 4, -60, 3.5, 180, 0);
+					// The page lists who could take a block nearest the hall first: Dara stands nearer, so she's first and the
+					// pointer, resting on the first row, picks her.
+					v.moveTo(1.5 - i * 4, -60, 3.5, 180, 0);
 					v.setNoAi(true); // jobless villagers would take a free block on their own before the camera sees it
 					v.setCustomName(Component.literal(names[i]));
 					v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.NONE));
@@ -4063,8 +4065,9 @@ final class JobScenes {
 				new Step("02_who_takes_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
-						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString().startsWith("Odo"),
-							"Dara and Odo could take it: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString());
+						String first = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).getHoverName().getString();
+						String second = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString();
+						Showcase.check(first.startsWith("Dara") && second.startsWith("Odo"), "Dara and Odo could take it: " + first + ", " + second);
 					}
 				}, 40),
 				new Step("03_dara_porter", -1, 0, (level, player) -> {

@@ -1719,9 +1719,14 @@ final class JobScenes {
 			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
 			int[] ticks = {0};
 			boolean[] turned = {false};
-			int[] turnedAt = {0};
+			long[] turnedAt = {-1};
+			boolean[] felled = {false};
+			long start = level.getGameTime();
 			return l -> {
+				// B130: this check is asked once every 10 client ticks, so ticks[0] counts checks, not ticks: the walk and
+				// the Warlord's fall go by the game time (counting checks put the fall at about 3000 ticks, past the limit)
 				ticks[0]++;
+				long t = l.getGameTime() - start;
 				if (ticks[0] == 5) {
 					// B130: mustered a few ticks in: the guards take their jobs in a server task after the staging one (picked)
 					var mustered = io.github.jcondedata.aliveworkplace.guard.WarParties.muster(l, hall, player);
@@ -1741,17 +1746,18 @@ final class JobScenes {
 				}
 				// The player walks south at the head of the war party, stopping short of the camp's fire.
 				if (player.getZ() < STATION.getZ() + 20) {
-					player.connection.teleport(player.getX(), player.getY(), player.getZ() + 0.12, 0f, 0f);
+					player.connection.teleport(player.getX(), player.getY(), Math.min(STATION.getZ() + 20.5, STATION.getZ() + 0.5 + 0.12 * t), 0f, 0f);
 				}
 				if (!turned[0] && io.github.jcondedata.aliveworkplace.threat.Lairs.band(l, standing.get()).size() > 1
 						&& !io.github.jcondedata.aliveworkplace.guard.WarParties.at(l, standing.get()).isEmpty()) {
 					turned[0] = true;
-					turnedAt[0] = ticks[0];
+					turnedAt[0] = t;
 					Showcase.check(true, "the band turned out to meet the war party");
 				}
 				// The Warlord falls at the front (a scene can't wait out a whole battle): 300 ticks after the band turned out,
 				// or at 500 if it never did (B130: at a fixed 900 a slow runner at about 10 ticks a second hit the 80-second limit first).
-				boolean fall = turnedAt[0] > 0 ? ticks[0] == turnedAt[0] + 300 : ticks[0] == 500;
+				boolean fall = !felled[0] && (turnedAt[0] >= 0 ? t >= turnedAt[0] + 300 : t >= 500);
+				felled[0] |= fall;
 				if (fall && l.getEntity(standing.get().captain()) instanceof net.minecraft.world.entity.LivingEntity warlord) {
 					warlord.hurt(l.damageSources().playerAttack(player), 10000f);
 				} else if (fall) {

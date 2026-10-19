@@ -24,6 +24,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Pillager;
+import net.minecraft.world.entity.monster.Ravager;
 
 /**
  * B208 (the owner's live Cobbleverse server): bandit camps stood empty and were broken up at once, and night attacks
@@ -194,6 +195,30 @@ public class B208GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			helper.assertTrue(HostileSpawns.lastWarning().contains("Peaceful"), "the log line: " + HostileSpawns.lastWarning());
 			long told = seen.stream().filter(c -> c.getContents() instanceof TranslatableContents t && t.getKey().equals("message.aliveworkplace.threat.peaceful")).count();
 			helper.assertTrue(told == 1, "the player was told " + told + " times: " + seen);
+			helper.succeed();
+		});
+	}
+
+	/** A rider and its mount both refused (a pillager on a ravager): both are placed, and the rider is back in the saddle. */
+	//$ gametest_ticks_batch AREA '100' '"b208Rider"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "b208Rider")
+	public void b208ARefusedRiderIsPlacedOnItsMount(GameTestHelper helper) {
+		village(helper, true);
+		ServerLevel level = helper.getLevel();
+		helper.runAfterDelay(2, () -> {
+			Ravager ravager = EntityType.RAVAGER.create(level);
+			ravager.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(8, 2, 8)));
+			Pillager rider = EntityType.PILLAGER.create(level);
+			rider.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(8, 2, 8)));
+			helper.assertTrue(rider.startRiding(ravager, true), "the pillager couldn't mount the ravager");
+			try {
+				helper.assertTrue(HostileSpawns.add(level, ravager, "test raid", Difficulty.NORMAL), "the ravager wasn't placed");
+				helper.assertTrue(in(level, ravager) && in(level, rider), "not both in the world: ravager " + in(level, ravager) + ", rider " + in(level, rider));
+				helper.assertTrue(rider.getVehicle() == ravager, "the rider isn't on its mount: " + rider.getVehicle());
+			} finally {
+				rider.discard();
+				ravager.discard();
+			}
 			helper.succeed();
 		});
 	}

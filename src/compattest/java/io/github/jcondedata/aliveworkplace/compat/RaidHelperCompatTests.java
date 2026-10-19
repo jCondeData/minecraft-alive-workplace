@@ -26,6 +26,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -480,6 +482,76 @@ public class RaidHelperCompatTests implements FabricGameTest {
 			cleanUp(helper, at[1], player);
 			java.nio.file.Files.deleteIfExists(data.resolve("aliveworkplace_den_wardens.dat"));
 			java.nio.file.Files.deleteIfExists(data.resolve("aliveworkplace_den_challenges.dat"));
+		}
+		helper.succeed();
+	}
+
+	/** A raid Raid Dens no longer runs (gone from its list): the helpers' next look ends the hiring and they walk home. */
+	//$ gametest_batch 'CompatGameTests.AREA' '"raidHelpersGone"'
+	@GameTest(template = CompatGameTests.AREA, batch = "raidHelpersGone")
+	public void aRaidNoLongerRunningSendsTheHelpersHome(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		helper.assertTrue(RaidAssist.EXTENSION.present(), "Raid Dens 0.11.3's raids weren't reached by reflection");
+		BlockPos[] at = village(helper);
+		Villager master = master(helper);
+		ServerPlayer player = player(helper, at[1].offset(3, 0, 0), PRICE);
+		try {
+			RaidHelpers.hire(level, at[0], at[1], player);
+			UUID gone = UUID.randomUUID();
+			helper.assertTrue(RaidAssist.EXTENSION.call(a -> a.raid(level.getServer(), gone), java.util.Optional.<RaidAssist.Raid>empty()).isEmpty(),
+				"a raid Raid Dens doesn't list was found");
+			RaidHelpers.Hire hire = hire(helper, player);
+			hire.joined = true;
+			hire.raid = gone;
+			hire.nextStrike = level.getGameTime();
+			RaidHelpers.tick(level, hire);
+			helper.assertTrue(RaidHelpers.hireOf(level.getServer(), player.getUUID()).isEmpty() && RaidHelpers.homeward(level, master.getUUID()),
+				"the hiring for a raid that's over goes on");
+		} finally {
+			cleanUp(helper, at[1], player);
+		}
+		helper.succeed();
+	}
+
+	/** In the raid, a helper at its place by the den stands there: a walk it was on is dropped. */
+	//$ gametest_batch 'CompatGameTests.AREA' '"raidHelpersStand"'
+	@GameTest(template = CompatGameTests.AREA, batch = "raidHelpersStand")
+	public void aHelperAtItsPlaceByTheDenStandsStill(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos[] at = village(helper);
+		Villager master = master(helper);
+		ServerPlayer player = player(helper, at[1].offset(3, 0, 0), PRICE);
+		try {
+			RaidHelpers.hire(level, at[0], at[1], player);
+			RaidHelpers.Hire hire = hire(helper, player);
+			hire.joined = true;
+			BlockPos spot = at[1].offset(3, 0, 0); // (the first helper's place: three blocks east of the crystal)
+			master.teleportTo(spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5);
+			master.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(helper.absolutePos(POSTS[0]), 0.6f, 1));
+			RaidHelpers.tick(level, hire);
+			helper.assertFalse(master.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET), "the helper at its place by the den walks off");
+		} finally {
+			cleanUp(helper, at[1], player);
+		}
+		helper.succeed();
+	}
+
+	/** A raid joined right at the edge of the den's reach ({@link RaidHelpers#NEAR} blocks from it) is the den's raid. */
+	//$ gametest_batch 'CompatGameTests.AREA' '"raidHelpersEdge"'
+	@GameTest(template = CompatGameTests.AREA, batch = "raidHelpersEdge")
+	public void aRaidJoinedAtTheEdgeOfTheDensReachCounts(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos[] at = village(helper);
+		master(helper);
+		ServerPlayer player = player(helper, at[1].offset(3, 0, 0), PRICE);
+		try {
+			RaidHelpers.hire(level, at[0], at[1], player);
+			player.teleportTo(at[1].getX() + 0.5 + RaidHelpers.NEAR, at[1].getY() + 0.5, at[1].getZ() + 0.5);
+			stat(player, RaidHelpers.JOINED);
+			helper.assertTrue(hire(helper, player).joined && cheers(player) == 1,
+				"a raid joined " + player.position().distanceTo(net.minecraft.world.phys.Vec3.atCenterOf(at[1])) + " blocks from the den: " + cheers(player) + " cheers");
+		} finally {
+			cleanUp(helper, at[1], player);
 		}
 		helper.succeed();
 	}

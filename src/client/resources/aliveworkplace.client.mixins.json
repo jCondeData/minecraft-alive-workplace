@@ -6,7 +6,9 @@
 		"ButtonTooltipMixin",
 		"VillagerModelMixin",
 		"LegendNameMixin",
-		"LegendNameShownMixin"
+		"LegendNameShownMixin",
+		"JobPlateShownMixin",
+		"JobPlateTextMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -96,6 +96,10 @@ public final class Fishers {
 		level.playSound(null, villager, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1f);
 		tell(player, Component.translatable("message.aliveworkplace.fisher.started", villager.getDisplayName(), SupplyContainers.RADIUS),
 			ChatFormatting.GREEN);
+		Component later = io.github.jcondedata.aliveworkplace.work.Jobs.startsLater(villager); // outside their hours (B220)
+		if (later != null) {
+			tell(player, later, ChatFormatting.YELLOW);
+		}
 		return InteractionResult.SUCCESS;
 	}
 

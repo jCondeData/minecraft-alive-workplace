@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade
   rails, Create track, train schedules, signals, railway casing and train controls. Without a Conductor a jobless
   villager still drives. Behind the Village trains setting.
+- **Any mod's spruce chair will do** (37.13; 2.1, behind its gate). A furnished build no longer insists on one
+  furniture mod's piece: bring CobbleFurnies' or Cozy Home's spruce chair where the build asked for Handcrafted's and
+  the builder builds yours, in the same place and facing the same way (the first mod in the furniture mods list when the
+  chest holds several). The material list book shows the piece once, "Spruce Chair (any furniture mod)", with each
+  mod's piece on hover. Chairs, tables, couches, desks, counters, cupboards, nightstands, drawers and lamps; pieces
+  already built stay, and a piece no installed mod makes is the plain one as before.
 ### Changed
 - **Cobblecuisine dishes are asked for at the Village Hall** (38.8a). The Chef no longer cooks Cobblecuisine's dishes on
   his own: open the hall, click the minecart and pick the new **Dishes** tab, then click a dish to ask for 4 (shift: 16,
@@ -29,6 +35,31 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Graves no longer clutter the village** (B222). The Undertaker walks to each grave lying in a street, a field or on
+  a doorstep and lays it in the next free row of the village's Graveyard; a village with no Graveyard gets a small plot
+  of three rows near the hall. Everything in the grave is kept (name, job, level, trades, partner) and the villager can
+  be brought back from there. Graves already scattered in your world are moved too. Setting: `gravesToGraveyard` (on).
+- **Look at a villager to see its job and level** (B221). Point your crosshair at a working villager up close and a
+  plate over its head reads "Fisherman, Journeyman" ("Dara — Fisherman, Journeyman" for one with a name). Every job
+  shows, ours and vanilla's; jobless villagers and nitwits show nothing new, and no villager's name is changed.
+- **A villager handed the item for their job gets straight to it** (B220). A Fisherman given a rod late in the work
+  day stood about for a second before fishing; now the work starts within a tick, as it does for a Builder given a
+  blueprint. Handed one outside their work hours, a villager now says when they start ("in about 8 minutes") instead
+  of standing there with no word; at night they still sleep first.
+- **A Miner stores everything they dig** (B224). Stone, cobblestone, deepslate, andesite, diorite, granite, tuff,
+  gravel and dirt go into the chests by the blast furnace along with the ores. When those chests are full (or there
+  are none), the rest goes to the village Storehouse instead of being dropped on the ground to vanish, and ores always
+  get the room first: a stack of stone moves on to the Storehouse to make way for them.
+- **A Builder with no chests by its bench builds from the village Storehouse again** (B226). The Storehouse only
+  counted while its Porter was in reach, so with the Porter asleep at home far off (or in a chunk that wasn't loaded)
+  the Builder said "No chests by its bench" and waited, though everything was in the Storehouse's chests. Now the
+  Storehouse counts by its block, Porter or not.
+- **A broken bandit camp gives the land back** (B225). When a camp came down it left its levelled pad and its patch of
+  trampled earth and gravel for good, so the land round a village got scarred as camps came and went. Now a camp
+  remembers the ground it was set on, and once it is down that ground comes back: the hill it cut into, the hollow it
+  filled, the grass. Camps made before this update have their pad blended into the land round them instead (grass on
+  top, no trampled earth or gravel, no sharp steps). With Camp Ruins on, the tents stay but the open ground round them
+  goes back. Anything a player built there stays.
 - The Blueprint Table no longer errors on a Create Schematic whose file name holds a hidden control character: it refuses it by name, like other bad names.
 - **The Firewarden puts out a fire on a high roof** (B218). A fire on the ridge of a pitched roof, such as the Starter
   Cottage's, had nowhere within a bucket's throw to stand, so the Firewarden waited by the grindstone while it spread

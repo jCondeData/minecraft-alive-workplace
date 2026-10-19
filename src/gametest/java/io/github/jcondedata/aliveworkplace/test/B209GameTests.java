@@ -27,7 +27,7 @@ import net.minecraft.world.phys.AABB;
 /**
  * B209 (the owner's live server): a bandit camp stood for good after its chief was killed and its band beaten, and could
  * still be found. Now the camp is gone from the village's records at once and its blocks come down a few seconds later
- * (only its own, still unchanged; its chests' loot spills out; its ground stays), or with {@code campRuins} it stays as
+ * (only its own, still unchanged; its chests' loot spills out; its ground goes back to what it was, B225), or with {@code campRuins} it stays as
  * ruins with its fire out. A reload mid-clearing carries on, a camp broken up before the fix (its record gone, its tents
  * standing) is found and cleared by the hall's round in a world saved before it, and a new camp can be made after.
  */
@@ -114,6 +114,7 @@ public class B209GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 		BlockPos hall = village(helper);
 		ServerLevel level = helper.getLevel();
 		helper.runAfterDelay(2, () -> {
+			BlockState groundState = level.getBlockState(helper.absolutePos(CAMP)); // (the land before the camp, B225)
 			Lairs.Lair lair = camp(helper, hall);
 			BlockPos middle = lair.pos();
 			int[] before = count(level, middle);
@@ -121,7 +122,7 @@ public class B209GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 			BlockPos gold = someWool(level, middle);
 			level.setBlockAndUpdate(gold, Blocks.GOLD_BLOCK.defaultBlockState());
 			BlockPos ground = middle.below();
-			BlockState groundState = level.getBlockState(ground);
+			helper.assertTrue(ground.equals(helper.absolutePos(CAMP)), "the camp's middle isn't over its ground: " + middle);
 			killChief(level, lair);
 			helper.assertTrue(Lairs.near(level, hall).isEmpty() && BanditCamps.all(level).isEmpty(), "the camp is still recorded after its chief fell");
 			helper.assertTrue(Scouts.known(level, hall).isEmpty(), "the scouts still know a camp");
@@ -132,7 +133,7 @@ public class B209GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 				int[] after = count(level, middle);
 				helper.assertTrue(after[0] == 0 && after[1] == 0 && after[2] == 0 && after[3] == 0, "the camp still stands: " + str(after));
 				helper.assertTrue(level.getBlockState(gold).is(Blocks.GOLD_BLOCK), "the player's block was taken");
-				helper.assertTrue(level.getBlockState(ground).equals(groundState), "the camp's ground was taken: " + level.getBlockState(ground));
+				helper.assertTrue(level.getBlockState(ground).equals(groundState), "the camp's ground isn't back to the land's: " + level.getBlockState(ground));
 				long loot = level.getEntitiesOfClass(ItemEntity.class, new AABB(middle).inflate(10)).stream().mapToInt(i -> i.getItem().getCount()).sum();
 				helper.assertTrue(loot > 0, "the chests' loot didn't spill out");
 				helper.assertTrue(CampCleanup.clearing(level).isEmpty(), "the clearing never ended");

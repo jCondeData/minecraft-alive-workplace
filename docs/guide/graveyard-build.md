@@ -31,4 +31,7 @@ Once a builder finishes the Graveyard, they sell its upgrade's blueprint as well
 
 Sneak-right-click a villager by the brewing stand with a **golden apple** (or a totem of undying) and they become the **Undertaker** (left alone, a jobless villager takes a brewing stand as a cleric). A grown villager with a job or a name who dies leaves a **grave** where they fell. With a golden apple, a healing potion or a totem in the chest, the undertaker walks to the nearest grave within 32 blocks and brings them back: job, level, trades and name as they were. Without one they ask for a golden apple on the storehouse's requests board. See [Village life](village-life.md).
 
+The undertaker brings the village's graves here: each grave lying about the village is laid in the next free slot of
+the yard's rows, so the streets stay clear, and the dead are brought back from here as from anywhere.
+
 Near a [Village Hall](village-hall.md) every finished building counts toward the village's rank (a Village needs 5 of them, a Town 12, a City 25, besides villagers and research), and a Village Map drawn at the hall marks it with a pink banner (healing and graves).

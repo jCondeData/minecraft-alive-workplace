@@ -1778,15 +1778,31 @@ final class JobScenes {
 		}, -1, 0)));
 		// B209: a broken bandit camp comes down. The camp stands south of the village; its chief falls, the camp is gone from
 		// the village's records at once, and a couple of seconds later its tents, fire and chests come down top first, the
-		// loot spilling out on its trampled ground.
-		SCENES.put("camp_cleared", new Job("the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilled on the trampled ground", 900,
+		// loot spilling out on its trampled ground. B225: the camp is made on a grassy rise, and once it is down the rise is
+		// back as it was (its slope and grass, no levelled pad, trampled earth or gravel).
+		SCENES.put("camp_cleared", new Job("the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilling out, and the grassy rise it had levelled came back as it was", 900,
 			new Vec3(12.5, -53.0, 10.0), new Vec3(0.5, -60.0, 24.0), (level, player) -> {
 			level.setDayTime(1000);
 			BlockPos hall = STATION.north(6);
 			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			BlockPos ground = STATION.offset(0, -1, 24);
-			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, ground, io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
+			// A grassy rise across the site, higher to the east (B225): the camp levels it, and puts it back when it goes.
+			java.util.Map<BlockPos, Integer> land = new java.util.HashMap<>();
+			for (int dx = -12; dx <= 12; dx++) {
+				for (int dz = -11; dz <= 11; dz++) {
+					int rise = Math.max(0, Math.min(3, (dx + 6) / 4 - Math.max(0, Math.abs(dz) - 8)));
+					BlockPos column = ground.offset(dx, 0, dz);
+					for (int y = 0; y <= rise; y++) {
+						level.setBlock(column.above(y), (y == rise ? Blocks.GRASS_BLOCK : Blocks.DIRT).defaultBlockState(), 2);
+					}
+					for (int y = rise + 1; y <= 8; y++) {
+						level.setBlock(column.above(y), Blocks.AIR.defaultBlockState(), 2);
+					}
+					land.put(column, ground.getY() + rise);
+				}
+			}
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, ground.above(land.get(ground) - ground.getY()), io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
 			Showcase.check(lair != null, "the bandits made camp south of the village");
 			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
 			long start = level.getGameTime();
@@ -1813,6 +1829,14 @@ final class JobScenes {
 				boolean gone = !(l.getBlockState(lair.pos()).getBlock() instanceof net.minecraft.world.level.block.CampfireBlock)
 					&& !l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(lair.pos()).inflate(10)).isEmpty();
 				Showcase.check(gone, "the camp came down and its loot spilled out");
+				int off = 0;
+				for (var e : land.entrySet()) {
+					BlockPos top = l.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, e.getKey()).below();
+					if (top.getY() != e.getValue() || !l.getBlockState(top).is(Blocks.GRASS_BLOCK)) {
+						off++;
+					}
+				}
+				Showcase.check(off == 0, "the rise the camp levelled is back as it was, grass on top, no trampled earth (" + off + " columns off)");
 				return true;
 			};
 		}, null));
@@ -2336,6 +2360,24 @@ final class JobScenes {
 			Villager u = picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
 			chest(level, STATION.east(2), new ItemStack(Items.GOLDEN_APPLE, 2));
 			return l -> n(ModAttachments.VILLAGERS_REVIVED, u) >= 1 && l.getEntity(id) instanceof Villager back && back.isAlive();
+		}, null));
+		// B222: Mira dies in the street; with no golden apple, the undertaker lays her grave in the plot by the hall (no Graveyard yet)
+		SCENES.put("undertaker_graveyard", new Job("the undertaker laid Mira's grave from the street in the plot by the hall", 2400,
+			new Vec3(4.5, -54, 12), new Vec3(-2, -59.5, 0), (level, player) -> {
+			BlockPos hall = new BlockPos(-3, -60, -8);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos bench = new BlockPos(-8, -60, -3);
+			level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+			Villager mira = EntityType.VILLAGER.spawn(level, new BlockPos(6, -60, 6), MobSpawnType.COMMAND);
+			Jobs.employ(level, mira, bench, ModVillagers.BLUEPRINT_TABLE_POI, ModVillagers.BUILDER);
+			mira.setVillagerData(mira.getVillagerData().setLevel(3));
+			mira.setCustomName(Component.literal("Mira"));
+			mira.kill();
+			List<BlockPos> street = io.github.jcondedata.aliveworkplace.grave.Graves.near(level, new BlockPos(6, -60, 6), 4);
+			picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
+			chest(level, STATION.east(2));
+			return l -> !street.isEmpty() && !l.getBlockState(street.get(0)).is(ModBlocks.GRAVE)
+				&& io.github.jcondedata.aliveworkplace.grave.Graveyards.plot(l, hall).stream().anyMatch(p -> l.getBlockState(p).is(ModBlocks.GRAVE));
 		}, null));
 		SCENES.put("innkeeper", new Job("a traveller came to stay at the inn", 1200, CAMERA, TARGET, (level, player) -> {
 			for (int x = 3; x <= 5; x += 2) {

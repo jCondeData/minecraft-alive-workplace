@@ -104,6 +104,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final RealmEdictsScene realmEdicts = new RealmEdictsScene();
 	private final ReliefScene relief = new ReliefScene();
 	private final LegendsHallScene legendsHall = new LegendsHallScene();
+	private final JobPlateScene jobPlate = new JobPlateScene();
 	private final CupPageScene cupPage = new CupPageScene();
 	private final CupBoutScene cupBout = new CupBoutScene();
 	private final CupMatchScene cupMatch = new CupMatchScene();
@@ -133,6 +134,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final LuxuryWorkshopsScene luxuryWorkshops = new LuxuryWorkshopsScene();
 	private final GrandHousesScene grandHouses = new GrandHousesScene();
 	private final FurnishedHomeScene furnishedHome = new FurnishedHomeScene();
+	private final FurnitureAnyModScene furnitureAnyMod = new FurnitureAnyModScene();
 	private final FurnishedWorkplacesScene furnishedWorkplaces = new FurnishedWorkplacesScene();
 	private final SeatsAndBedsScene seatsAndBeds = new SeatsAndBedsScene();
 	private final ModdedStorehouseScene moddedStorehouse = new ModdedStorehouseScene();
@@ -342,6 +344,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			furnishedHome.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("furniture_any_mod".equals(System.getProperty("aliveworkplace.scene"))) {
+			furnitureAnyMod.tick(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("furnished_workplaces".equals(System.getProperty("aliveworkplace.scene"))) {
 			furnishedWorkplaces.tick(mc, mc.getSingleplayerServer());
 			return;
@@ -440,6 +446,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("founder_colony".equals(System.getProperty("aliveworkplace.scene"))) {
 			founderColony.tick(mc);
+			return;
+		}
+		if ("job_plate".equals(System.getProperty("aliveworkplace.scene"))) {
+			jobPlate.tick(mc);
 			return;
 		}
 		if ("legends_hall".equals(System.getProperty("aliveworkplace.scene"))) {

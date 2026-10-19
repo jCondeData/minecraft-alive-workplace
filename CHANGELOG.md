@@ -60,6 +60,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Raiders no longer spawn stuck on their war camp's fences** (B130). A raid that gathered in or next to its own camp
+  put each raider on top of whatever stood highest where it was drawn, so pillagers stood on the camp's fences and the
+  ravager on a tent, and never set off (the ram never reached the Palisade Gate). Raiders now gather only on ground a
+  mob can stand and walk from, no higher than a step over the gathering point; another spot is drawn, else the nearest.
 - **Villagers no longer get stuck under flower boxes** (B156). The game's path finding counts every trapdoor as open,
   so a villager walking along a house front could walk into the gap under a window's flower box (a closed trapdoor at
   head height), bump its head and stand there for the rest of the day; a Printer walking up to the Print Shop sometimes

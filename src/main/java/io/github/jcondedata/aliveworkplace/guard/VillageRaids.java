@@ -725,19 +725,83 @@ public final class VillageRaids {
 	 * Where a raider gathering at {@code from} stands: within {@code scatter} blocks of it, on the ground; one wading in
 	 * ({@code wades}, from a ship, 32.8) on the water there, looking down from just over it. When the gathering point is
 	 * on ground where mobs move, so is every raider (B176): a spot over the edge of it is drawn again, up to 8 times, and
-	 * else the raider stands at the point itself.
+	 * else the raider stands at the point itself. On land a spot must be ground a mob stands and walks from (B130): not
+	 * the top of a fence, a wall or a camp's roof (a raid gathering in its own war camp left pillagers on its fences and
+	 * the ravager on a tent, stuck); such a spot is drawn again, and when none comes up the nearest good ground round the
+	 * point is taken.
 	 */
 	private static BlockPos near(ServerLevel level, BlockPos from, int scatter, boolean wades, RandomSource random) {
 		boolean live = level.isPositionEntityTicking(from);
-		BlockPos column = from;
-		for (int tries = 0; tries < 8; tries++) {
-			BlockPos drawn = from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter);
-			if (!live || level.isPositionEntityTicking(drawn)) {
-				column = drawn;
-				break;
+		if (wades) {
+			BlockPos column = from;
+			for (int tries = 0; tries < 8; tries++) {
+				BlockPos drawn = from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter);
+				if (!live || level.isPositionEntityTicking(drawn)) {
+					column = drawn;
+					break;
+				}
+			}
+			return io.github.jcondedata.aliveworkplace.threat.Ships.standAt(level, column, from.getY() + 2);
+		}
+		// The ground's height: the lowest good footing round the point (the point itself may lie on a camp's palisade or roof).
+		int ground = Integer.MAX_VALUE;
+		for (int dx = -scatter; dx <= scatter; dx++) {
+			for (int dz = -scatter; dz <= scatter; dz++) {
+				BlockPos column = from.offset(dx, 0, dz);
+				if (level.isLoaded(column)) {
+					BlockPos spot = surface(level, column);
+					if (spot.getY() < ground && io.github.jcondedata.aliveworkplace.work.Walker.canStand(level, spot)) {
+						ground = spot.getY();
+					}
+				}
 			}
 		}
-		return wades ? io.github.jcondedata.aliveworkplace.threat.Ships.standAt(level, column, from.getY() + 2) : surface(level, column);
+		if (ground == Integer.MAX_VALUE) {
+			ground = from.getY();
+		}
+		BlockPos first = null;
+		for (int tries = 0; tries < 12; tries++) {
+			BlockPos drawn = from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter);
+			if (live && !level.isPositionEntityTicking(drawn)) {
+				continue;
+			}
+			BlockPos spot = surface(level, drawn);
+			if (standsOn(level, spot, ground)) {
+				return spot;
+			}
+			if (first == null) {
+				first = spot;
+			}
+		}
+		// None drawn: the nearest good ground round the point, ring by ring, else as before.
+		for (int r = 0; r <= scatter + 4; r++) {
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dz = -r; dz <= r; dz++) {
+					if (Math.max(Math.abs(dx), Math.abs(dz)) != r) {
+						continue;
+					}
+					BlockPos column = from.offset(dx, 0, dz);
+					if (!level.isLoaded(column) || live && !level.isPositionEntityTicking(column)) {
+						continue;
+					}
+					BlockPos spot = surface(level, column);
+					if (standsOn(level, spot, ground)) {
+						return spot;
+					}
+				}
+			}
+		}
+		return first != null ? first : surface(level, from);
+	}
+
+	/** Ground a raider stands and walks from (B130): firm footing with room for its head, no higher than a step over {@code ground}. */
+	private static boolean standsOn(ServerLevel level, BlockPos spot, int ground) {
+		return spot.getY() <= ground + 1 && io.github.jcondedata.aliveworkplace.work.Walker.canStand(level, spot);
+	}
+
+	/** Where a raider gathering at {@code from} within {@code scatter} blocks is put down on land (tests: B130). */
+	public static BlockPos spawnSpot(ServerLevel level, BlockPos from, int scatter, RandomSource random) {
+		return near(level, from, scatter, false, random);
 	}
 
 	/** A place to stand at or right beside {@code portal}, at its height (raiders stepping out of it). */

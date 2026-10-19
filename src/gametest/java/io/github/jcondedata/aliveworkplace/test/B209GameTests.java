@@ -1,27 +1,42 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
+import io.github.jcondedata.aliveworkplace.bounty.Bounties;
 import io.github.jcondedata.aliveworkplace.guard.BanditCamps;
 import io.github.jcondedata.aliveworkplace.guard.Scouts;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.mc.Lookup;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
+import io.github.jcondedata.aliveworkplace.story.ArcState;
 import io.github.jcondedata.aliveworkplace.threat.CampCleanup;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
 
 /**
@@ -256,6 +271,134 @@ public class B209GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 					helper.assertTrue(CampCleanup.clearing(level).isEmpty() && count(level, next.pos())[0] == 1, "a swept village was swept again");
 					helper.succeed();
 				});
+			});
+		});
+	}
+
+	/** The bandit camp blueprint's spot for its fire (Lairs.FIRE): the camp's middle. */
+	private static final BlockPos FIRE_SPOT = new BlockPos(7, 1, 6);
+
+	/**
+	 * A camp left standing from before B209, as the old code set it down: unturned, no record, no band, no ground record,
+	 * its village still to be swept. The test area's barrier roof over it is opened (the sweep reads the sky's height).
+	 * Returns the blueprint's blocks above its ground layer, in the world.
+	 */
+	private static List<BlockPos> oldCamp(GameTestHelper helper, BlockPos hall, BlockPos middle) {
+		ServerLevel level = helper.getLevel();
+		StructureTemplate template = level.getStructureManager().get(Lairs.BANDIT_CAMP).orElseThrow();
+		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(Rotation.NONE);
+		BlockPos origin = middle.subtract(FIRE_SPOT);
+		template.placeInWorld(level, origin, origin, settings, RandomSource.create(41), 2);
+		for (BlockPos p : BlockPos.betweenClosed(middle.offset(-9, 1, -9), middle.offset(9, 40, 9))) {
+			if (level.getBlockState(p).is(Blocks.BARRIER)) {
+				level.setBlock(p, Blocks.AIR.defaultBlockState(), 2);
+			}
+		}
+		Lairs.Data data = Lairs.Data.get(level);
+		CompoundTag tag = data.save(new CompoundTag(), level.registryAccess());
+		tag.putBoolean("b209", true);
+		ListTag unswept = new ListTag();
+		CompoundTag at = new CompoundTag();
+		at.putLong("hall", hall.asLong());
+		unswept.add(at);
+		tag.put("unswept", unswept);
+		data.read(tag);
+		List<BlockPos> standing = new ArrayList<>();
+		for (Blueprint.Entry e : Blueprint.fromTemplate(Lairs.BANDIT_CAMP, template, Lookup.lookup(BuiltInRegistries.BLOCK)).blocks()) {
+			if (e.pos().getY() >= 1 && !e.state().isAir()) {
+				standing.add(origin.offset(e.pos()));
+			}
+		}
+		return standing;
+	}
+
+	/** An old camp set down unturned (its turn 0) is found by the sweep with that turn and comes all the way down, its beds and fire too. */
+	//$ gametest_ticks_batch AREA '300' '"b209OldUnturned"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "b209OldUnturned")
+	public void b209AnOldUnturnedCampComesAllTheWayDown(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		CampCleanup.SWEEP_FROM = 0;
+		CampCleanup.SWEEP_TO = 26;
+		BlockPos middle = helper.absolutePos(CAMP.above());
+		helper.runAfterDelay(2, () -> {
+			oldCamp(helper, hall, middle);
+			int[] before = count(level, middle);
+			helper.assertTrue(before[0] == 1 && before[3] == 10, "the old camp as set down: " + str(before));
+			CampCleanup.sweep(level, hall);
+			helper.assertTrue(CampCleanup.clearing(level).size() == 1 && CampCleanup.clearing(level).get(0).rotation() == 0,
+				"the old camp wasn't found unturned: " + CampCleanup.clearing(level));
+			helper.runAfterDelay(CampCleanup.CLEAR_TICKS + 10, () -> {
+				int[] after = count(level, middle);
+				helper.assertTrue(after[0] == 0 && after[1] == 0 && after[2] == 0 && after[3] == 0, "the old camp still stands: " + str(after));
+				helper.assertTrue(CampCleanup.clearing(level).isEmpty(), "the clearing never ended");
+				helper.succeed();
+			});
+		});
+	}
+
+	/** A bounty's hideout far from an old camp doesn't keep the camp standing: only one at the camp marks it as in use. */
+	//$ gametest_ticks_batch AREA '200' '"b209OldBounty"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b209OldBounty")
+	public void b209ABountyFarOffDoesntStopTheSweep(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		CampCleanup.SWEEP_FROM = 0;
+		CampCleanup.SWEEP_TO = 26;
+		BlockPos middle = helper.absolutePos(CAMP.above());
+		helper.runAfterDelay(2, () -> {
+			oldCamp(helper, hall, middle);
+			var bounties = Bounties.Data.get(level).bounties;
+			UUID near = UUID.randomUUID();
+			UUID far = UUID.randomUUID();
+			try {
+				// its own: a bounty's hideout at the camp keeps it
+				bounties.put(near, new Bounties.Bounty(near, hall, 0, 0, ResourceLocation.withDefaultNamespace("test"),
+					new ArcState.ArcPlace("hideout", middle.offset(3, 0, 3), List.of(), 0), 0, 1, false));
+				CampCleanup.sweep(level, hall);
+				helper.assertTrue(CampCleanup.clearing(level).isEmpty(), "a bounty's hideout was swept away: " + CampCleanup.clearing(level));
+				bounties.remove(near);
+				// another's, 800 blocks off, doesn't
+				bounties.put(far, new Bounties.Bounty(far, hall, 0, 0, ResourceLocation.withDefaultNamespace("test"),
+					new ArcState.ArcPlace("hideout", middle.offset(600, 0, 600), List.of(), 0), 0, 1, false));
+				oldCamp(helper, hall, middle); // (its village to be swept again)
+				CampCleanup.sweep(level, hall);
+				helper.assertTrue(CampCleanup.clearing(level).size() == 1, "a bounty 800 blocks off kept the old camp standing: " + CampCleanup.clearing(level));
+			} finally {
+				bounties.remove(near);
+				bounties.remove(far);
+			}
+			helper.runAfterDelay(CampCleanup.CLEAR_TICKS + 10, () -> {
+				helper.assertTrue(CampCleanup.clearing(level).isEmpty(), "the clearing never ended");
+				helper.succeed();
+			});
+		});
+	}
+
+	/** An old camp with exactly half its blocks still as set down is still known as the camp (the sweep's least share, met). */
+	//$ gametest_ticks_batch AREA '200' '"b209OldHalf"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "b209OldHalf")
+	public void b209AnOldCampWithExactlyHalfStandingIsFound(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		CampCleanup.SWEEP_FROM = 0;
+		CampCleanup.SWEEP_TO = 26;
+		BlockPos middle = helper.absolutePos(CAMP.above());
+		helper.runAfterDelay(2, () -> {
+			List<BlockPos> standing = new ArrayList<>(oldCamp(helper, hall, middle));
+			int keep = (int) Math.ceil(standing.size() * 0.5);
+			// the lowest first (the fire among them), the rest taken away from the top, nothing round them updated
+			standing.sort(Comparator.comparingInt(BlockPos::getY));
+			helper.assertTrue(standing.remove(middle), "the fire isn't the camp's middle");
+			standing.add(0, middle);
+			for (BlockPos p : standing.subList(keep, standing.size())) {
+				level.setBlock(p, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			}
+			CampCleanup.sweep(level, hall);
+			helper.assertTrue(CampCleanup.clearing(level).size() == 1, keep + " of " + standing.size() + " blocks (half) standing: not found as a camp");
+			helper.runAfterDelay(CampCleanup.CLEAR_TICKS + 10, () -> {
+				helper.assertTrue(CampCleanup.clearing(level).isEmpty() && count(level, middle)[0] == 0, "the half camp wasn't taken down");
+				helper.succeed();
 			});
 		});
 	}

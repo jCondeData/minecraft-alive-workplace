@@ -174,4 +174,29 @@ public class RaidDenCompatTests implements FabricGameTest {
 		clear(helper, at[0], at[1]);
 		helper.succeed();
 	}
+
+	static boolean known(GameTestHelper helper, BlockPos den) {
+		return RaidDens.Sites.get(helper.getLevel()).dens().stream().anyMatch(d -> d.pos().equals(den));
+	}
+
+	/**
+	 * The known dens are read again every 10 seconds, not every tick: a den broken while nobody looks at the list stays
+	 * listed between two looks and is dropped at the next.
+	 */
+	//$ gametest_ticks_batch 'CompatGameTests.AREA' '400' '"raidDenLook"'
+	@GameTest(template = CompatGameTests.AREA, timeoutTicks = 400, batch = "raidDenLook")
+	public void aBrokenDenIsDroppedAtTheNextLook(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos[] at = village(helper, den("tier_one", "grass", true));
+		helper.assertTrue(known(helper, at[1]), "the den isn't known");
+		helper.startSequence()
+			.thenWaitUntil(() -> helper.assertTrue(level.getGameTime() % 200 != 0, "on a look's tick"))
+			.thenExecute(() -> {
+				level.setBlockAndUpdate(at[1], Blocks.AIR.defaultBlockState());
+				RaidDens.tick(level);
+				helper.assertTrue(known(helper, at[1]), "the dens were read again between two looks (at " + level.getGameTime() + ")");
+			})
+			.thenWaitUntil(() -> helper.assertFalse(known(helper, at[1]), "the broken den is still known"))
+			.thenSucceed();
+	}
 }

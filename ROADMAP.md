@@ -5192,6 +5192,22 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-d-1019-1908): mutation pass on M38 Raid Dens and bandit-camp code, seed 41: RaidDens, RaidHelpers and
+  RaidDensRaids against the three Raid Den compat classes alone (RaidDenCompatTests, RaidDenFoundCompatTests,
+  RaidHelperCompatTests, about 2 min a run), CampCleanup and HostileSpawns against B208, B209, B211 and B225 alone
+  (`only_tests.py`, under a minute a run). 18 mutants, all compiled: 9 killed, 9 survived. Seven survivors were real gaps,
+  now killed (lines as at c570cc6e): B209GameTests.b209ABountyFarOffDoesntStopTheSweep (CampCleanup:399, any bounty
+  anywhere kept every old camp standing) and .b209AnOldCampWithExactlyHalfStandingIsFound (:228, the sweep's least
+  share met exactly); B208GameTests.b208ARefusedRiderIsPlacedOnItsMount (HostileSpawns:97, a forced rider not put back
+  on its forced mount); RaidDenCompatTests.aBrokenDenIsDroppedAtTheNextLook (RaidDens:148, the known dens read every
+  tick instead of every 10 s); RaidHelperCompatTests.aHelperAtItsPlaceByTheDenStandsStill (RaidHelpers:450),
+  .aRaidJoinedAtTheEdgeOfTheDensReachCounts (:223, exactly NEAR blocks off) and
+  .aRaidNoLongerRunningSendsTheHelpersHome (RaidDensRaids:82, a raid gone from Raid Dens' list read as running, so the
+  hiring never ended). Two are equivalent: CampCleanup:264 (the smoke's height, only seen on screen) and :165 (a turn-0
+  clearing looked for its turn again every tick: the bandit camp's bottom layer, well over a quarter of it, stands until
+  the last tick, so the same turn is always found; `b209AnOldUnturnedCampComesAllTheWayDown` covers the case anyway).
+  No mod bug found. Maven Central answered 429 at the first run: run the mutants with `--offline` once a build has
+  filled the cache, or mutate.py counts the failed build as a survivor.
 - 2026-10-19 (lane-e-1019-1913): the 10-19 nightly's M39 survivors (issue #1) are killed. The nightly runs only the
   plain suite (no Create), so Create-only lines survive there whatever the compat suite checks. Plain-suite kills (seen
   by the nightly): Contraptions `data == null` by MechanicGameTests.aGonePartAndAPartWithoutSpeedCountAsStill;

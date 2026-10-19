@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.146.0 — 2026-10-19
+
 ### Added
 - **Upgrade a home from the Village Hall** (36.14). A new Upgrades tab (the bricks) lists the village's finished builds
   that have a next level, nearest first: the level and the next, where, what it costs in blocks, and whether the space

@@ -85,7 +85,7 @@ SCENES = [
     # 36.10: the search box over the library: "smith" narrows it to the forges, a search for nothing says so
     S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, \"smith\" typed in the search box narrowed the library to the builds that bring a smith, a search for nothing said so, and a file was uploaded", 65,
       [("10_table_library", "Library"), ("10s_table_search", "Searched for \"smith\": the list narrowed"),
-       ("10t_table_no_match", "A search that finds nothing"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+       ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,

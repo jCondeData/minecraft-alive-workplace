@@ -736,7 +736,6 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 210 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
 			Showcase.check(screen.shownCount() == 0, "a search that finds nothing lists nothing (" + screen.shownCount() + " listed)");
-			shot(mc, "10t_table_no_match");
 			screen.search("");
 			Showcase.check(screen.shownCount() == screen.entryCount(), "clearing the box lists the whole library again");
 			screen.showFiles();

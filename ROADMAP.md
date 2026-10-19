@@ -4728,6 +4728,20 @@ Depends on: nothing open.
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
   empty result says so. Done when: GameTests for the filter (name, id, job, no match, cleared box, selected build hidden by
   a filter); `langcheck.py` passes; the `table` scene's stills show a search typed and the list narrowed.
+- [ ] **36.11** **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
+  the materials (cobblestone or deepslate for the head, sticks from the village store or crafted from planks; stone, then iron
+  and diamond as the level rises), crafts a new one at their work block from what they mined themselves, instead of waiting
+  for the player or the Toolsmith. Done when: GameTests for the happy path (mined cobblestone and sticks become a stone
+  pickaxe and the Miner keeps working), missing materials (they post a request on the Storehouse board and wait), a worn-out
+  pickaxe, save and reload, the config switch off; the new status line is in `en_us.json`; scene `miner_pickaxe`.
+- [ ] **36.12** **A Quarry build that refills.** (owner, 2026-10-19). A "Quarry" blueprint (architect skill, checked against STYLE.md in a
+  render): a pit with a ramp or steps, a rim and a Miner's shed with the job block, that the Miner mines from like a farm:
+  the pit's ore-bearing stone is the crop. The blocks they mine grow back slowly over time, from the bottom up, in a
+  weighted mix (mostly stone, some coal and copper, rarely iron, gold, redstone and diamond, deeper layers deepslate), so
+  even mined down far it slowly fills back up if given time. Done when: the blueprint lists in the Blueprint Table with its
+  Jobs line; GameTests: the Miner mines from it, mined blocks come back over time (a fixed random, a config for how fast,
+  the full pit refills only after days), nothing outside the pit is touched, a block a player placed in the pit isn't
+  replaced, save and reload, the switch off; scene `quarry_build`; the existing Quarry Marker still works for free areas.
 
 ## Milestone 37: Furnished homes and modded storage (2.1)
 

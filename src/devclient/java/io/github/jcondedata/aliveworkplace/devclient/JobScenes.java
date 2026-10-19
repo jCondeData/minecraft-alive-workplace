@@ -1128,6 +1128,7 @@ final class JobScenes {
 			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			int x = -20;
 			for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {
@@ -4332,6 +4333,65 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.YES, player);
 						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
 							"after Yes the page shows the cottage being repaired: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40)),
+			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
+		// Upgrade a built home from the Village Hall (ROADMAP 36.14): a finished Starter Cottage and a finished Stone House II
+		// stand north of the hall; the hall's Upgrades page lists the cottage (level I, next the Starter Cottage II, its cost,
+		// the space free) and the Stone House II (next level III, blocked by a garden fence where its new back rooms go, with
+		// where); a click on the cottage sends Bram to build its level II over it.
+		SCREENS.put("hall_upgrade", new Screen("the hall's Upgrades page listed the Starter Cottage (level I, next the Starter Cottage II, its cost, the space free) "
+			+ "and the Stone House II blocked by a garden fence where its level III goes; a click on the cottage sent Bram to build it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BuildSiteManager sites = BuildSiteManager.get(level);
+				BlockPos cottage = STATION.offset(-8, 0, -15);
+				BlockPos house = STATION.offset(6, 0, -16);
+				for (var built : List.of(java.util.Map.entry(StarterBlueprints.STARTER_COTTAGE.id(), cottage), java.util.Map.entry(StarterBlueprints.STONE_HOUSE_2.id(), house))) {
+					level.getStructureManager().get(built.getKey()).orElseThrow().placeInWorld(level, built.getValue(), built.getValue(),
+						new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+					sites.recordFinished(built.getKey(), new BlueprintData.Placement(level.dimension().location(), built.getValue(),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				}
+				// a garden fence behind the Stone House II, where its level III's back rooms go
+				for (int x = 2; x <= 8; x++) {
+					level.setBlockAndUpdate(house.offset(x, 0, 11), Blocks.OAK_FENCE.defaultBlockState());
+				}
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				chest(level, bench.east(), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_LOG, 64),
+					new ItemStack(Items.GLASS_PANE, 32), new ItemStack(Items.SPRUCE_PLANKS, 64));
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+			},
+			List.of(new Step("01_upgrades_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.UpgradesPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
+							"the cottage first on the Upgrades page, its space free: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_blocked_by_a_fence", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).is(Items.BARRIER),
+							"the Stone House II blocked by the fence: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1));
+					}
+				}, 40),
+				new Step("03_bram_builds_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
+							"after the click the cottage is being upgraded: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
@@ -7714,6 +7774,36 @@ final class JobScenes {
 	private Done done;
 	private final AtomicBoolean isDone = new AtomicBoolean(false);
 	private final AtomicBoolean ok = new AtomicBoolean(false);
+
+	/**
+	 * B231: writes one quad into Ponder's {@code ShadedBlockSbbBuilder} vertex by vertex, as Sodium does for a wrapped
+	 * block model when shaders turn Flywheel off, on the render thread, and reads the mesh back; false if a vertex call
+	 * throws ("only supports putBulkData!") or the mesh comes back empty.
+	 */
+	private static boolean contraptionBufferTakesVertices() {
+		try {
+			return Minecraft.getInstance().submit(() -> {
+				try {
+					Class<?> type = Class.forName("net.createmod.catnip.render.ShadedBlockSbbBuilder");
+					Object builder = type.getMethod("create").invoke(null);
+					type.getMethod("begin").invoke(builder);
+					com.mojang.blaze3d.vertex.VertexConsumer consumer = (com.mojang.blaze3d.vertex.VertexConsumer) builder;
+					for (int i = 0; i < 4; i++) {
+						consumer.addVertex(i & 1, 0, i >> 1, 0xFFFFFFFF, 0, 0, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0xF000F0, 0, 1, 0);
+					}
+					Object buffer = type.getMethod("end").invoke(builder);
+					boolean empty = (boolean) buffer.getClass().getMethod("isEmpty").invoke(buffer);
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[showcase] B231: a quad written vertex by vertex went in ({})", empty ? "empty" : "4 vertices");
+					return !empty;
+				} catch (ReflectiveOperationException e) {
+					throw new IllegalStateException(e);
+				}
+			}).get(10, java.util.concurrent.TimeUnit.SECONDS);
+		} catch (Exception e) {
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("[showcase] B231: a quad written vertex by vertex failed", e);
+			return false;
+		}
+	}
 
 	private static void command(MinecraftServer server, String command) {
 		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);

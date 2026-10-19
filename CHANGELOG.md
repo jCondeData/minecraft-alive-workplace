@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Upgrade a home from the Village Hall** (36.14). A new Upgrades tab (the bricks) lists the village's finished builds
+  that have a next level, nearest first: the level and the next, where, what it costs in blocks, and whether the space
+  is free. Click one and the village's Builder builds the next level over the old one. Natural ground, trees and water
+  in the way are cleared as part of the job; a wall, fence, path or another build blocks it, and the row says what's in
+  the way and where. Residents keep their beds: a Builder no longer breaks a bed somebody sleeps in while clearing for
+  any upgrade.
 - **A Quarry that grows back** (36.12). A new blueprint in the Blueprint Table: a fenced pit with steps cut down its side,
   a hoist and the Miner's shed with its blast furnace. The Miner who works at that furnace digs the pit by themselves (no
   Quarry Marker), and what they dig grows back slowly from the bottom up: mostly stone, some coal and copper, now and
@@ -54,6 +60,14 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **A Create schematic named like a Windows device no longer breaks the Blueprint Table.** A schematic uploaded to
+  Create's table as `con.nbt` (or `aux`, `nul`, `com1`...) made the game refuse to save its blueprint with an error
+  nobody caught, so the Blueprint Table failed every time it was opened. The table now says once that it couldn't
+  import that schematic and opens as usual.
+- **No more client crash near a turning Windmill with shaders on** (B231). With shaders, Create draws spinning
+  contraptions the slow way, and in packs where Sodium and Continuity write a block one corner at a time (Cobbleverse)
+  the Windmill's sails crashed the game ("ShadedBlockSbbBuilder only supports putBulkData!"). Each corner now goes into
+  Create's buffer as it would whole, so the sails draw.
 - **Graves no longer clutter the village** (B222). The Undertaker walks to each grave lying in a street, a field or on
   a doorstep and lays it in the next free row of the village's Graveyard; a village with no Graveyard gets a small plot
   of three rows near the hall. Everything in the grave is kept (name, job, level, trades, partner) and the villager can

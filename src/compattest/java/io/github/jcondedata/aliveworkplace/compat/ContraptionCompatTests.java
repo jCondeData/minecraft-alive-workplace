@@ -52,6 +52,7 @@ import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
  */
 public class ContraptionCompatTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
+	private static final String AREA = CompatGameTests.AREA;
 	/** Where the player's own contraption stands before it's saved (out of the build's way). */
 	private static final BlockPos ORIGINAL = new BlockPos(18, 2, 18);
 	private static final Vec3i SIZE = new Vec3i(8, 6, 9);
@@ -487,6 +488,29 @@ public class ContraptionCompatTests implements FabricGameTest {
 			helper.assertTrue(seen[0].equals("cog left for later true, bricks left for later false"), seen[0]);
 			BuildSiteManager.get(run.level).remove(run.site.id()); // only the order was wanted: not built to the end
 			run.builder.discard();
+		});
+	}
+
+	/**
+	 * The turning check (39.5) sees a turning part as turning: a shaft on a creative motor isn't listed as still, a shaft
+	 * nothing drives is.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"contraption_turning_parts"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "contraption_turning_parts")
+	public void aTurningPartIsNotListedAsStill(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos motor = new BlockPos(2, 2, 2);
+		BlockPos driven = motor.above();
+		BlockPos idle = new BlockPos(5, 2, 2);
+		helper.setBlock(motor, MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "up"));
+		helper.setBlock(driven, MechanicCompatTests.with(MechanicCompatTests.create("shaft").defaultBlockState(), "axis", "y"));
+		helper.setBlock(idle, MechanicCompatTests.with(MechanicCompatTests.create("shaft").defaultBlockState(), "axis", "y"));
+		helper.succeedWhen(() -> {
+			ServerLevel level = helper.getLevel();
+			helper.assertTrue(Math.abs(speed(level, helper.absolutePos(driven))) > 0, "setup: the motor doesn't turn the shaft yet");
+			List<BlockPos> still = Contraptions.stillParts(level, List.of(helper.absolutePos(motor), helper.absolutePos(driven), helper.absolutePos(idle)));
+			helper.assertTrue(still.equals(List.of(helper.absolutePos(idle))), "the still parts are " + still.stream().map(helper::relativePos).toList()
+				+ ", not only the shaft nothing drives");
 		});
 	}
 }

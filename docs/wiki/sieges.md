@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
 
 ## What a player sees
 
@@ -145,7 +145,11 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175
 - **Gathering** (`Sieges.outside`, used by `VillageRaids.start` for cultures with `ram_gates` or `ladders`): the line
   from the hall through the raid's gathering point is followed to where it leaves the footprint of each finished wall
   or gate build (3 blocks wider each way, so corners and joints count); if the point is not at least 7 blocks beyond
-  the farthest of them it is moved out to there. Raiders who come through a Nether portal are not moved.
+  the farthest of them it is moved out to there. Raiders who come through a Nether portal are not moved. The point is
+  moved only onto ground where mobs move (entity-ticking chunks), and when the point is on such ground every raider
+  scattered round it is too: a spot over its edge is drawn again, up to 8 times, else he stands at the point (B176:
+  raiders put down just past the live ground stood frozen, and a chunk loaded without its entities hid them from the
+  raid's count).
 - **Repair**: a broken gate block is a hole in a finished build, which a builder's upkeep fills like any other; the
   list on the Defense page drops a block once something stands there again.
 - **What threats may damage** (32.16a, `threat/ThreatDamage`): a "threat" is a raider (`aliveworkplace_raider` tag)
@@ -292,7 +296,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   back on the ground outside; a save and load with the ladder half up and another with it standing, then the raid
   ends: no ladder left and every block of the area as before; the wall broken behind a rung; mobGriefing off and
   `sieges` off; a ring of Stone Walls, with the gathering point beyond it from 16 sides and a started raid's raiders
-  all outside.
+  all outside, every one counted and on ground where mobs move (B176; the test keeps the ground east of its area live
+  with a ticket of its own that lapses by itself, never the forced chunks the batches share).
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.

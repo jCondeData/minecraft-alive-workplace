@@ -507,8 +507,8 @@ public class LadderGameTests implements FabricGameTest {
 	 * does every point with {@code sieges} off. A raid started by a culture that sets ladders then has every raider
 	 * outside the ring.
 	 */
-	//$ gametest_ticks_batch AREA '200' '"ladderRing"'
-	@GameTest(template = AREA, timeoutTicks = 200, batch = "ladderRing")
+	//$ gametest_ticks_batch AREA '1200' '"ladderRing"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "ladderRing")
 	public void aSiegeGathersOutsideTheRingOfWalls(GameTestHelper helper) {
 		Culture culture = village(helper);
 		ServerLevel level = helper.getLevel();
@@ -557,15 +557,48 @@ public class LadderGameTests implements FabricGameTest {
 		WorkplaceConfig.parse("{\"sieges\": false}").apply();
 		helper.assertTrue(Sieges.outside(level, hall, hall.east(3)).equals(hall.east(3)), "moved with sieges off");
 		new WorkplaceConfig().apply();
-		// The raid's own start, on the east side.
-		VillageRaids.Raid raid = VillageRaids.start(level, hall, 12, 0, 0.0, culture, RandomSource.create(7L));
-		helper.assertTrue(raid != null && raid.raiders() >= 3, "no raid started");
-		List<Mob> raiders = VillageRaids.raiders(level, hall);
-		helper.assertTrue(raiders.size() == raid.raiders(), "the raiders aren't about: " + raiders.size());
-		for (Mob mob : raiders) {
-			helper.assertTrue(mob.getX() - base.getX() > 26, "a raider appeared inside the ring, at " + mob.position().subtract(base.getX(), base.getY(), base.getZ()));
+		// The raid's own start, on the east side, once the ground out there is live. A raid gathers only where mobs move
+		// (B176), and only the area's own chunks are kept loaded, so how much east of it was live depended on the batches
+		// before. A ticket of the test's own keeps it live: never the forced chunks the batches share (taking those away
+		// again hung the next batch, whose area they also were).
+		List<net.minecraft.world.level.ChunkPos> east = new ArrayList<>();
+		for (int x = 26; x <= 64; x += 2) { // (the hall's radius is the config's again: they gather about 38 east of it)
+			for (int z = 10; z <= 20; z += 2) {
+				net.minecraft.world.level.ChunkPos chunk = new net.minecraft.world.level.ChunkPos(base.offset(x, 0, z));
+				if (!east.contains(chunk)) {
+					east.add(chunk);
+				}
+			}
 		}
-		helper.assertTrue(Sieges.siege(level, hall).isPresent(), "the raid on the ringed village isn't a siege");
-		helper.succeed();
+		for (net.minecraft.world.level.ChunkPos chunk : east) {
+			level.getChunkSource().addRegionTicket(RING_TICKET, chunk, 2, chunk);
+			level.getChunk(chunk.x, chunk.z); // (generated now; the ticket's level spreads with the next ticks)
+		}
+		Leftovers.after(helper, () -> east.forEach(chunk -> level.getChunkSource().removeRegionTicket(RING_TICKET, chunk, 2, chunk)));
+		boolean[] started = {false};
+		helper.onEachTick(() -> {
+			if (started[0]) {
+				return;
+			}
+			if (!east.stream().allMatch(chunk -> level.isPositionEntityTicking(chunk.getMiddleBlockPosition(hall.getY())))) {
+				helper.assertTrue(helper.getTick() < 1100, "the ground east of the ring never came live");
+				return;
+			}
+			started[0] = true;
+			VillageRaids.Raid raid = VillageRaids.start(level, hall, 12, 0, 0.0, culture, RandomSource.create(7L));
+			helper.assertTrue(raid != null && raid.raiders() >= 3, "no raid started");
+			List<Mob> raiders = VillageRaids.raiders(level, hall);
+			helper.assertTrue(raiders.size() == raid.raiders(), "the raiders aren't about: " + raiders.size() + " of " + raid.raiders());
+			for (Mob mob : raiders) {
+				helper.assertTrue(mob.getX() - base.getX() > 26, "a raider appeared inside the ring, at " + mob.position().subtract(base.getX(), base.getY(), base.getZ()));
+				helper.assertTrue(level.isPositionEntityTicking(mob.blockPosition()), "a raider stands where mobs don't move, at " + mob.position().subtract(base.getX(), base.getY(), base.getZ()));
+			}
+			helper.assertTrue(Sieges.siege(level, hall).isPresent(), "the raid on the ringed village isn't a siege");
+			helper.succeed();
+		});
 	}
+
+	/** Keeps the ground east of the ring live for {@link #aSiegeGathersOutsideTheRingOfWalls} (B176); it lapses by itself after 1500 ticks. */
+	private static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> RING_TICKET = net.minecraft.server.level.TicketType.create(
+		"aliveworkplace_test_ring", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong), 1500);
 }

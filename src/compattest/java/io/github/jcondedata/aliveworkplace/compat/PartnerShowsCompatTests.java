@@ -49,6 +49,25 @@ public class PartnerShowsCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * B177: empties the air around the test area, from just above its floor to {@code height} blocks over its top, and a
+	 * {@code margin} beyond its sides. A test area is cleared only up to its own height when its structure loads: blocks
+	 * built above it, or just outside it, by earlier batches stay, and a partner flying out of sight (air mail) climbs no
+	 * higher than the first of them. Only for tests alone in their batch; call it before placing anything.
+	 */
+	static void clearAirAbove(GameTestHelper helper, int margin, int height) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		net.minecraft.world.phys.AABB box = helper.getBounds();
+		BlockPos floor = helper.absolutePos(new BlockPos(0, 1, 0));
+		BlockPos from = BlockPos.containing(box.minX - margin, floor.getY() + 1, box.minZ - margin);
+		BlockPos to = BlockPos.containing(box.maxX + margin, box.maxY + height, box.maxZ + margin);
+		for (BlockPos pos : BlockPos.betweenClosed(from, to)) {
+			if (!level.getBlockState(pos).isAir()) {
+				level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+			}
+		}
+	}
+
+	/**
 	 * Removes every Village Hall whose village reaches the test area. Halls set outside a test's area (the scholar's
 	 * test puts one at 17,2,17) are never cleared, and one nearby makes this test's villagers its village. Only for
 	 * tests alone in their batch.

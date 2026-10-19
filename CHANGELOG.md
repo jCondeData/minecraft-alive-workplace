@@ -33,6 +33,17 @@ asks for the steps, `latest.log` and any crash report).
   waits for the villagers off work to gather before Mega Evolving their ace (at most half a minute), and everyone who
   came cheers (+3 mood), even those at the back of the crowd. Before, the show could go off as the first villagers
   arrived, and only those already near the pedestal got the mood.
+- **Raiders no longer appear frozen at the edge of the loaded world** (B176). A raid gathering near the edge of the
+  ground where mobs move put some of its raiders just past it, where they stood still and the raid lost count of
+  them. When a raid gathers on live ground every raider now arrives on it, and a siege moves its gathering point beyond the walls only onto it.
+- **Caravans no longer get lost when a Village Hall is taken away** (B212). Break the hall a caravan is heading for and
+  everything it carried now turns round and comes back to its own village's Storehouse, not just the goods it meant to
+  sell. A caravan whose own village's hall is gone too is dropped, so a new hall set down on the same spot no longer
+  receives old goods out of nowhere.
+- **A train caravan no longer waits forever at the station for a village that's gone** (B214, with Create). Break the
+  hall a caravan is waiting at the station to ride the village train to, or whose train is carrying its goods, and the
+  goods now come out of the train's chest once and the caravan walks them home; break the sending village's own hall
+  and its caravan waiting at the station walks on to where it was going.
 - **No more villagers than beds, and nobody lives in the settlers' wagon** (B206, B207). The bedrolls by a Settler's
   Wagon or a Colony Camp are for the road: once the Village Hall stands, a settler who kept one as their home gets up
   and finds a bed in the village's houses, and nobody claims one again. The hall doesn't count them among its beds

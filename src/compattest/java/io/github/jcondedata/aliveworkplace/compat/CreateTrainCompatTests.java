@@ -505,6 +505,120 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B214: the other village's hall taken away while the caravan waits at our station for the train: it doesn't wait on
+	 * for a train to a village that's gone, nor go on to it; it comes home at once with its logs, and none are lost.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"createTrainHallGoneBoarding"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "createTrainHallGoneBoarding")
+	public void theOtherHallGoneWhileTheCaravanWaitsAtTheStationSendsItHome(GameTestHelper helper) {
+		hallGoneAtTheStation(helper, false, true);
+	}
+
+	/**
+	 * B214: the other village's hall taken away while the caravan's logs ride in the train's chest: they come back out of
+	 * the chest once and the caravan walks them home; the train's chest keeps none and they never come a second time.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"createTrainHallGoneInChest"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "createTrainHallGoneInChest")
+	public void theOtherHallGoneWhileTheGoodsRideInTheChestBringsThemHomeOnce(GameTestHelper helper) {
+		hallGoneAtTheStation(helper, true, true);
+	}
+
+	/**
+	 * B214: the sending village's own hall taken away while its caravan waits at its station for the train: nobody serves
+	 * that station's train now, so the caravan walks on to where it was going instead of waiting there forever.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"createTrainSenderGone"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "createTrainSenderGone")
+	public void theSendersHallGoneWhileTheCaravanWaitsAtTheStationItWalksOn(GameTestHelper helper) {
+		hallGoneAtTheStation(helper, false, false);
+	}
+
+	/** The logs in both villages' chests. */
+	private static int chestLogs(ServerLevel level, Villages v) {
+		return ((Container) level.getBlockEntity(v.a().east(3).north(2))).countItem(Items.OAK_LOG)
+			+ ((Container) level.getBlockEntity(v.b().east(3).north(2))).countItem(Items.OAK_LOG);
+	}
+
+	/** The caravans on the road to or from either village. */
+	private static List<Caravans.Shipment> road(Villages v) {
+		return v.data().onTheRoad().stream().filter(s -> s.to().equals(v.a()) || s.to().equals(v.b()) || s.from().equals(v.a()) || s.from().equals(v.b())).toList();
+	}
+
+	/**
+	 * B214: a caravan from Ashford to Bramble stopped for the village train (waiting to board, or {@code inChest} with its
+	 * logs in the train's chest) when a hall is taken away: Bramble's ({@code destination}) or Ashford's own.
+	 */
+	private static void hallGoneAtTheStation(GameTestHelper helper, boolean inChest, boolean destination) {
+		ServerLevel level = helper.getLevel();
+		line(helper);
+		Villages v = villages(helper);
+		conductor(helper, new BlockPos(6, 2, 16));
+		UUID owner = CaravanTrains.railwayId(v.a(), v.b());
+		boolean[] sent = {false};
+		boolean[] gone = {false};
+		int[] tick = {0};
+		helper.onEachTick(() -> {
+			tick[0]++;
+			if (tick[0] % 10 == 0 && !gone[0]) {
+				buildTrain(level, v);
+				CaravanTrains.serve(level, v.a(), hall(level, v.a()));
+				CaravanTrains.serve(level, v.b(), hall(level, v.b()));
+			}
+			if (!sent[0]) {
+				if (CaravanTrains.realTrain(level, v.a(), v.b())) {
+					sendAgain(level, v);
+					sent[0] = true;
+				} else if (tick[0] > 600) {
+					helper.fail("no village train was put together in 600 ticks");
+				}
+				return;
+			}
+			if (gone[0]) {
+				return;
+			}
+			Caravans.Shipment s = v.data().onTheRoad().stream().filter(x -> x.to().equals(v.b())).findFirst().orElse(null);
+			helper.assertTrue(s != null && s.byTrain() && CaravanTrains.waiting(s.arrives()), "the caravan isn't stopped for the train: " + s);
+			if (inChest && s.arrives() != CaravanTrains.IN_CHEST) {
+				if (tick[0] == 2000) {
+					helper.fail("the caravan never boarded with its goods in the chest: " + s);
+				}
+				return;
+			}
+			if (inChest) {
+				helper.assertTrue(logs(railway().cargo(level, owner)) == 32, "the logs aren't in the train's chest: " + railway().cargo(level, owner));
+			} else {
+				helper.assertTrue(s.arrives() == CaravanTrains.BOARDING, "the caravan should still wait to board: " + s);
+			}
+			gone[0] = true;
+			BlockPos removed = destination ? v.b() : v.a();
+			BlockPos stays = destination ? v.a() : v.b();
+			long now = level.getGameTime();
+			level.removeBlock(removed, false);
+			helper.assertTrue(v.data().village(removed) == null, "the hall taken away is still on the list");
+			List<Caravans.Shipment> road = road(v);
+			helper.assertTrue(road.size() == 1, "one caravan should be on the road: " + road);
+			Caravans.Shipment after = road.get(0);
+			helper.assertTrue(after.to().equals(stays) && !after.byTrain() && !CaravanTrains.waiting(after.arrives()) && after.back() == destination
+				&& logs(after.goods()) == 32, "the caravan should get off the train and walk to " + (destination ? "Ashford" : "Bramble") + ": " + after);
+			helper.assertTrue(destination && !inChest ? after.arrives() <= now : after.arrives() > now,
+				"the caravan's arrival is off: " + after.arrives() + " at " + now);
+			helper.assertTrue(logs(railway().cargo(level, owner)) == 0, "logs were left in the train's chest: " + railway().cargo(level, owner));
+			v.data().hurry(stays);
+			Caravans.round(level, stays, null);
+			int logs = chestLogs(level, v);
+			helper.assertTrue(logs == 64, "the logs should all be back in the chests once: " + logs + " of 64, train's chest " + railway().cargo(level, owner));
+			helper.assertTrue(road(v).isEmpty(), "nothing should be left on the road: " + road(v));
+			if (!destination) {
+				helper.assertTrue(said(level, v.b(), "chronicle.aliveworkplace.caravan_came"), "Bramble's chronicle doesn't say the caravan came");
+			}
+			railway().scrap(level, owner);
+			tidy(level, v);
+			helper.succeed();
+		});
+	}
+
 	private record Villages(BlockPos a, BlockPos b, Caravans.Data data) {
 	}
 

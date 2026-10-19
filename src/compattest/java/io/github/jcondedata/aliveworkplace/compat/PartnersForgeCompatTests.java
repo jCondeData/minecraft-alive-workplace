@@ -97,6 +97,7 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_air_mail")
 	public void aPidgeyTakesTheAirMailUpAndLandsBackEmptyHanded(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
+		PartnerShowsCompatTests.clearAirAbove(helper, 8, 30); // B177: nothing left over head from earlier batches
 		PartnerShowsCompatTests.showsOn(helper);
 		int round = PostOffice.ROUND;
 		PostOffice.ROUND = 8;
@@ -131,7 +132,8 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			helper.assertTrue(started.contains(show("postman_flying_takes_the_air_mail")), "no air mail show: " + why(started));
 			helper.assertTrue(carried.contains(Items.BUNDLE), "the Pidgey carried " + carried + ", not a bundle");
-			helper.assertTrue(highest[0] >= 6, "the Pidgey only climbed " + highest[0] + " blocks");
+			helper.assertTrue(highest[0] >= 6, "the Pidgey only climbed " + highest[0] + " blocks ("
+				+ PartnersAtWorkCompatTests.pokemon(helper, "pidgey").getUUID().toString().substring(0, 8) + ": " + PartnerShows.lastFlight() + ")");
 			helper.assertTrue(p.bobs().countItem(Items.DIAMOND) == 2, "Bob's mailbox is still empty");
 			noDisplaysLeft(helper);
 			helper.assertTrue(!Double.isNaN(landedY[0]) && Math.abs(landedY[0] - takeOffY[0]) < 1.5,
@@ -148,6 +150,7 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "partners_air_mail_low")
 	public void airMailKeepsThePidgeyWithinItsPasturesRange(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
+		PartnerShowsCompatTests.clearAirAbove(helper, 8, 30); // B177: nothing left over head from earlier batches
 		PartnerShowsCompatTests.showsOn(helper);
 		int round = PostOffice.ROUND;
 		PostOffice.ROUND = 8;
@@ -189,7 +192,7 @@ public class PartnersForgeCompatTests implements FabricGameTest {
 		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(started.contains(show("postman_flying_takes_the_air_mail")), "no air mail show: " + why(started));
-			helper.assertTrue(highest[0] > 0, "the Pidgey never took off");
+			helper.assertTrue(highest[0] > 0, "the Pidgey never took off (" + PartnerShows.lastFlight() + ")");
 			helper.assertTrue(takeOffY[0] + highest[0] < top, "the Pidgey climbed to " + (takeOffY[0] + highest[0]) + ", its pasture's top is " + top);
 			helper.assertTrue(p.bobs().countItem(Items.DIAMOND) == 2, "Bob's mailbox is still empty");
 			noDisplaysLeft(helper);

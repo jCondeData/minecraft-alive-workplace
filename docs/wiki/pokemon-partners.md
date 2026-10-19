@@ -3,7 +3,7 @@
 With Cobblemon, Pokémon kept in a Pasture Block near a villager's workstation help with the job when their type
 suits it: the work goes faster, and (from 1.2) you see them doing it.
 
-Roadmap items: 28.3, 28.4, 28.5, 28.6
+Roadmap items: 28.3, 28.4, 28.5, 28.6, B177
 
 ## What a player sees
 

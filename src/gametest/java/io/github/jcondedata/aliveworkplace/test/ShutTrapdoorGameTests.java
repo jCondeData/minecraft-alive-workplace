@@ -65,7 +65,7 @@ public class ShutTrapdoorGameTests implements net.fabricmc.fabric.api.gametest.v
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 3));
 		DoorwayHeadroomGameTests.nitwit(helper, villager); // nothing to walk to of its own
 		helper.runAfterDelay(10, () -> { // once it stands on the ground: a villager in the air works out no path
-			Path path = villager.getNavigation().createPath(helper.absolutePos(new BlockPos(6, 2, 9)), 0);
+			Path path = pathFromStart(helper, villager);
 			helper.assertTrue(path != null && path.canReach(), "no path round the wall: " + path);
 			helper.assertTrue(!passes(helper, path, new BlockPos(6, 2, 6)), "the path runs under the shut trapdoor at head height, where a villager sticks");
 			helper.succeed();
@@ -81,11 +81,26 @@ public class ShutTrapdoorGameTests implements net.fabricmc.fabric.api.gametest.v
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 3));
 		DoorwayHeadroomGameTests.nitwit(helper, villager); // nothing to walk to of its own
 		helper.runAfterDelay(10, () -> { // once it stands on the ground: a villager in the air works out no path
-			Path path = villager.getNavigation().createPath(helper.absolutePos(new BlockPos(6, 2, 9)), 0);
+			Path path = pathFromStart(helper, villager);
 			helper.assertTrue(path != null && path.canReach(), "no path round the wall: " + path);
 			helper.assertTrue(!passes(helper, path, new BlockPos(6, 2, 6)), "the path runs through the shut top-half trapdoor at the hips");
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * The path from the start, (6, 2, 3), to the far side of the wall. The nitwit strolls in the ten ticks before (up to
+	 * 3/4 of a block in 8 runs), so the path came out of wherever it had got to: a full build once saw "Path(length=3)",
+	 * three cells from (6, 2, 9), which can only start beyond the gap, where a path has no gap to cross. It is put back
+	 * on the start first, so every path is worked out from the same cell.
+	 */
+	private static Path pathFromStart(GameTestHelper helper, Villager villager) {
+		villager.getNavigation().stop();
+		BlockPos start = helper.absolutePos(new BlockPos(6, 2, 3));
+		villager.teleportTo(start.getX() + 0.5, start.getY(), start.getZ() + 0.5);
+		villager.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+		helper.assertTrue(villager.blockPosition().equals(start), "the villager isn't on its start: " + villager.position());
+		return villager.getNavigation().createPath(helper.absolutePos(new BlockPos(6, 2, 9)), 0);
 	}
 
 	/** What isn't in the way stays walkable: a shut trapdoor underfoot, and an open one (a shutter) overhead. */
@@ -98,12 +113,12 @@ public class ShutTrapdoorGameTests implements net.fabricmc.fabric.api.gametest.v
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 3));
 		DoorwayHeadroomGameTests.nitwit(helper, villager); // nothing to walk to of its own
 		helper.runAfterDelay(10, () -> { // once it stands on the ground: a villager in the air works out no path
-			Path path = villager.getNavigation().createPath(helper.absolutePos(new BlockPos(6, 2, 9)), 0);
+			Path path = pathFromStart(helper, villager);
 			helper.assertTrue(path != null && path.canReach() && passes(helper, path, new BlockPos(6, 2, 6)),
 				"the path doesn't go over the shut trapdoor in the gap's floor: " + path);
 			helper.setBlock(new BlockPos(6, 2, 6), Blocks.AIR);
 			helper.setBlock(new BlockPos(6, 3, 6), trapdoor(Half.TOP).setValue(TrapDoorBlock.OPEN, true));
-			Path open = villager.getNavigation().createPath(helper.absolutePos(new BlockPos(6, 2, 9)), 0);
+			Path open = pathFromStart(helper, villager);
 			helper.assertTrue(open != null && open.canReach() && passes(helper, open, new BlockPos(6, 2, 6)),
 				"the path doesn't go under the open trapdoor in the gap: " + open);
 			helper.succeed();

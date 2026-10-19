@@ -39,7 +39,10 @@ The quarry has to be within 64 blocks of their blast furnace, and it can't swall
 
 The miner digs from the top down, back and forth across each layer. They light the pit with torches from the chests
 every few blocks, cut a **spiral stair** into the wall of any pit 3 by 3 and 3 deep or more so you can climb out, and keep
-the pit dry by leaving the blocks next to water and lava standing. When they finish, they tell you how many blocks they
+the pit dry by leaving the blocks next to water and lava standing. Everything they dig goes into the chests: stone,
+cobblestone, deepslate, andesite, diorite, granite, tuff, gravel, dirt and the ores. When the chests are full, or there
+are none, the rest goes to the village Storehouse, and ores always get the room first (a stack of stone moves on to the
+Storehouse to make way). When they finish, they tell you how many blocks they
 dug and how many they left (next to water or lava, or too hard for their pickaxe).
 
 Over their head you see the quarry's size and how far along it is. Sneak-right-click them with an empty hand for the

@@ -29,6 +29,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **A Miner stores everything they dig** (B224). Stone, cobblestone, deepslate, andesite, diorite, granite, tuff,
+  gravel and dirt go into the chests by the blast furnace along with the ores. When those chests are full (or there
+  are none), the rest goes to the village Storehouse instead of being dropped on the ground to vanish, and ores always
+  get the room first: a stack of stone moves on to the Storehouse to make way for them.
 - **A Builder with no chests by its bench builds from the village Storehouse again** (B226). The Storehouse only
   counted while its Porter was in reach, so with the Porter asleep at home far off (or in a chunk that wasn't loaded)
   the Builder said "No chests by its bench" and waited, though everything was in the Storehouse's chests. Now the

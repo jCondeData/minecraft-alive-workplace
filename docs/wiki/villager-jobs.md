@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103, B226
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103, B226, B224
 
 ## What a player sees
 
@@ -105,6 +105,9 @@ The Class column only counts once classes are on (see [Classes](classes.md)). Ea
 says what it does all day.
 
 ## How it works
+
+**A Miner keeps all they dig (B224).** Stone of every kind, gravel and dirt go into the chests by the blast furnace with
+the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
 
 **Fewer job blocks (21.1a).** Related jobs share a block. A jobless villager by a vanilla block takes the vanilla
 job by itself, as in vanilla; the player picks one of ours with its item. A crafting table, a beehive, a jukebox or a

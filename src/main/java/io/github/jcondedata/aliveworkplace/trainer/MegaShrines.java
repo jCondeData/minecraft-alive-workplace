@@ -54,6 +54,15 @@ public final class MegaShrines {
 	static final int WATCH_RANGE = 12;
 	/** The day each village's show was held (by its hall), so it's held once a festival. */
 	private static final Map<GlobalPos, Long> HELD = new ConcurrentHashMap<>();
+	/**
+	 * How long the trainer at the pedestal waits for the villagers off work to come (B215: the show was held the moment the
+	 * trainer got there, before the crowd had walked over, and only those standing near the pedestal just then cheered).
+	 */
+	public static final long WAIT_TICKS = 600;
+	/** The show is held, crowd or not, this long before its hours end. */
+	static final long LAST_CALL = 100;
+	/** Who came to each village's shrine today (by its hall), kept for its show. */
+	private static final Map<GlobalPos, Crowd> CROWDS = new ConcurrentHashMap<>();
 
 	/** Whether Mega Showdown's blocks for the shrine exist (the Table lists it only then). */
 	public static boolean blocksExist() {
@@ -105,13 +114,19 @@ public final class MegaShrines {
 		BlockPos crowd = Arenas.world(shrine.get().placement(), CROWD_SPOT);
 		Optional<Villager> trainer = trainer(level, hall, pedestal);
 		long today = Chronicle.day(level);
-		boolean held = Long.valueOf(today).equals(HELD.get(GlobalPos.of(level.dimension(), hall)));
+		GlobalPos key = GlobalPos.of(level.dimension(), hall);
+		boolean held = Long.valueOf(today).equals(HELD.get(key));
+		Crowd came = CROWDS.compute(key, (k, c) -> c == null || c.day != today ? new Crowd(today, level.getGameTime()) : c);
+		boolean everyone = true; // every villager off work has come to the shrine
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
 			if (trainer.isPresent() && villager == trainer.get()) {
 				continue;
 			}
 			if (Festivals.gatherAt(level, villager, crowd)) {
 				ModAttachments.FESTIVAL_DAY.set(villager, today);
+				came.uuids.add(villager.getUUID());
+			} else if (!came.uuids.contains(villager.getUUID()) && (villager.isPassenger() || Festivals.offWork(villager))) {
+				everyone = false; // still on their way
 			}
 		}
 		if (trainer.isEmpty() || held) {
@@ -122,8 +137,25 @@ public final class MegaShrines {
 			star.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(stage, 0.6f, 0));
 			return true;
 		}
-		show(level, hall, pedestal, star);
+		// B215: the trainer waits at the pedestal for the crowd (at most WAIT_TICKS, and never past the show's hours)
+		long time = Math.floorMod(level.getDayTime(), 24000L);
+		if (!everyone && level.getGameTime() - came.since < WAIT_TICKS && time < Festivals.START + SHOW_TICKS - LAST_CALL) {
+			return true;
+		}
+		show(level, hall, pedestal, star, came.uuids);
 		return true;
+	}
+
+	/** The villagers who came to the shrine round a hall on a festival day, and since when it has gathered (game time). */
+	private static final class Crowd {
+		final long day;
+		final long since;
+		final java.util.Set<java.util.UUID> uuids = ConcurrentHashMap.newKeySet();
+
+		Crowd(long day, long since) {
+			this.day = day;
+			this.since = since;
+		}
 	}
 
 	/** The village's trainer for the show: one who can Mega Evolve first, then the nearest to the pedestal. */
@@ -140,6 +172,14 @@ public final class MegaShrines {
 	 * how many watched.
 	 */
 	public static int show(ServerLevel level, BlockPos hall, BlockPos pedestal, Villager trainer) {
+		return show(level, hall, pedestal, trainer, java.util.Set.of());
+	}
+
+	/**
+	 * The show, watched also by the villagers in {@code came} (who gathered at the shrine for it today) wherever in the
+	 * village they stand now: the crowd's spot reaches farther from the pedestal than {@link #WATCH_RANGE} (B215).
+	 */
+	public static int show(ServerLevel level, BlockPos hall, BlockPos pedestal, Villager trainer, java.util.Set<java.util.UUID> came) {
 		long today = Chronicle.day(level);
 		HELD.put(GlobalPos.of(level.dimension(), hall), today);
 		double x = pedestal.getX() + 0.5;
@@ -151,7 +191,9 @@ public final class MegaShrines {
 		level.playSound(null, pedestal, SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1.2f, 1.2f);
 		level.playSound(null, pedestal, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.NEUTRAL, 1.5f, 0.8f);
 		int watchers = 0;
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, new AABB(pedestal).inflate(WATCH_RANGE), v -> v.isAlive() && v != trainer)) {
+		AABB near = new AABB(pedestal).inflate(WATCH_RANGE);
+		for (Villager villager : level.getEntitiesOfClass(Villager.class, near.minmax(VillageHalls.area(hall)),
+			v -> v.isAlive() && v != trainer && (v.getBoundingBox().intersects(near) || came.contains(v.getUUID())))) {
 			ModAttachments.MEGA_SHOW_DAY.set(villager, today);
 			watchers++;
 		}
@@ -171,6 +213,7 @@ public final class MegaShrines {
 	/** Forgets the shows held (server stop). */
 	public static void forget() {
 		HELD.clear();
+		CROWDS.clear();
 	}
 
 	private MegaShrines() {

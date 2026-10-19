@@ -308,24 +308,24 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	 */
 	public static boolean cue(Villager worker, String cue, BlockPos pos, ItemStack handling, @Nullable Delivery delivery) {
 		if (!ENABLED || !(worker.level() instanceof ServerLevel level) || shows.isEmpty() || !PokemonPartners.EXTENSION.present()) {
-			return refuse("off, no shows or no Cobblemon");
+			return refuse(worker, "off, no shows or no Cobblemon");
 		}
 		ResourceLocation job = BuiltInRegistries.VILLAGER_PROFESSION.getKey(worker.getVillagerData().getProfession());
 		List<Show> matching = shows.stream().filter(s -> s.cue().equals(cue) && s.jobs().contains(job) && s.plays(handling)
 			&& (!s.deliver() || delivery != null && !delivery.what().isEmpty())).toList();
 		if (matching.isEmpty()) {
-			return refuse("no show for " + job + " at " + cue + (handling.isEmpty() ? "" : " handling " + BuiltInRegistries.ITEM.getKey(handling.getItem())));
+			return refuse(worker, "no show for " + job + " at " + cue + (handling.isEmpty() ? "" : " handling " + BuiltInRegistries.ITEM.getKey(handling.getItem())));
 		}
 		long now = level.getGameTime();
 		Long last = LAST_CUE.get(worker);
 		if (last != null && now - last < WORKER_COOLDOWN) {
-			return refuse("this worker had a show " + (now - last) + " ticks ago");
+			return refuse(worker, "this worker had a show " + (now - last) + " ticks ago");
 		}
 		if (RUNNING.stream().filter(r -> r.level == level).count() >= MAX_PER_LEVEL) {
-			return refuse(MAX_PER_LEVEL + " shows already on");
+			return refuse(worker, MAX_PER_LEVEL + " shows already on");
 		}
 		if (level.getNearestPlayer(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, PLAYER_RANGE, false) == null) {
-			return refuse("no player within " + PLAYER_RANGE + " blocks");
+			return refuse(worker, "no player within " + PLAYER_RANGE + " blocks");
 		}
 		BlockPos station = worker.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(g -> g.dimension() == level.dimension())
 			.map(GlobalPos::pos).orElse(worker.blockPosition());
@@ -358,10 +358,11 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 				LAST_CUE.put(worker, now);
 				LAST_SHOW.put(worker.getUUID(), show.name());
 				lastRefusal = "";
+				REFUSALS.remove(worker);
 				return true;
 			}
 		}
-		return refuse(partners == 0 ? "no pastured partner of the show's types near the workstation" : partners + " partners, all busy");
+		return refuse(worker, partners == 0 ? "no pastured partner of the show's types near the workstation" : partners + " partners, all busy");
 	}
 
 	@Nullable
@@ -376,15 +377,23 @@ public final class PartnerShows implements ResourceManagerReloadListener {
 	}
 
 	private static String lastRefusal = "";
+	/** Why each worker's last cue started no show (B165: the global one is overwritten by any other worker's cue). */
+	private static final Map<Villager, String> REFUSALS = new WeakHashMap<>();
 
-	private static boolean refuse(String why) {
+	private static boolean refuse(Villager worker, String why) {
 		lastRefusal = why;
+		REFUSALS.put(worker, why);
 		return false;
 	}
 
-	/** Why the last cue started no show ("" if it started one): for tests and the debug log. */
+	/** Why the last cue (any worker's) started no show ("" if it started one): for tests and the debug log. */
 	public static String lastRefusal() {
 		return lastRefusal;
+	}
+
+	/** Why {@code worker}'s last cue started no show ("" if it started one, or never cued). */
+	public static String lastRefusal(Villager worker) {
+		return REFUSALS.getOrDefault(worker, "");
 	}
 
 	/** The last show a cue of {@code worker}'s started (null if none since the server started). */

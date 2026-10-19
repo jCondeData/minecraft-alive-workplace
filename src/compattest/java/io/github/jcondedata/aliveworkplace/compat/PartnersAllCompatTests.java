@@ -168,12 +168,18 @@ public class PartnersAllCompatTests implements FabricGameTest {
 		PartnerShowsCompatTests.showsOn(helper);
 		Villager keeper = employ(helper, new BlockPos(2, 2, 2), ModBlocks.APIARY, ModVillagers.APIARY_POI, ModVillagers.BEEKEEPER,
 			new BlockPos(2, 2, 4), new ItemStack(Items.GLASS_BOTTLE, 2));
-		BlockPos hive = new BlockPos(9, 3, 9);
+		// B165: Cobbleworkers (in the pack) sends a pastured Combee to empty any full hive within 8 blocks of its pasture
+		// (its honey_collection job), and it sometimes got there first: then the beekeeper found the hive no longer full and
+		// never cued. The hive stands 10 blocks from the pasture on both axes, outside that scan and 11 from the apiary.
+		BlockPos hive = new BlockPos(3, 3, 13);
 		helper.setBlock(hive.below(), Blocks.CAMPFIRE.defaultBlockState().setValue(CampfireBlock.LIT, true));
 		helper.setBlock(hive, Blocks.BEEHIVE.defaultBlockState().setValue(BeehiveBlock.HONEY_LEVEL, 5));
 		Set<ResourceLocation> started = partnered(helper, keeper, new BlockPos(13, 2, 3), "combee", new HashSet<>());
 		helper.succeedWhen(() -> {
-			helper.assertTrue(started.contains(show("beekeeper_partner_circles_the_hive")), "no hive show: " + why(started));
+			helper.assertTrue(started.contains(show("beekeeper_partner_circles_the_hive")), "no hive show: " + started + " ("
+				+ (PartnerShows.lastRefusal(keeper).isEmpty() ? "the beekeeper never cued" : PartnerShows.lastRefusal(keeper)) + "; the Combee " + PartnersAtWorkCompatTests.pokemon(helper, "combee").position()
+				.subtract(net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(new BlockPos(2, 2, 2)))) + " from the apiary; "
+				+ PartnerShows.running(helper.getLevel()) + " shows on)");
 			helper.assertTrue(helper.getBlockState(hive).getValue(BeehiveBlock.HONEY_LEVEL) == 0, "the hive is still full");
 		});
 	}

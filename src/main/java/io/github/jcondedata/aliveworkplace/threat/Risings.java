@@ -142,7 +142,9 @@ public final class Risings {
 		mob.moveTo(p.pos().x, p.pos().y, p.pos().z, mob.getYRot(), 0f);
 		mob.addTag(RISEN_TAG);
 		mob.setHealth((float) Math.max(1, mob.getMaxHealth() * p.health()));
-		level.addFreshEntity(mob);
+		if (!HostileSpawns.add(level, mob, "risen dead")) {
+			return; // (said in the log: B208)
+		}
 		level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.SAND.defaultBlockState()), p.pos().x, p.pos().y + 0.6, p.pos().z,
 			60, 0.5, 0.7, 0.5, 0.15);
 		level.sendParticles(ParticleTypes.CLOUD, p.pos().x, p.pos().y + 0.3, p.pos().z, 8, 0.4, 0.2, 0.4, 0.02);

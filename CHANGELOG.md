@@ -29,6 +29,11 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Bandit camps and night raids have their mobs again in modpacks that block vanilla mobs (B208).** Cobbleverse ships
+  MobsBeGone, which stops pillagers, vindicators, zombies and most other vanilla mobs from spawning, so camps stood
+  empty and were "broken up" at once and night raids never came. Camps, raids, the Bandit King's fort and bounty bands
+  now put their mobs in the world anyway (new setting **Force Raider Spawns**, on), the server log names any mob another
+  mod refused, a camp is never made without its chief, and on Peaceful players near are told why nothing comes.
 - **Settlers really walk out toward their colony (B182).** When the bell rang, settlers headed for a point 48 blocks
   out; if that ground wasn't loaded yet they could only shuffle a few random steps and often stood by the hall. They now
   walk to the farthest loaded point on the way, which moves out as the land ahead loads.

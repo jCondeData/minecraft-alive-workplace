@@ -485,7 +485,9 @@ public final class VillageRaids {
 				mob.setTarget(targets.get(random.nextInt(targets.size())));
 			}
 			mob.getNavigation().moveTo(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5, 1.0);
-			level.addFreshEntityWithPassengers(mob);
+			if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, mob, "raid on the village hall at " + hall.toShortString())) {
+				continue; // (said in the log: B208)
+			}
 			spawned.add(mob);
 		}
 		if (spawned.isEmpty()) {
@@ -511,8 +513,9 @@ public final class VillageRaids {
 					mob.setTarget(targets.get(random.nextInt(targets.size())));
 				}
 				mob.getNavigation().moveTo(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5, 1.0);
-				level.addFreshEntityWithPassengers(mob);
-				spawned.add(mob);
+				if (io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, mob, "raid on the village hall at " + hall.toShortString())) {
+					spawned.add(mob);
+				}
 			}
 		}
 		Mob leader = camp.filter(c -> Lairs.leads(level, c)).map(c -> Lairs.lead(level, c, surface(level, from))).orElse(null);

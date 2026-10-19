@@ -262,7 +262,9 @@ public final class BanditFort {
 			raider.setCanJoinRaid(false);
 		}
 		keepTo(mob, home, radius);
-		level.addFreshEntityWithPassengers(mob);
+		if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, mob, "Bandit King's fort")) {
+			return null; // (said in the log: B208)
+		}
 		LOADED.add(mob);
 		return mob;
 	}

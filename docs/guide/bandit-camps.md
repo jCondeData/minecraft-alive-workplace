@@ -44,7 +44,9 @@ night (see [Threats and defense](defence.md)). Guards stay at home otherwise: th
 - **Affects:** [raids](raids.md) (from the camp, twice as often), [wellbeing](village-needs.md) (less safe) and so the
   [work pace](work-pace.md) of the whole village.
 - **Turned down or off:** the [Threat Level](threat-level.md) setting makes camps rarer or more frequent, and at 0 none
-  come; on **Peaceful** none come; the [Bandit Camps](settings-threats.md) switch turns them off. With
+  come; on **Peaceful** none come; the [Bandit Camps](settings-threats.md) switch turns them off. In a modpack that blocks
+  pillagers (Cobbleverse does), the [Force Raider Spawns](settings-threats.md) setting still puts the chief and his men
+  in the camp. With
   [Monster Raids](settings-threats.md) off, a camp may still go up but no raids come from it.
 - **On demand.** Operators can set a camp down by the nearest hall with `/workplace threat lair bandits`, and clear it
   away again with `/workplace threat clear` (see [/workplace threat](command-threat.md)).

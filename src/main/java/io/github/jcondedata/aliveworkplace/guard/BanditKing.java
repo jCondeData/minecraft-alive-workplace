@@ -110,7 +110,9 @@ public final class BanditKing {
 		king.addTag(TAG);
 		king.addTag(DOOR_PREFIX + door.asLong());
 		BanditFort.keepTo(king, yard, BanditFort.KEEP);
-		level.addFreshEntityWithPassengers(king);
+		if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, king, "Bandit King")) {
+			return null; // (said in the log: B208)
+		}
 		BanditFort.track(king);
 		return king;
 	}

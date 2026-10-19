@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3
+Roadmap items: 32.3, B208
 
 ## What a player sees
 
@@ -59,6 +59,15 @@ None. One new screen page (the Defense page).
 - While the 1.6 gate (`Expansions.M32`) is closed, which ends in 1.0, a camp is the bandit camp as it was: an unnamed "Bandit Chief", three or four men, no
   strength limit on raids, and a guards icon that opens nothing.
 
+- `forceThreatSpawns` (true, B208): every foe (a lair's captain and band, a raid's raiders and extras, the Bandit
+  King and his fort's men, a bounty's band, the risen) goes in through `threat/HostileSpawns.add`, which checks the
+  result. Another mod refusing the mob at `ServerLevel.addEntity` (Cobbleverse's MobsBeGone lists pillagers,
+  vindicators, zombies and nearly every vanilla mob in `config/mobsbegone-blacklist.json`, and discards them there) is
+  logged once per mob type and, with the switch on, the mob is put in through the entity manager directly; off, or
+  still refused, it's left out and logged. A lair whose captain can't spawn isn't made (before B208 it was recorded
+  with no captain and "broken up" at the next round, by nobody); a raid counts only the raiders in the world. On
+  Peaceful nothing hostile is spawned and players within 96 blocks are told once a day.
+
 ## Saved data
 
 `aliveworkplace_bandit_camps` (per dimension; the bandit camps' file, name kept). Each entry of `camps` keeps `pos`,
@@ -108,3 +117,6 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   another culture's lair; the switches and the closed gate.
 - Unchanged: `RaidGameTests`, `ThreatGameTests`, `HallSpecGameTests` and every other caller of `BanditCamps`.
 - Showcase scene `defence_page`: the page with a bandit camp standing.
+- `B208GameTests`: with the world refusing hostile mobs as MobsBeGone does, a camp's chief and band of 6 and a night
+  attack's raiders are in the world, persistent, and still there 100 ticks later; with `forceThreatSpawns` off no camp is
+  made or broken up, no raid begins, and the log says why; on Peaceful nothing spawns and a player near is told once.

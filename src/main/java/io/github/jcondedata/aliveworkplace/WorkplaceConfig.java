@@ -103,6 +103,12 @@ public final class WorkplaceConfig {
 	 */
 	public int threatLevel = 2;
 	/**
+	 * A raider, bandit or camp mob another mod refuses to spawn (a mob blocklist such as MobsBeGone, which Cobbleverse ships
+	 * with pillagers and zombies on it) is put in the world anyway, so camps and raids aren't empty (B208). Off: such mobs
+	 * are left out, and the log says which.
+	 */
+	public boolean forceThreatSpawns = true;
+	/**
 	 * Every raider culture (ROADMAP 32.2) and whether it's on: ours by name ({@code monsters}), a datapack's by its id
 	 * ({@code pack:id}). One set to false is never picked. In the file only (a map isn't on the settings screen); a
 	 * culture the file doesn't list is added, on, when the world's data loads. {@code villageRaids} and
@@ -881,6 +887,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED = marketDays && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.VillageRaids.ENABLED = villageRaids && System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.guard.BanditCamps.ENABLED = banditCamps && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.threat.HostileSpawns.FORCE = forceThreatSpawns;
 		// The other cultures' lairs (32.3) come by chance as the bandits' do; each has its switch in raiderCultures.
 		io.github.jcondedata.aliveworkplace.threat.Lairs.ENABLED = System.getProperty("fabric-api.gametest") == null;
 		io.github.jcondedata.aliveworkplace.threat.Sieges.ENABLED = sieges && Expansions.on(Expansions.M32);

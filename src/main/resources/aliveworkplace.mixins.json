@@ -33,6 +33,7 @@
 		"PoiManagerMixin",
 		"ScoutUnseenMixin",
 		"ServerLevelMixin",
+		"ServerLevelEntitiesAccessor",
 		"ShowTradesToPlayerMixin",
 		"StructureTemplateMixin",
 		"StructureTemplatePoolAccessor",

@@ -619,6 +619,8 @@ public final class Lairs {
 			: captainSpot.map(spot -> origin.offset(StructureTemplate.calculateRelativePosition(settings, spot))).orElseGet(() -> standNear(level, middle, 0));
 		Mob captain = spawn(level, captainAt, lair, true, 0);
 		if (captain == null) {
+			// No camp without its captain: one recorded without him was "broken up" at the next round, by nobody (B208).
+			AliveWorkplace.LOG.warn("{} made no camp near the village hall at {}: its captain could not spawn", culture, hall);
 			return null;
 		}
 		lair = new Lair(lair.pos(), lair.hall(), captain.getUUID(), lair.day(), culture, strength, lair.grown(), 0, 0, lair.name());
@@ -726,7 +728,9 @@ public final class Lairs {
 		if (mob instanceof PathfinderMob pathfinder) {
 			pathfinder.restrictTo(lair.pos(), KEEP);
 		}
-		level.addFreshEntityWithPassengers(mob);
+		if (!HostileSpawns.add(level, mob, lair.culture() + " lair by the village hall at " + lair.hall().toShortString())) {
+			return null; // (said in the log: B208)
+		}
 		return mob;
 	}
 

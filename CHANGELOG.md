@@ -29,6 +29,9 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Raiders no longer appear frozen at the edge of the loaded world** (B176). A raid gathering near the edge of the
+  ground where mobs move put some of its raiders just past it, where they stood still and the raid lost count of
+  them. When a raid gathers on live ground every raider now arrives on it, and a siege moves its gathering point beyond the walls only onto it.
 - **Caravans no longer get lost when a Village Hall is taken away** (B212). Break the hall a caravan is heading for and
   everything it carried now turns round and comes back to its own village's Storehouse, not just the goods it meant to
   sell. A caravan whose own village's hall is gone too is dropped, so a new hall set down on the same spot no longer

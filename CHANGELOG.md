@@ -60,6 +60,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **No more client crash near a turning Windmill with shaders on** (B231). With shaders, Create draws spinning
+  contraptions the slow way, and in packs where Sodium and Continuity write a block one corner at a time (Cobbleverse)
+  the Windmill's sails crashed the game ("ShadedBlockSbbBuilder only supports putBulkData!"). Each corner now goes into
+  Create's buffer as it would whole, so the sails draw.
 - **Graves no longer clutter the village** (B222). The Undertaker walks to each grave lying in a street, a field or on
   a doorstep and lays it in the next free row of the village's Graveyard; a village with no Graveyard gets a small plot
   of three rows near the hall. Everything in the grave is kept (name, job, level, trades, partner) and the villager can

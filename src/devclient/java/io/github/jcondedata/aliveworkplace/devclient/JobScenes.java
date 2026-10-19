@@ -1128,6 +1128,7 @@ final class JobScenes {
 			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			int x = -20;
 			for (StarterBlueprints.Entry entry : StarterBlueprints.CREATE_ONLY) {
@@ -7773,6 +7774,36 @@ final class JobScenes {
 	private Done done;
 	private final AtomicBoolean isDone = new AtomicBoolean(false);
 	private final AtomicBoolean ok = new AtomicBoolean(false);
+
+	/**
+	 * B231: writes one quad into Ponder's {@code ShadedBlockSbbBuilder} vertex by vertex, as Sodium does for a wrapped
+	 * block model when shaders turn Flywheel off, on the render thread, and reads the mesh back; false if a vertex call
+	 * throws ("only supports putBulkData!") or the mesh comes back empty.
+	 */
+	private static boolean contraptionBufferTakesVertices() {
+		try {
+			return Minecraft.getInstance().submit(() -> {
+				try {
+					Class<?> type = Class.forName("net.createmod.catnip.render.ShadedBlockSbbBuilder");
+					Object builder = type.getMethod("create").invoke(null);
+					type.getMethod("begin").invoke(builder);
+					com.mojang.blaze3d.vertex.VertexConsumer consumer = (com.mojang.blaze3d.vertex.VertexConsumer) builder;
+					for (int i = 0; i < 4; i++) {
+						consumer.addVertex(i & 1, 0, i >> 1, 0xFFFFFFFF, 0, 0, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, 0xF000F0, 0, 1, 0);
+					}
+					Object buffer = type.getMethod("end").invoke(builder);
+					boolean empty = (boolean) buffer.getClass().getMethod("isEmpty").invoke(buffer);
+					io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[showcase] B231: a quad written vertex by vertex went in ({})", empty ? "empty" : "4 vertices");
+					return !empty;
+				} catch (ReflectiveOperationException e) {
+					throw new IllegalStateException(e);
+				}
+			}).get(10, java.util.concurrent.TimeUnit.SECONDS);
+		} catch (Exception e) {
+			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("[showcase] B231: a quad written vertex by vertex failed", e);
+			return false;
+		}
+	}
 
 	private static void command(MinecraftServer server, String command) {
 		server.getCommands().performPrefixedCommand(server.createCommandSourceStack().withSuppressedOutput(), command);

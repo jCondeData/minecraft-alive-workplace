@@ -8,7 +8,7 @@ the village knows (38.2), raid helpers (38.1a, which replaced 38.3's Den Wardens
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191
+Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191, B215
 
 ## What a player sees
 
@@ -82,7 +82,9 @@ hour and a half (from the festival's start, 1,500 ticks), a village with a finis
 villagers off work gather in front of the shrine instead of at the square, and a village trainer (one who can Mega
 Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ace: a flash, a burst of light, a beacon
 chord, and "<trainer> Mega Evolves their ace at the Mega Shrine, and the village cheers!" in chat for the players near.
-Every villager within 12 blocks is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
+The trainer waits at the pedestal until every villager off work has come to the shrine (at most 600 ticks from the
+gathering's start, and never past the show's last 100 ticks), so the crowd sees it (B215). Everyone who came, and every
+villager within 12 blocks, is the happier for it: +3 mood ("watched a Mega Evolution at the shrine") as long as a
 festival's good mood lasts (2 days). Once a festival; then the crowd goes back to the square for the dancing and
 fireworks. The show is part of the festival itself: it needs the village's festival (six villagers or more, on its
 festival day or one called), and it begins at the festival's first tick after the hall's round has seen it start.
@@ -206,7 +208,10 @@ village (the nearest hall) for that player, then checks the realm the village is
 (`BuildSiteManager.finishedNear`), and Mega Showdown's pedestal only by its id (`mega_showdown:pedestal`):
 `BlueprintLibrary.megaOk` lists the shrine only while that block exists and `villageMegas` is on. `Festivals.tick`
 asks it first each festival tick; in the show's hours it takes the crowd (to 4 blocks in front of the dais) and walks
-the trainer to the step before the pedestal; there, the show is held once a day per village (kept in memory: a restart
+the trainer to the step before the pedestal; there, the trainer waits for the crowd (`WAIT_TICKS`: every villager off
+work in the village has been at the crowd's spot once today, or 600 ticks since the gathering began, or the show's last
+100 ticks) and the show is held once a day per village, for everyone who came (kept in memory by villager id: the
+crowd's spot reaches up to 14 blocks from the pedestal, past the 12 of its watchers) and everyone within 12 blocks (kept in memory: a restart
 mid-show may hold it again, and the mood is the same). The Mega Evolution is shown as light and sound at the pedestal,
 not by a Pokémon sent out.
 
@@ -363,7 +368,10 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 - `MegaTrainerGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `aCupFinalistIsKnown`.
 - `MegaShrineCompatTests` (with Mega Showdown): `theShrineIsListedWithMegaShowdown`,
   `theFestivalShowIsHeldAtAFinishedShrine` (the pedestal's place, the watchers' +3, once a festival, through a save),
-  `noShowWhenOffWithoutATrainerOrLate` (villageMegas off: not listed, no show; no trainer; past its hours).
+  `noShowWhenOffWithoutATrainerOrLate` (villageMegas off: not listed, no show; no trainer; past its hours),
+  `theShowComesWithTheVillagesFestivalDay` (B191: the hall's round plans the festival and its own tick holds the show),
+  `theShowWaitsForTheCrowdAndCountsEveryoneWhoCame` (B215: the trainer waits for a villager still on the way; one at the
+  crowd's far edge, past 12 blocks, cheers too; one who never comes doesn't hold it past its last call).
 - `MegaShrineGameTests` (without Mega Showdown): `hiddenWithoutMegaShowdown`, `theShowsMoodAndText`.
 - `MegaStoneCompatTests` (with Mega Showdown, 38.6): `theRecipesAndFindsLoad`,
   `aJewellerCutsAMegaStoneForTheVillagesTrainers` (a crystal, gold and emeralds become one stone of the Master's team),

@@ -29,6 +29,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **The whole crowd sees the Mega Shrine's show** (B215). On a festival day the trainer at the shrine's pedestal now
+  waits for the villagers off work to gather before Mega Evolving their ace (at most half a minute), and everyone who
+  came cheers (+3 mood), even those at the back of the crowd. Before, the show could go off as the first villagers
+  arrived, and only those already near the pedestal got the mood.
 - **No more villagers than beds, and nobody lives in the settlers' wagon** (B206, B207). The bedrolls by a Settler's
   Wagon or a Colony Camp are for the road: once the Village Hall stands, a settler who kept one as their home gets up
   and finds a bed in the village's houses, and nobody claims one again. The hall doesn't count them among its beds

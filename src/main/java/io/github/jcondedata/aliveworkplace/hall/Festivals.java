@@ -423,8 +423,7 @@ public final class Festivals {
 		if (villager.isPassenger()) {
 			return square.closerToCenterThan(villager.position(), 24); // seated (in a Cup's stands, 28.19): there
 		}
-		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
-		if (activity != Activity.IDLE && activity != Activity.MEET && activity != Activity.PLAY) {
+		if (!offWork(villager)) {
 			return false;
 		}
 		if (!square.closerToCenterThan(villager.position(), SQUARE)) {
@@ -437,6 +436,12 @@ public final class Festivals {
 			level.sendParticles(ParticleTypes.NOTE, villager.getX(), villager.getY() + 2.2, villager.getZ(), 1, 0.2, 0.1, 0.2, level.random.nextDouble());
 		}
 		return true;
+	}
+
+	/** Whether {@code villager} is off work (idle, meeting or playing): one who comes to a gathering ({@link #gatherAt}). */
+	public static boolean offWork(Villager villager) {
+		Activity activity = villager.getBrain().getActiveNonCoreActivity().orElse(null);
+		return activity == Activity.IDLE || activity == Activity.MEET || activity == Activity.PLAY;
 	}
 
 	/** A firework from {@code at}, in two or three of the festival's colours. */

@@ -159,6 +159,48 @@ public class MegaShrineCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B215: the trainer at the pedestal waits for the villagers off work to come, and everyone who came cheers, even one
+	 * at the far edge of the crowd (farther than {@link MegaShrines#WATCH_RANGE} from the pedestal). The show used to be
+	 * held the moment the trainer got there, and only those standing near the pedestal just then got the mood. A villager
+	 * who never comes doesn't hold it back past the show's last call.
+	 */
+	//$ gametest_batch AREA '"mega_shrine_crowd"'
+	@GameTest(template = AREA, batch = "mega_shrine_crowd")
+	public void theShowWaitsForTheCrowdAndCountsEveryoneWhoCame(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		shrine(helper);
+		BlockPos hall = helper.absolutePos(HALL);
+		villager(helper, new BlockPos(5, 4, 7), true); // at the pedestal already
+		Villager near = villager(helper, new BlockPos(5, 2, 2), false); // at the crowd's spot
+		Villager late = villager(helper, new BlockPos(5, 2, 0), false);
+		late.setNoGravity(true);
+		late.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5.5, 2, -12.5))); // still on the way, off work
+		helper.assertTrue(MegaShrines.tick(level, hall), "the shrine didn't take the festival's crowd");
+		helper.assertTrue(ModAttachments.MEGA_SHOW_DAY.get(near) == null && ModAttachments.MEGA_SHOW_DAY.get(late) == null,
+			"the show was held before the crowd had come");
+		// The late one arrives at the crowd's far edge: at the crowd, but more than WATCH_RANGE from the pedestal.
+		late.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5.5, 2, -4.6)));
+		BlockPos pedestal = MegaShrines.pedestal(level, hall).orElseThrow();
+		helper.assertTrue(!late.getBoundingBox().intersects(new net.minecraft.world.phys.AABB(pedestal).inflate(12)), "the far edge is within the watch range");
+		MegaShrines.tick(level, hall);
+		long today = Chronicle.day(level);
+		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(near)), "the show wasn't held once the crowd had come");
+		helper.assertTrue(MegaShrines.mood(level, late) == MegaShrines.MOOD, "a villager who came to the shrine missed the show: mood " + MegaShrines.mood(level, late));
+		// Next festival: one never comes (off work, far off); at the show's last call it is held without them.
+		Festivals.forget();
+		ModAttachments.MEGA_SHOW_DAY.remove(near);
+		ModAttachments.MEGA_SHOW_DAY.remove(late);
+		late.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(5.5, 2, -12.5)));
+		MegaShrines.tick(level, hall);
+		helper.assertTrue(ModAttachments.MEGA_SHOW_DAY.get(near) == null, "the show didn't wait for the one still coming");
+		level.setDayTime((today - 1) * 24000L + Festivals.START + MegaShrines.SHOW_TICKS - 50);
+		MegaShrines.tick(level, hall);
+		helper.assertTrue(Long.valueOf(today).equals(ModAttachments.MEGA_SHOW_DAY.get(near)), "the show waited past its last call");
+		helper.assertTrue(ModAttachments.MEGA_SHOW_DAY.get(late) == null, "one who never came saw the show");
+		helper.succeed();
+	}
+
 	/** {@code villageMegas} off, no trainer, or past the show's hours: no show and nobody gets its mood. */
 	//$ gametest_batch AREA '"mega_shrine_off"'
 	@GameTest(template = AREA, batch = "mega_shrine_off")

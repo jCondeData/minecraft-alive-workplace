@@ -5,7 +5,7 @@ ROADMAP 32.16. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 chimney spark on a dry day or a raider's burning arrow. The fire spreads by the game's own rules but only through what
 the builders built, a new job, the **Firewarden**, puts it out, and the builders put back what burned.
 
-Roadmap items: 32.16
+Roadmap items: 32.16, B218
 
 ## What a player sees
 

@@ -441,7 +441,15 @@ public class WonderFinishedGameTests implements FabricGameTest {
 			}
 			// saved before 35.8: no standing, counted, damaged or festival
 			CompoundTag old = saved.copy();
-			CompoundTag entry = old.getList("sites", 10).getCompound(0);
+			// this test's own entry: another test's Wonder may be on the same level's list, ahead of it (B204)
+			net.minecraft.nbt.ListTag sites = old.getList("sites", 10);
+			CompoundTag entry = null;
+			for (int i = 0; i < sites.size(); i++) {
+				if (site.id().equals(net.minecraft.nbt.NbtUtils.loadUUID(sites.getCompound(i).get("id")))) {
+					entry = sites.getCompound(i);
+				}
+			}
+			helper.assertTrue(entry != null, "this Wonder isn't in the save");
 			for (String key : List.of("standing", "counted", "festival")) { // (damaged false, the default, isn't written)
 				helper.assertTrue(entry.contains(key), "not saved: " + key);
 				entry.remove(key);

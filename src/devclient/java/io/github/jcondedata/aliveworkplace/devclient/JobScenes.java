@@ -5795,6 +5795,14 @@ final class JobScenes {
 					Showcase.check(quest != null && quest.helpers.containsKey(player.getUUID()), "[I'll help] opened her request with the player as its helper");
 				}, 50),
 				new Step("03_hand_in", io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW, 6, (level, player) -> {
+					// She has asked: she waits beside the player from here. Walking on, she pushed the hovering camera back past
+					// the hall's 8-block reach, which shut the journal before its click (B219); the camera goes back to its place.
+					Villager dara = subject;
+					dara.setNoAi(true);
+					dara.moveTo(2.5, -60, 4.5, 27f, 0f);
+					dara.setYHeadRot(27f);
+					dara.setYBodyRot(27f);
+					ScreenshotHarness.hoverLookingAt(player, new Vec3(1.5, -60, 6.5), new Vec3(1.5, -58.8, 3.5));
 					// The pie in hand, the hall's quest journal on its Personal tab.
 					player.getInventory().add(new ItemStack(Items.PUMPKIN_PIE));
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
@@ -5805,9 +5813,9 @@ final class JobScenes {
 						ItemStack icon = m.icon(io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW);
 						shown = icon.is(Items.PUMPKIN_PIE) && icon.getHoverName().getString().equals("A taste of home");
 					}
-					Showcase.check(shown, "the journal's Personal tab shows \"A taste of home\" as a Pumpkin Pie to hand in");
-				}, 40),
+					Showcase.check(shown, "the journal's Personal tab shows \"A taste of home\" as a Pumpkin Pie to hand in");				}, 40),
 				new Step("04_thanks", -1, 0, (level, player) -> {
+					boolean open = player.containerMenu instanceof ChoiceMenu;
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.QuestJournal.PERSONAL_ROW, player); // the click that hands it in
 					}
@@ -5819,7 +5827,9 @@ final class JobScenes {
 					boolean chronicled = level.getBlockEntity(STATION) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity hall
 						&& hall.chronicle().stream().anyMatch(e -> e.kind() == io.github.jcondedata.aliveworkplace.hall.Chronicle.Kind.FRIEND
 							&& e.text().getString().equals(me + " helped Dara: A taste of home"));
-					Showcase.check(done && chronicled, "the pie handed in: the request is done, 4 emeralds paid, and the chronicle says " + me + " helped Dara");
+					Showcase.check(done && chronicled, "the pie handed in: the request is done, 4 emeralds paid, and the chronicle says " + me + " helped Dara"
+						+ (done && chronicled ? "" : "; journal " + (open ? "open" : "shut") + ", " + String.format("%.1f", Math.sqrt(player.distanceToSqr(Vec3.atCenterOf(STATION))))
+							+ " blocks from the hall"));
 				}, 60)),
 			(level, player) -> {
 				if (subject == null) {

@@ -50,6 +50,13 @@ public class FirewardenWork extends Behavior<Villager> {
 	public static final int XP_PER_SPLASH = 2;
 	/** How close (eyes to fire) a firewarden throws from. */
 	static final double THROW = 3.5;
+	/**
+	 * How far (eyes to fire) a firewarden standing in the open throws a bucket up onto a roof from, and how far out from
+	 * under the fire they may stand (B218: the ridge of a Starter Cottage has nowhere within {@link #THROW} to stand, and
+	 * a firewarden stood watching it burn until the fire crept down the roof).
+	 */
+	static final double THROW_UP = 12;
+	static final double THROW_UP_SIDE = 7;
 	private static final float SPEED = 0.75f;
 
 	private static final class State {
@@ -60,6 +67,11 @@ public class FirewardenWork extends Behavior<Villager> {
 		BlockPos water;
 		long nextWaterLook;
 		long nextThrow;
+		/** The open ground they throw up onto {@code belowFor} from: a fire with nowhere near it to stand (B218). */
+		@Nullable
+		BlockPos below;
+		@Nullable
+		BlockPos belowFor;
 	}
 
 	private static final Map<Villager, State> STATES = new WeakHashMap<>();
@@ -186,7 +198,7 @@ public class FirewardenWork extends Behavior<Villager> {
 			hold(villager, Items.WATER_BUCKET);
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(state.fire));
 			status(villager, "message.aliveworkplace.firewarden.state.fire");
-			if (state.walker.reach(level, villager, state.fire, THROW) && gameTime >= state.nextThrow) {
+			if (inReach(level, villager, state.fire, state) && gameTime >= state.nextThrow) {
 				splash(level, villager, state.fire);
 				state.nextThrow = gameTime + 10;
 				if (water(villager) == 0) {
@@ -202,6 +214,74 @@ public class FirewardenWork extends Behavior<Villager> {
 				state.water = null;
 			}
 		}
+	}
+
+	/**
+	 * Gets within a throw of {@code fire}: within {@link #THROW} of it, or, when there is nowhere to stand that near (a roof's
+	 * ridge), out in the open below it, close enough to throw the bucket up ({@link #throwsUp}). True once there.
+	 */
+	private static boolean inReach(ServerLevel level, Villager villager, BlockPos fire, State state) {
+		if (throwsUp(level, villager.blockPosition(), villager.getEyePosition(), fire) && villager.onGround()) {
+			villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+			return true;
+		}
+		if (state.below != null && (!fire.equals(state.belowFor) || !Walker.canStand(level, state.below))) {
+			state.below = null;
+		}
+		if (state.below == null) {
+			boolean near = state.walker.reach(level, villager, fire, THROW);
+			if (near || !state.walker.noSpot()) {
+				return near;
+			}
+			state.below = spotBelow(level, fire, villager.blockPosition()).orElse(null);
+			state.belowFor = fire;
+			if (state.below == null) {
+				return false;
+			}
+		}
+		state.walker.walkTo(level, villager, state.below, 1.2);
+		return false;
+	}
+
+	/**
+	 * Whether a firewarden standing at {@code feet} (eyes at {@code eyes}) can throw a bucket up onto {@code fire}: in the
+	 * open (nothing over their head up to the fire's height), the fire above their eyes, within {@link #THROW_UP_SIDE} blocks out from under it and
+	 * {@link #THROW_UP} of their eyes.
+	 */
+	static boolean throwsUp(ServerLevel level, BlockPos feet, Vec3 eyes, BlockPos fire) {
+		Vec3 at = Vec3.atCenterOf(fire);
+		double dx = at.x - eyes.x;
+		double dz = at.z - eyes.z;
+		if (at.y <= eyes.y || dx * dx + dz * dz > THROW_UP_SIDE * THROW_UP_SIDE || eyes.distanceTo(at) > THROW_UP) {
+			return false;
+		}
+		// (in the open: nothing over their head up to the fire's height, so not from inside under the roof)
+		BlockPos.MutableBlockPos p = feet.mutable();
+		for (int y = feet.getY() + 2; y < fire.getY(); y++) {
+			p.setY(y);
+			if (!level.getBlockState(p).getCollisionShape(level, p).isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** The open ground nearest {@code from} that a bucket can be thrown up onto {@code fire} from ({@link #throwsUp}). */
+	static Optional<BlockPos> spotBelow(ServerLevel level, BlockPos fire, BlockPos from) {
+		int side = (int) THROW_UP_SIDE;
+		BlockPos best = null;
+		double bestScore = Double.MAX_VALUE;
+		for (BlockPos p : BlockPos.betweenClosed(fire.offset(-side, -(int) THROW_UP, -side), fire.offset(side, -2, side))) {
+			if (!level.isLoaded(p) || !Walker.canStand(level, p) || !throwsUp(level, p, Walker.eyeFrom(p), fire)) {
+				continue;
+			}
+			double score = p.distSqr(from);
+			if (score < bestScore) {
+				bestScore = score;
+				best = p.immutable();
+			}
+		}
+		return Optional.ofNullable(best);
 	}
 
 	/** Throws a bucket of water over {@code fire}: the fire within the splash goes out, with steam. */
@@ -261,6 +341,7 @@ public class FirewardenWork extends Behavior<Villager> {
 		}
 		State state = state(villager);
 		state.walker.reset();
+		state.below = null;
 		state.fire = null;
 		state.water = null;
 	}

@@ -312,6 +312,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B235** Showcase scene job_plate fails on GitHub (showcase page, 2026-10-19, after B221's fix): 'not done: a level-3 fisherman's plate (null)' and 'a named builder's plate keeps her name first (null)'; the plate texts do show in the stills ('Fisherman, Journeyman', 'Dara - Builder, Expert') but the scene's checks read null, so the scene reports FAIL and B221 isn't ready to approve (lane: a) (found by digest-1019-2253, 2026-10-19)
 - [ ] **B236** Showcase scene undertaker_graveyard fails on GitHub (showcase page, 2026-10-19, after B222's fix): 'the undertaker laid Mira's grave from the street in the plot by the hall (not within 120 seconds)', picture 03_done missing; the grave is not moved to the Graveyard in the scene, so B222 isn't ready to approve (lane: a) (found by digest-1019-2253, 2026-10-19)
 - [ ] **B237** Showcase scene job_plate fails on GitHub (2026-10-19, after B221's fix): 'not done: a level-3 fisherman's plate (null)' and 'a named builder's plate keeps her name first (null)'; the stills show the right texts but the scene's checks read null, so the scene FAILs and B221 isn't ready to approve (lane: a) (found by digest-1019-2253, 2026-10-19)
+- [ ] **B238** Showcase scene undertaker_graveyard fails on GitHub (2026-10-19, after B222's fix): 'the undertaker laid Mira's grave from the street in the plot by the hall (not within 120 seconds)', picture 03_done missing, so B222 isn't ready to approve (lane: a) (found by digest-1019-2253, 2026-10-19)
 
 ## Milestone 21: Finish 0.138.0
 

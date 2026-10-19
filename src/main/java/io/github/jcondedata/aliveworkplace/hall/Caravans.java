@@ -214,7 +214,23 @@ public final class Caravans {
 			}
 		}
 
+		/**
+		 * Takes the village at {@code hall} off the list (tests; a hall broken in the world: {@link Caravans#hallGone}).
+		 * Without the level, a caravan stopped at a station for the village's Create train comes off it at once, and goods
+		 * in the train's chest stay there.
+		 */
 		public void remove(BlockPos hall) {
+			remove(hall, 0, s -> List.of(), s -> 0);
+		}
+
+		/**
+		 * Takes the village at {@code hall} off the list. B214: a caravan stopped at a station for the village's Create
+		 * train ({@link io.github.jcondedata.aliveworkplace.city.CaravanTrains#waiting}) to or from it has no train left
+		 * to wait for: it gets off and walks, arriving {@code walk} ticks from {@code now} ({@code now} itself when it turns
+		 * home from its own station, never having boarded), with its goods taken back out of the train's chest by {@code offTrain} when they rode there (only what
+		 * is still there, once; nothing left: it's dropped).
+		 */
+		void remove(BlockPos hall, long now, java.util.function.Function<Shipment, List<ItemStack>> offTrain, java.util.function.ToLongFunction<Shipment> walk) {
 			villages.remove(hall);
 			routes.remove(hall);
 			routes.values().forEach(to -> to.remove(hall));
@@ -222,21 +238,40 @@ public final class Caravans {
 			// 33.6, B212: a caravan on its way here turns round for home with everything it carried, the goods it brought
 			// for nothing and those to sell (if home is still on the list); one coming home here, or whose home is gone
 			// too, has nowhere to go and is dropped. A caravan that set out from here still arrives where it was going.
+			// B214: one stopped at a station for the train gets off (its goods out of the train's chest, once) and walks.
 			List<Shipment> home = new ArrayList<>();
-			onTheRoad.removeIf(s -> {
-				if (!s.to().equals(hall)) {
-					return false;
+			List<Shipment> next = new ArrayList<>();
+			for (Shipment s : onTheRoad) {
+				boolean stationed = s.byTrain() && io.github.jcondedata.aliveworkplace.city.CaravanTrains.waiting(s.arrives());
+				if (!s.to().equals(hall) && !(stationed && s.from().equals(hall))) {
+					next.add(s);
+					continue;
 				}
-				if (!s.back() && villages.containsKey(s.from())) {
-					List<ItemStack> goods = new ArrayList<>(s.goods());
-					s.sale().forEach(lot -> goods.addAll(lot.stacks()));
-					goods.removeIf(ItemStack::isEmpty);
-					if (!goods.isEmpty()) {
-						home.add(new Shipment(hall, s.from(), goods, s.arrives(), List.of(), true, s.byTrain()));
-					}
+				boolean turn = s.to().equals(hall);
+				if (turn && (s.back() || !villages.containsKey(s.from()))) {
+					// nowhere to go: dropped; goods in the train's chest stay in it (never a second time with the caravan)
+					continue;
 				}
-				return true;
-			});
+				List<ItemStack> goods = new ArrayList<>(stationed && s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.IN_CHEST
+					? offTrain.apply(s) : s.goods());
+				List<Lot> sale = s.sale();
+				if (turn) {
+					sale.forEach(lot -> goods.addAll(lot.stacks()));
+					sale = List.of();
+				}
+				goods.removeIf(ItemStack::isEmpty);
+				if (goods.isEmpty() && sale.isEmpty()) {
+					continue;
+				}
+				// one that never boarded and turns round is still at its own station: home at once
+				long arrives = !stationed ? s.arrives()
+					: turn && s.arrives() == io.github.jcondedata.aliveworkplace.city.CaravanTrains.BOARDING ? now : now + walk.applyAsLong(s);
+				Shipment moved = turn ? new Shipment(hall, s.from(), List.copyOf(goods), arrives, List.of(), true, !stationed && s.byTrain())
+					: new Shipment(s.from(), s.to(), List.copyOf(goods), arrives, sale, s.back(), false);
+				(turn ? home : next).add(moved);
+			}
+			onTheRoad.clear();
+			onTheRoad.addAll(next);
 			onTheRoad.addAll(home);
 			halves.remove(hall);
 			halves.values().forEach(to -> to.remove(hall));
@@ -994,6 +1029,19 @@ public final class Caravans {
 			CaravanSights.leave(level, hall, to, data); // 33.7: seen setting out, when someone is there to see it
 		}
 		return shipment;
+	}
+
+	/**
+	 * A Village Hall taken away (its block broken): its village leaves the list ({@link Data#remove}). B214: a caravan stopped
+	 * at a station for the village's Create train to or from it gets its goods back out of the train's chest (once) and
+	 * walks the rest, home when it was going there.
+	 */
+	public static void hallGone(ServerLevel level, BlockPos hall) {
+		Data data = Data.get(level);
+		data.remove(hall, level.getGameTime(),
+			s -> io.github.jcondedata.aliveworkplace.city.CaravanTrains.RAILWAY.call(
+				r -> r.unload(level, io.github.jcondedata.aliveworkplace.city.CaravanTrains.railwayId(s.from(), s.to()), s.goods()), List.<ItemStack>of()),
+			s -> Math.max(1, trip(level, s.from(), s.to(), data) / 4));
 	}
 
 	/** 39.7a: the village's Create train came in at {@code hall}'s station: the caravans it brought are unloaded now. */

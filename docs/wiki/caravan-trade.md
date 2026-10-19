@@ -3,7 +3,7 @@
 ROADMAP 33.6 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). It builds on
 [the price board](price-board.md) and [trading at the board](board-trade.md).
 
-Roadmap items: 33.6, B212
+Roadmap items: 33.6, B212, B214
 
 ## What a player sees
 
@@ -81,6 +81,9 @@ None new. It uses the Village Hall, the Storehouse and its chests.
 - B212 (fixed 2026-10-19): the free goods it carried turn round for home too, not just the goods for sale. A caravan
   whose own hall is gone as well (or one coming home to a hall taken away) is dropped, so a hall set down later on the
   same block isn't handed old goods.
+- B214 (fixed 2026-10-19): a caravan stopped for the village's Create train (waiting to board, or its goods in the
+  train's chest) when the hall it was going to is taken away gets its goods back out of the chest once and walks home;
+  with its own hall taken away it walks on to where it was going.
 - The full list is in ROADMAP's Notes, 2026-10-10 (33.6).
 
 ## Known limits
@@ -101,5 +104,8 @@ None new. It uses the Village Hall, the Storehouse and its chests.
   1.7; the economy off (before loading and mid-journey); no room at the other end and a seller that's gone; the
   buying hall taken away mid-journey, with goods for sale and (B212) with only free goods; a caravan whose home hall is
   gone dropped, and a new hall on the same block handed nothing.
+- `CreateTrainCompatTests` (B214, with Create): the other hall taken away while the caravan waits at the station and
+  while its logs ride in the train's chest (home once, none left in the chest), and the sender's hall taken away while
+  it waits (it walks on).
 - `VillageHallGameTests.caravansCarryWhatAnotherVillageNeeds` passes unchanged.
 - Showcase scene `caravan_trade`: the Routes tab with its earnings, then the chronicle line.

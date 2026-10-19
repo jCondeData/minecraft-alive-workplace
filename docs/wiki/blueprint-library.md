@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b
 
 ## 1. What a player sees
 

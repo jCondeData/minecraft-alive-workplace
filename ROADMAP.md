@@ -4668,7 +4668,7 @@ Depends on: nothing open.
   every description is checked against the build (who works there comes from the job blocks it holds);
   `langcheck.py` passes; the `table` scene's stills show a description.
   - [x] **36.6a** (review: pending 2026-10-18) Change from the owner (2026-10-18): delete the description lines. The Table shows only what jobs a build brings and its beds, in this format: 'Jobs: Fisherman (1), Butcher/Chef (3)' (a slash means a shared job block, the number is how many of that job block are in the build), plus 'Beds: N' when the build has beds.
-  - [ ] **36.6b** Change from the owner (2026-10-19): finish this asap, top priority (urgent: owner): the Blueprint Table must show Jobs and beds, and its scene must be filmed and passing so I can see it
+  - [x] **36.6b** (review: pending 2026-10-19) Change from the owner (2026-10-19): finish this asap, top priority (urgent: owner): the Blueprint Table must show Jobs and beds, and its scene must be filmed and passing so I can see it Status (lane-b-1019-0038): already met by 36.6a; the `table` scene filmed on GitHub from main 81216a3f (showcase page, 2026-10-18 23:08Z) PASSes, and its first still shows the Starter Cottage with "Jobs: Fisherman (1), Carpenter (1)" and "Beds: 1" under its size. Nothing to change.
 - [x] **36.7** (approved 2026-10-18) **Cellars for the builds that stop at Level II, and for old cellarless builds.** 37 builds top out at
   Level II. Eight of them, where a cellar suits the trade, get a Level III that is their Level II with a basement
   under it, named `<name>_3` because upgrades go by name (`BlueprintUpgrades`), drawn in `tools/blueprints/` and

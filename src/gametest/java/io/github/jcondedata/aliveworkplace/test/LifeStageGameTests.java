@@ -213,23 +213,50 @@ public class LifeStageGameTests implements FabricGameTest {
 		int[] ticks = new int[1];
 		double[] from = new double[2];
 		float[] asked = {-1f, -1f};
+		// Each villager's walk, whenever it changes (B213: a failure says when a walk target went and why).
+		StringBuilder trace = new StringBuilder();
+		String[] lastSeen = {"", ""};
+		// The walk is asked from when both stand on the ground (B213): a villager just spawned is in the air for a tick or
+		// two, when vanilla works out no path and notes "can't reach"; the retry wait that started let his idle strolls take
+		// him off, and the next try could fail again, so the 60 measured ticks held a 20-tick stop for one and not the other.
+		int[] start = {-1};
 		helper.onEachTick(() -> {
 			ticks[0]++;
-			if (ticks[0] <= 100) {
+			if (start[0] < 0 && bram.onGround() && tom.onGround()) {
+				start[0] = ticks[0];
+			}
+			int walked = start[0] < 0 ? -1 : ticks[0] - start[0];
+			if (walked >= 0 && walked <= 100) {
 				Walker.requestWalk(bram, bramGoal, 0.5f, 1, 0);
 				Walker.requestWalk(tom, tomGoal, 0.5f, 1, 0);
 			}
-			if (ticks[0] == 40) {
+			Villager[] both = {bram, tom};
+			for (int i = 0; i < 2; i++) {
+				Villager v = both[i];
+				var brain = v.getBrain();
+				String now = "target " + brain.getMemory(MemoryModuleType.WALK_TARGET).map(t -> helper.relativePos(t.getTarget().currentBlockPosition()).toShortString() + "@" + t.getSpeedModifier()).orElse("none")
+					+ ", cant-reach " + brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) + ", nav " + (v.getNavigation().isDone() ? "idle" : "walking")
+					+ ", ground " + v.onGround() + ", " + brain.getActiveNonCoreActivity().map(Object::toString).orElse("-");
+				if (!now.equals(lastSeen[i]) && trace.length() < 3000) {
+					lastSeen[i] = now;
+					trace.append(" [tick ").append(ticks[0]).append(' ').append(i == 0 ? "elder" : "younger").append(": ").append(now)
+						.append(", z ").append(Math.round((v.getZ() - helper.absolutePos(BlockPos.ZERO).getZ()) * 100) / 100.0).append(']');
+				}
+			}
+			if (walked == 40) {
 				from[0] = bram.getZ();
 				from[1] = tom.getZ();
 				asked[0] = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f);
 				asked[1] = tom.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(WalkTarget::getSpeedModifier).orElse(0f);
 			}
-		});
-		helper.runAfterDelay(100, () -> {
+			if (walked != 100) {
+				helper.assertTrue(start[0] >= 0 || ticks[0] < 40, "the two never stood on the ground");
+				return;
+			}
 			double elder = bram.getZ() - from[0];
 			double young = tom.getZ() - from[1];
-			String went = "walk targets " + asked[0] + " and " + asked[1] + "; in 60 ticks the elder went " + elder + " blocks, the younger villager " + young;
+			String went = "walk targets " + asked[0] + " and " + asked[1] + "; in 60 ticks the elder went " + elder + " blocks, the younger villager " + young
+				+ " (walks asked from tick " + start[0] + "); their walks:" + trace;
 			helper.assertTrue(Math.abs(asked[0] - 0.5f * LifeStages.ELDER_WALK) < 0.001f && Math.abs(asked[1] - 0.5f) < 0.001f, "the walk targets: " + went);
 			helper.assertTrue(young > 3, "the younger villager hardly walked: " + went);
 			helper.assertTrue(elder < young * 0.90 && elder > young * 0.74, "the elder isn't about 15% slower: " + went);

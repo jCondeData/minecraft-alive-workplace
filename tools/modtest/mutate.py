@@ -16,6 +16,12 @@ small (4-8) in the per-change check and spread them over the riskiest files. The
 needs the project's Java setup: pass --cmd "export JAVA_HOME=...; ./gradlew ..." or set
 MODTEST_CMD. The original file is backed up in build/modtest/mutant-backup/ before each mutant;
 --restore puts it back after a crash.
+
+--compat-cmd CMD (the nightly passes runCompatGameTest): a mutant the main command lets survive is
+run once more with CMD, so code only the optional mods' compat tests reach (compat/, storage networks,
+Create) isn't reported as a survivor when a compat test kills it. CMD gets its own baseline on the
+real code, run the first time a survivor needs it; a kill there is listed as "killed by (compat) ...".
+At most --compat-max survivors are re-run (default 6), the rest stay survivors.
 """
 import argparse
 import json
@@ -164,6 +170,47 @@ def failed_tests(root, since_time):
     return list(dict.fromkeys(names))
 
 
+def compat_run(a, root, f, orig, c, key, compat):
+    """Run a main-suite survivor once with --compat-cmd: (status, seconds, killer)."""
+    secs = 0.0
+    if compat["base"] is None:
+        t0 = time.time()
+        bstatus, bsecs, tail = run(a.compat_cmd, root, a.timeout)
+        secs += bsecs
+        if bstatus == "NO-COMPILE":
+            compat["left"] = 0
+            print("compat baseline doesn't build; survivors stay survivors:\n" + tail[-800:], flush=True)
+            return "SURVIVED", secs, ""
+        compat["base"] = (bstatus, set(failed_tests(root, t0)))
+        if bstatus != "SURVIVED" and not compat["base"][1]:
+            compat["left"] = 0
+            print("compat baseline failed without a failing test; survivors stay survivors:\n" + tail[-800:], flush=True)
+            return "SURVIVED", secs, ""
+        print(f"   compat baseline on the real code: {'all pass' if bstatus == 'SURVIVED' else 'failing: ' + (', '.join(sorted(compat['base'][1])) or bstatus)} ({bsecs:.0f}s)", flush=True)
+    bstatus, bfail = compat["base"]
+    shutil.copyfile(f, key.with_suffix(".orig"))
+    key.with_suffix(".json").write_text(json.dumps(dict(path=str(f))))
+    t0 = time.time()
+    try:
+        lines = orig.split("\n")
+        lines[c["line"] - 1] = c["new"]
+        f.write_text("\n".join(lines), encoding="utf-8")
+        status, more, _ = run(a.compat_cmd, root, a.timeout)
+    finally:
+        f.write_text(orig, encoding="utf-8")
+        key.with_suffix(".orig").unlink(missing_ok=True)
+        key.with_suffix(".json").unlink(missing_ok=True)
+    secs += more
+    if status == "NO-COMPILE":
+        return "SURVIVED", secs, ""
+    if status in ("KILLED", "TIMEOUT"):
+        new_fail = [n for n in failed_tests(root, t0) if n not in bfail]
+        if status == "KILLED" and not new_fail and bstatus != "SURVIVED":
+            return "SURVIVED", secs, ""      # only the compat tests that already failed on the real code
+        return status, secs, "(compat) " + (", ".join(new_fail)[:220] or ("(timed out)" if status == "TIMEOUT" else "failed"))
+    return "SURVIVED", secs, ""
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("repo", nargs="?", default=".")
@@ -175,6 +222,8 @@ def main():
     ap.add_argument("--shard", help="K/N: run only every Nth of the picked mutants, starting at the Kth (1-based), so N "
                                     "parallel jobs with the same --max and --seed share one set of mutants")
     ap.add_argument("--cmd", help="test command (default: runGameTest on the first node)")
+    ap.add_argument("--compat-cmd", help="second test command for the main command's survivors (e.g. runCompatGameTest)")
+    ap.add_argument("--compat-max", type=int, default=6, help="re-run at most this many survivors with --compat-cmd")
     ap.add_argument("--timeout", type=int, default=900)
     ap.add_argument("--list", action="store_true", help="only list the mutants that would run")
     ap.add_argument("--no-baseline", action="store_true", help="skip the first run on the real code (only if it is known to pass)")
@@ -225,6 +274,9 @@ def main():
         if base_status == "NO-COMPILE":
             sys.exit("the real code doesn't build with this command:\n" + tail[-1500:])
         base_fail = set(failed_tests(root, t0))
+        if base_status != "SURVIVED" and not base_fail:
+            # Gradle itself failed (a plugin not resolved, out of memory): every mutant would read as a survivor
+            sys.exit("the run on the real code failed without a failing test (Gradle, not the tests?):\n" + tail[-1500:])
         print(f"0. baseline on the real code: {'all pass' if base_status == 'SURVIVED' else 'failing: ' + ', '.join(sorted(base_fail)) or base_status} ({secs:.0f}s)")
     if a.list:
         for c in chosen:
@@ -232,6 +284,7 @@ def main():
         return
     results = []
     bdir = backup_dir(root)
+    compat = dict(left=a.compat_max, base=None)
     for i, c in enumerate(chosen, 1):
         f = c["file"]
         orig = f.read_text(encoding="utf-8")
@@ -257,6 +310,10 @@ def main():
             if base_status != "SURVIVED" and not new_fail and status == "KILLED":
                 status = "SURVIVED"          # only the tests that already failed on the real code failed
             killer = ", ".join(new_fail)[:240] or ("(timed out)" if status == "TIMEOUT" else "")
+        if status == "SURVIVED" and a.compat_cmd and compat["left"] > 0:
+            compat["left"] -= 1
+            status, more, killer = compat_run(a, root, f, orig, c, key, compat)
+            secs += more
         results.append((c, status, secs, killer))
         print(f"{i}. {status:10s} {f.relative_to(root)}:{c['line']} ({c['op']}, {secs:.0f}s){'  killed by ' + killer if killer else ''}", flush=True)
     surv = [r for r in results if r[1] == "SURVIVED"]

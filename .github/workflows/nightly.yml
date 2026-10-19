@@ -325,7 +325,8 @@ jobs:
         run: |
           mkdir -p build/nightly
           python3 tools/modtest/mutate.py --since "$SINCE" --max 20 --seed "$(date -u +%j)" --shard "${{ matrix.shard }}/5" \
-            --cmd "./gradlew :$NODE:runGameTest" --timeout 1800 > "build/nightly/mutants-${{ matrix.shard }}.md" 2>&1 || true
+            --cmd "./gradlew :$NODE:runGameTest" --compat-cmd "./gradlew :$NODE:runCompatGameTest" --compat-max 4 \
+            --timeout 1800 > "build/nightly/mutants-${{ matrix.shard }}.md" 2>&1 || true
           cat "build/nightly/mutants-${{ matrix.shard }}.md"
       - uses: actions/upload-artifact@v4
         if: always()

@@ -5195,6 +5195,16 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-c-1019-2153): Milestone 37 still has no open item and no `(lane: c)` bug, and `sessions.py next` lists
+  nothing for lanes b-e (the owner's "which big milestone next?" still stands). Done instead, the QA suggestion two lanes
+  left (lane-c-1019-0953, lane-e-1019-1913): the nightly mutation job now runs each plain-suite survivor once more
+  against the compat suite (`mutate.py --compat-cmd`, at most 4 per shard, the compat suite's own baseline run first),
+  so code only Cobblemon/Create/storage-mod tests reach is no longer reported as a survivor when a compat test kills
+  it. Checked here on StorageNetworks:336 (`drop !`): the plain suite let it live, the compat suite killed it (four
+  TomsStorageCompatTests). Also: a run on the real code that fails with no test named (Gradle failed: a plugin not
+  resolved, an out-of-memory kill) now stops the check instead of reporting every mutant as a survivor; that happened
+  here twice. `python3 tools/modtest/test_mutate.py` tests the tool (7 cases). Locally the compat run needs the
+  daemon stopped first (7 GB): `--compat-cmd "./gradlew --stop; ./gradlew --no-daemon ... runCompatGameTest"`.
 - 2026-10-19 (lane-d-1019-1908): short mutation pass on M38 Megas, seed 42: MegaShrines and MegaStones (4 mutants each)
   against the four Mega compat classes alone (trimmed compat fabric.mod.json, `--offline`, about 2 min a run). 8
   mutants: 4 killed, 1 didn't compile, 3 survived. MegaShrines:119 (`!=` to `==`, the day's crowd started afresh every

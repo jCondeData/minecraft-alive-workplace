@@ -28,6 +28,7 @@
 		"IronWillMixin",
 		"LightningFireMixin",
 		"MobAccessor",
+		"PathNavigationMixin",
 		"PlayerListMixin",
 		"PoiManagerMixin",
 		"ScoutUnseenMixin",

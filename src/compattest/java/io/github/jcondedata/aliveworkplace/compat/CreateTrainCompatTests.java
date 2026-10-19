@@ -514,6 +514,17 @@ public class CreateTrainCompatTests implements FabricGameTest {
 		BlockPos a = helper.absolutePos(HALL_A);
 		BlockPos b = helper.absolutePos(HALL_B);
 		Caravans.Data data = Caravans.Data.get(level);
+		// A hall's goods go into the chests by every Storehouse within its reach (Caravans.storehouse): one an earlier
+		// batch left outside this area (CuisineTreatsCompatTests, MegaStoneCompatTests) took the train's 32 logs once
+		// the batches' order put it within reach of the arriving hall.
+		net.minecraft.world.phys.AABB own = helper.getBounds();
+		for (BlockPos hall : List.of(a, b)) {
+			for (BlockPos store : level.getPoiManager().findAll(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI),
+					p -> !own.contains(net.minecraft.world.phys.Vec3.atCenterOf(p)), hall, io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS,
+					net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+				level.removeBlock(store, false);
+			}
+		}
 		for (BlockPos hall : List.of(a, b)) {
 			data.remove(hall);
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());

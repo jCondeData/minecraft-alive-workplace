@@ -46,6 +46,7 @@
 		"VillagerPanicTriggerMixin",
 		"VillagerSeatMixin",
 		"VillageFireMixin",
+		"WalkNodeEvaluatorMixin",
 		"WarDogSitMixin",
 		"ZombieVillagerMixin"
 	],

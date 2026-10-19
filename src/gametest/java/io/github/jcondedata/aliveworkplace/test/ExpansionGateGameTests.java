@@ -44,11 +44,11 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "tradePacts", "alliances", "feuds", "feudWars", "realmMap", "weeklyLeaderboard", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
 		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends", "builderScaffolding",
-		"furnishedBuilds", "moddedStorageNetworks", "moddedLibrary", "denWardens", "denChallenges", "villageMegas", "cuisineDishes", "beanFarms", "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains");
+		"furnishedBuilds", "moddedStorageNetworks", "moddedLibrary", "denHelpers", "villageMegas", "cuisineDishes", "beanFarms", "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
-		"coloniesPerVillage", "realmMaxMembers", "leaderboardHour", "wonderServerLimit", "wonderCrew", "wonderStanding", "denChallengeDays");
+		"coloniesPerVillage", "realmMaxMembers", "leaderboardHour", "wonderServerLimit", "wonderCrew", "wonderStanding", "denHelperPrice");
 
 	/** A config file as 0.139.0 wrote it: every switch on. */
 	static String oldConfig() {
@@ -79,8 +79,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		map.put("VillageHouses.POKEMON_JOBS", () -> io.github.jcondedata.aliveworkplace.world.VillageHouses.POKEMON_JOBS);
 		map.put("Legends", () -> Legends.ENABLED);
 		map.put("LegendSites", () -> LegendSites.ENABLED);
-		map.put("DenWardens", () -> io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED);
-		map.put("DenChallenges", () -> io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED);
+		map.put("RaidHelpers", () -> io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.ENABLED);
 		map.put("Gifted.CHANCE", () -> Gifted.CHANCE > 0);
 		map.put("Edicts", () -> Edicts.ENABLED);
 		map.put("WorkHorn", () -> WorkHorn.ENABLED);
@@ -182,8 +181,8 @@ public class ExpansionGateGameTests implements FabricGameTest {
 			if (!screen.contains("villageProtection") || !screen.contains("maxWorkPace") || !screen.contains("seasonDays")) {
 				problems.add("a finished option left the screen: " + screen);
 			}
-			if (screen.size() != 140 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
-				problems.add("expected " + (140 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
+			if (screen.size() != 139 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) {
+				problems.add("expected " + (139 - GATED_SWITCHES.size() - GATED_NUMBERS.size()) + " options on the screen, found "
 					+ screen.size());
 			}
 			empty.setBoolean("tonics", true);
@@ -282,12 +281,12 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 140, "every option on the screen in GameTests (37.12 moddedLibrary, 39.7 villageTrains, 39.6 createSchematics, 39.4 createBuilds, 39.3 machineWork, 39.2 mechanics, 38.9 beanFarms, 38.8 cuisineDishes, 38.5 villageMegas, 37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 139, "every option on the screen in GameTests (38.1a denHelpers and denHelperPrice for 38.3/38.4's three, 37.12 moddedLibrary, 39.7 villageTrains, 39.6 createSchematics, 39.4 createBuilds, 39.3 machineWork, 39.2 mechanics, 38.9 beanFarms, 38.8 cuisineDishes, 38.5 villageMegas, 37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 
-	/** M38's six switches (design note M38) belong to its gate: closed for a player until 2.2, open in GameTests. */
-	static final List<String> M38_SWITCHES = List.of("denWardens", "denChallenges", "denChallengeDays", "villageMegas", "cuisineDishes", "beanFarms");
+	/** M38's five switches (design note M38) belong to its gate: closed for a player until 2.2, open in GameTests. */
+	static final List<String> M38_SWITCHES = List.of("denHelpers", "denHelperPrice", "villageMegas", "cuisineDishes", "beanFarms");
 
 	/** Cobblemon depth (2.2) stays shut for players while it's built: its gate and each of its switches. */
 	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'

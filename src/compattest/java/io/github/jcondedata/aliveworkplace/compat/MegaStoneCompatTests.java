@@ -90,7 +90,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	 * spends the gold on them (the Mega Stone test passed alone but failed in the full compat suite).
 	 */
 	static Container shop(GameTestHelper helper, ItemStack... stock) {
-		DenWardenCompatTests.clearAround(helper);
+		RaidHelperCompatTests.clearAround(helper);
 		int radius = VillageHalls.RADIUS;
 		int range = StockOrders.RANGE;
 		VillageHalls.RADIUS = 16;
@@ -411,7 +411,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '3000' '"megaMinerFinds"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "megaMinerFinds")
 	public void aMinersKeyStonesGoToTheStore(GameTestHelper helper) {
-		DenWardenCompatTests.clearAround(helper);
+		RaidHelperCompatTests.clearAround(helper);
 		VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
@@ -456,7 +456,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 
 	/** Two villages in a realm (the capital and a member), each with its Trainer Leader seen by the hall's round. */
 	static Land realm(GameTestHelper helper) {
-		DenWardenCompatTests.clearAround(helper);
+		RaidHelperCompatTests.clearAround(helper);
 		REALMS_WERE = Realms.ENABLED;
 		Realms.ENABLED = true;
 		VillageHalls.forgetNearest();

@@ -15,7 +15,7 @@
 		"DroughtFarmlandMixin",
 		"DroughtPlantMixin",
 		"PlagueBedMixin",
-		"PlayerAdvancementsMixin",
+		"RaidStatMixin",
 		"CaravanPartyMixin",
 		"EntityAccessor",
 		"FarmlandTrampleMixin",

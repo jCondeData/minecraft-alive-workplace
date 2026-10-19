@@ -25,7 +25,7 @@ public final class TrainerPackages {
 					ModAttachments.TRAINER_BATTLES.getOrElse(v, 0)).withStyle(ChatFormatting.GRAY));
 				return false;
 			})),
-			Pair.of(2, WalkToJobSite.create(speed, 3)),
+			Pair.of(2, BehaviorBuilder.<Villager>triggerIf(v -> !RaidHelpers.busy(v), WalkToJobSite.create(speed, 3))), // hired for a raid (38.1a): not back to the post
 			Pair.of(5, StrollAroundPoi.create(MemoryModuleType.JOB_SITE, 0.4f, 4)),
 			Pair.of(10, SetLookAndInteract.create(EntityType.PLAYER, 6)),
 			Pair.of(99, UpdateActivityFromSchedule.create())

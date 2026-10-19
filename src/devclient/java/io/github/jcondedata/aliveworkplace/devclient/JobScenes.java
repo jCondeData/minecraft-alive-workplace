@@ -7300,70 +7300,69 @@ final class JobScenes {
 				}, 30),
 				new Step("03_raid_den_resting", io.github.jcondedata.aliveworkplace.hall.DefencePage.DENS[1], 6, null, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
-		// Den Wardens (38.3): a guard posted from the Defense page stands watch by the glowing den.
-		SCREENS.put("den_warden", new Screen("a guard posted from the hall's Defense page stands watch by the raid den, by day",
+		// Raid helpers (38.1a): two of the village's trainers, hired on the Defence page, stand by the den as the player's
+		// raid starts; each has cheered them on with a cheer item.
+		SCREENS.put("den_helpers", new Screen("two of the village's trainers, hired on the hall's Defence page, stand by the glowing raid den as the player's raid starts; each cheered them on with one of the raid's cheer items",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setDayTime(3000);
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				subject = guard(level, new BlockPos(6, -60, -6), new ItemStack(Items.IRON_SWORD));
-				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
-				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
-				// set down in a loaded chunk after the hall, as in a real world: the game finds it by itself (B190)
-				level.setBlockAndUpdate(new BlockPos(-4, -60, -4), denState(block.get(), "tier_three", "fire", true));
-			},
-			List.of(new Step("01_den_warden", -1, 0, (level, player) -> {
-					// the guard has their job by now (picked hands it over in a task after staging), so they can be posted
-					BlockPos den = new BlockPos(-4, -60, -4);
-					denRolled(level, den, "tier_three", "fire");
-					subject.teleportTo(-2.5, -60, -2.5); // already at the den: the walk there is the compat tests' (DenWardenCompatTests)
-					Component said = io.github.jcondedata.aliveworkplace.guard.DenWardens.post(level, STATION, den);
-					Showcase.check(io.github.jcondedata.aliveworkplace.guard.DenWardens.wardenOf(level, den).isPresent(), "a warden was posted: " + said.getString());
-				}, 60),
-				new Step("02_den_warden_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.WARDENS[0], 6, (level, player) -> {
-					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
-					if (player.containerMenu instanceof ChoiceMenu m) {
-						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
-						String slot = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.WARDENS[0]).getHoverName().getString();
-						Showcase.check(slot.startsWith("Warden: "), "the Defense page names the den's warden: " + slot);
-					}
-				}, 30)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
-		// Den challenges (38.4): the village's Trainer Leader beat the tier 3 den; it has gone dark, its loot is in the
-		// store and the chronicle tells it.
-		SCREENS.put("den_challenge", new Screen("the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it",
-			new Vec3(2.5, -58.4, 4.5), TARGET,
-			(level, player) -> {
-				level.setDayTime(3000);
-				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
-					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				level.setBlockAndUpdate(new BlockPos(4, -60, -1), Blocks.SMOKER.defaultBlockState());
-				chest(level, new BlockPos(5, -60, -1));
 				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
 				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
 				// set down in a loaded chunk after the hall, as in a real world: the game finds it by itself (B190)
 				level.setBlockAndUpdate(new BlockPos(-4, -60, -4), denState(block.get(), "tier_three", "fire", true));
 				subject = picked(level, player, new BlockPos(1, -60, -5), ModBlocks.TRAINING_POST, Items.GOLD_BLOCK);
+				worker(level, new BlockPos(5, -60, -5), ModBlocks.TRAINING_POST, ModVillagers.TRAINING_POST_POI, ModVillagers.TRAINER);
 			},
-			List.of(new Step("01_den_challenge", -1, 0, (level, player) -> {
-					// the job is the Leader's by now (picked hands it over in a task after staging); the scene's player is
-					// far enough off the den that it isn't theirs
-					subject.teleportTo(-2.5, -60, -1.5);
-					denRolled(level, new BlockPos(-4, -60, -4), "tier_three", "fire"); // a den a Leader takes on (up to tier 3)
-					var result = io.github.jcondedata.aliveworkplace.trainer.DenChallenges.challenge(level, STATION, 0f, net.minecraft.util.RandomSource.create(38));
-					Showcase.check(result == io.github.jcondedata.aliveworkplace.trainer.DenChallenges.Result.WON, "the Leader won the challenge: " + result);
-				}, 60),
-				new Step("02_den_challenge_chronicle", -1, 6, (level, player) -> {
-					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
-					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getString().contains("beat the tier 3 Fire raid den")),
-						"the chronicle has the challenge's line");
+			List.of(new Step("01_den_helpers_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.HELPERS[0], 6, (level, player) -> {
+					BlockPos den = new BlockPos(-4, -60, -4);
+					denRolled(level, den, "tier_three", "fire");
+					player.getInventory().add(new ItemStack(Items.EMERALD, 4 * io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE));
+					io.github.jcondedata.aliveworkplace.work.Bank.EXTENSION.run(b -> b.add(player, 400L * io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE));
+					String first = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hire(level, STATION, den, player).getString();
+					String second = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hire(level, STATION, den, player).getString();
+					Showcase.check(io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hireOf(level.getServer(), player.getUUID())
+						.map(h -> h.helpers.size() == 2).orElse(false), "two helpers hired: " + first + " / " + second);
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
-						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
+						String slot = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.HELPERS[0]).getHoverName().getString();
+						Showcase.check(slot.equals("Hire a raid helper"), "the Defence page offers raid helpers by the den: " + slot);
 					}
-				}, 30)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+				}, 30),
+				new Step("02_den_helpers_raid", -1, 0, (level, player) -> {
+					player.closeContainer();
+					BlockPos den = new BlockPos(-4, -60, -4);
+					var hire = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hireOf(level.getServer(), player.getUUID()).orElse(null);
+					Showcase.check(hire != null, "the hiring is there");
+					if (hire != null) {
+						// the raid joined by the den (Raid Dens' own statistic): the helpers cheer and take their places round it
+						hire.lastNear = level.getGameTime();
+						// the stat registry holds Raid Dens' own id instance
+						var joined = net.minecraft.core.registries.BuiltInRegistries.CUSTOM_STAT.get(
+							net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemonraiddens", io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.JOINED));
+						Showcase.check(joined != null, "Raid Dens has its raids_joined statistic");
+						if (joined != null) {
+							player.awardStat(joined);
+						}
+						Showcase.check(hire.joined, "the helpers joined the raid");
+						int i = 0;
+						for (var helper : io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.helpers(level, hire)) {
+							BlockPos at = den.offset(i++ == 0 ? 3 : 0, 0, i == 1 ? 0 : 3);
+							helper.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5); // already there: the walk is the compat tests'
+						}
+					}
+					int cheers = 0;
+					for (int s = 0; s < player.getInventory().getContainerSize(); s++) {
+						var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(player.getInventory().getItem(s).getItem());
+						if (id.getNamespace().equals("cobblemonraiddens") && id.getPath().startsWith("cheer_")) {
+							cheers += player.getInventory().getItem(s).getCount();
+						}
+					}
+					Showcase.check(cheers == 2, "each helper cheered once: " + cheers + " cheer items");
+				}, 60)),
+			(level, player) -> true));
 		// At peace (32.21): the owner set the village at peace on the Defence page; the bandit camp by it leaves at the next dawn.
 		SCREENS.put("at_peace", new Screen("the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

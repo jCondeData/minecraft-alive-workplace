@@ -42,6 +42,13 @@ asks for the steps, `latest.log` and any crash report).
   other villager could take it.
 - A Jeweller now cuts Abomasite for a Master trainer whose team has an Abomasnow: it was the one Mega Stone
   missing from Mega Showdown's stone list, so he waited for makings forever (B174).
+### Changed
+- **Raid helpers replace Den Wardens and the village's den challenges** (38.1a, 38.3a, 38.4a, the owner's change). The
+  village no longer raids dens alone and no guard stands watch at them. On the hall's Defence page, next to a glowing
+  den, hire up to 3 of the village's trainers (5 emeralds each, set by `denHelperPrice`): they follow you, each gives
+  you a raid cheer item once when you join the raid there, their Pokémon wear the boss down (never below a quarter),
+  a win goes in the chronicle, and they walk home after the raid or a day. Old worlds and config files load as before.
+  The scene `den_helpers` shows it.
 
 ## 0.145.0 — 2026-10-18
 

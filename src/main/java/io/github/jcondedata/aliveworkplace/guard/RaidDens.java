@@ -188,9 +188,6 @@ public final class RaidDens {
 		if (!now.equals(known)) {
 			sites.dens.put(pos.asLong(), now);
 			sites.setDirty();
-			if (now.active() && !known.active()) {
-				DenWardens.glowed(level, now); // a watched den glows again (38.3)
-			}
 		}
 	}
 

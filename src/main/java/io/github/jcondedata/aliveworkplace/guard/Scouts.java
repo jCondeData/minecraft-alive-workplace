@@ -327,7 +327,7 @@ public final class Scouts {
 	}
 
 	/** The next stop from {@code from} toward {@code to}: at most {@link #LEG} blocks on, on the ground, {@code aside} to one side. */
-	static BlockPos waypoint(ServerLevel level, BlockPos from, BlockPos to, int aside) {
+	public static BlockPos waypoint(ServerLevel level, BlockPos from, BlockPos to, int aside) {
 		double dx = to.getX() - from.getX();
 		double dz = to.getZ() - from.getZ();
 		double distance = Math.sqrt(dx * dx + dz * dz);

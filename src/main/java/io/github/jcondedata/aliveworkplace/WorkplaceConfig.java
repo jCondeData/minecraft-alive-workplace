@@ -144,17 +144,14 @@ public final class WorkplaceConfig {
 	 */
 	public boolean physicians = Expansions.on(Expansions.M32);
 	/**
-	 * Guards can be posted to the raid dens the village knows (ROADMAP 38.3, Cobblemon Raid Dens): they stand watch by
-	 * day, and a player who joins a raid there gets a cheer. Off: no new wardens, and those posted go back to normal duty.
+	 * Players can hire the village's trainers from the hall's Defence page to help in a raid at a den the village knows
+	 * (ROADMAP 38.1a, Cobblemon Raid Dens): they follow the player, cheer once a raid with one of the raid mod's cheer
+	 * items each, and wear the boss down. Off: no hiring, and those hired walk home. (Replaces 38.3's denWardens and
+	 * 38.4's denChallenges and denChallengeDays; old files with those keys load, the keys are dropped.)
 	 */
-	public boolean denWardens = Expansions.on(Expansions.M38);
-	/**
-	 * A village's best trainer (a Trainer Leader or a Master) challenges an active raid den it knows every
-	 * {@link #denChallengeDays} days (ROADMAP 38.4): a win brings that tier's raid loot to the store. Off: no challenges.
-	 */
-	public boolean denChallenges = Expansions.on(Expansions.M38);
-	/** Days between a village's raid den challenges (38.4). */
-	public int denChallengeDays = 3;
+	public boolean denHelpers = Expansions.on(Expansions.M38);
+	/** Emeralds a raid helper costs (38.1a). */
+	public int denHelperPrice = 5;
 	/**
 	 * More village trainers Mega Evolve (ROADMAP 38.5, Mega Showdown): a City's Trainer Leaders, the Festival Cup's
 	 * finalists and the Stadium Day's visitors carry a Mega Stone too, and every trainer who can Mega Evolve wears a Mega
@@ -551,7 +548,7 @@ public final class WorkplaceConfig {
 		"wonderServerLimit", 0, 64,
 		"wonderCrew", 1, 32,
 		"wonderStanding", 50, 100,
-		"denChallengeDays", 1, 30);
+		"denHelperPrice", 1, 64);
 
 	private static Map<String, Range> ranges(Object... nameMinMax) {
 		Map<String, Range> map = new LinkedHashMap<>();
@@ -890,9 +887,8 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.threat.Sieges.DAMAGE = siegeDamage && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = firewardens && Expansions.on(Expansions.M32);
 		io.github.jcondedata.aliveworkplace.work.WellKeeperWork.ENABLED = wellKeepers && Expansions.on(Expansions.M32);
-		io.github.jcondedata.aliveworkplace.guard.DenWardens.ENABLED = denWardens && Expansions.on(Expansions.M38);
-		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.ENABLED = denChallenges && Expansions.on(Expansions.M38);
-		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.EVERY_DAYS = denChallengeDays;
+		io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.ENABLED = denHelpers && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE = denHelperPrice;
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED = cuisineDishes && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED = beanFarms && Expansions.on(Expansions.M38);

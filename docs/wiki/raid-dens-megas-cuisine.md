@@ -1,14 +1,14 @@
 # Raid dens, Megas and Cobblecuisine
 
 Cobblemon depth brings three of the pack's Pokémon mods into village life: Cobblemon Raid Dens (the village knows the
-dens around it, guards watch them and its trainers challenge them), Mega Showdown (more village trainers Mega Evolve,
+dens around it, and the player hires its trainers to help in a raid), Mega Showdown (more village trainers Mega Evolve,
 and the village makes Mega Stones and Key Stones) and Cobblecuisine (the kitchens cook its dishes and farmers grow its
 beans). Part of 2.2, behind its gate (`Expansions.M38`). Built so far: the plan, the gate, the test mods, the dens
-the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4), more Mega trainers with their
+the village knows (38.2), raid helpers (38.1a, which replaced 38.3's Den Wardens and 38.4's village den challenges), more Mega trainers with their
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191
+Roadmap items: 38.1, 38.1a, 38.2, 38.3, 38.3a, 38.4, 38.4a, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191
 
 ## What a player sees
 
@@ -19,24 +19,17 @@ known". The village map marks each den on its square with a magenta banner named
 the raid dens. A den shows up once someone has been near enough for its chunk to load, the moment a crystal is set
 down in a loaded chunk, and when a hall is set down by dens that were there first; a broken den drops off the list.
 
-**Den Wardens (38.3).** Under each den on the Defense page, **Post a warden** sends the village's nearest free guard
-there. By day the warden walks to the den and stands watch beside it, nudging wild Pokémon off the crystal; at dusk
-they walk back to their post and their evening goes on as usual; next morning they go back. The slot then reads
-"Warden: <name>", and a click recalls them to normal duty. When a watched den glows again after being beaten, the
-chronicle says so: "The Fire raid den (40 blocks north) glows again". A player who joins a raid (or wins a
-tier) within 16 blocks of a watched den gets the warden's cheer: one Attack, Defense or Heal Cheer, once a raid.
-
-**Den challenges (38.4).** Every 3 days (`denChallengeDays`), by day, a village with a Trainer Leader or a Master
-sends its best one (the highest rank; one who lost lately stays home) against an active den the village knows: up to
-tier 3 for a Leader or a Master (tier 4 and up are for players: owner, 2026-10-18), the highest tier first, then the nearest. A den with a player within 8 blocks
-is theirs, and nobody is sent to it. The challenge is settled at once, like a Stadium bout: 45% at one rank over the
-den's tier, 15% more or less for each rank above or below (never under 10% or over 90%). Players in the village or
-within 32 blocks of the den are told as the trainer sets off and how it ended, so they can walk over and watch the den
-go dark. A win rolls the den's own tier loot (`cobblemonraiddens:raid/tier/<tier>`, as a Raid Pouch of that tier
-would) into the village store, turns the den inactive (`is_active` false; Raid Dens' own reset brings it back,
-`can_reset` untouched) and writes the chronicle: "<the trainer> beat the tier 3 Fire raid den and brought home 5
-things". A loss leaves the den glowing, sends the trainer home tired for a day and writes "... lost to the tier
-4 Fire raid den". Each try counts as a battle for the trainer and earns experience (more for a win).
+**Raid helpers (38.1a).** The village never raids a den on its own (owner, 2026-10-19: 38.3's Den Wardens and 38.4's
+solo challenges are gone). Under each active den on the Defense page, **Hire a raid helper** hires one of the village's
+free trainers for that den, the best first, for `denHelperPrice` emeralds (5; CobbleDollars when installed), up to 3
+at once; the tooltip says how many the player has and how many are free. No money: "A raid helper costs 500
+CobbleDollars", nothing taken. The helpers follow the player. When the player joins (or hosts) a raid within 16 blocks
+of the den, or within a minute of being there, each helper cheers once: one Attack, Defense or Heal Cheer, never twice
+a raid. They then stand round the crystal and, when the raid itself can be reached, their Pokémon take a share of the
+boss's health every 5 seconds (0.6% times their rank divided by the den's tier, more with a stronger team), never below a
+quarter: the last blows are the player's. A helper more than one rank under the den's tier only cheers. A won raid
+goes in the chronicle ("<player> and <trainer>'s band beat the tier 3 Fire raid den") and earns the helpers battle
+experience; won, lost or a day after the hiring, they walk home.
 
 **More Mega trainers (38.5).** With Mega Showdown installed, Masters still carry a Mega Stone, and now so do: a Trainer
 Leader whose village (the nearest Village Hall) is a City, the two trainers of a Festival Cup's final (on the Cup's
@@ -159,8 +152,8 @@ Every piece reads the three mods by their ids, tags, data files and advancements
 is loaded; any Cobblemon class stays in `compat/cobblemon/`. Without a mod, its part of the expansion doesn't exist and
 nothing else changes.
 
-The gate: `Expansions.M38` is false until the release that finishes the milestone, so its six switches (denWardens,
-denChallenges, denChallengeDays, villageMegas, cuisineDishes, beanFarms) stay off and hidden for players
+The gate: `Expansions.M38` is false until the release that finishes the milestone, so its five switches (denHelpers,
+denHelperPrice, villageMegas, cuisineDishes, beanFarms) stay off and hidden for players
 whatever a config file says. GameTests open the gate. Each switch comes into the config with the item that builds it.
 
 The compat test runtime now loads Cobblemon Raid Dens 0.11.3 (with GeckoLib 4.9.2) and Cobblecuisine 2.0.1, the pack's
@@ -229,9 +222,8 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 
 | Key | Default | What it does |
 |---|---|---|
-| `denWardens` | on (once 2.2 ships) | Guards can be posted to raid dens. Off: no new wardens, and those posted go back to normal duty. |
-| `denChallenges` | on (once 2.2 ships) | Village trainers challenge active dens. Off: no challenges. |
-| `denChallengeDays` | 3 (1 to 30) | Days between a village's challenges. |
+| `denHelpers` | on (once 2.2 ships) | Players hire the village's trainers to help in a den's raid. Off: no button, no hiring, and those hired walk home. (Replaced denWardens, denChallenges and denChallengeDays; an old file's keys are dropped.) |
+| `denHelperPrice` | 5 (1 to 64) | Emeralds one raid helper costs (100 CobbleDollars an emerald). |
 | `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
 | `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes asked of the Chef at the hall board's Dishes tab by his level (38.8a), counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8), the partners' daily treat and the Deluxe Shake and Clodsire Eclair luxuries (38.10). Off: the menus and the diet are as before, no treats, and the two luxuries are neither wanted nor taken. |
@@ -240,11 +232,11 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 ## Saved data
 
 Each dimension saves its known dens (`aliveworkplace_raid_dens`): a list of `pos`, `tier` (1 to 7), `type`,
-`active` and `firstSeen` (the day). An older save has none, and dens are found again as their chunks load. The wardens are saved per dimension too
-(`aliveworkplace_den_wardens`): each `guard` (their id) with their `den` and the players `cheered` this raid. An older
-save has no wardens. The den challenges are saved per dimension (`aliveworkplace_den_challenges`): each hall's
-`lastDenChallenge` (the day) and each tired trainer's `tiredUntil` (game time). An older save has none: every village
-may challenge at once. The Mega Bracelets are saved on the overworld (`aliveworkplace_leader_bracelets`): the villages
+`active` and `firstSeen` (the day). An older save has none, and dens are found again as their chunks load. The raid helpers are saved per dimension
+(`aliveworkplace_raid_helpers`): each hiring's `player`, `hall`, `den`, `tier`, `type`, `helpers` (their ids), `until`,
+`joined`, `raid` (the raid's id, when reached) and `dealt`, and the helpers walking home (`homeward`). An older save
+has none. The 38.3 and 38.4 files (`aliveworkplace_den_wardens`, `aliveworkplace_den_challenges`) are left on disk
+unread: a guard posted as a warden is simply a guard again. The Mega Bracelets are saved on the overworld (`aliveworkplace_leader_bracelets`): the villages
 known to have a Trainer Leader (`leaderHalls`) and, per player, the villages whose Leader they beat (`beaten`) and the
 realms whose bracelet they had (`megaBracelet`). An older save has none: nobody has a bracelet yet. A villager who
 watched a Mega Shrine's show keeps the day on them (`mega_show_day`, 38.7); an older save has none. Cobblecuisine's
@@ -294,17 +286,15 @@ the design note and checked by `CobblemonDepthCompatTests`.
 - The den list isn't switched: it only records and shows (design note M38). It's behind the 2.2 gate and needs Raid
   Dens (38.2).
 - The Defense page shows up to seven dens, nearest first (38.2).
-- A raid is noticed by Raid Dens' own advancements (`join_raid` and the seven tiers) being granted near a watched den,
-  since players fight raids in the mod's own dimension; "once a raid" means until the den glows again (38.3).
-- A warden stands two blocks off the crystal on the side toward home, and walks a leg of 16 blocks at a time, as
-  scouts do (38.3).
-- A Raid Dens tier table can't be rolled with a plain chest context: its pools check the Raid Pouch being opened, a
-  loot parameter only Raid Dens holds. `compat/raiddens` reads its three public fields (`RaidLootContexts.RAID_POUCH`,
-  `BONUS_LOOT`, `RAID_POUCH_USE`) by name and fills `RaidDenLoot`; Raid Dens stays off the compile classpath. If the
-  fields are gone in a later Raid Dens, a won challenge still turns the den dark but brings no loot, with a line in the
-  log (38.4).
-- The challenge is looked at every 30 seconds by day; a village that tried (won or lost) waits `denChallengeDays`
-  days, and a village with no free Leader or Master, or no den in reach, tries again next look (38.4).
+- A raid is noticed by Raid Dens' own statistics (`raids_joined`, `raids_hosted`, `tier_<n>_completed`), awarded
+  every raid, through a mixin on `ServerPlayer.awardStat`; its advancements (38.3's way) come only once a player.
+  Players fight raids in the mod's own dimension, so a raid counts as the den's within 16 blocks of it or a minute
+  after the player was there (38.1a).
+- The boss is reached by reflection in `compat/raiddens` (RaidHelper.ACTIVE_RAIDS, RaidInstance.isPlayerIn,
+  getCurrentHealth, getMaxHealth, getRaidState, healBoss), filling the `RaidAssist` extension; a blow is
+  healBoss with a negative share, which syncs every battle's health bar. The raid is only won when a player's own
+  battle takes the health to 0, so the helpers can't end it. Without those names the helpers only cheer (38.1a).
+- 38.4's loot-table reader (`RaidDenLoot`, `RaidDensLoot`) went with the challenges (38.1a).
 - The village's Megas come from where the trainer stands now: a Leader's village is the nearest hall's, so a Leader of
   a City who walks into a Town's reach counts as the Town's (38.5).
 - In a Cup final's simulated bouts (two villagers) the Mega Stone holder fights as the Pokémon it is: the bout's small
@@ -337,9 +327,10 @@ the design note and checked by `CobblemonDepthCompatTests`.
 ## Known limits
 
 Only dens within the map's 128-block square get a banner; farther ones (up to 160 blocks) are on the Defense page
-only. A den nobody has been near isn't known. A player who joins a raid from farther than 16 blocks (or whose advancement was granted earlier) gets no cheer. Only
-one warden per den. A challenge is settled at once: there's no battle to watch, only the den going dark. A won
-challenge gives no Raid Dens Pokémon, only the loot. On Cobblemon 1.8 (Raid Dens 0.13.2) the loot fields are untested.
+only. A den nobody has been near isn't known. A player who joins a raid farther than 16 blocks from the den, and not within a minute of being there, gets no cheer.
+The helpers' Pokémon aren't sent out on the ground: the helpers stand by the crystal, and their blows show as the
+boss's health bar dropping and sparks at the helpers. Without the raid reached (a newer Raid Dens) a lost raid isn't
+noticed, so the helpers stay until the day is up. On Cobblemon 1.8 (Raid Dens 0.13.2) the reflection is untested.
 The Camp Cook's curries have no cooking time and no lid shut (she cooks them over the fire at once). The Innkeeper
 serves no players, and a guest served from the store needs a Village Hall in reach. The shrine's Mega Evolution is light, sound and a chat line at the pedestal, not a
 Pokémon sent out and Mega Evolved: our trainers' Pokémon exist only in battle. The show takes the festival's first
@@ -354,15 +345,15 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 - `CobblemonDepthCompatTests`: `theThreeModsAreLoaded`, `raidDenIdsExist`, `megaIdsExist` and `cuisineIdsExist`
   list every id the milestone reads and fail naming any that's missing.
 - `ExpansionGateGameTests.cobblemonDepthIsGated`: the gate is shut for players and open in GameTests, for each of the
-  six switches.
+  five switches.
 - `RaidDenCompatTests`: `aDenNearAHallIsListed` (its states, its line, the Defense page, dropped once broken),
   `aDenTurnedInactiveShowsInactive`, `aDenFarOffIsntListed` (200 blocks), `aReloadKeepsTheList`, `theMapMarksTheDen`.
-- `DenWardenCompatTests`: `aWardenWalksToTheDenAndBackAtDusk`, `aDenGlowingAgainIsWrittenOnce`,
-  `aRaiderByAWatchedDenGetsOneCheer` (one a raid, none 40 blocks off, another next raid),
-  `aRecalledWardenGoesBackToNormalDuty`, `aWardenOfAGoneDenOrSwitchedOffIsFree`, `wardensSurviveASave`.
-- `DenChallengeCompatTests`: `aWinBringsTheLootHomeAndTheDenRests` (the tier's loot in the store, the den inactive, the
-  chronicle line), `aLossLeavesTheDenActive` (and the trainer tired, not sent again), `aTierSixDenIsNeverChallenged`,
-  `aDenInUseByAPlayerIsntChallenged`, `aBrokenDenIsntChallenged`, `tiredTrainersSurviveASave`.
+- `RaidHelperCompatTests` (38.1a): `hiringChargesAndTheHelperFollows` (the price taken, the best first, they keep up),
+  `noMoneyIsRefused`, `theCapIsRespected` (three, and none for a resting den), `eachHelperCheersOnceARaid` (none 40
+  blocks off, one each, never twice), `aWonRaidIsWrittenAndTheHelpersGoHome`, `aDayLaterTheHelpersGoHome`,
+  `theHelpersWearTheBossDown` (the reflection found the raids; blows by rank, never under a quarter),
+  `theButtonAndTheSwitch` (the Defence page's lines; off: no button, no hiring, no cheer), `hiringsSaveAndOldDataLoads`.
+- `ConfigGameTests.anOldDenConfigLoads`: a config with 38.3's and 38.4's keys loads (38.1a).
 
 - `MegaTrainerCompatTests` (with Mega Showdown): `aCityLeaderMegaEvolvesATownLeaderDoesNot`,
   `theCupFinalsTrainersHoldAMegaStone` (six seeds, the theme kept, as fighters too, not in earlier rounds; finalists
@@ -410,4 +401,4 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
 - Scene `partner_treats` (38.10): a Machop at a builder's pasture eats a Poké Puff from the storehouse chest.
 - Scene `bean_farm` (38.9): a row ripe, a row green, a row bare; the ripe row cut into the chest and the bare rows sown.
 
-Showcase scenes: `raid_dens`, `den_warden`, `den_challenge`, `mega_trainers`, `mega_jeweller`, `cuisine_kitchen`, `bean_farm`, `partner_treats`
+Showcase scenes: `raid_dens`, `den_helpers`, `mega_trainers`, `mega_jeweller`, `cuisine_kitchen`, `bean_farm`, `partner_treats`

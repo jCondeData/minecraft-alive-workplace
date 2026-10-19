@@ -4873,7 +4873,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   any that's missing. The flag: `Expansions.M38` with `flag()`, `MILESTONES` and `milestone()` for every switch. Done
   when: the note is on `main`, the compat runtime loads both mods, the id test and a gate test pass, and the package
   is sent.
-  - [ ] **38.1a** Change from the owner (2026-10-19): raid dens must not be done by villagers alone; the player can hire villagers to assist in the raid
+  - [x] **38.1a** (review: pending 2026-10-19) Change from the owner (2026-10-19): raid dens must not be done by villagers alone; the player can hire villagers to assist in the raid
 - [x] **38.2** (approved 2026-10-19) **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
   id, when its chunk first loads near the village (a chunk-load event through `Platform`, no area scans), with its
   tier, type and whether it's active (read from its block state by property name); a den broken or gone is dropped at
@@ -4887,7 +4887,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   GameTests: a posted guard walks to the den and back at dusk; a den that turns active writes the chronicle line once;
   a player granted the join advancement near a watched den gets one cheer item, once per raid; a warden recalled goes
   back to normal duty.
-  - [ ] **38.3a** Change from the owner (2026-10-19): not sure what this is for, may be useless (digest note: 38.3 posts a guard at a den as a lookout; it was our idea, he doesn't see the point. Decide with 38.1a/38.4a: if hired assistants replace the village's solo challenge, drop the warden's watch and keep only what serves the hired-helper raid; explain the outcome to him in plain words in the next digest.)
+  - [x] **38.3a** (approved auto 2026-10-19) Change from the owner (2026-10-19): not sure what this is for, may be useless (digest note: 38.3 posts a guard at a den as a lookout; it was our idea, he doesn't see the point. Decide with 38.1a/38.4a: if hired assistants replace the village's solo challenge, drop the warden's watch and keep only what serves the hired-helper raid; explain the outcome to him in plain words in the next digest.)
 - [x] **38.4** (review: pending 2026-10-18) **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
   Leaders, Masters) may send its best one to an active den the village knows. The server can't play a raid with no
   player in it, so the challenge is settled like the Stadium's bouts: the trainer's rank and team against the den's
@@ -4897,7 +4897,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   for a day. A player nearby can come along and watch. Done when: compat GameTests: a win puts that tier's loot in the
   store and turns the den inactive; a loss leaves it active; a tier 4 or higher den is never challenged; a den in use by a
   player (a player within 8 blocks) isn't challenged; scene `den_challenge` (`-Pcobblemon=true`).
-  - [ ] **38.4a** Change from the owner (2026-10-19): same as 38.1, the raid is done with villagers as assistance; if not possible to code, scratch it entirely
+  - [x] **38.4a** (review: pending 2026-10-19) Change from the owner (2026-10-19): same as 38.1, the raid is done with villagers as assistance; if not possible to code, scratch it entirely
 - [x] **38.5** (approved 2026-10-19) **More trainers Mega Evolve, and players can see who.** Today only Masters hold a Mega Stone
   (`CobblemonMegas.megaAce`). Add: Trainer Leaders of a City-rank village, the Festival Cup's final round and the
   Stadium Day's visiting champions (35.x) get a Mega Stone ace too, and every villager trainer whose team can Mega
@@ -5120,6 +5120,13 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (38.1a, 38.3a, 38.4a, lane-d-1019-0110; for the owner, plain words): (1) The village no longer raids dens
+  on its own: a trainer beating a den alone and bringing the loot home is gone. (2) The Den Warden is gone too: no more
+  guard standing watch at a den. (3) Instead, on the hall's Defence page you hire up to 3 of the village's trainers for
+  a den (5 emeralds each): they follow you, each hands you a cheer item when you join the raid there, their Pokémon wear
+  the boss down to a quarter (the last blows are yours), a win goes in the chronicle, and they walk home afterwards.
+  Decisions: price is a config number (`denHelperPrice`); a helper more than one rank under the den's tier only cheers;
+  raids are noticed by Raid Dens' statistics (every raid), boss damage by reflection (`docs/design/M38.md`, "As built in 38.1a").
 - 2026-10-18 (lane-e-1018-2212, question for the owner): Milestone 39 (Create, 2.3) is built: 39.1-39.7c are ticked (39.6-39.7c waiting on review, 39.7b with a needs-owner-check), no `(lane: e)` bug is open, and `sessions.py next` lists nothing for lanes c, d or e (M37 and M38 are done too). The big-update lanes idle until the owner names the next big milestone (2.4?) or says to turn them to other work; `wip/lane-e` is fully merged into main and can be deleted (deleting it from this session was refused).
 - 2026-10-18 (38.11, lane-d-1018-1608, decisions): (1) the Chef cooks the Campfire Pot recipes at his Kitchen Stove
   like his other dishes (Crafting's KITCHEN kind already planned pot recipes; only the menu was a fixed list), so no pot

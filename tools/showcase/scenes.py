@@ -974,14 +974,10 @@ SCENES = [
       "a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state", 45,
       [("01_raid_den", "A raid den by the hall"), ("02_raid_den_page", "The Defense page: tier 3, Fire, active"),
        ("03_raid_den_resting", "A beaten den, resting")], cobblemon=True),
-    # Den Wardens (ROADMAP 38.3, Cobblemon Raid Dens): a guard stands watch by the den
-    S("den_warden", "Village Hall", "Den Wardens: a guard stands watch at the raid den",
-      "a guard posted from the hall's Defense page stands watch by the raid den, by day", 45,
-      [("01_den_warden", "The warden by the glowing den"), ("02_den_warden_page", "The Defense page: the den's warden")], cobblemon=True),
-    # Den challenges (ROADMAP 38.4, Cobblemon Raid Dens): the village's Trainer Leader beats a den
-    S("den_challenge", "Village Hall", "Den challenges: the village's trainer beats a raid den",
-      "the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it", 45,
-      [("01_den_challenge", "The beaten den, dark, and the Leader by it"), ("02_den_challenge_chronicle", "The chronicle: the Leader beat the tier 3 Fire den")], cobblemon=True),
+    # Raid helpers (ROADMAP 38.1a, Cobblemon Raid Dens): the player hires the village's trainers to help in a den's raid
+    S("den_helpers", "Village Hall", "Raid helpers: hire the village's trainers for a raid",
+      "two of the village's trainers, hired on the hall's Defence page, stand by the glowing raid den as the player's raid starts; each cheered them on with one of the raid's cheer items", 45,
+      [("01_den_helpers_page", "The Defence page: hire a raid helper by the den"), ("02_den_helpers_raid", "The helpers by the den as the raid starts")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,

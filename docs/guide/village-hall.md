@@ -57,6 +57,16 @@ block](jobs.md) for a few emeralds.
 
 ![The Free job blocks page](https://jcondedata.github.io/minecraft-alive-workplace/hall_jobs/still-1.jpg)
 
+**Upgrading a home.** The **Upgrades** tab (the bricks) lists every finished build in your village that has a next
+level, like a Starter Cottage that can become a Starter Cottage II, nearest the hall first. Each one shows its level and
+the next, where it is, what the next level costs in blocks, and whether there's room for it. Click a build with room and
+your Builder goes and builds the next level right over the old one. Grass, dirt, stone, trees, snow or water in the
+way don't matter: the Builder clears them as part of the job. A wall, a fence, a path, a chest or another building does,
+and the page tells you what's in the way and its exact spot, so you can move it and try again. The villagers who live
+in the house keep their beds the whole time.
+
+![The Upgrades page](https://jcondedata.github.io/minecraft-alive-workplace/hall_upgrade/still-1.jpg)
+
 ![The Village Hall's screen](https://jcondedata.github.io/minecraft-alive-workplace/hall/still-4.jpg)
 
 The **bell** in the middle calls everyone home: villagers who wandered off are brought back beside the hall.
@@ -74,6 +84,7 @@ The **bell** in the middle calls everyone home: villagers who wandered off are b
 - **The calendar**: the season, the day, and when the next festival is.
 - **Mercenaries** (the iron sword): hire three fighters for a night. See [Threats and defense](defence.md).
 - **Free job blocks** (the crafting table tab): the job blocks nobody works at, and who could take each.
+- **Upgrades** (the bricks tab): your finished homes and workshops that can go up a level, and a Builder to send.
 
 ![The chronicle](https://jcondedata.github.io/minecraft-alive-workplace/hall_pages/still-1.jpg)
 

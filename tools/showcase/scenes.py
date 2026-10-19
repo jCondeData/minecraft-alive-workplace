@@ -433,6 +433,13 @@ SCENES = [
       "its view had Yes and Not now, and after Yes the page showed Bram repairing it", 50,
       [("01_repair_question", "The question in chat: Repair it? [Yes] [Not now]"), ("02_repairs_page", "The hall's Repairs page: the cottage, waiting"),
        ("03_yes_or_not_now", "The cottage's view: Yes, repair it, or Not now"), ("04_repairing", "After Yes: being repaired by Bram")]),
+    # Upgrade a built home from the Village Hall (ROADMAP 36.14): the Upgrades page, a blocked row, and a click sending a Builder
+    S("hall_upgrade", "Village Hall", "Upgrading a built home from the hall",
+      "the Upgrades page listed the Starter Cottage with its level, cost and free space and the Stone House II blocked by a garden fence, "
+      "and a click on the cottage sent Bram to build its level II", 50,
+      [("01_upgrades_page", "The Upgrades page: the cottage, its next level, cost and free space"),
+       ("02_blocked_by_a_fence", "The Stone House II: blocked by a fence where its level III goes"),
+       ("03_bram_builds_it", "Clicked: Bram builds the Starter Cottage II")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

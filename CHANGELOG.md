@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Upgrade a home from the Village Hall** (36.14). A new Upgrades tab (the bricks) lists the village's finished builds
+  that have a next level, nearest first: the level and the next, where, what it costs in blocks, and whether the space
+  is free. Click one and the village's Builder builds the next level over the old one. Natural ground, trees and water
+  in the way are cleared as part of the job; a wall, fence, path or another build blocks it, and the row says what's in
+  the way and where. Residents keep their beds: a Builder no longer breaks a bed somebody sleeps in while clearing for
+  any upgrade.
 - **A Quarry that grows back** (36.12). A new blueprint in the Blueprint Table: a fenced pit with steps cut down its side,
   a hoist and the Miner's shed with its blast furnace. The Miner who works at that furnace digs the pit by themselves (no
   Quarry Marker), and what they dig grows back slowly from the bottom up: mostly stone, some coal and copper, now and

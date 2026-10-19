@@ -5127,6 +5127,10 @@ the owner's port jar; M33's caravans (39.7).
   the boss down to a quarter (the last blows are yours), a win goes in the chronicle, and they walk home afterwards.
   Decisions: price is a config number (`denHelperPrice`); a helper more than one rank under the den's tier only cheers;
   raids are noticed by Raid Dens' statistics (every raid), boss damage by reflection (`docs/design/M38.md`, "As built in 38.1a").
+- 2026-10-19 (lane-d-1019-0110): lanes d and e both built 38.8a and 39.7d this hour (`sessions.py next` lists the
+  same owner changes to every big lane, with no claims). Lane e pushed first, so its versions stand; lane d's copies
+  (a hall tab with 4/8/16 per dish, a `villageConductors` switch) were dropped unpushed. Suggest `next` gives each
+  owner change only to its milestone's lane.
 - 2026-10-18 (lane-e-1018-2212, question for the owner): Milestone 39 (Create, 2.3) is built: 39.1-39.7c are ticked (39.6-39.7c waiting on review, 39.7b with a needs-owner-check), no `(lane: e)` bug is open, and `sessions.py next` lists nothing for lanes c, d or e (M37 and M38 are done too). The big-update lanes idle until the owner names the next big milestone (2.4?) or says to turn them to other work; `wip/lane-e` is fully merged into main and can be deleted (deleting it from this session was refused).
 - 2026-10-18 (38.11, lane-d-1018-1608, decisions): (1) the Chef cooks the Campfire Pot recipes at his Kitchen Stove
   like his other dishes (Crafting's KITCHEN kind already planned pot recipes; only the menu was a fixed list), so no pot

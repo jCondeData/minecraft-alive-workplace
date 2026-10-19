@@ -4891,7 +4891,6 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   when: the note is on `main`, the compat runtime loads both mods, the id test and a gate test pass, and the package
   is sent.
   - [x] **38.1a** (approved 2026-10-19) Change from the owner (2026-10-19): raid dens must not be done by villagers alone; the player can hire villagers to assist in the raid
-  - [ ] **38.1b** Change from the owner (2026-10-19): none; owner asks: search box for Blueprint Table (added as 36.10); owner reports no CobbleFurnies furnishing on the pack: 2.1 flag M37 is off in the released jar
 - [x] **38.2** (approved 2026-10-19) **The village knows its raid dens.** A raid den within 160 blocks of a hall is recorded once, by block
   id, when its chunk first loads near the village (a chunk-load event through `Platform`, no area scans), with its
   tier, type and whether it's active (read from its block state by property name); a den broken or gone is dropped at

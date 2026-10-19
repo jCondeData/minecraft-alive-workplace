@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193, B231
 
 ## What a player sees
 
@@ -405,6 +405,10 @@ tested (the GameTests use the table as the server does).
 
 ## Proof
 
+- B231 (client, with Create): the `create_builds` scene writes one quad vertex by vertex into Ponder's
+  `ShadedBlockSbbBuilder` (as Sodium does with shaders on, when Flywheel is off) and checks the mesh holds it;
+  `client/mixin/CreateShadedSbbBuilderMixin` hands each per-vertex call to the builder's own `BufferBuilder` (named
+  by both Mojang and intermediary names, `@Pseudo`, so nothing happens without Create).
 - `CreateBuildsCompatTests` (39.4, with Create): `theCreateBuildsAreInTheTable`, and
   `aBuilderBuildsTheWatermillAndItTurns`, `aBuilderBuildsTheWindmillAndStartsIt` and
   `aBuilderBuildsTheWorkshopAndItTurns`: built from barrels holding exactly their materials, nothing skipped, the job

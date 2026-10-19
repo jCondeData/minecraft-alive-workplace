@@ -4702,6 +4702,7 @@ Depends on: nothing open.
   assigns that block to them (they claim the POI and walk to it). Paid retraining of a working villager (26.6) stays.
   GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
   `hall_jobs`.
+  - [ ] **36.9a** Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
 
 ## Milestone 37: Furnished homes and modded storage (2.1)
 

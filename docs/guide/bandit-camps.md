@@ -36,10 +36,12 @@ like emeralds, iron and gold, bread, arrows, a crossbow or an iron axe, and with
 or a name tag. The chronicle remembers who brought him down, and no new camp comes for five days.
 
 A couple of seconds after the chief falls, the camp comes down: the tents, the fire and the chests go, top first, and
-whatever was still in the chests spills out on the ground for you to pick up. Anything you built or changed at the camp
-stays. The village forgets the camp at once: it is gone from the hall's Defense page and your scouts stop reporting it.
+whatever was still in the chests spills out on the ground for you to pick up. Then the land goes back to how it was
+before the camp: the hill it levelled, the grass, no trampled earth or gravel left behind. Anything you built or changed
+at the camp stays. The village forgets the camp at once: it is gone from the hall's Defense page and your scouts stop reporting it.
 After the five quiet days a new band may make camp, somewhere else. If you'd rather keep the ruins, turn on the
-[Camp Ruins](settings-threats.md) setting: the camp then stays standing, its fire put out.
+[Camp Ruins](settings-threats.md) setting: the camp then stays standing, its fire put out, and only the open ground
+round its tents goes back to how it was.
 
 Take help along: raise a Rally Banner and your guards follow you out, or hire three mercenaries at the hall for the
 night (see [Threats and defense](defence.md)). Guards stay at home otherwise: the camp is far beyond their patrol.

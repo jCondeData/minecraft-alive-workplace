@@ -5192,6 +5192,18 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-e-1019-1913): the 10-19 nightly's M39 survivors (issue #1) are killed. The nightly runs only the
+  plain suite (no Create), so Create-only lines survive there whatever the compat suite checks. Plain-suite kills (seen
+  by the nightly): Contraptions `data == null` by MechanicGameTests.aGonePartAndAPartWithoutSpeedCountAsStill;
+  MachineWork's dropped `!` by withoutCreateNoJobGetsMachineWork; MachineWorkFiles' deleted `makes.add` by
+  aMachineWorkFileReadsWhatItMakesAndHowManyToKeep. Compat-only (proven against each mutant): CaravanTrains `||` to `&&` by
+  VillageTrainCompatTests.stationsNotOnOneRailwayGetNoTrain (and most CreateTrainCompatTests); CreateTrains.load's
+  `return true` by the existing CreateTrainCompatTests.aVillageTrainIsAssembledAtAStationAndRunsToTheOther; MechanicWork's
+  IsController sort by MechanicCompatTests.aGoneBeltGoesBackControllerFirst; CreateSchematics.upToDate's `return false`
+  by CreateSchematicCompatTests.aSchematicNamedLikeADeviceIsSaidNotSkipped, which found a real bug (fixed in the same
+  commit: a schematic named `con.nbt` threw out of `sync` and broke the table); Contraptions also by
+  ContraptionCompatTests.aTurningPartIsNotListedAsStill. To stop Create-only survivors in the nightly, its mutation job
+  would need `runCompatGameTest` for files under `compat/create`, `mechanic`, `city/CaravanTrains`, `table/CreateSchematics`.
 - 2026-10-19 (lane-e-1019-1614): second mutation pass on M39 (Create) code, seed 40, favouring what the first pass
   (below) left out: Contraptions, KineticParts, MachineWorkFiles and MachineJob, plus new lines in CreateTrains,
   CaravanTrains, MachineWork, MechanicWork, CreateSchematics and Kinetics. Run against the ten Create compat classes and

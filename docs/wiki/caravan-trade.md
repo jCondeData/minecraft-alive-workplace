@@ -3,7 +3,7 @@
 ROADMAP 33.6 (part of 1.7, "From village to realm"; switched on in 1.0 with every other expansion). It builds on
 [the price board](price-board.md) and [trading at the board](board-trade.md).
 
-Roadmap items: 33.6
+Roadmap items: 33.6, B212
 
 ## What a player sees
 
@@ -78,6 +78,9 @@ None new. It uses the Village Hall, the Storehouse and its chests.
 - Both boards move when the goods are sold, not when they're loaded.
 - With the buying village's hall taken away while the caravan is out, the goods for sale turn round for home. With
   the selling village's hall gone, there's nobody to pay: the goods are unloaded where they arrived.
+- B212 (fixed 2026-10-19): the free goods it carried turn round for home too, not just the goods for sale. A caravan
+  whose own hall is gone as well (or one coming home to a hall taken away) is dropped, so a hall set down later on the
+  same block isn't handed old goods.
 - The full list is in ROADMAP's Notes, 2026-10-10 (33.6).
 
 ## Known limits
@@ -92,10 +95,11 @@ None new. It uses the Village Hall, the Storehouse and its chests.
 
 ## Proof
 
-- `CaravanTradeGameTests` (7): the sale between two halls with the Routes tab's lines and both chronicles; what the
+- `CaravanTradeGameTests` (9): the sale between two halls with the Routes tab's lines and both chronicles; what the
   other village can't pay for coming home; what goes (known for, short of or 10% dearer, whole bundles, 16 kept,
   never what they wait for, two stacks at most); save and reload with a caravan on the road, and a save from before
   1.7; the economy off (before loading and mid-journey); no room at the other end and a seller that's gone; the
-  buying hall taken away mid-journey.
+  buying hall taken away mid-journey, with goods for sale and (B212) with only free goods; a caravan whose home hall is
+  gone dropped, and a new hall on the same block handed nothing.
 - `VillageHallGameTests.caravansCarryWhatAnotherVillageNeeds` passes unchanged.
 - Showcase scene `caravan_trade`: the Routes tab with its earnings, then the chronicle line.

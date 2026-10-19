@@ -29,6 +29,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Caravans no longer get lost when a Village Hall is taken away** (B212). Break the hall a caravan is heading for and
+  everything it carried now turns round and comes back to its own village's Storehouse, not just the goods it meant to
+  sell. A caravan whose own village's hall is gone too is dropped, so a new hall set down on the same spot no longer
+  receives old goods out of nowhere.
 - **No more villagers than beds, and nobody lives in the settlers' wagon** (B206, B207). The bedrolls by a Settler's
   Wagon or a Colony Camp are for the road: once the Village Hall stands, a settler who kept one as their home gets up
   and finds a bed in the village's houses, and nobody claims one again. The hall doesn't count them among its beds

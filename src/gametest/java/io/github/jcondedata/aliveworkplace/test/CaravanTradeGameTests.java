@@ -520,4 +520,92 @@ public class CaravanTradeGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/** No trade goods either side (B212): the caravan carries only what the other village waits for. */
+	private static void noMarkets(Two two) {
+		two.data().setMarket(two.a(), Market.EMPTY);
+		two.data().setMarket(two.b(), Market.EMPTY);
+	}
+
+	/** The caravans on the road to or from either village of the test. */
+	private static List<Caravans.Shipment> road(Two two) {
+		return two.data().onTheRoad().stream()
+			.filter(s -> s.to().equals(two.a()) || s.to().equals(two.b()) || s.from().equals(two.a()) || s.from().equals(two.b())).toList();
+	}
+
+	/**
+	 * B212: the hall the caravan was going to is taken away mid-journey and it carried only what that village waited for
+	 * (nothing for sale): those goods turn round too and come back into the sender's Storehouse.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"caravanWantedGone"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "caravanWantedGone")
+	public void theOtherHallTakenAwayMidJourneySendsTheWantedGoodsHome(GameTestHelper helper) {
+		Two two = build(helper);
+		helper.runAfterDelay(2, () -> {
+			open(helper, two, 1000, List.of(new Caravans.Want(Items.OAK_LOG, 32)));
+			noMarkets(two);
+			two.ours().setItem(0, new ItemStack(Items.OAK_LOG, 48));
+			helper.assertTrue(two.data().toggleRoute(two.a(), two.b()), "no route");
+			Caravans.round(two.level(), two.a(), null);
+			helper.assertTrue(two.ours().countItem(Items.OAK_LOG) == 16, "loaded: " + two.ours().countItem(Items.OAK_LOG));
+			List<Caravans.Shipment> out = road(two);
+			helper.assertTrue(out.size() == 1 && out.get(0).to().equals(two.b()) && out.get(0).sale().isEmpty(), "the caravan should carry only wanted goods: " + out);
+			helper.setBlock(HALL_B, Blocks.AIR);
+			helper.assertTrue(two.data().village(two.b()) == null, "B is still on the list");
+			List<Caravans.Shipment> road = road(two);
+			helper.assertTrue(road.size() == 1 && road.get(0).to().equals(two.a()) && road.get(0).back() && road.get(0).sale().isEmpty()
+				&& road.get(0).goods().stream().mapToInt(ItemStack::getCount).sum() == 32, "the caravan should turn round: " + road);
+		});
+		helper.runAfterDelay(40, () -> {
+			Caravans.round(two.level(), two.a(), null);
+			helper.assertTrue(two.ours().countItem(Items.OAK_LOG) == 48, "the logs should be home: " + two.ours().countItem(Items.OAK_LOG));
+			helper.assertTrue(road(two).isEmpty(), "nothing should be left on the road: " + road(two));
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B212: a caravan whose home hall is gone has nowhere to go. Turned round from a village taken away and then its own
+	 * home taken away too, it is dropped, as is one still on its way out when both halls go; a hall set down later on
+	 * the same block isn't handed the old goods.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"caravanHomeGone"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "caravanHomeGone")
+	public void aCaravanWhoseHomeHallIsGoneIsDropped(GameTestHelper helper) {
+		Two two = build(helper);
+		helper.runAfterDelay(2, () -> {
+			// the sender goes first: its caravan still arrives where it was going, until that hall goes too
+			open(helper, two, 1000, List.of(new Caravans.Want(Items.OAK_LOG, 32)));
+			noMarkets(two);
+			two.ours().setItem(0, new ItemStack(Items.OAK_LOG, 48));
+			helper.assertTrue(two.data().toggleRoute(two.a(), two.b()), "no route");
+			Caravans.round(two.level(), two.a(), null);
+			helper.setBlock(HALL_A, Blocks.AIR);
+			helper.assertTrue(road(two).size() == 1 && road(two).get(0).to().equals(two.b()), "the caravan should go on to B: " + road(two));
+			helper.setBlock(HALL_B, Blocks.AIR);
+			helper.assertTrue(road(two).isEmpty(), "with both halls gone the caravan should be dropped: " + road(two));
+
+			// both halls back; the other village goes first, its caravan turns round, then its home goes too
+			helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
+			helper.setBlock(HALL_B, ModBlocks.VILLAGE_HALL);
+			open(helper, two, 1000, List.of(new Caravans.Want(Items.OAK_LOG, 32)));
+			noMarkets(two);
+			two.ours().setItem(0, new ItemStack(Items.OAK_LOG, 48));
+			helper.assertTrue(two.data().toggleRoute(two.a(), two.b()), "no route the second time");
+			Caravans.round(two.level(), two.a(), null);
+			helper.assertTrue(two.ours().countItem(Items.OAK_LOG) == 16, "loaded: " + two.ours().countItem(Items.OAK_LOG));
+			helper.setBlock(HALL_B, Blocks.AIR);
+			helper.assertTrue(road(two).size() == 1 && road(two).get(0).to().equals(two.a()) && road(two).get(0).back(), "the caravan should turn round: " + road(two));
+			helper.setBlock(HALL_A, Blocks.AIR);
+			helper.assertTrue(road(two).isEmpty(), "a caravan coming home to a hall that's gone should be dropped: " + road(two));
+
+			// a new hall on the same block starts with nothing on the road
+			helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
+			two.data().setWants(two.a(), Component.literal("Thornholm"), List.of());
+			Caravans.round(two.level(), two.a(), null);
+			helper.assertTrue(two.ours().countItem(Items.OAK_LOG) == 16 && road(two).isEmpty(),
+				"the new hall shouldn't be handed old goods: " + two.ours().countItem(Items.OAK_LOG) + " logs, " + road(two));
+			helper.succeed();
+		});
+	}
 }

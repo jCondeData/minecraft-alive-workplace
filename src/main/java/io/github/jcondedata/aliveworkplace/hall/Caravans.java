@@ -219,20 +219,24 @@ public final class Caravans {
 			routes.remove(hall);
 			routes.values().forEach(to -> to.remove(hall));
 			sales.removeIf(s -> s.seller().equals(hall));
-			// 33.6: goods a caravan was bringing here to sell turn round for home (if home is still on the list)
+			// 33.6, B212: a caravan on its way here turns round for home with everything it carried, the goods it brought
+			// for nothing and those to sell (if home is still on the list); one coming home here, or whose home is gone
+			// too, has nowhere to go and is dropped. A caravan that set out from here still arrives where it was going.
 			List<Shipment> home = new ArrayList<>();
-			onTheRoad.replaceAll(s -> {
-				if (!s.to().equals(hall) || s.sale().isEmpty()) {
-					return s;
+			onTheRoad.removeIf(s -> {
+				if (!s.to().equals(hall)) {
+					return false;
 				}
-				if (villages.containsKey(s.from())) {
-					List<ItemStack> goods = new ArrayList<>();
+				if (!s.back() && villages.containsKey(s.from())) {
+					List<ItemStack> goods = new ArrayList<>(s.goods());
 					s.sale().forEach(lot -> goods.addAll(lot.stacks()));
-					home.add(new Shipment(hall, s.from(), goods, s.arrives(), List.of(), true, s.byTrain()));
+					goods.removeIf(ItemStack::isEmpty);
+					if (!goods.isEmpty()) {
+						home.add(new Shipment(hall, s.from(), goods, s.arrives(), List.of(), true, s.byTrain()));
+					}
 				}
-				return new Shipment(s.from(), s.to(), s.goods(), s.arrives(), List.of(), s.back(), s.byTrain());
+				return true;
 			});
-			onTheRoad.removeIf(s -> s.goods().isEmpty() && s.sale().isEmpty());
 			onTheRoad.addAll(home);
 			halves.remove(hall);
 			halves.values().forEach(to -> to.remove(hall));

@@ -10,7 +10,7 @@ Needs: Create installed, two villages with a trade route and the road between th
 Build: Train Station
 Setting: Village trains
 categories: Builder, Trade
-related: trade-and-caravans.md, caravan-carters.md, create-contraptions.md
+related: trade-and-caravans.md, caravan-carters.md, create-contraptions.md, conductor.md
 ```
 
 With the Create mod installed, two villages that trade with each other can be joined by rail. Give each village a
@@ -38,13 +38,15 @@ villages' caravans take the train instead of walking.
 
 Once Create's railway knows both stations on one stretch of track, one of the villages puts a real Create train
 together at its station, just as you would: a bogey on the track, a small carriage of train casing with the caravan's
-chest, train controls at both ends, a seat on the deck under a little spruce canopy with a lantern, and one of its
-villagers without a job in the seat as the driver. The
+chest, train controls at both ends, a seat on the deck under a little spruce canopy with a lantern, and the village's
+[Conductor](conductor.md) in the seat as the driver. The
 chronicle says who took the seat. The train gets a Create schedule, to the other village's station and back with a short
 wait at each, and Create runs it from then on: you can watch it come and go, and see it on Create's maps.
 
-- **Keep a villager free.** The driver is a villager without a job near the station. Until there is one, the
-  caravans still go by train, as a quicker trip without a train you can see.
+- **A Conductor drives it.** A villager without a job by the station becomes the village's
+  [Conductor](conductor.md), who takes the seat and calls each stop as the train comes in. Without a Conductor, a
+  villager without a job near the station drives it instead. Until there is anyone free, the caravans still go by
+  train, as a quicker trip without a train you can see.
 - **A builder builds it.** One of the village's builders builds the train on the track just past the station, from
   the chests by the bench like any build: keep three train casings, two train controls, a seat, a chest, three spruce
   fences, four spruce slabs and a lantern there. The

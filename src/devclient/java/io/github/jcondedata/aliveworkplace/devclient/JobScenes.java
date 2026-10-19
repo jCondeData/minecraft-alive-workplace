@@ -1152,7 +1152,9 @@ final class JobScenes {
 		// 39.7b: Thornholm's builder builds the train from its blueprint out of the bench's barrel (the bogey from train
 		// casing), and the caravan's logs ride in the carriage's chest: loaded at Thornholm, taken out at Ashford (what the
 		// chest holds is shown over the hotbar the whole time).
-		SCENES.put("village_train", new Job("Thornholm's builder built the train, the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
+		// 39.7d: Thornholm has a Conductor (maroon cap and tunic) at its station as well as the jobless villager: he takes
+		// the seat, and calls the stop when the train comes in at Ashford.
+		SCENES.put("village_train", new Job("Thornholm's builder built the train, its Conductor took the seat, and the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
 			4000, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
@@ -1195,6 +1197,12 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, thornholm, data); // both stations known (B193)
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, ashford, data);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, thornholm, ashford), "the two villages are on a railway");
+			Villager conductor = EntityType.VILLAGER.spawn(level, west.offset(6, 1, 3), MobSpawnType.COMMAND); // 39.7d: Thornholm's Conductor
+			conductor.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.work.Stations.assign(level, conductor, data.stations(thornholm).get(0),
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.CONDUCTOR);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.isConductor(conductor), "Thornholm's station has a Conductor");
+			io.github.jcondedata.aliveworkplace.city.CaravanTrains.lastCall = null;
 			Container chest = (Container) level.getBlockEntity(ashford.east(3).north(2));
 			Container home = (Container) level.getBlockEntity(thornholm.east(3).north(2));
 			BlockPos bench = thornholm.offset(-3, 0, 2); // Thornholm's builder, with the train's parts in the barrel by the bench
@@ -1258,6 +1266,8 @@ final class JobScenes {
 				if (in) {
 					Showcase.check(filled[0] && io.github.jcondedata.aliveworkplace.city.CaravanTrains.RAILWAY.call(r -> r.cargo(l, owner), List.<ItemStack>of()).isEmpty(),
 						"the train came in at Ashford's station and its chest emptied into Ashford's storehouse");
+					Showcase.check(l.getEntity(conductor.getUUID()) instanceof Villager rider && rider.isPassenger(), "the village's Conductor rode the train, not the jobless villager");
+					Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.lastCall != null, "the Conductor called the stop as the train came in");
 				}
 				return in;
 			};

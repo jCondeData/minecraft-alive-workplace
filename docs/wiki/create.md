@@ -5,9 +5,10 @@ the machines turning, villagers who feed Create's millstone, press, mixer and cr
 contraptions built from a blueprint, Create schematics at the Blueprint Table and trains between villages.
 Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gate and the port in the test runtime
 (39.1), the Mechanic (39.2), villagers working the machines (39.3), the Create-powered builds (39.4), contraptions
-built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6) and trains between villages (39.7); the full plan is the design note, docs/design/M39.md.
+built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
+Conductor (39.7d); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, B189, B193
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193
 
 ## What a player sees
 
@@ -106,6 +107,17 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   what a derailed train still holds comes back out and the caravan takes the timed trip; a train broken up keeps them
   in its chest (a player breaking it up at a station gets the chest back with them), the caravan is taken off the road
   and the chronicle says "The train to Ashford was broken up on the way: the caravan's goods stayed in its chest".
+- **The Conductor** (39.7d). A jobless villager next to a Create Train Station becomes the village's Conductor, in a
+  maroon railwayman's cap with a gold braid band and badge, a maroon tunic with two rows of brass buttons, a gold watch
+  chain, a ticket punch at the belt and black gloves. When the village puts its train together, the Conductor by its
+  station takes the seat rather than a jobless villager ("Ada took the seat of the village's new train..."); a village
+  without one seats a jobless villager as before, and a villager with another job is never taken. As the train comes
+  in at a station, the Conductor riding it calls the stop once, over his head and in the chat of players within 24
+  blocks of the station: "Ada: Now arriving at Ashford! All change, mind the gap." (a train driven by a jobless
+  villager comes in quietly). Off the train he stands at his station like any villager at their workstation. He
+  trades coal and emeralds for rails, Create track, powered rails, train schedules, track signals, railway casing and,
+  as a Master, train controls.
+
 - **Every station, every road, a drawn train** (39.7c). After its first pass, `CaravanTrains.plan` joins what is left
   unjoined: the plan's pieces make lines (straight pieces meeting level and in line, or a curve's two ends); short lines
   of one or two pieces between gaps (a zig-zag's straight bits) are taken out, and each gap gets one Create curve from
@@ -261,7 +273,8 @@ showcase catalog).
   players until 2.3 ships, and does nothing without Create.
 
 - `villageTrains` (39.7): the Train Station at the table and in the creative tab, track laid along caravan roads,
-  caravans by train. Off: no station offered, no track site opened, new caravans walk; a train already on its way
+  caravans by train, and the Conductor job (39.7d). Off: no station offered, no track site opened, a jobless villager
+  doesn't see a station as a workstation (Conductors already hired keep the job), new caravans walk; a train already on its way
   still comes in, and stations and track already noted stay on the list. Off for players until 2.3 ships, and does
   nothing without Create (or with `caravanRoads` off: no road, no track).
 
@@ -296,6 +309,17 @@ The planned fields of later items, each with its default, are listed in the desi
 - Job: the **Mechanic** (`aliveworkplace:mechanic`, only with Create), at a Create Toolbox of any colour (POI
   `aliveworkplace:toolbox`). In the Village Hall's list a Mechanic shows with the toolbox's own item, as every job shows
   with its workstation.
+
+- Job: the **Conductor** (`aliveworkplace:conductor`, only with Create, 39.7d), at Create's Train Station (POI
+  `aliveworkplace:track_station`, registered once Create has registered `create:track_station`, and an optional entry
+  of the `acquirable_job_site` tag). No new block: the station the village already has is his workstation, as the
+  Toolbox is the Mechanic's. He works his workstation the vanilla way (no work package of ours); the seat is his
+  through `CaravanTrains.conductorFor` (the nearest grown-up Conductor within 24 blocks of the station not already
+  riding, else the nearest jobless villager as before). The stop is called from `CaravanTrains.serve` when a train it
+  saw away from the station stands there (`CaravanTrains.calls`, kept in memory only: a train first seen standing, as
+  after a restart, is not called). Riders are found by id: Create may save a carriage's riders and put them back as
+  new entities on the way. Trades in `ModTrades.conductorTrades`, Create's items looked up by id when offered.
+  Nothing new in the save; a villager saved as a Conductor in a world Create was removed from loads jobless.
 
 - Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
 
@@ -417,6 +441,13 @@ tested (the GameTests use the table as the server does).
   job survive a save and load.
 - `MechanicGameTests` (without Create): no profession, no POI, no crew lead; a saved Mechanic loads jobless; the saved
   round's defaults; the `mechanics` switch.
+- `ConductorCompatTests` (39.7d, with Create): a jobless villager takes a Train Station by themselves (and the POI is
+  the station's); `villageTrains` off, the station is hidden from the jobless and nobody takes it; the trades at every
+  level, Create's track, schedule, signal and controls among them; two villages joined by track: the Conductor (further
+  from the station than a jobless villager and a Librarian) rides the train and calls the stop at the other village,
+  naming it; without a Conductor the jobless villager rides it and nobody calls. `ConductorGameTests` (without Create):
+  no profession, no POI; a saved Conductor loads jobless; the seat goes to the nearest jobless grown-up, never to a
+  villager with a job or a baby. Scene `village_train` (the Conductor rides and calls the stop).
 
 - `MachineWorkCompatTests` (with Create): for each of the millstone, the press over a depot, the mixer over a basin
   and the crushing wheels, with the job's own worker: turned by a creative motor, the chest's input goes to the machine

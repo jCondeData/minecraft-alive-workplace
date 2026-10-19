@@ -204,8 +204,9 @@ public final class WorkplaceConfig {
 	/**
 	 * With Create installed, the Blueprint Table offers the Train Station (ROADMAP 39.7); two villages with a caravan
 	 * route and a station each get Create track laid along the road between them by their builders, and their caravans go
-	 * by train: a third of the trip, never lost. Off: no station at the table, no track laid, caravans walk (a train
-	 * already on its way still comes in). Without Create it does nothing.
+	 * by train: a third of the trip, never lost. A jobless villager by a Train Station becomes the village's Conductor
+	 * (39.7d), who drives its train and calls its stops. Off: no station at the table, no track laid, no new Conductors,
+	 * caravans walk (a train already on its way still comes in). Without Create it does nothing.
 	 */
 	public boolean villageTrains = Expansions.on(Expansions.M39);
 	/** Villages with a Village Hall hold a festival every eight days (players can still call one with a cake). */

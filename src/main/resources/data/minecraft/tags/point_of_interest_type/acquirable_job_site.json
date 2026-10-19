@@ -35,6 +35,10 @@
     {
       "id": "aliveworkplace:toolbox",
       "required": false
+    },
+    {
+      "id": "aliveworkplace:track_station",
+      "required": false
     }
   ]
 }

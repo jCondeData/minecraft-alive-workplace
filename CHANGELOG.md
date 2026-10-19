@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Conductor** (39.7d, with Create). A villager without a job by a Create Train Station becomes the village's
+  Conductor (maroon cap and tunic, brass buttons, a ticket punch): they take the seat of the village's train instead of a
+  jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade
+  rails, Create track, train schedules, signals, railway casing and train controls. Without a Conductor a jobless
+  villager still drives. Behind the Village trains setting.
+
 ## 0.145.0 — 2026-10-18
 
 ### Added

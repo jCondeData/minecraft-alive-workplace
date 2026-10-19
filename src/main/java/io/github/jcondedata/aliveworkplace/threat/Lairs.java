@@ -600,7 +600,9 @@ public final class Lairs {
 		}
 		StructurePlaceSettings settings = new StructurePlaceSettings().setRotation(rotation);
 		BoundingBox box = template.getBoundingBox(settings, origin);
+		CampGround land = null;
 		if (sea.isEmpty()) {
+			land = CampGround.take(level, box, rotation.ordinal()); // the land as it was, for when the camp goes (B225)
 			clearAndPlace(level, template, origin, settings, box);
 		}
 		Optional<BlockPos> captainSpot = spec.flatMap(Culture.Lair::captainAt);
@@ -636,6 +638,9 @@ public final class Lairs {
 		}
 		Data data = Data.get(level);
 		data.put(lair);
+		if (land != null) {
+			data.grounds.put(lair.pos(), land);
+		}
 		boolean named = named(lair);
 		Component captainName = captainName(lair);
 		Component where = VillageHallScreen.where(hall, middle);
@@ -966,6 +971,7 @@ public final class Lairs {
 		data.broken.clear();
 		data.clearing.clear();
 		data.unswept.clear();
+		data.grounds.clear();
 		data.setDirty();
 		QUIET.clear();
 		Ships.forget(level);
@@ -984,6 +990,8 @@ public final class Lairs {
 		final List<CampCleanup.Clearing> clearing = new ArrayList<>();
 		/** The villages whose camps broken up before B209 may still stand, not yet swept for them ({@link CampCleanup#sweep}). */
 		final java.util.Set<BlockPos> unswept = new java.util.LinkedHashSet<>();
+		/** The ground each standing lair on land covered before it was set down, by its middle (B225; none for older lairs). */
+		final Map<BlockPos, CampGround> grounds = new LinkedHashMap<>();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -1033,6 +1041,16 @@ public final class Lairs {
 				swept.add(c);
 			}
 			tag.put("unswept", swept);
+			ListTag lands = new ListTag();
+			for (Map.Entry<BlockPos, CampGround> e : grounds.entrySet()) {
+				if (lairs.values().stream().noneMatch(lair -> lair.pos().equals(e.getKey()))) {
+					continue; // (its lair is gone some other way: nothing will take it down)
+				}
+				CompoundTag c = e.getValue().write();
+				c.putLong("pos", e.getKey().asLong());
+				lands.add(c);
+			}
+			tag.put("grounds", lands);
 			tag.putBoolean("b209", true);
 			return tag;
 		}
@@ -1055,6 +1073,7 @@ public final class Lairs {
 			broken.clear();
 			clearing.clear();
 			unswept.clear();
+			grounds.clear();
 			ListTag list = Nbt.getList(tag, "camps", Tag.TAG_COMPOUND);
 			for (int i = 0; i < list.size(); i++) {
 				CompoundTag c = Nbt.compoundAt(list, i);
@@ -1083,6 +1102,14 @@ public final class Lairs {
 				CampCleanup.Clearing c = CampCleanup.Clearing.read(Nbt.compoundAt(going, i));
 				if (c != null) {
 					clearing.add(c);
+				}
+			}
+			ListTag lands = Nbt.getList(tag, "grounds", Tag.TAG_COMPOUND); // (none before B225)
+			for (int i = 0; i < lands.size(); i++) {
+				CompoundTag c = Nbt.compoundAt(lands, i);
+				CampGround ground = CampGround.read(c);
+				if (ground != null) {
+					grounds.put(BlockPos.of(Nbt.getLong(c, "pos")), ground);
 				}
 			}
 			if (Nbt.getBoolean(tag, "b209")) {

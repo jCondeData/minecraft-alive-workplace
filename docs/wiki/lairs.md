@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216
+Roadmap items: 32.3, B208, B209, B211, B216, B225
 
 ## What a player sees
 
@@ -29,6 +29,15 @@ Roadmap items: 32.3, B208, B209, B211, B216
   is found by matching the blueprint round the camp's middle in each of the four turns (at least a quarter must match).
   A camp whose ground isn't loaded waits; the list is saved, so a restart mid-clearing carries on. A lair that leaves
   in peace (`/workplace threat clear`, a quiet village) packs up the same way. A ship sinks or sails off as before.
+- **The land comes back** (B225, `threat/CampGround`). A lair on land records the ground it covers when it is made
+  (its box and 4 blocks under it, where it fills hollows with dirt; blocks with contents recorded as air), saved in the
+  lairs' file under `grounds` by the lair's middle and moved into its clearing when it breaks. In the tick the camp is
+  all down the ground is put back bottom up, but only where the camp's doing is still there: air, the camp's own blocks,
+  its dirt filling, fire, or plants grown since; a player's block and every block entity stay. Anything left inside
+  ground that came back is lifted onto it. A camp made before B225 (no record) has its pad blended instead: each column
+  goes to the height the natural land 3 blocks round the footprint has there (weighted by nearness), topped with that
+  land's surface (grass, sand, snow...), the trampled earth, gravel and fire gone. With `campRuins` the columns under
+  the ruins' standing blocks are kept; the rest goes back the same way.
 - **The Defense page.** Click the guards icon (the iron sword) on the Village Hall. Everyone who may open the hall may
   read it:
   - second row: the camp (whose it is), the captain by name, the strength (the icon counts it; the tooltip says how many
@@ -82,8 +91,8 @@ None. One new screen page (the Defense page).
   "Another mod refused to let minecraft:iron_golem spawn for the ...; Alive Workplace placed it directly"), left out and
   logged ("... and forceVillageSpawns is off") when off. The mod spawns no cats or war dogs itself (war dogs are wolves
   already about, tamed), and vanilla's own spawns and breeding are never forced.
-- `campRuins` (false, B209): a broken camp stays as ruins, its fires put out, instead of coming down. Either way it is
-  forgotten at once.
+- `campRuins` (false, B209): a broken camp stays as ruins, its fires put out, instead of coming down (the open ground
+  round it still goes back, B225). Either way it is forgotten at once.
 - Camps from before B209: a save without the `b209` mark lists every village that ever broke up a camp as unswept. The
   hall's round looks 64 to 120 blocks out for a campfire on top with the bandit camp's blueprint round it (half of it
   must match), with no living foe of ours (an `Enemy` with an `aliveworkplace_` tag) within 32 blocks and no standing
@@ -146,8 +155,14 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   Pact's golem, a relief rider's horse (with its rider on it), a Beastmaster foal and wolf pup and a caravan llama are in
   the world and still there 100 ticks later; with `forceVillageSpawns` off they are left out and the log says why.
 - `B209GameTests`: the chief killed, the camp's record, band and scouts' report are gone at once and its campfire, two
-  chests, tents and five beds are gone within 150 ticks, while a player's gold block in a tent and the ground stay and
+  chests, tents and five beds are gone within 150 ticks, while a player's gold block in a tent stays, the ground under
+  the fire is back to the land's and
   the chests' loot lies on the ground; a new camp is made after and stands; with `campRuins` the camp stays, its fire
   out; a save and reload before and halfway through the clearing carries on; a save from before B209 with a broken
   camp still standing is swept by the hall's round (not while its chief is alive), and only once.
-- Showcase scene `camp_cleared`: a bandit camp, its chief falling, the camp coming down.
+- `B225GameTests`: a camp on a grassy slope taken down leaves every block round it as it was before the camp; the same
+  after a save and reload before and halfway through the clearing; with `campRuins` the tents stay and every open column
+  is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no
+  trampled earth, gravel, cobblestone or fire, no step over one block, each column within 2 of the slope.
+- Showcase scene `camp_cleared`: a bandit camp on a grassy rise, its chief falling, the camp coming down and the rise
+  back as it was.

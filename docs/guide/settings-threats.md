@@ -54,8 +54,8 @@ spawns by itself are never forced.
 ## Camp Ruins
 
 Normally **off**: a bandit camp (or another raiders' camp) whose chief is killed comes down a couple of seconds later,
-its tents and fire gone and the loot in its chests spilled on the ground. On: the broken camp stays standing as ruins,
-its fire put out. Either way the village forgets it at once, and a new camp may come after the quiet days.
+its tents and fire gone, the loot in its chests spilled on the ground and the land under it back as it was. On: the
+broken camp stays standing as ruins, its fire put out, the open ground round it back as it was. Either way the village forgets it at once, and a new camp may come after the quiet days.
 
 ## Village Protection
 

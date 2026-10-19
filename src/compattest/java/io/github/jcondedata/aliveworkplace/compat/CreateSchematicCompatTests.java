@@ -290,6 +290,58 @@ public class CreateSchematicCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A Schematic whose file name is blank (written by a command or another mod) is a blank Schematic, not a bad name; a
+	 * name a file system reads as a drive, with a backslash or a NUL in it, or an uploader's folder named so, is refused
+	 * by name (the line players read), never taken for a missing file and never an exception.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void oddNamesAreRefusedByName(GameTestHelper helper) {
+		MinecraftServer server = helper.getLevel().getServer();
+		String owner = "gametest_odd";
+		CreateSchematics.Result blank = CreateSchematics.importItem(server, schematic("", owner));
+		helper.assertTrue(!blank.imported() && key(blank.message()).equals("message.aliveworkplace.create_schematic.not_written"),
+			"a Schematic with no file name: " + key(blank.message()));
+		String[][] tries = {{"c:hut.nbt", owner}, {"x\\..\\hut.nbt", owner}, {"hut\0.nbt", owner}, {"hut.nbt", "c:"}, {"hut.nbt", "a\\b"}};
+		for (String[] t : tries) {
+			CreateSchematics.Result result = CreateSchematics.importItem(server, schematic(t[0], t[1]));
+			helper.assertTrue(!result.imported() && key(result.message()).equals("message.aliveworkplace.create_schematic.bad_name"),
+				t[1].replace('\0', '0') + " / " + t[0].replace('\0', '0') + " wasn't refused by name: " + key(result.message()));
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * After a restart nothing remembers what was imported, so a schematic counts as current when its saved blueprint is at
+	 * least as new as the file. A blueprint saved in the same millisecond as its file (file systems that keep whole
+	 * seconds make that common) is current: the table doesn't import it again and say so at every first opening.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aBlueprintAsNewAsItsFileIsCurrent(GameTestHelper helper) {
+		MinecraftServer server = helper.getLevel().getServer();
+		String owner = "gametest_same_time";
+		ResourceLocation id = CreateSchematics.idFor(owner, "barn.nbt");
+		clear(server, owner, id);
+		try {
+			Path file = write(server, owner, "barn.nbt", structure(3, false));
+			Path saved = server.getStructureManager().createAndValidatePathToGeneratedStructure(id, ".nbt");
+			writeTo(saved, structure(3, false)); // imported before the restart
+			FileTime when = FileTime.fromMillis(System.currentTimeMillis() / 1000 * 1000);
+			Files.setLastModifiedTime(file, when);
+			Files.setLastModifiedTime(saved, when);
+			helper.assertTrue(lines(CreateSchematics.sync(server), "barn.nbt") == 0, "a blueprint as new as its file was imported again");
+			Files.setLastModifiedTime(file, FileTime.fromMillis(when.toMillis() + 1));
+			helper.assertTrue(lines(CreateSchematics.sync(server), "barn.nbt") == 1, "a file newer than its blueprint wasn't imported");
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		} finally {
+			clear(server, owner, id);
+		}
+		helper.succeed();
+	}
+
 	private static Object component(ItemStack stack, String name) {
 		DataComponentType<?> type = Lookup.value(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath("create", name));
 		return type == null ? null : stack.get(type);

@@ -105,6 +105,47 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		});
 	}
 
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '20' '"furniture_seat_hours"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 20, batch = "furniture_seat_hours")
+	public void sittingTimeRunsFromTheFirstTickOfSupperTillBedtime(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Runnable restore = clock(level);
+		long[] times = {FurnitureSeats.SUPPER - 1, FurnitureSeats.SUPPER, FurnitureSeats.BEDTIME - 1, FurnitureSeats.BEDTIME};
+		boolean[] sitting = new boolean[times.length];
+		for (int i = 0; i < times.length; i++) {
+			setTime(level, times[i]);
+			sitting[i] = FurnitureSeats.sittingTime(level);
+		}
+		restore.run();
+		helper.assertFalse(sitting[0], "sitting time before supper");
+		helper.assertTrue(sitting[1], "not sitting time at the first tick of supper");
+		helper.assertTrue(sitting[2], "not sitting time just before bed");
+		helper.assertFalse(sitting[3], "still sitting time at bedtime");
+		helper.succeed();
+	}
+
+	//$ gametest_ticks_batch HUGE_AREA '200' '"furniture_seat_riding"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 200, batch = "furniture_seat_riding")
+	public void aVillagerRidingAMinecartIsntPulledOntoAChairAtSupper(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos chair = chair(helper);
+		Entity cart = helper.spawn(EntityType.MINECART, CHAIR.south());
+		Villager v = helper.spawn(EntityType.VILLAGER, CHAIR.south());
+		helper.assertTrue(v.startRiding(cart, true), "the villager couldn't get into the minecart");
+		Runnable restore = clock(level);
+		setTime(level, FurnitureSeats.SUPPER + 600);
+		helper.runAfterDelay(100, () -> {
+			boolean inCart = v.getVehicle() == cart;
+			int onChair = seats(helper, chair).size();
+			v.discard();
+			cart.discard();
+			restore.run();
+			helper.assertTrue(inCart, "a villager riding a minecart was taken out of it at supper");
+			helper.assertTrue(onChair == 0, onChair + " seats on the chair next to a villager in a minecart");
+			helper.succeed();
+		});
+	}
+
 	//$ gametest_ticks_batch HUGE_AREA '600' '"furniture_seat_once"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 600, batch = "furniture_seat_once")
 	public void aSeatInUseIsntTakenTwice(GameTestHelper helper) {

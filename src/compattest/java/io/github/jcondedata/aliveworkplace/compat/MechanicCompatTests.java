@@ -295,4 +295,44 @@ public class MechanicCompatTests implements FabricGameTest {
 		copy.discard();
 		helper.succeed();
 	}
+
+	/**
+	 * A part fetched but not put back when the work stops (the day ends) goes back to the store, and out of the
+	 * Mechanic's hand: one shaft, never two.
+	 */
+	//$ gametest_batch AREA '"mechanic_stopped"'
+	@GameTest(template = AREA, batch = "mechanic_stopped")
+	public void aPartInHandWhenTheWorkStopsGoesBackOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		Villager mechanic = mechanic(helper);
+		Container chest = chest(helper);
+		mechanic.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(createItem("shaft")));
+		new MechanicWork().doStop(level, mechanic, level.getGameTime());
+		helper.assertTrue(count(chest, createItem("shaft")) == 1, "the shaft in hand didn't go back to the store: " + count(chest, createItem("shaft")));
+		helper.assertTrue(mechanic.getMainHandItem().isEmpty(), "the shaft went back to the store and stayed in the Mechanic's hand too: "
+			+ mechanic.getMainHandItem());
+		helper.succeed();
+	}
+
+	/**
+	 * A round of one machine is back at its start every visit, so a machine built since then is found and joins it: the
+	 * Mechanic of a village's first millstone sees to its second one too.
+	 */
+	//$ gametest_batch AREA '"mechanic_round_grows"'
+	@GameTest(template = AREA, batch = "mechanic_round_grows")
+	public void aMachineBuiltLaterJoinsARoundOfOne(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		Villager mechanic = mechanic(helper);
+		helper.setBlock(new BlockPos(6, 2, 2), create("millstone").defaultBlockState());
+		MechanicRound one = MechanicWork.round(level, mechanic, helper.absolutePos(TOOLBOX));
+		helper.assertTrue(one.machines().size() == 1, "unexpected round " + one);
+		ModAttachments.MECHANIC_ROUND.set(mechanic, one.advance()); // the first millstone seen to: round again
+		helper.setBlock(new BlockPos(6, 2, 5), create("millstone").defaultBlockState());
+		MechanicRound two = MechanicWork.round(level, mechanic, helper.absolutePos(TOOLBOX));
+		helper.assertTrue(two.machines().size() == 2 && two.machines().contains(helper.absolutePos(new BlockPos(6, 2, 5))),
+			"the millstone built later never joined the round of one: " + two);
+		helper.succeed();
+	}
 }

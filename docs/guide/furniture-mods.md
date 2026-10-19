@@ -37,8 +37,17 @@ mods list), for example to put Cozy Home first.
 ## What the builder needs
 
 The furniture is part of the build's materials: the Blueprint Table's preview, its supply report and the material list
-show the modded pieces, and the builder waits for them like any other block. Put a Handcrafted chair in his chest, not
-a stair. Every home in the starter set is furnished (the Starter Cottage, Stone House, Townhouse, Manor, Artisan's
+show the modded pieces, and the builder waits for them like any other block. Put a modded chair in his chest, not a
+stair.
+
+**Any mod's piece will do.** A spruce chair is a spruce chair whichever furniture mod made it: if the build asks for
+Handcrafted's spruce chair and you bring CobbleFurnies' (or Cozy Home's), the builder builds that one, in the same
+place and facing the same way. The material list book shows the piece once, as "Spruce Chair (any furniture mod)";
+point at it to see each mod's piece that will do. With several mods' pieces in the chest, he takes the first mod's in
+the list. A piece he has already put up stays as it is. Chairs, tables, couches, desks, counters, cupboards,
+nightstands, drawers and lamps work this way; a piece no installed mod makes is the plain one, as before.
+
+![Two cottages: Handcrafted chairs from one chest, CobbleFurnies chairs from the other](https://jcondedata.github.io/minecraft-alive-workplace/furniture_any_mod/still-3.jpg) Every home in the starter set is furnished (the Starter Cottage, Stone House, Townhouse, Manor, Artisan's
 House and Inn), and so are the Supply Shop, Library, Schoolhouse, Healing Center, Print Shop, Village Hall and
 Kitchen.
 

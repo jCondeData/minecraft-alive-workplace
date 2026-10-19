@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade
   rails, Create track, train schedules, signals, railway casing and train controls. Without a Conductor a jobless
   villager still drives. Behind the Village trains setting.
+- **Any mod's spruce chair will do** (37.13; 2.1, behind its gate). A furnished build no longer insists on one
+  furniture mod's piece: bring CobbleFurnies' or Cozy Home's spruce chair where the build asked for Handcrafted's and
+  the builder builds yours, in the same place and facing the same way (the first mod in the furniture mods list when the
+  chest holds several). The material list book shows the piece once, "Spruce Chair (any furniture mod)", with each
+  mod's piece on hover. Chairs, tables, couches, desks, counters, cupboards, nightstands, drawers and lamps; pieces
+  already built stay, and a piece no installed mod makes is the plain one as before.
 ### Changed
 - **Cobblecuisine dishes are asked for at the Village Hall** (38.8a). The Chef no longer cooks Cobblecuisine's dishes on
   his own: open the hall, click the minecart and pick the new **Dishes** tab, then click a dish to ask for 4 (shift: 16,
@@ -44,6 +50,7 @@ asks for the steps, `latest.log` and any crash report).
   counted while its Porter was in reach, so with the Porter asleep at home far off (or in a chunk that wasn't loaded)
   the Builder said "No chests by its bench" and waited, though everything was in the Storehouse's chests. Now the
   Storehouse counts by its block, Porter or not.
+- The Blueprint Table no longer errors on a Create Schematic whose file name holds a hidden control character: it refuses it by name, like other bad names.
 - **The Firewarden puts out a fire on a high roof** (B218). A fire on the ridge of a pitched roof, such as the Starter
   Cottage's, had nowhere within a bucket's throw to stand, so the Firewarden waited by the grindstone while it spread
   down the roof. Now they run to the open ground below it and throw their buckets up onto the roof (up to 12 blocks).

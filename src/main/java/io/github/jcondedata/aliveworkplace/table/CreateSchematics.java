@@ -143,9 +143,10 @@ public final class CreateSchematics {
 			return failed(Component.translatable("message.aliveworkplace.create_schematic.not_written"));
 		}
 		Path root = uploadedFolder(server);
-		Path path = root.resolve(owner).resolve(file).normalize();
-		if (!plainName(owner) || !plainName(file) || !file.endsWith(".nbt") || !path.startsWith(root)
-			|| !root.equals(path.getParent().getParent())) {
+		// the names checked before they make a path: a NUL in one (a Schematic written by a command) throws there
+		boolean plain = plainName(owner) && plainName(file) && file.endsWith(".nbt");
+		Path path = plain ? root.resolve(owner).resolve(file).normalize() : root;
+		if (!plain || !path.startsWith(root) || !root.equals(path.getParent().getParent())) {
 			AliveWorkplace.LOG.info("Refused a schematic naming {} / {}: not a file in {}", owner, file, root);
 			return failed(Component.translatable("message.aliveworkplace.create_schematic.bad_name", file));
 		}

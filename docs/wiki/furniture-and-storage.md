@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13
 
 ## 1. What a player sees
 
@@ -27,6 +27,13 @@ Nothing yet for players: the expansion's gate stays closed until 2.1. Behind it,
 Handcrafted gets Handcrafted chairs, tables and fancy beds where the vanilla build had stair chairs, fence tables and
 beds (37.3); the Blueprint Table's preview, its supply report and the material list book show those pieces and cost
 their items, and so does the builder's shopping list.
+
+Any mod's piece will do (37.13): a spruce chair is a spruce chair whichever furniture mod made it. The material list
+book shows the piece once, "Spruce Chair (any furniture mod)", with each mod's piece on hover, and counts any of them
+in the chests; the Builder builds whichever mod's piece its chests (or its bag) hold, the first in `furnitureMods` when
+several are there, in the same place, footprint and facing. A spot already going up keeps its piece, a spot none of
+whose pieces is in the chests keeps the planned piece (the builder waits for it, as before), and a piece no installed
+mod has is the vanilla stand-in as before. Scene: `furniture_any_mod`.
 
 The homes are furnished room by room (37.4): the Starter Cottage, Stone House, Townhouse and Manor at every level and
 in every style, the Artisan's House and the Inn. In plain vanilla the rooms read as rooms already: a dining corner (a
@@ -134,6 +141,24 @@ and blocks). When a build is planned, each spot becomes the piece of the first m
 has, found by block id in the registry; no class of any of those mods is used, so they stay optional. A spot whose
 modded piece doesn't fit, or whose kind no installed mod makes, keeps its vanilla blocks. The full formats, the list
 of kinds and each mod's block ids are in the design note.
+
+**Any mod's piece will do (37.13).** `data/<namespace>/furniture_equivalents/*.json` lists, per kind (chair, couch,
+table, desk, counter, cupboard, nightstand, drawer, lamp), whether its pieces match by wood or by colour and each mod's
+block id (`{wood}` or `{colour}` filled in); every file adds to the table (a datapack can add a mod), and a file with a
+mistake is logged with its path and skipped. `furnish/FurnitureEquivalents` reads it the way `MaterialFamilies` reads
+Chipped's tags: a block of a group stands for the group's other installed pieces of the mods in `furnitureMods`, in
+that order, and nothing is furniture with `furnishedBuilds` off. The material list counts a piece by the first mod's
+item and any of the group's items in the chests (`BlueprintSupplies.key`/`have`), and names it with
+`book.aliveworkplace.material_list.any_mod` and a hover listing each piece (`.mod_options`, `.mod_option`, the mods'
+names under `furniture_mod.aliveworkplace.<mod>`). When a builder goes for a furniture piece its chests don't hold
+(`BuilderWork.fetch`), `build/FurnitureStock.restock` gives every spot not yet started (all its cells still air)
+`FurnitureChoice.restocked`: the first mod in the order whose piece of that group is installed, has the planned piece's
+footprint (and, for a bed, is a villager's bed) and is in the chests or the bag, each piece taken off what's left so two
+spots never count one chair. The placed piece is the mod's own table piece for the kind with that block (its facing
+rule, states and footprint), so it faces the way the planned one did. The new choice is saved on the site and the plan
+is worked out again (its steps are sorted by position, so the order and the cursor hold). A spot with none of its
+pieces in stock keeps its piece; a Trainer's-room Poké Ball piece belongs to no group and never changes; a repair, a
+taking-down or a cellar keeps what its building has.
 
 **Furniture spots (37.2).** Each of our blueprints with furniture has a file beside it,
 `data/aliveworkplace/blueprint_furniture/<blueprint>.json` (223 of them), listing its spots: kind, position, facing,
@@ -246,6 +271,14 @@ every entry `"required": false`. Entity `aliveworkplace:furniture_seat` (37.6): 
 rides, which can't be summoned.
 
 ## 6. Decisions
+
+- 37.13: "neither (vanilla stand-in)" in the item is read as point (3): a piece no mod in `furnitureMods` has is the
+  vanilla stand-in, whatever the chest holds. With an installed mod's piece planned and none of its equivalents in the
+  chests, the builder waits for the planned piece as 37.4 decided (no stand-in, `theBuilderWaitsForAMissingCouch`),
+  otherwise a server with the mods would build stairs whenever the chests ran short. Pieces switch only when the
+  builder goes for one it lacks, so a piece already in the bag or the chests is never traded for another; a spot
+  switched once can switch again while it isn't built. The equivalents are their own data file rather than read from
+  the furnishing tables, since a table's fallback ids (CobbleFurnies' coloured chair) aren't the same piece.
 
 - 37.12: the modded copies are drawn by `tools/blueprints/modded_library.py` from the shipped vanilla templates (one
   pass over every home and workshop, by position, no randomness), written to `data/aliveworkplace/structure/modded/`,
@@ -419,3 +452,12 @@ the default with the mods), each with nothing skipped and exactly the vanilla bu
 `modded_library` (`-Pfurniture=true`, which now brings Chipped and Supplementaries too): the Starter Cottage II from
 both libraries side by side, and the modded Inn II. Renders of the copies: `tools/blueprints/modded_library.py --out
 <dir> <name>`, then the Minecraft Architect skill's `render.mjs` with the mods' textures added (`mods.mjs add --jar`).
+37.13: `FurnitureAnyModGameTests` (no mods; two test "mods" and a test equivalents file):
+`anyModsPieceIsListedOnceWithTheOthersOnHover`, `theBuildersChairFollowsTheChest` (only the other piece, both, neither,
+only the planned one, not furniture, the other order, a save and reload), `aBuiltChairAndTheStandInStayAsTheyAre`
+(a chair already standing, the bag counts, no mod in the order, switched off), `theMaterialListCountsAnyModsPiece`,
+`theEquivalentsFileIsReadAndCheckedWhenBroken`; with the mods (compat): `FurnitureAnyModCompatTests.onlyHandcraftedsChairInTheChest`,
+`onlyCobbleFurniesChairInTheChest` (same facing, nothing else changed), `bothInTheChestTheFirstInTheOrderIsUsed` (one of
+each too, and CobbleFurnies first), `neitherGivesTheStandInOrTheWait`, `theMaterialListNamesTheChairOnce` and
+`aBuilderBuildsTheChairInTheChest` (a builder planned with Handcrafted's chair builds CobbleFurnies' from the chest,
+facing south, and the finished building keeps it). Showcase scene `furniture_any_mod` (`-Pfurniture=true -Pcobblemon=true`).

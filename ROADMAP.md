@@ -301,6 +301,8 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B224** (approved auto 2026-10-19) Player-visible, live server: the Miner doesn't seem to collect stone or other common materials: only ores (and not the filler like cobblestone, deepslate, andesite, dirt?) end up in the chests. Owner (2026-10-19): 'we definitely want them to'. Expected: a Miner digging a quarry stores everything they dig out (stone, cobblestone, deepslate, andesite, diorite, granite, tuff, gravel, dirt and ores) in the village store / their chests, as the player would expect, with a config option for the filler only if it's needed to stop chests flooding. Check MinerWork.FILLERS and what Miners.store drops vs keeps. Test: a Miner mines a pit of stone: the chest holds the cobblestone; same for deepslate and ores; save and reload (urgent: owner) (owner report, 2026-10-19) (found by digest-1019-1253, 2026-10-19)
 - [ ] **B225** Player-visible, live server (lane: d): destroying a bandit camp (B209's cleanup) leaves the ground flattened and uneven: the camp's levelled pad and its rubble patch stay, which ruins the landscape over time as camps come and go. Expected: when a camp is taken down the terrain goes back to natural: either restore the blocks that were there before the camp was placed (record them when it is built, saved with the camp record), or at least blend the pad back into the surroundings (grass and dirt on top, no rubble, no sharp steps), and remove leftover rubble, fire and smoke. Applies to ruins mode too (ruins only the structures, not a flat scar). Test: build a camp on a slope, break it up, the ground heights and top blocks match the original terrain (or are within one block and natural blocks), no rubble left; save and reload mid-cleanup; scene camp_cleared shows the ground afterwards (urgent: owner) (owner report, 2026-10-19) (found by digest-1019-1253, 2026-10-19)
 - [x] **B226** (approved auto 2026-10-19) Player-visible, live server (rc.14 jar, owner's pack): suddenly the Builder's overhead says 'No chests by its bench at <pos>' (message.aliveworkplace.overhead.no_supplies) although the items he needs are in a Storehouse with many chests nearby; builders are meant to take from the village's Storehouse/store (overhead.storehouse_only says 'takes from the storehouse at <pos>'). It worked before and broke without a change by the owner. Expected: a Builder whose bench has no chest finds the village Storehouse's chests (and what's in them) and keeps building. Look at how SupplyContainers/BlueprintSupplies/the store find the Storehouse (chest scan radius, chunk loaded, the Storehouse not registered as a POI after the B205/B206/B207 ring/bed changes, modded containers, or a Storehouse build level change), and at what changed since rc.12 or 0.144; ask the log for the status line. Test: a builder at a bench with no chests, a Storehouse 30 blocks away holding the materials: the builder takes from it; the same after save and reload, and with the chests in a Storehouse the builder just walked past (urgent: owner) (owner report, 2026-10-19) (found by digest-1019-1253, 2026-10-19) FIXED (lane-a-1019-1522): the builder found a Storehouse only through its Porter's live entity (Village.mates lists workers by their loaded villager, within 2x villageRadius+16), so with the Porter out of reach (asleep at home far off, its chunk unloaded, or its job lost) the Storehouse dropped out and the overhead said no_supplies. A plain far Storehouse with its Porter by it worked on main (B226GameTests far and reload passed before the fix); the Porter-away case failed. Now Village.mates also lists every Storehouse POI within villageRadius by its block, shared as its owner's (StorehouseBlockEntity.owner, as its Porter answers to). Tests: B226GameTests (3). Leftovers.village now removes earlier batches' Storehouses beside the area. (needs owner check: on the live server, does the Porter of that Storehouse still have the job, and is it far away at night? With this jar the Builder should say 'takes from the storehouse at ...'.)
+- [x] **B227** (approved auto 2026-10-19) [lane: c] ./gradlew "Refresh active project" fails on src/compattest/.../compat/FurnitureSeatsCompatTests.java line 108: its swap line '//$ gametest_ticks_batch FabricGameTest.EMPTY_STRUCTURE ...' (from daed1285) passes the template unquoted, unlike the other swap lines, so Stonecutter stops before the compattest sources. Expected: Refresh active project runs over every source set and leaves git diff unchanged. Test: run Refresh active project, git diff empty. (found by lane-b-1019-1538) (found by lane-b-1019-1538, 2026-10-19) FIXED (lane-c-1019-1555): the swap line now quotes 'FabricGameTest.EMPTY_STRUCTURE'; Refresh active project runs and leaves git diff unchanged.
+- [x] **B228** (approved auto 2026-10-19) Refresh active project fails on main: FurnitureSeatsCompatTests.java:108 swap line passes FabricGameTest.EMPTY_STRUCTURE unquoted (//$ gametest_ticks_batch FabricGameTest.EMPTY_STRUCTURE '20' ...); Stonecutter says Mismatched input '.'. Quote it as 'FabricGameTest.EMPTY_STRUCTURE'. (found by lane-c-1019-1555, 2026-10-19) Duplicate of B227, fixed with it (lane-c-1019-1555).
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4896,6 +4898,16 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   (default: modded when the mods are installed). Choosing what ships in which release is the owner's later. Done
   when: the modded copies exist for every home and workshop, renders checked against STYLE.md, the switch works,
   vanilla builds untouched; compat GameTests; scene `modded_library`.
+- [x] **37.13** (review: pending 2026-10-19) **Any mod's "spruce chair" will do** (owner, 2026-10-19). Furniture such as a spruce chair exists in several mods (Handcrafted,
+  CobbleFurnies, Lucky's Cozy Home, Beautify) and a build asks for one mod's piece (the first in `furnitureMods`, now Handcrafted), so players
+  bring the wrong one and the Builder stalls. Make equivalent pieces interchangeable the way `MaterialFamilies` does for vanilla
+  blocks: an equivalence table for furniture (data file, by piece and wood or colour: chair, table, bed, lamp, shelf, cabinet,
+  sofa, ...), so (1) the material list shows the piece once ("Spruce chair", any of these mods) and lists the mod options
+  on hover; (2) the Builder takes whichever mod's piece is in the chests, in `furnitureMods` order when several are there, and
+  places that one, with the same footprint and facing; (3) a piece no installed mod has falls back to the vanilla stand-in as
+  today; (4) a build already half-furnished keeps its pieces. Done when: compat GameTests with only Handcrafted's chair in the
+  chest, only CobbleFurnies', both (the first in the order is used), and neither (vanilla stand-in); the material list text in
+  `en_us.json`; scene `furniture_any_mod`. Note the decision in the Notes.
 
 ## Milestone 38: Cobblemon depth (2.2)
 
@@ -5177,6 +5189,28 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-e-1019-1313): mutation pass on M39 (Create) code against the Create compat tests (the ten Create
+  classes alone via the compat fabric.mod.json, about 2 min a run). 23 mutants (seed 39) in CreateSchematics,
+  CreateTrains, CaravanTrains, MachineWork, MechanicWork, CreateBuilds, MechanicRound and Kinetics: 11 killed, 12
+  survived. Seven survivors were real gaps, now killed: CreateSchematicCompatTests.oddNamesAreRefusedByName
+  (CreateSchematics:142, :246) and .aBlueprintAsNewAsItsFileIsCurrent (:254; lines as at 233ac917), VillageTrainGameTests
+  .aTrainsWhistleIsSeenAndHeardOverTheStation (CaravanTrains:487, :491), MechanicCompatTests
+  .aPartInHandWhenTheWorkStopsGoesBackOnce (MechanicWork:576, a part kept in hand and put back too: duplicated) and
+  .aMachineBuiltLaterJoinsARoundOfOne (MechanicRound:38). Five are equivalent: CreateTrains:97 (aim's early true is
+  gated by linked()), CaravanTrains:881 (taken()'s curve branch: shortens() already refuses a node a curve ends on),
+  MachineWork:537 (the walker re-checks a stale stand spot), MechanicWork:400 (canStillUse stops it before a tick),
+  CreateBuilds:78 (this Create port's bearing answers useItemOn; the fallback is for ports that pass). Fixed on the way:
+  a written Schematic naming a file with a NUL in it threw (InvalidPathException) instead of being refused by name.
+  mutate.py read every failing compat run as NO-COMPILE (mods' "- error: " log lines); it now matches javac's own lines.
+- 2026-10-19 (lane-c-1019-1555, 37.13): "neither (vanilla stand-in)" is read as point (3): a piece no mod in
+  `furnitureMods` has is the vanilla stand-in whatever the chest holds (compat test: `furnitureMods` without a chair mod,
+  both chairs in the chest). With an installed mod's piece planned and none of its equivalents in the chests, the builder
+  still waits for the planned piece, as 37.4 decided (`theBuilderWaitsForAMissingCouch`); building stairs whenever the
+  chests ran short would undo furnished homes. Owner: say if you wanted the stand-in in that case too. The equivalents
+  are their own data file (`data/aliveworkplace/furniture_equivalents/furniture.json`: chair, couch, table, desk,
+  counter, cupboard, nightstand, drawer by wood; lamp by colour), not read from the furnishing tables, because a table's
+  fallback ids (CobbleFurnies' coloured chair) aren't the same piece. Pieces switch only when the builder goes for one it
+  lacks, so nothing in the bag or chests is traded away; a spot already going up never switches.
 - 2026-10-19 (lane-c-1019-0953): Milestone 37 has no open item and no `(lane: c)` bug; `sessions.py next` lists nothing for
   lanes b, c, d or e, so the owner's question above (lane-e-1018-2212: which big milestone next?) still stands. This run
   killed three mutants the nightly mutation job left alive in M37 code (SupplyContainers:62, StorageNetworks:336,

@@ -92,7 +92,7 @@ public final class BlueprintSupplies {
 					continue;
 				}
 				for (MaterialRules.Requirement r : step.requirements()) {
-					need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
+					need.merge(key(r.item()), r.count(), Integer::sum);
 				}
 			}
 		}
@@ -104,13 +104,20 @@ public final class BlueprintSupplies {
 		return need;
 	}
 
-	/** How many of {@code key}'s family the chests hold. */
+	/** How many of {@code key}'s family the chests hold (37.13: of a furniture piece, any mod's equivalent piece). */
 	private static long have(ServerLevel level, List<BlockPos> supplies, Item key) {
 		long have = 0;
-		for (Item member : MaterialFamilies.accepted(key)) {
-			have += SupplyContainers.count(level, supplies, member);
+		for (Item piece : io.github.jcondedata.aliveworkplace.furnish.FurnitureEquivalents.options(key)) {
+			for (Item member : MaterialFamilies.accepted(piece)) {
+				have += SupplyContainers.count(level, supplies, member);
+			}
 		}
 		return have;
+	}
+
+	/** What a material is listed as: its family's plain block, and (37.13) a furniture piece as the first mod's equivalent. */
+	static Item key(Item item) {
+		return io.github.jcondedata.aliveworkplace.furnish.FurnitureEquivalents.key(MaterialFamilies.key(item));
 	}
 
 	/** One line of a material list: what the build needs and how much of it isn't in the chests yet. */
@@ -151,7 +158,7 @@ public final class BlueprintSupplies {
 			for (Blueprint.Entry entry : blueprint.get().blocks()) {
 				if (MaterialRules.classify(entry.state(), entry.nbt()) != MaterialRules.Kind.SKIP) {
 					for (MaterialRules.Requirement r : MaterialRules.requirements(entry.state(), entry.nbt())) {
-						need.merge(MaterialFamilies.key(r.item()), r.count(), Integer::sum);
+						need.merge(key(r.item()), r.count(), Integer::sum);
 					}
 				}
 			}

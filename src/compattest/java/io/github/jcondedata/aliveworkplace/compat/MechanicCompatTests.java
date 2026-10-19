@@ -353,4 +353,72 @@ public class MechanicCompatTests implements FabricGameTest {
 			"the millstone built later never joined the round of one: " + two);
 		helper.succeed();
 	}
+
+	/**
+	 * A belt gone from a finished build goes back controller segment first (the segment that holds the belt together),
+	 * even when it's the farthest from the toolbox; the other segments follow, nearest first.
+	 */
+	//$ gametest_batch AREA '"mechanic_belt_order"'
+	@GameTest(template = AREA, batch = "mechanic_belt_order")
+	public void aGoneBeltGoesBackControllerFirst(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		for (BuildSiteManager.Finished f : sites.finishedIn(level)) {
+			if (f.structure().getPath().startsWith("compat_test/mechanic_line_")) {
+				sites.forgetFinished(f.placement());
+			}
+		}
+		// A three-segment belt along x, saved where its controller (the far end, x = 2) stood at 12 64 10
+		BlockState belt = create("belt").defaultBlockState();
+		CompoundTag structure = new CompoundTag();
+		structure.putInt("DataVersion", net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+		structure.put("size", ints(3, 1, 1));
+		net.minecraft.nbt.ListTag palette = new net.minecraft.nbt.ListTag();
+		palette.add(net.minecraft.nbt.NbtUtils.writeBlockState(belt));
+		structure.put("palette", palette);
+		net.minecraft.nbt.ListTag blocks = new net.minecraft.nbt.ListTag();
+		for (int x = 0; x < 3; x++) {
+			CompoundTag data = new CompoundTag();
+			data.putString("id", "create:belt");
+			data.putBoolean("IsController", x == 2);
+			data.putInt("Index", 2 - x);
+			data.putInt("Length", 3);
+			data.putIntArray("Controller", new int[] {12, 64, 10});
+			CompoundTag block = new CompoundTag();
+			block.put("pos", ints(x, 0, 0));
+			block.putInt("state", 0);
+			block.put("nbt", data);
+			blocks.add(block);
+			helper.setBlock(LINE.offset(x, 0, 0), Blocks.AIR); // all three gone
+		}
+		structure.put("blocks", blocks);
+		structure.put("entities", new net.minecraft.nbt.ListTag());
+		ResourceLocation id = AliveWorkplace.id("compat_test/mechanic_line_belt_" + BLUEPRINTS.incrementAndGet());
+		level.getStructureManager().getOrCreate(id).load(BuiltInRegistries.BLOCK.asLookup(), structure);
+		helper.assertTrue(BlueprintLibrary.get(level, id).isPresent(), "could not register the test blueprint");
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(LINE), Rotation.NONE, Mirror.NONE);
+		sites.recordFinished(id, placement, UUID.randomUUID());
+		try {
+			List<MechanicWork.Part> belts = MechanicWork.missingParts(level, helper.absolutePos(TOOLBOX)).stream().filter(p -> p.structure().equals(id)).toList();
+			helper.assertTrue(belts.size() == 3, "expected the 3 belt segments missing, found " + belts.stream().map(p -> helper.relativePos(p.pos())).toList());
+			MechanicWork.Part first = belts.get(0);
+			helper.assertTrue(first.pos().equals(helper.absolutePos(LINE.offset(2, 0, 0))) && first.nbt() != null && first.nbt().getBoolean("IsController")
+				&& first.cost() == createItem("belt_connector"), "the belt's controller segment doesn't go back first: "
+				+ belts.stream().map(p -> helper.relativePos(p.pos()) + " " + p.nbt()).toList());
+			helper.assertTrue(belts.get(1).pos().equals(helper.absolutePos(LINE)) && belts.get(2).pos().equals(helper.absolutePos(LINE.offset(1, 0, 0))),
+				"after the controller the segments don't go back nearest first: " + belts.stream().map(p -> helper.relativePos(p.pos())).toList());
+		} finally {
+			sites.forgetFinished(placement);
+		}
+		helper.succeed();
+	}
+
+	private static net.minecraft.nbt.ListTag ints(int... values) {
+		net.minecraft.nbt.ListTag list = new net.minecraft.nbt.ListTag();
+		for (int v : values) {
+			list.add(net.minecraft.nbt.IntTag.valueOf(v));
+		}
+		return list;
+	}
 }

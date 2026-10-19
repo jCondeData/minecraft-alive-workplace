@@ -342,6 +342,30 @@ public class CreateSchematicCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A schematic whose name can't be saved as a blueprint on every system (a name Windows keeps for itself, such as
+	 * {@code con}) isn't taken for imported already: the table tries it, says it couldn't, and says so only once.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aSchematicNamedLikeADeviceIsSaidNotSkipped(GameTestHelper helper) {
+		MinecraftServer server = helper.getLevel().getServer();
+		String owner = "gametest_reserved";
+		ResourceLocation id = CreateSchematics.idFor(owner, "con.nbt");
+		clear(server, owner);
+		try {
+			write(server, owner, "con.nbt", structure(3, false));
+			List<Component> first = CreateSchematics.sync(server);
+			helper.assertTrue(lines(first, "con.nbt") == 1, "a schematic named con wasn't tried and said: " + first.stream().map(Component::getString).toList());
+			helper.assertTrue(lines(CreateSchematics.sync(server), "con.nbt") == 0, "a schematic named con is said again with nothing changed");
+			helper.assertTrue(BlueprintLibrary.get(server, id).isEmpty(), "a schematic that couldn't be saved left a blueprint behind");
+		} finally {
+			clear(server, owner);
+			server.getStructureManager().remove(id);
+		}
+		helper.succeed();
+	}
+
 	private static Object component(ItemStack stack, String name) {
 		DataComponentType<?> type = Lookup.value(BuiltInRegistries.DATA_COMPONENT_TYPE, ResourceLocation.fromNamespaceAndPath("create", name));
 		return type == null ? null : stack.get(type);

@@ -68,6 +68,10 @@ asks for the steps, `latest.log` and any crash report).
 - **A Firewarden no longer stops a step short of a fire on a high roof** (B230). For a fire on a roof's ridge they now
   walk onto the very spot they throw the bucket up from; before, they could stop one block away, just out of throwing
   range, and stand there watching it burn.
+- **A Create schematic named like a Windows device no longer breaks the Blueprint Table.** A schematic uploaded to
+  Create's table as `con.nbt` (or `aux`, `nul`, `com1`...) made the game refuse to save its blueprint with an error
+  nobody caught, so the Blueprint Table failed every time it was opened. The table now says once that it couldn't
+  import that schematic and opens as usual.
 - **No more client crash near a turning Windmill with shaders on** (B231). With shaders, Create draws spinning
   contraptions the slow way, and in packs where Sodium and Continuity write a block one corner at a time (Cobbleverse)
   the Windmill's sails crashed the game ("ShadedBlockSbbBuilder only supports putBulkData!"). Each corner now goes into

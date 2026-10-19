@@ -231,6 +231,10 @@ public final class CreateSchematics {
 		} catch (BlueprintFormatException e) {
 			FAILED.put(path, changed);
 			return failed(Component.translatable("message.aliveworkplace.import.failed", name, e.toComponent()));
+		} catch (net.minecraft.ResourceLocationException e) { // a name the game saves no file under (con, aux, nul...): said, never thrown at the table
+			FAILED.put(path, changed);
+			server.getStructureManager().remove(idFor(owner, name)); // the template made before the save refused it
+			return failed(Component.translatable("message.aliveworkplace.import.failed", name, new BlueprintFormatException("save_failed").toComponent()));
 		} catch (IOException e) {
 			FAILED.put(path, changed);
 			AliveWorkplace.LOG.warn("Could not read the schematic {}", path, e);

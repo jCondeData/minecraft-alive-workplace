@@ -105,7 +105,7 @@ public class FurnitureSeatsCompatTests implements FabricGameTest {
 		});
 	}
 
-	//$ gametest_ticks_batch FabricGameTest.EMPTY_STRUCTURE '20' '"furniture_seat_hours"'
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '20' '"furniture_seat_hours"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 20, batch = "furniture_seat_hours")
 	public void sittingTimeRunsFromTheFirstTickOfSupperTillBedtime(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();

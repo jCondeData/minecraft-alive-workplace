@@ -615,15 +615,29 @@ public final class Settlers {
 		}
 	}
 
-	/** Where the settlers walk out to: {@link #OUT} blocks and a few more from the hall toward the spot, on the ground there. */
+	/**
+	 * Where the settlers walk out to: {@link #OUT} blocks and a few more from the hall toward the spot, on the ground there,
+	 * or the farthest point on the way that is loaded (B182). A villager can't work out a path to a block in a chunk that
+	 * isn't loaded, so it only took short random steps toward it and never got far; the walk is given again every half
+	 * second, so the point moves out as the chunks ahead load.
+	 */
 	public static BlockPos edge(ServerLevel level, RealmData.Order order) {
 		BlockPos hall = order.mother().pos();
 		double dx = order.spot().getX() - hall.getX();
 		double dz = order.spot().getZ() - hall.getZ();
 		double length = Math.max(1, Math.sqrt(dx * dx + dz * dz));
 		double far = Math.min(length, OUT + 8);
-		BlockPos column = BlockPos.containing(hall.getX() + 0.5 + dx / length * far, hall.getY(), hall.getZ() + 0.5 + dz / length * far);
-		return level.isLoaded(column) ? level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column) : column;
+		BlockPos first = null;
+		for (double d = far; d >= 0; d -= 1) {
+			BlockPos column = BlockPos.containing(hall.getX() + 0.5 + dx / length * d, hall.getY(), hall.getZ() + 0.5 + dz / length * d);
+			if (first == null) {
+				first = column;
+			}
+			if (level.isLoaded(column)) {
+				return level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column);
+			}
+		}
+		return first;
 	}
 
 	/**

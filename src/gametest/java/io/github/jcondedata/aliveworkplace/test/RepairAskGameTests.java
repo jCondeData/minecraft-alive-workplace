@@ -68,6 +68,7 @@ public class RepairAskGameTests implements FabricGameTest {
 		Upkeep.ENABLED = true; // builderRepairs on, as in a player's game
 		Upkeep.ASK = ask;
 		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000); // working hours: a builder repairs only on shift, and the full suite may leave it night
 		ServerPlayer owner = helper.makeMockServerPlayerInLevel();
 		Leftovers.after(helper, () -> {
 			VillageHalls.RADIUS = radius;

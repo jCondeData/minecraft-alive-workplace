@@ -29,6 +29,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **A villager handed the item for their job gets straight to it** (B220). A Fisherman given a rod late in the work
+  day stood about for a second before fishing; now the work starts within a tick, as it does for a Builder given a
+  blueprint. Handed one outside their work hours, a villager now says when they start ("in about 8 minutes") instead
+  of standing there with no word; at night they still sleep first.
 - **A Miner stores everything they dig** (B224). Stone, cobblestone, deepslate, andesite, diorite, granite, tuff,
   gravel and dirt go into the chests by the blast furnace along with the ores. When those chests are full (or there
   are none), the rest goes to the village Storehouse instead of being dropped on the ground to vanish, and ores always

@@ -74,6 +74,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FarmTrampleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FerryEdgeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FisherGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HandOffGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FisherRodGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MailGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GuardGameTests",

@@ -288,7 +288,12 @@ public final class Builders {
 		} else if (existing == null) {
 			tell(player, Component.translatable("message.aliveworkplace.assign.started", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), SupplyContainers.RADIUS), ChatFormatting.GREEN);
-		} else {
+		}
+		Component later = existing == null ? io.github.jcondedata.aliveworkplace.work.Jobs.startsLater(villager) : null; // B220
+		if (later != null) {
+			tell(player, later, ChatFormatting.YELLOW);
+		}
+		if (existing != null) {
 			tell(player, Component.translatable("message.aliveworkplace.queue.added", villager.getDisplayName(),
 				Blueprints.displayName(site.structure()), Blueprints.displayName(existing.structure()), queued + 1), ChatFormatting.GREEN);
 		}

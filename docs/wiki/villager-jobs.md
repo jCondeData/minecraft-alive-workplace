@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103, B226, B224
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103, B226, B224, B220
 
 ## What a player sees
 
@@ -105,6 +105,13 @@ The Class column only counts once classes are on (see [Classes](classes.md)). Ea
 says what it does all day.
 
 ## How it works
+
+**A fresh hire starts at once (B220).** A Fisherman handed a rod or a Builder handed a blueprint during their work day
+is at it within a tick or two. A villager taking our longer hours (a hired Fisherman, a job picked with an item) gets a
+new brain, and vanilla's own brain setup has just looked at vanilla's hours; a brain looks at its schedule at most once
+a second, so it used to keep vanilla's activity (late in the day, gossiping) for a second. `VillagerMixin` now lets the
+new hours apply at once (`BrainAccessor`). Outside their hours the hand-off is taken as before, the villager keeps their
+hours (a night's hire sleeps first) and the player is told when the work starts (`Jobs.startsLater`).
 
 **A Miner keeps all they dig (B224).** Stone of every kind, gravel and dirt go into the chests by the blast furnace with
 the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
@@ -241,6 +248,9 @@ and so on). Status lines and the requests board are not saved: workers post agai
   `villageRadius` of the barrel, as for the worker cap; fishermen are counted by their job, so one whose barrel is
   broken still counts. The cap is off in GameTests (tests side by side would count each other's villagers): its own
   tests switch it on.
+- B220 (bug lane, 2026-10-19): a villager handed their job's item outside their work hours keeps their hours and says
+  when they start ("Fred starts work when their work day begins, in about 8 minutes."), rather than starting at once:
+  starting early would need a saved override of the schedule, and a fresh hire at night would leave their bed.
 - 26.6 (owner's playtest, 2026-10-14): in Cobblemon villages nearly every villager works, so a working villager can
   be retrained as a Builder for emeralds. Whether the other jobs' switches should cost too is a question in the ROADMAP
   Notes; for now they stay free.
@@ -262,6 +272,8 @@ same block, a switched-off job leaves its block's tooltip), `StationsSpecGameTes
 `StationsRetakeGameTests`, `RetrainingGameTests` (7: a Librarian with trades and another mod's worker become Builders
 for the shown price, too little money changes nothing, a builder mid-site hands the build back, children and nitwits
 refuse, save and reload, the switch off), `StationsCompatTests` (11, the Pokémon jobs), `OutfitGameTests`, `ConfigGameTests`,
+`HandOffGameTests` (5, B220: a fisherman handed a rod and a builder handed a blueprint are at work within 10 ticks,
+mid-shift and late in it; before the shift and at night they say when they start, and a night's hire stays in bed),
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
 save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with

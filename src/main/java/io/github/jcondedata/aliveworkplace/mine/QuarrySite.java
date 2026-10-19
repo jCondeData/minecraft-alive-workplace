@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * the world in {@link QuarrySiteManager}, so the miner picks up where it left off.
  */
 public final class QuarrySite {
-	public enum Status { WORKING, NEEDS_PICKAXE, NEEDS_LADDERS, DEPOSITING, DONE, CRAFTING_PICKAXE }
+	public enum Status { WORKING, NEEDS_PICKAXE, NEEDS_LADDERS, DEPOSITING, DONE, CRAFTING_PICKAXE, REFILLING }
 
 	/**
 	 * Where the cursor is: down the ladder shaft (strip mines at a set height), in the quarry itself, or putting the
@@ -50,6 +50,17 @@ public final class QuarrySite {
 	private int shaftTop = NO_SHAFT;
 	/** Saved by a version before 0.45.0, which could stretch the quarry over its bench (see {@link #looksStretched}). */
 	private boolean fromOldVersion;
+
+	/** A Quarry build's pit (36.12): the build's origin, or null for a quarry marked out with the Quarry Marker. */
+	@Nullable
+	private BlockPos refillBuild;
+	/** No growth yet (see {@link #lastGrowth}). */
+	public static final long NEVER = Long.MIN_VALUE;
+	/** The game time the pit last grew back up to (see {@link QuarryBuilds#regrow}). */
+	private long lastGrowth = NEVER;
+	/** Blocks grown back in all, and since the miner last started down the pit. */
+	private int grownTotal;
+	private int grownSincePass;
 
 	private Status status = Status.WORKING;
 	private long lastNotified = Long.MIN_VALUE / 2;
@@ -315,6 +326,55 @@ public final class QuarrySite {
 		return i >= 0 && i == Math.floorMod(stairStart + (box.maxY() - pos.getY()), wallLength());
 	}
 
+	// --- a Quarry build's pit (36.12) ----------------------------------------------------------
+
+	/** Whether this is a Quarry build's pit, which grows back and is dug again (never finished). */
+	public boolean refills() {
+		return refillBuild != null;
+	}
+
+	@Nullable
+	public BlockPos refillBuild() {
+		return refillBuild;
+	}
+
+	public void setRefillBuild(@Nullable BlockPos origin) {
+		this.refillBuild = origin == null ? null : origin.immutable();
+		onChange.run();
+	}
+
+	public long lastGrowth() {
+		return lastGrowth;
+	}
+
+	public void setLastGrowth(long time) {
+		lastGrowth = time;
+		onChange.run();
+	}
+
+	public int grownTotal() {
+		return grownTotal;
+	}
+
+	public int grownSincePass() {
+		return grownSincePass;
+	}
+
+	/** A block grew back in the pit. */
+	public void countGrown() {
+		grownTotal++;
+		grownSincePass++;
+		onChange.run();
+	}
+
+	/** The miner starts down the pit again, from the top. */
+	public void restart() {
+		cursor = 0;
+		grownSincePass = 0;
+		status = Status.WORKING;
+		onChange.run();
+	}
+
 	public float progress() {
 		return total() == 0 ? 1f : Math.min(1f, cursor / (float) total());
 	}
@@ -416,6 +476,14 @@ public final class QuarrySite {
 		if (shaftTop != NO_SHAFT) {
 			tag.putInt("shaft_top", shaftTop);
 		}
+		if (refillBuild != null) {
+			tag.putLong("refill_build", refillBuild.asLong());
+			if (lastGrowth != NEVER) {
+				tag.putLong("last_growth", lastGrowth);
+			}
+			tag.putInt("grown", grownTotal);
+			tag.putInt("grown_since_pass", grownSincePass);
+		}
 		return tag;
 	}
 
@@ -438,6 +506,11 @@ public final class QuarrySite {
 		site.stairStart = Nbt.getInt(tag, "stair_start");
 		site.stripMine = Nbt.getBoolean(tag, "strip_mine");
 		site.shaftTop = Nbt.has(tag, "shaft_top", Tag.TAG_INT) ? Nbt.getInt(tag, "shaft_top") : NO_SHAFT;
+		// 36.12: absent in quarries saved before (and in every marked-out one)
+		site.refillBuild = Nbt.has(tag, "refill_build", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "refill_build")) : null;
+		site.lastGrowth = Nbt.has(tag, "last_growth", Tag.TAG_LONG) ? Nbt.getLong(tag, "last_growth") : NEVER;
+		site.grownTotal = Nbt.getInt(tag, "grown");
+		site.grownSincePass = Nbt.getInt(tag, "grown_since_pass");
 		return site;
 	}
 }

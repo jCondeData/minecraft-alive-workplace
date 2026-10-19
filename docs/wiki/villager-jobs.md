@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, B97, B101, B103
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, B97, B101, B103
 
 ## What a player sees
 
@@ -177,6 +177,24 @@ list of free workstations finds each kind of workstation's job once.
 
 **Outfits (24.1).** Each of the mod's professions has a vanilla-style outfit and a zombie villager version.
 
+**A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table
+with "Jobs: Armorer/Miner (1)") is a curbed, fenced rim round an 8 x 9 pit, steps cut down its east side to a landing
+four deep, a hoist, and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
+y -1 to -10) is not in the file: it is the ground as it lies. Every 5 seconds `mine/QuarryBuilds.hire` looks at the
+finished Quarries: one with no quarry site of its own is given to the Miner whose job site is its blast furnace and
+who has no quarry, as a `QuarrySite` that remembers the build's origin (no marker; the owner, if online,
+reads "Dara works the Quarry's pit now..."). The Miner digs it like a marked-out pit (stairs spiral down from the wall
+nearest the furnace). Every second `QuarryBuilds.regrow` grows back what is due: one block every day / `quarryRegrowth`
+ticks (100 a day: the 720-block pit takes 7.2 days to fill), at most 32 in one go, each into the lowest open air in the
+pit (never where an entity stands, never over a block that isn't air, so a player's block stays), picked from a
+weighted mix out of 1000 (stone 820, coal 80, copper 50, iron 25, redstone 10, gold 10, diamond 5), the deepslate kind in
+the pit's lower third or below y 0, with a random fixed by the site's id, the spot and the count grown. Time unloaded
+catches up when the pit loads again; nothing is banked while the pit is full. When the cursor reaches the end, the
+Miner drops off the finds and waits at the shed ("waiting at the shed for the pit to grow back") until a layer's worth
+(72 blocks) has grown since the last pass, then starts again from the top. A Quarry Marker handed to them ends the
+pit's site and starts the marked one; once that is done or cancelled the pit is given back. Cancelling the pit's site
+gives no marker back (there was none), and the Miner takes the pit again within 5 seconds.
+
 ## Switches
 
 | Key | Default | What it does |
@@ -190,6 +208,8 @@ list of free workstations finds each kind of workstation's job once.
 | `workerPathRange` | 48 (16 to 128) | How far a worker looks for a path in one go |
 | `keepVillagesWorking` | on | Villages keep working while no player is near |
 | `minerCraftsPickaxe` | on | A Miner with no pickaxe makes one at their workstation from what they mined; off: they wait for one |
+| `quarryBuild` | on | The Quarry build's Miner digs its pit without a marker and it grows back; off: not offered, nothing grows back |
+| `quarryRegrowth` | 100 (0 to 2400) | Blocks that grow back in a Quarry's pit in a Minecraft day; 0: none |
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
@@ -216,7 +236,8 @@ A villager's job is vanilla's own profession and job-site memory. On top of it t
 the villager (`registry/ModAttachments`), each absent or zero by default: the job in hand (`builder_job`,
 `miner_job`, `farm_field`, `tree_farm`, `orchard`, `courier_routes`, `patrol_route`), who hired them
 (`builder_employer`), and a counter per job that the hall shows (`trees_felled`, `fish_caught`, `mail_delivered`
-and so on). Status lines and the requests board are not saved: workers post again after a restart.
+and so on). A quarry (`aliveworkplace_quarries`) of a Quarry build saves `refill_build` (the build's origin),
+`last_growth`, `grown` and `grown_since_pass` (36.12); all absent in older saves and marked-out quarries. Status lines and the requests board are not saved: workers post again after a restart.
 
 ## Items, blocks, jobs, commands
 
@@ -254,6 +275,10 @@ and so on). Status lines and the requests board are not saved: workers post agai
   pickaxe already in their chests comes first (it's there to be used), then making one, then a spare from another
   worker's chests. Iron from Journeyman and diamond from Expert; the head comes only from their own bag and chests
   (what they mined), the sticks may come from the village store too.
+- 36.12 (owner, 2026-10-19): the Quarry's pit is the ground it's built on, not blocks the builder places (no stone or
+  ore to bring); the regrowth fills only air, bottom up, so the Miner's own steps and a player's blocks stay. The Miner
+  starts again after a layer's worth has grown back, not after every block. A cancelled pit is taken again: to stop it
+  for good, switch `quarryBuild` off or give the Miner another workstation.
 
 ## Known limits
 
@@ -278,7 +303,11 @@ save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded 
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
 their jobs), `MinerPickaxeGameTests` (7, 36.11: cobblestone and sticks become a stone pickaxe and the quarry is dug,
 a worn-out pickaxe made again from the bag and cut planks, missing materials on the Storehouse board and handed over
-there, save and reload mid-way, the switch off, iron and diamond as the miner rises, the new sentences).
+there, save and reload mid-way, the switch off, iron and diamond as the miner rises, the new sentences),
+`QuarryBuildGameTests` (10, 36.12: listed with its Jobs line and nothing drawn in the pit, the Miner takes and mines the
+pit, regrowth bottom up at the set rate with a player's block kept and nothing outside touched, a day grows back only a
+day's worth, the weighted mix, save and reload of the site and mid-dig, the switch off, the Quarry Marker still works,
+the new sentences).
 
 Showcase scenes: `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,

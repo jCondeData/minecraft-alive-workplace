@@ -81,7 +81,7 @@ public final class VillageMaps {
 			case "berry_farm", "ranch", "apiary_garden", "flower_shop", "compost_yard", "sifting_shed", "camp_kitchen", "berry_nursery",
 				"habitat_garden", "gem_grotto", "farmstead", "fishers_hut" -> Kind.FARMS;
 			case "lookout_tower", "barracks", "fire_station", "gatehouse", "wall_tower", "palisade_gate", "palisade_tower" -> Kind.DEFENCE;
-			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage",
+			case "tinkers_workshop", "nether_gate", "smithy", "masons_yard", "fletchers_lodge", "weavers_cottage", "quarry",
 				"winery", "tailors_shop", "print_shop", "jewellers_workshop", "butchers_shop" -> Kind.WORKSHOPS;
 			case "well", "fountain", "gazebo", "chapel", "bandstand", "market_cross", "stag_statue", "stone_archway", "lily_pond",
 				"lantern_pergola", "fire_pit", "sundial", "topiary_garden", "footbridge" -> Kind.DECORATIONS;

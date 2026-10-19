@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **A Quarry that grows back** (36.12). A new blueprint in the Blueprint Table: a fenced pit with steps cut down its side,
+  a hoist and the Miner's shed with its blast furnace. The Miner who works at that furnace digs the pit by themselves (no
+  Quarry Marker), and what they dig grows back slowly from the bottom up: mostly stone, some coal and copper, now and
+  then iron, redstone and gold, rarely a diamond, deepslate in the bottom layers. Dug to the bottom, they wait at the
+  shed for a layer to grow back; a pit dug right out takes about a week to fill again. Nothing outside the pit changes
+  and a block you put in it stays. The Quarry Marker works as before. Settings: Quarry Build (on), Quarry Regrowth (100
+  blocks a day).
 - **The Builder asks before repairing a house** (36.15). A builder who finds blocks missing from a build asks first:
   "Repair it? [Yes] [Not now]" in chat, and on the Village Hall's new Repairs tab, and repairs only what you said yes to.
   A repair under way can be paused or stopped there (the builder goes straight on to their next job), and a blueprint

@@ -68,6 +68,8 @@ range is in brackets.
 | `postmanRange` | 64 (16 to 256) |  | How far from their Mailbox a postman walks to deliver (farther mail arrives at dawn). |
 | `maxWorkersPerVillage` | 0 (0 to 500) |  | At most this many workers per village (taken workstations within the village radius); 0: no cap. Nobody loses a job they have. |
 | `minerCraftsPickaxe` | on |  | A Miner whose pickaxe wore out, or who has none, makes a new one at their workstation from what they mined (stone, iron from Journeyman, diamond from Expert). Off: they wait for a pickaxe from you or the Toolsmith. |
+| `quarryBuild` | on |  | The Quarry build (36.12): the Miner at its blast furnace digs its pit without a Quarry Marker, and what they dig grows back slowly from the bottom up. Off: the Quarry isn't offered and nothing grows back; the Quarry Marker works as before. |
+| `quarryRegrowth` | 100 (0 to 2400) |  | Blocks that grow back in a Quarry's pit in a Minecraft day (0: none). At 100 a pit dug to the bottom takes about a week to fill. |
 | `fishermanCap` | on |  | A village takes only so many fishermen: other jobless villagers pass free barrels (storage in builds) by for another workstation. A fisherman a village already has keeps his job. Off: as in vanilla. |
 | `fishermenPerVillage` | 1 (1 to 20) |  | With the fisherman cap on, the fishermen every village takes. |
 | `villagersPerFisherman` | 10 (1 to 100) |  | With the fisherman cap on, one more fisherman for every this many villagers within the village radius. |

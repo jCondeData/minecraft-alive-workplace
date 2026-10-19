@@ -4739,7 +4739,7 @@ Depends on: nothing open.
   for the player or the Toolsmith. Done when: GameTests for the happy path (mined cobblestone and sticks become a stone
   pickaxe and the Miner keeps working), missing materials (they post a request on the Storehouse board and wait), a worn-out
   pickaxe, save and reload, the config switch off; the new status line is in `en_us.json`; scene `miner_pickaxe`.
-- [ ] **36.12** **A Quarry build that refills.** (owner, 2026-10-19). A "Quarry" blueprint (architect skill, checked against STYLE.md in a
+- [x] **36.12** (review: pending 2026-10-19) **A Quarry build that refills.** (owner, 2026-10-19). A "Quarry" blueprint (architect skill, checked against STYLE.md in a
   render): a pit with a ramp or steps, a rim and a Miner's shed with the job block, that the Miner mines from like a farm:
   the pit's ore-bearing stone is the crop. The blocks they mine grow back slowly over time, from the bottom up, in a
   weighted mix (mostly stone, some coal and copper, rarely iron, gold, redstone and diamond, deeper layers deepslate), so

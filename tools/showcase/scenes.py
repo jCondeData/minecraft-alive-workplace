@@ -124,6 +124,9 @@ SCENES = [
     job("miner_pickaxe", "Miner", "Making a new pickaxe from what she mined",
         "the miner's worn pickaxe broke, she made a stone pickaxe at the blast furnace from the cobblestone she dug and dug on to the end", 150,
         extra=[("04_making_pickaxe", "Making the pickaxe at the blast furnace")]),
+    # The Quarry build (ROADMAP 36.12): the Miner at its blast furnace digs its pit without a marker, and it grows back
+    job("quarry_build", "Miner", "A Quarry that grows back",
+        "the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up", 300),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),

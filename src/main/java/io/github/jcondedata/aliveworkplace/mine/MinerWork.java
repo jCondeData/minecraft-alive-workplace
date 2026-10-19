@@ -148,6 +148,16 @@ public class MinerWork extends Behavior<Villager> {
 			}
 			site.advance(false, v == Verdict.LEAVE);
 		}
+		if (site.isDone() && site.refills()) {
+			// A Quarry build's pit (36.12): never finished. Drop off the finds, then wait at the shed for a layer to grow back.
+			if (site.grownSincePass() >= QuarryBuilds.restartAfter(site)) {
+				site.restart();
+			} else if (site.status() != QuarrySite.Status.REFILLING && walkTo(level, villager, containerNear(level, bench), CONTAINER_REACH)) {
+				deposit(level, villager, site, bench, bag);
+				site.setStatus(QuarrySite.Status.REFILLING);
+			}
+			return;
+		}
 		if (site.isDone()) {
 			if (walkTo(level, villager, containerNear(level, bench), CONTAINER_REACH)) {
 				Miners.finish(level, villager, site);

@@ -100,6 +100,11 @@ public final class Miners {
 			return InteractionResult.CONSUME;
 		}
 		QuarrySite existing = activeSite(level, villager);
+		if (existing != null && existing.refills()) {
+			// 36.12: the Quarry build's pit waits while they dig the marked area; they go back to it after
+			end(level, villager, existing);
+			existing = null;
+		}
 		if (existing != null) {
 			tell(player, Component.translatable("message.aliveworkplace.quarry.busy", villager.getDisplayName()), ChatFormatting.YELLOW);
 			return InteractionResult.CONSUME;
@@ -173,6 +178,25 @@ public final class Miners {
 	}
 
 	/** Creates the quarry and gives the miner the job. Also used by tests. */
+	/**
+	 * Gives {@code villager} the pit of the Quarry built at {@code origin} (36.12, {@link QuarryBuilds#hire}): dug like a
+	 * marked-out quarry, but it grows back and is never finished. Its owner, if online, hears of it.
+	 */
+	public static QuarrySite startQuarryBuild(ServerLevel level, Villager villager, java.util.UUID owner, BoundingBox pit, BlockPos origin) {
+		ServerPlayer player = level.getServer().getPlayerList().getPlayer(owner);
+		QuarrySite site = QuarrySiteManager.get(level).create(owner, player != null ? player.getGameProfile().getName() : "",
+			Ids.of(level.dimension()), clampToWorld(level, pit), pit.getYSpan());
+		site.setRefillBuild(origin);
+		site.setMiner(villager.getUUID());
+		site.setBench(Builders.benchPos(villager).orElse(null));
+		site.planStairs(site.bench());
+		ModAttachments.MINER_JOB.set(villager, new BuilderJob(site.id()));
+		if (player != null) {
+			tell(player, Component.translatable("message.aliveworkplace.quarry.build_started", villager.getDisplayName()), ChatFormatting.GREEN);
+		}
+		return site;
+	}
+
 	public static QuarrySite start(ServerLevel level, Villager villager, @Nullable Player owner, BoundingBox box, int depth) {
 		QuarrySite site = QuarrySiteManager.get(level).create(
 			owner != null ? owner.getUUID() : villager.getUUID(),
@@ -265,7 +289,7 @@ public final class Miners {
 
 	/** Stops a quarry: tools, finds and the marker go back; dug holes stay dug. */
 	public static void cancel(ServerLevel level, QuarrySite site) {
-		cancel(level, site, markerFor(site));
+		cancel(level, site, site.refills() ? ItemStack.EMPTY : markerFor(site)); // a Quarry build's pit had no marker
 	}
 
 	private static void cancel(ServerLevel level, QuarrySite site, ItemStack marker) {
@@ -276,7 +300,7 @@ public final class Miners {
 			returnEverything(level, villager, bench, supplies);
 		}
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
-		if (owner == null || !owner.getInventory().add(marker)) {
+		if (!marker.isEmpty() && (owner == null || !owner.getInventory().add(marker))) {
 			store(level, supplies, bench, marker);
 		}
 		if (villager != null) {
@@ -290,7 +314,9 @@ public final class Miners {
 		QuarrySite site = activeSite(level, villager);
 		if (site != null) {
 			BlockPos at = villager.blockPosition();
-			store(level, List.of(), at, markerFor(site));
+			if (!site.refills()) {
+				store(level, List.of(), at, markerFor(site));
+			}
 			QuarrySiteManager.get(level).remove(site.id());
 		}
 	}

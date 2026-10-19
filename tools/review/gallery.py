@@ -24,7 +24,7 @@ STYLES = ("plains", "desert", "savanna", "snowy", "taiga")
 FAMILIES = {
     "houses": ("Houses", ["starter_cottage*", "stone_house*", "terrace*", "inn*", "camp/settlers_camp"]),
     "workshops": ("Workshops", ["tinkers_workshop*", "research_lab*", "sifting_shed*", "compost_yard*", "storehouse*",
-                                "nether_gate*", "graveyard*", "research/town_hall"]),
+                                "nether_gate*", "graveyard*", "research/town_hall", "quarry"]),
     "shops": ("Shops, farms and services", ["supply_shop*", "market_stall*", "berry_farm*", "apiary_garden*", "ranch*",
                                             "flower_shop*", "healing_center*", "library*", "schoolhouse*"]),
     "defences": ("Defences", ["palisade", "palisade_gate", "palisade_tower", "stone_wall", "wall_tower", "gatehouse", "barracks*",

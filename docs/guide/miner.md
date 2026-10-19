@@ -13,7 +13,7 @@ Needs: a pickaxe (or cobblestone and sticks to make one), torches (and ladders f
 Makes: stone, ore, dirt and whatever else the ground holds
 Pokémon helpers: Ground, Rock, Steel
 categories: Jobs
-related: jobs-land.md, porter.md, armorer.md, toolsmith.md, builder.md
+related: jobs-land.md, porter.md, armorer.md, toolsmith.md, builder.md, quarry-build.md
 ```
 
 The Miner digs. Mark out a hole, hand it over, and a villager takes the ground apart layer by layer and fills your chests
@@ -62,6 +62,11 @@ always make the best one they can.
 Nothing to make one from? They wait by the furnace ("needs a pickaxe"), and the **Storehouse** board asks for what's
 missing, the cobblestone first and then the sticks. Hand it over there and they get to work. If you'd rather they
 always wait for you or the Toolsmith, turn off **Miners Make Pickaxes** in the settings.
+
+## A quarry that grows back
+
+Build the [Quarry](quarry-build.md) from the Blueprint Table and the Miner at its shed's blast furnace digs its pit by
+themselves, no marker needed. What they dig grows back slowly from the bottom up, so the pit never runs out.
 
 ## Strip mines
 

@@ -2536,6 +2536,42 @@ final class JobScenes {
 				return making[0] && now == null && c.countItem(Items.STONE_PICKAXE) >= 1 && c.countItem(Items.STICK) == 0;
 			};
 		}));
+		// The Quarry build (36.12): the pit's top four layers dug already, the Miner at the shed's blast furnace takes the
+		// pit by themselves and digs on down, and what they dug grows back from the bottom up (fast, for the film).
+		SCENES.put("quarry_build", new Job("the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up",
+			4800, new Vec3(0.5, -41, 5.5), new Vec3(1.5, -53, -10), (level, player) -> {
+			BlockPos origin = new BlockPos(-4, -49, -16);
+			io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(
+				level.dimension().location(), origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+			net.minecraft.world.level.levelgen.structure.BoundingBox pit = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pit(placement);
+			net.minecraft.util.RandomSource rock = net.minecraft.util.RandomSource.create(3612);
+			// A hill of rock to dig the pit in (the superflat ground is too thin), grass on top round the pit
+			for (BlockPos p : BlockPos.betweenClosed(origin.getX() - 2, -60, origin.getZ() - 1, origin.getX() + 17, origin.getY() - 1, origin.getZ() + 12)) {
+				boolean inPit = pit.isInside(p);
+				BlockState state;
+				if (inPit) {
+					state = p.getY() > pit.maxY() - 4 ? Blocks.AIR.defaultBlockState()
+						: io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pick(rock, p.getY() < pit.minY() + 3);
+				} else {
+					state = (p.getY() == origin.getY() - 1 ? Blocks.GRASS_BLOCK : p.getY() > origin.getY() - 4 ? Blocks.DIRT : Blocks.STONE).defaultBlockState();
+				}
+				level.setBlock(p, state, 2);
+			}
+			level.getStructureManager().get(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT).orElseThrow().placeInWorld(level,
+				origin.below(5), origin.below(5), new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
+			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT,
+				placement, player.getUUID());
+			io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = 1200; // a block every second, for the film
+			BlockPos furnace = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.furnace(placement);
+			Villager m = EntityType.VILLAGER.spawn(level, furnace.west(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, furnace);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+			return l -> {
+				var site = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).all().stream().filter(s -> origin.equals(s.refillBuild())).findFirst();
+				return site.isPresent() && site.get().mined() >= 12 && site.get().grownTotal() >= 8;
+			};
+		}, null));
 		SCENES.put("weaponsmith", job("the weaponsmith mended the worn pickaxe", 1800, (level, player) -> {
 			Villager w = worker(level, STATION, Blocks.GRINDSTONE.defaultBlockState()
 				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)

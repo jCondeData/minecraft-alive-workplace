@@ -54,6 +54,7 @@ public final class AliveWorkplace {
 		BuilderStatusSync.init();
 		io.github.jcondedata.aliveworkplace.world.VillageHouses.init();
 		io.github.jcondedata.aliveworkplace.farm.Fields.init();
+		io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.init(); // 36.12: the Quarry build's Miner and its pit growing back
 		io.github.jcondedata.aliveworkplace.fish.Fishers.init();
 		io.github.jcondedata.aliveworkplace.travel.FerryRides.init();
 		io.github.jcondedata.aliveworkplace.guard.Cavalry.init();

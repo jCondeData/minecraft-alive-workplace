@@ -5195,6 +5195,15 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-d-1019-1908): short mutation pass on M38 Megas, seed 42: MegaShrines and MegaStones (4 mutants each)
+  against the four Mega compat classes alone (trimmed compat fabric.mod.json, `--offline`, about 2 min a run). 8
+  mutants: 4 killed, 1 didn't compile, 3 survived. MegaShrines:119 (`!=` to `==`, the day's crowd started afresh every
+  tick, so one who came and wandered off held the show back) is now killed by
+  MegaShrineCompatTests.oneWhoCameAndWanderedOffStillCounts. MegaShrines:188 (the show's END_ROD particles) is
+  equivalent: only seen on screen. MegaStones:106 (`known.tier() == tier` to `!=`, stale stones kept after a rank change)
+  is still open: a test stepping a Master down to Novice or Expert didn't kill it (the Mega Evolve flag changes too, or
+  the teams want the same stones), so it needs a trainer whose tier changes while `canMegaEvolve` doesn't and whose
+  stones differ. No mod bug found.
 - 2026-10-19 (lane-d-1019-1908): mutation pass on M38 Raid Dens and bandit-camp code, seed 41: RaidDens, RaidHelpers and
   RaidDensRaids against the three Raid Den compat classes alone (RaidDenCompatTests, RaidDenFoundCompatTests,
   RaidHelperCompatTests, about 2 min a run), CampCleanup and HostileSpawns against B208, B209, B211 and B225 alone

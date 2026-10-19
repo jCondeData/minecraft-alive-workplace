@@ -292,4 +292,25 @@ public class FurnishedHomesCompatTests implements FabricGameTest {
 		}
 		return site;
 	}
+
+	/**
+	 * A furnished home's furniture is saved with its build site and comes back after a reload, so a build interrupted by a
+	 * restart goes on with the same pieces (37.3/37.4; mutation check: a choice taken for vanilla isn't saved).
+	 */
+	//$ gametest HUGE_AREA
+	@GameTest(template = HUGE_AREA)
+	public void aFurnishedSitesFurnitureSurvivesSaveAndReload(GameTestHelper helper) {
+		List<FurnitureSpot> spots = BlueprintFurniture.of(COTTAGE);
+		FurnitureChoice choice = FurnitureChoice.choose(spots, List.of("handcrafted"), true);
+		helper.assertTrue(!choice.spots().isEmpty() && !choice.modded(), "Handcrafted furnished none of the cottage's spots");
+		helper.assertTrue(!choice.isVanilla(), "a furnished choice counts as vanilla");
+		BuildSite site = new BuildSite(java.util.UUID.randomUUID(), java.util.UUID.randomUUID(), "test", COTTAGE,
+			new BlueprintData.Placement(helper.getLevel().dimension().location(), helper.absolutePos(new BlockPos(2, 2, 2)), Rotation.NONE, Mirror.NONE));
+		site.setFurniture(choice);
+		BuildSite loaded = BuildSite.load(site.save());
+		helper.assertTrue(loaded != null, "the site didn't load");
+		helper.assertTrue(loaded.furniture().spots().equals(choice.spots()),
+			"the furniture changed over a reload: " + choice.spots().size() + " pieces saved, " + loaded.furniture().spots().size() + " loaded");
+		helper.succeed();
+	}
 }

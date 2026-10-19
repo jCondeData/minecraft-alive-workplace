@@ -82,6 +82,20 @@ public class FireGameTests implements FabricGameTest {
 		VillageHalls.RADIUS = 20;
 		level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(true, level.getServer());
 		VillageFire.forget();
+		// B217: nothing but this test's own Firewarden may put the fire out. Rain does (the game's fire goes out under an
+		// open sky, and the sky's rain fades out over a hundred ticks after an earlier test's storm), and so would any other
+		// test's Firewarden still about whose grindstone is within answering reach, wherever they stand (Leftovers.clear
+		// reaches 48 blocks round the area; a Firewarden answers a fire 48 blocks from their grindstone).
+		level.setWeatherParameters(6000, 0, false, false);
+		level.setRainLevel(0f);
+		level.setThunderLevel(0f);
+		Vec3 middle = helper.getBounds().getCenter();
+		for (Villager other : level.getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(Villager.class), FirewardenWork::isFirewarden)) {
+			if (other.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+				.filter(g -> g.dimension() == level.dimension() && Vec3.atCenterOf(g.pos()).distanceTo(middle) <= VillageFire.ANSWER + 32).isPresent()) {
+				other.discard();
+			}
+		}
 		Leftovers.after(helper, () -> {
 			VillageHalls.RADIUS = radius;
 			level.getGameRules().getRule(GameRules.RULE_DOFIRETICK).set(fireTick, level.getServer());
@@ -135,6 +149,18 @@ public class FireGameTests implements FabricGameTest {
 		return v;
 	}
 
+	/** What a failure needs to know (B217): the Firewarden's state, the sky, the roof under the fire and the chronicle's word. */
+	private static String scene(GameTestHelper helper, Hut hut, Villager warden) {
+		ServerLevel level = hut.level();
+		return "the firewarden " + (warden.isAlive() && level.getEntity(warden.getUUID()) == warden ? "in the world" : "GONE (" + warden.getRemovalReason() + ")")
+			+ " at " + warden.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString() + ", a "
+			+ warden.getVillagerData().getProfession() + " level " + warden.getVillagerData().getLevel() + ", post "
+			+ warden.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()).orElse("none")
+			+ ", " + FirewardenWork.water(warden) + " buckets, activity " + warden.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("none")
+			+ "; rain " + level.getRainLevel(1f) + ", day time " + level.getDayTime() % 24000 + "; roof under the fire "
+			+ level.getBlockState(helper.absolutePos(ROOF_TOP.below())).getBlock() + "; chronicle: " + fireEntry(hut).map(e -> e.text().getString()).orElse("nothing yet");
+	}
+
 	private static Optional<Chronicle.Entry> fireEntry(Hut hut) {
 		if (!(hut.level().getBlockEntity(hut.hall()) instanceof VillageHallBlockEntity entity)) {
 			return Optional.empty();
@@ -163,6 +189,7 @@ public class FireGameTests implements FabricGameTest {
 			fire(helper, ROOF_TOP.offset(-1, 0, -1));
 			lit[0] = helper.getTick();
 			helper.assertTrue(VillageFire.incident(hut.level(), hut.hall()).isPresent(), "the fire wasn't noticed when it was placed");
+			helper.assertTrue(fires(helper) == 2, "the fire didn't take: " + fires(helper) + " fire blocks; " + scene(helper, hut, warden));
 		});
 		helper.onEachTick(() -> {
 			if (lit[0] >= 0 && out[0] < 0 && fires(helper) == 0) {
@@ -170,9 +197,11 @@ public class FireGameTests implements FabricGameTest {
 			}
 		});
 		helper.succeedWhen(() -> {
-			helper.assertTrue(out[0] >= 0, "the fire is still burning (" + fires(helper) + " fire blocks)");
-			helper.assertTrue(out[0] - lit[0] <= 400, "the fire took " + (out[0] - lit[0]) + " ticks to put out");
-			helper.assertTrue(warden.getVillagerXp() > xp[0], "the firewarden gained no experience: " + warden.getVillagerXp());
+			helper.assertTrue(out[0] >= 0, "the fire is still burning (" + fires(helper) + " fire blocks); " + scene(helper, hut, warden));
+			helper.assertTrue(out[0] - lit[0] <= 400, "the fire took " + (out[0] - lit[0]) + " ticks to put out; " + scene(helper, hut, warden));
+			// (B217: the chronicle says who put it out, or that it burned out, so a failure here names what did it)
+			helper.assertTrue(warden.getVillagerXp() > xp[0], "the firewarden gained no experience: " + warden.getVillagerXp() + " (fire out "
+				+ (out[0] - lit[0]) + " ticks after it was lit); " + scene(helper, hut, warden));
 			Optional<Chronicle.Entry> entry = fireEntry(hut);
 			helper.assertTrue(entry.isPresent(), "no fire in the chronicle");
 			String text = entry.get().text().getString();

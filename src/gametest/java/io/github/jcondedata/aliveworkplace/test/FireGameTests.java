@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.threat.Threats;
 import io.github.jcondedata.aliveworkplace.threat.VillageFire;
 import io.github.jcondedata.aliveworkplace.work.FirewardenWork;
 import io.github.jcondedata.aliveworkplace.work.Stations;
+import io.github.jcondedata.aliveworkplace.work.Walker;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -72,6 +73,14 @@ public class FireGameTests implements FabricGameTest {
 
 	/** A village (its hall) with the hut finished by the builders, fire ticking, every other test's leftovers gone. */
 	private static Hut hut(GameTestHelper helper, String name) {
+		return hut(helper, name, false);
+	}
+
+	/**
+	 * {@link #hut(GameTestHelper, String)}; {@code tall}: its corner logs reach y 7 and its roof at y 8 is a row of stairs
+	 * all over, a pitched roof's ridge, with nowhere on it or near it to stand (B218).
+	 */
+	private static Hut hut(GameTestHelper helper, String name, boolean tall) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		Leftovers.finished(helper);
@@ -114,15 +123,18 @@ public class FireGameTests implements FabricGameTest {
 		for (int x = 0; x < 5; x++) {
 			for (int z = 0; z < 5; z++) {
 				boolean corner = (x == 0 || x == 4) && (z == 0 || z == 4);
+				int walls = tall ? 6 : 2;
 				if (corner) {
-					helper.setBlock(HUT.offset(x, 0, z), Blocks.OAK_LOG);
-					helper.setBlock(HUT.offset(x, 1, z), Blocks.OAK_LOG);
+					for (int y = 0; y < walls; y++) {
+						helper.setBlock(HUT.offset(x, y, z), Blocks.OAK_LOG);
+					}
 				}
-				helper.setBlock(HUT.offset(x, 2, z), Blocks.OAK_LOG); // a log roof: it burns slowly, as a roof should in a test
+				// a log roof: it burns slowly, as a roof should in a test (the tall hut's: stairs, nowhere to stand)
+				helper.setBlock(HUT.offset(x, walls, z), tall ? Blocks.OAK_STAIRS : Blocks.OAK_LOG);
 			}
 		}
 		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "fire_" + name + "_" + Long.toHexString(level.getGameTime()));
-		level.getStructureManager().getOrCreate(id).fillFromWorld(level, helper.absolutePos(HUT), new Vec3i(5, 3, 5), false, Blocks.STRUCTURE_VOID);
+		level.getStructureManager().getOrCreate(id).fillFromWorld(level, helper.absolutePos(HUT), new Vec3i(5, tall ? 7 : 3, 5), false, Blocks.STRUCTURE_VOID);
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(HUT), Rotation.NONE, Mirror.NONE);
 		BuildSiteManager.get(level).recordFinished(id, placement, UUID.randomUUID());
 		Leftovers.after(helper, () -> BuildSiteManager.get(level).forgetFinished(placement));
@@ -206,6 +218,44 @@ public class FireGameTests implements FabricGameTest {
 			helper.assertTrue(entry.isPresent(), "no fire in the chronicle");
 			String text = entry.get().text().getString();
 			helper.assertTrue(text.contains("Rowan the Firewarden put it out") && text.startsWith("Fire in the "), "the chronicle says: " + text);
+		});
+	}
+
+	/**
+	 * B218: a fire on the ridge of a tall pitched roof, with nowhere on the roof or near it to stand: the Firewarden runs
+	 * over and throws the buckets up onto it from the ground below; it's out within 400 ticks and they gained experience.
+	 * (Before, they stood at the grindstone and watched it burn: their throw reached only 3.5 blocks.)
+	 */
+	//$ gametest_ticks_batch AREA '900' '"fireWardenHigh"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "fireWardenHigh")
+	public void aFirewardenThrowsUpOntoAHighRoof(GameTestHelper helper) {
+		Hut hut = hut(helper, "high", true);
+		helper.setBlock(new BlockPos(4, 1, 6), Blocks.WATER);
+		Villager warden = firewarden(helper, new BlockPos(3, 2, 4));
+		warden.setCustomName(net.minecraft.network.chat.Component.literal("Rowan"));
+		BlockPos ridge = new BlockPos(14, 9, 14);
+		helper.assertTrue(Walker.standingSpot(hut.level(), helper.absolutePos(ridge), helper.absolutePos(new BlockPos(3, 2, 4)), 3.5) == null,
+			"there is somewhere to stand near the ridge: the test doesn't test a high roof");
+		int[] xp = {-1};
+		long[] lit = {-1};
+		long[] out = {-1};
+		helper.runAfterDelay(2, () -> {
+			xp[0] = warden.getVillagerXp();
+			fire(helper, ridge);
+			lit[0] = helper.getTick();
+			helper.assertTrue(VillageFire.incident(hut.level(), hut.hall()).isPresent(), "the fire wasn't noticed when it was placed");
+			helper.assertTrue(fires(helper) == 1, "the fire didn't take: " + fires(helper) + " fire blocks");
+		});
+		helper.onEachTick(() -> {
+			if (lit[0] >= 0 && out[0] < 0 && fires(helper) == 0) {
+				out[0] = helper.getTick();
+			}
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(out[0] >= 0, "the fire on the ridge is still burning (" + fires(helper) + " fire blocks); the firewarden at "
+				+ warden.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString() + " with " + FirewardenWork.water(warden) + " buckets");
+			helper.assertTrue(out[0] - lit[0] <= 400, "the fire took " + (out[0] - lit[0]) + " ticks to put out");
+			helper.assertTrue(warden.getVillagerXp() > xp[0], "the firewarden gained no experience: " + warden.getVillagerXp());
 		});
 	}
 

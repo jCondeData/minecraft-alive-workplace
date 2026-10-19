@@ -447,6 +447,26 @@ public class VillageTrainCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * Stations at both ends and the road routed, but the village's half of it not finished yet: no track is due (the
+	 * track goes down a finished road); once the half is finished, it is.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"villageTrainHalfUnfinished"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "villageTrainHalfUnfinished")
+	public void noTrackIsDueBeforeTheVillagesHalfOfTheRoadIsFinished(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Villages v = villages(helper);
+		stations(helper, v);
+		Caravans.Half half = v.data().half(v.a(), v.b());
+		helper.assertTrue(half != null && half.finished(), "setup: Ashford's half of the road isn't finished: " + half);
+		v.data().setHalf(v.a(), v.b(), new Caravans.Half(half.end(), false, half.milestone(), half.noted()));
+		helper.assertTrue(!CaravanTrains.due(level, v.a(), v.b(), hall(helper, v.a()).plan(), v.data()),
+			"track due with Ashford's half of the road unfinished");
+		v.data().setHalf(v.a(), v.b(), half);
+		helper.assertTrue(CaravanTrains.due(level, v.a(), v.b(), hall(helper, v.a()).plan(), v.data()), "no track due once the half is finished");
+		helper.succeed();
+	}
+
 	/** {@code villageTrains} off: the Train Station isn't at the table, no track is due or opened, and the caravan walks. */
 	//$ gametest_ticks_batch AREA '300' '"villageTrainOff"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "villageTrainOff")

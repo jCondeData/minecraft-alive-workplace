@@ -279,6 +279,31 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A job with machine work keeps its schedule: the rest of its work waits while a trip to a machine is on, but the
+	 * schedule update (vanilla's priority 99) is never held up by one, so the worker still goes home at night.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aMachineTripNeverHoldsUpTheSchedule(GameTestHelper helper) {
+		var work = net.minecraft.world.entity.ai.behavior.VillagerGoalPackages.getWorkPackage(VillagerProfession.FARMER, 0.5F);
+		var out = MachineWork.packages(VillagerProfession.FARMER, work);
+		helper.assertTrue(out.size() == work.size() + 1, "setup: the farmer's work has no machine work added (" + out.size() + " of " + work.size() + ")");
+		int always = 0;
+		for (var entry : work) {
+			Object behavior = entry.getSecond();
+			boolean kept = out.stream().anyMatch(p -> p.getSecond() == behavior);
+			if (entry.getFirst() >= 99) {
+				always++;
+				helper.assertTrue(kept, "the farmer's " + behavior + " (priority " + entry.getFirst() + ") waits on machine trips");
+			} else {
+				helper.assertTrue(!kept, "the farmer's " + behavior + " (priority " + entry.getFirst() + ") runs during a machine trip");
+			}
+		}
+		helper.assertTrue(always > 0, "setup: the farmer's work has no schedule update");
+		helper.succeed();
+	}
+
 	//$ gametest_ticks_batch AREA '2400' '"machine_mill_works"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "machine_mill_works")
 	public void farmerMillsWheat(GameTestHelper helper) {

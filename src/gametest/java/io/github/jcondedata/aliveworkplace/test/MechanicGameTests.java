@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.test;
 import com.mojang.serialization.JsonOps;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.WorkplaceConfig;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.mechanic.Kinetics;
 import io.github.jcondedata.aliveworkplace.mechanic.MechanicRound;
 import io.github.jcondedata.aliveworkplace.mechanic.MechanicWork;
@@ -42,6 +43,49 @@ public class MechanicGameTests implements FabricGameTest {
 			helper.assertTrue(!Kinetics.isDrivePart(state) && !Kinetics.isMachine(state) && !Kinetics.keepsOwnItems(state) && !Kinetics.isToolbox(state),
 				state + " taken for a Create block");
 		}
+		helper.succeed();
+	}
+
+	/**
+	 * A belt segment the Mechanic puts back gets its place on the belt and its looks as saved, never the items on it, and
+	 * its {@code Controller} moved from where the blueprint was saved to where the build stands (offset and turned with
+	 * it), in whichever form it was saved (a list of three, or X, Y and Z).
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aPutBackBeltSegmentNamesItsControllerWhereTheBuildStands(GameTestHelper helper) throws ReflectiveOperationException {
+		java.lang.reflect.Method beltData = MechanicWork.class.getDeclaredMethod("beltData", CompoundTag.class, BlockPos.class,
+			io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement.class);
+		beltData.setAccessible(true);
+		var placement = new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(helper.getLevel().dimension().location(),
+			new BlockPos(100, 70, 200), net.minecraft.world.level.block.Rotation.CLOCKWISE_90, net.minecraft.world.level.block.Mirror.NONE);
+		BlockPos sourceOrigin = new BlockPos(10, 64, 8);
+		BlockPos expected = placement.origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
+			new BlockPos(0, 0, 2), net.minecraft.world.level.block.Mirror.NONE, net.minecraft.world.level.block.Rotation.CLOCKWISE_90, BlockPos.ZERO));
+		CompoundTag saved = new CompoundTag();
+		saved.putInt("Index", 2);
+		saved.putInt("Length", 3);
+		saved.putBoolean("IsController", false);
+		saved.putString("Casing", "ANDESITE");
+		saved.put("Items", new CompoundTag());
+		saved.putFloat("Speed", 16);
+		saved.putIntArray("Controller", new int[] {10, 64, 10});
+		CompoundTag out = (CompoundTag) beltData.invoke(null, saved, sourceOrigin, placement);
+		helper.assertTrue(out != null && Nbt.getInt(out, "Index") == 2 && Nbt.getInt(out, "Length") == 3 && out.contains("IsController")
+			&& "ANDESITE".equals(Nbt.getString(out, "Casing")), "the segment's place or looks weren't kept: " + out);
+		helper.assertTrue(!out.contains("Items") && !out.contains("Speed"), "the segment keeps its items or speed: " + out);
+		int[] named = Nbt.getIntArray(out, "Controller");
+		helper.assertTrue(named.length == 3 && new BlockPos(named[0], named[1], named[2]).equals(expected),
+			"the segment names " + java.util.Arrays.toString(named) + " as its controller, not " + expected.toShortString() + ": " + out);
+		CompoundTag xyz = new CompoundTag();
+		xyz.putInt("X", 10);
+		xyz.putInt("Y", 64);
+		xyz.putInt("Z", 10);
+		saved.put("Controller", xyz);
+		out = (CompoundTag) beltData.invoke(null, saved, sourceOrigin, placement);
+		CompoundTag moved = Nbt.getCompound(out, "Controller");
+		helper.assertTrue(new BlockPos(Nbt.getInt(moved, "X"), Nbt.getInt(moved, "Y"), Nbt.getInt(moved, "Z")).equals(expected) && moved.contains("X"),
+			"a controller saved as X, Y and Z isn't moved to " + expected.toShortString() + ": " + out);
 		helper.succeed();
 	}
 

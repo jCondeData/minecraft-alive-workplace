@@ -215,6 +215,40 @@ public class FreeJobsPageGameTests implements net.fabricmc.fabric.api.gametest.v
 		});
 	}
 
+	/**
+	 * A jobless villager already walking to a free block they picked on their own and given another one from the page lets
+	 * go of the first. Vanilla holds the block a jobless villager walks to (their potential job site) for them on the way;
+	 * picking the Storehouse for a villager walking to the bench must leave the bench free and listed, not held for nobody.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"aVillagerWalkingToABlockLetsItGo"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "aVillagerWalkingToABlockLetsItGo")
+	public void aVillagerWalkingToABlockLetsItGo(GameTestHelper helper) {
+		Villager jobless = stage(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		BlockPos store = helper.absolutePos(STOREHOUSE);
+		BlockPos bench = helper.absolutePos(BENCH);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(2, () -> {
+			// what vanilla's AcquirePoi does when a jobless villager picks a block to walk to: the block's place is taken and
+			// remembered as their potential job site
+			helper.assertTrue(level.getPoiManager().take(h -> true, (h, p) -> p.equals(bench), bench, 1).isPresent(), "setup: the bench couldn't be held");
+			jobless.getBrain().setMemory(MemoryModuleType.POTENTIAL_JOB_SITE, GlobalPos.of(level.dimension(), bench));
+			helper.assertTrue(FreeJobsPage.at(level, hall, bench) == null, "setup: the bench they walk to is listed as free");
+			ChoiceMenu menu = openPage(helper, player);
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_ROW).is(ModBlocks.STOREHOUSE.asItem()), "setup: the list: " + menu.icon(VillageHallScreen.FIRST_ROW));
+			menu.press(VillageHallScreen.FIRST_ROW, player);
+			menu.press(VillageHallScreen.FIRST_ROW, player);
+			helper.assertTrue(jobless.getVillagerData().getProfession() == ModVillagers.PORTER
+				&& store.equals(jobless.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).orElse(null)),
+				"setup: not given the Storehouse: " + jobless.getBrain().getMemory(MemoryModuleType.JOB_SITE));
+			helper.assertTrue(jobless.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).isEmpty(), "still walking to the bench");
+			helper.assertTrue(FreeJobsPage.at(level, hall, bench) != null, "the bench they walked to is still held, for nobody");
+			helper.assertTrue(menu.icon(VillageHallScreen.FIRST_ROW).is(ModBlocks.BUILDERS_BENCH.asItem()), "the bench isn't listed again: " + menu.icon(VillageHallScreen.FIRST_ROW));
+			helper.succeed();
+		});
+	}
+
 	/** The job given from the page is the villager's own: a save and reload keeps it, and the block stays off the list. */
 	//$ gametest_ticks_batch AREA '100' '"aGivenBlockSurvivesAReload"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "aGivenBlockSurvivesAReload")

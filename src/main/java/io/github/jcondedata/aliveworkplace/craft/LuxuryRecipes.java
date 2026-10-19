@@ -47,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
  * output's {@code count} (1) may be left out, {@code ticks} is 100 if missing. A tag's {@code count} is of one of its
  * items ("5 wool of one colour"), or with {@code "mix": true} of any of them together ("3 wool of any colour", 34.10).
  * A file can be switched off with {@code "enabled": false} or load conditions, like the other data files. 38.6 adds an
- * output named by a tag and a chooser ({@code "output": {"tag": "#mega_showdown:mega_stone", "for": "village_trainers"}}),
+ * output named by a tag and a chooser ({@code "output": {"tag": "#aliveworkplace:mega_stones", "for": "village_trainers"}}),
  * {@code "keep"} (how many of each good the store is kept in) and {@code "when"} (a named switch, such as
  * {@code village_megas}).
  *

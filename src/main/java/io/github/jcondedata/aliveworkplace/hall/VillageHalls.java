@@ -157,7 +157,8 @@ public final class VillageHalls {
 		villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
 			.filter(old -> !old.equals(target))
 			.ifPresent(old -> io.github.jcondedata.aliveworkplace.work.Stations.releaseOld(level, villager, old));
-		villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		// A block they were walking to on their own is let go of, or it stays held for nobody, off the free blocks.
+		io.github.jcondedata.aliveworkplace.work.Stations.forgetWalkedTo(villager, target);
 		villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), station.pos()));
 		io.github.jcondedata.aliveworkplace.work.JobSiteTickets.hold(level, villager);
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.order(villager, station.profession());

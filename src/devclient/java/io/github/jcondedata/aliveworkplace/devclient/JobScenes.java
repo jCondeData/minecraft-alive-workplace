@@ -3521,7 +3521,7 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.jeweller.MegaStones.on(), "the village's Mega Stones are on (Mega Showdown, villageMegas, Jewelers)");
 			Showcase.check(master != null && !io.github.jcondedata.aliveworkplace.jeweller.MegaStones.stonesOf(master).isEmpty(), "the Master's team has a Mega Stone to cut");
 			net.minecraft.tags.TagKey<net.minecraft.world.item.Item> stones = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
-				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone"));
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("mega_stones"));
 			Container c = chest(level, chestPos(), new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 					net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone_crystal"))),
 				new ItemStack(Items.GOLD_INGOT, 2), new ItemStack(Items.EMERALD, 4), new ItemStack(ModItems.AMETHYST_RING, 8),
@@ -4054,7 +4054,9 @@ final class JobScenes {
 				String[] names = {"Dara", "Odo"};
 				for (int i = 0; i < names.length; i++) {
 					Villager v = EntityType.VILLAGER.create(level);
-					v.moveTo(-2.5 + i * 4, -60, 3.5, 180, 0);
+					// The page lists who could take a block nearest the hall first: Dara stands nearer, so she's first and the
+					// pointer, resting on the first row, picks her.
+					v.moveTo(1.5 - i * 4, -60, 3.5, 180, 0);
 					v.setNoAi(true); // jobless villagers would take a free block on their own before the camera sees it
 					v.setCustomName(Component.literal(names[i]));
 					v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.NONE));
@@ -4073,8 +4075,9 @@ final class JobScenes {
 				new Step("02_who_takes_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
-						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString().startsWith("Odo"),
-							"Dara and Odo could take it: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString());
+						String first = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).getHoverName().getString();
+						String second = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString();
+						Showcase.check(first.startsWith("Dara") && second.startsWith("Odo"), "Dara and Odo could take it: " + first + ", " + second);
 					}
 				}, 40),
 				new Step("03_dara_porter", -1, 0, (level, player) -> {

@@ -8,7 +8,7 @@ the village knows (38.2), Den Wardens (38.3), the village's den challenges (38.4
 bracelets (38.5), the Jeweller's Mega Stones and Key Stones with the realm's Mega Bracelet (38.6), the Mega
 Shrine with its festival show (38.7), Cobblecuisine on the Chef's, Camp Cook's and Innkeeper's menus (38.8), bean farms (38.9) and the partners' treats and dish luxuries (38.10); the full plan is the design note, docs/design/M38.md.
 
-Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.9, 38.10, 38.11, B190, B191
+Roadmap items: 38.1, 38.2, 38.3, 38.4, 38.5, 38.6, 38.6a, 38.7, 38.8, 38.8a, 38.9, 38.10, 38.11, B190, B191
 
 ## What a player sees
 
@@ -108,6 +108,20 @@ takes them to the chests by the pot (16 kept). The Innkeeper serves each guest o
 from the chests by her counter or else the village store; it counts in the guest's diet, and her status says "served
 a guest Bouncy Brionne Soda".
 
+**Dishes on request (38.8a, the owner's change of 2026-10-19).** The Chef no longer cooks Cobblecuisine's dishes on
+his own: a player asks for them at the hall's board, on the Trade page's **Dishes** tab (the minecart in the hall's
+divider; the tab sits in the row's free slot before Routes and shows only while dishes are loaded). The tab lists every
+dish with the Chef's level it needs, how many are asked for and how many the village's store holds; a click asks for 4
+more, shift-click 16, right-click takes the request down (at most 64 of a dish wait). Without a Chef in the village
+every dish is locked and the tab says a Chef is needed; a dish above the best Chef's level says which level it needs.
+The village's Chef (the one whose stove's nearest hall it is) cooks the oldest request his level allows before his own
+menu, from the same makings, up to a batch of 8, and carries it to the village's Storehouse (the chests by his stove if
+it has none); what he delivers comes off the request. A request whose makings are missing waits. The requests are
+saved per dimension (`aliveworkplace_dish_requests`; older worlds start with none) and survive restarts. Unchanged:
+the Camp Cook's curries (her own `camp_menu` path), the Innkeeper serving whatever drinks are in her chests or the
+store (the Chef now makes them only on request too, since they're on the same dish lists), the Campfire Pot recipes,
+Cobblemon's Poké snacks and the vanilla menu. Dishes the Chef stocked before the update stay where they are.
+
 A farmer with Cobblecuisine grows beans for those dishes (38.9): while the store (her chests and the village's stashes)
 holds fewer than 16 of a bean colour a dish on the menu needs, she takes bean seeds from the chests and sows her
 field's empty farmland with them, cuts a bean plant only once it's fully grown, and takes the beans to the store with
@@ -160,7 +174,9 @@ for 1.8.
 `{"requires": "cobblecuisine", "dishes": [{"id", "level" (1 to 5, default 1), "group", "inn"}]}`. A file whose mod
 isn't installed is skipped, and so is a dish whose item doesn't exist; a bad entry skips its file with a warning in
 the log. The shipped lists are `salads`, `sandwiches`, `drinks`, `curries` and `cakes`. `Chefs.menu(level, chef)` is
-the plain menu and then the dishes up to the chef's level; the recipes are found through the recipe manager by their
+the plain menu and the Campfire Pot dishes, never a listed dish (38.8a: those come from `craft/DishRequests`, a
+`SavedData` of hall to dish to count, asked for through `craft/DishesTab` and cooked first by `ChefWork.chooseRequest`;
+`CrafterWork.delivered` counts them off); the recipes are found through the recipe manager by their
 result (`Crafting.Kind.KITCHEN`, which now also holds the campfire's recipes, after the smoker's and the crafting
 table's). `Diet` counts a dish by `"group:" + group` instead of its id, `VillageNeeds.isMeal` takes every dish, the
 Camp Cook's curries are ordinary `camp_menu` files (`cobblecuisine_*.json`, skipped while `cuisineDishes` is off), and
@@ -218,7 +234,7 @@ one that changed is updated, one that's gone is dropped. A den in an unloaded ch
 | `denChallengeDays` | 3 (1 to 30) | Days between a village's challenges. |
 | `villageMegas` | on (once 2.2 ships) | More Mega trainers and their bracelets (38.5), the Jeweller's Mega Stones and Key Stones, the Miner's finds to the store and the realm's Mega Bracelet (38.6), and the Mega Shrine at the Table with its festival show (38.7). Off: only Masters Mega Evolve, as before, nobody wears a bracelet, the Mega recipes don't run, the Miner keeps everything and no bracelet is given. With Jewelers off (M34) the Mega recipes don't run either, and the Miner keeps everything. |
 
-| `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes on the Chef's menu by his level, counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8), the partners' daily treat and the Deluxe Shake and Clodsire Eclair luxuries (38.10). Off: the menus and the diet are as before, no treats, and the two luxuries are neither wanted nor taken. |
+| `cuisineDishes` | on (once 2.2 ships) | Cobblecuisine's dishes asked of the Chef at the hall board's Dishes tab by his level (38.8a), counted by food group for the diet, the Camp Cook's curries and the Innkeeper's drinks (38.8), the partners' daily treat and the Deluxe Shake and Clodsire Eclair luxuries (38.10). Off: the menus and the diet are as before, no treats, and the two luxuries are neither wanted nor taken. |
 | `beanFarms` | on (once 2.2 ships) | Farmers sow Cobblecuisine's beans when the store is short of a colour a menu dish needs, and cut them when ripe (38.9). Off: farmers never sow beans (ripe ones on a field are still cut, as any crop). |
 
 ## Saved data
@@ -366,9 +382,12 @@ Cobblecuisine on Cobblemon 1.8 is untested beyond the id test.
   loss: nothing; both: one; again: still one; save and load), `braceletEdges` (switch off, a Leader who left, no realm).
 - `MegaStoneGameTests` (without Mega Showdown): `withoutMegaShowdownNothingChanges`, `withoutMegaShowdownNoBracelet`,
   `aTagOutputWithAChooser` (the recipe format's new parts and their errors), `theText`.
-- `CuisineCompatTests` (38.8, the real Cobblecuisine): `aChefWithTheMakingsCooksALevelOneDishAndKeeps16` (a Novice,
-  20 sets of a salad's makings: 16 salads and 4 sets left), `aLevelOneChefNeverCooksALevelFourDish` and
-  `anExpertChefCooksTheCake`, `aChefShortOfTheMakingsWaits`, `aVillagerWhoAteThreeKindsHasAVariedDiet` (and three
+- `CuisineCompatTests` (38.8 and 38.8a, the real Cobblecuisine): `withoutAChefTheDishesAreLockedOnTheBoard`,
+  `aRequestedLevelOneDishIsCookedAndDelivered` (was 38.8's "a Chef with the makings cooks a level-1 dish and keeps 16": 4 salads
+  asked for at the board, 4 cooked, 16 sets of makings left, no more cooked), `anUnrequestedChefCooksNoDish`,
+  `aLevelOneChefNeverCooksALevelFourDish` (the board refuses, and a written-in cake request isn't cooked) and
+  `anExpertChefCooksTheRequestedCake`, `aChefShortOfTheMakingsWaits` (the request stays up),
+  `dishRequestsSurviveSaveAndReload`, `aVillagerWhoAteThreeKindsHasAVariedDiet` (and three
   salads are one kind), `theSwitchOffLeavesTheMenusAsTheyWere`, `theCampCookMakesACurry`,
   `theCampCookMakesNoCurryWithTheSwitchOff`, `theInnkeeperServesAGuestADrinkOnceAStay`.
 - `CobblemonDepthCompatTests.cuisineDishListIdsExist`: every dish on the shipped lists and camp menu files is an item

@@ -369,9 +369,11 @@ SCENES = [
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
         cobblemon=True),
     # Cobblecuisine on the Chef's menu (ROADMAP 38.8): a Journeyman Chef cooks a salad and a curry from their own recipes
-    job("cuisine_kitchen", "Chef", "Cobblecuisine: a salad and a curry from the Chef",
-        "the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest",
-        cobblemon=True),
+    # Cobblecuisine's dishes on request (ROADMAP 38.8a): asked for on the hall board's Dishes tab, cooked by the Chef
+    job("cuisine_kitchen", "Chef", "Cobblecuisine: dishes asked for at the hall's board",
+        "asked at the hall board's Dishes tab, the Journeyman Chef cooked 4 Mixed Vegetable Salads and 2 Beanburger Curries "
+        "from their own recipes into the chest; the Fruit Punch (no Calcium in the store) is still waiting and the cake is locked for his level",
+        extra=[("04_board_dishes", "The board's Dishes tab: the punch still asked for, the cakes locked")], cobblemon=True),
     # Campfire Pot recipes (ROADMAP 38.11): the Chef cooks the pot's candies and sweets, found by recipe type
     job("campfire_pot", "Chef", "Campfire Pot recipes: candies from the Chef",
         "the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest",

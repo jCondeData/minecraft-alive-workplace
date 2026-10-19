@@ -360,6 +360,8 @@ final class JobScenes {
 	/** The printer scene's chest, for the Gazette the player takes out and reads (34.11). */
 	private static volatile Container printerChest;
 	private static volatile Villager subject;
+	/** The cuisine_kitchen scene's hall (38.8a), for the board's Dishes tab shown after. */
+	private static volatile BlockPos cuisineHall;
 	/** classes (34.6): the couple first, then three Peasants. */
 	private static final List<Villager> classPeople = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** curfew: the villagers who go to bed at dusk. */
@@ -3363,15 +3365,21 @@ final class JobScenes {
 				new ItemStack(cobblemonItem("oran_berry"), 3));
 			return l -> c.countItem(cobblemonItem("poke_snack")) > 0 && n(ModAttachments.DISHES_COOKED, cook) >= 1;
 		}));
-		SCENES.put("cuisine_kitchen", job("the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest", 2400, (level, player) -> {
-			// ROADMAP 38.8 (Cobblemon and Cobblecuisine): a Journeyman Chef at a Kitchen Stove, and in the chest beside it
-			// the makings of a Mixed Vegetable Salad (a level-1 dish) and of a Beanburger Curry (level 3). He cooks both
-			// from their crafting recipes and puts them in the chest. A sack of potatoes (B180): the menu's baked potatoes come
-			// first and take up to a batch of 8, and the salads' vegetable may be a potato, so 2 left none for the curry.
+		SCENES.put("cuisine_kitchen", new Job("asked at the hall board's Dishes tab, the Journeyman Chef cooked 4 Mixed Vegetable Salads and 2 Beanburger Curries "
+			+ "from their own recipes into the chest; the Fruit Punch (no Calcium in the store) is still waiting and the cake is locked for his level", 2400, CAMERA, TARGET, (level, player) -> {
+			// ROADMAP 38.8a (Cobblemon and Cobblecuisine): a Village Hall, a Journeyman Chef at a Kitchen Stove, and in the
+			// chest beside it the makings of 4 Mixed Vegetable Salads (a level-1 dish) and of 2 Beanburger Curries (level 3).
+			// He cooks Cobblecuisine's dishes only when asked at the hall's board: the player asks on the Dishes tab for the
+			// salads, the curries and a Fruit Punch (whose Calcium the store lacks). He cooks the first two into the chest; the
+			// last still waits on the board afterwards, beside the cakes, locked for a Journeyman. A sack of potatoes (B180).
 			java.util.function.Function<String, Item> cc = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", id));
 			Showcase.check(io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(cc.apply("beanburger_curry")) != null,
-				"Cobblecuisine's dishes are on the menus (Cobblecuisine, cuisineDishes)");
+				"Cobblecuisine's dishes are on the board (Cobblecuisine, cuisineDishes)");
+			BlockPos hall = new BlockPos(4, -60, -5);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			cuisineHall = hall;
 			Villager chef = worker(level, STATION, ModBlocks.KITCHEN_STOVE, ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
 			chef.setVillagerData(chef.getVillagerData().setLevel(3));
 			chef.setVillagerXp(150);
@@ -3379,8 +3387,23 @@ final class JobScenes {
 				new ItemStack(cc.apply("green_bean"), 4), new ItemStack(Items.CARROT, 4), new ItemStack(cc.apply("red_bean"), 2),
 				new ItemStack(Items.BREAD, 2), new ItemStack(Items.POTATO, 16), new ItemStack(cobblemonItem("charti_berry"), 2),
 				new ItemStack(Items.COOKED_CHICKEN, 2));
-			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 1 && c.countItem(cc.apply("beanburger_curry")) >= 1;
-		}));
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.Chefs.menu(level, chef).stream()
+				.noneMatch(i -> io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(i) != null), "no Cobblecuisine dish on the Chef's own menu");
+			for (String[] ask : new String[][] {{"mixed_vegetable_salad", "4"}, {"beanburger_curry", "2"}, {"fruit_punch", "4"}}) {
+				Showcase.check(io.github.jcondedata.aliveworkplace.craft.DishRequests.request(level, hall, cc.apply(ask[0]), Integer.parseInt(ask[1]))
+					== io.github.jcondedata.aliveworkplace.craft.DishRequests.Result.ASKED, "the board took the request for " + ask[0]);
+			}
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.DishRequests.request(level, hall, cc.apply("fruit_honey_cake"), 1)
+				== io.github.jcondedata.aliveworkplace.craft.DishRequests.Result.LEVEL, "the cake is locked for a Journeyman");
+			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 4 && c.countItem(cc.apply("beanburger_curry")) >= 2
+				&& io.github.jcondedata.aliveworkplace.craft.DishRequests.get(l).waiting(hall, net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(cc.apply("fruit_punch"))) == 4;
+		}, new After("04_board_dishes", (level, player) -> {
+			ScreenshotHarness.hover(player, Vec3.atCenterOf(cuisineHall.south(2)), 180, 10);
+			io.github.jcondedata.aliveworkplace.work.ChoiceMenu.openHall(player, net.minecraft.network.chat.Component.translatable("screen.aliveworkplace.hall.title",
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.name(level, cuisineHall)), p -> true,
+				menu -> io.github.jcondedata.aliveworkplace.trade.TradePage.render(menu, level, cuisineHall,
+					io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.DISHES, null, player));
+		}, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6)));
 		SCENES.put("campfire_pot", job("the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest", 2400, (level, player) -> {
 			// ROADMAP 38.11 (Cobblemon): a Chef at a Kitchen Stove, and in the chest beside it the makings of two of the
 			// Campfire Pot's recipes, found by recipe type: EXP Candy XS (sculk and honeycomb) and the Berry Sweet (blue

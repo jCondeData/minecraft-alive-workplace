@@ -4921,7 +4921,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   coffee, fruit punch). Done when: compat GameTests: a Chef with the makings cooks a level-1 dish and keeps 16; a
   level-1 Chef never cooks a level-4 dish; a villager who ate three kinds counts as a varied diet; the Camp Cook makes
   a curry; without Cobblecuisine the menu is today's (a GameTest); scene `cuisine_kitchen`.
-  - [ ] **38.8a** Change from the owner (2026-10-19): dishes must be requested at the village hall board, unlocked once you have this villager
+  - [x] **38.8a** (review: pending 2026-10-19) Change from the owner (2026-10-19): dishes must be requested at the village hall board, unlocked once you have this villager
 - [x] **38.9** (approved 2026-10-19) **Bean farms.** Farmers plant Cobblecuisine's beans on their fields when the store holds fewer than 16
   of a colour a dish on the menu needs, and harvest `cobblecuisine:bean_crop` when it's fully grown (its age property,
   read by name); the harvest goes to the store like other crops. Done when: compat GameTests: a farmer plants beans
@@ -5237,6 +5237,18 @@ the owner's port jar; M33's caravans (39.7).
   `world/VillageHouses` (a design choice, not a density problem). Commands: `tools/modtest/village_density.sh` on
   `main` (5d8652a1) and, for "before", the same script and `VillageDensityMeasure.java` copied into
   `git worktree add <dir> ac8dc522^`. The measurement is registered in no entrypoint, so `build` never runs it.
+- 2026-10-19, 38.8a design (lane-e-1019-0113): "the village hall board" is the hall's Trade page (the price board);
+  dishes get their own **Dishes** tab there, in row 1's free slot 3, shown while dish lists are loaded. Every dish on the
+  `cuisine_dishes` lists (Cobblecuisine's, drinks included, since the Chef made them through the same menu path) is now
+  request-only: `Chefs.menu(level, chef)` leaves them out, and `ChefWork` cooks the oldest request his level allows
+  before his menu. A click asks for 4, shift 16, right-click cancels; at most 64 of a dish wait per village. Locked
+  without a Chef in the hall's area (any grown Chef with a job site; the best level counts); a dish above that level is
+  locked with the level it needs, and a Chef never cooks a request above his own level (one asked of a better Chef
+  waits for one). Delivery: the village's Storehouse nearest the hall (the board's goods live there), else the chests
+  by his stove; the delivered count comes off the request. Saved in `aliveworkplace_dish_requests` (per dimension, hall
+  to dish to count; older worlds start empty; dishes already stocked stay). Kept as today: the Camp Cook's curries (own
+  path, `camp_menu`), the Innkeeper serving drinks from her chests or the store, Cobblemon's Poké snacks, the Campfire
+  Pot recipes and vanilla food; bean farms still plant for any listed dish.
 - 2026-10-18 (38.6a, lane-d-1018-1608, decisions): the Jeweller's Mega recipes (every `luxury_recipes` file with
   `"when": "village_megas"`: Key Stone, Mega Stone from a crystal, from a plain Mega Stone, from 4 meteorite ores) take
   their makings **only from the village store** (`LuxuryWork.store`: the hall's storehouses and kitchens, or without a

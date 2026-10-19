@@ -59,6 +59,7 @@ public final class CuisineDishes implements ResourceManagerReloadListener {
 
 	public static void init() {
 		Platform.get().onDataReload(ID, new CuisineDishes());
+		DishesTab.init(); // 38.8a: the dishes are asked for at the hall's board
 	}
 
 	/** The dishes, lowest level first (none while the switch is off). */
@@ -81,6 +82,12 @@ public final class CuisineDishes implements ResourceManagerReloadListener {
 	@Nullable
 	public static Dish of(Item item) {
 		return ENABLED ? byItem.get(item) : null;
+	}
+
+	/** The dish with item id {@code id}, or null (and null for every id while the switch is off). */
+	@Nullable
+	public static Dish byId(ResourceLocation id) {
+		return ENABLED ? byId.get(id) : null;
 	}
 
 	public static boolean isDish(ItemStack stack) {

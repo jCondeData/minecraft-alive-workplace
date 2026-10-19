@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade
   rails, Create track, train schedules, signals, railway casing and train controls. Without a Conductor a jobless
   villager still drives. Behind the Village trains setting.
+### Changed
+- **Cobblecuisine dishes are asked for at the Village Hall** (38.8a). The Chef no longer cooks Cobblecuisine's dishes on
+  his own: open the hall, click the minecart and pick the new **Dishes** tab, then click a dish to ask for 4 (shift: 16,
+  right-click: take the request down). The dishes are locked until the village has a Chef, and a dish above his level
+  says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
+  curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
 - **A job block a villager was walking to is let go when they're given another (B201).** A jobless villager on the
   way to a job block they picked on their own and given a different one, from the Village Hall or by sneak-right-

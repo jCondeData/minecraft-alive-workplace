@@ -4,6 +4,12 @@ import com.cobblemon.mod.common.block.entity.CampfireBlockEntity;
 import io.github.jcondedata.aliveworkplace.camp.CampCooks;
 import io.github.jcondedata.aliveworkplace.craft.Chefs;
 import io.github.jcondedata.aliveworkplace.craft.CuisineDishes;
+import io.github.jcondedata.aliveworkplace.craft.DishRequests;
+import io.github.jcondedata.aliveworkplace.craft.DishesTab;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.trade.TradePage;
+import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.inn.InnDrinks;
 import io.github.jcondedata.aliveworkplace.inn.Traveller;
@@ -19,6 +25,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
@@ -29,7 +36,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * ROADMAP 38.8 with the real Cobblecuisine 2.0.1: the Chef cooks its dishes by his level from their own crafting recipes,
+ * ROADMAP 38.8 with the real Cobblecuisine 2.0.1: the Chef cooks its dishes by his level from their own crafting recipes
+ * (since 38.8a only those asked for at the hall's board, once the village has a Chef),
  * the diet counts them by food group, the Camp Cook cooks its curries and the Innkeeper serves its drinks.
  */
 public class CuisineCompatTests implements FabricGameTest {
@@ -72,45 +80,173 @@ public class CuisineCompatTests implements FabricGameTest {
 		return chef;
 	}
 
+	/** Where the tests' Village Hall stands. */
+	private static final BlockPos HALL = new BlockPos(6, 2, 1);
+
 	/**
-	 * The Done when: a Novice Chef with the makings of a Mixed Vegetable Salad (Salad Mix, a Bold Mint, a green bean and
-	 * a carrot, twenty of each) cooks it from its own crafting recipe, and stops once the chest holds 16.
+	 * A Village Hall of the tests' own, nobody's but this test's: other halls round the area are taken down, no request
+	 * is left from before, and its village reaches 16 blocks (no Chef of another test is the village's) until the test ends.
+	 */
+	private static BlockPos hall(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearHalls(helper);
+		int radius = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		PartnerShowsCompatTests.after(helper, () -> {
+			VillageHalls.RADIUS = radius;
+			DishRequests.get(helper.getLevel()).clear();
+		});
+		DishRequests.get(helper.getLevel()).clear();
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		return helper.absolutePos(HALL);
+	}
+
+	/** The dish's icon on the board's Dishes tab. */
+	private static ItemStack dishIcon(ChoiceMenu menu, Item dish) {
+		for (int slot = VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+			if (menu.icon(slot).is(dish)) {
+				return menu.icon(slot);
+			}
+		}
+		throw new AssertionError("no " + dish + " on the Dishes tab");
+	}
+
+	private static int dishSlot(ChoiceMenu menu, Item dish) {
+		for (int slot = VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+			if (menu.icon(slot).is(dish)) {
+				return slot;
+			}
+		}
+		throw new AssertionError("no " + dish + " on the Dishes tab");
+	}
+
+	private static List<String> lore(ItemStack icon) {
+		List<String> out = new java.util.ArrayList<>();
+		var lore = icon.get(net.minecraft.core.component.DataComponents.LORE);
+		if (lore != null) {
+			lore.lines().forEach(l -> out.add(l.getString()));
+		}
+		return out;
+	}
+
+	/** The hall's screen, its minecart, then the Dishes tab: the way a player gets to the board's dishes. */
+	private static ChoiceMenu board(GameTestHelper helper, ServerPlayer player, BlockPos hall) {
+		ChoiceMenu menu = VillageHallScreen.forTest(player, hall);
+		menu.press(VillageHallScreen.ROUTES, player);
+		helper.assertFalse(menu.icon(TradePage.Tab.DISHES.slot()).isEmpty(),
+			"no Dishes tab on the Trade page");
+		menu.press(TradePage.Tab.DISHES.slot(), player);
+		helper.assertTrue(TradePage.marks(menu.icon(TradePage.Tab.DISHES.slot())).contains(TradePage.OPEN), "the Dishes tab didn't open");
+		return menu;
+	}
+
+	/**
+	 * The Done when (38.8a): with no Chef in the village the board lists the dishes locked, says a Chef is needed, and a
+	 * click asks for nothing; once a Novice Chef works there the salads open and the cakes stay locked for his level.
+	 */
+	//$ gametest_batch AREA '"cuisine_board_locked"'
+	@GameTest(template = AREA, batch = "cuisine_board_locked")
+	public void withoutAChefTheDishesAreLockedOnTheBoard(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos hall = hall(helper);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		Item salad = cc("mixed_vegetable_salad");
+		Item cake = cc("fruit_honey_cake");
+		ChoiceMenu menu = board(helper, player, hall);
+		ItemStack tab = menu.icon(TradePage.Tab.DISHES.slot());
+		helper.assertTrue(TradePage.marks(tab).contains(DishesTab.LOCKED), "the tab isn't locked without a Chef");
+		helper.assertTrue(lore(tab).contains("Locked: the village needs a Chef to cook these"), "the tab doesn't say a Chef is needed: " + lore(tab));
+		ItemStack icon = dishIcon(menu, salad);
+		helper.assertTrue(TradePage.marks(icon).contains(DishesTab.LOCKED), "the salad isn't locked");
+		helper.assertTrue(lore(icon).contains("Locked: the village needs a Chef to cook these"), "the salad: " + lore(icon));
+		menu.press(dishSlot(menu, salad), player);
+		helper.assertTrue(DishRequests.get(helper.getLevel()).waiting(hall, BuiltInRegistries.ITEM.getKey(salad)) == 0, "asked for a salad with no Chef");
+		helper.assertTrue(DishRequests.request(helper.getLevel(), hall, salad, 4) == DishRequests.Result.NO_CHEF, "the request without a Chef");
+		chef(helper, 1);
+		menu = board(helper, player, hall);
+		helper.assertFalse(TradePage.marks(dishIcon(menu, salad)).contains(DishesTab.LOCKED), "the salad is still locked with a Chef");
+		helper.assertTrue(lore(dishIcon(menu, salad)).contains("Click: ask for 4 more. Shift-click: 16 more"), "the salad: " + lore(dishIcon(menu, salad)));
+		helper.assertTrue(TradePage.marks(dishIcon(menu, cake)).contains(DishesTab.LOCKED), "a Novice's village can ask for the cake");
+		helper.assertTrue(lore(dishIcon(menu, cake)).contains("Locked: the Chef must be Expert"), "the cake: " + lore(dishIcon(menu, cake)));
+		helper.succeed();
+	}
+
+	/**
+	 * The Done when (38.8a; was 38.8's "a Chef with the makings cooks a level-1 dish and keeps 16", reversed by the
+	 * owner): a player asks at the board for 4 Mixed Vegetable Salads; the Novice Chef cooks them from their own crafting
+	 * recipe with the makings in his chest, delivers them (no Storehouse: to the chest by his stove), the request comes
+	 * down, and he cooks no more.
 	 */
 	//$ gametest_ticks_batch AREA '3000' '"cuisine_chef_salad"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "cuisine_chef_salad")
-	public void aChefWithTheMakingsCooksALevelOneDishAndKeeps16(GameTestHelper helper) {
+	public void aRequestedLevelOneDishIsCookedAndDelivered(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos hall = hall(helper);
 		Item salad = cc("mixed_vegetable_salad");
+		ResourceLocation id = BuiltInRegistries.ITEM.getKey(salad);
 		Container chest = chest(helper, new ItemStack(cc("salad_mix"), 20), new ItemStack(cm("bold_mint"), 20), new ItemStack(cc("green_bean"), 20),
 			new ItemStack(Items.CARROT, 20));
-		Villager chef = chef(helper, 1);
-		helper.assertTrue(Chefs.menu(helper.getLevel(), chef).contains(salad), "the salad isn't on a Novice's menu");
+		chef(helper, 1);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		ChoiceMenu menu = board(helper, player, hall);
+		menu.press(dishSlot(menu, salad), player);
+		helper.assertTrue(DishRequests.get(helper.getLevel()).waiting(hall, id) == 4, "the click asked for " + DishRequests.get(helper.getLevel()).waiting(hall, id));
+		helper.assertTrue(lore(dishIcon(menu, salad)).contains("Asked for: 4 waiting"), "the board after the click: " + lore(dishIcon(menu, salad)));
 		long[] reached = {-1};
 		helper.onEachTick(() -> {
-			if (reached[0] < 0 && chest.countItem(salad) >= 16) {
+			if (reached[0] < 0 && chest.countItem(salad) >= 4) {
 				reached[0] = helper.getTick();
 			}
 		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(reached[0] >= 0, chest.countItem(salad) + " salads so far");
-			helper.assertTrue(chest.countItem(salad) == 16, chest.countItem(salad) + " salads: the chef keeps 16");
-			helper.assertTrue(chest.countItem(cc("salad_mix")) == 4 && chest.countItem(cm("bold_mint")) == 4 && chest.countItem(cc("green_bean")) == 4
-				&& chest.countItem(Items.CARROT) == 4, "the makings of 16 weren't used, or more were: " + chest.countItem(cc("salad_mix")) + " salad mix left");
-			helper.assertTrue(helper.getTick() - reached[0] >= 400, "waiting to see the chef stops at 16");
+			helper.assertTrue(chest.countItem(salad) == 4, chest.countItem(salad) + " salads: 4 were asked for");
+			helper.assertTrue(DishRequests.get(helper.getLevel()).waiting(hall, id) == 0, "the request is still up");
+			helper.assertTrue(chest.countItem(cc("salad_mix")) == 16 && chest.countItem(cm("bold_mint")) == 16 && chest.countItem(cc("green_bean")) == 16
+				&& chest.countItem(Items.CARROT) == 16, "the makings of 4 weren't used, or more were: " + chest.countItem(cc("salad_mix")) + " salad mix left");
+			helper.assertTrue(helper.getTick() - reached[0] >= 400, "waiting to see the chef cooks no more");
 		});
 	}
 
-	/** A Novice Chef never cooks a level-4 dish: the makings of a Fruit & Honey Cake stay in the chest. */
+	/** The Done when (38.8a): a Master Chef with every dish's makings and nobody asking cooks no Cobblecuisine dish. */
+	//$ gametest_ticks_batch AREA '1600' '"cuisine_chef_unasked"'
+	@GameTest(template = AREA, timeoutTicks = 1600, batch = "cuisine_chef_unasked")
+	public void anUnrequestedChefCooksNoDish(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		hall(helper);
+		Item salad = cc("mixed_vegetable_salad");
+		Item cake = cc("fruit_honey_cake");
+		Container chest = chest(helper, new ItemStack(cc("salad_mix"), 8), new ItemStack(cm("bold_mint"), 8), new ItemStack(cc("green_bean"), 8),
+			new ItemStack(Items.CARROT, 8), new ItemStack(Items.WHEAT, 1), new ItemStack(cc("red_bean"), 4), new ItemStack(Items.HONEY_BOTTLE, 4),
+			new ItemStack(Items.APPLE, 4));
+		Villager chef = chef(helper, 5);
+		for (Item dish : Chefs.menu(helper.getLevel(), chef)) {
+			helper.assertTrue(CuisineDishes.of(dish) == null, dish + " is on the Chef's own menu");
+		}
+		helper.runAfterDelay(1400, () -> {
+			helper.assertTrue(chest.countItem(salad) == 0 && chest.countItem(cake) == 0, "cooked unasked: " + chest.countItem(salad) + " salads, "
+				+ chest.countItem(cake) + " cakes");
+			helper.assertTrue(chest.countItem(cc("salad_mix")) == 8 && chest.countItem(Items.WHEAT) == 1, "the makings were used");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * The Done when: a Novice Chef's village can't ask for a level-4 dish at the board, and a cake request left from a
+	 * better Chef (written straight into the requests) isn't cooked by him: the makings stay in the chest.
+	 */
 	//$ gametest_ticks_batch AREA '1600' '"cuisine_chef_novice_cake"'
 	@GameTest(template = AREA, timeoutTicks = 1600, batch = "cuisine_chef_novice_cake")
 	public void aLevelOneChefNeverCooksALevelFourDish(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos hall = hall(helper);
 		Item cake = cc("fruit_honey_cake");
 		Container chest = chest(helper, new ItemStack(Items.WHEAT, 1), new ItemStack(cc("red_bean"), 4), new ItemStack(Items.HONEY_BOTTLE, 4),
 			new ItemStack(Items.APPLE, 4));
 		Villager chef = chef(helper, 1);
-		helper.assertFalse(Chefs.menu(helper.getLevel(), chef).contains(cake), "a cake is on a Novice's menu");
 		helper.assertTrue(CuisineDishes.of(cake) != null && CuisineDishes.of(cake).level() == 4, "the cake isn't a level-4 dish");
+		helper.assertTrue(DishRequests.request(helper.getLevel(), hall, cake, 1) == DishRequests.Result.LEVEL, "a Novice's village asked for a cake");
+		helper.assertTrue(DishRequests.get(helper.getLevel()).waiting(hall, CuisineDishes.of(cake).id()) == 0, "the cake request went up");
+		DishRequests.get(helper.getLevel()).add(hall, CuisineDishes.of(cake).id(), 1);
 		helper.runAfterDelay(1400, () -> {
 			helper.assertTrue(chest.countItem(cake) == 0, "a Novice cooked " + chest.countItem(cake) + " cakes");
 			helper.assertTrue(chest.countItem(Items.WHEAT) == 1 && chest.countItem(Items.HONEY_BOTTLE) == 4, "the cake's makings were used");
@@ -119,36 +255,63 @@ public class CuisineCompatTests implements FabricGameTest {
 		});
 	}
 
-	/** The same makings and an Expert Chef: the cake is cooked (so the Novice above held back for his level alone). */
+	/** The same makings, an Expert Chef and a cake asked for: the cake is cooked (so the Novice above held back for his level alone). */
 	//$ gametest_ticks_batch AREA '2400' '"cuisine_chef_expert_cake"'
 	@GameTest(template = AREA, timeoutTicks = 2400, batch = "cuisine_chef_expert_cake")
-	public void anExpertChefCooksTheCake(GameTestHelper helper) {
+	public void anExpertChefCooksTheRequestedCake(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos hall = hall(helper);
 		Item cake = cc("fruit_honey_cake");
 		Container chest = chest(helper, new ItemStack(Items.WHEAT, 1), new ItemStack(cc("red_bean"), 4), new ItemStack(Items.HONEY_BOTTLE, 4),
 			new ItemStack(Items.APPLE, 4));
-		Villager chef = chef(helper, 4);
-		helper.assertTrue(Chefs.menu(helper.getLevel(), chef).contains(cake), "the cake isn't on an Expert's menu");
+		chef(helper, 4);
+		helper.assertTrue(DishRequests.request(helper.getLevel(), hall, cake, 1) == DishRequests.Result.ASKED, "an Expert's village can't ask for the cake");
 		helper.succeedWhen(() -> {
 			helper.assertTrue(chest.countItem(cake) == 1, chest.countItem(cake) + " cakes");
 			helper.assertTrue(chest.countItem(Items.WHEAT) == 0 && chest.countItem(Items.GLASS_BOTTLE) == 1, "the wheat or the bottle");
+			helper.assertTrue(DishRequests.get(helper.getLevel()).waiting(hall, CuisineDishes.of(cake).id()) == 0, "the cake request is still up");
 		});
 	}
 
-	/** The Chef's makings missing (no Bold Mint): no salad, and nothing else of the chest is touched. */
+	/** The Chef's makings missing (no Bold Mint) for the salads asked for: no salad, nothing touched, the request stays up. */
 	//$ gametest_ticks_batch AREA '1400' '"cuisine_chef_missing"'
 	@GameTest(template = AREA, timeoutTicks = 1400, batch = "cuisine_chef_missing")
 	public void aChefShortOfTheMakingsWaits(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos hall = hall(helper);
 		Container chest = chest(helper, new ItemStack(cc("salad_mix"), 4), new ItemStack(cc("green_bean"), 4), new ItemStack(Items.CARROT, 4));
 		Villager chef = chef(helper, 5);
+		Item salad = cc("mixed_vegetable_salad");
+		helper.assertTrue(DishRequests.request(helper.getLevel(), hall, salad, 4) == DishRequests.Result.ASKED, "the salads weren't asked for");
 		helper.runAfterDelay(1200, () -> {
-			helper.assertTrue(chest.countItem(cc("mixed_vegetable_salad")) == 0, "a salad without its mint");
+			helper.assertTrue(chest.countItem(salad) == 0, "a salad without its mint");
 			helper.assertTrue(chest.countItem(cc("salad_mix")) == 4 && chest.countItem(cc("green_bean")) == 4 && chest.countItem(Items.CARROT) == 4,
 				"the makings were touched");
 			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(chef, 0) == 0, "cooked " + ModAttachments.ITEMS_CRAFTED.getOrElse(chef, 0));
+			helper.assertTrue(DishRequests.get(helper.getLevel()).waiting(hall, BuiltInRegistries.ITEM.getKey(salad)) == 4, "the request came down");
 			helper.succeed();
 		});
+	}
+
+	/** The Done when: the board's requests are saved with the world: a reload brings back each village's, in their order. */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void dishRequestsSurviveSaveAndReload(GameTestHelper helper) {
+		DishRequests requests = new DishRequests();
+		BlockPos one = new BlockPos(100, 64, -40);
+		BlockPos two = new BlockPos(-7, 70, 300);
+		ResourceLocation salad = BuiltInRegistries.ITEM.getKey(cc("mixed_vegetable_salad"));
+		ResourceLocation cake = BuiltInRegistries.ITEM.getKey(cc("fruit_honey_cake"));
+		requests.add(one, cake, 2);
+		requests.add(one, salad, 12);
+		requests.add(two, salad, 100); // capped
+		requests.done(one, salad, 4);
+		DishRequests back = requests.reloaded(helper.getLevel().registryAccess());
+		helper.assertTrue(back.of(one).equals(java.util.Map.of(cake, 2, salad, 8)), "the first village's: " + back.of(one));
+		helper.assertTrue(List.copyOf(back.of(one).keySet()).equals(List.of(cake, salad)), "the order: " + back.of(one).keySet());
+		helper.assertTrue(back.waiting(two, salad) == DishRequests.MAX, "the second village's: " + back.of(two));
+		helper.assertTrue(new DishRequests().reloaded(helper.getLevel().registryAccess()).of(one).isEmpty(), "an older world has none waiting");
+		helper.succeed();
 	}
 
 	/**
@@ -181,12 +344,13 @@ public class CuisineCompatTests implements FabricGameTest {
 	public void theSwitchOffLeavesTheMenusAsTheyWere(GameTestHelper helper) {
 		Villager chef = helper.spawn(EntityType.VILLAGER, new BlockPos(1, 2, 1));
 		chef.setVillagerData(chef.getVillagerData().setProfession(ModVillagers.CHEF).setLevel(5));
-		helper.assertTrue(Chefs.menu(helper.getLevel(), chef).size() > Chefs.menu(helper.getLevel()).size(), "no dishes on a Master's menu");
+		helper.assertTrue(DishRequests.shown() && !CuisineDishes.upTo(5).isEmpty(), "no dishes to ask for at the board");
 		boolean was = CuisineDishes.ENABLED;
 		CuisineDishes.ENABLED = false;
 		try {
 			helper.assertTrue(Chefs.menu(helper.getLevel(), chef).equals(Chefs.menu(helper.getLevel())), "the menu with the switch off");
 			helper.assertTrue(CuisineDishes.drinks().isEmpty() && CuisineDishes.dishes().isEmpty(), "dishes with the switch off");
+			helper.assertFalse(DishRequests.shown() || TradePage.tabs().contains(TradePage.Tab.DISHES), "a Dishes tab with the switch off");
 			Villager salads = helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 2));
 			for (String dish : List.of("mixed_vegetable_salad", "spore_mushroom_salad", "pumpkin_pie_salad")) {
 				Diet.ate(salads, new ItemStack(cc(dish)));

@@ -4,10 +4,10 @@
 type: Pokémon feature
 expansion: M38
 image: https://jcondedata.github.io/minecraft-alive-workplace/cuisine_kitchen/still-3.jpg
-caption: A Journeyman Chef's salad and curry in the chest by the stove
+caption: A Journeyman Chef's salads and curries, asked for at the hall's board
 Needs: Cobblemon and Cobblecuisine on the server
 Who: the Chef, the Camp Cook, the Innkeeper, the Farmer, partner Pokémon, Burghers and Nobles
-Kept: 16 of each dish in the chests by the stove
+Asked for: on the Village Hall's Trade page, Dishes tab
 categories: Pokémon, Jobs
 related: chef.md, camp-cook.md, innkeeper.md, farmer.md, food-and-diet.md, partners-at-work.md, classes.md, settings.md
 ```
@@ -15,11 +15,19 @@ related: chef.md, camp-cook.md, innkeeper.md, farmer.md, food-and-diet.md, partn
 With **Cobblecuisine** on the server, your village's cooks make its salads, sandwiches, curries, cakes and drinks, and
 your villagers love the variety.
 
-## What the Chef cooks
+## Asking the Chef for a dish
 
-The [Chef](chef.md) cooks Cobblecuisine's dishes after his usual bread, pies and stews, each from its own recipe, with
-the makings from the chests by his stove and the village's spare food. He keeps 16 of each. What he can make grows
-with him:
+The [Chef](chef.md) cooks Cobblecuisine's dishes only when you ask for them. Open your Village Hall, click the
+minecart and pick the **Dishes** tab. Every dish is there with how many are asked for and how many the village's store
+holds:
+
+- **Click** a dish to ask for 4 more; **shift-click** for 16 more. Up to 64 of a dish can wait.
+- **Right-click** to take a request down.
+
+The dishes stay **locked** until your village has a Chef: the tab says so. Once he's there, he cooks what you asked
+for first, each from its own recipe, with the makings from the chests by his stove and the village's spare food, and
+carries it to your Storehouse (or the chests by his stove if you have none). If a makings is missing the request just
+waits. A dish above his level is locked too, and says which level he needs. What he can make grows with him:
 
 - **Novice:** salads (Mixed Vegetable, Spore Mushroom, Pumpkin Pie) and sandwiches (Sweet Jam, Salty Egg, Salty Veggie).
   He roasts the berries for the sandwiches himself.
@@ -29,7 +37,10 @@ with him:
 - **Expert:** five cakes, such as the Fruit & Honey Cake and the Twin Mushroom Cake.
 - **Master:** the Jigglypuff Fruity Flan and the Miltank Mix au Lait.
 
-Fill a chest by his stove with beans, Salad Mix, mints, berries and the other makings, and the dishes appear beside them.
+Fill a chest by his stove with beans, Salad Mix, mints, berries and the other makings, ask at the board, and the dishes
+appear in the Storehouse.
+
+![The board's Dishes tab: the Fruit Punch still asked for, the cakes locked](https://jcondedata.github.io/minecraft-alive-workplace/cuisine_kitchen/still-4.jpg)
 
 ![The Chef at work on the dishes](https://jcondedata.github.io/minecraft-alive-workplace/cuisine_kitchen/still-2.jpg)
 
@@ -54,7 +65,7 @@ cooks them over her fire and keeps 16 of each by her Campfire Pot.
 
 The [Innkeeper](innkeeper.md) serves each guest staying at her inn a drink: a Bouncy Brionne Soda, a Teddiursa Iced
 Coffee or a Fruit Punch, once a stay. She takes it from the chests by her counter, or else from the village store, so
-keep some there.
+ask the Chef for some at the board and keep them there.
 
 ## Beans on the farm
 

@@ -47,6 +47,8 @@ public final class WorkplaceConfig {
 	public int postmanRange = 64;
 	/** At most this many workers per village (taken workstations within villageRadius); 0: no cap. */
 	public int maxWorkersPerVillage = 0;
+	/** A Miner with no pickaxe makes one at their workstation from what they mined (36.11). Off: they wait for one. */
+	public boolean minerCraftsPickaxe = true;
 	/** A village takes only so many fishermen (ROADMAP 26.13: storage barrels made most villagers fishermen). Off: vanilla. */
 	public boolean fishermanCap = true;
 	/** Fishermen every village takes, with the cap on. */
@@ -862,6 +864,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.PATH_RANGE = workerPathRange;
 		// Off in gametests (fishermen in the tests beside one would count against it); the cap's tests turn it on.
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED = fishermanCap && System.getProperty("fabric-api.gametest") == null;
+		io.github.jcondedata.aliveworkplace.mine.PickaxeCrafting.ENABLED = minerCraftsPickaxe;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.BASE = fishermenPerVillage;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.PER_VILLAGERS = villagersPerFisherman;
 		io.github.jcondedata.aliveworkplace.fish.FishermanCap.RADIUS = villageRadius;

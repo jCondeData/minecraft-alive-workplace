@@ -2508,6 +2508,34 @@ final class JobScenes {
 			return l -> n(ModAttachments.ITEMS_CRAFTED, t) >= 1
 				&& (theirs.countItem(Items.IRON_AXE) >= 1 || lumberjack.getMainHandItem().is(Items.IRON_AXE));
 		}, null));
+		SCENES.put("miner_pickaxe", job("the miner's stone pickaxe wore out on the fourth block; she made a new one at the blast furnace from the cobblestone she had dug and dug on to the end",
+			2400, (level, player) -> {
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			Container c = chest(level, chestPos(), new ItemStack(Items.STICK, 2), new ItemStack(Items.TORCH, 4));
+			BlockPos min = new BlockPos(-1, -60, -5);
+			BlockPos max = new BlockPos(1, -59, -3);
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+			}
+			Villager m = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			ItemStack worn = new ItemStack(Items.STONE_PICKAXE);
+			worn.setDamageValue(worn.getMaxDamage() - 4);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, worn);
+			io.github.jcondedata.aliveworkplace.mine.QuarrySite site = io.github.jcondedata.aliveworkplace.mine.Miners.start(level, m, player,
+				net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max), 2);
+			site.setStairs(false);
+			boolean[] making = {false};
+			return l -> {
+				var now = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				if (!making[0] && now != null && now.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.CRAFTING_PICKAXE) {
+					making[0] = true;
+					SHOTS.add("04_making_pickaxe");
+				}
+				return making[0] && now == null && c.countItem(Items.STONE_PICKAXE) >= 1 && c.countItem(Items.STICK) == 0;
+			};
+		}));
 		SCENES.put("weaponsmith", job("the weaponsmith mended the worn pickaxe", 1800, (level, player) -> {
 			Villager w = worker(level, STATION, Blocks.GRINDSTONE.defaultBlockState()
 				.setValue(BlockStateProperties.ATTACH_FACE, net.minecraft.world.level.block.state.properties.AttachFace.FLOOR)

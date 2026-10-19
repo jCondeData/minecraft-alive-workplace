@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * the world in {@link QuarrySiteManager}, so the miner picks up where it left off.
  */
 public final class QuarrySite {
-	public enum Status { WORKING, NEEDS_PICKAXE, NEEDS_LADDERS, DEPOSITING, DONE }
+	public enum Status { WORKING, NEEDS_PICKAXE, NEEDS_LADDERS, DEPOSITING, DONE, CRAFTING_PICKAXE }
 
 	/**
 	 * Where the cursor is: down the ladder shaft (strip mines at a set height), in the quarry itself, or putting the

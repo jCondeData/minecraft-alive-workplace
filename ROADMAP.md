@@ -4732,7 +4732,7 @@ Depends on: nothing open.
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
   empty result says so. Done when: GameTests for the filter (name, id, job, no match, cleared box, selected build hidden by
   a filter); `langcheck.py` passes; the `table` scene's stills show a search typed and the list narrowed.
-- [ ] **36.11** **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
+- [x] **36.11** (review: pending 2026-10-19) **Miners craft their own pickaxe** (owner, 2026-10-19). A Miner whose pickaxe wears out or who has none, and who has mined
   the materials (cobblestone or deepslate for the head, sticks from the village store or crafted from planks; stone, then iron
   and diamond as the level rises), crafts a new one at their work block from what they mined themselves, instead of waiting
   for the player or the Toolsmith. Done when: GameTests for the happy path (mined cobblestone and sticks become a stone

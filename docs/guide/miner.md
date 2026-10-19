@@ -9,7 +9,7 @@ Pick it with: a pickaxe
 Works at: a quarry you mark with a **Quarry Marker** (a stick, red dye and paper), within 64 blocks of the furnace
 Quarry size: up to 32 by 32, 16 deep unless you change it
 Strip mine: tunnels up to 64 long and 32 wide
-Needs: pickaxes, torches (and ladders for a strip mine down a shaft)
+Needs: a pickaxe (or cobblestone and sticks to make one), torches (and ladders for a strip mine down a shaft)
 Makes: stone, ore, dirt and whatever else the ground holds
 Pokémon helpers: Ground, Rock, Steel
 categories: Jobs
@@ -45,6 +45,24 @@ dug and how many they left (next to water or lava, or too hard for their pickaxe
 Over their head you see the quarry's size and how far along it is. Sneak-right-click them with an empty hand for the
 full status and a **[Stop this quarry]** button: they stop and give the marker back, and what was dug stays dug.
 
+## When the pickaxe wears out
+
+A miner looks after their own tools. When their pickaxe breaks (or they never had one), they look in their chests for
+another; if there's none, they walk back to the blast furnace and **make one** out of what they dug: three cobblestone
+(cobbled deepslate or blackstone do too) and two sticks. The sticks can come from their chests or the village store,
+and two planks will do instead. The line over their head says "making a pickaxe", you hear that they made one, and
+they go straight back to digging.
+
+![Making a new pickaxe at the blast furnace](https://jcondedata.github.io/minecraft-alive-workplace/miner_pickaxe/still-4.jpg)
+
+As they gain levels they make better ones: an **iron pickaxe** from Journeyman when there are three iron ingots in
+their chests (their blast furnace smelts some for them), a **diamond pickaxe** from Expert with three diamonds. They
+always make the best one they can.
+
+Nothing to make one from? They wait by the furnace ("needs a pickaxe"), and the **Storehouse** board asks for what's
+missing, the cobblestone first and then the sticks. Hand it over there and they get to work. If you'd rather they
+always wait for you or the Toolsmith, turn off **Miners Make Pickaxes** in the settings.
+
 ## Strip mines
 
 A strip mine takes just the ore. The miner digs tunnels two blocks high with two blocks of rock between them, and mines
@@ -55,14 +73,14 @@ marker, you can also type `/workplace strip <height>`.
 
 ## How the miner fits in
 
-- **Fed by:** a [Toolsmith](toolsmith.md) makes a pickaxe when theirs wears out and the chests have none, and a
+- **Fed by:** they make their own stone pickaxes; a [Toolsmith](toolsmith.md) makes one when they can't, and a
   [Weaponsmith](weaponsmith.md) mends worn ones. A [Librarian](librarian.md) with an enchanting table enchants their
   pickaxe.
 - **Feeds:** the [Porter](porter.md) carries the stone and ore to the storehouse, but leaves the torches, ladders and
   32 of each kind of stone so the miner can patch the stairs. With coal in the chests, the miner's own blast furnace
   smelts the ore; an [Armorer](armorer.md) fetches the rest and smelts it for the village. The
   [Builder](builder.md) takes stone from the miner's chests or the storehouse when a build is short.
-- **Stops when:** there's no pickaxe in the chests ("needs a pickaxe"), the blast furnace is broken, or a strip mine
+- **Stops when:** there's no pickaxe in the chests and nothing to make one from ("needs a pickaxe"), the blast furnace is broken, or a strip mine
   down a shaft has no ladders.
 
 ## Trading

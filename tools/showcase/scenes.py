@@ -115,6 +115,10 @@ SCENES = [
     # Miner
     S("quarry", "Miner", "A miner digs out a quarry", "the miner dug out the whole quarry", 420,
       [("frame_*@first", "Start"), ("frame_*@middle", "Digging"), ("50_quarry_done", "Dug out")]),
+    # Miners make their own pickaxe (ROADMAP 36.11): a worn stone pickaxe breaks, a new one is made at the blast furnace
+    job("miner_pickaxe", "Miner", "Making a new pickaxe from what she mined",
+        "the miner's worn pickaxe broke, she made a stone pickaxe at the blast furnace from the cobblestone she dug and dug on to the end", 150,
+        extra=[("04_making_pickaxe", "Making the pickaxe at the blast furnace")]),
     # Lumberjack
     S("forest", "Lumberjack", "Felling and replanting four trees", "the lumberjack felled all four trees", 240,
       [("frame_*@first", "Start"), ("frame_*@middle", "Felling"), ("50_forest_done", "Felled and replanted")]),

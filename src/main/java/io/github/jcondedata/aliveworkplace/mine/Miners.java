@@ -224,8 +224,17 @@ public final class Miners {
 	static void notifyNeedsPickaxe(ServerLevel level, Villager villager, QuarrySite site) {
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
 		if (owner != null && site.shouldNotify(level.getGameTime(), 1200)) {
-			tell(owner, Component.translatable("message.aliveworkplace.quarry.needs_pickaxe", villager.getDisplayName(), SupplyContainers.RADIUS),
-				ChatFormatting.YELLOW);
+			tell(owner, Component.translatable(PickaxeCrafting.ENABLED ? "message.aliveworkplace.quarry.needs_pickaxe_or_materials"
+				: "message.aliveworkplace.quarry.needs_pickaxe", villager.getDisplayName(), SupplyContainers.RADIUS), ChatFormatting.YELLOW);
+		}
+	}
+
+	/** The miner made a new pickaxe from what they mined (36.11): the owner hears of it. */
+	static void notifyCraftedPickaxe(ServerLevel level, Villager villager, QuarrySite site, ItemStack pick) {
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		if (owner != null) {
+			tell(owner, Component.translatable("message.aliveworkplace.quarry.crafted_pickaxe", villager.getDisplayName(), pick.getHoverName()),
+				ChatFormatting.GRAY);
 		}
 	}
 

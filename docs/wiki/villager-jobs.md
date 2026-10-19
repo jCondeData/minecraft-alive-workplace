@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, B97, B101, B103
 
 ## What a player sees
 
@@ -140,6 +140,17 @@ requests as a list on the left (what, how many, for whom and how far), the store
 list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
 over what you have, as before.
 
+**Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
+chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three
+Cobblestone (or Cobbled Deepslate or Blackstone) from their bag and their chests, and two Sticks from there or from the
+village store, or two Planks cut into sticks (the spare two go in the bag). A Journeyman makes iron when there are three
+Iron Ingots in their chests (the blast furnace's own, often), an Expert or Master diamond with three Diamonds: always
+the best they can. It takes three seconds at the furnace, the line over their head says "making a pickaxe", and the
+owner reads "Dara made a new Stone Pickaxe at their workstation from what they mined." Nothing is taken unless all of
+it is there, so a Miner saved and loaded mid-way simply starts it again. Without the materials they wait as before
+("needs a pickaxe"), and the Storehouse board asks for what they lack, the cobblestone first and then the sticks,
+beside "A pickaxe" (which the Toolsmith may still make): handed over, it goes into their chests and they make it.
+
 **Working with nobody near.** While anyone is online, every worker's workstation chunk stays loaded, so villages
 keep working when no player is near (`keepVillagesWorking`). Builds and quarries follow the game rule
 `workplaceKeepWorkLoaded`.
@@ -178,6 +189,7 @@ list of free workstations finds each kind of workstation's job once.
 | `villagersPerFisherman` | 10 (1 to 100) | One more fisherman for every this many villagers, with the cap on |
 | `workerPathRange` | 48 (16 to 128) | How far a worker looks for a path in one go |
 | `keepVillagesWorking` | on | Villages keep working while no player is near |
+| `minerCraftsPickaxe` | on | A Miner with no pickaxe makes one at their workstation from what they mined; off: they wait for one |
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |
 | `workplaceKeepWorkLoaded` | true | Game rule: builds and quarries keep running while their player is online |
 | `workplaceVillageFarms` | true | Game rule: a village farmer with no field takes on the farm by their composter |
@@ -238,6 +250,10 @@ and so on). Status lines and the requests board are not saved: workers post agai
 - 26.6 (owner's playtest, 2026-10-14): in Cobblemon villages nearly every villager works, so a working villager can
   be retrained as a Builder for emeralds. Whether the other jobs' switches should cost too is a question in the ROADMAP
   Notes; for now they stay free.
+- 36.11 (owner, 2026-10-19): a Miner makes their own pickaxe instead of waiting for the player or the Toolsmith. A
+  pickaxe already in their chests comes first (it's there to be used), then making one, then a spare from another
+  worker's chests. Iron from Journeyman and diamond from Expert; the head comes only from their own bag and chests
+  (what they mined), the sticks may come from the village store too.
 
 ## Known limits
 
@@ -247,6 +263,7 @@ and so on). Status lines and the requests board are not saved: workers post agai
   grows later, he looks again by himself, but a fisherman over the cap is never let go to make room.
 - The five Pokémon jobs and the Gem Grower are behind 1.2's gate, the Vintner, the Tailor, the Printer and the Jeweler
   behind 1.8's, and the Firewarden, the Well Keeper and the Physician behind 1.6's; 1.0 opens them all.
+- A Miner makes only pickaxes, never their ladders or torches; the board asks for one missing material at a time.
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
 
 ## Proof
@@ -259,8 +276,10 @@ refuse, save and reload, the switch off), `StationsCompatTests` (11, the Pokémo
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
 save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
-their jobs).
+their jobs), `MinerPickaxeGameTests` (7, 36.11: cobblestone and sticks become a stone pickaxe and the quarry is dug,
+a worn-out pickaxe made again from the bag and cut planks, missing materials on the Storehouse board and handed over
+there, save and reload mid-way, the switch off, iron and diamond as the miner rises, the new sentences).
 
-Showcase scenes: `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
+Showcase scenes: `miner_pickaxe` (a worn pickaxe breaks, a new one is made at the blast furnace), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,
 `vintner`, `tailor`, `printer`.

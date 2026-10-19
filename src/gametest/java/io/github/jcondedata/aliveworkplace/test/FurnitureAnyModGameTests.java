@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderBag;
 import io.github.jcondedata.aliveworkplace.build.FurnitureStock;
 import io.github.jcondedata.aliveworkplace.build.MaterialList;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureEquivalents;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
 import io.github.jcondedata.aliveworkplace.furnish.Furnishings;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -54,6 +56,10 @@ public class FurnitureAnyModGameTests implements FabricGameTest {
 	private static final Vec3i NOOK_SIZE = new Vec3i(3, 2, 3);
 	private static final String PIECES = "aliveworkplace_test_pieces";
 	private static final String ALT = "aliveworkplace_test_alt";
+	/** A test mod whose chair is two blocks tall (a pressure plate on each): not the same footprint as the others. */
+	private static final String WIDE = "aliveworkplace_test_wide";
+	/** A test mod whose spruce chair is the very block {@link #PIECES} uses. */
+	private static final String SAME = "aliveworkplace_test_same";
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 	private static final BlockPos NOOK_AT = new BlockPos(5, 2, 5);
@@ -282,6 +288,95 @@ public class FurnitureAnyModGameTests implements FabricGameTest {
 			}
 			helper.succeed();
 		});
+	}
+
+	private static FurnitureSpot spruceChair(int x) {
+		return new FurnitureSpot(FurnitureSpot.Kind.CHAIR, new BlockPos(x, 1, 1), Direction.SOUTH, "spruce", null,
+			List.of(new FurnitureSpot.Cell(BlockPos.ZERO, Blocks.SPRUCE_STAIRS.defaultBlockState())));
+	}
+
+	private static String mods(FurnitureChoice choice) {
+		return choice.spots().get(0).mod() + "," + choice.spots().get(1).mod();
+	}
+
+	/**
+	 * Two chair spots share what the chests hold, one chair each: one alt chair goes to the first spot only (the second
+	 * keeps its planned piece and waits); two go to both; one of each gets both spots built (the stair to the first, the
+	 * alt chair to the second); a spot already going up passes the chair on to the next. A choice whose spots don't match
+	 * the blueprint's (or that has more spots than it) is left alone rather than switched or crashing.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"furnitureAnyMod"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "furnitureAnyMod")
+	public void twoChairSpotsShareTheChestsChairsOneEach(GameTestHelper helper) {
+		try {
+			Furnishings.MODS = List.of(PIECES, ALT);
+			List<FurnitureSpot> spots = List.of(spruceChair(1), spruceChair(3));
+			FurnitureChoice planned = FurnitureChoice.choose(spots, Furnishings.MODS, true);
+			helper.assertTrue(planned.spots().size() == 2 && mods(planned).equals(PIECES + "," + PIECES), "planned: " + planned.spots());
+			java.util.function.IntPredicate none = i -> false;
+
+			FurnitureChoice one = planned.restocked(spots, Furnishings.MODS, none, Map.of(Items.SPRUCE_WOOD, 1L));
+			helper.assertTrue(mods(one).equals(ALT + "," + PIECES), "one alt chair in the chest: " + mods(one));
+			helper.assertTrue(one.spots().get(0).cells().get(BlockPos.ZERO).is(Blocks.SPRUCE_WOOD), "spot 0 builds " + one.spots().get(0).cells());
+
+			FurnitureChoice two = planned.restocked(spots, Furnishings.MODS, none, Map.of(Items.SPRUCE_WOOD, 2L));
+			helper.assertTrue(mods(two).equals(ALT + "," + ALT), "two alt chairs in the chest: " + mods(two));
+
+			FurnitureChoice eachOne = planned.restocked(spots, Furnishings.MODS, none, Map.of(Items.SPRUCE_WOOD, 1L, Items.SPRUCE_STAIRS, 1L));
+			helper.assertTrue(mods(eachOne).equals(PIECES + "," + ALT), "one stair chair and one alt chair: " + mods(eachOne));
+
+			FurnitureChoice firstStarted = planned.restocked(spots, Furnishings.MODS, i -> i == 0, Map.of(Items.SPRUCE_WOOD, 1L));
+			helper.assertTrue(mods(firstStarted).equals(PIECES + "," + ALT), "the first spot going up already: " + mods(firstStarted));
+
+			FurnitureChoice moved = planned.restocked(List.of(spruceChair(2), spruceChair(4)), Furnishings.MODS, none, Map.of(Items.SPRUCE_WOOD, 2L));
+			helper.assertTrue(moved == planned, "spots that aren't the blueprint's were switched: " + mods(moved));
+			FurnitureChoice shorter = planned.restocked(List.of(spruceChair(1)), Furnishings.MODS, none, Map.of(Items.SPRUCE_WOOD, 2L));
+			helper.assertTrue(mods(shorter).equals(ALT + "," + PIECES), "a spot past the blueprint's: " + mods(shorter));
+		} finally {
+			new WorkplaceConfig().apply();
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * Only a set's own piece is ever switched, and only to one with the same footprint: a spot holding something that
+	 * isn't its set's piece (as CobbleFurnies' Poké Ball chair isn't its spruce chair) keeps it, and a two-block chair
+	 * doesn't take a one-block chair's place even when it's all the chest holds. Two mods with the very same block are
+	 * one option, offered and listed once.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"furnitureAnyMod"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "furnitureAnyMod")
+	public void onlyTheSetsOwnPieceSwitchesAndOnlyToTheSameFootprint(GameTestHelper helper) {
+		try {
+			Furnishings.MODS = List.of(PIECES, ALT);
+			java.util.function.IntPredicate none = i -> false;
+			FurnitureChoice special = new FurnitureChoice(Map.of(0, new FurnitureChoice.Placed(new BlockPos(1, 1, 1), FurnitureSpot.Kind.CHAIR, PIECES,
+				Map.of(BlockPos.ZERO, Blocks.OAK_LOG.defaultBlockState()))));
+			FurnitureChoice after = special.restocked(List.of(spruceChair(1)), Furnishings.MODS, none, Map.of(Items.SPRUCE_WOOD, 1L));
+			helper.assertTrue(after == special, "a piece outside its set was switched to " + after.spots());
+
+			List<FurnitureSpot> tall = List.of(new FurnitureSpot(FurnitureSpot.Kind.CHAIR, new BlockPos(1, 1, 1), Direction.SOUTH, "spruce", null,
+				List.of(new FurnitureSpot.Cell(BlockPos.ZERO, Blocks.SPRUCE_STAIRS.defaultBlockState()),
+					new FurnitureSpot.Cell(new BlockPos(0, 1, 0), Blocks.SPRUCE_PLANKS.defaultBlockState()))));
+			long wideCells = FurnitureChoice.choose(tall, List.of(WIDE), true).spots().get(0).cells().values().stream().filter(s -> !s.isAir()).count();
+			helper.assertTrue(wideCells == 2, "the two-block chair fills " + wideCells + " cells");
+			Furnishings.MODS = List.of(PIECES, WIDE);
+			FurnitureChoice planned = FurnitureChoice.choose(tall, Furnishings.MODS, true);
+			helper.assertTrue(planned.spots().get(0).mod().equals(PIECES), "planned: " + planned.spots());
+			FurnitureChoice wide = planned.restocked(tall, Furnishings.MODS, none, Map.of(Items.SPRUCE_PRESSURE_PLATE, 2L));
+			helper.assertTrue(wide == planned, "a two-block chair took a one-block chair's place: " + wide.spots());
+
+			Furnishings.MODS = List.of(PIECES, SAME, ALT);
+			helper.assertTrue(FurnitureEquivalents.options(Items.SPRUCE_STAIRS).equals(List.of(Items.SPRUCE_STAIRS, Items.SPRUCE_WOOD)),
+				"two mods' same block offered twice: " + FurnitureEquivalents.options(Items.SPRUCE_STAIRS));
+			HoverEvent hover = FurnitureEquivalents.name(Items.SPRUCE_STAIRS).getStyle().getHoverEvent();
+			Component shown = hover == null ? null : hover.getValue(HoverEvent.Action.SHOW_TEXT);
+			helper.assertTrue(shown != null && shown.getString().equals("Any of these will do:\nSpruce Stairs (" + PIECES + ")\nSpruce Wood (" + ALT + ")"),
+				"the hover: " + (shown == null ? null : shown.getString().replace("\n", " / ")));
+		} finally {
+			new WorkplaceConfig().apply();
+		}
+		helper.succeed();
 	}
 
 	/** The equivalents file: every shipped kind is a real kind with two or more mods; a broken file is skipped and named. */

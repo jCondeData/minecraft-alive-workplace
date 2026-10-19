@@ -4726,7 +4726,7 @@ Depends on: nothing open.
   GameTests: listing, assigning (the villager takes the job), a block claimed meanwhile, save and reload; scene
   `hall_jobs`.
   - [x] **36.9a** (approved 2026-10-19) Change from the owner (2026-10-19): top of the work list (urgent: owner): the hall's Free job blocks page must be filmed and passing so I can see it
-- [ ] **36.10** **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
+- [x] **36.10** (review: pending 2026-10-19) **Search the Blueprint Table** (owner, 2026-10-19). The library list has 150+ builds and no way to find one. Add a search box above
   the list in the Blueprint Table: typing filters the library live by name, id and the jobs a build brings ("smith", "inn",
   "fisherman"), case-insensitive, with the style/level rows kept under their build; an empty box shows everything and an
   empty result says so. Done when: GameTests for the filter (name, id, job, no match, cleared box, selected build hidden by

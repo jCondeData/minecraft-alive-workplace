@@ -116,7 +116,7 @@ public final class BuildJobs {
 	}
 
 	/** A job's name as the game shows it over a villager (as {@link Stations#name}). */
-	private static Component name(ResourceLocation profession) {
+	public static Component name(ResourceLocation profession) {
 		return BuiltInRegistries.VILLAGER_PROFESSION.getOptional(profession)
 			.<Component>map(p -> Component.translatable("entity.minecraft.villager." + p.name()))
 			.orElse(Component.literal(profession.getPath()));

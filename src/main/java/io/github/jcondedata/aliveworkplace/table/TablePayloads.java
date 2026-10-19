@@ -24,8 +24,10 @@ public final class TablePayloads {
 	/**
 	 * One blueprint in the library listing. {@code state} is a {@link BlueprintUnlocks.State} ordinal (26.10); a locked
 	 * build's {@code hint} is the lang key of how to get it. A hidden ("???") entry carries a stand-in id and no size.
+	 * {@code jobs} are the jobs its job blocks bring (profession ids, 36.10: the Table's search finds a build by them).
 	 */
-	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint) {
+	public record Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint, List<ResourceLocation> jobs) {
+		private static final StreamCodec<io.netty.buffer.ByteBuf, List<ResourceLocation>> JOBS = ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list(64));
 		public static final StreamCodec<FriendlyByteBuf, Entry> CODEC = StreamCodec.of((buf, e) -> {
 			ResourceLocation.STREAM_CODEC.encode(buf, e.id());
 			buf.writeVarInt(e.sizeX());
@@ -34,8 +36,18 @@ public final class TablePayloads {
 			buf.writeVarInt(e.blocks());
 			buf.writeVarInt(e.state());
 			buf.writeUtf(e.hint(), 256);
+			JOBS.encode(buf, e.jobs());
 		}, buf -> new Entry(ResourceLocation.STREAM_CODEC.decode(buf), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
-			buf.readVarInt(), buf.readUtf(256)));
+			buf.readVarInt(), buf.readUtf(256), JOBS.decode(buf)));
+
+		public Entry {
+			jobs = List.copyOf(jobs);
+		}
+
+		/** An entry whose build brings no jobs. */
+		public Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks, int state, String hint) {
+			this(id, sizeX, sizeY, sizeZ, blocks, state, hint, List.of());
+		}
 
 		/** An unlocked entry. */
 		public Entry(ResourceLocation id, int sizeX, int sizeY, int sizeZ, int blocks) {

@@ -41,6 +41,14 @@ under a faint green line where the ground will be, and its size says how many bl
 
 ![The starter cottage in Sandstone, picked from the style row](https://jcondedata.github.io/minecraft-alive-workplace/table_preview/still-3.jpg)
 
+- **Search.** Type in the box over the list and it narrows as you type: by a build's name ("inn"), its id
+  ("fishers_hut") or a job it brings ("fisherman", or "smith" for every forge), in capitals or not. A build's levels
+  stay under it (search "inn" and Inn II and Inn III come with the Inn), the header says how many match, and if nothing
+  does, the list says so. If the build you had picked isn't in the results, the first one that is gets picked instead.
+  Empty the box to see everything again.
+
+![Searching the library for "smith"](https://jcondedata.github.io/minecraft-alive-workplace/table/still-2.jpg)
+
 - **Jobs and beds.** Under the size, the build says what work it brings: "Jobs: Fisherman (1), Butcher/Chef/Rancher
   (3)". Each entry is one kind of job block; a slash means the jobs share that block (any one of them can work there),
   and the number is how many of that block the build has. "Beds: 2" follows when it has beds. A build with no job block

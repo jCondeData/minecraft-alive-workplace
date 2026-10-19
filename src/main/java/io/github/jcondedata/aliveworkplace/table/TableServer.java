@@ -97,7 +97,7 @@ public final class TableServer {
 			}
 			String hint = state == BlueprintUnlocks.State.UNLOCKED ? "" : BlueprintUnlocks.hint(id);
 			BlueprintLibrary.get(server, id).ifPresent(bp -> entries.add(new TablePayloads.Entry(id, bp.size().getX(), bp.size().getY(),
-				bp.size().getZ(), bp.solidBlockCount(), state.ordinal(), hint)));
+				bp.size().getZ(), bp.solidBlockCount(), state.ordinal(), hint, listedJobs(id, bp))));
 		}
 		// Unlocked first (26.10); our own blueprints first, then everything else alphabetically.
 		entries.sort(Comparator.comparing((TablePayloads.Entry e) -> e.locked())
@@ -207,6 +207,27 @@ public final class TableServer {
 	public static boolean styleTaken(MinecraftServer server, ResourceLocation id) {
 		Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
 		return styled.isEmpty() || styles(server, styled.get().base()).stream().anyMatch(s -> s.name().equals(styled.get().style()));
+	}
+
+	private record CachedJobs(Blueprint blueprint, List<ResourceLocation> jobs) {
+	}
+	/** Every listed build's jobs (36.10), small enough to keep them all. */
+	private static final Map<ResourceLocation, CachedJobs> JOBS = java.util.Collections.synchronizedMap(new HashMap<>());
+
+	/**
+	 * The jobs a listed build brings (36.10), each once, in the order {@link BuildJobs#of} finds them: what the Table's
+	 * search matches "fisherman" or "smith" against. Worked out once per build and kept.
+	 */
+	public static List<ResourceLocation> listedJobs(ResourceLocation id, Blueprint blueprint) {
+		CachedJobs cached = JOBS.get(id);
+		if (cached != null && cached.blueprint() == blueprint) {
+			return cached.jobs();
+		}
+		CachedMaterials materials = MATERIALS.get(id);
+		BuildJobs.Summary summary = materials != null && materials.blueprint() == blueprint ? materials.jobs() : BuildJobs.of(blueprint);
+		List<ResourceLocation> jobs = summary.jobs().stream().flatMap(b -> b.jobs().stream()).distinct().toList();
+		JOBS.put(id, new CachedJobs(blueprint, jobs));
+		return jobs;
 	}
 
 	/** A build's materials and its job blocks and beds (36.6a), worked out once per build. */

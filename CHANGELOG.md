@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **Search the Blueprint Table** (36.10). A search box over the library narrows its 150-odd builds as you type, by
+  name ("inn"), id ("fishers_hut") or a job a build brings ("fisherman", "smith"), in capitals or not. A build's levels
+  stay under it, the header counts the matches, and a search that finds nothing says so; an empty box lists everything.
 - **The Conductor** (39.7d, with Create). A villager without a job by a Create Train Station becomes the village's
   Conductor (maroon cap and tunic, brass buttons, a ticket punch): they take the seat of the village's train instead of a
   jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade

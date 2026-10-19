@@ -723,24 +723,38 @@ public class ScreenshotHarness implements ClientModInitializer {
 			String facts = mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen s ? s.selectedFacts() : "";
 			Showcase.check(facts.contains("Beds: "), "the Starter Cottage's beds show under its size (\"" + facts.replace('\n', ' ') + "\")");
 			shot(mc, "10_table_library");
+			// 36.10: a search typed into the box over the list narrows it to the forges (by the smiths' jobs)
 			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
-				screen.showFiles();
+				screen.search("smith");
 			}
 		}
-		if (tick == 200) {
+		if (tick == 190 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
+			Showcase.check(screen.shownCount() > 0 && screen.shownCount() < screen.entryCount(),
+				"typing \"smith\" narrowed the library (" + screen.shownCount() + " of " + screen.entryCount() + " builds listed)");
+			shot(mc, "10s_table_search");
+			screen.search("zzqx");
+		}
+		if (tick == 210 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
+			Showcase.check(screen.shownCount() == 0, "a search that finds nothing lists nothing (" + screen.shownCount() + " listed)");
+			shot(mc, "10t_table_no_match");
+			screen.search("");
+			Showcase.check(screen.shownCount() == screen.entryCount(), "clearing the box lists the whole library again");
+			screen.showFiles();
+		}
+		if (tick == 250) {
 			shot(mc, "11_table_upload");
 			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.BlueprintTableScreen screen) {
 				screen.upload();
 			}
 		}
-		if (tick == 280) {
+		if (tick == 330) {
 			shot(mc, "12_table_uploaded");
 			server.execute(() -> {
 				int now = BlueprintLibrary.list(server, false).size();
 				Showcase.check(now > libraryBefore, "a .litematic file uploaded into the library (" + libraryBefore + " -> " + now + " blueprints)");
 			});
 		}
-		if (tick == 300) {
+		if (tick == 350) {
 			if (mc.screen == null) {
 				shot(mc, "99_no_screen");
 			}

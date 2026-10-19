@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles;
 import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
 import io.github.jcondedata.aliveworkplace.table.TablePayloads;
+import io.github.jcondedata.aliveworkplace.table.TableSearch;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +20,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -30,7 +32,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The Blueprint Table: a list of every blueprint on the server with its size and materials, a button
- * to take a copy, and an "upload" view listing build files in the player's own blueprints folder.
+ * to take a copy, and an "upload" view listing build files in the player's own blueprints folder. A search box above
+ * the list (36.10) narrows it by name, id or job as the player types ({@link TableSearch}).
  */
 public class BlueprintTableScreen extends Screen {
 	private static final int LIST_BG = TableStyle.LIST_BG;
@@ -70,6 +73,11 @@ public class BlueprintTableScreen extends Screen {
 
 	private int left, top, panelW, panelH;
 	private LibraryList library;
+	/** The search box over the library (36.10), what's typed in it and the entries it lets through, in the list's order. */
+	private EditBox search;
+	private String query = "";
+	private List<TablePayloads.Entry> shown = List.of();
+	private static final int SEARCH_H = 16;
 	private FileList files;
 	private Button takeButton, uploadViewButton, uploadButton, folderButton, backButton;
 	/** The full materials list over the right side: opened by "+N" or "All materials", closed by Esc or Back. */
@@ -104,7 +112,7 @@ public class BlueprintTableScreen extends Screen {
 		this.entries = open.entries();
 		this.canUpload = open.canUpload();
 		if (library != null) {
-			library.fill();
+			fillLibrary();
 			if (selectAfterRefresh != null) {
 				select(selectAfterRefresh);
 				selectAfterRefresh = null;
@@ -198,9 +206,17 @@ public class BlueprintTableScreen extends Screen {
 		int listTop = top + 22;
 		int listH = panelH - 22 - 34;
 
-		library = new LibraryList(minecraft, listW, listH, listTop);
+		// The search box (36.10) sits over the library, which starts below it; the upload view's list keeps the full height.
+		search = new EditBox(font, left + 9, listTop, listW - 2, SEARCH_H, Component.translatable("screen.aliveworkplace.table.search"));
+		search.setMaxLength(TableSearch.MAX_LENGTH);
+		search.setHint(Component.translatable("screen.aliveworkplace.table.search_hint").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+		search.setValue(query);
+		search.setResponder(this::onSearch);
+		addRenderableWidget(search);
+		int libraryTop = listTop + SEARCH_H + 3;
+		library = new LibraryList(minecraft, listW, listH - SEARCH_H - 3, libraryTop);
 		library.setX(left + 8);
-		library.fill();
+		fillLibrary();
 		addRenderableWidget(library);
 
 		files = new FileList(minecraft, listW, listH, listTop);
@@ -238,15 +254,53 @@ public class BlueprintTableScreen extends Screen {
 
 		if (selectedId != null) {
 			select(selectedId);
-		} else if (!entries.isEmpty()) {
-			select(entries.get(0).id());
+		} else if (!shown.isEmpty()) {
+			select(shown.get(0).id());
 		}
 		updateVisibility();
+		setInitialFocus(search); // typing searches straight away
+	}
+
+	/** Lists the entries the search lets through (36.10). */
+	private void fillLibrary() {
+		shown = TableSearch.filter(entries, query);
+		library.fill();
+		library.clampScrollAmount();
+	}
+
+	/** The box changed: narrow the list, and if the selected build is no longer listed, pick the first that is. */
+	private void onSearch(String value) {
+		query = value;
+		fillLibrary();
+		ResourceLocation next = TableSearch.selection(shown, selectedId);
+		if (next != null) {
+			select(next);
+		}
+	}
+
+	/** Types {@code text} into the search box as a player would (for the screenshot harness). */
+	public void search(String text) {
+		search.setValue(text);
+	}
+
+	/** What's in the search box (for the screenshot harness). */
+	public String query() {
+		return query;
+	}
+
+	/** How many builds the library lists now, and how many it holds (for the screenshot harness). */
+	public int shownCount() {
+		return shown.size();
+	}
+
+	public int entryCount() {
+		return entries.size();
 	}
 
 	private void updateVisibility() {
 		boolean lib = mode == Mode.LIBRARY;
 		library.visible = lib;
+		search.visible = lib;
 		takeButton.visible = lib;
 		uploadViewButton.visible = lib;
 		uploadViewButton.active = canUpload;
@@ -376,10 +430,23 @@ public class BlueprintTableScreen extends Screen {
 		super.render(g, mouseX, mouseY, partialTick);
 		long unlocked = entries.stream().filter(TablePayloads.Entry::unlocked).count();
 		Component sub = mode == Mode.LIBRARY
-			? unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
+			? !query.isBlank() ? Component.translatable("screen.aliveworkplace.table.search_count", shown.size(), entries.size())
+			: unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
 				: Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
 			: Component.translatable("screen.aliveworkplace.table.files_title");
 		TableStyle.header(g, font, title, sub, left, top, panelW);
+		if (mode == Mode.LIBRARY && shown.isEmpty() && !query.isBlank()) {
+			// Nothing matches (36.10): said in the empty list, with what was typed.
+			Component none = Component.translatable("screen.aliveworkplace.table.no_match", query.trim());
+			int lw = library.getWidth() - 12;
+			int ly = library.getY() + 8;
+			for (var line : font.split(none, lw)) {
+				g.drawString(font, line, library.getX() + 6, ly, TableStyle.LOADING, false);
+				ly += 10;
+			}
+			g.drawString(font, font.plainSubstrByWidth(Component.translatable("screen.aliveworkplace.table.no_match_help").getString(), lw),
+				library.getX() + 6, ly + 4, TableStyle.FAINT, false);
+		}
 
 		int dx = library.getX() + library.getWidth() + 10;
 		int dw = left + panelW - 8 - dx;
@@ -741,7 +808,7 @@ public class BlueprintTableScreen extends Screen {
 
 		void fill() {
 			clearEntries();
-			for (TablePayloads.Entry e : entries) {
+			for (TablePayloads.Entry e : shown) {
 				addEntry(new Row(e));
 			}
 		}

@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10
 
 ## 1. What a player sees
 
@@ -20,6 +20,14 @@ Roadmap items: 26.10, 36.6, 36.6a, 36.6b
   share it joined by a slash with the one a jobless villager takes by itself first, and how many of that block the build
   holds), then "Beds: 2" when it has beds. A build with neither shows nothing there. Uploaded, scanned and imported
   builds get the lines too, from their own blocks; a build in a style shows its styled blocks'.
+- **Search** (36.10): a box over the list ("Search: name, id or job" until something is typed, focused when the Table
+  opens) narrows the list live, ignoring case, by a build's name, id or the jobs it brings ("inn", "fishers_hut",
+  "fisherman", "smith"); every word typed must be found. A build's levels and styles are kept under it: when any of
+  them matches, the build and all its levels are listed together, the build first, even where the full list keeps an
+  unlocked build and its locked levels apart. A "???" is listed only while the box is empty. The header reads "<shown>
+  of <total> match" while searching; nothing found reads "No builds match "zzq"." and "Try a name, an id or a job." in
+  the list. A selected build the search hides gives way to the first match (the pane always shows a listed build); with
+  nothing found the pane keeps what it showed. An empty box lists everything as before.
 - Each unlock says in chat: "The village's library has a new blueprint: Smithy II" (to the buyer, the player using a
   blueprint on the Table, or, for a builder's level-up, every player in the village).
 
@@ -65,6 +73,13 @@ Ways to unlock, all for the village round the nearest hall:
   another job block (the professions whose job site it is, such as a barrel's Fisherman). Kinds with the same jobs are
   counted together. `TableServer.details` sends them in `TablePayloads.Details` (`jobs`, `beds`), and
   `BuildJobs.lines` makes the pane's lines.
+- Search (36.10): `TableServer.listing` sends each build's jobs (profession ids, each once) in `TablePayloads.Entry.jobs`,
+  from `TableServer.listedJobs` (kept per build, reusing the materials cache's `BuildJobs.Summary` when there is one).
+  `table/TableSearch` does the matching in core: `filter(entries, query)` (words of the query, lower case, each found in
+  the display name, the id and each job's name and id; a build's family is its first listed level by
+  `BlueprintUpgrades.baseOf`, styles folded by `BlueprintStyles.base`), and `selection(shown, selected)`.
+  `BlueprintTableScreen` holds the `EditBox`, refills the `LibraryList` from `filter` on each change and draws the
+  no-match lines over the empty list.
 
 ## 3. Switches
 
@@ -85,7 +100,8 @@ Ways to unlock, all for the village round the nearest hall:
 - Lang: `message.aliveworkplace.blueprint_unlocks.new`, `message.aliveworkplace.table.locked`,
   `message.aliveworkplace.table.locked_hidden`, `message.aliveworkplace.table.wonder_only`, the
   `screen.aliveworkplace.table.hint.*` lines, `screen.aliveworkplace.table.unlocked_count`, and (36.6a)
-  `screen.aliveworkplace.table.jobs`, `.job_block`, `.jobs_separator` and `.beds`.
+  `screen.aliveworkplace.table.jobs`, `.job_block`, `.jobs_separator` and `.beds`, and (36.10) `.search`, `.search_hint`,
+  `.search_count`, `.no_match` and `.no_match_help`.
 
 ## 6. Decisions
 
@@ -94,6 +110,8 @@ start unlocked; unlocks belong to the village; existing villages keep what they 
 are always unlocked; five ways to unlock (buying, level-ups, questbook, loot, market traders); a rare build is a
 hidden "???"; a server switch, default on. Sorted unlocked first rather than a filter toggle (one less button).
 The owner (2026-10-18, 36.6a): no description lines; the Table says only what jobs a build brings and its beds.
+36.10 (lane decision): when the search hides the selected build, the first match is selected, so Get Blueprint never
+hands out a build the list doesn't show; words are ANDed ("inn iii" is the Inn III's family); a "???" never matches.
 
 ## 7. Known limits
 
@@ -103,6 +121,7 @@ The owner (2026-10-18, 36.6a): no description lines; the Table says only what jo
   tier below stands" without it.
 - A Table between two villages uses the nearer hall.
 - Only the mod's own chest loot tables hold blueprints; vanilla villages' chests don't.
+- The search matches names in the player's own language, but job and build ids only in English.
 - The job line counts job blocks, not workers: a build with two smokers shows "(2)" even if one villager works there.
 
 ## 8. Proof
@@ -119,6 +138,13 @@ with the switch off. `TableJobsGameTests` (5, 36.6a): `TableJobsGameTests.shared
 "Jobs: Fisherman (1), Butcher/Chef/Rancher (3)", "Beds: 2"), `TableJobsGameTests.bedsOnlyAndNeither`,
 `TableJobsGameTests.aSwitchedOffJobIsLeftOut` (config tailors off), `TableJobsGameTests.theTableSendsAShippedBuildsJobsAndBeds`
 (the Fishers' Hut and the Starter Cottage through `TableServer.details` and over the wire), `TableJobsGameTests.theLinesAreInEnglish`.
+`TableSearchGameTests` (6, 36.10): `TableSearchGameTests.searchFindsABuildByNameWithItsLevelsUnderIt` ("inn" with Inn
+II and III right under the Inn, "INN" the same, "iii" bringing each build with its third level),
+`TableSearchGameTests.searchFindsABuildById`, `TableSearchGameTests.searchFindsBuildsByTheJobsTheyBring` ("Fisherman"
+and "smith" against the jobs the listing sends, and the jobs over the wire), `TableSearchGameTests.aSearchThatFindsNothingSaysSo`
+(and every new line in English), `TableSearchGameTests.aClearedBoxListsEverything` (a "???" too, never found by a
+search), `TableSearchGameTests.aSelectedBuildHiddenByTheSearchGivesWayToTheFirstMatch`.
 
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
-starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows).
+starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows, then types "smith" and checks the list narrowed, a search
+for nothing lists nothing, and an emptied box lists everything).

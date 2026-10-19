@@ -82,8 +82,10 @@ SCENES = [
     S("missing", "Builder", "What a build is still missing, and its material list", "the blueprint's tooltip lists what the chests are short of, and a Book and Quill becomes the list", 60,
       [("00_missing_site", "The placed blueprint and the Blueprint Table"), ("01_blueprint_missing", "Still-missing tooltip"),
        ("02_material_list", "The material list (a book)"), ("03_material_list_page", "What's still to bring")]),
-    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, and a file was uploaded", 60,
-      [("10_table_library", "Library"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
+    # 36.10: the search box over the library: "smith" narrows it to the forges, a search for nothing says so
+    S("table", "Builder", "Blueprint Table", "the table screen opened with the Starter Cottage's beds (and any jobs) under its size, \"smith\" typed in the search box narrowed the library to the builds that bring a smith, a search for nothing said so, and a file was uploaded", 65,
+      [("10_table_library", "Library"), ("10s_table_search", "Searched for \"smith\": the list narrowed"),
+       ("10t_table_no_match", "A search that finds nothing"), ("11_table_upload", "Upload a file"), ("12_table_uploaded", "Uploaded")]),
     # 26.9: the selected build in 3D in the table's library, turning, dragged, large, and an uploaded file
     S("table_preview", "Builder", "Blueprint Table: see a build before you pick it",
       "the table's library showed the selected build in 3D: the starter cottage turning and dragged round, then in Sandstone from the style row, the largest build scaled to fit with its full materials list, and an uploaded .litematic", 60,

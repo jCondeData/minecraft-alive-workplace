@@ -298,6 +298,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B221** Player-visible, live server: hovering over a villager should show its job and its level (e.g. 'Fisherman, Journeyman'); today it doesn't. Expected: the hover/look-at tooltip (or name-plate text) shows the job name and level for every working villager. Test: GameTest of the displayed text for a leveled villager; scene showing it (urgent: owner) (owner report, 2026-10-19) (found by digest-1019-1253, 2026-10-19) Status (lane-a-1019-1228, read only, nothing run or changed): nothing shows job and level on hover today (no Jade/WTHIT compat; only LegendNameMixin colours a Legend's name). BuilderLevels.jobName/levelName already give both parts (merchant.level.1-5). Design options: a server-side Villager.getDisplayName mixin ('Fisherman, Journeyman' plus any real name; works for clients without the mod, but vanilla may only draw a plate for custom-named mobs, so check shouldShowName), or a client mixin on the name plate shown on crosshair hover (needs the client jar), or an action-bar line for the crosshair target (Chat.actionBar). Next: pick one (design call: Notes if unclear), a GameTest on the text for a level-3 fisherman, a named one and a jobless one, and a scene.
 - [ ] **B222** Player-visible, live server: villagers' graves clutter the village: every death leaves a grave where the villager fell (streets, fields, doorsteps), and elders passing in their sleep add more. Owner's decision (2026-10-19): the Undertaker moves each new grave to the village's Graveyard build, laid out in rows, with revival still working from there; a village with no Graveyard gets a small plot near the hall (or the Graveyard is proposed as the hall's civic build); keep the grave's saved villager (name, job, level, trades, partner) intact when moved, add a config switch (default on), old saves' scattered graves get moved too. Test: a grave left in the street ends up in the graveyard, revival from there restores the villager, save and reload, switch off leaves graves where they fall; scene (urgent: owner) (owner report, 2026-10-19) (found by digest-1019-1253, 2026-10-19)
 - [ ] **B223** tools/modtest/mutate.py marks a compat-test run NO-COMPILE whenever the output contains 'error: ', and every runCompatGameTest run logs Supplementaries loot-modifier lines with that text, so killed mutants (FurnitureChoice:180, :256) were reported as NO-COMPILE. Expected: only real javac errors count as NO-COMPILE. Also: reused Gradle daemons get OOM-killed between compat mutants; --no-daemon -Dorg.gradle.jvmargs=-Xmx1536m in --cmd avoids it. Test: none (tool) (found by lane-c-1019-1253, 2026-10-19)
+- [ ] **B224** Player-visible, live server: the Miner doesn't seem to collect stone or other common materials: only ores (and not the filler like cobblestone, deepslate, andesite, dirt?) end up in the chests. Owner (2026-10-19): 'we definitely want them to'. Expected: a Miner digging a quarry stores everything they dig out (stone, cobblestone, deepslate, andesite, diorite, granite, tuff, gravel, dirt and ores) in the village store / their chests, as the player would expect, with a config option for the filler only if it's needed to stop chests flooding. Check MinerWork.FILLERS and what Miners.store drops vs keeps. Test: a Miner mines a pit of stone: the chest holds the cobblestone; same for deepslate and ores; save and reload (urgent: owner) (owner report, 2026-10-19) (found by digest-1019-1253, 2026-10-19)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -4742,6 +4743,28 @@ Depends on: nothing open.
   Jobs line; GameTests: the Miner mines from it, mined blocks come back over time (a fixed random, a config for how fast,
   the full pit refills only after days), nothing outside the pit is touched, a block a player placed in the pit isn't
   replaced, save and reload, the switch off; scene `quarry_build`; the existing Quarry Marker still works for free areas.
+- [ ] **36.13** **The Blueprint Table is a library** (owner, 2026-10-19). Once a build is unlocked and a blueprint for it bought, the Table keeps it:
+  the player stores bought blueprints in the table (a Stored tab or a "Store" button on a blueprint held in hand), sees them
+  listed with a count, and takes one back out whenever they like, so a blueprint never has to sit in a chest or inventory.
+  Stored blueprints are the table's own (a broken table drops them; the table saves them across restarts). Done when: GameTests for storing,
+  taking one out, the count, a broken table dropping its blueprints, save and reload, a full inventory, and the stored tab
+  in `en_us.json`; scene `table_library` (the Table's stills show a stored blueprint taken out).
+- [ ] **36.14** **Upgrade a built home from the Village Hall** (owner, 2026-10-19). A page in the Village Hall lists the village's finished
+  builds that have a next level (I to II, II to III, ...). Each row shows the build, its level, the cost in materials, and
+  whether the space is free. Picking one sends a Builder to build the next level over it. The space check counts what the
+  next level adds: built blocks (walls, fences, other builds, paths) block an upgrade, natural terrain (grass, dirt, stone, trees,
+  water) does not, because it can be mined or cleared away (the Builder clears it as part of the job). A blocked row says what is
+  in the way and where. Done when: GameTests for the list, a free-space upgrade, one blocked by another build, one over natural
+  terrain only (it goes ahead), a build with no next level, the upgrade of a house with residents (they keep their beds), save and
+  reload; the page's text in `en_us.json`; scene `hall_upgrade`.
+- [ ] **36.15** **The Builder asks before repairing a house** (owner, 2026-10-19). Today a Builder starts repairs by themselves and the player
+  can't stop them or send them to another job. Change it: a damaged build is listed and the Builder asks first
+  (a prompt on the Village Hall's page or a "Repair? Yes / Not now" choice shown with the repair request), and only repairs the
+  builds the player agreed to; a repair in progress can be cancelled or paused from the same page, and a Builder who is paused
+  or re-assigned goes straight to the next job. A config switch keeps the old automatic repair (default: ask). Defence repairs
+  after a threat (32.16a) stay automatic if the owner didn't object (note it in the Notes). Done when: GameTests for the ask, yes,
+  not now, cancel mid-repair, moving the Builder to another job, the switch, save and reload; text in `en_us.json`; scene
+  `repair_ask`.
 
 ## Milestone 37: Furnished homes and modded storage (2.1)
 

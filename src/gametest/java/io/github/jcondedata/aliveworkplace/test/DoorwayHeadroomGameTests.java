@@ -70,10 +70,23 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 	 * the step, out of the doorway. Stuck, it stands in the doorway's cell with its feet on the floor.
 	 */
 	private static void walkIn(GameTestHelper helper, BlockPos from, BlockPos goal, int insideZ, double minFeet) {
+		propDoorsOpen(helper);
+		walkIn(helper, from, goal, insideZ, minFeet, null);
+	}
+
+	/**
+	 * The same walk through whatever doors the blueprint has (shut, as built). With {@code lookedAt}, the villager also
+	 * works out a path to that spot every tick and doesn't follow it, as vanilla's villagers do to see whether they could
+	 * reach a bed, a bell or a workstation (B203).
+	 */
+	private static void walkIn(GameTestHelper helper, BlockPos from, BlockPos goal, int insideZ, double minFeet, @org.jetbrains.annotations.Nullable BlockPos lookedAt) {
 		Villager villager = helper.spawn(EntityType.VILLAGER, from);
 		BlockPos target = helper.absolutePos(goal);
 		nitwit(helper, villager);
-		propDoorsOpen(helper);
+		if (lookedAt != null) {
+			BlockPos spot = helper.absolutePos(lookedAt);
+			helper.onEachTick(() -> villager.getNavigation().createPath(spot, 1));
+		}
 		double past = helper.absolutePos(new BlockPos(0, 0, insideZ)).getZ();
 		double floor = helper.absolutePos(new BlockPos(0, 2, 0)).getY();
 		helper.onEachTick(() -> {
@@ -94,6 +107,51 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		place(helper, "healing_center", new BlockPos(8, 1, 6));
 		// template (5, 1, 0) is the walk in front of the door; (5, 1, 5) the carpet's end by the counter
 		walkIn(helper, new BlockPos(13, 2, 6), new BlockPos(13, 2, 11), 10, 0.05);
+	}
+
+	/**
+	 * B203: the Healing Center's front door shut, as built: the villager opens it and walks in. Opening it changes the
+	 * door's shape, so vanilla works the villager's path out again, and it aimed that path at the last spot any path was
+	 * worked out for: with beds and bells about, often one the villager had only looked at, so the new path led away round
+	 * the building (2 of 62 copies among the Workplaces, Village and Warband tests); it shut the door behind it and never
+	 * got in. Here it looks at a spot outside every tick, as a villager in a village looks at its beds and bell.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"b203HealingCenter"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "b203HealingCenter")
+	public void aVillagerOpensTheHealingCentersShutFrontDoorAndWalksIn(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		place(helper, "healing_center", new BlockPos(8, 1, 6));
+		walkIn(helper, new BlockPos(13, 2, 6), new BlockPos(13, 2, 11), 10, 0.05, new BlockPos(2, 2, 2));
+	}
+
+	/** B203: the Manor's front door shut, as built, opened by the villager on its way onto the grand stair. */
+	//$ gametest_ticks_batch AREA '400' '"b203Manor"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "b203Manor")
+	public void aVillagerOpensTheManorsShutFrontDoorAndClimbsItsStair(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		place(helper, "manor", new BlockPos(5, 1, 6));
+		walkIn(helper, new BlockPos(14, 2, 9), new BlockPos(14, 2, 14), 14, 0.45, new BlockPos(2, 2, 2));
+	}
+
+	/**
+	 * B203, as a player sees it: a jobless villager outside the Healing Center (door shut, as built) opens the door, walks
+	 * in to the brewing stand and takes it as a cleric, with nothing steering it but vanilla's own brain.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"b203HealingCenterJob"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "b203HealingCenterJob")
+	public void aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		place(helper, "healing_center", new BlockPos(8, 1, 6));
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 4));
+		villager.getRandom().setSeed(203L);
+		// the brewing stand is template (3, 1, 7), behind the door (5, 1, 2)
+		double past = helper.absolutePos(new BlockPos(0, 0, 10)).getZ();
+		helper.succeedWhen(() -> helper.assertTrue(villager.getZ() > past && villager.getVillagerData().getProfession() == VillagerProfession.CLERIC,
+			"the villager hasn't come in and taken the brewing stand: at " + villager.position() + ", "
+				+ villager.getVillagerData().getProfession()));
 	}
 
 	/**

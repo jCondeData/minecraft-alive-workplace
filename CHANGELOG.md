@@ -29,6 +29,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Villagers walk in by a shut door every time (B203).** A villager opening a shut wooden door on its way in (to its
+  job, its bed, a workplace) sometimes turned round as the door swung open, shut it behind itself and wandered off
+  round the building: the game worked its path out again for the opened door and aimed it at some bed or bell the
+  villager had only looked at. The new path now goes where the villager was walking.
 - **A job block a villager was walking to is let go when they're given another (B201).** A jobless villager on the
   way to a job block they picked on their own and given a different one, from the Village Hall or by sneak-right-
   clicking them with a job's item, kept the first one held for nobody: it dropped off the Free job blocks list and no

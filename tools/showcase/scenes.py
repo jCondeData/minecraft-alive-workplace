@@ -1182,8 +1182,10 @@ STARTUP = 30  # seconds: Gradle, the client's start-up and loading the world, pe
 SHARD_TARGET = 30 * 60  # seconds of scenes per shard, to finish well within the hour
 # The most shards a run may use. GitHub runs 20 jobs at once on a free plan and queues the rest, so a run with more
 # shards than that takes longer but no shard does. It was 18 until the catalog passed 170 scenes: if those all ran
-# twice as long as estimated, 18 shards came to about 54 minutes each (B100).
-MAX_SHARDS = 36
+# twice as long as estimated, 18 shards came to about 54 minutes each (B100). It was 36 until the catalog passed 270
+# scenes: at twice their estimates those came to 46 minutes a shard (B199); 48 gives about 34, with room to grow. A
+# queued job's wait doesn't count toward its timeout-minutes, and GitHub's matrix cap is 256 jobs.
+MAX_SHARDS = 48
 
 
 def seconds(scene, last):

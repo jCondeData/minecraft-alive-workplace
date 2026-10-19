@@ -4880,7 +4880,7 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   GameTests: a posted guard walks to the den and back at dusk; a den that turns active writes the chronicle line once;
   a player granted the join advancement near a watched den gets one cheer item, once per raid; a warden recalled goes
   back to normal duty.
-  - [ ] **38.3a** Change from the owner (2026-10-19): not sure what this is for, may be useless
+  - [ ] **38.3a** Change from the owner (2026-10-19): not sure what this is for, may be useless (digest note: 38.3 posts a guard at a den as a lookout; it was our idea, he doesn't see the point. Decide with 38.1a/38.4a: if hired assistants replace the village's solo challenge, drop the warden's watch and keep only what serves the hired-helper raid; explain the outcome to him in plain words in the next digest.)
 - [x] **38.4** (review: pending 2026-10-18) **Village trainers challenge the dens.** Every `denChallengeDays` (3) a village with trainers (Trainer
   Leaders, Masters) may send its best one to an active den the village knows. The server can't play a raid with no
   player in it, so the challenge is settled like the Stadium's bouts: the trainer's rank and team against the den's

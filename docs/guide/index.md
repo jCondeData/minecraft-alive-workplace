@@ -224,6 +224,7 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
   Schematic Table are blueprints your builders can build.
 - [Trains between villages](create-trains.md): with Create, a Train Station in each village and track along the road,
   and caravans take the train.
+- [Conductor](conductor.md): with Create, the villager who drives the village train and calls its stops.
 
 ### Legends and guilds
 

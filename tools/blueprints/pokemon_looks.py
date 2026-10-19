@@ -55,6 +55,7 @@ def lg_hall(b):
     for x in (3, 9):
         window(b, x, 2, 2, "north", height=2, shutters="spruce_trapdoor",
                flowers=("spruce_trapdoor", ("potted_red_tulip",)))
+        b.set(x, 0, 1, COBBLE.full)  # the box stands on a block, not on the skirt's step: a villager would step under its lid (B197)
     window(b, 1, 2, 4, "west", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
     for z in (4, 8):
         window(b, 11, 2, z, "east", height=2, shutters="spruce_trapdoor", sill=SPRUCE)
@@ -190,6 +191,8 @@ def lg_wing(b):
     for x in (14, 17):
         window(b, x, 2, 3, "north", width=2, height=2, shutters="spruce_trapdoor",
                flowers=("spruce_trapdoor", ("potted_blue_orchid", "potted_red_tulip")))
+        for bx in (x, x + 1):
+            b.set(bx, 0, 2, COBBLE.full)  # under the flower box, a block, not the skirt's step (B197)
         window(b, x, 7, 3, "north", width=2, height=1, shutters="spruce_trapdoor", sill=SPRUCE)
         window(b, x, 7, 9, "south", width=2, height=1, shutters="spruce_trapdoor", sill=SPRUCE)
     window(b, 17, 2, 9, "south", width=2, height=2, sill=SPRUCE)

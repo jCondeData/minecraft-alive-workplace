@@ -66,7 +66,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	/** The village store: a Storehouse in the hall's reach, its chest out of the stonecutter's (8 blocks), and the other way round. */
 	private static final BlockPos SHOP_STOREHOUSE = new BlockPos(13, 2, 11);
 	private static final BlockPos SHOP_STORE = new BlockPos(15, 2, 11);
-	private static final TagKey<Item> STONES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone"));
+	private static final TagKey<Item> STONES = TagKey.create(Registries.ITEM, AliveWorkplace.id("mega_stones"));
 
 	static Item ms(String path) {
 		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("mega_showdown", path);
@@ -90,7 +90,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	 * spends the gold on them (the Mega Stone test passed alone but failed in the full compat suite).
 	 */
 	static Container shop(GameTestHelper helper, ItemStack... stock) {
-		DenWardenCompatTests.clearAround(helper);
+		RaidHelperCompatTests.clearAround(helper);
 		int radius = VillageHalls.RADIUS;
 		int range = StockOrders.RANGE;
 		VillageHalls.RADIUS = 16;
@@ -204,6 +204,19 @@ public class MegaStoneCompatTests implements FabricGameTest {
 		LuxuryRecipes.Recipe stone = LuxuryRecipes.all().get(AliveWorkplace.id("mega_stone"));
 		helper.assertTrue(stone.makes(ms("gengarite")) && !stone.makes(ms("keystone")) && !stone.makes(ms("mega_stone")) && stone.keepOr(LuxuryWork.KEEP) == 1,
 			"the Mega Stone recipe: " + stone);
+		// B174: Mega Showdown's own tag leaves out Abomasite, so a Master with an Abomasnow (1 in 40) wanted a stone no
+		// recipe cut. Every stone a Master's team can want is cut (fixed UUIDs, a Master's team is built from its UUID).
+		helper.assertTrue(stone.makes(ms("abomasite")), "the Mega Stone recipe doesn't cut Abomasite");
+		java.util.Random uuids = new java.util.Random(38_6L);
+		for (int i = 0; i < 500; i++) {
+			Villager master = new Villager(EntityType.VILLAGER, helper.getLevel());
+			master.setUUID(new UUID(uuids.nextLong(), uuids.nextLong()));
+			master.setVillagerData(master.getVillagerData().setProfession(ModVillagers.TRAINER).setLevel(5));
+			List<Item> wanted = MegaStones.stonesOf(master);
+			helper.assertTrue(!wanted.isEmpty() && wanted.stream().allMatch(stone::makes), "Master " + master.getUUID() + " wants " + wanted
+				+ ", which the Mega Stone recipe doesn't all cut");
+		}
+		MegaStones.forget();
 		for (String id : List.of("keystone_ore", "keystone", "mega_stone_crystal", "mega_stone", "mega_meteorid_fire_ore", "mega_meteorid_dawn_ore")) {
 			helper.assertTrue(MegaStones.forTheJeweller(new ItemStack(ms(id))), id + " isn't kept for the Jeweller");
 		}
@@ -398,7 +411,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '3000' '"megaMinerFinds"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "megaMinerFinds")
 	public void aMinersKeyStonesGoToTheStore(GameTestHelper helper) {
-		DenWardenCompatTests.clearAround(helper);
+		RaidHelperCompatTests.clearAround(helper);
 		VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
@@ -443,7 +456,7 @@ public class MegaStoneCompatTests implements FabricGameTest {
 
 	/** Two villages in a realm (the capital and a member), each with its Trainer Leader seen by the hall's round. */
 	static Land realm(GameTestHelper helper) {
-		DenWardenCompatTests.clearAround(helper);
+		RaidHelperCompatTests.clearAround(helper);
 		REALMS_WERE = Realms.ENABLED;
 		Realms.ENABLED = true;
 		VillageHalls.forgetNearest();

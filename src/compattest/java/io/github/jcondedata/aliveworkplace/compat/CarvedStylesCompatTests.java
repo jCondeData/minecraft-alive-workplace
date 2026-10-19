@@ -227,7 +227,11 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 		});
 	}
 
-	/** A builder on {@code id} at (9, 2, 3), his barrels holding exactly what the plan costs (as in 37.5's tests). */
+	/**
+	 * A builder on {@code id} at (9, 2, 3), his chests holding exactly what the plan costs (as in 37.5's tests). Chests,
+	 * not barrels (B202): a barrel is the Fisherman's job site, and the Library test's jobless villager once took one of
+	 * these supply barrels, a dozen blocks away, instead of the Library's lectern.
+	 */
 	private static BuildSite start(GameTestHelper helper, ResourceLocation id) {
 		ServerLevel level = helper.getLevel();
 		new WorkplaceConfig().apply();
@@ -252,9 +256,9 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 			}
 		}
 		for (int i = 0; i * 27 < stock.size(); i++) {
-			BlockPos barrel = new BlockPos(1 + i % 6, 2 + i / 6, 5);
-			helper.setBlock(barrel, Blocks.BARREL);
-			Container container = helper.getBlockEntity(barrel);
+			BlockPos chest = new BlockPos(1 + i % 6, 2 + i / 6, 5);
+			helper.setBlock(chest, Blocks.CHEST);
+			Container container = helper.getBlockEntity(chest);
 			for (int slot = 0; slot < 27 && i * 27 + slot < stock.size(); slot++) {
 				container.setItem(slot, stock.get(i * 27 + slot));
 			}

@@ -120,8 +120,9 @@ def war_camp():
     - a ring of sharpened spruce logs (3 and 4 high in turn, so the top is ragged), corners cut, a gateway in the middle
       of the front (z = 0) under a dark oak lintel, its gates swung open;
     - inside, trampled earth; the fire in the middle of the yard with log seats;
-    - three canvas tents (white and light grey wool on dark oak) down the west side;
-    - the Warlord's tent at the back, bigger and darker (grey and black wool, a dark oak ridge), the loot chest inside,
+    - three canvas tents (white and light grey wool on dark oak) down the west side, a lamp pole beside each mouth;
+    - the Warlord's tent at the back, bigger and darker (grey and black wool, a dark oak ridge), a red runner up to the
+      loot chest inside,
       the ominous banner over its door;
     - a ravager pen in the north-east corner: a dark oak fence with a gate, hay and a trough;
     - a siege yard in the south-east: logs stacked to dry, ladders leaning on a rack, a half-built ram on its sled;
@@ -197,14 +198,15 @@ def war_camp():
         b.set(2, 1, z0 + 2, cloth)
         b.set(2, 1, z0 + 3, cloth)
         b.set(2, 2, z0 + 2, cloth)
-        fence(b, 6, 1, z0 + 2, "dark_oak_fence")
-        fence(b, 6, 2, z0 + 2, "dark_oak_fence")
+        # the pole beside the mouth, not in it: the tent is two high only down its middle, under the ridge (B178)
+        fence(b, 6, 1, z0 + 1, "dark_oak_fence")
+        fence(b, 6, 2, z0 + 1, "dark_oak_fence")
         b.bed(3, 1, z0 + 2, "white" if cloth == "white_wool" else "light_gray", facing="west")
     side_tent(2, "white_wool")
     side_tent(7, "light_gray_wool")
     side_tent(12, "white_wool")
-    lantern(b, 6, 3, 9)
-    lantern(b, 6, 3, 14)
+    lantern(b, 6, 3, 8)
+    lantern(b, 6, 3, 13)
 
     # the Warlord's tent at the back: 7 wide, 5 deep, open to the south (the yard)
     for z in range(13, 18):
@@ -227,9 +229,10 @@ def war_camp():
     for x in range(9, 14):
         for z in range(13, 17):
             b.set(x, 0, z, "spruce_planks")
-    for x in range(10, 13):
-        for z in range(14, 17):
-            b.set(x, 1, z, "red_carpet")
+    # a red runner down the middle, under the ridge: on the sides, two high under the black wool, a carpet's 1/16 put
+    # a villager's head into the cloth and it stood at the carpet's edge for good (B178)
+    for z in range(13, 16):
+        b.set(11, 1, z, "red_carpet")
     b.set_nbt(11, 1, 16, Compound({"LootTable": String("aliveworkplace:chests/war_camp"), "id": String("minecraft:chest")}))
     b.set(11, 1, 16, "chest", facing="north", type="single", waterlogged=False)
     b.set(9, 1, 16, "barrel", facing="up", open=False)

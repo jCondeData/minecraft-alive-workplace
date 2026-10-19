@@ -35,6 +35,12 @@ Kill the **chief** and the camp is broken up: his band scatters, and the chest i
 like emeralds, iron and gold, bread, arrows, a crossbow or an iron axe, and with luck a diamond, a golden apple, a saddle
 or a name tag. The chronicle remembers who brought him down, and no new camp comes for five days.
 
+A couple of seconds after the chief falls, the camp comes down: the tents, the fire and the chests go, top first, and
+whatever was still in the chests spills out on the ground for you to pick up. Anything you built or changed at the camp
+stays. The village forgets the camp at once: it is gone from the hall's Defense page and your scouts stop reporting it.
+After the five quiet days a new band may make camp, somewhere else. If you'd rather keep the ruins, turn on the
+[Camp Ruins](settings-threats.md) setting: the camp then stays standing, its fire put out.
+
 Take help along: raise a Rally Banner and your guards follow you out, or hire three mercenaries at the hall for the
 night (see [Threats and defense](defence.md)). Guards stay at home otherwise: the camp is far beyond their patrol.
 
@@ -44,7 +50,9 @@ night (see [Threats and defense](defence.md)). Guards stay at home otherwise: th
 - **Affects:** [raids](raids.md) (from the camp, twice as often), [wellbeing](village-needs.md) (less safe) and so the
   [work pace](work-pace.md) of the whole village.
 - **Turned down or off:** the [Threat Level](threat-level.md) setting makes camps rarer or more frequent, and at 0 none
-  come; on **Peaceful** none come; the [Bandit Camps](settings-threats.md) switch turns them off. With
+  come; on **Peaceful** none come; the [Bandit Camps](settings-threats.md) switch turns them off. In a modpack that blocks
+  pillagers (Cobbleverse does), the [Force Raider Spawns](settings-threats.md) setting still puts the chief and his men
+  in the camp. With
   [Monster Raids](settings-threats.md) off, a camp may still go up but no raids come from it.
 - **On demand.** Operators can set a camp down by the nearest hall with `/workplace threat lair bandits`, and clear it
   away again with `/workplace threat clear` (see [/workplace threat](command-threat.md)).

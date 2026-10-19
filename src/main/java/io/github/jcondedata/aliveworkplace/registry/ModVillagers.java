@@ -930,6 +930,42 @@ public final class ModVillagers {
 	}
 
 	/**
+	 * Create's Train Station is the Conductor's job block (ROADMAP 39.7d), as the Toolbox is the Mechanic's: a POI of ours
+	 * registered once Create has registered the station, so without Create there is none. It's in the acquirable_job_site
+	 * tag (as an optional entry), so a jobless villager by the village's station takes it by themselves.
+	 */
+	public static final ResourceLocation TRACK_STATION_BLOCK = ResourceLocation.fromNamespaceAndPath("create", "track_station");
+	public static final ResourceLocation TRACK_STATION_ID = AliveWorkplace.id("track_station");
+	public static final ResourceKey<PoiType> TRACK_STATION_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, TRACK_STATION_ID);
+
+	static {
+		Platform.get().whenBlockRegistered(TRACK_STATION_BLOCK, block -> Platform.get().registerPoi(TRACK_STATION_ID, 1, 1, block));
+	}
+
+	/**
+	 * Drives the village train and calls its stations (ROADMAP 39.7d): only with Create installed, so without it there is
+	 * no Conductor at all (null). A villager saved as one in a world Create was removed from loads as a jobless one.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static final VillagerProfession CONDUCTOR = Platform.get().isModLoaded("create") ? Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("conductor"),
+		new VillagerProfession(
+			"conductor",
+			holder -> holder.is(TRACK_STATION_POI),
+			holder -> holder.is(TRACK_STATION_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.VILLAGER_WORK_CARTOGRAPHER
+		)
+	) : null;
+
+	/** Whether {@code profession} is the Conductor (false without Create). */
+	public static boolean isConductor(VillagerProfession profession) {
+		return CONDUCTOR != null && profession == CONDUCTOR;
+	}
+
+	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
 	 */

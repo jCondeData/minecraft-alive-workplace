@@ -1722,7 +1722,48 @@ def mechanic():
     return t.save_profession(ASSETS, "mechanic", hat=None)
 
 
-DRAW = [orchard_keeper, berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
+def conductor():
+    """The village train's Conductor (ROADMAP 39.7d, Create): a railwayman's peaked cap in deep maroon with a gold braid
+    band and a shiny black peak; a maroon uniform tunic, buttoned to the neck, with two rows of brass buttons down the
+    front; a gold watch chain looped across to a fob pocket; a black belt with a steel ticket punch at the right hip;
+    a ticket pouch on the right side; maroon sleeves with gold cuff rings and black leather gloves. Maroon and gold keep him
+    apart from the Postman's navy cap and mailbag at a glance."""
+    t = vg.VillagerTexture()
+    maroon = vg.cloth("#6e1f2a", spread=0.2)
+    peak = Ramp(["#15171f", "#1f2230", "#2b2f40", "#3e4458", "#555d74"], name="peak")
+    vg.hat(t, maroon, style="cap", visor=2, brim_ramp=peak, band=GOLD[1], noise=0)
+    crown_top(t, maroon)
+    hf = t.face("hat", "front")
+    paint(hf, ((3, 1), (4, 1)), GOLD[3])                 # the railway's winged badge over the band
+    paint(hf, ((2, 1), (5, 1)), GOLD[1])
+    for side in SIDES:                                   # the gold braid round the cap, lit on the front
+        t.face("hat", side).fill(GOLD[2] if side == "front" else GOLD[1], rows=[3])
+    vg.vest(t, maroon, length=18, open_front=False, noise=0)
+    f = t.face("jacket", "front")
+    for y in (1, 3, 5, 7):                               # two rows of brass buttons down the tunic
+        f.put(2, y, BRASS[3])
+        f.put(5, y, BRASS[2])
+    paint(f, ((2, 0), (3, 0), (4, 0), (5, 0)), maroon[0])   # the stand-up collar's shadow line
+    for x, y in ((3, 8), (4, 9), (5, 9), (6, 8)):        # the watch chain looped to the fob pocket
+        f.put(x, y, GOLD[3] if x < 5 else GOLD[2])
+    paint(f, ((6, 7), (7, 7)), maroon[1])                # the fob pocket's flap
+    vg.belt(t, vg.cloth("#26221f", n=4), row=10, buckle=BRASS[3])
+    for x, y, c in ((1, 11, STEEL[3]), (2, 11, STEEL[2]), (1, 12, STEEL[1]),   # the ticket punch at the right hip
+                    (2, 12, "#2e2e2e"), (1, 13, STEEL[1]), (1, 14, STEEL[0])):
+        f.put(x, y, c)
+    west = t.face("jacket", "west")                      # the ticket pouch on the right side, a ticket showing
+    bag(west, 1, 11, 3, 4, flap=1)
+    west.put(2, 10, "#e6d9a8")
+    west.put(1, 10, LINEN_SHADE)
+    back = t.face("jacket", "back")                      # the tunic's back vent and belt half-tab with two buttons
+    for y in range(11, 18):
+        back.put(4, y, maroon[0])
+    paint(back, ((2, 9), (5, 9)), BRASS[2])
+    vg.sleeves(t, maroon, cuff=GOLD[2], gloves=vg.cloth("#2a2420", n=4))
+    return t.save_profession(ASSETS, "conductor", hat="full")
+
+
+DRAW = [orchard_keeper,berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
 DRAW += [jeweller]   # 34.12
@@ -1730,6 +1771,7 @@ DRAW += [firewarden]   # 32.16
 DRAW += [well_keeper]   # 32.17
 DRAW += [physician]   # 32.18
 DRAW += [mechanic]   # 39.2
+DRAW += [conductor]   # 39.7d
 
 if __name__ == "__main__":
     run(DRAW)

@@ -27,7 +27,8 @@ and their work goes into them. Right-click the Inn Counter to see how many suppl
 
 ## How it fits in
 
-- **Needs beds.** No free bed, no travelers.
+- **Needs beds.** No free bed, no travelers. Each traveler takes their bed as they arrive, and a settlers' wagon bedroll
+  doesn't count.
 - **Shared stock.** Workers whose workstations are within 48 blocks of each other share their chests, as long as they
   answer to the same people.
 - **Breaking it.** Mine it with an axe; it drops itself, so you can move it. A worker who has leveled up keeps the job

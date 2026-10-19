@@ -79,6 +79,7 @@ def check(b, only=None, whole=None):
             problems.append(f"{short}@{x},{y},{z} {bad}")
     problems += chair_problems(blocks, only)
     problems += doorway_problems(blocks, only)
+    problems += headroom_problems(blocks, b.w, b.h, b.d, deep, drawn, only)
     if (only is None) if whole is None else whole:
         problems += reach_problems(blocks, b.w, b.h, b.d, deep, drawn)
     return problems
@@ -143,18 +144,20 @@ def chair_problems(blocks, only=None):
     return problems
 
 
-# --- Doorways a villager fits through (B170, B173) ----------------------------------------------------------------
+# --- Doorways a villager fits through (B170, B173, B178) ----------------------------------------------------------
 # A villager is 1.95 blocks tall. Under a lintel two blocks up it fits with 0.05 to spare, so any step up in or beside
 # the doorway (a carpet is 1/16, a slab half a block) puts its head into the lintel: it stands in the doorway for good.
 VILLAGER_HEIGHT = 1.95
 
 
 def raise_of(block):
-    """How far standing in the cell with {@code block} lifts the feet above the cell's floor (0: not a step up). Beds
-    don't count: nobody walks over one, a villager sleeps in it from beside it."""
+    """How far standing in the cell with {@code block} lifts the feet above the cell's floor (0: not a step up). A bed
+    counts (B178): it is 9/16 high, under a villager's 0.6 step, so a villager's path runs over one like a slab."""
     if block is None:
         return 0
     s, props = _short(block), block[1]
+    if s.endswith("_bed"):
+        return 9 / 16
     if s.endswith("_carpet"):
         return 1 / 16
     if s.endswith("_stairs") and props.get("half") == "bottom":
@@ -224,6 +227,63 @@ def doorway_problems(blocks, only=None):
                 where = "in" if cell == (x, y, z) else "beside"
                 problems.append(f"doorway@{x},{y},{z}: {_short(blocks.get(cell))}@{cell[0]},{y},{cell[2]} {where} it "
                                 f"leaves {room - lift:.2f} under the lintel, a villager needs {VILLAGER_HEIGHT}")
+    return problems
+
+
+# --- Headroom over steps anywhere (B197) --------------------------------------------------------------------------
+# Not only in doorways: a step a villager walks onto lifts it by the step's height. The game's path finder lets a
+# villager stand where the two cells its body is in (1.95 rounds up to 2) are open, wherever the feet are inside the
+# lower one, so a carpet (or a shut trapdoor, or snow) under a ceiling two blocks over the floor is a place to walk:
+# the villager steps to its edge, head in the ceiling (1.94 of room), and stands there for good. On a slab, a stair or
+# a bed the feet are in the cell above it, so the finder wants the two cells over the step open: under solid blocks
+# that is room enough, but not under a shut hatch (a trapdoor) in the second cell, which the finder walks under.
+def ceiling_over(blocks, x, y, z, top):
+    """How far over the floor of cell (x, y, z) the first thing a head hits is, or None when nothing is (up to
+    {@code top}, the build's height)."""
+    for y2 in range(y + 1, top + 1):
+        block = blocks.get((x, y2, z))
+        gap = y2 - y
+        if block is not None and _short(block).endswith("trapdoor") and block[1].get("open") != "true":
+            return gap + (13 / 16 if block[1].get("half") == "top" else 0)  # shut, a hatch is solid to walk under
+        if passable(block):
+            continue
+        s, props = _short(block), block[1]
+        if s.endswith("_slab") and props.get("type") == "top":
+            return gap + 0.5
+        if s.endswith("lantern") and props.get("hanging") == "true":
+            return gap + 1 / 16
+        return gap
+    return None
+
+
+def headroom_problems(blocks, w, h, d, deep=0, drawn=None, only=None):
+    """Steps (raise_of) a villager walks onto, from the floor beside them or from a step beside them, that leave it
+    less than its height under the ceiling. A villager walks where a player walks (reachable) and where the path
+    finder takes it (the cells its body is in open, see above); a table's carpet, a seat on a post, a bench under an
+    eave too low to stand on, a roof's stairs nobody gets to aren't walked onto."""
+    nodes, seen = reachable(blocks, w, h, d, deep, drawn)
+    problems = []
+    for (x, y, z), block in sorted(blocks.items()):
+        if only is not None and (x, y, z) not in only:
+            continue
+        lift = raise_of(block)
+        feet = y if passable(block) else y + 1  # a carpet, trapdoor or snow is in the feet's cell; a slab under it
+        if not lift or not all(passable(blocks.get((x, c, z))) for c in (feet, feet + 1)):
+            continue
+        under = blocks.get((x, y - 1, z))
+        earth = under is None and y <= 0 and (drawn is None or (x, y - 1, z) not in drawn)
+        if _short(block).endswith("_carpet") and not earth and (passable(under) or _thin(under)):
+            continue  # a carpet on nothing a villager stands on: a table top on a post, an awning
+        room = ceiling_over(blocks, x, y, z, h)
+        if room is None or room - lift >= VILLAGER_HEIGHT:
+            continue
+        # Stepped onto: a place a player gets to on this cell, or beside it on the same floor (or a step up from it)
+        levels = (2 * y, 2 * y + 1, 2 * y + 2)
+        near = [(x, z)] + [(x + dx, z + dz) for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1))]
+        if not any((cx, cz, L) in seen for cx, cz in near for L in levels):
+            continue
+        problems.append(f"{_short(block)}@{x},{y},{z} leaves {room - lift:.2f} under the ceiling, a villager needs "
+                        f"{VILLAGER_HEIGHT} (raise the ceiling or take the step away)")
     return problems
 
 
@@ -303,9 +363,8 @@ def walk_nodes(blocks, w, h, d, deep=0, drawn=None):
     return nodes
 
 
-def reach_problems(blocks, w, h, d, deep=0, drawn=None):
-    """Upper floors a player can't get to: places to stand two or more blocks over the ground, under a roof, four or
-    more together, that can't be walked, stepped (stairs and slabs) or climbed (ladders) to from the ground floor."""
+def reachable(blocks, w, h, d, deep=0, drawn=None):
+    """The places to stand (walk_nodes) and those of them a player gets to from the ground floor round the build."""
     nodes = walk_nodes(blocks, w, h, d, deep, drawn)
     by_col = {}
     for (x, z, L) in nodes:
@@ -333,6 +392,13 @@ def reach_problems(blocks, w, h, d, deep=0, drawn=None):
             if m not in seen:
                 seen.add(m)
                 todo.append(m)
+    return nodes, seen
+
+
+def reach_problems(blocks, w, h, d, deep=0, drawn=None):
+    """Upper floors a player can't get to: places to stand two or more blocks over the ground, under a roof, four or
+    more together, that can't be walked, stepped (stairs and slabs) or climbed (ladders) to from the ground floor."""
+    nodes, seen = reachable(blocks, w, h, d, deep, drawn)
     # Places to stand that weren't reached, two or more blocks up or below ground, inside the build: under something
     # (a room, a basement) or open to the sky (a stand, a terrace, a balcony, a wall's walk: B154)
     def roofed(x, z, L):

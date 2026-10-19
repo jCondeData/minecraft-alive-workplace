@@ -327,7 +327,7 @@ public final class Scouts {
 	}
 
 	/** The next stop from {@code from} toward {@code to}: at most {@link #LEG} blocks on, on the ground, {@code aside} to one side. */
-	static BlockPos waypoint(ServerLevel level, BlockPos from, BlockPos to, int aside) {
+	public static BlockPos waypoint(ServerLevel level, BlockPos from, BlockPos to, int aside) {
 		double dx = to.getX() - from.getX();
 		double dz = to.getZ() - from.getZ();
 		double distance = Math.sqrt(dx * dx + dz * dz);
@@ -472,6 +472,14 @@ public final class Scouts {
 			}
 		}
 		return 4;
+	}
+
+	/** The village round {@code hall} forgets where its lair stood: the lair is gone (B209). */
+	public static void forgetLair(ServerLevel level, BlockPos hall) {
+		Data data = Data.get(level);
+		if (data.known.remove(hall) != null) {
+			data.setDirty();
+		}
 	}
 
 	/** Forgets every mission and what every village knows (tests). */

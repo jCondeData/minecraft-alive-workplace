@@ -360,6 +360,8 @@ final class JobScenes {
 	/** The printer scene's chest, for the Gazette the player takes out and reads (34.11). */
 	private static volatile Container printerChest;
 	private static volatile Villager subject;
+	/** The cuisine_kitchen scene's hall (38.8a), for the board's Dishes tab shown after. */
+	private static volatile BlockPos cuisineHall;
 	/** classes (34.6): the couple first, then three Peasants. */
 	private static final List<Villager> classPeople = new java.util.concurrent.CopyOnWriteArrayList<>();
 	/** curfew: the villagers who go to bed at dusk. */
@@ -1152,7 +1154,9 @@ final class JobScenes {
 		// 39.7b: Thornholm's builder builds the train from its blueprint out of the bench's barrel (the bogey from train
 		// casing), and the caravan's logs ride in the carriage's chest: loaded at Thornholm, taken out at Ashford (what the
 		// chest holds is shown over the hotbar the whole time).
-		SCENES.put("village_train", new Job("Thornholm's builder built the train, the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
+		// 39.7d: Thornholm has a Conductor (maroon cap and tunic) at its station as well as the jobless villager: he takes
+		// the seat, and calls the stop when the train comes in at Ashford.
+		SCENES.put("village_train", new Job("Thornholm's builder built the train, its Conductor took the seat, and the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
 			4000, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
@@ -1195,6 +1199,12 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, thornholm, data); // both stations known (B193)
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, ashford, data);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, thornholm, ashford), "the two villages are on a railway");
+			Villager conductor = EntityType.VILLAGER.spawn(level, west.offset(6, 1, 3), MobSpawnType.COMMAND); // 39.7d: Thornholm's Conductor
+			conductor.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.work.Stations.assign(level, conductor, data.stations(thornholm).get(0),
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.CONDUCTOR);
+			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.isConductor(conductor), "Thornholm's station has a Conductor");
+			io.github.jcondedata.aliveworkplace.city.CaravanTrains.lastCall = null;
 			Container chest = (Container) level.getBlockEntity(ashford.east(3).north(2));
 			Container home = (Container) level.getBlockEntity(thornholm.east(3).north(2));
 			BlockPos bench = thornholm.offset(-3, 0, 2); // Thornholm's builder, with the train's parts in the barrel by the bench
@@ -1258,6 +1268,8 @@ final class JobScenes {
 				if (in) {
 					Showcase.check(filled[0] && io.github.jcondedata.aliveworkplace.city.CaravanTrains.RAILWAY.call(r -> r.cargo(l, owner), List.<ItemStack>of()).isEmpty(),
 						"the train came in at Ashford's station and its chest emptied into Ashford's storehouse");
+					Showcase.check(l.getEntity(conductor.getUUID()) instanceof Villager rider && rider.isPassenger(), "the village's Conductor rode the train, not the jobless villager");
+					Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.lastCall != null, "the Conductor called the stop as the train came in");
 				}
 				return in;
 			};
@@ -1754,10 +1766,56 @@ final class JobScenes {
 				if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity) {
 					Showcase.check(true, "the war camp's loot chest was left standing");
 					player.connection.teleport(p.getX() + 0.5, p.getY() + 1, p.getZ() - 1.5, 0f, 40f);
-					break;
+					return;
 				}
 			}
+			// B209: the broken camp comes down a few seconds after, its chests' loot spilling out
+			var loot = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(camp).inflate(14, 8, 14));
+			Showcase.check(!loot.isEmpty(), "the war camp came down and its loot spilled out");
+			if (!loot.isEmpty()) {
+				player.connection.teleport(loot.get(0).getX(), loot.get(0).getY() + 1, loot.get(0).getZ() - 1.5, 0f, 40f);
+			}
 		}, -1, 0)));
+		// B209: a broken bandit camp comes down. The camp stands south of the village; its chief falls, the camp is gone from
+		// the village's records at once, and a couple of seconds later its tents, fire and chests come down top first, the
+		// loot spilling out on its trampled ground.
+		SCENES.put("camp_cleared", new Job("the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilled on the trampled ground", 900,
+			new Vec3(12.5, -53.0, 10.0), new Vec3(0.5, -60.0, 24.0), (level, player) -> {
+			level.setDayTime(1000);
+			BlockPos hall = STATION.north(6);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
+			BlockPos ground = STATION.offset(0, -1, 24);
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, ground, io.github.jcondedata.aliveworkplace.threat.Threats.BANDITS);
+			Showcase.check(lair != null, "the bandits made camp south of the village");
+			player.connection.teleport(STATION.getX() + 0.5, STATION.getY(), STATION.getZ() + 0.5, 0f, 0f);
+			long start = level.getGameTime();
+			boolean[] fallen = {false};
+			return l -> {
+				long t = l.getGameTime() - start;
+				if (lair == null) {
+					return t > 40;
+				}
+				if (!fallen[0]) {
+					if (t < 100) {
+						return false; // (the camp standing, its band by the fire)
+					}
+					fallen[0] = true;
+					if (l.getEntity(lair.captain()) instanceof net.minecraft.world.entity.LivingEntity chief) {
+						chief.hurt(l.damageSources().playerAttack(player), 10000f);
+					}
+					Showcase.check(io.github.jcondedata.aliveworkplace.threat.Lairs.near(l, hall).isEmpty(), "the chief fell and the village forgot the camp at once");
+					return false;
+				}
+				if (!io.github.jcondedata.aliveworkplace.threat.CampCleanup.clearing(l).isEmpty()) {
+					return false;
+				}
+				boolean gone = !(l.getBlockState(lair.pos()).getBlock() instanceof net.minecraft.world.level.block.CampfireBlock)
+					&& !l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(lair.pos()).inflate(10)).isEmpty();
+				Showcase.check(gone, "the camp came down and its loot spilled out");
+				return true;
+			};
+		}, null));
 		// Witch covens (ROADMAP 32.11): the Coven Hut on its stilts in the swamp north of a village, at night. The coven hexes
 		// a villager or two (a swirl of witch-light over them); then its witches come out and stand off the village's
 		// palisade, 12 to 20 blocks out, throwing their potions over it at the villagers behind.
@@ -3354,15 +3412,21 @@ final class JobScenes {
 				new ItemStack(cobblemonItem("oran_berry"), 3));
 			return l -> c.countItem(cobblemonItem("poke_snack")) > 0 && n(ModAttachments.DISHES_COOKED, cook) >= 1;
 		}));
-		SCENES.put("cuisine_kitchen", job("the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest", 2400, (level, player) -> {
-			// ROADMAP 38.8 (Cobblemon and Cobblecuisine): a Journeyman Chef at a Kitchen Stove, and in the chest beside it
-			// the makings of a Mixed Vegetable Salad (a level-1 dish) and of a Beanburger Curry (level 3). He cooks both
-			// from their crafting recipes and puts them in the chest. A sack of potatoes (B180): the menu's baked potatoes come
-			// first and take up to a batch of 8, and the salads' vegetable may be a potato, so 2 left none for the curry.
+		SCENES.put("cuisine_kitchen", new Job("asked at the hall board's Dishes tab, the Journeyman Chef cooked 4 Mixed Vegetable Salads and 2 Beanburger Curries "
+			+ "from their own recipes into the chest; the Fruit Punch (no Calcium in the store) is still waiting and the cake is locked for his level", 2400, CAMERA, TARGET, (level, player) -> {
+			// ROADMAP 38.8a (Cobblemon and Cobblecuisine): a Village Hall, a Journeyman Chef at a Kitchen Stove, and in the
+			// chest beside it the makings of 4 Mixed Vegetable Salads (a level-1 dish) and of 2 Beanburger Curries (level 3).
+			// He cooks Cobblecuisine's dishes only when asked at the hall's board: the player asks on the Dishes tab for the
+			// salads, the curries and a Fruit Punch (whose Calcium the store lacks). He cooks the first two into the chest; the
+			// last still waits on the board afterwards, beside the cakes, locked for a Journeyman. A sack of potatoes (B180).
 			java.util.function.Function<String, Item> cc = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblecuisine", id));
 			Showcase.check(io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(cc.apply("beanburger_curry")) != null,
-				"Cobblecuisine's dishes are on the menus (Cobblecuisine, cuisineDishes)");
+				"Cobblecuisine's dishes are on the board (Cobblecuisine, cuisineDishes)");
+			BlockPos hall = new BlockPos(4, -60, -5);
+			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			cuisineHall = hall;
 			Villager chef = worker(level, STATION, ModBlocks.KITCHEN_STOVE, ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
 			chef.setVillagerData(chef.getVillagerData().setLevel(3));
 			chef.setVillagerXp(150);
@@ -3370,8 +3434,23 @@ final class JobScenes {
 				new ItemStack(cc.apply("green_bean"), 4), new ItemStack(Items.CARROT, 4), new ItemStack(cc.apply("red_bean"), 2),
 				new ItemStack(Items.BREAD, 2), new ItemStack(Items.POTATO, 16), new ItemStack(cobblemonItem("charti_berry"), 2),
 				new ItemStack(Items.COOKED_CHICKEN, 2));
-			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 1 && c.countItem(cc.apply("beanburger_curry")) >= 1;
-		}));
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.Chefs.menu(level, chef).stream()
+				.noneMatch(i -> io.github.jcondedata.aliveworkplace.craft.CuisineDishes.of(i) != null), "no Cobblecuisine dish on the Chef's own menu");
+			for (String[] ask : new String[][] {{"mixed_vegetable_salad", "4"}, {"beanburger_curry", "2"}, {"fruit_punch", "4"}}) {
+				Showcase.check(io.github.jcondedata.aliveworkplace.craft.DishRequests.request(level, hall, cc.apply(ask[0]), Integer.parseInt(ask[1]))
+					== io.github.jcondedata.aliveworkplace.craft.DishRequests.Result.ASKED, "the board took the request for " + ask[0]);
+			}
+			Showcase.check(io.github.jcondedata.aliveworkplace.craft.DishRequests.request(level, hall, cc.apply("fruit_honey_cake"), 1)
+				== io.github.jcondedata.aliveworkplace.craft.DishRequests.Result.LEVEL, "the cake is locked for a Journeyman");
+			return l -> c.countItem(cc.apply("mixed_vegetable_salad")) >= 4 && c.countItem(cc.apply("beanburger_curry")) >= 2
+				&& io.github.jcondedata.aliveworkplace.craft.DishRequests.get(l).waiting(hall, net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(cc.apply("fruit_punch"))) == 4;
+		}, new After("04_board_dishes", (level, player) -> {
+			ScreenshotHarness.hover(player, Vec3.atCenterOf(cuisineHall.south(2)), 180, 10);
+			io.github.jcondedata.aliveworkplace.work.ChoiceMenu.openHall(player, net.minecraft.network.chat.Component.translatable("screen.aliveworkplace.hall.title",
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.name(level, cuisineHall)), p -> true,
+				menu -> io.github.jcondedata.aliveworkplace.trade.TradePage.render(menu, level, cuisineHall,
+					io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.DISHES, null, player));
+		}, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6)));
 		SCENES.put("campfire_pot", job("the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest", 2400, (level, player) -> {
 			// ROADMAP 38.11 (Cobblemon): a Chef at a Kitchen Stove, and in the chest beside it the makings of two of the
 			// Campfire Pot's recipes, found by recipe type: EXP Candy XS (sculk and honeycomb) and the Berry Sweet (blue
@@ -3512,7 +3591,7 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.jeweller.MegaStones.on(), "the village's Mega Stones are on (Mega Showdown, villageMegas, Jewelers)");
 			Showcase.check(master != null && !io.github.jcondedata.aliveworkplace.jeweller.MegaStones.stonesOf(master).isEmpty(), "the Master's team has a Mega Stone to cut");
 			net.minecraft.tags.TagKey<net.minecraft.world.item.Item> stones = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
-				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone"));
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.id("mega_stones"));
 			Container c = chest(level, chestPos(), new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 					net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("mega_showdown", "mega_stone_crystal"))),
 				new ItemStack(Items.GOLD_INGOT, 2), new ItemStack(Items.EMERALD, 4), new ItemStack(ModItems.AMETHYST_RING, 8),
@@ -4045,7 +4124,9 @@ final class JobScenes {
 				String[] names = {"Dara", "Odo"};
 				for (int i = 0; i < names.length; i++) {
 					Villager v = EntityType.VILLAGER.create(level);
-					v.moveTo(-2.5 + i * 4, -60, 3.5, 180, 0);
+					// The page lists who could take a block nearest the hall first: Dara stands nearer, so she's first and the
+					// pointer, resting on the first row, picks her.
+					v.moveTo(1.5 - i * 4, -60, 3.5, 180, 0);
 					v.setNoAi(true); // jobless villagers would take a free block on their own before the camera sees it
 					v.setCustomName(Component.literal(names[i]));
 					v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.NONE));
@@ -4064,8 +4145,9 @@ final class JobScenes {
 				new Step("02_who_takes_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
-						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString().startsWith("Odo"),
-							"Dara and Odo could take it: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString());
+						String first = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).getHoverName().getString();
+						String second = m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).getHoverName().getString();
+						Showcase.check(first.startsWith("Dara") && second.startsWith("Odo"), "Dara and Odo could take it: " + first + ", " + second);
 					}
 				}, 40),
 				new Step("03_dara_porter", -1, 0, (level, player) -> {
@@ -7265,70 +7347,69 @@ final class JobScenes {
 				}, 30),
 				new Step("03_raid_den_resting", io.github.jcondedata.aliveworkplace.hall.DefencePage.DENS[1], 6, null, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
-		// Den Wardens (38.3): a guard posted from the Defense page stands watch by the glowing den.
-		SCREENS.put("den_warden", new Screen("a guard posted from the hall's Defense page stands watch by the raid den, by day",
+		// Raid helpers (38.1a): two of the village's trainers, hired on the Defence page, stand by the den as the player's
+		// raid starts; each has cheered them on with a cheer item.
+		SCREENS.put("den_helpers", new Screen("two of the village's trainers, hired on the hall's Defence page, stand by the glowing raid den as the player's raid starts; each cheered them on with one of the raid's cheer items",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setDayTime(3000);
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				subject = guard(level, new BlockPos(6, -60, -6), new ItemStack(Items.IRON_SWORD));
-				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
-				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
-				// set down in a loaded chunk after the hall, as in a real world: the game finds it by itself (B190)
-				level.setBlockAndUpdate(new BlockPos(-4, -60, -4), denState(block.get(), "tier_three", "fire", true));
-			},
-			List.of(new Step("01_den_warden", -1, 0, (level, player) -> {
-					// the guard has their job by now (picked hands it over in a task after staging), so they can be posted
-					BlockPos den = new BlockPos(-4, -60, -4);
-					denRolled(level, den, "tier_three", "fire");
-					subject.teleportTo(-2.5, -60, -2.5); // already at the den: the walk there is the compat tests' (DenWardenCompatTests)
-					Component said = io.github.jcondedata.aliveworkplace.guard.DenWardens.post(level, STATION, den);
-					Showcase.check(io.github.jcondedata.aliveworkplace.guard.DenWardens.wardenOf(level, den).isPresent(), "a warden was posted: " + said.getString());
-				}, 60),
-				new Step("02_den_warden_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.WARDENS[0], 6, (level, player) -> {
-					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
-					if (player.containerMenu instanceof ChoiceMenu m) {
-						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
-						String slot = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.WARDENS[0]).getHoverName().getString();
-						Showcase.check(slot.startsWith("Warden: "), "the Defense page names the den's warden: " + slot);
-					}
-				}, 30)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
-		// Den challenges (38.4): the village's Trainer Leader beat the tier 3 den; it has gone dark, its loot is in the
-		// store and the chronicle tells it.
-		SCREENS.put("den_challenge", new Screen("the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it",
-			new Vec3(2.5, -58.4, 4.5), TARGET,
-			(level, player) -> {
-				level.setDayTime(3000);
-				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
-					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
-				level.setBlockAndUpdate(new BlockPos(4, -60, -1), Blocks.SMOKER.defaultBlockState());
-				chest(level, new BlockPos(5, -60, -1));
 				var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(io.github.jcondedata.aliveworkplace.guard.RaidDens.DEN);
 				Showcase.check(block.isPresent(), "Cobblemon Raid Dens is loaded (-Pcobblemon=true)");
 				// set down in a loaded chunk after the hall, as in a real world: the game finds it by itself (B190)
 				level.setBlockAndUpdate(new BlockPos(-4, -60, -4), denState(block.get(), "tier_three", "fire", true));
 				subject = picked(level, player, new BlockPos(1, -60, -5), ModBlocks.TRAINING_POST, Items.GOLD_BLOCK);
+				worker(level, new BlockPos(5, -60, -5), ModBlocks.TRAINING_POST, ModVillagers.TRAINING_POST_POI, ModVillagers.TRAINER);
 			},
-			List.of(new Step("01_den_challenge", -1, 0, (level, player) -> {
-					// the job is the Leader's by now (picked hands it over in a task after staging); the scene's player is
-					// far enough off the den that it isn't theirs
-					subject.teleportTo(-2.5, -60, -1.5);
-					denRolled(level, new BlockPos(-4, -60, -4), "tier_three", "fire"); // a den a Leader takes on (up to tier 3)
-					var result = io.github.jcondedata.aliveworkplace.trainer.DenChallenges.challenge(level, STATION, 0f, net.minecraft.util.RandomSource.create(38));
-					Showcase.check(result == io.github.jcondedata.aliveworkplace.trainer.DenChallenges.Result.WON, "the Leader won the challenge: " + result);
-				}, 60),
-				new Step("02_den_challenge_chronicle", -1, 6, (level, player) -> {
-					var hall = (io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(STATION);
-					Showcase.check(hall.chronicle().stream().anyMatch(e -> e.text().getString().contains("beat the tier 3 Fire raid den")),
-						"the chronicle has the challenge's line");
+			List.of(new Step("01_den_helpers_page", io.github.jcondedata.aliveworkplace.hall.DefencePage.HELPERS[0], 6, (level, player) -> {
+					BlockPos den = new BlockPos(-4, -60, -4);
+					denRolled(level, den, "tier_three", "fire");
+					player.getInventory().add(new ItemStack(Items.EMERALD, 4 * io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE));
+					io.github.jcondedata.aliveworkplace.work.Bank.EXTENSION.run(b -> b.add(player, 400L * io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.PRICE));
+					String first = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hire(level, STATION, den, player).getString();
+					String second = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hire(level, STATION, den, player).getString();
+					Showcase.check(io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hireOf(level.getServer(), player.getUUID())
+						.map(h -> h.helpers.size() == 2).orElse(false), "two helpers hired: " + first + " / " + second);
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
-						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.CHRONICLE, player);
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.GUARDS, player);
+						String slot = m.icon(io.github.jcondedata.aliveworkplace.hall.DefencePage.HELPERS[0]).getHoverName().getString();
+						Showcase.check(slot.equals("Hire a raid helper"), "the Defence page offers raid helpers by the den: " + slot);
 					}
-				}, 30)),
-			(level, player) -> player.containerMenu instanceof ChoiceMenu));
+				}, 30),
+				new Step("02_den_helpers_raid", -1, 0, (level, player) -> {
+					player.closeContainer();
+					BlockPos den = new BlockPos(-4, -60, -4);
+					var hire = io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.hireOf(level.getServer(), player.getUUID()).orElse(null);
+					Showcase.check(hire != null, "the hiring is there");
+					if (hire != null) {
+						// the raid joined by the den (Raid Dens' own statistic): the helpers cheer and take their places round it
+						hire.lastNear = level.getGameTime();
+						// the stat registry holds Raid Dens' own id instance
+						var joined = net.minecraft.core.registries.BuiltInRegistries.CUSTOM_STAT.get(
+							net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblemonraiddens", io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.JOINED));
+						Showcase.check(joined != null, "Raid Dens has its raids_joined statistic");
+						if (joined != null) {
+							player.awardStat(joined);
+						}
+						Showcase.check(hire.joined, "the helpers joined the raid");
+						int i = 0;
+						for (var helper : io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.helpers(level, hire)) {
+							BlockPos at = den.offset(i++ == 0 ? 3 : 0, 0, i == 1 ? 0 : 3);
+							helper.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5); // already there: the walk is the compat tests'
+						}
+					}
+					int cheers = 0;
+					for (int s = 0; s < player.getInventory().getContainerSize(); s++) {
+						var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(player.getInventory().getItem(s).getItem());
+						if (id.getNamespace().equals("cobblemonraiddens") && id.getPath().startsWith("cheer_")) {
+							cheers += player.getInventory().getItem(s).getCount();
+						}
+					}
+					Showcase.check(cheers == 2, "each helper cheered once: " + cheers + " cheer items");
+				}, 60)),
+			(level, player) -> true));
 		// At peace (32.21): the owner set the village at peace on the Defence page; the bandit camp by it leaves at the next dawn.
 		SCREENS.put("at_peace", new Screen("the hall's owner set the village at peace on the Defence page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn",
 			new Vec3(2.5, -58.4, 4.5), TARGET,

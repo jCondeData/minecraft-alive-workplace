@@ -58,11 +58,13 @@ import org.jetbrains.annotations.Nullable;
 public final class TradePage {
 	/** The page's tabs, in the row's order. */
 	public enum Tab {
-		ROUTES, PRICES, PACTS, REALM, COLONIES;
+		ROUTES, PRICES, PACTS, REALM, COLONIES,
+		/** Dishes asked of the village's Chef (38.8a, {@code craft.DishesTab}): in the row's free slot before Routes. */
+		DISHES;
 
 		/** The tab's slot in the page's first row. */
 		public int slot() {
-			return FIRST_TAB + ordinal();
+			return this == DISHES ? DISHES_SLOT : FIRST_TAB + ordinal();
 		}
 	}
 
@@ -71,6 +73,8 @@ public final class TradePage {
 	public static final int TREASURY = 2;
 	/** The Routes tab's slot (where the routes page's title always was); the other tabs follow it. */
 	public static final int FIRST_TAB = 4;
+	/** The Dishes tab's slot (38.8a): the one free slot of the row, between the treasury and Routes. */
+	public static final int DISHES_SLOT = 3;
 	/** Goods the Prices tab shows: rows 3 to 6. */
 	public static final int GOODS = ChoiceMenu.SIZE - VillageHallScreen.FIRST_ROW;
 	/** The village sells a bundle at this many percent of what it pays for one (33.5). */

@@ -15,7 +15,7 @@ import net.minecraft.world.entity.npc.Villager;
 
 /** ROADMAP 38.8 without Cobblecuisine: the Chef's menu is today's, and the dish lists are read as their format says. */
 public class CuisineGameTests implements FabricGameTest {
-	/** The Done when: without Cobblecuisine a Master Chef's menu is the plain one, and no dish is listed. */
+	/** The Done when: without Cobblecuisine a Master Chef's menu is the plain one, no dish is listed and the board has no Dishes tab (38.8a). */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void withoutCobblecuisineTheMenuIsTodays(GameTestHelper helper) {
@@ -28,6 +28,10 @@ public class CuisineGameTests implements FabricGameTest {
 		chef.setVillagerData(chef.getVillagerData().setProfession(ModVillagers.CHEF).setLevel(5));
 		helper.assertTrue(Chefs.menu(helper.getLevel(), chef).equals(Chefs.menu(helper.getLevel())),
 			"a Master's menu " + Chefs.menu(helper.getLevel(), chef) + " isn't today's " + Chefs.menu(helper.getLevel()));
+		// 38.8a: no dishes to ask for, so the hall's board has no Dishes tab and the Trade page's tabs are today's
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.craft.DishRequests.shown(), "dishes to ask for without Cobblecuisine");
+		helper.assertFalse(io.github.jcondedata.aliveworkplace.trade.TradePage.tabs().contains(io.github.jcondedata.aliveworkplace.trade.TradePage.Tab.DISHES),
+			"a Dishes tab on the board without Cobblecuisine: " + io.github.jcondedata.aliveworkplace.trade.TradePage.tabs());
 		helper.succeed();
 	}
 

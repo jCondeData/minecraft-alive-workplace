@@ -443,7 +443,9 @@ public final class VillageRaids {
 		if (!portal && (io.github.jcondedata.aliveworkplace.threat.Sieges.lays(culture) || culture.tactics().contains(io.github.jcondedata.aliveworkplace.threat.Covens.TACTIC) && !Threats.gentle())) {
 			// A siege gathers beyond the outermost finished wall on its side (32.5), and so does a coven (32.11): no raider appears inside the walls.
 			BlockPos beyond = io.github.jcondedata.aliveworkplace.threat.Sieges.outside(level, hall, gather);
-			if (!beyond.equals(gather) && level.isLoaded(beyond)) {
+			// Only onto ground where mobs move (B176): raiders put down at the edge of the live ground stood frozen, and a
+			// chunk loaded without its entities hid them from every count of the raid.
+			if (!beyond.equals(gather) && level.isLoaded(beyond) && (level.isPositionEntityTicking(beyond) || !level.isPositionEntityTicking(gather))) {
 				gather = surface(level, beyond);
 			}
 		}
@@ -485,7 +487,9 @@ public final class VillageRaids {
 				mob.setTarget(targets.get(random.nextInt(targets.size())));
 			}
 			mob.getNavigation().moveTo(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5, 1.0);
-			level.addFreshEntityWithPassengers(mob);
+			if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, mob, "raid on the village hall at " + hall.toShortString())) {
+				continue; // (said in the log: B208)
+			}
 			spawned.add(mob);
 		}
 		if (spawned.isEmpty()) {
@@ -502,7 +506,7 @@ public final class VillageRaids {
 					continue;
 				}
 				BlockPos at = atPortal ? beside(level, from, random)
-					: surface(level, from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter));
+					: near(level, from, scatter, false, random);
 				mob.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, random.nextFloat() * 360f, 0f);
 				mob.finalizeSpawn(level, level.getCurrentDifficultyAt(at), MobSpawnType.EVENT, null);
 				Threats.outfit(level, mob, culture, extra.member());
@@ -511,8 +515,9 @@ public final class VillageRaids {
 					mob.setTarget(targets.get(random.nextInt(targets.size())));
 				}
 				mob.getNavigation().moveTo(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5, 1.0);
-				level.addFreshEntityWithPassengers(mob);
-				spawned.add(mob);
+				if (io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, mob, "raid on the village hall at " + hall.toShortString())) {
+					spawned.add(mob);
+				}
 			}
 		}
 		Mob leader = camp.filter(c -> Lairs.leads(level, c)).map(c -> Lairs.lead(level, c, surface(level, from))).orElse(null);
@@ -718,10 +723,20 @@ public final class VillageRaids {
 
 	/**
 	 * Where a raider gathering at {@code from} stands: within {@code scatter} blocks of it, on the ground; one wading in
-	 * ({@code wades}, from a ship, 32.8) on the water there, looking down from just over it.
+	 * ({@code wades}, from a ship, 32.8) on the water there, looking down from just over it. When the gathering point is
+	 * on ground where mobs move, so is every raider (B176): a spot over the edge of it is drawn again, up to 8 times, and
+	 * else the raider stands at the point itself.
 	 */
 	private static BlockPos near(ServerLevel level, BlockPos from, int scatter, boolean wades, RandomSource random) {
-		BlockPos column = from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter);
+		boolean live = level.isPositionEntityTicking(from);
+		BlockPos column = from;
+		for (int tries = 0; tries < 8; tries++) {
+			BlockPos drawn = from.offset(random.nextInt(2 * scatter + 1) - scatter, 0, random.nextInt(2 * scatter + 1) - scatter);
+			if (!live || level.isPositionEntityTicking(drawn)) {
+				column = drawn;
+				break;
+			}
+		}
 		return wades ? io.github.jcondedata.aliveworkplace.threat.Ships.standAt(level, column, from.getY() + 2) : surface(level, column);
 	}
 

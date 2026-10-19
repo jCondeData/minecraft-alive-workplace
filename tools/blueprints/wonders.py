@@ -3813,6 +3813,15 @@ def h_falls(b):
         lantern(b, x, 1, z)
 
 
+def h_low_moss(b):
+    """Takes up this stage's moss carpets under something two blocks over them (a ledge, a crown): on one a villager
+    has 1.94 of room, and stands there with its head in the green for good (B197)."""
+    for (x, y, z), (name, _) in list(b.blocks.items()):
+        if name == "minecraft:moss_carpet" and (x, y, z) not in b._frozen and b.get(x, y + 1, z) is None \
+                and b.get(x, y + 2, z) is not None:
+            del b.blocks[(x, y, z)]
+
+
 def hanging_gardens():
     b = StagedBuild(HW, HH, HD)
     b.begin(1)
@@ -3824,6 +3833,7 @@ def hanging_gardens():
     h_floor(b, 1)
     h_vines(b, 0)
     h_foot(b)
+    h_low_moss(b)
     for k in (1, 2):
         b.begin(k + 1)
         h_ramp(b, k)
@@ -3831,12 +3841,14 @@ def hanging_gardens():
         h_ledge(b, k)
         h_floor(b, k + 1)
         h_vines(b, k)
+        h_low_moss(b)
     b.begin(4)
     h_ramp(b, 3)
     h_terrace(b, 3)
     h_crown(b)
     h_vines(b, 3)
     h_falls(b)
+    h_low_moss(b)
     return b
 
 

@@ -51,15 +51,16 @@ public final class Chefs {
 	}
 
 	/**
-	 * What {@code chef} cooks: {@link #menu(ServerLevel)}, then the other mods' dishes ({@link CuisineDishes}, ROADMAP 38.8:
-	 * Cobblecuisine's salads and sandwiches from level 1, curries from 3, cakes from 4) of the chef's level and below.
-	 * Then every Campfire Pot recipe's dish ({@link #potDishes}, 38.11). Without those mods, or with {@code cuisineDishes}
-	 * off, it's the same menu.
+	 * What {@code chef} cooks on his own: {@link #menu(ServerLevel)}, then every Campfire Pot recipe's dish
+	 * ({@link #potDishes}, 38.11). The other mods' dishes ({@link CuisineDishes}, Cobblecuisine's) are not on it: since
+	 * 38.8a (the owner, 2026-10-19) he cooks those only when a player asks for them at the hall's board
+	 * ({@link DishRequests}), and only those his level allows. Without those mods, or with {@code cuisineDishes} off,
+	 * it's the same menu.
 	 */
 	public static List<Item> menu(ServerLevel level, Villager chef) {
 		Set<Item> out = new LinkedHashSet<>(menu(level));
-		out.addAll(CuisineDishes.upTo(io.github.jcondedata.aliveworkplace.build.BuilderLevels.level(chef)));
 		out.addAll(potDishes(level));
+		out.removeIf(item -> CuisineDishes.of(item) != null); // 38.8a: a dish of the lists only on request
 		return new ArrayList<>(out);
 	}
 

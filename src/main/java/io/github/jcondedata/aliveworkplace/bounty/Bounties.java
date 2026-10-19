@@ -645,12 +645,13 @@ public final class Bounties implements ResourceManagerReloadListener {
 			Lookup.holder(BuiltInRegistries.MOB_EFFECT, ResourceKey.create(Registries.MOB_EFFECT, e.id()))
 				.ifPresent(h -> captain.addEffect(new MobEffectInstance(h, MobEffectInstance.INFINITE_DURATION, e.amplifier(), false, true)));
 		}
-		level.addFreshEntity(captain);
+		if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, captain, "bounty hideout at " + at.toShortString())) {
+			return false; // (said in the log: B208)
+		}
 		b.captain = captain.getUUID();
 		if (quirk.mount().isPresent()) {
 			Mob mount = create(level, quirk.mount().get(), captain.blockPosition(), fire);
-			if (mount != null) {
-				level.addFreshEntity(mount);
+			if (mount != null && io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, mount, "bounty hideout at " + at.toShortString())) {
 				captain.startRiding(mount, true);
 				b.band.add(mount.getUUID());
 			}
@@ -662,8 +663,9 @@ public final class Bounties implements ResourceManagerReloadListener {
 			Mob man = create(level, i % 2 == 0 ? BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.VINDICATOR) : BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.PILLAGER), spot, fire);
 			if (man != null) {
 				man.setCustomName(Component.translatable("entity.aliveworkplace.bandit"));
-				level.addFreshEntity(man);
-				b.band.add(man.getUUID());
+				if (io.github.jcondedata.aliveworkplace.threat.HostileSpawns.add(level, man, "bounty hideout at " + at.toShortString())) {
+					b.band.add(man.getUUID());
+				}
 			}
 		}
 		if (quirk.nightInvisible()) {

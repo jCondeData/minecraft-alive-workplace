@@ -317,7 +317,7 @@ def builders_workshop(b, P):
         win(b, P, 1, 2, z, "west")
     win(b, P, 7, 2, 4, "east", shut=False)
     win(b, P, 4, 2, 8, "south")
-    door(b, 7, 1, 6, P.door, "west")
+    door(b, 7, 1, 5, P.door, "west")  # not beside the bed at (6, 6): a villager walked over it into the lintel (B178)
     # the yard
     box(b, 8, 0, 1, 12, 0, 10, P.yard)
     for x in range(8, 13):
@@ -383,7 +383,7 @@ def carpenters_workshop(b, P):
     for z in (4, 6):
         win(b, P, 1, 2, z, "west")
     win(b, P, 4, 2, 8, "south")
-    door(b, 7, 1, 6, P.door, "east")
+    door(b, 7, 1, 4, P.door, "east")  # not beside the bed at (6, 6): a villager walked over it into the lintel (B178)
     tie(b, P, 4)
     # in the shed: a log on two trestles, a plank bench, boards stood on end
     for z in (4, 6):
@@ -751,10 +751,12 @@ def ball_workshop(b, P):
     for x, z in ring:
         fence(b, x, 10, z, P.fence)
     apricorns = ("red_carpet", "yellow_carpet", "blue_carpet", "lime_carpet", "pink_carpet", "black_carpet", "white_carpet")
-    for i, (x, z) in enumerate(sorted(inside)):
-        if (x, z) != (cx + 1, cz):
-            b.set(x, 10, z, apricorns[i % len(apricorns)])
     hip_roof(b, cx - 2, cx + 2, cz - 2, cz + 2, 11, CUT_COPPER, steep=True)
+    # under the spire's foot the loft is two high: a carpet there leaves a villager 1.94 (B197), so the apricorns
+    # dry only where the spire rises over the floor
+    for i, (x, z) in enumerate(sorted(inside)):
+        if (x, z) != (cx + 1, cz) and all(b.blocks.get((x, yy, z), ("minecraft:air",))[0] == "minecraft:air" for yy in (11, 12)):
+            b.set(x, 10, z, apricorns[i % len(apricorns)])
     b.set(cx, 15, cz, "lightning_rod", facing="up", powered=False, waterlogged=False)
     # the way in from the workshop and up the tower
     for yy in (1, 2):

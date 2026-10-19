@@ -185,6 +185,7 @@ public class SettlersWagonItem extends Item {
 			}
 		}
 		template.placeInWorld(level, placement.origin(), placement.origin(), settings, level.getRandom(), 2);
+		CampBeds.record(level, box); // its bedrolls are for the road: no homes once a village is founded (B206, B207)
 		return box;
 	}
 

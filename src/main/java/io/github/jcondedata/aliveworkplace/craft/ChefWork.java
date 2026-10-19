@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
@@ -20,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
  * Kitchen Stove, in the village's storehouse (the porter's chests hold the farms' and fishermen's spare harvest) and at the
  * butcher's (milk and eggs), and
  * put them in the chests by the stove — until those hold {@link Chefs#KEEP} of each. After the menu, the chef's tonics
- * ({@link Tonics}, ROADMAP 30.15) from the same chests, until the stove's chests hold each one's keep.
+ * ({@link Tonics}, ROADMAP 30.15) from the same chests, until the stove's chests hold each one's keep. Before his menu,
+ * the dishes asked for at his village's hall board ({@link DishRequests}, 38.8a), which are never on the menu itself.
  */
 public class ChefWork extends CrafterWork {
 	private int next;
@@ -55,7 +57,11 @@ public class ChefWork extends CrafterWork {
 				}
 			}
 		}
-		List<Item> menu = Chefs.menu(level, villager); // with Cobblecuisine's dishes of the chef's level (38.8)
+		Job asked = chooseRequest(level, villager, station, stock, sources);
+		if (asked != null) {
+			return asked; // 38.8a: the dishes asked for at the hall's board, before his own menu
+		}
+		List<Item> menu = Chefs.menu(level, villager); // Cobblecuisine's dishes only on request since 38.8a
 		for (int i = 0; i < menu.size(); i++) {
 			Item dish = menu.get((next + i) % menu.size());
 			long have = stock.getOrDefault(dish, 0L);
@@ -91,6 +97,65 @@ public class ChefWork extends CrafterWork {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * A dish asked for at the board of the village our stove is in ({@link DishRequests}, 38.8a), the oldest first: one
+	 * our level allows, as many as are waiting (up to a batch, fewer if the makings run short), for the village's
+	 * Storehouse (our own chests if it has none). Null when nothing waiting can be cooked.
+	 */
+	@Nullable
+	private Job chooseRequest(ServerLevel level, Villager villager, BlockPos station, Map<Item, Long> stock, List<BlockPos> sources) {
+		if (!DishRequests.shown()) {
+			return null;
+		}
+		BlockPos hall = io.github.jcondedata.aliveworkplace.hall.VillageHalls.nearest(level, station).orElse(null);
+		if (hall == null) {
+			return null;
+		}
+		Map<ResourceLocation, Integer> waiting = DishRequests.get(level).of(hall);
+		if (waiting.isEmpty()) {
+			return null;
+		}
+		int chefLevel = io.github.jcondedata.aliveworkplace.build.BuilderLevels.level(villager);
+		long now = level.getGameTime();
+		BlockPos deliverTo = level.getPoiManager().findClosest(h -> h.is(ModVillagers.STOREHOUSE_POI), hall,
+				io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(BlockPos::immutable).filter(p -> !SupplyContainers.find(level, p, null).isEmpty()).orElse(station);
+		for (Map.Entry<ResourceLocation, Integer> e : waiting.entrySet()) {
+			CuisineDishes.Dish dish = CuisineDishes.byId(e.getKey());
+			if (dish == null || dish.level() > chefLevel) {
+				continue; // a dish no longer listed, or above our level (another Chef's, or asked before he left)
+			}
+			String claim = REQUEST + hall.asLong() + "|" + dish.id();
+			if (claimed(claim, now)) {
+				continue;
+			}
+			for (int count = Math.min(Chefs.BATCH, e.getValue()); count >= 1; count /= 2) {
+				Crafting.Plan plan = Crafting.plan(level, kind, dish.item(), count, stock);
+				if (fits(plan)) {
+					claim(claim, now);
+					return new Job(deliverTo, null, plan, claim, sources);
+				}
+			}
+		}
+		return null;
+	}
+
+	/** A request's claim: {@code dish|<hall>|<dish id>}. */
+	static final String REQUEST = "dish|";
+
+	/** A requested dish delivered: that many fewer wait at the board (38.8a). */
+	@Override
+	protected void delivered(ServerLevel level, Villager villager, Job job, int made) {
+		if (made <= 0 || !job.claim().startsWith(REQUEST)) {
+			return;
+		}
+		String[] parts = job.claim().substring(REQUEST.length()).split("\\|", 2);
+		ResourceLocation dish = parts.length == 2 ? ResourceLocation.tryParse(parts[1]) : null;
+		if (dish != null) {
+			DishRequests.get(level).done(BlockPos.of(Long.parseLong(parts[0])), dish, made);
+		}
 	}
 
 	/** A tonic's making as a plan: its makings in, the tonic out, no recipe (players can't make it). */

@@ -422,9 +422,9 @@ public final class CaravanSights {
 		return carter;
 	}
 
-	/** A pack llama: a chest, a carpet, and no will of its own but to follow its lead. */
+	/** A pack llama: a chest, a carpet, and no will of its own but to follow its lead; null if another mod refused it (B211). */
 	@Nullable
-	private static Llama llama(ServerLevel level, BlockPos at, float yaw, Item carpet, int variant) {
+	public static Llama llama(ServerLevel level, BlockPos at, float yaw, Item carpet, int variant) {
 		Llama llama = EntityType.LLAMA.create(level);
 		if (llama == null) {
 			return null;
@@ -442,8 +442,11 @@ public final class CaravanSights {
 		// no strolling, panicking, spitting, breeding or following hay: the lead moves it
 		((MobAccessor) llama).aliveworkplace$goals().removeAllGoals(goal -> !(goal instanceof FloatGoal));
 		((MobAccessor) llama).aliveworkplace$targets().removeAllGoals(goal -> true);
-		LIVE.add(llama);
-		level.addFreshEntity(llama);
+		LIVE.add(llama); // (before it joins: one that isn't is a leftover from a save, taken away)
+		if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.addVillage(level, llama, "caravan's pack llama")) {
+			LIVE.remove(llama);
+			return null;
+		}
 		return llama;
 	}
 

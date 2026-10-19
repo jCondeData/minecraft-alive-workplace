@@ -42,6 +42,7 @@ public final class ModTrades {
 		wellKeeperTrades();
 		physicianTrades();
 		mechanicTrades();
+		conductorTrades();
 		gemGrowerTrades();
 		vintnerTrades();
 		tailorTrades();
@@ -276,6 +277,32 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(create("goggles")), 6, 15, 0.05f)));
 		Platform.get().addTrades(ModVillagers.MECHANIC, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 10), new ItemStack(create("belt_connector"), 4), 4, 30, 0.05f)));
+	}
+
+	/**
+	 * The Conductor's trades (39.7d): railway things, vanilla's rails and Create's track, signals and schedules, looked up
+	 * by id when offered (only with Create, like the job).
+	 */
+	private static void conductorTrades() {
+		if (ModVillagers.CONDUCTOR == null) {
+			return;
+		}
+		Platform.get().addTrades(ModVillagers.CONDUCTOR, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COAL, 15), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.RAIL, 16), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.CONDUCTOR, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(create("track"), 16), 12, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.POWERED_RAIL, 4), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.CONDUCTOR, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(create("schedule")), 8, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(create("track_signal"), 2), 8, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.CONDUCTOR, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(create("railway_casing"), 8), 6, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.CONDUCTOR, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(create("controls")), 4, 30, 0.05f)));
 	}
 
 	/** Create's item {@code path}, looked up when a trade is made. */

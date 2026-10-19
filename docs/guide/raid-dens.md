@@ -3,19 +3,19 @@
 ```infobox
 type: Village Hall page
 expansion: M38
-image: https://jcondedata.github.io/minecraft-alive-workplace/den_warden/still-1.jpg
-caption: A warden stands watch by the glowing den
+image: https://jcondedata.github.io/minecraft-alive-workplace/den_helpers/still-2.jpg
+caption: Two hired trainers stand by the glowing den as the raid starts
 Needs: Cobblemon Raid Dens on the server
-Where: the Defense page of the Village Hall, a row of the dens near the village
-Wardens: a guard posted to a den watches it by day
-Cheer: an Attack, Defense or Heal Cheer for joining a raid at a watched den
-Challenges: the village's Trainer Leader or Master takes on a den every few days
+Where: the Defence page of the Village Hall, a row of the dens near the village
+Raid helpers: up to 3 of the village's trainers, hired by a den, help you in its raid
+Cheer: each helper gives you an Attack, Defense or Heal Cheer once a raid
+Price: 5 emeralds a helper (or CobbleDollars), set by the server
 categories: Village Hall, Defense, Pokémon
-related: defense-page.md, guard.md, trainer-leader.md, village-hall.md
+related: defense-page.md, trainer-leader.md, village-hall.md
 ```
 
-With Cobblemon Raid Dens on the server, your village gets to know the raid dens around it, keeps an eye on them and
-even sends its own trainers to beat them.
+With Cobblemon Raid Dens on the server, your village gets to know the raid dens around it, and its trainers can come
+along to help you raid them. The village never raids a den on its own: the raid is yours, they help.
 
 ## The dens your village knows
 
@@ -24,41 +24,34 @@ lists the raid dens within about 160 blocks of the hall, nearest first, such as 
 glowing icon means the den is active; "resting" means someone beat it and it hasn't come back yet. The village map
 marks the nearby ones with a magenta banner. A den shows up once someone has been close enough for it to load.
 
-## Den Wardens
+## Hiring raid helpers
 
-Under each den on the Defense page there's a **Post a warden** button. Click it and the village's nearest free
-[Guard](guard.md) becomes that den's warden.
+Under each active den on the Defense page there's a **Hire a raid helper** button. Each click hires one of the
+village's free trainers for that den, the best first (a [Trainer Leader](trainer-leader.md) or a Master before a
+Novice), for **5 emeralds** each (CobbleDollars when the server has them). You can have up to **3** helpers at once,
+for one den. The button's tooltip says how many you've hired and how many trainers are still free. With too little
+money you're told the price and nothing is taken.
 
-- By day the warden walks to the den and stands watch beside the crystal, shooing off wild Pokémon that crowd it.
-- At dusk they walk home to their post and spend the evening like any guard; next morning they go back.
-- When the den lights up again after being beaten, the village chronicle says so: "The Fire raid den (40 blocks
-  north) glows again".
-- Join a raid within 16 blocks of a watched den and the warden cheers you on: you get one **Attack Cheer**, **Defense
-  Cheer** or **Heal Cheer** for the raid. One per raid; once the den glows again, the next raid earns another.
+![The Defence page: hire a raid helper by the den](https://jcondedata.github.io/minecraft-alive-workplace/den_helpers/still-1.jpg)
 
-The slot then shows "Warden:" and the guard's name. Click it to recall them to normal duty.
+Your helpers follow you. Lead them to the den and start or join its raid.
 
-![The Defense page names the den's warden](https://jcondedata.github.io/minecraft-alive-workplace/den_warden/still-2.jpg)
+## In the raid
 
-## Your trainers challenge the dens
+- **Each helper cheers you on once:** as you join the raid by the den you get one **Attack Cheer**, **Defense Cheer**
+  or **Heal Cheer** from each of them (the raid mod's own items), once a raid, never more.
+- **They take their places round the crystal** and send their Pokémon at the boss: every few seconds the boss loses a
+  little health. A Master hits harder than a Novice, and a stronger team harder still. They never bring the boss below
+  a quarter of its health: the last blows are yours. A helper more than one rank under the den's tier (a Novice at a
+  tier 3 den and up) only cheers.
+- **A won raid** goes in the village chronicle ("Jesse and Master Trainer Mira's band beat the tier 3 Fire raid den"),
+  and the helpers earn some trainer experience.
 
-Every 3 days, by day, a village with a [Trainer Leader](trainer-leader.md) or a Master trainer sends its best one to
-take on an active den it knows: up to tier 3, Leaders and Masters alike. Tier 4 and up are left for you. A den
-with a player within 8 blocks is yours, so nobody is sent there.
+Won, lost, or a day after you hired them, your helpers walk home to their Training Posts.
 
-If you're in the village or near the den you're told when the trainer sets off and how it went, so you can go and watch
-the crystal go dark.
-
-- **A win** brings that tier's raid loot home to the village store (the chests by its kitchens and Storehouses), the den
-  goes quiet until it comes back by itself, and the chronicle tells the story.
-- **A loss** leaves the den glowing for you, and the trainer comes home tired and stays home for a day.
-
-The higher the trainer's rank above the den's tier, the better their odds.
-
-![The chronicle tells how the Leader beat the den](https://jcondedata.github.io/minecraft-alive-workplace/den_challenge/still-2.jpg)
+![The helpers by the den as the raid starts](https://jcondedata.github.io/minecraft-alive-workplace/den_helpers/still-2.jpg)
 
 ## Settings
 
-On the settings screen: **Den Wardens** turns wardens on or off (off sends the posted ones back to normal duty),
-**Raid Den Challenges** turns the trainers' challenges on or off, and **Den Challenge Days** sets how many days a
-village waits between challenges (1 to 30, 3 to start).
+On the settings screen: **Raid Helpers** turns the hiring on or off (off sends anyone hired home), and **Raid Helper
+Price** sets what one helper costs in emeralds (1 to 64, 5 to start).

@@ -52,7 +52,7 @@ public class MegaTrainerCompatTests implements FabricGameTest {
 
 	/** A hall of this rank (the only one within reach while the test runs: the reach is 8 till {@code done}). */
 	static VillageHallBlockEntity hall(GameTestHelper helper, VillageRanks.Rank rank) {
-		DenWardenCompatTests.clearAround(helper);
+		RaidHelperCompatTests.clearAround(helper);
 		VillageHalls.RADIUS = 8;
 		VillageHalls.forgetNearest();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);

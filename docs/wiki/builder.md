@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B185, B132
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203
 
 ## 1. What a player sees
 
@@ -171,14 +171,26 @@ claims and trip counts.
   in the doorway or just inside or outside it may raise the floor (a carpet, a slab, a stair or seat, a closed
   trapdoor). Carpets start a block in from the door, seats stand aside, and where a stair must start right inside (the
   Manor's) the door has a fanlight (an open trapdoor flat on the outside face) in place of a lintel: a stair's back half
-  is a full block up, and a villager climbing onto it still has its back in the doorway. `tools/blueprints/check.py` refuses every blueprint
-  that breaks it (B170, B173).
+  is a full block up, and a villager climbing onto it still has its back in the doorway. A bed counts too: it is 9/16
+  high, under a villager's step, so its path runs over a bed like a slab, and no bed stands right inside a door (the
+  Carpenter's Workshop and the builder's and carpenter's village looks). `tools/blueprints/check.py` refuses every
+  blueprint that breaks it (B170, B173, B178). Tents are two high only under their ridge: nothing stands in a tent's
+  mouth there, and no carpet lies under the low sides (the War Camp's tents, B178).
+- Not only in doorways: anywhere a villager walks, a step (a carpet, a shut trapdoor, a bottom slab or stair, a bed)
+  leaves it its 1.95 under whatever is over it. The game lets a villager walk where the two cells its body is in are
+  open, so a carpet under a ceiling two blocks up (1.94 of room) or a seat under a shut trapdoor is a place it walks
+  to and can't get onto. `tools/blueprints/check.py` flags every such step a player can get to (B197).
 - No villager is left standing inside a block in a growing village. A baby fits in nooks a grown villager doesn't
   (under a roof's stair being laid, beside a lantern on a fence post), and when it grows up vanilla finds no room for
   the bigger body there; a villager standing still in a doorway can have the door shut on it by a neighbour walking
   through. Twice a second every villager looks whether its body is inside a block; found there twice in a row, it opens
   the wooden door it is shut in or else steps (with a puff) to the nearest spot within four blocks with a floor and
   room to stand. A villager only pressed against walls is never moved (B185).
+- A villager walks in by a shut wooden door every time: it opens the door and carries on to where it was going. Vanilla
+  works a villager's path out again whenever a block on it changes shape (a door opening or shutting), and aimed the
+  new path at the last spot the villager had worked any path out for, which was often a bed, bell or workstation it had
+  only looked at; the villager then turned round, shut the door behind it and walked off round the building. A path
+  worked out again now goes where the villager is walking (B203).
 
 ## 7. Known limits
 
@@ -198,10 +210,19 @@ GameTests (`src/gametest/java/.../test/`): `BuilderGameTests` (108 tests), `Buil
 `BuildSiteStepsGameTests` (2), `BuildReserveGameTests` (5), `StallWatchGameTests` (7), `BuilderKeepsBenchGameTests`,
 `TerrainStallGameTests`, `BuildersShareSpareGameTests`, `PokemonBuildsGameTests`, `TablePreviewGameTests` (7, the table's
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
-at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (2, B173: a villager
+at scale 2 no cellar block shares a cell with a ground-floor block), `DoorwayHeadroomGameTests` (7, B173: a villager
 walks in by the Healing Center's front door onto its carpet, and by the Manor's front door onto the stair right inside:
 `DoorwayHeadroomGameTests.aVillagerWalksInByTheHealingCentersFrontDoor`,
-`DoorwayHeadroomGameTests.aVillagerWalksInByTheManorsFrontDoorOntoItsStair`).
+`DoorwayHeadroomGameTests.aVillagerWalksInByTheManorsFrontDoorOntoItsStair`; B178: three villagers walk from the War
+Camp's yard up to the beds of two canvas tents and into the Warlord's tent up to its barrel,
+`DoorwayHeadroomGameTests.villagersWalkIntoTheWarCampsTents`; B197: a villager in the Starter Cottage sits down on the
+chair under the front window, where the blinds were,
+`DoorwayHeadroomGameTests.aVillagerSitsDownOnTheStarterCottagesChairUnderTheWindow`; B203: with the front doors shut
+as built, a villager opens them and walks in while it keeps looking at a spot outside, as villagers look at beds and
+bells, `DoorwayHeadroomGameTests.aVillagerOpensTheHealingCentersShutFrontDoorAndWalksIn`,
+`DoorwayHeadroomGameTests.aVillagerOpensTheManorsShutFrontDoorAndClimbsItsStair`, and a jobless villager opens the
+Healing Center's door and takes its brewing stand as a cleric,
+`DoorwayHeadroomGameTests.aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand`).
 
 Showcase scenes (`tools/showcase/scenes.py`): `builders` (three builders, three starter builds), `soak` (10 builders,
 every starter build), `preview` (ghost preview and status), `placing` (turn, mirror, cancel, slope), `missing` (the

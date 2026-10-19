@@ -189,6 +189,7 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 			hall.needs = VillageNeeds.check(server, pos);
 			VillageQuests.tick(server, pos, hall);
 			MarketDays.tick(server, pos, hall);
+			io.github.jcondedata.aliveworkplace.camp.CampBeds.settle(server, pos); // the settlers' wagon is no home once the village stands (B207)
 			VillageHalls.Census census = VillageHalls.census(server, pos);
 			VillageRanks.round(server, pos, hall, census.villagers());
 			Guilds.round(server, pos, hall);

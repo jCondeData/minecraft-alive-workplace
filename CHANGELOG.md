@@ -16,6 +16,78 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Conductor** (39.7d, with Create). A villager without a job by a Create Train Station becomes the village's
+  Conductor (maroon cap and tunic, brass buttons, a ticket punch): they take the seat of the village's train instead of a
+  jobless villager, call each stop as it comes in ("Now arriving at Ashford! All change, mind the gap."), and trade
+  rails, Create track, train schedules, signals, railway casing and train controls. Without a Conductor a jobless
+  villager still drives. Behind the Village trains setting.
+### Changed
+- **Cobblecuisine dishes are asked for at the Village Hall** (38.8a). The Chef no longer cooks Cobblecuisine's dishes on
+  his own: open the hall, click the minecart and pick the new **Dishes** tab, then click a dish to ask for 4 (shift: 16,
+  right-click: take the request down). The dishes are locked until the village has a Chef, and a dish above his level
+  says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
+  curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
+### Fixed
+- **The whole crowd sees the Mega Shrine's show** (B215). On a festival day the trainer at the shrine's pedestal now
+  waits for the villagers off work to gather before Mega Evolving their ace (at most half a minute), and everyone who
+  came cheers (+3 mood), even those at the back of the crowd. Before, the show could go off as the first villagers
+  arrived, and only those already near the pedestal got the mood.
+- **Raiders no longer appear frozen at the edge of the loaded world** (B176). A raid gathering near the edge of the
+  ground where mobs move put some of its raiders just past it, where they stood still and the raid lost count of
+  them. When a raid gathers on live ground every raider now arrives on it, and a siege moves its gathering point beyond the walls only onto it.
+- **Caravans no longer get lost when a Village Hall is taken away** (B212). Break the hall a caravan is heading for and
+  everything it carried now turns round and comes back to its own village's Storehouse, not just the goods it meant to
+  sell. A caravan whose own village's hall is gone too is dropped, so a new hall set down on the same spot no longer
+  receives old goods out of nowhere.
+- **A train caravan no longer waits forever at the station for a village that's gone** (B214, with Create). Break the
+  hall a caravan is waiting at the station to ride the village train to, or whose train is carrying its goods, and the
+  goods now come out of the train's chest once and the caravan walks them home; break the sending village's own hall
+  and its caravan waiting at the station walks on to where it was going.
+- **No more villagers than beds, and nobody lives in the settlers' wagon** (B206, B207). The bedrolls by a Settler's
+  Wagon or a Colony Camp are for the road: once the Village Hall stands, a settler who kept one as their home gets up
+  and finds a bed in the village's houses, and nobody claims one again. The hall doesn't count them among its beds
+  (its Beds button says how many it left out). A baby or an inn's traveller now moves in only on a free bed in a house
+  and takes it at once, so one free bed can't be counted twice (a birth, a traveller and vanilla's own breeding all
+  used the same free bed before); a village with every bed taken takes nobody in, and the hall says "The village is
+  full". Existing worlds are mended at each hall's next round, older camps known by their bedrolls, campfire and hay.
+- **Village golems, horses and pups on modpacks that block animals** (B211). Cobbleverse's MobsBeGone also blocks iron
+  golems, wolves, horses and llamas, so the Golem Smith's and Iron Pact's golems, relief riders' horses, the
+  Beastmaster's foals and wolf pups and caravan pack llamas never appeared. They are now put in the world anyway (new
+  setting Force Village Spawns, on), or left out with one clear line in the server log; a Golem Smith keeps his iron
+  when his golem is refused. A story arc's foes are forced like raiders now too.
+- **A broken bandit camp no longer stands for good** (B209). Kill a camp's chief and the camp is gone from the village
+  at once (the hall, the Defense page and the scouts' reports forget it), and a couple of seconds later its tents, fire
+  and chests come down, top first; the loot in its chests spills out on the ground, and anything a player built or
+  changed there stays. Camps broken up before this update are found and taken down the same way when the village's
+  hall next checks for threats. A camp that leaves a village in peace packs up the same way. The new **Camp Ruins**
+  setting (off) leaves a broken camp standing as ruins instead, its fire out.
+- **Bandit camps and night raids have their mobs again in modpacks that block vanilla mobs (B208).** Cobbleverse ships
+  MobsBeGone, which stops pillagers, vindicators, zombies and most other vanilla mobs from spawning, so camps stood
+  empty and were "broken up" at once and night raids never came. Camps, raids, the Bandit King's fort and bounty bands
+  now put their mobs in the world anyway (new setting **Force Raider Spawns**, on), the server log names any mob another
+  mod refused, a camp is never made without its chief, and on Peaceful players near are told why nothing comes.
+- **Settlers really walk out toward their colony (B182).** When the bell rang, settlers headed for a point 48 blocks
+  out; if that ground wasn't loaded yet they could only shuffle a few random steps and often stood by the hall. They now
+  walk to the farthest loaded point on the way, which moves out as the land ahead loads.
+- **Villagers walk in by a shut door every time (B203).** A villager opening a shut wooden door on its way in (to its
+  job, its bed, a workplace) sometimes turned round as the door swung open, shut it behind itself and wandered off
+  round the building: the game worked its path out again for the opened door and aimed it at some bed or bell the
+  villager had only looked at. The new path now goes where the villager was walking.
+- **A job block a villager was walking to is let go when they're given another (B201).** A jobless villager on the
+  way to a job block they picked on their own and given a different one, from the Village Hall or by sneak-right-
+  clicking them with a job's item, kept the first one held for nobody: it dropped off the Free job blocks list and no
+  other villager could take it.
+- A Jeweller now cuts Abomasite for a Master trainer whose team has an Abomasnow: it was the one Mega Stone
+  missing from Mega Showdown's stone list, so he waited for makings forever (B174).
+### Changed
+- **Raid helpers replace Den Wardens and the village's den challenges** (38.1a, 38.3a, 38.4a, the owner's change). The
+  village no longer raids dens alone and no guard stands watch at them. On the hall's Defence page, next to a glowing
+  den, hire up to 3 of the village's trainers (5 emeralds each, set by `denHelperPrice`): they follow you, each gives
+  you a raid cheer item once when you join the raid there, their Pokémon wear the boss down (never below a quarter),
+  a win goes in the chronicle, and they walk home after the raid or a day. Old worlds and config files load as before.
+  The scene `den_helpers` shows it.
+
 ## 0.145.0 — 2026-10-18
 
 ### Added
@@ -335,6 +407,19 @@ asks for the steps, `latest.log` and any crash report).
   Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
   room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
   keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
+- **Villagers get into the War Camp's tents, and past the workshop beds.** A lamp pole stood in the middle of each
+  canvas tent's mouth, the only place a tent is two blocks high, so nobody reached the bed inside; the Warlord's tent
+  had red carpet under its low sides, where a villager stood at the carpet's edge for good. The poles now stand beside
+  the mouths and the carpet is a runner down the middle. A villager also walks over a bed (it is lower than its step),
+  so a bed right inside a door trapped it under the lintel: the Carpenter's Workshop's bed turns its head to the wall,
+  and the builder's and carpenter's village workshops have their side door a block or two along. Camps and workshops
+  already standing keep theirs (B178).
+- **No more villagers stuck on a step under a low ceiling, away from doors too.** A villager stepping onto a carpet,
+  slab, stair or bed with less than its own height over it stood there with its head in the ceiling. The Starter
+  Cottage's chair by the front window had the blinds right over it (the blinds there are gone), the upstairs rug lay
+  under the tie beam (it now lies by the bed), the Pokéball workshop's drying loft had apricorns under the spire's low
+  foot (they dry under the spire now), the Lodge-look Pokémon Center's flower boxes stood on the step round its walls,
+  and a few moss patches in the Hanging Gardens lay under ledges. Builds already standing keep theirs (B197).
 - **Chefs take the Kitchen's smoker, however it's decorated.** A villager walking to a workstation built in under
   solid blocks (the smoker in the Kitchen's brick oven) climbed onto the nearest chest or worktop instead, a step too far
   to take it, and stood there; it now walks to the floor in front of the workstation and takes it (B168).

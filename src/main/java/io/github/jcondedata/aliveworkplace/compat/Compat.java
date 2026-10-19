@@ -30,9 +30,9 @@ public final class Compat {
 			enable("create", io.github.jcondedata.aliveworkplace.compat.create.CreateCompat.TESTED,
 				io.github.jcondedata.aliveworkplace.compat.create.CreateCompat::init);
 		}
-		// Raid Dens' tier loot tables, for village den challenges (38.4): its loot parameters read by name, not its classes.
+		// Raid Dens' running raids, for the raid helpers' blows at the boss (38.1a): read by name, not its classes.
 		if (Platform.get().isModLoaded("cobblemonraiddens")) {
-			io.github.jcondedata.aliveworkplace.compat.raiddens.RaidDensLoot.init();
+			io.github.jcondedata.aliveworkplace.compat.raiddens.RaidDensRaids.init();
 		}
 		// The questbook: our chapters copied into FTB Quests' config folder (data only, never FTB Quests' classes).
 		if (Platform.get().isModLoaded("ftbquests")) {

@@ -49,8 +49,8 @@ def cottage_ground_floor(b):
     shelf(b, 2, 2, 6, "east", "spruce")
     clock(b, 6, 1, 3, "south", "spruce")
     picture(b, 2, 3, 4, "east", "green", "spruce")
-    for x in (2, 3, 7, 8):
-        blinds(b, x, 3, 3, "south", "spruce")
+    for x in (7, 8):  # not over the table's window: its chair stands under it, and a villager stepping onto the chair
+        blinds(b, x, 3, 3, "south", "spruce")  # would put its head into the blind (B197)
     for x in (3, 7):
         blinds(b, x, 3, 7, "north", "spruce")
 
@@ -125,7 +125,7 @@ def cottage_upper_floor(b):
     b.set(3, 6, 2, "bookshelf")
     b.set(2, 7, 2, "potted_fern")
     b.set(4, 6, 8, "chest", facing="north", type="single", waterlogged=False)
-    box(b, 4, 6, 4, 6, 6, 6, "light_blue_carpet")
+    box(b, 4, 6, 6, 6, 6, 7, "light_blue_carpet")  # by the bed, not under the tie beam: two high there (B197)
     # Furnished (37.4): a nightstand and a lamp by the bed, a couch with arms in the sitting corner over the porch,
     # a picture over the bed
     nightstand(b, 3, 6, 8, "north", "spruce")

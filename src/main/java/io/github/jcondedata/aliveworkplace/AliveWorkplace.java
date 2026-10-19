@@ -65,8 +65,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
 		io.github.jcondedata.aliveworkplace.guard.WarParties.init(); // marching on the lair (32.13)
 		io.github.jcondedata.aliveworkplace.guard.RaidDens.init(); // the raid dens a village knows (38.2)
-		io.github.jcondedata.aliveworkplace.guard.DenWardens.init(); // guards posted at the dens (38.3)
-		io.github.jcondedata.aliveworkplace.trainer.DenChallenges.init(); // village trainers challenge the dens (38.4)
+		io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.init(); // trainers hired to help in a den's raid (38.1a)
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.init(); // more Mega trainers, and their bracelets (38.5)
 		io.github.jcondedata.aliveworkplace.jeweller.MegaStones.init(); // the Jeweller's Mega Stones and Key Stones (38.6)
 		io.github.jcondedata.aliveworkplace.trainer.LeaderBracelets.init(); // a Mega Bracelet for beating a realm's Leaders (38.6)
@@ -130,6 +129,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.threat.SandRamps.init(); // sand ramps against the walls (32.9)
 		io.github.jcondedata.aliveworkplace.threat.Risings.init(); // the Pharaoh's husks rise again (32.9)
 		io.github.jcondedata.aliveworkplace.threat.Ships.init(); // the pirate ship: lairs on the sea, sinking (32.8)
+		io.github.jcondedata.aliveworkplace.threat.CampCleanup.init(); // broken camps come down, or stay as ruins (B209)
 		io.github.jcondedata.aliveworkplace.threat.Piglins.init(); // piglin raiders: never zombify, go for villagers (32.10)
 		io.github.jcondedata.aliveworkplace.threat.Plunder.init(); // the tactic plunder: gold from the village's chests (32.10)
 		io.github.jcondedata.aliveworkplace.threat.Covens.init(); // witch covens: the hex tactic, nightly hexes, the Coven Mother (32.11)

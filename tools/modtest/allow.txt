@@ -2,6 +2,8 @@
 # Keep this short: every line hides a class of messages forever. Our own mixin or data failures are never allowed.
 
 # --- ours, triggered on purpose by tests ---
+# B208GameTests and B211GameTests make the world refuse hostile mobs and village golems, wolves, horses and llamas, as Cobbleverse's MobsBeGone does, and set Peaceful, to prove each refusal is logged plainly.
+(Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
 # FurnitureSpotGameTests ships a broken spots file in the test pack to prove it is logged with its path and skipped (37.2).
 Skipping furniture spots aliveworkplace_test:blueprint_furniture/broken\.json
 # OptionalModsGameTests feeds an integration a missing method to prove it switches itself off.

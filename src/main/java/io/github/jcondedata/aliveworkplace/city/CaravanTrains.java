@@ -81,6 +81,10 @@ import org.jetbrains.annotations.Nullable;
  * <b>39.7c.</b> No real road leaves a gap: what the plan's first pass leaves unjoined gets a curve ({@link #join}), and a
  * Train Station standing off the road gets a spur from its own track to the road's ({@link #spur}). The train is the
  * architect's drawing ({@link #TRAIN}), turned to the track past the station.
+ * <p>
+ * <b>39.7d.</b> The train's seat goes to the village's Conductor, a villager whose job block is Create's Train Station
+ * ({@link #conductorFor}); a village without one seats a jobless villager as before. As the train comes in at a station
+ * the Conductor riding it calls the stop, once ({@link #calls}).
  */
 public final class CaravanTrains {
 	/** Config {@code villageTrains} (and M39 open). */
@@ -243,7 +247,9 @@ public final class CaravanTrains {
 				continue;
 			}
 			BlockPos station = stations.get(0); // the village's own station, the nearest (the other's may be in reach too)
-			if (!RAILWAY.call(r -> r.at(level, id, station), false)) {
+			boolean standing = RAILWAY.call(r -> r.at(level, id, station), false);
+			calls(level, hall, id, station, standing); // 39.7d: the Conductor calls the stop as it comes in
+			if (!standing) {
 				continue;
 			}
 			// loaded onto the train: the goods into its chest (39.7b), or as the caravan's record when they don't fit
@@ -289,7 +295,7 @@ public final class CaravanTrains {
 
 	/**
 	 * The pair's train at our station: built by a builder of ours from its blueprint when its blocks aren't all there
-	 * (39.7b), else glued and assembled with a jobless villager of ours as its conductor.
+	 * (39.7b), else glued and assembled with the village's Conductor in its seat (39.7d; a jobless villager without one).
 	 */
 	private static void build(ServerLevel level, BlockPos hall, BlockPos other, VillageHallBlockEntity entity, Caravans.Data data, UUID id) {
 		BlockPos[] pair = aimed(level, hall, other, data);
@@ -302,9 +308,7 @@ public final class CaravanTrains {
 			openTrain(level, hall, other, entity, station, far);
 			return;
 		}
-		Villager conductor = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(station).inflate(24),
-				v -> v.isAlive() && !v.isBaby() && !v.isPassenger() && v.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.NONE)
-			.stream().min(Comparator.comparingDouble(v -> v.distanceToSqr(station.getX(), station.getY(), station.getZ()))).orElse(null);
+		Villager conductor = conductorFor(level, station);
 		if (conductor == null) {
 			return; // nobody free to drive it yet: the caravans take the timed trip
 		}
@@ -314,6 +318,63 @@ public final class CaravanTrains {
 				conductor.getDisplayName(), CaravanRoads.nameOf(level, other)));
 			whistle(level, hall, data);
 		}
+	}
+
+	/** How far from the station (blocks) the train's conductor is looked for. */
+	static final int CONDUCTOR_REACH = 24;
+
+	/**
+	 * Who sits in the village train's seat at {@code station} (39.7d): the village's Conductor, the nearest one by the
+	 * station not already riding something; without one, the nearest jobless villager as before 39.7d. Null: nobody free.
+	 */
+	@Nullable
+	public static Villager conductorFor(ServerLevel level, BlockPos station) {
+		List<Villager> near = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(station).inflate(CONDUCTOR_REACH),
+			v -> v.isAlive() && !v.isBaby() && !v.isPassenger());
+		Comparator<Villager> nearest = Comparator.comparingDouble(v -> v.distanceToSqr(station.getX(), station.getY(), station.getZ()));
+		return near.stream().filter(v -> isConductor(v)).min(nearest)
+			.or(() -> near.stream().filter(v -> v.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.NONE).min(nearest))
+			.orElse(null);
+	}
+
+	/** Whether {@code villager} is a grown-up Conductor (39.7d; never without Create). */
+	public static boolean isConductor(Villager villager) {
+		return !villager.isBaby() && io.github.jcondedata.aliveworkplace.registry.ModVillagers.isConductor(villager.getVillagerData().getProfession());
+	}
+
+	/**
+	 * Whether each village train was standing at a station when last looked at, as {@code owner@station} (39.7d): an
+	 * arrival is called once, and only one seen coming in (not a train first seen standing, as after a restart).
+	 */
+	private static final Map<String, Boolean> STANDING = new java.util.concurrent.ConcurrentHashMap<>();
+	/** The last arrival a Conductor called (for the tests and the showcase), null before the first. */
+	@Nullable
+	public static volatile Component lastCall;
+
+	/**
+	 * The village train with this owner at {@code station} (39.7d): when it has just come in, the Conductor riding it calls
+	 * the stop, once, over his head and to the players by the station. Not called again until it has left and come back.
+	 */
+	static void calls(ServerLevel level, BlockPos hall, UUID owner, BlockPos station, boolean standing) {
+		Boolean before = STANDING.put(owner + "@" + station.asLong(), standing);
+		if (!standing || before == null || before) {
+			return; // gone, first seen (standing or not), or still standing there
+		}
+		Villager conductor = level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(station).inflate(CONDUCTOR_REACH),
+				v -> v.isAlive() && v.isPassenger() && isConductor(v))
+			.stream().min(Comparator.comparingDouble(v -> v.distanceToSqr(station.getX(), station.getY(), station.getZ()))).orElse(null);
+		if (conductor == null) {
+			return; // a jobless villager driving it (no Conductor yet) says nothing
+		}
+		Component line = Component.translatable("message.aliveworkplace.conductor.arriving", CaravanRoads.nameOf(level, hall))
+			.withStyle(net.minecraft.ChatFormatting.ITALIC);
+		io.github.jcondedata.aliveworkplace.work.WorkerStatus.set(conductor, conductor.getDisplayName().copy().withStyle(net.minecraft.ChatFormatting.GRAY), -1f, line);
+		Component said = io.github.jcondedata.aliveworkplace.story.HeartEvents.said(conductor.getDisplayName(), line);
+		for (net.minecraft.server.level.ServerPlayer player : level.getEntitiesOfClass(net.minecraft.server.level.ServerPlayer.class,
+			new net.minecraft.world.phys.AABB(station).inflate(CONDUCTOR_REACH))) {
+			io.github.jcondedata.aliveworkplace.mc.Chat.chat(player, said);
+		}
+		lastCall = said;
 	}
 
 	/**

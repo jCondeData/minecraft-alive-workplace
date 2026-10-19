@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#mega_showdown:mega_stone",
+      "required": false
+    },
+    {
+      "id": "mega_showdown:abomasite",
+      "required": false
+    }
+  ]
+}

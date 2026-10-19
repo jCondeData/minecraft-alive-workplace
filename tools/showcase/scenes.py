@@ -369,9 +369,11 @@ SCENES = [
     job("camp_cook", "Camp Cook", "Cooking a Poké Snack in the Campfire Pot", "the camp cook cooked a Poké Snack in the Campfire Pot", 150,
         cobblemon=True),
     # Cobblecuisine on the Chef's menu (ROADMAP 38.8): a Journeyman Chef cooks a salad and a curry from their own recipes
-    job("cuisine_kitchen", "Chef", "Cobblecuisine: a salad and a curry from the Chef",
-        "the Journeyman Chef cooked Cobblecuisine's Mixed Vegetable Salad and Beanburger Curry from their own recipes into the chest",
-        cobblemon=True),
+    # Cobblecuisine's dishes on request (ROADMAP 38.8a): asked for on the hall board's Dishes tab, cooked by the Chef
+    job("cuisine_kitchen", "Chef", "Cobblecuisine: dishes asked for at the hall's board",
+        "asked at the hall board's Dishes tab, the Journeyman Chef cooked 4 Mixed Vegetable Salads and 2 Beanburger Curries "
+        "from their own recipes into the chest; the Fruit Punch (no Calcium in the store) is still waiting and the cake is locked for his level",
+        extra=[("04_board_dishes", "The board's Dishes tab: the punch still asked for, the cakes locked")], cobblemon=True),
     # Campfire Pot recipes (ROADMAP 38.11): the Chef cooks the pot's candies and sweets, found by recipe type
     job("campfire_pot", "Chef", "Campfire Pot recipes: candies from the Chef",
         "the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest",
@@ -972,14 +974,10 @@ SCENES = [
       "a raid den crystal glows by the village and another rests up the valley; the hall's Defense page lists both with their tier, type and state", 45,
       [("01_raid_den", "A raid den by the hall"), ("02_raid_den_page", "The Defense page: tier 3, Fire, active"),
        ("03_raid_den_resting", "A beaten den, resting")], cobblemon=True),
-    # Den Wardens (ROADMAP 38.3, Cobblemon Raid Dens): a guard stands watch by the den
-    S("den_warden", "Village Hall", "Den Wardens: a guard stands watch at the raid den",
-      "a guard posted from the hall's Defense page stands watch by the raid den, by day", 45,
-      [("01_den_warden", "The warden by the glowing den"), ("02_den_warden_page", "The Defense page: the den's warden")], cobblemon=True),
-    # Den challenges (ROADMAP 38.4, Cobblemon Raid Dens): the village's Trainer Leader beats a den
-    S("den_challenge", "Village Hall", "Den challenges: the village's trainer beats a raid den",
-      "the village's Trainer Leader beat the tier 3 raid den: the crystal has gone dark, its loot is in the village store and the chronicle tells it", 45,
-      [("01_den_challenge", "The beaten den, dark, and the Leader by it"), ("02_den_challenge_chronicle", "The chronicle: the Leader beat the tier 3 Fire den")], cobblemon=True),
+    # Raid helpers (ROADMAP 38.1a, Cobblemon Raid Dens): the player hires the village's trainers to help in a den's raid
+    S("den_helpers", "Village Hall", "Raid helpers: hire the village's trainers for a raid",
+      "two of the village's trainers, hired on the hall's Defence page, stand by the glowing raid den as the player's raid starts; each cheered them on with one of the raid's cheer items", 45,
+      [("01_den_helpers_page", "The Defence page: hire a raid helper by the den"), ("02_den_helpers_raid", "The helpers by the den as the raid starts")], cobblemon=True),
     # At peace (ROADMAP 32.21): the owner sets the village at peace on the Defense page; the camp leaves at the next dawn
     S("at_peace", "Village Hall", "At peace: no raids, camps or disasters",
       "the hall's owner set the village at peace on the Defense page: no raids, camps or disasters come, and the bandit camp leaves at the next dawn", 45,
@@ -1042,9 +1040,9 @@ SCENES = [
     job("create_builds", "Create", "The Watermill, the Windmill and the Workshop, their machines turning",
         "the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
         120, create=True),
-    # Trains link villages (ROADMAP 39.7, 39.7a and 39.7b, with Create): two Train Stations, track between them, the train built by a builder and the caravan's goods in its chest
-    job("village_train", "Create", "Trains link villages: the builder's train, the goods in its chest",
-        "Thornholm's builder built the train, the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
+    # Trains link villages (ROADMAP 39.7, 39.7a, 39.7b and 39.7d, with Create): two Train Stations, track between them, the train built by a builder, its Conductor in the seat calling the stop, and the caravan's goods in its chest
+    job("village_train", "Create", "Trains link villages: the builder's train, its Conductor, the goods in its chest",
+        "Thornholm's builder built the train, its Conductor took the seat, and the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
         240, create=True),
     # Builders build contraptions (ROADMAP 39.5, with Create): a saved drive put up again, its moving parts last, then checked
     job("create_contraption", "Create", "A contraption from a blueprint: built in order, and it turns",
@@ -1068,6 +1066,9 @@ SCENES = [
     job("war_party", "Threats", "Marching on the lair: the war party, the Warlord, the loot",
         "the player led three guards and the five Siege-breakers into the pillagers' war camp; the band turned out to meet them, the Warlord fell at the front, and the camp's loot chest was theirs", 150,
         [("04_loot", "The war camp's loot chest")]),
+    # A broken camp comes down (B209): the chief falls, the village forgets the camp, its tents and fire come down
+    job("camp_cleared", "Threats", "A broken bandit camp comes down",
+        "the bandit chief fell; his camp was forgotten by the village at once and came down top first, its loot spilled on the trampled ground", 90),
     # Witch covens (ROADMAP 32.11): the Coven Hut in the swamp at night, a hex, witches throwing potions over a palisade
     job("coven", "Threats", "Witch covens: the hut, the hex, potions over the wall",
         "the witches' coven hut stood in the swamp north of the village at night; villagers were hexed in a swirl of witch-light, and the witches stood off the palisade throwing their potions over it", 150),
@@ -1180,8 +1181,10 @@ STARTUP = 30  # seconds: Gradle, the client's start-up and loading the world, pe
 SHARD_TARGET = 30 * 60  # seconds of scenes per shard, to finish well within the hour
 # The most shards a run may use. GitHub runs 20 jobs at once on a free plan and queues the rest, so a run with more
 # shards than that takes longer but no shard does. It was 18 until the catalog passed 170 scenes: if those all ran
-# twice as long as estimated, 18 shards came to about 54 minutes each (B100).
-MAX_SHARDS = 36
+# twice as long as estimated, 18 shards came to about 54 minutes each (B100). It was 36 until the catalog passed 270
+# scenes: at twice their estimates those came to 46 minutes a shard (B199); 48 gives about 34, with room to grow. A
+# queued job's wait doesn't count toward its timeout-minutes, and GitHub's matrix cap is 256 jobs.
+MAX_SHARDS = 48
 
 
 def seconds(scene, last):

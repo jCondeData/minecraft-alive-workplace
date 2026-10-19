@@ -350,7 +350,11 @@ public class CrafterWork extends Behavior<Villager> {
 		if (!walker.walkTo(level, villager, chests.get(0), REACH)) {
 			return;
 		}
+		int made = 0;
 		for (ItemStack stack : bag.takeAll()) {
+			if (stack.is(job.plan().target())) {
+				made += stack.getCount();
+			}
 			ItemStack rest = SupplyContainers.insert(level, chests, finished(level, stack));
 			if (!rest.isEmpty()) {
 				Block.popResource(level, chests.get(0).above(), rest);
@@ -358,6 +362,7 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 		villager.swing(InteractionHand.MAIN_HAND);
 		level.playSound(null, chests.get(0), SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.4f, 1.1f);
+		delivered(level, villager, job, made);
 		if (!job.claim().isEmpty()) {
 			synchronized (CLAIMS) {
 				CLAIMS.remove(job.claim()); // the builder checks again, and asks for more if it wasn't enough
@@ -367,6 +372,10 @@ public class CrafterWork extends Behavior<Villager> {
 		phase = Phase.IDLE;
 		lookTimer = 20;
 		walker.reset();
+	}
+
+	/** {@code job} was carried to its chests with {@code made} of what it makes (a trade may count it off a request: 38.8a). */
+	protected void delivered(ServerLevel level, Villager villager, Job job, int made) {
 	}
 
 	/** Puts what's left in the bag (from a job that fell through) in the chests by our workstation. */

@@ -63,6 +63,7 @@ public class LostCaravanGameTests implements FabricGameTest {
 		Arcs.NEAR = 0; // (the tests set the places down themselves)
 		LostCaravanStory.CHANCE = 1;
 		VillageHalls.RADIUS = 32;
+		Leftovers.storehouses(helper); // (an earlier batch's Storehouse within 32 blocks would load the caravan, B184)
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		BlockPos a = helper.absolutePos(HALL);
 		BlockPos b = a.offset(ROAD, 0, 0);

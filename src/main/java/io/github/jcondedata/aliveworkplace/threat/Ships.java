@@ -229,7 +229,7 @@ public final class Ships {
 	}
 
 	@Nullable
-	private static Blueprint blueprint(ServerLevel level, ResourceLocation structure) {
+	static Blueprint blueprint(ServerLevel level, ResourceLocation structure) {
 		Blueprint known = BLUEPRINTS.get(structure);
 		if (known != null) {
 			return known;

@@ -394,6 +394,9 @@ connector, the switch off), `TomsStorageCompatTests.aChestUnpluggedIsItsOwnStore
 and `PackModsCompatTests.packStorageWorksAsSupplyChests` (a connector by a builder's chest still doesn't count it twice).
 B192: `TomsStorageCompatTests.aPlayerOpensTheTerminalBesideTheStorehouse` (a player right-clicks the terminal next to
 the Storehouse and gets Tom's terminal menu, listing 10 cobblestone, 20 planks and 1 sword, each once).
+`TomsStorageCompatTests.aDoubleChestOnACableCountsOnce` (a double chest half on a cable connector isn't also its own
+store) and `TomsStorageCompatTests.aConnectorInsideThePlotIsPassedOver` (a connector inside the area being built isn't
+read; its chests outside are each a store).
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and
@@ -401,6 +404,8 @@ the board's line and Tom's terminal screen.
 gate open and runs `/workplace furnished` at full speed. `tools/packtest/furnished.py` passes it only when the Starter
 Cottage and the Inn both finish with 0 skipped, 0 blocks not as planned, every furniture piece standing, the order in
 effect starting with Cozy Home, and Cozy Home pieces in each (its verdict's own tests: `python3 tools/packtest/test_furnished.py`).
+`FurnishedPackTestGameTests.theBarrelsHoldExactlyWhatThePlanCosts` (no mods: the command's barrels hold exactly the
+plan's materials, none empty).
 37.12 (no mods): `ModdedLibraryGameTests.everyHomeAndWorkshopHasAModdedCopy`,
 `ModdedLibraryGameTests.withoutTheModsEveryBuildIsTheVanillaBuild` (every home and workshop exactly its vanilla build,
 the cottage planned with vanilla blocks only), `ModdedLibraryGameTests.theModdedChoiceIsSavedAndRead`,

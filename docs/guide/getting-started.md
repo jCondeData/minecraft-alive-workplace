@@ -20,7 +20,9 @@ Your first builder, your first building and your first village. It takes about t
 Craft a **Settler's Wagon** (three white wool over two hay bales and a block of emerald, over a chest between planks)
 and right-click some open ground. Two settlers make camp there: a covered wagon with a chest of supplies (logs, planks,
 cobblestone, bread, torches, two blueprints and a Village Hall), a Blueprint Table, a campfire and two bedrolls. The
-first settler is already a builder; the other takes whatever job you give them.
+first settler is already a builder; the other takes whatever job you give them. The bedrolls are for the road: once
+you place the Village Hall, the settlers look for beds in the village's houses, so have the builder put up a home
+early.
 
 ![A settlers' camp: the wagon, the campfire and the builder](https://jcondedata.github.io/minecraft-alive-workplace/camp/still-1.jpg)
 

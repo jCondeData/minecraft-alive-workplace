@@ -239,12 +239,12 @@ public final class GolemSmith {
 				return null;
 			}
 		}
-		for (Map.Entry<Item, Integer> e : role.cost().entrySet()) {
-			SupplyContainers.extract(level, chests, e.getKey(), e.getValue());
-		}
 		IronGolem golem = build(level, smith.blockPosition(), role);
 		if (golem == null) {
-			return null;
+			return null; // (refused by another mod with forceVillageSpawns off, B211: nothing is taken)
+		}
+		for (Map.Entry<Item, Integer> e : role.cost().entrySet()) {
+			SupplyContainers.extract(level, chests, e.getKey(), e.getValue());
 		}
 		ModAttachments.GOLEM_FORGE.set(smith, new Forge(forge.next(), today));
 		Chronicle.record(level, hall, Chronicle.Kind.ARRIVED, Component.translatable("chronicle.aliveworkplace.golem_smith.built",
@@ -305,7 +305,9 @@ public final class GolemSmith {
 		golem.setCustomName(role.title().copy().withStyle(ChatFormatting.GOLD));
 		golem.setCustomNameVisible(true);
 		ModAttachments.GOLEM_ROLE.set(golem, role.id);
-		level.addFreshEntityWithPassengers(golem);
+		if (!io.github.jcondedata.aliveworkplace.threat.HostileSpawns.addVillage(level, golem, "Golem Smith's " + role.id + " golem")) {
+			return null;
+		}
 		level.sendParticles(ParticleTypes.LAVA, golem.getX(), golem.getY() + 1, golem.getZ(), 12, 0.5, 0.8, 0.5, 0.05);
 		level.playSound(null, golem.blockPosition(), SoundEvents.ANVIL_USE, SoundSource.NEUTRAL, 1f, 0.8f);
 		return golem;

@@ -135,6 +135,11 @@ public final class WorkerLimits {
 			// config mechanics off (39.2): a jobless villager doesn't see Create's toolboxes as workstations
 			found = found.filter(p -> !p.getFirst().is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TOOLBOX_POI));
 		}
+		if (!io.github.jcondedata.aliveworkplace.city.CaravanTrains.ENABLED && villager != null
+			&& villager.getVillagerData().getProfession() == VillagerProfession.NONE) {
+			// config villageTrains off (39.7d): a jobless villager doesn't see Create's stations as workstations
+			found = found.filter(p -> !p.getFirst().is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRACK_STATION_POI));
+		}
 		boolean workers = MAX_PER_VILLAGE > 0;
 		boolean fishermen = FishermanCap.ENABLED;
 		if ((!workers && !fishermen) || villager == null || !(villager.level() instanceof ServerLevel level)

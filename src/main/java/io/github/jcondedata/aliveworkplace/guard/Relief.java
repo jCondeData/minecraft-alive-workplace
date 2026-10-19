@@ -326,7 +326,7 @@ public final class Relief {
 	}
 
 	/** The band reaches the village: riders on horseback at its edge on their home's side, or before the capital's Royal Hall. */
-	static void arrive(ServerLevel level, Band band) {
+	public static void arrive(ServerLevel level, Band band) {
 		BlockPos hall = band.target().pos();
 		BlockPos muster = muster(level, band);
 		Direction side = Direction.getNearest(hall.getX() - band.home().pos().getX(), 0, hall.getZ() - band.home().pos().getZ());
@@ -369,9 +369,9 @@ public final class Relief {
 			for (EquipmentSlot slot : EquipmentSlot.values()) {
 				rider.setDropChance(slot, 0f);
 			}
-			level.addFreshEntity(horse);
+			boolean mounted = io.github.jcondedata.aliveworkplace.threat.HostileSpawns.addVillage(level, horse, "relief rider from " + band.homeName().getString());
 			level.addFreshEntity(rider);
-			if (!Cavalry.ride(rider, horse)) {
+			if (mounted && !Cavalry.ride(rider, horse)) {
 				rider.startRiding(horse, true);
 			}
 			Guards.updateHealth(rider);

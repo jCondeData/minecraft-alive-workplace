@@ -1,0 +1,5 @@
+{
+  "pieces": {
+    "chair": {"by": "wood", "mods": {"aliveworkplace_test_pieces": "minecraft:{wood}_stairs", "aliveworkplace_test_alt": "minecraft:{wood}_wood"}}
+  }
+}

@@ -156,6 +156,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.init();
 		io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.init(); // ROADMAP 37.2: furniture spots
 		io.github.jcondedata.aliveworkplace.furnish.FurnishingTable.init(); // ROADMAP 37.3: the furniture mods' pieces
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureEquivalents.init(); // ROADMAP 37.13: any mod's spruce chair will do
 		io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.init(); // ROADMAP 37.12: the modded build library
 		io.github.jcondedata.aliveworkplace.city.RoadStyles.init();
 		io.github.jcondedata.aliveworkplace.city.WallKits.init();

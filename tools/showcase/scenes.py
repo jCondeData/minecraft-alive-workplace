@@ -1133,6 +1133,13 @@ SCENES = [
            ("03_bedroom", "The bedroom corner: the fancy bed, a nightstand, a lamp and the couch"),
            ("05_sitting", "Upstairs: the sitting corner's couch, blinds and a picture"),
            ("06_vanilla_dining", "The same corner without furniture mods: the vanilla pieces")], cobblemon=True, furniture=True),
+    # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
+    S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
+      "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",
+      60, [("01_chests", "The Builder's Bench and a chest holding only CobbleFurnies' chairs"),
+           ("02_handcrafted_dining", "The cottage whose chest held Handcrafted's chairs: Handcrafted chairs at the table"),
+           ("03_cobblefurnies_dining", "The cottage whose chest held CobbleFurnies' chairs: CobbleFurnies chairs in the same places"),
+           ("04_both", "The two cottages side by side")], cobblemon=True, furniture=True),
     # Furnished workplaces (ROADMAP 37.5): the Supply Shop, Library, Schoolhouse and Healing Center as a server with the
     # pack's furniture mods builds them
     S("furnished_workplaces", "Build families", "Furnished workplaces: shop counters, Library desks, school benches (Handcrafted, Beautify, CobbleFurnies)",

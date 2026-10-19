@@ -177,6 +177,15 @@ final class Leftovers {
 	 * ends, passed or failed — a failed test that left it on made the next batches' builders share chests and fail too.
 	 */
 	static void village(GameTestHelper helper, int radius) {
+		// B226: a Storehouse counts by its block, porter or not, so an earlier batch's left standing beside this test's
+		// area (never cleared) would be this village's store: those go (the test's own, inside its area, stay)
+		AABB box = helper.getBounds();
+		int reach = radius + (int) Math.ceil(Math.max(box.getXsize(), box.getZsize()));
+		for (net.minecraft.core.BlockPos storehouse : helper.getLevel().getPoiManager().findAll(
+			h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.STOREHOUSE_POI), p -> !box.contains(net.minecraft.world.phys.Vec3.atCenterOf(p)),
+			net.minecraft.core.BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+			helper.getLevel().removeBlock(storehouse, false);
+		}
 		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = radius;
 		after(helper, () -> io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0);
 	}

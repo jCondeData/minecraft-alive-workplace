@@ -128,6 +128,18 @@ public final class Village {
 					out.add(new Mate(theirs.immutable(), other.getVillagerData().getProfession()));
 				}
 			}
+			// B226: a Storehouse is the village's store whether or not its porter is about (asleep at home in a chunk
+			// that isn't loaded, beyond the search, or the job lost): found by its block, and shared as its owner's
+			// (the porter there answers to them), so a builder with no chests by its bench still builds from it
+			for (BlockPos storehouse : level.getPoiManager().findAll(h -> h.is(ModVillagers.STOREHOUSE_POI), p -> true, station, RADIUS,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
+				if (storehouse.equals(station) || !seen.add(storehouse.immutable()) || !level.isLoaded(storehouse)
+					|| !(level.getBlockEntity(storehouse) instanceof io.github.jcondedata.aliveworkplace.store.StorehouseBlockEntity store)
+					|| !sameSide(level, ModAttachments.BUILDER_EMPLOYER.get(villager), store.owner())) {
+					continue;
+				}
+				out.add(new Mate(storehouse.immutable(), ModVillagers.PORTER));
+			}
 			out.sort(Comparator.comparingDouble(m -> m.station().distSqr(station)));
 		}
 		List<Mate> mates = List.copyOf(out);

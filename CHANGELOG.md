@@ -29,6 +29,10 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **A Builder with no chests by its bench builds from the village Storehouse again** (B226). The Storehouse only
+  counted while its Porter was in reach, so with the Porter asleep at home far off (or in a chunk that wasn't loaded)
+  the Builder said "No chests by its bench" and waited, though everything was in the Storehouse's chests. Now the
+  Storehouse counts by its block, Porter or not.
 - **The Firewarden puts out a fire on a high roof** (B218). A fire on the ridge of a pitched roof, such as the Starter
   Cottage's, had nowhere within a bucket's throw to stand, so the Firewarden waited by the grindstone while it spread
   down the roof. Now they run to the open ground below it and throw their buckets up onto the roof (up to 12 blocks).

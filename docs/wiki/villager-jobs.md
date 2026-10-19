@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103, B226
 
 ## What a player sees
 
@@ -129,6 +129,9 @@ blueprint returned still placed.
 **Villages share.** Workers whose workstations are within `villageRadius` blocks (48) of each other are one
 village: one short of something takes it from another's chests. Only workers who answer to the same people share
 (yours and your friends', or village workers nobody hired).
+A Storehouse in the village counts by its block, whether or not its Porter is about (asleep at home far off, in a
+chunk that isn't loaded, or gone): it is shared as its owner's (the player who placed or had it built, or nobody for
+a village one), so a Builder with no chests by its bench builds from the Storehouse's chests (B226).
 
 **Pace.** Every job's speed goes through one rule: the worker's level, then every bonus (partners, a well-kept
 village, research, traits, mood, edicts, guilds, tonics) up to the cap `maxWorkPace`, then penalties (illness, a bad

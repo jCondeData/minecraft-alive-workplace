@@ -412,4 +412,81 @@ public class ContraptionCompatTests implements FabricGameTest {
 				&& BuildSiteManager.get(run.level).turnChecks().stream().noneMatch(c -> c.placement().equals(run.placement)), "checked with the switch off");
 		});
 	}
+
+	/**
+	 * A belt segment's data made for where the build stands: its place on the belt and its looks kept, the items on it and
+	 * its speed left out, and its {@code Controller} moved from where the blueprint was saved by the build's offset and turn.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aBeltSegmentsDataIsMadeForWhereTheBuildStands(GameTestHelper helper) {
+		BlockState belt = with(state("belt", "facing", "north", "slope", "horizontal", "casing", "false"), "part", "middle");
+		helper.assertTrue(KineticParts.isBelt(belt), "Create's belt isn't known as a belt");
+		BlueprintData.Placement placement = new BlueprintData.Placement(helper.getLevel().dimension().location(), new BlockPos(100, 70, 200),
+			Rotation.CLOCKWISE_90, Mirror.NONE);
+		BlockPos savedOrigin = new BlockPos(10, 64, 8);
+		BlockPos expected = placement.origin().offset(StructureTemplate.transform(new BlockPos(0, 0, 2), Mirror.NONE, Rotation.CLOCKWISE_90, BlockPos.ZERO));
+		CompoundTag saved = new CompoundTag();
+		saved.putInt("Index", 1);
+		saved.putInt("Length", 3);
+		saved.putBoolean("IsController", false);
+		saved.putString("Casing", "ANDESITE");
+		saved.put("Items", new CompoundTag());
+		saved.putFloat("Speed", 16);
+		saved.putIntArray("Controller", new int[] {10, 64, 10});
+		CompoundTag out = Contraptions.blockData(belt, saved, savedOrigin, placement);
+		helper.assertTrue(out != null && Nbt.getInt(out, "Index") == 1 && Nbt.getInt(out, "Length") == 3 && out.contains("IsController")
+			&& "ANDESITE".equals(Nbt.getString(out, "Casing")), "the segment's place on the belt or its looks weren't kept: " + out);
+		helper.assertTrue(!out.contains("Items") && !out.contains("Speed"), "the segment's items or speed were copied: " + out);
+		int[] named = Nbt.getIntArray(out, "Controller");
+		helper.assertTrue(named.length == 3 && new BlockPos(named[0], named[1], named[2]).equals(expected),
+			"the segment names " + java.util.Arrays.toString(named) + " as its controller, not " + expected.toShortString());
+		helper.succeed();
+	}
+
+	/**
+	 * A kinetic-parts file naming blocks that don't exist (this suite's {@code kinetic_parts/unknown_part.json}, for Create)
+	 * skips them: no other block, air least of all, becomes a part or a belt, and Create's own parts are still known.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aPartThatDoesntExistIsSkipped(GameTestHelper helper) {
+		BlockState air = Blocks.AIR.defaultBlockState();
+		helper.assertTrue(KineticParts.group(air) == -1 && !KineticParts.isBelt(air),
+			"an unknown id made air a part: group " + KineticParts.group(air) + ", belt " + KineticParts.isBelt(air));
+		helper.assertTrue(KineticParts.group(state("shaft")) == 0 && KineticParts.isBelt(state("belt")), "Create's own parts aren't known");
+		helper.succeed();
+	}
+
+	/**
+	 * While the lead hasn't reached the kinetic parts, a crew member leaves them for later (a cogwheel waits for what holds
+	 * it up), and takes what holds them up.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '3000' '"contraption_not_yet"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 3000, batch = "contraption_not_yet")
+	public void aCrewMemberLeavesTheKineticPartsForLater(GameTestHelper helper) {
+		Run run = start(helper, "not_yet", Rotation.NONE);
+		String[] seen = {null};
+		helper.onEachTick(() -> {
+			if (seen[0] != null || !run.started() || run.site.stage() != BuildPlan.Stage.STRUCTURE) {
+				return;
+			}
+			List<BuildPlan.Step> steps = run.plan.steps(BuildPlan.Stage.STRUCTURE);
+			BuildPlan.Step cog = steps.stream().filter(s -> KineticParts.group(s.state()) == 1).findFirst().orElse(null);
+			BuildPlan.Step bricks = steps.stream().filter(s -> KineticParts.group(s.state()) < 0).findFirst().orElse(null);
+			if (!run.site.kineticOrder() || run.site.cursor() >= run.plan.kineticStart(0) || cog == null || bricks == null) {
+				seen[0] = "setup: order " + run.site.kineticOrder() + ", cursor " + run.site.cursor() + " of " + run.plan.kineticStart(0)
+					+ ", cog " + cog + ", bricks " + bricks;
+				return;
+			}
+			seen[0] = "cog left for later " + Contraptions.notYet(run.site, run.plan, cog) + ", bricks left for later "
+				+ Contraptions.notYet(run.site, run.plan, bricks);
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(seen[0] != null, "the structure never started");
+			helper.assertTrue(seen[0].equals("cog left for later true, bricks left for later false"), seen[0]);
+			BuildSiteManager.get(run.level).remove(run.site.id()); // only the order was wanted: not built to the end
+			run.builder.discard();
+		});
+	}
 }

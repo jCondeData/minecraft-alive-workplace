@@ -5192,6 +5192,22 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-19 (lane-e-1019-1614): second mutation pass on M39 (Create) code, seed 40, favouring what the first pass
+  (below) left out: Contraptions, KineticParts, MachineWorkFiles and MachineJob, plus new lines in CreateTrains,
+  CaravanTrains, MachineWork, MechanicWork, CreateSchematics and Kinetics. Run against the ten Create compat classes and
+  the four plain M39 classes (Mechanic, Conductor, CreateBuilds, VillageTrain) alone, about 2 min a run. 29 mutants, 3
+  didn't compile, 26 ran: 17 killed, 9 survived, all nine real gaps (lines as at f18b953d), now killed:
+  ContraptionCompatTests.aBeltSegmentsDataIsMadeForWhereTheBuildStands (Contraptions:143, belt data copied;
+  KineticParts:94, belts never known), .aPartThatDoesntExistIsSkipped (KineticParts:109, an unknown id read as air; data
+  file kinetic_parts/unknown_part.json) and .aCrewMemberLeavesTheKineticPartsForLater (Contraptions:162, notYet);
+  CreateBuildsGameTests.aKineticPartsFileForAMissingModIsSkipped (KineticParts:75; data file kinetic_parts/absent_mod.json);
+  VillageTrainCompatTests.noTrackIsDueBeforeTheVillagesHalfOfTheRoadIsFinished (CaravanTrains:640);
+  MachineWorkCompatTests.aMachineTripNeverHoldsUpTheSchedule (MachineWork:101, the priority-99 schedule update gated);
+  MechanicCompatTests.theMechanicNearABuildLeadsItsCrew (MechanicWork:163, crewLead) and
+  MechanicGameTests.aPutBackBeltSegmentNamesItsControllerWhereTheBuildStands (MechanicWork:259, beltData's Controller).
+  None equivalent; no mod bug found. Belt data was untested end to end because Create works a belt out from its blocks
+  anyway, so the new belt tests call blockData and beltData directly. Runs need `./gradlew --stop` between batches here:
+  with leftover daemons a compat run was OOM-killed (exit 137), which mutate.py would count as a kill.
 - 2026-10-19 (lane-b-1019-1538, 36.15): defence repairs after a threat stay automatic, as the spec allows while the
   owner hasn't objected: anything on the threats' damage list (32.16a: a gate a ram broke, a block a village fire
   burned) is repaired without a question, and a question asked about that building before the threat is dropped. A

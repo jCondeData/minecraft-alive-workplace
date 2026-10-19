@@ -29,6 +29,9 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Look at a villager to see its job and level** (B221). Point your crosshair at a working villager up close and a
+  plate over its head reads "Fisherman, Journeyman" ("Dara — Fisherman, Journeyman" for one with a name). Every job
+  shows, ours and vanilla's; jobless villagers and nitwits show nothing new, and no villager's name is changed.
 - **A villager handed the item for their job gets straight to it** (B220). A Fisherman given a rod late in the work
   day stood about for a second before fishing; now the work starts within a tick, as it does for a Builder given a
   blueprint. Handed one outside their work hours, a villager now says when they start ("in about 8 minutes") instead

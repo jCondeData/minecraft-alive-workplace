@@ -20,6 +20,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QuestbookInstallGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuiltAdvancementGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StatusLineJobGameTests",
+			"io.github.jcondedata.aliveworkplace.test.JobPlateGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReleaseGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ServerControlsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FishermanCapGameTests",

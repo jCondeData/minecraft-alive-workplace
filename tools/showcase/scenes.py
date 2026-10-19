@@ -1174,6 +1174,12 @@ SCENES = [
        ("03_hall_line", "Close up: it still looks like moss")], cobblemon18=True),
     S("camp", "Build families", "A Settler's Wagon camp", "the camp was set up", 45,
       [("01_camp", "The camp"), ("02_camp_back", "From behind")]),
+    # Job plates (B221): looking at a working villager shows its job and level over its head, after its own name if it has
+    # one; a jobless villager shows nothing
+    S("job_plate", "Everyone at work", "Look at a villager to see its job and level",
+      "a Journeyman fisherman's plate reads its job and level, a named builder's her name first, a jobless villager's nothing", 15,
+      [("01_fisherman_plate", "Fisherman, Journeyman"), ("02_named_plate", "Dara — Builder, Expert"),
+       ("03_jobless_no_plate", "A jobless villager: no plate")]),
 ]
 
 BY_NAME = {s["name"]: s for s in SCENES}

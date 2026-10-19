@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103, B226, B224, B220
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, B97, B101, B103, B226, B224, B220, B221
 
 ## What a player sees
 
@@ -15,6 +15,10 @@ block's own job comes back with its own item (wheat for a Farmer, coal for an Ar
 A jobless villager already on the way to a block they picked themselves lets it go, so another villager can take it.
 Hold Shift over a workstation in your inventory to see its jobs and their items. A job whose switch is off (or that
 needs Cobblemon, without it) isn't listed.
+
+**Look at a villager to see its job and level (B221).** Point your crosshair at any working villager, from up to
+about 3 blocks away, and a name plate over its head reads "Fisherman, Journeyman". One with a name of its own reads
+"Dara — Fisherman, Journeyman". Every job shows, ours and vanilla's; a jobless villager or a nitwit shows nothing new.
 
 **Retraining (26.6).** A villager who already has a job (vanilla, ours or another mod's, traded with or not; never a
 child or a nitwit) becomes a Builder at a free Blueprint Table within about 4 blocks, sneak-right-clicked with a
@@ -105,6 +109,14 @@ The Class column only counts once classes are on (see [Classes](classes.md)). Ea
 says what it does all day.
 
 ## How it works
+
+**Job plates (B221).** The client already knows every villager's job and level (vanilla sends them, for the outfit
+and the level badge), so the plate is drawn on the client from those: `JobPlate` composes the text
+(`message.aliveworkplace.plate.job`, "%s, %s", with the job's name and vanilla's own level names Novice to Master;
+`message.aliveworkplace.plate.named`, "%s — %s", in front of a name), `JobPlateShownMixin` lets an unnamed working
+villager show a plate when it's the crosshair's target (vanilla only does that for a named mob), and
+`JobPlateTextMixin` puts the text on the plate as it's drawn. A Builder's status above its head moves up out of the
+plate's way.
 
 **A fresh hire starts at once (B220).** A Fisherman handed a rod or a Builder handed a blueprint during their work day
 is at it within a tick or two. A villager taking our longer hours (a hired Fisherman, a job picked with an item) gets a
@@ -251,6 +263,12 @@ and so on). Status lines and the requests board are not saved: workers post agai
 - B220 (bug lane, 2026-10-19): a villager handed their job's item outside their work hours keeps their hours and says
   when they start ("Fred starts work when their work day begins, in about 8 minutes."), rather than starting at once:
   starting early would need a saved override of the schedule, and a fresh hire at night would leave their bed.
+- B221 (bug lane, 2026-10-19, owner's report): the job and level show on the name plate of the villager you look at,
+  drawn by the client, rather than by renaming villagers on the server. Every player on the owner's server has the
+  mod (its blocks and items need it), so the client already has the job and level and no packet is needed; a
+  server-side name would have been saved into every villager's name, shown in chat and death messages, and fought a
+  player's own name tag. Vanilla jobs show too ("Farmer, Master"): a player asks "who is this?" of every villager.
+  A named villager keeps its name first.
 - 26.6 (owner's playtest, 2026-10-14): in Cobblemon villages nearly every villager works, so a working villager can
   be retrained as a Builder for emeralds. Whether the other jobs' switches should cost too is a question in the ROADMAP
   Notes; for now they stay free.
@@ -263,6 +281,8 @@ and so on). Status lines and the requests board are not saved: workers post agai
   grows later, he looks again by himself, but a fisherman over the cap is never let go to make room.
 - The five Pokémon jobs and the Gem Grower are behind 1.2's gate, the Vintner, the Tailor, the Printer and the Jeweler
   behind 1.8's, and the Firewarden, the Well Keeper and the Physician behind 1.6's; 1.0 opens them all.
+- The job plate shows only on a client with the mod (every client on a server with it), and only for the villager
+  under the crosshair, as close as vanilla's reach. Jade or WTHIT tooltips don't get it (no compat yet).
 - This page lists how each job starts, not what it does: jobs without a wiki page yet are in the README.
 
 ## Proof
@@ -277,8 +297,10 @@ mid-shift and late in it; before the shift and at night they say when they start
 `FishermanCapGameTests` (5, 26.13: cap reached, the cap grows with the village, the switch off, the file's numbers,
 save and reload), `PaceGameTests`, `ClassWarmupGameTests` (B103: what is loaded ahead, every class loads, chests only in loaded chunks,
 the shape warm-up, the nearest hall within a tick, a home finished or taken down within a tick, free workstations with
-their jobs).
+their jobs), `JobPlateGameTests` (3, B221: a level-3 fisherman reads "Fisherman, Journeyman", a Builder and a
+Master Farmer, a named fisherman "Dara — Fisherman, Journeyman" with her saved name untouched, a jobless villager, a
+nitwit and a pig unchanged). The client mixins themselves are proved by the scene.
 
-Showcase scenes: `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
+Showcase scenes: `job_plate` (a Journeyman fisherman, Dara the Expert builder and a jobless villager, each looked at), `stations` (one composter, four jobs), `retrain` (a Librarian retrained as a Builder), `staff` (every workstation with its villager), `outfits`
 (every outfit, and as a zombie), `berry_breeder`, `camp_cook`, `habitat_keeper`, `daycare_keeper`, `gem_grower`, `jeweller`,
 `vintner`, `tailor`, `printer`.

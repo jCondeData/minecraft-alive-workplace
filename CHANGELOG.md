@@ -54,6 +54,12 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **A broken bandit camp gives the land back** (B225). When a camp came down it left its levelled pad and its patch of
+  trampled earth and gravel for good, so the land round a village got scarred as camps came and went. Now a camp
+  remembers the ground it was set on, and once it is down that ground comes back: the hill it cut into, the hollow it
+  filled, the grass. Camps made before this update have their pad blended into the land round them instead (grass on
+  top, no trampled earth or gravel, no sharp steps). With Camp Ruins on, the tents stay but the open ground round them
+  goes back. Anything a player built there stays.
 - The Blueprint Table no longer errors on a Create Schematic whose file name holds a hidden control character: it refuses it by name, like other bad names.
 - **The Firewarden puts out a fire on a high roof** (B218). A fire on the ridge of a pitched roof, such as the Starter
   Cottage's, had nowhere within a bucket's throw to stand, so the Firewarden waited by the grindstone while it spread

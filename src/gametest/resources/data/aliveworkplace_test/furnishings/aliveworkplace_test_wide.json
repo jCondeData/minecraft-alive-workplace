@@ -1,0 +1,5 @@
+{
+  "pieces": {
+    "chair": {"block": "minecraft:{wood}_pressure_plate", "footprint": [{"at": [0, 0, 0]}, {"at": [0, 1, 0]}]}
+  }
+}

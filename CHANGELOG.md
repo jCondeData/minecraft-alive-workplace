@@ -60,6 +60,14 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Villagers no longer get stuck under flower boxes** (B156). The game's path finding counts every trapdoor as open,
+  so a villager walking along a house front could walk into the gap under a window's flower box (a closed trapdoor at
+  head height), bump its head and stand there for the rest of the day; a Printer walking up to the Print Shop sometimes
+  never reached its cartography table. Villagers now walk round closed trapdoors they can't fit under, in our builds
+  and yours; closed trapdoors used as a floor are walked on as before.
+- **A Firewarden no longer stops a step short of a fire on a high roof** (B230). For a fire on a roof's ridge they now
+  walk onto the very spot they throw the bucket up from; before, they could stop one block away, just out of throwing
+  range, and stand there watching it burn.
 - **A Create schematic named like a Windows device no longer breaks the Blueprint Table.** A schematic uploaded to
   Create's table as `con.nbt` (or `aux`, `nul`, `com1`...) made the game refuse to save its blueprint with an error
   nobody caught, so the Blueprint Table failed every time it was opened. The table now says once that it couldn't

@@ -112,6 +112,14 @@ public final class Walker {
 	}
 
 	/**
+	 * Walks onto {@code feet} itself (that block, not the game's "a block away will do"), hopping there when stuck. True
+	 * once standing on it.
+	 */
+	public boolean walkOnto(ServerLevel level, Villager villager, BlockPos feet) {
+		return walk(level, villager, feet, 0.35, true) || villager.blockPosition().equals(feet) && villager.onGround();
+	}
+
+	/**
 	 * Gets within {@code reach} of {@code target} to work on it: picks a place to stand (solid ground, room
 	 * for a villager), walks there and shuffles to the middle, hopping when stuck. Returns true once in reach;
 	 * false while on the way; throws nothing when there is nowhere to stand — {@link #noSpot()} says so.

@@ -228,6 +228,12 @@ public class FirewardenWork extends Behavior<Villager> {
 		if (state.below != null && (!fire.equals(state.belowFor) || !Walker.canStand(level, state.below))) {
 			state.below = null;
 		}
+		// B230: onto the spot itself (picked so a throw from it reaches), not a step short: the game's walking counts a
+		// block away as there, and a step away can be out of throwing range, where they stood and watched it burn.
+		if (state.below != null && state.walker.walkOnto(level, villager, state.below)) {
+			villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+			return true;
+		}
 		if (state.below == null) {
 			boolean near = state.walker.reach(level, villager, fire, THROW);
 			if (near || !state.walker.noSpot()) {
@@ -238,8 +244,11 @@ public class FirewardenWork extends Behavior<Villager> {
 			if (state.below == null) {
 				return false;
 			}
+			if (state.walker.walkOnto(level, villager, state.below)) {
+				villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+				return true;
+			}
 		}
-		state.walker.walkTo(level, villager, state.below, 1.2);
 		return false;
 	}
 

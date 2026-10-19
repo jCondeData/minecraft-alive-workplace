@@ -4336,6 +4336,65 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
+		// Upgrade a built home from the Village Hall (ROADMAP 36.14): a finished Starter Cottage and a finished Stone House II
+		// stand north of the hall; the hall's Upgrades page lists the cottage (level I, next the Starter Cottage II, its cost,
+		// the space free) and the Stone House II (next level III, blocked by a garden fence where its new back rooms go, with
+		// where); a click on the cottage sends Bram to build its level II over it.
+		SCREENS.put("hall_upgrade", new Screen("the hall's Upgrades page listed the Starter Cottage (level I, next the Starter Cottage II, its cost, the space free) "
+			+ "and the Stone House II blocked by a garden fence where its level III goes; a click on the cottage sent Bram to build it",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BuildSiteManager sites = BuildSiteManager.get(level);
+				BlockPos cottage = STATION.offset(-8, 0, -15);
+				BlockPos house = STATION.offset(6, 0, -16);
+				for (var built : List.of(java.util.Map.entry(StarterBlueprints.STARTER_COTTAGE.id(), cottage), java.util.Map.entry(StarterBlueprints.STONE_HOUSE_2.id(), house))) {
+					level.getStructureManager().get(built.getKey()).orElseThrow().placeInWorld(level, built.getValue(), built.getValue(),
+						new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+					sites.recordFinished(built.getKey(), new BlueprintData.Placement(level.dimension().location(), built.getValue(),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				}
+				// a garden fence behind the Stone House II, where its level III's back rooms go
+				for (int x = 2; x <= 8; x++) {
+					level.setBlockAndUpdate(house.offset(x, 0, 11), Blocks.OAK_FENCE.defaultBlockState());
+				}
+				BlockPos bench = new BlockPos(4, -60, -3);
+				place(level, bench, ModBlocks.BUILDERS_BENCH);
+				chest(level, bench.east(), new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.OAK_LOG, 64),
+					new ItemStack(Items.GLASS_PANE, 32), new ItemStack(Items.SPRUCE_PLANKS, 64));
+				Villager builder = EntityType.VILLAGER.create(level);
+				builder.moveTo(4.5, -60, -1.5, 180, 0);
+				builder.setCustomName(Component.literal("Bram"));
+				level.addFreshEntity(builder);
+				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+				io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_EMPLOYER.set(builder,
+					new io.github.jcondedata.aliveworkplace.build.Employer(player.getUUID(), player.getGameProfile().getName()));
+				classPeople.clear();
+				classPeople.add(builder);
+			},
+			List.of(new Step("01_upgrades_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.UpgradesPage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
+							"the cottage first on the Upgrades page, its space free: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_blocked_by_a_fence", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1).is(Items.BARRIER),
+							"the Stone House II blocked by the fence: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW + 1));
+					}
+				}, 40),
+				new Step("03_bram_builds_it", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.SCAFFOLDING),
+							"after the click the cottage is being upgraded: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40)),
+			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

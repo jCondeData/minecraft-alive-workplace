@@ -29,6 +29,9 @@ asks for the steps, `latest.log` and any crash report).
   says which level he needs. He cooks the requests from the store's makings and brings them to the Storehouse. Camp
   curries, Poké snacks, Campfire Pot candies and vanilla food are cooked as before; dishes he already made stay put.
 ### Fixed
+- **Settlers really walk out toward their colony (B182).** When the bell rang, settlers headed for a point 48 blocks
+  out; if that ground wasn't loaded yet they could only shuffle a few random steps and often stood by the hall. They now
+  walk to the farthest loaded point on the way, which moves out as the land ahead loads.
 - **Villagers walk in by a shut door every time (B203).** A villager opening a shut wooden door on its way in (to its
   job, its bed, a workplace) sometimes turned round as the door swung open, shut it behind itself and wandered off
   round the building: the game worked its path out again for the opened door and aimed it at some bed or bell the

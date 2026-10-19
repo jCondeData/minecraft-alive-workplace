@@ -4896,6 +4896,16 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   (default: modded when the mods are installed). Choosing what ships in which release is the owner's later. Done
   when: the modded copies exist for every home and workshop, renders checked against STYLE.md, the switch works,
   vanilla builds untouched; compat GameTests; scene `modded_library`.
+- [ ] **37.13** **Any mod's "spruce chair" will do** (owner, 2026-10-19). Furniture such as a spruce chair exists in several mods (Handcrafted,
+  CobbleFurnies, Lucky's Cozy Home, Beautify) and a build asks for one mod's piece (the first in `furnitureMods`, now Handcrafted), so players
+  bring the wrong one and the Builder stalls. Make equivalent pieces interchangeable the way `MaterialFamilies` does for vanilla
+  blocks: an equivalence table for furniture (data file, by piece and wood or colour: chair, table, bed, lamp, shelf, cabinet,
+  sofa, ...), so (1) the material list shows the piece once ("Spruce chair", any of these mods) and lists the mod options
+  on hover; (2) the Builder takes whichever mod's piece is in the chests, in `furnitureMods` order when several are there, and
+  places that one, with the same footprint and facing; (3) a piece no installed mod has falls back to the vanilla stand-in as
+  today; (4) a build already half-furnished keeps its pieces. Done when: compat GameTests with only Handcrafted's chair in the
+  chest, only CobbleFurnies', both (the first in the order is used), and neither (vanilla stand-in); the material list text in
+  `en_us.json`; scene `furniture_any_mod`. Note the decision in the Notes.
 
 ## Milestone 38: Cobblemon depth (2.2)
 

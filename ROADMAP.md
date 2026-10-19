@@ -4756,7 +4756,7 @@ Depends on: nothing open.
   Stored blueprints are the table's own (a broken table drops them; the table saves them across restarts). Done when: GameTests for storing,
   taking one out, the count, a broken table dropping its blueprints, save and reload, a full inventory, and the stored tab
   in `en_us.json`; scene `table_library` (the Table's stills show a stored blueprint taken out).
-- [ ] **36.14** **Upgrade a built home from the Village Hall** (owner, 2026-10-19). A page in the Village Hall lists the village's finished
+- [x] **36.14** (review: pending 2026-10-19) **Upgrade a built home from the Village Hall** (owner, 2026-10-19). A page in the Village Hall lists the village's finished
   builds that have a next level (I to II, II to III, ...). Each row shows the build, its level, the cost in materials, and
   whether the space is free. Picking one sends a Builder to build the next level over it. The space check counts what the
   next level adds: built blocks (walls, fences, other builds, paths) block an upgrade, natural terrain (grass, dirt, stone, trees,

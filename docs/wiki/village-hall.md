@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14
 
 ## What a player sees
 
@@ -38,6 +38,18 @@ and where its question stands (waiting for your answer, being repaired by a name
 now). A click on one gives Yes, repair it and Not now, or Pause and Stop the repair while it's being repaired. Builders
 ask here (and in chat) before repairing anything; what raiders and village fires broke is repaired without asking. The
 whole of it is on the [Builder](builder.md) page.
+
+**Upgrades (36.14).** A tab with bricks opens the "Upgrades" page: the village's finished builds that have a next level
+(a Starter Cottage with a Starter Cottage II, a Stone House II with a Stone House III...), nearest the hall first. Each
+row shows the build, its level and the next ("Level I, next: level II, the Starter Cottage II"), how far and which way
+from the hall, what the next level costs (the blocks in all, and the three it needs most of), and whether its space
+is free. A free row has bricks; click it and the village's Builder (the nearest one free,
+or the one with the shortest queue) builds the next level over the old one, and the row turns to scaffolding, "A
+Builder is building it now". Grass, dirt, stone, sand, trees, snow and water where the next level goes don't stop it:
+the row says how many such blocks the Builder clears on the way. A wall, a fence, a path, a chest or another build in
+the way does: the row turns to a barrier and says what and where ("Blocked: Oak Fence in the way at 120 64 -38", or
+"Blocked by the Smithy: its Stone Bricks at ..."), and a click only says so. The villagers who live there keep their
+beds: the Builder never breaks a bed somebody sleeps in.
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
@@ -97,6 +109,22 @@ class (34.8) is greyed with the class it needs. The pick is checked again on the
 meanwhile, or the villager found work, nothing changes, the action bar says why and the list comes back. The page
 shows up to 36 blocks; past that, the last slot says how many more there are further away.
 
+**Upgrades (36.14).** The page reads the village's finished builds (the hall's circle) whose blueprint has a next level
+by name (`<name>_2` after `<name>`, `_3` after `_2`, see `BlueprintUpgrades`), the same list the hall's advice and the
+Steward's upgrade rules use. The order is the same as every other upgrade: a build site of the next level on the old
+one's spot and turn (`Builders.start`, or `enqueue` behind a busy Builder), built only where it differs, recorded over
+the old level when done. The cost is what the next level's material list needs more of than the old one's, grouped by
+family as the Builder's lists group them. The space check walks every spot the next level's blueprint fills that the
+old level left empty or doesn't reach (lowest first); a spot holding air, or already the block the next level wants,
+is fine; a spot inside another build's outline (finished or going up) blocks unless it holds only air, water or
+something replaceable; elsewhere a spot blocks unless its block is natural: what the Steward's sites clear (ground:
+dirt, grass, sand, stone, gravel, clay, snow; growth: logs, leaves that grew, plants), water and lava, ice and ores.
+The first blocking spot is the one named. A room left empty in both levels (with what the villagers put in it since)
+isn't something the next level adds, so it isn't checked. While clearing, a Builder now leaves a bed a villager has
+claimed (its home point is taken) where the blueprint only wants air, so residents keep their beds through any
+upgrade, the Steward's and bought ones too. Ordering needs the right to build in the village (the owner, their friends
+or an operator; anyone in a village nobody owns), and is checked again on the click.
+
 ## Switches
 
 | Key | Default | What it does |
@@ -137,7 +165,7 @@ point of interest, saved by Minecraft).
   gold over planks, with an emerald in the middle.
 - Item: Village Ledger (`aliveworkplace:village_ledger`): right-click a hall to bind it, then open the hall's screen
   from anywhere nearby; sneak-use opens the Book of Edicts.
-- Jobs at the hall: the Steward (see [Steward](steward.md)).
+- Jobs at the hall: the Steward (see [Steward](steward.md)); the Builder builds what the Upgrades page orders (see [Builder](builder.md)).
 - Commands: `/workplace quests`, `/workplace friend add|remove|list`.
 
 ## Decisions
@@ -157,6 +185,13 @@ point of interest, saved by Minecraft).
   meant walking a villager into a finished home. Paid retraining of a working villager (26.6) stays at the block.
   The page is a spare tab (`HallPages.SPARES` went from 2 to 3), so the six tabs kept for other mods stay free. The
   tab is a vanilla crafting table, no new art.
+- 36.14 (owner, 2026-10-19): a home is upgraded from the hall. The page is one more spare tab (`HallPages.SPARES` went
+  from 4 to 5; it's the newest, so it gives way first). It reuses the one upgrade path (a build site of the next level
+  on the same spot), so nothing new is saved: the order is the build site. "Natural" is the Steward's clearable list
+  plus water, lava, ice and ores; a block of another build counts as built even when it's grass or dirt, because the
+  Builder would be tearing up part of someone else's build. A claimed bed is kept by every clear stage (it was broken
+  before when it stood where the next level has air); a claimed bed where the next level puts a block is "in the way".
+  The tab and rows use vanilla bricks, a barrier and scaffolding, no new art.
 - B37: the name icon's tooltip only offers "protect the village" to the player who may do it.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
@@ -171,6 +206,9 @@ point of interest, saved by Minecraft).
 - Free job blocks: a villager given a block walks there with the usual brain; at night or in a festival their
   schedule may take them elsewhere first. Blocks past the 36th aren't clickable until nearer ones fill. Only grown
   villagers in the hall's circle are offered.
+- Upgrades: the space check names the first blocking spot only; clear it and the row names the next one, if any. Spots
+  in chunks that aren't loaded aren't checked (the page never loads a chunk); the Builder deals with them when he gets
+  there, as for any build. The page lists up to 36 builds.
 
 ## Proof
 
@@ -182,9 +220,14 @@ the wagon-bed list and its save),
 `ProtectionSpecGameTests`, `HallProtectHintGameTests`, `ReadingFocusGameTests` (36.5: hovered, held on the way into
 the pane, let go outside the panel for the pinned button; unpinning and page changes; the wheel and Shift),
 `FreeJobsPageGameTests` (36.9: the listing with job, building and distance, `aPickTakesTheFreeBlock`, a block claimed
-meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockSurvivesAReload`).
+meanwhile refused, a villager who found work meanwhile left alone, `aGivenBlockSurvivesAReload`),
+`UpgradesPageGameTests` (36.14: the list with level, place, cost and free space; `aBuildWithNoNextLevelIsNotListed`;
+`aFreeUpgradeIsBuilt` by the village's Builder; `aBlockedUpgradeSaysWhatIsInTheWay` with another build's block, a
+fence, a path, then water (natural); `naturalGroundDoesNotBlockAnUpgrade`, all of it cleared;
+`residentsKeepTheirBedsThroughAnUpgrade`; `anOrderedUpgradeSurvivesAReload`; every sentence written).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end
 from the pane without a click, then the Storehouse board), `hall_jobs` (the Free job blocks page, the Storehouse's
-takers, Dara picked as its Porter).
+takers, Dara picked as its Porter), `hall_upgrade` (the Upgrades page: the Starter Cottage free, the Stone House II
+blocked by a garden fence, a click sending Bram to build the Starter Cottage II).

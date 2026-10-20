@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193, B231
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193, B231, B243, B244
 
 ## What a player sees
 
@@ -33,7 +33,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   machine is only fed while it turns ("the Millstone isn't turning" shows over the worker otherwise), and nothing is
   fed once the chest holds enough of what it makes (64 flour, sheets or crushed ore, 32 dough) or has no free slot
   ("the store is full: the Millstone waits"). A trip is short, and the job's own work picks up again after it. The
-  Mechanic's round now covers the press, the mixer and the crushing wheels too.
+  Mechanic's round now covers the press, the mixer and the crushing wheels too. Only the village's own machines and
+  chests are used (B243): a machine or a chest counts when it stands inside a building the village's builders
+  finished. A player's own millstone, press, mixer or crushing wheels, and a player's chests by a toolbox or a
+  workstation, are left alone: nothing of theirs is fed in, taken out or carried off.
 
 - **Create-powered builds** (39.4). The Blueprint Table offers three new workplaces, only with Create installed: the
   **Watermill**, a stone-and-timber mill house whose water wheel on the west wall is turned by water falling from a
@@ -211,8 +214,16 @@ the crushing wheels, whose gap block saves the wheels' RPM divided by 50). Files
 naming a block, job or recipe type that doesn't exist, are skipped quietly. What a machine is fed is read from
 Create's recipes of that type through the recipe manager: a recipe whose result the chest wants and whose ingredients
 it holds, so a datapack that changes Create's recipes changes the village's too. The worker (`mechanic/MachineWork`)
-looks every 5 seconds; a trip goes to the chest for the input, to the machine (anything
-made there comes along) and back to the chest. The chef's water is poured straight into the basin's tank (a bucket's
+looks every 5 seconds, only at machines and chests inside the outline of a finished build (`BuildSiteManager`'s
+finished buildings laid over their blueprints' size, `mechanic/VillageMachines`, read again when one is added or
+forgotten); the Mechanic's round lists only those machines too, and a trip saved before this rule to a machine outside
+them brings its load back to the store (B243). A trip goes to the chest for the input, to the machine (anything
+made there comes along) and back to the chest. A trip that can't go on any more ends at once, checked every tick by the
+worker (`MachineWork.tickTrip`, B244): machine work switched off (`machineWork` or the Create expansion), Create gone,
+or the worker no longer in the file's job (their workstation broken at Novice, or another job taken). What they
+carried goes straight into the village's store by their workstation (or by where they stand, when it's gone); what
+doesn't fit, or finds no store, drops at their feet. A broken machine, or a file gone, still runs the trip, which
+brings the load back on foot, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
 worth, 1000 mB), the way villages draw water anywhere; no bucket is used up. Items go in and out through Fabric's item
 and fluid transfer, which Create's port exposes; a depot, basin or crusher is never anyone's supply chest. The
 Mechanic's round uses the same files and the same work done on the spot.

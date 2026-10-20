@@ -316,7 +316,7 @@ public class MechanicWork extends Behavior<Villager> {
 
 	// ---- the round --------------------------------------------------------------------------------------------------
 
-	/** The machines on a round from {@code post}, nearest first: the loaded ones within {@link #REACH}. */
+	/** The machines on a round from {@code post}, nearest first: the village's loaded ones within {@link #REACH} (B243, {@link VillageMachines}). */
 	public static List<BlockPos> findMachines(ServerLevel level, BlockPos post) {
 		List<BlockPos> found = new ArrayList<>();
 		for (int cx = SectionPos.blockToSectionCoord(post.getX() - REACH); cx <= SectionPos.blockToSectionCoord(post.getX() + REACH); cx++) {
@@ -326,7 +326,7 @@ public class MechanicWork extends Behavior<Villager> {
 					continue;
 				}
 				for (BlockEntity be : chunk.getBlockEntities().values()) {
-					if (be.getBlockPos().closerThan(post, REACH) && Kinetics.isMachine(be.getBlockState())) {
+					if (be.getBlockPos().closerThan(post, REACH) && Kinetics.isMachine(be.getBlockState()) && VillageMachines.village(level, be.getBlockPos())) {
 						found.add(be.getBlockPos().immutable());
 					}
 				}
@@ -340,7 +340,7 @@ public class MechanicWork extends Behavior<Villager> {
 	public static MechanicRound round(ServerLevel level, Villager villager, BlockPos post) {
 		MechanicRound round = ModAttachments.MECHANIC_ROUND.getOrElse(villager, MechanicRound.EMPTY);
 		BlockPos current = round.current();
-		if (current == null || round.atStart() || level.isLoaded(current) && !Kinetics.isMachine(level.getBlockState(current))) {
+		if (current == null || round.atStart() || level.isLoaded(current) && (!Kinetics.isMachine(level.getBlockState(current)) || !VillageMachines.village(level, current))) {
 			List<BlockPos> machines = findMachines(level, post);
 			int next = current == null ? 0 : Math.max(0, machines.indexOf(current));
 			round = new MechanicRound(machines, next);
@@ -383,7 +383,7 @@ public class MechanicWork extends Behavior<Villager> {
 		if (file == null) {
 			return Tended.GONE;
 		}
-		return MachineWork.tend(level, SupplyContainers.find(level, post, null), machine, file, post);
+		return MachineWork.tend(level, VillageMachines.stores(level, post), machine, file, post);
 	}
 
 	private static void drop(ServerLevel level, BlockPos pos, ItemStack stack) {

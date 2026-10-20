@@ -626,6 +626,19 @@ final class JobScenes {
 		return STATION.west(2);
 	}
 
+	/**
+	 * B243: villagers work only the village's own Create machines and chests, those inside a building the builders
+	 * finished. Records the ground round the station (x -4 to 5, z -7 to 2, four high) as such a building, with an empty
+	 * blueprint, so a scene's millstone and store chest are the village's.
+	 */
+	private static void villageWorkshop(ServerLevel level, net.minecraft.world.entity.player.Player player) {
+		net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase/village_workshop");
+		BlockPos from = STATION.offset(-4, 0, -7);
+		level.getStructureManager().getOrCreate(id).fillFromWorld(level, from, new net.minecraft.core.Vec3i(10, 4, 10), false, Blocks.AIR);
+		BuildSiteManager.get(level).recordFinished(id, new BlueprintData.Placement(level.dimension().location(), from,
+			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+	}
+
 	// --- The scenes ------------------------------------------------------------------------------------------------
 
 	static {
@@ -1081,6 +1094,7 @@ final class JobScenes {
 			if (ModVillagers.MECHANIC == null) {
 				return l -> true;
 			}
+			villageWorkshop(level, player);
 			Container c = chest(level, chestPos(), new ItemStack(createItem.apply("shaft"), 2), new ItemStack(createItem.apply("cogwheel"), 1),
 				new ItemStack(Items.WHEAT, 16));
 			Villager mechanic = worker(level, STATION, create.apply("brown_toolbox"), ModVillagers.TOOLBOX_POI, ModVillagers.MECHANIC);
@@ -1116,6 +1130,7 @@ final class JobScenes {
 			java.util.function.Function<String, Item> createItem = path -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
 			Showcase.check(!io.github.jcondedata.aliveworkplace.mechanic.MachineWorkFiles.all().isEmpty(), "Create is loaded and the machine-work files are read");
+			villageWorkshop(level, player);
 			Container c = chest(level, chestPos(), new ItemStack(Items.WHEAT, 32));
 			Villager farmer = worker(level, STATION, Blocks.COMPOSTER, net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER,
 				net.minecraft.world.entity.npc.VillagerProfession.FARMER);

@@ -214,6 +214,7 @@ public class MechanicCompatTests implements FabricGameTest {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos post = helper.absolutePos(TOOLBOX);
+		MachineWorkCompatTests.villageWorkshop(helper); // B243: the village's own millstones and store
 		helper.setBlock(TOOLBOX, create("brown_toolbox").defaultBlockState());
 		Container chest = chest(helper, new ItemStack(Items.WHEAT, 20));
 		BlockPos mill = new BlockPos(6, 3, 2);
@@ -280,6 +281,7 @@ public class MechanicCompatTests implements FabricGameTest {
 	public void theRoundSurvivesASaveAndLoad(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
+		MachineWorkCompatTests.villageWorkshop(helper); // B243: the village's own millstones
 		Villager mechanic = mechanic(helper);
 		helper.setBlock(new BlockPos(6, 2, 2), create("millstone").defaultBlockState());
 		helper.setBlock(new BlockPos(6, 2, 5), create("millstone").defaultBlockState());
@@ -342,6 +344,7 @@ public class MechanicCompatTests implements FabricGameTest {
 	public void aMachineBuiltLaterJoinsARoundOfOne(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
+		MachineWorkCompatTests.villageWorkshop(helper); // B243: the village's own millstones
 		Villager mechanic = mechanic(helper);
 		helper.setBlock(new BlockPos(6, 2, 2), create("millstone").defaultBlockState());
 		MechanicRound one = MechanicWork.round(level, mechanic, helper.absolutePos(TOOLBOX));

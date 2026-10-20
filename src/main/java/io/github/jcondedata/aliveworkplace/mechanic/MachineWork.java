@@ -224,15 +224,24 @@ public class MachineWork extends Behavior<Villager> {
 		return STORES.hasMatching(level, at, s -> !inWork(file, all, s));
 	}
 
-	/** Takes what the machine made (never what it's still working on, nor a player's input waiting in it). */
-	static List<ItemStack> takeOutput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes) {
+	/**
+	 * Takes what the machine made (never what it's still working on, nor a player's input waiting in it), at most
+	 * {@code maxStacks} stacks: what the store has room for stays in the machine, never dropped by the store to despawn.
+	 */
+	static List<ItemStack> takeOutput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes, int maxStacks) {
+		if (maxStacks <= 0) {
+			return new ArrayList<>();
+		}
 		BlockPos at = collectPos(file, machine);
 		List<Recipe<?>> all = allRecipes(level, file);
 		if (!file.collect().drop()) {
-			return STORES.takeMatching(level, at, s -> !inWork(file, all, s), 9);
+			return STORES.takeMatching(level, at, s -> !inWork(file, all, s), Math.min(9, maxStacks));
 		}
 		List<ItemStack> out = new ArrayList<>();
 		for (ItemEntity e : dropped(level, at)) {
+			if (out.size() >= maxStacks) {
+				break;
+			}
 			if (!inWork(file, all, e.getItem())) {
 				out.add(e.getItem().copy());
 				e.discard();
@@ -365,7 +374,7 @@ public class MachineWork extends Behavior<Villager> {
 		}
 		List<Recipe<?>> recipes = recipes(level, file);
 		boolean worked = false;
-		List<ItemStack> made = takeOutput(level, file, machine, recipes);
+		List<ItemStack> made = takeOutput(level, file, machine, recipes, SupplyContainers.freeSlots(level, chests));
 		if (!made.isEmpty()) {
 			toStore(level, chests, made, dropAt);
 			worked = true;
@@ -534,7 +543,7 @@ public class MachineWork extends Behavior<Villager> {
 						} else {
 							back.addAll(carried); // stopped since: the input goes back to the store
 						}
-						back.addAll(takeOutput(level, file, job.machine(), recipes));
+						back.addAll(takeOutput(level, file, job.machine(), recipes, SupplyContainers.freeSlots(level, chests) - back.size()));
 					} else {
 						back.addAll(carried);
 					}

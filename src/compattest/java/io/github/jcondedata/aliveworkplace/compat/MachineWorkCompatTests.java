@@ -454,6 +454,49 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A store with room for one stack takes one stack of what the millstone made; the rest stays in the millstone for
+	 * the next time (it isn't dropped on the ground, where it would despawn).
+	 */
+	//$ gametest_ticks_batch AREA '200' '"machine_output_room"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_output_room")
+	public void whatDoesntFitStaysInTheMachine(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		ServerLevel level = helper.getLevel();
+		Container chest = chest(helper);
+		for (int i = 1; i < chest.getContainerSize(); i++) {
+			chest.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+		}
+		BlockPos mill = rig(helper, Kind.MILL, false);
+		var be = helper.getBlockEntity(mill);
+		CompoundTag tag = be.saveWithoutMetadata(level.registryAccess());
+		CompoundTag out = tag.getCompound("OutputInventory");
+		net.minecraft.nbt.ListTag items = new net.minecraft.nbt.ListTag();
+		ItemStack[] made = {new ItemStack(Kind.MILL.output(), 64), new ItemStack(Kind.MILL.output(), 64), new ItemStack(Items.WHEAT_SEEDS, 10)};
+		for (int i = 0; i < made.length; i++) {
+			CompoundTag item = (CompoundTag) made[i].save(level.registryAccess(), new CompoundTag());
+			item.putInt("Slot", i);
+			items.add(item);
+		}
+		out.put("Items", items);
+		tag.put("OutputInventory", out);
+		be.loadWithComponents(tag, level.registryAccess());
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		BlockPos at = helper.absolutePos(mill);
+		long before = stores.count(level, List.of(at), Kind.MILL.output()) + stores.count(level, List.of(at), Items.WHEAT_SEEDS);
+		helper.assertTrue(before == 138, "setup: the millstone holds " + before + " of the 138 made items put in it (" + tag + ")");
+		MachineWork.tend(level, List.of(helper.absolutePos(CHEST)), at, file(Kind.MILL), helper.absolutePos(CHEST));
+		long left = stores.count(level, List.of(at), Kind.MILL.output()) + stores.count(level, List.of(at), Items.WHEAT_SEEDS);
+		long stored = count(chest, Kind.MILL.output()) + count(chest, Items.WHEAT_SEEDS);
+		int dropped = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(4)).stream()
+			.mapToInt(e -> e.getItem().getCount()).sum();
+		helper.assertTrue(dropped == 0, dropped + " made items were dropped on the ground for want of room in the store");
+		helper.assertTrue(stored > 0 && stored + left == 138, "the store got " + stored + " and the millstone kept " + left + " of 138");
+		clearMachines(helper);
+		helper.succeed();
+	}
+
 	/** Config {@code machineWork} off: the farmer leaves the turning millstone alone. */
 	//$ gametest_ticks_batch AREA '600' '"machine_work_off"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_work_off")

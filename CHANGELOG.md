@@ -32,6 +32,8 @@ asks for the steps, `latest.log` and any crash report).
   creative crate (a farmer filled them with wheat, and a builder could take endlessly from a creative crate).
 - Create: an item vault built of several blocks counts as one store: its items were counted once per block (a
   three-block vault with 10 diamonds showed 30), so workers and builders thought the store held more than it did.
+- Create: when the store by a machine has room for only part of what the machine made, the rest now stays in the
+  machine for next time instead of being dropped on the ground, where it could despawn.
 
 ## 0.146.0 — 2026-10-19
 

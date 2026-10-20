@@ -3841,7 +3841,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
 				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
 				level.setDayTime(3000);
-				for (int i = 0; i < all.size(); i++) {
+			});
+		}
+		// Each build is placed as the camera leaves the one before it (the first before the first look), not all at the
+		// start (B248): 108 builds in one task generated a 5 km line of far chunks at once (a 7.5 s stall on GitHub's
+		// runner), and in showcase run 39373544908 the server then spun in vanilla's stop loop over those chunks until the
+		// scene's time limit. Placed one at a time, the chunks are already loaded around the camera, as in any other scene.
+		int place = tick == 30 ? 0 : tick >= 120 && tick % 60 == 0 ? tick / 60 - 1 : -1;
+		if (place >= 0 && place < all.size()) {
+			final int i = place;
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				{
 					BlockPos origin = new BlockPos(i * GALLERY_SPACING, -60, 0);
 					if (io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.parse(all.get(i).id()).isPresent()) {
 						// A styled blueprint isn't a structure file: set its blocks one by one.
@@ -3849,7 +3860,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 						for (var e : blueprint.blocks()) {
 							level.setBlock(origin.offset(e.pos()), e.state(), 2);
 						}
-						continue;
+						return;
 					}
 					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate t =
 						level.getStructureManager().get(all.get(i).id()).orElseThrow();

@@ -4808,6 +4808,19 @@ Depends on: nothing open.
   not now, cancel mid-repair, moving the Builder to another job, the switch, save and reload; text in `en_us.json`; scene
   `repair_ask`.
 
+- [ ] **36.16** **Villagers live much longer, and a death matters** (owner, 2026-10-20). Villagers die too soon: make
+  their whole life about 10x longer (adulthood and elder days, `villagerElderDays` and the ages the life stages use;
+  old saves keep each villager's age but use the new lengths). A death should be a bigger deal: the village mourns (a
+  chronicle entry and a message to players near the village naming who died, their job and years, a few days of lower
+  mood/work for their partner and family, a funeral the Undertaker leads at the grave or graveyard). Done when:
+  GameTests for the new lengths (a villager reaches elder only after the new span), an old save's villager keeps its
+  age, the death message and chronicle entry, the mourning ends; text in `en_us.json`; scene `village_mourns`.
+- [ ] **36.17** **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
+  than one job, which job a villager takes from it is chosen at random (weighted toward the jobs the village has
+  fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
+  block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
+  multi-job block comes up, a single-job block is unchanged, save and reload keeps the job taken; scene `random_job`.
+
 ## Milestone 37: Furnished homes and modded storage (2.1)
 
 Builds use the pack's furniture mods when they're installed: Handcrafted chairs round a Handcrafted table, Lucky's
@@ -4947,6 +4960,17 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   chest, only CobbleFurnies', both (the first in the order is used), and neither (vanilla stand-in); the material list text in
   `en_us.json`; scene `furniture_any_mod`. Note the decision in the Notes.
 
+- [ ] **37.14** **The Crafter: a worker who makes what others need** (owner, 2026-10-20: "the next build out"). A new
+  job that watches what the village's workers are short of (first the Builder's material list, then other workers'
+  needs) and crafts it from the Storehouse and shared stores, through whole recipe chains: for a chair that needs slabs
+  and planks it saws logs into planks, cuts slabs, then crafts the chair, and repeats until there are enough. It uses
+  vanilla and modded recipes found by recipe type (crafting, stonecutting, and the furniture mods' benches when their
+  job block is there), never takes a player's chests outside the village, and puts the results where the asker takes
+  from. Done when: its job block (art with the pixel-art skill) and workshop build (architect skill); GameTests for a
+  one-step craft, a three-step chain (log to planks to slabs to a chair), a missing raw material (it says what it
+  lacks, no partial waste), a builder's shortfall filled and the build finishing, two askers at once, save and reload
+  mid-chain, its config switch off; text in `en_us.json`; wiki and guide pages; scene `crafter_chain`.
+
 ## Milestone 38: Cobblemon depth (2.2)
 
 Three of the pack's Pokémon mods come into village life. **Raid Dens** (Cobblemon Raid Dens): the village knows the
@@ -5054,6 +5078,12 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   from the store's ingredients, and stocks them for trainers and players. Done when: every campfire pot recipe the
   installed mods register can be cooked (found by recipe type, not a fixed list), the cook only makes what the
   store has ingredients for, compat GameTests, scene `campfire_pot`.
+
+- [ ] **38.12** **A Furnicrafter job** (owner, 2026-10-20). With CobbleFurnies installed, its Furnicrafter block
+  (`cobblefurnies:furnicrafter`) hires a villager who makes CobbleFurnies furniture from the store's materials, for
+  the builders' material lists and the 37.x furnished homes; without the mod nothing changes (compat only). Done when:
+  compat GameTests for the hire, a piece made from store materials, a builder taking it, the mod absent; text in
+  `en_us.json`; outfit with the pixel-art skill; scene `furnicrafter`.
 
 ## Milestone 39: Create integration (2.3)
 

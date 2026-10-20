@@ -27,6 +27,8 @@ asks for the steps, `latest.log` and any crash report).
   nearby is waiting for (a furnished home's pieces) and the pieces the Storehouse orders, with sticks cut from planks
   first when they're short. A red bobble beanie, a walnut apron with a Poké Ball on it and a tape measure; trades in
   planks, wool and furniture. Without CobbleFurnies nothing changes. Switch: `furnicrafters`.
+- Fixed: a Sophisticated Storage link tied to a controller with the Storage Tool, standing away from the controller's network, no longer has the storage behind it counted twice at the Storehouse (B262).
+
 ## 0.146.1 — 2026-10-20
 
 ### Fixed

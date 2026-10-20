@@ -5216,6 +5216,24 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-c-1020-1253): fifth M37 mutation pass, seed 47, BlueprintStyles' 37.7 and 37.9 code (lines 300-400:
+  `apply`/`hangs`, `key`, `nearBlocks`, `applyNear`, `swap`; all 19 mutants) against StyleGameTests (`only_tests.py`,
+  ~1 min a run), survivors re-run against CarvedStylesCompatTests and SophisticatedControllerCompatTests (trimmed compat
+  fabric.mod.json, `--no-daemon`, ~3.5 min a run). 13 killed, 6 survived; 5 of the 6 now proved killed, the sixth (:335) the same as a killed one. Compat kills: :336 (the
+  cache key ignoring the switches), :314 drop `!`, :395 `||` to `&&`, :372 three ways, :381 `!=` to `==`, :350 drop `!`.
+  :312 `&&` to `||` (any true flag, such as waterlogged, made a swapped lantern hang) is killed by a new check in
+  `CarvedStylesCompatTests.theStylesUseCarvedWoodAndRechiseled` (a standing waterlogged lantern stays standing in Spruce;
+  passes on the real code). New `StyleGameTests.aNearRuleForAMissingBlockIsPassedOver` (a hand-made style: a near rule
+  naming a missing block, then a near rule and a plain rule) kills :381 `&&` to `||` (a near rule whose block isn't
+  installed turned the lantern on a Storehouse to air) and the five `nearBlocks` mutants (:346, :347, :350, :353, :354),
+  each proved on the plain suite, passing on the real code. :335 `!=` to `==` (the key counting only the rules without a
+  switch) was not re-run on the compat suite (compat-max reached); it caches like the killed :336, so
+  `theStylesUseCarvedWoodAndRechiseled`'s switch-off half catches it. No bug found. Not run (time): the three mutants on
+  lines 60-192 (:69 twice, both calling `switchOn(null)` for every plain rule, a NullPointerException in every styled
+  build; :175's delete-call removes the line closing `rules.add(`, so it won't compile) and the older 260-300 mutants
+  (`apply`, `changes`). Tool tip: Maven Central answered 429 for 10 minutes; copying the engineer skill's
+  `assets/gradle/central-mirror.gradle` into `~/.gradle/init.d/` fixed it (setup_env.sh skips it when Central answers
+  its first probe).
 - 2026-10-20 (lane-c-1020-0953): fourth M37 mutation pass, seed 46, FurnitureChoice. First the open :166 drop `!` (a
   bed spot following the chest to a piece villagers can't sleep in): the test pack's `furniture_equivalents` now has a
   bed set (`aliveworkplace_test_beds`' red bed = `aliveworkplace_test_plank_bed`'s two blocks of red wool, same

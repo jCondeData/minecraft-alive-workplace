@@ -190,4 +190,33 @@ public class StyleGameTests implements FabricGameTest {
 		helper.assertTrue(chimneys.getOrDefault("manor", 0) == 2, "the Manor has a chimney up each gable: " + chimneys);
 		helper.succeed();
 	}
+
+	/**
+	 * A {@code near} rule (37.9) swaps only the block beside the one it names, and one whose block isn't installed is
+	 * passed over as a plain rule's is: the lantern on a Storehouse falls through to the next near rule, not to air (a
+	 * datapack style naming a mod that isn't there), and a lantern elsewhere takes the plain rule.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aNearRuleForAMissingBlockIsPassedOver(GameTestHelper helper) {
+		ResourceLocation storehouse = ResourceLocation.parse("aliveworkplace:storehouse");
+		java.util.regex.Pattern lantern = java.util.regex.Pattern.compile("minecraft:lantern");
+		BlueprintStyles.Style style = new BlueprintStyles.Style("test_near_missing", 100, ResourceLocation.withDefaultNamespace("paper"), List.of(
+			new BlueprintStyles.Rule(lantern, "nomod:controller", storehouse),
+			new BlueprintStyles.Rule(lantern, "minecraft:redstone_lamp", storehouse),
+			new BlueprintStyles.Rule(lantern, "minecraft:soul_lantern")));
+		ResourceLocation id = ResourceLocation.parse("aliveworkplace:test_near_missing");
+		Blueprint base = new Blueprint(id, new net.minecraft.core.Vec3i(3, 2, 1), List.of(
+			new Blueprint.Entry(BlockPos.ZERO, io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE.defaultBlockState(), null),
+			new Blueprint.Entry(BlockPos.ZERO.above(), Blocks.LANTERN.defaultBlockState(), null),
+			new Blueprint.Entry(new BlockPos(2, 0, 0), Blocks.LANTERN.defaultBlockState(), null)), List.of());
+		Blueprint styled = BlueprintStyles.apply(style, base, id);
+		helper.assertTrue(styled.blocks().get(0).state().is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE),
+			"the Storehouse became " + styled.blocks().get(0).state());
+		helper.assertTrue(styled.blocks().get(1).state().is(Blocks.REDSTONE_LAMP),
+			"the lantern on the Storehouse became " + styled.blocks().get(1).state() + ", not the second near rule's redstone lamp");
+		helper.assertTrue(styled.blocks().get(2).state().is(Blocks.SOUL_LANTERN),
+			"the lantern away from the Storehouse became " + styled.blocks().get(2).state() + ", not the plain rule's soul lantern");
+		helper.succeed();
+	}
 }

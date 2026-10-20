@@ -2380,7 +2380,10 @@ final class JobScenes {
 			mira.setVillagerData(mira.getVillagerData().setLevel(3));
 			mira.setCustomName(Component.literal("Mira"));
 			mira.kill();
+			// B236: the grave's record is filed in vanilla's next task, so file it now or the street grave reads as none
+			ScreenshotHarness.fileRecords(level, new BlockPos(6, -60, 6), 4);
 			List<BlockPos> street = io.github.jcondedata.aliveworkplace.grave.Graves.near(level, new BlockPos(6, -60, 6), 4);
+			Showcase.check(!street.isEmpty(), "Mira's grave lies in the street");
 			picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
 			chest(level, STATION.east(2));
 			return l -> !street.isEmpty() && !l.getBlockState(street.get(0)).is(ModBlocks.GRAVE)

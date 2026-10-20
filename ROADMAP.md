@@ -5217,6 +5217,14 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-d-1020-1312): the three M38 survivors of the nightly mutation run (GitHub run 39394481465), lines as
+  at aba3b7cd. Two were real gaps, now killed by the new M38MutantGameTests:
+  .m38AClearingSavedWithAnOddTurnStillComesDown (CampCleanup:114, || to &&: a clearing saved with turn 4 kept it, and
+  `Rotation.values()[4]` would throw on the next clearing tick; now checked read as unknown, -1, and the camp still comes
+  all the way down) and .m38OnlyIdleMeetingOrPlayingIsOffWork with .m38AGatheringDoesntPullAVillagerFromWork
+  (Festivals:444, == to !=: a villager at WORK or REST counted as off work and was walked to the gathering). Lairs:1108
+  (< to <= over the saved `grounds`) is equivalent: on 1.21.1 `ListTag.getCompound` past the end returns an empty
+  compound (checked in the bytecode), `CampGround.read` turns that (size 0) into null, and a null ground is skipped.
 - 2026-10-20 (lane-c-1020-0953): fourth M37 mutation pass, seed 46, FurnitureChoice. First the open :166 drop `!` (a
   bed spot following the chest to a piece villagers can't sleep in): the test pack's `furniture_equivalents` now has a
   bed set (`aliveworkplace_test_beds`' red bed = `aliveworkplace_test_plank_bed`'s two blocks of red wool, same

@@ -5220,6 +5220,34 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-c-1020-1553): sixth M37 mutation pass, seed 48, StorageNetworks (13 of its 105 mutants; :358 had
+  been run before) against the three storage compat classes (SophisticatedStorage, SophisticatedController, TomsStorage;
+  trimmed compat fabric.mod.json, `--no-daemon`, ~2.5 min a run). 4 killed (:96 drop `!`, :290 `!=` to `==`, :358 and
+  :305 return false to true), 9 survived; 2 now killed by new tests, 5 equivalent or a boundary not worth a test, 2 open
+  behind a bug. Killed: :259 `==` to `!=` (the cable walk stopped at every cable connector, so a cable leading on from a
+  cable connector's side was missed, as Tom's runs cables through them: `canConnectFrom` any side but the front) by
+  `TomsStorageCompatTests.aCableRunsOnThroughACableConnector`; :285 `>=` to `>` (a block exactly 16 away joined, though
+  Tom's scan takes only `distSqr < range²`, checked in its bytecode) by
+  `TomsStorageCompatTests.theSixteenthBarrelIsOutOfTheConnectorsRange` (16 barrels in a row: members 15, Tom's
+  connector exposes the 15th's glass, not the 16th's planks). Both pass on the real code and fail on their mutants
+  (one run with both mutants planted: each test failed with its own message). Equivalent: :318 `&&` to `||` (facing()
+  is read only on Tom's two cable connectors, whose only Direction property is `facing`; the others are booleans);
+  :189 `3` to `4` and `>` to `>=` and :185 `<` to `<=` (afterBuilt's walk: a controller at Manhattan 45+ can't link the
+  block, which needs it within 15 each way, and a storage block joins through its own `setPlacedBy` anyway; 4096 is a
+  safety cap); :239 `<=` to `<` (a network of exactly 2,048 cables, Tom's own cap; not tested). Open: :196 (delete
+  `open.add`) and :195 (`||` to `&&`) stop afterBuilt's walk finding a controller beyond the built block, which only
+  matters for a built storage_link, and that path is B257 (filed `(lane: c)`): `linkedTo` walks through any touching
+  storage_link, but the mod links a link only with its Storage Tool (an ILinkable with a saved controller pos, no
+  `setPlacedBy`), so the barrel behind a built link drops out of the Storehouse's list while the controller doesn't
+  expose it. Its test, `SophisticatedControllerCompatTests.aLinkBuiltOntoTheNetworkLosesNothing` (layout in B257),
+  failed on the real code ("counts 0 of the 7 planks behind the link"), so it isn't committed; it lands with the fix.
+  Not run (time): the other 92 mutants. Tool tip: in a fresh container the plugin portal redirects to Central, which
+  answered 429 even with `central-mirror.gradle`; a local `~/.gradle/init.d` script adding the kikugie, Fabric and
+  Google-mirror repositories to `pluginManagement` first fixed it. Seen on the way, not filed (test order):
+  `TomsStorageCompatTests.theBuilderTakesWhatItNeedsThroughTheConnector` fails whenever TomsStorageCompatTests is the
+  only compat class loaded (3 of 3 such runs, with or without the two new tests: once "11 planks left of 10", twice
+  still FETCHING at the timeout) and passes with the Sophisticated classes loaded too (15 of 15 runs here); trim to
+  more than one class when running it alone.
 - 2026-10-20 (lane-c-1020-1253): fifth M37 mutation pass, seed 47, BlueprintStyles' 37.7 and 37.9 code (lines 300-400:
   `apply`/`hangs`, `key`, `nearBlocks`, `applyNear`, `swap`; all 19 mutants) against StyleGameTests (`only_tests.py`,
   ~1 min a run), survivors re-run against CarvedStylesCompatTests and SophisticatedControllerCompatTests (trimmed compat

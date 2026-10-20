@@ -383,6 +383,80 @@ public class TomsStorageCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * Tom's cables run on through a cable connector's other sides: a cable on top of the first cable connector leads to a
+	 * third cable connector, whose chest the network joins too. The store is the connector alone, and what lies in that
+	 * chest is counted once, through it.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_through"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_through")
+	public void aCableRunsOnThroughACableConnector(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		network(helper, false);
+		// Above the first cable connector: a cable, then a cable connector facing west at a third chest.
+		BlockPos cable = CABLE_CONNECTOR_1.above();
+		BlockPos third = cable.above();
+		BlockPos chest = third.west();
+		helper.setBlock(cable, block("inventory_cable"));
+		helper.setBlock(third, facing(block("inventory_cable_connector").defaultBlockState(), Direction.WEST));
+		helper.setBlock(chest, Blocks.CHEST);
+		for (BlockPos rel : List.of(CABLE_CONNECTOR_1, cable, third)) {
+			BlockPos at = helper.absolutePos(rel);
+			level.setBlock(at, Block.updateFromNeighbourShapes(level.getBlockState(at), level, at), Block.UPDATE_ALL);
+		}
+		put(helper, CHEST_1, new ItemStack(Items.COBBLESTONE, 10));
+		put(helper, chest, new ItemStack(Items.GLASS, 9));
+		BlockPos storehouse = helper.absolutePos(STOREHOUSE);
+		helper.runAfterDelay(40, () -> {
+			List<BlockPos> members = List.copyOf(StorageNetworks.members(level, helper.absolutePos(CONNECTOR)));
+			helper.assertTrue(members.size() == 4 && members.contains(helper.absolutePos(chest)),
+				"the connector joins " + rel(helper, members) + ", wanted the three chests and the cabinet");
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			helper.assertTrue(store.equals(List.of(helper.absolutePos(CONNECTOR))), "the store: " + rel(helper, store) + ", wanted the connector alone");
+			assertCount(helper, store, Items.GLASS, 9);
+			assertCount(helper, store, Items.COBBLESTONE, 10);
+			// Nothing left for later batches' porters and builders to find.
+			for (BlockPos p : List.of(chest, third, cable)) {
+				helper.setBlock(p, Blocks.AIR);
+			}
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Tom's connector scans touching inventories only within its range (16 blocks, a block exactly 16 away is out of it):
+	 * in a row of 16 barrels from the connector, it joins the first 15, which it exposes, and not the 16th, which stays a
+	 * store of its own.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_range"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_range")
+	public void theSixteenthBarrelIsOutOfTheConnectorsRange(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos connector = new BlockPos(0, 2, 8);
+		helper.setBlock(connector, block("inventory_connector"));
+		for (int x = 1; x <= 16; x++) {
+			helper.setBlock(new BlockPos(x, 2, 8), Blocks.BARREL);
+		}
+		put(helper, new BlockPos(15, 2, 8), new ItemStack(Items.GLASS, 3));
+		put(helper, new BlockPos(16, 2, 8), new ItemStack(Items.OAK_PLANKS, 5));
+		helper.runAfterDelay(40, () -> {
+			List<BlockPos> members = List.copyOf(StorageNetworks.members(level, helper.absolutePos(connector)));
+			helper.assertTrue(members.size() == 15 && !members.contains(helper.absolutePos(new BlockPos(16, 2, 8))),
+				"the connector joins " + members.size() + " barrels: " + rel(helper, members) + ", wanted the 15 within its range");
+			// Tom's own connector agrees: it exposes the 15th barrel's glass, not the 16th's planks.
+			List<BlockPos> through = List.of(helper.absolutePos(connector));
+			assertCount(helper, through, Items.GLASS, 3);
+			assertCount(helper, through, Items.OAK_PLANKS, 0);
+			// Nothing left for later batches' porters and builders to find.
+			for (int x = 0; x <= 16; x++) {
+				helper.setBlock(new BlockPos(x, 2, 8), Blocks.AIR);
+			}
+			helper.succeed();
+		});
+	}
+
 	private static void put(GameTestHelper helper, BlockPos rel, ItemStack stack) {
 		ItemStack rest = SupplyContainers.insert(helper.getLevel(), List.of(helper.absolutePos(rel)), stack.copy());
 		helper.assertTrue(rest.isEmpty(), "put " + stack + " in " + helper.getLevel().getBlockState(helper.absolutePos(rel)) + ": " + rest.getCount() + " left over");

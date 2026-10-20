@@ -437,6 +437,10 @@ the Storehouse and gets Tom's terminal menu, listing 10 cobblestone, 20 planks a
 store) and `TomsStorageCompatTests.aConnectorInsideThePlotIsPassedOver` (a connector inside the area being built isn't
 read; its chests outside are each a store). `TomsStorageCompatTests.aBlockHoldingNoItemsIsntJoined` (an enchanting
 table on the connector isn't joined, and a chest touching only the table is its own store).
+`TomsStorageCompatTests.aCableRunsOnThroughACableConnector` (a cable on a cable connector's side leads on to another
+cable connector, whose chest the network joins: the connector stays the only store, its glass counted once) and
+`TomsStorageCompatTests.theSixteenthBarrelIsOutOfTheConnectorsRange` (in a row of 16 barrels from the connector, it
+joins the 15 within its 16-block range, as Tom's own connector does, and not the 16th).
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

@@ -205,7 +205,9 @@ public class WonderCrewGameTests implements FabricGameTest {
 						if (!level.getBlockState(s.pos()).isAir() && up.add(s.pos())) {
 							BlockPos below = s.pos().below();
 							helper.assertTrue(!plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced(),
-								"a structure block went up at " + s.pos().toShortString() + " with nothing under it (" + level.getBlockState(below) + ")");
+								"a structure block went up at " + s.pos().toShortString() + " with nothing under it (" + level.getBlockState(below) + ", given up "
+								+ part.gaveUp(below) + ", in it " + level.getEntitiesOfClass(Villager.class, new net.minecraft.world.phys.AABB(below)).stream()
+								.map(e -> e.getUUID().equals(part.builder()) ? "the lead" : "a member").toList() + ", lead retrying " + part.isRetrying() + ")"); // B254
 						}
 					}
 				}

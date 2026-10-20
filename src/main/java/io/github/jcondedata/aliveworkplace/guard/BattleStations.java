@@ -35,19 +35,24 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 /**
  * Sieges III: battle stations (ROADMAP 32.6). While a siege lasts the village's guards take stations instead of
  * rallying at the bell:
  * <ul>
- * <li><b>archers</b> climb to the free station highest over the breach's side, among those within {@link #POST_REACH}
- * blocks of their Guard Post; a build with fewer archers on it comes before a higher one, so they spread over the
- * towers and walks. A station is a walkway spot of a finished wall, gate or tower build (the walls and gates
+ * <li><b>archers</b> climb to a free station over the breach's side, among those within {@link #POST_REACH}
+ * blocks of their Guard Post; a build with fewer archers on it comes first, so they spread over the towers and walks,
+ * then the station that sees the most of the ground in front of the breach ({@link #view}: behind a merlon one sees
+ * nothing below, in a crenel one does; B252), then the highest. A station is a walkway spot of a finished wall, gate or tower build (the walls and gates
  * family and the Lookout Towers): a block of the blueprint at least {@link #MIN_HEIGHT} above its floor that one can
  * stand on, with two blocks of air above it, and not a merlon (a spot one block above a walkway spot beside it). They
  * are <b>read once per blueprint</b> ({@link #reads} counts) and checked against the world when taken: a station whose
@@ -84,6 +89,14 @@ public final class BattleStations {
 	/** A knight or medic leaves their spot only for a foe within this many blocks of it. */
 	public static final double HOLD = 6;
 	private static final float SPEED = 0.9f;
+	/** B252: the ground in front of the breach an archer is to see, from this many blocks out to {@link #VIEW_FAR}. */
+	public static final int VIEW_NEAR = 2;
+	public static final int VIEW_FAR = 16;
+	/** How far off the middle of his station an archer may stand before he steps back to it. */
+	private static final double CENTRE = 0.2;
+	/** A villager's eyes over his feet, and a raider's over the ground, for {@link #view}. */
+	private static final double EYE = 1.62;
+	private static final double FOE_EYE = 1.5;
 	/** The tick of each second the watches run in (the director runs in tick 0, the ladders in every tenth). */
 	private static final int OFFSET = 7;
 
@@ -107,6 +120,10 @@ public final class BattleStations {
 		ThreatData.Siege alert;
 		int cursor;
 		int most;
+		/** What each station sees ({@link #view}), and of which breach (a new breach is looked at afresh). */
+		final Map<BlockPos, Integer> views = new HashMap<>();
+		@org.jetbrains.annotations.Nullable
+		BlockPos viewed;
 		final Set<UUID> guards = new HashSet<>();
 	}
 
@@ -347,15 +364,28 @@ public final class BattleStations {
 		});
 	}
 
-	/** Every tick: an archer on their station stays on it (nothing else of a villager's day walks them off the wall). */
+	/**
+	 * Every tick: an archer on their station stays on it (nothing else of a villager's day walks them off the wall), and
+	 * in the middle of it: half a block to the side, behind the merlon beside a crenel, he would see none of what the
+	 * station was chosen to see (B252).
+	 */
 	private static void stay(ServerLevel level) {
 		for (Map.Entry<UUID, Place> e : PLACES.entrySet()) {
 			Place place = e.getValue();
-			if (place.station() && level.getEntity(e.getKey()) instanceof Villager guard && at(guard, place.pos()) && !guard.getNavigation().isDone()) {
+			if (!place.station() || !(level.getEntity(e.getKey()) instanceof Villager guard) || !at(guard, place.pos())) {
+				continue;
+			}
+			if (!guard.getNavigation().isDone()) {
 				BlockPos to = guard.getNavigation().getTargetPos();
-				if (to != null && flat(to, place.pos()) > 2) {
+				if (to != null && !to.equals(place.pos())) {
 					guard.getNavigation().stop();
 					guard.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+				}
+			} else {
+				double dx = place.pos().getX() + 0.5 - guard.getX();
+				double dz = place.pos().getZ() + 0.5 - guard.getZ();
+				if (dx * dx + dz * dz > CENTRE * CENTRE) {
+					guard.getMoveControl().setWantedPosition(place.pos().getX() + 0.5, guard.getY(), place.pos().getZ() + 0.5, 0.5);
 				}
 			}
 		}
@@ -405,6 +435,11 @@ public final class BattleStations {
 			}
 		}
 		Direction in = siege.out.getOpposite();
+		BlockPos looking = siege.breach != null ? siege.breach : watch.alert == siege ? siege.hall : null;
+		if (!java.util.Objects.equals(looking, watch.viewed)) {
+			watch.views.clear();
+			watch.viewed = looking;
+		}
 		int knights = 0;
 		int medics = 0;
 		for (Villager guard : guards) {
@@ -418,10 +453,12 @@ public final class BattleStations {
 			if (kind == Guards.Kind.ARCHER) {
 				BlockPos home = Builders.benchPos(guard).orElse(guard.blockPosition());
 				// The breach's side first; then the build with the fewest archers, so they spread over the towers and
-				// walks; then the highest; then the nearest the breach (with none: the farthest out from the hall).
+				// walks; then the one with the most of the ground in front of the breach in sight (B252); then the
+				// highest; then the nearest the breach (with none: the farthest out from the hall).
 				pos = watch.stations.keySet().stream()
 					.filter(s -> !taken.contains(s) && flat(s, home) <= (double) POST_REACH * POST_REACH && standable(level, s))
 					.min(Comparator.<BlockPos>comparingInt(s -> side(siege, s, watch.alert == siege) ? 0 : 1).thenComparingInt(s -> manned.getOrDefault(watch.stations.get(s), 0))
+						.thenComparingInt(s -> -watch.views.computeIfAbsent(s, v -> view(level, siege, v, watch.alert == siege)))
 						.thenComparingInt(s -> -s.getY())
 						.thenComparingDouble(s -> siege.breach == null ? -flat(s, siege.hall) : flat(s, siege.breach.relative(siege.out, 4))).thenComparingLong(BlockPos::asLong))
 					.orElse(null);
@@ -472,6 +509,34 @@ public final class BattleStations {
 		}
 		watch.cursor = guards.isEmpty() ? 0 : (watch.cursor + Math.max(1, sent)) % guards.size();
 		watch.most = Math.max(watch.most, sent);
+	}
+
+	/**
+	 * B252: how much of the ground in front of the breach an archer sees from the station {@code s}: of the spots
+	 * {@link #VIEW_NEAR} to {@link #VIEW_FAR} blocks out from the breach, on the ground near its height (ahead of a warned
+	 * attack, with no breach yet, out from the station at the hall's height), how many have a raider's eyes in his sight and in his reach. A station right behind a
+	 * merlon, or far back from a tower's parapet, sees none of the near ground: from there an archer never sees the
+	 * raiders at the gate. 0 everywhere with neither a breach nor a warning.
+	 */
+	public static int view(ServerLevel level, ThreatData.Siege siege, BlockPos s, boolean alert) {
+		BlockPos from = siege.breach != null ? siege.breach : alert ? new BlockPos(s.getX(), siege.hall.getY(), s.getZ()) : null;
+		if (from == null) {
+			return 0;
+		}
+		Vec3 eye = new Vec3(s.getX() + 0.5, s.getY() + EYE, s.getZ() + 0.5);
+		int seen = 0;
+		for (int d = VIEW_NEAR; d <= VIEW_FAR; d++) {
+			BlockPos p = from.relative(siege.out, d);
+			if (!level.isLoaded(p)) {
+				continue;
+			}
+			Vec3 at = Vec3.atBottomCenterOf(ground(level, p)).add(0, FOE_EYE, 0); // the ground near the gate's own height
+			if (eye.distanceToSqr(at) <= RANGE * RANGE
+				&& level.clip(new ClipContext(eye, at, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty())).getType() == HitResult.Type.MISS) {
+				seen++;
+			}
+		}
+		return seen;
 	}
 
 	private static int spread(int n) {

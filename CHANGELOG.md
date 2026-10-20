@@ -24,6 +24,9 @@ asks for the steps, `latest.log` and any crash report).
 
 - Sieges: an archer on a battle station whose raider goes out of sight (under the walkway, hacking at the gate) turns
   to the nearest raider he can see and reach, instead of watching for the hidden one for up to a minute (B252).
+- Sieges: archers take the battle station with a view of the ground in front of the gate, in a gap of the
+  battlements rather than right behind a merlon, and stay in the middle of it, so they shoot at the raiders coming at
+  the gate instead of standing over the siege without seeing anyone (B252).
 
 - Create: a farmer, armorer, chef or miner who stops machine work in the middle of a trip (their workstation broken
   while still a Novice, or machine work switched off in the config) no longer keeps the wheat, iron or ore they

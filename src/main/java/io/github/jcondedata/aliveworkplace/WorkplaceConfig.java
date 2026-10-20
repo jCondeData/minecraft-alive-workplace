@@ -47,6 +47,11 @@ public final class WorkplaceConfig {
 	public int postmanRange = 64;
 	/** At most this many workers per village (taken workstations within villageRadius); 0: no cap. */
 	public int maxWorkersPerVillage = 0;
+	/**
+	 * A jobless villager who takes a block several jobs share (a composter, a lectern...) by themselves gets one of its
+	 * jobs at random, likelier the fewer the village has (36.17). Off: always the block's vanilla job, as before.
+	 */
+	public boolean randomStationJobs = true;
 	/** A Miner with no pickaxe makes one at their workstation from what they mined (36.11). Off: they wait for one. */
 	public boolean minerCraftsPickaxe = true;
 	/** The Quarry build (36.12): its Miner works its pit without a marker, and what they dig grows back. Off: not offered, nothing grows back. */
@@ -885,6 +890,7 @@ public final class WorkplaceConfig {
 		// switch sharing on in batches of their own.
 		io.github.jcondedata.aliveworkplace.work.Village.RADIUS = System.getProperty("fabric-api.gametest") != null ? 0 : villageRadius;
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.MAX_PER_VILLAGE = maxWorkersPerVillage;
+		io.github.jcondedata.aliveworkplace.work.RandomJobs.ENABLED = randomStationJobs; // 36.17
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.RADIUS = villageRadius;
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.PATH_RANGE = workerPathRange;
 		// Off in gametests (fishermen in the tests beside one would count against it); the cap's tests turn it on.

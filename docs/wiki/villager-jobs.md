@@ -7,8 +7,9 @@ Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10,
 
 ## What a player sees
 
-**Vanilla jobs work as in vanilla:** put the block near a jobless villager and they take it. Most of the mod's jobs
-share a vanilla block. To start one of ours, stand the villager within about 4 blocks of the block and
+**Vanilla jobs work as in vanilla:** put the block near a jobless villager and they take it (a block several jobs
+share gives one of its jobs at random, likeliest the one the village has fewest of: [Random jobs](random-jobs.md),
+36.17). Most of the mod's jobs share a vanilla block. To start one of ours, stand the villager within about 4 blocks of the block and
 **sneak-right-click them holding the job's item**. A villager already working there switches the same way, and the
 block's own job comes back with its own item (wheat for a Farmer, coal for an Armorer). You are told what happened
 ("Dara took the Miner job at the Blast Furnace."), or what is missing (no such block near, or every one taken).
@@ -129,7 +130,8 @@ hours (a night's hire sleeps first) and the player is told when the work starts 
 the ores; with those chests full (or none), the rest goes to the village Storehouse, and ores get the room first.
 
 **Fewer job blocks (21.1a).** Related jobs share a block. A jobless villager by a vanilla block takes the vanilla
-job by itself, as in vanilla; the player picks one of ours with its item. A crafting table, a beehive, a jukebox or a
+job by itself, as in vanilla (since 36.17, one of the block's jobs at random: [Random jobs](random-jobs.md)); the
+player picks one of ours with its item. A crafting table, a beehive, a jukebox or a
 Mailbox never takes a jobless villager by itself. Where one item fits two blocks (paper, a book, a glass bottle), the
 block they work at, or else the nearest, decides. The older job blocks (the Builder's Bench, the Fruit Basket...)
 can't be crafted any more, but ones already placed keep working, so old worlds are fine.

@@ -112,7 +112,9 @@ public class ServerControlsGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "workerCapRoom")
 	public void aVillageWithRoomTakesTheWorker(GameTestHelper helper) {
 		Villager jobless = village(helper, 2);
-		helper.succeedWhen(() -> helper.assertTrue(jobless.getVillagerData().getProfession() == VillagerProfession.FLETCHER,
+		// (a job of the fletching table's: since 36.17 the Fletcher or, at random, the Lumberjack who shares it)
+		helper.succeedWhen(() -> helper.assertTrue(jobless.getVillagerData().getProfession() != VillagerProfession.NONE
+			&& io.github.jcondedata.aliveworkplace.work.Stations.at(Blocks.FLETCHING_TABLE).orElseThrow().has(jobless.getVillagerData().getProfession()),
 			"still " + jobless.getVillagerData().getProfession()));
 	}
 

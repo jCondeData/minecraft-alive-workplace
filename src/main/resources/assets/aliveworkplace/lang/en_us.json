@@ -3274,6 +3274,8 @@
   "aliveworkplace.config.maxWorkersPerVillage": "Workers per Village",
   "aliveworkplace.config.maxWorkersPerVillage.tooltip": "Jobless villagers stop taking free workstations once this many workstations in their village are taken. Nobody loses a job they have. 0: no limit.",
   "aliveworkplace.config.maxWorkersPerVillage.zero": "No Limit",
+  "aliveworkplace.config.randomStationJobs": "Random Station Jobs",
+  "aliveworkplace.config.randomStationJobs.tooltip": "A jobless villager who takes a block several jobs share (a composter, a lectern, a Shop Counter...) by themselves gets one of its jobs at random, likelier the fewer of it the village has. Off: always the block's vanilla job.",
   "aliveworkplace.config.minerCraftsPickaxe": "Miners Make Pickaxes",
   "aliveworkplace.config.minerCraftsPickaxe.tooltip": "A Miner whose pickaxe wore out, or who has none, makes a new one at their workstation from what they mined: stone, then iron from Journeyman and diamond from Expert. Off: they wait for a pickaxe from you or the Toolsmith.",
   "aliveworkplace.config.quarryBuild": "Quarry Build",

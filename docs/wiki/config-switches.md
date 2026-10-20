@@ -67,6 +67,7 @@ range is in brackets.
 | `partnerRadius` | 16 (4 to 48) |  | How far from a workstation pastured Pokémon count as partners. |
 | `postmanRange` | 64 (16 to 256) |  | How far from their Mailbox a postman walks to deliver (farther mail arrives at dawn). |
 | `maxWorkersPerVillage` | 0 (0 to 500) |  | At most this many workers per village (taken workstations within the village radius); 0: no cap. Nobody loses a job they have. |
+| `randomStationJobs` | on |  | A jobless villager who takes a block several jobs share (a composter, a lectern, a Shop Counter...) by themselves gets one of its jobs at random, likelier the fewer of it the village has (36.17). Off: always the block's vanilla job, as before. See [Random jobs at shared blocks](random-jobs.md). |
 | `minerCraftsPickaxe` | on |  | A Miner whose pickaxe wore out, or who has none, makes a new one at their workstation from what they mined (stone, iron from Journeyman, diamond from Expert). Off: they wait for a pickaxe from you or the Toolsmith. |
 | `quarryBuild` | on |  | The Quarry build (36.12): the Miner at its blast furnace digs its pit without a Quarry Marker, and what they dig grows back slowly from the bottom up. Off: the Quarry isn't offered and nothing grows back; the Quarry Marker works as before. |
 | `quarryRegrowth` | 100 (0 to 2400) |  | Blocks that grow back in a Quarry's pit in a Minecraft day (0: none). At 100 a pit dug to the bottom takes about a week to fill. |

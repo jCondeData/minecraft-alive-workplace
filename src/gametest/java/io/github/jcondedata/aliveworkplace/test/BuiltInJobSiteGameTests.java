@@ -36,6 +36,7 @@ public class BuiltInJobSiteGameTests implements net.fabricmc.fabric.api.gametest
 		helper.setBlock(new BlockPos(7, 2, 6), Blocks.CHEST);
 	}
 
+	/** {@code job} null: any of the smoker's jobs (a jobless villager draws one, 36.17). */
 	private static void takesTheSmoker(GameTestHelper helper, Villager villager, VillagerProfession job) {
 		BlockPos smoker = helper.absolutePos(SMOKER);
 		helper.succeedWhen(() -> {
@@ -44,7 +45,9 @@ public class BuiltInJobSiteGameTests implements net.fabricmc.fabric.api.gametest
 				"the villager works at " + villager.getBrain().getMemory(MemoryModuleType.JOB_SITE) + " standing at "
 					+ helper.relativePos(villager.blockPosition()).toShortString() + ", picked "
 					+ villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("none"));
-			helper.assertTrue(villager.getVillagerData().getProfession() == job, "the villager is a " + villager.getVillagerData().getProfession());
+			VillagerProfession now = villager.getVillagerData().getProfession();
+			helper.assertTrue(job == null ? now != VillagerProfession.NONE
+				&& io.github.jcondedata.aliveworkplace.work.Stations.at(Blocks.SMOKER).orElseThrow().has(now) : now == job, "the villager is a " + now);
 		});
 	}
 
@@ -60,13 +63,13 @@ public class BuiltInJobSiteGameTests implements net.fabricmc.fabric.api.gametest
 		takesTheSmoker(helper, chef, ModVillagers.CHEF);
 	}
 
-	/** A jobless villager takes it too, and becomes its butcher, as at any smoker. */
+	/** A jobless villager takes it too, and becomes one of its jobs (the Butcher, or at random the Chef or Rancher, 36.17), as at any smoker. */
 	//$ gametest_ticks_batch AREA '1200' '"builtInJobSiteJobless"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "builtInJobSiteJobless")
 	public void joblessVillagerTakesASmokerUnderBricks(GameTestHelper helper) {
 		oven(helper);
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(7, 2, 2));
-		takesTheSmoker(helper, villager, VillagerProfession.BUTCHER);
+		takesTheSmoker(helper, villager, null);
 	}
 
 	/**

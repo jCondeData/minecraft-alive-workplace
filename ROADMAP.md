@@ -4818,7 +4818,7 @@ Depends on: nothing open.
   mood/work for their partner and family, a funeral the Undertaker leads at the grave or graveyard). Done when:
   GameTests for the new lengths (a villager reaches elder only after the new span), an old save's villager keeps its
   age, the death message and chronicle entry, the mourning ends; text in `en_us.json`; scene `village_mourns`.
-- [ ] **36.17** **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
+- [x] **36.17** (review: pending 2026-10-20) **A job block with several jobs gives one at random** (owner, 2026-10-20). Where one block can hire more
   than one job, which job a villager takes from it is chosen at random (weighted toward the jobs the village has
   fewest of is fine: the lane decides and writes it in the Notes), not always the same one. Done when: a list of every
   block that offers several jobs in the wiki page; GameTests that over many hires (fixed `RandomSource`) each job of a
@@ -5260,6 +5260,11 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-b-1020-2138): 36.17 decided: a jobless villager taking a shared block by themselves draws its job
+  with weight 1 / (1 + n), n = villagers within 48 blocks already doing it; only that vanilla path draws (item, hall,
+  Steward, family trade, successor keep the named job); the Trainer Leader is never drawn; class-barred jobs are left
+  out; switch `randomStationJobs` (on). Replaces 21.1a's "vanilla job by itself" on shared blocks (the Shop Counter
+  now Shopkeeper or Innkeeper). See docs/wiki/random-jobs.md.
 - 2026-10-20 (lane-e-1020-1913): fourth mutation pass on M39 (Create) code, seed 52 (mutate.py `--list` per file),
   hand-picked from lines no earlier pass names: the two VillageMachines mutants the third pass left (:61, :69) and new
   lines in MechanicRound, Kinetics, MachineWorkFiles, Contraptions, CreateSchematics, CreateTrains and CaravanTrains

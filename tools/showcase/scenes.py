@@ -210,6 +210,9 @@ SCENES = [
     job("undertaker_graveyard", "Undertaker", "Laying a grave to rest", "the undertaker moved Mira's grave from the street to the plot by the hall"),
     # 36.16: a death matters: the village is told who died, the family mourns, the undertaker leads the funeral
     job("village_mourns", "Undertaker", "The village mourns", "the undertaker led Mira's funeral at her grave, and her husband and son mourned her", 160),
+    # 36.17: a block several jobs share gives one at random, likelier the fewer the village has
+    job("random_job", "Picking a job", "Four composters, four jobs at random",
+        "four jobless villagers took four composters by themselves, and not all became farmers", 120),
     # Legends (ROADMAP 29.2): the engine, with a Legend of the scene's own: the plain outfit, Master level, a pace power
     job("legend", "Legends", "A villager becomes a Legend",
         "a villager became a Legend, a Master who speeds up the builder beside them"),

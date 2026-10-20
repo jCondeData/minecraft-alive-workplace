@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **A job block with several jobs gives one at random** (36.17). A villager without a job who takes a composter, a
+  lectern, a Shop Counter or any block several jobs share by themselves now becomes one of its jobs, not always the
+  vanilla one: a composter can make a Farmer, an Orchard Keeper, a Florist or a Composter. The jobs the village has
+  fewest of are the likeliest, and the job taken stays. Jobs picked with their item, from the hall or by the Steward
+  are unchanged, and the Trainer Leader is never drawn. Random Station Jobs in the settings turns it off (the vanilla
+  job every time, as before).
+
 ### Fixed
 
 - Two villagers coming home through one door together no longer get stuck on the doorstep, where one could lose

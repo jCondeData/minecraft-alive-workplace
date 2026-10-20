@@ -178,11 +178,17 @@ public class StationsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** By itself a jobless villager takes the vanilla job at a shared block, never one of ours. */
+	/**
+	 * With {@code randomStationJobs} off, by itself a jobless villager takes the vanilla job at a shared block, never one
+	 * of ours (on, the default since 36.17, one of the block's jobs at random: RandomJobsGameTests).
+	 */
 	//$ gametest_ticks_batch AREA '1200' '"stationsVanillaFirst"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "stationsVanillaFirst")
 	public void byThemselvesVillagersTakeTheVanillaJob(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		boolean random = io.github.jcondedata.aliveworkplace.work.RandomJobs.ENABLED;
+		io.github.jcondedata.aliveworkplace.work.RandomJobs.ENABLED = false;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.work.RandomJobs.ENABLED = random);
 		helper.setDayTime(2000);
 		helper.setBlock(STATION, Blocks.COMPOSTER);
 		Villager villager = helper.spawn(EntityType.VILLAGER, STANDING);

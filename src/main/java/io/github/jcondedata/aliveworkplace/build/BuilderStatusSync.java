@@ -175,7 +175,7 @@ public final class BuilderStatusSync {
 		}
 		List<Component> lines = new ArrayList<>();
 		BlockPos bench = Builders.siteBench(level, villager, site).orElse(site.bench());
-		List<BlockPos> supplies = bench == null ? List.of() : SupplyContainers.find(level, bench, plan.bounds());
+		List<BlockPos> supplies = bench == null ? List.of() : SupplyContainers.find(level, bench, plan.supplyExclude());
 		Map<Item, Integer> missing = Builders.computeMissing(level, site, plan,
 			io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_BAG.getOrCreate(villager), supplies);
 		lines.add(missingLine(missing));
@@ -214,7 +214,7 @@ public final class BuilderStatusSync {
 		Component where = at(bench);
 		BlockPos storehouse = null;
 		for (io.github.jcondedata.aliveworkplace.work.Village.Stash stash
-				: io.github.jcondedata.aliveworkplace.work.Village.stashes(level, villager, bench, plan.bounds())) {
+				: io.github.jcondedata.aliveworkplace.work.Village.stashes(level, villager, bench, plan.supplyExclude())) {
 			if (stash.job() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.PORTER) {
 				storehouse = stash.station();
 				break;

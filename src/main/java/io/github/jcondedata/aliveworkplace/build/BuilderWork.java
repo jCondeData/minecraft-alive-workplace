@@ -478,7 +478,7 @@ public class BuilderWork extends Behavior<Villager> {
 				} else {
 					// None to be had: asked for on the requests board, and the step is left as it always was (put off,
 					// then skipped and counted). A build never waits on scaffolding (coordinator, 2026-10-12).
-					site.setMissing(scaffolds.addMissing(level, site.missing(), bag, SupplyContainers.find(level, bench, plan.bounds())));
+					site.setMissing(scaffolds.addMissing(level, site.missing(), bag, SupplyContainers.find(level, bench, plan.supplyExclude())));
 					scaffolds.giveUp();
 					defer(site, villager, step.pos());
 				}
@@ -969,7 +969,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return Long.MAX_VALUE;
 		}
 		long n = bagNow == null ? 0 : bagNow.count(net.minecraft.world.item.Items.SCAFFOLDING);
-		return site.bench() == null ? n : n + SupplyContainers.count(level, SupplyContainers.find(level, site.bench(), plan.bounds()), net.minecraft.world.item.Items.SCAFFOLDING);
+		return site.bench() == null ? n : n + SupplyContainers.count(level, SupplyContainers.find(level, site.bench(), plan.supplyExclude()), net.minecraft.world.item.Items.SCAFFOLDING);
 	}
 
 	/** Ticks since a path to where we're going last failed (see {@link io.github.jcondedata.aliveworkplace.work.Walker#requestWalk}). */
@@ -1153,7 +1153,7 @@ public class BuilderWork extends Behavior<Villager> {
 	/** True if our chests, or the village's (23.5: a storehouse, another worker's), hold what {@code r} asks for. */
 	private static boolean inStock(ServerLevel level, Villager villager, BuildSite site, BlockPos bench, BuildPlan plan,
 								   MaterialRules.Requirement r) {
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
 		long have = 0;
 		for (Item item : MaterialFamilies.accepted(r.item())) {
 			have += SupplyContainers.count(level, supplies, item);
@@ -1176,7 +1176,7 @@ public class BuilderWork extends Behavior<Villager> {
 			deposit(level, villager, site, plan, bag, bench);
 			return;
 		}
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
 		int needed = requirement.count() - bag.count(requirement.item());
 		List<Item> accepted = MaterialFamilies.accepted(requirement.item());
 		long available = 0;
@@ -1214,7 +1214,7 @@ public class BuilderWork extends Behavior<Villager> {
 			// first only what the other builders near it can spare (23.5: one that could also reach another storehouse
 			// took what builders who can reach only this one were waiting for); if nothing anywhere is spare that way,
 			// first come first served, so builders short of the same thing never wait on each other.
-			List<Village.Stash> stashes = Village.stashes(level, villager, bench, plan.bounds());
+			List<Village.Stash> stashes = Village.stashes(level, villager, bench, plan.supplyExclude());
 			for (int pass = 0; pass < 2; pass++) {
 				for (Village.Stash stash : stashes) {
 					if (pass == 1 && stash.job() != ModVillagers.PORTER) {
@@ -1662,7 +1662,7 @@ public class BuilderWork extends Behavior<Villager> {
 	 */
 	private static Map<Item, Long> spareElsewhere(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		Map<Item, Long> out = new HashMap<>();
-		for (Village.Stash stash : Village.stashes(level, villager, bench, plan.bounds())) {
+		for (Village.Stash stash : Village.stashes(level, villager, bench, plan.supplyExclude())) {
 			Map<Item, Long> held = new HashMap<>();
 			SupplyContainers.contents(level, stash.chests()).forEach((item, n) -> held.merge(MaterialFamilies.key(item), n, Long::sum));
 			Map<Item, Integer> reserved = reservedIn(level, stash, site, false);
@@ -1692,9 +1692,9 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	private void deposit(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench) {
-		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.bounds());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, plan.supplyExclude());
 		if (supplies.isEmpty() || SupplyContainers.freeSlots(level, supplies) == 0) {
-			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.bounds());
+			List<BlockPos> store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
 			if (!store.isEmpty() && SupplyContainers.freeSlots(level, store) > 0) {
 				supplies = store;
 			}
@@ -1722,7 +1722,7 @@ public class BuilderWork extends Behavior<Villager> {
 			ItemStack rest = SupplyContainers.insert(level, supplies, stack);
 			if (!rest.isEmpty()) {
 				if (store == null) {
-					store = Builders.storehouseChests(level, villager, bench, plan.bounds());
+					store = Builders.storehouseChests(level, villager, bench, plan.supplyExclude());
 				}
 				if (!store.equals(supplies)) {
 					rest = SupplyContainers.insert(level, store, rest);

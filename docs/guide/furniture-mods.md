@@ -47,7 +47,9 @@ point at it to see each mod's piece that will do. With several mods' pieces in t
 the list. A piece he has already put up stays as it is. Chairs, tables, couches, desks, counters, cupboards,
 nightstands, drawers and lamps work this way; a piece no installed mod makes is the plain one, as before.
 
-![Two cottages: Handcrafted chairs from one chest, CobbleFurnies chairs from the other](https://jcondedata.github.io/minecraft-alive-workplace/furniture_any_mod/still-3.jpg) Every home in the starter set is furnished (the Starter Cottage, Stone House, Townhouse, Manor, Artisan's
+![Two cottages: Handcrafted chairs from one chest, CobbleFurnies chairs from the other](https://jcondedata.github.io/minecraft-alive-workplace/furniture_any_mod/still-3.jpg)
+
+Every home in the starter set is furnished (the Starter Cottage, Stone House, Townhouse, Manor, Artisan's
 House and Inn), and so are the Supply Shop, Library, Schoolhouse, Healing Center, Print Shop, Village Hall and
 Kitchen.
 

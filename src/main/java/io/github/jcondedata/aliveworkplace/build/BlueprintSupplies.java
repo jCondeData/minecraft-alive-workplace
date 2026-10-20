@@ -66,7 +66,7 @@ public final class BlueprintSupplies {
 			return Optional.of(new SupplyReport(Optional.empty(), 0, List.of()));
 		}
 		BuildPlan plan = BuildPlan.create(blueprint.get(), placement, level, Rules.number(level, ModGameRules.FOUNDATION_DEPTH));
-		List<BlockPos> supplies = SupplyContainers.find(level, bench.get(), plan.bounds());
+		List<BlockPos> supplies = SupplyContainers.find(level, bench.get(), plan.supplyExclude());
 		if (Rules.on(level, ModGameRules.FREE_MATERIALS)) {
 			return Optional.of(new SupplyReport(bench, supplies.size(), List.of()));
 		}
@@ -150,7 +150,7 @@ public final class BlueprintSupplies {
 		}
 		if (bench.isPresent()) {
 			BuildPlan plan = BuildPlan.create(blueprint.get(), data.placement().get(), level, Rules.number(level, ModGameRules.FOUNDATION_DEPTH));
-			List<BlockPos> supplies = SupplyContainers.find(level, bench.get(), plan.bounds());
+			List<BlockPos> supplies = SupplyContainers.find(level, bench.get(), plan.supplyExclude());
 			boolean free = Rules.on(level, ModGameRules.FREE_MATERIALS);
 			need(level, plan).forEach((item, n) -> lines.add(new Line(item, n, free ? 0 : (int) Math.max(0, n - have(level, supplies, item)))));
 		} else {

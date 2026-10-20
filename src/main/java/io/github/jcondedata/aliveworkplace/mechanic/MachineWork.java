@@ -86,6 +86,22 @@ public class MachineWork extends Behavior<Villager> {
 		), 2400);
 	}
 
+	/** A worker killed mid-trip drops what they carried where they fell (it's never lost with them). */
+	public static void init() {
+		Platform.get().afterDeath((entity, source) -> {
+			if (entity instanceof Villager villager && villager.level() instanceof ServerLevel level) {
+				MachineJob job = ModAttachments.MACHINE_JOB.get(villager);
+				if (job == null) {
+					return;
+				}
+				ModAttachments.MACHINE_JOB.remove(villager);
+				for (ItemStack stack : job.carried()) {
+					villager.spawnAtLocation(stack.copy(), 0.5f);
+				}
+			}
+		});
+	}
+
 	/**
 	 * {@code work} with machine work added (only with Create installed, for a job a machine-work file names): ours first, and the rest of the
 	 * activity waiting while a trip to a machine is on (the schedule update always runs).

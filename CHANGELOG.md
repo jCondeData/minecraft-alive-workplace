@@ -25,6 +25,8 @@ asks for the steps, `latest.log` and any crash report).
 - Create: Mechanics and machine workers no longer carry a player's own input out of a Create machine to the village
   store (gold ingots waiting on a press's depot, bones in a millstone, a brass mix in a basin); they only take what
   the machine made, and don't feed a machine that is still busy with a player's batch.
+- Create: a farmer, armorer, chef or miner killed on the way to a machine now drops the input they were carrying
+  instead of losing it.
 
 ## 0.146.0 — 2026-10-19
 

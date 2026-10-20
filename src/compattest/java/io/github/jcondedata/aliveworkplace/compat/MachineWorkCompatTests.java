@@ -432,6 +432,28 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/** A worker killed on the way to the machine drops the wheat they carried; it doesn't vanish with them. */
+	//$ gametest_ticks_batch AREA '200' '"machine_trip_death"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_trip_death")
+	public void aWorkerKilledMidTripDropsWhatTheyCarried(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		chest(helper);
+		BlockPos machine = rig(helper, Kind.MILL, false);
+		Villager villager = worker(helper, Kind.MILL);
+		ModAttachments.MACHINE_JOB.set(villager, new MachineJob(helper.absolutePos(machine), file(Kind.MILL).id(), MachineJob.Stage.FEED,
+			List.of(new ItemStack(Items.WHEAT, 12))));
+		villager.hurt(helper.getLevel().damageSources().genericKill(), Float.MAX_VALUE);
+		helper.assertTrue(villager.isDeadOrDying(), "setup: the worker didn't die");
+		helper.runAfterDelay(5, () -> {
+			int dropped = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(4),
+				e -> e.getItem().is(Items.WHEAT)).stream().mapToInt(e -> e.getItem().getCount()).sum();
+			helper.assertTrue(dropped == 12, "the killed worker dropped " + dropped + " of the 12 wheat they carried");
+			clearMachines(helper);
+			helper.succeed();
+		});
+	}
+
 	/** Config {@code machineWork} off: the farmer leaves the turning millstone alone. */
 	//$ gametest_ticks_batch AREA '600' '"machine_work_off"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_work_off")

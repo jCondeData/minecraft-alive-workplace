@@ -3888,6 +3888,8 @@ final class JobScenes {
 			place(level, STATION, ModBlocks.STOREHOUSE);
 			Container store = chest(level, STATION.west(2));
 			Villager porter = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			// B251: no gift by the UUID roll (one villager in 240 is a Night Owl, who rests through the scene's morning)
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(porter, null);
 			// The porter starts once the Drop Box's screen has been filmed (the runner calls this), while it's still full.
 			afterDuring = (l, p) -> io.github.jcondedata.aliveworkplace.store.Porters.employ(l, porter, STATION);
 			BlockPos box = new BlockPos(3, -60, -3);
@@ -3908,6 +3910,7 @@ final class JobScenes {
 					+ porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
 					+ ", potential " + porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
 					+ ", doing " + porter.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", schedule " + net.minecraft.core.registries.BuiltInRegistries.SCHEDULE.getKey(porter.getBrain().getSchedule())
 					+ ", time " + l.getDayTime() % 24000 + ", at " + porter.blockPosition().toShortString()
 					+ ", status " + (status == null ? "none" : status.title().getString() + " / " + status.line().getString())
 					+ ", bag " + ModAttachments.BUILDER_BAG.getOrCreate(porter).stacks().stream().filter(s -> !s.isEmpty()).map(s -> s.getCount() + " " + s.getItem()).toList()

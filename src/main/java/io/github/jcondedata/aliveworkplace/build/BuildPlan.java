@@ -83,6 +83,8 @@ public final class BuildPlan {
 	private final List<Step> landscape;
 	private final List<Step> deconstruct;
 	private final BoundingBox bounds;
+	/** A repair's plan (B261): the building stands, so the chests inside its box are the builder's to take from. */
+	private boolean standing;
 
 	private BuildPlan(List<Step> clear, List<Step> foundation, List<Step> structure, List<Step> decoration, List<Step> landscape,
 					  List<Step> deconstruct, BoundingBox bounds) {
@@ -201,6 +203,7 @@ public final class BuildPlan {
 		}
 		BuildPlan out = new BuildPlan(clear, foundation, List.copyOf(sorted), decoration, landscape, deconstruct, bounds);
 		out.entities = entities;
+		out.standing = standing;
 		out.kineticStarts = new int[groups];
 		java.util.Arrays.fill(out.kineticStarts, sorted.size());
 		for (int i = sorted.size() - 1; i >= 0; i--) {
@@ -317,7 +320,9 @@ public final class BuildPlan {
 		BuildPlan build = create(blueprint, placement);
 		List<Step> structure = build.structure.stream().filter(s -> !gaveUp.contains(s.pos()) && !isCrop(s.state()) && missing(level, s)).toList();
 		List<Step> decoration = build.decoration.stream().filter(s -> !gaveUp.contains(s.pos()) && !isCrop(s.state()) && missing(level, s)).toList();
-		return new BuildPlan(List.of(), List.of(), structure, decoration, List.of(), List.of(), build.bounds);
+		BuildPlan out = new BuildPlan(List.of(), List.of(), structure, decoration, List.of(), List.of(), build.bounds);
+		out.standing = true;
+		return out;
 	}
 
 	/** A crop a farmer tends (wheat, carrots, stems, ...): planted on the first build, never put back by a repair. */
@@ -439,6 +444,17 @@ public final class BuildPlan {
 
 	public BoundingBox bounds() {
 		return bounds;
+	}
+
+	/**
+	 * The box whose chests this build's supplies leave out: a new build's own (the chests it puts up are its owner's, not
+	 * the builder's stock), none for a repair (B261): the building stands, and the chests in it are the ones by the bench,
+	 * a Storehouse Shed's the village's store. Leaving them out kept a builder repairing a Storehouse Shed waiting for a
+	 * hay bale and a ladder its own chests held.
+	 */
+	@Nullable
+	public BoundingBox supplyExclude() {
+		return standing ? null : bounds;
 	}
 
 	// --- crews (35.5) -------------------------------------------------------------------------

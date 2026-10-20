@@ -404,7 +404,9 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 37.9 (compat, Sophisticated Storage): `SophisticatedControllerCompatTests.aControllerMakesThreeBarrelsOneStore` (counted
 once, a delivery put away and a builder's take through the controller, the board's line, three stores again once it
 breaks), `SophisticatedControllerCompatTests.aPorterDeliversThroughTheController`,
-`SophisticatedControllerCompatTests.switchOffKeepsThreeStores`, `SophisticatedControllerCompatTests.theSophisticatedStyleAddsAController`.
+`SophisticatedControllerCompatTests.switchOffKeepsThreeStores`, `SophisticatedControllerCompatTests.theSophisticatedStyleAddsAController`;
+no mods: `StyleGameTests.aNearRuleForAMissingBlockIsPassedOver` (a near rule swaps only the block beside its block, and one
+whose block isn't installed falls through to the next rule, not to air).
 Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, which now brings Sophisticated Storage).
 
 37.6 (no mods): `FurnitureSeatsGameTests.theSeatsTagLoadsWithoutTheFurnitureMods`; with Handcrafted (compat):
@@ -416,7 +418,7 @@ point of interest, the villager claims and sleeps in it, the Starter Cottage it 
 adds the furnished home's beauty). Scene `seats_and_beds` (`-Pfurniture=true`).
 
 37.7 (compat, with Carved Wood and Rechiseled): `CarvedStylesCompatTests.theStylesUseCarvedWoodAndRechiseled` (each
-swap, the Carved Wood lectern the Librarian's job site and barrel the Fisherman's, a hanging lantern still hanging; with
+swap, the Carved Wood lectern the Librarian's job site and barrel the Fisherman's, a hanging lantern still hanging and a standing waterlogged one standing; with
 the switch off no Spruce style and Grand as before), `CarvedStylesCompatTests.aCarvedWoodChestIsASupplyChest` (a
 builder builds from a Carved Wood chest; a Carved Wood barrel is listed and filled),
 `CarvedStylesCompatTests.aSpruceLibraryHasCarvedShelvesAndALibrarian` (built with nothing skipped, every shelf Carved

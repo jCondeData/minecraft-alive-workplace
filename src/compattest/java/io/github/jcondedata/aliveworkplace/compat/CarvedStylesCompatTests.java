@@ -84,6 +84,11 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 			BlockState hanging = BlueprintStyles.apply(spruce, Blocks.LANTERN.defaultBlockState().setValue(net.minecraft.world.level.block.LanternBlock.HANGING, true));
 			helper.assertTrue(hanging.getValues().entrySet().stream().anyMatch(p -> p.getKey().getName().equals("shape") && p.getValue().toString().equals("hanging")),
 				"a hanging lantern isn't hanging in spruce: " + hanging);
+			// Only the hanging flag hangs it: a standing lantern that is waterlogged (another true flag) still stands.
+			BlockState standing = BlueprintStyles.apply(spruce, Blocks.LANTERN.defaultBlockState()
+				.setValue(net.minecraft.world.level.block.LanternBlock.WATERLOGGED, true));
+			helper.assertTrue(standing.getValues().entrySet().stream().noneMatch(p -> p.getKey().getName().equals("shape") && p.getValue().toString().equals("hanging")),
+				"a standing waterlogged lantern hangs in spruce: " + standing);
 			Map<Block, String> grandWants = Map.of(Blocks.SPRUCE_PLANKS, "rechiseled:dark_oak_planks_flooring", Blocks.BIRCH_PLANKS, "rechiseled:andesite_squares",
 				Blocks.WHITE_TERRACOTTA, "rechiseled:andesite_squares", Blocks.POLISHED_ANDESITE, "rechiseled:andesite_tiles",
 				Blocks.COBBLESTONE, "minecraft:stone_bricks");

@@ -154,21 +154,29 @@ public class LifeStageGameTests implements FabricGameTest {
 		// Side by side over real ground, the same 60 ticks at a steady walk: the elder covers 15% less of it.
 		int[] ticks = new int[1];
 		double[] from = new double[2];
-		// What the elder's walk was asked at, tick by tick (a failure says when it changed and what the villager was then).
+		// Each villager's walk, whenever it changes (B242: CI build 1244 traced only the elder's, and it was the younger
+		// villager who lost ground).
 		StringBuilder asked = new StringBuilder();
-		float[] last = {Float.NaN};
+		String[] lastSeen = {"", ""};
 		helper.onEachTick(() -> {
 			ticks[0]++;
-			float now = bram.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(t -> t.getSpeedModifier()).orElse(-1f);
-			if (now != last[0] && asked.length() < 2000) {
-				last[0] = now;
-				asked.append(" [tick ").append(ticks[0]).append(": ").append(now).append(", elder ").append(LifeStages.isElder(bram))
-					.append(", ages ").append(LifeStages.AGES).append('/').append(LifeStages.ELDER_DAYS).append(", grown ").append(LifeStages.grownDays(bram, Chronicle.day(level)))
-					.append(", nav ").append(bram.getNavigation().isDone() ? "idle" : "walking").append(", z ").append(Math.round(bram.getZ() * 100) / 100.0).append(']');
-			}
 			if (ticks[0] <= 100) {
 				bramWalk.walkTo(level, bram, bramGoal, 1.5);
 				tomWalk.walkTo(level, tom, tomGoal, 1.5);
+			}
+			Villager[] both = {bram, tom};
+			for (int i = 0; i < 2; i++) {
+				Villager v = both[i];
+				var brain = v.getBrain();
+				String now = "target " + brain.getMemory(MemoryModuleType.WALK_TARGET).map(t -> helper.relativePos(t.getTarget().currentBlockPosition()).toShortString() + "@" + t.getSpeedModifier()).orElse("none")
+					+ ", cant-reach " + brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) + ", nav " + (v.getNavigation().isDone() ? "idle" : "walking")
+					+ ", ground " + v.onGround() + ", " + brain.getActiveNonCoreActivity().map(Object::toString).orElse("-")
+					+ brain.getMemory(MemoryModuleType.INTERACTION_TARGET).map(e -> ", with " + e.getName().getString()).orElse("");
+				if (!now.equals(lastSeen[i]) && asked.length() < 4000) {
+					lastSeen[i] = now;
+					asked.append(" [tick ").append(ticks[0]).append(' ').append(i == 0 ? "elder" : "younger").append(": ").append(now)
+						.append(", z ").append(Math.round((v.getZ() - helper.absolutePos(BlockPos.ZERO).getZ()) * 100) / 100.0).append(']');
+				}
 			}
 			if (ticks[0] == 40) { // (both are well under way by now, whenever their paths were found)
 				from[0] = bram.getZ();
@@ -178,7 +186,7 @@ public class LifeStageGameTests implements FabricGameTest {
 		helper.runAfterDelay(100, () -> {
 			double elder = bram.getZ() - from[0];
 			double young = tom.getZ() - from[1];
-			String went = "in 60 ticks the elder went " + elder + " blocks, the younger villager " + young + " (" + Math.round(100 * elder / young) + "%); the elder's walk target:" + asked;
+			String went = "in 60 ticks the elder went " + elder + " blocks, the younger villager " + young + " (" + Math.round(100 * elder / young) + "%); their walks:" + asked;
 			org.slf4j.LoggerFactory.getLogger("LifeStageGameTests").info("[elder walk] {}", went);
 			helper.assertTrue(young > 3, "the younger villager hardly walked: " + went);
 			// 15% slower: 85% of the ground, give or take the steps of a path (B115: 78% once, with a half block of step noise in
@@ -290,6 +298,54 @@ public class LifeStageGameTests implements FabricGameTest {
 		});
 		helper.runAfterDelay(40, () -> {
 			helper.assertTrue(got[0] > 0 && got[0] <= 25, "the walk after a failed path was asked again on tick " + got[0] + " (never: -1)");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B242: a walk vanilla drops with no new failure (the stroll it replaced finished in the same tick) is asked again at
+	 * once, even with an old "can't reach" note from a path that failed before (CI build 1244: the younger villager waited
+	 * ticks 23 to 42 for nothing and the elder looked as fast); a walk whose own path fails still waits.
+	 */
+	//$ gametest_ticks_batch AREA '80' '"walkRetryStale"'
+	@GameTest(template = AREA, timeoutTicks = 80, batch = "walkRetryStale")
+	public void b242AWalkDroppedWithoutAFailureIsAskedAgainAtOnce(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Villager tom = walker(helper, new BlockPos(4, 2, 2), "Tom");
+		tom.setNoAi(true); // only what the test does to his memories happens to them
+		Leftovers.after(helper, tom::discard);
+		BlockPos goal = helper.absolutePos(new BlockPos(4, 2, 12));
+		var brain = tom.getBrain();
+		brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, helper.getLevel().getGameTime() - 100); // an old failure
+		brain.eraseMemory(MemoryModuleType.WALK_TARGET);
+		java.util.function.BooleanSupplier walking = () -> brain.getMemory(MemoryModuleType.WALK_TARGET).filter(t -> t.getTarget().currentBlockPosition().equals(goal)).isPresent();
+		int[] ticks = new int[1];
+		int[] got = {-1};
+		int[] dropped = {-1};
+		int[] retry = {0};
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			if (got[0] < 0) {
+				retry[0] = Walker.requestWalk(tom, goal, 0.5f, 1, retry[0]);
+				if (walking.getAsBoolean()) {
+					got[0] = ticks[0];
+					helper.assertFalse(brain.hasMemoryValue(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE), "the old \"can't reach\" note is kept with the new walk");
+					brain.eraseMemory(MemoryModuleType.WALK_TARGET); // vanilla drops it, with no failure of its own
+				}
+			} else if (dropped[0] < 0) {
+				retry[0] = Walker.requestWalk(tom, goal, 0.5f, 1, retry[0]);
+				helper.assertTrue(walking.getAsBoolean(), "a walk dropped without a failure wasn't asked again at once (tick " + ticks[0] + ", first walk on tick " + got[0] + ")");
+				dropped[0] = ticks[0];
+				// Its own path fails now: vanilla notes it and drops the walk, and the next request waits.
+				brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, helper.getLevel().getGameTime());
+				brain.eraseMemory(MemoryModuleType.WALK_TARGET);
+			} else if (ticks[0] == dropped[0] + 1) {
+				retry[0] = Walker.requestWalk(tom, goal, 0.5f, 1, retry[0]);
+				helper.assertFalse(walking.getAsBoolean(), "a walk whose own path failed was asked again with no wait");
+			}
+		});
+		helper.runAfterDelay(40, () -> {
+			helper.assertTrue(got[0] > 0 && got[0] <= 25 && dropped[0] == got[0] + 1, "first walk on tick " + got[0] + ", asked again on tick " + dropped[0]);
 			helper.succeed();
 		});
 	}

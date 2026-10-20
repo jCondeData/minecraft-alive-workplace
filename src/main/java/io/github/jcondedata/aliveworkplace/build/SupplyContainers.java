@@ -124,6 +124,8 @@ public final class SupplyContainers {
 
 	private static List<BlockPos> near(ServerLevel level, BlockPos bench, java.util.function.Predicate<BlockEntity> keep) {
 		List<BlockPos> found = new ArrayList<>();
+		// a store that several blocks hand out (a Create item vault's) is listed once, so its items are counted once
+		java.util.Set<Object> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
 		int minCx = SectionPos.blockToSectionCoord(bench.getX() - RADIUS), maxCx = SectionPos.blockToSectionCoord(bench.getX() + RADIUS);
 		int minCz = SectionPos.blockToSectionCoord(bench.getZ() - RADIUS), maxCz = SectionPos.blockToSectionCoord(bench.getZ() + RADIUS);
 		for (int cx = minCx; cx <= maxCx; cx++) {
@@ -137,7 +139,7 @@ public final class SupplyContainers {
 					if (Math.abs(p.getX() - bench.getX()) > RADIUS || Math.abs(p.getZ() - bench.getZ()) > RADIUS || Math.abs(p.getY() - bench.getY()) > VERTICAL) {
 						continue;
 					}
-					if (keep.test(be) && !otherHalfFound(be, found)) {
+					if (keep.test(be) && !otherHalfFound(be, found) && seen.add(STORES.identity(level, p))) {
 						found.add(p.immutable());
 					}
 				}

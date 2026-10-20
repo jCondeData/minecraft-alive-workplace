@@ -474,4 +474,70 @@ public class MechanicCompatTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * Create's blocks that hold items for their own work are never a worker's supply chest: a train station's schedule
+	 * slot, a saw's or a drill's work, an ejector's launch, a portable storage interface (a contraption's chests), the
+	 * packager's and the package ports' packages, the stock ticker's and the creative crate's endless stock. Otherwise a
+	 * farmer next to one fills it with wheat or a builder takes from a creative crate without end. An item vault is
+	 * storage and stays one.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"create_not_storage"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "create_not_storage")
+	public void createWorkBlocksAreNoSupplyChests(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		List<String> ids = List.of("track_station", "mechanical_saw", "mechanical_drill", "weighted_ejector", "portable_storage_interface",
+			"packager", "repackager", "package_frogport", "white_postbox", "stock_ticker", "creative_crate", "andesite_tunnel", "brass_tunnel");
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		java.util.Map<BlockPos, String> placed = new java.util.LinkedHashMap<>();
+		for (int i = 0; i < ids.size(); i++) {
+			BlockPos at = new BlockPos(i % 7, 2, 5 + i / 7 * 2);
+			helper.setBlock(at, create(ids.get(i)).defaultBlockState());
+			placed.put(helper.absolutePos(at), ids.get(i));
+		}
+		BlockPos vault = new BlockPos(6, 2, 2);
+		helper.setBlock(vault, create("item_vault").defaultBlockState());
+		List<BlockPos> found = SupplyContainers.find(level, helper.absolutePos(new BlockPos(3, 2, 3)), null);
+		List<String> listed = new java.util.ArrayList<>();
+		int stores0 = 0;
+		for (var e : placed.entrySet()) {
+			if (stores.isStore(level, e.getKey())) {
+				stores0++;
+			}
+			if (found.contains(e.getKey())) {
+				listed.add(e.getValue());
+			}
+		}
+		helper.assertTrue(stores0 > 0, "setup: none of Create's work blocks has item storage");
+		helper.assertTrue(listed.isEmpty(), "Create's work blocks listed as supply chests: " + listed);
+		helper.assertTrue(found.contains(helper.absolutePos(vault)), "an item vault isn't listed as a supply chest");
+		MachineWorkCompatTests.clearMachines(helper);
+		helper.succeed();
+	}
+
+	/**
+	 * A Create item vault built of several blocks is one store: every block of it hands out the same inventory, so it's
+	 * listed once and its items counted once (as a double chest is), not once per block.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"create_vault_once"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "create_vault_once")
+	public void aBigVaultIsCountedOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		for (int x = 4; x <= 6; x++) {
+			helper.setBlock(new BlockPos(x, 2, 0), with(create("item_vault").defaultBlockState(), "axis", "x"));
+		}
+		helper.runAfterDelay(20, () -> {
+			var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+			BlockPos first = helper.absolutePos(new BlockPos(4, 2, 0));
+			helper.assertTrue(stores.insert(level, List.of(first), new ItemStack(Items.DIAMOND, 10)).isEmpty(), "setup: the vault takes no diamonds");
+			List<BlockPos> found = SupplyContainers.find(level, helper.absolutePos(new BlockPos(3, 2, 3)), null);
+			long vaults = found.stream().filter(p -> level.getBlockState(p).is(create("item_vault"))).count();
+			long counted = SupplyContainers.count(level, found, Items.DIAMOND);
+			helper.assertTrue(counted == 10, "10 diamonds in a three-block vault counted as " + counted + " (" + vaults + " vault blocks listed)");
+			MachineWorkCompatTests.clearMachines(helper); // the vault, without spilling its diamonds for later tests
+			helper.succeed();
+		});
+	}
 }

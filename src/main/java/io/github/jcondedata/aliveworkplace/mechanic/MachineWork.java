@@ -86,6 +86,22 @@ public class MachineWork extends Behavior<Villager> {
 		), 2400);
 	}
 
+	/** A worker killed mid-trip drops what they carried where they fell (it's never lost with them). */
+	public static void init() {
+		Platform.get().afterDeath((entity, source) -> {
+			if (entity instanceof Villager villager && villager.level() instanceof ServerLevel level) {
+				MachineJob job = ModAttachments.MACHINE_JOB.get(villager);
+				if (job == null) {
+					return;
+				}
+				ModAttachments.MACHINE_JOB.remove(villager);
+				for (ItemStack stack : job.carried()) {
+					villager.spawnAtLocation(stack.copy(), 0.5f);
+				}
+			}
+		});
+	}
+
 	/**
 	 * {@code work} with machine work added (only with Create installed, for a job a machine-work file names): ours first, and the rest of the
 	 * activity waiting while a trip to a machine is on (the schedule update always runs).
@@ -146,6 +162,27 @@ public class MachineWork extends Behavior<Villager> {
 		return out;
 	}
 
+	/** Every recipe of the file's type: what the machine can work on, whoever put it in. */
+	static List<Recipe<?>> allRecipes(ServerLevel level, MachineWorkFiles.Machine file) {
+		RecipeType<?> type = BuiltInRegistries.RECIPE_TYPE.get(file.recipeType());
+		List<Recipe<?>> out = new ArrayList<>();
+		for (RecipeHolder<?> holder : Recipes.all(Recipes.manager(level))) {
+			if (holder.value().getType() == type) {
+				out.add(holder.value());
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * Whether {@code stack} in the machine is still to be worked on: an ingredient of any recipe of the machine's type
+	 * (a player's gold ingots on the press's depot too, not only the village's iron), unless it's something the file
+	 * wants made. Anything else is what the machine made.
+	 */
+	static boolean inWork(MachineWorkFiles.Machine file, List<Recipe<?>> all, ItemStack stack) {
+		return !file.makes(stack.getItem()) && isInput(all, stack);
+	}
+
 	/** Whether {@code stack} is something the machine works on (an ingredient of one of its recipes). */
 	static boolean isInput(List<Recipe<?>> recipes, ItemStack stack) {
 		for (Recipe<?> recipe : recipes) {
@@ -180,21 +217,32 @@ public class MachineWork extends Behavior<Villager> {
 	/** Whether there's something made to take from the machine. */
 	public static boolean hasOutput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes) {
 		BlockPos at = collectPos(file, machine);
+		List<Recipe<?>> all = allRecipes(level, file);
 		if (file.collect().drop()) {
-			return dropped(level, at).stream().anyMatch(e -> !isInput(recipes, e.getItem()));
+			return dropped(level, at).stream().anyMatch(e -> !inWork(file, all, e.getItem()));
 		}
-		return STORES.hasMatching(level, at, s -> !isInput(recipes, s));
+		return STORES.hasMatching(level, at, s -> !inWork(file, all, s));
 	}
 
-	/** Takes what the machine made (never what it's still working on). */
-	static List<ItemStack> takeOutput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes) {
+	/**
+	 * Takes what the machine made (never what it's still working on, nor a player's input waiting in it), at most
+	 * {@code maxStacks} stacks: what the store has room for stays in the machine, never dropped by the store to despawn.
+	 */
+	static List<ItemStack> takeOutput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes, int maxStacks) {
+		if (maxStacks <= 0) {
+			return new ArrayList<>();
+		}
 		BlockPos at = collectPos(file, machine);
+		List<Recipe<?>> all = allRecipes(level, file);
 		if (!file.collect().drop()) {
-			return STORES.takeMatching(level, at, s -> !isInput(recipes, s), 9);
+			return STORES.takeMatching(level, at, s -> !inWork(file, all, s), Math.min(9, maxStacks));
 		}
 		List<ItemStack> out = new ArrayList<>();
 		for (ItemEntity e : dropped(level, at)) {
-			if (!isInput(recipes, e.getItem())) {
+			if (out.size() >= maxStacks) {
+				break;
+			}
+			if (!inWork(file, all, e.getItem())) {
 				out.add(e.getItem().copy());
 				e.discard();
 			}
@@ -202,13 +250,14 @@ public class MachineWork extends Behavior<Villager> {
 		return out;
 	}
 
-	/** Whether the machine still holds input to work on (then it isn't fed more). */
+	/** Whether the machine still holds input to work on, the village's or a player's (then it isn't fed more). */
 	static boolean holdsInput(ServerLevel level, MachineWorkFiles.Machine file, BlockPos machine, List<Recipe<?>> recipes) {
 		BlockPos at = feedPos(file, machine);
+		List<Recipe<?>> all = allRecipes(level, file);
 		if (file.feed().drop()) {
-			return dropped(level, at).stream().anyMatch(e -> isInput(recipes, e.getItem()));
+			return dropped(level, at).stream().anyMatch(e -> inWork(file, all, e.getItem()));
 		}
-		return STORES.hasMatching(level, at, s -> isInput(recipes, s));
+		return STORES.hasMatching(level, at, s -> inWork(file, all, s));
 	}
 
 	/**
@@ -325,7 +374,7 @@ public class MachineWork extends Behavior<Villager> {
 		}
 		List<Recipe<?>> recipes = recipes(level, file);
 		boolean worked = false;
-		List<ItemStack> made = takeOutput(level, file, machine, recipes);
+		List<ItemStack> made = takeOutput(level, file, machine, recipes, SupplyContainers.freeSlots(level, chests));
 		if (!made.isEmpty()) {
 			toStore(level, chests, made, dropAt);
 			worked = true;
@@ -494,7 +543,7 @@ public class MachineWork extends Behavior<Villager> {
 						} else {
 							back.addAll(carried); // stopped since: the input goes back to the store
 						}
-						back.addAll(takeOutput(level, file, job.machine(), recipes));
+						back.addAll(takeOutput(level, file, job.machine(), recipes, SupplyContainers.freeSlots(level, chests) - back.size()));
 					} else {
 						back.addAll(carried);
 					}

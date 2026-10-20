@@ -400,6 +400,103 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		reload(helper, Kind.CRUSHER);
 	}
 
+	/**
+	 * A player's own work on a machine is left alone: gold ingots on the press's depot (Create presses them into golden
+	 * sheets, which no file asks for) and bones in the millstone (milled into bone meal) are still being worked on, so
+	 * seeing to the machine never carries them off to the village's store, and the machine gets no batch on top of them.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"machine_players_input"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_players_input")
+	public void aPlayersInputIsLeftInTheMachine(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		ServerLevel level = helper.getLevel();
+		Container chest = chest(helper, new ItemStack(Items.IRON_INGOT, 16), new ItemStack(Items.WHEAT, 16));
+		List<BlockPos> store = List.of(helper.absolutePos(CHEST));
+		BlockPos press = rig(helper, Kind.PRESS, false);
+		BlockPos depot = helper.absolutePos(press.offset(file(Kind.PRESS).feed().at()));
+		BlockPos mill = new BlockPos(2, 3, 7);
+		helper.setBlock(mill.below(), Blocks.STONE);
+		helper.setBlock(mill, create("millstone").defaultBlockState());
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		helper.assertTrue(stores.insert(level, List.of(depot), new ItemStack(Items.GOLD_INGOT, 8)).isEmpty(), "setup: the depot takes no gold ingots");
+		helper.assertTrue(stores.insert(level, List.of(helper.absolutePos(mill)), new ItemStack(Items.BONE, 8)).isEmpty(), "setup: the millstone takes no bones");
+		MachineWork.tend(level, store, helper.absolutePos(press), file(Kind.PRESS), helper.absolutePos(CHEST));
+		MachineWork.tend(level, store, helper.absolutePos(mill), file(Kind.MILL), helper.absolutePos(CHEST));
+		helper.assertTrue(count(chest, Items.GOLD_INGOT) == 0, "the player's gold ingots were carried off the depot to the store");
+		helper.assertTrue(count(chest, Items.BONE) == 0, "the player's bones were carried out of the millstone to the store");
+		helper.assertTrue(stores.count(level, List.of(depot), Items.GOLD_INGOT) == 8, "the depot doesn't hold the player's 8 gold ingots");
+		helper.assertTrue(stores.count(level, List.of(helper.absolutePos(mill)), Items.BONE) == 8, "the millstone doesn't hold the player's 8 bones");
+		helper.assertTrue(count(chest, Items.IRON_INGOT) == 16 && count(chest, Items.WHEAT) == 16, "a machine still busy with a player's input got a batch from the store");
+		clearMachines(helper);
+		helper.succeed();
+	}
+
+	/** A worker killed on the way to the machine drops the wheat they carried; it doesn't vanish with them. */
+	//$ gametest_ticks_batch AREA '200' '"machine_trip_death"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_trip_death")
+	public void aWorkerKilledMidTripDropsWhatTheyCarried(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		chest(helper);
+		BlockPos machine = rig(helper, Kind.MILL, false);
+		Villager villager = worker(helper, Kind.MILL);
+		ModAttachments.MACHINE_JOB.set(villager, new MachineJob(helper.absolutePos(machine), file(Kind.MILL).id(), MachineJob.Stage.FEED,
+			List.of(new ItemStack(Items.WHEAT, 12))));
+		villager.hurt(helper.getLevel().damageSources().genericKill(), Float.MAX_VALUE);
+		helper.assertTrue(villager.isDeadOrDying(), "setup: the worker didn't die");
+		helper.runAfterDelay(5, () -> {
+			int dropped = helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(4),
+				e -> e.getItem().is(Items.WHEAT)).stream().mapToInt(e -> e.getItem().getCount()).sum();
+			helper.assertTrue(dropped == 12, "the killed worker dropped " + dropped + " of the 12 wheat they carried");
+			clearMachines(helper);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * A store with room for one stack takes one stack of what the millstone made; the rest stays in the millstone for
+	 * the next time (it isn't dropped on the ground, where it would despawn).
+	 */
+	//$ gametest_ticks_batch AREA '200' '"machine_output_room"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_output_room")
+	public void whatDoesntFitStaysInTheMachine(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		ServerLevel level = helper.getLevel();
+		Container chest = chest(helper);
+		for (int i = 1; i < chest.getContainerSize(); i++) {
+			chest.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+		}
+		BlockPos mill = rig(helper, Kind.MILL, false);
+		var be = helper.getBlockEntity(mill);
+		CompoundTag tag = be.saveWithoutMetadata(level.registryAccess());
+		CompoundTag out = tag.getCompound("OutputInventory");
+		net.minecraft.nbt.ListTag items = new net.minecraft.nbt.ListTag();
+		ItemStack[] made = {new ItemStack(Kind.MILL.output(), 64), new ItemStack(Kind.MILL.output(), 64), new ItemStack(Items.WHEAT_SEEDS, 10)};
+		for (int i = 0; i < made.length; i++) {
+			CompoundTag item = (CompoundTag) made[i].save(level.registryAccess(), new CompoundTag());
+			item.putInt("Slot", i);
+			items.add(item);
+		}
+		out.put("Items", items);
+		tag.put("OutputInventory", out);
+		be.loadWithComponents(tag, level.registryAccess());
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		BlockPos at = helper.absolutePos(mill);
+		long before = stores.count(level, List.of(at), Kind.MILL.output()) + stores.count(level, List.of(at), Items.WHEAT_SEEDS);
+		helper.assertTrue(before == 138, "setup: the millstone holds " + before + " of the 138 made items put in it (" + tag + ")");
+		MachineWork.tend(level, List.of(helper.absolutePos(CHEST)), at, file(Kind.MILL), helper.absolutePos(CHEST));
+		long left = stores.count(level, List.of(at), Kind.MILL.output()) + stores.count(level, List.of(at), Items.WHEAT_SEEDS);
+		long stored = count(chest, Kind.MILL.output()) + count(chest, Items.WHEAT_SEEDS);
+		int dropped = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, helper.getBounds().inflate(4)).stream()
+			.mapToInt(e -> e.getItem().getCount()).sum();
+		helper.assertTrue(dropped == 0, dropped + " made items were dropped on the ground for want of room in the store");
+		helper.assertTrue(stored > 0 && stored + left == 138, "the store got " + stored + " and the millstone kept " + left + " of 138");
+		clearMachines(helper);
+		helper.succeed();
+	}
+
 	/** Config {@code machineWork} off: the farmer leaves the turning millstone alone. */
 	//$ gametest_ticks_batch AREA '600' '"machine_work_off"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_work_off")

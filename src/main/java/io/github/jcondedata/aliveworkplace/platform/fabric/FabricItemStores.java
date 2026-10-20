@@ -41,6 +41,12 @@ final class FabricItemStores implements ItemStores {
 	}
 
 	@Override
+	public Object identity(Level level, BlockPos pos) {
+		Storage<ItemVariant> s = storage(level, pos);
+		return s != null ? s : pos.immutable();
+	}
+
+	@Override
 	public int freeSlots(Level level, List<BlockPos> stores) {
 		int free = 0;
 		for (BlockPos p : stores) {

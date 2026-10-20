@@ -210,14 +210,16 @@ iron.
 **Sophisticated controllers (37.9).** The mod's jar registers Fabric's `ItemStorage.SIDED` for the controller's block
 entity, so the controller is one item storage over everything it links (checked in Sophisticated Storage 1.3.7.9 before
 building). `store/StorageNetworks` goes by block ids only: from a `sophisticatedstorage:controller` it walks through
-touching storage blocks (chests, barrels, limited barrels and shulker boxes of every tier) and `storage_link`s, within
-the controller's reach (15 blocks each way, the mod's `SEARCH_RANGE`). `SupplyContainers.find` around a Storehouse
+touching storage blocks (chests, barrels, limited barrels and shulker boxes of every tier) and the `storage_link`s
+linked to it (the mod links a link only with its Storage Tool and saves the controller's position on it; an unlinked
+link is passed over, so the storage behind it stays a store of its own, B257), within the controller's reach (15 blocks each way, the mod's `SEARCH_RANGE`). `SupplyContainers.find` around a Storehouse
 block, with the switch on, folds those blocks into the controller: they leave the list and the controller joins it, so
 the board, porters, builders and every job that reads the Storehouse see one store. Around any other workstation the
 blocks are read one by one as before (the controller stays out of those lists, `ModdedBlocks.STORAGE_NETWORK`). The mod
 links a controller's storage when a player places it; a builder sets blocks without that, so after a
-builder places a controller, or a storage block or link joining one's network, `MaterialRules.afterPlaced` has the
-controller look again (the block's vanilla placing hook) so it links. Styles gained three optional fields for it:
+builder places a controller, or a storage block joining one's network, `MaterialRules.afterPlaced` runs the block's
+vanilla placing hook (the controller's, or the storage block's, which joins the controller it touches) so it links. A
+link a builder places stays unlinked, as one a player places without the tool. Styles gained three optional fields for it:
 `"blueprints"` (a regex on the base blueprint ids the style is for), `"requires_switch"` (a config switch it is offered
 under) and a rule's `"near"` (the rule applies only to a block touching that block in the blueprint: the lantern on the
 Storehouse becomes the controller).
@@ -437,6 +439,10 @@ the Storehouse and gets Tom's terminal menu, listing 10 cobblestone, 20 planks a
 store) and `TomsStorageCompatTests.aConnectorInsideThePlotIsPassedOver` (a connector inside the area being built isn't
 read; its chests outside are each a store). `TomsStorageCompatTests.aBlockHoldingNoItemsIsntJoined` (an enchanting
 table on the connector isn't joined, and a chest touching only the table is its own store).
+`TomsStorageCompatTests.aCableRunsOnThroughACableConnector` (a cable on a cable connector's side leads on to another
+cable connector, whose chest the network joins: the connector stays the only store, its glass counted once) and
+`TomsStorageCompatTests.theSixteenthBarrelIsOutOfTheConnectorsRange` (in a row of 16 barrels from the connector, it
+joins the 15 within its 16-block range, as Tom's own connector does, and not the 16th).
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Sieges: an archer on a battle station whose raider goes out of sight (under the walkway, hacking at the gate) turns
+  to the nearest raider he can see and reach, instead of watching for the hidden one for up to a minute (B252).
+
 - Create: a farmer, armorer, chef or miner who stops machine work in the middle of a trip (their workstation broken
   while still a Novice, or machine work switched off in the config) no longer keeps the wheat, iron or ore they
   carried for good: it goes back into the village's store, or drops at their feet when the store is full (B244).

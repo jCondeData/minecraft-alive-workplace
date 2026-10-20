@@ -2051,6 +2051,24 @@ final class JobScenes {
 			Showcase.check(stations.stream().anyMatch(s -> s.getX() < STATION.getX() + 6) && stations.stream().anyMatch(s -> s.getX() >= STATION.getX() + 6),
 				"the Gatehouse and the Wall Tower both have battle stations");
 			return l -> {
+				// B252: on a timeout, say where each archer stood, their station and what they were shooting at
+				StringBuilder why = new StringBuilder();
+				for (Villager a : archers) {
+					net.minecraft.world.entity.LivingEntity foe = io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(a);
+					why.append(why.length() == 0 ? "" : "; ").append("archer at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", a.getX(), a.getY(), a.getZ()))
+						.append(a.isAlive() ? "" : " (dead)").append(", station ")
+						.append(io.github.jcondedata.aliveworkplace.guard.BattleStations.post(a).map(BlockPos::toShortString).orElse("none"))
+						.append(io.github.jcondedata.aliveworkplace.guard.BattleStations.onStation(a) ? " (on it)" : " (not on it)")
+						.append(", guard ").append(io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(a))
+						.append(", fighting ").append(io.github.jcondedata.aliveworkplace.guard.GuardCombat.isFighting(a))
+						.append(", target ").append(foe == null ? "none" : String.format(java.util.Locale.ROOT, "%s at %.1f %.1f %.1f, %.1f off, %s", foe.getType().toShortString(),
+							foe.getX(), foe.getY(), foe.getZ(), Math.sqrt(a.distanceToSqr(foe)), a.hasLineOfSight(foe) ? "in sight" : "out of sight"));
+				}
+				for (net.minecraft.world.entity.Mob r : raiders) {
+					why.append("; raider at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f, health %.0f/%.0f%s, seen by %d", r.getX(), r.getY(), r.getZ(),
+						r.getHealth(), r.getMaxHealth(), r.isAlive() ? "" : " (dead)", archers.stream().filter(a -> a.hasLineOfSight(r)).count()));
+				}
+				timeoutWhy = why.toString();
 				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
 				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
 				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());
@@ -3883,7 +3901,20 @@ final class JobScenes {
 				ScreenshotHarness.hoverLookingAt(p, new Vec3(3.5, -58.3, 0.5), new Vec3(3.5, -60, -3));
 				p.openMenu((net.minecraft.world.MenuProvider) drop);
 			};
-			return l -> drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
+			return l -> {
+				// B251: on a timeout, say what the porter was doing
+				var status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(porter, l.getGameTime());
+				timeoutWhy = "the porter: " + porter.getVillagerData().getProfession() + ", job site "
+					+ porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", potential " + porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", doing " + porter.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", time " + l.getDayTime() % 24000 + ", at " + porter.blockPosition().toShortString()
+					+ ", status " + (status == null ? "none" : status.title().getString() + " / " + status.line().getString())
+					+ ", bag " + ModAttachments.BUILDER_BAG.getOrCreate(porter).stacks().stream().filter(s -> !s.isEmpty()).map(s -> s.getCount() + " " + s.getItem()).toList()
+					+ ", carried " + n(ModAttachments.ITEMS_CARRIED, porter) + ", box empty " + drop.isEmpty() + ", store bread " + store.countItem(Items.BREAD)
+					+ ", free store tickets " + l.getPoiManager().getFreeTickets(STATION);
+				return drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
+			};
 		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "

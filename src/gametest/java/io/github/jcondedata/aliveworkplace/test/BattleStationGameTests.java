@@ -270,6 +270,61 @@ public class BattleStationGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B252: the foe an archer on his station is shooting at goes out of his sight (as a raider hacking at a gate does,
+	 * under the walkway) while another comes on in plain sight: he turns to that one and hits it. Before, he kept his
+	 * eyes on the hidden one for a minute (the fight's longest), and on the showcase the archers on a Gatehouse and a
+	 * Wall Tower stood over the siege without loosing an arrow.
+	 */
+	//$ gametest_ticks_batch AREA '900' '"stationHidden"'
+	@GameTest(template = AREA, timeoutTicks = 900, batch = "stationHidden")
+	public void anArcherTurnsFromAHiddenFoeToOneInSight(GameTestHelper helper) {
+		Village village = village(helper, false);
+		ServerLevel level = village.level();
+		Villager archer = guard(helper, new ItemStack(Items.BOW), 12, 21);
+		Mob hidden = raider(helper, 28.5, 16.5);
+		VillageRaids.track(level, village.hall(), village.culture(), List.of(hidden));
+		village.siege(helper);
+		Mob[] seen = {null};
+		long[] since = {-1};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (seen[0] == null) {
+				if (BattleStations.onStation(archer) && io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer) == hidden) {
+					// Walled in where it stands: out of his sight from now on
+					for (int x = 27; x <= 29; x++) {
+						for (int z = 15; z <= 17; z++) {
+							helper.setBlock(new BlockPos(x, 4, z), Blocks.STONE);
+							if (x != 28 || z != 16) {
+								helper.setBlock(new BlockPos(x, 2, z), Blocks.STONE);
+								helper.setBlock(new BlockPos(x, 3, z), Blocks.STONE);
+							}
+						}
+					}
+					helper.assertFalse(archer.hasLineOfSight(hidden), "the walled-in raider is still in his sight");
+					seen[0] = raider(helper, 28.5, 12.5);
+					since[0] = tick;
+				} else if (tick > 500) {
+					helper.fail("the archer never stood on his station shooting at the first raider: at " + archer.position() + ", his place "
+						+ BattleStations.post(archer) + ", his foe " + io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer));
+				}
+				return;
+			}
+			Mob open = seen[0];
+			if (tick == since[0] + 2) {
+				double off = archer.distanceTo(open);
+				helper.assertTrue(archer.hasLineOfSight(open) && off < BattleStations.RANGE, "the second raider is " + off + " blocks off, in sight " + archer.hasLineOfSight(open));
+			}
+			if (open.getHealth() < open.getMaxHealth()) {
+				helper.assertTrue(BattleStations.onStation(archer), "he came down off his station to hit it: at " + archer.position());
+				helper.succeed();
+			} else if (tick > since[0] + 300) {
+				helper.fail("the archer on his station never hit the raider in plain sight " + archer.distanceTo(open) + " blocks off; his foe is "
+					+ (io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer) == hidden ? "the walled-in one" : io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer)));
+			}
+		});
+	}
+
+	/**
 	 * No free station: the tower's top is built over, so the archer has no place, answers as before, and shoots the
 	 * raider 22 blocks off only once he has closed to 16.
 	 */

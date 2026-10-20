@@ -54,6 +54,10 @@ final class ColonyDepartureScene {
 	private volatile boolean gone;
 	private volatile boolean onRoad;
 	private volatile BlockPos hall;
+	/** B253: when the muster began and the bell rang (game ticks, 0: not seen), and the settlers as last seen before it. */
+	private volatile long musterAt;
+	private volatile long bellAt;
+	private volatile String beforeBell = "not seen";
 	private final List<Villager> settlers = new ArrayList<>();
 
 	void tick(Minecraft mc) {
@@ -65,6 +69,7 @@ final class ColonyDepartureScene {
 		if (tick > 430 && tick < 1250) {
 			server.execute(() -> {
 				RealmData.Order order = order(server);
+				watch(order);
 				// gathered: all of them by the hall, or the bell has rung (it rings the moment the last one gets there, and
 				// they turn for the road at once, so a look a tick late missed it; a bell rung on the muster's timeout
 				// with nobody there still fails the check below)
@@ -111,7 +116,7 @@ final class ColonyDepartureScene {
 				Showcase.check(order != null && player.getMainHandItem().isEmpty(), "right-clicking the hall with the charter gave the order and used the charter up");
 				if (order != null) {
 					settlers.addAll(Settlers.here(level, order));
-					Showcase.check(settlers.size() >= 2, "two settlers volunteered (" + settlers.stream().map(v -> v.getDisplayName().getString()).toList() + ")");
+					Showcase.check(settlers.size() >= 2, "two settlers volunteered (" + states() + ")");
 					Showcase.check(Settlers.missing(order).isEmpty(), "the Storehouse gave every supply (missing: " + Settlers.missing(order) + ")");
 				}
 			});
@@ -133,11 +138,20 @@ final class ColonyDepartureScene {
 				player.closeContainer();
 			});
 		}
-		// The settlers at the hall, just before the bell.
+		// The settlers at the hall, just before the bell. B253: the bell rings the tick the last of them comes within 5
+		// blocks of the hall and they turn for the road at once, so on a slow runner a look a few ticks after it found them
+		// walking away. The bell rung before the muster's timeout is the mod's own word that every one of them stood within
+		// 5 blocks of the hall; a bell rung on the timeout is not, and fails.
 		if (tick == 525) {
 			ScreenshotHarness.shot(mc, "02_settlers_gathered");
-			server.execute(() -> Showcase.check(!settlers.isEmpty() && settlers.stream().allMatch(v -> v.isAlive() && v.distanceToSqr(Vec3.atCenterOf(hall)) <= 8 * 8),
-				"the settlers are at the hall"));
+			server.execute(() -> {
+				watch(order(server));
+				boolean there = !settlers.isEmpty() && settlers.stream().allMatch(v -> v.isAlive() && v.distanceToSqr(Vec3.atCenterOf(hall)) <= 8 * 8);
+				boolean rangOnGathering = musterAt > 0 && bellAt > 0 && bellAt - musterAt < Settlers.MUSTER_TICKS;
+				Showcase.check(there || rangOnGathering, "the settlers are at the hall (muster began at tick " + musterAt + ", bell at " + bellAt
+					+ (bellAt > 0 && musterAt > 0 ? (rangOnGathering ? ", on gathering" : ", on the " + Settlers.MUSTER_TICKS + "-tick timeout") : ", not rung")
+					+ "; just before the bell: " + beforeBell + "; now (tick " + server.overworld().getGameTime() + "): " + states() + ")");
+			});
 		}
 		// The bell has rung: they walk out toward the spot.
 		if (tick == 640) {
@@ -175,6 +189,40 @@ final class ColonyDepartureScene {
 			Settlers.MUSTER_DELAY = -1;
 			mc.stop();
 		}
+	}
+
+	/** B253: notes the muster's start, the bell, and the settlers' state while they gather (on the server thread). */
+	private void watch(RealmData.Order order) {
+		if (order == null) {
+			return;
+		}
+		String state = order.state();
+		if (state.equals(RealmData.MUSTER) || state.equals(RealmData.GATHERING) && order.leaves() > 0 && musterAt == 0) {
+			musterAt = order.leaves();
+		}
+		if (state.equals(RealmData.MUSTER)) {
+			beforeBell = states();
+		}
+		if (order.gone() && bellAt == 0) {
+			bellAt = order.leaves();
+		}
+	}
+
+	/** Each settler's name, place, distance to the hall, activity, walk target and path, for the failure lines. */
+	private String states() {
+		List<String> out = new ArrayList<>();
+		for (Villager v : settlers) {
+			net.minecraft.world.level.pathfinder.Path path = v.getNavigation().getPath();
+			out.add(v.getName().getString() + (v.isAlive() ? "" : " (dead)") + (v.isRemoved() ? " (removed)" : "") + " at " + v.blockPosition().toShortString()
+				+ String.format(" %.1f from the hall", Math.sqrt(v.distanceToSqr(Vec3.atCenterOf(hall))))
+				+ ", doing " + v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+				+ (v.isSleeping() ? ", asleep" : "")
+				+ ", walking to " + v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET)
+					.map(w -> w.getTarget().currentBlockPosition().toShortString()).orElse("nowhere")
+				+ ", path " + (path == null ? "none" : "to " + path.getTarget().toShortString() + " node " + path.getNextNodeIndex() + "/" + path.getNodeCount()
+					+ (path.canReach() ? "" : " (can't reach)") + (path.isDone() ? " (done)" : "")));
+		}
+		return String.join("; ", out);
 	}
 
 	private RealmData.Order order(MinecraftServer server) {
@@ -249,7 +297,8 @@ final class ColonyDepartureScene {
 		if (porter != null) {
 			io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, store);
 		}
-		// Dara and Tomas, jobless grown-ups by the hall: the nearest to it, so they are the ones who volunteer.
+		// Dara and Tomas, jobless grown-ups by the hall: the nearest to it, so they are the ones who volunteer (B253: the
+		// village's own villagers wander too, so now and then one of them is nearer when the order comes, and goes instead).
 		settler(level, ground(level, hall.getX() + 1, hall.getZ() + 1), "Dara");
 		settler(level, ground(level, hall.getX() - 1, hall.getZ() + 1), "Tomas");
 		// The charter: Thornholm's, the spot 612 blocks north-east, named Newbrook in an anvil.
@@ -259,8 +308,18 @@ final class ColonyDepartureScene {
 		player.getInventory().setItem(0, charter);
 		player.getInventory().selected = 0;
 		player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket(0));
-		// south-west of the hall, looking north-east past it: the way the settlers go
-		BlockPos stand = ground(level, hall.getX() - 5, hall.getZ() + 6);
+		// south-west of the hall, looking north-east past it: the way the settlers go. B253: within the hall screen's reach
+		// (8 blocks), which a stand on a roof or down a slope of the random village was not, so the Colonies tab shut at once.
+		BlockPos stand = null;
+		for (int back = 6; back >= 3 && stand == null; back--) {
+			BlockPos at = ground(level, hall.getX() - back + 1, hall.getZ() + back);
+			if (Vec3.atBottomCenterOf(at).distanceToSqr(Vec3.atCenterOf(hall)) <= 7 * 7) {
+				stand = at;
+			}
+		}
+		if (stand == null) {
+			stand = hall.south(2);
+		}
 		player.teleportTo(level, stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, -140, 8);
 	}
 

@@ -22,6 +22,9 @@ asks for the steps, `latest.log` and any crash report).
   the rest of the siege; it is sent in again (B175).
 - Storage: a Sophisticated barrel or chest a builder adds to a storage controller's network, touching only another
   linked barrel, is now linked by the controller, so the Storehouse sees what is in it (B238).
+- Create: Mechanics and machine workers no longer carry a player's own input out of a Create machine to the village
+  store (gold ingots waiting on a press's depot, bones in a millstone, a brass mix in a basin); they only take what
+  the machine made, and don't feed a machine that is still busy with a player's batch.
 
 ## 0.146.0 — 2026-10-19
 

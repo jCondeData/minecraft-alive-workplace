@@ -400,6 +400,38 @@ public class MachineWorkCompatTests implements FabricGameTest {
 		reload(helper, Kind.CRUSHER);
 	}
 
+	/**
+	 * A player's own work on a machine is left alone: gold ingots on the press's depot (Create presses them into golden
+	 * sheets, which no file asks for) and bones in the millstone (milled into bone meal) are still being worked on, so
+	 * seeing to the machine never carries them off to the village's store, and the machine gets no batch on top of them.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"machine_players_input"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "machine_players_input")
+	public void aPlayersInputIsLeftInTheMachine(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		ServerLevel level = helper.getLevel();
+		Container chest = chest(helper, new ItemStack(Items.IRON_INGOT, 16), new ItemStack(Items.WHEAT, 16));
+		List<BlockPos> store = List.of(helper.absolutePos(CHEST));
+		BlockPos press = rig(helper, Kind.PRESS, false);
+		BlockPos depot = helper.absolutePos(press.offset(file(Kind.PRESS).feed().at()));
+		BlockPos mill = new BlockPos(2, 3, 7);
+		helper.setBlock(mill.below(), Blocks.STONE);
+		helper.setBlock(mill, create("millstone").defaultBlockState());
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		helper.assertTrue(stores.insert(level, List.of(depot), new ItemStack(Items.GOLD_INGOT, 8)).isEmpty(), "setup: the depot takes no gold ingots");
+		helper.assertTrue(stores.insert(level, List.of(helper.absolutePos(mill)), new ItemStack(Items.BONE, 8)).isEmpty(), "setup: the millstone takes no bones");
+		MachineWork.tend(level, store, helper.absolutePos(press), file(Kind.PRESS), helper.absolutePos(CHEST));
+		MachineWork.tend(level, store, helper.absolutePos(mill), file(Kind.MILL), helper.absolutePos(CHEST));
+		helper.assertTrue(count(chest, Items.GOLD_INGOT) == 0, "the player's gold ingots were carried off the depot to the store");
+		helper.assertTrue(count(chest, Items.BONE) == 0, "the player's bones were carried out of the millstone to the store");
+		helper.assertTrue(stores.count(level, List.of(depot), Items.GOLD_INGOT) == 8, "the depot doesn't hold the player's 8 gold ingots");
+		helper.assertTrue(stores.count(level, List.of(helper.absolutePos(mill)), Items.BONE) == 8, "the millstone doesn't hold the player's 8 bones");
+		helper.assertTrue(count(chest, Items.IRON_INGOT) == 16 && count(chest, Items.WHEAT) == 16, "a machine still busy with a player's input got a batch from the store");
+		clearMachines(helper);
+		helper.succeed();
+	}
+
 	/** Config {@code machineWork} off: the farmer leaves the turning millstone alone. */
 	//$ gametest_ticks_batch AREA '600' '"machine_work_off"'
 	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_work_off")

@@ -71,8 +71,18 @@ final class CupBoutScene {
 				begin(level);
 			});
 		}
+		// Watched every 5 ticks while the bout runs, not sampled once: on a slow runner the server can be behind the
+		// client, and a Pokémon fainted on the first move is recalled for 5 ticks before the next comes out (B250).
+		if (tick > 60 && endedAt < 0 && !bothOut && tick % 5 == 0) {
+			server.execute(() -> {
+				net.minecraft.world.entity.Entity a = CupBouts.shown(server.overworld(), HALL, 0);
+				net.minecraft.world.entity.Entity b = CupBouts.shown(server.overworld(), HALL, 1);
+				if (a != null && b != null && a.isAlive() && b.isAlive()) {
+					bothOut = true;
+				}
+			});
+		}
 		if (tick == 100) {
-			server.execute(() -> bothOut = CupBouts.shown(server.overworld(), HALL, 0) != null && CupBouts.shown(server.overworld(), HALL, 1) != null);
 			ScreenshotHarness.shot(mc, "01_bout_start");
 		}
 		if (tick > 100 && endedAt < 0 && tick % 150 == 0 && shots < 8) {

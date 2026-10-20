@@ -1,6 +1,7 @@
 {
   "pieces": {
     "chair": {"by": "wood", "mods": {"aliveworkplace_test_pieces": "minecraft:{wood}_stairs", "aliveworkplace_test_alt": "minecraft:{wood}_wood",
-      "aliveworkplace_test_wide": "minecraft:{wood}_pressure_plate", "aliveworkplace_test_same": "minecraft:{wood}_stairs"}}
+      "aliveworkplace_test_wide": "minecraft:{wood}_pressure_plate", "aliveworkplace_test_same": "minecraft:{wood}_stairs"}},
+    "bed": {"by": "colour", "mods": {"aliveworkplace_test_beds": "minecraft:{colour}_bed", "aliveworkplace_test_plank_bed": "minecraft:{colour}_wool"}}
   }
 }

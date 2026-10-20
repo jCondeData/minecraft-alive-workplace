@@ -48,6 +48,7 @@ abstract class VillagerMixin {
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.tick((Villager) (Object) this); // who wears a Mega Bracelet (38.5)
 		io.github.jcondedata.aliveworkplace.people.Retirement.tick((Villager) (Object) this); // shadows and mentors (34.20)
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureSeats.tick((Villager) (Object) this); // sitting on the furniture (37.6)
+		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.tickTrip((Villager) (Object) this); // a machine trip that can't go on (B244)
 		if (((Villager) (Object) this).isRemoved()) {
 			ci.cancel();
 			return;

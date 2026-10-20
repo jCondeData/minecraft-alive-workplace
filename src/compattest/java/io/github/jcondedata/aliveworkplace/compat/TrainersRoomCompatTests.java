@@ -120,6 +120,70 @@ public class TrainersRoomCompatTests implements net.fabricmc.fabric.api.gametest
 		helper.succeed();
 	}
 
+	/**
+	 * The Trainer's desk is in the chair's room: within three blocks each way across the floor (one at three is taken) and
+	 * on the chair's own floor; a desk further off along one side only, or a floor up, is another room's, so the room is
+	 * the chair alone (mutation check, 37.4).
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void theTrainersDeskIsInTheChairsRoom(GameTestHelper helper) {
+		BlockPos chair = new BlockPos(5, 1, 5);
+		BlockPos bed = new BlockPos(12, 1, 12);
+		Map<String, BlockPos> elsewhere = Map.of(
+			"five blocks along x", chair.offset(5, 0, 0),
+			"five blocks along z", chair.offset(0, 0, 5),
+			"a floor up", chair.offset(1, 2, 0));
+		elsewhere.forEach((where, desk) -> {
+			Map<Integer, FurnishingTable.Piece> room = FurnitureChoice.trainersRoom(List.of(
+				spot(FurnitureSpot.Kind.CHAIR, chair), spot(FurnitureSpot.Kind.BED, bed), spot(FurnitureSpot.Kind.DESK, desk)));
+			helper.assertTrue(room.keySet().equals(java.util.Set.of(0)), "a desk " + where + " was taken into the Trainer's room: " + room.keySet());
+		});
+		Map<String, BlockPos> near = Map.of(
+			"three blocks along z", chair.offset(0, 0, 3),
+			"three blocks along x", chair.offset(-3, 0, 0),
+			"a step down", chair.offset(1, -1, 1));
+		near.forEach((where, desk) -> {
+			Map<Integer, FurnishingTable.Piece> room = FurnitureChoice.trainersRoom(List.of(
+				spot(FurnitureSpot.Kind.CHAIR, chair), spot(FurnitureSpot.Kind.BED, bed), spot(FurnitureSpot.Kind.DESK, desk)));
+			helper.assertTrue(room.get(2) == FurnitureChoice.POKE_BALL_DESK, "the desk " + where + " was left out of the Trainer's room: " + room.keySet());
+		});
+		// A home with a bed and no chair has no Trainer's room
+		helper.assertTrue(FurnitureChoice.trainersRoom(List.of(spot(FurnitureSpot.Kind.BED, bed), spot(FurnitureSpot.Kind.DESK, chair))).isEmpty(),
+			"a Trainer's room in a home without a chair");
+		helper.succeed();
+	}
+
+	/**
+	 * Only a home has a Trainer's room: a build with a chair and a desk but no bed spot (a workplace) has none, so a
+	 * partner living nearby never puts a Poké Ball chair in it (mutation check, 37.4).
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void aBuildWithoutABedHasNoTrainersRoom(GameTestHelper helper) {
+		BlockPos chair = new BlockPos(5, 1, 5);
+		Map<Integer, FurnishingTable.Piece> room = FurnitureChoice.trainersRoom(List.of(
+			spot(FurnitureSpot.Kind.CHAIR, chair), spot(FurnitureSpot.Kind.DESK, chair.offset(1, 0, 0))));
+		helper.assertTrue(room.isEmpty(), "a Trainer's room in a build without a bed: " + room.keySet());
+		helper.succeed();
+	}
+
+	/**
+	 * The Trainer's desk is a desk before a table: with a table and a desk the same distance from the chair, the desk is
+	 * taken, though the table comes first in the file (mutation check, 37.4).
+	 */
+	//$ gametest AREA
+	@GameTest(template = AREA)
+	public void theTrainersDeskIsADeskBeforeATable(GameTestHelper helper) {
+		BlockPos chair = new BlockPos(5, 1, 5);
+		Map<Integer, FurnishingTable.Piece> room = FurnitureChoice.trainersRoom(List.of(
+			spot(FurnitureSpot.Kind.CHAIR, chair), spot(FurnitureSpot.Kind.BED, new BlockPos(12, 1, 12)),
+			spot(FurnitureSpot.Kind.TABLE, chair.offset(1, 0, 0)), spot(FurnitureSpot.Kind.DESK, chair.offset(0, 0, 1))));
+		helper.assertTrue(room.get(3) == FurnitureChoice.POKE_BALL_DESK && !room.containsKey(2),
+			"the table was taken over the desk as near: " + room.keySet());
+		helper.succeed();
+	}
+
 	private static FurnitureSpot spot(FurnitureSpot.Kind kind, BlockPos pos) {
 		return new FurnitureSpot(kind, pos, Direction.NORTH, "oak", null, List.of());
 	}

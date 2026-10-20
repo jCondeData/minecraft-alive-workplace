@@ -378,7 +378,10 @@ public class SiegeGameTests implements FabricGameTest {
 			+ ", raid " + (ThreatData.get(level).raid(s.hall).isPresent() ? "on" : "over")).toList();
 		List<String> goals = ((io.github.jcondedata.aliveworkplace.mixin.MobAccessor) mob).aliveworkplace$goals().getAvailableGoals().stream()
 			.filter(net.minecraft.world.entity.ai.goal.WrappedGoal::isRunning).map(w -> w.getGoal().getClass().getSimpleName()).toList();
-		return "raiders about " + raiders + "; sieges " + sieges + "; its goals " + goals;
+		List<String> held = ThreatData.get(level).sieges().stream().map(s -> Sieges.directorState(level, s.hall, mob)).toList();
+		List<String> all = ((io.github.jcondedata.aliveworkplace.mixin.MobAccessor) mob).aliveworkplace$goals().getAvailableGoals().stream()
+			.map(w -> w.getPriority() + " " + w.getGoal().getClass().getSimpleName()).toList();
+		return "raiders about " + raiders + "; sieges " + sieges + "; its goals " + goals + " of " + all + "; held " + held;
 	}
 
 	/**
@@ -412,6 +415,48 @@ public class SiegeGameTests implements FabricGameTest {
 				helper.fail("the pillager from beside the wall isn't in 600 ticks after the way opened: pillager " + state(helper, pillager) + "; ram "
 					+ state(helper, ram) + "; " + siegeState(level, yard));
 			} else if (open[0] < 0 && tick > 2000) {
+				helper.fail("the way isn't open after 2000 ticks: ram " + state(helper, ram));
+			}
+		});
+	}
+
+	/**
+	 * B175: a raider the director counted through the breach that walks back out (its own stroll took it out through the
+	 * open gateway) is the director's again and goes back in. It was left be for good and stood outside for the rest of
+	 * the siege.
+	 */
+	//$ gametest_ticks_batch AREA '2400' '"siegeBackOut"'
+	@GameTest(template = AREA, timeoutTicks = 2400, batch = "siegeBackOut")
+	public void aRaiderBackOutsideGoesInAgain(GameTestHelper helper) {
+		Yard yard = yard(helper, StarterBlueprints.GATEHOUSE);
+		ServerLevel level = yard.level();
+		Mob ram = raider(helper, yard, Culture.Role.RAM, 14.5, 21.5);
+		Mob pillager = raider(helper, yard, Culture.Role.RANGED, 14.5, 25.5);
+		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(ram, pillager));
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		long[] at = {-1, -1}; // when the way opened; when the counted pillager was put back outside
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (at[0] < 0 && Sieges.open(yard.siege(helper))) {
+				at[0] = tick;
+				// In the yard, where the director counts it through.
+				pillager.teleportTo(base.getX() + 14.5, base.getY() + 2, base.getZ() + 9.5);
+				pillager.getNavigation().stop();
+				pillager.setTarget(null);
+			} else if (at[0] >= 0 && at[1] < 0 && Sieges.through(level, yard.hall(), pillager.getUUID())) {
+				at[1] = tick;
+				// Back out in front of the gate, as its stroll took it, with no foe.
+				pillager.teleportTo(base.getX() + 14.5, base.getY() + 2, base.getZ() + 25.5);
+				pillager.getNavigation().stop();
+				pillager.setTarget(null);
+			} else if (at[1] >= 0 && tick - at[1] > 10 && through(helper, yard, pillager)) {
+				helper.succeed();
+			} else if (at[1] >= 0 && tick - at[1] > 600) {
+				helper.fail("the pillager back outside isn't in again 600 ticks later: pillager " + state(helper, pillager) + "; ram " + state(helper, ram)
+					+ "; " + siegeState(level, yard) + "; " + about(helper, level, pillager));
+			} else if (at[0] >= 0 && at[1] < 0 && tick - at[0] > 200) {
+				helper.fail("the director didn't count the pillager in the yard through: " + state(helper, pillager) + "; " + about(helper, level, pillager));
+			} else if (at[0] < 0 && tick > 2000) {
 				helper.fail("the way isn't open after 2000 ticks: ram " + state(helper, ram));
 			}
 		});
@@ -806,6 +851,15 @@ public class SiegeGameTests implements FabricGameTest {
 						Rotation.NONE, Mirror.NONE), builder[0].getUUID()); // the builder's to look after
 					io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = false; // builderRepairs off
 					io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS = true; // as in a player's game
+					// Builders work by day (2000 to 9000) and rest at night: a gate broken at night goes back the next
+					// morning, so the clock goes on to a working morning unless enough of the day's work is left. The level's
+					// clock is whatever earlier tests left it at, and from dusk the builder only rested (B237). yard() puts
+					// the clock back when the test ends.
+					long now = level.getDayTime();
+					long timeOfDay = now % 24000L;
+					if (timeOfDay < 2000L || timeOfDay > 7000L) {
+						level.setDayTime(now - timeOfDay + (timeOfDay < 2000L ? 0L : 24000L) + 2000L);
+					}
 					var site = io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder[0]);
 					helper.assertTrue(site != null && site.isRepair(), "no repair of the broken gate with builderRepairs off");
 				} else if (tick > 500) {
@@ -817,8 +871,13 @@ public class SiegeGameTests implements FabricGameTest {
 				&& !io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0])) {
 				helper.succeed();
 			} else if (tick > broke[0] + 1200) {
+				var site = io.github.jcondedata.aliveworkplace.build.Builders.activeSite(level, builder[0]);
 				helper.fail("the builder didn't put the gate back: " + level.getBlockState(gate) + ", repairing "
-					+ io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0]));
+					+ io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0]) + "; builder at "
+					+ builder[0].position() + (builder[0].isSleeping() ? ", asleep" : "") + ", activity "
+					+ builder[0].getBrain().getActiveNonCoreActivity().orElse(null) + ", day time " + level.getDayTime() % 24000L
+					+ " (broke at " + (level.getDayTime() - (tick - broke[0])) % 24000L + ")"
+					+ (site == null ? ", no site" : ", site " + site.stage() + " " + site.status() + " " + site.detail() + ", skipped " + site.skipped()));
 			}
 		});
 	}

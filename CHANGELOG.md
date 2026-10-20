@@ -16,6 +16,35 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- Create: a farmer, armorer, chef or miner who stops machine work in the middle of a trip (their workstation broken
+  while still a Novice, or machine work switched off in the config) no longer keeps the wheat, iron or ore they
+  carried for good: it goes back into the village's store, or drops at their feet when the store is full (B244).
+- Create: villagers and the Mechanic only work the village's own machines and chests, those inside a building the
+  village's builders finished. A Mechanic hired at a player's own toolbox, or a farmer, armorer, chef or miner whose
+  workstation stands by a player's chests, no longer feeds the player's iron, wheat or ore into the player's press or
+  millstone, nor carries the player's automation output away (B243).
+- Workers: a villager whose walk the game dropped for a moment (a stroll ending as the job's walk began) no longer
+  stands still for a second before setting off, when an old path of theirs had failed; this sometimes made an elder
+  look as quick as a younger villager walking beside him (B242).
+- Sieges: a raider that walked back out through the open gate after going in no longer stands outside the walls for
+  the rest of the siege; it is sent in again (B175).
+- Storage: a Sophisticated barrel or chest a builder adds to a storage controller's network, touching only another
+  linked barrel, is now linked by the controller, so the Storehouse sees what is in it (B238).
+- Create: Mechanics and machine workers no longer carry a player's own input out of a Create machine to the village
+  store (gold ingots waiting on a press's depot, bones in a millstone, a brass mix in a basin); they only take what
+  the machine made, and don't feed a machine that is still busy with a player's batch.
+- Create: a farmer, armorer, chef or miner killed on the way to a machine now drops the input they were carrying
+  instead of losing it.
+- Create: workers no longer use Create's work blocks as supply chests: a train station's schedule slot, a saw, an
+  ejector, a brass tunnel, a portable storage interface, a packager, a frogport or postbox, a stock ticker or a
+  creative crate (a farmer filled them with wheat, and a builder could take endlessly from a creative crate).
+- Create: an item vault built of several blocks counts as one store: its items were counted once per block (a
+  three-block vault with 10 diamonds showed 30), so workers and builders thought the store held more than it did.
+- Create: when the store by a machine has room for only part of what the machine made, the rest now stays in the
+  machine for next time instead of being dropped on the ground, where it could despawn.
+
 ## 0.146.0 — 2026-10-19
 
 ### Added

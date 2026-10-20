@@ -182,6 +182,8 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 				helper.assertTrue(carved == shelves && vanilla == 0, "built: " + carved + " Carved Wood bookshelves of " + shelves + ", " + vanilla + " vanilla");
 				helper.assertTrue(id(level.getBlockState(lectern)).equals("carved_wood:spruce_lectern")
 					&& level.getPoiManager().getType(lectern).map(h -> h.is(PoiTypes.LIBRARIAN)).orElse(false), "the lectern is no Librarian's job site");
+				clearStrays(helper, site, lectern);
+				helper.assertTrue(level.getPoiManager().getFreeTickets(lectern) > 0, "the lectern is taken before the villager comes");
 				Villager v = EntityType.VILLAGER.create(level);
 				BlockPos stand = standNear(level, lectern);
 				v.moveTo(stand.getX() + 0.5, stand.getY(), stand.getZ() + 0.5, 0, 0);
@@ -191,7 +193,8 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 			}
 			Villager v = librarian.get();
 			helper.assertTrue(v.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN,
-				"the villager is " + v.getVillagerData().getProfession() + " (job site " + v.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ")");
+				"the villager is " + v.getVillagerData().getProfession() + " (job site " + v.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ")"
+					+ diagnose(helper, v, lectern));
 			helper.assertTrue(v.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).map(lectern::equals).orElse(false),
 				"the Librarian's job site isn't the Carved Wood lectern: " + v.getBrain().getMemory(MemoryModuleType.JOB_SITE));
 		});
@@ -230,7 +233,8 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 	/**
 	 * A builder on {@code id} at (9, 2, 3), his chests holding exactly what the plan costs (as in 37.5's tests). Chests,
 	 * not barrels (B202): a barrel is the Fisherman's job site, and the Library test's jobless villager once took one of
-	 * these supply barrels, a dozen blocks away, instead of the Library's lectern.
+	 * these supply barrels, a dozen blocks away, instead of the Library's lectern (because a stray villager had taken the
+	 * lectern first, B245: see {@link #clearStrays}).
 	 */
 	private static BuildSite start(GameTestHelper helper, ResourceLocation id) {
 		ServerLevel level = helper.getLevel();
@@ -274,6 +278,43 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 			}
 		}
 		throw new GameTestAssertException("no room beside the lectern at " + pos);
+	}
+
+	/**
+	 * B245 (and B202): removes every villager but the builder from around the finished Library, letting go of the lectern
+	 * first if one holds it. A villager left by an earlier batch (one the clear at the start missed, or that walked in
+	 * from farther off during the build) took the lectern as soon as it was built, and the test's villager then found no
+	 * free lectern: it stayed jobless (B245) or took a supply barrel (B202). In a world that's vanilla: a free lectern goes
+	 * to the first jobless villager who finds it. This test is about the one it spawns beside the lectern.
+	 */
+	private static void clearStrays(GameTestHelper helper, BuildSite site, BlockPos lectern) {
+		for (Villager other : helper.getLevel().getEntitiesOfClass(Villager.class, helper.getBounds().inflate(48),
+				o -> !o.getUUID().equals(site.builder()))) {
+			for (MemoryModuleType<GlobalPos> memory : List.of(MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE)) {
+				if (other.getBrain().getMemory(memory).map(g -> g.pos().equals(lectern)).orElse(false)) {
+					other.releasePoi(memory);
+				}
+			}
+			other.discard();
+		}
+	}
+
+	/** B245: why a villager hasn't become the Librarian: where they are, what they picked, who else holds the lectern. */
+	private static String diagnose(GameTestHelper helper, Villager v, BlockPos lectern) {
+		ServerLevel level = helper.getLevel();
+		StringBuilder s = new StringBuilder("; villager ").append(v.isRemoved() ? "REMOVED " + v.getRemovalReason() : "alive")
+			.append(" at ").append(helper.relativePos(v.blockPosition()).toShortString()).append(", lectern at ").append(helper.relativePos(lectern).toShortString())
+			.append(", lectern tickets free ").append(level.getPoiManager().getFreeTickets(lectern))
+			.append(", picked ").append(v.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("-"))
+			.append(", walk ").append(v.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(w -> helper.relativePos(w.getTarget().currentBlockPosition()).toShortString()).orElse("-"))
+			.append(", activity ").append(v.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("-"))
+			.append(", baby ").append(v.isBaby()).append(", day time ").append(level.getDayTime() % 24000);
+		for (Villager other : level.getEntitiesOfClass(Villager.class, v.getBoundingBox().inflate(64), o -> o != v)) {
+			s.append("; other villager ").append(other.getVillagerData().getProfession()).append(" at ").append(helper.relativePos(other.blockPosition()).toShortString())
+				.append(" job ").append(other.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("-"))
+				.append(" picked ").append(other.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("-"));
+		}
+		return s.toString();
 	}
 
 	private static boolean isPoi(BlockState state, ResourceKey<PoiType> type) {

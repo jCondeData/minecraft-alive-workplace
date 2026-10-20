@@ -714,6 +714,13 @@ public final class Sieges {
 				if (ramming.contains(mob.getUUID()) || Ladders.claims(mob.getUUID()) || SandRamps.claims(mob.getUUID())) {
 					continue; // (at the gate, or at a ladder: Ladders walks those)
 				}
+				// Counted through a few steps in, its own goals (a stroll) could walk it back out through the open gateway, and the
+				// director never ordered it again: it stood outside for the rest of the siege (B175). Back outside, it is the
+				// director's again.
+				Vec3 d = mob.position().subtract(gate);
+				if (d.x * siege.out.getStepX() + d.z * siege.out.getStepZ() > 1) {
+					director.through.remove(mob.getUUID());
+				}
 				if (open && !director.through.contains(mob.getUUID()) && mob.position().distanceToSqr(within) < 16) {
 					director.through.add(mob.getUUID());
 				}
@@ -974,8 +981,20 @@ public final class Sieges {
 		return new Status(gates, open, data.brokenGates(hall).size(), portcullis, portcullisDown(level, hall), data.siege(hall).isPresent());
 	}
 
+	/**
+	 * What the director of the siege round {@code hall} holds about {@code mob}, for a test's failure message (B175): its
+	 * steps, whether the mob is on its raider list, counted through, at a ladder or ramp, its order and its goal.
+	 */
+	public static String directorState(ServerLevel level, BlockPos hall, Mob mob) {
+		Director director = DIRECTORS.get(new Key(level.dimension(), hall));
+		UUID id = mob.getUUID();
+		String held = director == null ? "no director" : "director steps " + director.steps + ", listed " + director.raiders.contains(mob) + " of "
+			+ director.raiders.size() + ", through " + director.through.contains(id) + ", ordered " + director.ordered.contains(id);
+		return held + ", ladder " + Ladders.claims(id) + ", ramp " + SandRamps.claims(id) + ", order " + ORDERS.get(id) + ", goaled " + GOALED.contains(mob);
+	}
+
 	/** Whether the director of the siege of the village round {@code hall} saw {@code mob} go in through the breach. */
-	static boolean through(ServerLevel level, BlockPos hall, UUID mob) {
+	public static boolean through(ServerLevel level, BlockPos hall, UUID mob) {
 		Director director = DIRECTORS.get(new Key(level.dimension(), hall));
 		return director != null && director.through.contains(mob);
 	}

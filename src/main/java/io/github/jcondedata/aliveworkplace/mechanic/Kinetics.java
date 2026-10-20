@@ -17,8 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * blueprint in that order (what a cogwheel sits on before the cogwheel, the pulleys' shafts before the belt).</li>
  * <li>The machines on the round: those the machine-work files name ({@link MachineWorkFiles}, 39.3), fed and emptied as
  * their files say.</li>
- * <li>Blocks that keep their own items ({@link #keepsOwnItems}): the machines, the depot, the basin, the belt and the
- * toolbox. They're never anyone's supply chest, so no worker puts the store's goods into a mill or takes a player's
+ * <li>Blocks that keep their own items ({@link #keepsOwnItems}): the machines, the depot, the basin, the belt, the
+ * toolbox, a train station, Create's package logistics and the creative crate. They're never anyone's supply chest, so no worker puts the store's goods into a mill or takes a player's
  * tools out of a toolbox.</li>
  * </ul>
  */
@@ -31,10 +31,15 @@ public final class Kinetics {
 		"cogwheel", 1, "large_cogwheel", 1,
 		"belt", 2);
 
-	/** Create's blocks that hold items for their own work, never as storage. */
+	/**
+	 * Create's blocks that hold items for their own work, never as storage: the machines, belts and what feeds them, a
+	 * train station's schedule slot, the packages of Create's logistics, and the creative crate's endless stock.
+	 */
 	private static final List<String> OWN_ITEMS = List.of("millstone", "mechanical_press", "mechanical_mixer", "basin", "depot",
 		"crushing_wheel", "crushing_wheel_controller", "belt", "chute", "smart_chute", "deployer", "mechanical_crafter",
-		"item_drain", "spout", "blaze_burner");
+		"item_drain", "spout", "blaze_burner", "mechanical_saw", "mechanical_drill", "weighted_ejector", "andesite_tunnel",
+		"brass_tunnel", "portable_storage_interface", "track_station", "packager", "repackager", "package_frogport",
+		"stock_ticker", "creative_crate");
 
 	private Kinetics() {
 	}
@@ -76,7 +81,7 @@ public final class Kinetics {
 	/** A Create block that holds items for its own work (a machine, a belt, a toolbox): never a supply chest. */
 	public static boolean keepsOwnItems(BlockState state) {
 		String id = createId(state);
-		return id != null && (OWN_ITEMS.contains(id) || id.endsWith("_toolbox"));
+		return id != null && (OWN_ITEMS.contains(id) || id.endsWith("_toolbox") || id.endsWith("_postbox"));
 	}
 
 	/**

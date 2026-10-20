@@ -16,7 +16,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
   is heard, the block cracks a little more with each, and at the end it breaks: nothing drops. The chat says "The
   raiders have broken through a gate of Oakbrook!" The other raiders wait a few blocks behind the ram and walk in
   through the gap; the ram steps aside out of the gateway to let them past, then widens it. A raider a fight took
-  round the side of the walls comes back round to the gateway and in.
+  round the side of the walls comes back round to the gateway and in, and one that strolls back out through the gap
+  is sent in again.
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
@@ -283,6 +284,8 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   still shut after the raid, open at dawn, with the Defense page's lines; the gate standing after 2400 ticks with
   the game rule off; the two switches; a save and load half-way through a gate; a gate the player breaks first; the
   director's four paths a tick; a village without a finished wall or gate, and a culture that does not ram.
+- GameTests (B175): `SiegeGameTests.aRaiderBackOutsideGoesInAgain` (a pillager the director counted through, put back
+  outside in front of the gate with no foe, is in again within 600 ticks; it stood outside for good before the fix).
 - GameTests (32.20): `SiegeGameTests.aGatehouseIITakesLongerThanAGatehouse` (the same yard with a Gatehouse, then a
   Gatehouse II: twelve bars drop, both gates shut, the breach is the barbican's middle gate, and the pillager takes
   longer to get through), `theDefenceUpgradesAreKnown` (all four are defenses with stations and keep most of their

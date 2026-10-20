@@ -34,6 +34,12 @@ fi
 # 2. Fresh copy of the world + client options that skip first-launch screens.
 mkdir -p $RUN/screenshots/saves
 rm -rf $RUN/screenshots/saves/shots $RUN/screenshots/screenshots $RUN/screenshots/showcase.json
+# Pokémon Showdown's files, rebuilt every launch (B233). Cobblemon unpacks them into showdown/ when the folder is missing,
+# and Mega Showdown then patches them and writes showdown/MSDPatch.json, which makes it skip the patch on later launches.
+# A shard runs scenes with and without Mega Showdown in one run folder: after a Cobblemon-only scene the files were stock
+# again but the marker stayed, so the next Mega scene loaded Showdown without Mega's functions, its held-item data
+# failed to load ("receiveHeldItemDataFn is null") and the world never opened.
+rm -rf $RUN/screenshots/showdown $RUN/screenshots/showdown-backup
 cp -r $RUN/shots $RUN/screenshots/saves/shots
 printf '%s\n' 'version:3955' 'onboardAccessibility:false' 'tutorialStep:none' 'joinedFirstServer:true' \
   'skipMultiplayerWarning:true' 'narrator:0' 'renderDistance:6' 'simulationDistance:6' 'graphicsMode:0' \

@@ -88,6 +88,9 @@ final class JobScenes {
 	}
 
 	/** Stills a job scene's server side asks for (named like any still), taken on the client's next tick. */
+	/** What a job scene's check last found missing (set on the server by checks that say), added to its timeout message. */
+	static volatile String timeoutWhy;
+
 	static final java.util.concurrent.ConcurrentLinkedQueue<String> SHOTS = new java.util.concurrent.ConcurrentLinkedQueue<>();
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
@@ -626,6 +629,19 @@ final class JobScenes {
 		return STATION.west(2);
 	}
 
+	/**
+	 * B243: villagers work only the village's own Create machines and chests, those inside a building the builders
+	 * finished. Records the ground round the station (x -4 to 5, z -7 to 2, four high) as such a building, with an empty
+	 * blueprint, so a scene's millstone and store chest are the village's.
+	 */
+	private static void villageWorkshop(ServerLevel level, net.minecraft.world.entity.player.Player player) {
+		net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("showcase/village_workshop");
+		BlockPos from = STATION.offset(-4, 0, -7);
+		level.getStructureManager().getOrCreate(id).fillFromWorld(level, from, new net.minecraft.core.Vec3i(10, 4, 10), false, Blocks.AIR);
+		BuildSiteManager.get(level).recordFinished(id, new BlueprintData.Placement(level.dimension().location(), from,
+			net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+	}
+
 	// --- The scenes ------------------------------------------------------------------------------------------------
 
 	static {
@@ -807,7 +823,10 @@ final class JobScenes {
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
 			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pillager_warband");
-			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 34), id);
+			// The camp stands past where the raid gathers (0.6 of the hall's radius out, about z 26, a few blocks each way), as a
+			// real one does (80 to 104 out, B130): at z 34 its ring of logs (z 24 to 44, turned at random) took the gathering
+			// ground in, the ravager was put down inside it and never got out to the gate.
+			io.github.jcondedata.aliveworkplace.threat.Lairs.Lair lair = io.github.jcondedata.aliveworkplace.threat.Lairs.found(level, hall, STATION.offset(0, -1, 52), id);
 			Showcase.check(lair != null && io.github.jcondedata.aliveworkplace.threat.Lairs.named(lair)
 				&& io.github.jcondedata.aliveworkplace.threat.Lairs.captainName(lair).getString().startsWith("Warlord "), "the warband made its war camp, with a named Warlord");
 			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
@@ -1078,6 +1097,7 @@ final class JobScenes {
 			if (ModVillagers.MECHANIC == null) {
 				return l -> true;
 			}
+			villageWorkshop(level, player);
 			Container c = chest(level, chestPos(), new ItemStack(createItem.apply("shaft"), 2), new ItemStack(createItem.apply("cogwheel"), 1),
 				new ItemStack(Items.WHEAT, 16));
 			Villager mechanic = worker(level, STATION, create.apply("brown_toolbox"), ModVillagers.TOOLBOX_POI, ModVillagers.MECHANIC);
@@ -1113,6 +1133,7 @@ final class JobScenes {
 			java.util.function.Function<String, Item> createItem = path -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
 				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("create", path));
 			Showcase.check(!io.github.jcondedata.aliveworkplace.mechanic.MachineWorkFiles.all().isEmpty(), "Create is loaded and the machine-work files are read");
+			villageWorkshop(level, player);
 			Container c = chest(level, chestPos(), new ItemStack(Items.WHEAT, 32));
 			Villager farmer = worker(level, STATION, Blocks.COMPOSTER, net.minecraft.world.entity.ai.village.poi.PoiTypes.FARMER,
 				net.minecraft.world.entity.npc.VillagerProfession.FARMER);
@@ -2380,7 +2401,10 @@ final class JobScenes {
 			mira.setVillagerData(mira.getVillagerData().setLevel(3));
 			mira.setCustomName(Component.literal("Mira"));
 			mira.kill();
+			// B236: the grave's record is filed in vanilla's next task, so file it now or the street grave reads as none
+			ScreenshotHarness.fileRecords(level, new BlockPos(6, -60, 6), 4);
 			List<BlockPos> street = io.github.jcondedata.aliveworkplace.grave.Graves.near(level, new BlockPos(6, -60, 6), 4);
+			Showcase.check(!street.isEmpty(), "Mira's grave lies in the street");
 			picked(level, player, STATION, Blocks.BREWING_STAND, Items.GOLDEN_APPLE);
 			chest(level, STATION.east(2));
 			return l -> !street.isEmpty() && !l.getBlockState(street.get(0)).is(ModBlocks.GRAVE)
@@ -3409,7 +3433,10 @@ final class JobScenes {
 			}
 			java.util.UUID id = site.id();
 			return l -> {
-				if (!built(l, id, 1f)) {
+				// B246: the statue counts once the builder has handed the job in (Builders.finish files it among the
+				// village's buildings and drops the site). built(…, 1f) is already true from the LANDSCAPE stage on, a
+				// few work ticks before that, and on GitHub's slower runner the checks landed in that gap.
+				if (BuildSiteManager.get(l).get(id) != null) {
 					return false;
 				}
 				io.github.jcondedata.aliveworkplace.legend.Founder.forgetStands();
@@ -3759,6 +3786,11 @@ final class JobScenes {
 			net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
 				io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
 			BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+			// B72: the Pasture Block's default state is waterlogged (a player's placement clears it on dry ground): set
+			// that way, both halves were water sources that flooded the ground, the lure spot with it, so no snack went out
+			if (bottom.hasProperty(BlockStateProperties.WATERLOGGED)) {
+				bottom = bottom.setValue(BlockStateProperties.WATERLOGGED, false);
+			}
 			BlockPos spot = STATION.offset(-2, 0, -3);
 			BlockPos log = STATION.offset(2, 0, -2);
 			level.setBlockAndUpdate(log, net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
@@ -3770,10 +3802,22 @@ final class JobScenes {
 			chest(level, chestPos(), new ItemStack(cobblemonItem("poke_snack"), 2), new ItemStack(Items.HONEY_BOTTLE, 2));
 			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.addSpot(keeper, spot);
 			WildPokemon.spawnStill(level, "eevee shiny=yes level=12", STATION.getX() + 4.5, STATION.getY(), STATION.getZ() - 4.5);
-			return l -> io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks() != null
-				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks().isSnackBlock(l.getBlockState(spot))
-				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.isSlathered(l.getBlockState(log))
-				&& !io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightings(keeper).isEmpty();
+			return l -> {
+				// B72: name which of the three is missing (and what she is doing) if the scene times out
+				boolean snack = io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks() != null
+					&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks().isSnackBlock(l.getBlockState(spot));
+				boolean slathered = io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.isSlathered(l.getBlockState(log));
+				boolean seen = !io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightings(keeper).isEmpty();
+				io.github.jcondedata.aliveworkplace.work.WorkerStatus.Entry status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(keeper, l.getGameTime());
+				timeoutWhy = "missing:" + (snack ? "" : " snack (spot holds " + l.getBlockState(spot).getBlock() + ")")
+					+ (slathered ? "" : " slathered log (log is " + l.getBlockState(log).getBlock() + ")")
+					+ (seen ? "" : " sighting (wild eevees near: " + l.getEntities((net.minecraft.world.entity.Entity) null, new net.minecraft.world.phys.AABB(STATION).inflate(24),
+						e -> net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals("cobblemon")).size() + " cobblemon entities)")
+					+ "; keeper " + keeper.getVillagerData().getProfession() + (keeper.isAlive() ? "" : " dead") + " at " + keeper.blockPosition().toShortString()
+					+ ", status " + (status == null ? "none" : status.line().getString())
+					+ ", spots " + io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.spots(keeper);
+				return snack && slathered && seen;
+			};
 		}));
 		SCENES.put("berry_breeder", new Job("the berry breeder bred a Lum Berry from Oran and Cheri", 2400, CAMERA, TARGET, (level, player) -> {
 			// ROADMAP 28.9: a composter picked with an Oran Berry; Oran, Cheri and Surprise Mulch in the chest; two rows of
@@ -3878,11 +3922,19 @@ final class JobScenes {
 			data.clearRoad(STATION);
 			data.clearRoad(ashford);
 			data.sent(ashford, today); // Ashford's caravan waits for the scene to send it
-			// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still
-			data.sent(STATION, -1);
-			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, STATION, null);
 			int[] act = {0, 0};
+			boolean[] sent = {false};
 			return l -> {
+				if (!sent[0]) {
+					// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still.
+					// B132: sent on the first look (tick 70, the world still frozen), not while staging: the game files a new
+					// block's point of interest a moment after it's placed (ServerLevel.onBlockStateChange queues it), so a
+					// round in the same moment found no Storehouse, packed nothing and sent no party, and the scene waited out
+					// its four minutes. (A real village's Storehouse stands long before its caravan's day.)
+					sent[0] = true;
+					data.sent(STATION, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+				}
 				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
 				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
 					act[0] = 1; // seen setting out
@@ -4293,11 +4345,15 @@ final class JobScenes {
 				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
 				// five blocks of the front wall knocked out (a creeper's hole, say: nothing a threat is counted for)
 				int knocked = 0;
-				for (int x = 0; x < size.getX() && knocked < 5; x++) {
-					BlockPos at = origin.offset(x, 2, 0);
-					if (!level.getBlockState(at).isAir() && level.getBlockEntity(at) == null) {
-						level.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
-						knocked++;
+				// (a row of the front at one height has the door and windows in it: take the wall's rows from the floor up
+				// until five solid blocks are out)
+				for (int y = 1; y < size.getY() && knocked < 5; y++) {
+					for (int x = 0; x < size.getX() && knocked < 5; x++) {
+						BlockPos at = origin.offset(x, y, 0);
+						if (level.getBlockState(at).canOcclude() && level.getBlockEntity(at) == null) {
+							level.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
+							knocked++;
+						}
 					}
 				}
 				Showcase.check(knocked == 5, "five blocks knocked out of the cottage's front: " + knocked);
@@ -6767,11 +6823,23 @@ final class JobScenes {
 					player.closeContainer();
 					level.setDayTime((level.getDayTime() / 24000) * 24000 + 11800);
 				}, 30),
+				// The guard's night patrol picks random spots within 6 blocks of his post, cabin doorways too, and stands there a
+				// few seconds: on GitHub (B72) he stood in front of a cabin with a villager still outside it at the check after
+				// 200 ticks. 400 lets a villager held up by him reach the bed once he moves on; the check still wants all three.
 				new Step("02_curfew_dusk", -1, 0, (level, player) ->
-					level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Curfew.DUSK + 20), 200),
+					level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Curfew.DUSK + 20), 400),
 				new Step("03_curfew_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
 					long asleep = curfewSleepers.stream().filter(io.github.jcondedata.aliveworkplace.hall.Curfew::asleepInBed).count();
-					Showcase.check(asleep == 3, "every villager went to bed at dusk: " + asleep + " of 3 asleep");
+					StringBuilder awake = new StringBuilder();
+					for (Villager v : curfewSleepers) {
+						if (!io.github.jcondedata.aliveworkplace.hall.Curfew.asleepInBed(v)) {
+							awake.append(" (awake: ").append(v.getVillagerData().getProfession()).append(" at ").append(v.blockPosition().toShortString())
+								.append(", resting ").append(v.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.REST))
+								.append(", home ").append(v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME).map(h -> h.pos().toShortString()).orElse("none"))
+								.append(", time ").append(level.getDayTime() % 24000).append(')');
+						}
+					}
+					Showcase.check(asleep == 3, "every villager went to bed at dusk: " + asleep + " of 3 asleep" + awake);
 					Showcase.check(!subject.isSleeping() && !io.github.jcondedata.aliveworkplace.hall.Curfew.keepsIn(subject), "the guard stayed on watch");
 					player.teleportTo(-5.5, -60, 1.5);
 					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));
@@ -7935,7 +8003,7 @@ final class JobScenes {
 		}
 		if (tick >= job.maxTicks() && doneAt < 0) {
 			ScreenshotHarness.shot(mc, "99_timeout");
-			Showcase.check(false, job.what() + " (not within " + job.maxTicks() / 20 + " seconds)");
+			Showcase.check(false, job.what() + " (not within " + job.maxTicks() / 20 + " seconds" + (timeoutWhy == null ? "" : "; " + timeoutWhy) + ")");
 			mc.stop();
 		}
 	}

@@ -95,11 +95,16 @@ val compattest: SourceSet? = if (compatTestMods.isNotEmpty()) sourceSets.create(
 
 compattest?.let { loom.createRemapConfigurations(it) }
 
-// The GameTest watchdog (B114: fails a run whose server thread stops ticking, with every thread's stack) runs in the
-// compat tests too: its one file, copied from the gametest sources into the compattest source set.
+// The GameTest watchdog (B114: fails a run whose server thread stops ticking, with every thread's stack) and the
+// mock-player sweep (B210: without it the compat suite kept every test's mock player, about 120 by batch 266, and ran
+// out of a 2 GB heap at batch megaSwitchOff) run in the compat tests too: their files, copied from the gametest
+// sources into the compattest source set.
 compattest?.let { set ->
     val watchdogSource = tasks.register<Sync>("compatWatchdogSource") {
-        from(rootProject.file("src/gametest/java")) { include("**/test/GameTestWatchdog.java") }
+        from(rootProject.file("src/gametest/java")) {
+            include("**/test/GameTestWatchdog.java")
+            include("**/test/MockPlayerSweep.java")
+        }
         into(layout.buildDirectory.dir("generated/compatWatchdog"))
     }
     set.java.srcDir(watchdogSource)

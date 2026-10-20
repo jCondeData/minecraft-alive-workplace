@@ -156,7 +156,7 @@ test to ship, not a bug. Each run, after checking CI and the nightly issue:
      job in the newest `nightly-tests` run (GitHub MCP: `actions_list` `list_workflow_runs` with `resource_id:
      nightly.yml`, then `list_workflow_jobs`; or the run's `nightly-mutation` artifact, `report.md`): mutants killed
      and each survivor's line and change, and each new test's failures out of 10. A mutant the plain suite misses is
-     run once more against the compat suite (`mutate.py --compat-cmd`), so "killed by (compat) ..." is a kill too; Survivors and flaky tests are also
+     run once more against the compat suite (`mutate.py --compat-cmd`), so "killed by (compat) ..." is a kill too (that run gets `--no-daemon` and a 1.5 GB heap by itself, and only javac's own errors count as NO-COMPILE); Survivors and flaky tests are also
      in the `nightly-tests` issue. A survivor in an item's code is a test to write; a flaky new test is a bug. To check
      something sooner, start the workflow by hand with `part: mutation`;
    - visual items: check their scenes on the showcase page or the item's showcase run; run the client yourself only

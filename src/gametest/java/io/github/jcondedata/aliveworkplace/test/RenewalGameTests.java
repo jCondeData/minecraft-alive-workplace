@@ -290,9 +290,15 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		helper.setDayTime(13000);
 		helper.succeedWhen(() -> {
 			for (Villager villager : sleepers) {
+				// B255: the walk and the "can't reach since" say why (vanilla gives a bed up after 1200 ticks unreachable), and
+				// where the others stand shows two villagers jammed together on the doorstep
 				helper.assertTrue(villager.isSleeping() && villager.getSleepingPos().map(box::isInside).orElse(false),
 					"not asleep in the new home yet: at " + helper.relativePos(villager.blockPosition()) + ", home " + villager.getBrain().getMemory(MemoryModuleType.HOME)
-						.map(g -> helper.relativePos(g.pos())) + ", activity " + villager.getBrain().getActiveNonCoreActivity() + ", new home " + box);
+						.map(g -> helper.relativePos(g.pos())) + ", activity " + villager.getBrain().getActiveNonCoreActivity() + ", walking to "
+						+ villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(w -> helper.relativePos(w.getTarget().currentBlockPosition()))
+						+ ", can't reach it since tick " + villager.getBrain().getMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE) + " (now "
+						+ level.getGameTime() + "), the others at " + sleepers.stream().filter(o -> o != villager).map(o -> helper.relativePos(o.blockPosition())
+						+ (o.isSleeping() ? " asleep" : "")).toList() + ", new home " + box);
 			}
 		});
 	}

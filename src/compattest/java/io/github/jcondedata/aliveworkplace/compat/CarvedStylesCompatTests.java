@@ -197,7 +197,9 @@ public class CarvedStylesCompatTests implements FabricGameTest {
 				throw new GameTestAssertException("a villager without a job is in the Library");
 			}
 			Villager v = librarian.get();
-			helper.assertTrue(v.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN,
+			// 36.17: the lectern is shared, so its villager is a Librarian or a Teacher
+			helper.assertTrue(v.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN
+					|| v.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.TEACHER,
 				"the villager is " + v.getVillagerData().getProfession() + " (job site " + v.getBrain().getMemory(MemoryModuleType.JOB_SITE) + ")"
 					+ diagnose(helper, v, lectern));
 			helper.assertTrue(v.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).map(lectern::equals).orElse(false),

@@ -24,6 +24,9 @@ import net.minecraft.world.level.Level;
  * rework (ingredients, the recipe manager on the server only) lands here too.
  */
 public final class Recipes {
+	/** The data pack folder recipe files are in ({@code data/<namespace>/recipe/}; {@code recipes} before 1.21). */
+	public static final String FOLDER = "recipe";
+
 	public static RecipeManager manager(ServerLevel level) {
 		return level.getRecipeManager();
 	}

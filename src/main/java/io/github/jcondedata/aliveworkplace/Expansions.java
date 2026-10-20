@@ -58,7 +58,7 @@ public final class Expansions {
 	/**
 	 * Milestone 38, Cobblemon depth (2.2): raid dens, more Megas and Cobblecuisine (design note M38). Its switches:
 	 * {@code denHelpers}, {@code denHelperPrice}, {@code villageMegas}, {@code cuisineDishes},
-	 * {@code beanFarms}; each comes into the config with the item that builds it (38.3 to 38.10).
+	 * {@code beanFarms}, {@code furnicrafters} (38.12); each comes into the config with the item that builds it (38.3 to 38.12).
 	 */
 	public static final boolean M38 = false;
 	/**
@@ -141,7 +141,7 @@ public final class Expansions {
 			case "wonders", "wonderCaps", "wonderLegends", "wonderServerLimit", "disabledWonders", "wonderCrew", "builderScaffolding",
 				"wonderStanding" -> "M35";
 			case "furnishedBuilds", "furnitureMods", "moddedStorageNetworks", "moddedLibrary", "crafters" -> "M37";
-			case "denHelpers", "denHelperPrice", "villageMegas", "cuisineDishes", "beanFarms" -> "M38";
+			case "denHelpers", "denHelperPrice", "villageMegas", "cuisineDishes", "beanFarms", "furnicrafters" -> "M38";
 			case "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains" -> "M39";
 			default -> null;
 		};

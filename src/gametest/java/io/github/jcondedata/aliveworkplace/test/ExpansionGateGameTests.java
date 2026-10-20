@@ -44,7 +44,7 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		"villageEdicts", "workHorns", "villageBanners", "cradles", "harvestIdols", "tonics", "guilds",
 		"villageEconomy", "visibleCaravans", "colonies", "realms", "realmRelief", "tradePacts", "alliances", "feuds", "feudWars", "realmMap", "weeklyLeaderboard", "villageClasses", "friendship", "heartEvents", "personalRequests", "reputation", "titlesInChat", "storyArcs", "bountyBoard", "rogueBounties", "vintners", "tailors", "printers", "villagerAges", "elderPassing", "agelessElders", "classOutfits", "elderRetirement", "familyNames",
 		"sieges", "siegeDamage", "firewardens", "wellKeepers", "physicians", "wonders", "wonderLegends", "builderScaffolding",
-		"furnishedBuilds", "moddedStorageNetworks", "moddedLibrary", "crafters", "denHelpers", "villageMegas", "cuisineDishes", "beanFarms", "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains");
+		"furnishedBuilds", "moddedStorageNetworks", "moddedLibrary", "crafters", "denHelpers", "villageMegas", "cuisineDishes", "beanFarms", "furnicrafters", "mechanics", "machineWork", "createBuilds", "createSchematics", "villageTrains");
 	/** The numbers that belong to them (hidden from the screen with them). */
 	static final List<String> GATED_NUMBERS = List.of("stewardMaxOpenBuilds", "caravanRoadReach", "giftedChance", "edictMinDays", "guildsPerRank",
 		"classRiseDays", "classFallDays", "classGraceDays", "cupEveryFestivals", "arcCooldownDays", "arcsAtOnce", "lostCaravanChance", "villagerElderDays", "colonyCooldownDays",
@@ -281,12 +281,12 @@ public class ExpansionGateGameTests implements FabricGameTest {
 		for (String name : GATED_SWITCHES) {
 			helper.assertTrue(new WorkplaceConfig().getBoolean(name), name + " should default on in GameTests");
 		}
-		helper.assertTrue(WorkplaceConfig.optionNames().size() == 148, "every option on the screen in GameTests (37.14 crafters, B222 gravesToGraveyard, 36.12 quarryBuild and quarryRegrowth, 36.15 repairAsk, 36.11 minerCraftsPickaxe, B211 forceVillageSpawns, B208 forceThreatSpawns, B209 campRuins, 38.1a denHelpers and denHelperPrice for 38.3/38.4's three, 37.12 moddedLibrary, 39.7 villageTrains, 39.6 createSchematics, 39.4 createBuilds, 39.3 machineWork, 39.2 mechanics, 38.9 beanFarms, 38.8 cuisineDishes, 38.5 villageMegas, 37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
+		helper.assertTrue(WorkplaceConfig.optionNames().size() == 149, "every option on the screen in GameTests (38.12 furnicrafters, 37.14 crafters, B222 gravesToGraveyard, 36.12 quarryBuild and quarryRegrowth, 36.15 repairAsk, 36.11 minerCraftsPickaxe, B211 forceVillageSpawns, B208 forceThreatSpawns, B209 campRuins, 38.1a denHelpers and denHelperPrice for 38.3/38.4's three, 37.12 moddedLibrary, 39.7 villageTrains, 39.6 createSchematics, 39.4 createBuilds, 39.3 machineWork, 39.2 mechanics, 38.9 beanFarms, 38.8 cuisineDishes, 38.5 villageMegas, 37.1 furnishedBuilds, furnitureMods and moddedStorageNetworks, 38.4 denChallenges and denChallengeDays, 38.3 denWardens, 26.13 fishermanCap, fishermenPerVillage and villagersPerFisherman, 26.10 blueprintUnlocks, 26.8 questbookKeepEdits, 35.8 wonderStanding, 35.6 builderScaffolding, 35.5 wonderCrew, 33.21 realmMap, 35.2 wonders, wonderLegends and wonderServerLimit, 33.20 feuds and feudWars, 33.19 weeklyLeaderboard and leaderboardHour, 33.18 tradePacts and alliances, 33.17 realmRelief, 32.21 threatLevel, 31.20 lostCaravanChance, 34.22 added classGraceDays, 31.13/31.14 bountyBoard and rogueBounties, 33.11 realms)");
 		helper.succeed();
 	}
 
-	/** M38's five switches (design note M38) belong to its gate: closed for a player until 2.2, open in GameTests. */
-	static final List<String> M38_SWITCHES = List.of("denHelpers", "denHelperPrice", "villageMegas", "cuisineDishes", "beanFarms");
+	/** M38's switches (design note M38) belong to its gate: closed for a player until 2.2, open in GameTests. */
+	static final List<String> M38_SWITCHES = List.of("denHelpers", "denHelperPrice", "villageMegas", "cuisineDishes", "beanFarms", "furnicrafters");
 
 	/** Cobblemon depth (2.2) stays shut for players while it's built: its gate and each of its switches. */
 	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'

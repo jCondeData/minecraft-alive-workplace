@@ -162,6 +162,7 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [Mega Stones from the village](mega-stones.md): the Jeweler's Mega Stones and Key Stones, and a Mega Bracelet for beating a realm's Leaders.
 - [Mega Shrine](mega-shrine.md): a decoration with Mega Showdown's pedestal, where a trainer Mega Evolves on festival days.
 - [Cobblecuisine dishes](cobblecuisine.md): the salads, curries, cakes and drinks your Chef, Camp Cook and Innkeeper make and serve.
+- [Furnicrafter](furnicrafter.md): with CobbleFurnies, the villager who makes its furniture for your builders and your store.
 
 ## For server owners
 

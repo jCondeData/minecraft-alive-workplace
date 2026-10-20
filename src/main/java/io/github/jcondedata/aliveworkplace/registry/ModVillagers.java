@@ -987,6 +987,43 @@ public final class ModVillagers {
 	}
 
 	/**
+	 * CobbleFurnies' Furnicrafter ({@code cobblefurnies:furnicrafter}) is the Furnicrafter's job block (ROADMAP 38.12): a
+	 * POI of ours registered once CobbleFurnies registers the block, so without CobbleFurnies there is none. It's in the
+	 * acquirable_job_site tag (as an optional entry), so a jobless villager by one takes it by themselves.
+	 */
+	public static final ResourceLocation FURNICRAFTER_BLOCK = ResourceLocation.fromNamespaceAndPath("cobblefurnies", "furnicrafter");
+	public static final ResourceLocation FURNICRAFTER_ID = AliveWorkplace.id("furnicrafter");
+	public static final ResourceKey<PoiType> FURNICRAFTER_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, FURNICRAFTER_ID);
+
+	static {
+		Platform.get().whenBlockRegistered(FURNICRAFTER_BLOCK, block -> Platform.get().registerPoi(FURNICRAFTER_ID, 1, 1, block));
+	}
+
+	/**
+	 * Makes CobbleFurnies furniture for the builders and the store from the store's materials (ROADMAP 38.12): only with
+	 * CobbleFurnies installed, so without it there is no Furnicrafter at all (null). A villager saved as one in a world
+	 * CobbleFurnies was removed from loads as a jobless one.
+	 */
+	@org.jetbrains.annotations.Nullable
+	public static final VillagerProfession FURNICRAFTER = Platform.get().isModLoaded("cobblefurnies") ? Registry.register(
+		BuiltInRegistries.VILLAGER_PROFESSION,
+		AliveWorkplace.id("furnicrafter"),
+		new VillagerProfession(
+			"furnicrafter",
+			holder -> holder.is(FURNICRAFTER_POI),
+			holder -> holder.is(FURNICRAFTER_POI),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			SoundEvents.WOOD_PLACE
+		)
+	) : null;
+
+	/** Whether {@code profession} is the Furnicrafter (false without CobbleFurnies). */
+	public static boolean isFurnicrafter(VillagerProfession profession) {
+		return FURNICRAFTER != null && profession == FURNICRAFTER;
+	}
+
+	/**
 	 * Guards keep the night watch: on patrol from evening to mid-morning, asleep until early afternoon,
 	 * then out with the village. They fight whenever a monster shows up, whatever they are doing.
 	 */
@@ -1026,7 +1063,7 @@ public final class ModVillagers {
 			|| profession == SIFTER || profession == TINKERER || profession == NETHERWORKER || profession == COMPOSTER || profession == JEWELLER
 			|| profession == BERRY_BREEDER || profession == CAMP_COOK || profession == HABITAT_KEEPER || profession == GEM_GROWER
 			|| profession == DAYCARE_KEEPER || profession == VINTNER || profession == TAILOR || profession == PRINTER || profession == WELL_KEEPER
-			|| profession == PHYSICIAN || profession == CRAFTER || isMechanic(profession);
+			|| profession == PHYSICIAN || profession == CRAFTER || isMechanic(profession) || isFurnicrafter(profession);
 	}
 
 	/**

@@ -40,6 +40,10 @@
     {
       "id": "aliveworkplace:track_station",
       "required": false
+    },
+    {
+      "id": "aliveworkplace:furnicrafter",
+      "required": false
     }
   ]
 }

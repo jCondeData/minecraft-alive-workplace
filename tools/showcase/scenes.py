@@ -30,7 +30,7 @@ GROUPS = [
     "Carpenter", "Crafter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
-    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
+    "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Furnicrafter", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
 ]
 
 START, WORKING, DONE = ("01_start", "Start"), ("work_*@middle", "At work"), ("03_done", "Done")
@@ -399,6 +399,11 @@ SCENES = [
     job("campfire_pot", "Chef", "Campfire Pot recipes: candies from the Chef",
         "the Chef cooked EXP Candies and Berry Sweets from the Campfire Pot's recipes into the chest",
         cobblemon=True),
+    # The Furnicrafter (ROADMAP 38.12, CobbleFurnies): furniture the storehouse ordered, made from the store's materials
+    job("furnicrafter", "Furnicrafter", "The Furnicrafter: CobbleFurnies furniture from the store's materials",
+        "the Furnicrafter made the Oak Chairs, Red Lamps and Poke Ball Desk the storehouse ordered from the planks, wool, "
+        "redstone and concrete in its store",
+        cobblemon=True, furniture=True),
     # Bean farms (ROADMAP 38.9): the farmer cuts ripe Cobblecuisine beans, leaves the green ones and sows the bare rows
     job("bean_farm", "Farmer", "Cobblecuisine: beans for the menu",
         "the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows",

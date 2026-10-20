@@ -22,6 +22,11 @@ asks for the steps, `latest.log` and any crash report).
   workers are short of through whole recipe chains (logs into planks into slabs into a barrel), from the builders'
   chests and the Storehouse, and puts it in the asker's chests; a raw material short is said, and nothing is wasted. A
   chain half made carries on after a restart. With the Crafter's Workshop in the Blueprint Table (37.14).
+- The Furnicrafter (Cobblemon depth, 2.2, with CobbleFurnies): a villager without a job by CobbleFurnies' Furni
+  Crafter takes it and makes CobbleFurnies furniture from the store's materials: the chairs, tables and lamps a builder
+  nearby is waiting for (a furnished home's pieces) and the pieces the Storehouse orders, with sticks cut from planks
+  first when they're short. A red bobble beanie, a walnut apron with a Poké Ball on it and a tape measure; trades in
+  planks, wool and furniture. Without CobbleFurnies nothing changes. Switch: `furnicrafters`.
 ## 0.146.1 — 2026-10-20
 
 ### Fixed

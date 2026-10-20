@@ -55,6 +55,10 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
 - **From a station an archer shoots 24 blocks** (16 from the ground) and does a quarter more damage to a foe 3 or
   more blocks below. On a station he never climbs down to chase: when the raider he is shooting at goes out of his
   sight (under the walkway, hacking at the gate), he turns to the nearest raider he can see and reach (B252).
+- **An archer takes the station with a view** (B252): on the same build, the spot from which he sees the most of
+  the ground in front of the gate, so he stands in a gap of the battlements (a crenel), not behind a merlon, where
+  he saw nothing below. The ground right at the foot of a wall stays hidden from any walkway (only murder holes see
+  it, as Gatehouse II's do), so archers shoot at raiders coming at the gate, and at those who get through.
 - **The morning after**, at the dawn the gates open, the chronicle has a siege report (a new kind with the iron bars
   icon): "The siege: 9 raiders came and 7 fell, 5 to the guards and 2 to players. The gate held. Hero of the night:
   Brannoc, with 3 kills."
@@ -124,15 +128,20 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
   - When a station is taken it is checked against the world: its floor must stand and two blocks be free. A station
     built over or with its floor gone is skipped, and a guard on it gets another.
   - An archer's choice among the free stations within 24 blocks of his Guard Post: the breach's side of the village
-    first, then the build with the fewest archers, then the highest, then the nearest the breach (with no breach, the
-    farthest out from the hall).
+    first, then the build with the fewest archers, then the one with the most of the ground in front of the breach in
+    sight (`BattleStations.view`: of the spots 2 to 16 blocks out from the breach along its outside, on the ground near
+    the gate's height, how many have a raider's eyes in his sight and within 24 blocks, from his eyes over the station;
+    ahead of a warned attack, out from the station; read once a siege and breach), then the highest, then the nearest
+    the breach (with no breach, the farthest out from the hall).
   - **The climb**: villagers cannot path up a ladder. A guard walks as near his station as his path gets; once he
     is within 3.5 blocks of it and below it he is set on it, with a ladder's step sound.
   - On the way an archer fights only what comes within 8 blocks. From a station his bow's arrow flies faster and
     flatter so that it carries the range; its damage is scaled back so only the height rule adds to it.
   - A knight or medic fights only a foe within 6 blocks of his spot, so the gate's defenders wait for what comes
     through instead of pressing against the bars.
-  - An archer on a station is kept on it: any other walk of a villager's day is stopped while he stands there.
+  - An archer on a station is kept on it: any other walk of a villager's day is stopped while he stands there, and
+    one who drifts more than 0.2 blocks off its middle steps back (half a block aside, a crenel's archer is behind the
+    merlon beside it).
   - A guard is an archer, knight or medic by what is in the off hand (bow or crossbow, shield, healing potion), as
     everywhere else. A guard whose kind changes gives his place up.
   - Nothing of it is saved: after a restart the stations are read and handed out again.

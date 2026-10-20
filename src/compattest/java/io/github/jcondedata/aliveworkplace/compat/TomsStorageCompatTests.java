@@ -352,6 +352,37 @@ public class TomsStorageCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * A block that holds no items, though it has a block entity (an enchanting table on the connector), isn't one of
+	 * the inventories the connector joins, and Tom's scan doesn't pass through it: the board still counts the three
+	 * blocks, and a chest touching only the table is its own store, its items counted once.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_no_items"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_no_items")
+	public void aBlockHoldingNoItemsIsntJoined(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		network(helper, false);
+		BlockPos table = CONNECTOR.above();
+		BlockPos overTable = table.above();
+		helper.setBlock(table, Blocks.ENCHANTING_TABLE);
+		helper.setBlock(overTable, Blocks.CHEST);
+		put(helper, CHEST_1, new ItemStack(Items.COBBLESTONE, 10));
+		put(helper, overTable, new ItemStack(Items.OAK_PLANKS, 7));
+		BlockPos storehouse = helper.absolutePos(STOREHOUSE);
+		helper.runAfterDelay(40, () -> {
+			List<BlockPos> members = List.copyOf(StorageNetworks.members(level, helper.absolutePos(CONNECTOR)));
+			List<BlockPos> joined = List.of(helper.absolutePos(CHEST_1), helper.absolutePos(CHEST_2), helper.absolutePos(CABINET));
+			helper.assertTrue(members.size() == 3 && members.containsAll(joined), "the connector joins " + rel(helper, members)
+				+ ", wanted the two chests and the cabinet");
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			helper.assertTrue(store.contains(helper.absolutePos(overTable)), "the chest on the table isn't its own store: " + rel(helper, store));
+			assertCount(helper, store, Items.OAK_PLANKS, 7);
+			assertCount(helper, store, Items.COBBLESTONE, 10);
+			helper.succeed();
+		});
+	}
+
 	private static void put(GameTestHelper helper, BlockPos rel, ItemStack stack) {
 		ItemStack rest = SupplyContainers.insert(helper.getLevel(), List.of(helper.absolutePos(rel)), stack.copy());
 		helper.assertTrue(rest.isEmpty(), "put " + stack + " in " + helper.getLevel().getBlockState(helper.absolutePos(rel)) + ": " + rest.getCount() + " left over");

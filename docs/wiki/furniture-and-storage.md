@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238
 
 ## 1. What a player sees
 
@@ -95,6 +95,8 @@ controller, which files them into the linked blocks, and builders take what they
 and the blocks are separate stores again, with everything still in them. A "Sophisticated" style for the Storehouse
 (I, II and III; offered only with the mod and the switch on) builds Sophisticated chests and barrels in place of the
 vanilla ones and a controller on top of the Storehouse block, touching the chests on both sides.
+A Sophisticated barrel or chest a builder adds to a controller's network joins it, even when it touches only another
+linked barrel, as it would if you placed it yourself (B238).
 Behind the gate (37.10), a Tom's Simple Storage inventory connector within the Storehouse's 8 blocks is one store for
 every inventory it joins: the chests, barrels and filing cabinets touching it (and touching those), and the one each
 cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says
@@ -364,10 +366,12 @@ and a missing list, the list off the screen and in the saved file), `FurnishingC
 `ExpansionGateGameTests` (both switches in its gated lists). 37.2:
 `FurnitureSpotGameTests.starterCottageSpotsAreWhereItsChairsAndTablesAre`,
 `FurnitureSpotGameTests.everyShippedSpotMatchesItsTemplate`, `FurnitureSpotGameTests.aBrokenSpotsFileIsSkipped`,
-`FurnitureSpotGameTests.aStyleCarriesTheSpotsOver`. 37.3 (no mods, a test table of vanilla blocks):
+`FurnitureSpotGameTests.aStyleCarriesTheSpotsOver`, `FurnitureSpotGameTests.eachMistakeInASpotsFileIsNamed`,
+`FurnitureSpotGameTests.aStyleSwappingPlanksForNoPlanksKeepsTheWood`. 37.3 (no mods, a test table of vanilla blocks):
 `FurnishingTableGameTests.withoutFurnitureModsTheBuildIsVanilla`,
 `FurnishingTableGameTests.theFirstModWithAFittingPieceIsChosen`, `FurnishingTableGameTests.switchedOffTheBuildIsVanilla`,
-`FurnishingTableGameTests.aSiteSavedMidBuildKeepsItsChoice`, `FurnishingTableGameTests.aRemovedModsPieceTurnsBackToVanilla`;
+`FurnishingTableGameTests.aSiteSavedMidBuildKeepsItsChoice`, `FurnishingTableGameTests.aRemovedModsPieceTurnsBackToVanilla`,
+`FurnishingTableGameTests.eachMistakeInAFurnishingTableIsNamed`;
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.
@@ -429,7 +433,8 @@ B192: `TomsStorageCompatTests.aPlayerOpensTheTerminalBesideTheStorehouse` (a pla
 the Storehouse and gets Tom's terminal menu, listing 10 cobblestone, 20 planks and 1 sword, each once).
 `TomsStorageCompatTests.aDoubleChestOnACableCountsOnce` (a double chest half on a cable connector isn't also its own
 store) and `TomsStorageCompatTests.aConnectorInsideThePlotIsPassedOver` (a connector inside the area being built isn't
-read; its chests outside are each a store).
+read; its chests outside are each a store). `TomsStorageCompatTests.aBlockHoldingNoItemsIsntJoined` (an enchanting
+table on the connector isn't joined, and a chest touching only the table is its own store).
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

@@ -20,6 +20,8 @@ asks for the steps, `latest.log` and any crash report).
 
 - Sieges: a raider that walked back out through the open gate after going in no longer stands outside the walls for
   the rest of the siege; it is sent in again (B175).
+- Storage: a Sophisticated barrel or chest a builder adds to a storage controller's network, touching only another
+  linked barrel, is now linked by the controller, so the Storehouse sees what is in it (B238).
 
 ## 0.146.0 — 2026-10-19
 

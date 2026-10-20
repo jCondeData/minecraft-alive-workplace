@@ -154,8 +154,11 @@ public final class StorageNetworks {
 
 	/**
 	 * A builder has just set {@code state} at {@code pos}: a controller it builds links its storage the way a player's
-	 * placing it would (the mod links on placement, through the block's own {@code setPlacedBy}), and a storage block or
-	 * link it adds to a controller's network is linked by that controller looking again. With the switch off, nothing.
+	 * placing it would (the mod links on placement, through the block's own {@code setPlacedBy}); a storage block it adds
+	 * joins the network the same way, through its own {@code setPlacedBy} (the mod's storage asks a touching controller,
+	 * or the controller of a touching storage block, to add it: the controller's own search stops at storage it already
+	 * links, so looking again from the controller misses a block added beyond one, B238); and a link it adds is linked by
+	 * its controller looking again. With the switch off, nothing.
 	 */
 	public static void afterBuilt(ServerLevel level, BlockPos pos, BlockState state) {
 		if (!ENABLED || !BuiltInRegistries.BLOCK.getKey(state.getBlock()).getNamespace().equals(SOPHISTICATED)) {
@@ -167,6 +170,11 @@ public final class StorageNetworks {
 		}
 		if (!isSophisticatedStorage(state) && !isLink(state)) {
 			return;
+		}
+		if (isSophisticatedStorage(state)) {
+			// As a player's placing it: the freshly built block reads the plain item (its default size, no wood or
+			// colours, no contents), then joins the controller beside it or beside a storage block it touches.
+			state.getBlock().setPlacedBy(level, pos, state, null, new ItemStack(state.getBlock().asItem()));
 		}
 		// The controllers whose network this block joins: walk out from it the way a controller walks.
 		Set<BlockPos> seen = new HashSet<>();

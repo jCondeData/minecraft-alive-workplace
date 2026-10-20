@@ -5203,6 +5203,28 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-c-1020-0353): second M37 mutation pass, seed 44, on the files no pass had covered: Furnishings (all
+  6 mutants), FurnitureStock (all 22), ModdedLibrary (all 13) and FurnitureChoice (30 of 129) against the ten
+  furnishing GameTest classes (`only_tests.py`, ~40 s a run); survivors only compat code reaches re-run against
+  TrainersRoomCompatTests and ModdedLibraryCompatTests (trimmed compat fabric.mod.json, `--no-daemon`, ~2.3 min a run).
+  71 mutants: 43 killed, 4 didn't compile, 24 survived the plain suite. Of those, 6 were killed by the compat classes
+  (ModdedLibrary:91, :118, :140; FurnitureChoice:280 `chair <= 0`, :303 `desk > 0`, both by
+  `theTrainersRoomTakesTheFirstChairEvenAtSpotZero`); 9 are now killed by 3 new tests, each proved against its
+  mutant and passing on the real code: a repair, a taking-down, a cellar dig or a build whose furnished-builds switch
+  was since turned off switched its planned chair to the chest's (FurnitureStock:35, three `||` to `&&`):
+  `FurnitureAnyModGameTests.onlyANewBuildsChairFollowsTheChest`; a saved piece whose spot index is past the end of the
+  spots file crashed `apply` (FurnitureChoice:325 `<` to `<=`): `FurnishingTableGameTests.aPieceWhoseSpotIsGoneBuildsVanilla`;
+  a desk five blocks off along x only, or a floor up, was taken into the Trainer's room, and one exactly three blocks off
+  was left out (FurnitureChoice:294 `||` to `&&`, `>` to `>=`, `1` to `2`), and a home with a bed and no chair crashed
+  the Trainer's room (:275 `<` to `<=`): `TrainersRoomCompatTests.theTrainersDeskIsInTheChairsRoom`. Not run on the
+  compat suite but the same behaviour as the proved :280/:303 mutants (a chair or desk at spot 0): :275 `chair < 1`,
+  :275 `chair <= 0`, :280 `chair < 1`, :303 `desk >= 1`; and :288 `<=` throws on every Trainer's-room call with a
+  chair (the partnered-home compat test). Equivalent (no test): FurnitureStock:64 (`started` is only asked about the
+  choice's own spots, never a missing one); ModdedLibrary:103 (dropping the sort: nothing in the game reads the
+  order of `builds()`); FurnitureChoice:377 (`load` reading one past the list: `ListTag.getCompound` gives an empty tag,
+  which has no kind and is skipped), :425 twice (they differ only for text starting with `[`, which is no block either
+  way), :298 `<` to `<=` (two equally near desks: the spec's "nearest" allows either). No bug found. Left for a later
+  pass: the other 99 FurnitureChoice mutants and BlueprintStyles' 37.7 parts.
 - 2026-10-20 (lane-c-1020-0053): Milestone 37 still has no open item and no `(lane: c)` bug, so the owner's "which big
   milestone next?" still stands. Test-hardening instead. The 10-19 nightly's two M37 survivors (StorageNetworks:336
   `&&` to `||`, FurnishedPackTest:158 `<` to `<=`) were already killed: that nightly ran at 09:49 UTC, before

@@ -379,6 +379,44 @@ public class FurnitureAnyModGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * Only a new build follows the chest (37.13): a repair, a taking-down and a cellar dig keep the pieces their building
+	 * has, and so does a build planned with furnished builds on once the switch is turned off (a config change never
+	 * changes a build that is going up, 37.3), whatever chair the chest holds. The same site as a new build switches.
+	 */
+	//$ gametest_batch AREA '"furnitureAnyMod"'
+	@GameTest(template = AREA, batch = "furnitureAnyMod")
+	public void onlyANewBuildsChairFollowsTheChest(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		String switchOff = "{\"furnishedBuilds\": false, \"furnitureMods\": [\"" + PIECES + "\", \"" + ALT + "\"]}";
+		Map<String, java.util.function.Consumer<BuildSite>> jobs = new java.util.LinkedHashMap<>();
+		jobs.put("a new build", site -> {
+		});
+		jobs.put("a repair", BuildSite::setRepair);
+		jobs.put("a taking-down", BuildSite::setDeconstruction);
+		jobs.put("a cellar dig", BuildSite::setCellarOnly);
+		jobs.put("a build with furnished builds since turned off", site -> WorkplaceConfig.parse(switchOff).apply());
+		try {
+			chest(helper, new ItemStack(Items.SPRUCE_WOOD));
+			jobs.forEach((job, turn) -> {
+				new WorkplaceConfig().apply();
+				Furnishings.MODS = List.of(PIECES, ALT);
+				BuildSite site = site(helper);
+				BuildPlan plan = site.plan(level);
+				helper.assertTrue(chairMod(site).equals(PIECES), job + " planned " + chairMod(site));
+				List<BlockPos> supplies = SupplyContainers.find(level, helper.absolutePos(BENCH), plan.bounds());
+				turn.accept(site);
+				boolean changed = FurnitureStock.restock(level, site, BuilderBag.of(List.of()), supplies, Items.SPRUCE_STAIRS);
+				boolean switches = job.equals("a new build");
+				helper.assertTrue(changed == switches && chairMod(site).equals(switches ? ALT : PIECES),
+					job + " with the alt chair in the chest: switched " + changed + ", the chair is " + chairMod(site));
+			});
+		} finally {
+			new WorkplaceConfig().apply();
+		}
+		helper.succeed();
+	}
+
 	/** The equivalents file: every shipped kind is a real kind with two or more mods; a broken file is skipped and named. */
 	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"furnitureAnyMod"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "furnitureAnyMod")

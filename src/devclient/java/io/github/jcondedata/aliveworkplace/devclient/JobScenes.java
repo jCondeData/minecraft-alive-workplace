@@ -2051,6 +2051,24 @@ final class JobScenes {
 			Showcase.check(stations.stream().anyMatch(s -> s.getX() < STATION.getX() + 6) && stations.stream().anyMatch(s -> s.getX() >= STATION.getX() + 6),
 				"the Gatehouse and the Wall Tower both have battle stations");
 			return l -> {
+				// B252: on a timeout, say where each archer stood, their station and what they were shooting at
+				StringBuilder why = new StringBuilder();
+				for (Villager a : archers) {
+					net.minecraft.world.entity.LivingEntity foe = io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(a);
+					why.append(why.length() == 0 ? "" : "; ").append("archer at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", a.getX(), a.getY(), a.getZ()))
+						.append(a.isAlive() ? "" : " (dead)").append(", station ")
+						.append(io.github.jcondedata.aliveworkplace.guard.BattleStations.post(a).map(BlockPos::toShortString).orElse("none"))
+						.append(io.github.jcondedata.aliveworkplace.guard.BattleStations.onStation(a) ? " (on it)" : " (not on it)")
+						.append(", guard ").append(io.github.jcondedata.aliveworkplace.guard.Guards.isGuard(a))
+						.append(", fighting ").append(io.github.jcondedata.aliveworkplace.guard.GuardCombat.isFighting(a))
+						.append(", target ").append(foe == null ? "none" : String.format(java.util.Locale.ROOT, "%s at %.1f %.1f %.1f, %.1f off, %s", foe.getType().toShortString(),
+							foe.getX(), foe.getY(), foe.getZ(), Math.sqrt(a.distanceToSqr(foe)), a.hasLineOfSight(foe) ? "in sight" : "out of sight"));
+				}
+				for (net.minecraft.world.entity.Mob r : raiders) {
+					why.append("; raider at ").append(String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f, health %.0f/%.0f%s, seen by %d", r.getX(), r.getY(), r.getZ(),
+						r.getHealth(), r.getMaxHealth(), r.isAlive() ? "" : " (dead)", archers.stream().filter(a -> a.hasLineOfSight(r)).count()));
+				}
+				timeoutWhy = why.toString();
 				boolean posted = archers.stream().allMatch(io.github.jcondedata.aliveworkplace.guard.BattleStations::onStation);
 				boolean both = archers.stream().anyMatch(a -> a.getX() < STATION.getX() + 6) && archers.stream().anyMatch(a -> a.getX() >= STATION.getX() + 6);
 				return posted && both && raiders.stream().anyMatch(r -> !r.isAlive() || r.getHealth() < r.getMaxHealth());

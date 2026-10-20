@@ -53,7 +53,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176
   the rams go for, medics 3 blocks behind them. Guards with only a sword, and anyone who finds no free station, answer
   the bell as before. Their card says "going to their battle station" and "at their battle station".
 - **From a station an archer shoots 24 blocks** (16 from the ground) and does a quarter more damage to a foe 3 or
-  more blocks below. On a station he never climbs down to chase.
+  more blocks below. On a station he never climbs down to chase: when the raider he is shooting at goes out of his
+  sight (under the walkway, hacking at the gate), he turns to the nearest raider he can see and reach (B252).
 - **The morning after**, at the dawn the gates open, the chronicle has a siege report (a new kind with the iron bars
   icon): "The siege: 9 raiders came and 7 fell, 5 to the guards and 2 to players. The gate held. Hero of the night:
   Brannoc, with 3 kills."
@@ -245,7 +246,10 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 ## Known limits
 
 - Battle stations (32.6): a station only counts if the guard can get within 3.5 blocks of its foot. Merlons can
-  hide a foe from an archer standing behind one; he shoots when he has a line of sight. A blueprint whose walkway is
+  hide a foe from an archer standing behind one; he shoots when he has a line of sight. Stations are chosen without
+  regard to their view: on the Gatehouse the station picked is behind a merlon, and from the Gatehouse's walkway and
+  the Wall Tower's top a raider at the gate, or within about 12 blocks of it on the ground, is out of sight (B252).
+  A blueprint whose walkway is
   made of slabs' lower halves or stairs is not read as stations.
 
 - Ladders (32.5): anything at least two blocks high between a climber and the hall counts as a wall, so a house that

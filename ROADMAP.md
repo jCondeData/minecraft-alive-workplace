@@ -5209,6 +5209,7 @@ the owner's port jar; M33's caravans (39.7).
 ## Notes / blocked
 
 - 2026-10-20 (lane-e-1020-0715, decision on B243): villagers' Create machine work uses only the village's own stores and
+- 2026-10-20 (lane-e-1020-0715, for the owner and the tools): B243 and B244 (lane: e) are fixed; Milestone 39 and its lane-e bugs are now empty, so lane E idles until the owner names the next big milestone. Owner, to know on the live server: after B243 a hand-placed millstone, press, mixer or crusher outside any builder-made building is no longer worked by villagers (needs owner check: put a Mechanic's toolbox by your own Create setup and confirm nothing is moved; a village Workshop/Watermill is still worked). Tools: `sessions.py next` did not list B243/B244 because their `(lane: e)` tag sat at the end of the entry rather than the front.
   machines, never a player's. A machine or a store chest counts when it stands inside a building the mod's builders
   finished (a `BuildSiteManager` finished building, inside its blueprint's outline; `mechanic/VillageMachines`), the
   concept the Mechanic's mending already uses. It applies to the Mechanic's round and to every machine worker (farmer,

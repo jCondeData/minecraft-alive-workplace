@@ -3883,7 +3883,20 @@ final class JobScenes {
 				ScreenshotHarness.hoverLookingAt(p, new Vec3(3.5, -58.3, 0.5), new Vec3(3.5, -60, -3));
 				p.openMenu((net.minecraft.world.MenuProvider) drop);
 			};
-			return l -> drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
+			return l -> {
+				// B251: on a timeout, say what the porter was doing
+				var status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(porter, l.getGameTime());
+				timeoutWhy = "the porter: " + porter.getVillagerData().getProfession() + ", job site "
+					+ porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", potential " + porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", doing " + porter.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", time " + l.getDayTime() % 24000 + ", at " + porter.blockPosition().toShortString()
+					+ ", status " + (status == null ? "none" : status.title().getString() + " / " + status.line().getString())
+					+ ", bag " + ModAttachments.BUILDER_BAG.getOrCreate(porter).stacks().stream().filter(s -> !s.isEmpty()).map(s -> s.getCount() + " " + s.getItem()).toList()
+					+ ", carried " + n(ModAttachments.ITEMS_CARRIED, porter) + ", box empty " + drop.isEmpty() + ", store bread " + store.countItem(Items.BREAD)
+					+ ", free store tickets " + l.getPoiManager().getFreeTickets(STATION);
+				return drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
+			};
 		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "

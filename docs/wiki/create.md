@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193, B231, B243
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, B189, B193, B231, B243, B244
 
 ## What a player sees
 
@@ -218,7 +218,12 @@ looks every 5 seconds, only at machines and chests inside the outline of a finis
 finished buildings laid over their blueprints' size, `mechanic/VillageMachines`, read again when one is added or
 forgotten); the Mechanic's round lists only those machines too, and a trip saved before this rule to a machine outside
 them brings its load back to the store (B243). A trip goes to the chest for the input, to the machine (anything
-made there comes along) and back to the chest. The chef's water is poured straight into the basin's tank (a bucket's
+made there comes along) and back to the chest. A trip that can't go on any more ends at once, checked every tick by the
+worker (`MachineWork.tickTrip`, B244): machine work switched off (`machineWork` or the Create expansion), Create gone,
+or the worker no longer in the file's job (their workstation broken at Novice, or another job taken). What they
+carried goes straight into the village's store by their workstation (or by where they stand, when it's gone); what
+doesn't fit, or finds no store, drops at their feet. A broken machine, or a file gone, still runs the trip, which
+brings the load back on foot, and a worker killed mid-trip drops it where they fell. The chef's water is poured straight into the basin's tank (a bucket's
 worth, 1000 mB), the way villages draw water anywhere; no bucket is used up. Items go in and out through Fabric's item
 and fluid transfer, which Create's port exposes; a depot, basin or crusher is never anyone's supply chest. The
 Mechanic's round uses the same files and the same work done on the spot.

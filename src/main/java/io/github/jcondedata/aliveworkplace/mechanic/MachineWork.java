@@ -104,6 +104,55 @@ public class MachineWork extends Behavior<Villager> {
 	}
 
 	/**
+	 * B244, every server tick of a villager (from the villager's own tick): a trip to a machine that can't go on any more
+	 * ends here, with what was carried put back. A trip goes on while machine work is on (config {@code machineWork} and
+	 * the Create expansion), Create is installed and the worker still has the job of the trip's machine-work file. One whose
+	 * worker lost that job (their workstation broken at Novice, or another job taken) or whose work was switched off would
+	 * otherwise keep its load in the saved record for good, since nobody runs the trip any more: the load goes into the
+	 * village's store by the worker's workstation (or by where they stand, when the workstation is gone) and what doesn't
+	 * fit, or has no store, drops at the worker's feet. A trip whose machine was broken, or whose file is gone, is still
+	 * run, and brings its load back on foot.
+	 */
+	public static void tickTrip(Villager villager) {
+		if (!(villager.level() instanceof ServerLevel level)) {
+			return;
+		}
+		MachineJob job = ModAttachments.MACHINE_JOB.get(villager);
+		if (job == null || goesOn(villager, job)) {
+			return;
+		}
+		endTrip(level, villager, job);
+	}
+
+	/** Whether {@code job} can go on: machine work on, Create installed and the worker still in the job of its file. */
+	static boolean goesOn(Villager villager, MachineJob job) {
+		if (!ENABLED || !Platform.get().isModLoaded(Kinetics.CREATE)) {
+			return false;
+		}
+		List<MachineWorkFiles.Machine> files = files(villager);
+		if (files.isEmpty()) {
+			return false;
+		}
+		MachineWorkFiles.Machine file = file(job.file());
+		return file == null || files.contains(file); // a file gone since: the trip itself brings the load back
+	}
+
+	/** Ends {@code job} where the worker is: its load into the store by their workstation (else by them), the rest dropped. */
+	static void endTrip(ServerLevel level, Villager villager, MachineJob job) {
+		ModAttachments.MACHINE_JOB.remove(villager);
+		state(villager).walker.reset();
+		if (job.carried().isEmpty()) {
+			return;
+		}
+		BlockPos here = villager.blockPosition();
+		List<BlockPos> chests = post(level, villager).map(p -> VillageMachines.stores(level, p)).orElse(List.of());
+		if (chests.isEmpty()) {
+			chests = VillageMachines.stores(level, here);
+		}
+		toStore(level, chests, job.carried(), here);
+	}
+
+	/**
 	 * {@code work} with machine work added (only with Create installed, for a job a machine-work file names): ours first, and the rest of the
 	 * activity waiting while a trip to a machine is on (the schedule update always runs).
 	 */
@@ -592,6 +641,7 @@ public class MachineWork extends Behavior<Villager> {
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 		state(villager).walker.reset();
-		// a trip cut short (the work day ended) stays saved with what's carried, and goes on next time
+		// a trip cut short (the work day ended) stays saved with what's carried, and goes on next time; one that can't go
+		// on (machine work switched off, the job lost) ends in tickTrip, which puts the load back (B244)
 	}
 }

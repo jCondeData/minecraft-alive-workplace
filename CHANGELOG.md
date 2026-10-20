@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Create: a farmer, armorer, chef or miner who stops machine work in the middle of a trip (their workstation broken
+  while still a Novice, or machine work switched off in the config) no longer keeps the wheat, iron or ore they
+  carried for good: it goes back into the village's store, or drops at their feet when the store is full (B244).
 - Create: villagers and the Mechanic only work the village's own machines and chests, those inside a building the
   village's builders finished. A Mechanic hired at a player's own toolbox, or a farmer, armorer, chef or miner whose
   workstation stands by a player's chests, no longer feeds the player's iron, wheat or ore into the player's press or

@@ -701,4 +701,95 @@ public class MachineWorkCompatTests implements FabricGameTest {
 			clearMachines(helper);
 		});
 	}
+
+	// ---- B244: a trip that can't go on puts its load back ----------------------------------------------------------------
+
+	/** The wheat in the chest and lying on the ground around the area. */
+	private static int wheatAround(GameTestHelper helper, Container chest) {
+		return count(chest, Items.WHEAT) + helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+			helper.getBounds().inflate(8), e -> e.isAlive() && e.getItem().is(Items.WHEAT)).stream().mapToInt(e -> e.getItem().getCount()).sum();
+	}
+
+	/**
+	 * B244: a Novice farmer saved mid-trip with 12 wheat (the work day over, the trip waiting for the morning) whose
+	 * composter is broken loses the job; the 12 wheat go back into the village's store, none kept in the record.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"machine_trip_job_lost"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "machine_trip_job_lost")
+	public void aWorkerWhoLosesTheJobMidTripPutsTheLoadBack(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = chest(helper);
+		BlockPos mill = rig(helper, Kind.MILL, false);
+		Villager villager = worker(helper, Kind.MILL);
+		villager.setVillagerXp(0); // a Novice who never traded (Stations.assign gives 1 xp to hold the job): vanilla takes the job back
+		helper.assertTrue(villager.getVillagerData().getLevel() == 1, "setup: the farmer isn't a Novice");
+		ModAttachments.MACHINE_JOB.set(villager, new MachineJob(helper.absolutePos(mill), file(Kind.MILL).id(), MachineJob.Stage.FEED,
+			List.of(new ItemStack(Items.WHEAT, 12))));
+		helper.setDayTime(13000);
+		helper.destroyBlock(STATION);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getVillagerData().getProfession() == VillagerProfession.NONE, "the farmer hasn't lost the job yet");
+			helper.assertTrue(!MachineWork.busy(villager), "the jobless farmer still holds the trip: " + ModAttachments.MACHINE_JOB.get(villager));
+			helper.assertTrue(count(chest, Items.WHEAT) == 12, "the store got " + count(chest, Items.WHEAT) + " of the 12 wheat carried");
+			helper.assertTrue(wheatAround(helper, chest) == 12, "the wheat came to " + wheatAround(helper, chest) + ", not 12");
+			clearMachines(helper);
+		});
+	}
+
+	/**
+	 * B244: config {@code machineWork} switched off while a farmer carries 12 wheat to the turning millstone: the trip
+	 * ends, the wheat goes back into the store and none into the millstone.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"machine_trip_switched_off"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "machine_trip_switched_off")
+	public void machineWorkSwitchedOffMidTripPutsTheLoadBack(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = chest(helper);
+		BlockPos mill = rig(helper, Kind.MILL, true);
+		Villager villager = worker(helper, Kind.MILL);
+		ModAttachments.MACHINE_JOB.set(villager, new MachineJob(helper.absolutePos(mill), file(Kind.MILL).id(), MachineJob.Stage.FEED,
+			List.of(new ItemStack(Items.WHEAT, 12))));
+		boolean before = MachineWork.ENABLED;
+		MachineWork.ENABLED = false;
+		PartnerShowsCompatTests.after(helper, () -> MachineWork.ENABLED = before);
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		BlockPos feed = helper.absolutePos(mill.offset(file(Kind.MILL).feed().at()));
+		helper.succeedWhen(() -> {
+			helper.assertTrue(!MachineWork.busy(villager), "machineWork off, but the trip is still on: " + ModAttachments.MACHINE_JOB.get(villager));
+			helper.assertTrue(stores.count(helper.getLevel(), List.of(feed), Items.WHEAT) == 0, "machineWork off, but wheat went into the millstone");
+			helper.assertTrue(count(chest, Items.WHEAT) == 12, "the store got " + count(chest, Items.WHEAT) + " of the 12 wheat carried");
+			helper.assertTrue(wheatAround(helper, chest) == 12, "the wheat came to " + wheatAround(helper, chest) + ", not 12");
+			clearMachines(helper);
+		});
+	}
+
+	/** B244: with the store full, a trip switched off drops all 12 wheat at the worker's feet: none is lost. */
+	//$ gametest_ticks_batch AREA '300' '"machine_trip_off_full"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "machine_trip_off_full")
+	public void aTripEndedWithAFullStoreDropsTheLoad(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		clearMachines(helper);
+		villageWorkshop(helper);
+		Container chest = chest(helper);
+		for (int i = 0; i < chest.getContainerSize(); i++) {
+			chest.setItem(i, new ItemStack(Items.COBBLESTONE, 64));
+		}
+		BlockPos mill = rig(helper, Kind.MILL, true);
+		Villager villager = worker(helper, Kind.MILL);
+		ModAttachments.MACHINE_JOB.set(villager, new MachineJob(helper.absolutePos(mill), file(Kind.MILL).id(), MachineJob.Stage.RETURN,
+			List.of(new ItemStack(Items.WHEAT, 12))));
+		boolean before = MachineWork.ENABLED;
+		MachineWork.ENABLED = false;
+		PartnerShowsCompatTests.after(helper, () -> MachineWork.ENABLED = before);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(!MachineWork.busy(villager), "machineWork off, but the trip is still on: " + ModAttachments.MACHINE_JOB.get(villager));
+			int dropped = wheatAround(helper, chest) - count(chest, Items.WHEAT);
+			helper.assertTrue(dropped == 12, "the worker dropped " + dropped + " of the 12 wheat carried");
+			clearMachines(helper);
+		});
+	}
 }

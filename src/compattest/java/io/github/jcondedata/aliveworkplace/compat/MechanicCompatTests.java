@@ -358,6 +358,51 @@ public class MechanicCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * B243: a millstone that stops being the village's halfway round (its workshop forgotten, so it's a player's now)
+	 * leaves the Mechanic's round at once, not only when the round comes back to its start.
+	 */
+	//$ gametest_batch AREA '"mechanic_round_not_village"'
+	@GameTest(template = AREA, batch = "mechanic_round_not_village")
+	public void aMachineNoLongerTheVillagesLeavesTheRound(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		MachineWorkCompatTests.villageWorkshop(helper);
+		Villager mechanic = mechanic(helper);
+		helper.setBlock(new BlockPos(6, 2, 2), create("millstone").defaultBlockState());
+		helper.setBlock(new BlockPos(6, 2, 5), create("millstone").defaultBlockState());
+		MechanicRound round = MechanicWork.round(level, mechanic, helper.absolutePos(TOOLBOX));
+		helper.assertTrue(round.machines().size() == 2, "setup: unexpected round " + round);
+		ModAttachments.MECHANIC_ROUND.set(mechanic, round.advance()); // halfway round: the second millstone next
+		MachineWorkCompatTests.noVillage(helper); // the workshop forgotten: neither millstone is the village's any more
+		MechanicRound after = MechanicWork.round(level, mechanic, helper.absolutePos(TOOLBOX));
+		helper.assertTrue(after.current() == null && after.machines().isEmpty(), "a millstone no longer the village's is still on the round: " + after);
+		helper.succeed();
+	}
+
+	/**
+	 * The round is the one found at its start: a millstone built halfway round joins it when it comes back to its start
+	 * ({@link #aMachineBuiltLaterJoinsARoundOfOne}), and until then the round keeps its machines and its place.
+	 */
+	//$ gametest_batch AREA '"mechanic_round_kept"'
+	@GameTest(template = AREA, batch = "mechanic_round_kept")
+	public void aRoundHalfwayKeepsItsMachines(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		MachineWorkCompatTests.villageWorkshop(helper);
+		Villager mechanic = mechanic(helper);
+		helper.setBlock(new BlockPos(6, 2, 2), create("millstone").defaultBlockState());
+		helper.setBlock(new BlockPos(6, 2, 5), create("millstone").defaultBlockState());
+		MechanicRound round = MechanicWork.round(level, mechanic, helper.absolutePos(TOOLBOX));
+		helper.assertTrue(round.machines().size() == 2, "setup: unexpected round " + round);
+		MechanicRound halfway = round.advance();
+		ModAttachments.MECHANIC_ROUND.set(mechanic, halfway);
+		helper.setBlock(new BlockPos(10, 2, 10), create("millstone").defaultBlockState());
+		MechanicRound after = MechanicWork.round(level, mechanic, helper.absolutePos(TOOLBOX));
+		helper.assertTrue(after.equals(halfway), "the round changed halfway: " + halfway + " became " + after);
+		helper.succeed();
+	}
+
+	/**
 	 * A belt gone from a finished build goes back controller segment first (the segment that holds the belt together),
 	 * even when it's the farthest from the toolbox; the other segments follow, nearest first.
 	 */

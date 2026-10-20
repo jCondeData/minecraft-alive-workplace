@@ -125,7 +125,7 @@ final class StewardJobsScene {
 			server.execute(() -> Showcase.check(there == 3, "all three walked to their new workstations (" + there + " there"
 				+ jobless.stream().filter(v -> !arrived.contains(v.getUUID())).map(v -> "; not " + v.getVillagerData().getProfession() + " at " + v.blockPosition().toShortString()
 					+ ", block " + v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
-					+ ", " + java.util.Optional.ofNullable(io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(v, v.level().getGameTime())).map(e -> e.line().getString()).orElse("no status"))
+					+ ", " + java.util.Optional.ofNullable(io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(v, v.level().getGameTime())).map(e -> e.line().getString()).orElse("no status") + why(v))
 					.collect(java.util.stream.Collectors.joining()) + ")"));
 			stopAt = tick + 20;
 		}
@@ -153,6 +153,24 @@ final class StewardJobsScene {
 		return patrolling && site.get().distToCenterSqr(v.position()) <= 16 * 16 && from != null && from.distanceToSqr(v.position()) >= 3 * 3;
 	}
 	private int stopAt = -1;
+
+	/**
+	 * B132: what the brain of a villager who didn't get to work is doing, for the failure line. A GameTest of the same
+	 * hand-out (StewardJobsGameTests.aGuardTheStewardAppointsStartsHisPatrol) has the guard still on patrol 700 ticks later,
+	 * so a guard missing here is something of the scene's world: this names it.
+	 */
+	private static String why(Villager v) {
+		net.minecraft.world.entity.ai.Brain<Villager> brain = v.getBrain();
+		return " (activity " + brain.getActiveNonCoreActivity().map(Object::toString).orElse("none")
+			+ ", schedule " + net.minecraft.core.registries.BuiltInRegistries.SCHEDULE.getKey(brain.getSchedule())
+			+ ", day time " + v.level().getDayTime() + (v.isSleeping() ? ", asleep" : "") + (v.isNoAi() ? ", no AI" : "")
+			+ (io.github.jcondedata.aliveworkplace.guard.GuardRally.isRallying(v) ? ", rallying" : "")
+			+ (io.github.jcondedata.aliveworkplace.guard.GuardCombat.isFighting(v) ? ", fighting" : "")
+			+ (io.github.jcondedata.aliveworkplace.guard.BattleStations.stationed(v) ? ", at battle stations" : "")
+			+ ", walking to " + brain.getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET)
+				.map(w -> w.getTarget().currentBlockPosition().toShortString()).orElse("nowhere")
+			+ ", running " + brain.getRunningBehaviors().stream().map(b -> b.debugString()).collect(java.util.stream.Collectors.joining("/")) + ")";
+	}
 
 	private static ServerPlayer player(MinecraftServer server) {
 		return server.getPlayerList().getPlayers().get(0);

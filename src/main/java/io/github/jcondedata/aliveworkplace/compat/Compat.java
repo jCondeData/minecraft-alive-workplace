@@ -34,6 +34,11 @@ public final class Compat {
 		if (Platform.get().isModLoaded("cobblemonraiddens")) {
 			io.github.jcondedata.aliveworkplace.compat.raiddens.RaidDensRaids.init();
 		}
+		// CobbleFurnies' Furnicrafter recipes for the Furnicrafter job (38.12): its recipe files only, never its classes.
+		if (Platform.get().isModLoaded("cobblefurnies")) {
+			io.github.jcondedata.aliveworkplace.compat.cobblefurnies.CobbleFurniesRecipes.init();
+			AliveWorkplace.LOG.info("Alive Workplace: cobblefurnies {} furniture recipes on", Platform.get().modVersion("cobblefurnies"));
+		}
 		// The questbook: our chapters copied into FTB Quests' config folder (data only, never FTB Quests' classes).
 		if (Platform.get().isModLoaded("ftbquests")) {
 			io.github.jcondedata.aliveworkplace.compat.ftbquests.FtbQuestsBook.init();

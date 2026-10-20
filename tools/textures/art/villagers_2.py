@@ -1763,6 +1763,59 @@ def conductor():
     return t.save_profession(ASSETS, "conductor", hat="full")
 
 
+def furnicrafter():
+    """The village's Furnicrafter (ROADMAP 38.12, CobbleFurnies), who makes furniture at the Furni Crafter: a knitted
+    beanie in Poke Ball red with a white turn-up; a cream linen shirt under a walnut-brown leather apron, with a Poke
+    Ball stitched on its skirt (red over white, a dark band and button) as the mark of the furniture she makes; a
+    yellow tape measure hung round the neck, both ends down the bib; a leather belt with a pencil and a little
+    upholstery hammer at the right hip; a pincushion of red cloth on the right side, pins in it; rolled sleeves. Red
+    and walnut keep her apart from the Carpenter's bare head and tan canvas at a glance."""
+    t = vg.VillagerTexture()
+    red = vg.cloth("#b8322c", spread=0.2)
+    white = vg.cloth("#e6e2d4", spread=0.12)
+    shirt = vg.cloth("#d8ccae", spread=0.14)
+    walnut = vg.cloth("#5e3b22", spread=0.2)
+    tape = ("#e8c23a", "#b8901c")
+    vg.hat(t, red, style="beanie", noise=0)
+    crown_top(t, red)
+    top = t.face("hat", "top")                           # a white bobble on the crown
+    paint(top, ((3, 3), (4, 3), (3, 4)), white[3])
+    top.put(4, 4, white[2])
+    for side in SIDES:                                   # the white turn-up of the beanie, lit on the front
+        t.face("hat", side).fill(white[3] if side == "front" else white[2], rows=[3])
+    vg.vest(t, shirt, length=18, open_front=False, noise=0.02)
+    vg.apron(t, walnut, top=2, bottom=18, left=1, right=6, ties=True)
+    apron_back(t, walnut)
+    f = t.face("jacket", "front")
+    for y in range(0, 9):                                # the tape measure round the neck, down both sides of the bib
+        f.put(1, y, tape[0] if y % 3 else tape[1])
+        f.put(6, y, tape[0] if y % 3 else tape[1])
+    ball = (".rr.", "rrrr", "kwkk", "wwww", ".ww.")   # the stitched Poke Ball on the skirt, under the badge
+    colours = {"r": red[2], "w": white[3], "k": "#2a2224"}
+    for y, row in enumerate(ball):
+        for x, ch in enumerate(row):
+            if ch != ".":
+                c = colours[ch]
+                if ch == "r" and (x == 0 or y == 0):
+                    c = red[3]                           # lit from the top left
+                if ch == "w" and (x == 3 or y == 4):
+                    c = white[1]
+                f.put(3 + x, 14 + y, c)
+    f.put(4, 16, white[3])                               # the button in the band
+    vg.belt(t, vg.cloth("#3e2616", n=4), row=10, buckle=BRASS[3])
+    for x, y, c in ((1, 11, STEEL[3]), (2, 11, STEEL[2]),   # the upholstery hammer at the right hip
+                    (1, 12, "#8a5a32"), (1, 13, "#6e4424"), (1, 14, "#5a361c"),
+                    (3, 11, "#3a3a3a"), (3, 12, tape[0]), (3, 13, tape[0])):   # and a pencil beside it
+        f.put(x, y, c)
+    west = t.face("jacket", "west")                      # the pincushion on the right side, pins in it
+    paint(west, ((1, 11), (2, 11), (1, 12), (2, 12)), red[2])
+    west.put(1, 11, red[3])
+    west.put(2, 12, red[1])
+    paint(west, ((1, 10), (2, 10)), STEEL[3])
+    vg.sleeves(t, shirt, cuff=walnut[2])
+    return t.save_profession(ASSETS, "furnicrafter", hat="full")
+
+
 DRAW = [orchard_keeper,berry_breeder, camp_cook, habitat_keeper, daycare_keeper, gem_grower, vintner, tailor, printer,pokemon_trader, porter, postman, rancher, scholar, shopkeeper, sifter, teacher, tinkerer,
         trainer, trainer_leader, tutor, undertaker, steward, legend, legend_placeholder, master_architect, pathfinder, old_sage, seer, golem_smith,
         merchant_prince, grand_chef, bard_laureate, beastmaster, founder, pokemon_professor, pokemon_ranger]
@@ -1772,6 +1825,7 @@ DRAW += [well_keeper]   # 32.17
 DRAW += [physician]   # 32.18
 DRAW += [mechanic]   # 39.2
 DRAW += [conductor]   # 39.7d
+DRAW += [furnicrafter]   # 38.12
 
 if __name__ == "__main__":
     run(DRAW)

@@ -3680,6 +3680,27 @@ final class JobScenes {
 				new ItemStack(Items.BLUE_DYE, 2), new ItemStack(Items.HONEY_BOTTLE, 2), new ItemStack(Items.SUGAR, 2));
 			return l -> c.countItem(cobblemonItem("exp_candy_xs")) >= 1 && c.countItem(cobblemonItem("berry_sweet")) >= 1;
 		}));
+		SCENES.put("furnicrafter", job("the Furnicrafter made the Oak Chairs, Red Lamps and Poke Ball Desk the storehouse ordered from the planks, wool, redstone and concrete in its store", 2400, (level, player) -> {
+			// ROADMAP 38.12 (CobbleFurnies): a Furnicrafter at CobbleFurnies' Furni Crafter, and by it a Storehouse whose
+			// chest holds planks, red wool, redstone and red and white concrete, with stock orders for Oak Chairs, Red Lamps
+			// and Poke Ball Desks. She makes each from the store's materials (the chairs' sticks cut from the planks first)
+			// and puts them in the store.
+			java.util.function.Function<String, Item> cf = id -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(
+				net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblefurnies", id));
+			Block crafter = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(ModVillagers.FURNICRAFTER_BLOCK);
+			Showcase.check(ModVillagers.FURNICRAFTER != null && io.github.jcondedata.aliveworkplace.craft.FurnicrafterWork.ENABLED
+				&& io.github.jcondedata.aliveworkplace.craft.FurnitureRecipes.makes(level.getServer(), cf.apply("oak_chair")),
+				"the Furnicrafter's job and CobbleFurnies' recipes are there (CobbleFurnies, furnicrafters)");
+			BlockPos storehouse = chestPos().west();
+			level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+			Container c = chest(level, chestPos(), new ItemStack(Items.OAK_PLANKS, 6), new ItemStack(Items.RED_WOOL, 2),
+				new ItemStack(Items.REDSTONE, 2), new ItemStack(Items.RED_CONCRETE, 1), new ItemStack(Items.WHITE_CONCRETE, 1));
+			for (String piece : java.util.List.of("oak_chair", "red_lamp", "poke_ball_desk")) {
+				io.github.jcondedata.aliveworkplace.store.StockOrders.cycle(level, storehouse, cf.apply(piece));
+			}
+			worker(level, STATION, crafter, ModVillagers.FURNICRAFTER_POI, ModVillagers.FURNICRAFTER);
+			return l -> c.countItem(cf.apply("oak_chair")) >= 1 && c.countItem(cf.apply("red_lamp")) >= 1 && c.countItem(cf.apply("poke_ball_desk")) >= 1;
+		}));
 		SCENES.put("bean_farm", job("the farmer cut the ripe Cobblecuisine beans into the chest, left the green ones and sowed the bare rows", 2400, (level, player) -> {
 			// ROADMAP 38.9 (Cobblemon and Cobblecuisine): a farmer's 5x3 field by her composter, watered down the middle,
 			// a row of ripe beans, a row still green and a row of bare farmland; bean seeds in the chest and no beans, so
@@ -3949,6 +3970,8 @@ final class JobScenes {
 			place(level, STATION, ModBlocks.STOREHOUSE);
 			Container store = chest(level, STATION.west(2));
 			Villager porter = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			// B251: no gift by the UUID roll (one villager in 240 is a Night Owl, who rests through the scene's morning)
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(porter, null);
 			// The porter starts once the Drop Box's screen has been filmed (the runner calls this), while it's still full.
 			afterDuring = (l, p) -> io.github.jcondedata.aliveworkplace.store.Porters.employ(l, porter, STATION);
 			BlockPos box = new BlockPos(3, -60, -3);
@@ -3969,6 +3992,7 @@ final class JobScenes {
 					+ porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
 					+ ", potential " + porter.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
 					+ ", doing " + porter.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", schedule " + net.minecraft.core.registries.BuiltInRegistries.SCHEDULE.getKey(porter.getBrain().getSchedule())
 					+ ", time " + l.getDayTime() % 24000 + ", at " + porter.blockPosition().toShortString()
 					+ ", status " + (status == null ? "none" : status.title().getString() + " / " + status.line().getString())
 					+ ", bag " + ModAttachments.BUILDER_BAG.getOrCreate(porter).stacks().stream().filter(s -> !s.isEmpty()).map(s -> s.getCount() + " " + s.getItem()).toList()

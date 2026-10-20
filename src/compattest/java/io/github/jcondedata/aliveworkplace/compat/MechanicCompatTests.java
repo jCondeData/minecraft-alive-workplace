@@ -421,4 +421,57 @@ public class MechanicCompatTests implements FabricGameTest {
 		}
 		return list;
 	}
+
+	/**
+	 * B239/B240: what a player puts in a Create Toolbox stays in it as the same item and count, with a Mechanic at it and
+	 * a chest of goods by it through hundreds of ticks of work; and none of our storage code ever lists, fills or empties
+	 * the toolbox as a supply chest. (Put in and taken out through Fabric's item storage, the way hoppers and menus do.)
+	 */
+	//$ gametest_ticks_batch AREA '1800' '"toolbox_keeps_items"'
+	@GameTest(template = AREA, timeoutTicks = 1800, batch = "toolbox_keeps_items")
+	public void aToolboxKeepsWhatIsPutInIt(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		chest(helper, new ItemStack(Items.OAK_PLANKS, 64), new ItemStack(createItem("shaft"), 2));
+		Villager mechanic = mechanic(helper);
+		BlockPos toolbox = helper.absolutePos(TOOLBOX);
+		var storage = net.fabricmc.fabric.api.transfer.v1.item.ItemStorage.SIDED.find(level, toolbox, null);
+		if (storage == null) {
+			helper.fail("no item storage on the toolbox");
+			return;
+		}
+		ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
+		long in;
+		try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+			in = storage.insert(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(pick), 1, tx);
+			tx.commit();
+		}
+		if (in == 0) {
+			helper.fail("toolbox takes no pickaxe via storage");
+			return;
+		}
+		helper.setDayTime(2000);
+		helper.runAfterDelay(400, () -> {
+			long found = 0;
+			boolean other = false;
+			for (var view : storage) {
+				if (view.isResourceBlank()) {
+					continue;
+				}
+				if (view.getResource().getItem() == Items.DIAMOND_PICKAXE) {
+					found += view.getAmount();
+				} else {
+					other = true;
+				}
+			}
+			helper.assertTrue(found == in, "the toolbox holds " + found + " of the " + in + " pickaxes put in");
+			helper.assertTrue(!other, "the toolbox holds something that wasn't put in");
+			helper.assertTrue(!SupplyContainers.find(level, toolbox, null).contains(toolbox), "the toolbox is listed as a supply chest");
+			try (var tx = net.fabricmc.fabric.api.transfer.v1.transaction.Transaction.openOuter()) {
+				long out = storage.extract(net.fabricmc.fabric.api.transfer.v1.item.ItemVariant.of(pick), in, tx);
+				helper.assertTrue(out == in, "only " + out + " of " + in + " pickaxes come back out");
+			}
+			helper.succeed();
+		});
+	}
 }

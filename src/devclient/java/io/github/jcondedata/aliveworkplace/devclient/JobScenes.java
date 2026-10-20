@@ -4298,11 +4298,15 @@ final class JobScenes {
 				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
 				// five blocks of the front wall knocked out (a creeper's hole, say: nothing a threat is counted for)
 				int knocked = 0;
-				for (int x = 0; x < size.getX() && knocked < 5; x++) {
-					BlockPos at = origin.offset(x, 2, 0);
-					if (!level.getBlockState(at).isAir() && level.getBlockEntity(at) == null) {
-						level.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
-						knocked++;
+				// (a row of the front at one height has the door and windows in it: take the wall's rows from the floor up
+				// until five solid blocks are out)
+				for (int y = 1; y < size.getY() && knocked < 5; y++) {
+					for (int x = 0; x < size.getX() && knocked < 5; x++) {
+						BlockPos at = origin.offset(x, y, 0);
+						if (level.getBlockState(at).canOcclude() && level.getBlockEntity(at) == null) {
+							level.setBlockAndUpdate(at, Blocks.AIR.defaultBlockState());
+							knocked++;
+						}
 					}
 				}
 				Showcase.check(knocked == 5, "five blocks knocked out of the cottage's front: " + knocked);

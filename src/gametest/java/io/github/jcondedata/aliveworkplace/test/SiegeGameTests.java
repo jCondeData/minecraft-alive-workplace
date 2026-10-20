@@ -851,6 +851,15 @@ public class SiegeGameTests implements FabricGameTest {
 						Rotation.NONE, Mirror.NONE), builder[0].getUUID()); // the builder's to look after
 					io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = false; // builderRepairs off
 					io.github.jcondedata.aliveworkplace.build.Upkeep.THREATS = true; // as in a player's game
+					// Builders work by day (2000 to 9000) and rest at night: a gate broken at night goes back the next
+					// morning, so the clock goes on to a working morning unless enough of the day's work is left. The level's
+					// clock is whatever earlier tests left it at, and from dusk the builder only rested (B237). yard() puts
+					// the clock back when the test ends.
+					long now = level.getDayTime();
+					long timeOfDay = now % 24000L;
+					if (timeOfDay < 2000L || timeOfDay > 7000L) {
+						level.setDayTime(now - timeOfDay + (timeOfDay < 2000L ? 0L : 24000L) + 2000L);
+					}
 					var site = io.github.jcondedata.aliveworkplace.build.Upkeep.look(level, builder[0]);
 					helper.assertTrue(site != null && site.isRepair(), "no repair of the broken gate with builderRepairs off");
 				} else if (tick > 500) {
@@ -862,8 +871,13 @@ public class SiegeGameTests implements FabricGameTest {
 				&& !io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0])) {
 				helper.succeed();
 			} else if (tick > broke[0] + 1200) {
+				var site = io.github.jcondedata.aliveworkplace.build.Builders.activeSite(level, builder[0]);
 				helper.fail("the builder didn't put the gate back: " + level.getBlockState(gate) + ", repairing "
-					+ io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0]));
+					+ io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(builder[0]) + "; builder at "
+					+ builder[0].position() + (builder[0].isSleeping() ? ", asleep" : "") + ", activity "
+					+ builder[0].getBrain().getActiveNonCoreActivity().orElse(null) + ", day time " + level.getDayTime() % 24000L
+					+ " (broke at " + (level.getDayTime() - (tick - broke[0])) % 24000L + ")"
+					+ (site == null ? ", no site" : ", site " + site.stage() + " " + site.status() + " " + site.detail() + ", skipped " + site.skipped()));
 			}
 		});
 	}

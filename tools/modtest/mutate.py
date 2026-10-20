@@ -22,6 +22,10 @@ run once more with CMD, so code only the optional mods' compat tests reach (comp
 Create) isn't reported as a survivor when a compat test kills it. CMD gets its own baseline on the
 real code, run the first time a survivor needs it; a kill there is listed as "killed by (compat) ...".
 At most --compat-max survivors are re-run (default 6), the rest stay survivors.
+A --compat-cmd that calls gradlew gets "--no-daemon -Dorg.gradle.jvmargs=-Xmx1536m" added unless it
+already says --daemon/--no-daemon or sets jvmargs: a Gradle daemon reused between compat mutants gets
+OOM-killed on the 7 GB container. Only javac's own error lines (Foo.java:12: error: ...), "Compilation
+failed" and a failed compile task count as NO-COMPILE; the compat server log's "error: " lines don't.
 """
 import argparse
 import json
@@ -141,6 +145,13 @@ def restore_all(root):
     return n
 
 
+def compat_gradle_flags(cmd):
+    """Compat runs: no reused daemon, capped heap (B223). Other commands and explicit choices stay as given."""
+    if not cmd or "gradlew" not in cmd or re.search(r"--(no-)?daemon|org\.gradle\.jvmargs", cmd):
+        return cmd
+    return re.sub(r"(\./gradlew)", r"\1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1536m", cmd, count=1)
+
+
 def run(cmd, root, timeout):
     t = time.time()
     try:
@@ -230,6 +241,7 @@ def main():
     ap.add_argument("--restore", action="store_true")
     ap.add_argument("--include-client", action="store_true", help="also mutate src/client* (only useful with a client test command)")
     a = ap.parse_args()
+    a.compat_cmd = compat_gradle_flags(a.compat_cmd)
     root = repo_root(a.repo)
     left = restore_all(root)
     if left:

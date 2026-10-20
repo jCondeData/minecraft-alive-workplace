@@ -22,8 +22,44 @@ def mutate(root, *args):
     return r.returncode, r.stdout + r.stderr
 
 
+def unit_checks():
+    """B223: run()'s NO-COMPILE vs KILLED classification and the compat Gradle flags (no Gradle needed)."""
+    sys.path.insert(0, HERE)
+    import mutate
+    noise = "[Server] WARN loot modifier supplementaries:x - error: unknown condition\\n"
+    cases = [
+        ("a Supplementaries 'error: ' log line with a failing test is KILLED",
+         f"printf '{noise}FAILED: FurnitureChoiceTest\\n'; exit 1", "KILLED"),
+        ("a real javac error is NO-COMPILE",
+         "printf 'src/main/java/mod/A.java:5: error: cannot find symbol\\n'; exit 1", "NO-COMPILE"),
+        ("Gradle's Compilation failed is NO-COMPILE", "printf 'Compilation failed; see the error\\n'; exit 1", "NO-COMPILE"),
+        ("a javac error among the log noise is NO-COMPILE",
+         f"printf '{noise}A.java:9: error: ; expected\\n'; exit 1", "NO-COMPILE"),
+        ("exit 0 survives even with 'error: ' in the output", f"printf '{noise}'", "SURVIVED"),
+    ]
+    bad = 0
+    for name, cmd, want in cases:
+        got = mutate.run(cmd, ".", 30)[0]
+        print(("ok   " if got == want else f"FAIL (got {got}) ") + name)
+        bad += got != want
+    f = mutate.compat_gradle_flags
+    flag = "--no-daemon -Dorg.gradle.jvmargs=-Xmx1536m"
+    flag_cases = [
+        ("compat gradlew gets --no-daemon and a capped heap", f("export J=1; ./gradlew --max-workers=1 runCompatGameTest"),
+         f"export J=1; ./gradlew {flag} --max-workers=1 runCompatGameTest"),
+        ("an explicit --daemon choice stays", f("./gradlew --daemon x"), "./gradlew --daemon x"),
+        ("explicit jvmargs stay", f("./gradlew -Dorg.gradle.jvmargs=-Xmx3g x"), "./gradlew -Dorg.gradle.jvmargs=-Xmx3g x"),
+        ("a non-Gradle command stays", f("true"), "true"),
+        ("no command stays None", f(None), None),
+    ]
+    for name, got, want in flag_cases:
+        print(("ok   " if got == want else f"FAIL (got {got!r}) ") + name)
+        bad += got != want
+    return bad
+
+
 def main():
-    fails = 0
+    fails = unit_checks()
     with tempfile.TemporaryDirectory() as root:
         os.makedirs(os.path.join(root, "src/main/java/mod"))
         with open(os.path.join(root, SRC), "w") as f:

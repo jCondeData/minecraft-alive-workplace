@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Storehouse: a Sophisticated Storage link that isn't linked with the Storage Tool (one a builder built, or a player
+  placed without the tool) no longer hides the storage behind it: that barrel stays a store of its own, so villagers
+  see what's in it. A link linked to the controller still counts what's behind it through the controller (B257).
+
 - Sieges: an archer on a battle station whose raider goes out of sight (under the walkway, hacking at the gate) turns
   to the nearest raider he can see and reach, instead of watching for the hidden one for up to a minute (B252).
 

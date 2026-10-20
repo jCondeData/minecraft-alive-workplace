@@ -318,4 +318,82 @@ public class SophisticatedControllerCompatTests implements FabricGameTest {
 		return BuiltInRegistries.BLOCK.getOptional(ResourceLocation.fromNamespaceAndPath(MOD, id))
 			.orElseThrow(() -> new GameTestAssertException("no block " + MOD + ":" + id));
 	}
+
+	/**
+	 * A builder adds a storage link to a controller's network (touching a barrel the controller links, two blocks from the
+	 * controller) with a barrel behind it: once the builder's after-block hook has run, what lies in that barrel is counted
+	 * once at the Storehouse (through the controller, or as a store of its own), never dropped.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"sophisticated_controller_link"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "sophisticated_controller_link")
+	public void aLinkBuiltOntoTheNetworkLosesNothing(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		networks(helper, true);
+		ServerLevel level = helper.getLevel();
+		BlockPos storehouse = helper.absolutePos(new BlockPos(2, 2, 2));
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.STOREHOUSE);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		BlockPos first = helper.absolutePos(new BlockPos(4, 2, 4));
+		level.setBlockAndUpdate(first, block("barrel").defaultBlockState());
+		BlockPos controller = helper.absolutePos(new BlockPos(3, 2, 4));
+		placeAsPlayer(level, controller, block("controller"), player);
+		helper.assertTrue(SupplyContainers.insert(level, List.of(first), new ItemStack(Items.COBBLESTONE, 10)).isEmpty(), "the first barrel took nothing");
+		// The barrel behind the link, then the link between it and the first barrel (its back, which it links, east).
+		BlockPos behind = helper.absolutePos(new BlockPos(6, 2, 4));
+		level.setBlockAndUpdate(behind, block("barrel").defaultBlockState());
+		helper.assertTrue(SupplyContainers.insert(level, List.of(behind), new ItemStack(Items.OAK_PLANKS, 7)).isEmpty(), "the barrel behind took nothing");
+		BlockPos link = helper.absolutePos(new BlockPos(5, 2, 4));
+		level.setBlock(link, TomsStorageCompatTests.facing(block("storage_link").defaultBlockState(), net.minecraft.core.Direction.WEST), Block.UPDATE_ALL);
+		StorageNetworks.afterBuilt(level, link, level.getBlockState(link));
+		helper.succeedWhen(() -> {
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			long planks = SupplyContainers.count(level, store, Items.OAK_PLANKS);
+			long cobble = SupplyContainers.count(level, store, Items.COBBLESTONE);
+			helper.assertTrue(planks == 7 && cobble == 10, "the Storehouse " + store + " counts " + planks + " of the 7 planks behind the link and "
+				+ cobble + " of the 10 cobblestone; linked by our walk: " + StorageNetworks.linkedTo(level, controller));
+		});
+	}
+
+	/**
+	 * A storage link a player has linked to the controller with the mod's Storage Tool: the barrel behind it is the
+	 * controller's, counted once through it (the tool's linking is the mod's own {@code ILinkable.linkToController}, called
+	 * by name, as the tests have the mod only at run time).
+	 */
+	//$ gametest_ticks_batch AREA '400' '"sophisticated_controller_tool_link"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "sophisticated_controller_tool_link")
+	public void aToolLinkedLinkCountsWhatLiesBehindItOnce(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		networks(helper, true);
+		ServerLevel level = helper.getLevel();
+		BlockPos storehouse = helper.absolutePos(new BlockPos(2, 2, 2));
+		helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.STOREHOUSE);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		PartnerShowsCompatTests.after(helper, () -> level.getServer().getPlayerList().remove(player));
+		BlockPos first = helper.absolutePos(new BlockPos(4, 2, 4));
+		level.setBlockAndUpdate(first, block("barrel").defaultBlockState());
+		BlockPos controller = helper.absolutePos(new BlockPos(3, 2, 4));
+		placeAsPlayer(level, controller, block("controller"), player);
+		helper.assertTrue(SupplyContainers.insert(level, List.of(first), new ItemStack(Items.COBBLESTONE, 10)).isEmpty(), "the first barrel took nothing");
+		BlockPos behind = helper.absolutePos(new BlockPos(6, 2, 4));
+		level.setBlockAndUpdate(behind, block("barrel").defaultBlockState());
+		helper.assertTrue(SupplyContainers.insert(level, List.of(behind), new ItemStack(Items.OAK_PLANKS, 7)).isEmpty(), "the barrel behind took nothing");
+		BlockPos link = helper.absolutePos(new BlockPos(5, 2, 4));
+		level.setBlock(link, TomsStorageCompatTests.facing(block("storage_link").defaultBlockState(), net.minecraft.core.Direction.WEST), Block.UPDATE_ALL);
+		net.minecraft.world.level.block.entity.BlockEntity be = level.getBlockEntity(link);
+		helper.assertTrue(be != null, "the link has no block entity");
+		try {
+			be.getClass().getMethod("linkToController", BlockPos.class).invoke(be, controller);
+		} catch (ReflectiveOperationException e) {
+			throw new GameTestAssertException("the link can't be linked: " + e);
+		}
+		helper.succeedWhen(() -> {
+			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
+			long planks = SupplyContainers.count(level, store, Items.OAK_PLANKS);
+			long cobble = SupplyContainers.count(level, store, Items.COBBLESTONE);
+			helper.assertTrue(planks == 7 && cobble == 10 && !store.contains(behind) && store.contains(controller), "the Storehouse " + store
+				+ " counts " + planks + " of the 7 planks behind the linked link and " + cobble + " of the 10 cobblestone; linked by our walk: "
+				+ StorageNetworks.linkedTo(level, controller));
+		});
+	}
 }

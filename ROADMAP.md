@@ -5208,6 +5208,22 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-c-1020-0654): third M37 mutation pass, seed 45, FurnitureChoice (30 of its 129 mutants, some the
+  seed-44 pass had run) against the ten furnishing GameTest classes (`only_tests.py`, ~50 s a run). 30 mutants: 19
+  killed, 11 survived the plain suite; no test added, no bug filed. Nine survivors are code only CobbleFurnies/Cobblemon
+  reach (the plain suite has no Poké Ball chair, so `trainersRoom` is empty), each asserted by a compat test (not re-run
+  here): :100 `partner ||` (unpartnered spots get the Trainer's room; `aPartneredHomeGetsThePokeBallChairAndDesk`'s
+  unpartnered check), :248 drop `!` (partner only when there is no room; same test), :304 delete the desk `put` (same
+  test's desk check), :303 `desk > 0` and `desk >= 1` (proved last pass by `theTrainersRoomTakesTheFirstChairEvenAtSpotZero`),
+  :294 `>=` on x, y and z (`theTrainersDeskIsInTheChairsRoom`'s "three blocks along x/z" and "a step down"), :312 (hasPartner, the Cobblemon extension).
+  Equivalent: :204 drop `!` (`footprint` returning the air cells): `Piece.resolve` gives every cell of the spot (air
+  where the piece has none) and refuses a footprint outside the spot, so placed and candidate, resolved on the same
+  spot, have equal air sets exactly when their block sets are equal. Open for a later pass: :166 drop `!` (a bed
+  candidate that isn't sleepable would be taken), re-run alone and survived; the shipped equivalents file has no bed
+  set, so only a datapack bed set reaches it (a test needs a test bed set in `aliveworkplace_test`'s
+  `furniture_equivalents`). Caution: a test added mid-run that fails on the real code shows as kills (:166, :294 twice, :312
+  were first reported killed by a draft test that was wrong; dropped, :166 re-run). Left: the other ~70 FurnitureChoice
+  mutants not yet run by any seed and BlueprintStyles' 37.7 parts.
 - 2026-10-20 (lane-c-1020-0353): second M37 mutation pass, seed 44, on the files no pass had covered: Furnishings (all
   6 mutants), FurnitureStock (all 22), ModdedLibrary (all 13) and FurnitureChoice (30 of 129) against the ten
   furnishing GameTest classes (`only_tests.py`, ~40 s a run); survivors only compat code reaches re-run against

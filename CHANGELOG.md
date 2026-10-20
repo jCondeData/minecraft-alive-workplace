@@ -16,6 +16,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- Sieges: a raider that walked back out through the open gate after going in no longer stands outside the walls for
+  the rest of the siege; it is sent in again (B175).
+
 ## 0.146.0 — 2026-10-19
 
 ### Added

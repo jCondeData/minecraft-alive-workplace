@@ -18,6 +18,9 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Workers: a villager whose walk the game dropped for a moment (a stroll ending as the job's walk began) no longer
+  stands still for a second before setting off, when an old path of theirs had failed; this sometimes made an elder
+  look as quick as a younger villager walking beside him (B242).
 - Sieges: a raider that walked back out through the open gate after going in no longer stands outside the walls for
   the rest of the siege; it is sent in again (B175).
 - Storage: a Sophisticated barrel or chest a builder adds to a storage controller's network, touching only another

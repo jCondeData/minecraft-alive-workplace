@@ -99,7 +99,11 @@ everyone of the family, generation by generation, two to a page.
   After a path that failed, a walk is asked again a second later (`Walker.RETRY_TICKS`), counted on the villager's own
   clock as well as by the caller, so a caller that keeps no counter (a successor following the elder, a mentor going to
   the hall) is never dropped for good (B187: vanilla keeps the "can't reach" note until a path gets there, so one failed
-  path used to stop every later walk; in the showcase Tom stopped after two blocks and Bram looked the faster).
+  path used to stop every later walk; in the showcase Tom stopped after two blocks and Bram looked the faster). Each
+  new walk Walker sets clears that note first, so only a failure of this walk makes the next request wait: vanilla also
+  drops a fresh walk target when the stroll it replaced ends in the same tick, and with an old note left from a path
+  that failed earlier (a villager just spawned, still falling) that drop used to cost another second (B242: CI build
+  1244, the younger villager stood from tick 23 to 42 and the elder covered 92% of his ground).
 - **The mood.** `Moods` adds 5 for an elder who is fed (ate within their day) and has a bed. Because it lifts the mood,
   it also helps an elder towards the 20 happy days below.
 - **The talk.** `Chatter` has the topic `elder` (four lines), as likely as any village news.
@@ -269,7 +273,8 @@ The chronicle has a new kind, `LIFE` (a clock); an older version reads an unknow
   elder's (`b95AnElderIsAskedAgainWhenVanillaTakesTheWalkOver`) and a walk the game had already started slowing to 80 to
   90% (`b95AnElderSlowsAWalkVanillaStarted`); the same walk asked tick after tick with no retry counter, 0.461 against
   0.5 and 74 to 90% of the ground (`b187AnElderAskedWithoutACounterStillWalksSlower`), and a walk after a failed path
-  asked again within 25 ticks (`b187AWalkAfterAFailedPathIsTriedAgain`); the mood 5 higher than a younger villager's same day, first on
+  asked again within 25 ticks (`b187AWalkAfterAFailedPathIsTriedAgain`), and a walk dropped with no failure of its own
+  asked again at once despite an old failure, while one whose own path failed still waits (`b242AWalkDroppedWithoutAFailureIsAskedAgainAtOnce`); the mood 5 higher than a younger villager's same day, first on
   the card, gone when hungry or without a bed, and the four lines word for word (`aFedAndHousedElderHasAQuietOldAge`);
   a reload, an older save's villager, an elder made ageless before this version (`aReloadKeepsTheDay`); a child grown up
   in the hall's own round, and an elder noted by it (`aChildGrowingUpIsGrownFromToday`); `villagerAges` off and on again

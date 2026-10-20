@@ -27,6 +27,9 @@ asks for the steps, `latest.log` and any crash report).
   the machine made, and don't feed a machine that is still busy with a player's batch.
 - Create: a farmer, armorer, chef or miner killed on the way to a machine now drops the input they were carrying
   instead of losing it.
+- Create: workers no longer use Create's work blocks as supply chests: a train station's schedule slot, a saw, an
+  ejector, a brass tunnel, a portable storage interface, a packager, a frogport or postbox, a stock ticker or a
+  creative crate (a farmer filled them with wheat, and a builder could take endlessly from a creative crate).
 
 ## 0.146.0 — 2026-10-19
 

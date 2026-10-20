@@ -474,4 +474,44 @@ public class MechanicCompatTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * Create's blocks that hold items for their own work are never a worker's supply chest: a train station's schedule
+	 * slot, a saw's or a drill's work, an ejector's launch, a portable storage interface (a contraption's chests), the
+	 * packager's and the package ports' packages, the stock ticker's and the creative crate's endless stock. Otherwise a
+	 * farmer next to one fills it with wheat or a builder takes from a creative crate without end. An item vault is
+	 * storage and stays one.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"create_not_storage"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "create_not_storage")
+	public void createWorkBlocksAreNoSupplyChests(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		List<String> ids = List.of("track_station", "mechanical_saw", "mechanical_drill", "weighted_ejector", "portable_storage_interface",
+			"packager", "repackager", "package_frogport", "white_postbox", "stock_ticker", "creative_crate", "andesite_tunnel", "brass_tunnel");
+		var stores = io.github.jcondedata.aliveworkplace.platform.Platform.get().items();
+		java.util.Map<BlockPos, String> placed = new java.util.LinkedHashMap<>();
+		for (int i = 0; i < ids.size(); i++) {
+			BlockPos at = new BlockPos(i % 7, 2, 5 + i / 7 * 2);
+			helper.setBlock(at, create(ids.get(i)).defaultBlockState());
+			placed.put(helper.absolutePos(at), ids.get(i));
+		}
+		BlockPos vault = new BlockPos(6, 2, 2);
+		helper.setBlock(vault, create("item_vault").defaultBlockState());
+		List<BlockPos> found = SupplyContainers.find(level, helper.absolutePos(new BlockPos(3, 2, 3)), null);
+		List<String> listed = new java.util.ArrayList<>();
+		int stores0 = 0;
+		for (var e : placed.entrySet()) {
+			if (stores.isStore(level, e.getKey())) {
+				stores0++;
+			}
+			if (found.contains(e.getKey())) {
+				listed.add(e.getValue());
+			}
+		}
+		helper.assertTrue(stores0 > 0, "setup: none of Create's work blocks has item storage");
+		helper.assertTrue(listed.isEmpty(), "Create's work blocks listed as supply chests: " + listed);
+		helper.assertTrue(found.contains(helper.absolutePos(vault)), "an item vault isn't listed as a supply chest");
+		helper.succeed();
+	}
 }

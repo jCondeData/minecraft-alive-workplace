@@ -88,6 +88,9 @@ final class JobScenes {
 	}
 
 	/** Stills a job scene's server side asks for (named like any still), taken on the client's next tick. */
+	/** What a job scene's check last found missing (set on the server by checks that say), added to its timeout message. */
+	static volatile String timeoutWhy;
+
 	static final java.util.concurrent.ConcurrentLinkedQueue<String> SHOTS = new java.util.concurrent.ConcurrentLinkedQueue<>();
 
 	/** One step of a screen scene: optionally act on the server, then point at {@code slot} (-1: nowhere) and shoot. */
@@ -3782,6 +3785,11 @@ final class JobScenes {
 			net.minecraft.world.level.block.Block pasture = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
 				io.github.jcondedata.aliveworkplace.registry.ModVillagers.PASTURE_BLOCK);
 			BlockState bottom = pastureHalf(ScreenshotHarness.standing(pasture.defaultBlockState()), "bottom");
+			// B72: the Pasture Block's default state is waterlogged (a player's placement clears it on dry ground): set
+			// that way, both halves were water sources that flooded the ground, the lure spot with it, so no snack went out
+			if (bottom.hasProperty(BlockStateProperties.WATERLOGGED)) {
+				bottom = bottom.setValue(BlockStateProperties.WATERLOGGED, false);
+			}
 			BlockPos spot = STATION.offset(-2, 0, -3);
 			BlockPos log = STATION.offset(2, 0, -2);
 			level.setBlockAndUpdate(log, net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(
@@ -3793,10 +3801,22 @@ final class JobScenes {
 			chest(level, chestPos(), new ItemStack(cobblemonItem("poke_snack"), 2), new ItemStack(Items.HONEY_BOTTLE, 2));
 			io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.addSpot(keeper, spot);
 			WildPokemon.spawnStill(level, "eevee shiny=yes level=12", STATION.getX() + 4.5, STATION.getY(), STATION.getZ() - 4.5);
-			return l -> io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks() != null
-				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks().isSnackBlock(l.getBlockState(spot))
-				&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.isSlathered(l.getBlockState(log))
-				&& !io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightings(keeper).isEmpty();
+			return l -> {
+				// B72: name which of the three is missing (and what she is doing) if the scene times out
+				boolean snack = io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks() != null
+					&& io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.snacks().isSnackBlock(l.getBlockState(spot));
+				boolean slathered = io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.isSlathered(l.getBlockState(log));
+				boolean seen = !io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightings(keeper).isEmpty();
+				io.github.jcondedata.aliveworkplace.work.WorkerStatus.Entry status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(keeper, l.getGameTime());
+				timeoutWhy = "missing:" + (snack ? "" : " snack (spot holds " + l.getBlockState(spot).getBlock() + ")")
+					+ (slathered ? "" : " slathered log (log is " + l.getBlockState(log).getBlock() + ")")
+					+ (seen ? "" : " sighting (wild eevees near: " + l.getEntities((net.minecraft.world.entity.Entity) null, new net.minecraft.world.phys.AABB(STATION).inflate(24),
+						e -> net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getNamespace().equals("cobblemon")).size() + " cobblemon entities)")
+					+ "; keeper " + keeper.getVillagerData().getProfession() + (keeper.isAlive() ? "" : " dead") + " at " + keeper.blockPosition().toShortString()
+					+ ", status " + (status == null ? "none" : status.line().getString())
+					+ ", spots " + io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.spots(keeper);
+				return snack && slathered && seen;
+			};
 		}));
 		SCENES.put("berry_breeder", new Job("the berry breeder bred a Lum Berry from Oran and Cheri", 2400, CAMERA, TARGET, (level, player) -> {
 			// ROADMAP 28.9: a composter picked with an Oran Berry; Oran, Cheri and Surprise Mulch in the chest; two rows of
@@ -7982,7 +8002,7 @@ final class JobScenes {
 		}
 		if (tick >= job.maxTicks() && doneAt < 0) {
 			ScreenshotHarness.shot(mc, "99_timeout");
-			Showcase.check(false, job.what() + " (not within " + job.maxTicks() / 20 + " seconds)");
+			Showcase.check(false, job.what() + " (not within " + job.maxTicks() / 20 + " seconds" + (timeoutWhy == null ? "" : "; " + timeoutWhy) + ")");
 			mc.stop();
 		}
 	}

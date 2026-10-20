@@ -108,6 +108,9 @@ public class TomsStorageCompatTests implements FabricGameTest {
 			List<BlockPos> store = SupplyContainers.find(level, storehouse, null);
 			helper.assertTrue(store.size() == 2 && store.contains(helper.absolutePos(CONNECTOR)) && store.contains(helper.absolutePos(LONE_CHEST)),
 				"the store: " + rel(helper, store) + ", wanted the connector and the lone chest");
+			// Nearest first (a builder takes from the nearest store): the lone chest beside the Storehouse, then the connector.
+			helper.assertTrue(store.equals(List.of(helper.absolutePos(LONE_CHEST), helper.absolutePos(CONNECTOR))),
+				"the store " + rel(helper, store) + ", wanted the lone chest then the connector, nearest first");
 			assertCount(helper, store, Items.COBBLESTONE, 13);
 			assertCount(helper, store, Items.OAK_PLANKS, 20);
 			assertCount(helper, store, Items.IRON_SWORD, 3);
@@ -453,6 +456,33 @@ public class TomsStorageCompatTests implements FabricGameTest {
 			for (int x = 0; x <= 16; x++) {
 				helper.setBlock(new BlockPos(x, 2, 8), Blocks.AIR);
 			}
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Another inventory connector touching one of the network's chests is a network's head, not an inventory: the
+	 * connector doesn't join it (nor read on through it), so its members are the two chests and the cabinet, and what
+	 * lies in the shared chest is counted once through the connector.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"toms_own_blocks"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "toms_own_blocks")
+	public void anotherConnectorIsntJoined(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		network(helper, false);
+		BlockPos second = CHEST_1.south();
+		helper.setBlock(second, block("inventory_connector"));
+		put(helper, CHEST_1, new ItemStack(Items.COBBLESTONE, 10));
+		helper.runAfterDelay(40, () -> {
+			List<BlockPos> members = List.copyOf(StorageNetworks.members(level, helper.absolutePos(CONNECTOR)));
+			List<BlockPos> wanted = List.of(helper.absolutePos(CHEST_1), helper.absolutePos(CHEST_2), helper.absolutePos(CABINET));
+			helper.assertTrue(members.size() == 3 && members.containsAll(wanted), "the connector joins " + rel(helper, members)
+				+ ", wanted the two chests and the cabinet, not the other connector");
+			// Tom's own connector agrees: the chest's cobblestone once.
+			assertCount(helper, List.of(helper.absolutePos(CONNECTOR)), Items.COBBLESTONE, 10);
+			// Nothing left for later batches' porters and builders to find.
+			helper.setBlock(second, Blocks.AIR);
 			helper.succeed();
 		});
 	}

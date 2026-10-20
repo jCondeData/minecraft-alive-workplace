@@ -5238,6 +5238,34 @@ the owner's port jar; M33's caravans (39.7).
   cache kept one tick longer or read again on the same tick; changes() still drops it when a building is added or
   forgotten). Two VillageMachines mutants weren't run (time box). No mod bug found. Gradle's first run in a fresh
   container got HTTP 429 from Maven Central for about 20 minutes; a retry loop (25 s apart) got it through.
+- 2026-10-20 (lane-c-1020-1853): seventh M37 mutation pass, seed 49, StorageNetworks (lines as at edb62f7d, 107
+  mutants now with B257's `linkedToController`; the sixth pass's 13 mapped to the new lines and left out), against the
+  three storage compat classes (trimmed compat fabric.mod.json, `--no-daemon`, ~2.3 min a run, a small driver over
+  `mutate.py`'s candidates in a hand-picked order: B257's new code first, then the rest). 27 run: 18 killed, 9 survived;
+  6 of the 9 now killed by new tests, 2 equivalent, 1 open (+ :112, not run alone, killed by the new reach test). Killed by
+  the old tests: :120 `&&` to `||`, :136 `==` to `!=`, :140 `==` to `!=`, :156 `!=` to `==`, :281 second `&&` to `||`,
+  :308 `&&` to `||`, :322 first drop `!`, :325, :356 and :362 second drop `!`, :375, :196 and :184, :191, :261, :268, :303
+  `||` to `&&`, :336 `==` to `!=`. New tests, each passing on the real code (26 of 26) and failing on its mutant with its
+  own message (one run with all eight survivors planted): `SophisticatedControllerCompatTests.aLinkToolLinkedToAnotherControllerIsntThisOnes`
+  kills :140 `&&` to `||` (any link with a saved controllerPos, even another controller's, let the walk through, so the
+  barrel behind it left the Storehouse's list); `.theSixteenthBarrelEachWayIsOutOfTheControllersReach` (huge_area, rows
+  of 16 east, south and up; the mod's `isWithinRange` takes 15 inclusive, checked in its bytecode, and its controller
+  holds each 15th's glass, no 16th's planks) kills :111, :112 and :113 `>` to `>=` (the message names each axis);
+  nearest-first checks in `.aLinkBuiltOntoTheNetworkLosesNothing` and `TomsStorageCompatTests.aConnectorIsOneStoreForItsChestsAndCabinet`
+  kill :170 and :366 (delete the sort: a controller or connector nearer than a chest came last, and a builder takes
+  from the first store); `TomsStorageCompatTests.anotherConnectorIsntJoined` kills :322 second drop `!` (every Tom's
+  block but the crate counted as an inventory, so a second connector touching a network chest was joined). Equivalent:
+  :137 return true (a storage_link always has its block entity) and :349 `||` to `&&` (`asStorehouse` is only called
+  with the switch on, and with no heads it returns `found` re-sorted, already nearest first). Open: :220 (delete
+  `relink`): no layout found where the built block's own `setPlacedBy` doesn't already link it; the new
+  `.aBarrelBuiltBehindAToolLinkedLinkIsLinked` (a barrel built touching only a tool-linked link) passes with and without
+  it. Tried and dropped: an open crate on the connector (the test's `put` into Tom's `open_crate` failed at once; it
+  takes items into the network rather than holding them, so not tested). No bug found. Not run (time): the other 79
+  mutants, among them :383, :362 and :356 `&&` to `||`, :257, :373, :374. Seen on the way, not filed (a guess, no test):
+  a storage link tool-linked to a controller from afar (not touching its network) adds the barrel behind it to the
+  mod's own controller (its `storagePositions`), but `linkedTo` walks only from the controller through touching blocks,
+  so if that controller also links a touching barrel, the barrel behind the far link may be counted twice. Tool tip:
+  `pgrep -f drive.py` matches the shell running it; wait on the results file instead.
 - 2026-10-20 (lane-c-1020-1553): sixth M37 mutation pass, seed 48, StorageNetworks (13 of its 105 mutants; :358 had
   been run before) against the three storage compat classes (SophisticatedStorage, SophisticatedController, TomsStorage;
   trimmed compat fabric.mod.json, `--no-daemon`, ~2.5 min a run). 4 killed (:96 drop `!`, :290 `!=` to `==`, :358 and

@@ -406,7 +406,13 @@ with Sophisticated Storage (compat): `SophisticatedStorageCompatTests.everyTierS
 37.9 (compat, Sophisticated Storage): `SophisticatedControllerCompatTests.aControllerMakesThreeBarrelsOneStore` (counted
 once, a delivery put away and a builder's take through the controller, the board's line, three stores again once it
 breaks), `SophisticatedControllerCompatTests.aPorterDeliversThroughTheController`,
-`SophisticatedControllerCompatTests.switchOffKeepsThreeStores`, `SophisticatedControllerCompatTests.theSophisticatedStyleAddsAController`;
+`SophisticatedControllerCompatTests.switchOffKeepsThreeStores`, `SophisticatedControllerCompatTests.theSophisticatedStyleAddsAController`,
+`SophisticatedControllerCompatTests.aLinkToolLinkedToAnotherControllerIsntThisOnes` (a link tied to another controller
+isn't this one's way on: the barrel behind it isn't linked, its planks counted once),
+`SophisticatedControllerCompatTests.theSixteenthBarrelEachWayIsOutOfTheControllersReach` (rows of 16 barrels east, south
+and up: the controller links each 15th, not a 16th, as the mod's own controller does) and
+`SophisticatedControllerCompatTests.aBarrelBuiltBehindAToolLinkedLinkIsLinked` (a barrel a builder adds behind a
+tool-linked link is counted through the controller, once);
 no mods: `StyleGameTests.aNearRuleForAMissingBlockIsPassedOver` (a near rule swaps only the block beside its block, and one
 whose block isn't installed falls through to the next rule, not to air).
 Showcase scene `modded_storehouse` part one (filmed with `-Pfurniture=true`, which now brings Sophisticated Storage).
@@ -443,6 +449,8 @@ table on the connector isn't joined, and a chest touching only the table is its 
 cable connector, whose chest the network joins: the connector stays the only store, its glass counted once) and
 `TomsStorageCompatTests.theSixteenthBarrelIsOutOfTheConnectorsRange` (in a row of 16 barrels from the connector, it
 joins the 15 within its 16-block range, as Tom's own connector does, and not the 16th).
+`TomsStorageCompatTests.anotherConnectorIsntJoined` (a second inventory connector touching a network chest isn't one
+of its inventories). Both classes check the store list is nearest first.
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

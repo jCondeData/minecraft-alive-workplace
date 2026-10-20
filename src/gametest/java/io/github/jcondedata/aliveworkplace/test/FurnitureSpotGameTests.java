@@ -143,4 +143,61 @@ public class FurnitureSpotGameTests implements FabricGameTest {
 		helper.assertTrue(there != null && there.is(Blocks.DARK_OAK_STAIRS), "the styled template has " + there + " at the chair");
 		helper.succeed();
 	}
+
+	/**
+	 * Every kind of mistake in a spots file is named, so the log line says what to fix: no spots list (an empty file, a
+	 * list instead of an object, spots that aren't a list), a spot facing up or down, a position without three numbers.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void eachMistakeInASpotsFileIsNamed(GameTestHelper helper) {
+		String cell = "\"blocks\": [{\"at\": [0, 0, 0], \"state\": \"minecraft:oak_slab\"}]";
+		String[][] cases = {
+			{"{}", "no \"spots\" list"},
+			{"[]", "no \"spots\" list"},
+			{"{\"spots\": {}}", "no \"spots\" list"},
+			{"{\"spots\": [{\"kind\": \"chair\", \"pos\": [0, 1, 0], \"facing\": \"up\", " + cell + "}]}", "is not north, south, east or west"},
+			{"{\"spots\": [{\"kind\": \"chair\", \"pos\": [0, 1], \"facing\": \"north\", " + cell + "}]}", "a position needs three numbers"},
+		};
+		for (String[] c : cases) {
+			String message = null;
+			try {
+				BlueprintFurniture.read(JsonParser.parseString(c[0]));
+			} catch (IllegalArgumentException ex) {
+				message = ex.getMessage();
+			} catch (RuntimeException ex) {
+				message = "not named (" + ex + ")";
+			}
+			helper.assertTrue(message != null && message.contains(c[1]), "for " + c[0] + " the reader said " + message + ", wanted " + c[1]);
+		}
+		helper.succeed();
+	}
+
+	/**
+	 * A style that swaps a wood's planks for something that isn't planks (stone bricks, a log) leaves the spot's wood as
+	 * it was: only a swap to another wood's planks carries the wood over.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aStyleSwappingPlanksForNoPlanksKeepsTheWood(GameTestHelper helper) {
+		FurnitureSpot spruceChair = new FurnitureSpot(FurnitureSpot.Kind.CHAIR, new BlockPos(1, 1, 1), net.minecraft.core.Direction.NORTH, "spruce", null,
+			List.of(new FurnitureSpot.Cell(BlockPos.ZERO, Blocks.SPRUCE_STAIRS.defaultBlockState())));
+		String[][] cases = {
+			{"aliveworkplace_test_planks_to_stone", "minecraft:stone_bricks", "spruce"},
+			{"aliveworkplace_test_planks_to_log", "minecraft:dark_oak_log", "spruce"},
+			{"aliveworkplace_test_planks_to_planks", "minecraft:dark_oak_planks", "dark_oak"},
+		};
+		for (String[] c : cases) {
+			BlueprintStyles.Style style = new BlueprintStyles.Style(c[0], 0, ResourceLocation.withDefaultNamespace("stone"),
+				List.of(new BlueprintStyles.Rule(java.util.regex.Pattern.compile("minecraft:spruce_planks"), c[1])));
+			String wood;
+			try {
+				wood = BlueprintFurniture.styled(List.of(spruceChair), style).get(0).wood();
+			} catch (RuntimeException ex) {
+				wood = "a crash (" + ex + ")";
+			}
+			helper.assertTrue(c[2].equals(wood), "spruce planks swapped for " + c[1] + ": the chair's wood is " + wood + ", wanted " + c[2]);
+		}
+		helper.succeed();
+	}
 }

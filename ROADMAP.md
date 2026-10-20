@@ -5197,6 +5197,27 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-c-1020-0053): Milestone 37 still has no open item and no `(lane: c)` bug, so the owner's "which big
+  milestone next?" still stands. Test-hardening instead. The 10-19 nightly's two M37 survivors (StorageNetworks:336
+  `&&` to `||`, FurnishedPackTest:158 `<` to `<=`) were already killed: that nightly ran at 09:49 UTC, before
+  lane-c-1019-0953's tests (10:14), and neither file changed since. Fresh pass, seed 43: FurnishingTable (all 30
+  mutants) and BlueprintFurniture (all 24) against the six furnishing GameTest classes (`only_tests.py`, ~35 s a run),
+  StorageNetworks (5 of 104) against the three storage compat classes (~2 min a run). 59 mutants: 47 killed, 3 didn't
+  compile, 9 survived; 7 now killed, each proved against its mutant, 2 left for a bug (below): the readers named no mistake for a file without its
+  list or a spot with two numbers (an NPE or out-of-bounds instead; BlueprintFurniture:112 twice, :149,
+  FurnishingTable:152) and took a spot facing up (:134): `FurnitureSpotGameTests.eachMistakeInASpotsFileIsNamed`,
+  `FurnishingTableGameTests.eachMistakeInAFurnishingTableIsNamed`; a style swapping planks for stone crashed the spot
+  reading (BlueprintFurniture:107): `FurnitureSpotGameTests.aStyleSwappingPlanksForNoPlanksKeepsTheWood`; a block
+  entity holding no items on a Tom's connector was joined and its scan passed through it (StorageNetworks:299):
+  `TomsStorageCompatTests.aBlockHoldingNoItemsIsntJoined`. StorageNetworks:187 (`||` to `&&`) and :168 (drop `!`) stop
+  `afterBuilt` relinking a controller when a builder adds a Sophisticated barrel to its network, but the test for that
+  path (barrel A linked by a player-placed controller, barrel B set touching only A, `afterBuilt` on B) fails on the
+  real code too: the controller counts none of B's items after 200 ticks, though our own walk (`linkedTo`) has B, so
+  the Storehouse drops B from its store list while the controller doesn't expose it. Calling the controller's
+  `setPlacedBy` again (`relink`) doesn't add B; removing and placing the controller afresh does. Looks like a real bug
+  (37.9's "a storage block it adds to a controller's network is linked"), reported to the lane to file; the two
+  mutants stay open until it is fixed. Tip: a mutant restored by renaming a file (not rewriting it) can stay compiled in a running Gradle
+  daemon (its file watcher misses it); run proofs with `--no-daemon` or `./gradlew --stop` after.
 - 2026-10-19 (lane-c-1019-2153): Milestone 37 still has no open item and no `(lane: c)` bug, and `sessions.py next` lists
   nothing for lanes b-e (the owner's "which big milestone next?" still stands). Done instead, the QA suggestion two lanes
   left (lane-c-1019-0953, lane-e-1019-1913): the nightly mutation job now runs each plain-suite survivor once more

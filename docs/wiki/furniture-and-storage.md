@@ -364,10 +364,12 @@ and a missing list, the list off the screen and in the saved file), `FurnishingC
 `ExpansionGateGameTests` (both switches in its gated lists). 37.2:
 `FurnitureSpotGameTests.starterCottageSpotsAreWhereItsChairsAndTablesAre`,
 `FurnitureSpotGameTests.everyShippedSpotMatchesItsTemplate`, `FurnitureSpotGameTests.aBrokenSpotsFileIsSkipped`,
-`FurnitureSpotGameTests.aStyleCarriesTheSpotsOver`. 37.3 (no mods, a test table of vanilla blocks):
+`FurnitureSpotGameTests.aStyleCarriesTheSpotsOver`, `FurnitureSpotGameTests.eachMistakeInASpotsFileIsNamed`,
+`FurnitureSpotGameTests.aStyleSwappingPlanksForNoPlanksKeepsTheWood`. 37.3 (no mods, a test table of vanilla blocks):
 `FurnishingTableGameTests.withoutFurnitureModsTheBuildIsVanilla`,
 `FurnishingTableGameTests.theFirstModWithAFittingPieceIsChosen`, `FurnishingTableGameTests.switchedOffTheBuildIsVanilla`,
-`FurnishingTableGameTests.aSiteSavedMidBuildKeepsItsChoice`, `FurnishingTableGameTests.aRemovedModsPieceTurnsBackToVanilla`;
+`FurnishingTableGameTests.aSiteSavedMidBuildKeepsItsChoice`, `FurnishingTableGameTests.aRemovedModsPieceTurnsBackToVanilla`,
+`FurnishingTableGameTests.eachMistakeInAFurnishingTableIsNamed`;
 with the mods (compat): `FurnishedBuildCompatTests.handcraftedFurnishesTheStarterCottage`,
 `FurnishedBuildCompatTests.cobbleFurniesFirstGetsItsPieces`, `FurnishedBuildCompatTests.switchedOffItIsTheVanillaBuild`,
 `FurnishedBuildCompatTests.aSavedSiteKeepsItsHandcraftedPieces`.
@@ -429,7 +431,8 @@ B192: `TomsStorageCompatTests.aPlayerOpensTheTerminalBesideTheStorehouse` (a pla
 the Storehouse and gets Tom's terminal menu, listing 10 cobblestone, 20 planks and 1 sword, each once).
 `TomsStorageCompatTests.aDoubleChestOnACableCountsOnce` (a double chest half on a cable connector isn't also its own
 store) and `TomsStorageCompatTests.aConnectorInsideThePlotIsPassedOver` (a connector inside the area being built isn't
-read; its chests outside are each a store).
+read; its chests outside are each a store). `TomsStorageCompatTests.aBlockHoldingNoItemsIsntJoined` (an enchanting
+table on the connector isn't joined, and a chest touching only the table is its own store).
 Showcase scene `modded_storehouse` part two (`-Pfurniture=true`, which also loads Tom's Simple Storage): the network,
 the board's line and Tom's terminal screen.
 37.11, the real pack (Cozy Home installed): `FURNISHED=true tools/packtest/run.sh` writes `furnishedBuilds` on and

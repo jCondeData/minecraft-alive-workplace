@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture;
+import io.github.jcondedata.aliveworkplace.furnish.FurnishingTable;
 import io.github.jcondedata.aliveworkplace.furnish.Furnishings;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
@@ -209,6 +210,37 @@ public class FurnishingTableGameTests implements FabricGameTest {
 		helper.assertTrue(FurnitureChoice.load(planked.save()).isVanilla(), "a saved bed that isn't a bed was kept");
 		helper.assertTrue(!FurnitureChoice.sleepable(Map.of(BlockPos.ZERO, Blocks.RED_BED.defaultBlockState())),
 			"a bed's foot alone counted as sleepable");
+		helper.succeed();
+	}
+
+	/**
+	 * Every kind of mistake in a furnishing table is named, so the log line says what to fix: no pieces object (an empty
+	 * file, pieces that aren't an object), an unknown kind, a facing that isn't front, back, left or right.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void eachMistakeInAFurnishingTableIsNamed(GameTestHelper helper) {
+		String[][] cases = {
+			{"{}", "no \"pieces\" object"},
+			{"{\"pieces\": []}", "no \"pieces\" object"},
+			{"{\"pieces\": {\"throne\": {\"block\": \"minecraft:oak_stairs\"}}}", "unknown kind throne"},
+			{"{\"pieces\": {\"chair\": {\"block\": \"minecraft:oak_stairs\", \"facing\": \"up\"}}}", "chair: facing up is not front, back, left or right"},
+		};
+		for (String[] c : cases) {
+			String message = null;
+			try {
+				FurnishingTable.read("aliveworkplace_test_mistakes", com.google.gson.JsonParser.parseString(c[0]));
+			} catch (IllegalArgumentException ex) {
+				message = ex.getMessage();
+			} catch (RuntimeException ex) {
+				message = "not named (" + ex + ")";
+			}
+			helper.assertTrue(message != null && message.contains(c[1]), "for " + c[0] + " the reader said " + message + ", wanted " + c[1]);
+		}
+		FurnishingTable good = FurnishingTable.read("aliveworkplace_test_mistakes",
+			com.google.gson.JsonParser.parseString("{\"pieces\": {\"chair\": {\"block\": \"minecraft:{wood}_stairs\", \"facing\": \"back\"}}}"));
+		helper.assertTrue(good.pieces().containsKey(FurnitureSpot.Kind.CHAIR) && "back".equals(good.pieces().get(FurnitureSpot.Kind.CHAIR).facing()),
+			"a good table read wrong: " + good);
 		helper.succeed();
 	}
 }

@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.behavior.SetLookAndInteract;
 import net.minecraft.world.entity.ai.behavior.UpdateActivityFromSchedule;
 import net.minecraft.world.entity.npc.Villager;
 
-/** The Carpenter's WORK activity (make what the builders nearby are waiting for) and the Chef's (cook). */
+/** The Carpenter's WORK activity (make what the builders nearby are waiting for), the Chef's (cook) and the Furnicrafter's. */
 public final class CarpenterPackages {
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(float speed) {
 		return work(new CrafterWork(Crafting.Kind.CRAFTING, true));
@@ -22,6 +22,11 @@ public final class CarpenterPackages {
 	/** The Tinkerer's: redstone and iron parts for the builders, iron golems patched up in between. */
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> tinkerer(float speed) {
 		return work(new TinkererWork());
+	}
+
+	/** The Furnicrafter's (38.12): furniture for the builders and the store, at CobbleFurnies' Furnicrafter. */
+	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> furnicrafter(float speed) {
+		return work(new FurnicrafterWork());
 	}
 
 	private static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(CrafterWork crafter) {

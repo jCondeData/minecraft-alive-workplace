@@ -84,6 +84,7 @@ sneak-right-clicking a worker with an empty hand shows their status, ending with
 | Well Keeper | Cauldron + a shovel | any |
 | Physician | Brewing stand + a glistering melon slice | any |
 | Mechanic (with Create) | Create Toolbox, any colour (2.3) | any |
+| Furnicrafter (with CobbleFurnies) | CobbleFurnies' Furni Crafter (2.2) | any |
 | Fletcher | Fletching Table (vanilla) | any |
 | Shepherd | Loom (vanilla) | any |
 | Fisherman | Barrel (vanilla) | any |
@@ -253,6 +254,7 @@ gives no marker back (there was none), and the Miner takes the pit again within 
 | `wellKeepers` | on from 1.0 | The Well Keeper job |
 | `physicians` | on from 1.0 | The Physician job |
 | `mechanics` | on from 2.3 | The Mechanic job (only with Create) |
+| `furnicrafters` | on from 2.2 | The Furnicrafter job (only with CobbleFurnies) |
 | `machineWork` | on from 2.3 | Farmers, armorers, chefs and miners feed Create's machines (only with Create) |
 
 ## Saved data

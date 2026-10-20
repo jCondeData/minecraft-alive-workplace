@@ -205,6 +205,13 @@ public final class WorkplaceConfig {
 	 */
 	public boolean beanFarms = Expansions.on(Expansions.M38);
 	/**
+	 * With CobbleFurnies installed, a jobless villager by its Furnicrafter becomes the village's Furnicrafter (ROADMAP
+	 * 38.12), who makes the CobbleFurnies furniture the builders nearby are waiting for (a furnished home's chairs, tables
+	 * and lamps) and the storehouse's stock orders ask for, from the store's materials. Off: no new Furnicrafters, and
+	 * those hired stand idle. Without CobbleFurnies it does nothing.
+	 */
+	public boolean furnicrafters = Expansions.on(Expansions.M38);
+	/**
 	 * With Create installed, a jobless villager by a Create Toolbox becomes the village's Mechanic (ROADMAP 39.2): they walk
 	 * a round of the village's machines, empty full millstones into the store and refill empty ones, and put back the
 	 * shafts, cogwheels and belts gone from finished builds. Off: no new Mechanics, and those hired stand idle. Without
@@ -934,6 +941,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.ENABLED = villageMegas && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.craft.CuisineDishes.ENABLED = cuisineDishes && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.farm.BeanFarms.ENABLED = beanFarms && Expansions.on(Expansions.M38);
+		io.github.jcondedata.aliveworkplace.craft.FurnicrafterWork.ENABLED = furnicrafters && Expansions.on(Expansions.M38);
 		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED = mechanics && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.ENABLED = machineWork && Expansions.on(Expansions.M39);
 		io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.ENABLED = createBuilds && Expansions.on(Expansions.M39);

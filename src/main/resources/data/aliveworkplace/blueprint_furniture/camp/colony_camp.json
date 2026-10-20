@@ -1,5 +1,5 @@
 {"spots": [
-  {"kind": "bed", "pos": [1, 0, 12], "facing": "west", "wood": "spruce", "colour": "brown", "blocks": [{"at": [0, 0, 0], "state": "minecraft:brown_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:brown_bed[facing=west,occupied=false,part=head]"}]},
-  {"kind": "bed", "pos": [3, 0, 12], "facing": "west", "wood": "spruce", "colour": "green", "blocks": [{"at": [0, 0, 0], "state": "minecraft:green_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:green_bed[facing=west,occupied=false,part=head]"}]},
-  {"kind": "bed", "pos": [13, 0, 12], "facing": "east", "wood": "spruce", "colour": "brown", "blocks": [{"at": [0, 0, 0], "state": "minecraft:brown_bed[facing=east,occupied=false,part=foot]"}, {"at": [1, 0, 0], "state": "minecraft:brown_bed[facing=east,occupied=false,part=head]"}]}
+  {"kind": "bed", "pos": [1, 0, 12], "facing": "west", "wood": "spruce", "colour": "brown", "blocks": [{"at": [0, 0, 0], "state": "minecraft:brown_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:brown_bed[facing=west,occupied=false,part=head]"}], "support": []},
+  {"kind": "bed", "pos": [3, 0, 12], "facing": "west", "wood": "spruce", "colour": "green", "blocks": [{"at": [0, 0, 0], "state": "minecraft:green_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:green_bed[facing=west,occupied=false,part=head]"}], "support": []},
+  {"kind": "bed", "pos": [13, 0, 12], "facing": "east", "wood": "spruce", "colour": "brown", "blocks": [{"at": [0, 0, 0], "state": "minecraft:brown_bed[facing=east,occupied=false,part=foot]"}, {"at": [1, 0, 0], "state": "minecraft:brown_bed[facing=east,occupied=false,part=head]"}], "support": []}
 ]}

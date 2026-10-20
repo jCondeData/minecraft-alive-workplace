@@ -1,6 +1,6 @@
 {"spots": [
-  {"kind": "bench", "pos": [3, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}]},
-  {"kind": "bench", "pos": [4, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}]},
-  {"kind": "bench", "pos": [8, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}]},
-  {"kind": "bench", "pos": [9, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}]}
+  {"kind": "bench", "pos": [3, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]},
+  {"kind": "bench", "pos": [4, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]},
+  {"kind": "bench", "pos": [8, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]},
+  {"kind": "bench", "pos": [9, 1, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]}
 ]}

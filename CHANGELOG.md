@@ -18,6 +18,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Furnished homes and workplaces read as rooms: no furniture in a doorway's way, every bed's head against a wall,
+  lanterns hung or on a table instead of the floor, chests against a wall or at a bed's foot. A modded piece goes only
+  where it can stand (no Beautify picture frame or Handcrafted shelf floating mid-wall) and a two-block-tall piece gets
+  its top half. The Stone House was refurnished: a clear way in from the door, and its attic and upper floor are
+  proper bedrooms (B260).
 - Two villagers coming home through one door together no longer get stuck on the doorstep, where one could lose
   their bed for the night (seen at a renewed Stone House). The one further from the door now steps back a moment and
   goes in after the other (B255).

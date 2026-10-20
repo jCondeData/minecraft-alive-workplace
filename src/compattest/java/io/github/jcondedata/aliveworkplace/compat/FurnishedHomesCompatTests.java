@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture;
+import io.github.jcondedata.aliveworkplace.furnish.FurnishingTable;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
 import io.github.jcondedata.aliveworkplace.furnish.Furnishings;
@@ -208,6 +209,19 @@ public class FurnishedHomesCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * B260: the mod a spot's piece comes from, given the mod the order picks for its kind: that mod, unless its piece needs
+	 * a floor, wall or ceiling the spot doesn't have (a Beautify picture frame stands on a table, a Handcrafted shelf on
+	 * the floor), and then the vanilla piece (no other mod in these tests has a piece of those kinds).
+	 */
+	static String standing(FurnitureSpot spot, String want) {
+		if (want.equals("minecraft")) {
+			return want;
+		}
+		FurnishingTable.Piece piece = FurnishingTable.of(want).map(t -> t.pieces().get(spot.kind())).orElse(null);
+		return piece == null || spot.supports(piece.needs()) ? want : "minecraft";
+	}
+
+	/**
 	 * Builds {@code id} at (9, 2, 3) with the furniture mods tried in {@code order}; when it's done every block is right,
 	 * nothing was skipped, and each spot's piece is from the mod {@code expected} names for its kind.
 	 */
@@ -223,7 +237,7 @@ public class FurnishedHomesCompatTests implements FabricGameTest {
 			FurnitureSpot spot = spots.get(i);
 			FurnitureChoice.Placed placed = choice.spots().get(i);
 			String mod = placed == null ? "minecraft" : placed.mod();
-			String want = expected.getOrDefault(spot.kind(), "minecraft");
+			String want = standing(spot, expected.getOrDefault(spot.kind(), "minecraft"));
 			if (!mod.equals(want)) {
 				wrong.put(spot.kind() + "@" + spot.pos().toShortString(), mod + " (expected " + want + ")");
 			}

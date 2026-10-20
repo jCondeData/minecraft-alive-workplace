@@ -27,6 +27,8 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,13 +49,25 @@ public record FurnishingTable(String mod, Map<FurnitureSpot.Kind, Piece> pieces)
 	}
 
 	/** A kind's piece in this mod. */
-	public record Piece(List<String> blocks, @Nullable String facing, Map<String, String> states, String wood, String colour, List<FootCell> footprint) {
+	public record Piece(List<String> blocks, @Nullable String facing, Map<String, String> states, String wood, String colour, List<FootCell> footprint,
+						@Nullable FurnitureSpot.Support needs) {
+		/** A piece that stands anywhere its footprint fits. */
+		public Piece(List<String> blocks, @Nullable String facing, Map<String, String> states, String wood, String colour, List<FootCell> footprint) {
+			this(blocks, facing, states, wood, colour, footprint, null);
+		}
+
 		/**
 		 * This piece in {@code spot}'s place: the state of every cell of the spot (air where the piece doesn't fill), or
-		 * null when no block id resolves in the registry or the footprint doesn't fit inside the spot's cells.
+		 * null when no block id resolves in the registry, the footprint doesn't fit inside the spot's cells, the spot
+		 * lacks what the piece {@link #needs} (B260: a standing picture frame on a wall would float), or a two-block-tall
+		 * piece (a {@code half=lower|upper} block, as a grandfather clock may be) has no cell of the spot over it for its
+		 * top half.
 		 */
 		@Nullable
 		public Map<BlockPos, BlockState> resolve(FurnitureSpot spot) {
+			if (!spot.supports(needs)) {
+				return null;
+			}
 			String wood = spot.wood() != null ? spot.wood() : this.wood;
 			String colour = spot.colour() != null ? spot.colour() : this.colour;
 			Set<BlockPos> cells = new HashSet<>();
@@ -85,6 +99,9 @@ public record FurnishingTable(String mod, Map<FurnitureSpot.Kind, Piece> pieces)
 					}
 					out.put(rel, state);
 				}
+				if (fits) {
+					fits = withTopHalves(out, cells);
+				}
 				if (!fits) {
 					return null; // the next id would have the same footprint
 				}
@@ -94,6 +111,31 @@ public record FurnishingTable(String mod, Map<FurnitureSpot.Kind, Piece> pieces)
 				return out;
 			}
 			return null;
+		}
+
+		/**
+		 * Every lower half of a two-block-tall piece in {@code out} gets its upper half over it (B260: a clock placed as
+		 * its lower half only had no top, and stood invisible in the hall); false when that cell isn't one of the
+		 * spot's, so the piece doesn't fit there.
+		 */
+		private static boolean withTopHalves(Map<BlockPos, BlockState> out, Set<BlockPos> cells) {
+			for (Map.Entry<BlockPos, BlockState> e : List.copyOf(out.entrySet())) {
+				BlockState state = e.getValue();
+				if (!state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF) || state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) != DoubleBlockHalf.LOWER) {
+					continue;
+				}
+				BlockPos top = e.getKey().above();
+				if (!cells.contains(top)) {
+					return false;
+				}
+				BlockState upper = state.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER);
+				BlockState there = out.get(top);
+				if (there != null && !there.is(state.getBlock())) {
+					return false; // the footprint puts something else there
+				}
+				out.put(top, upper);
+			}
+			return true;
 		}
 
 		@Nullable
@@ -179,8 +221,15 @@ public record FurnishingTable(String mod, Map<FurnitureSpot.Kind, Piece> pieces)
 			} else {
 				footprint.add(new FootCell(BlockPos.ZERO, Map.of()));
 			}
+			FurnitureSpot.Support needs = null;
+			if (o.has("needs")) { // B260: what the piece must stand on or against (floor, wall, ceiling)
+				needs = FurnitureSpot.Support.of(o.get("needs").getAsString());
+				if (needs == null) {
+					throw new IllegalArgumentException(e.getKey() + ": needs " + o.get("needs").getAsString() + " is not floor, wall or ceiling");
+				}
+			}
 			pieces.put(kind, new Piece(List.copyOf(blocks), facing, strings(o, "states"),
-				o.has("wood") ? o.get("wood").getAsString() : "oak", o.has("colour") ? o.get("colour").getAsString() : "white", List.copyOf(footprint)));
+				o.has("wood") ? o.get("wood").getAsString() : "oak", o.has("colour") ? o.get("colour").getAsString() : "white", List.copyOf(footprint), needs));
 		}
 		return new FurnishingTable(mod, Collections.unmodifiableMap(pieces));
 	}

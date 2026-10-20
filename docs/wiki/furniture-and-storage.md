@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, B238, B260
 
 ## 1. What a player sees
 
@@ -48,6 +48,17 @@ chairs, tables, nightstands, sofas, lamps and curtains. Cozy Home's clocks and s
 planned with a Pokémon partner (a Pokémon kept in a Pasture Block within 16 blocks of the plot) gets a Trainer's room:
 with CobbleFurnies installed, its first chair becomes the Poké Ball chair and the table beside it the Poké Ball desk,
 whatever the order (the owner's answer); the rest of the house follows the order.
+
+Rooms that read as rooms (B260): nothing stands in a door's way (two blocks in and out of every door), every bed has
+its head against a wall (or a window in it) and faces into the room, a lantern hangs or stands on a table or post,
+never on the bare floor, and a chest stands against a wall or at the foot of a bed. Each spot records what it stands
+on or against in the drawing (floor, wall, ceiling), and a modded piece goes only where what it needs is there: a
+Beautify picture frame stands on a table, so a picture on a wall stays a banner; a Handcrafted shelf stands on the
+floor, so a shelf on a wall stays a slab; a two-block-tall piece (a `half=lower|upper` block) is placed with its top
+half or not at all. The generator refuses a furnished build that breaks these rules, and `FurnishedRoomsGameTests`
+checks every shipped one. The Stone House was redone for it: the table by the west window and the clock by the bed
+(not beside the door), the attic a bedroom (the bed's head to the gable, a nightstand, a chest at its foot, a rug and a
+lamp hung from the ridge), and upstairs in II two beds with their heads to the back wall, a nightstand by each.
 
 The workplaces are furnished too (37.5), at every level: the Supply Shop's counter boards either side of the Shop
 Counter are counters, with a shelf of cups and a picture on the back wall, pots hanging from chains in the display

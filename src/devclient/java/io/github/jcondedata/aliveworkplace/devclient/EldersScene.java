@@ -53,6 +53,9 @@ final class EldersScene {
 	private double tomFrom;
 	private int bramRetry;
 	private int tomRetry;
+	/** Ticks of the measured walk in which each stood with no walk under way (B242: says which one lost ground, and when). */
+	private final int[] stood = new int[2];
+	private int walkTicks;
 
 	void tick(Minecraft mc) {
 		MinecraftServer server = mc.getSingleplayerServer();
@@ -147,6 +150,11 @@ final class EldersScene {
 				// Asked the way every worker asks: with its own retry counter (B187: Tom once had no walk target at all).
 				bramRetry = Walker.requestWalk(bram, new BlockPos(10, -60, 1), 0.5f, 1, bramRetry);
 				tomRetry = Walker.requestWalk(tom, new BlockPos(10, -60, 3), 0.5f, 1, tomRetry);
+				if (bramFrom != 0 && walkTicks >= 0) {
+					walkTicks++;
+					stood[0] += bram.getNavigation().isDone() ? 1 : 0;
+					stood[1] += tom.getNavigation().isDone() ? 1 : 0;
+				}
 			});
 		}
 		if (tick == WALK_FROM) {
@@ -164,7 +172,9 @@ final class EldersScene {
 				double elder = bram.getX() - bramFrom;
 				double young = tom.getX() - tomFrom;
 				Showcase.check(young > 3 && elder < young * 0.92 && elder > young * 0.78,
-					"in the same 3 seconds Bram walked " + Math.round(100 * elder / young) + "% as far as Tom (" + elder + " and " + young + " blocks)");
+					"in the same 3 seconds Bram walked " + Math.round(100 * elder / young) + "% as far as Tom (" + elder + " and " + young + " blocks; of "
+						+ walkTicks + " ticks Bram stood " + stood[0] + " and Tom " + stood[1] + ")");
+				walkTicks = -1;
 			});
 			ScreenshotHarness.shot(mc, "03_elders_walk");
 		}

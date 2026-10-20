@@ -3883,11 +3883,19 @@ final class JobScenes {
 			data.clearRoad(STATION);
 			data.clearRoad(ashford);
 			data.sent(ashford, today); // Ashford's caravan waits for the scene to send it
-			// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still
-			data.sent(STATION, -1);
-			io.github.jcondedata.aliveworkplace.hall.Caravans.round(level, STATION, null);
 			int[] act = {0, 0};
+			boolean[] sent = {false};
 			return l -> {
+				if (!sent[0]) {
+					// Today's caravan leaves Thornholm with the bread: its party stands by the Storehouse for the "Start" still.
+					// B132: sent on the first look (tick 70, the world still frozen), not while staging: the game files a new
+					// block's point of interest a moment after it's placed (ServerLevel.onBlockStateChange queues it), so a
+					// round in the same moment found no Storehouse, packed nothing and sent no party, and the scene waited out
+					// its four minutes. (A real village's Storehouse stands long before its caravan's day.)
+					sent[0] = true;
+					data.sent(STATION, -1);
+					io.github.jcondedata.aliveworkplace.hall.Caravans.round(l, STATION, null);
+				}
 				io.github.jcondedata.aliveworkplace.hall.CaravanSights.Party party = io.github.jcondedata.aliveworkplace.hall.CaravanSights.party(l, STATION);
 				if (act[0] == 0 && party != null && party.phase() == io.github.jcondedata.aliveworkplace.hall.CaravanSights.Phase.LEAVING) {
 					act[0] = 1; // seen setting out

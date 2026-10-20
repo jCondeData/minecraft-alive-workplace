@@ -86,6 +86,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
+	/**
+	 * When the world's data packs fail to load (B233: another mod's reload listener threw), vanilla shows a screen that
+	 * waits for a click, and the scene sat there until the showcase killed it 10 minutes later. Nothing can be filmed
+	 * then, so the harness says why in the log and quits; the scene still fails (it leaves no showcase.json).
+	 */
+	private static void quitOnDatapackFailure(Minecraft mc) {
+		if (mc.screen instanceof net.minecraft.client.gui.screens.DatapackLoadFailureScreen) {
+			System.out.println("[aliveworkplace-shots] The world's data packs failed to load (see the exception above); quitting");
+			mc.stop();
+		}
+	}
+
 	private final JobScenes jobScenes = new JobScenes();
 	private final WordsScene words = new WordsScene();
 	private final CityPlanScene cityPlan = new CityPlanScene();
@@ -183,6 +195,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	private void onTick(Minecraft mc) {
 		skipBackupQuestion(mc);
+		quitOnDatapackFailure(mc);
 		if (mc.level == null || mc.player == null || mc.getSingleplayerServer() == null) {
 			return;
 		}

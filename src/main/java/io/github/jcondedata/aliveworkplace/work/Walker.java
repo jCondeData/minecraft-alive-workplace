@@ -86,6 +86,12 @@ public final class Walker {
 			}
 		}
 		FAILED_SEEN.remove(villager);
+		// A new walk starts with no "can't reach" note: vanilla writes it only when there is none, so an old one (a path that
+		// failed earlier, while the villager was still falling, say) would make the next drop of this walk look like its own
+		// failure, and the villager would stand out another RETRY_TICKS. Vanilla also drops a fresh walk target when the walk
+		// it replaced finishes in the same tick, with no failure at all (B242: a worker stood still a second for nothing, and
+		// in the elders test the younger villager fell behind the elder). If this walk fails, vanilla notes it again now.
+		brain.eraseMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		brain.setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, pace, closeEnough));
 		return 0;
 	}

@@ -21,6 +21,9 @@ asks for the steps, `latest.log` and any crash report).
 - A Builder repairing a building now takes what it needs from the chests inside that building. Repairing a Storehouse
   Shed, it waited for a Hay Bale and an Oak Ladder that were in the shed's own chests by its bench, because chests
   inside the build were left out, as they are for a new build (B261).
+- A villager without a job who had picked a workstation just before dusk no longer keeps walking to it at bedtime.
+  From a Stone House attic it used to stand by its bed all night and then lose the bed; now it goes to bed and picks a
+  workstation again by day (B258).
 - Two villagers coming home through one door together no longer get stuck on the doorstep, where one could lose
   their bed for the night (seen at a renewed Stone House). The one further from the door now steps back a moment and
   goes in after the other (B255).

@@ -132,6 +132,28 @@ public class MechanicGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * The round is walked in its order (the machines nearest the toolbox first, as findMachines sorts them), one machine
+	 * on each time, and comes back to its start only after the last: never backwards to the farthest machine second.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void theRoundIsWalkedInItsOrder(GameTestHelper helper) {
+		BlockPos near = new BlockPos(1, 2, 0);
+		BlockPos middle = new BlockPos(4, 2, 0);
+		BlockPos far = new BlockPos(9, 2, 0);
+		MechanicRound round = new MechanicRound(List.of(near, middle, far), 0);
+		List<BlockPos> walked = new java.util.ArrayList<>();
+		for (int i = 0; i < 3; i++) {
+			walked.add(round.current());
+			helper.assertTrue(i == 0 ? round.atStart() : !round.atStart(), "the round is at its start after " + i + " machines: " + round);
+			round = round.advance();
+		}
+		helper.assertTrue(walked.equals(List.of(near, middle, far)), "the round is walked as " + walked + ", not nearest first");
+		helper.assertTrue(round.atStart() && near.equals(round.current()), "the round doesn't come back to its start after the last machine: " + round);
+		helper.succeed();
+	}
+
+	/**
 	 * The turning check (39.5) counts a part as still when it's gone (nothing saved there) or saved without a turning
 	 * speed: a block taken away and a block that isn't kinetic are both listed, in order, and neither breaks the check.
 	 */

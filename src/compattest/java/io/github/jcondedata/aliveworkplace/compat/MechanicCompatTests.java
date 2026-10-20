@@ -111,6 +111,14 @@ public class MechanicCompatTests implements FabricGameTest {
 	 * as a blueprint and recorded as a finished build; returns the line's blocks' positions (shafts 0-2, cogwheel 3).
 	 */
 	private static List<BlockPos> finishedLine(GameTestHelper helper) {
+		return finishedLine(helper, false);
+	}
+
+	/**
+	 * The same line with {@code cogNearest}: the cogwheel at the line's near end ({@link #LINE}'s x, nearest the toolbox)
+	 * and the three shafts after it; the positions are still shafts 0-2, cogwheel 3.
+	 */
+	private static List<BlockPos> finishedLine(GameTestHelper helper, boolean cogNearest) {
 		ServerLevel level = helper.getLevel();
 		// The lines of earlier tests (their areas cleared, their records kept) would be holes within this Mechanic's reach.
 		BuildSiteManager sites = BuildSiteManager.get(level);
@@ -121,10 +129,12 @@ public class MechanicCompatTests implements FabricGameTest {
 		}
 		BlockState shaft = with(create("shaft").defaultBlockState(), "axis", "x");
 		BlockState cog = with(create("cogwheel").defaultBlockState(), "axis", "x");
-		List<BlockPos> parts = List.of(LINE.offset(0, 1, 0), LINE.offset(1, 1, 0), LINE.offset(2, 1, 0), LINE.offset(3, 1, 0));
-		for (int x = 0; x < 4; x++) {
-			helper.setBlock(LINE.offset(x, 0, 0), Blocks.STONE_BRICKS);
-			helper.setBlock(parts.get(x), x < 3 ? shaft : cog);
+		int first = cogNearest ? 1 : 0;
+		List<BlockPos> parts = List.of(LINE.offset(first, 1, 0), LINE.offset(first + 1, 1, 0), LINE.offset(first + 2, 1, 0),
+			LINE.offset(cogNearest ? 0 : 3, 1, 0));
+		for (int i = 0; i < 4; i++) {
+			helper.setBlock(parts.get(i).below(), Blocks.STONE_BRICKS);
+			helper.setBlock(parts.get(i), i < 3 ? shaft : cog);
 		}
 		ResourceLocation id = AliveWorkplace.id("compat_test/mechanic_line_" + BLUEPRINTS.incrementAndGet());
 		StructureTemplate template = level.getStructureManager().getOrCreate(id);
@@ -183,6 +193,30 @@ public class MechanicCompatTests implements FabricGameTest {
 					+ count(chest, createItem("cogwheel")) + " cogwheels left");
 			helper.assertTrue(mechanic.getMainHandItem().isEmpty(), "the Mechanic still holds " + mechanic.getMainHandItem());
 		});
+	}
+
+	/**
+	 * Parts go back in their order whatever the distance: a shaft before a cogwheel even when the cogwheel is the nearer
+	 * hole (39.2: shafts before the cogwheels that sit on them, both before belts).
+	 */
+	//$ gametest_batch AREA '"mechanic_part_order"'
+	@GameTest(template = AREA, batch = "mechanic_part_order")
+	public void aShaftGoesBackBeforeANearerCogwheel(GameTestHelper helper) {
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		ServerLevel level = helper.getLevel();
+		List<BlockPos> line = finishedLine(helper, true);
+		mechanic(helper);
+		helper.setBlock(line.get(3), Blocks.AIR); // the cogwheel, nearest the toolbox
+		helper.setBlock(line.get(2), Blocks.AIR); // the shaft at the far end
+		BlockPos toolbox = helper.absolutePos(TOOLBOX);
+		helper.assertTrue(helper.absolutePos(line.get(3)).distSqr(toolbox) < helper.absolutePos(line.get(2)).distSqr(toolbox),
+			"setup: the cogwheel should be the nearer hole");
+		List<MechanicWork.Part> missing = MechanicWork.missingParts(level, toolbox);
+		helper.assertTrue(missing.size() == 2, "expected 2 missing parts, found " + missing.stream().map(p -> helper.relativePos(p.pos()) + " " + p.state()).toList());
+		helper.assertTrue(missing.get(0).pos().equals(helper.absolutePos(line.get(2))) && missing.get(0).cost() == createItem("shaft")
+			&& missing.get(1).cost() == createItem("cogwheel"),
+			"the nearer cogwheel goes back before the shaft: " + missing.stream().map(p -> helper.relativePos(p.pos()) + " " + p.cost()).toList());
+		helper.succeed();
 	}
 
 	/** Without the part in the store nothing is put back, and the Mechanic says what's needed. */

@@ -179,6 +179,33 @@ public class FurnishingTableGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * A saved choice whose spot no longer matches the blueprint's spots file (a data pack took spots away, or moved or
+	 * changed one) builds that spot vanilla, and a spot past the end of the file is passed over too, never a crash.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aPieceWhoseSpotIsGoneBuildsVanilla(GameTestHelper helper) {
+		List<FurnitureSpot> spots = BlueprintFurniture.of(COTTAGE);
+		FurnitureSpot table = spot(FurnitureSpot.Kind.TABLE);
+		Map<BlockPos, BlockState> plank = Map.of(BlockPos.ZERO, Blocks.SPRUCE_PLANKS.defaultBlockState());
+		Blueprint vanilla = BlueprintLibrary.get(helper.getLevel(), COTTAGE).orElseThrow();
+		Map<String, FurnitureChoice> gone = Map.of(
+			"a spot past the end of the file", new FurnitureChoice(Map.of(spots.size(), new FurnitureChoice.Placed(table.pos(), table.kind(), TEST_TABLE, plank))),
+			"a spot that moved", new FurnitureChoice(Map.of(spots.indexOf(table), new FurnitureChoice.Placed(table.pos().above(), table.kind(), TEST_TABLE, plank))),
+			"a spot of another kind", new FurnitureChoice(Map.of(spots.indexOf(table), new FurnitureChoice.Placed(table.pos(), FurnitureSpot.Kind.BED, TEST_TABLE, plank))));
+		gone.forEach((what, choice) -> {
+			Blueprint built = choice.apply(vanilla, spots);
+			helper.assertTrue(built.blocks().equals(vanilla.blocks()), what + " changed the build");
+		});
+		// The spot as the file has it does take the piece (the check above isn't vacuous)
+		Blueprint furnished = new FurnitureChoice(Map.of(spots.indexOf(table), new FurnitureChoice.Placed(table.pos(), table.kind(), TEST_TABLE, plank)))
+			.apply(vanilla, spots);
+		helper.assertTrue(furnished.blocks().stream().anyMatch(e -> e.pos().equals(table.pos()) && e.state().is(Blocks.SPRUCE_PLANKS)),
+			"the matching spot didn't get its piece");
+		helper.succeed();
+	}
+
+	/**
 	 * B166: a bed spot only takes a piece a villager can claim and sleep in (a bed whose head is a HOME point of
 	 * interest). A table whose "bed" is planks is passed over for the next mod's real bed, and alone it leaves the vanilla bed.
 	 */

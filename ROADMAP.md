@@ -321,6 +321,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [x] **B242** (approved auto 2026-10-20) LifeStageGameTests.anElderWalksSlower failed on main CI build 1244 (042ff154, 2026-10-20 02:31Z, its only failure; build 1243 on near-identical code passed), the third time after B95/B115 were closed; the nightly showcase's elders scene fails the same way ('in the same 3 seconds Bram walked 114% as far as Tom', run 39309028348), so an elder may sometimes not walk slower in game. Expected: an elder always walks slower than a younger villager. Test: LifeStageGameTests.anElderWalksSlower repeated in own batches in a full-suite mix; SCENE=elders (found by lane-a-1020-0022 red duty) (found by lane-a-1020-0022, 2026-10-20)
 - [ ] **B243** Player-visible (design question for the owner): a Mechanic hired at a player's own Create toolbox treats every chest within 8 blocks of it as the village store and every millstone, press, mixer or crusher within 32 blocks as a village machine: it feeds the player's wheat, iron ingots, raw ore and flour from those chests into the player's machines until 64 of each product are stored (64 iron ingots become 64 iron sheets), and carries the player's own automation output (anything not an input of that machine's recipes, e.g. golden sheets off a press's depot, bone meal from a millstone) into those chests. The same goes for a farmer, armorer, chef or miner whose workstation stands by a player's chests. Expected: villagers only use the village's own stores and machines (e.g. inside a Village Hall's area or a build they made), or only take the products their file names; decide which. Likely explains B240. Test: MachineWorkCompatTests, a player's chest by a toolbox outside any village keeps its iron ingots (lane: e) (found by digest-1019-2253, 2026-10-20)
 - [ ] **B244** A Create machine worker (farmer, armorer, chef, miner) who loses their job in the middle of a trip to a machine (workstation broken at Novice, or config machineWork switched off) keeps the input they carried in the saved machine_job record for good: nobody finishes the trip or returns it, so up to 16 wheat, iron or ore are lost (and come back only if they take that job again). Expected: the carried items go back to the store or drop when the trip can't go on. Test: MachineWorkCompatTests, a worker whose workstation is broken mid-trip drops or returns what they carried (lane: e) (found by digest-1019-2253, 2026-10-20)
+- [ ] **B245** [lane: c] B202 is back: CarvedStylesCompatTests.aSpruceLibraryHasCarvedShelvesAndALibrarian was the 1 failed compat test in CI build 1254 on main 4a13d1f9 (2026-10-20 06:46Z), turning main red; it passed in build 1253 (f7774d5a). The CI log prints no assertion message (the gametest-report artifact has it). B202's fix (supply chests, not barrels) didn't hold. Expected: the Library's jobless villager always becomes the Librarian at the Carved Wood lectern (a player building this library sees the same). Test: the repeat generator on that test under runCompatGameTest (found by lane-c-1020-0654, 2026-10-20)
 
 ## Milestone 21: Finish 0.138.0
 
@@ -5207,6 +5208,28 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-c-1020-0353): second M37 mutation pass, seed 44, on the files no pass had covered: Furnishings (all
+  6 mutants), FurnitureStock (all 22), ModdedLibrary (all 13) and FurnitureChoice (30 of 129) against the ten
+  furnishing GameTest classes (`only_tests.py`, ~40 s a run); survivors only compat code reaches re-run against
+  TrainersRoomCompatTests and ModdedLibraryCompatTests (trimmed compat fabric.mod.json, `--no-daemon`, ~2.3 min a run).
+  71 mutants: 43 killed, 4 didn't compile, 24 survived the plain suite. Of those, 6 were killed by the compat classes
+  (ModdedLibrary:91, :118, :140; FurnitureChoice:280 `chair <= 0`, :303 `desk > 0`, both by
+  `theTrainersRoomTakesTheFirstChairEvenAtSpotZero`); 9 are now killed by 3 new tests, each proved against its
+  mutant and passing on the real code: a repair, a taking-down, a cellar dig or a build whose furnished-builds switch
+  was since turned off switched its planned chair to the chest's (FurnitureStock:35, three `||` to `&&`):
+  `FurnitureAnyModGameTests.onlyANewBuildsChairFollowsTheChest`; a saved piece whose spot index is past the end of the
+  spots file crashed `apply` (FurnitureChoice:325 `<` to `<=`): `FurnishingTableGameTests.aPieceWhoseSpotIsGoneBuildsVanilla`;
+  a desk five blocks off along x only, or a floor up, was taken into the Trainer's room, and one exactly three blocks off
+  was left out (FurnitureChoice:294 `||` to `&&`, `>` to `>=`, `1` to `2`), and a home with a bed and no chair crashed
+  the Trainer's room (:275 `<` to `<=`): `TrainersRoomCompatTests.theTrainersDeskIsInTheChairsRoom`. Not run on the
+  compat suite but the same behaviour as the proved :280/:303 mutants (a chair or desk at spot 0): :275 `chair < 1`,
+  :275 `chair <= 0`, :280 `chair < 1`, :303 `desk >= 1`; and :288 `<=` throws on every Trainer's-room call with a
+  chair (the partnered-home compat test). Equivalent (no test): FurnitureStock:64 (`started` is only asked about the
+  choice's own spots, never a missing one); ModdedLibrary:103 (dropping the sort: nothing in the game reads the
+  order of `builds()`); FurnitureChoice:377 (`load` reading one past the list: `ListTag.getCompound` gives an empty tag,
+  which has no kind and is skipped), :425 twice (they differ only for text starting with `[`, which is no block either
+  way), :298 `<` to `<=` (two equally near desks: the spec's "nearest" allows either). No bug found. Left for a later
+  pass: the other 99 FurnitureChoice mutants and BlueprintStyles' 37.7 parts.
 - 2026-10-20 (lane-c-1020-0053): Milestone 37 still has no open item and no `(lane: c)` bug, so the owner's "which big
   milestone next?" still stands. Test-hardening instead. The 10-19 nightly's two M37 survivors (StorageNetworks:336
   `&&` to `||`, FurnishedPackTest:158 `<` to `<=`) were already killed: that nightly ran at 09:49 UTC, before

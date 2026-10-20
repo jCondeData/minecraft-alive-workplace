@@ -43,6 +43,7 @@ public final class ModTrades {
 		physicianTrades();
 		mechanicTrades();
 		conductorTrades();
+		furnicrafterTrades();
 		gemGrowerTrades();
 		vintnerTrades();
 		tailorTrades();
@@ -303,6 +304,38 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(create("railway_casing"), 8), 6, 15, 0.05f)));
 		Platform.get().addTrades(ModVillagers.CONDUCTOR, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(create("controls")), 4, 30, 0.05f)));
+	}
+
+	/**
+	 * The Furnicrafter's trades (38.12): planks and wool bought, CobbleFurnies pieces sold, looked up by id when offered
+	 * (only with CobbleFurnies, like the job).
+	 */
+	private static void furnicrafterTrades() {
+		if (ModVillagers.FURNICRAFTER == null) {
+			return;
+		}
+		Platform.get().addTrades(ModVillagers.FURNICRAFTER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.OAK_PLANKS, 24), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(furni("oak_chair"), 2), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.FURNICRAFTER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.WHITE_WOOL, 12), new ItemStack(Items.EMERALD), 16, 5, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(furni("red_lamp")), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.FURNICRAFTER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(furni("oak_table")), 8, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 3), new ItemStack(furni("oak_cabinet")), 8, 10, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.FURNICRAFTER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(furni("white_sofa")), 6, 15, 0.05f)));
+		Platform.get().addTrades(ModVillagers.FURNICRAFTER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 12), new ItemStack(furni("poke_ball_desk")), 4, 30, 0.05f)));
+	}
+
+	/** CobbleFurnies' item {@code path}, looked up when a trade is made. */
+	private static net.minecraft.world.item.Item furni(String path) {
+		return io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM,
+			net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("cobblefurnies", path));
 	}
 
 	/** Create's item {@code path}, looked up when a trade is made. */

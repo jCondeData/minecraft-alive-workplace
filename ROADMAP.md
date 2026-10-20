@@ -5082,11 +5082,13 @@ partners, the Camp Cook), M34 (the Jeweller, luxuries) and M35 (the Stadium), ea
   installed mods register can be cooked (found by recipe type, not a fixed list), the cook only makes what the
   store has ingredients for, compat GameTests, scene `campfire_pot`.
 
-- [ ] **38.12** **A Furnicrafter job** (owner, 2026-10-20). With CobbleFurnies installed, its Furnicrafter block
+- [x] **38.12** (review: pending 2026-10-20) **A Furnicrafter job** (owner, 2026-10-20). With CobbleFurnies installed, its Furnicrafter block
   (`cobblefurnies:furnicrafter`) hires a villager who makes CobbleFurnies furniture from the store's materials, for
   the builders' material lists and the 37.x furnished homes; without the mod nothing changes (compat only). Done when:
   compat GameTests for the hire, a piece made from store materials, a builder taking it, the mod absent; text in
-  `en_us.json`; outfit with the pixel-art skill; scene `furnicrafter`.
+  `en_us.json`; outfit with the pixel-art skill; scene `furnicrafter`. (needs owner check: on the live server with CobbleFurnies,
+  place a Furni Crafter by a jobless villager, order an Oak Chair at the Storehouse with planks in its store, and watch
+  her make it; then a furnished home's chairs while its builder waits.)
 
 ## Milestone 39: Create integration (2.3)
 

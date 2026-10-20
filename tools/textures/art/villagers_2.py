@@ -1773,5 +1773,29 @@ DRAW += [physician]   # 32.18
 DRAW += [mechanic]   # 39.2
 DRAW += [conductor]   # 39.7d
 
+
+def crafter():
+    """The Crafter (ROADMAP 37.14): a dark green flat cap, and a canvas work apron over a belt, its pocket holding a
+    folding rule and a pencil, a brass buckle; a hand saw's blade hangs at the hip."""
+    t = vg.VillagerTexture()
+    vg.hat(t, vg.cloth("#3f5a3a"), style="beanie", crown=2, noise=0.04)
+    canvas = vg.cloth("#8a7d5a")
+    vg.apron(t, canvas, top=2, bottom=18, left=1, right=6, ties=True)
+    apron_back(t, canvas)
+    vg.belt(t, LEATHER, buckle=BRASS[2])
+    f = pocket(t, canvas)
+    f.put(1, 11, "#e2c35a")                              # a folding rule
+    f.put(1, 12, "#e2c35a")
+    f.put(2, 11, "#3a2a1a")                              # and a pencil
+    f.put(2, 12, "#c4913e")
+    w = t.face("jacket", "west")                         # a hand saw's blade at the hip
+    paint(w, ((1, 13), (2, 13), (3, 13)), STEEL[3])
+    paint(w, ((1, 14), (2, 14)), STEEL[1])
+    w.put(4, 13, "#8a5a2a")
+    return t.save_profession(ASSETS, "crafter", hat="full")
+
+
+DRAW += [crafter]   # 37.14
+
 if __name__ == "__main__":
     run(DRAW)

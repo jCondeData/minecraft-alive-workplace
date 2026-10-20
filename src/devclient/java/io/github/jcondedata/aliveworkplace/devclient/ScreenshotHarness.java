@@ -608,6 +608,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 			carpenterScene(mc, mc.getSingleplayerServer());
 			return;
 		}
+		if ("crafter_chain".equals(System.getProperty("aliveworkplace.scene"))) {
+			crafterChainScene(mc, mc.getSingleplayerServer());
+			return;
+		}
 		if ("camp".equals(System.getProperty("aliveworkplace.scene"))) {
 			campScene(mc, mc.getSingleplayerServer());
 			return;
@@ -1707,6 +1711,65 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if (tick == 1560) {
 			shot(mc, "30_carpenter_closeup");
+			mc.stop();
+		}
+	}
+
+	// --- Crafter (ROADMAP 37.14): a builder's woodwork made from logs, step by step -------------------------
+
+	private void crafterChainScene(Minecraft mc, MinecraftServer server) {
+		tick++;
+		if (tick == 1) {
+			mc.options.renderDistance().set(6);
+			mc.options.cloudStatus().set(CloudStatus.OFF);
+		}
+		if (tick == 30) {
+			server.execute(() -> {
+				ServerLevel level = server.overworld();
+				level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
+				level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
+				level.setDayTime(2500);
+				io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 48;
+				BlockPos bench = new BlockPos(-4, -60, -2);
+				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
+				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
+				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
+				// Everything for a Market Stall but the woodwork: spruce logs instead, for the Crafter to saw, cut and make.
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 20}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
+					{net.minecraft.world.item.Items.LANTERN, 1}, {net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 20},
+					{net.minecraft.world.item.Items.WHITE_WOOL, 15}};
+				for (int i = 0; i < stock.length; i++) {
+					chest.setItem(i, new ItemStack((net.minecraft.world.item.Item) stock[i][0], (Integer) stock[i][1]));
+				}
+				Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+				Builders.employ(level, builder, bench);
+				Builders.start(level, builder, null, io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints.MARKET_STALL.id(),
+					new io.github.jcondedata.aliveworkplace.blueprint.BlueprintData.Placement(level.dimension().location(), new BlockPos(-4, -60, -12),
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE));
+				BlockPos workbench = new BlockPos(3, -60, -2);
+				level.setBlockAndUpdate(workbench, ModBlocks.CRAFTERS_WORKBENCH.defaultBlockState()
+					.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+				Villager crafter = EntityType.VILLAGER.spawn(level, workbench.south(), MobSpawnType.COMMAND);
+				worker = crafter;
+				io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, crafter, workbench,
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CRAFTERS_WORKBENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CRAFTER);
+				hover(server.getPlayerList().getPlayers().get(0), new Vec3(-0.5, -54.5, 5.5), 180, 32);
+			});
+		}
+		if (tick >= 60 && tick <= 1500 && tick % 60 == 0) {
+			shot(mc, String.format("%02d_crafter_chain", tick / 60));
+		}
+		if (tick == 1510) {
+			server.execute(() -> hover(server.getPlayerList().getPlayers().get(0), new Vec3(3.5, -58.3, 2.5), 180, 20));
+		}
+		if (tick == 1550) {
+			server.execute(() -> {
+				int made = io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CRAFTED.getOrElse(worker, 0);
+				Showcase.check(made >= 1, "the crafter made the builder's woodwork from logs (" + made + " pieces)");
+			});
+		}
+		if (tick == 1560) {
+			shot(mc, "30_crafter_chain_closeup");
 			mc.stop();
 		}
 	}

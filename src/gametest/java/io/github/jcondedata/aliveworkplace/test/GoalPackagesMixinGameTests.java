@@ -73,6 +73,7 @@ public class GoalPackagesMixinGameTests implements FabricGameTest {
 		jobs.put(ModVillagers.FOSSIL_SCIENTIST, () -> io.github.jcondedata.aliveworkplace.fossil.FossilPackages.work(SPEED));
 		jobs.put(ModVillagers.CHEF, () -> io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.chef(SPEED));
 		jobs.put(ModVillagers.CARPENTER, () -> io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.work(SPEED));
+		jobs.put(ModVillagers.CRAFTER, () -> io.github.jcondedata.aliveworkplace.craft.Crafters.packages(SPEED));
 		jobs.put(ModVillagers.PORTER, () -> io.github.jcondedata.aliveworkplace.store.PorterPackages.work(SPEED));
 		jobs.put(ModVillagers.POSTMAN, () -> io.github.jcondedata.aliveworkplace.mail.PostmanPackages.work(SPEED));
 		jobs.put(ModVillagers.GUARD, () -> io.github.jcondedata.aliveworkplace.guard.GuardPackages.work(SPEED));

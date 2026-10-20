@@ -78,6 +78,10 @@ public final class ModAttachments {
 	/** The builder's tool bag: materials fetched from the supply chests, and rubble from clearing. */
 	public static final Attachment<BuilderBag> BUILDER_BAG = Attachment.saved("builder_bag", BuilderBag.CODEC, BuilderBag::new);
 
+	/** A Crafter's job in hand, saved so a chain half made carries on after a restart (ROADMAP 37.14). */
+	public static final Attachment<io.github.jcondedata.aliveworkplace.craft.CrafterJob> CRAFTER_JOB = Attachment.saved("crafter_job",
+		io.github.jcondedata.aliveworkplace.craft.CrafterJob.CODEC);
+
 	/** Which quarry a miner is digging. */
 	public static final Attachment<BuilderJob> MINER_JOB = Attachment.saved("miner_job", BuilderJob.CODEC);
 

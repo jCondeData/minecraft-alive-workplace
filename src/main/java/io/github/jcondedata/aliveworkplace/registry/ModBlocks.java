@@ -164,6 +164,12 @@ public final class ModBlocks {
 	/** Workstation for the Carpenter: they make what the builders nearby are waiting for, here. */
 	public static final BuildersBenchBlock CARPENTERS_BENCH = Reg.block("carpenters_bench", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE));
 
+	/**
+	 * The Crafter's job block (ROADMAP 37.14): they make what the village's workers are short of here, through whole recipe
+	 * chains. A jobless villager takes a free one by themselves, with config {@code crafters} on.
+	 */
+	public static final BuildersBenchBlock CRAFTERS_WORKBENCH = Reg.block("crafters_workbench", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE));
+
 	/** Workstation for the Chef: they cook here, from the chests nearby and the village's storehouse. */
 	public static final BuildersBenchBlock KITCHEN_STOVE = Reg.block("kitchen_stove", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.SMOKER).lightLevel(state -> 7));
 

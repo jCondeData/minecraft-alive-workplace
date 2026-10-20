@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+- Fixed: a Sophisticated Storage link tied to a controller with the Storage Tool, standing away from the controller's network, no longer has the storage behind it counted twice at the Storehouse (B262).
+
 ## 0.146.1 — 2026-10-20
 
 ### Fixed

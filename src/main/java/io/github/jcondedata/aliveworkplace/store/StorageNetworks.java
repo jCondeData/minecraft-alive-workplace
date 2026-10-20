@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -22,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -93,7 +95,9 @@ public final class StorageNetworks {
 
 	/**
 	 * The storage blocks {@code controller} links: walking from it through touching storage blocks and storage links,
-	 * within its reach, loaded blocks only. Empty if {@code controller} isn't one.
+	 * within its reach, loaded blocks only, and from every storage link linked to it with the Storage Tool within that
+	 * reach, touching its network or not (the mod's controller keeps those links whatever lies between, B262). Empty if
+	 * {@code controller} isn't one.
 	 */
 	public static Set<BlockPos> linkedTo(ServerLevel level, BlockPos controller) {
 		Set<BlockPos> storage = new LinkedHashSet<>();
@@ -104,6 +108,11 @@ public final class StorageNetworks {
 		Deque<BlockPos> open = new ArrayDeque<>();
 		seen.add(controller);
 		open.add(controller);
+		for (BlockPos link : toolLinkedLinks(level, controller)) {
+			if (seen.add(link)) {
+				open.add(link);
+			}
+		}
 		while (!open.isEmpty()) {
 			BlockPos at = open.poll();
 			for (Direction d : Direction.values()) {
@@ -123,6 +132,37 @@ public final class StorageNetworks {
 			}
 		}
 		return storage;
+	}
+
+	/**
+	 * The storage links within {@code controller}'s reach, in loaded chunks, that are linked to it with the Storage Tool
+	 * (B262): a link far from the network is still the controller's, and the storage behind it with it.
+	 */
+	private static List<BlockPos> toolLinkedLinks(ServerLevel level, BlockPos controller) {
+		List<BlockPos> links = new ArrayList<>();
+		int minCx = SectionPos.blockToSectionCoord(controller.getX() - CONTROLLER_REACH);
+		int maxCx = SectionPos.blockToSectionCoord(controller.getX() + CONTROLLER_REACH);
+		int minCz = SectionPos.blockToSectionCoord(controller.getZ() - CONTROLLER_REACH);
+		int maxCz = SectionPos.blockToSectionCoord(controller.getZ() + CONTROLLER_REACH);
+		for (int cx = minCx; cx <= maxCx; cx++) {
+			for (int cz = minCz; cz <= maxCz; cz++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz); // loaded only, without waiting
+				if (chunk == null) {
+					continue;
+				}
+				for (BlockEntity be : chunk.getBlockEntities().values()) {
+					BlockPos p = be.getBlockPos();
+					if (Math.abs(p.getX() - controller.getX()) > CONTROLLER_REACH || Math.abs(p.getY() - controller.getY()) > CONTROLLER_REACH
+						|| Math.abs(p.getZ() - controller.getZ()) > CONTROLLER_REACH || !isLink(be.getBlockState())) {
+						continue;
+					}
+					if (linkedToController(level, p, controller)) {
+						links.add(p.immutable());
+					}
+				}
+			}
+		}
+		return links;
 	}
 
 	/**

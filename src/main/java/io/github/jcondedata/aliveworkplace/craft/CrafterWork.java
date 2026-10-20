@@ -419,7 +419,7 @@ public class CrafterWork extends Behavior<Villager> {
 			if (plan == null || builderStation == null) {
 				continue;
 			}
-			BoundingBox area = plan.bounds();
+			BoundingBox area = plan.supplyExclude(); // B261: none for a repair
 			// The builder's chests and village-mates' first; another builder's last, and only what its builds can spare (B33).
 			List<BlockPos> sources = new ArrayList<>(SupplyContainers.find(level, builderStation, area));
 			List<BlockPos> theirs = new ArrayList<>();

@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15
+Roadmap items: 23.1, 23.1a, 23.1b, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261
 
 ## 1. What a player sees
 
@@ -49,7 +49,9 @@ material). A fixed set of blocks is never placed (bedrock, command blocks, spawn
 A Builder takes what it needs from the chests and barrels within `supplyRadius` of the bench (and 4 blocks up or
 down), carries up to 27 stacks in its bag (`BuilderBag`), and empties the bag at the chests when it finishes or
 stops helping. Builders never copy what is inside containers. The blueprint's tooltip and a Book and Quill list what
-is still missing.
+is still missing. A new build leaves out the chests inside its own box (they are what it puts up, its owner's), but a
+repair counts them (`BuildPlan.supplyExclude`, B261): the building stands, so a Storehouse Shed being repaired, or a
+shed the bench's chests stand in, hands the Builder what its chests hold.
 
 **Speed.** `workplaceBuildDelay` ticks per block (default 8) times a share by Builder level 1 to 5:
 100%, 100%, 85%, 70%, 55%, 40% (index 0 is unused). Then the village's mood, traits, edicts and so on change it
@@ -254,7 +256,10 @@ bells, `DoorwayHeadroomGameTests.aVillagerOpensTheHealingCentersShutFrontDoorAnd
 Healing Center's door and takes its brewing stand as a cleric,
 `DoorwayHeadroomGameTests.aJoblessVillagerOpensTheHealingCentersShutDoorAndTakesItsBrewingStand`).
 
-`RepairAskGameTests` (9, 36.15: the ask with nothing started and the page's Yes and Not now,
+`B261GameTests` (8, B261: a Storehouse Shed missing its hay bale and bottom ladder is repaired from its own chest,
+`aStorehouseShedIsRepairedFromItsOwnChests`; a shed repaired from the chest, barrel, double chest (its second half),
+trapped chest or chest one block above the bench inside it, and after a reload; a new build still leaves its own box's
+chests out). `RepairAskGameTests` (9, 36.15: the ask with nothing started and the page's Yes and Not now,
 `theBuilderAsksBeforeRepairing`; Yes on the hall's page repairs it, `yesOnTheHallPageRepairsIt`; Not now from the chat
 command and asked again once more goes missing, a stranger refused, `notNowLeavesItUntilMoreGoesMissing`; Stop and
 Pause mid-repair with the builder going straight to its queued job, `aRepairGoingOnStopsAndPausesFromTheHall`; a new

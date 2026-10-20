@@ -276,7 +276,9 @@ def render(md):
                 continue
             out.append(f"<{tag}>" + "".join(f"<li>{inline(it)}</li>" for it in items) + f"</{tag}>")
             continue
-        para = []
+        # The first line always goes in, so a line no branch above takes (a picture with words after it, "#### x")
+        # can't stall the loop: it once hung the showcase's page job for 40 minutes (B256).
+        para, i = [line.strip()], i + 1
         while i < len(lines) and lines[i].strip() and not re.match(r"^(#{1,3} |!\[|\s*\||\s*([-*]|\d+\.) )", lines[i]):
             para.append(lines[i].strip())
             i += 1

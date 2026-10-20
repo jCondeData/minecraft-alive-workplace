@@ -167,6 +167,8 @@ jobs:
           ONLY: ${{ needs.plan.outputs.full == 'true' && 'all' || needs.plan.outputs.scenes }}
         run: python3 tools/showcase/page.py --results build/showcase --site build/showcase-site --only "$ONLY"
       - name: Player guide (docs/guide, under /player-guide/; ROADMAP 22.10)
+        # Seconds normally; a hang (B256) fails here instead of eating the job.
+        timeout-minutes: 5
         run: python3 tools/playerguide/site.py --site build/showcase-site
       - id: report
         name: Verdict

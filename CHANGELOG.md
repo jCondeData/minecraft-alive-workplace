@@ -30,6 +30,9 @@ asks for the steps, `latest.log` and any crash report).
   where it can stand (no Beautify picture frame or Handcrafted shelf floating mid-wall) and a two-block-tall piece gets
   its top half. The Stone House was refurnished: a clear way in from the door, and its attic and upper floor are
   proper bedrooms (B260).
+- A Builder repairing a building now takes what it needs from the chests inside that building. Repairing a Storehouse
+  Shed, it waited for a Hay Bale and an Oak Ladder that were in the shed's own chests by its bench, because chests
+  inside the build were left out, as they are for a new build (B261).
 - Two villagers coming home through one door together no longer get stuck on the doorstep, where one could lose
   their bed for the night (seen at a renewed Stone House). The one further from the door now steps back a moment and
   goes in after the other (B255).

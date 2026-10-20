@@ -404,7 +404,7 @@ public final class Builders {
 		}
 		Optional<BlockPos> supplyBench = villager == null ? Optional.empty() : site.wonder() != null ? siteBench(level, villager, site) : benchPos(villager);
 		if (villager != null && supplyBench.isPresent() && !site.isDeconstruction()) {
-			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.bounds());
+			List<BlockPos> supplies = SupplyContainers.find(level, supplyBench.get(), plan.supplyExclude());
 			BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 			site.setMissing(computeMissing(level, site, plan, bag, supplies));
 		}

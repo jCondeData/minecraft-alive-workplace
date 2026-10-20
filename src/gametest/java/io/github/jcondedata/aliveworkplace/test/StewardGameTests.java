@@ -199,6 +199,8 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 	@GameTest(template = AREA, timeoutTicks = 40, batch = "stewardStops")
 	public void hisRoundsHaveAtMostSixStops(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// B264: a Storehouse an earlier batch left outside its own area (never cleared) is a stop of this hall's rounds
+		Leftovers.stewardSites(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(HALL_A, ModBlocks.VILLAGE_HALL);
 		BlockPos hall = helper.absolutePos(HALL_A);
@@ -206,7 +208,8 @@ public class StewardGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		Villager villager = seasoned(helper.spawn(EntityType.VILLAGER, HALL_A.east(2)));
 		Stewards.appoint(player, villager, planFor(helper, player, HALL_A));
-		helper.assertTrue(StewardWork.stops(level, villager, hall).isEmpty(), "stops with an empty plan");
+		List<StewardWork.Stop> none = StewardWork.stops(level, villager, hall);
+		helper.assertTrue(none.isEmpty(), "stops with an empty plan: " + none);
 		CityPlan plan = CityPlan.EMPTY;
 		for (int i = 0; i < 8; i++) {
 			BitSet cells = new BitSet();

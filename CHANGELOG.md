@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+
+- The Crafter (2.1, behind its switch `crafters`): a villager at the new Crafter's Workbench makes what the village's
+  workers are short of through whole recipe chains (logs into planks into slabs into a barrel), from the builders'
+  chests and the Storehouse, and puts it in the asker's chests; a raw material short is said, and nothing is wasted. A
+  chain half made carries on after a restart. With the Crafter's Workshop in the Blueprint Table (37.14).
+
 ### Fixed
 
 - Furnished homes and workplaces read as rooms: no furniture in a doorway's way, every bed's head against a wall,

@@ -4963,7 +4963,7 @@ M34's grander homes get furnished too, and simply aren't there until M34 is on.
   chest, only CobbleFurnies', both (the first in the order is used), and neither (vanilla stand-in); the material list text in
   `en_us.json`; scene `furniture_any_mod`. Note the decision in the Notes.
 
-- [ ] **37.14** **The Crafter: a worker who makes what others need** (owner, 2026-10-20: "the next build out"). A new
+- [x] **37.14** (review: pending 2026-10-20) **The Crafter: a worker who makes what others need** (owner, 2026-10-20: "the next build out"). A new
   job that watches what the village's workers are short of (first the Builder's material list, then other workers'
   needs) and crafts it from the Storehouse and shared stores, through whole recipe chains: for a chair that needs slabs
   and planks it saws logs into planks, cuts slabs, then crafts the chair, and repeats until there are enough. It uses

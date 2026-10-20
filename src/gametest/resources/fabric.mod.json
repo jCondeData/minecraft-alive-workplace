@@ -276,6 +276,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FurnishedWorkplacesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedPackTestGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ModdedLibraryGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CrafterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureSeatsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderPlanGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderStageGameTests",

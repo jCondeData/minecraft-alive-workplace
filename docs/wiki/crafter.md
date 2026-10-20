@@ -1,0 +1,93 @@
+# Crafter
+
+A villager at a Crafter's Workbench who makes what the village's workers are short of, through whole recipe chains:
+logs sawn into planks, planks cut into slabs, then the barrel, chair or fence asked for. Part of Furnished homes and
+modded storage (2.1), behind its expansion gate (`Expansions.M37`) and its own switch.
+
+Roadmap items: 37.14
+
+## 1. What a player sees
+
+A jobless villager by a Crafter's Workbench takes it and becomes a Crafter, in a canvas apron and a green cap. When a
+builder nearby is waiting for something that can be crafted, the Crafter fetches the makings from the builder's chests
+and the village's stores, walks to the workbench and makes it one step after another (the line above their head says
+"making 24 Oak Planks (step 1 of 3)", then the slabs, then the barrels), and carries the result to the builder's chests;
+the build carries on. A big order is made a bagful at a time until there's enough. When something can't be made, the
+Crafter takes nothing and says what's short: "short of 2 Oak Log to make 2 Barrel". After the builders, they fill the
+Storehouse's stock orders and a Wonder's goods, then what any other worker nearby is waiting for (a miner's ladders).
+
+The Crafter's Workshop is in the Blueprint Table: birch boards in a spruce frame under a dark oak roof, the workbench
+facing the door between two chests, and an open store lean-to of logs, planks and slabs against its east wall.
+
+## 2. How it works
+
+Each look (every 5 seconds while there's nothing to do) the Crafter goes down the asks in order: builders within the
+village whose site is waiting for materials (their missing list, biggest first), the Storehouse's stock orders and a
+Wonder's goods (the same search the Carpenter uses, sharing its claims, so a carpenter and a crafter never both make
+the same thing), then the requests other workers post. Each is planned with the game's own recipes, so modded recipes
+count: the crafting table's and the stonecutter's, and a furniture mod's bench's recipe type while one of its blocks
+stands within 6 blocks of the workbench (`crafter_benches` data files). Chains go 3 steps down (a chair from slabs from
+planks from logs, with one to spare for sticks). Repeated steps are merged: planks for the barrel and planks for its
+slabs are one step.
+
+The whole plan is checked against the stock before anything is taken, so a short raw material wastes nothing. To say
+what's short, the plan is worked out again noting each raw material (something no recipe of theirs makes) that runs
+out, along the first way down the recipes that nothing else could make.
+
+What may be used: from a builder's own chests and their village-mates' stashes everything the rest of that build
+doesn't need; from another builder's chests only what their builds can spare (B33). Never a chest outside the village.
+The finished goods go into the asker's chests (the builder's, the Storehouse's, the Wonder's stockpile, the worker's).
+A bag's worth at a time: at most 12 stacks of makings, the rest of the 27-slot bag for what's made.
+
+The job in hand is saved on the villager after every step, so a chain half made carries on from the same step after a
+restart (the planks already made are in the saved bag). If the makings vanish while fetching, what was fetched goes back
+where it came from. A step takes 6 ticks a craft (at least a second), faster with the Crafter's level.
+
+## 3. Switches
+
+| Key | Default | What it does |
+|---|---|---|
+| `crafters` | on from 2.1 | A jobless villager takes a free Crafter's Workbench and becomes a Crafter. Off: no villager takes one, and Crafters already hired stand idle (they keep their job). |
+
+## 4. Saved data
+
+- `crafter_job` on the villager: the job in hand (who it's for, the chain's steps, what it takes, the phase and the next
+  step). None: no job (an older save, or a Crafter with nothing to do).
+- The bag (`builder_bag`) and items made (`items_crafted`) are the ones every crafting job already saves.
+
+## 5. Items, blocks, jobs, commands
+
+- Block: `aliveworkplace:crafters_workbench` (crafted from two stonecutters, a crafting table, two planks and a chest;
+  mined with an axe).
+- Job: `aliveworkplace:crafter`.
+- Blueprint: `aliveworkplace:crafters_workshop`.
+- Data: `data/<namespace>/crafter_benches/*.json`, each `{"recipe_type": "...", "blocks": ["..."]}`.
+
+## 6. Decisions
+
+- 37.14 (owner, 2026-10-20, "the next build out"): a new job that makes what others need, through whole chains.
+- Its own job block rather than a vanilla one: the crafting table is the Carpenter's and the stonecutter the Mason's;
+  the Crafter does both, so it gets a workbench of its own (and the workshop has neither, so nobody else moves in).
+- The vanilla stand-in for "a chair from slabs and planks" is the barrel (six planks and two slabs): vanilla has no
+  chair. With Handcrafted installed its chairs are planned the same way from their own recipes.
+- A furniture mod's bench is named by recipe type id and block ids in a data file, never its classes; none is shipped
+  yet, since the pack's furniture mods (Handcrafted, Beautify, CobbleFurnies) make their pieces at the crafting table.
+
+## 7. Known limits
+
+- The Crafter is not in the village Steward's rules or the generated villages yet, and doesn't sell its workshop's
+  blueprint; the Blueprint Table has it.
+- What's short is found along the first way down the recipes: with oak and spruce logs both short it names oak.
+- The showcase scene is filmed on GitHub, not in this session.
+
+## 8. Proof
+
+- `CrafterGameTests.theCrafterMakesTheSlabsTheBuilderNeeds`: one step.
+- `CrafterGameTests.theCrafterMakesBarrelsFromLogsForTheBuilder`: the three-step chain and the build finishing.
+- `CrafterGameTests.theCrafterSaysWhatItLacksAndWastesNothing`: a raw material short.
+- `CrafterGameTests.oneCrafterServesTwoBuilders`: two askers at once.
+- `CrafterGameTests.aChainHalfMadeCarriesOnAfterAReload`: save and reload mid-chain.
+- `CrafterGameTests.withTheSwitchOffTheCrafterMakesNothing`: the switch off.
+- `CrafterGameTests.aBenchsRecipesOnlyWhileTheBenchIsThere`: a bench's recipes.
+
+Showcase scenes: `crafter_chain`

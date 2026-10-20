@@ -1,0 +1,4 @@
+{
+  "recipe_type": "minecraft:smelting",
+  "blocks": ["minecraft:furnace"]
+}

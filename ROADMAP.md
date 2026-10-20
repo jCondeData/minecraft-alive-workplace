@@ -5211,6 +5211,27 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-c-1020-0953): fourth M37 mutation pass, seed 46, FurnitureChoice. First the open :166 drop `!` (a
+  bed spot following the chest to a piece villagers can't sleep in): the test pack's `furniture_equivalents` now has a
+  bed set (`aliveworkplace_test_beds`' red bed = `aliveworkplace_test_plank_bed`'s two blocks of red wool, same
+  footprint), and `FurnitureAnyModGameTests.aBedSpotOnlyFollowsTheChestToABedVillagersSleepIn` kills it (proved against
+  the mutant, passes on the real code). Then every FurnitureChoice mutant no seed had run (78 of 129; seeds 44 and 45 ran
+  the other 51) against the ten furnishing GameTest classes (`only_tests.py`, ~50 s a run): 60 killed, 18 survived the
+  plain suite. Of those, 9 run against TrainersRoomCompatTests plus the Healing Center check (trimmed compat
+  fabric.mod.json, `--no-daemon`, ~2.5 min a run) were all killed: :271 `kind != BED` (a build with no bed, a workplace,
+  got a Trainer's room) by the new `TrainersRoomCompatTests.aBuildWithoutABedHasNoTrainersRoom`; :297 `!= DESK` (a table
+  taken over an equally near desk) by the new `TrainersRoomCompatTests.theTrainersDeskIsADeskBeforeATable`; :248 (first
+  `&&` to `||`), :90, :275 `||`, :290 `== TABLE`, :294 `&&` on y/z, :271 `chairId != null`, :106 by existing compat tests.
+  Not run on the compat suite (time), same paths as those proved: :92 and :95 (Poké Ball desks:
+  `theHealingCenterAndSchoolhouseGetPokeBallDesks`), :107 (partner put: `aPartneredHomeGetsThePokeBallChairAndDesk`),
+  :276, :284, :290 (the other two) (`theTrainersRoomTakesTheFirstChairEvenAtSpotZero`). Equivalent: :248 second `&&` to
+  `||` (`... || hasPartner`: `choose` returns vanilla when furnished builds are off and re-asks `trainersRoom`, empty
+  without a room, so the partner flag changes nothing); :426 `||` to `&&` (an unregistered id makes
+  `BlockStateParser` throw a CommandSyntaxException, caught as null; a null id is no registry key either way). No bug
+  found. FurnitureChoice is now fully covered (all 129 run by some seed). Left: BlueprintStyles' 37.7 parts (mostly
+  Carved Wood/Rechiseled compat code: `requiresSwitch`, `key`, `hangs`). The final full `runGameTest` hit the
+  session's 10-minute tool limit before finishing (not a failure; the coordinator's build runs it).
+
 - 2026-10-20 (lane-c-1020-0654): third M37 mutation pass, seed 45, FurnitureChoice (30 of its 129 mutants, some the
   seed-44 pass had run) against the ten furnishing GameTest classes (`only_tests.py`, ~50 s a run). 30 mutants: 19
   killed, 11 survived the plain suite; no test added, no bug filed. Nine survivors are code only CobbleFurnies/Cobblemon

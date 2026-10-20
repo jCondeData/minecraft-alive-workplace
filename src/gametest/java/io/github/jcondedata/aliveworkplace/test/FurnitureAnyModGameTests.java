@@ -417,6 +417,46 @@ public class FurnitureAnyModGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * A bed spot only follows the chest to a bed villagers can sleep in (B166 with 37.13): the test pack's bed set makes
+	 * {@code aliveworkplace_test_plank_bed}'s two blocks of red wool the same piece as a red bed, with the same footprint.
+	 * Wool in the chest never takes the planned bed's place, first in the order or not, and a bed in the chest keeps it.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"furnitureAnyMod"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "furnitureAnyMod")
+	public void aBedSpotOnlyFollowsTheChestToABedVillagersSleepIn(GameTestHelper helper) {
+		String beds = "aliveworkplace_test_beds";
+		String plankBed = "aliveworkplace_test_plank_bed";
+		try {
+			List<FurnitureSpot.Cell> cells = new java.util.ArrayList<>();
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					cells.add(new FurnitureSpot.Cell(new BlockPos(dx, 0, dz), Blocks.AIR.defaultBlockState()));
+				}
+			}
+			List<FurnitureSpot> spots = List.of(new FurnitureSpot(FurnitureSpot.Kind.BED, new BlockPos(1, 1, 1), Direction.SOUTH, null, "red", cells));
+			FurnitureChoice planned = FurnitureChoice.choose(spots, List.of(beds), true);
+			FurnitureChoice.Placed bed = planned.spots().get(0);
+			helper.assertTrue(bed != null && bed.mod().equals(beds) && FurnitureChoice.sleepable(bed.cells())
+				&& bed.cells().values().stream().anyMatch(s -> s.is(Blocks.RED_BED)), "planned: " + planned.spots());
+			FurnitureEquivalents.Group group = FurnitureEquivalents.of(spots.get(0)).orElse(null);
+			helper.assertTrue(group != null && group.block(plankBed) == Blocks.RED_WOOL, "the test bed set: " + group);
+			java.util.function.IntPredicate none = i -> false;
+
+			Furnishings.MODS = List.of(plankBed, beds);
+			FurnitureChoice wool = planned.restocked(spots, Furnishings.MODS, none, Map.of(Items.RED_WOOL, 4L));
+			helper.assertTrue(wool == planned, "wool first in the order took the bed's place: " + wool.spots());
+			FurnitureChoice both = planned.restocked(spots, Furnishings.MODS, none, Map.of(Items.RED_WOOL, 4L, Items.RED_BED, 1L));
+			helper.assertTrue(both == planned, "with a bed and wool in the chest the bed went: " + both.spots());
+			Furnishings.MODS = List.of(beds, plankBed);
+			FurnitureChoice after = planned.restocked(spots, Furnishings.MODS, none, Map.of(Items.RED_WOOL, 4L));
+			helper.assertTrue(after == planned, "wool second in the order took the bed's place: " + after.spots());
+		} finally {
+			new WorkplaceConfig().apply();
+		}
+		helper.succeed();
+	}
+
 	/** The equivalents file: every shipped kind is a real kind with two or more mods; a broken file is skipped and named. */
 	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"furnitureAnyMod"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "furnitureAnyMod")

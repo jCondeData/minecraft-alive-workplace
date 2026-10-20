@@ -325,6 +325,7 @@ stay in the list, ticked, so their numbers stay unique.
 - [ ] **B246** Showcase scene legend_founder failed 'the statue stands' and 'the statue is worth 5 beauty' in showcase run 39373544908 (main 7644cdf, 2026-10-20). Expected: the Founder's statue goes up and counts 5 beauty. Test: SCENE=legend_founder tools/screenshots/run.sh, then a GameTest if it's the mod (found by lane-a-1020-0923, 2026-10-20)
 - [ ] **B247** Showcase scene shop: picture 01_shop_counter (The counter) missing in showcase run 39373544908 (main 7644cdf, 2026-10-20). Expected: every shop picture is taken. Test: SCENE=shop tools/screenshots/run.sh (found by lane-a-1020-0923, 2026-10-20)
 - [ ] **B248** Showcase scene gallery (every starter blueprint) ran over its time limit in showcase run 39373544908 (main 7644cdf, 2026-10-20). Expected: finishes inside its limit on GitHub. Test: SCENE=gallery tools/screenshots/run.sh (time it) (found by lane-a-1020-0923, 2026-10-20)
+- [ ] **B249** Showcase-only (nightly-tests issue #1, showcase run 36758016372, version 0.137.0, commit e94704b): scene forest (Lumberjack: Felling and replanting four trees) failed its check 'the lumberjack replanted (3 saplings in the ground)'. Expected: the lumberjack replants within the scene's time and the scene passes. Test: SCENE=forest tools/screenshots/run.sh, judged by tools/showcase/process.py (found by lane-e-1020-1013, 2026-10-20)
 
 ## Milestone 21: Finish 0.138.0
 

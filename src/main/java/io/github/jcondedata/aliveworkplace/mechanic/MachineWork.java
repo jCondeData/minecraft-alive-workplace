@@ -50,7 +50,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Villagers work Create's machines (ROADMAP 39.3, design note M39), as the {@code machine_work} files say
  * ({@link MachineWorkFiles}): the farmer mills, the armorer presses, the chef mixes and the miner crushes. In their WORK
- * activity, a worker whose job has a file looks for that machine within {@link #REACH} of their workstation; while it
+ * activity, a worker whose job has a file looks for that machine within {@link #REACH} of their workstation (the
+ * village's own only, as is the store: inside a building the builders finished, {@link VillageMachines}, B243); while it
  * turns (its {@code Speed}, read by name, at least the file's {@code min_speed}) and the store by the workstation has
  * room, they take the input from the store, carry it to the machine's feed spot (the machine, its depot or basin, or
  * the gap they drop it into) and bring what the machine made back to the store. What a machine makes is read from
@@ -369,6 +370,9 @@ public class MachineWork extends Behavior<Villager> {
 		if (!whole(level, file, machine)) {
 			return level.getBlockState(machine).is(file.machine()) ? MechanicWork.Tended.FINE : MechanicWork.Tended.GONE;
 		}
+		if (!VillageMachines.village(level, machine)) {
+			return MechanicWork.Tended.FINE; // a player's own machine (B243): never fed, never emptied
+		}
 		if (chests.isEmpty() || SupplyContainers.freeSlots(level, chests) <= 0) {
 			return MechanicWork.Tended.FULL;
 		}
@@ -391,7 +395,10 @@ public class MachineWork extends Behavior<Villager> {
 		return worked ? MechanicWork.Tended.WORKED : turning ? MechanicWork.Tended.FINE : MechanicWork.Tended.STOPPED;
 	}
 
-	/** The machines of {@code file} within {@link #REACH} of {@code post}, in loaded chunks, nearest first. */
+	/**
+	 * The village's machines of {@code file} within {@link #REACH} of {@code post}, in loaded chunks, nearest first: only
+	 * those inside a building the builders finished ({@link VillageMachines}, B243), never a player's own.
+	 */
 	public static List<BlockPos> findMachines(ServerLevel level, BlockPos post, MachineWorkFiles.Machine file) {
 		List<BlockPos> found = new ArrayList<>();
 		for (int cx = SectionPos.blockToSectionCoord(post.getX() - REACH); cx <= SectionPos.blockToSectionCoord(post.getX() + REACH); cx++) {
@@ -401,7 +408,7 @@ public class MachineWork extends Behavior<Villager> {
 					continue;
 				}
 				for (BlockEntity be : chunk.getBlockEntities().values()) {
-					if (be.getBlockPos().closerThan(post, REACH) && be.getBlockState().is(file.machine())) {
+					if (be.getBlockPos().closerThan(post, REACH) && be.getBlockState().is(file.machine()) && VillageMachines.village(level, be.getBlockPos())) {
 						found.add(be.getBlockPos().immutable());
 					}
 				}
@@ -452,7 +459,7 @@ public class MachineWork extends Behavior<Villager> {
 		if (post.isEmpty()) {
 			return false;
 		}
-		List<BlockPos> chests = SupplyContainers.find(level, post.get(), null);
+		List<BlockPos> chests = VillageMachines.stores(level, post.get());
 		if (chests.isEmpty()) {
 			return false;
 		}
@@ -497,7 +504,7 @@ public class MachineWork extends Behavior<Villager> {
 		}
 		State state = state(villager);
 		BlockPos post = post(level, villager).orElse(villager.blockPosition());
-		List<BlockPos> chests = SupplyContainers.find(level, post, null);
+		List<BlockPos> chests = VillageMachines.stores(level, post);
 		MachineWorkFiles.Machine file = file(job.file());
 		if (file == null && job.stage() != MachineJob.Stage.RETURN) {
 			job = save(villager, job.with(MachineJob.Stage.RETURN, job.carried())); // its file is gone: bring back what's carried
@@ -507,7 +514,7 @@ public class MachineWork extends Behavior<Villager> {
 			case FETCH -> {
 				List<Recipe<?>> recipes = recipes(level, file);
 				List<ItemStack> planned = plan(level, file, chests, recipes);
-				if (planned.isEmpty() || SupplyContainers.freeSlots(level, chests) <= 0) {
+				if (planned.isEmpty() || SupplyContainers.freeSlots(level, chests) <= 0 || !VillageMachines.village(level, job.machine())) {
 					done(villager, state);
 					return;
 				}
@@ -535,7 +542,7 @@ public class MachineWork extends Behavior<Villager> {
 					state.walker.reset();
 					List<ItemStack> carried = new ArrayList<>(job.carried());
 					List<ItemStack> back = new ArrayList<>();
-					if (file != null && whole(level, file, job.machine())) {
+					if (file != null && whole(level, file, job.machine()) && VillageMachines.village(level, job.machine())) {
 						List<Recipe<?>> recipes = recipes(level, file);
 						if (!carried.isEmpty() && turning(level, job.machine(), file.minSpeed())) {
 							back.addAll(feed(level, file, job.machine(), carried));

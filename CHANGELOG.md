@@ -18,6 +18,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Create: villagers and the Mechanic only work the village's own machines and chests, those inside a building the
+  village's builders finished. A Mechanic hired at a player's own toolbox, or a farmer, armorer, chef or miner whose
+  workstation stands by a player's chests, no longer feeds the player's iron, wheat or ore into the player's press or
+  millstone, nor carries the player's automation output away (B243).
 - Workers: a villager whose walk the game dropped for a moment (a stroll ending as the job's walk began) no longer
   stands still for a second before setting off, when an old path of theirs had failed; this sometimes made an elder
   look as quick as a younger villager walking beside him (B242).

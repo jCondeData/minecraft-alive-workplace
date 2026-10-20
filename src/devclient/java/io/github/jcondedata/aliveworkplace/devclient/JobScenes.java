@@ -6772,11 +6772,23 @@ final class JobScenes {
 					player.closeContainer();
 					level.setDayTime((level.getDayTime() / 24000) * 24000 + 11800);
 				}, 30),
+				// The guard's night patrol picks random spots within 6 blocks of his post, cabin doorways too, and stands there a
+				// few seconds: on GitHub (B72) he stood in front of a cabin with a villager still outside it at the check after
+				// 200 ticks. 400 lets a villager held up by him reach the bed once he moves on; the check still wants all three.
 				new Step("02_curfew_dusk", -1, 0, (level, player) ->
-					level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Curfew.DUSK + 20), 200),
+					level.setDayTime((level.getDayTime() / 24000) * 24000 + io.github.jcondedata.aliveworkplace.hall.Curfew.DUSK + 20), 400),
 				new Step("03_curfew_book", io.github.jcondedata.aliveworkplace.hall.EdictBook.SLOTS[0], 6, (level, player) -> {
 					long asleep = curfewSleepers.stream().filter(io.github.jcondedata.aliveworkplace.hall.Curfew::asleepInBed).count();
-					Showcase.check(asleep == 3, "every villager went to bed at dusk: " + asleep + " of 3 asleep");
+					StringBuilder awake = new StringBuilder();
+					for (Villager v : curfewSleepers) {
+						if (!io.github.jcondedata.aliveworkplace.hall.Curfew.asleepInBed(v)) {
+							awake.append(" (awake: ").append(v.getVillagerData().getProfession()).append(" at ").append(v.blockPosition().toShortString())
+								.append(", resting ").append(v.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.REST))
+								.append(", home ").append(v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HOME).map(h -> h.pos().toShortString()).orElse("none"))
+								.append(", time ").append(level.getDayTime() % 24000).append(')');
+						}
+					}
+					Showcase.check(asleep == 3, "every villager went to bed at dusk: " + asleep + " of 3 asleep" + awake);
 					Showcase.check(!subject.isSleeping() && !io.github.jcondedata.aliveworkplace.hall.Curfew.keepsIn(subject), "the guard stayed on watch");
 					player.teleportTo(-5.5, -60, 1.5);
 					io.github.jcondedata.aliveworkplace.hall.EdictBook.open(player, STATION.offset(-7, 0, 0));

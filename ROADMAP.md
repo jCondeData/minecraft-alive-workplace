@@ -5260,6 +5260,7 @@ the owner's port jar; M33's caravans (39.7).
 
 ## Notes / blocked
 
+- 2026-10-20 (lane-e-1020-2213, for the owner): lane E built nothing this run, on purpose. Milestone 39 and its `(lane: e)` bugs are empty; `next` gave lane E only 37.14 (the Crafter) and 38.12 (the Furnicrafter), and lanes C (started 21:53, B260 then 37.14) and D (started 22:08, 38.12 then 37.14) were already running with those as their own top items. With no claims, a third copy would only be thrown away (as 38.8a and 39.7d were). Main's CI was green (1314cdc building); no M39 scene fails on the showcase. `wip/lane-e` is fully merged into main; deleting it from here was refused again. Question for the owner: give lane E new work (a 2.4 milestone, Create recipes for the Crafter, or a share of 37.14), or pause its scheduled task until there is some.
 - 2026-10-20 (lane-e-1020-1913): fourth mutation pass on M39 (Create) code, seed 52 (mutate.py `--list` per file),
   hand-picked from lines no earlier pass names: the two VillageMachines mutants the third pass left (:61, :69) and new
   lines in MechanicRound, Kinetics, MachineWorkFiles, Contraptions, CreateSchematics, CreateTrains and CaravanTrains

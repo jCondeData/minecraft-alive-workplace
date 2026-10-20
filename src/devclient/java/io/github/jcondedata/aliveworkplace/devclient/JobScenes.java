@@ -3429,7 +3429,10 @@ final class JobScenes {
 			}
 			java.util.UUID id = site.id();
 			return l -> {
-				if (!built(l, id, 1f)) {
+				// B246: the statue counts once the builder has handed the job in (Builders.finish files it among the
+				// village's buildings and drops the site). built(…, 1f) is already true from the LANDSCAPE stage on, a
+				// few work ticks before that, and on GitHub's slower runner the checks landed in that gap.
+				if (BuildSiteManager.get(l).get(id) != null) {
 					return false;
 				}
 				io.github.jcondedata.aliveworkplace.legend.Founder.forgetStands();

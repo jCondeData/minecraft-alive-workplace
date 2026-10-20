@@ -65,8 +65,11 @@ final class ColonyDepartureScene {
 		if (tick > 430 && tick < 1250) {
 			server.execute(() -> {
 				RealmData.Order order = order(server);
+				// gathered: all of them by the hall, or the bell has rung (it rings the moment the last one gets there, and
+				// they turn for the road at once, so a look a tick late missed it; a bell rung on the muster's timeout
+				// with nobody there still fails the check below)
 				gathered = order != null && !settlers.isEmpty()
-					&& settlers.stream().allMatch(v -> v.isAlive() && v.distanceToSqr(Vec3.atCenterOf(hall)) <= 5 * 5);
+					&& (settlers.stream().allMatch(v -> v.isAlive() && v.distanceToSqr(Vec3.atCenterOf(hall)) <= 5 * 5) || order.gone());
 				gone = order != null && order.gone();
 				onRoad = order != null && order.state().equals(RealmData.ON_ROAD);
 			});
@@ -239,6 +242,13 @@ final class ColonyDepartureScene {
 				chest.setItem(i, stacks[i]);
 			}
 		}
+		// The Storehouse's own porter (B132): with the Storehouse free, Dara or Tomas took it as a porter within the 50 ticks
+		// before the order, so a villager from across the village volunteered instead and couldn't reach the hall before
+		// the muster's bell rang without them.
+		Villager porter = settler(level, ground(level, hall.getX() - 3, hall.getZ() - 1), "Bram");
+		if (porter != null) {
+			io.github.jcondedata.aliveworkplace.store.Porters.employ(level, porter, store);
+		}
 		// Dara and Tomas, jobless grown-ups by the hall: the nearest to it, so they are the ones who volunteer.
 		settler(level, ground(level, hall.getX() + 1, hall.getZ() + 1), "Dara");
 		settler(level, ground(level, hall.getX() - 1, hall.getZ() + 1), "Tomas");
@@ -258,14 +268,15 @@ final class ColonyDepartureScene {
 		return new BlockPos(x, level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), z);
 	}
 
-	private static void settler(ServerLevel level, BlockPos at, String name) {
+	private static Villager settler(ServerLevel level, BlockPos at, String name) {
 		Villager villager = EntityType.VILLAGER.create(level);
 		if (villager == null) {
-			return;
+			return null;
 		}
 		villager.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0f, 0f);
 		villager.setCustomName(Component.literal(name));
 		villager.setPersistenceRequired();
 		level.addFreshEntity(villager);
+		return villager;
 	}
 }

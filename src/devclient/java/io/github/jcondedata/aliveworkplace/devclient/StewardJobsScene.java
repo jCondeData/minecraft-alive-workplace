@@ -96,7 +96,10 @@ final class StewardJobsScene {
 					menu.press(StewardDeskPage.APPROVE, player);
 				}
 				player.closeContainer();
-				jobless.forEach(v -> v.setNoAi(false)); // now they may walk to the blocks he gave them
+				jobless.forEach(v -> {
+					v.setNoAi(false); // now they may walk to the blocks he gave them
+					givenAt.put(v.getUUID(), v.position());
+				});
 				List<VillagerProfession> jobs = jobless.stream().map(v -> v.getVillagerData().getProfession()).toList();
 				Showcase.check(jobs.equals(List.of(VillagerProfession.FARMER, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD,
 					VillagerProfession.FLETCHER)), "approving gave a farmer, a guard and a fletcher: " + jobs);
@@ -108,16 +111,22 @@ final class StewardJobsScene {
 		}
 		// B132: each arrival counts once, whenever it happens: read only at tick 520, a villager that had got there and
 		// wandered off (or a slow GitHub runner's late walker) failed the check. The walk may take until tick 900.
+		// A guard's work isn't at his block: on his shift he walks the ground round his post (GuardPatrol, up to 14 blocks
+		// out by day), so on GitHub he could walk his patrol all the scene and never pass within 4 blocks of the grindstone.
+		// He counts once he's on patrol there and has walked away from where he stood when he was given the job.
 		if (tick > 130 && tick % 10 == 0 && stopAt < 0) {
-			server.execute(() -> jobless.stream().filter(v -> v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
-				.map(g -> g.pos().distToCenterSqr(v.position()) <= 4 * 4).orElse(false)).forEach(v -> arrived.add(v.getUUID())));
+			server.execute(() -> jobless.stream().filter(this::atWork).forEach(v -> arrived.add(v.getUUID())));
 		}
 		if (tick == 520) {
 			ScreenshotHarness.shot(mc, "04_jobs_at_work");
 		}
 		if (tick >= 520 && stopAt < 0 && (arrived.size() == 3 || tick >= 900)) {
 			int there = arrived.size();
-			server.execute(() -> Showcase.check(there == 3, "all three walked to their new workstations (" + there + " there)"));
+			server.execute(() -> Showcase.check(there == 3, "all three walked to their new workstations (" + there + " there"
+				+ jobless.stream().filter(v -> !arrived.contains(v.getUUID())).map(v -> "; not " + v.getVillagerData().getProfession() + " at " + v.blockPosition().toShortString()
+					+ ", block " + v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(g -> g.pos().toShortString()).orElse("none")
+					+ ", " + java.util.Optional.ofNullable(io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(v, v.level().getGameTime())).map(e -> e.line().getString()).orElse("no status"))
+					.collect(java.util.stream.Collectors.joining()) + ")"));
 			stopAt = tick + 20;
 		}
 		if (tick == stopAt) {
@@ -126,6 +135,23 @@ final class StewardJobsScene {
 	}
 
 	private final java.util.Set<java.util.UUID> arrived = java.util.concurrent.ConcurrentHashMap.newKeySet();
+	private final Map<java.util.UUID, Vec3> givenAt = new java.util.HashMap<>();
+
+	/** At their new block (within 4), or for the guard: on patrol round his post, having walked off from where he stood. */
+	private boolean atWork(Villager v) {
+		Optional<BlockPos> site = v.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE).map(net.minecraft.core.GlobalPos::pos);
+		if (site.isEmpty()) {
+			return false;
+		}
+		if (v.getVillagerData().getProfession() != io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD) {
+			return site.get().distToCenterSqr(v.position()) <= 4 * 4;
+		}
+		io.github.jcondedata.aliveworkplace.work.WorkerStatus.Entry status = io.github.jcondedata.aliveworkplace.work.WorkerStatus.get(v, v.level().getGameTime());
+		boolean patrolling = status != null && status.line().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+			&& t.getKey().equals("message.aliveworkplace.guard.state.patrolling");
+		Vec3 from = givenAt.get(v.getUUID());
+		return patrolling && site.get().distToCenterSqr(v.position()) <= 16 * 16 && from != null && from.distanceToSqr(v.position()) >= 3 * 3;
+	}
 	private int stopAt = -1;
 
 	private static ServerPlayer player(MinecraftServer server) {

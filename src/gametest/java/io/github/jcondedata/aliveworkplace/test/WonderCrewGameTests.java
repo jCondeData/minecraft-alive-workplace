@@ -561,14 +561,25 @@ public class WonderCrewGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpUnder"'
 	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpUnder")
 	public void aBlockGivenUpMidWallDoesNotStallTheCrew(GameTestHelper helper) {
-		gaveUpMidWall(helper, false);
+		gaveUpMidWall(helper, false, false);
 	}
 
 	/** B139: the same, saved and loaded the moment the blocks are given up: they stay given up, and the crew finishes. */
 	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpReload"'
 	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpReload")
 	public void aBlockGivenUpMidWallStaysGivenUpAfterAReload(GameTestHelper helper) {
-		gaveUpMidWall(helper, true);
+		gaveUpMidWall(helper, true, false);
+	}
+
+	/**
+	 * B254: the wall over blocks the lead gave up (someone stood in them) never goes up over the hole: the folly's dome
+	 * once had a block laid in the air over its given-up centre tile. Once they step away the crew lays the given-up
+	 * blocks after all, and the folly is finished whole.
+	 */
+	//$ gametest_ticks_batch TALL '24000' '"crewGaveUpLaid"'
+	@GameTest(template = TALL, timeoutTicks = 24000, batch = "crewGaveUpLaid")
+	public void blocksGivenUpMidWallAreLaidOnceClearAndNothingGoesUpOverThem(GameTestHelper helper) {
+		gaveUpMidWall(helper, false, true);
 	}
 
 	/**
@@ -694,7 +705,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 		});
 	}
 
-	private static void gaveUpMidWall(GameTestHelper helper, boolean reload) {
+	private static void gaveUpMidWall(GameTestHelper helper, boolean reload, boolean whole) {
 		Village v = village(helper, 4, 4);
 		ServerLevel level = v.level();
 		var registries = level.registryAccess();
@@ -707,7 +718,22 @@ public class WonderCrewGameTests implements FabricGameTest {
 		AtomicBoolean placedStander = new AtomicBoolean(false);
 		AtomicBoolean gone = new AtomicBoolean(false);
 		List<CompoundTag> saved = new ArrayList<>();
+		Set<BlockPos> up = new HashSet<>();
 		helper.onEachTick(() -> {
+			if (whole) { // B254: every stage II wall block that goes up has what the drawing puts under it
+				WonderSite ws = WonderManager.get(level).site(id).orElse(null);
+				BuildSite wp = ws == null || ws.done() || ws.stage() != 2 || ws.parts().isEmpty() ? null : BuildSiteManager.get(level).get(ws.parts().get(0));
+				BuildPlan wpl = wp == null || wp.stage() != BuildPlan.Stage.STRUCTURE ? null : wp.plan(level);
+				if (wpl != null) {
+					for (BuildPlan.Step built : wpl.steps(BuildPlan.Stage.STRUCTURE)) {
+						if (!level.getBlockState(built.pos()).isAir() && up.add(built.pos())) {
+							BlockPos below = built.pos().below();
+							helper.assertTrue(!wpl.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced(), "a wall block went up at "
+								+ built.pos().toShortString() + " over the hole at " + below.toShortString() + " (given up " + wp.gaveUp(below) + ")");
+						}
+					}
+				}
+			}
 			if (level.getGameTime() % 200 == 0) {
 				helper.setDayTime(2000);
 			}
@@ -777,6 +803,7 @@ public class WonderCrewGameTests implements FabricGameTest {
 			List<BlockPos> left = unlikeButTheFinial(level, at);
 			helper.assertTrue(holes.containsAll(left), left.size() + " blocks unlike the drawing besides the given-up " + holes + ", e.g. "
 				+ left.stream().filter(p -> !holes.contains(p)).limit(4).toList());
+			helper.assertTrue(!whole || left.isEmpty(), "the crew never laid the given-up blocks once they were clear: " + left);
 		});
 	}
 

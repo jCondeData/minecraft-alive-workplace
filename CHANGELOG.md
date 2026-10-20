@@ -18,6 +18,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Two villagers coming home through one door together no longer get stuck on the doorstep, where one could lose
+  their bed for the night (seen at a renewed Stone House). The one further from the door now steps back a moment and
+  goes in after the other (B255).
+- Wonders: a crew no longer lays a block in the air over one the lead had to give up (someone stood in it, or there
+  was nowhere to reach it from), as once on the folly's dome. A crew member now lays the given-up block once it's
+  clear, and the wall goes on from there; if nobody can, the block over it is left too, never floating (B254).
+
 - Storehouse: a Sophisticated Storage link that isn't linked with the Storage Tool (one a builder built, or a player
   placed without the tool) no longer hides the storage behind it: that barrel stays a store of its own, so villagers
   see what's in it. A link linked to the controller still counts what's behind it through the controller (B257).

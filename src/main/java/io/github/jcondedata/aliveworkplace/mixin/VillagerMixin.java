@@ -68,6 +68,7 @@ abstract class VillagerMixin {
 	private void aliveworkplace$thought(CallbackInfo ci) {
 		io.github.jcondedata.aliveworkplace.work.WorkerLimits.thinking(null);
 		io.github.jcondedata.aliveworkplace.work.BedLadders.tick((Villager) (Object) this); // up a ladder to a bed upstairs (B79)
+		io.github.jcondedata.aliveworkplace.work.DoorJams.tick((Villager) (Object) this); // two at one door: one gives way (B255)
 		io.github.jcondedata.aliveworkplace.legend.Pathfinder.hold((Villager) (Object) this); // after the brain: waiting stays put
 		io.github.jcondedata.aliveworkplace.work.StuckVillagers.tick((Villager) (Object) this); // never left inside a block (B185)
 	}

@@ -137,6 +137,14 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Stage helperWaitStage;
 	/** After this long the lead does the blocks helpers claimed itself (a helper that claims and never places). */
 	private static final int HELPER_WAIT = 200;
+	/** B254: the lead's site's {@link BuildSite#progressMark} as last seen, and the game tick it last changed (not saved). */
+	private long lastMark = Long.MIN_VALUE;
+	private long markSince;
+	/**
+	 * B254: how long a crew's site may stand still before the lead gives up a block that waits on a given-up one under
+	 * it (nobody could lay that one): without it the column above waited for good (B139).
+	 */
+	private static final int GIVEN_UP_WAIT = 200;
 	/** True while this builder works on a Wonder with a crew, in columns (35.5). */
 	private boolean crew;
 	/** True while the lead works on a block away from its cursor, this tick (23.1a). */
@@ -149,6 +157,8 @@ public class BuilderWork extends Behavior<Villager> {
 	private BlockPos currentStep;
 	/** Steps a helper gave up on (left for the lead), for the stage in {@link #avoidStage}. */
 	private final Set<BlockPos> avoid = new HashSet<>();
+	/** B254: blocks the lead gave up on that this builder then failed to lay as well, for the stage in {@link #avoidStage}. */
+	private final Set<BlockPos> retakeFailed = new HashSet<>();
 	@Nullable
 	private BuildPlan.Stage avoidStage;
 	/** How close a crewmate must be to pass materials over without walking to them (23.1a). */
@@ -310,7 +320,13 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		if (!helping) {
 			site.helpers(gameTime); // lets go of the claims of helpers that have left, so the lead never waits on them
+			long mark = site.progressMark();
+			if (mark != lastMark) {
+				lastMark = mark;
+				markSince = gameTime;
+			}
 		}
+		boolean standingStill = !helping && gameTime - markSince >= GIVEN_UP_WAIT;
 		BuildPlan.Step crewPick = null;
 		if (!helping && crew && !site.isDone()) {
 			crewPick = crewStep(level, villager, site, plan, bench); // the lead of a crew takes a column too
@@ -334,6 +350,10 @@ public class BuilderWork extends Behavior<Villager> {
 				if (site.endsStage() && io.github.jcondedata.aliveworkplace.mechanic.Contraptions.goBack(level, site, plan)) {
 					continue; // 39.5: a kinetic part broken since it went in: back over the parts, before the build is called done
 				}
+				if (crew && site.endsStage() && !standingStill && crewOnGivenUp(site, gameTime)) {
+					setStatus(site, BuildSite.Status.WORKING);
+					return; // B254: a member is laying a block the lead gave up on: the stage waits for it, not for long
+				}
 				site.finishList();
 				continue;
 			}
@@ -356,6 +376,12 @@ public class BuilderWork extends Behavior<Villager> {
 					site.playerBlockInTheWay(); // 27.19: counted once, as it is skipped for good
 				}
 				site.defer(); // (lead only: helpers pick their own steps)
+			} else if (crew && site.isRetrying() && standingStill && action == Action.PLACE && overGivenUp(level, site, plan, candidate)) {
+				// B254: it waits on a block under it the lead gave up and nobody has laid since, and the crew has done
+				// nothing for a while: given up too (a hole, never a block in the air), rather than wait for good (B139)
+				site.defer();
+				standingStill = false; // one at a time: the crew may lay the one under it now
+				markSince = gameTime;
 			} else if (crew && crewBlocked(level, villager, site, plan, candidate, bench)
 				|| helperWait < HELPER_WAIT && site.claimedByOther(villager.getUUID(), candidate.pos())) {
 				// A helper is on this block (23.1a): leave it to them rather than both walking over to it. If they don't
@@ -501,6 +527,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step helperStep(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
+			retakeFailed.clear();
 			avoidStage = site.stage();
 		}
 		BuildPlan.Step leads = site.current(plan);
@@ -554,6 +581,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step crewStep(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
+			retakeFailed.clear();
 			avoidStage = site.stage();
 		}
 		java.util.UUID me = villager.getUUID();
@@ -604,8 +632,11 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step columnWork(ServerLevel level, BuildSite site, BuildPlan plan, List<BuildPlan.Step> column, int layer, BlockPos bench) {
 		boolean topDown = site.stage() == BuildPlan.Stage.CLEAR;
 		for (BuildPlan.Step s : column) {
-			if (avoid.contains(s.pos()) || site.gaveUp(s.pos()) || site.placedThisStage(s.pos())) {
+			if (site.placedThisStage(s.pos())) {
 				continue; // (B139: a block placed this stage that changed by itself since, as farmland drying out, stays)
+			}
+			if (site.gaveUp(s.pos()) ? retakeFailed.contains(s.pos()) || !retakeGivenUp(level, site, s.pos()) : avoid.contains(s.pos())) {
+				continue; // (B254: a given-up block is tried again, even by one who failed at it before it was given up)
 			}
 			if (io.github.jcondedata.aliveworkplace.mechanic.Contraptions.notYet(site, plan, s)) {
 				continue; // 39.5: a kinetic part waits for the lead to reach its group
@@ -648,16 +679,42 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	/**
-	 * A foundation or structure block goes up only once the block the drawing puts under it is there, or the lead gave
-	 * that one up (B139: a crewmate stood on top of the Colossus's half-built robe, the block under its feet was given
-	 * up, and the robe above it waited for it for good, the whole crew with it).
+	 * A foundation or structure block goes up only once the block the drawing puts under it is there. B254: not over one
+	 * the lead gave up either (B139 let it, and the crew laid the folly's dome over a hole, a block in the air): the crew
+	 * lays a given-up block once nothing stands in it ({@link #retakeGivenUp}), and if nobody can, the lead gives up the
+	 * one over it in time (B139: the Colossus's robe waited for good on the block under a crewmate's feet).
 	 */
 	private static boolean supported(ServerLevel level, BuildSite site, BuildPlan plan, BuildPlan.Step step) {
 		if (site.stage() != BuildPlan.Stage.STRUCTURE && site.stage() != BuildPlan.Stage.FOUNDATION) {
 			return true;
 		}
 		BlockPos below = step.pos().below();
-		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced() || site.gaveUp(below);
+		return !plan.solidPlannedAt(below) || !level.getBlockState(below).canBeReplaced();
+	}
+
+	/** B254: whether {@code step} waits on a block under it that the lead gave up and nobody has laid since. */
+	private static boolean overGivenUp(ServerLevel level, BuildSite site, BuildPlan plan, BuildPlan.Step step) {
+		return !supported(level, site, plan, step) && site.gaveUp(step.pos().below());
+	}
+
+	/**
+	 * B254: a crew member takes a foundation or structure block the lead gave up on again once nothing stands in it (what
+	 * stood there has gone, or the lead had no spot to reach it from): the blocks over it wait for it.
+	 */
+	private static boolean retakeGivenUp(ServerLevel level, BuildSite site, BlockPos pos) {
+		return (site.stage() == BuildPlan.Stage.STRUCTURE || site.stage() == BuildPlan.Stage.FOUNDATION)
+			&& level.getEntities((Entity) null, new AABB(pos), e -> e.isAlive() && e.blocksBuilding && !e.isSpectator()).isEmpty();
+	}
+
+	/** B254: whether a member of the crew is on a block the lead gave up on. */
+	private static boolean crewOnGivenUp(BuildSite site, long gameTime) {
+		for (java.util.UUID m : site.helpers(gameTime)) {
+			BlockPos claim = site.claim(m);
+			if (claim != null && site.gaveUp(claim)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Whether any step of the stage still has work a builder can do (one the lead gave up on doesn't count). */
@@ -688,6 +745,7 @@ public class BuilderWork extends Behavior<Villager> {
 	private BuildPlan.Step workInReach(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
+			retakeFailed.clear();
 			avoidStage = site.stage();
 		}
 		BuildPlan.Step pick = null;
@@ -716,11 +774,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/** A step can't be done now. The lead retries it at the end of the stage; a helper leaves it to the lead. */
 	private void defer(BuildSite site, Villager villager, BlockPos pos) {
+		Set<BlockPos> leave = site.gaveUp(pos) ? retakeFailed : avoid; // B254: a given-up block is tried once more each
 		if (helping) {
-			avoid.add(pos);
+			leave.add(pos);
 			site.release(villager.getUUID());
 		} else if (offCursor) {
-			avoid.add(pos); // a block off the lead's cursor: it comes round in its turn
+			leave.add(pos); // a block off the lead's cursor: it comes round in its turn
 			site.setLeadClaim(null);
 		} else {
 			site.defer();
